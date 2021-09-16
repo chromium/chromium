@@ -26,12 +26,15 @@ class DeviceOperationHandlerImpl : public DeviceOperationHandler {
  private:
   // DeviceOperationHandler:
   void PerformConnect(const std::string& device_id) override;
+  void PerformDisconnect(const std::string& device_id) override;
+  void PerformForget(const std::string& device_id) override;
 
   // device::BluetoothDevice::Connect() callback.
   void OnDeviceConnect(
-      const std::string& address,
-      device::BluetoothDeviceType device_type,
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+
+  // device::BluetoothDevice::Disconnect() and ::Forget() callback.
+  void OnOperationFinished(bool success);
 
   // Finds a BluetoothDevice* based on device_id. If no device is found, nullptr
   // is returned.

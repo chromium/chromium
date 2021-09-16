@@ -27,6 +27,13 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
   // Initiates a connection to the device with ID |device_id|.
   void Connect(const std::string& device_id, OperationCallback callback);
 
+  // Initiates a disconnection from the device with ID |device_id|.
+  void Disconnect(const std::string& device_id, OperationCallback callback);
+
+  // Forgets the device with ID |device_id|, which in practice means
+  // un-pairing from the device.
+  void Forget(const std::string& device_id, OperationCallback callback);
+
  protected:
   explicit DeviceOperationHandler(
       AdapterStateController* adapter_state_controller);
@@ -34,14 +41,21 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
   // Invokes |current_operation_.callback| with the result of the operation.
   void HandleFinishedOperation(bool success);
 
-  // Implementation-specific method that attempts to connect to device_id.
+  // Implementation-specific methods.
   virtual void PerformConnect(const std::string& device_id) = 0;
+  virtual void PerformDisconnect(const std::string& device_id) = 0;
+  virtual void PerformForget(const std::string& device_id) = 0;
 
  private:
+  friend class DeviceOperationHandlerImplTest;
+
   enum class Operation {
-    // TODO(gordonseto): Add kDisconnect and kForget.
-    kConnect
+    kConnect,
+    kDisconnect,
+    kForget,
   };
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const Operation& operation);
 
   struct PendingOperation {
     PendingOperation(Operation operation_,

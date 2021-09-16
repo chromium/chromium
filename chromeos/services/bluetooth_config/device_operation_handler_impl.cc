@@ -30,13 +30,45 @@ void DeviceOperationHandlerImpl::PerformConnect(const std::string& device_id) {
   device->Connect(
       /*delegate=*/nullptr,
       base::BindOnce(&DeviceOperationHandlerImpl::OnDeviceConnect,
-                     weak_ptr_factory_.GetWeakPtr(), device->GetAddress(),
-                     device->GetDeviceType()));
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DeviceOperationHandlerImpl::PerformDisconnect(
+    const std::string& device_id) {
+  device::BluetoothDevice* device = FindDevice(device_id);
+  if (!device) {
+    BLUETOOTH_LOG(ERROR) << "Disconnect failed due to device not being "
+                            "found, device id: "
+                         << device_id;
+    HandleFinishedOperation(/*success=*/false);
+    return;
+  }
+
+  device->Disconnect(
+      base::BindOnce(&DeviceOperationHandlerImpl::OnOperationFinished,
+                     weak_ptr_factory_.GetWeakPtr(), /*success=*/true),
+      base::BindOnce(&DeviceOperationHandlerImpl::OnOperationFinished,
+                     weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
+}
+
+void DeviceOperationHandlerImpl::PerformForget(const std::string& device_id) {
+  device::BluetoothDevice* device = FindDevice(device_id);
+  if (!device) {
+    BLUETOOTH_LOG(ERROR) << "Forget failed due to device not being "
+                            "found, device id: "
+                         << device_id;
+    HandleFinishedOperation(/*success=*/false);
+    return;
+  }
+
+  device->Forget(
+      base::BindOnce(&DeviceOperationHandlerImpl::OnOperationFinished,
+                     weak_ptr_factory_.GetWeakPtr(), /*success=*/true),
+      base::BindOnce(&DeviceOperationHandlerImpl::OnOperationFinished,
+                     weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
 }
 
 void DeviceOperationHandlerImpl::OnDeviceConnect(
-    const std::string& address,
-    device::BluetoothDeviceType device_type,
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Connect failed with error code: "
@@ -44,6 +76,10 @@ void DeviceOperationHandlerImpl::OnDeviceConnect(
   }
 
   HandleFinishedOperation(!error_code.has_value());
+}
+
+void DeviceOperationHandlerImpl::OnOperationFinished(bool success) {
+  HandleFinishedOperation(success);
 }
 
 device::BluetoothDevice* DeviceOperationHandlerImpl::FindDevice(

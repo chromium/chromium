@@ -47,7 +47,27 @@ void DeviceOperationHandler::Connect(const std::string& device_id,
   EnqueueOperation(Operation::kConnect, device_id, std::move(callback));
 }
 
+void DeviceOperationHandler::Disconnect(const std::string& device_id,
+                                        OperationCallback callback) {
+  EnqueueOperation(Operation::kDisconnect, device_id, std::move(callback));
+}
+
+void DeviceOperationHandler::Forget(const std::string& device_id,
+                                    OperationCallback callback) {
+  EnqueueOperation(Operation::kForget, device_id, std::move(callback));
+}
+
 void DeviceOperationHandler::HandleFinishedOperation(bool success) {
+  if (success) {
+    BLUETOOTH_LOG(EVENT) << "Device with id: " << current_operation_->device_id
+                         << " succeeded operation: "
+                         << current_operation_->operation;
+  } else {
+    BLUETOOTH_LOG(ERROR) << "Device with id: " << current_operation_->device_id
+                         << " failed operation: "
+                         << current_operation_->operation;
+  }
+
   // Return the result of the operation to the client.
   std::move(current_operation_->callback).Run(std::move(success));
   current_operation_.reset();
@@ -91,9 +111,18 @@ void DeviceOperationHandler::PerformNextOperation() {
     return;
   }
 
+  BLUETOOTH_LOG(EVENT) << "Device with id: " << current_operation_->device_id
+                       << " starting operation: "
+                       << current_operation_->operation;
   switch (current_operation_->operation) {
     case Operation::kConnect:
       PerformConnect(current_operation_->device_id);
+      return;
+    case Operation::kDisconnect:
+      PerformDisconnect(current_operation_->device_id);
+      return;
+    case Operation::kForget:
+      PerformForget(current_operation_->device_id);
       return;
   }
 }
@@ -101,6 +130,22 @@ void DeviceOperationHandler::PerformNextOperation() {
 bool DeviceOperationHandler::IsBluetoothEnabled() const {
   return adapter_state_controller_->GetAdapterState() ==
          mojom::BluetoothSystemState::kEnabled;
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const DeviceOperationHandler::Operation& operation) {
+  switch (operation) {
+    case DeviceOperationHandler::Operation::kConnect:
+      stream << "[Connect]";
+      break;
+    case DeviceOperationHandler::Operation::kDisconnect:
+      stream << "[Disconnect]";
+      break;
+    case DeviceOperationHandler::Operation::kForget:
+      stream << "[Forget]";
+      break;
+  }
+  return stream;
 }
 
 }  // namespace bluetooth_config

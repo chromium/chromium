@@ -22,6 +22,8 @@ class FakeDeviceOperationHandler : public DeviceOperationHandler {
  private:
   // DeviceOperationHandler:
   void PerformConnect(const std::string& device_id) override;
+  void PerformDisconnect(const std::string& device_id) override;
+  void PerformForget(const std::string& device_id) override;
 };
 
 }  // namespace bluetooth_config

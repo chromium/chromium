@@ -27,6 +27,8 @@ const char kTestBluetoothName[] = "testName";
 
 class DeviceOperationHandlerImplTest : public testing::Test {
  protected:
+  using Operation = DeviceOperationHandler::Operation;
+
   DeviceOperationHandlerImplTest() = default;
   DeviceOperationHandlerImplTest(const DeviceOperationHandlerImplTest&) =
       delete;
@@ -70,6 +72,22 @@ class DeviceOperationHandlerImplTest : public testing::Test {
               EXPECT_FALSE(connect_callback_);
               connect_callback_ = std::move(callback);
             }));
+    ON_CALL(*mock_device, Disconnect(testing::_, testing::_))
+        .WillByDefault(testing::Invoke(
+            [this](base::OnceClosure callback,
+                   device::BluetoothDevice::ErrorCallback error_callback) {
+              EXPECT_FALSE(disconnect_callbacks_.has_value());
+              disconnect_callbacks_ = std::make_pair(std::move(callback),
+                                                     std::move(error_callback));
+            }));
+    ON_CALL(*mock_device, Forget(testing::_, testing::_))
+        .WillByDefault(testing::Invoke(
+            [this](base::OnceClosure callback,
+                   device::BluetoothDevice::ErrorCallback error_callback) {
+              EXPECT_FALSE(forget_callbacks_.has_value());
+              forget_callbacks_ = std::make_pair(std::move(callback),
+                                                 std::move(error_callback));
+            }));
     mock_devices_.push_back(std::move(mock_device));
   }
 
@@ -77,12 +95,33 @@ class DeviceOperationHandlerImplTest : public testing::Test {
     device_operation_handler_->Connect(
         device_id,
         base::BindOnce(&DeviceOperationHandlerImplTest::OnOperationFinished,
-                       base::Unretained(this)));
+                       base::Unretained(this), device_id, Operation::kConnect));
   }
 
-  void OnOperationFinished(bool success) { results_.push_back(success); }
+  void DisconnectDevice(const std::string& device_id) {
+    device_operation_handler_->Disconnect(
+        device_id,
+        base::BindOnce(&DeviceOperationHandlerImplTest::OnOperationFinished,
+                       base::Unretained(this), device_id,
+                       Operation::kDisconnect));
+  }
 
-  const std::vector<bool>& results() { return results_; }
+  void ForgetDevice(const std::string& device_id) {
+    device_operation_handler_->Forget(
+        device_id,
+        base::BindOnce(&DeviceOperationHandlerImplTest::OnOperationFinished,
+                       base::Unretained(this), device_id, Operation::kForget));
+  }
+
+  void OnOperationFinished(const std::string& device_id,
+                           Operation operation,
+                           bool success) {
+    results_.emplace_back(device_id, operation, success);
+  }
+
+  const std::vector<std::tuple<std::string, Operation, bool>>& results() {
+    return results_;
+  }
 
   bool HasPendingConnectCallback() const {
     return !connect_callback_.is_null();
@@ -97,6 +136,32 @@ class DeviceOperationHandlerImplTest : public testing::Test {
     }
   }
 
+  bool HasPendingDisconnectCallback() const {
+    return disconnect_callbacks_.has_value();
+  }
+
+  void InvokePendingDisconnectCallback(bool success) {
+    if (success) {
+      std::move(disconnect_callbacks_->first).Run();
+    } else {
+      std::move(disconnect_callbacks_->second).Run();
+    }
+    disconnect_callbacks_.reset();
+  }
+
+  bool HasPendingForgetCallback() const {
+    return forget_callbacks_.has_value();
+  }
+
+  void InvokePendingForgetCallback(bool success) {
+    if (success) {
+      std::move(forget_callbacks_->first).Run();
+    } else {
+      std::move(forget_callbacks_->second).Run();
+    }
+    forget_callbacks_.reset();
+  }
+
  private:
   std::vector<const device::BluetoothDevice*> GetMockDevices() {
     std::vector<const device::BluetoothDevice*> devices;
@@ -107,9 +172,17 @@ class DeviceOperationHandlerImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  std::vector<bool> results_;
+  // Results of processed operations. Each entry contains the operation's
+  // device ID, which Operation it was, and if it succeeded or not.
+  std::vector<std::tuple<std::string, Operation, bool>> results_;
 
   device::BluetoothDevice::ConnectCallback connect_callback_;
+  absl::optional<
+      std::pair<base::OnceClosure, device::BluetoothDevice::ErrorCallback>>
+      disconnect_callbacks_;
+  absl::optional<
+      std::pair<base::OnceClosure, device::BluetoothDevice::ErrorCallback>>
+      forget_callbacks_;
 
   std::vector<NiceMockDevice> mock_devices_;
   size_t num_devices_created_ = 0u;
@@ -127,25 +200,76 @@ TEST_F(DeviceOperationHandlerImplTest,
   // Connect should fail due to Bluetooth being disabled.
   SetBluetoothSystemState(mojom::BluetoothSystemState::kDisabled);
   ConnectDevice(device_id);
-  EXPECT_FALSE(results()[0]);
+  EXPECT_EQ(results()[0],
+            std::make_tuple(device_id, Operation::kConnect, false));
 
   // Connect should fail due to device not being found.
   SetBluetoothSystemState(mojom::BluetoothSystemState::kEnabled);
   ConnectDevice(device_id);
-  EXPECT_FALSE(results()[1]);
+  EXPECT_EQ(results()[1],
+            std::make_tuple(device_id, Operation::kConnect, false));
 
   // Add the device and simulate BluetoothDevice::Connect() failing.
   AddDevice(&device_id);
   ConnectDevice(device_id);
   EXPECT_TRUE(HasPendingConnectCallback());
   InvokePendingConnectCallback(/*success=*/false);
-  EXPECT_FALSE(results()[2]);
+  EXPECT_EQ(results()[2],
+            std::make_tuple(device_id, Operation::kConnect, false));
 
   // Simulate BluetoothDevice::Connect() succeeding.
   ConnectDevice(device_id);
   EXPECT_TRUE(HasPendingConnectCallback());
   InvokePendingConnectCallback(/*success=*/true);
-  EXPECT_TRUE(results()[3]);
+  EXPECT_EQ(results()[3],
+            std::make_tuple(device_id, Operation::kConnect, true));
+}
+
+TEST_F(DeviceOperationHandlerImplTest, DisconnectNotFoundFailThenSucceed) {
+  std::string device_id = "testid";
+
+  // Disconnect should fail due to device not being found.
+  DisconnectDevice(device_id);
+  EXPECT_EQ(results()[0],
+            std::make_tuple(device_id, Operation::kDisconnect, false));
+
+  // Add the device and simulate BluetoothDevice::Disconnect() failing.
+  AddDevice(&device_id);
+  DisconnectDevice(device_id);
+  EXPECT_TRUE(HasPendingDisconnectCallback());
+  InvokePendingDisconnectCallback(/*success=*/false);
+  EXPECT_EQ(results()[1],
+            std::make_tuple(device_id, Operation::kDisconnect, false));
+
+  // Simulate BluetoothDevice::Disconnect() succeeding.
+  DisconnectDevice(device_id);
+  EXPECT_TRUE(HasPendingDisconnectCallback());
+  InvokePendingDisconnectCallback(/*success=*/true);
+  EXPECT_EQ(results()[2],
+            std::make_tuple(device_id, Operation::kDisconnect, true));
+}
+
+TEST_F(DeviceOperationHandlerImplTest, ForgetNotFoundFailThenSucceed) {
+  std::string device_id = "testid";
+
+  // Forget should fail due to device not being found.
+  ForgetDevice(device_id);
+  EXPECT_EQ(results()[0],
+            std::make_tuple(device_id, Operation::kForget, false));
+
+  // Add the device and simulate BluetoothDevice::Forget() failing.
+  AddDevice(&device_id);
+  ForgetDevice(device_id);
+  EXPECT_TRUE(HasPendingForgetCallback());
+  InvokePendingForgetCallback(/*success=*/false);
+  EXPECT_EQ(results()[1],
+            std::make_tuple(device_id, Operation::kForget, false));
+
+  // Simulate BluetoothDevice::Forget() succeeding.
+  ForgetDevice(device_id);
+  EXPECT_TRUE(HasPendingForgetCallback());
+  InvokePendingForgetCallback(/*success=*/true);
+  EXPECT_EQ(results()[2], std::make_tuple(device_id, Operation::kForget, true));
 }
 
 TEST_F(DeviceOperationHandlerImplTest, SimultaneousOperationsAreQueued) {
@@ -153,36 +277,42 @@ TEST_F(DeviceOperationHandlerImplTest, SimultaneousOperationsAreQueued) {
   AddDevice(&device_id1);
   std::string device_id2;
   AddDevice(&device_id2);
+  std::string device_id3;
+  AddDevice(&device_id3);
 
   // Connect to the first device. BluetoothDevice::Connect() should be
   // called.
   ConnectDevice(device_id1);
   EXPECT_TRUE(HasPendingConnectCallback());
 
-  // Attempt to connect another device. BluetoothDevice::Connect() should not be
-  // called.
-  ConnectDevice(device_id2);
+  // Attempt to disconnect another device. BluetoothDevice::Disconnect() should
+  // not be called yet.
+  DisconnectDevice(device_id2);
+  EXPECT_FALSE(HasPendingDisconnectCallback());
 
-  // Invoke first connect callback.
+  // Invoke the first connect callback.
   InvokePendingConnectCallback(/*success=*/false);
-  EXPECT_EQ(results()[0], false);
+  EXPECT_EQ(results()[0],
+            std::make_tuple(device_id1, Operation::kConnect, false));
 
-  // Now the second BluetoothDevice::Connect() should have been called.
-  EXPECT_TRUE(HasPendingConnectCallback());
+  // Now the second operation's BluetoothDevice::Disconnect() should have been
+  // called.
+  EXPECT_TRUE(HasPendingDisconnectCallback());
 
-  // Attempt to connect to the first device again and disable Bluetooth.
-  ConnectDevice(device_id1);
+  // Attempt to forget a third device and disable Bluetooth.
+  // BluetoothDevice::Forget() should not be called yet,
+  ForgetDevice(device_id3);
+  EXPECT_FALSE(HasPendingForgetCallback());
   SetBluetoothSystemState(mojom::BluetoothSystemState::kDisabled);
 
-  // Succeed with the second connect call.
-  InvokePendingConnectCallback(/*success=*/true);
-  EXPECT_EQ(results()[1], true);
+  // Succeed with the disconnect call.
+  InvokePendingDisconnectCallback(/*success=*/true);
+  EXPECT_EQ(results()[1],
+            std::make_tuple(device_id2, Operation::kDisconnect, true));
 
-  // The third connect should immediately fail due to Bluetooth being disabled.
-  EXPECT_EQ(results()[2], false);
-
-  // TODO(gordonseto): Test Forget and Disconnect calls here when they're
-  // implemented.
+  // The forget call should immediately fail due to Bluetooth being disabled.
+  EXPECT_EQ(results()[2],
+            std::make_tuple(device_id3, Operation::kForget, false));
 }
 
 }  // namespace bluetooth_config
