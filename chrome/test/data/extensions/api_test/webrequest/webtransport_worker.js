@@ -32,10 +32,8 @@ async function expectSessionFailed(url) {
     await transport.ready;
     postMessage('Ready should be rejected.');
   } catch (e) {
-    // TODO(crbug.com/1240935): Consider showing error.
-    // This is filtered by InterceptingHandshakeClient.
-    if (JSON.stringify(e) != '{}') {
-      postMessage('Error should be empty.');
+   if (e.name !== 'WebTransportError') {
+      postMessage(`Error name should be WebTransportError but is ${e.name}.`);
     } else {
       postMessage('PASS');
     }

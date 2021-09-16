@@ -5,30 +5,45 @@
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('custom-response.py?:status=200'));
   await wt.ready;
-}, 'WebTransport connection succeeds with status code 200');
+}, 'WebTransport session is established with status code 200');
 
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('custom-response.py?:status=204'));
   await wt.ready;
-}, 'WebTransport connection succeeds with status code 204');
+}, 'WebTransport session is established with status code 204');
 
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('custom-response.py?:status=301'));
-  await promise_rejects_js(t, TypeError, wt.ready, 'ready promise shoud be rejected');
-  await promise_rejects_js(t, TypeError, wt.closed, 'closed promise should be rejected');
-}, 'WebTransport connection fails with status code 301');
+  // Sadly we cannot use promise_rejects_dom as the error constructor is
+  // WebTransportError rather than DOMException. Ditto below.
+  // We get a possible error, and then make sure wt.closed is rejected with it.
+  const e = await wt.ready.catch(e => e);
+  await promise_rejects_exactly(t, e, wt.closed, 'closed promise should be rejected');
+  await promise_rejects_exactly(t, e, wt.ready, 'ready promise shoud be rejected');
+  assert_true(e instanceof WebTransportError);
+  assert_equals(e.source, 'session', 'source');
+  assert_equals(e.applicationProtocolCode, null, 'applicationProtocolCode');
+}, 'WebTransport session establishment fails with status code 301');
 
 promise_test(async t => {
   const  wt = new WebTransport(webtransport_url('custom-response.py?:status=401'));
-  await promise_rejects_js(t, TypeError, wt.ready, 'ready promise should be rejected');
-  await promise_rejects_js(t, TypeError, wt.closed, 'closed promise should be rejected');
-}, 'WebTransport connection fails with status code 401');
+  const e = await wt.ready.catch(e => e);
+  await promise_rejects_exactly(t, e, wt.closed, 'closed promise should be rejected');
+  await promise_rejects_exactly(t, e, wt.ready, 'ready promise shoud be rejected');
+  assert_true(e instanceof WebTransportError);
+  assert_equals(e.source, 'session', 'source');
+  assert_equals(e.applicationProtocolCode, null, 'applicationProtocolCode');
+}, 'WebTransport session establishment with status code 401');
 
 promise_test(async t => {
   const wt = new WebTransport(webtransport_url('custom-response.py?:status=404'));
-  await promise_rejects_js(t, TypeError, wt.ready, 'ready promise should be rejected');
-  await promise_rejects_js(t, TypeError, wt.closed, 'closed promise should be rejected');
-}, 'WebTransport connection fails with status code 404');
+  const e = await wt.ready.catch(e => e);
+  await promise_rejects_exactly(t, e, wt.closed, 'closed promise should be rejected');
+  await promise_rejects_exactly(t, e, wt.ready, 'ready promise shoud be rejected');
+  assert_true(e instanceof WebTransportError);
+  assert_equals(e.source, 'session', 'source');
+  assert_equals(e.applicationProtocolCode, null, 'applicationProtocolCode');
+}, 'WebTransport session establishment fails with status code 404');
 
 promise_test(async t => {
   // Create WebTransport session.

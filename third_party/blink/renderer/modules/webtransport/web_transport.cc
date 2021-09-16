@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/modules/webtransport/datagram_duplex_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -783,8 +784,9 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
   }
   closed_resolver_->Resolve(close_info);
 
-  v8::Local<v8::Value> reason = V8ThrowException::CreateTypeError(
-      script_state_->GetIsolate(), "Connection closed.");
+  v8::Local<v8::Value> reason = WebTransportError::Create(
+      script_state_->GetIsolate(), /*application_protocol_code=*/absl::nullopt,
+      "Connection closed.", WebTransportError::Source::kSession);
   ready_resolver_->Reject(reason);
   RejectPendingStreamResolvers();
   ResetAll();
@@ -841,8 +843,10 @@ void WebTransport::OnHandshakeFailed(
   DVLOG(1) << "WebTransport::OnHandshakeFailed() this=" << this;
   ScriptState::Scope scope(script_state_);
   {
-    v8::Local<v8::Value> reason = V8ThrowException::CreateTypeError(
-        script_state_->GetIsolate(), "Connection lost.");
+    v8::Local<v8::Value> reason = WebTransportError::Create(
+        script_state_->GetIsolate(),
+        /*application_protocol_code=*/absl::nullopt, "Connection lost.",
+        WebTransportError::Source::kSession);
     ready_resolver_->Reject(reason);
     closed_resolver_->Reject(reason);
   }
@@ -1079,8 +1083,10 @@ void WebTransport::OnConnectionError() {
 
   ScriptState::Scope scope(script_state_);
   if (!cleanly_closed_) {
-    v8::Local<v8::Value> reason = V8ThrowException::CreateTypeError(
-        script_state_->GetIsolate(), "Connection lost.");
+    v8::Local<v8::Value> reason = WebTransportError::Create(
+        script_state_->GetIsolate(),
+        /*application_protocol_code=*/absl::nullopt, "Connection lost.",
+        WebTransportError::Source::kSession);
     datagram_underlying_source_->Error(reason);
     received_streams_underlying_source_->Error(reason);
     received_bidirectional_streams_underlying_source_->Error(reason);
@@ -1095,8 +1101,9 @@ void WebTransport::OnConnectionError() {
 }
 
 void WebTransport::RejectPendingStreamResolvers() {
-  v8::Local<v8::Value> reason = V8ThrowException::CreateTypeError(
-      script_state_->GetIsolate(), "Connection lost.");
+  v8::Local<v8::Value> reason = WebTransportError::Create(
+      script_state_->GetIsolate(), /*application_protocol_code=*/absl::nullopt,
+      "Connection lost.", WebTransportError::Source::kSession);
   for (ScriptPromiseResolver* resolver : create_stream_resolvers_) {
     resolver->Reject(reason);
   }

@@ -18,9 +18,7 @@ async function expectSessionFailed(url) {
     await transport.ready;
     established = true;
   } catch (e) {
-    // TODO(crbug.com/1240935): Consider showing error.
-    // This is filtered by InterceptingHandshakeClient.
-    chrome.test.assertEq({}, e);
+    chrome.test.assertEq(e.name, 'WebTransportError');
   }
   chrome.test.assertFalse(established);
 }
