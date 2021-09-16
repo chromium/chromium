@@ -48,7 +48,7 @@ constexpr base::FeatureParam<std::string> kSkipCartExtractionPattern{
 
 constexpr base::FeatureParam<bool> kRbdUtmParam{
     &ntp_features::kNtpChromeCartModule,
-    ntp_features::NtpChromeCartModuleAbandonedCartDiscountUseUtmParam, false};
+    ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam, false};
 
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
