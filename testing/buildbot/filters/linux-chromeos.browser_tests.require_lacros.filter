@@ -1,15 +1,18 @@
 # This file contains tests that for browser_tests built for ash, and
 # requires Lacros.
 # For more information, please see //chrome/test/base/chromeos/README.md.
-# TODO(crbug.com/1245416) Enable more accessibility tests.
 DemoAshRequiresLacrosTest*
-ChromeVoxBackgroundTest.ForwardNavigationThroughIframeButtons
-ChromeVoxBackgroundTest.ReadPhoneticPronunciationTest
-ChromeVoxBackgroundTest.PopupButtonCollapsed
-ChromeVoxBackgroundTest.PageLoadEarcons
-ChromeVoxEditingTest.EditableLineTwoStaticTexts
-ChromeVoxLiveRegionsTest.LiveRegionChangeAtomicText
-ChromeVoxLocaleOutputHelperTest.JapaneseAndChineseUnlabeledDocTest
-ChromeVoxLocaleOutputHelperTest.SwitchBetweenChineseDialectsTest
-ChromeVoxOutputE2ETest.NoTooltipWithNameTitle
-ChromeVoxOutputE2ETest.ARCCustomAction
+ChromeVox*
+
+# TODO(crbug.com/1245416) Enable more accessibility tests.
+-ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
+-ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
+-ChromeVoxBackgroundTest.TextSelectionAndLiveRegion
+-ChromeVoxBackgroundTest.TouchEditingState
+-ChromeVoxDesktopAutomationHandlerTest.TaskManagerTableView
+-ChromeVoxISearchTest.Simple
+-ChromeVoxPanelTest.FormControlsMenu
+-ChromeVoxPanelTest.InternationalFormControlsMenu
+-ChromeVoxPanelTest.LinkMenu
+-ChromeVoxPortalsTest.PortalName
+-ChromeVoxPortalsTest.ShouldFocusPortal

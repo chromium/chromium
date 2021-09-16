@@ -4265,8 +4265,11 @@
           '--lacros-chrome-path=lacros_clang_x64',
         ],
         # TODO(crbug.com/1195974): Remove experiment after verify it's stable.
-        'experiment_percentage': 100,
+        'experiment_percentage': 1,
         'test': 'browser_tests',
+        'swarming': {
+          'shards': 4,
+        },
       },
     },
 
