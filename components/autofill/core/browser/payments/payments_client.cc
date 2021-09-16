@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/select_challenge_option_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -1196,6 +1197,14 @@ PaymentsClient::MigrationRequestDetails::MigrationRequestDetails(
     const MigrationRequestDetails& other) = default;
 PaymentsClient::MigrationRequestDetails::~MigrationRequestDetails() = default;
 
+PaymentsClient::SelectChallengeOptionRequestDetails::
+    SelectChallengeOptionRequestDetails() = default;
+PaymentsClient::SelectChallengeOptionRequestDetails::
+    SelectChallengeOptionRequestDetails(
+        const SelectChallengeOptionRequestDetails& other) = default;
+PaymentsClient::SelectChallengeOptionRequestDetails::
+    ~SelectChallengeOptionRequestDetails() = default;
+
 PaymentsClient::PaymentsClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
@@ -1285,6 +1294,15 @@ void PaymentsClient::MigrateCards(
           request_details, migratable_credit_cards,
           account_info_getter_->IsSyncFeatureEnabled(), std::move(callback)),
       /*authenticate=*/true);
+}
+
+void PaymentsClient::SelectChallengeOption(
+    const SelectChallengeOptionRequestDetails& request_details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const std::string&)> callback) {
+  IssueRequest(std::make_unique<SelectChallengeOptionRequest>(
+                   request_details, std::move(callback)),
+               /*authenticate=*/true);
 }
 
 void PaymentsClient::CancelRequest() {

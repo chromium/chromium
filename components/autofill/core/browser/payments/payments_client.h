@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -241,6 +242,21 @@ class PaymentsClient {
     std::string app_locale;
   };
 
+  // A collection of the information required to make select challenge option
+  // request.
+  struct SelectChallengeOptionRequestDetails {
+    SelectChallengeOptionRequestDetails();
+    SelectChallengeOptionRequestDetails(
+        const SelectChallengeOptionRequestDetails& other);
+    ~SelectChallengeOptionRequestDetails();
+
+    CardUnmaskChallengeOption selected_challenge_option;
+    // An opaque token used to chain consecutive payments requests together.
+    std::string context_token;
+    int64_t billing_customer_number = 0;
+    std::string app_locale;
+  };
+
   // An enum set in the GetUploadDetailsRequest indicating the source of the
   // request when uploading a card to Google Payments. It should stay consistent
   // with the same enum in Google Payments server code.
@@ -343,6 +359,13 @@ class PaymentsClient {
       const MigrationRequestDetails& details,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrateCardsCallback callback);
+
+  // The user has chosen one of the available challenge options. Send the
+  // selected challenge option to server to continue the unmask flow.
+  virtual void SelectChallengeOption(
+      const SelectChallengeOptionRequestDetails& details,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              const std::string&)> callback);
 
   // Cancels and clears the current |request_|.
   void CancelRequest();

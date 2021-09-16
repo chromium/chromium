@@ -219,6 +219,12 @@ class PaymentsClientTest : public testing::Test {
   }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
+  void OnDidSelectChallengeOption(AutofillClient::PaymentsRpcResult result,
+                                  const std::string& updated_context_token) {
+    result_ = result;
+    context_token_ = updated_context_token;
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -331,6 +337,27 @@ class PaymentsClientTest : public testing::Test {
   }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
+  void StartSelectingChallengeOption(
+      CardUnmaskChallengeOptionType challenge_type =
+          CardUnmaskChallengeOptionType::kSmsOtp,
+      std::string challenge_id = "arbitrary id") {
+    PaymentsClient::SelectChallengeOptionRequestDetails request_details;
+    request_details.billing_customer_number = 555666777888;
+    request_details.context_token = "fake context token";
+    request_details.app_locale = "language-LOCALE";
+
+    CardUnmaskChallengeOption selected_challenge_option;
+    selected_challenge_option.type = challenge_type;
+    selected_challenge_option.id = challenge_id;
+    selected_challenge_option.challenge_info = u"(***)-***-5678";
+    request_details.selected_challenge_option = selected_challenge_option;
+
+    client_->SelectChallengeOption(
+        request_details,
+        base::BindOnce(&PaymentsClientTest::OnDidSelectChallengeOption,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   network::TestURLLoaderFactory* factory() { return &test_url_loader_factory_; }
 
   const std::string& GetUploadData() { return intercepted_body_; }
@@ -399,6 +426,14 @@ class PaymentsClientTest : public testing::Test {
     EXPECT_TRUE(GetUploadData().find("&s7e_263_otp=") == std::string::npos);
   }
 
+  void assertIncludedInRequest(std::string field_name_or_value) {
+    EXPECT_TRUE(GetUploadData().find(field_name_or_value) != std::string::npos);
+  }
+
+  void assertNotIncludedInRequest(std::string field_name_or_value) {
+    EXPECT_TRUE(GetUploadData().find(field_name_or_value) == std::string::npos);
+  }
+
   AutofillClient::PaymentsRpcResult result_ = AutofillClient::NONE;
   payments::PaymentsClient::UnmaskDetails* unmask_details_;
 
@@ -415,6 +450,8 @@ class PaymentsClientTest : public testing::Test {
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   // The nickname name in the UploadRequest that was supposed to be saved.
   std::u16string upstream_nickname_;
+  // The opaque token used to chain consecutive payments requests together.
+  std::string context_token_;
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   // Credit cards to be upload saved during a local credit card migration call.
@@ -1497,6 +1534,60 @@ TEST_F(PaymentsClientTest, MigrationSuccessWithDisplayText) {
   EXPECT_EQ("display text", display_text_);
 }
 #endif
+
+TEST_F(PaymentsClientTest, SelectChallengeOptionWithSmsOtpMethod) {
+  StartSelectingChallengeOption(CardUnmaskChallengeOptionType::kSmsOtp,
+                                "arbitrary id for sms otp");
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{ \"context_token\": \"new context token\" }");
+
+  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  assertIncludedInRequest("context_token");
+  assertIncludedInRequest("selected_idv_challenge_option");
+  assertIncludedInRequest("sms_otp_challenge_option");
+  // We should only set the challenge id. No need to send the masked phone
+  // number.
+  assertIncludedInRequest("challenge_id");
+  assertIncludedInRequest("arbitrary id for sms otp");
+  assertNotIncludedInRequest("masked_phone_number");
+}
+
+TEST_F(PaymentsClientTest, SelectChallengeOptionSuccess) {
+  StartSelectingChallengeOption();
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{ \"context_token\": \"new context token\" }");
+
+  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ("new context token", context_token_);
+}
+
+TEST_F(PaymentsClientTest, SelectChallengeOptionTemporaryFailure) {
+  StartSelectingChallengeOption();
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+                 "\"api_error_reason\": \"virtual_card_temporary_error\"} }");
+
+  EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE, result_);
+}
+
+TEST_F(PaymentsClientTest, SelectChallengeOptionVcnFlowPermanentFailure) {
+  StartSelectingChallengeOption();
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+                 "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
+
+  EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE, result_);
+}
+
+TEST_F(PaymentsClientTest, SelectChallengeOptionResponseMissingContextToken) {
+  StartSelectingChallengeOption();
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{}");
+
+  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+}
 
 }  // namespace payments
 }  // namespace autofill
