@@ -72,7 +72,8 @@ class WallpaperResizerTest : public testing::Test,
                         WallpaperLayout layout) {
     auto resizer = std::make_unique<WallpaperResizer>(
         image, target_size,
-        WallpaperInfo("", layout, DEFAULT, base::Time::Now().LocalMidnight()),
+        WallpaperInfo("", layout, WallpaperType::kDefault,
+                      base::Time::Now().LocalMidnight()),
         task_runner());
     resizer->AddObserver(this);
     resizer->StartResize();
@@ -153,10 +154,11 @@ TEST_F(WallpaperResizerTest, ImageId) {
 
   // Create a WallpaperResizer and check that it reports an original image ID
   // both pre- and post-resize that matches the ID returned by GetImageId().
-  WallpaperResizer resizer(image, gfx::Size(10, 20),
-                           WallpaperInfo("", WALLPAPER_LAYOUT_STRETCH, DEFAULT,
-                                         base::Time::Now().LocalMidnight()),
-                           task_runner());
+  WallpaperResizer resizer(
+      image, gfx::Size(10, 20),
+      WallpaperInfo("", WALLPAPER_LAYOUT_STRETCH, WallpaperType::kDefault,
+                    base::Time::Now().LocalMidnight()),
+      task_runner());
   EXPECT_EQ(WallpaperResizer::GetImageId(image), resizer.original_image_id());
   resizer.AddObserver(this);
   resizer.StartResize();

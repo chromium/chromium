@@ -253,7 +253,7 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, ObserveWallpaperFiresWhenBound) {
   chromeos::personalization_app::mojom::CurrentWallpaper* current =
       current_wallpaper();
 
-  EXPECT_EQ(ash::WallpaperType::ONLINE, current->type);
+  EXPECT_EQ(ash::WallpaperType::kOnline, current->type);
   EXPECT_EQ(ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
             current->layout);
   // Data url of a solid black image scaled up to 256x256.

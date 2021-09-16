@@ -13,7 +13,7 @@ namespace ash {
 
 WallpaperInfo::WallpaperInfo() {
   layout = WALLPAPER_LAYOUT_CENTER;
-  type = WALLPAPER_TYPE_COUNT;
+  type = WallpaperType::kCount;
 }
 
 WallpaperInfo::WallpaperInfo(
@@ -22,7 +22,7 @@ WallpaperInfo::WallpaperInfo(
                     online_wallpaper_params.asset_id,
                     online_wallpaper_params.collection_id,
                     online_wallpaper_params.layout,
-                    WallpaperType::ONLINE,
+                    WallpaperType::kOnline,
                     base::Time::Now()) {}
 
 WallpaperInfo::WallpaperInfo(const std::string& in_location,
@@ -68,7 +68,7 @@ std::ostream& operator<<(std::ostream& os, const WallpaperInfo& info) {
   os << "  asset_id: " << info.asset_id.value_or(-1) << std::endl;
   os << "  collection_id: " << info.collection_id << std::endl;
   os << "  layout: " << info.layout << std::endl;
-  os << "  type: " << info.type << std::endl;
+  os << "  type: " << static_cast<int>(info.type) << std::endl;
   os << "  date: " << info.date << std::endl;
   return os;
 }

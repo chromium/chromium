@@ -73,7 +73,7 @@ gfx::ImageSkia CreateWallpaperImage(SkColor fill, SkColor rect) {
 void HandleToggleWallpaperMode() {
   static int index = 0;
   auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
-  WallpaperInfo info("", WALLPAPER_LAYOUT_STRETCH, DEFAULT,
+  WallpaperInfo info("", WALLPAPER_LAYOUT_STRETCH, WallpaperType::kDefault,
                      base::Time::Now().LocalMidnight());
   switch (++index % 4) {
     case 0:

@@ -190,8 +190,8 @@ void ChromePersonalizationAppUiDelegate::OnWallpaperChanged() {
       GURL(webui::GetBitmapDataUrl(*current_wallpaper_resized.bitmap()));
 
   switch (info.type) {
-    case ash::WallpaperType::DAILY:
-    case ash::WallpaperType::ONLINE: {
+    case ash::WallpaperType::kDaily:
+    case ash::WallpaperType::kOnline: {
       if (info.collection_id.empty() || !info.asset_id.has_value()) {
         DVLOG(2) << "no collection_id or asset_id found";
         // Older versions of ChromeOS do not store these information, need to
@@ -209,7 +209,7 @@ void ChromePersonalizationAppUiDelegate::OnWallpaperChanged() {
                       std::vector<backdrop::Collection>{collection});
       return;
     }
-    case ash::WallpaperType::CUSTOMIZED: {
+    case ash::WallpaperType::kCustomized: {
       base::FilePath file_name = base::FilePath(info.location).BaseName();
 
       // Match selected wallpaper based on full filename including extension.
@@ -225,18 +225,18 @@ void ChromePersonalizationAppUiDelegate::OnWallpaperChanged() {
 
       return;
     }
-    case ash::WallpaperType::DEFAULT:
-    case ash::WallpaperType::DEVICE:
-    case ash::WallpaperType::ONE_SHOT:
-    case ash::WallpaperType::POLICY:
-    case ash::WallpaperType::THIRDPARTY:
+    case ash::WallpaperType::kDefault:
+    case ash::WallpaperType::kDevice:
+    case ash::WallpaperType::kOneShot:
+    case ash::WallpaperType::kPolicy:
+    case ash::WallpaperType::kThirdParty:
       NotifyWallpaperChanged(
           chromeos::personalization_app::mojom::CurrentWallpaper::New(
               wallpaper_data_url, /*attribution=*/std::vector<std::string>(),
               info.layout, info.type,
               /*key=*/base::UnguessableToken::Create().ToString()));
       return;
-    case ash::WallpaperType::WALLPAPER_TYPE_COUNT:
+    case ash::WallpaperType::kCount:
       mojo::ReportBadMessage("Impossible WallpaperType received");
       return;
   }

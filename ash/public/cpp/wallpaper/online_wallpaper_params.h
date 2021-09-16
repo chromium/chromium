@@ -34,8 +34,8 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
   // Indicate the params is a result of a user's request. i.e clicking on an
   // image.
   bool from_user = false;
-  // If the |WallpaperInfo| generated from these params should have type
-  // |WallpaperType::DAILY|.
+  // If the `WallpaperInfo` generated from these params should have type
+  // `WallpaperType::kDaily`.
   bool daily_refresh_enabled = false;
 
   OnlineWallpaperParams(const AccountId& account_id,

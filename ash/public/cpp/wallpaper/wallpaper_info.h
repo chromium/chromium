@@ -54,7 +54,7 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   WallpaperType type;
   base::Time date;
 
-  // Not empty if type == WallpaperType::ONE_SHOT.
+  // Not empty if type == WallpaperType::kOneShot.
   // This field is filled in by ShowWallpaperImage when image is already
   // decoded.
   gfx::ImageSkia one_shot_wallpaper;

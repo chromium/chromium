@@ -63,23 +63,23 @@ bool EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::FromMojom(
 MojomWallpaperType EnumTraits<MojomWallpaperType, ash::WallpaperType>::ToMojom(
     ash::WallpaperType input) {
   switch (input) {
-    case ash::WallpaperType::DAILY:
+    case ash::WallpaperType::kDaily:
       return MojomWallpaperType::kDaily;
-    case ash::WallpaperType::CUSTOMIZED:
+    case ash::WallpaperType::kCustomized:
       return MojomWallpaperType::kCustomized;
-    case ash::WallpaperType::DEFAULT:
+    case ash::WallpaperType::kDefault:
       return MojomWallpaperType::kDefault;
-    case ash::WallpaperType::ONLINE:
+    case ash::WallpaperType::kOnline:
       return MojomWallpaperType::kOnline;
-    case ash::WallpaperType::POLICY:
+    case ash::WallpaperType::kPolicy:
       return MojomWallpaperType::kPolicy;
-    case ash::WallpaperType::THIRDPARTY:
+    case ash::WallpaperType::kThirdParty:
       return MojomWallpaperType::kThirdParty;
-    case ash::WallpaperType::DEVICE:
+    case ash::WallpaperType::kDevice:
       return MojomWallpaperType::kDevice;
-    case ash::WallpaperType::ONE_SHOT:
+    case ash::WallpaperType::kOneShot:
       return MojomWallpaperType::kOneShot;
-    case ash::WallpaperType::WALLPAPER_TYPE_COUNT:
+    case ash::WallpaperType::kCount:
       NOTREACHED();
       return MojomWallpaperType::kDefault;
   }
@@ -90,28 +90,28 @@ bool EnumTraits<MojomWallpaperType, ash::WallpaperType>::FromMojom(
     ash::WallpaperType* output) {
   switch (input) {
     case MojomWallpaperType::kDaily:
-      *output = ash::WallpaperType::DAILY;
+      *output = ash::WallpaperType::kDaily;
       return true;
     case MojomWallpaperType::kCustomized:
-      *output = ash::WallpaperType::CUSTOMIZED;
+      *output = ash::WallpaperType::kCustomized;
       return true;
     case MojomWallpaperType::kDefault:
-      *output = ash::WallpaperType::DEFAULT;
+      *output = ash::WallpaperType::kDefault;
       return true;
     case MojomWallpaperType::kOnline:
-      *output = ash::WallpaperType::ONLINE;
+      *output = ash::WallpaperType::kOnline;
       return true;
     case MojomWallpaperType::kPolicy:
-      *output = ash::WallpaperType::POLICY;
+      *output = ash::WallpaperType::kPolicy;
       return true;
     case MojomWallpaperType::kThirdParty:
-      *output = ash::WallpaperType::THIRDPARTY;
+      *output = ash::WallpaperType::kThirdParty;
       return true;
     case MojomWallpaperType::kDevice:
-      *output = ash::WallpaperType::DEVICE;
+      *output = ash::WallpaperType::kDevice;
       return true;
     case MojomWallpaperType::kOneShot:
-      *output = ash::WallpaperType::ONE_SHOT;
+      *output = ash::WallpaperType::kOneShot;
       return true;
   }
   NOTREACHED();

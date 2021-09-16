@@ -546,7 +546,8 @@ bool SetWallpaperInfo(const AccountId& account_id,
   wallpaper_info_dict.SetIntPath(
       WallpaperControllerImpl::kNewWallpaperLayoutNodeName, info.layout);
   wallpaper_info_dict.SetIntPath(
-      WallpaperControllerImpl::kNewWallpaperTypeNodeName, info.type);
+      WallpaperControllerImpl::kNewWallpaperTypeNodeName,
+      static_cast<int>(info.type));
   wallpaper_update->SetKey(account_id.GetUserEmail(),
                            std::move(wallpaper_info_dict));
   return true;
@@ -693,7 +694,7 @@ WallpaperLayout WallpaperControllerImpl::GetWallpaperLayout() const {
 
 WallpaperType WallpaperControllerImpl::GetWallpaperType() const {
   return current_wallpaper_ ? current_wallpaper_->wallpaper_info().type
-                            : WALLPAPER_TYPE_COUNT;
+                            : WallpaperType::kCount;
 }
 
 bool WallpaperControllerImpl::ShouldShowInitialAnimation() {
@@ -762,7 +763,7 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
   if (image.width() == 1 && image.height() == 1)
     info.layout = WALLPAPER_LAYOUT_STRETCH;
 
-  if (info.type == WallpaperType::ONE_SHOT)
+  if (info.type == WallpaperType::kOneShot)
     info.one_shot_wallpaper = image.DeepCopy();
 
   VLOG(1) << "SetWallpaper: image_id=" << WallpaperResizer::GetImageId(image)
@@ -774,7 +775,7 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
   }
 
   UMA_HISTOGRAM_ENUMERATION("Ash.Wallpaper.Type", info.type,
-                            WALLPAPER_TYPE_COUNT);
+                            WallpaperType::kCount);
 
   // Cancel any in-flight color calculation because we have a new wallpaper.
   if (color_calculator_) {
@@ -808,7 +809,8 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
 bool WallpaperControllerImpl::IsPolicyControlled(
     const AccountId& account_id) const {
   WallpaperInfo info;
-  return GetUserWallpaperInfo(account_id, &info) && info.type == POLICY;
+  return GetUserWallpaperInfo(account_id, &info) &&
+         info.type == WallpaperType::kPolicy;
 }
 
 void WallpaperControllerImpl::UpdateWallpaperBlurForLockState(bool blur) {
@@ -869,7 +871,7 @@ bool WallpaperControllerImpl::IsBlurAllowedForLockState() const {
 
 bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
                                                    const WallpaperInfo& info) {
-  if (info.type != DAILY)
+  if (info.type != WallpaperType::kDaily)
     daily_refresh_timer_.Stop();
 
   if (IsEphemeralUser(account_id)) {
@@ -885,10 +887,11 @@ bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
     wallpaper_colors_update->RemoveKey(old_info.location);
   }
   bool success = SetLocalWallpaperInfo(account_id, info);
-  // Although |CUSTOMIZED| typed wallpapers are syncable, we don't set synced
-  // info until the image is stored in drivefs, so we know when to retry
-  // saving it on failure.
-  if (IsWallpaperTypeSyncable(info.type) && info.type != CUSTOMIZED) {
+  // Although `WallpaperType::kCustomized` typed wallpapers are syncable, we
+  // don't set synced info until the image is stored in drivefs, so we know when
+  // to retry saving it on failure.
+  if (IsWallpaperTypeSyncable(info.type) &&
+      info.type != WallpaperType::kCustomized) {
     SetSyncedWallpaperInfo(account_id, info);
   }
 
@@ -1000,23 +1003,24 @@ void WallpaperControllerImpl::SetCustomWallpaper(
   const bool is_active_user = IsActiveUser(account_id);
   if (preview_mode) {
     DCHECK(is_active_user);
-    confirm_preview_wallpaper_callback_ = base::BindOnce(
-        &WallpaperControllerImpl::SaveAndSetWallpaper,
-        weak_factory_.GetWeakPtr(), account_id, file_name, CUSTOMIZED, layout,
-        /*show_wallpaper=*/false, image);
+    confirm_preview_wallpaper_callback_ =
+        base::BindOnce(&WallpaperControllerImpl::SaveAndSetWallpaper,
+                       weak_factory_.GetWeakPtr(), account_id, file_name,
+                       WallpaperType::kCustomized, layout,
+                       /*show_wallpaper=*/false, image);
     reload_preview_wallpaper_callback_ = base::BindRepeating(
         &WallpaperControllerImpl::ShowWallpaperImage,
         weak_factory_.GetWeakPtr(), image,
         WallpaperInfo{/*in_location=*/std::string(),
                       /*in_asset_id=*/absl::nullopt,
-                      /*in_collection_id=*/std::string(), layout, CUSTOMIZED,
-                      base::Time::Now()},
+                      /*in_collection_id=*/std::string(), layout,
+                      WallpaperType::kCustomized, base::Time::Now()},
         /*preview_mode=*/true, /*always_on_top=*/false);
     // Show the preview wallpaper.
     reload_preview_wallpaper_callback_.Run();
   } else {
     SaveAndSetWallpaperWithCompletion(
-        account_id, file_name, CUSTOMIZED, layout,
+        account_id, file_name, WallpaperType::kCustomized, layout,
         /*show_wallpaper=*/is_active_user, image,
         base::BindOnce(&WallpaperControllerImpl::SaveWallpaperToDriveFs,
                        weak_factory_.GetWeakPtr(), account_id));
@@ -1110,10 +1114,10 @@ void WallpaperControllerImpl::SetCustomizedDefaultWallpaperPaths(
   customized_default_small_path_ = customized_default_small_path;
   customized_default_large_path_ = customized_default_large_path;
 
-  // If the current wallpaper has type DEFAULT, the new customized default
-  // wallpaper should be shown immediately to update the screen. It shouldn't
-  // replace wallpapers of other types.
-  bool show_wallpaper = (GetWallpaperType() == DEFAULT);
+  // If the current wallpaper has type `WallpaperType::kDefault`, the new
+  // customized default wallpaper should be shown immediately to update the
+  // screen. It shouldn't replace wallpapers of other types.
+  bool show_wallpaper = (GetWallpaperType() == WallpaperType::kDefault);
 
   // Customized default wallpapers are subject to the same restrictions as other
   // default wallpapers, e.g. they should not be set during guest sessions.
@@ -1131,8 +1135,8 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
   const bool show_wallpaper = IsActiveUser(account_id);
   DecodeImageCallback callback = base::BindOnce(
       &WallpaperControllerImpl::SaveAndSetWallpaper, weak_factory_.GetWeakPtr(),
-      account_id, kPolicyWallpaperFile, POLICY, WALLPAPER_LAYOUT_CENTER_CROPPED,
-      show_wallpaper);
+      account_id, kPolicyWallpaperFile, WallpaperType::kPolicy,
+      WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper);
 
   if (bypass_decode_for_testing_) {
     std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
@@ -1168,8 +1172,8 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
   bool allowed_to_show_wallpaper = IsActiveUser(account_id);
 
   if (allowed_to_set_wallpaper) {
-    SaveAndSetWallpaper(account_id, file_name, CUSTOMIZED, layout,
-                        allowed_to_show_wallpaper, image);
+    SaveAndSetWallpaper(account_id, file_name, WallpaperType::kCustomized,
+                        layout, allowed_to_show_wallpaper, image);
   }
   return allowed_to_set_wallpaper && allowed_to_show_wallpaper;
 }
@@ -1211,7 +1215,8 @@ void WallpaperControllerImpl::UpdateCustomWallpaperLayout(
     return;
 
   WallpaperInfo info;
-  if (!GetUserWallpaperInfo(account_id, &info) || info.type != CUSTOMIZED)
+  if (!GetUserWallpaperInfo(account_id, &info) ||
+      info.type != WallpaperType::kCustomized)
     return;
   if (info.layout == layout)
     return;
@@ -1258,19 +1263,21 @@ void WallpaperControllerImpl::ShowUserWallpaper(const AccountId& account_id) {
     return;
   }
 
-  if (info.type == DEFAULT) {
+  if (info.type == WallpaperType::kDefault) {
     SetDefaultWallpaperImpl(account_id, /*show_wallpaper=*/true);
     return;
   }
 
-  if (info.type != CUSTOMIZED && info.type != POLICY && info.type != DEVICE) {
+  if (info.type != WallpaperType::kCustomized &&
+      info.type != WallpaperType::kPolicy &&
+      info.type != WallpaperType::kDevice) {
     // Load wallpaper according to WallpaperInfo.
     SetWallpaperFromInfo(account_id, info, /*show_wallpaper=*/true);
     return;
   }
 
   base::FilePath wallpaper_path;
-  if (info.type == DEVICE) {
+  if (info.type == WallpaperType::kDevice) {
     DCHECK(!device_policy_wallpaper_path_.empty());
     wallpaper_path = device_policy_wallpaper_path_;
   } else {
@@ -1316,7 +1323,7 @@ void WallpaperControllerImpl::ShowOneShotWallpaper(
                               /*in_asset_id=*/absl::nullopt,
                               /*in_collection_id=*/std::string(),
                               WallpaperLayout::WALLPAPER_LAYOUT_STRETCH,
-                              WallpaperType::ONE_SHOT,
+                              WallpaperType::kOneShot,
                               base::Time::Now()};
   ShowWallpaperImage(image, info, /*preview_mode=*/false,
                      /*always_on_top=*/false);
@@ -1329,7 +1336,7 @@ void WallpaperControllerImpl::ShowAlwaysOnTopWallpaper(
                               /*in_asset_id=*/absl::nullopt,
                               /*in_collection_id=*/std::string(),
                               WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                              WallpaperType::ONE_SHOT,
+                              WallpaperType::kOneShot,
                               base::Time::Now()};
   ReparentWallpaper(GetWallpaperContainerId(locked_));
   ReadAndDecodeWallpaper(
@@ -1590,7 +1597,7 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
     if (!GetSyncedWallpaperInfo(account_id, &synced_info) &&
         GetLocalWallpaperInfo(account_id, &local_info) &&
         IsWallpaperTypeSyncable(local_info.type)) {
-      if (local_info.type == CUSTOMIZED) {
+      if (local_info.type == WallpaperType::kCustomized) {
         base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
                                     .Append(local_info.location);
         SaveWallpaperToDriveFs(account_id, source);
@@ -1857,7 +1864,7 @@ bool WallpaperControllerImpl::InitializeUserWallpaperInfo(
                               /*in_asset_id=*/absl::nullopt,
                               /*in_collection_id=*/std::string(),
                               WALLPAPER_LAYOUT_CENTER_CROPPED,
-                              DEFAULT,
+                              WallpaperType::kDefault,
                               base::Time::Now()};
   return SetUserWallpaperInfo(account_id, info);
 }
@@ -1910,7 +1917,7 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
         &WallpaperControllerImpl::ShowWallpaperImage,
         weak_factory_.GetWeakPtr(), image,
         WallpaperInfo{params.url.spec(), params.asset_id, params.collection_id,
-                      params.layout, ONLINE, base::Time::Now()},
+                      params.layout, WallpaperType::kOnline, base::Time::Now()},
         /*preview_mode=*/true, /*always_on_top=*/false);
     // Show the preview wallpaper.
     reload_preview_wallpaper_callback_.Run();
@@ -1927,7 +1934,9 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
                                   params.asset_id,
                                   params.collection_id,
                                   params.layout,
-                                  params.daily_refresh_enabled ? DAILY : ONLINE,
+                                  params.daily_refresh_enabled
+                                      ? WallpaperType::kDaily
+                                      : WallpaperType::kOnline,
                                   base::Time::Now()};
   if (!SetUserWallpaperInfo(params.account_id, wallpaper_info)) {
     LOG(ERROR) << "Setting user wallpaper info fails. This should never happen "
@@ -1945,10 +1954,12 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
 void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
                                                    const WallpaperInfo& info,
                                                    bool show_wallpaper) {
-  if (info.type != ONLINE && info.type != DAILY && info.type != DEFAULT) {
-    // This method is meant to be used for ONLINE and DEFAULT types. In
-    // unexpected cases, revert to default wallpaper to fail safely. See
-    // crosbug.com/38429.
+  if (info.type != WallpaperType::kOnline &&
+      info.type != WallpaperType::kDaily &&
+      info.type != WallpaperType::kDefault) {
+    // This method is meant to be used for `WallpaperType::kOnline` and
+    // `WallpaperType::kDefault` types. In unexpected cases, revert to default
+    // wallpaper to fail safely. See crosbug.com/38429.
     LOG(ERROR) << "Wallpaper reverts to default unexpected.";
     SetDefaultWallpaperImpl(account_id, show_wallpaper);
     return;
@@ -1965,7 +1976,8 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
   }
 
   base::FilePath wallpaper_path;
-  if (info.type == ONLINE || info.type == DAILY) {
+  if (info.type == WallpaperType::kOnline ||
+      info.type == WallpaperType::kDaily) {
     wallpaper_path =
         GetOnlineWallpaperPath(info.location, GetAppropriateResolution());
 
@@ -2016,8 +2028,8 @@ void WallpaperControllerImpl::OnDefaultWallpaperDecoded(
   if (show_wallpaper) {
     WallpaperInfo info(cached_default_wallpaper_.file_path.value(),
                        /*in_asset_id=*/absl::nullopt,
-                       /*in_collection_id=*/std::string(), layout, DEFAULT,
-                       base::Time::Now());
+                       /*in_collection_id=*/std::string(), layout,
+                       WallpaperType::kDefault, base::Time::Now());
     ShowWallpaperImage(cached_default_wallpaper_.image, info,
                        /*preview_mode=*/false, /*always_on_top=*/false);
   }
@@ -2090,7 +2102,7 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
 
   const bool should_save_to_disk =
       !IsEphemeralUser(account_id) ||
-      (type == POLICY &&
+      (type == WallpaperType::kPolicy &&
        GetUserType(account_id) == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
 
   if (should_save_to_disk) {
@@ -2290,12 +2302,12 @@ void WallpaperControllerImpl::OnAlwaysOnTopWallpaperDecoded(
 
 bool WallpaperControllerImpl::IsDevicePolicyWallpaper() const {
   return current_wallpaper_ &&
-         current_wallpaper_->wallpaper_info().type == WallpaperType::DEVICE;
+         current_wallpaper_->wallpaper_info().type == WallpaperType::kDevice;
 }
 
 bool WallpaperControllerImpl::IsOneShotWallpaper() const {
   return current_wallpaper_ &&
-         current_wallpaper_->wallpaper_info().type == WallpaperType::ONE_SHOT;
+         current_wallpaper_->wallpaper_info().type == WallpaperType::kOneShot;
 }
 
 bool WallpaperControllerImpl::ShouldSetDevicePolicyWallpaper() const {
@@ -2333,7 +2345,7 @@ void WallpaperControllerImpl::OnDevicePolicyWallpaperDecoded(
                           /*in_asset_id=*/absl::nullopt,
                           /*in_collection_id=*/std::string(),
                           WALLPAPER_LAYOUT_CENTER_CROPPED,
-                          DEVICE,
+                          WallpaperType::kDevice,
                           base::Time::Now()};
     ShowWallpaperImage(image, info, /*preview_mode=*/false,
                        /*always_on_top=*/false);
@@ -2405,7 +2417,7 @@ void WallpaperControllerImpl::SyncLocalAndRemotePrefs(
     return;
   if (synced_info.date > local_info.date) {
     HandleWallpaperInfoSyncedIn(account_id, synced_info);
-  } else if (local_info.type == CUSTOMIZED) {
+  } else if (local_info.type == WallpaperType::kCustomized) {
     // Generally, we handle setting synced_info when local_info is updated.
     // But for custom images, we wait until the image is uploaded to Drive,
     // which may not be available at the time of setting the local_info.
@@ -2421,16 +2433,16 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
   if (!CanSetUserWallpaper(account_id))
     return;
   switch (info.type) {
-    case CUSTOMIZED:
+    case WallpaperType::kCustomized:
       HandleCustomWallpaperInfoSyncedIn(account_id, info);
       break;
-    case DEFAULT:
+    case WallpaperType::kDefault:
       SetDefaultWallpaper(account_id, /*show_wallpaper=*/true);
       break;
-    case DAILY:
+    case WallpaperType::kDaily:
       HandleDailyWallpaperInfoSyncedIn(account_id, info);
       break;
-    case ONLINE:
+    case WallpaperType::kOnline:
       SetOnlineWallpaper(
           OnlineWallpaperParams{account_id, info.asset_id, GURL(info.location),
                                 info.collection_id, info.layout,
@@ -2439,11 +2451,11 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
                                 /*daily_refresh_enabled=*/false},
           base::DoNothing());
       break;
-    case POLICY:
-    case THIRDPARTY:
-    case DEVICE:
-    case ONE_SHOT:
-    case WALLPAPER_TYPE_COUNT:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kDevice:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kCount:
       DCHECK(false) << "Synced in an unsyncable wallpaper type";
       break;
   }
@@ -2468,16 +2480,16 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
 constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(
     WallpaperType type) {
   switch (type) {
-    case DAILY:
-    case CUSTOMIZED:
-    case DEFAULT:
-    case ONLINE:
+    case WallpaperType::kDaily:
+    case WallpaperType::kCustomized:
+    case WallpaperType::kDefault:
+    case WallpaperType::kOnline:
       return true;
-    case POLICY:
-    case THIRDPARTY:
-    case DEVICE:
-    case ONE_SHOT:
-    case WALLPAPER_TYPE_COUNT:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kDevice:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kCount:
       return false;
   }
 }
@@ -2491,16 +2503,16 @@ void WallpaperControllerImpl::SetDailyRefreshCollectionId(
 
   // If daily refresh is being enabled.
   if (!collection_id.empty()) {
-    info.type = DAILY;
+    info.type = WallpaperType::kDaily;
     info.collection_id = collection_id;
   }
 
   // If Daily Refresh is disabled without selecting another wallpaper, we should
-  // keep the current wallpaper and change to type ONLINE, so daily refreshes
-  // stop.
+  // keep the current wallpaper and change to type `WallpaperType::kOnline`, so
+  // daily refreshes stop.
   if (collection_id.empty()) {
-    DCHECK(info.type == DAILY);
-    info.type = ONLINE;
+    DCHECK(info.type == WallpaperType::kDaily);
+    info.type = WallpaperType::kOnline;
   }
   SetUserWallpaperInfo(account_id, info);
 }
@@ -2510,7 +2522,7 @@ std::string WallpaperControllerImpl::GetDailyRefreshCollectionId(
   WallpaperInfo info;
   if (!GetUserWallpaperInfo(account_id, &info))
     return std::string();
-  if (info.type != DAILY)
+  if (info.type != WallpaperType::kDaily)
     return std::string();
   return info.collection_id;
 }
@@ -2666,7 +2678,8 @@ void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::SaveAndSetWallpaper,
                      weak_factory_.GetWeakPtr(), account_id, file_name,
-                     CUSTOMIZED, info.layout, /*show_wallpaper=*/true),
+                     WallpaperType::kCustomized, info.layout,
+                     /*show_wallpaper=*/true),
       sequenced_task_runner_, drivefs_path);
 }
 
