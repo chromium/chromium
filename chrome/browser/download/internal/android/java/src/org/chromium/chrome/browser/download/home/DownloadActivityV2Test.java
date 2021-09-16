@@ -471,9 +471,9 @@ public class DownloadActivityV2Test extends DummyUiChromeActivityTestCase {
                 .perform(ViewActions.click());
 
         // Share an item. The share via android dialog should popup.
-        onView(withText("Share")).check(matches(isDisplayed())).perform(ViewActions.click());
+        onView(withText("Share")).check(matches(isDisplayed()));
 
-        // TODO(shaktisahu): Test content of the intent.
+        // TODO(shaktisahu): Perform a click, capture the Intent and check its contents.
     }
 
     @Test
