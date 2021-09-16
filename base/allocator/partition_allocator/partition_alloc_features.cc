@@ -21,6 +21,10 @@ const Feature kPartitionAllocPCScan{"PartitionAllocPCScan",
 const Feature kPartitionAllocPCScanBrowserOnly{
     "PartitionAllocPCScanBrowserOnly", FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, PCScan is turned on only for the renderer's malloc partition.
+const Feature kPartitionAllocPCScanRendererOnly{
+    "PartitionAllocPCScanRendererOnly", FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, this instance belongs to the Control group of the BackupRefPtr
 // binary experiment.
 const Feature kPartitionAllocBackupRefPtrControl{

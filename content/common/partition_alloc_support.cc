@@ -79,6 +79,24 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
   return false;
 }
 
+bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+  DCHECK(base::FeatureList::GetInstance());
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocPCScanRendererOnly)) {
+    const bool dcscan_wanted =
+        base::FeatureList::IsEnabled(base::features::kPartitionAllocDCScan);
+#if !defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
+    CHECK(!dcscan_wanted)
+        << "DCScan is currently only supported on Linux based systems";
+#endif
+    base::allocator::EnablePCScan(dcscan_wanted);
+    return true;
+  }
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
+  return false;
+}
+
 // This function should be executed as early as possible once we can get the
 // command line arguments and determine whether the process needs BRP support.
 // Until that moment, all heap allocations end up in a slower temporary
@@ -206,6 +224,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   if (process_type.empty()) {
     scan_enabled = scan_enabled ||
                    EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
+  }
+  if (process_type == switches::kRendererProcess) {
+    scan_enabled = scan_enabled ||
+                   EnablePCScanForMallocPartitionsInRendererProcessIfNeeded();
   }
   if (scan_enabled) {
     if (base::FeatureList::IsEnabled(
