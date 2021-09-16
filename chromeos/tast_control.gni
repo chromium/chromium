@@ -48,4 +48,8 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1247177
   "inputs.PhysicalKeyboardEnglishTyping",
   "inputs.PhysicalKeyboardEmoji",
+
+  # crbug.com/1250036
+  "a11y.Smoke.lacros",
+  "a11y.Smoke.lacros_rootfs",
 ]
