@@ -246,15 +246,24 @@ bool ProcessV1Endpoint(ReportingDelegate* delegate,
 
 absl::optional<base::flat_map<std::string, std::string>>
 ParseReportingEndpoints(const std::string& header) {
+  // Ignore empty header values. Skip logging metric to maintain parity with
+  // ReportingHeaderType::kReportToInvalid.
+  if (header.empty())
+    return absl::nullopt;
   absl::optional<structured_headers::Dictionary> header_dict =
       structured_headers::ParseDictionary(header);
   if (!header_dict) {
+    ReportingHeaderParser::RecordReportingHeaderType(
+        ReportingHeaderParser::ReportingHeaderType::kReportingEndpointsInvalid);
     return absl::nullopt;
   }
   base::flat_map<std::string, std::string> parsed_header;
   for (const structured_headers::DictionaryMember& entry : *header_dict) {
     if (entry.second.member_is_inner_list ||
         !entry.second.member.front().item.is_string()) {
+      ReportingHeaderParser::RecordReportingHeaderType(
+          ReportingHeaderParser::ReportingHeaderType::
+              kReportingEndpointsInvalid);
       return absl::nullopt;
     }
     const std::string& endpoint_url_string =
@@ -336,12 +345,12 @@ void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
     }
   }
 
-  // Remove the client if it has no valid endpoint groups.
   if (parsed_header.empty()) {
-    cache->RemoveClient(network_isolation_key, origin);
+    RecordReportingHeaderType(ReportingHeaderType::kReportingEndpointsInvalid);
     return;
   }
 
+  RecordReportingHeaderType(ReportingHeaderType::kReportingEndpoints);
   cache->OnParsedReportingEndpointsHeader(reporting_source,
                                           std::move(parsed_header));
 }

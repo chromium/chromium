@@ -58083,6 +58083,8 @@ Called by update_net_error_codes.py.-->
 <enum name="NetReportingHeaderType">
   <int value="0" label="Report-To"/>
   <int value="1" label="Invalid Report-To"/>
+  <int value="2" label="Reporting-Endpoints"/>
+  <int value="3" label="Invalid Reporting-Endpoints"/>
 </enum>
 
 <enum name="NetReportingReportOutcome">

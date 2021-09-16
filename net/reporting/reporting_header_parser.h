@@ -35,10 +35,14 @@ class NET_EXPORT ReportingHeaderParser {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // They should also be kept in sync with the NetReportingHeaderType enum
+  // in tools/metrics/histograms/enums.xml
   enum class ReportingHeaderType {
     kReportTo = 0,
     kReportToInvalid = 1,
-    kMaxValue = kReportToInvalid,
+    kReportingEndpoints = 2,
+    kReportingEndpointsInvalid = 3,
+    kMaxValue = kReportingEndpointsInvalid,
   };
 
   static void ParseReportToHeader(

@@ -1825,6 +1825,9 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, ProcessInvalid) {
       {"default=\"relative/path\"", "path relative url"},
       {"default=\"http://insecure/\"", "insecure url"}};
 
+  base::HistogramTester histograms;
+  int invalid_case_count = 0;
+
   for (auto& test_case : kInvalidHeaderTestCases) {
     auto parsed_result = ParseReportingEndpoints(test_case.header_value);
 
@@ -1834,11 +1837,20 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, ProcessInvalid) {
         << "\") parsed as invalid.";
     ProcessParsedHeader(kReportingSource_, kNik_, kOrigin1_, parsed_result);
 
+    invalid_case_count++;
+    histograms.ExpectBucketCount(
+        kReportingHeaderTypeHistogram,
+        ReportingHeaderParser::ReportingHeaderType::kReportingEndpointsInvalid,
+        invalid_case_count);
+
     // The endpoint should not have been set up in the cache.
     ReportingEndpoint endpoint =
         cache()->GetV1EndpointForTesting(kReportingSource_, "default");
     EXPECT_FALSE(endpoint);
   }
+  histograms.ExpectBucketCount(
+      kReportingHeaderTypeHistogram,
+      ReportingHeaderParser::ReportingHeaderType::kReportingEndpoints, 0);
 }
 
 TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseBasic) {
@@ -1856,6 +1868,7 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseBasic) {
 }
 
 TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
+  base::HistogramTester histograms;
   std::vector<ReportingEndpoint::EndpointInfo> endpoints = {{kEndpoint1_}};
 
   std::string header =
@@ -1870,6 +1883,7 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
   ReportingEndpoint endpoint =
       cache()->GetV1EndpointForTesting(kReportingSource_, kGroup1_);
   EXPECT_TRUE(endpoint);
+
   EXPECT_EQ(kOrigin1_, endpoint.group_key.origin);
   EXPECT_EQ(kGroup1_, endpoint.group_key.group_name);
   EXPECT_EQ(kEndpoint1_, endpoint.info.url);
@@ -1877,6 +1891,9 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
             endpoint.info.priority);
   EXPECT_EQ(ReportingEndpoint::EndpointInfo::kDefaultWeight,
             endpoint.info.weight);
+  histograms.ExpectBucketCount(
+      kReportingHeaderTypeHistogram,
+      ReportingHeaderParser::ReportingHeaderType::kReportingEndpoints, 1);
 
   // Ephemeral endpoints should not be persisted in the store
   if (mock_store()) {
@@ -1887,6 +1904,7 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
 }
 
 TEST_P(ReportingHeaderParserStructuredHeaderTest, PathAbsoluteURLEndpoint) {
+  base::HistogramTester histograms;
   std::string header = "group1=\"/path-absolute-url\"";
   auto parsed_result = ParseReportingEndpoints(header);
   ProcessParsedHeader(kReportingSource_, kNik_, kOrigin1_, parsed_result);
@@ -1894,7 +1912,6 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, PathAbsoluteURLEndpoint) {
   // Ensure that the endpoint was not inserted into the persistent endpoint
   // groups used for v0 reporting.
   EXPECT_EQ(0u, cache()->GetEndpointGroupCountForTesting());
-  ParseHeader(kReportingSource_, kNik_, kOrigin1_, header);
 
   ReportingEndpoint endpoint =
       cache()->GetV1EndpointForTesting(kReportingSource_, kGroup1_);
@@ -1906,6 +1923,9 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, PathAbsoluteURLEndpoint) {
             endpoint.info.priority);
   EXPECT_EQ(ReportingEndpoint::EndpointInfo::kDefaultWeight,
             endpoint.info.weight);
+  histograms.ExpectBucketCount(
+      kReportingHeaderTypeHistogram,
+      ReportingHeaderParser::ReportingHeaderType::kReportingEndpoints, 1);
 
   // Ephemeral endpoints should not be persisted in the store
   if (mock_store()) {
