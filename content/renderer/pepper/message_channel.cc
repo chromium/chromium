@@ -27,7 +27,9 @@
 #include "ppapi/shared_impl/var_tracker.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-template.h"
 
 using ppapi::PpapiGlobals;
 using ppapi::ScopedPPVar;

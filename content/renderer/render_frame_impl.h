@@ -111,6 +111,7 @@
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "v8/include/v8-forward.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/common/pepper_plugin.mojom.h"

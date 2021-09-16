@@ -10,7 +10,8 @@
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/scoped_pp_var.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-forward.h"
 
 namespace content {
 

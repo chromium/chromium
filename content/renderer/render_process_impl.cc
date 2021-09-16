@@ -43,7 +43,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_v8_features.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-initialization.h"
 
 #if defined(OS_WIN)
 #include "base/win/win_util.h"

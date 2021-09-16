@@ -14,7 +14,7 @@
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/scoped_pp_var.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace content {
 

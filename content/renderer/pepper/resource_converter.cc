@@ -27,6 +27,7 @@
 #include "third_party/blink/public/web/web_dom_file_system.h"
 #include "third_party/blink/public/web/web_dom_media_stream_track.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-context.h"
 
 using ppapi::ResourceVar;
 

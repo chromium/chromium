@@ -10,7 +10,8 @@
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/var.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace content {
 class PepperPluginInstanceImpl;

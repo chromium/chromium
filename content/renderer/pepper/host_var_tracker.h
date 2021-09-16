@@ -17,7 +17,7 @@
 #include "ppapi/shared_impl/host_resource.h"
 #include "ppapi/shared_impl/resource_tracker.h"
 #include "ppapi/shared_impl/var_tracker.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace ppapi {
 class ArrayBufferVar;

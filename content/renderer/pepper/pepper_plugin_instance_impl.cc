@@ -122,7 +122,8 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/range/range.h"
 #include "url/origin.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-object.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 // nogncheck because dependency on //printing is conditional upon

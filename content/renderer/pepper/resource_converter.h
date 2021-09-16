@@ -15,7 +15,7 @@
 #include "content/renderer/pepper/host_resource_var.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_var.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace IPC {
 class Message;
