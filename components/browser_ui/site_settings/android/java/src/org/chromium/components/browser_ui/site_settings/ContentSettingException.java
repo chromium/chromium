@@ -74,7 +74,7 @@ public class ContentSettingException implements Serializable {
      */
     public void setContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingValues int value) {
-        WebsitePreferenceBridge.setContentSettingForPattern(browserContextHandle,
+        WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
                 mContentSettingType, mPrimaryPattern, mSecondaryPattern, value);
     }
 }

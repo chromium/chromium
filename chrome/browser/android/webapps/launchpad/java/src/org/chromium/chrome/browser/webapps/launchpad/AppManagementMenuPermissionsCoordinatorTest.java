@@ -92,7 +92,7 @@ public class AppManagementMenuPermissionsCoordinatorTest {
     }
 
     private void setPermission(@ContentSettingsType int type, @ContentSettingValues int value) {
-        when(mWebsitePreferenceBridgeJniMock.getSettingForOrigin(
+        when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
                      any(BrowserContextHandle.class), eq(type), anyString(), anyString()))
                 .thenReturn(value);
     }
@@ -147,13 +147,13 @@ public class AppManagementMenuPermissionsCoordinatorTest {
 
         listener.onButtonClick(AppManagementMenuPermissionsProperties.MIC);
         verify(mWebsitePreferenceBridgeJniMock, times(1))
-                .setSettingForOrigin(any(), eq(ContentSettingsType.MEDIASTREAM_MIC), eq(ORIGIN),
-                        eq(ORIGIN), eq(ContentSettingValues.BLOCK));
+                .setPermissionSettingForOrigin(any(), eq(ContentSettingsType.MEDIASTREAM_MIC),
+                        eq(ORIGIN), eq(ORIGIN), eq(ContentSettingValues.BLOCK));
 
         listener.onButtonClick(AppManagementMenuPermissionsProperties.CAMERA);
         verify(mWebsitePreferenceBridgeJniMock, times(1))
-                .setSettingForOrigin(any(), eq(ContentSettingsType.MEDIASTREAM_CAMERA), eq(ORIGIN),
-                        eq(ORIGIN), eq(ContentSettingValues.ALLOW));
+                .setPermissionSettingForOrigin(any(), eq(ContentSettingsType.MEDIASTREAM_CAMERA),
+                        eq(ORIGIN), eq(ORIGIN), eq(ContentSettingValues.ALLOW));
     }
 
     // Test the click listener on no-clickable icon will not set any permission, and will trigger
@@ -169,7 +169,7 @@ public class AppManagementMenuPermissionsCoordinatorTest {
 
         listener.onButtonClick(AppManagementMenuPermissionsProperties.LOCATION);
         verify(mWebsitePreferenceBridgeJniMock, never())
-                .setSettingForOrigin(
+                .setPermissionSettingForOrigin(
                         any(), eq(ContentSettingsType.GEOLOCATION), eq(ORIGIN), eq(ORIGIN), any());
     }
 
@@ -187,8 +187,8 @@ public class AppManagementMenuPermissionsCoordinatorTest {
 
         listener.onButtonClick(AppManagementMenuPermissionsProperties.NOTIFICATIONS);
         verify(mWebsitePreferenceBridgeJniMock, times(1))
-                .setSettingForOrigin(any(), eq(ContentSettingsType.NOTIFICATIONS), eq(ORIGIN),
-                        eq(ORIGIN), eq(ContentSettingValues.BLOCK));
+                .setPermissionSettingForOrigin(any(), eq(ContentSettingsType.NOTIFICATIONS),
+                        eq(ORIGIN), eq(ORIGIN), eq(ContentSettingValues.BLOCK));
         verify(mActivity, never()).startActivity(any());
     }
 
@@ -206,8 +206,8 @@ public class AppManagementMenuPermissionsCoordinatorTest {
 
         listener.onButtonClick(AppManagementMenuPermissionsProperties.NOTIFICATIONS);
         verify(mWebsitePreferenceBridgeJniMock, never())
-                .setSettingForOrigin(any(), eq(ContentSettingsType.NOTIFICATIONS), eq(ORIGIN),
-                        eq(ORIGIN), eq(ContentSettingValues.BLOCK));
+                .setPermissionSettingForOrigin(any(), eq(ContentSettingsType.NOTIFICATIONS),
+                        eq(ORIGIN), eq(ORIGIN), eq(ContentSettingValues.BLOCK));
         verify(mActivity, times(1)).startActivity(any());
     }
 

@@ -114,7 +114,7 @@ public class SiteSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             for (int t = 0; t < SiteSettingsCategory.Type.NUM_ENTRIES; t++) {
                 if (SiteSettingsCategory.contentSettingsType(t) >= 0) {
-                    WebsitePreferenceBridge.setContentSetting(getBrowserContextHandle(),
+                    WebsitePreferenceBridge.setDefaultContentSetting(getBrowserContextHandle(),
                             SiteSettingsCategory.contentSettingsType(t),
                             ContentSettingValues.DEFAULT);
                 }
@@ -1223,9 +1223,9 @@ public class SiteSettingsTest {
                 "exampleToBlock.com", "/chrome/test/data/notifications/notification_tester.html");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridgeJni.get().setSettingForOrigin(getBrowserContextHandle(),
-                    ContentSettingsType.NOTIFICATIONS, urlToBlock, urlToBlock,
-                    ContentSettingValues.BLOCK);
+            WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(
+                    getBrowserContextHandle(), ContentSettingsType.NOTIFICATIONS, urlToBlock,
+                    urlToBlock, ContentSettingValues.BLOCK);
         });
 
         final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(

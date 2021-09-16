@@ -80,7 +80,7 @@ public class SiteSettings
                 checked =
                         WebsitePreferenceBridge.areAllLocationSettingsEnabled(browserContextHandle);
             } else if (requiresTriStateSetting) {
-                setting = WebsitePreferenceBridge.getContentSetting(
+                setting = WebsitePreferenceBridge.getDefaultContentSetting(
                         browserContextHandle, contentType);
             } else {
                 checked = WebsitePreferenceBridge.isCategoryEnabled(

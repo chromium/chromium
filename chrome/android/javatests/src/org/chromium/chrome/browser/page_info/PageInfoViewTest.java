@@ -89,6 +89,7 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -245,12 +246,15 @@ public class PageInfoViewTest {
         }
     }
 
-    private void addSomePermissions(String url) {
+    private void addSomePermissions(String urlString) {
+        GURL url = new GURL(urlString);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridge.setContentSettingForPattern(Profile.getLastUsedRegularProfile(),
-                    ContentSettingsType.GEOLOCATION, url, "*", ContentSettingValues.ALLOW);
-            WebsitePreferenceBridge.setContentSettingForPattern(Profile.getLastUsedRegularProfile(),
-                    ContentSettingsType.NOTIFICATIONS, url, "*", ContentSettingValues.BLOCK);
+            WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION, url, url,
+                    ContentSettingValues.ALLOW);
+            WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.NOTIFICATIONS, url,
+                    url, ContentSettingValues.BLOCK);
         });
     }
 
@@ -262,22 +266,25 @@ public class PageInfoViewTest {
         int expectBlock = hasPermissions ? ContentSettingValues.BLOCK : ContentSettingValues.ASK;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertEquals(expectBlock,
-                    WebsitePreferenceBridgeJni.get().getSettingForOrigin(
+                    WebsitePreferenceBridgeJni.get().getPermissionSettingForOrigin(
                             Profile.getLastUsedRegularProfile(), ContentSettingsType.NOTIFICATIONS,
                             url, url));
             assertEquals(expectAllow,
-                    WebsitePreferenceBridgeJni.get().getSettingForOrigin(
+                    WebsitePreferenceBridgeJni.get().getPermissionSettingForOrigin(
                             Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION,
                             url, "*"));
         });
     }
 
-    private void addDefaultSettingPermissions(String url) {
+    private void addDefaultSettingPermissions(String urlString) {
+        GURL url = new GURL(urlString);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridge.setContentSettingForPattern(Profile.getLastUsedRegularProfile(),
-                    ContentSettingsType.MEDIASTREAM_MIC, url, "*", ContentSettingValues.DEFAULT);
-            WebsitePreferenceBridge.setContentSettingForPattern(Profile.getLastUsedRegularProfile(),
-                    ContentSettingsType.MEDIASTREAM_CAMERA, url, "*", ContentSettingValues.ASK);
+            WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.MEDIASTREAM_MIC, url,
+                    url, ContentSettingValues.DEFAULT);
+            WebsitePreferenceBridge.setContentSettingDefaultScope(
+                    Profile.getLastUsedRegularProfile(), ContentSettingsType.MEDIASTREAM_CAMERA,
+                    url, url, ContentSettingValues.ASK);
         });
     }
 

@@ -99,7 +99,7 @@ public class SearchEngineSettingsTest {
             // first and ensure that location permission is NOT granted.
             String keyword3 = pref.getKeywordFromIndexForTesting(3);
             String url = templateUrlService.getSearchEngineUrlFromTemplateUrl(keyword3);
-            WebsitePreferenceBridgeJni.get().setSettingForOrigin(
+            WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(
                     Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION, url, url,
                     ContentSettingValues.BLOCK);
             keyword3 = pref.setValueForTesting("3");
@@ -117,12 +117,12 @@ public class SearchEngineSettingsTest {
             // setting to allow for search engine 3 before changing to search engine 2.
             // Otherwise the block setting will cause the content setting for search engine 2
             // to be reset when we switch to it.
-            WebsitePreferenceBridgeJni.get().setSettingForOrigin(
+            WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(
                     Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION, url, url,
                     ContentSettingValues.ALLOW);
             keyword2 = pref.getKeywordFromIndexForTesting(2);
             url = templateUrlService.getSearchEngineUrlFromTemplateUrl(keyword2);
-            WebsitePreferenceBridgeJni.get().setSettingForOrigin(
+            WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(
                     Profile.getLastUsedRegularProfile(), ContentSettingsType.GEOLOCATION, url, url,
                     ContentSettingValues.ALLOW);
             keyword2 = pref.setValueForTesting("2");

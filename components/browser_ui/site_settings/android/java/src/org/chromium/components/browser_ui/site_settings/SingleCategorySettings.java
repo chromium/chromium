@@ -442,7 +442,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         } else if (TRI_STATE_TOGGLE_KEY.equals(preference.getKey())) {
             @ContentSettingValues
             int setting = (int) newValue;
-            WebsitePreferenceBridge.setContentSetting(
+            WebsitePreferenceBridge.setDefaultContentSetting(
                     browserContextHandle, mCategory.getContentSettingsType(), setting);
             getInfoForOrigins();
         } else if (FOUR_STATE_COOKIE_TOGGLE_KEY.equals(preference.getKey())) {
@@ -590,7 +590,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                     : ContentSettingValues.ALLOW;
         }
 
-        WebsitePreferenceBridge.setContentSettingForPattern(browserContextHandle,
+        WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
                 mCategory.getContentSettingsType(), primaryPattern, secondaryPattern, setting);
 
         String hostname = primaryPattern.equals(SITE_WILDCARD) ? secondaryPattern : primaryPattern;
@@ -975,7 +975,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             TriStateSiteSettingsPreference triStateToggle, int contentType) {
         triStateToggle.setOnPreferenceChangeListener(this);
         @ContentSettingValues
-        int setting = WebsitePreferenceBridge.getContentSetting(
+        int setting = WebsitePreferenceBridge.getDefaultContentSetting(
                 getSiteSettingsDelegate().getBrowserContextHandle(), contentType);
         int[] descriptionIds =
                 ContentSettingsResources.getTriStateSettingDescriptionIDs(contentType);

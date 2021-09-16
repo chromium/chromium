@@ -135,8 +135,9 @@ public class GeolocationHeaderUnitTest {
         GeolocationHeader.setAppPermissionGrantedForTesting(true);
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getWebContents()).thenReturn(mWebContentsMock);
-        when(mWebsitePreferenceBridgeJniMock.getSettingForOrigin(any(BrowserContextHandle.class),
-                     eq(ContentSettingsType.GEOLOCATION), anyString(), anyString()))
+        when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
+                     any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
+                     anyString(), anyString()))
                 .thenReturn(ContentSettingValues.ALLOW);
         when(mWebsitePreferenceBridgeJniMock.isPermissionControlledByDSE(
                      any(BrowserContextHandle.class), anyInt(), anyString()))

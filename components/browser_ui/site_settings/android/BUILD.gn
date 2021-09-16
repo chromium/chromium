@@ -28,6 +28,7 @@ source_set("android") {
     "//services/network/public/mojom",
     "//storage/browser",
     "//url",
+    "//url:gurl_android",
   ]
 }
 

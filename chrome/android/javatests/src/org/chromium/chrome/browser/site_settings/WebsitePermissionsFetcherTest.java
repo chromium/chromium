@@ -330,18 +330,18 @@ public class WebsitePermissionsFetcherTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
             for (String url : PERMISSION_URLS) {
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.GEOLOCATION, url, url, ContentSettingValues.BLOCK);
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.MIDI_SYSEX, url, url, ContentSettingValues.ALLOW);
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, url, url,
                         ContentSettingValues.BLOCK);
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.NOTIFICATIONS, url, url, ContentSettingValues.ALLOW);
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.MEDIASTREAM_MIC, url, url, ContentSettingValues.ALLOW);
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.MEDIASTREAM_CAMERA, url, url,
                         ContentSettingValues.BLOCK);
             }
