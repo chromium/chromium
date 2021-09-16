@@ -171,6 +171,7 @@ ProfilePickerDiceSignInProvider::GetWebContentsModalDialogHost() {
 void ProfilePickerDiceSignInProvider::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   DCHECK(IsInitialized());
+  refresh_token_updated_ = true;
   FinishFlowIfSignedIn();
 }
 
@@ -184,7 +185,8 @@ void ProfilePickerDiceSignInProvider::FinishFlowIfSignedIn() {
   DCHECK(IsInitialized());
 
   if (IdentityManagerFactory::GetForProfile(profile_)
-          ->HasPrimaryAccountWithRefreshToken(signin::ConsentLevel::kSignin)) {
+          ->HasPrimaryAccountWithRefreshToken(signin::ConsentLevel::kSignin) &&
+      refresh_token_updated_) {
     FinishFlow(/*is_saml=*/false);
   }
 }
