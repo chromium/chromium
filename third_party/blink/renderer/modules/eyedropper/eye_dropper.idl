@@ -8,5 +8,6 @@
 interface EyeDropper {
   [CallWith=ExecutionContext] constructor();
 
-  [CallWith=ScriptState, RaisesException] Promise<ColorSelectionResult> open();
+  [CallWith=ScriptState, RaisesException] Promise<ColorSelectionResult> open(
+      optional ColorSelectionOptions options = {});
 };

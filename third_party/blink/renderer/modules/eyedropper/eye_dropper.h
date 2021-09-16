@@ -13,6 +13,8 @@
 
 namespace blink {
 
+class ColorSelectionOptions;
+enum class DOMExceptionCode;
 class ExceptionState;
 class ScriptPromise;
 class ScriptPromiseResolver;
@@ -35,13 +37,17 @@ class EyeDropper final : public ScriptWrappable {
 
   // Opens the eyedropper and replaces the cursor with a browser-defined
   // preview.
-  ScriptPromise open(ScriptState*, ExceptionState&);
+  ScriptPromise open(ScriptState*,
+                     const ColorSelectionOptions*,
+                     ExceptionState&);
 
   void Trace(Visitor*) const override;
 
  private:
+  void Abort();
   void EyeDropperResponseHandler(ScriptPromiseResolver*, bool, uint32_t);
   void EndChooser();
+  void RejectPromiseHelper(DOMExceptionCode, const WTF::String&);
 
   HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;
   Member<ScriptPromiseResolver> resolver_;
