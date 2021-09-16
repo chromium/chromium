@@ -6,7 +6,7 @@
 A tokenizer for traffic annotation definitions.
 """
 
-from collections import namedtuple
+from typing import NamedTuple, Optional
 
 import re
 
@@ -19,10 +19,19 @@ import re
 TOKEN_REGEXEN = [
     # Comma for separating args.
     ('comma', re.compile(r'(,)')),
-    # String literal. "string" or R"(string)".
-    ('string_literal',
-     re.compile(r'"((?:[^"]|\\.)*?)"|R"\((.*?)\)"', re.DOTALL)),
-    # C++ identifier.
+    # String literal. "string" or R"(string)". In Java, this will incorrectly
+    # accept R-strings, which aren't part of the language's syntax. But since
+    # that wouldn't compile anyways, we can just ignore this issue.
+    ('string_literal', re.compile(r'"((?:[^"]|\\.)*?)"|R"\((.*?)\)"',
+                                  re.DOTALL)),
+    # The '+' operator, for string concatenation. Java doesn't have multi-line
+    # string literals, so this is the only way to keep long strings readable. It
+    # doesn't incur a runtime cost, since the Java compiler is smart enough to
+    # concat the string literals at compile time. See "constant expressions" in
+    # the JLS:
+    # https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.28
+    ('plus', re.compile(r'(\+)')),
+    # C++ or Java identifier.
     ('symbol', re.compile(r'([a-zA-Z_][a-zA-Z_0-9]*)')),
     # Left parenthesis.
     ('left_paren', re.compile(r'(\()')),
@@ -33,11 +42,15 @@ TOKEN_REGEXEN = [
 # Number of characters to include in the context (for error reporting).
 CONTEXT_LENGTH = 20
 
-Token = namedtuple('Token', ['type', 'value', 'pos'])
+
+class Token(NamedTuple):
+  type: str
+  value: str
+  pos: int
 
 
-class CppParsingError(Exception):
-  """An error during C++ parsing/tokenizing."""
+class SourceCodeParsingError(Exception):
+  """An error during C++ or Java parsing/tokenizing."""
 
   def __init__(self, expected_type, body, pos, file_path, line_number):
     context = body[pos:pos + CONTEXT_LENGTH]
@@ -65,8 +78,8 @@ class Tokenizer:
       return
     # Skip whitespace to make the error message more useful.
     pos = self._skip_whitespace()
-    raise CppParsingError(expected_type, self.body, pos, self.file_path,
-                          self.line_number)
+    raise SourceCodeParsingError(expected_type, self.body, pos, self.file_path,
+                                 self.line_number)
 
   def _skip_whitespace(self):
     """Return the position of the first non-whitespace character from here."""
@@ -90,7 +103,7 @@ class Tokenizer:
 
     return token
 
-  def maybe_advance(self, expected_type):
+  def maybe_advance(self, expected_type: str) -> Optional[str]:
     """Advance the tokenizer by one token if it has |expected_type|.
 
     Args:
@@ -106,7 +119,7 @@ class Tokenizer:
       return token.value
     return None
 
-  def advance(self, expected_type):
+  def advance(self, expected_type: str) -> str:
     """Advance the tokenizer by one token, asserting its type.
 
     Throws an error if the token at point has the wrong type.

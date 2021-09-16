@@ -776,13 +776,14 @@ class Annotation:
     self.file = file_path
     self.line = line_number
 
-    if serialized_annotation.type_name == "Mutable":
+    if serialized_annotation.type_name == extractor.AnnotationType.MUTABLE:
       return [
           AuditorError(AuditorError.Type.MUTABLE_TAG, "", file_path,
                        line_number)
       ]
 
-    self.type = Annotation.Type.from_string(serialized_annotation.type_name)
+    self.type = Annotation.Type.from_string(
+        serialized_annotation.type_name.value)
     self.unique_id = serialized_annotation.unique_id
     self.second_id = serialized_annotation.extra_id
     self.second_id_hash_code = compute_hash_value(self.second_id)
@@ -953,6 +954,8 @@ class FileFilter:
   def _is_supported_source_file(self, file_path: Path) -> bool:
     """Returns true if file_path looks like a non-test C++/Obj-C++ file."""
     # Check file extension.
+    #
+    # TODO(crbug.com/1231780): Also accept .java files on Android.
     if file_path.suffix not in [".cc", ".mm"]:
       return False
 
@@ -1638,8 +1641,8 @@ class Auditor:
           and not self._path_filters_match(path_filters, relative_path)):
         continue
 
-      # Extract annotations from the .cc file. This will throw a CppParsingError
-      # if the format is invalid.
+      # Extract annotations from the .cc file. This will throw a
+      # SourceCodeParsingError if the format is invalid.
       annotations = extractor.extract_annotations(absolute_path)
       if annotations:
         all_annotations.extend(annotations)

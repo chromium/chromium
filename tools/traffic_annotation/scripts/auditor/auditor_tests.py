@@ -61,9 +61,12 @@ class AuditorTest(unittest.TestCase):
       lines = [l.rstrip() for l in f.readlines()]
 
     annotation = Annotation()
-    extracted_annotation = extractor.Annotation(file_path=lines[0],
+    language = extractor.LANGUAGE_MAPPING[Path(lines[0]).suffix]
+    type_name = extractor.AnnotationType(lines[2])
+    extracted_annotation = extractor.Annotation(language=language,
+                                                file_path=lines[0],
                                                 line_number=int(lines[1]),
-                                                type_name=lines[2],
+                                                type_name=type_name,
                                                 unique_id=lines[3],
                                                 extra_id=lines[4],
                                                 text="\n".join(lines[5:]))
