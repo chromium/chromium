@@ -280,14 +280,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // almost all of the cases. See RenderFrameHost::IsActive for the details.
   virtual RenderFrameHost* GetMainFrame() = 0;
 
-  // Returns a vector of all RenderFrameHosts in the subtree rooted at |this|.
-  // The results may be in different processes.
-  // Does not consider inner frame trees.
-  // TODO(https://crbug.com/1013740): Consider exposing a way for the browser
-  // process to run a function across a subtree in all renderers rather than
-  // exposing the RenderFrameHosts of the frames here.
-  virtual std::vector<RenderFrameHost*> GetFramesInSubtree() = 0;
-
   // Returns whether or not this RenderFrameHost is a descendant of |ancestor|.
   // This is equivalent to check that |ancestor| is reached by iterating on
   // GetParent().

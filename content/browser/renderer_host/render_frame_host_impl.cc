@@ -1929,14 +1929,6 @@ PageImpl& RenderFrameHostImpl::GetPage() {
   return *GetMainFrame()->document_associated_data_->owned_page.get();
 }
 
-std::vector<RenderFrameHost*> RenderFrameHostImpl::GetFramesInSubtree() {
-  DCHECK_EQ(frame_tree_node()->current_frame_host(), this);
-  std::vector<RenderFrameHost*> frame_hosts;
-  for (FrameTreeNode* node : frame_tree_->SubtreeNodes(frame_tree_node()))
-    frame_hosts.push_back(node->current_frame_host());
-  return frame_hosts;
-}
-
 bool RenderFrameHostImpl::IsDescendantOf(RenderFrameHost* ancestor) {
   if (!ancestor || !static_cast<RenderFrameHostImpl*>(ancestor)->child_count())
     return false;
@@ -5986,15 +5978,23 @@ bool RenderFrameHostImpl::GetSuddenTerminationDisablerState(
 
 bool RenderFrameHostImpl::UnloadHandlerExistsInSameSiteInstanceSubtree() {
   DCHECK(!GetParent());
-  auto* main_frame_site_instance = GetSiteInstance();
-  for (auto* subframe : GetFramesInSubtree()) {
-    auto* rfhi = static_cast<RenderFrameHostImpl*>(subframe);
-    if (rfhi->GetSiteInstance() == main_frame_site_instance &&
-        rfhi->has_unload_handler_) {
-      return true;
-    }
-  }
-  return false;
+  bool result = false;
+  ForEachRenderFrameHost(base::BindRepeating(
+      [](const SiteInstanceImpl* main_frame_site_instance,
+         const PageImpl* main_frame_page, bool* result,
+         RenderFrameHostImpl* rfhi) {
+        // If we aren't from the same page ignore unload handlers.
+        if (&rfhi->GetPage() != main_frame_page)
+          return FrameIterationAction::kSkipChildren;
+        if (rfhi->GetSiteInstance() == main_frame_site_instance &&
+            rfhi->has_unload_handler_) {
+          *result = true;
+          return FrameIterationAction::kStop;
+        }
+        return FrameIterationAction::kContinue;
+      },
+      base::Unretained(GetSiteInstance()), &GetPage(), &result));
+  return result;
 }
 
 bool RenderFrameHostImpl::InsidePortal() {
