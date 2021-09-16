@@ -57,10 +57,12 @@ source_set("browser_tests") {
     "base_telemetry_extension_browser_test.h",
     "diagnostics_api_browsertest.cc",
     "telemetry_api_browsertest.cc",
+    "telemetry_extension_capabilities_browser_test.cc",
   ]
 
   deps = [
     ":api",
+    "//base",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chrome/test:test_support",
     "//chromeos/dbus",
