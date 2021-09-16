@@ -219,10 +219,11 @@ class SharedRemoteBase
   DISALLOW_COPY_AND_ASSIGN(SharedRemoteBase);
 };
 
-// SharedRemote wraps a non-thread-safe Remote and proxies messages to it.
-// Unlike normal Remote objects, SharedRemote is copyable and usable from any
-// thread, but has some additional overhead and latency in message transmission
-// as a trade-off.
+// SharedRemote wraps a non-thread-safe Remote and proxies messages to it. Note
+// that SharedRemote itself is also NOT THREAD-SAFE, but unlike Remote it IS
+// copyable cross-thread, and each copy is usable from its own thread. The
+// trade-off compared to a Remote is some additional overhead and latency in
+// message transmission, as sending a message usually incurs a task hop.
 //
 // Async calls are posted to the bound sequence (the sequence that the
 // underlying Remote is bound to, i.e. |bind_task_runner| below), and responses
