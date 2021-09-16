@@ -221,4 +221,26 @@ Status ExecuteElementScreenshot(Session* session,
                                 const base::DictionaryValue& params,
                                 std::unique_ptr<base::Value>* value);
 
+Status ExecuteGetElementShadowRoot(Session* session,
+                                   WebView* web_view,
+                                   const std::string& element_id,
+                                   const base::DictionaryValue& params,
+                                   std::unique_ptr<base::Value>* value);
+
+Status ExecuteFindChildElementFromShadowRoot(
+    int interval_ms,
+    Session* session,
+    WebView* web_view,
+    const std::string& shadow_root_id,
+    const base::DictionaryValue& params,
+    std::unique_ptr<base::Value>* value);
+
+Status ExecuteFindChildElementsFromShadowRoot(
+    int interval_ms,
+    Session* session,
+    WebView* web_view,
+    const std::string& shadow_root_id,
+    const base::DictionaryValue& params,
+    std::unique_ptr<base::Value>* value);
+
 #endif  // CHROME_TEST_CHROMEDRIVER_ELEMENT_COMMANDS_H_
