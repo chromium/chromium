@@ -480,3 +480,6 @@ crbug.com/dawn/1107 [ Mac11.5 ] wpt_internal/webgpu/cts.html?q=webgpu:api,operat
 crbug.com/dawn/1107 [ Mac11.5 ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rg32float";* [ Failure ]
 crbug.com/dawn/1107 [ Mac11.5 ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rgba16float";* [ Failure ]
 crbug.com/dawn/1107 [ Mac11.5 ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rgba32float";* [ Failure ]
+
+# (Intel-only?) Flaky test failures on Mac 11.5.2
+crbug.com/dawn/1119 [ Mac11.5 ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,rendering,basic:large_draw:* [ RetryOnFailure ]
