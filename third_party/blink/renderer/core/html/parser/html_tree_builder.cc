@@ -1564,9 +1564,19 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
   // The adoption agency algorithm is N^2. We limit the number of iterations
   // to stop from hanging the whole browser. This limit is specified in the
   // adoption agency algorithm:
-  // http://www.whatwg.org/specs/web-apps/current-work/multipage/tree-construction.html#parsing-main-inbody
+  // https://html.spec.whatwg.org/multipage/parsing.html#adoption-agency-algorithm
   static const int kOuterIterationLimit = 8;
   static const int kInnerIterationLimit = 3;
+
+  // 2. If the current node is an HTML element whose tag name is subject,
+  // and the current node is not in the list of active formatting elements,
+  // then pop the current node off the stack of open elements and return.
+  if (!tree_.IsEmpty() && tree_.CurrentStackItem()->IsElementNode() &&
+      tree_.CurrentElement()->HasLocalName(token->GetName()) &&
+      !tree_.ActiveFormattingElements()->Contains(tree_.CurrentElement())) {
+    tree_.OpenElements()->Pop();
+    return;
+  }
 
   // 1, 2, 3 and 16 are covered by the for() loop.
   for (int i = 0; i < kOuterIterationLimit; ++i) {
