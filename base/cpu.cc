@@ -15,12 +15,12 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/no_destructor.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
     defined(OS_AIX)
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/internal_linux.h"
 #include "base/strings/string_number_conversions.h"
@@ -635,5 +635,11 @@ bool CPU::GetCumulativeCoreIdleTimes(CoreIdleTimes& idle_times) {
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) ||
         // defined(OS_AIX)
+
+const CPU& CPU::GetInstanceNoAllocation() {
+  static const base::NoDestructor<const CPU> cpu(CPU(false));
+
+  return *cpu;
+}
 
 }  // namespace base

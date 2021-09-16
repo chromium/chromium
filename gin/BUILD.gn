@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/allocator/allocator.gni")
 import("//testing/test.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//v8/gni/v8.gni")
@@ -70,6 +71,13 @@ component("gin") {
     "wrappable.h",
     "wrapper_info.cc",
   ]
+
+  if (use_partition_alloc) {
+    sources += [
+      "v8_platform_page_allocator.cc",
+      "v8_platform_page_allocator.h",
+    ]
+  }
 
   if (v8_use_external_startup_data) {
     data = [ "$root_out_dir/snapshot_blob.bin" ]
@@ -150,6 +158,11 @@ test("gin_unittests") {
     "//testing/gtest",
     "//v8",
   ]
+
+  if (use_partition_alloc) {
+    sources += [ "v8_platform_page_allocator_unittest.cc" ]
+    deps += [ "//base:arm_bti_testfunctions" ]
+  }
 
   configs += [
     "//tools/v8_context_snapshot:use_v8_context_snapshot",
