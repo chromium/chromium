@@ -264,17 +264,6 @@ bool ShouldCheckCors(const GURL& request_url,
   return true;
 }
 
-// https://wicg.github.io/cors-rfc1918/#http-headerdef-access-control-allow-external
-absl::optional<CorsErrorStatus> CheckExternalPreflight(
-    const absl::optional<std::string>& allow_external) {
-  if (!allow_external)
-    return CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowExternal);
-  if (*allow_external == kLowerCaseTrue)
-    return absl::nullopt;
-  return CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowExternal,
-                         *allow_external);
-}
-
 bool IsCorsEnabledRequestMode(mojom::RequestMode mode) {
   return mode == mojom::RequestMode::kCors ||
          mode == mojom::RequestMode::kCorsWithForcedPreflight;

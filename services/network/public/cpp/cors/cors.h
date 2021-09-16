@@ -87,13 +87,6 @@ bool ShouldCheckCors(const GURL& request_url,
                      const absl::optional<url::Origin>& request_initiator,
                      mojom::RequestMode request_mode);
 
-// Checks errors for the currently experimental "Access-Control-Allow-External:"
-// header. Shares error conditions with standard preflight checking.
-// See https://crbug.com/590714.
-COMPONENT_EXPORT(NETWORK_CPP)
-absl::optional<CorsErrorStatus> CheckExternalPreflight(
-    const absl::optional<std::string>& allow_external);
-
 COMPONENT_EXPORT(NETWORK_CPP)
 bool IsCorsEnabledRequestMode(mojom::RequestMode mode);
 

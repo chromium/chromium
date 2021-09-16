@@ -39,6 +39,8 @@ namespace cors {
 
 namespace {
 
+const char kLowerCaseTrue[] = "true";
+
 int RetrieveCacheFlags(int load_flags) {
   return load_flags & (net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
                        net::LOAD_DISABLE_CACHE);
@@ -222,6 +224,21 @@ absl::optional<CorsErrorStatus> CheckPreflightAccess(
   UMA_HISTOGRAM_ENUMERATION("Net.Cors.PreflightCheckError",
                             error_status->cors_error);
   return error_status;
+}
+
+// Checks errors for the currently experimental "Access-Control-Allow-External"
+// header. Shares error conditions with standard preflight checking.
+// TODO(https://crbug.com/590714): Access-Control-Allow-External header is
+// stale. Following implementation need to be updated to follow the latest spec,
+// https://wicg.github.io/private-network-access/.
+absl::optional<CorsErrorStatus> CheckExternalPreflight(
+    const absl::optional<std::string>& allow_external) {
+  if (!allow_external)
+    return CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowExternal);
+  if (*allow_external == kLowerCaseTrue)
+    return absl::nullopt;
+  return CorsErrorStatus(mojom::CorsError::kPreflightInvalidAllowExternal,
+                         *allow_external);
 }
 
 std::unique_ptr<PreflightResult> CreatePreflightResult(
@@ -484,6 +501,13 @@ PreflightController::CheckPreflightAccessForTesting(
   return CheckPreflightAccess(response_url, response_status_code,
                               allow_origin_header, allow_credentials_header,
                               actual_credentials_mode, origin);
+}
+
+// static
+absl::optional<CorsErrorStatus>
+PreflightController::CheckExternalPreflightForTesting(
+    const absl::optional<std::string>& allow_external) {
+  return CheckExternalPreflight(allow_external);
 }
 
 PreflightController::PreflightController(NetworkService* network_service)

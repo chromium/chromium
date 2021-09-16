@@ -208,24 +208,6 @@ TEST_F(CorsTest, CheckAccessAndReportMetricsForNotPermittedSecureOrigin) {
       1);
 }
 
-TEST_F(CorsTest, CheckExternalPreflightErrors) {
-  EXPECT_FALSE(CheckExternalPreflight(std::string("true")));
-
-  absl::optional<CorsErrorStatus> error2 =
-      CheckExternalPreflight(absl::nullopt);
-  ASSERT_TRUE(error2);
-  EXPECT_EQ(mojom::CorsError::kPreflightMissingAllowExternal,
-            error2->cors_error);
-  EXPECT_EQ("", error2->failed_parameter);
-
-  absl::optional<CorsErrorStatus> error3 =
-      CheckExternalPreflight(std::string("TRUE"));
-  ASSERT_TRUE(error3);
-  EXPECT_EQ(mojom::CorsError::kPreflightInvalidAllowExternal,
-            error3->cors_error);
-  EXPECT_EQ("TRUE", error3->failed_parameter);
-}
-
 TEST_F(CorsTest, SafelistedMethod) {
   // Method check should be case-insensitive.
   EXPECT_TRUE(IsCorsSafelistedMethod("get"));
