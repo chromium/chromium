@@ -650,18 +650,43 @@ bool CommerceHintAgent::ShouldSkip(base::StringPiece product_name) {
 
 const std::vector<std::string> CommerceHintAgent::ExtractButtonTexts(
     const blink::WebFormElement& form) {
-  static base::NoDestructor<WebString> kButton("button");
-
-  const WebElementCollection& buttons = form.GetElementsByHTMLTagName(*kButton);
+  // Handle <button> elements.
+  const WebElementCollection& buttons = form.GetElementsByHTMLTagName("button");
 
   std::vector<std::string> button_texts;
   for (WebElement button = buttons.FirstItem(); !button.IsNull();
        button = buttons.NextItem()) {
     // TODO(crbug/1164236): emulate innerText to be more robust.
-    button_texts.push_back(base::UTF16ToUTF8(base::CollapseWhitespace(
-        base::TrimWhitespace(button.TextContent().Utf16(),
-                             base::TrimPositions::TRIM_ALL),
-        true)));
+    button_texts.push_back(base::UTF16ToUTF8(
+        base::CollapseWhitespace(button.TextContent().Utf16(), true)));
+  }
+
+  // Handle input[type="submit"] elements.
+  const WebElementCollection& inputs = form.GetElementsByHTMLTagName("input");
+
+  for (WebElement input = inputs.FirstItem(); !input.IsNull();
+       input = inputs.NextItem()) {
+    if (input.GetAttribute("type") != "submit")
+      continue;
+    if (input.HasAttribute("aria-labelledby")) {
+      const WebElement& label = form.GetDocument().GetElementById(
+          input.GetAttribute("aria-labelledby"));
+      if (!label.IsNull()) {
+        // TODO(crbug/1164236): emulate innerText to be more robust.
+        std::string label_content = base::UTF16ToUTF8(
+            base::CollapseWhitespace(label.TextContent().Utf16(), true));
+        if (label_content != "") {
+          button_texts.push_back(std::move(label_content));
+        }
+      }
+    }
+    if (input.HasAttribute("value")) {
+      std::string value = base::UTF16ToUTF8(
+          base::CollapseWhitespace(input.GetAttribute("value").Utf16(), true));
+      if (value != "") {
+        button_texts.push_back(std::move(value));
+      }
+    }
   }
   return button_texts;
 }
@@ -859,14 +884,17 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
 
   bool is_purchase = false;
   for (const std::string& button_text : ExtractButtonTexts(form)) {
+    DVLOG(1) << "Extracted button text \"" << button_text << "\"";
     if (IsPurchase(url, button_text)) {
       RecordCommerceEvent(CommerceEvent::kPurchaseByForm);
       OnPurchase(render_frame());
       is_purchase = true;
+      DVLOG(1) << "Button text \"" << button_text << "\" is for purchase";
       break;
     }
   }
   OnFormSubmit(render_frame(), is_purchase);
+  DVLOG(1) << "OnFormSubmit(is_purchase = " << is_purchase << ")";
 }
 
 // TODO(crbug/1164236): use MutationObserver on cart instead.

@@ -30,10 +30,18 @@ static const std::map<std::string, std::vector<std::string>> extract_case = {
     {"<button><br><p><span><br>\nPay now</span>\n</p><br>\n</button>",
      {"Pay now"}},
     {"<p>hello</p><button>Pay now</button>", {"Pay now"}},
+    // input[type="submit"]
+    {"<input type=\"text\" value=\"value of input\">", {}},
+    {"<input type=\"submit\" value=\"value of input\">", {"value of input"}},
+    {"<input type=\"submit\" aria-labelledby=\"desc\" value=\"value of input\">"
+     "<span id=\"desc\">label</span>",
+     {"label", "value of input"}},
+    {"<input type=\"submit\" aria-labelledby=\"nonexisting\">", {}},
     // Multiple buttons.
     {"<button>Pay now</button>something "
-     "in<p>between</p><button>cancel</button>",
-     {"Pay now", "cancel"}},
+     "in<p>between</p><button>cancel</button>"
+     "<input type=\"submit\" value=\"Submit\">",
+     {"Pay now", "cancel", "Submit"}},
     {"<p>test</p>", {}},
     {"", {}},
     // Unicode.
@@ -51,11 +59,8 @@ TEST_F(CommerceHintAgentRendererTest, ExtractButtonTexts) {
     PopulateForm(entry.first);
     const std::vector<std::string> button_texts =
         cart::CommerceHintAgent::ExtractButtonTexts(form);
-    EXPECT_EQ(button_texts.size(), entry.second.size());
-    for (size_t i = 0; i < button_texts.size(); i++) {
-      EXPECT_EQ(button_texts.at(i), entry.second.at(i))
-          << "HTML = " << entry.first;
-    }
+    auto expected = entry.second;
+    EXPECT_EQ(button_texts, expected) << "HTML = " << entry.first;
   }
 }
 
