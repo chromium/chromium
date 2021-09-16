@@ -26,8 +26,9 @@ using TelemetryExtensionBrowserTest = BaseTelemetryExtensionBrowserTest;
 
 // Tests that chromeos_system_extension is able to define externally_connectable
 // manifest key and receive messages from another extension.
+// TODO(crbug.com/1250462): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest,
-                       CanReceiveMessageExternal) {
+                       DISABLED_CanReceiveMessageExternal) {
   // Start listening on the receiving extension.
   ExtensionTestMessageListener listener(/*will_reply=*/false);
   listener.set_extension_id(kChromeOSSystemExtensionId);
