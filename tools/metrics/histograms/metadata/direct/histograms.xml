@@ -27,9 +27,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>etienneb@chromium.org</owner>
   <summary>
     The number of iterations that was required to initialize Direct Write. This
-    metric is taken by the browser process at startup. The value -1 is reported
-    when the initialization failed. The fallback path using GDI is used instead
-    of DWrite.
+    metric is recorded by the browser process at startup. The value -1 is
+    reported when the initialization failed. The fallback path using GDI is used
+    instead of DWrite.
+  </summary>
+</histogram>
+
+<histogram name="DirectWrite.Fonts.Gfx.InitializeTime" units="ms"
+    expires_after="M98">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time it takes to initialize GFX fonts. This metric is taken by the browser
+    process at startup. It includes the time required to initialize Direct
+    Write. This metric is recorded only on Windows.
   </summary>
 </histogram>
 
