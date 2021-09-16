@@ -172,22 +172,31 @@ void AutoCloseDialog(views::Widget* widget) {
   views::test::CancelDialog(widget);
 }
 
-class ProfileDestructionWaiter : public ProfileObserver {
+// Key for ProfileDestroyedData user data.
+const char kProfileDestrictionWaiterUserDataKey = 0;
+
+// Waits until the Profile instance is destroyed.
+class ProfileDestructionWaiter {
  public:
   explicit ProfileDestructionWaiter(Profile* profile) {
-    observation_.Observe(profile);
+    profile->SetUserData(
+        &kProfileDestrictionWaiterUserDataKey,
+        std::make_unique<ProfileDestroyedData>(run_loop_.QuitClosure()));
   }
-  ~ProfileDestructionWaiter() override = default;
 
   void Wait() { run_loop_.Run(); }
 
-  void OnProfileWillBeDestroyed(Profile* profile) override {
-    run_loop_.Quit();
-    observation_.Reset();
-  }
-
  private:
-  base::ScopedObservation<Profile, ProfileObserver> observation_{this};
+  // Simple user data that calls a callback at destruction.
+  class ProfileDestroyedData : public base::SupportsUserData::Data {
+   public:
+    explicit ProfileDestroyedData(base::OnceClosure callback)
+        : scoped_closure_runner_(std::move(callback)) {}
+
+   private:
+    base::ScopedClosureRunner scoped_closure_runner_;
+  };
+
   base::RunLoop run_loop_;
 };
 
@@ -292,24 +301,11 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, DeleteEphemeralProfile) {
 
   // Add sentinel data to observe profile destruction. Ephemeral profiles are
   // destroyed immediately upon browser close.
-  class ProfileDestroyedData : public base::SupportsUserData::Data {
-   public:
-    ProfileDestroyedData(base::OnceClosure callback)
-        : callback_(std::move(callback)) {}
-
-    ~ProfileDestroyedData() override { std::move(callback_).Run(); }
-
-   private:
-    base::OnceClosure callback_;
-  };
-  base::RunLoop loop;
-  const char kUserDataKey = 0;
-  profile->SetUserData(&kUserDataKey, std::make_unique<ProfileDestroyedData>(
-                                          loop.QuitClosure()));
+  ProfileDestructionWaiter waiter(profile);
 
   // Close browser and wait for the profile to be deleted.
   CloseBrowserSynchronously(browser());
-  loop.Run();
+  waiter.Wait();
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Create a new profile and activate it.
@@ -1441,6 +1437,40 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest, UrlNotCaptured) {
   content::WebContents* web_contents = tab_strip->GetWebContentsAt(1);
   EXPECT_EQ(GURL("https://en.example.com/abc/def"),
             web_contents->GetVisibleURL());
+}
+
+class AppControllerIncognitoSwitchTest : public InProcessBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kIncognito);
+  }
+};
+
+// Regression test for https://crbug.com/1248661
+IN_PROC_BROWSER_TEST_F(AppControllerIncognitoSwitchTest,
+                       ObserveProfileDestruction) {
+  // Chrome is launched in incognito.
+  Profile* otr_profile = browser()->profile();
+  EXPECT_EQ(otr_profile,
+            otr_profile->GetPrimaryOTRProfile(/*create_if_needed=*/false));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  AppController* ac =
+      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:browser()
+                               ->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
+  // The last profile is the incognito profile.
+  EXPECT_EQ([ac lastProfileIfLoaded], otr_profile);
+  // Destroy the incognito profile.
+  ProfileDestructionWaiter waiter(otr_profile);
+  CloseBrowserSynchronously(browser());
+  waiter.Wait();
+  // Check that |-lastProfileIfLoaded| is not pointing to released memory.
+  EXPECT_NE([ac lastProfileIfLoaded], otr_profile);
 }
 
 }  // namespace
