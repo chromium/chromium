@@ -87,6 +87,13 @@ void DatabaseImpl::RenameObjectStore(int64_t transaction_id,
     return;
   }
 
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "RenameObjectStore was called after committing or aborting the "
+        "transaction");
+    return;
+  }
+
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
       BindWeakOperation(&IndexedDBDatabase::RenameObjectStoreOperation,
@@ -175,6 +182,12 @@ void DatabaseImpl::Get(int64_t transaction_id,
     return;
   }
 
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "Get was called after committing or aborting the transaction");
+    return;
+  }
+
   blink::mojom::IDBDatabase::GetCallback aborting_callback =
       CreateCallbackAbortOnDestruct<blink::mojom::IDBDatabase::GetCallback,
                                     blink::mojom::IDBDatabaseGetResultPtr>(
@@ -225,6 +238,12 @@ void DatabaseImpl::GetAll(int64_t transaction_id,
     return;
   }
 
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "GetAll was called after committing or aborting the transaction");
+    return;
+  }
+
   // Hypothetically, this could pass the receiver to the callback immediately.
   // However, for result ordering issues, we need to PostTask to mimic
   // all of the other operations.
@@ -264,6 +283,12 @@ void DatabaseImpl::SetIndexKeys(
     return;
   }
 
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "SetIndexKeys was called after committing or aborting the transaction");
+    return;
+  }
+
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
       BindWeakOperation(&IndexedDBDatabase::SetIndexKeysOperation,
@@ -287,6 +312,13 @@ void DatabaseImpl::SetIndexesReady(int64_t transaction_id,
   if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
         "SetIndexesReady must be called from a version change transaction.");
+    return;
+  }
+
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "SetIndexesReady was called after committing or aborting the "
+        "transaction");
     return;
   }
 
@@ -324,6 +356,12 @@ void DatabaseImpl::OpenCursor(
     std::move(callback).Run(
         blink::mojom::IDBDatabaseOpenCursorResult::NewErrorResult(
             blink::mojom::IDBError::New(error.code(), error.message())));
+    return;
+  }
+
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "OpenCursor was called after committing or aborting the transaction");
     return;
   }
 
@@ -376,6 +414,12 @@ void DatabaseImpl::Count(
   if (!transaction)
     return;
 
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "Count was called after committing or aborting the transaction");
+    return;
+  }
+
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::CountOperation, connection_->database()->AsWeakPtr(),
       object_store_id, index_id,
@@ -401,6 +445,12 @@ void DatabaseImpl::DeleteRange(
   if (!transaction)
     return;
 
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "DeleteRange was called after committing or aborting the transaction");
+    return;
+  }
+
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::DeleteRangeOperation,
       connection_->database()->AsWeakPtr(), object_store_id,
@@ -424,6 +474,13 @@ void DatabaseImpl::GetKeyGeneratorCurrentNumber(
   if (!transaction)
     return;
 
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "GetKeyGeneratorCurrentNumber was called after committing or aborting "
+        "the transaction");
+    return;
+  }
+
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::GetKeyGeneratorCurrentNumberOperation,
       connection_->database()->AsWeakPtr(), object_store_id,
@@ -446,6 +503,12 @@ void DatabaseImpl::Clear(
       connection_->GetTransaction(transaction_id);
   if (!transaction)
     return;
+
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "Clear was called after committing or aborting the transaction");
+    return;
+  }
 
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::ClearOperation, connection_->database()->AsWeakPtr(),
@@ -474,6 +537,12 @@ void DatabaseImpl::CreateIndex(int64_t transaction_id,
     return;
   }
 
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "CreateIndex was called after committing or aborting the transaction");
+    return;
+  }
+
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
       BindWeakOperation(&IndexedDBDatabase::CreateIndexOperation,
@@ -499,6 +568,12 @@ void DatabaseImpl::DeleteIndex(int64_t transaction_id,
     return;
   }
 
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "DeleteIndex was called after committing or aborting the transaction");
+    return;
+  }
+
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::DeleteIndexOperation,
       connection_->database()->AsWeakPtr(), object_store_id, index_id));
@@ -520,6 +595,12 @@ void DatabaseImpl::RenameIndex(int64_t transaction_id,
   if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
         "RenameIndex must be called from a version change transaction.");
+    return;
+  }
+
+  if (!transaction->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "RenameIndex was called after committing or aborting the transaction");
     return;
   }
 

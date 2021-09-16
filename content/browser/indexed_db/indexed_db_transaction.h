@@ -67,6 +67,14 @@ class CONTENT_EXPORT IndexedDBTransaction {
   // Signals the transaction for commit.
   void SetCommitFlag();
 
+  // Returns false if the transaction has been signalled to commit, is in the
+  // process of committing, or finished committing or was aborted. Essentially
+  // when this returns false no tasks should be scheduled that try to modify
+  // the transaction.
+  bool IsAcceptingRequests() {
+    return !is_commit_pending_ && state_ != COMMITTING && state_ != FINISHED;
+  }
+
   // This transaction is ultimately backed by a LevelDBScope. Aborting a
   // transaction rolls back the LevelDBScopes, which (if LevelDBScopes is in
   // single-sequence mode) can fail. This returns the result of that rollback,
