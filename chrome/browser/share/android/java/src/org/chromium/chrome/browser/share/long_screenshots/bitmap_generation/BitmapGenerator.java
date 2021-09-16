@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.util.Size;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -105,8 +106,8 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
         // Check if the compositor is ready and whether the rect is within the bounds of the
         // the capture.
         if (mScaleFactor == 0f) {
-            mScaleFactor =
-                    mBoundsManager.getBitmapScaleFactorFromCompositedWidth(mCompositor.getWidth());
+            mScaleFactor = mBoundsManager.getBitmapScaleFactorFromCompositedWidth(
+                    getContentSize().getWidth());
         }
         return mCompositor.requestBitmap(mBoundsManager.calculateBoundsRelativeToCapture(rect),
                 mScaleFactor, errorCallback, onBitmapGenerated);
@@ -123,6 +124,14 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
         if (mTabService != null) {
             mTabService.longScreenshotsClosed();
         }
+    }
+
+    public Size getContentSize() {
+        return mCompositor.getContentSize();
+    }
+
+    public Size getScrollOffset() {
+        return mCompositor.getScrollOffset();
     }
 
     @VisibleForTesting

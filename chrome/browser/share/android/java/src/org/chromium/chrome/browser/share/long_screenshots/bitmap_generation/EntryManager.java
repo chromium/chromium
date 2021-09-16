@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.util.Size;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -48,6 +49,13 @@ public class EntryManager {
          * @param status current status.
          */
         void onStatusChange(@EntryStatus int status);
+
+        /**
+         * Called when the compositor is ready.
+         * @param contentSize size of the main frame.
+         * @param scrollOffset the offset of the viewport rect relative to the main frame.
+         */
+        void onCompositorReady(Size contentSize, Size scrollOffset);
     }
 
     /**
@@ -229,7 +237,11 @@ public class EntryManager {
 
     public void addBitmapGeneratorObserver(BitmapGeneratorObserver observer) {
         mGeneratorObservers.addObserver(observer);
+
         observer.onStatusChange(mGeneratorStatus);
+        if (mGeneratorStatus == EntryStatus.CAPTURE_COMPLETE) {
+            observer.onCompositorReady(mGenerator.getContentSize(), mGenerator.getScrollOffset());
+        }
     }
 
     public void removeBitmapGeneratorObserver(BitmapGeneratorObserver observer) {
@@ -256,6 +268,12 @@ public class EntryManager {
                     LongScreenshotsMetrics.logLongScreenshotsEvent(
                             LongScreenshotsMetrics.LongScreenshotsEvent
                                     .GENERATOR_COMPOSITOR_CAPTURE_COMPLETE);
+
+                    Size contentSize = mGenerator.getContentSize();
+                    Size scrollOffset = mGenerator.getScrollOffset();
+                    for (BitmapGeneratorObserver observer : mGeneratorObservers) {
+                        observer.onCompositorReady(contentSize, scrollOffset);
+                    }
                 } else {
                     updateGeneratorStatus(EntryStatus.GENERATION_ERROR);
                     LongScreenshotsMetrics.logLongScreenshotsEvent(
