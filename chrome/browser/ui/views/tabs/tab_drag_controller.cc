@@ -1565,8 +1565,13 @@ gfx::Point TabDragController::GetAttachedDragPoint(
   const int x = attached_context_->AsView()->GetMirroredXInView(tab_loc.x()) -
                 mouse_offset_.x();
 
-  const int max_x = attached_context_->GetTabDragAreaWidth() -
-                    TabStrip::GetSizeNeededForViews(attached_views_);
+  // If the width needed for the `attached_views_` is greater than what is
+  // available in the tab drag area the attached drag point should simply be the
+  // beginning of the tab strip. Once attached the `attached_views_` will simply
+  // overflow as usual (see https://crbug.com/1250184).
+  const int max_x =
+      std::max(0, attached_context_->GetTabDragAreaWidth() -
+                      TabStrip::GetSizeNeededForViews(attached_views_));
   return gfx::Point(base::clamp(x, 0, max_x), 0);
 }
 
