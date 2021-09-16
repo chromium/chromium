@@ -6,6 +6,9 @@
 
 Takes as input a structured.xml file describing all events and produces a C++
 header and implementation file exposing builders for those events.
+
+TODO(crbug.com/1249222): Rename this to gen_events.py once migration is
+complete.
 """
 
 import argparse
@@ -13,10 +16,10 @@ import sys
 
 import codegen
 import model
-import templates
+import templates_mojo_events as templates
 
 parser = argparse.ArgumentParser(
-    description='Generate structured metrics events')
+    description='Generate structured metrics mojo events')
 parser.add_argument('--input', help='Path to structured.xml')
 parser.add_argument('--output', help='Path to generated files.')
 
@@ -28,7 +31,7 @@ def main():
   codegen.Template(
       data,
       args.output,
-      'structured_events.h',
+      'structured_mojo_events.h',
       file_template=templates.HEADER_FILE_TEMPLATE,
       project_template=templates.HEADER_PROJECT_TEMPLATE,
       event_template=templates.HEADER_EVENT_TEMPLATE,
@@ -36,7 +39,7 @@ def main():
 
   codegen.Template(data,
                    args.output,
-                   'structured_events.cc',
+                   'structured_mojo_events.cc',
                    file_template=templates.IMPL_FILE_TEMPLATE,
                    project_template=templates.IMPL_PROJECT_TEMPLATE,
                    event_template=templates.IMPL_EVENT_TEMPLATE,

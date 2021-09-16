@@ -59,7 +59,7 @@ class Event {
   Event(Event&& other);
   Event& operator=(Event&& other);
 
-  ~Event();
+  virtual ~Event();
 
   // Returns true if the value was added successfully. |type| and type of
   // |value| must be consistent and will be enforced. If the data in |value| and
