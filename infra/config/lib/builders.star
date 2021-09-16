@@ -190,6 +190,10 @@ xcode = struct(
     x13latestbeta = xcode_enum("13a233"),
 )
 
+# Git revision of the compilator_watcher luciexe sub_build binary for chromium
+# orchestrators to use
+compilator_watcher_git_revision = "ac4c95a90ea18c8ce70865c667a04ba18dfca1cd"
+
 ################################################################################
 # Implementation details                                                       #
 ################################################################################

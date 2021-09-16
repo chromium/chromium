@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "cpu", "goma", "os", "xcode")
+load("//lib/builders.star", "compilator_watcher_git_revision", "cpu", "goma", "os", "xcode")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 load("//project.star", "branch_type", "settings")
@@ -1320,6 +1320,7 @@ try_.chromium_linux_builder(
     coverage_test_types = ["unit", "overall"],
     properties = {
         "compilator": "linux-rel-compilator",
+        "compilator_watcher_git_revision": compilator_watcher_git_revision,
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
     tryjob = try_.job(
@@ -1912,6 +1913,7 @@ try_.chromium_win_builder(
     coverage_test_types = ["unit", "overall"],
     properties = {
         "compilator": "win10-rel-compilator",
+        "compilator_watcher_git_revision": compilator_watcher_git_revision,
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
     tryjob = try_.job(

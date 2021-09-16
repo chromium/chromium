@@ -27,5 +27,6 @@
     ]
   },
   "compilator": "linux-rel-compilator",
+  "compilator_watcher_git_revision": "ac4c95a90ea18c8ce70865c667a04ba18dfca1cd",
   "recipe": "chromium/orchestrator"
 }
