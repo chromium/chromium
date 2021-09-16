@@ -260,8 +260,17 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 0);
 }
 
+// TODO(crbug.com/1250246): This test is failing consistently on builder
+// "Linux ChromiumOS MSan Tests" since it was added.
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_MatchMetricRecordedWhenOneOrMoreSuggestions \
+  DISABLED_MatchMetricRecordedWhenOneOrMoreSuggestions
+#else
+#define MAYBE_MatchMetricRecordedWhenOneOrMoreSuggestions \
+  MatchMetricRecordedWhenOneOrMoreSuggestions
+#endif
 TEST_F(AssistiveSuggesterMultiWordTest,
-       MatchMetricRecordedWhenOneOrMoreSuggestions) {
+       MAYBE_MatchMetricRecordedWhenOneOrMoreSuggestions) {
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
                      .type = TextSuggestionType::kMultiWord,
