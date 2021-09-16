@@ -21,7 +21,7 @@
       Ads blocked
     </message>
     <message name="IDS_BLOCKED_ADS_DIALOG_MESSAGE" desc="A description that a site has, in the past, shown intrusive or misleading ads. To be shown on the Ads Blocked dialog." formatter_data="android_java">
-      This site shows intrusive or misleading ads
+      This site shows intrusive or misleading ads. <ph name="LEARN_MORE_LINK_TEXT">^1</ph>
     </message>
     <message name="IDS_BLOCKED_ADS_DIALOG_ALWAYS_ALLOW" desc="Text associated with the button to allow ads after ads have been blocked on the site. To be shown on the Ads Blocked dialog." formatter_data="android_java">
       Allow for this site

@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 
 import android.content.res.Resources;
+import android.text.style.ClickableSpan;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -47,7 +48,9 @@ public class AdsBlockedDialogTest {
     private AdsBlockedDialog.Natives mNativeMock;
 
     private long mNativeDialog;
+    private AdsBlockedDialog mDialog;
     private PropertyModel mModalDialogModel;
+    private ClickableSpan mClickableSpan;
 
     @Before
     public void setUp() {
@@ -66,14 +69,13 @@ public class AdsBlockedDialogTest {
         Assert.assertEquals("Dialog title should match.",
                 resources.getString(R.string.blocked_ads_dialog_title),
                 mModalDialogModel.get(ModalDialogProperties.TITLE));
-        Assert.assertEquals("Dialog message should match.",
-                resources.getString(R.string.blocked_ads_dialog_message),
+        Assert.assertEquals("Dialog message should match.", mDialog.getFormattedMessageText(),
                 mModalDialogModel.get(ModalDialogProperties.MESSAGE));
         Assert.assertEquals("Dialog positive button text should match.",
                 resources.getString(R.string.blocked_ads_dialog_always_allow),
                 mModalDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
         Assert.assertEquals("Dialog negative button text should match.",
-                resources.getString(R.string.blocked_ads_dialog_learn_more),
+                resources.getString(R.string.cancel),
                 mModalDialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
         Assert.assertTrue("Dialog should be dismissed on touch outside.",
                 mModalDialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
@@ -106,7 +108,7 @@ public class AdsBlockedDialogTest {
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
-        Mockito.verify(mNativeMock).onLearnMoreClicked(anyLong());
+        Mockito.verify(mNativeMock, never()).onLearnMoreClicked(anyLong());
         Mockito.verify(mNativeMock, never()).onAllowAdsClicked(anyLong());
         Mockito.verify(mModalDialogManagerMock)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
@@ -126,14 +128,25 @@ public class AdsBlockedDialogTest {
     }
 
     /**
+     * Tests that the native #onLearnMoreClicked is called when the dialog message link
+     * text is clicked.
+     */
+    @Test
+    public void tesDialogMessageLinkCallback() {
+        createAndShowDialog();
+        mClickableSpan.onClick(null);
+        Mockito.verify(mNativeMock).onLearnMoreClicked(anyLong());
+    }
+
+    /**
      * Helper function that creates AdsBlockedDialog, calls show() and captures the
      * property model for modal dialog view.
      */
     private void createAndShowDialog() {
         // Set nativeDialog to a non-zero value to pass assertion check
-        AdsBlockedDialog mDialog =
-                new AdsBlockedDialog(1, RuntimeEnvironment.application, mModalDialogManagerMock);
+        mDialog = new AdsBlockedDialog(1, RuntimeEnvironment.application, mModalDialogManagerMock);
         mDialog.show();
         mModalDialogModel = mDialog.getDialogModelForTesting();
+        mClickableSpan = mDialog.getMessageClickableSpanForTesting();
     }
 }
