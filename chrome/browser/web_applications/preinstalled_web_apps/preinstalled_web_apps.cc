@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/youtube.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/web_applications/preinstalled_web_apps/calculator.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
@@ -72,6 +73,7 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
       GetConfigForGoogleSlides(),
       GetConfigForYouTube(),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+      GetConfigForCalculator(),
       GetConfigForGoogleCalendar(),
       GetConfigForGoogleChat(),
       GetConfigForGoogleMeet(),

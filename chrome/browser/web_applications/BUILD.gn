@@ -296,6 +296,8 @@ source_set("web_applications") {
 
     if (is_chromeos_ash) {
       sources += [
+        "preinstalled_web_apps/calculator.cc",
+        "preinstalled_web_apps/calculator.h",
         "preinstalled_web_apps/google_calendar.cc",
         "preinstalled_web_apps/google_calendar.h",
         "preinstalled_web_apps/google_chat.cc",

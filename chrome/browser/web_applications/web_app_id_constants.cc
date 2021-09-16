@@ -13,6 +13,10 @@ namespace web_app {
 // Please maintain the alphabetical order when adding new app IDs.
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "https://calculator.apps.chrome/"))
+const char kCalculatorAppId[] = "oabkinaljpjeilageghcdlnekhphhphl";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "chrome://camera-app/views/main.html"))
 const char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 

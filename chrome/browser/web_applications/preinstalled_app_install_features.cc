@@ -18,6 +18,7 @@ namespace {
 constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
     &kMigrateDefaultChromeAppToWebAppsGSuite,
     &kMigrateDefaultChromeAppToWebAppsNonGSuite,
+    &kDefaultCalculatorWebApp,
 };
 
 bool g_always_enabled_for_testing = false;

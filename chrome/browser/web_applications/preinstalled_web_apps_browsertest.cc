@@ -54,7 +54,6 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
       SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 
   auto& provider = *WebAppProvider::GetForTest(browser()->profile());
-
   struct OfflineOnlyExpectation {
     const char* app_id;
     const char* install_url;
@@ -68,6 +67,11 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
         "https://calendar.google.com/calendar/r?usp=installed_webapp",
     },
 #endif  // defined(OS_CHROMEOS)
+    {
+        kCalculatorAppId,
+        "https://calculator.apps.chrome/install",
+        "https://calculator.apps.chrome/",
+    },
     {
         kGoogleDocsAppId,
         "https://docs.google.com/document/installwebapp?usp=chrome_default",
