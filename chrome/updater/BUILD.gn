@@ -397,17 +397,38 @@ if (is_win || is_mac) {
       "//chrome/updater/constants.cc",
       "//chrome/updater/constants.h",
       "//chrome/updater/enum_traits.h",
+      "//chrome/updater/lib_util.h",
       "//chrome/updater/registration_data.cc",
       "//chrome/updater/registration_data.h",
+      "//chrome/updater/tag.cc",
+      "//chrome/updater/tag.h",
       "//chrome/updater/update_service.cc",
       "//chrome/updater/update_service.h",
+      "//chrome/updater/updater_scope.cc",
+      "//chrome/updater/updater_scope.h",
+      "//chrome/updater/util.cc",
+      "//chrome/updater/util.h",
     ]
 
     deps = [
       ":branding_header",
+      ":version_header",
       "//base",
       "//components/update_client",
+      "//url",
     ]
+
+    if (is_win) {
+      sources += [
+        "//chrome/updater/lib_util_win.cc",
+        "//chrome/updater/win/user_info.cc",
+        "//chrome/updater/win/user_info.h",
+        "//chrome/updater/win/win_constants.cc",
+        "//chrome/updater/win/win_constants.h",
+        "//chrome/updater/win/win_util.cc",
+        "//chrome/updater/win/win_util.h",
+      ]
+    }
 
     if (is_mac) {
       sources += [
@@ -415,16 +436,20 @@ if (is_win || is_mac) {
         "//chrome/updater/app/server/mac/service_protocol.mm",
         "//chrome/updater/app/server/mac/update_service_wrappers.h",
         "//chrome/updater/app/server/mac/update_service_wrappers.mm",
+        "//chrome/updater/lib_util_mac.mm",
+        "//chrome/updater/mac/mac_util.h",
+        "//chrome/updater/mac/mac_util.mm",
         "//chrome/updater/mac/xpc_service_names.h",
         "//chrome/updater/mac/xpc_service_names.mm",
       ]
 
-      deps += [ ":version_header" ]
+      deps += [ "//chrome/common/mac:launchd" ]
     }
 
     visibility = [
       "//chrome/browser/ui:ui",
       "//chrome/browser/updater:*",
+      "//chrome/test:*",
       "//chrome/test:unit_tests",
     ]
   }

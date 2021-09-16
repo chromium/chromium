@@ -12,7 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 
 // Cross-platform client to communicate between the browser and the Chromium
 // updater. It helps the browser register to the Chromium updater and invokes
@@ -34,6 +36,16 @@ class BrowserUpdaterClient
   void CheckForUpdate(
       base::RepeatingCallback<void(updater::UpdateService::UpdateState)>
           version_updater_callback);
+
+  // Gets the current updater version. Can also be used to check for the
+  // existence of the updater.
+  virtual void GetUpdaterVersion(
+      base::OnceCallback<void(const std::string&)> callback) = 0;
+
+#if defined(OS_MAC)
+  // Resets the XPC Connection with the given scope.
+  virtual void ResetConnection(updater::UpdaterScope scope) = 0;
+#endif  // defined(OS_MAC)
 
  protected:
   friend class base::RefCountedThreadSafe<BrowserUpdaterClient>;

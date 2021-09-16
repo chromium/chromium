@@ -15,6 +15,9 @@
 #include "chrome/browser/ui/webui/help/version_updater.h"
 
 #if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+#include <string.h>
+
+#include "base/memory/weak_ptr.h"
 #include "chrome/updater/update_service.h"  // nogncheck
 
 class BrowserUpdaterClient;
@@ -48,6 +51,19 @@ class VersionUpdaterMac : public VersionUpdater {
   // Update the visibility state of promote button.
   void UpdateShowPromoteButton();
 
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+  // Updates the status from the Chromium Updater.
+  void UpdateStatusFromChromiumUpdater(
+      VersionUpdater::StatusCallback status_callback,
+      VersionUpdater::PromoteCallback promote_callback,
+      updater::UpdateService::UpdateState update_state);
+
+  void UpdatePromotionStatusFromChromiumUpdater(
+      VersionUpdater::PromoteCallback promote_callback,
+      bool enable_promote_button,
+      const std::string& version);
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+
   // Callback used to communicate update status to the client.
   StatusCallback status_callback_;
 
@@ -64,10 +80,10 @@ class VersionUpdaterMac : public VersionUpdater {
   // Instance of the BrowserUpdaterClient used to update the browser with the
   // new updater.
   scoped_refptr<BrowserUpdaterClient> update_client_;
+  base::WeakPtrFactory<VersionUpdaterMac> weak_factory_{this};
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
   DISALLOW_COPY_AND_ASSIGN(VersionUpdaterMac);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_MAC_H_
-
