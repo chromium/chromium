@@ -292,7 +292,6 @@ static_library("test_support") {
     "content_test_suite.h",
     "did_commit_navigation_interceptor.cc",
     "did_commit_navigation_interceptor.h",
-    "fake_mojo_message_dispatch_context.h",
     "fake_network.cc",
     "fake_network.h",
     "fake_network_url_loader_factory.cc",

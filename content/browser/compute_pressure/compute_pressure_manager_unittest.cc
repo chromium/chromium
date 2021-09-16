@@ -10,10 +10,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/compute_pressure/compute_pressure_test_support.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/test/fake_mojo_message_dispatch_context.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -188,7 +188,7 @@ TEST_F(ComputePressureManagerTest, AddObserver_InvalidQuantization) {
 
 TEST_F(ComputePressureManagerTest, AddObserver_InsecureOrigin) {
   {
-    FakeMojoMessageDispatchContext fake_dispatch_context;
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
     mojo::test::BadMessageObserver bad_message_observer;
     mojo::Remote<blink::mojom::ComputePressureHost> insecure_host;
     manager_->BindReceiver(kInsecureOrigin, main_frame_id_,
@@ -218,7 +218,7 @@ TEST_F(ComputePressureManagerTest, AddObserver_NoFeature) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(blink::features::kComputePressure);
 
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   mojo::Remote<blink::mojom::ComputePressureHost> insecure_host;
   manager_->BindReceiver(kInsecureOrigin, main_frame_id_,

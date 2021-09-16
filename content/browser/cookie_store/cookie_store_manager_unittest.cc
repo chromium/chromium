@@ -17,8 +17,8 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/test/fake_mojo_message_dispatch_context.h"
 #include "content/test/storage_partition_test_helpers.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
@@ -1756,7 +1756,7 @@ TEST_F(CookieStoreManagerTest, UnTrustworthyOrigin) {
   mojo::Remote<blink::mojom::CookieStore> untrustworthy_service_remote;
 
   // Create a fake dispatch context to trigger a bad message in.
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_mesage_observer;
 
   cookie_store_manager_->BindReceiver(

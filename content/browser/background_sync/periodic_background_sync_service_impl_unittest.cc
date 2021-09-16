@@ -93,7 +93,7 @@ TEST_F(PeriodicBackgroundSyncServiceImplTest, RegisterWithInvalidMinInterval) {
   auto to_register = default_sync_registration_.Clone();
   to_register->min_interval = -1;
 
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   RegisterPeriodicSync(
       std::move(to_register),
       base::BindOnce(&ErrorAndRegistrationCallback, &called, &error, &reg));

@@ -17,9 +17,9 @@
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/native_io/native_io_manager.h"
-#include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
@@ -727,7 +727,7 @@ TEST_P(NativeIOManagerTest, StorageKeyIsolation) {
 TEST_P(NativeIOManagerTest, BindReceiver_UntrustworthyStorageKey) {
   mojo::Remote<blink::mojom::NativeIOHost> insecure_host_remote_;
 
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   manager_->BindReceiver(
       StorageKey::CreateFromStringForTesting("http://insecure.com"),

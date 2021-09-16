@@ -81,7 +81,7 @@ TEST_F(OneShotBackgroundSyncServiceImplTest, RegisterWithInvalidOptions) {
   auto to_register = default_sync_registration_.Clone();
   to_register->min_interval = 3600;
 
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   RegisterOneShotSync(
       std::move(to_register),
       base::BindOnce(&ErrorAndRegistrationCallback, &called, &error, &reg));

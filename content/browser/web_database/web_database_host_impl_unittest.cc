@@ -25,8 +25,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -96,7 +96,7 @@ class WebDatabaseHostImplTest : public ::testing::Test {
     base::RunLoop run_loop;
     task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          FakeMojoMessageDispatchContext fake_dispatch_context;
+          mojo::FakeMessageDispatchContext fake_dispatch_context;
           func();
           run_loop.Quit();
         }));
@@ -112,7 +112,7 @@ class WebDatabaseHostImplTest : public ::testing::Test {
     base::RunLoop run_loop;
     task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          FakeMojoMessageDispatchContext fake_dispatch_context;
+          mojo::FakeMessageDispatchContext fake_dispatch_context;
           func();
           run_loop.Quit();
         }));
@@ -175,7 +175,7 @@ TEST_F(WebDatabaseHostImplTest, OpenFileCreatesBucket) {
   base::RunLoop run_loop;
   task_runner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        FakeMojoMessageDispatchContext fake_dispatch_context;
+        mojo::FakeMessageDispatchContext fake_dispatch_context;
         host()->OpenFile(vfs_file_name, /*desired_flags=*/0,
                          base::BindLambdaForTesting(
                              [&](base::File file) { run_loop.Quit(); }));
@@ -299,7 +299,7 @@ TEST_F(WebDatabaseHostImplTest, ProcessShutdown) {
     base::RunLoop run_loop;
     task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          FakeMojoMessageDispatchContext fake_dispatch_context;
+          mojo::FakeMessageDispatchContext fake_dispatch_context;
           host()->OpenFile(bad_vfs_file_name,
                            /*desired_flags=*/0, success_callback);
           run_loop.Quit();
@@ -325,7 +325,7 @@ TEST_F(WebDatabaseHostImplTest, ProcessShutdown) {
     base::RunLoop run_loop;
     task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          FakeMojoMessageDispatchContext fake_dispatch_context;
+          mojo::FakeMessageDispatchContext fake_dispatch_context;
           host()->OpenFile(bad_vfs_file_name,
                            /*desired_flags=*/0, success_callback);
           run_loop.Quit();

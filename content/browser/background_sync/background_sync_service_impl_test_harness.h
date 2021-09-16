@@ -14,7 +14,7 @@
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/test/fake_mojo_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"

@@ -7,8 +7,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -55,7 +55,7 @@ class ContentIndexServiceImplTest : public ::testing::Test {
  private:
   BrowserTaskEnvironment task_environment_;  // Must be first member
   std::unique_ptr<ContentIndexServiceImpl> service_;
-  FakeMojoMessageDispatchContext fake_dispatch_context_;
+  mojo::FakeMessageDispatchContext fake_dispatch_context_;
   mojo::test::BadMessageObserver bad_message_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentIndexServiceImplTest);

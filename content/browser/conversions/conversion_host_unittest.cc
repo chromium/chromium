@@ -14,10 +14,10 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/test/fake_mojo_message_dispatch_context.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -112,7 +112,7 @@ TEST_F(ConversionHostTest, ValidConversionInSubframe_NoBadMessage) {
   SetCurrentTargetFrameForTesting(subframe);
 
   // Create a fake dispatch context to trigger a bad message in.
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
@@ -144,7 +144,7 @@ TEST_F(ConversionHostTest,
   SetCurrentTargetFrameForTesting(subframe);
 
   // Create a fake dispatch context to trigger a bad message in.
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
@@ -175,7 +175,7 @@ TEST_F(ConversionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
   SetCurrentTargetFrameForTesting(subframe);
 
   // Create a fake dispatch context to trigger a bad message in.
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
@@ -249,7 +249,7 @@ TEST_F(ConversionHostTest, ConversionOnInsecurePage_BadMessage) {
   contents()->NavigateAndCommit(GURL("http://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
 
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
@@ -268,7 +268,7 @@ TEST_F(ConversionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
 
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin = url::Origin::Create(GURL("http://secure.com"));
@@ -289,7 +289,7 @@ TEST_F(ConversionHostTest, ValidConversion_NoBadMessage) {
   SetCurrentTargetFrameForTesting(main_rfh());
 
   // Create a fake dispatch context to listen for bad messages.
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
@@ -682,7 +682,7 @@ TEST_F(ConversionHostTest,
   SetCurrentTargetFrameForTesting(subframe);
 
   // Create a fake dispatch context to trigger a bad message in.
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
   const blink::Impression impression = CreateValidImpression();
@@ -704,7 +704,7 @@ TEST_F(ConversionHostTest, ValidImpression_NoBadMessage) {
   SetCurrentTargetFrameForTesting(main_rfh());
 
   // Create a fake dispatch context to listen for bad messages.
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
 
   const blink::Impression impression = CreateValidImpression();
