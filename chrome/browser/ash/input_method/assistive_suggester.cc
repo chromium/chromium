@@ -284,7 +284,9 @@ void AssistiveSuggester::OnExternalSuggestionsUpdated(
 
   if (!blocklist_->IsMultiWordSuggestionAllowed() &&
       !IsExpandedMultiWordSuggestEnabled()) {
-    RecordAssistiveDisabledReasonForMultiWord(GetDisabledReasonForMultiWord());
+    if (IsTopResultMultiWord(suggestions))
+      RecordAssistiveDisabledReasonForMultiWord(
+          GetDisabledReasonForMultiWord());
     return;
   }
 

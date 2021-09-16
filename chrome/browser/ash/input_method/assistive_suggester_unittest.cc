@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/input_method/assistive_suggester_blocklist.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/personal_info_suggester.h"
 #include "chrome/test/base/testing_profile.h"
@@ -208,6 +209,184 @@ TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenFeatureFlagAndDepsEnabled) {
                              features::kAssistPersonalInfo});
 
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
+class FakeBlocklist : public AssistiveSuggesterBlocklist {
+ public:
+  explicit FakeBlocklist(bool allowed) : allowed_(allowed) {}
+  ~FakeBlocklist() override = default;
+
+  // AssistiveSuggesterDelegate overrides
+  bool IsEmojiSuggestionAllowed() override { return false; }
+  bool IsMultiWordSuggestionAllowed() override { return allowed_; }
+  bool IsPersonalInfoSuggestionAllowed() override { return false; }
+
+ private:
+  bool allowed_;
+};
+
+class AssistiveSuggesterMultiWordTest : public testing::Test {
+ protected:
+  AssistiveSuggesterMultiWordTest() {
+    profile_ = std::make_unique<TestingProfile>();
+  }
+
+  void SetUp() override {
+    engine_ = std::make_unique<InputMethodEngine>();
+    assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+        engine_.get(), profile_.get(), std::make_unique<FakeBlocklist>(true));
+
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAssistMultiWord},
+        /*disabled_features=*/{});
+    profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
+                                     true);
+
+    ui::IMEBridge::Initialize();
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<AssistiveSuggester> assistive_suggester_;
+  std::unique_ptr<InputMethodEngine> engine_;
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(AssistiveSuggesterMultiWordTest,
+       MatchMetricNotRecordedWhenZeroSuggestions) {
+  assistive_suggester_->OnExternalSuggestionsUpdated({});
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 0);
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest,
+       MatchMetricRecordedWhenOneOrMoreSuggestions) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hello there"}};
+
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 1);
+  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Match",
+                                       AssistiveType::kMultiWordPrediction, 1);
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest,
+       MatchMetricNotRecordedWhenMultiWordFlagDisabled) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAssistMultiWord});
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hello there"}};
+
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 0);
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest,
+       DisableMetricNotRecordedWhenNoSuggestionAndMultiWordBlocked) {
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      engine_.get(), profile_.get(), std::make_unique<FakeBlocklist>(false));
+
+  assistive_suggester_->OnExternalSuggestionsUpdated({});
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Disabled.MultiWord",
+                                     0);
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest,
+       DisableMetricRecordedWhenGivenSuggestionAndMultiWordBlocked) {
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      engine_.get(), profile_.get(), std::make_unique<FakeBlocklist>(false));
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hello there"}};
+
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Disabled.MultiWord",
+                                     1);
+  histogram_tester_.ExpectUniqueSample(
+      "InputMethod.Assistive.Disabled.MultiWord",
+      DisabledReason::kUrlOrAppNotAllowed, 1);
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest,
+       CoverageMetricNotRecordedWhenNoSuggestionGiven) {
+  assistive_suggester_->OnExternalSuggestionsUpdated({});
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 0);
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest,
+       CoverageMetricRecordedWhenSuggestionShown) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hello there"}};
+
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 1);
+  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
+                                       AssistiveType::kMultiWordPrediction, 1);
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest,
+       CoverageMetricRecordedOnceWhenSuggestionShownAndTracked) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hello there"}};
+
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnSurroundingTextChanged(u"h", 1, 1);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnSurroundingTextChanged(u"he", 2, 2);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+  assistive_suggester_->OnSurroundingTextChanged(u"hel", 3, 3);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 1);
+  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
+                                       AssistiveType::kMultiWordPrediction, 1);
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest,
+       CoverageMetricRecordedForEverySuggestionShown) {
+  std::vector<TextSuggestion> first_suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hello there"}};
+  std::vector<TextSuggestion> second_suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "was"}};
+
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
+  assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions);
+  assistive_suggester_->OnSurroundingTextChanged(u"h", 1, 1);
+  assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions);
+  assistive_suggester_->OnSurroundingTextChanged(u"he", 2, 2);
+  assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions);
+  assistive_suggester_->OnSurroundingTextChanged(u"he ", 3, 3);
+  assistive_suggester_->OnExternalSuggestionsUpdated(second_suggestions);
+
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 2);
+  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
+                                       AssistiveType::kMultiWordPrediction, 2);
 }
 
 }  // namespace input_method
