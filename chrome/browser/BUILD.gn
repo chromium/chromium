@@ -2732,6 +2732,7 @@ static_library("browser") {
       "android/favicon_helper.cc",
       "android/favicon_helper.h",
       "android/feature_engagement/tracker_factory_android.cc",
+      "android/feed/feed_process_scope_dependency_provider.cc",
       "android/feed/feed_surface_scope_dependency_provider.cc",
       "android/feed/v2/background_refresh_task.cc",
       "android/feed/v2/background_refresh_task.h",

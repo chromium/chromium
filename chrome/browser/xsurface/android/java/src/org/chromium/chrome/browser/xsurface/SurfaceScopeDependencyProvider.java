@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
  *
  * Should only be called on the UI thread.
  */
-public interface SurfaceScopeDependencyProvider extends FeedLoggingDependencyProvider {
+public interface SurfaceScopeDependencyProvider {
     /** Returns the activity. */
     @Nullable
     default Activity getActivity() {
@@ -171,4 +171,49 @@ public interface SurfaceScopeDependencyProvider extends FeedLoggingDependencyPro
      * @param observer An Object returned by |addHeaderOffsetObserver|.
      */
     default void removeHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
+
+    /** Returns whether or not activity logging should be enabled. */
+    default boolean isActivityLoggingEnabled() {
+        return false;
+    }
+
+    // TODO(iwells): Remove the methods below when they're no longer used.
+    /** Returns the account name of the signed-in user, or the empty string. */
+    @Deprecated
+    default String getAccountName() {
+        return "";
+    }
+
+    /** Returns the client instance id for this chrome. */
+    @Deprecated
+    default String getClientInstanceId() {
+        return "";
+    }
+
+    /** Returns the collection of currently active experiment ids. */
+    @Deprecated
+    default int[] getExperimentIds() {
+        return new int[0];
+    }
+
+    /** Returns the signed-out session id */
+    @Deprecated
+    default String getSignedOutSessionId() {
+        return "";
+    }
+
+    /**
+     * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
+     * message.
+     */
+    @Deprecated
+    default void processViewAction(byte[] data) {}
+
+    /**
+     * Reports whether the visibility log upload was successful.
+     *
+     * @param success - whether the upload was successful
+     */
+    @Deprecated
+    default void reportOnUploadVisibilityLog(boolean success) {}
 }

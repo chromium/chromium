@@ -11,6 +11,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.GoogleAPIKeys;
@@ -20,15 +24,20 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Provides logging and context for all surfaces.
  */
+@JNINamespace("feed::android")
 public class FeedProcessScopeDependencyProvider implements ProcessScopeDependencyProvider {
     private static final String FEED_SPLIT_NAME = "feedv2";
 
@@ -138,5 +147,64 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
                 ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
                 "image_memory_cache_size_percentage",
                 /*default=*/100);
+    }
+
+    @Override
+    public String getAccountName() {
+        // Don't return account name if there's a signed-out session ID.
+        if (!getSignedOutSessionId().isEmpty()) {
+            return "";
+        }
+        assert ThreadUtils.runningOnUiThread();
+        CoreAccountInfo primaryAccount =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        return (primaryAccount == null) ? "" : primaryAccount.getEmail();
+    }
+
+    @Override
+    public String getClientInstanceId() {
+        // Don't return client instance id if there's a signed-out session ID.
+        if (!getSignedOutSessionId().isEmpty()) {
+            return "";
+        }
+        assert ThreadUtils.runningOnUiThread();
+        return FeedServiceBridge.getClientInstanceId();
+    }
+
+    @Override
+    public int[] getExperimentIds() {
+        assert ThreadUtils.runningOnUiThread();
+        return FeedProcessScopeDependencyProviderJni.get().getExperimentIds();
+    }
+
+    @Override
+    public String getSignedOutSessionId() {
+        ThreadUtils.runningOnUiThread();
+        return FeedProcessScopeDependencyProviderJni.get().getSessionId();
+    }
+
+    /**
+     * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
+     * message.
+     */
+    @Override
+    public void processViewAction(byte[] data) {
+        FeedProcessScopeDependencyProviderJni.get().processViewAction(data);
+    }
+
+    @Override
+    public void reportOnUploadVisibilityLog(boolean success) {
+        RecordHistogram.recordBooleanHistogram(
+                "ContentSuggestions.Feed.UploadVisibilityLog", success);
+    }
+
+    @VisibleForTesting
+    @NativeMethods
+    public interface Natives {
+        int[] getExperimentIds();
+        String getSessionId();
+        void processViewAction(byte[] data);
     }
 }
