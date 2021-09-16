@@ -127,13 +127,37 @@ static ScrollbarPainterMap& GetScrollbarPainterMap() {
   return *map;
 }
 
-static bool SupportsExpandedScrollbars() {
-  // FIXME: This is temporary until all platforms that support ScrollbarPainter
-  // support this part of the API.
-  static bool global_supports_expanded_scrollbars =
-      [NSClassFromString(@"NSScrollerImp")
-          instancesRespondToSelector:@selector(setExpanded:)];
-  return global_supports_expanded_scrollbars;
+static int ScrollbarThicknessInternal(NSControlSize control_size,
+                                      NSScrollerStyle scroller_style) {
+  ScrollbarPainter scrollbar_painter =
+      [NSClassFromString(@"NSScrollerImp") scrollerImpWithStyle:scroller_style
+                                                    controlSize:control_size
+                                                     horizontal:NO
+                                           replacingScrollerImp:nil];
+  if ([scrollbar_painter respondsToSelector:@selector(setExpanded:)]) {
+    [scrollbar_painter setExpanded:YES];
+  }
+  return [scrollbar_painter trackBoxWidth];
+}
+
+static int OverlayScrollbarThickness(NSControlSize control_size) {
+  static int small_scrollbar_thickness =
+      ScrollbarThicknessInternal(NSControlSizeSmall, NSScrollerStyleOverlay);
+  static int regular_scrollbar_thickness =
+      ScrollbarThicknessInternal(NSControlSizeRegular, NSScrollerStyleOverlay);
+
+  return control_size == NSControlSizeSmall ? small_scrollbar_thickness
+                                            : regular_scrollbar_thickness;
+}
+
+static int LegacyScrollbarThickness(NSControlSize control_size) {
+  static int small_scrollbar_thickness =
+      ScrollbarThicknessInternal(NSControlSizeSmall, NSScrollerStyleLegacy);
+  static int regular_scrollbar_thickness =
+      ScrollbarThicknessInternal(NSControlSizeRegular, NSScrollerStyleLegacy);
+
+  return control_size == NSControlSizeSmall ? small_scrollbar_thickness
+                                            : regular_scrollbar_thickness;
 }
 
 ScrollbarThemeMac::ScrollbarThemeMac() {
@@ -190,9 +214,9 @@ void ScrollbarThemeMac::RegisterScrollbar(Scrollbar& scrollbar) {
 
   NSControlSize size;
   if (scrollbar.CSSScrollbarWidth() == EScrollbarWidth::kThin)
-    size = NSSmallControlSize;
+    size = NSControlSizeSmall;
   else
-    size = NSRegularControlSize;
+    size = NSControlSizeRegular;
 
   bool is_horizontal = scrollbar.Orientation() == kHorizontalScrollbar;
   base::scoped_nsobject<ScrollbarPainter> scrollbar_painter([[NSClassFromString(
@@ -419,26 +443,13 @@ int ScrollbarThemeMac::ScrollbarThickness(float scale_from_dip,
   if (scrollbar_width == EScrollbarWidth::kNone)
     return 0;
 
-  NSControlSize size;
-  if (scrollbar_width == EScrollbarWidth::kThin)
-    size = NSSmallControlSize;
-  else
-    size = NSRegularControlSize;
+  NSControlSize control_size = scrollbar_width == EScrollbarWidth::kThin
+                                   ? NSControlSizeSmall
+                                   : NSControlSizeRegular;
 
-  ScrollbarPainter scrollbar_painter = [NSClassFromString(@"NSScrollerImp")
-      scrollerImpWithStyle:RecommendedScrollerStyle()
-               controlSize:size
-                horizontal:NO
-      replacingScrollerImp:nil];
-  BOOL was_expanded = NO;
-  if (SupportsExpandedScrollbars()) {
-    was_expanded = [scrollbar_painter isExpanded];
-    [scrollbar_painter setExpanded:YES];
-  }
-  int thickness = [scrollbar_painter trackBoxWidth];
-  if (SupportsExpandedScrollbars())
-    [scrollbar_painter setExpanded:was_expanded];
-  return thickness * scale_from_dip;
+  return RecommendedScrollerStyle() == NSScrollerStyleOverlay
+             ? OverlayScrollbarThickness(control_size) * scale_from_dip
+             : LegacyScrollbarThickness(control_size) * scale_from_dip;
 }
 
 bool ScrollbarThemeMac::UsesOverlayScrollbars() const {

@@ -8,6 +8,7 @@ include_rules = [
     "+base/mac/mac_util.h",
     "+base/mac/scoped_cftyperef.h",
     "+base/mac/scoped_nsobject.h",
+    "+base/mac/scoped_objc_class_swizzler.h",
     "+base/memory/scoped_policy.h",
     "+base/memory/scoped_refptr.h",
     "+base/metrics/field_trial_params.h",

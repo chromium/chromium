@@ -66,3 +66,7 @@ blink_core_tests_scroll = [
   "scrollbar_test_suite.h",
   "scrollbar_theme_overlay_test.cc",
 ]
+
+if (is_mac) {
+  blink_core_tests_scroll += [ "scrollbar_theme_mac_test.mm" ]
+}
