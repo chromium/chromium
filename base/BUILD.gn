@@ -2890,18 +2890,9 @@ source_set("base_unittests_tasktraits") {
   deps = [ ":base" ]
 }
 
-source_set("arm_bti_testfunctions") {
-  testonly = true
-
-  sources = [ "allocator/partition_allocator/arm_bti_test_functions.h" ]
-
-  if (target_cpu == "arm64") {
-    sources += [ "allocator/partition_allocator/arm_bti_test_functions.S" ]
-  }
-}
-
 test("base_unittests") {
   sources = [
+    "allocator/partition_allocator/arm_bti_test_functions.h",
     "allocator/tcmalloc_unittest.cc",
     "as_const_unittest.cc",
     "at_exit_unittest.cc",
@@ -3227,7 +3218,6 @@ test("base_unittests") {
   defines = []
 
   deps = [
-    ":arm_bti_testfunctions",
     ":base",
     ":base_stack_sampling_profiler_test_util",
     ":base_unittests_tasktraits",
@@ -3696,6 +3686,10 @@ test("base_unittests") {
       "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
       "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
     ]
+  }
+
+  if (target_cpu == "arm64" && (is_linux || is_android)) {
+    sources += [ "allocator/partition_allocator/arm_bti_test_functions.S" ]
   }
 
   configs += [

@@ -15,18 +15,38 @@
 
 namespace base {
 
+// Two helper functions to detect whether we can safely use PROT_BTI
+// and PROT_MTE (static CPU triggers a -Wexit-time-destructors warning.)
+static bool HasCPUBranchIdentification() {
+#if defined(ARCH_CPU_ARM_FAMILY)
+  CPU cpu = CPU::CreateNoAllocation();
+  return cpu.has_bti();
+#else
+  return false;
+#endif
+}
+
+static bool HasCPUMemoryTaggingExtension() {
+#if defined(ARCH_CPU_ARM_FAMILY)
+  CPU cpu = CPU::CreateNoAllocation();
+  return cpu.has_mte();
+#else
+  return false;
+#endif
+}
+
 int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
+  static const bool has_bti = HasCPUBranchIdentification();
+  static const bool has_mte = HasCPUMemoryTaggingExtension();
   switch (accessibility) {
     case PageRead:
       return PROT_READ;
     case PageReadWrite:
       return PROT_READ | PROT_WRITE;
     case PageReadWriteTagged:
-      return PROT_READ | PROT_WRITE |
-             (CPU::GetInstanceNoAllocation().has_mte() ? PROT_MTE : 0u);
+      return PROT_READ | PROT_WRITE | (has_mte ? PROT_MTE : 0u);
     case PageReadExecuteProtected:
-      return PROT_READ | PROT_EXEC |
-             (CPU::GetInstanceNoAllocation().has_bti() ? PROT_BTI : 0u);
+      return PROT_READ | PROT_EXEC | (has_bti ? PROT_BTI : 0u);
     case PageReadExecute:
       return PROT_READ | PROT_EXEC;
     case PageReadWriteExecute:
