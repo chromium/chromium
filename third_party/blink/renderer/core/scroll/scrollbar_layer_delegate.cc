@@ -24,15 +24,15 @@ class ScopedScrollbarPainter {
  public:
   ScopedScrollbarPainter(cc::PaintCanvas& canvas, float device_scale_factor)
       : canvas_(canvas) {
-    builder_.Context().SetDeviceScaleFactor(device_scale_factor);
+    builder_->Context().SetDeviceScaleFactor(device_scale_factor);
   }
-  ~ScopedScrollbarPainter() { canvas_.drawPicture(builder_.EndRecording()); }
+  ~ScopedScrollbarPainter() { canvas_.drawPicture(builder_->EndRecording()); }
 
-  GraphicsContext& Context() { return builder_.Context(); }
+  GraphicsContext& Context() { return builder_->Context(); }
 
  private:
   cc::PaintCanvas& canvas_;
-  PaintRecordBuilder builder_;
+  PaintRecordBuilder* builder_ = MakeGarbageCollected<PaintRecordBuilder>();
 };
 
 }  // namespace

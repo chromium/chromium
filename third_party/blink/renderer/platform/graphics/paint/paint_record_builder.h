@@ -20,9 +20,9 @@ class PaintCanvas;
 
 namespace blink {
 
-class PLATFORM_EXPORT PaintRecordBuilder final : public DisplayItemClient {
-  STACK_ALLOCATED();
-
+class PLATFORM_EXPORT PaintRecordBuilder final
+    : public GarbageCollected<PaintRecordBuilder>,
+      public DisplayItemClient {
  public:
   // Constructs a new builder for the resulting paint record. A transient
   // PaintController is created and will be used for the duration of the picture
@@ -57,6 +57,7 @@ class PLATFORM_EXPORT PaintRecordBuilder final : public DisplayItemClient {
 
   // DisplayItemClient.
   String DebugName() const final { return "PaintRecordBuilder"; }
+  void Trace(Visitor* visitor) const {}
 
  private:
   absl::optional<PaintController> own_paint_controller_;
