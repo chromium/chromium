@@ -25,6 +25,7 @@ js_type_check("closure_compile") {
     ":format_dialog",
     ":gear_menu",
     ":grid_view",
+    ":holding_space",
     ":install_linux_package_dialog",
     ":keyboard_operations",
     ":metadata",
@@ -33,6 +34,7 @@ js_type_check("closure_compile") {
     ":open_audio_files",
     ":open_image_media_app",
     ":open_media_app",
+    ":open_sniffed_files",
     ":open_video_media_app",
     ":providers",
     ":quick_view",
@@ -157,6 +159,16 @@ js_library("gear_menu") {
 js_library("grid_view") {
   testonly = true
   deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("holding_space") {
+  testonly = true
+  deps = [
+    ":background",
+    ":file_dialog",
+    "//ui/file_manager/integration_tests:test_util",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("install_linux_package_dialog") {

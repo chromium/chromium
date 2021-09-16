@@ -223,7 +223,7 @@ export class RemoteCall {
     return repeatUntil(async () => {
       const elements = await this.callRemoteTestUtil(
           'deepQueryAllElements', appId, [query, styleNames]);
-      if (elements.length > 0) {
+      if (elements && elements.length > 0) {
         return /** @type {ElementObject} */ (elements[0]);
       }
       return pending(caller, 'Element %s is not found.', query);

@@ -729,13 +729,45 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     HoldingSpace, /* holding_space.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("holdingSpaceWelcomeBanner"),
-        TestCase("holdingSpaceWelcomeBannerWontShowAfterBeingDismissed"),
-        TestCase("holdingSpaceWelcomeBannerWontShowAfterReachingLimit"),
+        TestCase("holdingSpaceWelcomeBanner").EnableBannersFramework(),
+        TestCase("holdingSpaceWelcomeBanner").DisableBannersFramework(),
+        TestCase("holdingSpaceWelcomeBanner")
+            .EnableBannersFramework()
+            .FilesSwa(),
+        TestCase("holdingSpaceWelcomeBanner")
+            .DisableBannersFramework()
+            .FilesSwa(),
+        TestCase("holdingSpaceWelcomeBannerWontShowAfterBeingDismissed")
+            .DisableBannersFramework(),
         TestCase("holdingSpaceWelcomeBannerWontShowForModalDialogs")
-            .WithBrowser(),
-        TestCase("holdingSpaceWelcomeBannerWontShowOnDrive"),
-        TestCase("holdingSpaceWelcomeBannerOnTabletModeChanged")));
+            .WithBrowser()
+            .DisableBannersFramework(),
+        TestCase("holdingSpaceWelcomeBannerWillShowForModalDialogs")
+            .WithBrowser()
+            .EnableBannersFramework(),
+        TestCase("holdingSpaceWelcomeBannerWillShowForModalDialogs")
+            .WithBrowser()
+            .EnableBannersFramework()
+            .FilesSwa(),
+        TestCase("holdingSpaceWelcomeBannerWontShowForModalDialogs")
+            .WithBrowser()
+            .DisableBannersFramework()
+            .FilesSwa(),
+        TestCase("holdingSpaceWelcomeBannerWontShowOnDrive")
+            .DisableBannersFramework(),
+        TestCase("holdingSpaceWelcomeBannerWontShowOnDrive")
+            .DisableBannersFramework()
+            .FilesSwa(),
+        TestCase("holdingSpaceWelcomeBannerOnTabletModeChanged")
+            .EnableBannersFramework(),
+        TestCase("holdingSpaceWelcomeBannerOnTabletModeChanged")
+            .DisableBannersFramework(),
+        TestCase("holdingSpaceWelcomeBannerOnTabletModeChanged")
+            .EnableBannersFramework()
+            .FilesSwa(),
+        TestCase("holdingSpaceWelcomeBannerOnTabletModeChanged")
+            .DisableBannersFramework()
+            .FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Transfer, /* transfer.js */
