@@ -452,9 +452,7 @@ void ForceInstalledMetrics::ReportMetrics() {
   if (missing_forced_extensions.empty()) {
     base::UmaHistogramLongTimes("Extensions.ForceInstalledLoadTime",
                                 base::Time::Now() - start_time_);
-    // TODO(burunduk): Remove VLOGs after resolving crbug/917700 and
-    // crbug/904600.
-    VLOG(2) << "All forced extensions seem to be installed";
+    LOG(WARNING) << "All forced extensions seem to be installed";
     return;
   }
   size_t enabled_missing_count = missing_forced_extensions.size();
@@ -480,8 +478,8 @@ void ForceInstalledMetrics::ReportMetrics() {
       installed_missing_count);
   base::UmaHistogramCounts100("Extensions.ForceInstalledAndBlackListed",
                               blocklisted_count);
-  VLOG(2) << "Failed to install " << installed_missing_count
-          << " forced extensions.";
+  LOG(WARNING) << "Failed to install " << installed_missing_count
+               << " forced extensions.";
   for (const auto& extension_id : missing_forced_extensions) {
     InstallStageTracker::InstallationData installation =
         install_stage_tracker->Get(extension_id);
