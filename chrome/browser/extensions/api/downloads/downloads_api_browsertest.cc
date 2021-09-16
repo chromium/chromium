@@ -2425,8 +2425,16 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // chrome fails to propagate them back to the server.  This tests both that
 // testserver.py does not succeed when it should fail as well as how the
 // downloads extension api exposes the failure to extensions.
+// TODO(https://crbug.com/1249757): DownloadExtensionTest's are flaky
+#if defined(OS_WIN)
+#define MAYBE_DownloadExtensionTest_Download_Headers_Fail \
+  DISABLED_DownloadExtensionTest_Download_Headers_Fail
+#else
+#define MAYBE_DownloadExtensionTest_Download_Headers_Fail \
+  DownloadExtensionTest_Download_Headers_Fail
+#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       DownloadExtensionTest_Download_Headers_Fail) {
+                       MAYBE_DownloadExtensionTest_Download_Headers_Fail) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url =
@@ -2574,8 +2582,16 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // server. This tests both that testserver.py does not succeed when it should
 // fail, and this tests how the downloads extension api exposes the failure to
 // extensions.
+// TODO(https://crbug.com/1249757): DownloadExtensionTest's are flaky
+#if defined(OS_WIN)
+#define MAYBE_DownloadExtensionTest_Download_Post_Get \
+  DISABLED_DownloadExtensionTest_Download_Post_Get
+#else
+#define MAYBE_DownloadExtensionTest_Download_Post_Get \
+  DownloadExtensionTest_Download_Post_Get
+#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       DownloadExtensionTest_Download_Post_Get) {
+                       MAYBE_DownloadExtensionTest_Download_Post_Get) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url = embedded_test_server()
@@ -2615,8 +2631,16 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // server. This tests both that testserver.py does not succeed when it should
 // fail, and this tests how the downloads extension api exposes the failure to
 // extensions.
+// TODO(https://crbug.com/1249757): DownloadExtensionTest's are flaky
+#if defined(OS_WIN)
+#define MAYBE_DownloadExtensionTest_Download_Post_NoBody \
+  DISABLED_DownloadExtensionTest_Download_Post_NoBody
+#else
+#define MAYBE_DownloadExtensionTest_Download_Post_NoBody \
+  DownloadExtensionTest_Download_Post_NoBody
+#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       DownloadExtensionTest_Download_Post_NoBody) {
+                       MAYBE_DownloadExtensionTest_Download_Post_NoBody) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url = embedded_test_server()
