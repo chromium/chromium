@@ -240,9 +240,14 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
 }
 
 SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
+    ExecutionContext* execution_context,
     const SourceBufferConfig* config,
     ExceptionState& exception_state) {
   DVLOG(2) << __func__ << " this=" << this;
+
+  UseCounter::Count(execution_context,
+                    WebFeature::kMediaSourceExtensionsForWebCodecs);
+
   DCHECK(config);
 
   // Precisely one of the multiple keys in SourceBufferConfig must be set.

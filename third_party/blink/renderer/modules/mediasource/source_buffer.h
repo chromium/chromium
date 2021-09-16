@@ -94,7 +94,9 @@ class SourceBuffer final : public EventTargetWithInlineData,
   void abort(ExceptionState&);
   void remove(double start, double end, ExceptionState&);
   void changeType(const String& type, ExceptionState&);
-  void ChangeTypeUsingConfig(const SourceBufferConfig*, ExceptionState&);
+  void ChangeTypeUsingConfig(ExecutionContext*,
+                             const SourceBufferConfig*,
+                             ExceptionState&);
   double appendWindowStart() const;
   void setAppendWindowStart(double, ExceptionState&);
   double appendWindowEnd() const;

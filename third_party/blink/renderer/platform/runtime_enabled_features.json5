@@ -1419,6 +1419,7 @@
     {
       name: "MediaSourceExtensionsForWebCodecs",
       status: "experimental",
+      origin_trial_feature_name: "MediaSourceExtensionsForWebCodecs",
     },
     {
       name: "MediaSourceInWorkers",
