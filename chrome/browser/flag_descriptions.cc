@@ -2965,6 +2965,12 @@ const char kChromeSharingHubName[] = "Chrome Sharing Hub";
 const char kChromeSharingHubDescription[] =
     "Enables the Chrome Sharing Hub/custom share sheet for Android.";
 
+const char kChromeSharingHubLaunchAdjacentName[] =
+    "Launch new share hub actions in adjacent window";
+const char kChromeSharingHubLaunchAdjacentDescription[] =
+    "In multi-window mode, launches share hub actions in an adjacent window. "
+    "For internal debugging.";
+
 const char kClipboardSuggestionContentHiddenName[] =
     "Clipboard suggestion content hidden";
 const char kClipboardSuggestionContentHiddenDescription[] =

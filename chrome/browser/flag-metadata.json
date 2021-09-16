@@ -668,6 +668,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "chrome-sharing-hub-launch-adjacent",
+    "owners": [ "skare", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "chrome-tips-in-main-menu",
     "owners": [ "dfried" ],
     "expiry_milestone": 95

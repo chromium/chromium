@@ -49653,6 +49653,7 @@ from previous Chrome versions.
   <int value="-255157394" label="ButtonARCNetworkDiagnostics:enabled"/>
   <int value="-254887599" label="google-profile-info"/>
   <int value="-254158542" label="SubresourceRedirectPreviews:enabled"/>
+  <int value="-253619457" label="ChromeSharingHubLaunchAdjacent:enabled"/>
   <int value="-252258023" label="ShimlessRMAFlow:enabled"/>
   <int value="-250822813" label="PwaImprovedSplashScreen:enabled"/>
   <int value="-250721831" label="AndroidAutofillAccessibility:disabled"/>
@@ -50293,6 +50294,7 @@ from previous Chrome versions.
   <int value="277483398" label="ClipboardHistory:disabled"/>
   <int value="277565405" label="ContextualSearchDefinitions:disabled"/>
   <int value="278756320" label="disable-app-list-app-info"/>
+  <int value="280459238" label="ChromeSharingHubLaunchAdjacent:disabled"/>
   <int value="280644887" label="mash"/>
   <int value="280925459" label="LiveCaption:disabled"/>
   <int value="281024089" label="AppServiceExternalProtocol:disabled"/>
