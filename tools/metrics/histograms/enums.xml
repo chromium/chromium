@@ -47665,6 +47665,7 @@ from previous Chrome versions.
   <int value="-1818947212" label="OutOfBlinkCors:disabled"/>
   <int value="-1817209284" label="PayWithGoogleV1:enabled"/>
   <int value="-1816066138" label="CastAllowAllIPs:enabled"/>
+  <int value="-1813088913" label="CCTResizable90MaximumHeight:disabled"/>
   <int value="-1812579951" label="ContentSuggestionsCategoryRanker:enabled"/>
   <int value="-1811949013" label="SameSiteByDefaultCookies:disabled"/>
   <int value="-1811394154" label="disable-webrtc-hw-vp8-encoding"/>
@@ -47994,6 +47995,7 @@ from previous Chrome versions.
   <int value="-1547953198" label="FullRestore:enabled"/>
   <int value="-1547247328" label="OverrideTranslateTriggerInIndia:disabled"/>
   <int value="-1546903171" label="enable-touch-drag-drop"/>
+  <int value="-1546461079" label="CCTResizableForFirstParties:disabled"/>
   <int value="-1546351452" label="CrossOriginIsolated:enabled"/>
   <int value="-1546029755" label="OverrideTranslateTriggerInIndia:enabled"/>
   <int value="-1545595496" label="RendererSideResourceScheduler:enabled"/>
@@ -49245,6 +49247,7 @@ from previous Chrome versions.
   <int value="-595819071"
       label="OmniboxUIExperimentBlueTitlesOnPageSuggestions:disabled"/>
   <int value="-595353721" label="RecordWebAppDebugInfo:enabled"/>
+  <int value="-594732580" label="CCTResizableForThirdParties:enabled"/>
   <int value="-594076614" label="PluginVmShowCameraPermissions:disabled"/>
   <int value="-593536514" label="ExperimentalTabController:enabled"/>
   <int value="-592628080" label="DnsProxyEnableDOH:disabled"/>
@@ -49594,6 +49597,7 @@ from previous Chrome versions.
   <int value="-301228557" label="PageInfoDiscoverability:disabled"/>
   <int value="-300018686" label="disable-cloud-import"/>
   <int value="-299841473" label="top-document-isolation:enabled"/>
+  <int value="-299116652" label="CCTResizable90MaximumHeight:enabled"/>
   <int value="-298629214"
       label="AutofillParseMerchantPromoCodeFields:disabled"/>
   <int value="-298458993" label="SystemNotifications:enabled"/>
@@ -50323,6 +50327,7 @@ from previous Chrome versions.
   <int value="293996306" label="ArrayPrototypeValues:disabled"/>
   <int value="294150128" label="RelatedSearchesSimplifiedUx:enabled"/>
   <int value="295661985" label="video-capture-use-gpu-memory-buffer"/>
+  <int value="296066418" label="CCTResizableForThirdParties:disabled"/>
   <int value="296215399" label="WindowsMixedReality:disabled"/>
   <int value="296296761" label="MediaFoundationVideoCapture:disabled"/>
   <int value="297095559" label="ShowBluetoothDebugLogToggle:disabled"/>
@@ -50645,6 +50650,7 @@ from previous Chrome versions.
   <int value="533064367" label="WebRtcHideLocalIpsWithMdns:disabled"/>
   <int value="533115840"
       label="HoldingSpaceInProgressDownloadsIntegration:enabled"/>
+  <int value="533814676" label="CCTResizableForFirstParties:enabled"/>
   <int value="535131384" label="OmniboxTailSuggestions:enabled"/>
   <int value="535194142" label="TemporaryHoldingSpacePreviews:enabled"/>
   <int value="535976218" label="enable-plugin-power-saver"/>

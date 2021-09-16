@@ -5260,6 +5260,21 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kCCTIncognitoAvailableToThirdParty)},
 #endif
 
+#if defined(OS_ANDROID)
+    {"cct-resizable-90-maximum-height",
+     flag_descriptions::kCCTResizable90MaximumHeightName,
+     flag_descriptions::kCCTResizable90MaximumHeightDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTResizable90MaximumHeight)},
+    {"cct-resizable-for-first-parties",
+     flag_descriptions::kCCTResizableForFirstPartiesName,
+     flag_descriptions::kCCTResizableForFirstPartiesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTResizableForFirstParties)},
+    {"cct-resizable-for-third-parties",
+     flag_descriptions::kCCTResizableForThirdPartiesName,
+     flag_descriptions::kCCTResizableForThirdPartiesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTResizableForThirdParties)},
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enforce-system-aec", flag_descriptions::kCrOSEnforceSystemAecName,
      flag_descriptions::kCrOSEnforceSystemAecDescription, kOsCrOS,

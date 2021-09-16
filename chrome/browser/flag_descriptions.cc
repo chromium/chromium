@@ -2939,6 +2939,22 @@ const char kCCTIncognitoAvailableToThirdPartyDescription[] =
     "Enabling it would allow third party apps to open incognito mode for "
     "Chrome Custom Tabs, on Android.";
 
+const char kCCTResizable90MaximumHeightName[] =
+    "Bottom sheet Custom Tabs maximum height";
+const char kCCTResizable90MaximumHeightDescription[] =
+    "When enabled, the bottom sheet Custom Tabs will have maximum height 90% "
+    "of the screen height, otherwise the maximum height is 100% of the screen "
+    "height. In both cases, Custom Tabs will yield to the top status bar when "
+    "at full stop";
+const char kCCTResizableForFirstPartiesName[] =
+    "Bottom sheet Custom Tabs (first party)";
+const char kCCTResizableForFirstPartiesDescription[] =
+    "Enable bottom sheet Custom Tabs for first party apps.";
+const char kCCTResizableForThirdPartiesName[] =
+    "Bottom sheet Custom Tabs (third party)";
+const char kCCTResizableForThirdPartiesDescription[] =
+    "Enable bottom sheet Custom Tabs for third party apps.";
+
 const char kChimeAlwaysShowNotificationDescription[] =
     "A debug flag to always show Chime notification after receiving a payload.";
 const char kChimeAlwaysShowNotificationName[] =

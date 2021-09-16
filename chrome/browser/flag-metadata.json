@@ -618,6 +618,21 @@
     "expiry_milestone": 100
   },
   {
+    "name": "cct-resizable-90-maximum-height",
+    "owners": ["ctzsm", "peconn"],
+    "expiry_milestone": 105
+  },
+  {
+    "name": "cct-resizable-for-first-parties",
+    "owners": ["ctzsm", "peconn"],
+    "expiry_milestone": 105
+  },
+  {
+    "name": "cct-resizable-for-third-parties",
+    "owners": ["ctzsm", "peconn"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "cellular-allow-per-network-roaming",
     "owners": [ "chadduffin", "khorimoto", "cros-connectivity@google.com" ],
     "expiry_milestone": 96

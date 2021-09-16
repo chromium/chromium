@@ -1674,6 +1674,13 @@ extern const char kCCTIncognitoDescription[];
 extern const char kCCTIncognitoAvailableToThirdPartyName[];
 extern const char kCCTIncognitoAvailableToThirdPartyDescription[];
 
+extern const char kCCTResizable90MaximumHeightName[];
+extern const char kCCTResizable90MaximumHeightDescription[];
+extern const char kCCTResizableForFirstPartiesName[];
+extern const char kCCTResizableForFirstPartiesDescription[];
+extern const char kCCTResizableForThirdPartiesName[];
+extern const char kCCTResizableForThirdPartiesDescription[];
+
 extern const char kChimeAlwaysShowNotificationDescription[];
 extern const char kChimeAlwaysShowNotificationName[];
 
