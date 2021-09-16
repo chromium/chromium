@@ -696,7 +696,8 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       web_contents_(web_contents),
       delegate_(new DefaultBindingsDelegate(web_contents_)),
       devices_updates_enabled_(false),
-      frontend_loaded_(false) {
+      frontend_loaded_(false),
+      settings_(profile_) {
   DevToolsUIBindings::GetDevToolsUIBindings().push_back(this);
   frontend_contents_observer_ =
       std::make_unique<FrontendWebContentsObserver>(this);
@@ -1245,28 +1246,20 @@ void DevToolsUIBindings::OpenNodeFrontend() {
 }
 
 void DevToolsUIBindings::GetPreferences(DispatchCallback callback) {
-  const DictionaryValue* prefs =
-      profile_->GetPrefs()->GetDictionary(prefs::kDevToolsPreferences);
-  std::move(callback).Run(prefs);
+  std::move(callback).Run(settings_.Get());
 }
 
 void DevToolsUIBindings::SetPreference(const std::string& name,
-                                   const std::string& value) {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsPreferences);
-  update.Get()->SetKey(name, base::Value(value));
+                                       const std::string& value) {
+  settings_.Set(name, value);
 }
 
 void DevToolsUIBindings::RemovePreference(const std::string& name) {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsPreferences);
-  update.Get()->RemoveKey(name);
+  settings_.Remove(name);
 }
 
 void DevToolsUIBindings::ClearPreferences() {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsPreferences);
-  update.Get()->Clear();
+  settings_.Clear();
 }
 
 void DevToolsUIBindings::Reattach(DispatchCallback callback) {
