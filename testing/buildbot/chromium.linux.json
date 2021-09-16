@@ -1862,6 +1862,12 @@
       }
     ]
   },
+  "Cast Linux ARM64": {
+    "additional_compile_targets": [
+      "cast_shell",
+      "cast_test_lists"
+    ]
+  },
   "Cast Linux Debug": {
     "additional_compile_targets": [
       "cast_shell",

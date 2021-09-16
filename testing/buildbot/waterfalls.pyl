@@ -4838,6 +4838,15 @@
           'gtest_tests': 'chromium_linux_cast_video_gtests',
         },
       },
+      'Cast Linux ARM64': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'additional_compile_targets': [
+          'cast_shell',
+          'cast_test_lists',
+        ],
+      },
       'Cast Linux Debug': {
         'mixins': [
           'linux-bionic',
