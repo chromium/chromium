@@ -1,45 +1,126 @@
-<style include="profile-creation-shared cr-shared-style">
+<style include="profile-creation-shared profile-picker-shared cr-shared-style">
+  :host {
+    --account-button-hover-color: var(--md-background-color);
+  }
+
+  .banner {
+    background-color: var(--theme-frame-color);
+    height: var(--banner-height);
+  }
+
   #accountsContainer {
     background-color: white;
     border: var(--cr-hairline);
     border-radius: 8px;
-    inset: 10% 20%;
-    position: absolute;
+    margin: 25px auto;
+    min-width: 500px;
+    padding-bottom: 30px;
+    padding-top: 30px;
+    position: relative;
     text-align: center;
+    width: 50%;
+  }
+
+  #product-logo {
+    height: 32px;
   }
 
   #textContainer {
-    margin: 40px
+    margin: 20px 40px;
   }
 
   #buttonsContainer {
-    margin: 20px
+    margin: 20px;
   }
 
   .account-button {
+    --account-avatar-size: 48px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    font-family: roboto;
+    text-align: start;
     width: 100%;
+  }
+
+  .account-button:hover {
+    background-color: var(--account-button-hover-color);
+  }
+
+  .account-avatar {
+    align-items: center;
+    border-radius: 50%;
+    display: flex;
+    height: var(--account-avatar-size);
+    justify-content: center;
+    margin: auto 0;
+    width: var(--account-avatar-size);
+  }
+
+  .account-text {
+    display: flex;
+    flex-direction: column;
+    height : var(--account-avatar-size);
+    justify-content: center;
+    margin: 10px;
+    width: calc(100% - var(--account-avatar-size));  /* Required for ellipsis */
+  }
+
+  .account-name {
+    color: var(--cr-primary-text-color);
+    font-size: var(--text-font-size);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .account-email {
+    color: var(--cr-secondary-text-color);
+    font-size: var(--text-font-size);
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .divider {
     border-top: var(--cr-separator-line);
   }
 
+  #otherAccountIcon {
+    --account-icon-size: 32px;
+    --iron-icon-fill-color: var(--cr-secondary-text-color);
+    --iron-icon-height: var(--account-icon-size);
+    --iron-icon-width: var(--account-icon-size);
+  }
+
+  #footer {
+    padding-top: 50px;
+  }
+
   @media (prefers-color-scheme: dark) {
+    :host {
+      --account-button-hover-color: var(--google-grey-800);
+    }
+
     #accountsContainer {
       background-color: var(--md-background-color);
     }
   }
 </style>
 
-<div id="headerContainer"
-    style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
-            --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
+<div style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
+             --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
+  <div id="signinPromoBanner" class="banner"></div>
   <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
       on-click="onBackClick_" aria-label$="[[getBackButtonAriaLabel_()]]">
   </cr-icon-button>
-  <div id="signinPromoBanner" class="banner"></div>
 </div>
 <div id="accountsContainer">
+  <img id="product-logo" on-click="onProductLogoTap_"
+      srcset="chrome://theme/current-channel-logo@1x 1x,
+              chrome://theme/current-channel-logo@2x 2x"
+      role="presentation">
   <div id="textContainer">
     <h2>$i18n{accountSelectionLacrosTitle}</h2>
     <h3>$i18n{accountSelectionLacrosSubtitle}</h3>
@@ -47,13 +128,26 @@
   <div id="buttonsContainer">
     <template is="dom-repeat" items="[[unassignedAccounts_]]">
       <button class="account-button" on-click="onAccountClick_">
-        <div>[[item.name]]</div>
-        <div>[[item.email]]</div>
-        <div class="divider"></div>
+        <!-- Placeholder account image. -->
+        <img class="account-avatar" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==">
+        <div class="account-text">
+          <div class="account-name">[[item.name]]</div>
+          <div class="account-email">[[item.email]]</div>
+        </div>
       </button>
+      <div class="divider"></div>
     </template>
     <button class="account-button" on-click="onOtherAccountClick_">
-      $i18n{accountSelectionLacrosOtherAccountButtonLabel}
+      <div class="account-avatar">
+        <iron-icon icon="profiles:account-circle" id="otherAccountIcon">
+        </iron-icon>
+      </div>
+      <div class="account-text">
+        <div class="account-name">
+          $i18n{accountSelectionLacrosOtherAccountButtonLabel}
+        </div>
+      </div>
     </button>
   </div>
 </div>
+<div id="footer"></div>

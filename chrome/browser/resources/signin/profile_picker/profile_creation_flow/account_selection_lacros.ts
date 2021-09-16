@@ -25,6 +25,7 @@ interface RepeaterEvent extends CustomEvent {
 export interface AccountSelectionLacrosElement {
   $: {
     backButton: HTMLElement,
+    'product-logo': HTMLElement,
   };
 }
 
@@ -84,6 +85,17 @@ export class AccountSelectionLacrosElement extends
   private getBackButtonAriaLabel_(): string {
     return this.i18n(
         'backButtonAriaLabel', this.i18n('accountSelectionLacrosTitle'));
+  }
+
+  private onProductLogoTap_() {
+    this.$['product-logo'].animate(
+        {
+          transform: ['none', 'rotate(-10turn)'],
+        },
+        {
+          duration: 500,
+          easing: 'cubic-bezier(1, 0, 0, 1)',
+        });
   }
 
   private onAccountClick_(e: RepeaterEvent) {
