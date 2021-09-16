@@ -294,6 +294,10 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // closing. Don't call this yourself.
   void WindowWillClose();
 
+  // Returns whether the delegate's CancelDialog() should be called instead of
+  // closing the Widget when Esc is pressed. Called by DialogClientView.
+  bool EscShouldCancelDialog() const;
+
  protected:
   // Overridden from WidgetDelegate:
   ax::mojom::Role GetAccessibleWindowRole() override;

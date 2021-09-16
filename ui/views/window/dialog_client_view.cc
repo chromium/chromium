@@ -169,7 +169,7 @@ bool DialogClientView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   // the dialog instead of closing the widget as the delegate may likely expect
   // either Accept or Cancel to be called as a result of user action.
   DialogDelegate* const delegate = GetDialogDelegate();
-  if (delegate && !delegate->ShouldShowCloseButton()) {
+  if (delegate && delegate->EscShouldCancelDialog()) {
     delegate->CancelDialog();
     return true;
   }

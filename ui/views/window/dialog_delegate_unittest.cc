@@ -165,14 +165,30 @@ TEST_F(DialogTest, OkButtonAccepts) {
   EXPECT_TRUE(accepted_);
 }
 
-TEST_F(DialogTest, EscButtonClosesWithCloseButton) {
+TEST_F(DialogTest, EscButtonClosesDialogWithCloseButtonWithoutCallingCancel) {
+  // Showing the close button should be sufficient to call close on Esc (even if
+  // there's no close callback), we verify this by making sure that Cancel
+  // doesn't get called as best-effort verification.
   dialog()->set_show_close_button(true);
+  dialog()->SetCloseCallback(base::OnceClosure());
+  EXPECT_FALSE(cancelled_);
+  SimulateKeyPress(ui::VKEY_ESCAPE);
+  EXPECT_FALSE(cancelled_);
+}
+
+TEST_F(DialogTest, EscButtonClosesWithCloseCallback) {
+  // The dialog's close callback should be called even if there's no close-x.
+  // See crbug.com/1245127.
+  dialog()->set_show_close_button(false);
   EXPECT_FALSE(closed_);
   SimulateKeyPress(ui::VKEY_ESCAPE);
   EXPECT_TRUE(closed_);
 }
 
-TEST_F(DialogTest, EscButtonCancelsWithoutCloseButton) {
+TEST_F(DialogTest, EscButtonCancelsWithoutCloseAction) {
+  // If there's no close-x or close callback then the cancelled action should be
+  // called.
+  dialog()->SetCloseCallback(base::OnceClosure());
   dialog()->set_show_close_button(false);
   EXPECT_FALSE(cancelled_);
   SimulateKeyPress(ui::VKEY_ESCAPE);
