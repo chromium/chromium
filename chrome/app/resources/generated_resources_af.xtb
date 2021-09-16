@@ -704,6 +704,7 @@
 <translation id="1719312230114180055">Let wel: Jou vingerafdruk kan minder veilig as 'n sterk wagwoord of PIN wees.</translation>
 <translation id="1720318856472900922">TLS WWW-bedienerstawing</translation>
 <translation id="1720941539803966190">Maak tutoriaal toe</translation>
+<translation id="172123215662733643">Deursoek prente met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Jy het <ph name="NAME" /> se toestemming nodig om hierdie werf te besoek</translation>
 <translation id="1722460139690167654">Jou <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> word bestuur<ph name="END_LINK" /> deur <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">Nuwe venster</translation>
@@ -1280,6 +1281,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
     As jy later besluit dat Voice Match nie reg is vir jou kind nie, kan jy dit eenvoudig in hul Assistent-instellings verwyder. Gaan na <ph name="VOICE_MATCH_SETTINGS_URL" /> vanuit jou kind se rekening om die oudiosnitte wat jou kind tydens Voice Match-opstelling opneem, te bekyk of uit te vee.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">Deursoek 'n deel van die bladsy met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="230927227160767054">Hierdie bladsy wil 'n dienshanteerder installeer.</translation>
 <translation id="2309620859903500144">Hierdie werf is gekeer om toegang tot jou beweging- en ligsensors te kry.</translation>
 <translation id="2312219318583366810">Bladsy-URL</translation>
@@ -1845,6 +1847,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="289695669188700754">Sleutel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Hierdie gepasmaakte instelling sal verwyder word wanneer jy al jou Incognito-vensters toemaak</translation>
 <translation id="2897878306272793870">Is jy seker jy wil <ph name="TAB_COUNT" /> oortjies oopmaak?</translation>
+<translation id="2900477968385519153">Soek op jou skerm met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Lêer gebruik ongesteunde kenmerke</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> kon nie met hierdie drukker kommunikeer nie. Maak seker dat die drukker ingeprop is en probeer weer.</translation>
 <translation id="2902312830803030883">Nog handelinge</translation>
@@ -2284,6 +2287,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3390741581549395454">Linux-programme en -lêers is suksesvol gerugsteun. Opgradering sal binnekort begin.</translation>
 <translation id="3391512812407811893">Privacy Sandbox-proeflopies</translation>
 <translation id="339178315942519818">Bekyk kennisgewings vanaf jou kletsprogramme op jou <ph name="DEVICE_TYPE" /></translation>
+<translation id="3393554941209044235">Chrome-dokumentontleding</translation>
 <translation id="3394850431319394743">Word toegelaat om identifiseerders te gebruik om beskermde inhoud te speel</translation>
 <translation id="3396800784455899911">Deur die "Aanvaar en gaan voort"-knoppie te klik, stem jy in tot die verwerking wat hierbo vir hierdie Google-dienste beskryf word.</translation>
 <translation id="339722927132407568">Vries</translation>
@@ -3247,6 +3251,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4415748029120993980">SECG-elliptiesekurwe-secp384r1 (ook bekend as NIST P-384)</translation>
 <translation id="4416450511678320850">Geen programme vir hierdie inhoud beskikbaar nie</translation>
 <translation id="4416582610654027550">Voer 'n geldige URL in</translation>
+<translation id="4417162649853416189">Sleep oor prente om met <ph name="VISUAL_SEARCH_PROVIDER" /> te soek</translation>
 <translation id="4419409365248380979">Laat <ph name="HOST" /> altyd toe om webkoekies te stel</translation>
 <translation id="4421932782753506458">Wollerig</translation>
 <translation id="4423376891418188461">Stel instellings terug</translation>
@@ -3374,6 +3379,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4551763574344810652">Druk <ph name="MODIFIER_KEY_DESCRIPTION" /> om te ontdoen</translation>
 <translation id="4553526521109675518">Jy moet jou Chromebook herbegin om die toesteltaal te verander. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Begin Weer-opstelling</translation>
+<translation id="4554491709904933912">Sleep oor prente om met <ph name="VISUAL_SEARCH_PROVIDER" /> te soek</translation>
 <translation id="4554591392113183336">Eksterne uitbreiding is op dieselfde of 'n laer weergawe vergeleke met die bestaande een.</translation>
 <translation id="4555769855065597957">Skadu</translation>
 <translation id="4555863373929230635">Meld aan en skakel sinkronisering aan om wagwoorde in jou Google-rekening te stoor.</translation>
@@ -3520,7 +3526,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4699172675775169585">Gekaste prente en lêers</translation>
 <translation id="4699357559218762027">(outomaties begin)</translation>
 <translation id="4701025263201366865">Oueraanmelding</translation>
-<translation id="4707582759326616943">Sleep om prente met Google Lens te soek</translation>
 <translation id="4708794300267213770">Wys sluitskerm wanneer dit uit slaap wakker word</translation>
 <translation id="4708849949179781599">Maak <ph name="PRODUCT_NAME" /> toe</translation>
 <translation id="4711638718396952945">Stel instellings terug</translation>
@@ -4149,6 +4154,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5427278936122846523">Vertaal altyd</translation>
 <translation id="5427459444770871191">Draai kloksgewys</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Opdatering is beskikbaar)</translation>
+<translation id="5429373054983029602">Soek op jou skerm met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">'n Opdatering van die Trusted Platform Module-fermware moet geïnstalleer word. Sien <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Kitsverbinding</translation>
 <translation id="5431318178759467895">Kleur</translation>
@@ -4215,6 +4221,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5494920125229734069">Kies almal</translation>
 <translation id="5495466433285976480">Dit sal alle plaaslike gebruikers, lêers, data en ander instellings verwyder ná jou volgende herbegin. Alle gebruikers moet weer aanmeld.</translation>
 <translation id="5495597166260341369">Hou skerm aan</translation>
+<translation id="549580971452855947">Sleep om prente met <ph name="VISUAL_SEARCH_PROVIDER" /> te deursoek</translation>
 <translation id="5496587651328244253">Rangskik</translation>
 <translation id="5496730470963166430">Mag nie opspringers stuur of herleidings gebruik nie</translation>
 <translation id="5497251278400702716">Hierdie lêer</translation>
@@ -5167,7 +5174,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6532663472409656417">Onderneming is ingeskryf</translation>
 <translation id="6535331821390304775">Laat <ph name="ORIGIN" /> altyd toe om hierdie soort skakels in die geassosieerde program oop te maak</translation>
 <translation id="653659894138286600">Skandeer dokumente en prente</translation>
-<translation id="6537016096312202316">Sleep oor prente om met Google Lens te soek</translation>
 <translation id="6537613839935722475">Naam kan letters, syfers en koppeltekens (-) gebruik</translation>
 <translation id="6537880577641744343">Opdraggewer</translation>
 <translation id="6538098297809675636">Kon nie kode bespeur nie</translation>
@@ -5220,6 +5226,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6593881952206664229">Media met kopiereg op sal dalk nie speel nie</translation>
 <translation id="6594011207075825276">Soek tans reekstoestelle …</translation>
 <translation id="6595187330192059106">Keer <ph name="HOST" /> altyd om volle beheer oor MIDI-toestelle te hê.</translation>
+<translation id="6595792813574514527">Sleep om prente met <ph name="VISUAL_SEARCH_PROVIDER" /> te deursoek</translation>
 <translation id="6596325263575161958">Enkripsie-opsies</translation>
 <translation id="6596816719288285829">IP-adres</translation>
 <translation id="6597017209724497268">Voorbeelde</translation>
@@ -5350,7 +5357,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6745592621698551453">Dateer nou op</translation>
 <translation id="6746124502594467657">Skuif af</translation>
 <translation id="674632704103926902">Aktiveer tiksleep</translation>
-<translation id="6748054820659621153">Soek op jou skerm met Google Lens</translation>
 <translation id="6748465660675848252">Jy mag voortgaan, maar net jou gesinkroniseerde data en instellings sal herwin word. Alle plaaslike data sal verloor word.</translation>
 <translation id="6750757184909117990">Deaktiveer sellulêre netwerk</translation>
 <translation id="6750946710563435348">Gebruik ander gebruikernaam</translation>
@@ -5790,6 +5796,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7230222852462421043">&amp;Laai venster terug</translation>
 <translation id="7230787553283372882">Pasmaak jou teksgrootte</translation>
 <translation id="7232750842195536390">Kon nie hernoem nie</translation>
+<translation id="723343421145275488">Deursoek prente met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Kanselleer tans Linux-terugstelling</translation>
 <translation id="7235716375204803342">Gaan haal tans aktiwiteite …</translation>
 <translation id="7235737137505019098">Jou sekuriteitsleutel het nie genoeg berging vir nog rekeninge nie.</translation>
@@ -6410,7 +6417,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7853747251428735">Meer nutsgoed</translation>
 <translation id="7855678561139483478">Skuif oortjie na nuwe venster</translation>
 <translation id="7857093393627376423">Teksvoorstelle</translation>
-<translation id="7857675386615530425">Deursoek 'n deel van die bladsy met Google Lens</translation>
 <translation id="7857949311770343000">Is dit die nuwe oortjiebladsy wat jy verwag het?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Diens: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6418,7 +6424,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7861846108263890455">Google-rekeningtaal</translation>
 <translation id="7864539943188674973">Deaktiveer Bluetooth</translation>
 <translation id="7865127013871431856">Vertaalopsies</translation>
-<translation id="7866230141401327032">Deursoek 'n deel van die bladsy met Google Lens</translation>
 <translation id="7869143217755017858">Deaktiveer donkermodus</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – saamgebind</translation>
 <translation id="7870730066603611552">Hersien sinkroniseeropsies ná opstelling</translation>
@@ -6738,6 +6743,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8184318863960255706">Meer inligting</translation>
 <translation id="8184472985242519288">Eenvormig</translation>
 <translation id="8186609076106987817">Die bediener kon nie die lêer vind nie.</translation>
+<translation id="8186704951085064172">Deursoek 'n deel van die bladsy met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Gaan jou toestelinstellings na en skakel dit aan om voort te gaan</translation>
 <translation id="8189306097519446565">Skoolrekeninge</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -7400,7 +7406,6 @@ Druk 'n toegewese skakelaar om toewysing te verwyder</translation>
 <translation id="8907787635362884532">Publiseerder: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome kan jou rekenaar vir skadelike sagteware nagaan</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> is gedeïnstalleer</translation>
-<translation id="8909782404367982052">Sleep om prente met Google Lens te soek</translation>
 <translation id="8909833622202089127">Werf spoor tans jou ligging na</translation>
 <translation id="8910222113987937043">Veranderinge aan jou boekmerke, geskiedenis, wagwoorde en ander instellings sal nie meer met jou Google-rekening gesinkroniseer word nie. Jou bestaande data sal egter in jou Google-rekening geberg bly en kan op <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> bestuur word.</translation>
 <translation id="8910987510378294980">Versteek toestellys</translation>
@@ -7544,7 +7549,6 @@ Druk 'n toegewese skakelaar om toewysing te verwyder</translation>
 <translation id="9055636786322918818">Laat RC4-enkripsie toe. As jy hierdie opsie gebruik, verhoog dit jou risiko aangesien die RC4-syfers onveilig is.</translation>
 <translation id="9056810968620647706">Geen passings is gevind nie.</translation>
 <translation id="9057354806206861646">Opdateringskedule</translation>
-<translation id="9057599413476594385">Sleep oor prente om met Google Lens te soek</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Fout vanaf reël <ph name="ERROR_LINE_START" /> tot <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Kan nie vertroulike inhoud vasvang nie</translation>

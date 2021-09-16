@@ -693,6 +693,7 @@
 <translation id="1719312230114180055">注: 指紋は複雑なパスワードや PIN より安全面で劣る場合があります。</translation>
 <translation id="1720318856472900922">TLS WWW サーバー認証</translation>
 <translation id="1720941539803966190">チュートリアルを閉じる</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
 <translation id="1721312023322545264">このサイトにアクセスするには <ph name="NAME" /> さんの許可が必要です</translation>
 <translation id="1722460139690167654">ご使用の <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> は <ph name="ENROLLMENT_DOMAIN" /> によって管理されています<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">新しいウィンドウ(&amp;N)</translation>
@@ -1264,6 +1265,7 @@
     Voice Match はお子様には必要ないと判断された場合は、お子様の [アシスタントの設定] で削除してください。Voice Match のセットアップ中にお子様が録音した音声クリップを確認または削除するには、お子様のアカウントから <ph name="VOICE_MATCH_SETTINGS_URL" /> にアクセスしてください。
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> でページの一部を検索</translation>
 <translation id="230927227160767054">このページはサービス ハンドラのインストールを求めています。</translation>
 <translation id="2309620859903500144">このサイトではモーション センサーまたは光センサーへのアクセスがブロックされています。</translation>
 <translation id="2312219318583366810">ページの URL</translation>
@@ -1829,6 +1831,7 @@
 <translation id="289695669188700754">キー ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">このカスタム設定はシークレット ウィンドウをすべて閉じると削除されます</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> 個のタブが開きます。本当によろしいですか？</translation>
+<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> で画面を検索</translation>
 <translation id="290105521672621980">サポートされていない機能がファイルで使用されています</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> はこのプリンタと通信できませんでした。プリンタが接続されていることを確認して、もう一度お試しください。</translation>
 <translation id="2902312830803030883">その他の操作</translation>
@@ -2268,6 +2271,7 @@
 <translation id="3390741581549395454">Linux のアプリとファイルをバックアップしました。まもなくアップグレードを開始します。</translation>
 <translation id="3391512812407811893">プライバシー サンドボックス（試用版）</translation>
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" /> のチャットアプリの通知を表示します</translation>
+<translation id="3393554941209044235">Chrome ドキュメント解析</translation>
 <translation id="3394850431319394743">識別子の使用と保護されたコンテンツの再生を許可するサイト</translation>
 <translation id="3396800784455899911">[同意して続行] をクリックすると、これらの Google サービスに関する上記の処理内容に同意したことになります。</translation>
 <translation id="339722927132407568">固まる</translation>
@@ -3231,6 +3235,7 @@
 <translation id="4415748029120993980">SECG 楕円曲線 secp384r1（別名 NIST P-384）</translation>
 <translation id="4416450511678320850">このコンテンツで使用できるアプリはありません</translation>
 <translation id="4416582610654027550">有効な URL を入力してください</translation>
+<translation id="4417162649853416189">画像上をドラッグして <ph name="VISUAL_SEARCH_PROVIDER" /> で検索</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> による Cookie 設定を常に許可する</translation>
 <translation id="4421932782753506458">フワフワ</translation>
 <translation id="4423376891418188461">設定を元に戻す</translation>
@@ -3357,6 +3362,7 @@
 <translation id="4551763574344810652">元に戻すには <ph name="MODIFIER_KEY_DESCRIPTION" /> を押します</translation>
 <translation id="4553526521109675518">デバイスの言語を変更するには Chromebook を再起動する必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">設定をやり直す</translation>
+<translation id="4554491709904933912">画像上をドラッグして <ph name="VISUAL_SEARCH_PROVIDER" /> で検索</translation>
 <translation id="4554591392113183336">外部の拡張機能のバージョンが既存のバージョン以下です。</translation>
 <translation id="4555769855065597957">シャドウ</translation>
 <translation id="4555863373929230635">パスワードを Google アカウントに保存するには、ログインして同期を有効にします。</translation>
@@ -3503,7 +3509,6 @@
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4699357559218762027">（自動起動済み）</translation>
 <translation id="4701025263201366865">保護者のログイン</translation>
-<translation id="4707582759326616943">ドラッグして Google レンズで画像を検索</translation>
 <translation id="4708794300267213770">スリープから復帰するときにロック画面を表示する</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> を終了</translation>
 <translation id="4711638718396952945">設定を復元</translation>
@@ -4132,6 +4137,7 @@
 <translation id="5427278936122846523">常に翻訳する</translation>
 <translation id="5427459444770871191">時計回りに回転(&amp;C)</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />（アップデート利用可）</translation>
+<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> で画面を検索</translation>
 <translation id="542948651837270806">Trusted Platform Module ファームウェアのアップデートをインストールする必要があります。<ph name="TPM_FIRMWARE_UPDATE_LINK" /> をご覧ください。</translation>
 <translation id="5430931332414098647">インスタント テザリング</translation>
 <translation id="5431318178759467895">カラー</translation>
@@ -4198,6 +4204,7 @@
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5495466433285976480">すべてのローカル ユーザー、ファイル、データ、およびその他の設定が次回の再起動後に削除されます。すべてのユーザーは、もう一度ログインする必要があります。</translation>
 <translation id="5495597166260341369">画面をオンのままにする</translation>
+<translation id="549580971452855947">ドラッグして <ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
 <translation id="5496587651328244253">管理</translation>
 <translation id="5496730470963166430">ポップアップの送信やリダイレクトの使用を許可しないサイト</translation>
 <translation id="5497251278400702716">このファイル</translation>
@@ -5149,7 +5156,6 @@
 <translation id="6532663472409656417">企業登録済み</translation>
 <translation id="6535331821390304775"><ph name="ORIGIN" /> でのこのタイプのリンクは常に関連付けられたアプリで開く</translation>
 <translation id="653659894138286600">ドキュメントと画像のスキャン</translation>
-<translation id="6537016096312202316">画像上をドラッグして Google レンズで検索</translation>
 <translation id="6537613839935722475">名前には文字、数字、ハイフン（-）を使用できます</translation>
 <translation id="6537880577641744343">コマンダー</translation>
 <translation id="6538098297809675636">コード検出エラー</translation>
@@ -5202,6 +5208,7 @@
 <translation id="6593881952206664229">著作権が設定されたメディアは再生できません</translation>
 <translation id="6594011207075825276">シリアル デバイスを検出しています...</translation>
 <translation id="6595187330192059106"><ph name="HOST" /> による MIDI デバイスのフル コントロールを常にブロックする</translation>
+<translation id="6595792813574514527">ドラッグして <ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
 <translation id="6596325263575161958">暗号化オプション</translation>
 <translation id="6596816719288285829">IP アドレス</translation>
 <translation id="6597017209724497268">サンプル</translation>
@@ -5332,7 +5339,6 @@
 <translation id="6745592621698551453">今すぐ更新</translation>
 <translation id="6746124502594467657">下に移動</translation>
 <translation id="674632704103926902">タップによるドラッグを有効にする</translation>
-<translation id="6748054820659621153">Google レンズで画面を検索</translation>
 <translation id="6748465660675848252">続行した場合、同期済みのデータと設定のみが復元され、ローカルデータはすべて失われます。</translation>
 <translation id="6750757184909117990">モバイルデータ通信を無効にする</translation>
 <translation id="6750946710563435348">他のユーザー名を使用</translation>
@@ -5772,6 +5778,7 @@
 <translation id="7230222852462421043">ウィンドウを復元(&amp;R)</translation>
 <translation id="7230787553283372882">テキストサイズをカスタマイズします</translation>
 <translation id="7232750842195536390">名前を変更できませんでした</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
 <translation id="7234010996000898150">Linux の復元をキャンセルしています</translation>
 <translation id="7235716375204803342">アクティビティを取得しています...</translation>
 <translation id="7235737137505019098">セキュリティ キーに空き容量がないため、これ以上アカウントを追加できません。</translation>
@@ -6392,7 +6399,6 @@
 <translation id="7853747251428735">その他のツール(&amp;L)</translation>
 <translation id="7855678561139483478">タブを新しいウィンドウに移動</translation>
 <translation id="7857093393627376423">テキスト候補</translation>
-<translation id="7857675386615530425">Google レンズでページの一部を検索</translation>
 <translation id="7857949311770343000">この新しいタブ ページでよろしいですか？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" />（Windows）</translation>
 <translation id="786073089922909430">サービス: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6400,7 +6406,6 @@
 <translation id="7861846108263890455">Google アカウントの言語</translation>
 <translation id="7864539943188674973">Bluetooth を無効にする</translation>
 <translation id="7865127013871431856">翻訳オプション</translation>
-<translation id="7866230141401327032">Google レンズでページの一部を検索</translation>
 <translation id="7869143217755017858">ダークモードを無効にする</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ペア設定済み</translation>
 <translation id="7870730066603611552">設定後に同期オプションを確認する</translation>
@@ -6720,6 +6725,7 @@
 <translation id="8184318863960255706">詳細</translation>
 <translation id="8184472985242519288">均一</translation>
 <translation id="8186609076106987817">お探しのファイルはサーバーにはありません。</translation>
+<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> でページの一部を検索</translation>
 <translation id="8188389033983459049">続行するには、デバイスの設定で Bluetooth をオンにしてください</translation>
 <translation id="8189306097519446565">学校用アカウント</translation>
 <translation id="8189750580333936930">プライバシー サンドボックス</translation>
@@ -7382,7 +7388,6 @@
 <translation id="8907787635362884532">パブリッシャー: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">パソコン内の有害なソフトウェアを Chrome で確認できます</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> のアンインストールが完了しました</translation>
-<translation id="8909782404367982052">ドラッグして Google レンズで画像を検索</translation>
 <translation id="8909833622202089127">サイトで現在地が追跡されています</translation>
 <translation id="8910222113987937043">ブックマーク、履歴、パスワードなどの設定に行った変更は Google アカウントと同期されなくなります。ただし、既存のデータは Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
 <translation id="8910987510378294980">デバイスリストを非表示にする</translation>
@@ -7526,7 +7531,6 @@
 <translation id="9055636786322918818">RC4 暗号化を適用します。なお RC4 暗号は安全でないため、このオプションを使用するとリスクが高まります。</translation>
 <translation id="9056810968620647706">一致する項目が見つかりません。</translation>
 <translation id="9057354806206861646">更新スケジュール</translation>
-<translation id="9057599413476594385">画像上をドラッグして Google レンズで検索</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />～<ph name="ERROR_LINE_END" /> 行目にエラーがあります</translation>
 <translation id="9063800855227801443">機密コンテンツはキャプチャできません</translation>

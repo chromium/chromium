@@ -700,6 +700,7 @@
 <translation id="1719312230114180055">Забележка: Отпечатъкът ви може да е по-малко сигурен в сравнение с надеждна парола или ПИН код.</translation>
 <translation id="1720318856472900922">Удостоверяване на TLS WWW сървър</translation>
 <translation id="1720941539803966190">Затваряне на урока</translation>
+<translation id="172123215662733643">Търсене на изображения посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Необходимо ви е разрешение от <ph name="NAME" />, за да посетите този сайт</translation>
 <translation id="1722460139690167654">Вашият <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> се управлява<ph name="END_LINK" /> от <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Нов прозорец</translation>
@@ -1276,6 +1277,7 @@
     Ако по-късно решите, че функцията Voice Match не е подходяща за детето ви, трябва само да я премахнете от настройките на Асистент в профила му. За да прегледате или изтриете аудиооткъсите, които детето ви записва по време на настройването на Voice Match, посетете <ph name="VOICE_MATCH_SETTINGS_URL" /> от профила му.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">Търсене в част от страницата посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="230927227160767054">Тази страница иска да инсталира манипулатор на услуги.</translation>
 <translation id="2309620859903500144">Достъпът на този сайт до сензорите ви за движение или светлина е блокиран.</translation>
 <translation id="2312219318583366810">URL адрес на страницата</translation>
@@ -1841,6 +1843,7 @@
 <translation id="289695669188700754">Идентификатор (ИД) на ключ: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Тази персонализирана настройка ще бъде премахната, когато затворите всички прозорци в режим „инкогнито“</translation>
 <translation id="2897878306272793870">Наистина ли искате да отворите <ph name="TAB_COUNT" /> раздела?</translation>
+<translation id="2900477968385519153">Търсене в екрана посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Файлът използва неподдържани функции</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> не можа да установи връзка с този принтер. Уверете се, че той е включен, и опитайте отново.</translation>
 <translation id="2902312830803030883">Още действия</translation>
@@ -2280,6 +2283,7 @@
 <translation id="3390741581549395454">Успешно бе създадено резервно копие на приложенията и файловете под Linux. Надстройването ще започне след малко.</translation>
 <translation id="3391512812407811893">Изпробване на Privacy Sandbox</translation>
 <translation id="339178315942519818">Преглеждайте на устройството си <ph name="DEVICE_TYPE" /> известията от приложенията си за чат</translation>
+<translation id="3393554941209044235">Анализ на документа в Chrome</translation>
 <translation id="3394850431319394743">Разрешено е използването на идентификатори с цел възпроизвеждане на защитено съдържание</translation>
 <translation id="3396800784455899911">С кликването си върху бутона „Приемам и продължавам“ приемате описаното по-горе обработване за тези услуги на Google.</translation>
 <translation id="339722927132407568">Блокира</translation>
@@ -3244,6 +3248,7 @@
 <translation id="4415748029120993980">Елиптична крива secp384r1 по SECG (позната и като NIST P-384)</translation>
 <translation id="4416450511678320850">За това съдържание няма налични приложения</translation>
 <translation id="4416582610654027550">Въведете валиден URL адрес</translation>
+<translation id="4417162649853416189">Плъзгане върху изображения с цел търсене посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Да се разреши на <ph name="HOST" /> винаги да задава „бисквитки“</translation>
 <translation id="4421932782753506458">Пухчо</translation>
 <translation id="4423376891418188461">Възстановяване на настройките</translation>
@@ -3371,6 +3376,7 @@
 <translation id="4551763574344810652">Натиснете <ph name="MODIFIER_KEY_DESCRIPTION" /> за отмяна</translation>
 <translation id="4553526521109675518">Трябва да рестартирате своя Chromebook, за да промените езика на устройството. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Стартиране на настройването отначало</translation>
+<translation id="4554491709904933912">Плъзгане върху изображения с цел търсене посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Версията на външното разширение е същата или по-стара в сравнение със съществуващата.</translation>
 <translation id="4555769855065597957">Сянка</translation>
 <translation id="4555863373929230635">За да запазвате пароли в профила си в Google, влезте в него и включете синхронизирането.</translation>
@@ -3517,7 +3523,6 @@
 <translation id="4699172675775169585">Кеширани изображения и файлове</translation>
 <translation id="4699357559218762027">(автоматично стартирано)</translation>
 <translation id="4701025263201366865">Влизане в профила на родител</translation>
-<translation id="4707582759326616943">Преместете с плъзгане, за да търсите изображения с Google Обектив</translation>
 <translation id="4708794300267213770">Показване на заключения екран при излизане от спящ режим</translation>
 <translation id="4708849949179781599">Изход от <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Възстановяване на настройките</translation>
@@ -4146,6 +4151,7 @@
 <translation id="5427278936122846523">Винаги да се превежда</translation>
 <translation id="5427459444770871191">Завъртане &amp;по часовниковата стрелка</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Налице е актуализация)</translation>
+<translation id="5429373054983029602">Търсене в екрана посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Трябва да бъде инсталирана актуализация на фърмуера на модула за надеждна платформа. Вижте информацията на адрес <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Незабавен тетъринг</translation>
 <translation id="5431318178759467895">Цветно</translation>
@@ -4212,6 +4218,7 @@
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5495466433285976480">По този начин при следващото рестартиране ще се премахнат всички локални потребители, файлове, данни и други настройки. Всички потребители ще трябва да влязат отново.</translation>
 <translation id="5495597166260341369">Без изключване на екрана</translation>
+<translation id="549580971452855947">Плъзгане с цел търсене на изображения посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Организиране</translation>
 <translation id="5496730470963166430">Сайтове без разрешение за изпращане на изскачащи прозорци или използване на пренасочвания</translation>
 <translation id="5497251278400702716">Този файл</translation>
@@ -5164,7 +5171,6 @@
 <translation id="6532663472409656417">Корпоративно записано</translation>
 <translation id="6535331821390304775">Винаги да се разрешава на <ph name="ORIGIN" /> да отваря връзки от този тип в свързаното приложение</translation>
 <translation id="653659894138286600">Сканиране на документи и изображения</translation>
-<translation id="6537016096312202316">Плъзнете изображения над полето, за да търсите с Google Обектив</translation>
 <translation id="6537613839935722475">Можете да ползвате букви, цифри и къси тирета (-)</translation>
 <translation id="6537880577641744343">Управление</translation>
 <translation id="6538098297809675636">При откриването на кода възникна грешка</translation>
@@ -5217,6 +5223,7 @@
 <translation id="6593881952206664229">Мултимедийното съдържание, защитено с авторски права, може да не се възпроизвежда</translation>
 <translation id="6594011207075825276">Търсят се серийни устройства...</translation>
 <translation id="6595187330192059106">Пълният контрол над MIDI устройствата да е блокиран винаги за <ph name="HOST" />.</translation>
+<translation id="6595792813574514527">Плъзгане с цел търсене на изображения посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Опции за шифроване</translation>
 <translation id="6596816719288285829">IP адрес</translation>
 <translation id="6597017209724497268">Извадки</translation>
@@ -5347,7 +5354,6 @@
 <translation id="6745592621698551453">Актуализиране сега</translation>
 <translation id="6746124502594467657">Придвижване надолу</translation>
 <translation id="674632704103926902">Да се активира преместването чрез докосване</translation>
-<translation id="6748054820659621153">Търсете в екрана си с Google Обектив</translation>
 <translation id="6748465660675848252">Може да продължите, но само синхронизираните ви данни и настройки ще бъдат възстановени. Цялата локална информация ще бъде заличена.</translation>
 <translation id="6750757184909117990">Деактивиране на мобилната мрежа</translation>
 <translation id="6750946710563435348">Използване на друго потребителско име</translation>
@@ -5787,6 +5793,7 @@
 <translation id="7230222852462421043">Възстановяване на &amp;прозореца</translation>
 <translation id="7230787553283372882">Персонализирайте размера на текста</translation>
 <translation id="7232750842195536390">Преименуването не бе успешно</translation>
+<translation id="723343421145275488">Търсене на изображения посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Възстановяването на Linux се анулира</translation>
 <translation id="7235716375204803342">Активността се извлича...</translation>
 <translation id="7235737137505019098">В ключа ви за сигурност няма достатъчно място за повече профили.</translation>
@@ -6407,7 +6414,6 @@
 <translation id="7853747251428735">Още инструмен&amp;ти</translation>
 <translation id="7855678561139483478">Преместване на раздела в нов прозорец</translation>
 <translation id="7857093393627376423">Текстови предложения</translation>
-<translation id="7857675386615530425">Търсене в част от страницата посредством Google Обектив</translation>
 <translation id="7857949311770343000">Това очакваният от вас нов раздел ли е?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Услуга: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6415,7 +6421,6 @@
 <translation id="7861846108263890455">Език на профила в Google</translation>
 <translation id="7864539943188674973">Деактивиране на Bluetooth</translation>
 <translation id="7865127013871431856">Опции за превод</translation>
-<translation id="7866230141401327032">Търсене в част от страницата посредством Google Обектив</translation>
 <translation id="7869143217755017858">Деактивиране на тъмния режим</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – сдвоено</translation>
 <translation id="7870730066603611552">Преглед на опциите за синхронизиране след настройването</translation>
@@ -6736,6 +6741,7 @@
 <translation id="8184318863960255706">Още информация</translation>
 <translation id="8184472985242519288">Еднородна</translation>
 <translation id="8186609076106987817">Сървърът не можа да намери файла.</translation>
+<translation id="8186704951085064172">Търсене в част от страницата посредством <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Проверете настройките на устройството си и я включете, за да продължите</translation>
 <translation id="8189306097519446565">Училищни профили</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -7398,7 +7404,6 @@
 <translation id="8907787635362884532">Издател: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome може да проверява компютъра ви за опасен софтуер</translation>
 <translation id="8909298138148012791">Деинсталирането на <ph name="APP_NAME" /> бе успешно</translation>
-<translation id="8909782404367982052">Преместете с плъзгане, за да търсите изображения с Google Обектив</translation>
 <translation id="8909833622202089127">Сайтът следи местоположението ви</translation>
 <translation id="8910222113987937043">Промените във вашите отметки, история, пароли и други настройки повече няма да се синхронизират с профила ви в Google. Съществуващите ви данни обаче ще продължат да се съхраняват в него. Можете да ги управлявате от <ph name="BEGIN_LINK" />Google Табло за управление<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Скриване на списъка с устройства</translation>
@@ -7542,7 +7547,6 @@
 <translation id="9055636786322918818">Задължително прилагане на RC4 шифроване. Използването на тази опция увеличава риска, тъй като шифрите RC4 са несигурни.</translation>
 <translation id="9056810968620647706">Няма намерени съответствия.</translation>
 <translation id="9057354806206861646">График на актуализациите</translation>
-<translation id="9057599413476594385">Плъзнете изображения над полето, за да търсите с Google Обектив</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка от ред <ph name="ERROR_LINE_START" /> до ред <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Не е възможно заснемане на поверително съдържание</translation>

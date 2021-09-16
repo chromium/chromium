@@ -705,6 +705,7 @@
 <translation id="1719312230114180055">Забелешка: вашиот отпечаток може да биде помалку безбеден од силна лозинка или PIN.</translation>
 <translation id="1720318856472900922">Автентикација на сервер за TLS WWW</translation>
 <translation id="1720941539803966190">Затвори го упатството</translation>
+<translation id="172123215662733643">Пребарајте слики со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Потребна ви е дозвола од <ph name="NAME" /> за да го посетите сајтов</translation>
 <translation id="1722460139690167654">Вашиот <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> е управуван<ph name="END_LINK" /> од <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Нов прозорец</translation>
@@ -1281,6 +1282,7 @@
     Ако подоцна одлучите дека Voice Match не е за вашето дете, едноставно отстранете го од поставките за „Помошникот“ на детето. За да ги прегледате или избришете аудиоисечоците коишто вашето дете ги снима при поставувањето на Voice Match, одете на <ph name="VOICE_MATCH_SETTINGS_URL" /> од сметката на детето.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">Пребарајте дел од страницата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="230927227160767054">Страницава сака да инсталира управувач на услуга.</translation>
 <translation id="2309620859903500144">Пристапот на сајтов до сензорите за движење или светлина е блокиран.</translation>
 <translation id="2312219318583366810">URL на страницата</translation>
@@ -1846,6 +1848,7 @@
 <translation id="289695669188700754">ИД на клуч: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Оваа приспособена поставка ќе биде отстранета кога ќе ги затворите сите ваши прозорци „Инкогнито“</translation>
 <translation id="2897878306272793870">Дали сте сигурни дека сакате да отворите <ph name="TAB_COUNT" /> картички?</translation>
+<translation id="2900477968385519153">Пребарајте го екранот со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Датотеката користи неподдржани функции</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> не може да комуницира со печатачов. Погрижете се печатачот да е приклучен и обидете се повторно.</translation>
 <translation id="2902312830803030883">Повеќе дејства</translation>
@@ -2285,6 +2288,7 @@
 <translation id="3390741581549395454">Успешно е направен бекап на апликациите и датотеките на Linux. Надградбата ќе започне наскоро.</translation>
 <translation id="3391512812407811893">Пробни периоди за Privacy Sandbox</translation>
 <translation id="339178315942519818">Прегледувајте ги известувањата од апликациите за разговор на вашиот <ph name="DEVICE_TYPE" /></translation>
+<translation id="3393554941209044235">Анализа на документ од Chrome</translation>
 <translation id="3394850431319394743">Има дозвола да користи идентификатори за да пушта заштитени содржини</translation>
 <translation id="3396800784455899911">Ако кликнете на копчето „Прифати и продолжи“, се согласувате со обработката опишана погоре за овие услуги на Google.</translation>
 <translation id="339722927132407568">Замрзнува</translation>
@@ -3248,6 +3252,7 @@
 <translation id="4415748029120993980">SECG елиптична крива secp384r1 (наречена NIST P-384)</translation>
 <translation id="4416450511678320850">Нема достапни апликации за содржиниве</translation>
 <translation id="4416582610654027550">Внесете валидна URL</translation>
+<translation id="4417162649853416189">Повлечете преку сликите за да пребарате со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Секогаш дозволи <ph name="HOST" /> да поставува колачиња</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">Обнови поставки</translation>
@@ -3375,6 +3380,7 @@
 <translation id="4551763574344810652">Притиснете <ph name="MODIFIER_KEY_DESCRIPTION" /> за да се врати</translation>
 <translation id="4553526521109675518">Треба да го рестартирате вашиот Chromebook за да го промените јазикот на уредот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Рестартирај го поставувањето</translation>
+<translation id="4554491709904933912">Повлечете преку сликите за да пребарате со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Надворешната наставка е иста или пониска верзија споредена со постоечката.</translation>
 <translation id="4555769855065597957">Сенка</translation>
 <translation id="4555863373929230635">За да се зачувуваат лозинки во сметката на Google, најавете се и вклучете синхронизација.</translation>
@@ -3521,7 +3527,6 @@
 <translation id="4699172675775169585">Кеширани слики и датотеки</translation>
 <translation id="4699357559218762027">(автоматско стартување)</translation>
 <translation id="4701025263201366865">Најавување на родител</translation>
-<translation id="4707582759326616943">Повлечете за да пребарувате слики со Google Lens</translation>
 <translation id="4708794300267213770">Прикажи заклучен екран при будење од режим на мирување</translation>
 <translation id="4708849949179781599">Излези од <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Обнови поставки</translation>
@@ -4150,6 +4155,7 @@
 <translation id="5427278936122846523">Секогаш преведувај</translation>
 <translation id="5427459444770871191">Ротирај &amp;надесно</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Достапно е ажурирање)</translation>
+<translation id="5429373054983029602">Пребарајте го екранот со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Треба да се инсталира ажурирање за фирмверот на Trusted Platform Module. Видете <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Инстант врзување</translation>
 <translation id="5431318178759467895">Боја</translation>
@@ -4216,6 +4222,7 @@
 <translation id="5494920125229734069">Избери сè</translation>
 <translation id="5495466433285976480">Ова ќе ги отстрани сите локални корисници, датотеки, податоци и други поставки по вашето следно рестартирање. Сите корисници ќе треба да се пријават повторно.</translation>
 <translation id="5495597166260341369">Држи го екранот вклучен</translation>
+<translation id="549580971452855947">Повлечете за да пребарате слики со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Организирај</translation>
 <translation id="5496730470963166430">Не им е дозволено да испраќаат скокачки програми, ниту да користат пренасочувања</translation>
 <translation id="5497251278400702716">Оваа датотека</translation>
@@ -5167,7 +5174,6 @@
 <translation id="6532663472409656417">Регистриран во компанија</translation>
 <translation id="6535331821390304775">Секогаш дозволувај <ph name="ORIGIN" /> да отвора линкови од овој тип во поврзаната апликација</translation>
 <translation id="653659894138286600">Скенирајте документи и слики</translation>
-<translation id="6537016096312202316">Повлекувајте преку слики за да пребарувате со Google Lens</translation>
 <translation id="6537613839935722475">Името може да содржи букви, бројки и цртички (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Грешка при откривањето на кодот</translation>
@@ -5220,6 +5226,7 @@
 <translation id="6593881952206664229">Содржините со авторски права можеби нема да се пуштаат</translation>
 <translation id="6594011207075825276">Се бараат сериски уреди…</translation>
 <translation id="6595187330192059106">Не дозволувај <ph name="HOST" /> да има целосна контрола врз MIDI-уредите.</translation>
+<translation id="6595792813574514527">Повлечете за да пребарате слики со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Опции за шифрирање</translation>
 <translation id="6596816719288285829">IP-адреса</translation>
 <translation id="6597017209724497268">Примероци</translation>
@@ -5350,7 +5357,6 @@
 <translation id="6745592621698551453">Ажурирај сега</translation>
 <translation id="6746124502594467657">Премести долу</translation>
 <translation id="674632704103926902">Овозможи влечење картичка</translation>
-<translation id="6748054820659621153">Пребарувајте на екранот со Google Lens</translation>
 <translation id="6748465660675848252">Може да продолжите, но ќе се обноват само синхронизираните податоци и поставки. Сите локални податоци ќе се загубат.</translation>
 <translation id="6750757184909117990">Оневозможување мобилна мрежа</translation>
 <translation id="6750946710563435348">Користете друго корисничко име</translation>
@@ -5790,6 +5796,7 @@
 <translation id="7230222852462421043">&amp;Врати го прозорецот</translation>
 <translation id="7230787553283372882">Приспособете ја големината на текстот</translation>
 <translation id="7232750842195536390">Преименувањето не успеа</translation>
+<translation id="723343421145275488">Пребарајте слики со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Се откажува враќањето на Linux</translation>
 <translation id="7235716375204803342">Се преземаат активностите…</translation>
 <translation id="7235737137505019098">Вашиот безбедносен клуч нема доволно простор за уште сметки.</translation>
@@ -6410,7 +6417,6 @@
 <translation id="7853747251428735">&amp;Повеќе алатки</translation>
 <translation id="7855678561139483478">Преместете ја картичката во нов прозорец</translation>
 <translation id="7857093393627376423">Предлози за текст</translation>
-<translation id="7857675386615530425">Пребарај дел од страницата со Google Lens</translation>
 <translation id="7857949311770343000">Дали е ова страницата од новата картичка што ја очекувавте?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Услуга: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6418,7 +6424,6 @@
 <translation id="7861846108263890455">Јазик на сметката на Google</translation>
 <translation id="7864539943188674973">Оневозможи Bluetooth</translation>
 <translation id="7865127013871431856">Опции за „Преведи“</translation>
-<translation id="7866230141401327032">Пребарај дел од страницата со Google Lens</translation>
 <translation id="7869143217755017858">Оневозможи темен режим</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - спарено</translation>
 <translation id="7870730066603611552">Прегледајте ги опциите за синхронизација по поставувањето</translation>
@@ -6738,6 +6743,7 @@
 <translation id="8184318863960255706">Повеќе информации</translation>
 <translation id="8184472985242519288">Унифициран</translation>
 <translation id="8186609076106987817">Серверот не може да ја најде датотеката.</translation>
+<translation id="8186704951085064172">Пребарајте дел од страницата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Проверете ги поставките на уредот и вклучете го за да продолжите</translation>
 <translation id="8189306097519446565">Училишни сметки</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -7404,7 +7410,6 @@
 <translation id="8907787635362884532">Издавач: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome може да проверува дали има штетен софтвер на вашиот компјутер</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> е деинсталиран</translation>
-<translation id="8909782404367982052">Повлечете за да пребарувате слики со Google Lens</translation>
 <translation id="8909833622202089127">Сајтот ја следи вашата локација</translation>
 <translation id="8910222113987937043">Промените во обележувачите, историјата, лозинките и другите поставки нема веќе да се синхронизираат со вашата сметка на Google. Сепак, вашите податоци ќе останат складирани во сметката на Google и со нив може да управувате во <ph name="BEGIN_LINK" />„Контролната табла на Google“<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Сокријте го списокот со уреди</translation>
@@ -7548,7 +7553,6 @@
 <translation id="9055636786322918818">Наметнете RC4-шифрирање. Ако ја користите опцијава, ви се зголемува ризикот бидејќи RC4-шифрите се небезбедни.</translation>
 <translation id="9056810968620647706">Не се најдени совпаѓања.</translation>
 <translation id="9057354806206861646">Распоред за ажурирање</translation>
-<translation id="9057599413476594385">Повлекувајте преку слики за да пребарувате со Google Lens</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка од ред <ph name="ERROR_LINE_START" /> до <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Не може да се сликаат доверливи содржини</translation>

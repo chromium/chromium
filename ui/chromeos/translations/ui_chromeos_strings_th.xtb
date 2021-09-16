@@ -287,7 +287,7 @@
 <translation id="3549797760399244642">ไปยัง drive.google.com...</translation>
 <translation id="3553048479571901246">หากต้องการเปิดไฟล์ด้วย <ph name="APP_NAME" /> ให้คัดลอกไปที่โฟลเดอร์ไฟล์ของ Windows ก่อน</translation>
 <translation id="3556731189587832921">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์พีซีแบบสากล</translation>
-<translation id="3567221313191587603">เลือกไฟล์แล้วสลับ<ph name="OFFLINE_CHECKBOX_NAME" />เป็นเปิดเพื่อเข้าถึงไฟล์แบบออฟไลน์</translation>
+<translation id="3567221313191587603">เลือกไฟล์แล้วเปิด <ph name="OFFLINE_CHECKBOX_NAME" /> เพื่อเข้าถึงไฟล์แบบออฟไลน์</translation>
 <translation id="357479282490346887">ลิทัวเนีย</translation>
 <translation id="3592251141500063301">ทำให้ <ph name="FILE_NAME" /> ใช้งานแบบออฟไลน์ไม่ได้</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>

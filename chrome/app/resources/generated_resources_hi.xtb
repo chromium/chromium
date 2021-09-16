@@ -705,13 +705,14 @@
 <translation id="1719312230114180055">ध्यान दें: आपका फ़िंगरप्रिंट किसी मज़बूत पासवर्ड या पिन की तुलना में कम सुरक्षित हो सकता है.</translation>
 <translation id="1720318856472900922">TLS WWW सर्वर प्रमाणीकरण</translation>
 <translation id="1720941539803966190">ट्यूटोरियल बंद करें</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजें</translation>
 <translation id="1721312023322545264">आपको <ph name="NAME" /> से इस साइट पर जाने की अनुमति लेनी होगी</translation>
 <translation id="1722460139690167654">आपके <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> का प्रबंधन<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> करता है</translation>
 <translation id="1723824996674794290">&amp;नई विंडो</translation>
 <translation id="1725562816265788801">टैब स्क्रोलिंग</translation>
 <translation id="1727662110063605623"><ph name="USB_DEVICE_NAME" /> काे Parallels Desktop या Linux से कनेक्ट करने के लिए 'सेटिंग' खाेलें</translation>
 <translation id="1729533290416704613">इससे यह भी नियंत्रित होता है कि ऑम्निबॉक्‍स से खोजते समय आपको कौन सा पेज दिखाया जाए.</translation>
-<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ऐप्लिकेशन हटाने के लिए, सेटिंग &gt; Google Play स्टोर &gt; Android प्राथमिकताएं प्रबंधित करें &gt; ऐप्लिकेशन या ऐप्लिकेशन एडमिन पर जाएं. फिर उस ऐप्लिकेशन पर टैप करें जिसे आप अनइंस्टॉल करना चाहते हैं (ऐप्लिकेशन ढूंढने के लिए आपको दाएं या बाएं स्वाइप करना पड़ सकता है). फिर अनइंस्टॉल करें या बंद करें पर टैप करें.<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ऐप्लिकेशन हटाने के लिए, सेटिंग &gt; Google Play Store &gt; Android प्राथमिकताएं प्रबंधित करें &gt; ऐप्लिकेशन या ऐप्लिकेशन एडमिन पर जाएं. फिर उस ऐप्लिकेशन पर टैप करें जिसे आप अनइंस्टॉल करना चाहते हैं (ऐप्लिकेशन ढूंढने के लिए आपको दाएं या बाएं स्वाइप करना पड़ सकता है). फिर अनइंस्टॉल करें या बंद करें पर टैप करें.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">अनुरोध भेजा जा रहा है...</translation>
 <translation id="1733383495376208985">सिंक किए गए डेटा को <ph name="BEGIN_LINK" />अपने खुद के सिंक लंबे पासवर्ड<ph name="END_LINK" /> से सुरक्षित करें. इसमें Google Pay से भुगतान करने के तरीके और पते शामिल नहीं हैं.</translation>
 <translation id="1734212868489994726">हल्का नीला</translation>
@@ -1281,6 +1282,7 @@
     अगर बाद में आपको लगता है कि वॉइस मैच की सुविधा आपके बच्चे के लिए सही नहीं है, तो Assistant की सेटिंग में जाकर, इस सुविधा को आसानी से बंद किया जा सकता है. वॉइस मैच की सुविधा सेट अप करने के दौरान, अपने बच्चे की रिकॉर्ड की गई ऑडियो क्लिप देखने या मिटाने के लिए, अपने बच्चे के खाते से <ph name="VOICE_MATCH_SETTINGS_URL" /> पर जाएं.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से पेज का हिस्सा खोजें</translation>
 <translation id="230927227160767054">यह पेज सेवा हैंडलर इंस्टॉल करना चाहता है.</translation>
 <translation id="2309620859903500144">इस साइट को आपके डिवाइस के गति या रोशनी के सेंसर ऐक्सेस करने से ब्लॉक कर दिया गया है.</translation>
 <translation id="2312219318583366810">पेज का यूआरएल</translation>
@@ -1474,7 +1476,7 @@
 <translation id="250704661983564564">डिसप्ले की सेटिंग</translation>
 <translation id="2507253002925770350">टिकट हटाया गया</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> को रोका गया</translation>
-<translation id="2508428939232952663">Google Play स्टोर खाता</translation>
+<translation id="2508428939232952663">Google Play Store खाता</translation>
 <translation id="2509495747794740764">स्केल राशि की संख्या 10 और 200 के बीच होनी चाहिए.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">ब्लूटूथ डिवाइस की जानकारी हटाएं</translation>
@@ -1654,7 +1656,7 @@
 <translation id="2712173769900027643">अनुमति मांगें</translation>
 <translation id="2713106313042589954">कैमरा बंद करें</translation>
 <translation id="2713444072780614174">सफ़ेद</translation>
-<translation id="2714393097308983682">Google Play स्टोर</translation>
+<translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">सुरक्षा कुंजी से जुड़ा अनुरोध</translation>
 <translation id="2715751256863167692">यह अपग्रेड (बेहतर बनाना) आपका Chromebook रीसेट कर देता है और मौजूदा 'उपयोगकर्ता डेटा' हटा देता है.</translation>
 <translation id="271639966356700691">ज़ूम इन करने के लिए, Ctrl+Alt+स्क्रीन की चमक बढ़ाएं बटन दबाएं और ज़ूम आउट करने के लिए, Ctrl+Alt+स्क्रीन की चमक कम करें बटन दबाएं.</translation>
@@ -1845,6 +1847,7 @@
 <translation id="289695669188700754">कुंजी ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">इस कस्टम सेटिंग को तब हटाया जाएगा, जब आप अपने सभी गुप्त विंडो बंद करेंगे</translation>
 <translation id="2897878306272793870">क्या आप वाकई <ph name="TAB_COUNT" /> टैब खोलना चाहते हैं?</translation>
+<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से स्क्रीन खोजें</translation>
 <translation id="290105521672621980">फ़ाइल असमर्थित सुविधाओं का उपयोग कर‍‍ती है</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> इस प्रिंटर के साथ जुड़ नहीं सका. पक्का करें कि प्रिंटर को प्लग इन किया गया है और पुनः प्रयास करें.</translation>
 <translation id="2902312830803030883">और क्रियाएं</translation>
@@ -2284,6 +2287,7 @@
 <translation id="3390741581549395454">Linux ऐप्लिकेशन और फ़ाइलों का बैक अप ले लिया गया है. जल्द ही बेहतर बनाने की प्रोसेस शुरू हो जाएगी.</translation>
 <translation id="3391512812407811893">निजता सैंडबॉक्स ट्रायल</translation>
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" /> पर अपने चैट ऐप्लिकेशन की सूचनाएं देखें</translation>
+<translation id="3393554941209044235">Chrome के दस्तावेज़ का विश्लेषण</translation>
 <translation id="3394850431319394743">सुरक्षित कॉन्टेंट दिखाने के लिए, पहचानकर्ताओं का इस्तेमाल किया जा सकता है</translation>
 <translation id="3396800784455899911">"स्वीकार करें और जारी रखें" बटन पर क्लिक करके, आप पुष्टि करते हैं कि इन Google सेवाओं के लिए ऊपर बताई गई प्रोसेसिंग से आप सहमत हैं.</translation>
 <translation id="339722927132407568">रुक जाना/हैंग हो जाना</translation>
@@ -2362,7 +2366,7 @@
 <translation id="3458451003193188688">नेटवर्क की गड़बड़ी की वजह से वर्चुअल मशीन को इंस्टॉल नहीं किया जा सका. कृपया फिर से कोशिश करें या अपने एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">शेयर करना बंद नहीं किया जा सका</translation>
 <translation id="3459509316159669723">प्रिंट करना</translation>
-<translation id="3459697287128633276">Google Play स्टोर एक्सेस करने को अपना खाता चालू करने के लिए, कृपया अपनी पहचान देने वाली सेवा के ज़रिए पुष्टि करें.</translation>
+<translation id="3459697287128633276">Google Play Store एक्सेस करने को अपना खाता चालू करने के लिए, कृपया अपनी पहचान देने वाली सेवा के ज़रिए पुष्टि करें.</translation>
 <translation id="3462311546193741693">आपको अधिकतर साइटों से साइन आउट कर देता है. आप अपने 'Google खाते' में साइन इन रहते हैं ताकि आपका सिंक किया हुआ डेटा साफ़ हो जाए.</translation>
 <translation id="3462413494201477527">खाता सेटअप रहने दें?</translation>
 <translation id="346298925039590474">यह मोबाइल नेटवर्क, इस डिवाइस को इस्तेमाल करने वाले सभी उपयोगकर्ताओं के लिए उपलब्ध रहेगा</translation>
@@ -2501,7 +2505,7 @@
 <translation id="3609277884604412258">तेज़ी से खोजने की सुविधा</translation>
 <translation id="3610369246614755442">डॉक के पंखे को मरम्मत की ज़रूरत है</translation>
 <translation id="361106536627977100">फ़्लैश डेटा</translation>
-<translation id="3611655097742243705">ज़्यादा ऐप्लिकेशन पाने के लिए, 'Play स्टोर' पर जाएं</translation>
+<translation id="3611655097742243705">ज़्यादा ऐप्लिकेशन पाने के लिए, 'Play Store' पर जाएं</translation>
 <translation id="3611658447322220736">हाल ही में बंद की गई साइटें, डेटा भेजने और पाने की प्रकिया को पूरा कर सकती हैं</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; के द्वारा डाउनलोड किया गया</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> दिखाएं</translation>
@@ -2623,7 +2627,7 @@
 <translation id="3732530910372558017">पिन में ज़्यादा से ज़्यादा 63 वर्ण हो सकते हैं</translation>
 <translation id="3732857534841813090">Google Assistant से जुड़ी जानकारी</translation>
 <translation id="3733127536501031542">स्टेप-अप वाला SSL सर्वर</translation>
-<translation id="3733296813637058299">हम आपके लिए वे ऐप्लिकेशन इंस्टॉल कर देंगे. आप 'Play स्टोर' में जाकर, अपने <ph name="DEVICE_TYPE" /> के लिए और भी ऐप्लिकेशन डाउनलोड कर सकते हैं.</translation>
+<translation id="3733296813637058299">हम आपके लिए वे ऐप्लिकेशन इंस्टॉल कर देंगे. आप 'Play Store' में जाकर, अपने <ph name="DEVICE_TYPE" /> के लिए और भी ऐप्लिकेशन डाउनलोड कर सकते हैं.</translation>
 <translation id="3735740477244556633">इसके अनुसार क्रम से लगाएं</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> का डेटा 24 घंटे में मिटा दिया जाएगा</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -2631,7 +2635,7 @@
 <translation id="3742055079367172538">स्क्रीनशॉट लिया गया</translation>
 <translation id="3742235229730461951">कोरियाई कीबोर्ड लेआउट</translation>
 <translation id="3742666961763734085">इस नाम की संगठनात्मक इकाई नहीं मिल पा रही है. कृपया फिर से कोशिश करें.</translation>
-<translation id="3747077776423672805">ऐप्लिकेशन हटाने के लिए, सेटिंग &gt; 'Google Play स्टोर' &gt; Android से जुड़ी पसंद प्रबंधित करें &gt; ऐप्लिकेशन या ऐप्लिकेशन मैनेजर पर जाएं. उसके बाद उस ऐप्लिकेशन पर टैप करें जिसे आप अनइंस्टॉल करना चाहते हैं (ऐप्लिकेशन ढूंढने के लिए आपको दाएं या बाएं स्वाइप करना पड़ सकता है). फिर 'अनइंस्टॉल करें' या 'बंद करें' पर टैप करें.</translation>
+<translation id="3747077776423672805">ऐप्लिकेशन हटाने के लिए, सेटिंग &gt; 'Google Play Store' &gt; Android से जुड़ी पसंद प्रबंधित करें &gt; ऐप्लिकेशन या ऐप्लिकेशन मैनेजर पर जाएं. उसके बाद उस ऐप्लिकेशन पर टैप करें जिसे आप अनइंस्टॉल करना चाहते हैं (ऐप्लिकेशन ढूंढने के लिए आपको दाएं या बाएं स्वाइप करना पड़ सकता है). फिर 'अनइंस्टॉल करें' या 'बंद करें' पर टैप करें.</translation>
 <translation id="3747220812138541072">टाइप करते समय दिखने वाले इनलाइन लिखने के सुझाव दिखाएं</translation>
 <translation id="3748706263662799310">बग की रिपोर्ट करें</translation>
 <translation id="3752253558646317685">फ़िंगरप्रिंट को सेव करने के लिए, अपने बच्चे से उंगली उठाते रहने को कहें</translation>
@@ -2885,7 +2889,7 @@
 <translation id="3982375475032951137">कुछ आसान चरणों में अपना ब्राउज़र सेट करें</translation>
 <translation id="3983400541576569538">शायद कुछ ऐप्लिकेशन का डेटा खो गया है</translation>
 <translation id="3983586614702900908">किसी अज्ञात विक्रेता के डिवाइस</translation>
-<translation id="3983764759749072418">'Play स्टोर' के ऐप्लिकेशन इस डिवाइस पर काम करते हैं.</translation>
+<translation id="3983764759749072418">'Play Store' के ऐप्लिकेशन इस डिवाइस पर काम करते हैं.</translation>
 <translation id="3983769721878416534">क्‍लिक से पहले देरी</translation>
 <translation id="3984135167056005094">ईमेल पता न डालें</translation>
 <translation id="3984159763196946143">डेमो मोड शुरू नहीं किया जा सका</translation>
@@ -3013,7 +3017,7 @@
 <translation id="413121957363593859">घटक</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
 <translation id="413193092008917129">नेटवर्क डायग्नोस्टिक रूटीन</translation>
-<translation id="4132183752438206707">'Google Play स्टोर' में जाकर, ऐप्लिकेशन ढूंढें</translation>
+<translation id="4132183752438206707">'Google Play Store' में जाकर, ऐप्लिकेशन ढूंढें</translation>
 <translation id="4132364317545104286">eSIM प्रोफ़ाइल का नाम बदलें</translation>
 <translation id="4133076602192971179">पासवर्ड बदलने के लिए ऐप्लिकेशन खोलें</translation>
 <translation id="4136203100490971508">सूर्योदय होने पर नाइट लाइट अपने आप बंद हो जाएगी</translation>
@@ -3075,7 +3079,7 @@
 <translation id="4220648711404560261">सेटअप पूरा करने के दौरान कुछ गड़बड़ी हुई.</translation>
 <translation id="4225020013797061859">"<ph name="ACTION" />" असाइन करने के लिए कोई बटन दबाएं</translation>
 <translation id="4225397296022057997">सभी साइट पर</translation>
-<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}one{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}other{कुछ एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}}</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}one{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}other{कुछ एक्सटेंशन के इस्तेमाल की अनुमति नहीं है}}</translation>
 <translation id="4231095370974836764">Google Play से अपने <ph name="DEVICE_TYPE" /> पर ऐप्लिकेशन और गेम इंस्टॉल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos कॉन्फ़िगर करें</translation>
 <translation id="4235965441080806197">साइन इन रद्द करें</translation>
@@ -3246,6 +3250,7 @@
 <translation id="4415748029120993980">SECG अंडाकार वक्र secp384r1 (अर्थात NIST P-384)</translation>
 <translation id="4416450511678320850">इस कॉन्टेंट के लिए कोई भी ऐप्लिकेशन उपलब्ध नहीं है</translation>
 <translation id="4416582610654027550">एक मान्य यूआरएल टाइप करें</translation>
+<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से खोजने के लिए, खींचें और इमेज पर छोड़ें</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> को हमेशा कुकी सेट करने की अनुमति दें</translation>
 <translation id="4421932782753506458">फ्लफ़ी</translation>
 <translation id="4423376891418188461">सेटिंग फिर से स्थापित करें</translation>
@@ -3373,6 +3378,7 @@
 <translation id="4551763574344810652">पहले जैसा करने के लिए <ph name="MODIFIER_KEY_DESCRIPTION" /> दबाएं</translation>
 <translation id="4553526521109675518">आपको डिवाइस की भाषा बदलने के लिए, अपने Chromebook को रीस्टार्ट करना होगा. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">सेट अप शुरू करें</translation>
+<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से खोजने के लिए, खींचें और इमेज पर छोड़ें</translation>
 <translation id="4554591392113183336">बाहरी एक्‍सटेंशन मौजूदा की तुलना में समान या निम्नतर संस्‍करण पर है.</translation>
 <translation id="4555769855065597957">परछाई</translation>
 <translation id="4555863373929230635">अपने Google खाते में पासवर्ड सेव करने के लिए, साइन इन करें और सिंक करना चालू करें.</translation>
@@ -3519,7 +3525,6 @@
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
 <translation id="4699357559218762027">(अपने-आप-लॉन्च किया गया)</translation>
 <translation id="4701025263201366865">माता-पिता साइन इन करें</translation>
-<translation id="4707582759326616943">Google Lens से इमेज खोजने के लिए, खींचें और छोड़ें</translation>
 <translation id="4708794300267213770">निष्क्रिय से बाहर आने पर लॉक स्क्रीन दिखाएं</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड़ें</translation>
 <translation id="4711638718396952945">सेटिंग फिर से स्थापित करें</translation>
@@ -3565,7 +3570,7 @@
 <translation id="4776594120007763294">आप बाद में पढ़ने के लिए पेज जोड़ सकते हैं. इसके लिए, बटन पर क्लिक करें</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> के लिए पासवर्ड</translation>
 <translation id="4777458362738635055">इस डिवाइस के अन्य उपयोगकर्ता यह नेटवर्क इस्तेमाल कर सकते हैं</translation>
-<translation id="4777825441726637019">Play स्टोर</translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">नेटवर्क के नाम सर्वर कॉन्फ़िगर करें</translation>
 <translation id="4778644898150334464">कोई और पासवर्ड इस्तेमाल करें</translation>
 <translation id="4779083564647765204">ज़ूम</translation>
@@ -3850,7 +3855,7 @@
 <translation id="5084230410268011727">साइटों को गति और लाइट का उपयोग करने की अनुमति दें</translation>
 <translation id="5084328598860513926">सेट अप करने के दौरान कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें. इसके अलावा, डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">अपडेट जाँच रहा है</translation>
-<translation id="5085561329775168253">'Google Play स्टोर' पर मौजूद ऐप्लिकेशन की मदद से रचनात्मक बनें, बेहतर तरीके से ज़्यादा काम करें, और अपना मनोरंजन भी करें</translation>
+<translation id="5085561329775168253">'Google Play Store' पर मौजूद ऐप्लिकेशन की मदद से रचनात्मक बनें, बेहतर तरीके से ज़्यादा काम करें, और अपना मनोरंजन भी करें</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="5086874064903147617">डिफ़ॉल्ट होमपेज को बहाल करना चाहते हैं?</translation>
 <translation id="5087249366037322692">किसी तृतीय-पक्ष द्वारा जोड़ा गया</translation>
@@ -4148,6 +4153,7 @@
 <translation id="5427278936122846523">हमेशा अनुवाद करें</translation>
 <translation id="5427459444770871191">&amp;घड़ी की दिशा में घुमाएं</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (अपडेट उपलब्‍ध है)</translation>
+<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से स्क्रीन खोजें</translation>
 <translation id="542948651837270806">भरोसेमंद प्लैटफ़ॉर्म मॉड्यूल फ़र्मवेयर के लिए अपडेट इंस्टॉल करने की ज़रूरत है. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> देखें</translation>
 <translation id="5430931332414098647">इंस्टैंट टेदरिंग</translation>
 <translation id="5431318178759467895">रंग</translation>
@@ -4214,6 +4220,7 @@
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5495466433285976480">आपके अगली बार फिर से शुरू करने के बाद ये सभी स्थानीय उपयोगकर्ताओं, फ़ाइलों, डेटा, और अन्य सेटिंग को हटा देगा. सभी उपयोगकर्ताओं को फिर से साइन इन करना होगा.</translation>
 <translation id="5495597166260341369">डिसप्ले चालू रखें</translation>
+<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजने के लिए, खींचें और छोड़ें</translation>
 <translation id="5496587651328244253">व्यवस्थित करें</translation>
 <translation id="5496730470963166430">पॉप-अप भेजने या दूसरे वेबलिंक पर भेजने वाले यूआरएल इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="5497251278400702716">इस फ़ाइल</translation>
@@ -4240,7 +4247,7 @@
 <translation id="5510775624736435856">Google से इमेज की जानकारी पाएं</translation>
 <translation id="5511379779384092781">बहुत कम</translation>
 <translation id="5511823366942919280">क्या आप वाकई इस डिवाइस को "Shark" के रूप में सेट करना चाहते हैं?</translation>
-<translation id="5517304475148761050">इस ऐप्लिकेशन काे 'Play स्टोर' के ऐक्सेस की ज़रूरत है</translation>
+<translation id="5517304475148761050">इस ऐप्लिकेशन काे 'Play Store' के ऐक्सेस की ज़रूरत है</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">जब कोई साइट क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखना चाहे, तो इसके लिए पूछें</translation>
 <translation id="5518584115117143805">ईमेल सुरक्षित करने का तरीकों के लिए प्रमाणपत्र</translation>
@@ -5032,7 +5039,7 @@
 <translation id="6393550101331051049">असुरक्षित कॉन्टेंट दिखाने की अनुमति है</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />सिस्टम की जानकारी<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />मेट्रिक्स<ph name="END_LINK2" /> भेजें</translation>
 <translation id="6396988158856674517">साइटों को हलचल पकड़ने वाले सेंसर का इस्तेमाल करने से रोकें</translation>
-<translation id="6398715114293939307">Google Play स्टोर निकालें</translation>
+<translation id="6398715114293939307">Google Play Store निकालें</translation>
 <translation id="6398765197997659313">फ़ुल स्क्रीन से बाहर निकलें</translation>
 <translation id="6399774419735315745">जासूस</translation>
 <translation id="6404511346730675251">बुकमार्क में बदलाव करें</translation>
@@ -5165,7 +5172,6 @@
 <translation id="6532663472409656417">एंटरप्राइज़ दर्ज किया गया है</translation>
 <translation id="6535331821390304775">इस तरह के लिंक को उनसे जुड़े ऐप्लिकेशन में खोलने के लिए, हमेशा <ph name="ORIGIN" /> का इस्तेमाल करें</translation>
 <translation id="653659894138286600">दस्तावेज़ और इमेज स्कैन करें</translation>
-<translation id="6537016096312202316">Google Lens से खोजने के लिए, इमेज पर खींचें और छोड़ें</translation>
 <translation id="6537613839935722475">नाम में अक्षर, अंक, और हाइफ़न (-) शामिल हो सकते हैं</translation>
 <translation id="6537880577641744343">निर्देश देने की सुविधा (कमांडर)</translation>
 <translation id="6538098297809675636">कोड को पहचानते समय गड़बड़ी हुई</translation>
@@ -5218,6 +5224,7 @@
 <translation id="6593881952206664229">हो सकता है कि कॉपीराइट वाला मीडिया न चले</translation>
 <translation id="6594011207075825276">क्रम से लगाए गए डिवाइस ढूंढे जा रहे हैं...</translation>
 <translation id="6595187330192059106"><ph name="HOST" /> को, MIDI डिवाइस का पूरा कंट्रोल रखने से हमेशा रोकें.</translation>
+<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजने के लिए, खींचें और छोड़ें</translation>
 <translation id="6596325263575161958">सुरक्षित करने के तरीकों के विकल्प</translation>
 <translation id="6596816719288285829">आईपी पता</translation>
 <translation id="6597017209724497268">नमूने</translation>
@@ -5348,7 +5355,6 @@
 <translation id="6745592621698551453">अभी अपडेट करें</translation>
 <translation id="6746124502594467657">नीचे ले जाएं</translation>
 <translation id="674632704103926902">टैप करके खींचना चालू करें</translation>
-<translation id="6748054820659621153">Google Lens से अपनी स्क्रीन खोजें</translation>
 <translation id="6748465660675848252">आप आगे बढ़ सकते हैं, लेकिन केवल आपके समन्वयित डेटा और सेटिंग को पुनर्स्थापित किया जाएगा. सभी स्थानीय डेटा खो जाएगा.</translation>
 <translation id="6750757184909117990">सेल्युलर नेटवर्क बंद करें</translation>
 <translation id="6750946710563435348">दूसरा उपयोगकर्ता नाम इस्तेमाल करें</translation>
@@ -5788,6 +5794,7 @@
 <translation id="7230222852462421043">&amp;विंडो को पहले जैसा करना</translation>
 <translation id="7230787553283372882">अपने लेख के आकार को पसंद के मुताबिक बनाएं</translation>
 <translation id="7232750842195536390">नाम नहीं बदला जा सका</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजें</translation>
 <translation id="7234010996000898150">Linux का डेटा बहाल करने की प्रक्रिया रद्द की जा रही है</translation>
 <translation id="7235716375204803342">गतिविधियां लाई जा रही हैं...</translation>
 <translation id="7235737137505019098">आपकी सुरक्षा कुंजी में और खाते जोड़ने के लिए खाली जगह नहीं है.</translation>
@@ -6145,7 +6152,7 @@
 <translation id="761530003705945209">'Google डिस्क' में बैक अप लें. अपना डेटा आसानी से वापस लाएं या किसी भी समय डिवाइस बदलें. आपके बैक अप में ऐप्लिकेशन डेटा शामिल होता है. आपके डिवाइस के डेटा का बैक अप Google पर अपलोड हो गया है. साथ ही, उसे Google खाते के पासवर्ड से एन्क्रिप्ट (सुरक्षित) कर दिया गया है.</translation>
 <translation id="7615365294369022248">खाता जोड़ने के दौरान कोई गड़बड़ी हुई</translation>
 <translation id="7616214729753637086">डिवाइस का नाम दर्ज किया जा रहा है...</translation>
-<translation id="7617263010641145920">'Play स्टोर' चालू करें</translation>
+<translation id="7617263010641145920">'Play Store' चालू करें</translation>
 <translation id="7617366389578322136">"<ph name="DEVICE_NAME" />" से कनेक्‍ट हो रहा है</translation>
 <translation id="7617648809369507487">काम में किसी रुकावट के बिना सूचनाएं पाएं</translation>
 <translation id="7618774594543487847">न्यूट्रल</translation>
@@ -6243,7 +6250,7 @@
 <translation id="7702907602086592255">डोमेन</translation>
 <translation id="7704305437604973648">Tasks</translation>
 <translation id="7704317875155739195">खोजों और यूआरएल को अपने आप पूरा करें</translation>
-<translation id="7704521324619958564">Play स्टोर खोलें</translation>
+<translation id="7704521324619958564">Play Store खोलें</translation>
 <translation id="7705276765467986571">बुकमार्क मॉडल लोड नहीं कर सका.</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
 <translation id="7707108266051544351">इस साइट को हलचल वाले सेंसर का इस्तेमाल करने से रोक दिया गया है.</translation>
@@ -6407,7 +6414,6 @@
 <translation id="7853747251428735">ज़्यादा टू&amp;ल</translation>
 <translation id="7855678561139483478">टैब को नई विंडो पर ले जाएं</translation>
 <translation id="7857093393627376423">टाइपिंग के समय मिलने वाले शब्दों के सुझाव</translation>
-<translation id="7857675386615530425">Google Lens से पेज का हिस्सा खोजना</translation>
 <translation id="7857949311770343000">क्या यह वही नया टैब पेज है जिसकी आप अपेक्षा कर रहे थे?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows) में खोलें</translation>
 <translation id="786073089922909430">सेवा: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6415,7 +6421,6 @@
 <translation id="7861846108263890455">Google खाते की भाषा</translation>
 <translation id="7864539943188674973">ब्लूटूथ अक्षम करें</translation>
 <translation id="7865127013871431856">Google Translate के विकल्प</translation>
-<translation id="7866230141401327032">Google Lens से पेज का हिस्सा खोजना</translation>
 <translation id="7869143217755017858">गहरे रंग वाला मोड बंद करें</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - युग्मित किया गया</translation>
 <translation id="7870730066603611552">सेटअप के बाद सिंक विकल्पों की समीक्षा करें</translation>
@@ -6655,7 +6660,7 @@
 <translation id="81020759409809034">डाउनलोड करने के लिए डिफ़ॉल्ट लोकेशन</translation>
 <translation id="8102139037507939978">system_logs.txt से, व्यक्तिगत पहचान ज़ाहिर करने वाली जानकारी को हटाएं.</translation>
 <translation id="8104088837833760645">ई-सिम प्रोफ़ाइल डाउनलोड करें</translation>
-<translation id="8107015733319732394">आपके <ph name="DEVICE_TYPE" /> पर Google Play स्टोर इंस्टॉल हो रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
+<translation id="8107015733319732394">आपके <ph name="DEVICE_TYPE" /> पर Google Play Store इंस्टॉल हो रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="810728361871746125">डिसप्ले का रिज़ॉल्यूशन</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{तीसरे पक्ष की कोई कुकी नहीं है}=1{तीसरे पक्ष की 1 कुकी ब्लॉक की गई है}one{तीसरे पक्ष की # कुकी ब्लॉक की गई हैं}other{तीसरे पक्ष की # कुकी ब्लॉक की गई हैं}}</translation>
 <translation id="8109109153262930486">डिफ़ॉल्ट अवतार</translation>
@@ -6736,6 +6741,7 @@
 <translation id="8184318863960255706">ज़्यादा जानकारी</translation>
 <translation id="8184472985242519288">एक जैसा</translation>
 <translation id="8186609076106987817">सर्वर को फ़ाइल नहीं मिल सकी.</translation>
+<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से पेज का हिस्सा खोजें</translation>
 <translation id="8188389033983459049">अपनी डिवाइस सेटिंग जांचें और जारी रखने के लिए उसे चालू करें</translation>
 <translation id="8189306097519446565">स्कूल वाले खाते</translation>
 <translation id="8189750580333936930">निजता सैंडबॉक्स</translation>
@@ -6784,7 +6790,7 @@
 <translation id="8241040075392580210">शेडी</translation>
 <translation id="8241806945692107836">डिवाइस कॉन्फ़िगरेशन तय किया जा रहा है...</translation>
 <translation id="8241868517363889229">अपने बुकमार्क पढ़ें और बदलें</translation>
-<translation id="8242370300221559051">'Play स्टोर' चालू करें</translation>
+<translation id="8242370300221559051">'Play Store' चालू करें</translation>
 <translation id="8242426110754782860">आगे बढ़ें</translation>
 <translation id="8243948765190375130">मीडिया क्वालिटी कम हो सकती है</translation>
 <translation id="8244514732452879619">लाइटें जल्दी ही बंद हो जाएंगी</translation>
@@ -7399,7 +7405,6 @@
 <translation id="8907787635362884532">प्रकाशक: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome यह जांच कर सकता है कि आपके कंप्यूटर में नुकसान पहुंचाने वाला सॉफ़्टवेयर है या नहीं</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> अनइंस्टॉल हो गया</translation>
-<translation id="8909782404367982052">Google Lens से इमेज खोजने के लिए, खींचें और छोड़ें</translation>
 <translation id="8909833622202089127">साइट आपकी जगह को ट्रैक कर रही है</translation>
 <translation id="8910222113987937043">आपके बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग में किए गए बदलाव अब आपके Google खाते से सिंक नहीं किए जाएंगे. हालांकि, आपका मौजूदा डेटा आपके Google खाते में संग्रहित रहेगा और <ph name="BEGIN_LINK" />Google डैशबोर्ड<ph name="END_LINK" /> पर प्रबंधित किया जा सकेगा.</translation>
 <translation id="8910987510378294980">डिवाइसों की सूची छिपाएं</translation>
@@ -7512,7 +7517,7 @@
 <translation id="9026731007018893674">डाउनलोड करें</translation>
 <translation id="9026852570893462412">इस प्रोसेस में कुछ मिनट लग सकते हैं. वर्चुअल मशीन को डाउनलोड किया जा रहा है.</translation>
 <translation id="9027459031423301635">नए &amp;टैब में लिंक खोलें</translation>
-<translation id="9030515284705930323">आपके संगठन ने आपके खाते के लिए Google Play स्टोर को सक्षम नहीं किया है. ज़्यादा जानकारी के लिए अपने व्यवस्थापक से संपर्क करें.</translation>
+<translation id="9030515284705930323">आपके संगठन ने आपके खाते के लिए Google Play Store को सक्षम नहीं किया है. ज़्यादा जानकारी के लिए अपने व्यवस्थापक से संपर्क करें.</translation>
 <translation id="9030754204056345429">ज़्यादा तेज़</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> अब काम नहीं करता</translation>
@@ -7543,7 +7548,6 @@
 <translation id="9055636786322918818">RC4 सुरक्षा लागू करें. इस विकल्प का इस्तेमाल करने से आपका खतरा बढ़ जाता है, क्योंकि RC4 सिफ़र सुरक्षित नहीं होते हैं.</translation>
 <translation id="9056810968620647706">कोई मिलान नहीं मिले.</translation>
 <translation id="9057354806206861646">शेड्यूल को अपडेट करें</translation>
-<translation id="9057599413476594385">Google Lens से खोजने के लिए, इमेज पर खींचें और छोड़ें</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">लाइन <ph name="ERROR_LINE_START" /> से <ph name="ERROR_LINE_END" /> तक में गड़बड़ी</translation>
 <translation id="9063800855227801443">गोपनीय कॉन्टेंट को कैप्चर नहीं किया जा सकता</translation>
@@ -7689,7 +7693,7 @@
 <translation id="9214520840402538427">ओह!  इंस्टॉलेशन-समय विशेषताएं शुरू करने की समय सीमा खत्म हो गई है. कृपया अपने सहायता प्रतिनिधि से संपर्क करें.</translation>
 <translation id="9214695392875603905">कपकेक</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" जोड़ा गया</translation>
-<translation id="9215742531438648683">'Google Play स्टोर' अनइंस्टॉल करें</translation>
+<translation id="9215742531438648683">'Google Play Store' अनइंस्टॉल करें</translation>
 <translation id="9218430445555521422">डिफ़ॉल्ट के रूप में सेट करें</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (ऐप्लिकेशन काम नहीं करता)</translation>
 <translation id="9220525904950070496">खाता हटाएं</translation>

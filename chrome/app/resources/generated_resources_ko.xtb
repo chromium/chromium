@@ -704,6 +704,7 @@
 <translation id="1719312230114180055">참고: 지문은 안전한 비밀번호 또는 PIN보다 보안 수준이 낮을 수도 있습니다.</translation>
 <translation id="1720318856472900922">TLS WWW 서버 인증</translation>
 <translation id="1720941539803966190">튜토리얼 닫기</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />로 이미지 검색</translation>
 <translation id="1721312023322545264">이 사이트를 방문하려면 <ph name="NAME" />님으로부터 권한을 받아야 합니다.</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" />에서 <ph name="BEGIN_LINK" />관리하는 <ph name="DEVICE_TYPE" /><ph name="END_LINK" />입니다.</translation>
 <translation id="1723824996674794290">새 창(&amp;N)</translation>
@@ -1280,6 +1281,7 @@
     나중에 Voice Match가 자녀에게 적합하지 않다고 생각되면 어시스턴트 설정에서 삭제하세요. Voice Match 설정 중에 녹음된 자녀 오디오 클립을 보거나 삭제하려면 자녀의 계정에서 <ph name="VOICE_MATCH_SETTINGS_URL" />로 이동하세요.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 일부 검색</translation>
 <translation id="230927227160767054">이 페이지에서 서비스 핸들러를 설치하려 합니다.</translation>
 <translation id="2309620859903500144">모션 센서 또는 조도 센서 액세스가 차단된 사이트입니다.</translation>
 <translation id="2312219318583366810">페이지 URL</translation>
@@ -1845,6 +1847,7 @@
 <translation id="289695669188700754">키 ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">시크릿 창을 모두 닫으면 맞춤 설정이 삭제됩니다.</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" />개 탭을 여시겠습니까?</translation>
+<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" />로 화면 검색</translation>
 <translation id="290105521672621980">파일에 지원되지 않는 기능이 있습니다.</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" />이(가) 이 프린터와 통신할 수 없습니다. 프린터가 연결되어 있는지 확인한 후 다시 시도해 주세요.</translation>
 <translation id="2902312830803030883">추가 작업</translation>
@@ -2284,6 +2287,7 @@
 <translation id="3390741581549395454">Linux 앱 및 파일 백업이 완료되었습니다. 업그레이드가 곧 시작됩니다.</translation>
 <translation id="3391512812407811893">개인정보 보호 샌드박스 체험판</translation>
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" />에서 채팅 앱 알림을 확인합니다.</translation>
+<translation id="3393554941209044235">Chrome 문서 분석</translation>
 <translation id="3394850431319394743">보호된 콘텐츠를 재생하기 위해 식별자를 사용하도록 허용됨</translation>
 <translation id="3396800784455899911">'동의 및 계속' 버튼을 클릭하면 이러한 Google 서비스와 관련하여 위에 설명된 처리 방식에 동의하는 것으로 간주됩니다.</translation>
 <translation id="339722927132407568">정지됨</translation>
@@ -3245,6 +3249,7 @@
 <translation id="4415748029120993980">SECG 타원 곡선 secp384r1(또는 NIST P-384)</translation>
 <translation id="4416450511678320850">콘텐츠에 사용할 수 있는 앱이 없음</translation>
 <translation id="4416582610654027550">유효한 URL을 입력하세요.</translation>
+<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" />로 이미지 위로 드래그하여 검색</translation>
 <translation id="4419409365248380979"><ph name="HOST" />에서 항상 쿠키를 설정하도록 허용</translation>
 <translation id="4421932782753506458">복실이</translation>
 <translation id="4423376891418188461">설정 복원</translation>
@@ -3371,6 +3376,7 @@
 <translation id="4551763574344810652">실행취소하려면 <ph name="MODIFIER_KEY_DESCRIPTION" />을(를) 누르세요.</translation>
 <translation id="4553526521109675518">기기 언어를 변경하려면 Chromebook을 다시 시작해야 합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">처음부터 설정 다시 시작</translation>
+<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" />로 이미지 위로 드래그하여 검색</translation>
 <translation id="4554591392113183336">외부 확장 프로그램의 버전이 기존 프로그램과 동일하거나 낮습니다.</translation>
 <translation id="4555769855065597957">그림자</translation>
 <translation id="4555863373929230635">Google 계정에 비밀번호를 저장하려면 로그인한 다음 동기화를 사용 설정하세요.</translation>
@@ -3517,7 +3523,6 @@
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
 <translation id="4699357559218762027">(자동 실행)</translation>
 <translation id="4701025263201366865">부모 로그인</translation>
-<translation id="4707582759326616943">드래그하여 Google 렌즈로 이미지 검색</translation>
 <translation id="4708794300267213770">절전 모드 해제 시 잠금 화면 표시</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
 <translation id="4711638718396952945">설정값 복원</translation>
@@ -4146,6 +4151,7 @@
 <translation id="5427278936122846523">항상 번역</translation>
 <translation id="5427459444770871191">시계 방향으로 회전(&amp;C)</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />(업데이트 사용 가능)</translation>
+<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" />로 화면 검색</translation>
 <translation id="542948651837270806">신뢰할 수 있는 플랫폼 모듈 펌웨어 업데이트를 설치해야 합니다. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> 보기</translation>
 <translation id="5430931332414098647">인스턴트 테더링</translation>
 <translation id="5431318178759467895">컬러</translation>
@@ -4212,6 +4218,7 @@
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5495466433285976480">다음에 다시 시작할 때 모든 로컬 사용자, 파일, 데이터 및 기타 설정이 삭제됩니다. 모든 사용자는 다시 로그인해야 합니다.</translation>
 <translation id="5495597166260341369">디스플레이를 켜진 상태로 유지</translation>
+<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" />로 드래그하여 이미지 검색</translation>
 <translation id="5496587651328244253">정리</translation>
 <translation id="5496730470963166430">팝업 전송 또는 리디렉션 사용이 허용되지 않음</translation>
 <translation id="5497251278400702716">이 파일</translation>
@@ -5163,7 +5170,6 @@
 <translation id="6532663472409656417">기업 등록됨</translation>
 <translation id="6535331821390304775">항상 <ph name="ORIGIN" />에서 연결된 앱에 있는 이 유형의 링크를 열도록 허용</translation>
 <translation id="653659894138286600">문서 및 이미지 스캔</translation>
-<translation id="6537016096312202316">이미지 위로 드래그하여 Google 렌즈로 검색</translation>
 <translation id="6537613839935722475">이름에는 문자, 숫자, 하이픈(-)을 사용할 수 있습니다.</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">코드를 감지하는 중 오류 발생</translation>
@@ -5216,6 +5222,7 @@
 <translation id="6593881952206664229">저작권이 있는 미디어는 재생되지 않을 수 있습니다</translation>
 <translation id="6594011207075825276">직렬 기기를 찾는 중...</translation>
 <translation id="6595187330192059106"><ph name="HOST" />의 MIDI 기기 전체 제어 항상 차단</translation>
+<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" />로 드래그하여 이미지 검색</translation>
 <translation id="6596325263575161958">암호화 옵션</translation>
 <translation id="6596816719288285829">IP 주소</translation>
 <translation id="6597017209724497268">샘플</translation>
@@ -5346,7 +5353,6 @@
 <translation id="6745592621698551453">지금 업데이트</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
 <translation id="674632704103926902">탭 드래그 사용</translation>
-<translation id="6748054820659621153">Google 렌즈로 화면 검색</translation>
 <translation id="6748465660675848252">계속 진행할 수 있지만 동기화된 데이터와 설정만 복원됩니다. 모든 로컬 데이터가 손실됩니다.</translation>
 <translation id="6750757184909117990">셀룰러 사용 중지</translation>
 <translation id="6750946710563435348">다른 사용자 이름 사용</translation>
@@ -5786,6 +5792,7 @@
 <translation id="7230222852462421043">창 복원(&amp;R)</translation>
 <translation id="7230787553283372882">텍스트 크기 맞춤설정</translation>
 <translation id="7232750842195536390">이름 변경 실패</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" />로 이미지 검색</translation>
 <translation id="7234010996000898150">Linux 복원 취소 중</translation>
 <translation id="7235716375204803342">활동을 가져오는 중...</translation>
 <translation id="7235737137505019098">보안 키에 계정을 추가할 공간이 충분하지 않습니다.</translation>
@@ -6406,7 +6413,6 @@
 <translation id="7853747251428735">도구 더보기(&amp;L)</translation>
 <translation id="7855678561139483478">탭을 새 창으로 이동</translation>
 <translation id="7857093393627376423">텍스트 추천</translation>
-<translation id="7857675386615530425">Google 렌즈로 페이지 일부 검색</translation>
 <translation id="7857949311770343000">설정한 새 탭 페이지가 맞습니까?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" />(Windows)</translation>
 <translation id="786073089922909430">서비스: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6414,7 +6420,6 @@
 <translation id="7861846108263890455">Google 계정 언어</translation>
 <translation id="7864539943188674973">블루투스 사용 안 함</translation>
 <translation id="7865127013871431856">번역 옵션</translation>
-<translation id="7866230141401327032">Google 렌즈로 페이지 일부 검색</translation>
 <translation id="7869143217755017858">어두운 모드 사용 중지</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 페어링됨</translation>
 <translation id="7870730066603611552">설정 후 동기화 옵션 검토</translation>
@@ -6735,6 +6740,7 @@
 <translation id="8184318863960255706">추가 정보</translation>
 <translation id="8184472985242519288">균일</translation>
 <translation id="8186609076106987817">서버에서 파일을 찾을 수 없습니다.</translation>
+<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 일부 검색</translation>
 <translation id="8188389033983459049">계속하려면 기기 설정을 확인하고 사용 설정하세요.</translation>
 <translation id="8189306097519446565">학교 계정</translation>
 <translation id="8189750580333936930">개인정보 보호 샌드박스</translation>
@@ -7397,7 +7403,6 @@
 <translation id="8907787635362884532">게시자: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome에서 컴퓨터에 유해 소프트웨어가 있는지 확인할 수 있습니다.</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> 앱이 제거됨</translation>
-<translation id="8909782404367982052">드래그하여 Google 렌즈로 이미지 검색</translation>
 <translation id="8909833622202089127">사이트에서 내 위치를 추적하고 있습니다.</translation>
 <translation id="8910222113987937043">북마크, 방문 기록, 비밀번호 및 기타 설정을 변경하면 더 이상 Google 계정에 동기화되지 않습니다. 하지만 기존 데이터는 Google 계정에 계속 저장되며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="8910987510378294980">기기 목록 숨기기</translation>
@@ -7541,7 +7546,6 @@
 <translation id="9055636786322918818">RC4 암호화를 적용합니다. RC4 암호화는 안전하지 않으므로 이 옵션을 사용하면 보안 위험도가 높아집니다.</translation>
 <translation id="9056810968620647706">일치하는 항목이 없습니다.</translation>
 <translation id="9057354806206861646">업데이트 일정</translation>
-<translation id="9057599413476594385">이미지 위로 드래그하여 Google 렌즈로 검색</translation>
 <translation id="9062468308252555888">14배</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />행부터 <ph name="ERROR_LINE_END" />행까지에 오류가 있음</translation>
 <translation id="9063800855227801443">기밀 콘텐츠는 캡처할 수 없음</translation>

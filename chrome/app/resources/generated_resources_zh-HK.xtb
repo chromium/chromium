@@ -703,6 +703,7 @@
 <translation id="1719312230114180055">請注意：相比安全性較強的密碼或 PIN，指紋識別的安全性較低。</translation>
 <translation id="1720318856472900922">TLS WWW 伺服器驗證</translation>
 <translation id="1720941539803966190">閂教學課程</translation>
+<translation id="172123215662733643">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="1721312023322545264">您必須獲得<ph name="NAME" />授權，才能瀏覽此網頁</translation>
 <translation id="1722460139690167654">您的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 由 <ph name="END_LINK" /><ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1723824996674794290">新視窗(&amp;N)</translation>
@@ -1279,6 +1280,7 @@
     如果之後您不想子女使用 Voice Match，只需在「Google 助理」設定中移除即可。如要查看或刪除子女設定 Voice Match 時的錄音，請從子女的帳戶前往 <ph name="VOICE_MATCH_SETTINGS_URL" />。
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋頁面上的部分內容</translation>
 <translation id="230927227160767054">這個網頁想要安裝服務處理常式。</translation>
 <translation id="2309620859903500144">系統已封鎖此網站存取您的動作或光線感應器。</translation>
 <translation id="2312219318583366810">網頁網址</translation>
@@ -1844,6 +1846,7 @@
 <translation id="289695669188700754">金鑰識別碼：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">當您關閉所有無痕式視窗時，系統將會移除此自訂設定</translation>
 <translation id="2897878306272793870">您確定要開啟 <ph name="TAB_COUNT" /> 分頁嗎？</translation>
+<translation id="2900477968385519153">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋螢幕畫面</translation>
 <translation id="290105521672621980">檔案使用的功能不受支援</translation>
 <translation id="2902127500170292085">「<ph name="EXTENSION_NAME" />」無法與此打印機通訊。請確定已插上打印機，然後再試一次。</translation>
 <translation id="2902312830803030883">更多操作</translation>
@@ -2283,6 +2286,7 @@
 <translation id="3390741581549395454">已成功備份 Linux 應用程式和檔案。升級即將開始。</translation>
 <translation id="3391512812407811893">試用 Privacy Sandbox</translation>
 <translation id="339178315942519818">在 <ph name="DEVICE_TYPE" /> 上查看即時通訊應用程式的通知</translation>
+<translation id="3393554941209044235">Chrome 文件分析</translation>
 <translation id="3394850431319394743">已允許使用識別碼來播放受保護的內容</translation>
 <translation id="3396800784455899911">按一下 [接受並繼續] 按鈕，即表示您同意上述的 Google 服務處理程序。.</translation>
 <translation id="339722927132407568">畫面凍結</translation>
@@ -3246,6 +3250,7 @@
 <translation id="4415748029120993980">SECG 橢圓曲線 secp384r1 (亦稱為 NIST P-384)</translation>
 <translation id="4416450511678320850">沒有與此內容相關的應用程式</translation>
 <translation id="4416582610654027550">輸入有效的網址</translation>
+<translation id="4417162649853416189">在圖片上拖曳以使用「<ph name="VISUAL_SEARCH_PROVIDER" />」的搜尋功能</translation>
 <translation id="4419409365248380979">永遠允許 <ph name="HOST" /> 設定 Coockie</translation>
 <translation id="4421932782753506458">長毛貓</translation>
 <translation id="4423376891418188461">還原設定</translation>
@@ -3373,6 +3378,7 @@
 <translation id="4551763574344810652">按下 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可復原</translation>
 <translation id="4553526521109675518">您需要重新啟動 Chromebook 才能變更裝置語言。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">重新設定</translation>
+<translation id="4554491709904933912">在圖片上拖曳以使用「<ph name="VISUAL_SEARCH_PROVIDER" />」的搜尋功能</translation>
 <translation id="4554591392113183336">外部擴充功能與現有擴充功能的版本相同或較低。</translation>
 <translation id="4555769855065597957">陰影</translation>
 <translation id="4555863373929230635">如要將密碼儲存至 Google 帳戶，請登入並開啟同步功能。</translation>
@@ -3519,7 +3525,6 @@
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4699357559218762027">(自動啟動)</translation>
 <translation id="4701025263201366865">家長登入</translation>
-<translation id="4707582759326616943">拖曳以使用「Google 智能鏡頭」搜尋圖片</translation>
 <translation id="4708794300267213770">從休眠狀態喚醒時顯示螢幕鎖定畫面</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">還原設定</translation>
@@ -4148,6 +4153,7 @@
 <translation id="5427278936122846523">一律翻譯</translation>
 <translation id="5427459444770871191">順時針旋轉(&amp;C)</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (有可用的更新)</translation>
+<translation id="5429373054983029602">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋螢幕畫面</translation>
 <translation id="542948651837270806">需要安裝信任平台模組韌體的更新。請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">即時網絡共享</translation>
 <translation id="5431318178759467895">顏色</translation>
@@ -4214,6 +4220,7 @@
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、數據和其他設定。所有使用者都必須重新登入。</translation>
 <translation id="5495597166260341369">保持螢幕開啟</translation>
+<translation id="549580971452855947">拖曳以使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="5496587651328244253">管理</translation>
 <translation id="5496730470963166430">不允許傳送彈出式視窗或使用重新導向</translation>
 <translation id="5497251278400702716">此檔案</translation>
@@ -5165,7 +5172,6 @@
 <translation id="6532663472409656417">已註冊企業</translation>
 <translation id="6535331821390304775">永遠允許 <ph name="ORIGIN" /> 使用相關聯的應用程式開啟這類連結</translation>
 <translation id="653659894138286600">掃瞄文件及圖片</translation>
-<translation id="6537016096312202316">在圖片上拖曳以使用「Google 智能鏡頭」的搜尋功能</translation>
 <translation id="6537613839935722475">名稱可以使用字母、數字和連字號 (-)</translation>
 <translation id="6537880577641744343">指令程式</translation>
 <translation id="6538098297809675636">偵測代碼時發生錯誤</translation>
@@ -5218,6 +5224,7 @@
 <translation id="6593881952206664229">系統可能不會播放受版權保護的媒體</translation>
 <translation id="6594011207075825276">正在尋找序列裝置…</translation>
 <translation id="6595187330192059106">一律禁止 <ph name="HOST" /> 全權控制 MIDI 裝置。</translation>
+<translation id="6595792813574514527">拖曳以使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="6596325263575161958">加密選項</translation>
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6597017209724497268">樣本數目</translation>
@@ -5348,7 +5355,6 @@
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="674632704103926902">啟用輕觸拖曳</translation>
-<translation id="6748054820659621153">使用「Google 智能鏡頭」搜尋螢幕</translation>
 <translation id="6748465660675848252">您可以繼續，但是只有您的同步資料和設定會被還原。所有本機資料將會遺失。</translation>
 <translation id="6750757184909117990">停用流動網絡</translation>
 <translation id="6750946710563435348">使用其他使用者名稱</translation>
@@ -5788,6 +5794,7 @@
 <translation id="7230222852462421043">還原視窗</translation>
 <translation id="7230787553283372882">自訂文字大小</translation>
 <translation id="7232750842195536390">無法重新命名</translation>
+<translation id="723343421145275488">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="7234010996000898150">正在取消 Linux 還原</translation>
 <translation id="7235716375204803342">正在擷取活動…</translation>
 <translation id="7235737137505019098">安全密鑰的空間不足，無法建立帳戶。</translation>
@@ -6408,7 +6415,6 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855678561139483478">把分頁移至新視窗</translation>
 <translation id="7857093393627376423">文字建議</translation>
-<translation id="7857675386615530425">透過「Google 智能鏡頭」搜尋頁面的一部分</translation>
 <translation id="7857949311770343000">這是您想要的新分頁嗎？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">服務：<ph name="ARC_PROCESS_NAME" /></translation>
@@ -6416,7 +6422,6 @@
 <translation id="7861846108263890455">Google 帳戶語言</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
 <translation id="7865127013871431856">翻譯選項</translation>
-<translation id="7866230141401327032">透過「Google 智能鏡頭」搜尋頁面的一部分</translation>
 <translation id="7869143217755017858">停用夜間模式</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配對</translation>
 <translation id="7870730066603611552">設定後查看同步選項</translation>
@@ -6737,6 +6742,7 @@
 <translation id="8184318863960255706">更多資訊</translation>
 <translation id="8184472985242519288">平均</translation>
 <translation id="8186609076106987817">伺服器無法找到這個檔案。</translation>
+<translation id="8186704951085064172">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋頁面上的部分內容</translation>
 <translation id="8188389033983459049">檢查您的裝置設定並開啟藍牙以繼續</translation>
 <translation id="8189306097519446565">學校帳戶</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -7399,7 +7405,6 @@
 <translation id="8907787635362884532">發佈者：<ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome 可為電腦檢查有害軟件</translation>
 <translation id="8909298138148012791">已解除安裝 <ph name="APP_NAME" /></translation>
-<translation id="8909782404367982052">拖曳以使用「Google 智能鏡頭」搜尋圖片</translation>
 <translation id="8909833622202089127">網站正在追蹤您的位置</translation>
 <translation id="8910222113987937043">您的書籤、記錄、密碼和其他設定的變更將不會繼續同步至您的 Google 帳戶。不過，Google 帳戶內仍會儲存您現有的資料，而您亦可透過「<ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />」管理這些資料。</translation>
 <translation id="8910987510378294980">隱藏裝置清單</translation>
@@ -7543,7 +7548,6 @@
 <translation id="9055636786322918818">強制執行 RC4 加密。由於 RC4 加密不安全，因此使用此選項會提高風險。</translation>
 <translation id="9056810968620647706">找不到相符的項目。</translation>
 <translation id="9057354806206861646">更新時間表</translation>
-<translation id="9057599413476594385">在圖片上拖曳以使用「Google 智能鏡頭」的搜尋功能</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第<ph name="ERROR_LINE_START" />至第<ph name="ERROR_LINE_END" />行有錯</translation>
 <translation id="9063800855227801443">無法擷取機密內容</translation>

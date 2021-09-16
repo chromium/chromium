@@ -695,6 +695,7 @@
 <translation id="1719312230114180055">Помните, что распознавание отпечатков защищает не так надежно, как сложный пароль или PIN-код.</translation>
 <translation id="1720318856472900922">Аутентификация сервера TLS WWW</translation>
 <translation id="1720941539803966190">Закрыть руководство</translation>
+<translation id="172123215662733643">Искать изображения с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="1721312023322545264">Для доступа к этой странице требуется разрешение пользователя <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Ваше <ph name="BEGIN_LINK" />устройство <ph name="DEVICE_TYPE" /> находится под управлением<ph name="END_LINK" /> домена <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="1723824996674794290">&amp;Новое окно</translation>
@@ -1267,6 +1268,7 @@
     Отключить функцию Voice Match можно в настройках Ассистента. Чтобы послушать или удалить записи, сделанные при настройке Voice Match, войдите в аккаунт ребенка и откройте страницу <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">Искать часть страницы с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="230927227160767054">Эта страница пытается установить обработчик службы.</translation>
 <translation id="2309620859903500144">Этому сайту запрещено использовать датчики движения и освещенности.</translation>
 <translation id="2312219318583366810">URL страницы</translation>
@@ -1831,6 +1833,7 @@
 <translation id="289695669188700754">Идентификатор ключа: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Когда вы закроете все окна в режиме инкогнито, эта специальная настройка будет сброшена</translation>
 <translation id="2897878306272793870">Вы действительно хотите открыть столько вкладок (<ph name="TAB_COUNT" />)?</translation>
+<translation id="2900477968385519153">Искать содержимое экрана с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="290105521672621980">Файл использует неподдерживаемые функции</translation>
 <translation id="2902127500170292085">Расширение "<ph name="EXTENSION_NAME" />" не может установить связь с принтером. Убедитесь, что он подключен и повторите попытку.</translation>
 <translation id="2902312830803030883">Другие действия</translation>
@@ -2270,6 +2273,7 @@
 <translation id="3390741581549395454">Резервная копия приложений и файлов сохранена. Скоро начнется обновление.</translation>
 <translation id="3391512812407811893">Пробные версии Privacy Sandbox</translation>
 <translation id="339178315942519818">Просматривайте уведомления из мессенджеров на устройстве <ph name="DEVICE_TYPE" /></translation>
+<translation id="3393554941209044235">Анализ документов в Chrome</translation>
 <translation id="3394850431319394743">Сайты, которым разрешено использовать идентификаторы для воспроизведения защищенного контента</translation>
 <translation id="3396800784455899911">Нажимая кнопку "Принять условия и продолжить", вы соглашаетесь с Условиями использования сервисов Google, описанными выше.</translation>
 <translation id="339722927132407568">Зависает</translation>
@@ -3233,6 +3237,7 @@
 <translation id="4415748029120993980">Эллиптическая кривая SECG secp384r1 (она же NIST P-384)</translation>
 <translation id="4416450511678320850">Нет подходящих приложений</translation>
 <translation id="4416582610654027550">Введите действительный URL.</translation>
+<translation id="4417162649853416189">Выделять изображения перетаскиванием курсора для поиска с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="4419409365248380979">Разрешить сайту <ph name="HOST" /> сохранять файлы cookie</translation>
 <translation id="4421932782753506458">Пушистик</translation>
 <translation id="4423376891418188461">Восстановить настройки</translation>
@@ -3359,6 +3364,7 @@
 <translation id="4551763574344810652">Чтобы отменить действие, нажмите <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4553526521109675518">Чтобы изменить язык устройства, нужно перезапустить Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Начать заново</translation>
+<translation id="4554491709904933912">Выделять изображения перетаскиванием курсора для поиска с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="4554591392113183336">Внешнее расширение не новее существующего.</translation>
 <translation id="4555769855065597957">Тень</translation>
 <translation id="4555863373929230635">Чтобы сохранять пароли в аккаунте Google, войдите в него и включите синхронизацию.</translation>
@@ -3505,7 +3511,6 @@
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вход для родителя</translation>
-<translation id="4707582759326616943">Перетащить изображения и выполнить поиск с помощью Google Объектива</translation>
 <translation id="4708794300267213770">Показывать заблокированный экран при выходе из спящего режима</translation>
 <translation id="4708849949179781599">Выйти из <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Восстановить исходные настройки</translation>
@@ -4134,6 +4139,7 @@
 <translation id="5427278936122846523">Всегда переводить</translation>
 <translation id="5427459444770871191">Повернуть &amp;по часовой стрелке</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (доступно обновление)</translation>
+<translation id="5429373054983029602">Искать содержимое экрана с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="542948651837270806">Требуется обновить встроенное ПО доверенного платформенного модуля (TPM). Подробнее: <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5430931332414098647">Мгновенная точка доступа</translation>
 <translation id="5431318178759467895">Цветная печать</translation>
@@ -4200,6 +4206,7 @@
 <translation id="5494920125229734069">Выделить все</translation>
 <translation id="5495466433285976480">После перезагрузки все локальные аккаунты, файлы, данные и другие настройки будут удалены. Все пользователи должны снова войти в аккаунт.</translation>
 <translation id="5495597166260341369">Не выключать экран</translation>
+<translation id="549580971452855947">Перетаскивать для поиска изображений с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="5496587651328244253">Управление</translation>
 <translation id="5496730470963166430">Запретить сайтам показывать всплывающие окна или использовать переадресацию</translation>
 <translation id="5497251278400702716">Этот файл</translation>
@@ -5151,7 +5158,6 @@
 <translation id="6532663472409656417">Зарегистрировано в корпоративном домене</translation>
 <translation id="6535331821390304775">Всегда разрешать сайту <ph name="ORIGIN" /> открывать ссылки этого типа в связанном приложении</translation>
 <translation id="653659894138286600">Сканирование документов и изображений</translation>
-<translation id="6537016096312202316">Перетащить область и выполнить поиск по изображениям с помощью Google Объектива</translation>
 <translation id="6537613839935722475">Допускаются буквы, цифры и дефисы.</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">При распознавании кода произошла ошибка.</translation>
@@ -5204,6 +5210,7 @@
 <translation id="6593881952206664229">Медиафайлы, защищенные авторскими правами, могут не воспроизводиться</translation>
 <translation id="6594011207075825276">Поиск последовательных устройств…</translation>
 <translation id="6595187330192059106">Запрещать сайту <ph name="HOST" /> контролировать устройства MIDI</translation>
+<translation id="6595792813574514527">Перетаскивать для поиска изображений с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="6596325263575161958">Параметры шифрования</translation>
 <translation id="6596816719288285829">IP-адрес</translation>
 <translation id="6597017209724497268">Примеры</translation>
@@ -5334,7 +5341,6 @@
 <translation id="6745592621698551453">Обновить сейчас</translation>
 <translation id="6746124502594467657">Переместить вниз</translation>
 <translation id="674632704103926902">Включить перетаскивание нажатием</translation>
-<translation id="6748054820659621153">Искать содержимое экрана с помощью Google Объектива</translation>
 <translation id="6748465660675848252">Если вы продолжите сейчас, восстановлены будут только синхронизированные, но не локальные данные.</translation>
 <translation id="6750757184909117990">Отключить мобильную сеть</translation>
 <translation id="6750946710563435348">Использовать другое имя пользователя</translation>
@@ -5774,6 +5780,7 @@
 <translation id="7230222852462421043">&amp;Восстановить окно</translation>
 <translation id="7230787553283372882">Позволяет настроить размер текста</translation>
 <translation id="7232750842195536390">Название не изменено</translation>
+<translation id="723343421145275488">Искать изображения с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="7234010996000898150">Отмена восстановления контейнера Linux…</translation>
 <translation id="7235716375204803342">Загрузка действий...</translation>
 <translation id="7235737137505019098">На электронном ключе не хватает места для нового аккаунта.</translation>
@@ -6394,7 +6401,6 @@
 <translation id="7853747251428735">Дополнительные инструмен&amp;ты</translation>
 <translation id="7855678561139483478">Открыть вкладку в новом окне</translation>
 <translation id="7857093393627376423">Текстовые подсказки</translation>
-<translation id="7857675386615530425">Искать часть страницы с помощью Google Объектива</translation>
 <translation id="7857949311770343000">Другая страница быстрого доступа?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Сервис: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6402,7 +6408,6 @@
 <translation id="7861846108263890455">Язык аккаунта Google</translation>
 <translation id="7864539943188674973">Отключить Bluetooth</translation>
 <translation id="7865127013871431856">Параметры перевода</translation>
-<translation id="7866230141401327032">Искать часть страницы с помощью Google Объектива</translation>
 <translation id="7869143217755017858">Отключить тёмную тему</translation>
 <translation id="786957569166715433">Подключено устройство: <ph name="DEVICE_NAME" /></translation>
 <translation id="7870730066603611552">Проверять параметры синхронизации после начала сеанса</translation>
@@ -6722,6 +6727,7 @@
 <translation id="8184318863960255706">Подробнее</translation>
 <translation id="8184472985242519288">Без объема</translation>
 <translation id="8186609076106987817">Этот файл отсутствует на сервере.</translation>
+<translation id="8186704951085064172">Искать часть страницы с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="8188389033983459049">Чтобы продолжить, проверьте настройки устройства и включите Bluetooth.</translation>
 <translation id="8189306097519446565">Учебные аккаунты</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -7387,7 +7393,6 @@
 <translation id="8907787635362884532">Издатель: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Браузер Chrome может проверить компьютер на наличие вредоносного ПО.</translation>
 <translation id="8909298138148012791">Плагин <ph name="APP_NAME" /> удален.</translation>
-<translation id="8909782404367982052">Перетащить изображения и выполнить поиск с помощью Google Объектива</translation>
 <translation id="8909833622202089127">Сайт отслеживает ваше местоположение</translation>
 <translation id="8910222113987937043">Изменения, связанные с закладками, историей, паролями и настройками, больше не будут синхронизироваться с вашим аккаунтом Google. Тем не менее, данные в аккаунте Google сохранятся. Вы можете просмотреть и изменить их в <ph name="BEGIN_LINK" />Личном кабинете Google<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Скрыть список устройств</translation>
@@ -7531,7 +7536,6 @@
 <translation id="9055636786322918818">Использовать шифрование по алгоритму RC4. Этот вариант небезопасен, так как потоковый шифр RC4 ненадежен.</translation>
 <translation id="9056810968620647706">Ничего не найдено.</translation>
 <translation id="9057354806206861646">График обновлений</translation>
-<translation id="9057599413476594385">Перетащить область и выполнить поиск по изображениям с помощью Google Объектива</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Ошибка в строках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Не удается сделать снимок конфиденциального контента</translation>

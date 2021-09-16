@@ -695,6 +695,7 @@
 <translation id="1719312230114180055">Poznámka: Otisk prstu může být méně bezpečný než silné heslo nebo PIN.</translation>
 <translation id="1720318856472900922">Ověření TLS webového serveru</translation>
 <translation id="1720941539803966190">Zavřít výukový program</translation>
+<translation id="172123215662733643">Vyhledat obrázky pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Zdá se, že k návštěvě tohoto webu potřebujete povolení od správce <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Vaše <ph name="BEGIN_LINK" />zařízení <ph name="DEVICE_TYPE" /> je spravováno<ph name="END_LINK" /> doménou <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">Nové okno</translation>
@@ -1267,6 +1268,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
     Pokud se později rozhodnete, že nechcete, aby dítě funkci Voice Match používalo, můžete ji v nastavení Asistenta jednoduše odstranit. Pokud chcete zobrazit nebo smazat zvukové úryvky, které dítě zaznamená během nastavování funkce Voice Match, přejděte v účtu dítěte na stránku <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">Prohledat část stránky pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="230927227160767054">Stránka chce instalovat obslužný nástroj služby.</translation>
 <translation id="2309620859903500144">Tomuto webu byl zablokován přístup k senzorům pohybu nebo osvětlení.</translation>
 <translation id="2312219318583366810">Adresa URL stránky</translation>
@@ -1831,6 +1833,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="289695669188700754">ID klíče: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Po zavření všech anonymních oken bude toto vlastní nastavení odstraněno</translation>
 <translation id="2897878306272793870">Určitě chcete otevřít <ph name="TAB_COUNT" /> karty (karet)?</translation>
+<translation id="2900477968385519153">Vyhledat na obrazovce pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Soubor používá prvky, které nejsou podporovány</translation>
 <translation id="2902127500170292085">Rozšíření <ph name="EXTENSION_NAME" /> s touto tiskárnou nedokáže komunikovat. Ujistěte se, zda je tiskárna zapojena, a zkuste to znovu.</translation>
 <translation id="2902312830803030883">Další akce</translation>
@@ -2270,6 +2273,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3390741581549395454">Aplikace a soubory systému Linux byly úspěšně zálohovány. Brzy začne upgradování.</translation>
 <translation id="3391512812407811893">Privacy Sandbox</translation>
 <translation id="339178315942519818">Zobrazovat oznámení z chatovacích aplikací v zařízení <ph name="DEVICE_TYPE" /></translation>
+<translation id="3393554941209044235">Analýza dokumentů Chrome</translation>
 <translation id="3394850431319394743">Povolení používat identifikátory k přehrávání chráněného obsahu</translation>
 <translation id="3396800784455899911">Kliknutím na tlačítko Přijmout a pokračovat vyjadřujete souhlas se zpracováním popsaným výše pro tyto služby Google.</translation>
 <translation id="339722927132407568">Zamrzá</translation>
@@ -3232,6 +3236,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4415748029120993980">Eliptická křivka SECG secp384r1 (neboli NIST P-384)</translation>
 <translation id="4416450511678320850">Pro tento obsah nejsou k dispozici žádné aplikace</translation>
 <translation id="4416582610654027550">Zadejte platnou adresu URL</translation>
+<translation id="4417162649853416189">Přetáhnutím přes obrázky vyhledávat pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Vždy povolit hostiteli <ph name="HOST" /> nastavovat soubory cookie</translation>
 <translation id="4421932782753506458">Kotě</translation>
 <translation id="4423376891418188461">Obnovit nastavení</translation>
@@ -3358,6 +3363,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4551763574344810652">Stisknutím <ph name="MODIFIER_KEY_DESCRIPTION" /> vrátíte provedenou akci zpět</translation>
 <translation id="4553526521109675518">Pokud chcete změnit jazyk Chromebooku, musíte ho restartovat. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Zahájit nastavení znovu</translation>
+<translation id="4554491709904933912">Přetáhnutím přes obrázky vyhledávat pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Externí rozšíření má stejnou nebo nižší verzi než stávající.</translation>
 <translation id="4555769855065597957">Stín</translation>
 <translation id="4555863373929230635">Chcete-li hesla ukládat do účtu Google, přihlaste se a zapněte synchronizaci.</translation>
@@ -3504,7 +3510,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4699172675775169585">Obrázky a soubory v mezipaměti</translation>
 <translation id="4699357559218762027">(spuštěno automaticky)</translation>
 <translation id="4701025263201366865">Přihlášení rodiče</translation>
-<translation id="4707582759326616943">Přetáhnutím vyhledat obrázky pomocí Google Lens</translation>
 <translation id="4708794300267213770">Při probuzení z režimu spánku zobrazit obrazovku uzamčení</translation>
 <translation id="4708849949179781599">Ukončit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Obnovit nastavení</translation>
@@ -4133,6 +4138,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5427278936122846523">Vždy překládat</translation>
 <translation id="5427459444770871191">Otočit &amp;ve směru hodinových ručiček</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (K dispozici je aktualizace)</translation>
+<translation id="5429373054983029602">Vyhledat na obrazovce pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Je potřeba nainstalovat aktualizaci firmwaru čipu TPM. Zobrazit <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Dynamický tethering</translation>
 <translation id="5431318178759467895">Barevně</translation>
@@ -4199,6 +4205,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5494920125229734069">Vybrat vše</translation>
 <translation id="5495466433285976480">Pokud provedete tuto akci, budou po příštím restartu odebráni všichni místní uživatelé, soubory, údaje a další nastavení. Všichni uživatelé se budou muset znovu přihlásit.</translation>
 <translation id="5495597166260341369">Ponechat displej zapnutý</translation>
+<translation id="549580971452855947">Přetažením vyhledat obrázky pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Uspořádat</translation>
 <translation id="5496730470963166430">Zákaz zobrazovat vyskakovací okna a používat přesměrování</translation>
 <translation id="5497251278400702716">Tento soubor</translation>
@@ -5150,7 +5157,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6532663472409656417">Registrováno v podniku</translation>
 <translation id="6535331821390304775">Vždy webu <ph name="ORIGIN" /> povolit otvírání odkazů tohoto typu v přidružené aplikaci</translation>
 <translation id="653659894138286600">Skenování dokumentů a obrázků</translation>
-<translation id="6537016096312202316">Přetáhnutím přes obrázky vyhledávat pomocí Google Lens</translation>
 <translation id="6537613839935722475">Název smí obsahovat písmena, čísla a spojovníky (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Při zjišťování kódu došlo k chybě</translation>
@@ -5203,6 +5209,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6593881952206664229">Mediální obsah chráněný autorskými právy se nemusí přehrávat</translation>
 <translation id="6594011207075825276">Hledání zařízení se sériovým portem…</translation>
 <translation id="6595187330192059106">Webu <ph name="HOST" /> vždy blokovat úplné ovládání zařízení MIDI</translation>
+<translation id="6595792813574514527">Přetažením vyhledat obrázky pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Možnosti šifrování</translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6597017209724497268">Vzory</translation>
@@ -5333,7 +5340,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6745592621698551453">Aktualizovat</translation>
 <translation id="6746124502594467657">Posunout dolů</translation>
 <translation id="674632704103926902">Aktivovat přetažení klepnutím</translation>
-<translation id="6748054820659621153">Vyhledávat na obrazovce pomocí Google Lens</translation>
 <translation id="6748465660675848252">Můžete pokračovat. Obnoví se však pouze synchronizovaná data a nastavení. Veškerá místní data budou ztracena.</translation>
 <translation id="6750757184909117990">Deaktivovat mobilní síť</translation>
 <translation id="6750946710563435348">Použít jiné uživatelské jméno</translation>
@@ -5773,6 +5779,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7230222852462421043">&amp;Obnovit okno</translation>
 <translation id="7230787553283372882">Přizpůsobení velikosti textu</translation>
 <translation id="7232750842195536390">Přejmenování se nezdařilo</translation>
+<translation id="723343421145275488">Vyhledat obrázky pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Obnovení kontejneru systému Linux se ruší</translation>
 <translation id="7235716375204803342">Načítání aktivit...</translation>
 <translation id="7235737137505019098">Na bezpečnostním klíči již není dost místa pro žádné další účty.</translation>
@@ -6393,7 +6400,6 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7853747251428735">&amp;Další nástroje</translation>
 <translation id="7855678561139483478">Přesunout kartu do nového okna</translation>
 <translation id="7857093393627376423">Textové návrhy</translation>
-<translation id="7857675386615530425">Prohledat část stránky pomocí Google Lens</translation>
 <translation id="7857949311770343000">Je toto stránka nové karty, kterou jste očekávali?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Služba: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6401,7 +6407,6 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7861846108263890455">Jazyk účtu Google</translation>
 <translation id="7864539943188674973">Vypnout Bluetooth</translation>
 <translation id="7865127013871431856">Možnosti Překladače</translation>
-<translation id="7866230141401327032">Prohledat část stránky pomocí Google Lens</translation>
 <translation id="7869143217755017858">Deaktivovat tmavý režim</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – spárováno</translation>
 <translation id="7870730066603611552">Po nastavení zkontrolovat možnosti synchronizace</translation>
@@ -6721,6 +6726,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8184318863960255706">Další informace</translation>
 <translation id="8184472985242519288">Obrys</translation>
 <translation id="8186609076106987817">Serveru se nepodařilo soubor najít.</translation>
+<translation id="8186704951085064172">Prohledat část stránky pomocí <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Chcete-li pokračovat, zkontrolujte nastavení zařízení a zapněte Bluetooth</translation>
 <translation id="8189306097519446565">Školní účty</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -7385,7 +7391,6 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="8907787635362884532">Vydavatel: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome může zkontrolovat, zda v počítači nemáte škodlivý software</translation>
 <translation id="8909298138148012791">Aplikace <ph name="APP_NAME" /> byla odinstalována.</translation>
-<translation id="8909782404367982052">Přetáhnutím vyhledat obrázky pomocí Google Lens</translation>
 <translation id="8909833622202089127">Web sleduje vaši polohu</translation>
 <translation id="8910222113987937043">Změny záložek, historie, hesel a dalších nastavení se již nebudou synchronizovat do účtu Google. Vaše existující data v účtu Google uložena zůstanou a lze je spravovat na <ph name="BEGIN_LINK" />Hlavním panelu Google<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Skrýt seznam zařízení</translation>
@@ -7529,7 +7534,6 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="9055636786322918818">Vynutit šifrování RC4. Použití této možnosti zvyšuje riziko, protože šifry RC4 nejsou bezpečné.</translation>
 <translation id="9056810968620647706">Nebyly nalezeny žádné shody.</translation>
 <translation id="9057354806206861646">Plán aktualizací</translation>
-<translation id="9057599413476594385">Přetáhnutím přes obrázky vyhledávat pomocí Google Lens</translation>
 <translation id="9062468308252555888">14×</translation>
 <translation id="9063208415146866933">Chyba na řádku <ph name="ERROR_LINE_START" /> až <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Snímek důvěrného obsahu pořídit nelze</translation>

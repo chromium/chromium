@@ -690,6 +690,7 @@
 <translation id="1719312230114180055">请注意：指纹识别的安全性可能不及安全系数高的密码或 PIN 码。</translation>
 <translation id="1720318856472900922">TLS WWW 服务器身份验证</translation>
 <translation id="1720941539803966190">关闭教程</translation>
+<translation id="172123215662733643">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="1721312023322545264">您需要获得<ph name="NAME" />的许可，然后才能访问此网站</translation>
 <translation id="1722460139690167654">您的<ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" />由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1723824996674794290">打开新的窗口(&amp;N)</translation>
@@ -1262,6 +1263,7 @@
     如果您日后又改变了想法，觉得 Voice Match 功能不适合您的孩子，只需在孩子的 Google 助理设置中关闭该功能即可。如需查看或删除您孩子在设置 Voice Match 时录制的音频剪辑，请使用孩子的帐号访问 <ph name="VOICE_MATCH_SETTINGS_URL" />。
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索网页的某个部分</translation>
 <translation id="230927227160767054">此页面想要安装一个服务处理程序。</translation>
 <translation id="2309620859903500144">此网站已被禁止使用您的动态传感器或光传感器。</translation>
 <translation id="2312219318583366810">网页网址</translation>
@@ -1826,6 +1828,7 @@
 <translation id="289695669188700754">密钥 ID：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">当您关闭所有无痕式窗口后，系统将会撤消这项自定义设置</translation>
 <translation id="2897878306272793870">是否确实要打开 <ph name="TAB_COUNT" /> 个标签页？</translation>
+<translation id="2900477968385519153">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索您的屏幕上的内容</translation>
 <translation id="290105521672621980">文件使用了不支持的功能</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" />无法与此打印机通信。请确保此打印机已插好并重试。</translation>
 <translation id="2902312830803030883">更多操作</translation>
@@ -2096,6 +2099,7 @@
 <translation id="3183143381919926261">移动数据网络</translation>
 <translation id="3183944777708523606">显示器排列方式</translation>
 <translation id="3184536091884214176">设置或管理 CUPS 打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{这个应用已被屏蔽}other{某些应用已被屏蔽}}</translation>
 <translation id="3188257591659621405">我的文件</translation>
 <translation id="3188465121994729530">移动平均值</translation>
 <translation id="3189187154924005138">大号光标</translation>
@@ -2264,6 +2268,7 @@
 <translation id="3390741581549395454">已成功备份 Linux 应用和文件。即将开始升级。</translation>
 <translation id="3391512812407811893">试用隐私沙盒</translation>
 <translation id="339178315942519818">在 <ph name="DEVICE_TYPE" /> 上查看聊天应用内的通知</translation>
+<translation id="3393554941209044235">Chrome 文档分析</translation>
 <translation id="3394850431319394743">可以使用标识符来播放受保护内容</translation>
 <translation id="3396800784455899911">点击“接受并继续”按钮，即表示您同意上述针对这些 Google 服务的处理方式。</translation>
 <translation id="339722927132407568">卡顿</translation>
@@ -3055,6 +3060,7 @@
 <translation id="4220648711404560261">激活时出错。</translation>
 <translation id="4225020013797061859">按某个开关键或按键即可将其分配给“<ph name="ACTION" />”操作</translation>
 <translation id="4225397296022057997">在所有网站上</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
 <translation id="4235965441080806197">取消登录</translation>
@@ -3225,6 +3231,7 @@
 <translation id="4415748029120993980">SECG 椭圆曲线 secp384r1（又称 NIST P-384）</translation>
 <translation id="4416450511678320850">这里没有可用来分享此内容的应用</translation>
 <translation id="4416582610654027550">请输入一个有效网址</translation>
+<translation id="4417162649853416189">在图片上拖动光标即可使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索</translation>
 <translation id="4419409365248380979">总是允许 <ph name="HOST" /> 设置 Cookie</translation>
 <translation id="4421932782753506458">猫咪</translation>
 <translation id="4423376891418188461">还原设置</translation>
@@ -3351,6 +3358,7 @@
 <translation id="4551763574344810652">按 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可撤消</translation>
 <translation id="4553526521109675518">您需要重启 Chromebook 才能更改设备语言。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">重新开始设置</translation>
+<translation id="4554491709904933912">在图片上拖动光标即可使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索</translation>
 <translation id="4554591392113183336">外部扩展程序的版本与现有版本相同或更低。</translation>
 <translation id="4555769855065597957">阴影</translation>
 <translation id="4555863373929230635">若想将密码保存到您的 Google 帐号中，请登录帐号并开启同步功能。</translation>
@@ -3497,7 +3505,6 @@
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4699357559218762027">（自动启动）</translation>
 <translation id="4701025263201366865">家长登录</translation>
-<translation id="4707582759326616943">拖动即可使用 Google 智能镜头搜索图片</translation>
 <translation id="4708794300267213770">从休眠状态唤醒时显示锁定屏幕</translation>
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">恢复设置</translation>
@@ -4126,6 +4133,7 @@
 <translation id="5427278936122846523">一律翻译</translation>
 <translation id="5427459444770871191">顺时针旋转(&amp;C)</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />（可进行更新）</translation>
+<translation id="5429373054983029602">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索您的屏幕上的内容</translation>
 <translation id="542948651837270806">需为“可信平台模块”固件安装更新。请访问 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">即时网络共享</translation>
 <translation id="5431318178759467895">彩色</translation>
@@ -4192,6 +4200,7 @@
 <translation id="5494920125229734069">全选</translation>
 <translation id="5495466433285976480">执行此操作后，所有本地用户、文件、数据和其他设置都将遭到删除，下次重启后您将再也看不到这些内容。所有用户均必须重新登录。</translation>
 <translation id="5495597166260341369">不关闭显示屏</translation>
+<translation id="549580971452855947">拖动光标即可使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="5496587651328244253">整理</translation>
 <translation id="5496730470963166430">不允许发送弹出式窗口或使用重定向</translation>
 <translation id="5497251278400702716">此文件</translation>
@@ -4301,6 +4310,7 @@
 <translation id="5604884720628869833">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），名称为“<ph name="DEVICE_NAME" />”，类型为键盘</translation>
 <translation id="5605623530403479164">其他搜索引擎</translation>
 <translation id="5605758115928394442">系统向您的手机发送了一条通知，以确认您的身份。</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{这个扩展程序已被屏蔽}other{这些扩展程序已被屏蔽}}</translation>
 <translation id="560834977503641186">Wi-Fi 同步，了解详情</translation>
 <translation id="5608580678041221894">按以下键可调整或移动剪裁区域</translation>
 <translation id="5609231933459083978">该应用似乎无效。</translation>
@@ -5047,6 +5057,7 @@
 <translation id="6434325376267409267">您需要更新设备，才能使用 <ph name="APP_NAME" />。</translation>
 <translation id="6436164536244065364">在 Chrome 网上应用店中查看</translation>
 <translation id="6436610005579237680">如果想获得为您量身定制的回复，您不妨允许 Google 助理在您提问后使用您的屏幕上内容的屏幕截图。Google 助理可能还会使用正在播放的歌曲或视频的相关信息。</translation>
+<translation id="6436778875248895551">您的管理员已屏蔽扩展程序“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6438234780621650381">重置设置</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音频</translation>
 <translation id="6442187272350399447">棒极了</translation>
@@ -5141,7 +5152,6 @@
 <translation id="6532663472409656417">已向企业注册</translation>
 <translation id="6535331821390304775">始终允许 <ph name="ORIGIN" /> 在关联的应用中打开此类链接</translation>
 <translation id="653659894138286600">扫描文件和图片</translation>
-<translation id="6537016096312202316">在图片上拖动光标即可使用 Google 智能镜头搜索</translation>
 <translation id="6537613839935722475">名称可以使用字母、数字和连字符 (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">检测代码时出错</translation>
@@ -5194,10 +5204,12 @@
 <translation id="6593881952206664229">受版权保护的媒体可能无法播放</translation>
 <translation id="6594011207075825276">正在查找串行设备…</translation>
 <translation id="6595187330192059106">始终禁止 <ph name="HOST" /> 全面控制 MIDI 设备。</translation>
+<translation id="6595792813574514527">拖动光标即可使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="6596325263575161958">加密选项</translation>
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6597017209724497268">个样本的平均值</translation>
 <translation id="6597148444736186483">要在此设备上退出主要帐号，请点击屏幕上的时间。在随即显示的菜单中，点击“退出”。</translation>
+<translation id="6597331566371766302">您的管理员已屏蔽以下扩展程序：</translation>
 <translation id="6601395831301182804">您是想启用 ChromeVox（Chrome 操作系统的内置屏幕阅读器）吗？如果是，请按空格键。</translation>
 <translation id="6601612474695404578">某些网站会使用第三方 Cookie 加载网页。如果某个网站无法正常运行，您可以尝试允许使用 Cookie。</translation>
 <translation id="6602937173026466876">访问您的打印机</translation>
@@ -5323,7 +5335,6 @@
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="674632704103926902">启用点按拖动功能</translation>
-<translation id="6748054820659621153">使用 Google 智能镜头搜索您的屏幕上的内容</translation>
 <translation id="6748465660675848252">您可以继续，但系统将只恢复已同步的数据和设置。所有本地数据都将会丢失。</translation>
 <translation id="6750757184909117990">停用移动网络</translation>
 <translation id="6750946710563435348">使用其他用户名</translation>
@@ -5331,6 +5342,7 @@
 <translation id="6757101664402245801">网址已复制</translation>
 <translation id="6758056191028427665">让我们知道您的满意度。</translation>
 <translation id="6759193508432371551">恢复出厂设置</translation>
+<translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6762833852331690540">已开启</translation>
 <translation id="676560328519657314">您在 Google Pay 中的付款方式</translation>
 <translation id="6767566652486411142">选择另一种语言…</translation>
@@ -5762,6 +5774,7 @@
 <translation id="7230222852462421043">恢复窗口(&amp;R)</translation>
 <translation id="7230787553283372882">自定义文字大小</translation>
 <translation id="7232750842195536390">重命名失败</translation>
+<translation id="723343421145275488">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="7234010996000898150">正在取消 Linux 恢复</translation>
 <translation id="7235716375204803342">正在获取活动…</translation>
 <translation id="7235737137505019098">您的安全密钥没有足够的空间来存储任何其他帐号。</translation>
@@ -6210,6 +6223,7 @@
 <translation id="7691698019618282776">Crostini 升级</translation>
 <translation id="7696063401938172191">在您的“<ph name="PHONE_NAME" />”上：</translation>
 <translation id="7697166915480294040">当您共享屏幕时，系统会隐藏详细信息</translation>
+<translation id="7698507637739331665">某些内容已被屏蔽</translation>
 <translation id="7701040980221191251">无</translation>
 <translation id="7701869757853594372">用户句柄</translation>
 <translation id="7702574632857388784">从列表中移除 <ph name="FILE_NAME" /></translation>
@@ -6381,14 +6395,13 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855678561139483478">将标签页移至新窗口</translation>
 <translation id="7857093393627376423">文字建议</translation>
-<translation id="7857675386615530425">使用 Google 智能镜头搜索网页的某个部分</translation>
 <translation id="7857949311770343000">这是您想要的新标签页吗？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">服务：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下载内容(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帐号语言</translation>
 <translation id="7864539943188674973">停用蓝牙</translation>
-<translation id="7866230141401327032">使用 Google 智能镜头搜索网页的某个部分</translation>
+<translation id="7865127013871431856">翻译选项</translation>
 <translation id="7869143217755017858">停用深色模式</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配对</translation>
 <translation id="7870730066603611552">完成设置后查看同步选项</translation>
@@ -6708,6 +6721,7 @@
 <translation id="8184318863960255706">更多信息</translation>
 <translation id="8184472985242519288">均匀</translation>
 <translation id="8186609076106987817">服务器找不到该文件。</translation>
+<translation id="8186704951085064172">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索网页的某个部分</translation>
 <translation id="8188389033983459049">请检查您的设备设置，并开启蓝牙以继续</translation>
 <translation id="8189306097519446565">学校帐号</translation>
 <translation id="8189750580333936930">隐私沙盒</translation>
@@ -7370,7 +7384,6 @@
 <translation id="8907787635362884532">发布者：<ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome 可以检查您的计算机上是否存在有害软件</translation>
 <translation id="8909298138148012791">已卸载 <ph name="APP_NAME" /></translation>
-<translation id="8909782404367982052">拖动即可使用 Google 智能镜头搜索图片</translation>
 <translation id="8909833622202089127">该网站正在跟踪您的位置</translation>
 <translation id="8910222113987937043">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 帐号。但是，您的现有数据依然会存储在您的 Google 帐号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>
 <translation id="8910987510378294980">隐藏设备列表</translation>
@@ -7514,7 +7527,6 @@
 <translation id="9055636786322918818">强制执行 RC4 加密。选中此选项会令您面临更大的风险，因为 RC4 加密不安全。</translation>
 <translation id="9056810968620647706">未找到匹配项。</translation>
 <translation id="9057354806206861646">更新时间表</translation>
-<translation id="9057599413476594385">在图片上拖动光标即可使用 Google 智能镜头搜索</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 行到第 <ph name="ERROR_LINE_END" /> 行存在错误</translation>
 <translation id="9063800855227801443">无法截取机密内容</translation>

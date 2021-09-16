@@ -693,6 +693,7 @@
 <translation id="1719312230114180055">Not: Parmak iziniz güçlü bir şifre veya PIN kadar güvenli olmayabilir.</translation>
 <translation id="1720318856472900922">TLS WWW Sunucu Kimlik Doğrulaması</translation>
 <translation id="1720941539803966190">Eğitimi kapat</translation>
+<translation id="172123215662733643">Görselleri <ph name="VISUAL_SEARCH_PROVIDER" /> ile ara</translation>
 <translation id="1721312023322545264">Bu siteyi ziyaret etmek için <ph name="NAME" /> size izin vermelidir</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" />, <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetilmektedir</translation>
 <translation id="1723824996674794290">Ye&amp;ni pencere</translation>
@@ -1264,6 +1265,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
     Daha sonra Voice Match'in çocuğunuza uygun olmadığına karar verirseniz bunu Asistan Ayarları'ndan kaldırabilirsiniz. Voice Match kurulumu sırasında çocuğunuzun kaydettiği ses kliplerini görüntülemek veya silmek için çocuğunuzun hesabından <ph name="VOICE_MATCH_SETTINGS_URL" /> adresine gidin.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> ile sayfanın bir kısmında arama yap</translation>
 <translation id="230927227160767054">Bu sayfa bir servis işleyici yüklemek istiyor.</translation>
 <translation id="2309620859903500144">Bu sitenin, hareket veya ışık sensörlerinize erişimi engellenmiştir.</translation>
 <translation id="2312219318583366810">Sayfa URL'si</translation>
@@ -1828,6 +1830,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="289695669188700754">Anahtar Kimliği: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Tüm Gizli pencerelerinizi kapattığınızda bu özel ayar kaldırılır</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> sekmeyi açmak istediğinizden emin misiniz?</translation>
+<translation id="2900477968385519153">Ekranınızı <ph name="VISUAL_SEARCH_PROVIDER" /> ile arayın</translation>
 <translation id="290105521672621980">Dosyada desteklenmeyen özellikler kullanılıyor</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> bu yazıcıyla iletişim kuramadı. Yazıcının fişinin takılı olduğundan emin olun ve tekrar deneyin.</translation>
 <translation id="2902312830803030883">Diğer işlemler</translation>
@@ -2267,6 +2270,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3390741581549395454">Linux uygulamaları ve dosyaları başarıyla yedeklendi. Yeni sürüme geçirme işlemi birazdan başlayacak.</translation>
 <translation id="3391512812407811893">Özel Korumalı Alan denemeleri</translation>
 <translation id="339178315942519818">Sohbet uygulamalarınızdaki bildirimleri <ph name="DEVICE_TYPE" /> cihazınızda görüntüleyin</translation>
+<translation id="3393554941209044235">Chrome Doküman Analizi</translation>
 <translation id="3394850431319394743">Korumalı içeriği oynatmak için tanımlayıcı kullanımına izin verildi</translation>
 <translation id="3396800784455899911">"Kabul et ve devam et" düğmesini tıklayarak bu Google hizmetleri ile ilgili yukarıda açıklanan işlemleri kabul etmiş olursunuz.</translation>
 <translation id="339722927132407568">Donuyor</translation>
@@ -3230,6 +3234,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4415748029120993980">SECG eliptik eğri secp384r1 (önceki adı NIST P-384)</translation>
 <translation id="4416450511678320850">Bu içerik için kullanılabilen uygulama yok</translation>
 <translation id="4416582610654027550">Geçerli bir URL yazın</translation>
+<translation id="4417162649853416189">Görselleri <ph name="VISUAL_SEARCH_PROVIDER" /> ile aramak için üzerine sürükleyin</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> ana makinesinin her zaman çerezleri ayarlamasına izin ver</translation>
 <translation id="4421932782753506458">Mırnav</translation>
 <translation id="4423376891418188461">Ayarları Geri Yükle</translation>
@@ -3356,6 +3361,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4551763574344810652">Geri Almak için <ph name="MODIFIER_KEY_DESCRIPTION" /> kısayoluna basın</translation>
 <translation id="4553526521109675518">Cihaz dilini değiştirmek için Chromebook'unuzu yeniden başlatmanız gerekir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Kuruluma baştan başla</translation>
+<translation id="4554491709904933912">Görselleri <ph name="VISUAL_SEARCH_PROVIDER" /> ile aramak için üzerine sürükleyin</translation>
 <translation id="4554591392113183336">Harici uzantı, mevcut bir uzantıyla aynı veya daha eski sürümde.</translation>
 <translation id="4555769855065597957">Gölge</translation>
 <translation id="4555863373929230635">Şifreleri Google Hesabınıza kaydetmek için oturum açın ve senkronizasyonu etkinleştirin.</translation>
@@ -3502,7 +3508,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4699172675775169585">Önbelleğe alınan resimler ve dosyalar</translation>
 <translation id="4699357559218762027">(otomatik başlatıldı)</translation>
 <translation id="4701025263201366865">Ebeveyn oturum açmalı</translation>
-<translation id="4707582759326616943">Google Lens ile görsel aramak için sürükleyin</translation>
 <translation id="4708794300267213770">Uykudan uyanırken kilit ekranını göster</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> uygulamasından çık</translation>
 <translation id="4711638718396952945">Ayarları geri yükle</translation>
@@ -4131,6 +4136,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5427278936122846523">Her Zaman Çevir</translation>
 <translation id="5427459444770871191">Saat &amp;Yönünde Döndür</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Güncelleme mevcut)</translation>
+<translation id="5429373054983029602">Ekranınızı <ph name="VISUAL_SEARCH_PROVIDER" /> ile arayın</translation>
 <translation id="542948651837270806">Güvenilir Platform Modülü donanım yazılımı için bir güncellemenin yüklenmesi gerekiyor. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> ürününe göz atın</translation>
 <translation id="5430931332414098647">Anında Tethering</translation>
 <translation id="5431318178759467895">Renk</translation>
@@ -4197,6 +4203,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5494920125229734069">Tümünü seç</translation>
 <translation id="5495466433285976480">Bu işlem, cihazı tekrar başlattığınızda tüm yerel kullanıcıları, dosyaları, verileri ve diğer ayarları kaldıracak. Tüm kullanıcıların yeniden oturum açması gerekecek.</translation>
 <translation id="5495597166260341369">Ekranı açık tut</translation>
+<translation id="549580971452855947">Görselleri <ph name="VISUAL_SEARCH_PROVIDER" /> ile aramak için sürükleyin</translation>
 <translation id="5496587651328244253">Düzenle</translation>
 <translation id="5496730470963166430">Pop-up'lar göndermesine veya yönlendirmeler kullanmasına izin verilmeyen siteler</translation>
 <translation id="5497251278400702716">Bu dosya</translation>
@@ -5149,7 +5156,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6532663472409656417">Kurumsal Olarak Kayıtlı</translation>
 <translation id="6535331821390304775">Bu tür bağlantıları ilişkilendirilmiş uygulamada açması için <ph name="ORIGIN" /> sitesine her zaman izin ver</translation>
 <translation id="653659894138286600">Dokümanları ve resimleri tarayın</translation>
-<translation id="6537016096312202316">Google Lens ile aramak için görsellerin üzerine sürükleyin</translation>
 <translation id="6537613839935722475">Ad harf, sayı ve kısa çizgi (-) içerebilir</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Kod algılanırken hata oluştu</translation>
@@ -5202,6 +5208,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6593881952206664229">Telif hakkıyla korunan medya içerikleri oynatılmayabilir</translation>
 <translation id="6594011207075825276">Seri cihazlar bulunuyor...</translation>
 <translation id="6595187330192059106"><ph name="HOST" /> sitesinin MIDI cihazları üzerinde tam denetime sahip olmasını her zaman engelle.</translation>
+<translation id="6595792813574514527">Görselleri <ph name="VISUAL_SEARCH_PROVIDER" /> ile aramak için sürükleyin</translation>
 <translation id="6596325263575161958">Şifreleme seçenekleri</translation>
 <translation id="6596816719288285829">IP Adresi</translation>
 <translation id="6597017209724497268">Örnek Sayısı</translation>
@@ -5332,7 +5339,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6745592621698551453">Şimdi güncelle</translation>
 <translation id="6746124502594467657">Aşağı taşı</translation>
 <translation id="674632704103926902">Hafifçe vurarak sürüklemeyi etkinleştir</translation>
-<translation id="6748054820659621153">Google Lens ile Ekranınızda Arama yapın</translation>
 <translation id="6748465660675848252">Devam edebilirsiniz, ancak yalnızca senkronize edilen verileriniz ve ayarlarınız geri yüklenecek. Tüm yerel verileri kaybedeceksiniz.</translation>
 <translation id="6750757184909117990">Hücresel bağlantıyı devre dışı bırak</translation>
 <translation id="6750946710563435348">Başka kullanıcı adı kullan</translation>
@@ -5772,6 +5778,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7230222852462421043">&amp;Pencereyi Geri Yükle</translation>
 <translation id="7230787553283372882">Metin boyutunu özelleştir</translation>
 <translation id="7232750842195536390">Yeniden adlandırma başarısız oldu</translation>
+<translation id="723343421145275488">Görselleri <ph name="VISUAL_SEARCH_PROVIDER" /> ile arayın</translation>
 <translation id="7234010996000898150">Linux geri yükleme işlemi iptal ediliyor</translation>
 <translation id="7235716375204803342">Etkinlikler getiriliyor...</translation>
 <translation id="7235737137505019098">Güvenlik anahtarınızda başka hesaplar için yeterli alan yok.</translation>
@@ -6391,7 +6398,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7853747251428735">&amp;Diğer Araçlar</translation>
 <translation id="7855678561139483478">Sekmeyi yeni pencereye taşı</translation>
 <translation id="7857093393627376423">Metin önerileri</translation>
-<translation id="7857675386615530425">Google Lens ile sayfanın bir kısmında arama yap</translation>
 <translation id="7857949311770343000">Bu, beklediğiniz yeni sekme sayfası mı?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Hizmet: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6399,7 +6405,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7861846108263890455">Google Hesabı dili</translation>
 <translation id="7864539943188674973">Bluetooth'u devre dışı bırak</translation>
 <translation id="7865127013871431856">Çeviri seçenekleri</translation>
-<translation id="7866230141401327032">Google Lens İle Sayfanın Bir Kısmında Arama Yap</translation>
 <translation id="7869143217755017858">Koyu modu devre dışı bırak</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Eşlendi</translation>
 <translation id="7870730066603611552">Kurulumdan sonra senkronizasyon seçeneklerini inceleyin</translation>
@@ -6719,6 +6724,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8184318863960255706">Daha fazla bilgi</translation>
 <translation id="8184472985242519288">Tek tip</translation>
 <translation id="8186609076106987817">Sunucu dosyayı bulamadı.</translation>
+<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> ile Sayfanın Bir Kısmında Arama Yap</translation>
 <translation id="8188389033983459049">Cihaz ayarlarınızı kontrol edin ve devam etmek için açın</translation>
 <translation id="8189306097519446565">Okul hesapları</translation>
 <translation id="8189750580333936930">Özel Korumalı Alan</translation>
@@ -7381,7 +7387,6 @@ Atamayı kaldırmak için atanmış bir anahtara basın</translation>
 <translation id="8907787635362884532">Yayıncı: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome, bilgisayarınızda zararlı yazılım olup olmadığını kontrol edebilir</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> kaldırıldı.</translation>
-<translation id="8909782404367982052">Google Lens ile Görsel Aramak için sürükleyin</translation>
 <translation id="8909833622202089127">Site, konumunuzu izliyor</translation>
 <translation id="8910222113987937043">Yer işaretleri, geçmiş, şifreler ve diğer ayarlarınızla ilgili değişiklikler artık Google Hesabınızla senkronize edilmez. Ancak mevcut verileriniz Google Hesabınızda kalmaya devam eder ve <ph name="BEGIN_LINK" />Google Hesap Özeti<ph name="END_LINK" />'nde yönetilebilir.</translation>
 <translation id="8910987510378294980">Cihaz listesini gizle</translation>
@@ -7525,7 +7530,6 @@ Atamayı kaldırmak için atanmış bir anahtara basın</translation>
 <translation id="9055636786322918818">RC4 şifrelemesini uygula. RC4 şifreleri güvenli olmadığından bu seçeneğin kullanılması, riskinizi artırır.</translation>
 <translation id="9056810968620647706">Eşleştirme bulunamadı.</translation>
 <translation id="9057354806206861646">Programı güncelle</translation>
-<translation id="9057599413476594385">Google Lens ile Aramak için Görsellerin üzerine sürükleyin</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />. ila <ph name="ERROR_LINE_END" />. satır arasında hata</translation>
 <translation id="9063800855227801443">Gizli içeriklerin ekran görüntüsü alınamaz</translation>

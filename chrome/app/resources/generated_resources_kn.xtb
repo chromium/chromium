@@ -698,6 +698,7 @@
 <translation id="1719312230114180055">ಗಮನಿಸಿ: ಬಲವಾದ ಪ್ಯಾಟರ್ನ್ ಅಥವಾ ಪಿನ್‌ಗಿಂತ ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಕಡಿಮೆ ಸುರಕ್ಷಿತವಾಗಿರಬಹುದು.</translation>
 <translation id="1720318856472900922">TLS WWW ಸರ್ವರ್ ಪ್ರಮಾಣೀಕರಣ</translation>
 <translation id="1720941539803966190">ಟ್ಯುಟೋರಿಯಲ್ ಮುಚ್ಚಿ</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ಚಿತ್ರಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="1721312023322545264">ಈ ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡಲು ನಿಮಗೆ <ph name="NAME" /> ಅವರ ಅನುಮತಿಯ ಅಗತ್ಯವಿರುತ್ತದೆ</translation>
 <translation id="1722460139690167654">ನಿಮ್ಮ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ಅನ್ನು<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
 <translation id="1723824996674794290">&amp;ಹೊಸ ವಿಂಡೋ</translation>
@@ -1273,6 +1274,7 @@
     Voice Match ನಿಮ್ಮ ಮಗುವಿಗೆ ಸರಿಹೊಂದುವುದಿಲ್ಲ ಎಂದು ನೀವು ನಂತರ ನಿರ್ಧರಿಸಿದರೆ, ಅದನ್ನು ಅವರ Assistant ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ತೆಗೆದುಹಾಕಿ. Voice Match ಸೆಟಪ್‌ನ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಮಗು ರೆಕಾರ್ಡ್ ಮಾಡುವ ಆಡಿಯೊ ಕ್ಲಿಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಅಥವಾ ಅಳಿಸಲು, ನಿಮ್ಮ ಮಗುವಿನ ಖಾತೆಯಿಂದ <ph name="VOICE_MATCH_SETTINGS_URL" /> ಗೆ ಹೋಗಿ.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ಪುಟದ ಭಾಗವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="230927227160767054">ಸೇವೆ ಹ್ಯಾಂಡ್ಲರ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಈ ಪುಟವು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="2309620859903500144">ನಿಮ್ಮ ಚಲನೆಯ ಅಥವಾ ಲೈಟ್‌ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸದಂತೆ ಈ ಸೈಟ್‌ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="2312219318583366810">ಪುಟದ URL</translation>
@@ -1837,6 +1839,7 @@
 <translation id="289695669188700754">ಕೀಲಿ ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ನಿಮ್ಮ ಎಲ್ಲಾ ಅಜ್ಞಾತ ವಿಂಡೋಗಳನ್ನು ನೀವು ಮುಚ್ಚಿದಾಗ ಈ ಕಸ್ಟಮ್ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</translation>
+<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="290105521672621980">ಬೆಂಬಲಿಸದ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಫೈಲ್ ಬಳಸುತ್ತದೆ</translation>
 <translation id="2902127500170292085">ಈ ಪ್ರಿಂಟರ್‌ ಜೊತೆಗೆ <ph name="EXTENSION_NAME" /> ಸಂವಹನ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪ್ರಿಂಟರ್‌ ಪ್ಲಗಿನ್‌ ಮಾಡಲಾಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2902312830803030883">ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
@@ -2276,6 +2279,7 @@
 <translation id="3390741581549395454">Linux ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬ್ಯಾಕಪ್ ಮಾಡಲಾಗಿದೆ. ಅಪ್‌ಗ್ರೇಡ್ ಶೀಘ್ರದಲ್ಲೇ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ.</translation>
 <translation id="3391512812407811893">ಪ್ರೈವೆಸಿ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್ ಪ್ರಯೋಗಗಳು</translation>
 <translation id="339178315942519818">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಚಾಟ್ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="3393554941209044235">Chrome ಡಾಕ್ಯುಮೆಂಟ್ ವಿಶ್ಲೇಷಣೆ</translation>
 <translation id="3394850431319394743">ಸಂರಕ್ಷಿತ ವಿಷಯವನ್ನು ಪ್ಲೇ ಮಾಡಲು ಗುರುತಿಸುವಿಕೆಗಳನ್ನು ಬಳಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="3396800784455899911">ಈ Google ಸೇವೆಗಳಿಗಾಗಿ "ಸ್ವೀಕರಿಸಿ ಮತ್ತು ಮುಂದುವರೆಸು" ಬಟನ್‌ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡುವುದರ ಮೂಲಕ, ನೀವು ಮೇಲೆ ವಿವರಿಸಿರುವ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವಿಕೆಗೆ ಒಪ್ಪುತ್ತೀರಿ.</translation>
 <translation id="339722927132407568">ಫ್ರೀಜ್‌ ಮಾಡುತ್ತದೆ</translation>
@@ -3240,6 +3244,7 @@
 <translation id="4415748029120993980">SECG ಎಲಿಪ್ಟಿಕ್ ಕರ್ವ್ secp384r1 (aka NIST P-384)</translation>
 <translation id="4416450511678320850">ಈ ವಿಷಯಕ್ಕೆ ಯಾವುದೇ ಆ್ಯಪ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="4416582610654027550">ಮಾನ್ಯವಾದ URL ಟೈಪ್ ಮಾಡಿ</translation>
+<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ಹುಡುಕಲು ಚಿತ್ರಗಳ ಮೇಲೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="4419409365248380979">ಕುಕೀಗಳನ್ನು ಹೊಂದಿಸಲು <ph name="HOST" /> ಯಾವಾಗಲೂ ಅನುಮತಿಸುತ್ತದೆ</translation>
 <translation id="4421932782753506458">ಫ್ಲುಫಿ</translation>
 <translation id="4423376891418188461">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸು</translation>
@@ -3366,6 +3371,7 @@
 <translation id="4551763574344810652">ರದ್ದುಮಾಡಲು <ph name="MODIFIER_KEY_DESCRIPTION" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="4553526521109675518">ಸಾಧನದ ಭಾಷೆ ಬದಲಾಯಿಸಲು ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುವ ಅಗತ್ಯವಿದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">ಸೆಟಪ್ ಪುನರಾರಂಭಿಸಿ</translation>
+<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ಹುಡುಕಲು ಚಿತ್ರಗಳ ಮೇಲೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="4554591392113183336">ಬಾಹ್ಯ ವಿಸ್ತರಣೆಯು ಅಸ್ತಿತ್ವದಲ್ಲಿರುವುದಕ್ಕೆ ಹೋಲಿಸಿದರೆ ಅದೇ ಅಥವಾ ಕಡಿಮೆ ಆವೃತ್ತಿಯಲ್ಲಿದೆ</translation>
 <translation id="4555769855065597957">ನೆರಳು</translation>
 <translation id="4555863373929230635">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು, ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ಸಿಂಕ್ ಆನ್ ಮಾಡಿ.</translation>
@@ -3512,7 +3518,6 @@
 <translation id="4699172675775169585">ಸಂಗ್ರಹಿಸಲಾಗಿರುವ ಚಿತ್ರಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳು</translation>
 <translation id="4699357559218762027">(ಆಟೋ-ಲಾಂಚ್ ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="4701025263201366865">ಪೋಷಕರ ಸೈನ್ ಇನ್</translation>
-<translation id="4707582759326616943">Google Lens ಮೂಲಕ ಚಿತ್ರಗಳನ್ನು ಹುಡುಕಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="4708794300267213770">ನಿದ್ರಾವಸ್ಥೆಯಿಂದ ಹೊರಬರುವಾಗ ಲಾಕ್ ಪರದೆ ತೋರಿಸು</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="4711638718396952945">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪುನಃಸ್ಥಾಪಿಸು</translation>
@@ -4142,6 +4147,7 @@
 <translation id="5427278936122846523">ಯಾವಾಗಲೂ ಅನುವಾದಿಸು</translation>
 <translation id="5427459444770871191">&amp;ಪ್ರದಕ್ಷಿಣೆಯಂತೆ ತಿರುಗಿಸಿ</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (ಅಪ್‌ಡೇಟ್‌ ಲಭ್ಯವಿದೆ)</translation>
+<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="542948651837270806">ವಿಶ್ವಾಸಾರ್ಹ ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್ ಮಾಡ್ಯೂಲ್ ಫರ್ಮ್‌ವೇರ್‌ಗಾಗಿ ಅಪ್‌ಡೇಟ್‌ ಒಂದನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> ಅನ್ನು ನೋಡಿ</translation>
 <translation id="5430931332414098647">ತತ್‌ಕ್ಷಣದ ಟೆಥರಿಂಗ್‌</translation>
 <translation id="5431318178759467895">ಬಣ್ಣ</translation>
@@ -4208,6 +4214,7 @@
 <translation id="5494920125229734069">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="5495466433285976480">ಇದು ನಿಮ್ಮ ಮುಂದಿನ ಮರುಪ್ರಾರಂಭದ ನಂತರ ಎಲ್ಲಾ ಸ್ಥಳೀಯ ಬಳಕೆದಾರರು, ಫೈಲ್‌ಗಳು, ಡೇಟಾ ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ. ಎಲ್ಲಾ ಬಳಕೆದಾರರು ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="5495597166260341369">ಡಿಸ್‌ಪ್ಲೇ ಅನ್ನು ಆನ್‌ನಲ್ಲೇ ಇರಿಸಿ</translation>
+<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ಚಿತ್ರಗಳನ್ನು ಹುಡುಕಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="5496587651328244253">ವ್ಯವಸ್ಥಿತಗೊಳಿಸಿ</translation>
 <translation id="5496730470963166430">ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು ಅಥವಾ ಮರುನಿರ್ದೇಶನಗಳನ್ನು ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5497251278400702716">ಈ ಫೈಲ್</translation>
@@ -5160,7 +5167,6 @@
 <translation id="6532663472409656417">ಎಂಟರ್‌ಪ್ರೈಸ್ ನೋಂದಣಿಯಾಗಿದೆ</translation>
 <translation id="6535331821390304775">ಸಂಬಂಧಿತ ಆ್ಯಪ್‌ನಲ್ಲಿ ಈ ಪ್ರಕಾರದ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಲು <ph name="ORIGIN" /> ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="653659894138286600">ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು ಹಾಗೂ ಚಿತ್ರಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
-<translation id="6537016096312202316">Google Lens ಮೂಲಕ ಹುಡುಕಲು ಚಿತ್ರಗಳ ಮೇಲೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="6537613839935722475">ಹೆಸರು ಅಕ್ಷರಗಳು, ಸಂಖ್ಯೆಗಳು ಮತ್ತು ಹೈಫನ್‌ಗಳನ್ನು (-) ಬಳಸಬಹುದು</translation>
 <translation id="6537880577641744343">ಕಮಾಂಡರ್</translation>
 <translation id="6538098297809675636">ಕೋಡ್ ಪತ್ತೆಹಚ್ಚುವಾಗ ದೋಷ ಎದುರಾಗಿದೆ</translation>
@@ -5213,6 +5219,7 @@
 <translation id="6593881952206664229">ಕೃತಿಸ್ವಾಮ್ಯ ಹೊಂದಿರುವ ಮಾಧ್ಯಮ ಪ್ಲೇ ಆಗದಿರಬಹುದು</translation>
 <translation id="6594011207075825276">ಸರಣಿ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6595187330192059106">MIDI ಸಾಧನಗಳ ಸಂಪೂರ್ಣ ನಿಯಂತ್ರಣವನ್ನು ಹೊಂದದಂತೆ <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ನಿರ್ಬಂಧಿಸಿ.</translation>
+<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ಚಿತ್ರಗಳನ್ನು ಹುಡುಕಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="6596325263575161958">ಎನ್‌ಕ್ರಿಫ್ಶನ್ ಆಯ್ಕೆಗಳು</translation>
 <translation id="6596816719288285829">IP ವಿಳಾಸ</translation>
 <translation id="6597017209724497268">ಮಾದರಿಗಳು</translation>
@@ -5343,7 +5350,6 @@
 <translation id="6745592621698551453">ಈಗ ಅಪ್‌ಡೇಟ್‌ ಮಾಡು</translation>
 <translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸು</translation>
 <translation id="674632704103926902">ಟ್ಯಾಪ್ ಎಳೆಯುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸು</translation>
-<translation id="6748054820659621153">Google Lens ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="6748465660675848252">ನೀವು ಮುಂದುವರಿಯಬಹುದು, ಆದರೆ ನಿಮ್ಮ ಸಿಂಕ್ ಮಾಡಲಾದ ಡೇಟಾ ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮಾತ್ರ ಮರುಸ್ಥಾಪಿಸಲಾಗುವುದು. ಎಲ್ಲಾ ಸ್ಥಳೀಯ ಡೇಟಾ ಕಳೆದು ಹೋಗುತ್ತದೆ.</translation>
 <translation id="6750757184909117990">ಸೆಲ್ಯುಲರ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6750946710563435348">ಇತರೆ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಬಳಸಿ</translation>
@@ -5784,6 +5790,7 @@
 <translation id="7230222852462421043">&amp;ವಿಂಡೋ ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="7230787553283372882">ನಿಮ್ಮ ಪಠ್ಯ ಗಾತ್ರ ಗ್ರಾಹಕೀಯಗೊಳಿಸಿ</translation>
 <translation id="7232750842195536390">ಮರುಹೆಸರಿಸುವಿಕೆ ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ಚಿತ್ರಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7234010996000898150">Linux ಮರುಸ್ಥಾಪನೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7235716375204803342">ಚಟುವಟಿಕೆಗಳನ್ನು ಪಡೆಯಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7235737137505019098">ಇನ್ನು ಯಾವುದೇ ಖಾತೆಗಳಿಗಾಗಿ ನಿಮ್ಮ ಭದ್ರತೆಯ ಕೀ ಸಾಕಷ್ಟು ಸ್ಥಳಾವಕಾಶವನ್ನು ಹೊಂದಿಲ್ಲ.</translation>
@@ -6403,7 +6410,6 @@
 <translation id="7853747251428735">ಇನ್ನಷ್ಟು ಪರಿಕರ&amp;ಗಳು</translation>
 <translation id="7855678561139483478">ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಸ ವಿಂಡೋಗೆ ಸರಿಸಿ</translation>
 <translation id="7857093393627376423">ಪಠ್ಯ ಸಲಹೆಗಳು</translation>
-<translation id="7857675386615530425">Google Lens ಬಳಸಿಕೊಂಡು ಪುಟದ ಭಾಗವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7857949311770343000">ನೀವು ನಿರೀಕ್ಷಿಸುತ್ತಿರುವುದು ಈ ಹೊಸ ಟ್ಯಾಬ್ ಪುಟವೇ?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">ಸೇವೆ: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6411,7 +6417,6 @@
 <translation id="7861846108263890455">Google ಖಾತೆಯ ಭಾಷೆ</translation>
 <translation id="7864539943188674973">ಬ್ಲೂಟೂತ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="7865127013871431856">ಅನುವಾದ ಆಯ್ಕೆಗಳು</translation>
-<translation id="7866230141401327032">Google Lens ಬಳಸಿಕೊಂಡು ಪುಟದ ಭಾಗವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7869143217755017858">ಕತ್ತಲೆ ಮೋಡ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ಜೋಡಿಸಲಾಗಿದೆ</translation>
 <translation id="7870730066603611552">ಸೆಟಪ್ ನಂತರ ಸಿಂಕ್ ಆಯ್ಕೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -6729,6 +6734,7 @@
 <translation id="8184318863960255706">ಹೆಚ್ಚಿನ ಮಾಹಿತಿ</translation>
 <translation id="8184472985242519288">ಏಕರೂಪ</translation>
 <translation id="8186609076106987817">ಸರ್ವರ್‌ಗೆ ಫೈಲ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ.</translation>
+<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> ಬಳಸಿಕೊಂಡು ಪುಟದ ಭಾಗವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="8188389033983459049">ನಿಮ್ಮ ಸಾಧನದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮುಂದುವರಿಸಲು ಬ್ಲೂಟೂತ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="8189306097519446565">ಶಾಲಾ ಖಾತೆಗಳು</translation>
 <translation id="8189750580333936930">ಪ್ರೈವೆಸಿ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್</translation>
@@ -7392,7 +7398,6 @@
 <translation id="8907787635362884532">ಪ್ರಕಾಶಕರು: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್‌ಗಾ‌ಗಿ, Chrome ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಬಹುದು</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="8909782404367982052">Google Lens ಮೂಲಕ ಚಿತ್ರಗಳನ್ನು ಹುಡುಕಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="8909833622202089127">ನಿಮ್ಮ ಸ್ಧಳವನ್ನು ಸೈಟ್‌ ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="8910222113987937043">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮಾಡಲಾಗುವ ಬದಲಾವಣೆಗಳನ್ನು ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸಿಂಕ್‌ ಮಾಡಲಾಗುವುದಿಲ್ಲ. ಆದಾಗ್ಯೂ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಡೇಟಾ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿಯೇ ಇರುತ್ತದೆ ಮತ್ತು <ph name="BEGIN_LINK" />Google ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌<ph name="END_LINK" />ನಲ್ಲಿ ನಿರ್ವಹಿಸಬಹುದಾಗಿದೆ.</translation>
 <translation id="8910987510378294980">ಸಾಧನದ ಪಟ್ಟಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -7536,7 +7541,6 @@
 <translation id="9055636786322918818">RC4 ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಅನ್ನು ಜಾರಿಗೊಳಿಸಿ. RC4 ಸೈಫರ್‌ಗಳು ಅಸುರಕ್ಷಿತವಾಗಿರುವುದರಿಂದ ಈ ಆಯ್ಕೆಯನ್ನು ಬಳಸುವುದು ನಿಮ್ಮ ಅಪಾಯವನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ.</translation>
 <translation id="9056810968620647706">ಯಾವುದೇ ಹೊಂದಾಣಿಕೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="9057354806206861646">ಅಪ್‌ಡೇಟ್ ವೇಳಾಪಟ್ಟಿ</translation>
-<translation id="9057599413476594385">Google Lens ಮೂಲಕ ಹುಡುಕಲು ಚಿತ್ರಗಳ ಮೇಲೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> ನೇ ಸಾಲಿನಿಂದ <ph name="ERROR_LINE_END" /> ನೇ ಸಾಲಿನವರೆಗೆ ದೋಷವಿದೆ</translation>
 <translation id="9063800855227801443">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>

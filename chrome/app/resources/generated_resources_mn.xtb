@@ -700,6 +700,7 @@
 <translation id="1719312230114180055">Санамж: Таны хурууны хээ нь хүчтэй нууц үг болон ПИН-ээс хамгаалалт муутай байж болзошгүй.</translation>
 <translation id="1720318856472900922">TLS WWW Сервер таниулах</translation>
 <translation id="1720941539803966190">Практик хичээлийг хаах</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />-р зураг хайх</translation>
 <translation id="1721312023322545264">Та энэ сайтад зочлохын тулд <ph name="NAME" />-с зөвшөөрөл авах шаардлагатай</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" />-с таны <ph name="BEGIN_LINK" /> <ph name="DEVICE_TYPE" />-г удирдаж байна<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;Шинэ цонх</translation>
@@ -1276,6 +1277,7 @@
     Хэрэв та хожим нь Voice Match-г таны хүүхдэд тохирохгүй гэж шийдвэл үүнийг ердөө хүүхдийнхээ Туслахын Тохиргоо хэсэгт хасна уу. Voice Match-н тохируулгын үеэр хүүхдийнхээ бичсэн аудио клипийг харах эсвэл устгахын тулд хүүхдийнхээ бүртгэлээс <ph name="VOICE_MATCH_SETTINGS_URL" /> руу очно уу.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" />-р хуудасны хэсгийг хайх</translation>
 <translation id="230927227160767054">Энэ хуудас нь үйлчилгээний зохицуулагчийг суулгахыг хүсч байна.</translation>
 <translation id="2309620859903500144">Энэ сайтад таны хөдөлгөөн болон гэрлийн мэдрэгчид хандахыг блоклосон байна.</translation>
 <translation id="2312219318583366810">Хуудасны URL</translation>
@@ -1841,6 +1843,7 @@
 <translation id="289695669188700754">Гол ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Таныг бүх нууцлалтай цонхоо хаах үед энэ захиалгат тохиргоог хасах болно</translation>
 <translation id="2897878306272793870">Та <ph name="TAB_COUNT" /> цонхнуудыг нээхийг хүсч байна уу?</translation>
+<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" />-р дэлгэцээ хайх</translation>
 <translation id="290105521672621980">Файл нь дэмжээгүй онцлогийг ашиглаж байна</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> нь хэвлэгчтэй холбогдохгүй байна. Хэвлэгч залгаатай байгаа эсэхээ шалгаад дахин оролдоно уу.</translation>
 <translation id="2902312830803030883">Бусад үйлдэл</translation>
@@ -2280,6 +2283,7 @@
 <translation id="3390741581549395454">Linux аппууд болон файлуудыг амжилттай хуулбарлалаа. Тун удахгүй дэвшүүлэлтийг эхлүүлнэ.</translation>
 <translation id="3391512812407811893">Privacy Sandbox-н туршилт</translation>
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" /> дээрх чатны аппуудынхаа мэдэгдлийг харах</translation>
+<translation id="3393554941209044235">Chrome-н документын задлан шинжилгээ</translation>
 <translation id="3394850431319394743">Хамгаалагдсан контентыг тоглуулахын тулд таниулбар ашиглахыг зөвшөөрсөн</translation>
 <translation id="3396800784455899911">"Зөвшөөрөөд үргэлжлүүлэх" товчлуурыг товшсоноор та Google-н эдгээр үйлчилгээг дээр дурдсан байдлаар боловсруулахыг зөвшөөрч байна.</translation>
 <translation id="339722927132407568">Царцдаг</translation>
@@ -3242,6 +3246,7 @@
 <translation id="4415748029120993980">SECG зууван муруй secp384r1 (aka NIST P-384)</translation>
 <translation id="4416450511678320850">Энэ контентод боломжтой ямар ч апп байхгүй байна</translation>
 <translation id="4416582610654027550">Хүчинтэй URL оруулна уу</translation>
+<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" />-р хайхын тулд зураг чирэх</translation>
 <translation id="4419409365248380979"><ph name="HOST" />-д cookies-н тохиргоог тогтмол хийх эрхийг олгох</translation>
 <translation id="4421932782753506458">Найдваргүй</translation>
 <translation id="4423376891418188461">Тохиргоог сэргээх</translation>
@@ -3369,6 +3374,7 @@
 <translation id="4551763574344810652">Болихын тулд <ph name="MODIFIER_KEY_DESCRIPTION" />-г дарна уу</translation>
 <translation id="4553526521109675518">Та төхөөрөмжийн хэлийг өөрчлөхийн тулд Chromebook-ээ дахин эхлүүлэх шаардлагатай. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Тохируулгыг эхнээс нь эхлүүлэх</translation>
+<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" />-р хайхын тулд зураг чирэх</translation>
 <translation id="4554591392113183336">Энэ программын гадаад өргөтгөл одоогийн хувилбартай адилхан эсвэл хуучин байна.</translation>
 <translation id="4555769855065597957">Сүүдэр</translation>
 <translation id="4555863373929230635">Google Бүртгэлдээ нууц үг хадгалахын тулд нэвтрээд, синк хийхийг асаана уу.</translation>
@@ -3515,7 +3521,6 @@
 <translation id="4699172675775169585">Кэшлсэн дүрс ба файл</translation>
 <translation id="4699357559218762027">(автоматаар эхлүүлсэн)</translation>
 <translation id="4701025263201366865">Эцэг эхийн нэвтрэлт</translation>
-<translation id="4707582759326616943">Google Дурангаар зураг хайхын тулд чирэх</translation>
 <translation id="4708794300267213770">Унтаад сэрэх үед дэлгэцийн түгжээг харуулах</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />-аас гарах</translation>
 <translation id="4711638718396952945">Тохиргоог дахин сэргээх</translation>
@@ -4144,6 +4149,7 @@
 <translation id="5427278936122846523">Үргэлж орчуулах</translation>
 <translation id="5427459444770871191">Эргэлдэх &amp; Цагийн зүүний дагуу</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (шинэчлэх боломжтой)</translation>
+<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" />-р дэлгэцээ хайх</translation>
 <translation id="542948651837270806">Итгэмжлэгдсэн платформ модулийн жижиг программын шинэчлэлтийг суулгах хэрэгтэй. <ph name="TPM_FIRMWARE_UPDATE_LINK" />-г үзнэ үү</translation>
 <translation id="5430931332414098647">Шуурхай модем болгох</translation>
 <translation id="5431318178759467895">Өнгө</translation>
@@ -4210,6 +4216,7 @@
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
 <translation id="5495466433285976480">Энэ нь дараагийн удаа системийг дахин эхлүүлэхэд бүх суурин хэрэглэгч, файл, дата, бусад тохиргоог арилгах болно. Бүх хэрэглэгчид дахин нэвтрэх хэрэгтэй.</translation>
 <translation id="5495597166260341369">Дэлгэцийг асаалттай байлгах</translation>
+<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" />-р зураг хайхын тулд чирэх</translation>
 <translation id="5496587651328244253">Зохион байгуулах</translation>
 <translation id="5496730470963166430">Попап илгээх эсвэл дахин чиглүүлэлт ашиглахыг зөвшөөрөөгүй</translation>
 <translation id="5497251278400702716">Энэ файл</translation>
@@ -5161,7 +5168,6 @@
 <translation id="6532663472409656417">Байгууллагад бүртгүүлсэн</translation>
 <translation id="6535331821390304775">Холбогдсон апп дээр энэ төрлийн холбооснуудыг нээхийг нь <ph name="ORIGIN" />-д үргэлж зөвшөөрөх</translation>
 <translation id="653659894138286600">Документ, зургуудыг скан хийх</translation>
-<translation id="6537016096312202316">Google Дурангаар хайхын тулд зураг дээр чирэх</translation>
 <translation id="6537613839935722475">Нэр үсэг, тоо, зураас (-) ашиглах боломжтой</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Кодыг илрүүлэхэд алдаа гарлаа</translation>
@@ -5214,6 +5220,7 @@
 <translation id="6593881952206664229">Зохиогчийн эрхтэй медиаг тоглуулахгүй байж болзошгүй</translation>
 <translation id="6594011207075825276">Цуваа төхөөрөмжүүдийг хайж байна...</translation>
 <translation id="6595187330192059106">MIDI төхөөрөмжүүдийг бүрэн удирдахыг <ph name="HOST" />-д үргэлж хориглох.</translation>
+<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" />-р зураг хайхын тулд чирэх</translation>
 <translation id="6596325263575161958">Шифрлэлтийн сонголтууд</translation>
 <translation id="6596816719288285829">IP хаяг</translation>
 <translation id="6597017209724497268">Жишээ загвар</translation>
@@ -5344,7 +5351,6 @@
 <translation id="6745592621698551453">Одоо шинэчилнэ үү</translation>
 <translation id="6746124502594467657">Доош зөөх</translation>
 <translation id="674632704103926902">Tap dragging хэсгийг идэвхжүүлнэ үү.</translation>
-<translation id="6748054820659621153">Дэлгэцээ Google Дурангаар хайх</translation>
 <translation id="6748465660675848252">Ta үргэлжлүүлж болно, гэхдээ таны синхрончилсон өгөгдөл болон тохиргоо сэргээгдэх болно. Харин суурин өгөгдлүүд бүгд устах болно.</translation>
 <translation id="6750757184909117990">Үүрэн холбоог идэвхгүй болгох</translation>
 <translation id="6750946710563435348">Хэрэглэгчийн өөр нэр ашиглах</translation>
@@ -5784,6 +5790,7 @@
 <translation id="7230222852462421043">&amp;Цонхыг сэргээх</translation>
 <translation id="7230787553283372882">Текстийн хэмжээгээ өөрчлөх</translation>
 <translation id="7232750842195536390">Нэрийг өөрчилж чадсангүй</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" />-р зураг хайх</translation>
 <translation id="7234010996000898150">Linux-г сэргээхийг цуцалж байна</translation>
 <translation id="7235716375204803342">Үйл ажиллагааг дуудаж байна...</translation>
 <translation id="7235737137505019098">Таны аюулгүй байдлын түлхүүрт бусад бүртгэлд зориулах хангалттай зай алга байна.</translation>
@@ -6403,7 +6410,6 @@
 <translation id="7853747251428735">Бусад хэрэгсэл</translation>
 <translation id="7855678561139483478">Табыг шинэ цонх руу зөөх</translation>
 <translation id="7857093393627376423">Текстийн зөвлөмж</translation>
-<translation id="7857675386615530425">Хуудасны хэсгийг Google Дурангаар хай</translation>
 <translation id="7857949311770343000">Энэ таны хүссэн шинэ хуудас мөн үү?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Үйлчилгээ: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6411,7 +6417,6 @@
 <translation id="7861846108263890455">Google Бүртгэлийн хэл</translation>
 <translation id="7864539943188674973">Bluetooth-ийг идэвхгүй болго</translation>
 <translation id="7865127013871431856">Орчуулах сонголт</translation>
-<translation id="7866230141401327032">Хуудасны хэсгийг Google Дурангаар хай</translation>
 <translation id="7869143217755017858">Бараан горимыг идэвхгүй болгох</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Холбосон</translation>
 <translation id="7870730066603611552">Синк хийх сонголтын тохируулгыг хянах</translation>
@@ -6730,6 +6735,7 @@
 <translation id="8184318863960255706">Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="8184472985242519288">Нэгэн жигд</translation>
 <translation id="8186609076106987817">Сервер файлыг олж чадсангүй.</translation>
+<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" />-р хуудасны хэсгийг хайх</translation>
 <translation id="8188389033983459049">Төхөөрөмжийнхөө тохиргоог шалгаад үргэлжлүүлэх бол асаана уу</translation>
 <translation id="8189306097519446565">Сургуулийн бүртгэлүүд</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -7390,7 +7396,6 @@
 <translation id="8907787635362884532">Нийтлэгч: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome таны компьютерт хортой программ хангамж байгаа эсэхийг шалгах боломжтой</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" />-г устгасан</translation>
-<translation id="8909782404367982052">Google Дурангаар зураг хайхын тулд чирэх</translation>
 <translation id="8909833622202089127">Сайт таны байршлыг шинжилж байна</translation>
 <translation id="8910222113987937043">Таны хавчуурга, түүх, нууц үг болон бусад тохиргоонд хийсэн өөрчлөлтийг цаашид Google бүртгэлд синк хийхгүй. Таны одоогийн өгөгдлийг Google бүртгэлд хадгалсан хэвээр байх бөгөөд <ph name="BEGIN_LINK" />Google Хяналтын самбарт<ph name="END_LINK" /> удирдах боломжтой.</translation>
 <translation id="8910987510378294980">Төхөөрөмжийн жагсаалтыг нуух</translation>
@@ -7534,7 +7539,6 @@
 <translation id="9055636786322918818">RC4 шифрлэлтийг мөрдүүлнэ үү. RC4 цифр нь аюултай учир энэхүү сонголтыг ашигласнаар таны эрсдэлийг нэмэгдүүлнэ.</translation>
 <translation id="9056810968620647706">Ямар ч таарах зүйл олдсонгүй.</translation>
 <translation id="9057354806206861646">Хуваарийг шинэчлэх</translation>
-<translation id="9057599413476594385">Google Дурангаар хайхын тулд зураг дээр чирэх</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />-с <ph name="ERROR_LINE_END" /> мөрийн алдаа</translation>
 <translation id="9063800855227801443">Нууцлалтай контентын зургийг авах боломжгүй</translation>

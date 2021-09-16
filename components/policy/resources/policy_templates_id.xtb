@@ -3402,9 +3402,9 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Saat mencetak dengan printer PostScript di <ph name="MS_WIN_NAME" />, metode pembuatan PostScript yang berbeda dapat memengaruhi performa pencetakan.
 
-      Jika kebijakan ini disetel ke Default, <ph name="PRODUCT_NAME" /> akan menggunakan sekumpulan opsi default saat membuat PostScript. Khusus untuk teks, teks akan selalu dirender menggunakan font Jenis 3.
+      Jika kebijakan ini disetel ke Default, <ph name="PRODUCT_NAME" /> akan menggunakan sekumpulan opsi default saat membuat PostScript. Khusus untuk teks, teks akan selalu dirender menggunakan font Type 3.
 
-      Jika kebijakan ini disetel ke Type42, <ph name="PRODUCT_NAME" /> akan merender teks menggunakan font Jenis 42 ketika memungkinkan. Tindakan ini dapat meningkatkan kecepatan pencetakan untuk beberapa printer PostScript.
+      Jika kebijakan ini disetel ke Type42, <ph name="PRODUCT_NAME" /> akan merender teks menggunakan font Type 42 jika memungkinkan. Tindakan ini dapat meningkatkan kecepatan pencetakan untuk beberapa printer PostScript.
 
       Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan berada dalam mode Default.</translation>
 <translation id="5227647876065695164">Kebijakan ini akan menentukan perilaku downgrade saluran rilis di perangkat yang terdaftar. Yang kami maksud downgrade saluran rilis adalah mengubah ke saluran yang lebih stabil, misalnya dari beta ke stabil.

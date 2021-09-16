@@ -695,6 +695,7 @@
 <translation id="1719312230114180055">Նկատի ունեցեք, որ ապակողպման հուսալի գաղտնաբառը կամ PIN կոդը կարող է մատնահետքից ավելի ապահով լինել:</translation>
 <translation id="1720318856472900922">TLS WWW սերվերի նույնականացում</translation>
 <translation id="1720941539803966190">Փակել ուղեցույցը</translation>
+<translation id="172123215662733643">Որոնել պատկերներ <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="1721312023322545264">Այս էջն այցելելու համար հարկավոր է <ph name="NAME" />-ի թույլտվությունը</translation>
 <translation id="1722460139690167654">Ձեր <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> կայքի կողմից</translation>
 <translation id="1723824996674794290">&amp;Նոր պատուհան</translation>
@@ -1267,6 +1268,7 @@
     Ցանկության դեպքում Voice Match գործառույթը կարող եք անջատել Օգնականի կարգավորումներում։ Voice Match-ի կարգավորման ժամանակ երեխայի կողմից արված ձայնագրությունները լսելու կամ ջնջելու համար նրա հաշվից անցեք <ph name="VOICE_MATCH_SETTINGS_URL" /> էջ։
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">Որոնել էջի հատվածում <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="230927227160767054">Այս էջը ծառայության մշակիչ է ուզում տեղադրել:</translation>
 <translation id="2309620859903500144">Այս կայքին արգելված է օգտագործել շարժման և լույսի ձեր տվիչները:</translation>
 <translation id="2312219318583366810">Էջի URL</translation>
@@ -1831,6 +1833,7 @@
 <translation id="289695669188700754">Բանալու ID` <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Այս հատուկ կարգավորումը կհեռացվի, երբ դուք փակեք ձեր բոլոր ինկոգնիտո պատուհանները</translation>
 <translation id="2897878306272793870">Իսկապե՞ս ուզում եք բացել <ph name="TAB_COUNT" /> ներդիր:</translation>
+<translation id="2900477968385519153">Որոնել էկրանին <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="290105521672621980">Ֆայլն օգտագործում է չաջակցվող գործառույթներ</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" />-ին չհաջողվեց կապվել այս տպիչի հետ: Համոզվեք, որ տպիչը միացված է և նորից փորձեք:</translation>
 <translation id="2902312830803030883">Այլ գործողություններ</translation>
@@ -2270,6 +2273,7 @@
 <translation id="3390741581549395454">Լինուքսի հավելվածներն ու ֆայլերը պահուստավորվեցին։ Նորացումը շուտով կսկսվի։</translation>
 <translation id="3391512812407811893">Privacy Sandbox-ի փորձնական տարբերակներ</translation>
 <translation id="339178315942519818">Դիտեք զրույցի հավելվածների ծանուցումները <ph name="DEVICE_TYPE" /> սարքում</translation>
+<translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3394850431319394743">Կայքեր, որոնք ունեն նույնացուցիչներ օգտագործելու թույլտվություն՝ պաշտպանված բովանդակություն նվագարկելու համար</translation>
 <translation id="3396800784455899911">Սեղմելով «Ընդունել և շարունակել» կոճակը՝ դուք ընդունում եք Google-ի վերոնշյալ ծառայությունների մշակման պայմանները։</translation>
 <translation id="339722927132407568">Կախում է</translation>
@@ -3233,6 +3237,7 @@
 <translation id="4415748029120993980">SECG օվալաձև կոր secp384r1 (հայտնի է նաև որպես NIST P-384)</translation>
 <translation id="4416450511678320850">Հասանելի հավելվածներ չկան</translation>
 <translation id="4416582610654027550">Մուտքագրեք վավեր URL</translation>
+<translation id="4417162649853416189">Քաշել տարածքը և որոնել ըստ պատկերների <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="4419409365248380979">Միշտ թույլատրել <ph name="HOST" /> խնամորդին կայել քուքիները</translation>
 <translation id="4421932782753506458">Փափկամազիկ</translation>
 <translation id="4423376891418188461">Վերականգնել կարգավորումները</translation>
@@ -3359,6 +3364,7 @@
 <translation id="4551763574344810652">Հետարկելու համար սեղմեք <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4553526521109675518">Սարքի լեզուն փոխելու համար վերագործարկեք Chromebook-ը։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Նորից սկսել կարգավորումը</translation>
+<translation id="4554491709904933912">Քաշել տարածքը և որոնել ըստ պատկերների <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="4554591392113183336">Արտաքին ընդլայնումը ընթացիկի համեմատ ունի նույն կամ ավելի հին տարբերակ:</translation>
 <translation id="4555769855065597957">Ստվեր</translation>
 <translation id="4555863373929230635">Գաղտնաբառերը ձեր Google հաշվում պահելու համար մտեք հաշիվ և միացրեք համաժամացումը։</translation>
@@ -3505,7 +3511,6 @@
 <translation id="4699172675775169585">Քեշավորված պատկերներ և ֆայլեր</translation>
 <translation id="4699357559218762027">(ինքնագործարկում)</translation>
 <translation id="4701025263201366865">Մուտք ծնողի համար</translation>
-<translation id="4707582759326616943">Քաշել՝ Google Տեսապակու միջոցով պատկերներ որոնելու համար</translation>
 <translation id="4708794300267213770">Ցույց տալ կողպէկրանը քնի ռեժիմից դուրս գալիս</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Վերականգնել կարգավորումները</translation>
@@ -4137,6 +4142,7 @@
 <translation id="5427278936122846523">Միշտ թարգմանել</translation>
 <translation id="5427459444770871191">Պտտել &amp;ժամացույցի սլաքի ուղղությամբ</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (մատչելի է թարմացում)</translation>
+<translation id="5429373054983029602">Որոնել էկրանին <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="542948651837270806">Անհրաժեշտ է տեղադրել Trusted Platform Module-ի ներկառուցված ծրագրի թարմացում։ Անցեք <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Անկթարթային մուտքի կետ</translation>
 <translation id="5431318178759467895">Գունավոր</translation>
@@ -4203,6 +4209,7 @@
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5495466433285976480">Հաջորդ վերագործարկումից հետո այս գործողությունը կջնջի բոլոր տեղային օգտատերերին, ֆայլերը, տվյալները և այլ կարգավորումները: Բոլոր օգտատերերը պետք է նորից մուտք գործեն:</translation>
 <translation id="5495597166260341369">Չանջատել էկրանը</translation>
+<translation id="549580971452855947">Քաշել պատկերները՝ <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով որոնելու համար</translation>
 <translation id="5496587651328244253">Կազմակերպել</translation>
 <translation id="5496730470963166430">Չի թույլատրվում ցուցադրել ելնող պատուհաններ և օգտագործել վերահասցեավորումներ</translation>
 <translation id="5497251278400702716">Այս ֆայլը</translation>
@@ -5154,7 +5161,6 @@
 <translation id="6532663472409656417">Գրանցված է կորպորատիվ տիրույթում</translation>
 <translation id="6535331821390304775">Միշտ թույլատրել <ph name="ORIGIN" /> կայքին բացել նման տեսակի հղումները համապատասխան հավելվածում</translation>
 <translation id="653659894138286600">Սկանավորեք փաստաթղթեր և պատկերներ</translation>
-<translation id="6537016096312202316">Քաշել տարածքը և որոնել ըստ պատկերների Google Տեսապակու միջոցով</translation>
 <translation id="6537613839935722475">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և գծիկներ (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Կոդը հայտնաբերելիս սխալ առաջացավ</translation>
@@ -5207,6 +5213,7 @@
 <translation id="6593881952206664229">Հեղինակային իրավունքով պաշտպանված մեդիա ֆայլերը կարող են չնվագարկվել</translation>
 <translation id="6594011207075825276">Սերիական սարքերի որոնում…</translation>
 <translation id="6595187330192059106">Արգելել <ph name="HOST" /> կայքին ամբողջությամբ վերահսկել MIDI սարքերը։</translation>
+<translation id="6595792813574514527">Քաշել պատկերները՝ <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով որոնելու համար</translation>
 <translation id="6596325263575161958">Գաղտնագրման ընտրանքներ</translation>
 <translation id="6596816719288285829">IP հասցե</translation>
 <translation id="6597017209724497268">Նմուշներ</translation>
@@ -5337,7 +5344,6 @@
 <translation id="6745592621698551453">Թարմացնել հիմա</translation>
 <translation id="6746124502594467657">Տեղափոխել վար</translation>
 <translation id="674632704103926902">Թույլ տալ հպումով քաշումը</translation>
-<translation id="6748054820659621153">Որոնել էկրանի բովանդակությունը Google Տեսապակու միջոցով</translation>
 <translation id="6748465660675848252">Դուք կարող եք շարունակել, սակայն կվերականգնվեն միայն ձեր համաժամացված տվյալները և կարգավորումները: Տեղական բոլոր տվյալները կկորչեն:</translation>
 <translation id="6750757184909117990">Անջատել բջջային ցանցը</translation>
 <translation id="6750946710563435348">Օգտագործել այլ օգտանուն</translation>
@@ -5777,6 +5783,7 @@
 <translation id="7230222852462421043">&amp;Վերականգնել պատուհանը</translation>
 <translation id="7230787553283372882">Թույլ է տալիս կարգավորել տեքստի չափը</translation>
 <translation id="7232750842195536390">Չհաջողվեց վերանվանել</translation>
+<translation id="723343421145275488">Որոնել պատկերներ <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="7234010996000898150">Լինուքսի վերականգնումը չեղարկվում է</translation>
 <translation id="7235716375204803342">Գործողությունների բեռնում...</translation>
 <translation id="7235737137505019098">Անվտանգության բանալու վրա բավարար տարածք չկա ևս մեկ հաշիվ ստեղծելու համար:</translation>
@@ -6396,7 +6403,6 @@
 <translation id="7853747251428735">Լրացուցիչ գործիքներ</translation>
 <translation id="7855678561139483478">Բացել ներդիրը նոր պատուհանում</translation>
 <translation id="7857093393627376423">Տեքստային հուշումներ</translation>
-<translation id="7857675386615530425">Որոնել էջի հատվածում Google Տեսապակու միջոցով</translation>
 <translation id="7857949311770343000">Սա՞ է ձեր ուզած նոր ներդիրի էջը:</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Ծառայություն՝ <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6404,7 +6410,6 @@
 <translation id="7861846108263890455">Google հաշվի լեզուն</translation>
 <translation id="7864539943188674973">Անջատել Bluetooth-ը</translation>
 <translation id="7865127013871431856">Թարգմանության կարգավորումներ</translation>
-<translation id="7866230141401327032">Որոնել էջի հատվածում Google Տեսապակու միջոցով</translation>
 <translation id="7869143217755017858">Անջատել մուգ ռեժիմը</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> սարք՝ զուգակցված է</translation>
 <translation id="7870730066603611552">Ստուգել համաժամացման պարամետրերը աշխատաշրջանի մեկնարկից հետո</translation>
@@ -6723,6 +6728,7 @@
 <translation id="8184318863960255706">Լրացուցիչ տեղեկություններ</translation>
 <translation id="8184472985242519288">Միանման</translation>
 <translation id="8186609076106987817">Սերվերը չկարողացավ գտնել ֆայլը:</translation>
+<translation id="8186704951085064172">Որոնել էջի հատվածում <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
 <translation id="8188389033983459049">Շարունակելու համար ստուգեք սարքի կարգավորումները և միացրեք Bluetooth-ը</translation>
 <translation id="8189306097519446565">Ուսումնական հաշիվներ</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -7386,7 +7392,6 @@
 <translation id="8907787635362884532">Հրատարակիչ՝ <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome-ը կարող է ստուգել համակարգչում վնասաբեր ծրագրերի առկայությունը</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> հավելվածը հեռացվեց</translation>
-<translation id="8909782404367982052">Քաշել՝ Google Տեսապակու միջոցով պատկերներ որոնելու համար</translation>
 <translation id="8909833622202089127">Կայքին հայտնի է ձեր գտնվելու վայրը</translation>
 <translation id="8910222113987937043">Ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և այլ կարգավորումների փոփոխությունները չեն համաժամացվի ձեր Google հաշվի հետ: Այդուհանդերձ, ձեր առկա տվյալները կպահվեն Google հաշվում, և դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Google Dashboard-ում<ph name="END_LINK" />:</translation>
 <translation id="8910987510378294980">Թաքցնել սարքերի ցանկը</translation>
@@ -7530,7 +7535,6 @@
 <translation id="9055636786322918818">Օգտագործել RC4 գաղտնագրումը։ Այս տարբերակի օգտագործումն ապահով չէ, քանի որ RC4 գաղտնագրերը հուսալի չեն։</translation>
 <translation id="9056810968620647706">Համընկնումներ չեն գտնվել:</translation>
 <translation id="9057354806206861646">Ժամանակացույցի թարմացում</translation>
-<translation id="9057599413476594385">Քաշել տարածքը և որոնել ըստ պատկերների Google Տեսապակու միջոցով</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Սխալ <ph name="ERROR_LINE_START" />-<ph name="ERROR_LINE_END" /> տողերում</translation>
 <translation id="9063800855227801443">Հնարավոր չէ տեսագրել գաղտնի բովանդակությունը</translation>

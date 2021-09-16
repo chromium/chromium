@@ -328,9 +328,9 @@
 
       Si vous activez les fonctionnalités d'accessibilité par d'autres moyens (par exemple, une combinaison de touches), les options d'accessibilité restent affichées dans le menu de la barre d'état système.</translation>
 <translation id="1449777485284610883">Autoriser l'installation et la mise à jour d'extensions hébergées en dehors du Chrome Web Store</translation>
-<translation id="1451113827539677573">Permet de spécifier le mode d'impression de <ph name="PRODUCT_NAME" /> sous <ph name="MS_WIN_NAME" />.
+<translation id="1451113827539677573">Contrôle la façon dont <ph name="PRODUCT_NAME" /> imprime sous <ph name="MS_WIN_NAME" />.
 
-      Lorsqu'il s'agit d'une imprimante non compatible PostScript sous <ph name="MS_WIN_NAME" />, certaines tâches d'impression doivent être rastérisées pour être imprimées correctement.
+      Lors de l'utilisation d'une imprimante autre que PostScript sous <ph name="MS_WIN_NAME" />, certaines tâches d'impression doivent être rastérisées pour s'imprimer correctement.
 
       Si cette règle est définie sur "Full", <ph name="PRODUCT_NAME" /> rastérise toute la page si nécessaire.
 
@@ -1146,9 +1146,9 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2355876547176311490">Désactiver l'utilisation des serveurs de relais pour l'hôte d'accès à distance</translation>
 <translation id="2358176879566587521">Cette règle est supprimée. Elle n'est pas compatible avec cette version de <ph name="PRODUCT_NAME" />. Pour en savoir plus, rendez-vous sur https://support.google.com/chrome/a/answer/7643500.</translation>
 <translation id="2362469626417133796">Fenêtre de redémarrage</translation>
-<translation id="2363928351203698966">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilise pas de versions SSL/TLS antérieures à la version spécifiée. Les valeurs non reconnues sont ignorées.
+<translation id="2363928351203698966">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilise pas de versions SSL/TLS antérieures à celle spécifiée. Les valeurs non reconnues sont ignorées.
 
-      Si cette règle n'est pas configurée, un message d'erreur concernant TLS 1.0 et TLS 1.1 s'affiche dans <ph name="PRODUCT_NAME" />. Toutefois, l'utilisateur peut contourner le processus.
+      Si cette règle n'est pas configurée, un message d'erreur concernant TLS 1.0 et TLS 1.1 s'affiche dans <ph name="PRODUCT_NAME" />. Toutefois, l'utilisateur peut passer outre.
 
       Si elle est configurée sur "tls1.2", l'utilisateur ne pourra pas contourner cette erreur.
 
@@ -3382,11 +3382,11 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="5213038356678567351">Sites Web qui ne doivent jamais déclencher un changement de navigateur.</translation>
 <translation id="5219844027738217407">Cette règle ne s'applique qu'au micro pour les applications Android. Lorsqu'elle est définie sur "True", le son du micro est coupé pour toutes les applications Android sans exception.</translation>
 <translation id="5220594484746830711">Autoriser les pop-ups avec une cible "<ph name="BLANK_PAGE_NAME" />" à interagir avec la page sur laquelle ils ont été ouverts uniquement si celle-ci accepte explicitement ce type d'interaction</translation>
-<translation id="5227124062673546005">Permet de spécifier le mode d'impression de <ph name="PRODUCT_NAME" /> sous <ph name="MS_WIN_NAME" />.
+<translation id="5227124062673546005">Contrôle la façon dont <ph name="PRODUCT_NAME" /> imprime sous <ph name="MS_WIN_NAME" />.
 
-      Lorsqu'il s'agit d'une imprimante compatible PostScript sous <ph name="MS_WIN_NAME" />, plusieurs méthodes de génération PostScript peuvent affecter les performances d'impression.
+      Lors de l'utilisation d'une imprimante PostScript sous <ph name="MS_WIN_NAME" />, des méthodes de génération de PostScript différentes peuvent affecter les performances d'impression.
 
-      Si cette règle est définie sur "Par défaut", <ph name="PRODUCT_NAME" /> applique un ensemble d'options par défaut lors de la génération PostScript. Le rendu du texte se fera toujours avec des polices de type 3.
+      Si cette règle est définie sur "Par défaut", <ph name="PRODUCT_NAME" /> applique un ensemble d'options par défaut au moment de générer le PostScript. Le rendu du texte se fera toujours avec des polices de type 3.
 
       Si cette règle est définie sur "Type 42", <ph name="PRODUCT_NAME" /> effectue le rendu du texte à l'aide de polices de type 42 dans la mesure du possible. Cela devrait augmenter la vitesse d'impression de certaines imprimantes PostScript.
 

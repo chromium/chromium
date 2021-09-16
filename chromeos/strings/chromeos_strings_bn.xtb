@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">প্রিন্ট করার কোনও কাজ চালু নেই</translation>
 <translation id="4244962993387259361">মেমরি টেস্ট করাতে আপনার ডিভাইসে অন্তত ৫০০ এমবি খালি জায়গা থাকতে হবে। জায়গা খালি করতে 'সেটিংস' &gt; 'স্টোরেজ ম্যানেজ করা' বিকল্পে যান।</translation>
 <translation id="4258281355379922695">HTTP লেটেন্সি</translation>
+<translation id="4271957103967917607">ফুল স্ক্রিন দেখুন</translation>
 <translation id="4289540628985791613">ওভারভিউ</translation>
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />টি ছবি</translation>
@@ -372,6 +373,7 @@
 <translation id="7550715992156305117">ডায়াগনস্টিক রুটিন</translation>
 <translation id="7561454561030345039">এই কাজটি আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC পিং করুন</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকি আছে</translation>
 <translation id="7620771111601174153">সহায়তা কেন্দ্র বিভাগে গিয়ে আরও জানুন</translation>
 <translation id="763165478673169849">শেষবার রিসেট করার সময়</translation>

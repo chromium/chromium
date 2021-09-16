@@ -328,7 +328,7 @@
 
       Si activas las funciones de accesibilidad por otros medios (por ejemplo, mediante una combinación de teclas), se mostrarán siempre las opciones de accesibilidad en el menú de la bandeja de entrada.</translation>
 <translation id="1449777485284610883">Permitir la instalación y las actualizaciones de extensiones que no están alojadas en Chrome Web Store</translation>
-<translation id="1451113827539677573">Controla la forma en que <ph name="PRODUCT_NAME" /> realiza trabajo de impresión en <ph name="MS_WIN_NAME" />.
+<translation id="1451113827539677573">Controla la forma en que <ph name="PRODUCT_NAME" /> realiza trabajos de impresión en <ph name="MS_WIN_NAME" />.
 
       A veces, cuando se usa una impresora que no es PostScript en <ph name="MS_WIN_NAME" />, deben rasterizarse los trabajos de impresión para imprimirlos correctamente.
 
@@ -3385,7 +3385,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="5213038356678567351">Sitios web que nunca deben abrirse en otro navegador</translation>
 <translation id="5219844027738217407">Para las apps de Android, esta política solo afecta al micrófono. Cuando esta política se establece como falsa, se silencia el micrófono para todas las apps de Android, sin excepciones.</translation>
 <translation id="5220594484746830711">Solo permitir que se abran ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> para interactuar con la página que abrió la ventana emergente si esta página habilita esta interacción de forma explícita</translation>
-<translation id="5227124062673546005">Controla la forma en que <ph name="PRODUCT_NAME" /> realiza trabajo de impresión en <ph name="MS_WIN_NAME" />.
+<translation id="5227124062673546005">Controla la forma en que <ph name="PRODUCT_NAME" /> realiza trabajos de impresión en <ph name="MS_WIN_NAME" />.
 
       Cuando se usa una impresora que es PostScript en <ph name="MS_WIN_NAME" />, los diferentes métodos de generación de PostScript pueden afectar el rendimiento de los trabajos de impresión.
 

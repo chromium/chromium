@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
 <translation id="4244962993387259361">您需要有至少 500 MB 的可用空间才能运行内存测试。若要释放空间，请依次转到“设置”&gt;“存储空间管理”。</translation>
 <translation id="4258281355379922695">HTTP 延迟时间</translation>
+<translation id="4271957103967917607">全屏查看</translation>
 <translation id="4289540628985791613">概述</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 张图片</translation>
@@ -373,6 +374,7 @@
 <translation id="7550715992156305117">诊断例程</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331">电池续航时间还剩 <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>
 <translation id="763165478673169849">上次重置时间</translation>

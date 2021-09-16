@@ -696,6 +696,7 @@
 <translation id="1719312230114180055">Заўвага. Выкарыстанне адбітка пальца можа быць менш бяспечным, чым надзейны пароль або PIN-код.</translation>
 <translation id="1720318856472900922">Аўтэнтыфікацыя сервера TLS WWW</translation>
 <translation id="1720941539803966190">Закрыць дапаможнік</translation>
+<translation id="172123215662733643">Пошук відарысаў з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Каб наведаць гэты сайт, вам патрабуецца дазвол ад карыстальніка <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Ваша <ph name="BEGIN_LINK" />прылада <ph name="DEVICE_TYPE" /> знаходзіцца пад кіраваннем<ph name="END_LINK" /> дамена <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Новае акно</translation>
@@ -1268,6 +1269,7 @@
     Выключыць функцыю Voice Match можна, выдаліўшы яе ў наладах Памочніка. Каб праслухаць або выдаліць запісы, зробленыя вашым дзіцем падчас наладжвання Voice Match, перайдзіце на старонку <ph name="VOICE_MATCH_SETTINGS_URL" /> з уліковага запісу вашага дзіцяці.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">Пошук па частцы старонкі з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="230927227160767054">Старонка спрабуе ўсталяваць апрацоўшчык сэрвісу.</translation>
 <translation id="2309620859903500144">Гэтаму сайту заблакіраваны доступ да датчыкаў руху або святла.</translation>
 <translation id="2312219318583366810">URL-адрас старонкі</translation>
@@ -1832,6 +1834,7 @@
 <translation id="289695669188700754">Ідэнтыфікатар ключа: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Гэта карыстальніцкая налада будзе выдалена, калі вы закрыеце ўсе вокны, адкрытыя ў рэжыме інкогніта</translation>
 <translation id="2897878306272793870">Сапраўды адкрыць укладкі (<ph name="TAB_COUNT" />)?</translation>
+<translation id="2900477968385519153">Пошук аб'ектаў на экране з дапамогай<ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Файл выкарыстоўвае функцыі, якія не падтрымліваюцца</translation>
 <translation id="2902127500170292085">Пашырэнню <ph name="EXTENSION_NAME" /> не ўдалося звязацца з гэтым прынтарам. Праверце, ці падключаны ён, і паўтарыце спробу.</translation>
 <translation id="2902312830803030883">Іншыя дзеянні</translation>
@@ -2271,6 +2274,7 @@
 <translation id="3390741581549395454">Рэзервовая копія файлаў і праграм Linux створана. Хутка пачнецца абнаўленне.</translation>
 <translation id="3391512812407811893">Пробныя версіі Privacy Sandbox</translation>
 <translation id="339178315942519818">Чытайце апавяшчэнні з праграм для чатаў на прыладзе <ph name="DEVICE_TYPE" /></translation>
+<translation id="3393554941209044235">Аналіз дакументаў у Chrome</translation>
 <translation id="3394850431319394743">Сайты, якім дазволена выкарыстоўваць ідэнтыфікатары для прайгравання абароненага змесціва</translation>
 <translation id="3396800784455899911">Націскаючы на кнопку "Прыняць і працягнуць", вы згаджаецеся з апісанымі вышэй умовамі гэтых сэрвісаў Google.</translation>
 <translation id="339722927132407568">Ёсць завісанні</translation>
@@ -3234,6 +3238,7 @@
 <translation id="4415748029120993980">SECG эліптычны secp384r1 (іншая назва – NIST P-384)</translation>
 <translation id="4416450511678320850">Для гэтага змесціва праграм няма</translation>
 <translation id="4416582610654027550">Увядзіце правільны URL-адрас</translation>
+<translation id="4417162649853416189">Вылучыць частку відарыса для пошуку з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Заўсёды дазваляць сайту <ph name="HOST" /> захоўваць файлы cookie</translation>
 <translation id="4421932782753506458">Пушок</translation>
 <translation id="4423376891418188461">Аднавіць налады</translation>
@@ -3360,6 +3365,7 @@
 <translation id="4551763574344810652">Каб адрабіць, націсніце <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4553526521109675518">Каб змяніць мову прылады, трэба перазапусціць Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Пачаць наладку занава</translation>
+<translation id="4554491709904933912">Вылучыць частку відарыса для пошуку з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Знешняе пашырэнне мае тую ж версію, што існуючае пашырэнне, або ніжэйшую.</translation>
 <translation id="4555769855065597957">Цень</translation>
 <translation id="4555863373929230635">Каб захоўваць паролі ва Уліковым запісе Google, увайдзіце ў яго і ўключыце сінхранізацыю.</translation>
@@ -3506,7 +3512,6 @@
 <translation id="4699172675775169585">Відарысы і файлы ў кэшы</translation>
 <translation id="4699357559218762027">(аўтаматычны запуск)</translation>
 <translation id="4701025263201366865">Уваход для бацькоў</translation>
-<translation id="4707582759326616943">Перацягваць відарысы для іх пошуку з дапамогай Google Аб'ектыва</translation>
 <translation id="4708794300267213770">Паказваць экран блакіроўкі пры абуджэнні ад сну</translation>
 <translation id="4708849949179781599">Выйсці з браўзера <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Аднавіць налады</translation>
@@ -4133,6 +4138,7 @@
 <translation id="5427278936122846523">Заўсёды перакладаць</translation>
 <translation id="5427459444770871191">Павярнуць &amp;па гадзіннікавай стрэлцы</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (ёсць абнаўленне)</translation>
+<translation id="5429373054983029602">Пошук аб'ектаў на экране з дапамогай<ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Неабходна ўсталяваць абнаўленне для ўбудаванага праграмнага забеспячэння Trusted Platform Module. Глядзіце старонку <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Імгненны рэжым мадэма</translation>
 <translation id="5431318178759467895">Колер</translation>
@@ -4199,6 +4205,7 @@
 <translation id="5494920125229734069">Выбраць усё</translation>
 <translation id="5495466433285976480">Пасля наступнага перазапуску будуць выдалены ўсе лакальныя ўліковыя запісы карыстальнікаў, файлы, даныя і іншыя налады. Усім карыстальнікам трэба будзе зноў увайсці ў свае ўліковыя запісы.</translation>
 <translation id="5495597166260341369">Не выключаць дысплэй</translation>
+<translation id="549580971452855947">Вылучыць частку змесціва на экране для пошуку з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Упарадкаванне</translation>
 <translation id="5496730470963166430">Не дазволена паказваць усплывальныя вокны або ажыццяўляць перанакіраванне</translation>
 <translation id="5497251278400702716">Гэты файл</translation>
@@ -5150,7 +5157,6 @@
 <translation id="6532663472409656417">Зарэгістравана карпарацыяй</translation>
 <translation id="6535331821390304775">Заўсёды дазваляць сайту <ph name="ORIGIN" /> адкрываць спасылкі гэтага тыпу ў звязанай з імі праграме</translation>
 <translation id="653659894138286600">Сканіраванне дакументаў і відарысаў</translation>
-<translation id="6537016096312202316">Перацягваць відарысы для іх пошуку з дапамогай Google Аб'ектыва</translation>
 <translation id="6537613839935722475">У назве можна выкарыстоўваць літары, лічбы і злучкі (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Пры спробе выявіць код адбылася памылка</translation>
@@ -5203,6 +5209,7 @@
 <translation id="6593881952206664229">Мультымедыйныя файлы, абароненыя аўтарскім правам, могуць не прайгравацца</translation>
 <translation id="6594011207075825276">Ідзе пошук прылад паслядоўнага порта...</translation>
 <translation id="6595187330192059106">Заўсёды блакіраваць сайту <ph name="HOST" /> поўны кантроль над прыладамі MIDI</translation>
+<translation id="6595792813574514527">Вылучыць частку змесціва на экране для пошуку з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Параметры шыфравання</translation>
 <translation id="6596816719288285829">IP-адрас</translation>
 <translation id="6597017209724497268">Узоры</translation>
@@ -5333,7 +5340,6 @@
 <translation id="6745592621698551453">Абнавіць</translation>
 <translation id="6746124502594467657">Перамясціць ніжэй</translation>
 <translation id="674632704103926902">Уключыць перацягванне дотыкам</translation>
-<translation id="6748054820659621153">Шукаць змесціва экрана з дапамогай Google Аб'ектыва</translation>
 <translation id="6748465660675848252">Вы можаце працягнуць, але будуць адноўлены толькі сінхранізаваныя даныя і налады. Усе лакальныя даныя будуць страчаны.</translation>
 <translation id="6750757184909117990">Выключыць сотавую сетку</translation>
 <translation id="6750946710563435348">Выкарыстаць іншае імя карыстальніка</translation>
@@ -5773,6 +5779,7 @@
 <translation id="7230222852462421043">Аднавіць акно</translation>
 <translation id="7230787553283372882">Наладжванне памеру тэксту</translation>
 <translation id="7232750842195536390">Не ўдалося перайменаваць</translation>
+<translation id="723343421145275488">Пошук відарысаў з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Ідзе скасаванне аднаўлення кантэйнера Linux</translation>
 <translation id="7235716375204803342">Ідзе атрыманне дзеянняў...</translation>
 <translation id="7235737137505019098">На вашым ключы бяспекі недастаткова месца для стварэння іншых уліковых запісаў.</translation>
@@ -6393,7 +6400,6 @@
 <translation id="7853747251428735">Іншыя &amp;інструменты</translation>
 <translation id="7855678561139483478">Перамясціць укладку ў новае акно</translation>
 <translation id="7857093393627376423">Тэкставыя прапановы</translation>
-<translation id="7857675386615530425">Выканаць пошук па частцы старонкі з дапамогай Google Аб'ектыва</translation>
 <translation id="7857949311770343000">Ці з'яўляецца старонка новай укладкі той, якую вы чакалі ўбачыць?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Сэрвіс: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6401,7 +6407,6 @@
 <translation id="7861846108263890455">Мова Уліковага запісу Google</translation>
 <translation id="7864539943188674973">Адключыць Bluetooth</translation>
 <translation id="7865127013871431856">Параметры Перакладчыка</translation>
-<translation id="7866230141401327032">Выканаць пошук па частцы старонкі з дапамогай Google Аб'ектыва</translation>
 <translation id="7869143217755017858">Адключыць цёмны рэжым</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – спалучана</translation>
 <translation id="7870730066603611552">Праверка параметраў сінхранізацыі пасля наладжвання</translation>
@@ -6720,6 +6725,7 @@
 <translation id="8184318863960255706">Дадатковая інфармацыя</translation>
 <translation id="8184472985242519288">Аднастайны</translation>
 <translation id="8186609076106987817">Сервер не знайшоў файл.</translation>
+<translation id="8186704951085064172">Пошук па частцы старонкі з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Каб працягнуць, праверце налады прылады і ўключыце яе</translation>
 <translation id="8189306097519446565">Навучальныя ўліковыя запісы</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -7385,7 +7391,6 @@
 <translation id="8907787635362884532">Выдавец: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Браўзер Chrome можа правяраць ваш камп'ютар на наяўнасць шкоднага праграмнага забеспячэння</translation>
 <translation id="8909298138148012791">Праграма <ph name="APP_NAME" /> выдалена</translation>
-<translation id="8909782404367982052">Перацягваць відарысы для іх пошуку з дапамогай Google Аб'ектыва</translation>
 <translation id="8909833622202089127">Сайт адсочвае ваша месцазнаходжанне</translation>
 <translation id="8910222113987937043">Змены ў закладках, гісторыі, паролях і іншых наладах больш не будуць сінхранізавацца з Уліковым запісам Google. Але існуючыя даныя застануцца ва Уліковым запісе Google, і імі можна будзе кіраваць на старонцы <ph name="BEGIN_LINK" />Панэль кіравання Google<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Схаваць спіс прылад</translation>
@@ -7529,7 +7534,6 @@
 <translation id="9055636786322918818">Уключыць шыфраванне RC4. Выкарыстанне гэтага параметра павялічвае рызыкі з-за небяспечнасці шыфраў RC4.</translation>
 <translation id="9056810968620647706">Супадзенняў не знойдзена.</translation>
 <translation id="9057354806206861646">Абнавіць расклад</translation>
-<translation id="9057599413476594385">Перацягваць відарысы для іх пошуку з дапамогай Google Аб'ектыва</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Памылка з радка <ph name="ERROR_LINE_START" /> па <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Здыманне немагчымае з-за наяўнасці на экране прыватнага змесціва</translation>

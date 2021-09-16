@@ -704,6 +704,7 @@
 <translation id="1719312230114180055">குறிப்பு: கைரேகையானது வலிமையான கடவுச்சொல் அல்லது பின்னை விடப் பாதுகாப்புக் குறைவாக இருக்கக்கூடும்.</translation>
 <translation id="1720318856472900922">TLS WWW சேவையக அங்கீகரிப்பு</translation>
 <translation id="1720941539803966190">பயிற்சியை மூடும்</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் படங்களைத் தேடு</translation>
 <translation id="1721312023322545264">இந்தத் தளத்திற்குச் செல்ல, <ph name="NAME" /> இன் அனுமதி வேண்டும்</translation>
 <translation id="1722460139690167654">உங்கள் <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" />ஐ நிர்வகிப்பது<ph name="END_LINK" />: <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;புதிய சாளரம்</translation>
@@ -1280,6 +1281,7 @@
     Voice Match உங்கள் பிள்ளைக்கு ஏற்றது அல்ல என நீங்கள் பின்னர் முடிவு செய்தால் அதை Assistant அமைப்புகளுக்குச் சென்று முடக்கவும். Voice Match அமைவின்போது உங்கள் பிள்ளை ரெக்கார்டு செய்த ஆடியோ கிளிப்புகளைப் பார்க்கவோ நீக்கவோ அவரின் கணக்கில் இருந்து <ph name="VOICE_MATCH_SETTINGS_URL" /> தளத்திற்குச் செல்லவும்.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் பக்கத்தின் ஒரு பகுதியைத் தேடு</translation>
 <translation id="230927227160767054">இந்தப் பக்கம் சேவை ஹேண்ட்லரை நிறுவ உள்ளது.</translation>
 <translation id="2309620859903500144">இந்தத் தளம் உங்கள் நகர்வு அல்லது ஒளி சென்சார்களை அணுகுவதிலிருந்து தடைசெய்யப்பட்டுள்ளது.</translation>
 <translation id="2312219318583366810">பக்கத்தின் URL</translation>
@@ -1845,6 +1847,7 @@
 <translation id="289695669188700754">விசை ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">மறைநிலைச் சாளரங்கள் அனைத்தையும் மூடினால் இந்தப் பிரத்தியேக அமைப்பு அகற்றப்படும்</translation>
 <translation id="2897878306272793870">நிச்சயமாக <ph name="TAB_COUNT" /> தாவல்களைத் திறக்க விரும்புகிறீர்களா?</translation>
+<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் திரையில் இருப்பவற்றைத் தேடு</translation>
 <translation id="290105521672621980">கோப்பானது ஆதரிக்கப்படாத அம்சங்களைப் பயன்படுத்துகிறது</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> ஆல் இந்த பிரிண்டருடன் தொடர்புகொள்ள முடியவில்லை. பிரிண்டர் இணைக்கப்பட்டிருப்பதை, உறுதிசெய்து மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="2902312830803030883">மேலும் செயல்கள்</translation>
@@ -2284,6 +2287,7 @@
 <translation id="3390741581549395454">Linux ஆப்ஸும் கோப்புகளும் காப்புப் பிரதி எடுக்கப்பட்டன. மேம்படுத்தல் விரைவில் துவங்கும்.</translation>
 <translation id="3391512812407811893">சோதனையிலுள்ள தனியுரிமை சாண்ட்பாக்ஸ்</translation>
 <translation id="339178315942519818">உங்கள் அரட்டை ஆப்ஸின் அறிவிப்புகளை <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்</translation>
+<translation id="3393554941209044235">Chrome ஆவணப் பகுப்பாய்வு</translation>
 <translation id="3394850431319394743">பாதுகாக்கப்பட்ட உள்ளடக்கத்தைப் பிளே செய்ய அடையாளங்காட்டிகளைப் பயன்படுத்த அனுமதியுள்ளவை</translation>
 <translation id="3396800784455899911">"ஏற்றுக்கொண்டு, தொடர்க" பட்டனைக் கிளிக் செய்வதன் மூலம், இந்த Google சேவைகளுக்காக மேலே விவரிக்கப்பட்டுள்ள செயலாக்க நடைமுறைகளை ஏற்கிறீர்கள்.</translation>
 <translation id="339722927132407568">பிளே ஆகாமல் நிற்கிறது</translation>
@@ -3247,6 +3251,7 @@
 <translation id="4415748029120993980">SECG நீள்வட்ட வளைவான secp384r1 (NIST P-384 எனவும் அறியப்படும்)</translation>
 <translation id="4416450511678320850">இந்த உள்ளடக்கத்தைக் காட்டக்கூடிய ஆப்ஸ் எதுவுமில்லை</translation>
 <translation id="4416582610654027550">சரியான URLஐ உள்ளிடவும்</translation>
+<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் தேட, படங்களைக் கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="4419409365248380979">குக்கீகளை அமைக்க <ph name="HOST" /> ஐ எப்போதும் அனுமதி</translation>
 <translation id="4421932782753506458">ஃபளஃபி</translation>
 <translation id="4423376891418188461">அமைப்புகளை மீட்டெடு</translation>
@@ -3374,6 +3379,7 @@
 <translation id="4551763574344810652">செயல்தவிர்க்க <ph name="MODIFIER_KEY_DESCRIPTION" />ஐ அழுத்தவும்</translation>
 <translation id="4553526521109675518">சாதனத்தின் மொழியை மாற்ற உங்கள் Chromebookகை மீண்டும் தொடங்கவும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">அமைவை மீண்டும் தொடங்கு</translation>
+<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் தேட, படங்களைக் கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="4554591392113183336">ஏற்கனவே இருப்பதுடன் ஒப்பிடும் போது வெளிப்புற நீட்டிப்பு ஒரே அல்லது குறைவான பதிப்பைக் கொண்டுள்ளது.</translation>
 <translation id="4555769855065597957">நிழல்</translation>
 <translation id="4555863373929230635">கடவுச்சொற்களை உங்கள் Google கணக்கில் சேமிக்க உள்நுழைந்து ஒத்திசைவை இயக்கவும்.</translation>
@@ -3520,7 +3526,6 @@
 <translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்கள் மற்றும் ஃபைல்கள் </translation>
 <translation id="4699357559218762027">(தானாக துவக்கப்பட்டது)</translation>
 <translation id="4701025263201366865">பெற்றோர் உள்நுழைதல்</translation>
-<translation id="4707582759326616943">Google Lens மூலம் படங்களைத் தேட, கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="4708794300267213770">உறக்கநிலையிலிருந்து விழிக்கும் போது, லாக் ஸ்கிரீனைக் காட்டு</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> இலிருந்து வெளியேறு</translation>
 <translation id="4711638718396952945">அமைப்புகளை மீட்டெடு</translation>
@@ -4149,6 +4154,7 @@
 <translation id="5427278936122846523">எப்போதும் மொழிபெயர்</translation>
 <translation id="5427459444770871191">&amp;வலஞ்சுழியாகச் சுற்று</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (புதுப்பித்தல் இருக்கிறது)</translation>
+<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் திரையில் இருப்பவற்றைத் தேடு</translation>
 <translation id="542948651837270806">Trusted Platform Module நிலைபொருளுக்கான புதுப்பிப்பை நிறுவ வேண்டும். <ph name="TPM_FIRMWARE_UPDATE_LINK" />ஐக் காட்டு</translation>
 <translation id="5430931332414098647">உடனடி இணைப்பு முறை</translation>
 <translation id="5431318178759467895">வண்ணம்</translation>
@@ -4215,6 +4221,7 @@
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
 <translation id="5495466433285976480">நீங்கள் அடுத்தமுறை மறுதொடக்கம் செய்தபின்னர், அகப் பயனர்கள், ஃபைல்கள் , தரவு அனைத்தையும், பிற அமைப்புகளையும் இது அகற்றும். எல்லா பயனர்களும் மீண்டும் உள்நுழைய வேண்டியிருக்கும்.</translation>
 <translation id="5495597166260341369">திரையை இயக்கத்தில் வை</translation>
+<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் படங்களைத் தேட, கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="5496587651328244253">ஒழுங்கமை</translation>
 <translation id="5496730470963166430">பாப்-அப்களை அனுப்ப/திசைதிருப்புதல்களைப் பயன்படுத்த அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="5497251278400702716">இந்த ஃபைல்</translation>
@@ -5167,7 +5174,6 @@
 <translation id="6532663472409656417">நிறுவனத்தால் பதிவுசெய்யப்பட்டது</translation>
 <translation id="6535331821390304775">தொடர்புடைய ஆப்ஸில் இந்த வகை இணைப்புகளைத் திறக்க எப்போதும் <ph name="ORIGIN" /> ஐ அனுமதி</translation>
 <translation id="653659894138286600">ஆவணங்களையும் படங்களையும் ஸ்கேன் செய்யலாம்</translation>
-<translation id="6537016096312202316">Google Lens மூலம் தேட படத்தில் கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="6537613839935722475">எழுத்துகள், எண்கள், இடைக்கோடுகள் (-) ஆகியவற்றைப் பெயரில் பயன்படுத்தலாம்</translation>
 <translation id="6537880577641744343">கமாண்டர்</translation>
 <translation id="6538098297809675636">குறியீட்டைக் கண்டறிவதில் பிழை ஏற்பட்டது</translation>
@@ -5220,6 +5226,7 @@
 <translation id="6593881952206664229">பதிப்புரிமை பெற்ற மீடியா பிளே ஆகாது</translation>
 <translation id="6594011207075825276">தொடர் சாதனங்களைத் தேடுகிறது...</translation>
 <translation id="6595187330192059106">MIDI சாதனங்களுக்கான முழுக் கட்டுப்பாட்டையும் <ph name="HOST" /> பெறுவதை எப்போதும் தடு.</translation>
+<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் படங்களைத் தேட, கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="6596325263575161958">என்க்ரிப்ஷன் விருப்பங்கள்</translation>
 <translation id="6596816719288285829">IP முகவரி</translation>
 <translation id="6597017209724497268">மாதிரிகள்</translation>
@@ -5350,7 +5357,6 @@
 <translation id="6745592621698551453">இப்போது புதுப்பி</translation>
 <translation id="6746124502594467657">கீழே நகர்த்து</translation>
 <translation id="674632704103926902">தட்டி இழுப்பதை இயக்கு</translation>
-<translation id="6748054820659621153">திரையில் இருப்பவற்றை Google Lens மூலம் தேடுக</translation>
 <translation id="6748465660675848252">தொடர்ந்தாலும், ஒத்திசைக்கப்பட்ட தரவும் அமைப்புகளும் மட்டுமே மீட்டெடுக்கப்படும். சிஸ்டத்தின் அகத் தரவு முழுவதையும் இழப்பீர்கள்.</translation>
 <translation id="6750757184909117990">செல்லுலார் இணைப்பை முடக்கு</translation>
 <translation id="6750946710563435348">வேறொரு பயனர்பெயரைப் பயன்படுத்தவும்</translation>
@@ -5790,6 +5796,7 @@
 <translation id="7230222852462421043">&amp;சாளரத்தை மீட்டெடு</translation>
 <translation id="7230787553283372882">உரை அளவைத் தனிப்பயனாக்கலாம்</translation>
 <translation id="7232750842195536390">பெயரை மாற்ற முடியவில்லை</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் படங்களைத் தேடு</translation>
 <translation id="7234010996000898150">Linux மீட்டமைப்பது ரத்துசெய்யப்படுகிறது</translation>
 <translation id="7235716375204803342">செயல்பாடுகளைப் பெறுகிறது...</translation>
 <translation id="7235737137505019098">உங்கள் பாதுகாப்பு விசையில் கூடுதலாகக் கணக்குகளைச் சேர்ப்பதற்குப் போதிய இடமில்லை.</translation>
@@ -6410,7 +6417,6 @@
 <translation id="7853747251428735">மேலும் கருவி&amp;கள்</translation>
 <translation id="7855678561139483478">தாவலை புதிய சாளரத்திற்கு நகர்த்து</translation>
 <translation id="7857093393627376423">சொல் பரிந்துரைகள்</translation>
-<translation id="7857675386615530425">Google Lens மூலம் பக்கத்தின் ஒரு பகுதியைத் தேடு</translation>
 <translation id="7857949311770343000">இந்தப் புதிய தாவல் பக்கத்தைத்தான் எதிர்பார்த்தீர்களா?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">சேவை: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6418,7 +6424,6 @@
 <translation id="7861846108263890455">Google கணக்கின் மொழி</translation>
 <translation id="7864539943188674973">புளூடூத்தை முடக்கு</translation>
 <translation id="7865127013871431856">Translate விருப்பங்கள்</translation>
-<translation id="7866230141401327032">Google Lens மூலம் பக்கத்தின் ஒரு பகுதியைத் தேடு</translation>
 <translation id="7869143217755017858">டார்க் பயன்முறையை முடக்குதல்</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - இணைக்கப்பட்டது</translation>
 <translation id="7870730066603611552">அமைவைத் தொடர்ந்து, ஒத்திசைவு விருப்பங்களை மதிப்பாய்வு செய்யவும்</translation>
@@ -6739,6 +6744,7 @@
 <translation id="8184318863960255706">மேலும் தகவல்</translation>
 <translation id="8184472985242519288">சீரானது</translation>
 <translation id="8186609076106987817">சேவையகத்தால் கோப்பை கண்டறிய முடியவில்லை.</translation>
+<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் பக்கத்தின் ஒரு பகுதியைத் தேடு</translation>
 <translation id="8188389033983459049">தொடர்வதற்கு, சாதன அமைப்புகளைச் சரிபார்த்து, புளூடூத்தை இயக்கவும்</translation>
 <translation id="8189306097519446565">பள்ளிக் கணக்குகள்</translation>
 <translation id="8189750580333936930">தனியுரிமை சாண்ட்பாக்ஸ்</translation>
@@ -7401,7 +7407,6 @@
 <translation id="8907787635362884532">வெளியீட்டாளர்: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">உங்கள் கம்ப்யூட்டரில் தீங்கிழைக்கும் மென்பொருள் உள்ளதா என Chrome உலாவியால் சரிபார்க்க முடியும்</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> ஆப்ஸ் நிறுவல் நீக்கப்பட்டது</translation>
-<translation id="8909782404367982052">Google Lens மூலம் படங்களைத் தேட, கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="8909833622202089127">தளமானது உங்கள் இருப்பிடத்தைக் கண்காணிக்கிறது</translation>
 <translation id="8910222113987937043">புத்தகக்குறிகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகள் உங்கள் Google கணக்கிற்கு இனி ஒத்திசைக்கப்படாது. இருப்பினும், ஏற்கனவே உங்களிடம் உள்ள தரவு தொடர்ந்து Google கணக்கில் சேமிக்கப்படும். அவற்றை <ph name="BEGIN_LINK" />Google டாஷ்போர்டில்<ph name="END_LINK" /> நிர்வகிக்கலாம்.</translation>
 <translation id="8910987510378294980">சாதனப் பட்டியலை மறைக்கும்</translation>
@@ -7545,7 +7550,6 @@
 <translation id="9055636786322918818">RC4 என்க்ரிப்ஷனைச் செயல்படுத்தும். RC4 சைஃபர்கள் பாதுகாப்பற்றவை என்பதால், இந்த விருப்பத்தைப் பயன்படுத்துவது, உங்கள் அபாயத்தை அதிகரிக்கும்.</translation>
 <translation id="9056810968620647706">பொருத்தங்கள் கண்டறியப்படவில்லை.</translation>
 <translation id="9057354806206861646">புதுப்பிப்புக்கான திட்ட அட்டவணை</translation>
-<translation id="9057599413476594385">Google Lens மூலம் தேட படத்தில் கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> இலிருந்து <ph name="ERROR_LINE_END" />வது வரி வரை பிழை</translation>
 <translation id="9063800855227801443">ரகசியமான உள்ளடக்கம் இருப்பதால் ஸ்கிரீன்ஷாட் எடுக்க முடியாது</translation>

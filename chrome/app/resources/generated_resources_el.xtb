@@ -704,6 +704,7 @@
 <translation id="1719312230114180055">Σημείωση: Το δακτυλικό σας αποτύπωμα μπορεί να είναι λιγότερο ασφαλές από έναν δυνατό κωδικό πρόσβασης ή αριθμό PIN.</translation>
 <translation id="1720318856472900922">Έλεγχος ταυτότητας διακομιστή TLS WWW</translation>
 <translation id="1720941539803966190">Κλείσιμο οδηγού</translation>
+<translation id="172123215662733643">Αναζήτηση εικόνων με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Για να επισκεφτείτε αυτήν τη σελίδα, χρειάζεστε άδεια από τον διαχειριστή <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Η συσκευή <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> είναι διαχειριζόμενη<ph name="END_LINK" /> από τον τομέα <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Νέο παράθυρο</translation>
@@ -1280,6 +1281,7 @@
     Εάν αποφασίσετε αργότερα ότι το Voice Match δεν είναι κατάλληλο για το παιδί σας, μπορείτε απλώς να το καταργήσετε από τις Ρυθμίσεις του Βοηθού. Για να προβάλετε ή να διαγράψετε τα αποσπάσματα ήχου που εγγράφει το παιδί σας κατά τη ρύθμιση του Voice Match, μεταβείτε στο <ph name="VOICE_MATCH_SETTINGS_URL" /> από τον λογαριασμό του παιδιού σας.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">Αναζήτηση τμήματος της σελίδας με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="230927227160767054">Αυτή η σελίδα θέλει να κάνει εγκατάσταση ενός δείκτη χειρισμού υπηρεσιών.</translation>
 <translation id="2309620859903500144">Έχει αποκλειστεί η πρόσβαση αυτού του ιστοτόπου στους αισθητήρες κίνησης και φωτός.</translation>
 <translation id="2312219318583366810">URL σελίδας</translation>
@@ -1845,6 +1847,7 @@
 <translation id="289695669188700754">Αναγνωριστικό κλειδιού: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Αυτή η προσαρμοσμένη ρύθμιση θα καταργηθεί όταν κλείσετε όλα τα παράθυρα ανώνυμης περιήγησης</translation>
 <translation id="2897878306272793870">Είστε βέβαιοι ότι θέλετε να ανοίξετε <ph name="TAB_COUNT" /> καρτέλες;</translation>
+<translation id="2900477968385519153">Αναζήτηση στην οθόνη σας με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Το αρχείο χρησιμοποιεί μη υποστηριζόμενες λειτουργίες</translation>
 <translation id="2902127500170292085">Δεν ήταν δυνατή η επικοινωνία της επέκτασης <ph name="EXTENSION_NAME" /> με αυτόν τον εκτυπωτή. Βεβαιωθείτε ότι ο εκτυπωτής είναι συνδεδεμένος και δοκιμάστε ξανά.</translation>
 <translation id="2902312830803030883">Περισσότερες ενέργειες</translation>
@@ -2284,6 +2287,7 @@
 <translation id="3390741581549395454">Δημιουργήθηκαν επιτυχώς αντίγραφα ασφαλείας για τις εφαρμογές και τα αρχεία Linux. Η αναβάθμιση θα ξεκινήσει σύντομα.</translation>
 <translation id="3391512812407811893">Δοκιμές του Πλαισίου ιδιωτικότητας</translation>
 <translation id="339178315942519818">Προβολή ειδοποιήσεων από τις εφαρμογές συζήτησης στη συσκευή σας <ph name="DEVICE_TYPE" /></translation>
+<translation id="3393554941209044235">Ανάλυση εγγράφων Chrome</translation>
 <translation id="3394850431319394743">Επιτρέπεται να χρησιμοποιούν αναγνωριστικά για την αναπαραγωγή προστατευμένου περιεχομένου</translation>
 <translation id="3396800784455899911">Εάν κάνετε κλικ στο κουμπί "Αποδοχή και συνέχεια", αποδέχεστε την επεξεργασία που περιγράφεται παραπάνω για αυτές τις υπηρεσίες Google.</translation>
 <translation id="339722927132407568">Παγώνει</translation>
@@ -3247,6 +3251,7 @@
 <translation id="4415748029120993980">Ελλειπτική καμπύλη SECG secp384r1 (επίσης γνωστή ως NIST P-384)</translation>
 <translation id="4416450511678320850">Δεν υπάρχουν διαθέσιμες εφαρμογές για αυτό το περιεχόμενο</translation>
 <translation id="4416582610654027550">Πληκτρολογήστε ένα έγκυρο URL</translation>
+<translation id="4417162649853416189">Σύρετε πάνω από εικόνες για αναζήτηση με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Να επιτρέπεται πάντα στο <ph name="HOST" /> να ορίζει cookie</translation>
 <translation id="4421932782753506458">Χνουδωτός</translation>
 <translation id="4423376891418188461">Επαναφορά ρυθμίσεων</translation>
@@ -3374,6 +3379,7 @@
 <translation id="4551763574344810652">Πατήστε <ph name="MODIFIER_KEY_DESCRIPTION" /> για αναίρεση.</translation>
 <translation id="4553526521109675518">Πρέπει να επανεκκινήσετε το Chromebook για να αλλάξετε τη γλώσσα συσκευής. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Έναρξη ρύθμισης από την αρχή</translation>
+<translation id="4554491709904933912">Σύρετε πάνω από εικόνες για αναζήτηση με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">Η εξωτερική επέκταση είναι στην ίδια ή προγενέστερη έκδοση σε σύγκριση με την υπάρχουσα.</translation>
 <translation id="4555769855065597957">Σκιά</translation>
 <translation id="4555863373929230635">Για να αποθηκεύσετε κωδικούς πρόσβασης στον Λογαριασμό σας Google, συνδεθείτε και ενεργοποιήστε τον συγχρονισμό.</translation>
@@ -3520,7 +3526,6 @@
 <translation id="4699172675775169585">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="4699357559218762027">(αυτόματη εκκίνηση)</translation>
 <translation id="4701025263201366865">Γονική σύνδεση</translation>
-<translation id="4707582759326616943">Σύρετε για αναζήτηση εικόνων με το Google Lens</translation>
 <translation id="4708794300267213770">Εμφάνιση κλειδώματος οθόνης κατά την αφύπνιση από την αδράνεια</translation>
 <translation id="4708849949179781599">Έξοδος από το <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Επαναφορά ρυθμίσεων</translation>
@@ -4149,6 +4154,7 @@
 <translation id="5427278936122846523">Να μεταφράζεται πάντα</translation>
 <translation id="5427459444770871191">Περιστροφή &amp;προς τα δεξιά</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Διατίθεται ενημέρωση)</translation>
+<translation id="5429373054983029602">Αναζήτηση στην οθόνη σας με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Απαιτείται η εγκατάσταση μιας ενημέρωσης υλικολογισμικού της Μονάδας αξιόπιστης πλατφόρμας. Επισκεφτείτε τη διεύθυνση <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Άμεση σύνδεση</translation>
 <translation id="5431318178759467895">Χρώμα</translation>
@@ -4215,6 +4221,7 @@
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5495466433285976480">Μετά την επόμενη επανεκκίνηση, θα καταργηθούν όλοι οι χρήστες, τα αρχεία και οι υπόλοιπες ρυθμίσεις. Όλοι οι χρήστες θα πρέπει να συνδεθούν ξανά.</translation>
 <translation id="5495597166260341369">Διατήρηση ενεργοποιημένης οθόνης</translation>
+<translation id="549580971452855947">Σύρετε για αναζήτηση εικόνων με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Οργάνωση</translation>
 <translation id="5496730470963166430">Δεν επιτρέπεται να αποστέλλουν αναδυόμενα παράθυρα ή να χρησιμοποιούν ανακατευθύνσεις</translation>
 <translation id="5497251278400702716">Αυτό το αρχείο</translation>
@@ -5167,7 +5174,6 @@
 <translation id="6532663472409656417">Εγγεγραμμένη σε επιχείρηση</translation>
 <translation id="6535331821390304775">Να επιτρέπεται πάντα στο <ph name="ORIGIN" /> να ανοίγει συνδέσμους αυτού του είδους στη συσχετισμένη εφαρμογή.</translation>
 <translation id="653659894138286600">Σάρωση εγγράφων και εικόνων</translation>
-<translation id="6537016096312202316">Σύρετε εικόνες για αναζήτηση με το Google Lens</translation>
 <translation id="6537613839935722475">Στα ονόματα μπορείτε να χρησιμοποιείτε γράμματα, αριθμούς και παύλες (-).</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Σφάλμα κατά την ανίχνευση του κωδικού</translation>
@@ -5220,6 +5226,7 @@
 <translation id="6593881952206664229">Ενδέχεται να μην γίνεται αναπαραγωγή των μέσων που προστατεύονται από πνευματικά δικαιώματα</translation>
 <translation id="6594011207075825276">Εύρεση σειριακών συσκευών…</translation>
 <translation id="6595187330192059106">Να αποκλείεται πάντα ο πλήρης έλεγχος των συσκευών MIDI από το <ph name="HOST" />.</translation>
+<translation id="6595792813574514527">Σύρετε για αναζήτηση εικόνων με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Επιλογές κρυπτογράφησης</translation>
 <translation id="6596816719288285829">Διεύθυνση IP</translation>
 <translation id="6597017209724497268">Δείγματα</translation>
@@ -5350,7 +5357,6 @@
 <translation id="6745592621698551453">Ενημέρωση τώρα</translation>
 <translation id="6746124502594467657">Μετακίνηση προς τα κάτω</translation>
 <translation id="674632704103926902">Ενεργοποίηση μεταφοράς με πάτημα</translation>
-<translation id="6748054820659621153">Αναζήτηση στην οθόνη σας με το Google Lens</translation>
 <translation id="6748465660675848252">Μπορείτε να συνεχίσετε, αλλά μόνο τα συγχρονισμένα δεδομένα και οι ρυθμίσεις σας θα αποκατασταθούν. Όλα τα τοπικά δεδομένα θα χαθούν.</translation>
 <translation id="6750757184909117990">Απενεργοποίηση δικτύου κινητής τηλεφωνίας</translation>
 <translation id="6750946710563435348">Χρήση άλλου ονόματος χρήστη</translation>
@@ -5790,6 +5796,7 @@
 <translation id="7230222852462421043">&amp;Επαναφορά παραθύρου</translation>
 <translation id="7230787553283372882">Προσαρμόστε το μέγεθος του κειμένου σας</translation>
 <translation id="7232750842195536390">Η μετονομασία απέτυχε</translation>
+<translation id="723343421145275488">Αναζήτηση εικόνων με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Ακύρωση επαναφοράς Linux</translation>
 <translation id="7235716375204803342">Ανάκτηση δραστηριοτήτων…</translation>
 <translation id="7235737137505019098">Το κλειδί ασφαλείας δεν διαθέτει αρκετό αποθηκευτικό χώρο για επιπλέον λογαριασμούς.</translation>
@@ -6410,7 +6417,6 @@
 <translation id="7853747251428735">Περισσότερα Ε&amp;ργαλεία</translation>
 <translation id="7855678561139483478">Μετακίνηση καρτέλας σε νέο παράθυρο</translation>
 <translation id="7857093393627376423">Προτάσεις κειμένου</translation>
-<translation id="7857675386615530425">Αναζήτηση τμήματος της σελίδας με το Google Lens</translation>
 <translation id="7857949311770343000">Είναι αυτή η σελίδα νέας καρτέλας που περιμένατε να δείτε;</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Υπηρεσία: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6418,7 +6424,6 @@
 <translation id="7861846108263890455">Γλώσσα Λογαριασμού Google</translation>
 <translation id="7864539943188674973">Απενεργοποίηση Bluetooth</translation>
 <translation id="7865127013871431856">Επιλογές Μετάφρασης</translation>
-<translation id="7866230141401327032">Αναζήτηση τμήματος της σελίδας με το Google Lens</translation>
 <translation id="7869143217755017858">Απενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
 <translation id="786957569166715433">Έγινε σύζευξη της συσκευής <ph name="DEVICE_NAME" /></translation>
 <translation id="7870730066603611552">Έλεγχος επιλογών συγχρονισμού μετά τη ρύθμιση</translation>
@@ -6739,6 +6744,7 @@
 <translation id="8184318863960255706">Περισσότερες πληροφορίες</translation>
 <translation id="8184472985242519288">Ομοιόμορφο</translation>
 <translation id="8186609076106987817">Δεν ήταν δυνατός ο εντοπισμός του αρχείου από τον διακομιστή.</translation>
+<translation id="8186704951085064172">Αναζήτηση τμήματος της σελίδας με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Ελέγξτε τις ρυθμίσεις της συσκευής σας και ενεργοποιήστε την για να συνεχίσετε</translation>
 <translation id="8189306097519446565">Σχολικοί λογαριασμοί</translation>
 <translation id="8189750580333936930">Πλαίσιο ιδιωτικότητας</translation>
@@ -7399,7 +7405,6 @@
 <translation id="8907787635362884532">Εκδότης: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Το Chrome μπορεί να ελέγξει τον υπολογιστή σας για επιβλαβές λογισμικό</translation>
 <translation id="8909298138148012791">Η απεγκατάσταση της εφαρμογής <ph name="APP_NAME" /> ολοκληρώθηκε.</translation>
-<translation id="8909782404367982052">Σύρετε για αναζήτηση εικόνων με το Google Lens</translation>
 <translation id="8909833622202089127">Ο ιστότοπος παρακολουθεί την τοποθεσία σας</translation>
 <translation id="8910222113987937043">Οι αλλαγές στους σελιδοδείκτες, το ιστορικό, τους κωδικούς πρόσβασης και άλλες ρυθμίσεις δεν θα συγχρονίζονται πλέον με τον Λογαριασμό σας Google. Ωστόσο, τα υπάρχοντα δεδομένα θα παραμείνουν αποθηκευμένα στον Λογαριασμό σας Google και η διαχείρισή τους μπορεί να γίνεται στον <ph name="BEGIN_LINK" />Πίνακα ελέγχου Google<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Απόκρυψη λίστας συσκευών</translation>
@@ -7543,7 +7548,6 @@
 <translation id="9055636786322918818">Να επιβάλλεται η κρυπτογράφηση RC4. Η χρήση αυτής της επιλογής αυξάνει τον κίνδυνο, επειδή η κρυπτογράφηση RC4 δεν είναι ασφαλής.</translation>
 <translation id="9056810968620647706">Δεν βρέθηκαν αντιστοιχίες.</translation>
 <translation id="9057354806206861646">Ενημέρωση χρονοδιαγράμματος</translation>
-<translation id="9057599413476594385">Σύρετε εικόνες για αναζήτηση με το Google Lens</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Σφάλμα από τη γραμμή <ph name="ERROR_LINE_START" /> έως <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Δεν είναι δυνατή η λήψη εμπιστευτικού περιεχομένου</translation>

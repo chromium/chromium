@@ -704,6 +704,7 @@
 <translation id="1719312230114180055">Note: Your fingerprint may be less secure than a strong password or PIN.</translation>
 <translation id="1720318856472900922">TLS WWW Server Authentication</translation>
 <translation id="1720941539803966190">Close tutorial</translation>
+<translation id="172123215662733643">Search images with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">You need permission from <ph name="NAME" /> to visit this site</translation>
 <translation id="1722460139690167654">Your <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> is managed<ph name="END_LINK" /> by <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;New window</translation>
@@ -1280,6 +1281,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant settings. To view or delete the audio clips that your child records during Voice Match setup, go to <ph name="VOICE_MATCH_SETTINGS_URL" /> from your child’s account.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">Search part of the page with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="230927227160767054">This page wants to install a service handler.</translation>
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
 <translation id="2312219318583366810">Page URL</translation>
@@ -1845,6 +1847,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="289695669188700754">Key ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">This custom setting will be removed when you close all your incognito windows</translation>
 <translation id="2897878306272793870">Are you sure that you want to open <ph name="TAB_COUNT" /> tabs?</translation>
+<translation id="2900477968385519153">Search Your Screen with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">File uses unsupported features</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> could not communicate with this printer. Make sure that the printer is plugged in and try again.</translation>
 <translation id="2902312830803030883">More actions</translation>
@@ -2284,6 +2287,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3390741581549395454">Linux apps and files have been successfully backed up. Upgrade will begin shortly.</translation>
 <translation id="3391512812407811893">Privacy Sandbox trials</translation>
 <translation id="339178315942519818">View notifications from your chat apps on your <ph name="DEVICE_TYPE" /></translation>
+<translation id="3393554941209044235">Chrome document analysis</translation>
 <translation id="3394850431319394743">Allowed to use identifiers to play protected content</translation>
 <translation id="3396800784455899911">By clicking the 'Accept and continue' button, you agree to the processing described above for these Google services.</translation>
 <translation id="339722927132407568">Freezes</translation>
@@ -3247,6 +3251,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (aka NIST P-384)</translation>
 <translation id="4416450511678320850">No apps available for this content</translation>
 <translation id="4416582610654027550">Type a valid URL</translation>
+<translation id="4417162649853416189">Drag over Images to Search with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Always allow <ph name="HOST" /> to set cookies</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">Restore Settings</translation>
@@ -3374,6 +3379,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4551763574344810652">Press <ph name="MODIFIER_KEY_DESCRIPTION" /> to undo</translation>
 <translation id="4553526521109675518">You need to restart your Chromebook to change the device language. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Start setup again</translation>
+<translation id="4554491709904933912">Drag over images to search with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">External extension is at the same or lower version compared to the existing one.</translation>
 <translation id="4555769855065597957">Shadow</translation>
 <translation id="4555863373929230635">To save passwords to your Google account, sign in and turn on sync.</translation>
@@ -3520,7 +3526,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4699357559218762027">(auto-launched)</translation>
 <translation id="4701025263201366865">Parent sign-in</translation>
-<translation id="4707582759326616943">Drag to search images with Google Lens</translation>
 <translation id="4708794300267213770">Show lock screen when waking from sleep</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restore settings</translation>
@@ -4149,6 +4154,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5427278936122846523">Always Translate</translation>
 <translation id="5427459444770871191">Rotate &amp;clockwise</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Update is available)</translation>
+<translation id="5429373054983029602">Search your screen with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">An update for the trusted platform module firmware needs to be installed. See <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Colour</translation>
@@ -4215,6 +4221,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5495466433285976480">This will remove all local users, files, data and other settings after your next restart. All users will need to sign in again.</translation>
 <translation id="5495597166260341369">Keep display on</translation>
+<translation id="549580971452855947">Drag to search images with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organise</translation>
 <translation id="5496730470963166430">Not allowed to send pop-ups or use redirects</translation>
 <translation id="5497251278400702716">This file</translation>
@@ -5166,7 +5173,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6532663472409656417">Enterprise enrolled</translation>
 <translation id="6535331821390304775">Always allow <ph name="ORIGIN" /> to open links of this type in the associated app</translation>
 <translation id="653659894138286600">Scan documents and images</translation>
-<translation id="6537016096312202316">Drag over images to search with Google Lens</translation>
 <translation id="6537613839935722475">The name can use letters, numbers and hyphens (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Error detecting code</translation>
@@ -5219,6 +5225,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6593881952206664229">Media with a copyright might not play</translation>
 <translation id="6594011207075825276">Finding serial devices…</translation>
 <translation id="6595187330192059106">Always block <ph name="HOST" /> from having full control of MIDI devices.</translation>
+<translation id="6595792813574514527">Drag to Search Images with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Encryption options</translation>
 <translation id="6596816719288285829">IP Address</translation>
 <translation id="6597017209724497268">Samples</translation>
@@ -5349,7 +5356,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6745592621698551453">Update now</translation>
 <translation id="6746124502594467657">Move down</translation>
 <translation id="674632704103926902">Enable tap dragging</translation>
-<translation id="6748054820659621153">Search your screen with Google Lens</translation>
 <translation id="6748465660675848252">You may proceed, but only your synced data and settings will be restored. All local data will be lost.</translation>
 <translation id="6750757184909117990">Disable mobile</translation>
 <translation id="6750946710563435348">Use other username</translation>
@@ -5789,6 +5795,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7230222852462421043">&amp;Restore window</translation>
 <translation id="7230787553283372882">Customise your text size</translation>
 <translation id="7232750842195536390">Renaming failed</translation>
+<translation id="723343421145275488">Search Images with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Cancelling Linux restore</translation>
 <translation id="7235716375204803342">Fetching activities...</translation>
 <translation id="7235737137505019098">Your security key does not have enough space for any more accounts.</translation>
@@ -6409,7 +6416,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7853747251428735">More Too&amp;ls</translation>
 <translation id="7855678561139483478">Move tab to new window</translation>
 <translation id="7857093393627376423">Text suggestions</translation>
-<translation id="7857675386615530425">Search part of the page with Google Lens</translation>
 <translation id="7857949311770343000">Is this the new tab page that you were expecting?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Service: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6417,7 +6423,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7861846108263890455">Google Account language</translation>
 <translation id="7864539943188674973">Disable Bluetooth</translation>
 <translation id="7865127013871431856">Translate options</translation>
-<translation id="7866230141401327032">Search part of the page with Google Lens</translation>
 <translation id="7869143217755017858">Disable dark mode</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – Paired</translation>
 <translation id="7870730066603611552">Review sync options following setup</translation>
@@ -6738,6 +6743,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8184318863960255706">More info</translation>
 <translation id="8184472985242519288">Uniform</translation>
 <translation id="8186609076106987817">The server could not find the file.</translation>
+<translation id="8186704951085064172">Search Part of the Page with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Check your device settings and turn it on to continue</translation>
 <translation id="8189306097519446565">School accounts</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -7400,7 +7406,6 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8907787635362884532">Publisher: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome can check your computer for harmful software</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> has been uninstalled</translation>
-<translation id="8909782404367982052">Drag to search images with Google Lens</translation>
 <translation id="8909833622202089127">Site is tracking your location</translation>
 <translation id="8910222113987937043">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Hide device list</translation>
@@ -7544,7 +7549,6 @@ Press an assigned switch to remove assignment</translation>
 <translation id="9055636786322918818">Enforce RC4 encryption. Using this option increases your risk, as the RC4 ciphers are insecure.</translation>
 <translation id="9056810968620647706">No matches were found.</translation>
 <translation id="9057354806206861646">Update schedule</translation>
-<translation id="9057599413476594385">Drag over images to search with Google Lens</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error from line <ph name="ERROR_LINE_START" /> to <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Can't capture confidential content</translation>
