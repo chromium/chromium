@@ -468,7 +468,8 @@ void WebTransport::SetOutgoingDatagramExpirationDuration(
       quic::QuicTime::Delta::FromMicroseconds(duration.InMicroseconds()));
 }
 
-void WebTransport::OnConnected() {
+void WebTransport::OnConnected(
+    scoped_refptr<net::HttpResponseHeaders> response_headers) {
   if (torn_down_) {
     return;
   }
@@ -477,7 +478,7 @@ void WebTransport::OnConnected() {
 
   handshake_client_->OnConnectionEstablished(
       receiver_.BindNewPipeAndPassRemote(),
-      client_.BindNewPipeAndPassReceiver());
+      client_.BindNewPipeAndPassReceiver(), std::move(response_headers));
 
   handshake_client_.reset();
   client_.set_disconnect_handler(

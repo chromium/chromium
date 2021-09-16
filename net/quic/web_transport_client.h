@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/network_isolation_key.h"
 #include "net/quic/web_transport_error.h"
@@ -19,6 +20,7 @@
 
 namespace net {
 
+class HttpResponseHeaders;
 class URLRequestContext;
 
 // Diagram of allowed state transitions:
@@ -57,7 +59,8 @@ class NET_EXPORT WebTransportClientVisitor {
 
   // State change notifiers.
   // CONNECTING -> CONNECTED
-  virtual void OnConnected() = 0;
+  virtual void OnConnected(
+      scoped_refptr<HttpResponseHeaders> response_headers) = 0;
   // CONNECTING -> FAILED
   virtual void OnConnectionFailed(const WebTransportError& error) = 0;
   // CONNECTED -> CLOSED

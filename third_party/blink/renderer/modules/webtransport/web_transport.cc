@@ -802,7 +802,8 @@ void WebTransport::setDatagramWritableQueueExpirationDuration(double duration) {
 void WebTransport::OnConnectionEstablished(
     mojo::PendingRemote<network::mojom::blink::WebTransport> web_transport,
     mojo::PendingReceiver<network::mojom::blink::WebTransportClient>
-        client_receiver) {
+        client_receiver,
+    network::mojom::blink::HttpResponseHeadersPtr response_headers) {
   DVLOG(1) << "WebTransport::OnConnectionEstablished() this=" << this;
   connector_.reset();
   handshake_client_receiver_.reset();

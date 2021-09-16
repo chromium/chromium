@@ -78,8 +78,8 @@ class MODULES_EXPORT WebTransport final
   // WebTransportHandshakeClient implementation
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::blink::WebTransport>,
-      mojo::PendingReceiver<network::mojom::blink::WebTransportClient>)
-      override;
+      mojo::PendingReceiver<network::mojom::blink::WebTransportClient>,
+      network::mojom::blink::HttpResponseHeadersPtr response_headers) override;
   void OnHandshakeFailed(network::mojom::blink::WebTransportErrorPtr) override;
 
   // WebTransportClient implementation

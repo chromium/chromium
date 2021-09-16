@@ -6,6 +6,7 @@ module network.mojom;
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/url.mojom";
 
 // Represents a WebTransport error.
@@ -100,7 +101,8 @@ interface WebTransportClient {
 interface WebTransportHandshakeClient {
   // Called when the handshake succeeds.
   OnConnectionEstablished(pending_remote<WebTransport> transport,
-                          pending_receiver<WebTransportClient> client);
+                          pending_receiver<WebTransportClient> client,
+                          HttpResponseHeaders response_headers);
 
   // Called when the handshake fails.
   // |error| contains the error details. The actual error information issued

@@ -12,6 +12,7 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -62,6 +63,8 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
 
   void Start() {
     bool should_collapse_initiator = false;
+    // Since WebTransport doesn't support redirect, 'redirect_url' is ignored
+    // even if extensions assigned it.
     const int result =
         ExtensionWebRequestEventRouter::GetInstance()->OnBeforeRequest(
             browser_context_, &info_,
@@ -137,13 +140,54 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   // Proxing should be finished with either of below functions.
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::WebTransport> transport,
-      mojo::PendingReceiver<network::mojom::WebTransportClient> client)
+      mojo::PendingReceiver<network::mojom::WebTransportClient> client,
+      const scoped_refptr<net::HttpResponseHeaders>& response_headers)
       override {
-    remote_->OnConnectionEstablished(std::move(transport), std::move(client));
+    receiver_.reset();
+    pending_transport_ = std::move(transport);
+    pending_client_ = std::move(client);
+    response_headers_ = response_headers;
+    // Since WebTransport doesn't support redirect, 'redirect_url' is ignored
+    // even if extensions assigned it.
+    const int result =
+        ExtensionWebRequestEventRouter::GetInstance()->OnHeadersReceived(
+            browser_context_, &info_,
+            base::BindOnce(
+                &WebTransportHandshakeProxy::OnHeadersReceivedCompleted,
+                base::Unretained(this)),
+            response_headers_.get(), &override_headers_, &redirect_url_);
+
+    if (result == net::ERR_IO_PENDING)
+      return;
+
+    DCHECK(result == net::OK || result == net::ERR_BLOCKED_BY_CLIENT) << result;
+    OnHeadersReceivedCompleted(result);
+  }
+
+  void OnHeadersReceivedCompleted(int error_code) {
+    if (error_code != net::OK) {
+      OnError(error_code);
+      return;
+    }
+
+    network::mojom::URLResponseHead response;
+    response.headers =
+        override_headers_ ? override_headers_ : response_headers_;
+    DCHECK(response.headers);
+    // TODO(1250090): Assign actual server IP 'response';
+    response.remote_endpoint = net::IPEndPoint();
+    // Web transport doesn't use the http cache.
+    response.was_fetched_via_cache = false;
+    info_.AddResponseInfoFromResourceResponse(response);
+
+    remote_->OnConnectionEstablished(std::move(pending_transport_),
+                                     std::move(pending_client_),
+                                     response.headers);
 
     OnCompleted();
     // `this` is deleted.
   }
+
   void OnHandshakeFailed(
       const absl::optional<net::WebTransportError>& error) override {
     remote_->OnHandshakeFailed(error);
@@ -158,9 +202,8 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     // `this` is deleted.
   }
 
-  // TODO(crbug.com/1240935): Implement WebRequestAPI::onHeadersReceived
   // TODO(crbug.com/1240935): Implement WebRequestAPI::onResponseStarted
-  // TODO(crbug.com/1240935): Implement WebRequestAPI::onCompleted
+
   void OnError(int error_code) {
     DCHECK_NE(error_code, net::OK);
     if (create_callback_) {
@@ -178,6 +221,8 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   }
 
   void OnCompleted() {
+    ExtensionWebRequestEventRouter::GetInstance()->OnCompleted(browser_context_,
+                                                               &info_, net::OK);
     // Delete `this`.
     proxies_.RemoveProxy(this);
   }
@@ -193,6 +238,11 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   GURL redirect_url_;
   mojo::Remote<WebTransportHandshakeClient> remote_;
   mojo::Receiver<WebTransportHandshakeClient> receiver_{this};
+  scoped_refptr<net::HttpResponseHeaders> response_headers_;
+  scoped_refptr<net::HttpResponseHeaders> override_headers_;
+  mojo::PendingRemote<network::mojom::WebTransport> pending_transport_;
+  mojo::PendingReceiver<network::mojom::WebTransportClient> pending_client_;
+
   CreateCallback create_callback_;
 };
 

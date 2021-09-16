@@ -31,9 +31,14 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
   // WebTransportHandshakeClient implementation:
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::WebTransport> transport,
-      mojo::PendingReceiver<network::mojom::WebTransportClient> client)
+      mojo::PendingReceiver<network::mojom::WebTransportClient> client,
+      const scoped_refptr<net::HttpResponseHeaders>& response_headers)
       override {
-    remote_->OnConnectionEstablished(std::move(transport), std::move(client));
+    // We don't need to pass headers to the renderer here.
+    remote_->OnConnectionEstablished(
+        std::move(transport), std::move(client),
+        base::MakeRefCounted<net::HttpResponseHeaders>(
+            /*raw_headers=*/""));
   }
   void OnHandshakeFailed(
       const absl::optional<net::WebTransportError>& error) override {
@@ -80,8 +85,17 @@ void WebTransportConnectorImpl::Connect(
     return;
   }
 
+  mojo::PendingRemote<WebTransportHandshakeClient> handshake_client_to_pass;
+  // TODO(yhirano): Stop using MakeSelfOwnedReceiver here, because the
+  // WebTransport implementation in the network service won't notice that
+  // the WebTransportHandshakeClient is going away.
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<InterceptingHandshakeClient>(
+          frame_, url, std::move(handshake_client)),
+      handshake_client_to_pass.InitWithNewPipeAndPassReceiver());
+
   GetContentClient()->browser()->WillCreateWebTransport(
-      frame_.get(), url, std::move(handshake_client),
+      frame_.get(), url, std::move(handshake_client_to_pass),
       base::BindOnce(
           &WebTransportConnectorImpl::OnWillCreateWebTransportCompleted,
           weak_factory_.GetWeakPtr(), url, std::move(fingerprints)));
@@ -101,18 +115,9 @@ void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
     return;
   }
 
-  mojo::PendingRemote<WebTransportHandshakeClient> handshake_client_to_pass;
-  // TODO(yhirano): Stop using MakeSelfOwnedReceiver here, because the
-  // WebTransport implementation in the network service won't notice that
-  // the WebTransportHandshakeClient is going away.
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<InterceptingHandshakeClient>(
-          frame_, url, std::move(handshake_client)),
-      handshake_client_to_pass.InitWithNewPipeAndPassReceiver());
-
   if (error) {
     mojo::Remote<WebTransportHandshakeClient> remote(
-        std::move(handshake_client_to_pass));
+        std::move(handshake_client));
     remote->OnHandshakeFailed(net::WebTransportError(
         error.value()->net_error,
         static_cast<quic::QuicErrorCode>(error.value()->quic_error),
@@ -122,7 +127,7 @@ void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
 
   process->GetStoragePartition()->GetNetworkContext()->CreateWebTransport(
       url, origin_, network_isolation_key_, std::move(fingerprints),
-      std::move(handshake_client_to_pass));
+      std::move(handshake_client));
 }
 
 }  // namespace content

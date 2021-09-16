@@ -114,7 +114,8 @@ class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
 
   void OnConnectionEstablished(
       mojo::PendingRemote<mojom::WebTransport> transport,
-      mojo::PendingReceiver<mojom::WebTransportClient> client_receiver)
+      mojo::PendingReceiver<mojom::WebTransportClient> client_receiver,
+      const scoped_refptr<net::HttpResponseHeaders>& response_headers)
       override {
     transport_ = std::move(transport);
     client_receiver_ = std::move(client_receiver);

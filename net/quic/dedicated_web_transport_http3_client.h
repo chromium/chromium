@@ -163,6 +163,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   bool retried_with_new_version_ = false;
   bool session_ready_ = false;
   bool safe_to_report_error_details_ = false;
+  std::unique_ptr<HttpResponseInfo> http_response_info_;
 
   ProxyInfo proxy_info_;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolution_request_;

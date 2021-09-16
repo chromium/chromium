@@ -69,7 +69,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta duration) override;
 
   // WebTransportClientVisitor implementation:
-  void OnConnected() override;
+  void OnConnected(
+      scoped_refptr<net::HttpResponseHeaders> response_headers) override;
   void OnConnectionFailed(const net::WebTransportError& error) override;
   void OnClosed() override;
   void OnError(const net::WebTransportError& error) override;
