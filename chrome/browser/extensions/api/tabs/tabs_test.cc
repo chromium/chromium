@@ -86,6 +86,19 @@ class ExtensionTabsTest : public PlatformAppBrowserTest {
  public:
   ExtensionTabsTest() {}
 
+  std::string GetWindowType(Browser* test_browser,
+                            scoped_refptr<const Extension> extension) {
+    scoped_refptr<WindowsGetFunction> function = new WindowsGetFunction();
+    function->set_extension(extension.get());
+    std::string args = base::StringPrintf(
+        R"([%u, {"windowTypes": ["normal", "popup", "devtools", "app"]}])",
+        ExtensionTabUtil::GetWindowId(test_browser));
+    std::unique_ptr<base::DictionaryValue> result(
+        utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+            function.get(), args, browser())));
+    return api_test_utils::GetString(result.get(), "type");
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(ExtensionTabsTest);
 };
@@ -188,18 +201,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
   // TODO(aa): Minimized and maximized dimensions. Is there a way to set
   // minimize/maximize programmatically?
 
-  // Popup.
-  Browser* popup_browser = Browser::Create(
+  // Check window type.
+  EXPECT_EQ("normal", GetWindowType(browser(), extension));
+  Browser* test_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
-  function = new WindowsGetFunction();
-  function->set_extension(extension.get());
-  result.reset(utils::ToDictionary(
-      utils::RunFunctionAndReturnSingleResult(
-          function.get(),
-          base::StringPrintf(
-              "[%u]", ExtensionTabUtil::GetWindowId(popup_browser)),
-          browser())));
-  EXPECT_EQ("popup", api_test_utils::GetString(result.get(), "type"));
+  EXPECT_EQ("popup", GetWindowType(test_browser, extension));
+  DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
+  EXPECT_EQ("devtools",
+            GetWindowType(DevToolsWindowTesting::Get(devtools)->browser(),
+                          extension));
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
+  test_browser = Browser::Create(Browser::CreateParams::CreateForApp(
+      "test-app", true, gfx::Rect(), browser()->profile(), true));
+  EXPECT_EQ("app", GetWindowType(test_browser, extension));
+  test_browser = Browser::Create(Browser::CreateParams::CreateForAppPopup(
+      "test-app-popup", true, gfx::Rect(), browser()->profile(), true));
+  EXPECT_EQ("popup", GetWindowType(test_browser, extension));
 
   // Incognito.
   Browser* incognito_browser = CreateIncognitoBrowser();
@@ -221,22 +239,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetWindow) {
       function.get(), base::StringPrintf("[%u]", incognito_window_id),
       browser(), api_test_utils::INCLUDE_INCOGNITO)));
   EXPECT_TRUE(api_test_utils::GetBoolean(result.get(), "incognito"));
-
-  // DevTools window.
-  DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
-      browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
-
-  function = new WindowsGetFunction();
-  function->set_extension(extension.get());
-  result.reset(utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
-      function.get(),
-      base::StringPrintf("[%u, {\"windowTypes\": [\"devtools\"]}]",
-                         ExtensionTabUtil::GetWindowId(
-                             DevToolsWindowTesting::Get(devtools)->browser())),
-      browser(), api_test_utils::INCLUDE_INCOGNITO)));
-  EXPECT_EQ("devtools", api_test_utils::GetString(result.get(), "type"));
-
-  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetCurrentWindow) {
@@ -1307,6 +1309,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, OnBoundsChanged) {
       rect.x(), rect.width(), rect.height()));
 
   ASSERT_TRUE(catcher.GetNextResult());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate) {
+  ASSERT_TRUE(RunExtensionTest("api_test/windows/create")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExecuteScriptOnDevTools) {
