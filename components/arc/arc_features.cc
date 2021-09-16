@@ -27,7 +27,7 @@ const base::Feature kEnableArcNearbyShare{"ArcNearbySharing",
 
 // Controls whether to pass throttling notifications to Android side.
 const base::Feature kEnableThrottlingNotification{
-    "ArcEnableThrottlingNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ArcEnableThrottlingNotification", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
 const base::Feature kEnableUnifiedAudioFocusFeature{

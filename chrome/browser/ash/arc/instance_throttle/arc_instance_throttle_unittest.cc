@@ -184,11 +184,7 @@ TEST_F(ArcInstanceThrottleTest, TestThrottleInstance) {
 }
 
 // Tests that power instance is correctly notified.
-TEST_F(ArcInstanceThrottleTest, TestPowerNotification) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({arc::kEnableThrottlingNotification},
-                                       {});
-
+TEST_F(ArcInstanceThrottleTest, TestPowerNotificationEnabledByDefault) {
   // Set power instance and it should be automatically notified once connection
   // is made.
   CreatePowerInstance();
@@ -210,7 +206,10 @@ TEST_F(ArcInstanceThrottleTest, TestPowerNotification) {
 }
 
 // Tests that power instance notification is off by default.
-TEST_F(ArcInstanceThrottleTest, TestPowerNotificationDisabledByDefault) {
+TEST_F(ArcInstanceThrottleTest, TestPowerNotificationDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({},
+                                       {arc::kEnableThrottlingNotification});
   // Set power instance and it should be automatically notified once connection
   // is made.
   CreatePowerInstance();
