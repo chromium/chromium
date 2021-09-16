@@ -71,6 +71,9 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   class NetworkStateObserver {
    public:
+    NetworkStateObserver(const NetworkStateObserver&) = delete;
+    NetworkStateObserver& operator=(const NetworkStateObserver&) = delete;
+
     // Will be called on the task runner that is passed in add*Observer.
     virtual void ConnectionChange(
         WebConnectionType,
@@ -81,6 +84,14 @@ class PLATFORM_EXPORT NetworkStateNotifier {
         const absl::optional<double>& downlink_throughput_mbps,
         bool save_data) {}
     virtual void OnLineStateChange(bool on_line) {}
+
+   protected:
+    NetworkStateObserver() = default;
+
+    // We don't delete these objects via the base class, so a virtual destructor
+    // isn't necessary, but protect the destructor to make sure we don't call it
+    // by accident.
+    ~NetworkStateObserver() = default;
   };
 
   enum class ObserverType {
