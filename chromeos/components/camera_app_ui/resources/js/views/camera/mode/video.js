@@ -61,10 +61,9 @@ let avc1Parameters = null;
 const MINIMUM_VIDEO_DURATION_IN_MILLISECONDS = 500;
 
 /**
- * The resolution of the generated gif file.
- * TODO(b:191950622): Rotate the scaled size according to input orientation.
+ * The maximal length of the longer side of gif width or height.
  */
-export const GIF_RESOLUTION = new Resolution(640, 360);
+export const GIF_MAX_SIDE = 640;
 
 /**
  * Maximum recording time for GIF animation mode.
@@ -600,11 +599,16 @@ export class Video extends ModeBase {
    * @private
    */
   async captureGif_() {
-    const gifSaver = await this.handler_.createGifSaver(GIF_RESOLUTION);
-
     const video = this.handler_.getPreviewVideo();
-    const canvas =
-        new OffscreenCanvas(GIF_RESOLUTION.width, GIF_RESOLUTION.height);
+    let {videoWidth: width, videoHeight: height} = video;
+    if (width > GIF_MAX_SIDE || height > GIF_MAX_SIDE) {
+      const ratio = GIF_MAX_SIDE / Math.max(width, height);
+      width = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+    }
+    const gifSaver =
+        await this.handler_.createGifSaver(new Resolution(width, height));
+    const canvas = new OffscreenCanvas(width, height);
     const context = assertInstanceof(
         canvas.getContext('2d'), OffscreenCanvasRenderingContext2D);
     this.isRecordingGif_ = true;
@@ -622,12 +626,9 @@ export class Video extends ModeBase {
         }
         encodedFrames++;
         if (encodedFrames % GRAB_GIF_FRAME_RATIO === 0) {
-          context.drawImage(
-              video, 0, 0, GIF_RESOLUTION.width, GIF_RESOLUTION.height);
+          context.drawImage(video, 0, 0, width, height);
           gifSaver.write(new Blob([
-            context
-                .getImageData(0, 0, GIF_RESOLUTION.width, GIF_RESOLUTION.height)
-                .data,
+            context.getImageData(0, 0, width, height).data,
           ]));
         }
         video.requestVideoFrameCallback(updateCanvas);
