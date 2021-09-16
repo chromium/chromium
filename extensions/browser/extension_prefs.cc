@@ -86,7 +86,6 @@ constexpr const char kPrefAcknowledgePromptCount[] = "ack_prompt_count";
 
 // Indicates whether the user has acknowledged various types of extensions.
 constexpr const char kPrefExternalAcknowledged[] = "ack_external";
-constexpr const char kPrefBlocklistAcknowledged[] = "ack_blacklist";
 
 // Indicates whether the external extension was installed during the first
 // run of this profile.
@@ -916,14 +915,15 @@ void ExtensionPrefs::AcknowledgeExternalExtension(
 
 bool ExtensionPrefs::IsBlocklistedExtensionAcknowledged(
     const std::string& extension_id) const {
-  return ReadPrefAsBooleanAndReturn(extension_id, kPrefBlocklistAcknowledged);
+  return blocklist_prefs::HasAcknowledgedBlocklistState(
+      extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
 }
 
 void ExtensionPrefs::AcknowledgeBlocklistedExtension(
     const std::string& extension_id) {
   DCHECK(crx_file::id_util::IdIsValid(extension_id));
-  UpdateExtensionPref(extension_id, kPrefBlocklistAcknowledged,
-                      std::make_unique<base::Value>(true));
+  blocklist_prefs::AddAcknowledgedBlocklistState(
+      extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
   UpdateExtensionPref(extension_id, kPrefAcknowledgePromptCount, nullptr);
 }
 
@@ -1076,10 +1076,6 @@ void ExtensionPrefs::ModifyBitMapPrefBits(const std::string& extension_id,
     UpdateExtensionPref(extension_id, pref_key,
                         std::make_unique<base::Value>(new_value));
   }
-}
-
-base::StringPiece ExtensionPrefs::GetPrefBlocklistAcknowledgedKey() {
-  return kPrefBlocklistAcknowledged;
 }
 
 namespace {
@@ -2677,21 +2673,44 @@ void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
 
 void ExtensionPrefs::MigrateOldBlocklistPrefs() {
   static constexpr char kLegacyBlocklistPref[] = "blacklist";
+  static constexpr char kLegacyBlocklistAcknowledgedPref[] = "ack_blacklist";
   std::unique_ptr<ExtensionsInfo> extensions_info(GetInstalledExtensionsInfo());
 
   for (const auto& info : *extensions_info) {
     const ExtensionId& extension_id = info->extension_id;
     bool was_blocklisted = false;
-    if (!ReadPrefAsBoolean(extension_id, kLegacyBlocklistPref,
-                           &was_blocklisted))
-      continue;  // Pref wasn't present.
-    // Migrate the old value.
-    if (was_blocklisted) {
-      blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
-          extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
+    bool was_blocklist_acknowledged = false;
+    bool legacy_pref_cleared = false;
+
+    if (ReadPrefAsBoolean(extension_id, kLegacyBlocklistPref,
+                          &was_blocklisted)) {
+      // Migrate the old value.
+      if (was_blocklisted) {
+        // Keep the blocklist acknowledged pref unchanged as it will be updated
+        // below.
+        blocklist_prefs::SetSafeBrowsingExtensionBlocklistStateKeepAcknowledged(
+            extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
+      }
+      // Clear the legacy pref.
+      UpdateExtensionPref(extension_id, kLegacyBlocklistPref, nullptr);
+      legacy_pref_cleared = true;
     }
-    UpdateExtensionPref(extension_id, kLegacyBlocklistPref, nullptr);
-    DeleteExtensionPrefsIfPrefEmpty(extension_id);
+
+    if (ReadPrefAsBoolean(extension_id, kLegacyBlocklistAcknowledgedPref,
+                          &was_blocklist_acknowledged)) {
+      // Migrate the old value.
+      if (was_blocklist_acknowledged) {
+        blocklist_prefs::AddAcknowledgedBlocklistState(
+            extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
+      }
+      // Clear the legacy pref.
+      UpdateExtensionPref(extension_id, kLegacyBlocklistAcknowledgedPref,
+                          nullptr);
+      legacy_pref_cleared = true;
+    }
+
+    if (legacy_pref_cleared)
+      DeleteExtensionPrefsIfPrefEmpty(extension_id);
   }
 }
 

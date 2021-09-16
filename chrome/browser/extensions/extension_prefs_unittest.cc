@@ -1096,6 +1096,7 @@ TEST_F(ExtensionPrefsMigratedPref, ExtensionPrefsMigratedPref) {}
 class ExtensionPrefsMigrateOldBlocklistPrefs : public ExtensionPrefsTest {
  public:
   static constexpr char kLegacyBlocklistPref[] = "blacklist";
+  static constexpr char kLegacyBlocklistAcknowledgedPref[] = "ack_blacklist";
 
   ExtensionPrefsMigrateOldBlocklistPrefs() = default;
   ~ExtensionPrefsMigrateOldBlocklistPrefs() override = default;
@@ -1112,6 +1113,17 @@ class ExtensionPrefsMigrateOldBlocklistPrefs : public ExtensionPrefsTest {
     EXPECT_FALSE(
         blocklist_prefs::IsExtensionBlocklisted(extension_->id(), prefs()));
 
+    prefs()->UpdateExtensionPref(extension_->id(),
+                                 kLegacyBlocklistAcknowledgedPref,
+                                 std::make_unique<base::Value>(true));
+    bool is_blocklist_acknowledged_pref = false;
+    prefs()->ReadPrefAsBoolean(extension_->id(),
+                               kLegacyBlocklistAcknowledgedPref,
+                               &is_blocklist_acknowledged_pref);
+    EXPECT_TRUE(is_blocklist_acknowledged_pref);
+    // The pref is not migrated to the new pref yet.
+    EXPECT_FALSE(prefs()->IsBlocklistedExtensionAcknowledged(extension_->id()));
+
     prefs()->MigrateOldBlocklistPrefs();
   }
 
@@ -1123,6 +1135,14 @@ class ExtensionPrefsMigrateOldBlocklistPrefs : public ExtensionPrefsTest {
     EXPECT_FALSE(is_blocklisted_pref);
     EXPECT_TRUE(
         blocklist_prefs::IsExtensionBlocklisted(extension_->id(), prefs()));
+
+    bool is_blocklist_acknowledged_pref = false;
+    prefs()->ReadPrefAsBoolean(extension_->id(),
+                               kLegacyBlocklistAcknowledgedPref,
+                               &is_blocklist_acknowledged_pref);
+    // The old pref should be cleared.
+    EXPECT_FALSE(is_blocklist_acknowledged_pref);
+    EXPECT_TRUE(prefs()->IsBlocklistedExtensionAcknowledged(extension_->id()));
   }
 
  private:
@@ -1133,6 +1153,8 @@ class ExtensionPrefsMigrateOldBlocklistPrefs : public ExtensionPrefsTest {
 
 // static
 constexpr char ExtensionPrefsMigrateOldBlocklistPrefs::kLegacyBlocklistPref[];
+constexpr char
+    ExtensionPrefsMigrateOldBlocklistPrefs::kLegacyBlocklistAcknowledgedPref[];
 
 TEST_F(ExtensionPrefsMigrateOldBlocklistPrefs,
        ExtensionPrefsMigrateOldBlocklistPrefs) {}

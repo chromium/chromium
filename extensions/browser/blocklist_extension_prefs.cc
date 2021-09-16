@@ -168,7 +168,7 @@ void ClearAcknowledgedBlocklistStates(const std::string& extension_id,
 
 bool HasAcknowledgedBlocklistState(const std::string& extension_id,
                                    BitMapBlocklistState state,
-                                   ExtensionPrefs* extension_prefs) {
+                                   const ExtensionPrefs* extension_prefs) {
   int current_states = extension_prefs->GetBitMapPrefBits(
       extension_id, kPrefAcknowledgedBlocklistState,
       static_cast<int>(kDefaultBitMapBlocklistState));
@@ -203,9 +203,9 @@ void SetSafeBrowsingExtensionBlocklistState(
   if (is_blocklisted != currently_blocklisted) {
     // Always make sure the "acknowledged" bit is cleared since the blocklist
     // bit is changing.
-    extension_prefs->UpdateExtensionPref(
-        extension_id, extension_prefs->GetPrefBlocklistAcknowledgedKey(),
-        nullptr);
+    blocklist_prefs::RemoveAcknowledgedBlocklistState(
+        extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+        extension_prefs);
   }
 
   SetSafeBrowsingExtensionBlocklistStateKeepAcknowledged(

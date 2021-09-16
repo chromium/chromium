@@ -68,7 +68,7 @@ void ClearAcknowledgedBlocklistStates(const std::string& extension_id,
 // blocklist state pref.
 bool HasAcknowledgedBlocklistState(const std::string& extension_id,
                                    BitMapBlocklistState state,
-                                   ExtensionPrefs* extension_prefs);
+                                   const ExtensionPrefs* extension_prefs);
 // Sets all current greylist states for this `extension_id` as acknowledged.
 // It will consider both Safe Browsing greylist state and Omaha attribute
 // greylist state. Previous acknowledged states will be cleared if the
