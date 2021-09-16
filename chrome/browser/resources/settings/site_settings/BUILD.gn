@@ -10,38 +10,15 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
-    ":all_sites",
     ":category_default_setting",
-    ":category_setting_exceptions",
     ":constants",
     ":cookie_info",
     ":local_data_browser_proxy",
     ":site_data",
-    ":site_data_details_subpage",
     ":site_data_entry",
-    ":site_entry",
     ":site_settings_mixin",
     ":site_settings_prefs_browser_proxy",
   ]
-}
-
-js_library("all_sites") {
-  deps = [
-    ":constants",
-    ":local_data_browser_proxy",
-    ":site_settings_mixin",
-    ":site_settings_prefs_browser_proxy",
-    "..:global_scroll_target_mixin",
-    "..:router",
-    "..:settings_routes",
-    "//third_party/polymer/v3_0/components-chromium/iron-list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
 }
 
 js_library("category_default_setting") {
@@ -52,17 +29,6 @@ js_library("category_default_setting") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("category_setting_exceptions") {
-  deps = [
-    ":constants",
-    ":site_settings_mixin",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [ "$externs_path/settings_private.js" ]
@@ -101,44 +67,12 @@ js_library("site_data") {
   ]
 }
 
-js_library("site_data_details_subpage") {
-  deps = [
-    ":local_data_browser_proxy",
-    "..:metrics_browser_proxy",
-    "..:route",
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
 js_library("site_data_entry") {
   deps = [
     ":local_data_browser_proxy",
     "..:metrics_browser_proxy",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
-  ]
-}
-
-js_library("site_entry") {
-  deps = [
-    ":constants",
-    ":local_data_browser_proxy",
-    ":site_settings_mixin",
-    ":site_settings_prefs_browser_proxy",
-    "..:base_mixin",
-    "..:route",
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
   ]
 }
@@ -166,10 +100,10 @@ js_library("site_settings_prefs_browser_proxy") {
 html_to_js("web_components") {
   js_files = [
     "add_site_dialog.ts",
-    "all_sites.js",
+    "all_sites.ts",
     "all_sites_icons.ts",
     "category_default_setting.js",
-    "category_setting_exceptions.js",
+    "category_setting_exceptions.ts",
     "chooser_exception_list.ts",
     "chooser_exception_list_entry.ts",
     "clear_storage_dialog_css.ts",
@@ -179,11 +113,11 @@ html_to_js("web_components") {
     "protocol_handlers.ts",
     "settings_category_default_radio_group.ts",
     "site_data.js",
-    "site_data_details_subpage.js",
+    "site_data_details_subpage.ts",
     "site_data_entry.js",
     "site_details.ts",
     "site_details_permission.ts",
-    "site_entry.js",
+    "site_entry.ts",
     "site_list.ts",
     "site_list_entry.ts",
     "zoom_levels.ts",

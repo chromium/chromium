@@ -21,48 +21,68 @@ import './clear_storage_dialog_css.js';
 import './site_entry.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {ALL_SITES_DIALOG, AllSitesAction2, ContentSetting, ContentSettingsTypes, SortMethod} from './constants.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
-import {SiteGroup} from './site_settings_prefs_browser_proxy.js';
+import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
-/**
- * @typedef {!CustomEvent<{
- *    actionScope: string,
- *    index: number,
- *    item: !SiteGroup,
- *    origin: string,
- *    path: string,
- *    target: !HTMLElement}>
- *  }
- */
-let OpenMenuEvent;
+type ActionMenuModel = {
+  actionScope: string,
+  index: number,
+  item: SiteGroup,
+  origin: string,
+  path: string,
+  target: HTMLElement,
+};
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {SiteSettingsMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
+type OpenMenuEvent = CustomEvent<ActionMenuModel>;
+
+type SelectedItem = {
+  item: SiteGroup,
+  index: number,
+};
+
+declare global {
+  interface HTMLElementEventMap {
+    'open-menu': OpenMenuEvent;
+    'site-entry-selected': CustomEvent<SelectedItem>;
+  }
+}
+
+interface AllSitesElement {
+  $: {
+    allSitesList: IronListElement,
+    confirmClearAllData: CrLazyRenderElement<CrDialogElement>,
+    confirmClearData: CrLazyRenderElement<CrDialogElement>,
+    confirmResetSettings: CrLazyRenderElement<CrDialogElement>,
+    menu: CrLazyRenderElement<CrActionMenuElement>,
+    sortMethod: HTMLSelectElement,
+  };
+}
+
 const AllSitesElementBase = mixinBehaviors(
-    [
-      I18nBehavior,
-      WebUIListenerBehavior,
-    ],
-    GlobalScrollTargetMixin(
-        RouteObserverMixin(SiteSettingsMixin(PolymerElement))));
+                                [
+                                  I18nBehavior,
+                                  WebUIListenerBehavior,
+                                ],
+                                GlobalScrollTargetMixin(RouteObserverMixin(
+                                    SiteSettingsMixin(PolymerElement)))) as {
+  new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
+  SiteSettingsMixinInterface & RouteObserverMixinInterface
+};
 
-/** @polymer */
 class AllSitesElement extends AllSitesElementBase {
   static get is() {
     return 'all-sites';
@@ -75,14 +95,13 @@ class AllSitesElement extends AllSitesElementBase {
   static get properties() {
     return {
       // TODO(https://crbug.com/1037809): Refactor siteGroupMap to use an Object
-      // instead of a Map so that it's observable by Polymore more naturally. As
+      // instead of a Map so that it's observable by Polymer more naturally. As
       // it stands, one cannot use computed properties based off the value of
       // siteGroupMap nor can one use observable functions to listen to changes
       // to siteGroupMap.
       /**
        * Map containing sites to display in the widget, grouped into their
        * eTLD+1 names.
-       * @type {!Map<string, !SiteGroup>}
        */
       siteGroupMap: {
         type: Object,
@@ -93,8 +112,6 @@ class AllSitesElement extends AllSitesElementBase {
 
       /**
        * Filtered site group list.
-       * @type {!Array<SiteGroup>}
-       * @private
        */
       filteredList_: {
         type: Array,
@@ -102,7 +119,6 @@ class AllSitesElement extends AllSitesElementBase {
 
       /**
        * Needed by GlobalScrollTargetMixin.
-       * @override
        */
       subpageRoute: {
         type: Object,
@@ -113,7 +129,6 @@ class AllSitesElement extends AllSitesElementBase {
       /**
        * The search query entered into the All Sites search textbox. Used to
        * filter the All Sites list.
-       * @private
        */
       filter: {
         type: String,
@@ -123,8 +138,6 @@ class AllSitesElement extends AllSitesElementBase {
 
       /**
        * All possible sort methods.
-       * @type {!{name: string, mostVisited: string, storage: string}}
-       * @private
        */
       sortMethods_: {
         type: Object,
@@ -134,39 +147,24 @@ class AllSitesElement extends AllSitesElementBase {
 
       /**
        * Stores the last selected item in the All Sites list.
-       * @type {?{item: !SiteGroup, index: number}}
-       * @private
        */
       selectedItem_: Object,
 
       /**
-       * @private
        * Used to track the last-focused element across rows for the
        * focusRowBehavior.
        */
       lastFocused_: Object,
 
       /**
-       * @private
        * Used to track whether the list of row items has been blurred for the
        * focusRowBehavior.
        */
       listBlurred_: Boolean,
 
-      /**
-       * @private {?{
-       *   actionScope: string,
-       *   index: number,
-       *   item: !SiteGroup,
-       *   origin: string,
-       *   path: string,
-       *   target: !HTMLElement
-       * }}
-       */
       actionMenuModel_: Object,
 
       /**
-       * @private
        * Used to determine if user is attempting to clear all site data
        * rather than a single site or origin's data.
        */
@@ -174,15 +172,11 @@ class AllSitesElement extends AllSitesElementBase {
 
       /**
        * The selected sort method.
-       * @type {!SortMethod|undefined}
-       * @private
        */
       sortMethod_: String,
 
       /**
        * The total usage of all sites for this profile.
-       * @type {string}
-       * @private
        */
       totalUsage_: {
         type: String,
@@ -191,37 +185,40 @@ class AllSitesElement extends AllSitesElementBase {
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  siteGroupMap: Map<string, SiteGroup>;
+  private filteredList_: Array<SiteGroup>;
+  subpageRoute: Route;
+  private filter: string;
+  private selectedItem_: SelectedItem|null;
+  private listBlurred_: boolean;
+  private actionMenuModel_: ActionMenuModel|null;
+  private clearAllData_: boolean;
+  private sortMethod_?: SortMethod;
+  private totalUsage_: string;
+  private localDataBrowserProxy_: LocalDataBrowserProxy =
+      LocalDataBrowserProxyImpl.getInstance();
 
-    /** @private {!LocalDataBrowserProxy} */
-    this.localDataBrowserProxy_ = LocalDataBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   ready() {
     super.ready();
 
     this.addWebUIListener(
-        'onStorageListFetched', this.onStorageListFetched.bind(this));
-    this.addEventListener('site-entry-selected', e => {
-      const event =
-          /** @type {!CustomEvent<!{item: !SiteGroup, index: number}>} */ (e);
-      this.selectedItem_ = event.detail;
-    });
+        'onStorageListFetched',
+        (list: Array<SiteGroup>) => this.onStorageListFetched(list));
+    this.addEventListener(
+        'site-entry-selected', (e: CustomEvent<SelectedItem>) => {
+          this.selectedItem_ = e.detail;
+        });
 
     this.addEventListener(
-        'open-menu', e => this.onOpenMenu_(/** @type {!OpenMenuEvent} */ (e)));
+        'open-menu', (e: OpenMenuEvent) => this.onOpenMenu_(e));
 
     const sortParam = Router.getInstance().getQueryParameters().get('sort');
-    if (Object.values(this.sortMethods_).includes(sortParam)) {
+    if (sortParam !== null && Object.values(SortMethod).includes(sortParam)) {
       this.$.sortMethod.value = sortParam;
     }
     this.sortMethod_ = this.$.sortMethod.value;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -236,10 +233,8 @@ class AllSitesElement extends AllSitesElementBase {
    * Reload the site list when the all sites page is visited.
    *
    * RouteObserverBehavior
-   * @param {!Route} currentRoute
-   * @protected
    */
-  currentRouteChanged(currentRoute) {
+  currentRouteChanged(currentRoute: Route) {
     super.currentRouteChanged(currentRoute);
     if (currentRoute === routes.SITE_SETTINGS_ALL) {
       this.populateList_();
@@ -248,13 +243,11 @@ class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Retrieves a list of all known sites with site details.
-   * @private
    */
-  populateList_() {
+  private populateList_() {
     this.browserProxy.getAllSites().then((response) => {
       // Create a new map to make an observable change.
-      const newMap = /** @type {!Map<string, !SiteGroup>} */
-          (new Map(this.siteGroupMap));
+      const newMap = new Map(this.siteGroupMap);
       response.forEach(siteGroup => {
         newMap.set(siteGroup.etldPlus1, siteGroup);
       });
@@ -267,12 +260,11 @@ class AllSitesElement extends AllSitesElementBase {
   /**
    * Integrate sites using storage into the existing sites map, as there
    * may be overlap between the existing sites.
-   * @param {!Array<!SiteGroup>} list The list of sites using storage.
+   * @param list The list of sites using storage.
    */
-  onStorageListFetched(list) {
+  onStorageListFetched(list: Array<SiteGroup>) {
     // Create a new map to make an observable change.
-    const newMap = /** @type {!Map<string, !SiteGroup>} */
-        (new Map(this.siteGroupMap));
+    const newMap = new Map(this.siteGroupMap);
     list.forEach(storageSiteGroup => {
       newMap.set(storageSiteGroup.etldPlus1, storageSiteGroup);
     });
@@ -285,9 +277,8 @@ class AllSitesElement extends AllSitesElementBase {
   /**
    * Update the total usage by all sites for this profile after updates
    * to the list
-   * @private
    */
-  updateTotalUsage_() {
+  private updateTotalUsage_() {
     let usageSum = 0;
     for (const [etldPlus1, siteGroup] of this.siteGroupMap) {
       siteGroup.origins.forEach(origin => {
@@ -301,12 +292,12 @@ class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Filters the all sites list with the given search query text.
-   * @param {!Map<string, !SiteGroup>} siteGroupMap The map of sites to filter.
-   * @param {string} searchQuery The filter text.
-   * @return {!Array<!SiteGroup>}
-   * @private
+   * @param siteGroupMap The map of sites to filter.
+   * @param searchQuery The filter text.
    */
-  filterPopulatedList_(siteGroupMap, searchQuery) {
+  private filterPopulatedList_(
+      siteGroupMap: Map<string, SiteGroup>,
+      searchQuery: string): Array<SiteGroup> {
     const result = [];
     for (const [etldPlus1, siteGroup] of siteGroupMap) {
       if (siteGroup.origins.find(
@@ -319,13 +310,12 @@ class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Sorts the given SiteGroup list with the currently selected sort method.
-   * @param {!Array<!SiteGroup>} siteGroupList The list of sites to sort.
-   * @return {!Array<!SiteGroup>}
-   * @private
+   * @param siteGroupList The list of sites to sort.
    */
-  sortSiteGroupList_(siteGroupList) {
+  private sortSiteGroupList_(siteGroupList: Array<SiteGroup>):
+      Array<SiteGroup> {
     const sortMethod = this.$.sortMethod.value;
-    if (!this.sortMethods_) {
+    if (!sortMethod) {
       return siteGroupList;
     }
 
@@ -344,12 +334,10 @@ class AllSitesElement extends AllSitesElementBase {
    * with the origins listed inside it. Note only the maximum engagement is used
    * for each SiteGroup (as opposed to the sum) in order to prevent domains with
    * higher numbers of origins from always floating to the top of the list.
-   * @param {!SiteGroup} siteGroup1
-   * @param {!SiteGroup} siteGroup2
-   * @private
    */
-  mostVisitedComparator_(siteGroup1, siteGroup2) {
-    const getMaxEngagement = (max, originInfo) => {
+  private mostVisitedComparator_(siteGroup1: SiteGroup, siteGroup2: SiteGroup):
+      number {
+    const getMaxEngagement = (max: number, originInfo: OriginInfo) => {
       return (max > originInfo.engagement) ? max : originInfo.engagement;
     };
     const score1 = siteGroup1.origins.reduce(getMaxEngagement, 0);
@@ -360,12 +348,10 @@ class AllSitesElement extends AllSitesElementBase {
   /**
    * Comparator used to sort SiteGroups by the amount of storage they use. Note
    * this sorts in descending order.
-   * @param {!SiteGroup} siteGroup1
-   * @param {!SiteGroup} siteGroup2
-   * @private
    */
-  storageComparator_(siteGroup1, siteGroup2) {
-    const getOverallUsage = siteGroup => {
+  private storageComparator_(siteGroup1: SiteGroup, siteGroup2: SiteGroup):
+      number {
+    const getOverallUsage = (siteGroup: SiteGroup) => {
       let usage = 0;
       siteGroup.origins.forEach(originInfo => {
         usage += originInfo.usage;
@@ -382,19 +368,16 @@ class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Comparator used to sort SiteGroups by their eTLD+1 name (domain).
-   * @param {!SiteGroup} siteGroup1
-   * @param {!SiteGroup} siteGroup2
-   * @private
    */
-  nameComparator_(siteGroup1, siteGroup2) {
+  private nameComparator_(siteGroup1: SiteGroup, siteGroup2: SiteGroup):
+      number {
     return siteGroup1.etldPlus1.localeCompare(siteGroup2.etldPlus1);
   }
 
   /**
    * Called when the user chooses a different sort method to the default.
-   * @private
    */
-  onSortMethodChanged_() {
+  private onSortMethodChanged_() {
     this.sortMethod_ = this.$.sortMethod.value;
     this.filteredList_ = this.sortSiteGroupList_(this.filteredList_);
     // Force the iron-list to rerender its items, as the order has changed.
@@ -404,37 +387,31 @@ class AllSitesElement extends AllSitesElementBase {
   /**
    * Forces the all sites list to update its list of items, taking into account
    * the search query and the sort method, then re-renders it.
-   * @private
    */
-  forceListUpdate_() {
+  private forceListUpdate_() {
     this.filteredList_ =
         this.filterPopulatedList_(this.siteGroupMap, this.filter);
     this.$.allSitesList.fire('iron-resize');
   }
 
   /**
-   * Whether the |siteGroupMap| is empty.
-   * @return {boolean}
-   * @private
+   * @return Whether the |siteGroupMap| is empty.
    */
-  siteGroupMapEmpty_() {
+  private siteGroupMapEmpty_(): boolean {
     return !this.siteGroupMap.size;
   }
 
   /**
-   * Whether the |filteredList_| is empty due to searching.
-   * @return {boolean}
-   * @private
+   * @return Whether the |filteredList_| is empty due to searching.
    */
-  noSearchResultFound_() {
+  private noSearchResultFound_(): boolean {
     return !this.filteredList_.length && !this.siteGroupMapEmpty_();
   }
 
   /**
    * Focus on previously selected entry.
-   * @private
    */
-  focusOnLastSelectedEntry_() {
+  private focusOnLastSelectedEntry_() {
     if (!this.selectedItem_ || this.siteGroupMap.size === 0) {
       return;
     }
@@ -451,30 +428,25 @@ class AllSitesElement extends AllSitesElementBase {
    * Open the overflow menu and ensure that the item is visible in the scroll
    * pane when its menu is opened (it is possible to open off-screen items using
    * keyboard shortcuts).
-   * @param {!OpenMenuEvent} e
-   * @private
    */
-  onOpenMenu_(e) {
+  private onOpenMenu_(e: OpenMenuEvent) {
     const index = e.detail.index;
-    const list = /** @type {IronListElement} */ (this.$['allSitesList']);
+    const list = this.$.allSitesList;
     if (index < list.firstVisibleIndex || index > list.lastVisibleIndex) {
       list.scrollToIndex(index);
     }
     const target = e.detail.target;
     this.actionMenuModel_ = e.detail;
-    const menu = /** @type {CrActionMenuElement} */ (this.$.menu.get());
-    menu.showAt(target);
+    this.$.menu.get().showAt(target);
   }
 
   /**
    * Confirms the resetting of all content settings for an origin.
-   * @param {!Event} e
-   * @private
    */
-  onConfirmResetSettings_(e) {
+  private onConfirmResetSettings_(e: Event) {
     e.preventDefault();
-    const scope =
-        this.actionMenuModel_.actionScope === 'origin' ? 'Origin' : 'SiteGroup';
+    const scope = this.actionMenuModel_!.actionScope === 'origin' ? 'Origin' :
+                                                                    'SiteGroup';
     const scopes = [ALL_SITES_DIALOG.RESET_PERMISSIONS, scope, 'DialogOpened'];
     this.recordUserAction_(scopes);
     this.$.confirmResetSettings.get().showModal();
@@ -482,12 +454,10 @@ class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Confirms the clearing of all storage data for an etld+1.
-   * @param {!Event} e
-   * @private
    */
-  onConfirmClearData_(e) {
+  private onConfirmClearData_(e: Event) {
     e.preventDefault();
-    const {actionScope, index, origin} = this.actionMenuModel_;
+    const {actionScope, index, origin} = this.actionMenuModel_!;
     const {origins, hasInstalledPWA} = this.filteredList_[index];
 
     const scope = actionScope === 'origin' ? 'Origin' : 'SiteGroup';
@@ -504,10 +474,8 @@ class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Confirms the clearing of all storage data for all sites.
-   * @param {!Event} e
-   * @private
    */
-  onConfirmClearAllData_(e) {
+  private onConfirmClearAllData_(e: Event) {
     e.preventDefault();
     this.clearAllData_ = true;
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
@@ -517,10 +485,9 @@ class AllSitesElement extends AllSitesElementBase {
     this.$.confirmClearAllData.get().showModal();
   }
 
-  /** @private */
-  onCloseDialog_(e) {
+  private onCloseDialog_(e: Event) {
     chrome.metricsPrivate.recordUserAction('AllSites_DialogClosed');
-    e.target.closest('cr-dialog').close();
+    (e.target as HTMLElement).closest('cr-dialog')!.close();
     this.actionMenuModel_ = null;
     this.$.menu.get().close();
   }
@@ -529,10 +496,8 @@ class AllSitesElement extends AllSitesElementBase {
    * Get the appropriate label string for the clear data dialog based on whether
    * user is clearing data for an origin or siteGroup, and whether or not the
    * origin/siteGroup has an associated installed app.
-   * @return {string}
-   * @private
    */
-  getClearDataLabel_() {
+  private getClearDataLabel_(): string {
     // actionMenuModel_ will be null when dialog closes
     if (this.actionMenuModel_ === null) {
       return '';
@@ -575,10 +540,8 @@ class AllSitesElement extends AllSitesElementBase {
    * Get the appropriate label for the reset permissions confirmation
    * dialog, dependent on whether user is resetting permissions for an
    * origin or an entire SiteGroup.
-   * @return {string}
-   * @private
    */
-  getResetPermissionsLabel_() {
+  private getResetPermissionsLabel_(): string {
     if (this.actionMenuModel_ === null) {
       return '';
     }
@@ -597,10 +560,8 @@ class AllSitesElement extends AllSitesElementBase {
   /**
    * Get the appropriate label for the clear all data confirmation
    * dialog, depending on whether or not any apps are installed.
-   * @return {string}
-   * @private
    */
-  getClearAllDataLabel_() {
+  private getClearAllDataLabel_(): string {
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
     const messageId = anyAppsInstalled ?
         'siteSettingsClearAllStorageConfirmationInstalled' :
@@ -613,30 +574,22 @@ class AllSitesElement extends AllSitesElementBase {
    * Get the appropriate label for the clear data confirmation
    * dialog, depending on whether the user is clearing data for a
    * single origin or an entire site group.
-   * @return {string}
-   * @private
    */
-  getLogoutLabel_() {
-    return this.actionMenuModel_.actionScope === 'origin' ?
+  private getLogoutLabel_(): string {
+    return this.actionMenuModel_!.actionScope === 'origin' ?
         this.i18n('siteSettingsSiteClearStorageSignOut') :
         this.i18n('siteSettingsSiteGroupDeleteSignOut');
   }
 
-  /**
-   * @param {!Array<string>} scopes
-   * @private
-   */
-  recordUserAction_(scopes) {
+  private recordUserAction_(scopes: Array<string>) {
     chrome.metricsPrivate.recordUserAction(
         ['AllSites', ...scopes].filter(Boolean).join('_'));
   }
 
   /**
    * Resets all permission settings for a single origin.
-   * @param {string} origin
-   * @private
    */
-  resetPermissionsForOrigin_(origin) {
+  private resetPermissionsForOrigin_(origin: string) {
     this.browserProxy.setOriginPermissions(
         origin, null, ContentSetting.DEFAULT);
   }
@@ -644,17 +597,16 @@ class AllSitesElement extends AllSitesElementBase {
   /**
    * Resets all permissions for a single origin or all origins listed in
    * |siteGroup.origins|.
-   * @param {!Event} e
-   * @private
    */
-  onResetSettings_(e) {
-    const {actionScope, index, origin} = this.actionMenuModel_;
+  private onResetSettings_(e: Event) {
+    const {actionScope, index, origin} = this.actionMenuModel_!;
     const siteGroupToUpdate = this.filteredList_[index];
 
-    const updatedSiteGroup = {
+    const updatedSiteGroup: SiteGroup = {
       etldPlus1: siteGroupToUpdate.etldPlus1,
+      hasInstalledPWA: false,
       numCookies: siteGroupToUpdate.numCookies,
-      origins: []
+      origins: [],
     };
 
     if (actionScope === 'origin') {
@@ -665,7 +617,7 @@ class AllSitesElement extends AllSitesElementBase {
       this.resetPermissionsForOrigin_(origin);
       updatedSiteGroup.origins = siteGroupToUpdate.origins;
       const updatedOrigin =
-          updatedSiteGroup.origins.find(o => o.origin === origin);
+          updatedSiteGroup.origins.find(o => o.origin === origin)!;
       updatedOrigin.hasPermissionSettings = false;
       if (updatedOrigin.numCookies <= 0 || updatedOrigin.usage <= 0) {
         updatedSiteGroup.origins =
@@ -678,7 +630,7 @@ class AllSitesElement extends AllSitesElementBase {
       this.recordUserAction_(
           [ALL_SITES_DIALOG.RESET_PERMISSIONS, 'SiteGroup', 'Confirm']);
 
-      if (this.actionMenuModel_.item.etldPlus1 !==
+      if (this.actionMenuModel_!.item.etldPlus1 !==
           siteGroupToUpdate.etldPlus1) {
         return;
       }
@@ -702,7 +654,8 @@ class AllSitesElement extends AllSitesElementBase {
         engagement: 0,
         usage: 0,
         numCookies: siteGroupToUpdate.numCookies,
-        hasPermissionSettings: false
+        hasPermissionSettings: false,
+        isInstalled: false,
       };
       updatedSiteGroup.origins.push(originPlaceHolder);
       this.set('filteredList_.' + index, updatedSiteGroup);
@@ -716,13 +669,12 @@ class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Helper to remove data and cookies for an etldPlus1.
-   * @param {!number} index The index of the target siteGroup in filteredList_
-   *                        that should be cleared.
-   * @private
+   * @param index The index of the target siteGroup in filteredList_ that should
+   *     be cleared.
    */
-  clearDataForSiteGroupIndex_(index) {
+  private clearDataForSiteGroupIndex_(index: number) {
     const siteGroupToUpdate = this.filteredList_[index];
-    const updatedSiteGroup = {
+    const updatedSiteGroup: SiteGroup = {
       etldPlus1: siteGroupToUpdate.etldPlus1,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: 0,
@@ -744,24 +696,23 @@ class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Helper to remove data and cookies for an origin.
-   * @param {number} index The index of the target siteGroup in filteredList_
-   *                        that should be cleared.
-   * @param {string} origin The origin of the target origin
-   *                         that should be cleared.
-   * @private
+   * @param index The index of the target siteGroup in filteredList_ that should
+   *     be cleared.
+   * @param origin The origin of the target origin that should be cleared.
    */
-  clearDataForOrigin_(index, origin) {
+  private clearDataForOrigin_(index: number, origin: string) {
     this.browserProxy.clearOriginDataAndCookies(this.toUrl(origin).href);
 
     const siteGroupToUpdate = this.filteredList_[index];
-    const updatedSiteGroup = {
+    const updatedSiteGroup: SiteGroup = {
       etldPlus1: siteGroupToUpdate.etldPlus1,
+      hasInstalledPWA: false,
       numCookies: 0,
-      origins: []
+      origins: [],
     };
 
     const updatedOrigin =
-        siteGroupToUpdate.origins.find(o => o.origin === origin);
+        siteGroupToUpdate.origins.find(o => o.origin === origin)!;
     if (updatedOrigin.hasPermissionSettings) {
       updatedOrigin.numCookies = 0;
       updatedOrigin.usage = 0;
@@ -779,12 +730,11 @@ class AllSitesElement extends AllSitesElementBase {
   /**
    * Updates the UI after permissions have been reset or data/cookies
    * have been cleared
-   * @param {number} index The index of the target siteGroup in filteredList_
-   *                        that should be updated.
-   * @param {!SiteGroup} updatedSiteGroup The SiteGroup object that represents
-   *                                      the new state.
+   * @param index The index of the target siteGroup in filteredList_ that should
+   *     be updated.
+   * @param updatedSiteGroup The SiteGroup object that represents the new state.
    */
-  updateSiteGroup_(index, updatedSiteGroup) {
+  private updateSiteGroup_(index: number, updatedSiteGroup: SiteGroup) {
     if (updatedSiteGroup.origins.length > 0) {
       this.set('filteredList_.' + index, updatedSiteGroup);
     } else {
@@ -795,11 +745,9 @@ class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Clear data and cookies for an etldPlus1.
-   * @param {!Event} e
-   * @private
    */
-  onClearData_(e) {
-    const {index, actionScope, origin} = this.actionMenuModel_;
+  private onClearData_(e: Event) {
+    const {index, actionScope, origin} = this.actionMenuModel_!;
     const scopes = [ALL_SITES_DIALOG.CLEAR_DATA];
 
     if (actionScope === 'origin') {
@@ -833,10 +781,8 @@ class AllSitesElement extends AllSitesElementBase {
 
   /**
    * Clear data and cookies for all sites.
-   * @param {!Event} e
-   * @private
    */
-  onClearAllData_(e) {
+  private onClearAllData_(e: Event) {
     this.browserProxy.recordAction(AllSitesAction2.CLEAR_ALL_DATA);
 
     const scopes = [ALL_SITES_DIALOG.CLEAR_DATA, 'All'];

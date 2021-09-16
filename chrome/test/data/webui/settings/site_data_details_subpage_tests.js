@@ -47,7 +47,7 @@ suite('SiteDataDetailsSubpage', function() {
   setup(function() {
     browserProxy = new TestLocalDataBrowserProxy();
     browserProxy.setCookieDetails([cookieDetails]);
-    LocalDataBrowserProxyImpl.instance_ = browserProxy;
+    LocalDataBrowserProxyImpl.setInstance(browserProxy);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     PolymerTest.clearBody();

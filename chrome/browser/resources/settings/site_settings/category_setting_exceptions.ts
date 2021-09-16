@@ -9,26 +9,20 @@
  */
 import './site_list.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 
+const CategorySettingExceptionsElementBase =
+    mixinBehaviors(
+        [WebUIListenerBehavior], SiteSettingsMixin(PolymerElement)) as {
+      new ():
+          PolymerElement & WebUIListenerBehavior & SiteSettingsMixinInterface
+    };
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {SiteSettingsMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const CategorySettingExceptionsElementBase = mixinBehaviors(
-    [I18nBehavior, WebUIListenerBehavior], SiteSettingsMixin(PolymerElement));
-
-/** @polymer */
 export class CategorySettingExceptionsElement extends
     CategorySettingExceptionsElementBase {
   static get is() {
@@ -46,22 +40,21 @@ export class CategorySettingExceptionsElement extends
        */
       description: {
         type: String,
-        value() {
-          return this.i18n('siteSettingsCustomizedBehaviorsDescription');
-        }
+        value: function() {
+          return loadTimeData.getString(
+              'siteSettingsCustomizedBehaviorsDescription');
+        },
       },
 
       /**
        * The string ID of the category that this element is displaying data for.
        * See site_settings/constants.js for possible values.
-       * @type {!ContentSettingsTypes}
        */
       category: String,
 
       /**
        * Some content types (like Location) do not allow the user to manually
        * edit the exception list from within Settings.
-       * @private
        */
       readOnlyList: {
         type: Boolean,
@@ -70,7 +63,6 @@ export class CategorySettingExceptionsElement extends
 
       /**
        * True if the default value is managed by a policy.
-       * @private
        */
       defaultManaged_: Boolean,
 
@@ -88,7 +80,6 @@ export class CategorySettingExceptionsElement extends
 
       /**
        * If true, displays the Allow site list. Defaults to true.
-       * @private
        */
       showAllowSiteList_: {
         type: Boolean,
@@ -105,7 +96,6 @@ export class CategorySettingExceptionsElement extends
 
       /**
        * Expose ContentSetting enum to HTML bindings.
-       * @private
        */
       contentSettingEnum_: {
         type: Object,
@@ -120,29 +110,35 @@ export class CategorySettingExceptionsElement extends
     ];
   }
 
-  /** @override */
+  description: string;
+  category: ContentSettingsTypes;
+  private readOnlyList: boolean;
+  private defaultManaged_: boolean;
+  blockHeader: string;
+  allowHeader: string;
+  searchFilter: string;
+  private showAllowSiteList_: boolean;
+  private showBlockSiteList_: boolean;
+
   ready() {
     super.ready();
 
     this.addWebUIListener(
-        'contentSettingCategoryChanged', this.updateDefaultManaged_.bind(this));
+        'contentSettingCategoryChanged', () => this.updateDefaultManaged_());
   }
 
   /**
    * Hides particular category subtypes if |this.category| does not support the
    * content setting of that type.
-   * @return {boolean}
-   * @private
    */
-  computeShowAllowSiteList_() {
+  private computeShowAllowSiteList_(): boolean {
     return this.category !== ContentSettingsTypes.FILE_SYSTEM_WRITE;
   }
 
   /**
    * Updates whether or not the default value is managed by a policy.
-   * @private
    */
-  updateDefaultManaged_() {
+  private updateDefaultManaged_() {
     if (this.category === undefined) {
       return;
     }
@@ -158,10 +154,8 @@ export class CategorySettingExceptionsElement extends
    * of this component or if the default value for these exceptions are managed
    * by a policy. User should not be able to set exceptions to managed default
    * values.
-   * @return {boolean}
-   * @private
    */
-  getReadOnlyList_() {
+  private getReadOnlyList_(): boolean {
     return this.readOnlyList || this.defaultManaged_;
   }
 }

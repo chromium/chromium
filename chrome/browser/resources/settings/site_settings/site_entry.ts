@@ -14,9 +14,12 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
@@ -29,16 +32,29 @@ import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_bro
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {BaseMixinInterface}
- * @implements {SiteSettingsMixinInterface}
- */
-const SiteEntryElementBase = mixinBehaviors(
-    [FocusRowBehavior], SiteSettingsMixin(BaseMixin(PolymerElement)));
 
-/** @polymer */
+interface RepeaterEvent {
+  model: {
+    index: number,
+  },
+}
+
+interface SiteEntryElement {
+  $: {
+    expandIcon: CrIconButtonElement,
+    originList: CrLazyRenderElement<IronCollapseElement>,
+    toggleButton: HTMLElement,
+  };
+
+  // Declaring here because TypeScript default types seem to lack that method.
+  scrollIntoViewIfNeeded(): void;
+}
+
+const SiteEntryElementBase =
+    mixinBehaviors(
+        [FocusRowBehavior], SiteSettingsMixin(BaseMixin(PolymerElement))) as
+    {new (): PolymerElement & SiteSettingsMixinInterface & BaseMixinInterface};
+
 class SiteEntryElement extends SiteEntryElementBase {
   static get is() {
     return 'site-entry';
@@ -52,7 +68,6 @@ class SiteEntryElement extends SiteEntryElementBase {
     return {
       /**
        * An object representing a group of sites with the same eTLD+1.
-       * @type {!SiteGroup}
        */
       siteGroup: {
         type: Object,
@@ -62,13 +77,11 @@ class SiteEntryElement extends SiteEntryElementBase {
       /**
        * The name to display beside the icon. If grouped_() is true, it will be
        * the eTLD+1 for all the origins, otherwise, it will return the host.
-       * @private
        */
       displayName_: String,
 
       /**
        * The string to display when there is a non-zero number of cookies.
-       * @private
        */
       cookieString_: String,
 
@@ -82,15 +95,12 @@ class SiteEntryElement extends SiteEntryElementBase {
 
       /**
        * The string to display showing the overall usage of this site-entry.
-       * @private
        */
       overallUsageString_: String,
 
       /**
        * An array containing the strings to display showing the individual disk
        * usage for each origin in |siteGroup|.
-       * @type {!Array<string>}
-       * @private
        */
       originUsages_: {
         type: Array,
@@ -102,8 +112,6 @@ class SiteEntryElement extends SiteEntryElementBase {
       /**
        * An array containing the strings to display showing the individual
        * cookies number for each origin in |siteGroup|.
-       * @type {!Array<string>}
-       * @private
        */
       cookiesNum_: {
         type: Array,
@@ -114,27 +122,25 @@ class SiteEntryElement extends SiteEntryElementBase {
 
       /**
        * The selected sort method.
-       * @type {!SortMethod|undefined}
        */
       sortMethod: {type: String, observer: 'updateOrigins_'},
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  siteGroup: SiteGroup;
+  private displayName_: string;
+  private cookieString_: string;
+  listIndex: number;
+  private overallUsageString_: string;
+  private originUsages_: Array<string>;
+  private cookiesNum_: Array<string>;
+  sortMethod?: SortMethod;
 
-    /** @private {?Element} */
-    this.button_ = null;
+  private button_: Element|null = null;
+  private localDataBrowserProxy_: LocalDataBrowserProxy =
+      LocalDataBrowserProxyImpl.getInstance();
+  private eventTracker_: EventTracker = new EventTracker();
 
-    /** @private {!LocalDataBrowserProxy} */
-    this.localDataBrowserProxy_ = LocalDataBrowserProxyImpl.getInstance();
-
-    /** @private {!EventTracker} */
-    this.eventTracker_ = new EventTracker();
-  }
-
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -143,8 +149,7 @@ class SiteEntryElement extends SiteEntryElementBase {
     }
   }
 
-  /** @param {!KeyboardEvent} e */
-  onButtonKeydown_(e) {
+  private onButtonKeydown_(e: KeyboardEvent) {
     if (e.shiftKey && e.key === 'Tab') {
       this.focus();
     }
@@ -153,11 +158,9 @@ class SiteEntryElement extends SiteEntryElementBase {
   /**
    * Whether the list of origins displayed in this site-entry is a group of
    * eTLD+1 origins or not.
-   * @param {SiteGroup} siteGroup The eTLD+1 group of origins.
-   * @return {boolean}
-   * @private
+   * @param siteGroup The eTLD+1 group of origins.
    */
-  grouped_(siteGroup) {
+  private grouped_(siteGroup: SiteGroup): boolean {
     if (!siteGroup) {
       return false;
     }
@@ -172,11 +175,10 @@ class SiteEntryElement extends SiteEntryElementBase {
    * Returns a user-friendly name for the siteGroup.
    * If grouped_() is true and eTLD+1 is available, returns the eTLD+1,
    * otherwise return the origin representation for the first origin.
-   * @param {SiteGroup} siteGroup The eTLD+1 group of origins.
-   * @return {string} The user-friendly name.
-   * @private
+   * @param siteGroup The eTLD+1 group of origins.
+   * @return The user-friendly name.
    */
-  siteGroupRepresentation_(siteGroup) {
+  private siteGroupRepresentation_(siteGroup: SiteGroup): string {
     if (!siteGroup) {
       return '';
     }
@@ -191,18 +193,18 @@ class SiteEntryElement extends SiteEntryElementBase {
   }
 
   /**
-   * @param {SiteGroup} siteGroup The eTLD+1 group of origins.
-   * @private
+   * @param siteGroup The eTLD+1 group of origins.
    */
-  onSiteGroupChanged_(siteGroup) {
+  private onSiteGroupChanged_(siteGroup: SiteGroup) {
     // Update the button listener.
     if (this.button_) {
       this.eventTracker_.remove(this.button_, 'keydown');
     }
-    this.button_ = /** @type Element */
-        (this.root.querySelector('#toggleButton *:not([hidden])'));
+    this.button_ =
+        this.shadowRoot!.querySelector('#toggleButton *:not([hidden])');
     this.eventTracker_.add(
-        assert(this.button_), 'keydown', e => this.onButtonKeydown_(e));
+        assert(this.button_!), 'keydown',
+        (e: KeyboardEvent) => this.onButtonKeydown_(e));
 
     if (!this.grouped_(siteGroup)) {
       // Ensure ungrouped |siteGroup|s do not get stuck in an opened state.
@@ -225,11 +227,10 @@ class SiteEntryElement extends SiteEntryElementBase {
   /**
    * Returns any non-HTTPS scheme/protocol for the siteGroup that only contains
    * one origin. Otherwise, returns a empty string.
-   * @param {SiteGroup} siteGroup The eTLD+1 group of origins.
-   * @return {string} The scheme if non-HTTPS, or empty string if HTTPS.
-   * @private
+   * @param siteGroup The eTLD+1 group of origins.
+   * @return The scheme if non-HTTPS, or empty string if HTTPS.
    */
-  siteGroupScheme_(siteGroup) {
+  private siteGroupScheme_(siteGroup: SiteGroup): string {
     if (!siteGroup || (this.grouped_(siteGroup))) {
       return '';
     }
@@ -239,14 +240,12 @@ class SiteEntryElement extends SiteEntryElementBase {
   /**
    * Returns any non-HTTPS scheme/protocol for the origin. Otherwise, returns
    * an empty string.
-   * @param {OriginInfo} origin
-   * @return {string} The scheme if non-HTTPS, or empty string if HTTPS.
-   * @private
+   * @return The scheme if non-HTTPS, or empty string if HTTPS.
    */
-  originScheme_(origin) {
+  private originScheme_(origin: OriginInfo): string {
     const url = this.toUrl(origin.origin);
     const scheme = url.protocol.replace(new RegExp(':*$'), '');
-    /** @type{string} */ const HTTPS_SCHEME = 'https';
+    const HTTPS_SCHEME = 'https';
     if (scheme === HTTPS_SCHEME) {
       return '';
     }
@@ -256,11 +255,10 @@ class SiteEntryElement extends SiteEntryElementBase {
   /**
    * Get an appropriate favicon that represents this group of eTLD+1 sites as a
    * whole.
-   * @param {!SiteGroup} siteGroup The eTLD+1 group of origins.
-   * @return {string} URL that is used for fetching the favicon
-   * @private
+   * @param siteGroup The eTLD+1 group of origins.
+   * @return URL that is used for fetching the favicon
    */
-  getSiteGroupIcon_(siteGroup) {
+  private getSiteGroupIcon_(siteGroup: SiteGroup): string {
     const origins = siteGroup.origins;
     assert(origins);
     assert(origins.length >= 1);
@@ -275,7 +273,7 @@ class SiteEntryElement extends SiteEntryElementBase {
         return originInfo.origin;
       }
     }
-    const getMaxStorage = (max, originInfo) => {
+    const getMaxStorage = (max: OriginInfo, originInfo: OriginInfo) => {
       return (
           max.usage > originInfo.usage ||
                   (max.usage === originInfo.usage &&
@@ -289,12 +287,11 @@ class SiteEntryElement extends SiteEntryElementBase {
   /**
    * Calculates the amount of disk storage used by the given eTLD+1.
    * Also updates the corresponding display strings.
-   * @param {SiteGroup} siteGroup The eTLD+1 group of origins.
-   * @private
+   * @param siteGroup The eTLD+1 group of origins.
    */
-  calculateUsageInfo_(siteGroup) {
+  private calculateUsageInfo_(siteGroup: SiteGroup) {
     let overallUsage = 0;
-    this.siteGroup.origins.forEach((originInfo, i) => {
+    siteGroup.origins.forEach(originInfo => {
       overallUsage += originInfo.usage;
     });
     this.browserProxy.getFormattedBytes(overallUsage).then(string => {
@@ -304,10 +301,8 @@ class SiteEntryElement extends SiteEntryElementBase {
 
   /**
    * Get display string for number of cookies.
-   * @param {number} numCookies
-   * @private
    */
-  getCookieNumString_(numCookies) {
+  private getCookieNumString_(numCookies: number): Promise<string> {
     if (numCookies === 0) {
       return Promise.resolve('');
     }
@@ -316,33 +311,29 @@ class SiteEntryElement extends SiteEntryElementBase {
 
   /**
    * Array binding for the |originUsages_| array for use in the HTML.
-   * @param {!{base: !Array<string>}} change The change record for the array.
-   * @param {number} index The index of the array item.
-   * @return {string}
-   * @private
+   * @param change The change record for the array.
+   * @param index The index of the array item.
    */
-  originUsagesItem_(change, index) {
+  private originUsagesItem_(change: {base: Array<string>}, index: number):
+      string {
     return change.base[index];
   }
 
   /**
    * Array binding for the |cookiesNum_| array for use in the HTML.
-   * @param {!{base: !Array<string>}} change The change record for the array.
-   * @param {number} index The index of the array item.
-   * @return {string}
-   * @private
+   * @param change The change record for the array.
+   * @param index The index of the array item.
    */
-  originCookiesItem_(change, index) {
+  private originCookiesItem_(change: {base: Array<string>}, index: number):
+      string {
     return change.base[index];
   }
 
   /**
    * Navigates to the corresponding Site Details page for the given origin.
-   * @param {string} origin The origin to navigate to the Site Details page for
-   * it.
-   * @private
+   * @param origin The origin to navigate to the Site Details page for it.
    */
-  navigateToSiteDetails_(origin) {
+  private navigateToSiteDetails_(origin: string) {
     this.fire(
         'site-entry-selected', {item: this.siteGroup, index: this.listIndex});
     Router.getInstance().navigateTo(
@@ -352,10 +343,8 @@ class SiteEntryElement extends SiteEntryElementBase {
 
   /**
    * A handler for selecting a site (by clicking on the origin).
-   * @param {!{model: !{index: !number}}} e
-   * @private
    */
-  onOriginTap_(e) {
+  private onOriginTap_(e: RepeaterEvent) {
     this.navigateToSiteDetails_(this.siteGroup.origins[e.model.index].origin);
     this.browserProxy.recordAction(AllSitesAction2.ENTER_SITE_DETAILS);
     chrome.metricsPrivate.recordUserAction('AllSites_EnterSiteDetails');
@@ -364,9 +353,8 @@ class SiteEntryElement extends SiteEntryElementBase {
   /**
    * A handler for clicking on a site-entry heading. This will either show a
    * list of origins or directly navigates to Site Details if there is only one.
-   * @private
    */
-  onSiteEntryTap_() {
+  private onSiteEntryTap_() {
     // Individual origins don't expand - just go straight to Site Details.
     if (!this.grouped_(this.siteGroup)) {
       this.navigateToSiteDetails_(this.siteGroup.origins[0].origin);
@@ -383,13 +371,12 @@ class SiteEntryElement extends SiteEntryElementBase {
 
   /**
    * Toggles open and closed the list of origins if there is more than one.
-   * @private
    */
-  toggleCollapsible_() {
-    const collapseChild =
-        /** @type {IronCollapseElement} */ (this.$.originList.get());
+  private toggleCollapsible_() {
+    const collapseChild = this.$.originList.get();
     collapseChild.toggle();
-    this.$.toggleButton.setAttribute('aria-expanded', collapseChild.opened);
+    this.$.toggleButton.setAttribute(
+        'aria-expanded', collapseChild.opened ? 'true' : 'false');
     this.$.expandIcon.toggleClass('icon-expand-more');
     this.$.expandIcon.toggleClass('icon-expand-less');
     this.fire('iron-resize');
@@ -398,50 +385,31 @@ class SiteEntryElement extends SiteEntryElementBase {
   /**
    * Fires a custom event when the menu button is clicked. Sends the details
    * of the site entry item and where the menu should appear.
-   * @param {!Event} e
-   * @private
    */
-  showOverflowMenu_(e) {
+  private showOverflowMenu_(e: Event) {
     this.fire('open-menu', {
       target: e.target,
       index: this.listIndex,
       item: this.siteGroup,
-      origin: e.target.dataset.origin,
-      actionScope: e.target.dataset.context,
+      origin: (e.target as HTMLElement).dataset['origin'],
+      actionScope: (e.target as HTMLElement).dataset['context'],
     });
-  }
-
-  /**
-   * Returns a valid index for an origin contained in |siteGroup.origins| by
-   * clamping the given |index|. This also replaces undefined |index|es with 0.
-   * Use this to prevent being given out-of-bounds indexes by dom-repeat when
-   * scrolling an iron-list storing these site-entries too quickly.
-   * @param {!number=} index
-   * @return {number}
-   * @private
-   */
-  getIndexBoundToOriginList_(siteGroup, index) {
-    return Math.max(0, Math.min(index, siteGroup.origins.length - 1));
   }
 
   /**
    * Returns the correct class to apply depending on this site-entry's position
    * in a list.
-   * @param {number} index
-   * @private
    */
-  getClassForIndex_(index) {
+  private getClassForIndex_(index: number): string {
     return index > 0 ? 'hr' : '';
   }
 
   /**
    * Update the order and data display text for origins.
-   * @param {!SortMethod|undefined} sortMethod
-   * @private
    */
-  updateOrigins_(sortMethod) {
+  private updateOrigins_(sortMethod?: SortMethod) {
     if (!sortMethod || !this.siteGroup || !this.grouped_(this.siteGroup)) {
-      return null;
+      return;
     }
 
     const origins = this.siteGroup.origins.slice();
@@ -465,10 +433,9 @@ class SiteEntryElement extends SiteEntryElementBase {
 
   /**
    * Sort functions for sorting origins based on selected method.
-   * @param {!SortMethod|undefined} sortMethod
-   * @private
    */
-  sortFunction_(sortMethod) {
+  private sortFunction_(sortMethod: SortMethod):
+      (o1: OriginInfo, o2: OriginInfo) => number {
     if (sortMethod === SortMethod.MOST_VISITED) {
       return (origin1, origin2) => {
         return origin2.engagement - origin1.engagement;
@@ -483,6 +450,8 @@ class SiteEntryElement extends SiteEntryElementBase {
         return origin1.origin.localeCompare(origin2.origin);
       };
     }
+    assertNotReached();
+    return (_origin1, _origin2) => 0;
   }
 }
 

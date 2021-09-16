@@ -73,7 +73,7 @@ suite('SiteEntry', function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     localDataBrowserProxy = new TestLocalDataBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    LocalDataBrowserProxyImpl.instance_ = localDataBrowserProxy;
+    LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
 
     PolymerTest.clearBody();
     testElement = document.createElement('site-entry');

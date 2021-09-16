@@ -141,8 +141,17 @@ export class LocalDataBrowserProxyImpl {
   removeAllThirdPartyCookies() {
     return sendWithPromise('localData.removeThirdPartyCookies');
   }
+
+  /** @return {!LocalDataBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new LocalDataBrowserProxyImpl());
+  }
+
+  /** @param {!LocalDataBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(LocalDataBrowserProxyImpl);
+/** @type {?LocalDataBrowserProxy} */
+let instance = null;

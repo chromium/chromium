@@ -9,7 +9,7 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -21,7 +21,7 @@ import {CookieDataForDisplay, CookieDetails, getCookieData} from './cookie_info.
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
 
 
-const categoryLabels = {
+const categoryLabels: {[key: string]: string} = {
   app_cache: loadTimeData.getString('cookieAppCache'),
   cache_storage: loadTimeData.getString('cookieCacheStorage'),
   database: loadTimeData.getString('cookieDatabaseStorage'),
@@ -38,16 +38,13 @@ const categoryLabels = {
  * 'site-data-details-subpage' Display cookie contents.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {RouteObserverMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SiteDataDetailsSubpageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], RouteObserverMixin(PolymerElement));
+    mixinBehaviors(
+        [WebUIListenerBehavior], RouteObserverMixin(PolymerElement)) as {
+      new ():
+          PolymerElement & WebUIListenerBehavior & RouteObserverMixinInterface
+    };
 
-/** @polymer */
 class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
   static get is() {
     return 'site-data-details-subpage';
@@ -61,8 +58,6 @@ class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
     return {
       /**
        * The cookie entries for the given site.
-       * @type {!Array<!CookieDetails>}
-       * @private
        */
       entries_: Array,
 
@@ -72,36 +67,28 @@ class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
         notify: true,
       },
 
-      /** @private */
       site_: String,
     };
   }
 
-  constructor() {
-    super();
+  private entries_: Array<CookieDetails&{expanded_: boolean}>;
+  pageTitle: string;
+  private site_: string;
+  private browserProxy_: LocalDataBrowserProxy =
+      LocalDataBrowserProxyImpl.getInstance();
 
-    /**
-     * The browser proxy used to retrieve and change cookies.
-     * @private {!LocalDataBrowserProxy}
-     */
-    this.browserProxy_ = LocalDataBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   ready() {
     super.ready();
 
     this.addWebUIListener(
-        'on-tree-item-removed', this.getCookieDetails_.bind(this));
+        'on-tree-item-removed', () => this.getCookieDetails_());
   }
 
   /**
    * RouteObserverMixin
-   * @override
    */
-  currentRouteChanged(route) {
-    if (Router.getInstance().getCurrentRoute() !==
-        routes.SITE_SETTINGS_DATA_DETAILS) {
+  currentRouteChanged(route: Route) {
+    if (route !== routes.SITE_SETTINGS_DATA_DETAILS) {
       return;
     }
     const site = Router.getInstance().getQueryParameters().get('site');
@@ -113,53 +100,40 @@ class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
     this.getCookieDetails_();
   }
 
-  /** @private */
-  getCookieDetails_() {
+  private getCookieDetails_() {
     if (!this.site_) {
       return;
     }
     this.browserProxy_.getCookieDetails(this.site_)
         .then(
-            this.onCookiesLoaded_.bind(this),
-            this.onCookiesLoadFailed_.bind(this));
+            (cookies: Array<CookieDetails>) => this.onCookiesLoaded_(cookies),
+            () => this.onCookiesLoadFailed_());
   }
 
-  /**
-   * @return {!Array<!CookieDataForDisplay>}
-   * @private
-   */
-  getCookieNodes_(node) {
+  private getCookieNodes_(node: CookieDetails): Array<CookieDataForDisplay> {
     return getCookieData(node);
   }
 
-  /**
-   * @param {!Array<!CookieDetails>} cookies
-   * @private
-   */
-  onCookiesLoaded_(cookies) {
-    this.entries_ = cookies;
-    // Set up flag for expanding cookie details.
-    this.entries_.forEach(function(e) {
-      e.expanded_ = false;
-    });
+  private onCookiesLoaded_(cookies: Array<CookieDetails>) {
+    this.entries_ = cookies.map(c => {
+      // Set up flag for expanding cookie details.
+      (c as CookieDetails & {expanded_: boolean}).expanded_ = false;
+      return c;
+    }) as Array<CookieDetails&{expanded_: boolean}>;
   }
 
   /**
    * The site was not found. E.g. The site data may have been deleted or the
    * site URL parameter may be mistyped.
-   * @private
    */
-  onCookiesLoadFailed_() {
+  private onCookiesLoadFailed_() {
     this.entries_ = [];
   }
 
   /**
    * Retrieves a string description for the provided |item|.
-   * @param {!CookieDetails} item
-   * @return {string}
-   * @private
    */
-  getEntryDescription_(item) {
+  private getEntryDescription_(item: CookieDetails): string {
     // Frequently there are multiple cookies per site. To avoid showing a list
     // of '1 cookie', '1 cookie', ... etc, it is better to show the title of the
     // cookie to differentiate them.
@@ -174,14 +148,12 @@ class SiteDataDetailsSubpageElement extends SiteDataDetailsSubpageElementBase {
 
   /**
    * A handler for when the user opts to remove a single cookie.
-   * @param {!Event} event
-   * @private
    */
-  onRemove_(event) {
+  private onRemove_(event: Event) {
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ITEM);
     this.browserProxy_.removeItem(
-        /** @type {!CookieDetails} */ (event.currentTarget.dataset).idPath);
+        (event.currentTarget as HTMLElement).dataset['idPath']!);
   }
 
   /**

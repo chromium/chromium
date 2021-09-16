@@ -99,7 +99,7 @@ suite('AllSites', function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     localDataBrowserProxy = new TestLocalDataBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    LocalDataBrowserProxyImpl.instance_ = localDataBrowserProxy;
+    LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
     testElement = document.createElement('all-sites');
     assertTrue(!!testElement);
     document.body.appendChild(testElement);

@@ -28,7 +28,7 @@ suite('SiteDataTest', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     testBrowserProxy = new TestLocalDataBrowserProxy();
-    LocalDataBrowserProxyImpl.instance_ = testBrowserProxy;
+    LocalDataBrowserProxyImpl.setInstance(testBrowserProxy);
     siteData = document.createElement('site-data');
     siteData.filter = '';
   });
