@@ -419,7 +419,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       highlight_painter.Selection()->PaintSelectionBackground(
           context, node, document, style, rotation);
     }
+  }
 
+  if (paint_info.phase == PaintPhase::kForeground) {
+    highlight_painter.Paint(NGHighlightPainter::kForeground);
+  }
+
+  if (UNLIKELY(highlight_painter.Selection())) {
     // Paint only the text that is selected.
     decoration_painter.Begin(NGTextDecorationPainter::kSelection);
     decoration_painter.PaintExceptLineThrough();
@@ -427,10 +433,6 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
                                                      text_style, node_id);
     decoration_painter.PaintOnlyLineThrough();
   }
-
-  if (paint_info.phase != PaintPhase::kForeground)
-    return;
-  highlight_painter.Paint(NGHighlightPainter::kForeground);
 }
 
 }  // namespace blink
