@@ -43,7 +43,8 @@ class BrokerHost : public Channel::Delegate,
  private:
   ~BrokerHost() override;
 
-  bool PrepareHandlesForClient(std::vector<PlatformHandleInTransit>* handles);
+  bool PrepareHandlesForClient(std::vector<PlatformHandleInTransit>* handles,
+                               bool check_on_failure);
 
   // Channel::Delegate:
   void OnChannelMessage(const void* payload,

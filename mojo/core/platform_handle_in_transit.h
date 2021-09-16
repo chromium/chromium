@@ -53,7 +53,8 @@ class PlatformHandleInTransit {
   void CompleteTransit();
 
   // Transfers ownership of this (local) handle to |target_process|.
-  bool TransferToProcess(base::Process target_process);
+  bool TransferToProcess(base::Process target_process,
+                         bool check_on_failure = true);
 
 #if defined(OS_WIN)
   HANDLE remote_handle() const { return remote_handle_; }
