@@ -7425,7 +7425,7 @@ static_library("test_support") {
       "//components/webapk:proto",
       "//extensions/browser/api/messaging",
       "//ui/base:test_support",
-      "//ui/base/ime/chromeos",
+      "//ui/base/ime/ash",
     ]
   }
 

@@ -154,7 +154,7 @@ component("ozone_base") {
     # Everyone should depend on //ui/ozone instead except a handful of
     # things that would otherwise create a cycle.
     "//chromeos/system:system",
-    "//ui/base/ime/chromeos/*",
+    "//ui/base/ime/ash/*",
     "//ui/events/ozone/*",
     "//ui/ozone/common/*",
     "//ui/ozone/platform/*",

@@ -12,8 +12,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 

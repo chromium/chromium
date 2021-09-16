@@ -15,7 +15,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/widget/widget.h"

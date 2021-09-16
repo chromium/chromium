@@ -2277,7 +2277,7 @@ source_set("browser") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//ui/base/ime/chromeos:chromeos",
+      "//ui/base/ime/ash",
       "//ui/chromeos/styles:cros_styles_views",
     ]
   }

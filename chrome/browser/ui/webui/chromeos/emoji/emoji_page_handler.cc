@@ -12,7 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 
 namespace chromeos {
 

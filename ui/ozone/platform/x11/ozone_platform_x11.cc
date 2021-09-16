@@ -52,7 +52,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
-#include "ui/base/ime/chromeos/input_method_chromeos.h"
+#include "ui/base/ime/ash/input_method_chromeos.h"
 #else
 #include "ui/base/dragdrop/os_exchange_data_provider_x11.h"
 #include "ui/base/ime/linux/input_method_auralinux.h"

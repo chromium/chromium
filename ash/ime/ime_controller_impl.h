@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/base/ime/chromeos/ime_keyset.h"
+#include "ui/base/ime/ash/ime_keyset.h"
 #include "ui/display/display_observer.h"
 
 namespace ui {

@@ -385,7 +385,7 @@ component("cpp") {
     "//components/arc/mojom:notifications",
     "//components/session_manager:base",
     "//components/user_manager",
-    "//ui/base/ime/chromeos:ime_types",
+    "//ui/base/ime/ash:ime_types",
     "//ui/gfx",
   ]
 

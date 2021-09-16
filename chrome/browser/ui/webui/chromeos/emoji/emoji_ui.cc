@@ -19,7 +19,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
 #include <iostream>

@@ -28,9 +28,9 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/services/ime/public/mojom/input_method.mojom.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_ukm.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_ukm.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace ash {

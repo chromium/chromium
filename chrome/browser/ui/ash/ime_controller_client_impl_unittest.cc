@@ -17,12 +17,12 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/ash/test_ime_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/fake_input_method_delegate.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/input_method_descriptor.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
-#include "ui/base/ime/chromeos/mock_ime_candidate_window_handler.h"
-#include "ui/base/ime/chromeos/mock_input_method_manager.h"
+#include "ui/base/ime/ash/fake_input_method_delegate.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
+#include "ui/base/ime/ash/input_method_util.h"
+#include "ui/base/ime/ash/mock_ime_candidate_window_handler.h"
+#include "ui/base/ime/ash/mock_input_method_manager.h"
 
 using chromeos::input_method::FakeInputMethodDelegate;
 using chromeos::input_method::InputMethodDescriptor;

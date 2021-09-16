@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "ui/base/ime/chromeos/input_method_util.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash {
 namespace input_method {

@@ -24,7 +24,7 @@ source_set("events") {
     "//base",
     "//device/udev_linux",
     "//ui/base:features",
-    "//ui/base/ime/chromeos",
+    "//ui/base/ime/ash",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events/devices",

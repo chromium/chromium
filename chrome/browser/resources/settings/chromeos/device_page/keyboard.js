@@ -23,7 +23,7 @@ import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, Exter
 
 /**
  * Modifier key IDs corresponding to the ModifierKey enumerators in
- * /ui/base/ime/chromeos/ime_keyboard.h.
+ * /ui/base/ime/ash/ime_keyboard.h.
  * @enum {number}
  */
 const ModifierKey = {

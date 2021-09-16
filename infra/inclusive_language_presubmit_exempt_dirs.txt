@@ -207,7 +207,7 @@ tools/python/google 1 1
 tools/traffic_annotation 1 1
 tools/ubsan 7 3
 tools/win/RetrieveSymbols 1 1
-ui/base/ime/chromeos 2 1
+ui/base/ime/ash 2 1
 ui/base/x 1 1
 ui/events/devices/x11 8 2
 ui/events/test 1 1

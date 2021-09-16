@@ -70,7 +70,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
 #include "chrome/browser/exo_parts.h"

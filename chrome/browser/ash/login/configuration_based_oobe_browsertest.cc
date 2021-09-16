@@ -42,7 +42,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_notification_observer.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
 // Disabled due to flakiness: https://crbug.com/997685.
 #define MAYBE_TestDemoModeOfflineNetwork DISABLED_TestDemoModeOfflineNetwork

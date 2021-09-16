@@ -12,7 +12,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 enum class ParentCodeValidationResult;

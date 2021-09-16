@@ -11,7 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "base/scoped_observation.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_rewriter.h"
 

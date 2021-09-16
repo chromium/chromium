@@ -15,8 +15,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
-#include "ui/base/ime/chromeos/ime_assistive_window_handler_interface.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/wm/core/window_util.h"
 

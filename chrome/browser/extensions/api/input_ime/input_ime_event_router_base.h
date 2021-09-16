@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/profiles/profile.h"
-#include "ui/base/ime/chromeos/ime_engine_handler_interface.h"
+#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 
 namespace extensions {
 

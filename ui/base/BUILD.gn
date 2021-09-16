@@ -795,22 +795,22 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "ime/chromeos/mock_component_extension_ime_manager.cc",
-      "ime/chromeos/mock_component_extension_ime_manager.h",
-      "ime/chromeos/mock_component_extension_ime_manager_delegate.cc",
-      "ime/chromeos/mock_component_extension_ime_manager_delegate.h",
-      "ime/chromeos/mock_ime_candidate_window_handler.cc",
-      "ime/chromeos/mock_ime_candidate_window_handler.h",
-      "ime/chromeos/mock_ime_engine_handler.cc",
-      "ime/chromeos/mock_ime_engine_handler.h",
-      "ime/chromeos/mock_ime_input_context_handler.cc",
-      "ime/chromeos/mock_ime_input_context_handler.h",
-      "ime/chromeos/mock_input_method_manager.cc",
-      "ime/chromeos/mock_input_method_manager.h",
+      "ime/ash/mock_component_extension_ime_manager.cc",
+      "ime/ash/mock_component_extension_ime_manager.h",
+      "ime/ash/mock_component_extension_ime_manager_delegate.cc",
+      "ime/ash/mock_component_extension_ime_manager_delegate.h",
+      "ime/ash/mock_ime_candidate_window_handler.cc",
+      "ime/ash/mock_ime_candidate_window_handler.h",
+      "ime/ash/mock_ime_engine_handler.cc",
+      "ime/ash/mock_ime_engine_handler.h",
+      "ime/ash/mock_ime_input_context_handler.cc",
+      "ime/ash/mock_ime_input_context_handler.h",
+      "ime/ash/mock_input_method_manager.cc",
+      "ime/ash/mock_input_method_manager.h",
     ]
     deps += [
-      "//ui/base/ime/chromeos",
-      "//ui/base/ime/chromeos:typing_session_manager",
+      "//ui/base/ime/ash",
+      "//ui/base/ime/ash:typing_session_manager",
     ]
   }
 }
@@ -1045,17 +1045,17 @@ test("ui_base_unittests") {
     if (is_chromeos_ash) {
       sources += [
         "dragdrop/os_exchange_data_provider_non_backed_unittest.cc",
-        "ime/chromeos/extension_ime_util_unittest.cc",
-        "ime/chromeos/ime_keyboard_unittest.cc",
-        "ime/chromeos/input_method_chromeos_unittest.cc",
-        "ime/chromeos/input_method_descriptor_unittest.cc",
-        "ime/chromeos/input_method_util_unittest.cc",
-        "ime/chromeos/typing_session_manager_unittest.cc",
+        "ime/ash/extension_ime_util_unittest.cc",
+        "ime/ash/ime_keyboard_unittest.cc",
+        "ime/ash/input_method_chromeos_unittest.cc",
+        "ime/ash/input_method_descriptor_unittest.cc",
+        "ime/ash/input_method_util_unittest.cc",
+        "ime/ash/typing_session_manager_unittest.cc",
       ]
       deps += [
         "//build:branding_buildflags",
-        "//ui/base/ime/chromeos",
-        "//ui/base/ime/chromeos:typing_session_manager",
+        "//ui/base/ime/ash",
+        "//ui/base/ime/ash:typing_session_manager",
       ]
     }
     if ((is_linux || is_chromeos_lacros) && use_aura) {

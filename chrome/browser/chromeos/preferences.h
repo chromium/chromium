@@ -15,7 +15,7 @@
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 class ContentTracingManager;
 class PrefRegistrySimple;

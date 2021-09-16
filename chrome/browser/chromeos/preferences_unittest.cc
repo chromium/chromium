@@ -41,8 +41,8 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/mock_component_extension_ime_manager_delegate.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 #include "url/gurl.h"
 
 namespace chromeos {

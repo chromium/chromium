@@ -90,7 +90,7 @@ include_rules = [
   "-ui/base/idle"
 
   # InputMethodManager lives in the browser process. Use ImeController.
-  "-ui/base/ime/chromeos/input_method_manager.h"
+  "-ui/base/ime/ash/input_method_manager.h"
 ]
 
 specific_include_rules = {

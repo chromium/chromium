@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 namespace input_method {

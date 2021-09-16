@@ -78,7 +78,7 @@ source_set("x11") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//ui/base/ime/chromeos" ]
+    deps += [ "//ui/base/ime/ash" ]
   } else {
     deps += [ "//ui/base/ime/linux" ]
   }

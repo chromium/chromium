@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace sync_preferences {
 class PrefServiceSyncable;

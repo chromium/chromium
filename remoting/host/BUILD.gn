@@ -561,7 +561,7 @@ static_library("common") {
     deps += [
       "//ash",
       "//remoting/host/chromeos",
-      "//ui/base/ime/chromeos",
+      "//ui/base/ime/ash",
     ]
 
     if (use_ozone) {

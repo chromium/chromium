@@ -19,9 +19,9 @@
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
-#include "ui/base/ime/chromeos/input_method_ukm.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
+#include "ui/base/ime/ash/input_method_ukm.h"
 #include "url/gurl.h"
 
 namespace ash {

@@ -11,8 +11,8 @@
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash {
 

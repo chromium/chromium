@@ -2922,7 +2922,7 @@ static_library("ui") {
       "//services/device/public/mojom",
       "//services/media_session/public/mojom",
       "//services/preferences/public/mojom",
-      "//ui/base/ime/chromeos",
+      "//ui/base/ime/ash",
       "//ui/chromeos",
       "//ui/chromeos/events",
       "//ui/chromeos/strings:strings_provider",

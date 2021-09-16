@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/input_method/ui/grammar_suggestion_window.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_window_view.h"
 #include "chrome/browser/ash/input_method/ui/undo_window.h"
-#include "ui/base/ime/chromeos/ime_assistive_window_handler_interface.h"
+#include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;

@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util_test_util.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/component_extension_ime_manager.h"
-#include "ui/base/ime/chromeos/mock_component_extension_ime_manager_delegate.h"
+#include "ui/base/ime/ash/component_extension_ime_manager.h"
+#include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 
 namespace chromeos {
 

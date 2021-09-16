@@ -547,7 +547,7 @@ component("views") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//ui/base/ime/chromeos" ]
+    deps += [ "//ui/base/ime/ash" ]
   }
 
   if (is_linux || is_chromeos || is_fuchsia) {

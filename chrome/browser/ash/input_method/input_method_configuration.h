@@ -7,7 +7,7 @@
 
 #include "base/sequenced_task_runner.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 namespace input_method {

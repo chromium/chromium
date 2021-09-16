@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_LOCK_SCREEN_UTILS_H_
 
 #include "ash/public/cpp/login_types.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
 

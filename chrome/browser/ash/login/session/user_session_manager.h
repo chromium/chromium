@@ -50,7 +50,7 @@
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
 class AshTurnSyncOnHelper;
