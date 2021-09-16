@@ -62,4 +62,13 @@ void TestAuthenticationRequester::IsUserVerifiableCallback(
 }
 #endif
 
+void TestAuthenticationRequester::OnOtpAuthenticationComplete(
+    const CreditCardOtpAuthenticator::OtpAuthenticationResponse& response) {
+  did_succeed_ = response.did_succeed;
+  if (did_succeed_) {
+    DCHECK(response.card);
+    number_ = response.card->number();
+  }
+}
+
 }  // namespace autofill

@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 
 #if !defined(OS_IOS)
@@ -24,11 +24,13 @@ namespace autofill {
 // CreditCardFIDOAuthenticator.
 #if defined(OS_IOS)
 class TestAuthenticationRequester
-    : public CreditCardCVCAuthenticator::Requester {
+    : public CreditCardCVCAuthenticator::Requester,
+      public CreditCardOtpAuthenticator::Requester {
 #else
 class TestAuthenticationRequester
     : public CreditCardCVCAuthenticator::Requester,
-      public CreditCardFIDOAuthenticator::Requester {
+      public CreditCardFIDOAuthenticator::Requester,
+      public CreditCardOtpAuthenticator::Requester {
 #endif
  public:
   TestAuthenticationRequester();
@@ -52,6 +54,11 @@ class TestAuthenticationRequester
 
   void IsUserVerifiableCallback(bool is_user_verifiable);
 #endif
+
+  // CreditCardOtpAuthenticator::Requester:
+  void OnOtpAuthenticationComplete(
+      const CreditCardOtpAuthenticator::OtpAuthenticationResponse& response)
+      override;
 
   base::WeakPtr<TestAuthenticationRequester> GetWeakPtr();
 
