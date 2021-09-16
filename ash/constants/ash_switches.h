@@ -131,7 +131,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableExtensionAssetsSharing[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableHoudini[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableHoudini64[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableHoudiniDlc[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableNdkTranslation[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableNdkTranslation64[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

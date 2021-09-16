@@ -47,7 +47,6 @@
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_dlc_installer.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/file_system_status.h"
 #include "components/arc/test/connection_holder_util.h"
@@ -350,11 +349,9 @@ class ArcVmClientAdapterTest : public testing::Test,
     adapter_->SetDemoModeDelegate(&demo_mode_delegate_);
     app_host_ = std::make_unique<FakeAppHost>(arc_bridge_service()->app());
     app_instance_ = std::make_unique<FakeAppInstance>(app_host_.get());
-    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
   }
 
   void TearDown() override {
-    arc_dlc_installer_.reset();
     chromeos::SessionManagerClient::Shutdown();
     adapter_->RemoveObserver(this);
     adapter_.reset();
@@ -639,7 +636,6 @@ class ArcVmClientAdapterTest : public testing::Test,
   FakeDemoModeDelegate demo_mode_delegate_;
   std::unique_ptr<FakeAppHost> app_host_;
   std::unique_ptr<FakeAppInstance> app_instance_;
-  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcVmClientAdapterTest);
 };
