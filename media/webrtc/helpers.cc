@@ -244,13 +244,6 @@ void StopEchoCancellationDump(webrtc::AudioProcessing* audio_processing) {
 rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     const AudioProcessingSettings& settings,
     absl::optional<int> agc_startup_min_volume) {
-  // Experimental options provided at creation.
-  // TODO(https://bugs.webrtc.org/5298): Replace with equivalent settings in
-  // webrtc::AudioProcessing::Config.
-  webrtc::Config config;
-  config.Set<webrtc::ExperimentalNs>(
-      new webrtc::ExperimentalNs(settings.transient_noise_suppression));
-
   // Create and configure the webrtc::AudioProcessing.
   webrtc::AudioProcessingBuilder ap_builder;
   if (settings.echo_cancellation) {
@@ -258,7 +251,7 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
         std::make_unique<webrtc::EchoCanceller3Factory>());
   }
   rtc::scoped_refptr<webrtc::AudioProcessing> audio_processing_module =
-      ap_builder.Create(config);
+      ap_builder.Create();
 
   webrtc::AudioProcessing::Config apm_config =
       audio_processing_module->GetConfig();
@@ -276,6 +269,11 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
   apm_config.echo_canceller.mobile_mode = false;
 #endif
   apm_config.residual_echo_detector.enabled = false;
+
+#if !(defined(OS_ANDROID) || defined(OS_IOS))
+  apm_config.transient_suppression.enabled =
+      settings.transient_noise_suppression;
+#endif
 
   ConfigAutomaticGainControl(settings, agc_startup_min_volume, apm_config);
 
