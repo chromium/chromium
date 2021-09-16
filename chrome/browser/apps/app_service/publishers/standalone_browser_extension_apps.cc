@@ -48,9 +48,19 @@ void StandaloneBrowserExtensionApps::Connect(
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));
 
-  subscribers_.Add(std::move(subscriber));
-  // TODO(https://crbug.com/1225848): Call subscriber->OnApps() with the set of
-  // registered apps.
+  mojo::RemoteSetElementId id = subscribers_.Add(std::move(subscriber));
+
+  if (app_ptr_cache_.empty())
+    return;
+
+  std::vector<apps::mojom::AppPtr> apps;
+  for (auto& it : app_ptr_cache_) {
+    apps.push_back(it.second.Clone());
+  }
+
+  subscribers_.Get(id)->OnApps(
+      std::move(apps), apps::mojom::AppType::kStandaloneBrowserExtension,
+      true /* should_notify_initialized */);
 }
 
 void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
@@ -99,6 +109,7 @@ void StandaloneBrowserExtensionApps::GetMenuModel(
 void StandaloneBrowserExtensionApps::OnApps(
     std::vector<apps::mojom::AppPtr> deltas) {
   for (apps::mojom::AppPtr& delta : deltas) {
+    app_ptr_cache_[delta->app_id] = delta.Clone();
     Publish(std::move(delta), subscribers_);
   }
 }
