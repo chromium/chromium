@@ -19,5 +19,9 @@ AssistantClient::AssistantClient(
 
 AssistantClient::~AssistantClient() = default;
 
+void AssistantClient::ResetAssistantManager() {
+  assistant_manager_ = nullptr;
+}
+
 }  // namespace libassistant
 }  // namespace chromeos

@@ -165,6 +165,9 @@ class AssistantClient {
       std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
       assistant_client::AssistantManagerInternal* assistant_manager_internal);
 
+ protected:
+  void ResetAssistantManager();
+
  private:
   std::unique_ptr<assistant_client::AssistantManager> assistant_manager_;
   assistant_client::AssistantManagerInternal* assistant_manager_internal_ =

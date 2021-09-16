@@ -242,7 +242,12 @@ AssistantClientV1::AssistantClientV1(
   assistant_manager()->AddDeviceStateListener(device_state_listener_.get());
 }
 
-AssistantClientV1::~AssistantClientV1() = default;
+AssistantClientV1::~AssistantClientV1() {
+  // Some listeners (e.g. MediaManagerListener) require that they outlive 
+  // `assistant_manager_`. Reset `assistant_manager_` in the parent class first
+  // before any listener in this class gets destructed.
+  ResetAssistantManager();
+}
 
 void AssistantClientV1::StartServices() {
   assistant_manager()->Start();
