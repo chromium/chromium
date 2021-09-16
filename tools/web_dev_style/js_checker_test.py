@@ -3,11 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from . import js_checker
+import js_checker
 from os import path as os_path
 import re
 from sys import path as sys_path
-from . import test_util
+import test_util
 import unittest
 
 _HERE = os_path.dirname(os_path.abspath(__file__))
@@ -67,17 +67,19 @@ class JsCheckerTest(unittest.TestCase):
 
   def testBindThisFails(self):
     lines = [
-        'let bound = this.method_.bind(this);',
-        "document.addEventListener('click', this.onClick_.bind(this));",
-        'this.api_.onEvent = this.onClick_.bind(this);',
-        'this.api_.getThinger(this.gotThinger_.bind(this));',
-        'this.api_.getThinger(this.gotThinger_.bind(this, param1, param2));',
+        'this.api_.getThinger((function() {console.log(\'foo\');}).bind(this));',
+        'this.api_.getThinger((function foo() {console.log(\'foo\');}).bind(this));',
     ]
     for line in lines:
       self.ShouldFailBindThisCheck(line)
 
   def testBindThisPasses(self):
     lines = [
+        'let bound = this.method_.bind(this);',
+        "document.addEventListener('click', this.onClick_.bind(this));",
+        'this.api_.onEvent = this.onClick_.bind(this);',
+        'this.api_.getThinger(this.gotThinger_.bind(this));',
+        'this.api_.getThinger(this.gotThinger_.bind(this, param1, param2));',
         '// And in the darkness bind them.',
         'this.methodName_.bind(scope, param)',
     ]

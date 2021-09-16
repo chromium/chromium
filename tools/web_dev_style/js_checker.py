@@ -7,7 +7,7 @@
 See chrome/browser/PRESUBMIT.py
 """
 
-from . import regex_check
+import regex_check
 
 
 class JSChecker(object):
@@ -21,7 +21,8 @@ class JSChecker(object):
         self.input_api.re, line_number, line, regex, message)
 
   def BindThisCheck(self, i, line):
-    return self.RegexCheck(i, line, r"(\.bind\(this)[^)]*\)",
+    """Checks for usages of bind(this) with inlined functions."""
+    return self.RegexCheck(i, line, r"\)(\.bind\(this)[^)]*\)",
                            "Prefer arrow (=>) functions over bind(this)")
 
   def ChromeSendCheck(self, i, line):
