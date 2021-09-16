@@ -8480,6 +8480,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "crossfade_preview_at": "0.25",
+                        "page_loaded_delay": "300",
+                        "page_loading_delay": "300",
+                        "page_not_ready_delay": "800"
+                    },
                     "enable_features": [
                         "TabHoverCardImages"
                     ]
