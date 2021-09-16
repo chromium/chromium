@@ -32,8 +32,11 @@ class WebApp;
 
 namespace apps_util {
 // Create intent filters for |web_app|.
+// The |scope| is needed because currently the correct app scope is not
+// provided through WebApp API for shortcuts.
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
-    const web_app::WebApp& web_app);
+    const web_app::WebApp& web_app,
+    const GURL& scope);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create an intent struct with filesystem:// or file:// type URLs from the

@@ -211,12 +211,11 @@ const char* ConvertAppServiceToArcIntentAction(const std::string& action) {
 namespace apps_util {
 
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
-    const web_app::WebApp& web_app) {
-  if (web_app.scope().is_empty())
-    return {};
-
+    const web_app::WebApp& web_app,
+    const GURL& scope) {
   std::vector<apps::mojom::IntentFilterPtr> filters;
-  filters.push_back(apps_util::CreateIntentFilterForUrlScope(web_app.scope()));
+  if (!scope.is_empty())
+    filters.push_back(apps_util::CreateIntentFilterForUrlScope(scope));
 
   base::Extend(filters, CreateWebAppShareIntentFilters(web_app));
   base::Extend(filters, CreateWebAppFileHandlerIntentFilters(web_app));

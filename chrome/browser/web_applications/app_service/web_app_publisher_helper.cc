@@ -288,7 +288,8 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 
   // Add the intent filters for PWAs.
   base::Extend(app->intent_filters,
-               apps_util::CreateWebAppIntentFilters(*web_app));
+               apps_util::CreateWebAppIntentFilters(
+                   *web_app, registrar().GetAppScope(web_app->app_id())));
 
   app->icon_key = MakeIconKey(web_app);
 

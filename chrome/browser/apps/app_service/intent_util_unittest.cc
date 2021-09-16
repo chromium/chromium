@@ -168,17 +168,6 @@ TEST_F(IntentUtilsTest, CreateShareIntentFromText) {
             apps_util::CreateLaunchIntent("com.android.vending", intent));
 }
 
-TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_ShortcutApp_NoUrlFilter) {
-  auto web_app = web_app::test::CreateWebApp();
-  // Ensure scope is empty, as in a "Create Shortcut" app.
-  web_app->SetScope(GURL());
-
-  std::vector<IntentFilterPtr> filters =
-      apps_util::CreateWebAppIntentFilters(*web_app.get());
-
-  EXPECT_EQ(filters.size(), 0);
-}
-
 TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
   auto web_app = web_app::test::CreateWebApp();
   DCHECK(web_app->start_url().is_valid());
@@ -186,7 +175,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
   web_app->SetScope(scope);
 
   std::vector<IntentFilterPtr> filters =
-      apps_util::CreateWebAppIntentFilters(*web_app.get());
+      apps_util::CreateWebAppIntentFilters(*web_app.get(), scope);
 
   ASSERT_EQ(filters.size(), 1);
   IntentFilterPtr& filter = filters[0];
@@ -255,7 +244,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_FileHandlers) {
   web_app->SetFileHandlers(file_handlers);
 
   std::vector<IntentFilterPtr> filters =
-      apps_util::CreateWebAppIntentFilters(*web_app.get());
+      apps_util::CreateWebAppIntentFilters(*web_app.get(), scope);
 
   ASSERT_EQ(filters.size(), 2);
   // 1st filter is URL filter.
@@ -290,7 +279,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_NoteTakingApp) {
   web_app->SetNoteTakingNewNoteUrl(new_note_url);
 
   std::vector<IntentFilterPtr> filters =
-      apps_util::CreateWebAppIntentFilters(*web_app.get());
+      apps_util::CreateWebAppIntentFilters(*web_app.get(), scope);
 
   ASSERT_EQ(filters.size(), 2);
 
