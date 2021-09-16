@@ -4,28 +4,24 @@
 
 # This file implements very minimal ASN.1, DER serialization.
 
-import types
-
 
 def ToDER(obj):
   '''ToDER converts the given object into DER encoding'''
-  if type(obj) == types.NoneType:
+  if obj is None:
     # None turns into NULL
     return TagAndLength(5, 0)
-  if type(obj) == types.StringType:
-    # Strings are PRINTABLESTRING
-    return TagAndLength(19, len(obj)) + obj
-  if type(obj) == types.UnicodeType:
-    # Encode Unicode strings as UTF8String.
-    utf8val = obj.encode('utf-8')
-    return TagAndLength(12, len(utf8val)) + utf8val
-  if type(obj) == types.BooleanType:
-    val = "\x00"
+  if isinstance(obj, (str, bytes)):
+    # There are many ASN.1 string types, so rather than pick one implicitly,
+    # require the caller explicitly specify the encoding with asn1.UTF8String,
+    # etc., below.
+    raise TypeError("String types must be specified explicitly")
+  if isinstance(obj, bool):
+    val = b"\x00"
     if obj:
-      val = "\xff"
-    return TagAndLength(1, 1) + val
-  if type(obj) == types.IntType or type(obj) == types.LongType:
-    big_endian = []
+      val = b"\xff"
+    return TagAndData(1, val)
+  if isinstance(obj, int):
+    big_endian = bytearray()
     val = obj
     while val != 0:
       big_endian.append(val & 0xff)
@@ -35,18 +31,13 @@ def ToDER(obj):
       big_endian.append(0)
 
     big_endian.reverse()
-    return TagAndLength(2, len(big_endian)) + ToBytes(big_endian)
+    return TagAndData(2, bytes(big_endian))
 
   return obj.ToDER()
 
 
-def ToBytes(array_of_bytes):
-  '''ToBytes converts the array of byte values into a binary string'''
-  return ''.join([chr(x) for x in array_of_bytes])
-
-
 def TagAndLength(tag, length):
-  der = [tag]
+  der = bytearray([tag])
   if length < 128:
     der.append(length)
   elif length < 256:
@@ -59,11 +50,16 @@ def TagAndLength(tag, length):
   else:
     assert False
 
-  return ToBytes(der)
+  return bytes(der)
+
+
+def TagAndData(tag, data):
+  return TagAndLength(tag, len(data)) + data
 
 
 class Raw(object):
   '''Raw contains raw DER encoded bytes that are used verbatim'''
+
   def __init__(self, der):
     self.der = der
 
@@ -73,6 +69,7 @@ class Raw(object):
 
 class Explicit(object):
   '''Explicit prepends an explicit tag'''
+
   def __init__(self, tag, child):
     self.tag = tag
     self.child = child
@@ -80,9 +77,9 @@ class Explicit(object):
   def ToDER(self):
     der = ToDER(self.child)
     tag = self.tag
-    tag |= 0x80 # content specific
-    tag |= 0x20 # complex
-    return TagAndLength(tag, len(der)) + der
+    tag |= 0x80  # content specific
+    tag |= 0x20  # complex
+    return TagAndData(tag, der)
 
 
 class ENUMERATED(object):
@@ -90,7 +87,7 @@ class ENUMERATED(object):
     self.value = value
 
   def ToDER(self):
-    return TagAndLength(10, 1) + chr(self.value)
+    return TagAndData(10, bytes([self.value]))
 
 
 class SEQUENCE(object):
@@ -98,8 +95,8 @@ class SEQUENCE(object):
     self.children = children
 
   def ToDER(self):
-    der = ''.join([ToDER(x) for x in self.children])
-    return TagAndLength(0x30, len(der)) + der
+    der = b''.join([ToDER(x) for x in self.children])
+    return TagAndData(0x30, der)
 
 
 class SET(object):
@@ -107,8 +104,8 @@ class SET(object):
     self.children = children
 
   def ToDER(self):
-    der = ''.join([ToDER(x) for x in self.children])
-    return TagAndLength(0x31, len(der)) + der
+    der = b''.join([ToDER(x) for x in self.children])
+    return TagAndData(0x31, der)
 
 
 class OCTETSTRING(object):
@@ -116,7 +113,23 @@ class OCTETSTRING(object):
     self.val = val
 
   def ToDER(self):
-    return TagAndLength(4, len(self.val)) + self.val
+    return TagAndData(4, self.val)
+
+
+class PrintableString(object):
+  def __init__(self, val):
+    self.val = val
+
+  def ToDER(self):
+    return TagAndData(19, self.val)
+
+
+class UTF8String(object):
+  def __init__(self, val):
+    self.val = val
+
+  def ToDER(self):
+    return TagAndData(12, self.val)
 
 
 class OID(object):
@@ -127,12 +140,12 @@ class OID(object):
     if len(self.parts) < 2 or self.parts[0] > 6 or self.parts[1] >= 40:
       assert False
 
-    der = [self.parts[0]*40 + self.parts[1]]
+    der = bytearray([self.parts[0] * 40 + self.parts[1]])
     for x in self.parts[2:]:
       if x == 0:
         der.append(0)
       else:
-        octets = []
+        octets = bytearray()
         while x != 0:
           v = x & 0x7f
           if len(octets) > 0:
@@ -142,7 +155,7 @@ class OID(object):
         octets.reverse()
         der = der + octets
 
-    return TagAndLength(6, len(der)) + ToBytes(der)
+    return TagAndData(6, bytes(der))
 
 
 class UTCTime(object):
@@ -150,7 +163,7 @@ class UTCTime(object):
     self.time_str = time_str
 
   def ToDER(self):
-    return TagAndLength(23, len(self.time_str)) + self.time_str
+    return TagAndData(23, self.time_str.encode('ascii'))
 
 
 class GeneralizedTime(object):
@@ -158,7 +171,7 @@ class GeneralizedTime(object):
     self.time_str = time_str
 
   def ToDER(self):
-    return TagAndLength(24, len(self.time_str)) + self.time_str
+    return TagAndData(24, self.time_str.encode('ascii'))
 
 
 class BitString(object):
@@ -166,4 +179,4 @@ class BitString(object):
     self.bits = bits
 
   def ToDER(self):
-    return TagAndLength(3, 1 + len(self.bits)) + "\x00" + self.bits
+    return TagAndData(3, b"\x00" + self.bits)

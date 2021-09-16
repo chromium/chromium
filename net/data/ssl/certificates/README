@@ -102,7 +102,7 @@ unit tests.
      converting a subject/issuer name to their stringized form.
 
 - ocsp-test-root.pem : A root certificate for the code in
-      net/tools/testserver/minica.py
+      net/data/ssl/scripts/minica.py and net::EmbeddedTestServer.
 
 - websocket_cacert.pem : The testing root CA for testing WebSocket client
      certificate authentication.

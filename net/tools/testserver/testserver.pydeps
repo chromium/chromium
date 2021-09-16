@@ -74,7 +74,5 @@
 ../../../third_party/tlslite/tlslite/verifierdb.py
 ../../../third_party/tlslite/tlslite/x509.py
 ../../../third_party/tlslite/tlslite/x509certchain.py
-asn1.py
-minica.py
 testserver.py
 testserver_base.py
