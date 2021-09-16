@@ -65,8 +65,8 @@ js_library("trusted_annotator_closure_compile") {
 
 js_library("trusted_app_closure_compile") {
   sources = [
+    "app/embedder.js",
     "app/trusted/trusted_app_comm_factory.js",
-    "embedder.js",
   ]
   deps = [
     ":message_types",
@@ -117,9 +117,9 @@ generate_grd("build_trusted_grd") {
     "annotator/trusted/trusted_annotator_comm_factory.js",
     "app/trusted/trusted_app_comm_factory.js",
     "communication/projector_browser_proxy.js",
-    "embedder.html",
-    "embedder.css",
-    "embedder.js",
+    "app/embedder.html",
+    "app/embedder.css",
+    "app/embedder.js",
     "selfie_cam/selfie_cam.html",
     "selfie_cam/selfie_cam.css",
     "selfie_cam/selfie_cam.js",

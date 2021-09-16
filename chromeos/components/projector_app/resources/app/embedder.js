@@ -5,8 +5,9 @@
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppTrustedCommFactory, UntrustedAppClient} from './app/trusted/trusted_app_comm_factory.js';
-import {ProjectorBrowserProxyImpl} from './communication/projector_browser_proxy.js';
+import {ProjectorBrowserProxyImpl} from '../communication/projector_browser_proxy.js';
+
+import {AppTrustedCommFactory, UntrustedAppClient} from './trusted/trusted_app_comm_factory.js';
 
 /**
  * Gets the query string from the URL.
@@ -31,7 +32,6 @@ Polymer({
 
   /** @override */
   ready() {
-    // TODO(b/197343976): embed chrome-untrusted://projector/app instead.
     document.body.querySelector('iframe').src =
         'chrome-untrusted://projector/' + getQuery();
 

@@ -14,11 +14,12 @@ const char kChromeUIUntrustedProjectorAppUrl[] =
 const char kChromeUIUntrustedProjectorPwaUrl[] =
     "https://projector.apps.chrome";
 
-const char kChromeUITrustedProjectorAppUrl[] = "chrome://projector/";
+const char kChromeUITrustedProjectorUrl[] = "chrome://projector/";
+const char kChromeUITrustedProjectorAppUrl[] = "chrome://projector/app/";
 const char kChromeUITrustedProjectorSelfieCamUrl[] =
     "chrome://projector/selfie_cam/selfie_cam.html";
 const char kChromeUITrustedAnnotatorUrl[] =
     "chrome://projector/annotator/annotator_embedder.html";
 const char kChromeUITrustedProjectorSwaAppId[] =
-    "nblbgfbmjfjaeonhjnbbkabkdploocij";
+    "fgnpbdobngpkonkajbmelfhjkemaddhp";
 }  // namespace chromeos

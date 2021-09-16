@@ -38,7 +38,7 @@ constexpr char kFilePath[] = "xyz";
 // Summary of expected behavior on ChromeOS:
 // ____________________________|_SWA_launches_|_URL_redirection
 // projector.apps.chrome       | Yes          | Yes
-// chrome://projector          | Yes          | No
+// chrome://projector/app/     | Yes          | No
 // chrome-untrusted://projector| No           | No
 
 class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
@@ -69,7 +69,7 @@ class ProjectorNavigationThrottleTestParameterized
 };
 
 // Verifies that navigating to https://projector.apps.chrome/xyz redirects to
-// chrome://projector/xyz and launches the SWA.
+// chrome://projector/app/xyz and launches the SWA.
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
                        PwaNavigationRedirects) {
   base::HistogramTester histogram_tester;
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
   EXPECT_EQ(tab->GetVisibleURL().spec(), url);
 }
 
-// Verifies that navigating to chrome://projector does not redirect.
+// Verifies that navigating to chrome://projector/app/ does not redirect.
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
                        TrustedNavigationNoRedirect) {
   std::string url = chromeos::kChromeUITrustedProjectorAppUrl;

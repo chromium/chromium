@@ -121,8 +121,6 @@ GURL RedirectUrlIfSwa(Profile* profile,
       url.GetOrigin() ==
           GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl).GetOrigin()) {
     std::string override_url = chromeos::kChromeUITrustedProjectorAppUrl;
-    // TODO(b/195975836): Redirect to chrome://projector/app/path instead to
-    // prevent access to the annotator and selfie cam.
     if (url.path().length() > 1)
       override_url += url.path().substr(1);
     GURL result(override_url);

@@ -61,7 +61,7 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
   // TODO(b/193579885): Override content security policy to support loading wasm
   // resources.
 
-  source->AddFrameAncestor(GURL(kChromeUITrustedProjectorAppUrl));
+  source->AddFrameAncestor(GURL(kChromeUITrustedProjectorUrl));
 
   return source;
 }
