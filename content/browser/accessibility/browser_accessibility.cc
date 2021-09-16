@@ -1010,20 +1010,12 @@ BrowserAccessibility::CreatePositionForSelectionAt(int offset) const {
   return CreateTextPositionAt(offset)->AsTextSelectionPosition();
 }
 
-std::u16string BrowserAccessibility::GetNameAsString16() const {
-  return base::UTF8ToUTF16(GetName());
+const std::string& BrowserAccessibility::GetName() const {
+  return node_->GetNameUTF8();
 }
 
-std::string BrowserAccessibility::GetName() const {
-  if (GetRole() == ax::mojom::Role::kPortal &&
-      GetData().GetNameFrom() == ax::mojom::NameFrom::kNone) {
-    BrowserAccessibility* child_tree_root = PlatformGetRootOfChildTree();
-    if (child_tree_root) {
-      return child_tree_root->GetStringAttribute(
-          ax::mojom::StringAttribute::kName);
-    }
-  }
-  return GetStringAttribute(ax::mojom::StringAttribute::kName);
+std::u16string BrowserAccessibility::GetNameAsString16() const {
+  return node_->GetNameUTF16();
 }
 
 std::u16string BrowserAccessibility::GetHypertext() const {

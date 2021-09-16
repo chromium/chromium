@@ -3984,15 +3984,7 @@ class AXPosition {
   base::stack<AXNode*> GetAncestorAnchors() const {
     if (!GetAnchor())
       return base::stack<AXNode*>();
-
-    base::stack<AXNode*> anchors;
-    AXNode* current_anchor = GetAnchor();
-    while (current_anchor) {
-      anchors.push(current_anchor);
-      current_anchor = current_anchor->GetParentCrossingTreeBoundary();
-    }
-
-    return anchors;
+    return GetAnchor()->GetAncestorsCrossingTreeBoundary();
   }
 
   AXNode* GetLowestUnignoredAncestor() const {

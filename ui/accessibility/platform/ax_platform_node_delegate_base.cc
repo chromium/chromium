@@ -473,7 +473,7 @@ AXPlatformNodeDelegateBase::ChildrenEnd() {
   return std::make_unique<ChildIteratorBase>(this, GetChildCount());
 }
 
-std::string AXPlatformNodeDelegateBase::GetName() const {
+const std::string& AXPlatformNodeDelegateBase::GetName() const {
   return GetData().GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 

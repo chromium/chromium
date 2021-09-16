@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/stack.h"
 #include "base/strings/char_traits.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -151,6 +152,7 @@ class AX_EXPORT AXNode final {
   AXNode* GetParentCrossingTreeBoundary() const;
   AXNode* GetUnignoredParent() const;
   AXNode* GetUnignoredParentCrossingTreeBoundary() const;
+  base::stack<AXNode*> GetAncestorsCrossingTreeBoundary() const;
   size_t GetIndexInParent() const;
   size_t GetUnignoredIndexInParent() const;
   AXNode* GetFirstChild() const;
@@ -224,6 +226,21 @@ class AX_EXPORT AXNode final {
   UnignoredChildrenCrossingTreeBoundaryBegin() const;
   UnignoredChildCrossingTreeBoundaryIterator
   UnignoredChildrenCrossingTreeBoundaryEnd() const;
+
+  // Returns an optional integer indicating the logical order of this node
+  // compared to another node, or returns an empty optional if the nodes are not
+  // comparable. Nodes are not comparable if they do not share a common
+  // ancestor.
+  //
+  //    0: if this node is logically equivalent to the other node.
+  //   <0: if this node is logically less than the other node.
+  //   >0: if this node is logically greater than the other node.
+  //
+  // Another way to look at the nodes' relative positions/logical orders is that
+  // they are equivalent to pre-order traversal of the tree. If we pre-order
+  // traverse from the root, the node that we visited earlier is always going to
+  // be before (logically less) the node we visit later.
+  absl::optional<int> CompareTo(const AXNode& other) const;
 
   // Returns true if the node has any of the text related roles, including
   // kStaticText, kInlineTextBox and kListMarker (for Legacy Layout). Does not
@@ -372,6 +389,8 @@ class AX_EXPORT AXNode final {
 
   bool HasState(ax::mojom::State state) const { return data().HasState(state); }
 
+  ax::mojom::NameFrom GetNameFrom() const { return data().GetNameFrom(); }
+
   // Return the hierarchical level if supported.
   absl::optional<int> GetHierarchicalLevel() const;
 
@@ -389,6 +408,11 @@ class AX_EXPORT AXNode final {
   // Container objects that should be ignored for computing PosInSet and SetSize
   // for ordered sets.
   bool IsIgnoredContainerForOrderedSet() const;
+
+  // Returns the accessible name for this node. This could have originated from
+  // e.g. an onscreen label, or an ARIA label.
+  const std::string& GetNameUTF8() const;
+  std::u16string GetNameUTF16() const;
 
   // If this node is a leaf, returns the inner text of this node. This is
   // equivalent to its visible accessible name. Otherwise, if this node is not a

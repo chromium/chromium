@@ -183,6 +183,16 @@ AXNode* AXNode::GetUnignoredParentCrossingTreeBoundary() const {
   return unignored_parent;
 }
 
+base::stack<AXNode*> AXNode::GetAncestorsCrossingTreeBoundary() const {
+  base::stack<AXNode*> ancestors;
+  AXNode* ancestor = const_cast<AXNode*>(this);
+  while (ancestor) {
+    ancestors.push(ancestor);
+    ancestor = ancestor->GetParentCrossingTreeBoundary();
+  }
+  return ancestors;
+}
+
 size_t AXNode::GetIndexInParent() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   return index_in_parent_;
@@ -571,6 +581,43 @@ AXNode::UnignoredChildrenCrossingTreeBoundaryEnd() const {
   return UnignoredChildCrossingTreeBoundaryIterator(this, nullptr);
 }
 
+absl::optional<int> AXNode::CompareTo(const AXNode& other) const {
+  if (this == &other)
+    return 0;
+
+  AXNode* common_ancestor = nullptr;
+  base::stack<AXNode*> our_ancestors = GetAncestorsCrossingTreeBoundary();
+  base::stack<AXNode*> other_ancestors =
+      other.GetAncestorsCrossingTreeBoundary();
+  while (!our_ancestors.empty() && !other_ancestors.empty() &&
+         our_ancestors.top() == other_ancestors.top()) {
+    common_ancestor = our_ancestors.top();
+    our_ancestors.pop();
+    other_ancestors.pop();
+  }
+
+  if (!common_ancestor)
+    return absl::nullopt;
+  if (common_ancestor == this)
+    return -1;
+  if (common_ancestor == &other)
+    return 1;
+
+  if (our_ancestors.empty() || other_ancestors.empty()) {
+    NOTREACHED() << "The common ancestor should be followed by two uncommon "
+                    "children in the two corresponding lists of ancestors.";
+    return absl::nullopt;
+  }
+
+  size_t this_uncommon_ancestor_index = our_ancestors.top()->GetIndexInParent();
+  size_t other_uncommon_ancestor_index =
+      other_ancestors.top()->GetIndexInParent();
+  DCHECK_NE(this_uncommon_ancestor_index, other_uncommon_ancestor_index)
+      << "Deepest uncommon ancestors should truly be uncommon, i.e. not be the "
+         "same node.";
+  return this_uncommon_ancestor_index - other_uncommon_ancestor_index;
+}
+
 bool AXNode::IsText() const {
   // Regular list markers only expose their alternative text, but do not expose
   // their descendants; and the descendants should be ignored. This is because
@@ -773,6 +820,26 @@ const AXComputedNodeData& AXNode::GetComputedNodeData() const {
 
 void AXNode::ClearComputedNodeData() {
   computed_node_data_.reset();
+}
+
+const std::string& AXNode::GetNameUTF8() const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  const AXNode* node = this;
+  if (GetRole() == ax::mojom::Role::kPortal &&
+      GetNameFrom() == ax::mojom::NameFrom::kNone) {
+    const AXTreeManager* child_tree_manager =
+        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*this);
+    if (child_tree_manager)
+      node = child_tree_manager->GetRootAsAXNode();
+  }
+
+  return node->GetStringAttribute(ax::mojom::StringAttribute::kName);
+}
+
+std::u16string AXNode::GetNameUTF16() const {
+  // Storing a copy of the name in UTF16 would probably not be helpful because
+  // it could potentially double the memory usage of AXTree.
+  return base::UTF8ToUTF16(GetNameUTF8());
 }
 
 const std::u16string& AXNode::GetHypertext() const {

@@ -144,7 +144,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
       override;
   std::unique_ptr<AXPlatformNodeDelegate::ChildIterator> ChildrenEnd() override;
 
-  std::string GetName() const override;
+  const std::string& GetName() const override;
   std::u16string GetHypertext() const override;
   bool SetHypertextSelection(int start_offset, int end_offset) override;
   TextAttributeMap ComputeTextAttributeMap(

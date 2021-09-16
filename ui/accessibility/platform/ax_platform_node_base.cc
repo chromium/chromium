@@ -660,10 +660,7 @@ bool AXPlatformNodeBase::IsStructuredAnnotation() const {
       GetDelegate()->GetReverseRelations(
           ax::mojom::IntListAttribute::kDetailsIds);
 
-  if (reverse_relations.empty())
-    return false;
-
-  return true;
+  return !reverse_relations.empty();
 }
 
 bool AXPlatformNodeBase::IsSelectionItemSupported() const {

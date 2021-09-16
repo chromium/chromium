@@ -145,6 +145,7 @@ class AX_EXPORT AXPlatformNode {
 };
 
 namespace testing {
+
 class ScopedAxModeSetter {
  public:
   explicit ScopedAxModeSetter(AXMode new_mode) {
@@ -152,6 +153,7 @@ class ScopedAxModeSetter {
   }
   ~ScopedAxModeSetter() { AXPlatformNode::ResetAxModeForTesting(); }
 };
+
 }  // namespace testing
 
 }  // namespace ui
