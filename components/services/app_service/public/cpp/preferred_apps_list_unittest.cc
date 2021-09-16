@@ -290,6 +290,19 @@ TEST_F(PreferredAppListTest, ReplacedAppPreference) {
   EXPECT_EQ(1u, entry->second.size());
 }
 
+TEST_F(PreferredAppListTest, ReplacedAppPreferencesSameApp) {
+  GURL filter_url = GURL("https://www.google.com/abc");
+
+  auto intent_filter = apps_util::CreateIntentFilterForUrlScope(filter_url);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter);
+
+  auto replaced_app_preferences =
+      preferred_apps_.AddPreferredApp(kAppId1, intent_filter);
+
+  EXPECT_EQ(0u, replaced_app_preferences->replaced_preference.size());
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url));
+}
+
 // Test that for a single preferred app with URL filter, we can delete
 // the preferred app id.
 TEST_F(PreferredAppListTest, DeletePreferredAppForURL) {

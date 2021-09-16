@@ -83,14 +83,18 @@ apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
     if (apps_util::FiltersHaveOverlap((*iter)->intent_filter, intent_filter)) {
       // Add the to be removed preferred app into a map, key by app_id.
       const std::string replaced_app_id = (*iter)->app_id;
-      auto entry = replaced_preference_map.find(replaced_app_id);
-      if (entry == replaced_preference_map.end()) {
-        std::vector<apps::mojom::IntentFilterPtr> intent_filter_vector;
-        intent_filter_vector.push_back((*iter)->intent_filter->Clone());
-        replaced_preference_map.emplace(replaced_app_id,
-                                        std::move(intent_filter_vector));
-      } else {
-        entry->second.push_back((*iter)->intent_filter->Clone());
+      // Only notify about removals in other apps, since we already know that
+      // |app_id|'s preferred apps have changed.
+      if (replaced_app_id != app_id) {
+        auto entry = replaced_preference_map.find(replaced_app_id);
+        if (entry == replaced_preference_map.end()) {
+          std::vector<apps::mojom::IntentFilterPtr> intent_filter_vector;
+          intent_filter_vector.push_back((*iter)->intent_filter->Clone());
+          replaced_preference_map.emplace(replaced_app_id,
+                                          std::move(intent_filter_vector));
+        } else {
+          entry->second.push_back((*iter)->intent_filter->Clone());
+        }
       }
       iter = preferred_apps_.erase(iter);
     } else {
