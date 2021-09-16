@@ -25,6 +25,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/track_event_thread_local_event_sink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 
@@ -56,7 +57,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
   static TraceEventMetadataSource* GetInstance();
 
   using JsonMetadataGeneratorFunction =
-      base::RepeatingCallback<std::unique_ptr<base::DictionaryValue>()>;
+      base::RepeatingCallback<absl::optional<base::Value>()>;
 
   using MetadataGeneratorFunction = base::RepeatingCallback<void(
       perfetto::protos::pbzero::ChromeMetadataPacket*,
@@ -77,7 +78,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
   // metadata fields to be uploaded as POST args in addition to being
   // embedded in the trace. TODO(oysteine): Remove when only the
   // UMA uploader path is used.
-  std::unique_ptr<base::DictionaryValue> GenerateLegacyMetadataDict();
+  base::Value GenerateLegacyMetadataDict();
 
   // PerfettoTracedProcess::DataSourceBase implementation:
   void StartTracingImpl(
@@ -118,7 +119,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
 
   void WriteMetadataPacket(perfetto::protos::pbzero::ChromeMetadataPacket*,
                            bool privacy_filtering_enabled);
-  std::unique_ptr<base::DictionaryValue> GenerateTraceConfigMetadataDict();
+  absl::optional<base::Value> GenerateTraceConfigMetadataDict();
 
   // All members are protected by |lock_|.
   // TODO(crbug.com/1138893): Change annotations to GUARDED_BY

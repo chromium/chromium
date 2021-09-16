@@ -1062,8 +1062,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   absl::optional<base::Value> trace_json =
       base::JSONReader::Read(trace_receiver_helper.json_file_contents());
   ASSERT_TRUE(trace_json);
-  auto* metadata_json = static_cast<base::DictionaryValue*>(
-      trace_json->FindKeyOfType("metadata", base::Value::Type::DICTIONARY));
+  auto* metadata_json = trace_json->FindDictKey("metadata");
   ASSERT_TRUE(metadata_json);
 
   const std::string* trace_config =
@@ -1135,8 +1134,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   absl::optional<base::Value> trace_json =
       base::JSONReader::Read(trace_receiver_helper.json_file_contents());
   ASSERT_TRUE(trace_json);
-  auto* metadata_json = static_cast<base::DictionaryValue*>(
-      trace_json->FindKeyOfType("metadata", base::Value::Type::DICTIONARY));
+  auto* metadata_json = trace_json->FindDictKey("metadata");
   ASSERT_TRUE(metadata_json);
 
   const std::string* trace_config =
@@ -1731,7 +1729,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   dict.SetKey("configs", std::move(rules_list));
 
   std::unique_ptr<BackgroundTracingConfig> config(
-      BackgroundTracingConfigImpl::ReactiveFromDict(&dict));
+      BackgroundTracingConfigImpl::ReactiveFromDict(dict));
 
   EXPECT_TRUE(BackgroundTracingManager::GetInstance()
                   ->SetActiveScenarioWithReceiveCallback(
@@ -1781,7 +1779,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest, RunStartupTracing) {
                     tracing::TraceStartupConfig::kDefaultStartupCategories);
 
   std::unique_ptr<BackgroundTracingConfig> config(
-      BackgroundTracingConfigImpl::ReactiveFromDict(&dict));
+      BackgroundTracingConfigImpl::ReactiveFromDict(dict));
 
   EXPECT_TRUE(BackgroundTracingManager::GetInstance()
                   ->SetActiveScenarioWithReceiveCallback(

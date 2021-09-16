@@ -8,6 +8,11 @@
 #include <memory>
 
 #include "content/public/browser/tracing_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace android_webview {
 
@@ -24,7 +29,7 @@ class AwTracingDelegate : public content::TracingDelegate {
       const content::BackgroundTracingConfig& config,
       bool requires_anonymized_data,
       bool is_crash_scenario) override;
-  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict() override;
+  absl::optional<base::Value> GenerateMetadataDict() override;
 };
 
 }  // namespace android_webview

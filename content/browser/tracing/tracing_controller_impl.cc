@@ -49,6 +49,7 @@
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
@@ -246,17 +247,16 @@ void TracingControllerImpl::GenerateMetadataPacket(
 }
 
 // Can be called on any thread.
-std::unique_ptr<base::DictionaryValue>
-TracingControllerImpl::GenerateMetadataDict() {
+absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto metadata_dict = std::make_unique<base::DictionaryValue>();
+  base::Value metadata_dict(base::Value::Type::DICTIONARY);
 
-  metadata_dict->SetString("network-type", GetNetworkTypeString());
-  metadata_dict->SetString("product-version",
-                           GetContentClient()->browser()->GetProduct());
-  metadata_dict->SetString("v8-version", V8_VERSION_STRING);
-  metadata_dict->SetString("user-agent",
-                           GetContentClient()->browser()->GetUserAgent());
+  metadata_dict.SetStringKey("network-type", GetNetworkTypeString());
+  metadata_dict.SetStringKey("product-version",
+                             GetContentClient()->browser()->GetProduct());
+  metadata_dict.SetStringKey("v8-version", V8_VERSION_STRING);
+  metadata_dict.SetStringKey("user-agent",
+                             GetContentClient()->browser()->GetUserAgent());
 
 #if defined(OS_ANDROID)
   // The library name is used for symbolizing heap profiles. This cannot be
@@ -266,54 +266,54 @@ TracingControllerImpl::GenerateMetadataDict() {
   absl::optional<base::StringPiece> soname =
       base::debug::ReadElfLibraryName(&__ehdr_start);
   if (soname)
-    metadata_dict->SetString("chrome-library-name", *soname);
-  metadata_dict->SetString("clock-offset-since-epoch",
-                           GetClockOffsetSinceEpoch());
+    metadata_dict.SetStringKey("chrome-library-name", *soname);
+  metadata_dict.SetStringKey("clock-offset-since-epoch",
+                             GetClockOffsetSinceEpoch());
 #endif  // defined(OS_ANDROID)
-  metadata_dict->SetInteger("chrome-bitness", 8 * sizeof(uintptr_t));
+  metadata_dict.SetIntKey("chrome-bitness", 8 * sizeof(uintptr_t));
 
 #if DCHECK_IS_ON()
-  metadata_dict->SetInteger("chrome-dcheck-on", 1);
+  metadata_dict.SetIntKey("chrome-dcheck-on", 1);
 #endif
 
   // OS
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  metadata_dict->SetString("os-name", "CrOS");
+  metadata_dict.SetStringKey("os-name", "CrOS");
   if (are_statistics_loaded_)
-    metadata_dict->SetString("hardware-class", hardware_class_);
+    metadata_dict.SetStringKey("hardware-class", hardware_class_);
 #else
-  metadata_dict->SetString("os-name", base::SysInfo::OperatingSystemName());
+  metadata_dict.SetStringKey("os-name", base::SysInfo::OperatingSystemName());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  metadata_dict->SetString("os-version",
-                           base::SysInfo::OperatingSystemVersion());
+  metadata_dict.SetStringKey("os-version",
+                             base::SysInfo::OperatingSystemVersion());
 #if defined(OS_WIN)
   if (base::win::OSInfo::GetArchitecture() ==
       base::win::OSInfo::X64_ARCHITECTURE) {
     if (base::win::OSInfo::GetInstance()->wow64_status() ==
         base::win::OSInfo::WOW64_ENABLED) {
-      metadata_dict->SetString("os-wow64", "enabled");
+      metadata_dict.SetStringKey("os-wow64", "enabled");
     } else {
-      metadata_dict->SetString("os-wow64", "disabled");
+      metadata_dict.SetStringKey("os-wow64", "disabled");
     }
   }
 
-  metadata_dict->SetString(
+  metadata_dict.SetStringKey(
       "os-session", base::win::IsCurrentSessionRemote() ? "remote" : "local");
 #endif
 
-  metadata_dict->SetString("os-arch",
-                           base::SysInfo::OperatingSystemArchitecture());
+  metadata_dict.SetStringKey("os-arch",
+                             base::SysInfo::OperatingSystemArchitecture());
 
   // CPU
   base::CPU cpu;
-  metadata_dict->SetInteger("cpu-family", cpu.family());
-  metadata_dict->SetInteger("cpu-model", cpu.model());
-  metadata_dict->SetInteger("cpu-stepping", cpu.stepping());
-  metadata_dict->SetInteger("num-cpus", base::SysInfo::NumberOfProcessors());
-  metadata_dict->SetInteger("physical-memory",
-                            base::SysInfo::AmountOfPhysicalMemoryMB());
+  metadata_dict.SetIntKey("cpu-family", cpu.family());
+  metadata_dict.SetIntKey("cpu-model", cpu.model());
+  metadata_dict.SetIntKey("cpu-stepping", cpu.stepping());
+  metadata_dict.SetIntKey("num-cpus", base::SysInfo::NumberOfProcessors());
+  metadata_dict.SetIntKey("physical-memory",
+                          base::SysInfo::AmountOfPhysicalMemoryMB());
 
-  metadata_dict->SetString("cpu-brand", cpu.cpu_brand());
+  metadata_dict.SetStringKey("cpu-brand", cpu.cpu_brand());
 
   // GPU
   const gpu::GPUInfo gpu_info =
@@ -321,34 +321,32 @@ TracingControllerImpl::GenerateMetadataDict() {
   const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info.active_gpu();
 
 #if !defined(OS_ANDROID)
-  metadata_dict->SetInteger("gpu-venid", active_gpu.vendor_id);
-  metadata_dict->SetInteger("gpu-devid", active_gpu.device_id);
+  metadata_dict.SetIntKey("gpu-venid", active_gpu.vendor_id);
+  metadata_dict.SetIntKey("gpu-devid", active_gpu.device_id);
 #endif
 
-  metadata_dict->SetString("gpu-driver", active_gpu.driver_version);
-  metadata_dict->SetString("gpu-psver", gpu_info.pixel_shader_version);
-  metadata_dict->SetString("gpu-vsver", gpu_info.vertex_shader_version);
+  metadata_dict.SetStringKey("gpu-driver", active_gpu.driver_version);
+  metadata_dict.SetStringKey("gpu-psver", gpu_info.pixel_shader_version);
+  metadata_dict.SetStringKey("gpu-vsver", gpu_info.vertex_shader_version);
 
 #if defined(OS_MAC)
-  metadata_dict->SetString("gpu-glver", gpu_info.gl_version);
+  metadata_dict.SetStringKey("gpu-glver", gpu_info.gl_version);
 #elif defined(OS_POSIX)
-  metadata_dict->SetString("gpu-gl-vendor", gpu_info.gl_vendor);
-  metadata_dict->SetString("gpu-gl-renderer", gpu_info.gl_renderer);
+  metadata_dict.SetStringKey("gpu-gl-vendor", gpu_info.gl_vendor);
+  metadata_dict.SetStringKey("gpu-gl-renderer", gpu_info.gl_renderer);
 #endif
-  metadata_dict->SetDictionary(
-      "gpu-features", base::DictionaryValue::From(
-                          std::make_unique<base::Value>(GetFeatureStatus())));
+  metadata_dict.SetKey("gpu-features", GetFeatureStatus());
 
-  metadata_dict->SetString("clock-domain", GetClockString());
-  metadata_dict->SetBoolean("highres-ticks",
-                            base::TimeTicks::IsHighResolution());
+  metadata_dict.SetStringKey("clock-domain", GetClockString());
+  metadata_dict.SetBoolKey("highres-ticks",
+                           base::TimeTicks::IsHighResolution());
 
   base::CommandLine::StringType command_line =
       base::CommandLine::ForCurrentProcess()->GetCommandLineString();
 #if defined(OS_WIN)
-  metadata_dict->SetString("command_line", base::WideToUTF16(command_line));
+  metadata_dict.SetStringKey("command_line", base::WideToUTF16(command_line));
 #else
-  metadata_dict->SetString("command_line", command_line);
+  metadata_dict.SetStringKey("command_line", command_line);
 #endif
 
   base::Time::Exploded ctime;
@@ -356,7 +354,7 @@ TracingControllerImpl::GenerateMetadataDict() {
   std::string time_string = base::StringPrintf(
       "%u-%u-%u %d:%d:%d", ctime.year, ctime.month, ctime.day_of_month,
       ctime.hour, ctime.minute, ctime.second);
-  metadata_dict->SetString("trace-capture-datetime", time_string);
+  metadata_dict.SetStringKey("trace-capture-datetime", time_string);
 
   // TODO(crbug.com/737049): The central controller doesn't know about
   // metadata filters, so we temporarily filter here as the controller is
@@ -368,10 +366,9 @@ TracingControllerImpl::GenerateMetadataDict() {
   }
 
   if (!metadata_filter.is_null()) {
-    for (base::DictionaryValue::Iterator it(*metadata_dict); !it.IsAtEnd();
-         it.Advance()) {
-      if (!metadata_filter.Run(it.key())) {
-        metadata_dict->SetString(it.key(), "__stripped__");
+    for (auto it : metadata_dict.DictItems()) {
+      if (!metadata_filter.Run(it.first)) {
+        it.second = base::Value("__stripped__");
       }
     }
   }

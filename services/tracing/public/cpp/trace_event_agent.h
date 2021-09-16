@@ -5,7 +5,6 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_TRACE_EVENT_AGENT_H_
 #define SERVICES_TRACING_PUBLIC_CPP_TRACE_EVENT_AGENT_H_
 
-#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -19,6 +18,7 @@
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/base_agent.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tracing {
 
@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventAgent : public BaseAgent {
   void GetCategories(std::set<std::string>* category_set) override;
 
   using MetadataGeneratorFunction =
-      base::RepeatingCallback<std::unique_ptr<base::DictionaryValue>()>;
+      base::RepeatingCallback<absl::optional<base::Value>()>;
   void AddMetadataGeneratorFunction(MetadataGeneratorFunction generator);
 
  private:

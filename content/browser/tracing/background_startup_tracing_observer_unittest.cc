@@ -90,17 +90,16 @@ TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
 
   // A custom config without preference set should not set preference and keep
   // config same.
-  std::unique_ptr<base::DictionaryValue> rules_dict(
-      new base::DictionaryValue());
-  rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-  rules_dict->SetString("trigger_name", "test");
-  base::DictionaryValue dict;
-  base::ListValue rules_list;
+  base::Value rules_dict(base::Value::Type::DICTIONARY);
+  rules_dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+  rules_dict.SetStringKey("trigger_name", "test");
+  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value rules_list(base::Value::Type::LIST);
   rules_list.Append(std::move(rules_dict));
   dict.SetKey("configs", std::move(rules_list));
-  dict.SetString("custom_categories",
-                 tracing::TraceStartupConfig::kDefaultStartupCategories);
-  config_impl = BackgroundTracingConfigImpl::ReactiveFromDict(&dict);
+  dict.SetStringKey("custom_categories",
+                    tracing::TraceStartupConfig::kDefaultStartupCategories);
+  config_impl = BackgroundTracingConfigImpl::ReactiveFromDict(dict);
   ASSERT_TRUE(config_impl);
 
   preferences->SetBackgroundStartupTracingEnabled(false);

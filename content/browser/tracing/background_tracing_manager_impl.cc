@@ -40,6 +40,7 @@
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "content/browser/tracing/background_reached_code_tracing_observer_android.h"
@@ -449,16 +450,12 @@ bool BackgroundTracingManagerImpl::IsAllowedFinalization(
               is_crash_scenario));
 }
 
-std::unique_ptr<base::DictionaryValue>
+absl::optional<base::Value>
 BackgroundTracingManagerImpl::GenerateMetadataDict() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  auto metadata_dict = std::make_unique<base::DictionaryValue>();
-  if (active_scenario_) {
-    active_scenario_->GenerateMetadataDict(metadata_dict.get());
-  }
-
-  return metadata_dict;
+  if (!active_scenario_)
+    return absl::nullopt;
+  return active_scenario_->GenerateMetadataDict();
 }
 
 void BackgroundTracingManagerImpl::GenerateMetadataProto(

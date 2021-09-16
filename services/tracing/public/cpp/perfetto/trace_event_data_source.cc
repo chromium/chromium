@@ -216,23 +216,23 @@ void TraceEventMetadataSource::WriteMetadataPacket(
   }
 }
 
-std::unique_ptr<base::DictionaryValue>
+absl::optional<base::Value>
 TraceEventMetadataSource::GenerateTraceConfigMetadataDict() {
   AutoLockWithDeferredTaskPosting lock(lock_);
   if (chrome_config_.empty()) {
-    return nullptr;
+    return absl::nullopt;
   }
 
-  auto metadata_dict = std::make_unique<base::DictionaryValue>();
+  base::Value metadata_dict(base::Value::Type::DICTIONARY);
   // If argument filtering is enabled, we need to check if the trace config is
   // allowlisted before emitting it.
   // TODO(eseckler): Figure out a way to solve this without calling directly
   // into IsMetadataAllowlisted().
   if (!parsed_chrome_config_->IsArgumentFilterEnabled() ||
       IsMetadataAllowlisted("trace-config")) {
-    metadata_dict->SetString("trace-config", chrome_config_);
+    metadata_dict.SetStringKey("trace-config", chrome_config_);
   } else {
-    metadata_dict->SetString("trace-config", "__stripped__");
+    metadata_dict.SetStringKey("trace-config", "__stripped__");
   }
 
   chrome_config_ = std::string();
@@ -308,7 +308,7 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
   DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
 
   auto write_to_bundle = [&generator](ChromeEventBundle* bundle) {
-    std::unique_ptr<base::DictionaryValue> metadata_dict = generator.Run();
+    absl::optional<base::Value> metadata_dict = generator.Run();
     if (!metadata_dict)
       return;
     for (auto it : metadata_dict->DictItems()) {
@@ -364,22 +364,21 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
-std::unique_ptr<base::DictionaryValue>
-TraceEventMetadataSource::GenerateLegacyMetadataDict() {
+base::Value TraceEventMetadataSource::GenerateLegacyMetadataDict() {
   DCHECK(!privacy_filtering_enabled_);
 
-  auto merged_metadata = std::make_unique<base::DictionaryValue>();
+  base::Value merged_metadata(base::Value::Type::DICTIONARY);
   std::vector<JsonMetadataGeneratorFunction> json_generators;
   {
     base::AutoLock lock(lock_);
     json_generators = json_generator_functions_;
   }
   for (auto& generator : json_generators) {
-    std::unique_ptr<base::DictionaryValue> metadata_dict = generator.Run();
+    absl::optional<base::Value> metadata_dict = generator.Run();
     if (!metadata_dict) {
       continue;
     }
-    merged_metadata->MergeDictionary(metadata_dict.get());
+    merged_metadata.MergeDictionary(&(*metadata_dict));
   }
 
   base::trace_event::MetadataFilterPredicate metadata_filter =
@@ -388,10 +387,9 @@ TraceEventMetadataSource::GenerateLegacyMetadataDict() {
   // This out-of-band generation of the global metadata is only used by the
   // crash service uploader path, which always requires privacy filtering.
   CHECK(metadata_filter);
-  for (base::DictionaryValue::Iterator it(*merged_metadata); !it.IsAtEnd();
-       it.Advance()) {
-    if (!metadata_filter.Run(it.key())) {
-      merged_metadata->SetString(it.key(), "__stripped__");
+  for (auto it : merged_metadata.DictItems()) {
+    if (!metadata_filter.Run(it.first)) {
+      it.second = base::Value("__stripped__");
     }
   }
 

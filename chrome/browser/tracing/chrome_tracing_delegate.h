@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/public/browser/tracing_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
@@ -23,6 +24,7 @@ class PrefRegistrySimple;
 
 namespace base {
 class Time;
+class Value;
 }
 
 class ChromeTracingDelegate : public content::TracingDelegate,
@@ -58,7 +60,7 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 
   bool IsSystemWideTracingEnabled() override;
 
-  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict() override;
+  absl::optional<base::Value> GenerateMetadataDict() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,

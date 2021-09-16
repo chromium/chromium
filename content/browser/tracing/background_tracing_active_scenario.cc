@@ -558,15 +558,16 @@ BackgroundTracingActiveScenario::GetRuleAbleToTriggerTracing(
   return nullptr;
 }
 
-void BackgroundTracingActiveScenario::GenerateMetadataDict(
-    base::DictionaryValue* metadata_dict) {
-  metadata_dict->SetKey("config", config_->ToDict());
-  metadata_dict->SetString("scenario_name", config_->scenario_name());
+base::Value BackgroundTracingActiveScenario::GenerateMetadataDict() {
+  base::Value metadata_dict(base::Value::Type::DICTIONARY);
+  metadata_dict.SetKey("config", config_->ToDict());
+  metadata_dict.SetStringKey("scenario_name", config_->scenario_name());
 
   if (last_triggered_rule_) {
-    metadata_dict->SetKey("last_triggered_rule",
-                          last_triggered_rule_->ToDict());
+    metadata_dict.SetKey("last_triggered_rule", last_triggered_rule_->ToDict());
   }
+
+  return metadata_dict;
 }
 
 void BackgroundTracingActiveScenario::GenerateMetadataProto(

@@ -35,6 +35,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -151,7 +152,7 @@ void ChromeTracingDelegate::BackgroundTracingStateManager::Initialize() {
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       local_state->GetDictionary(prefs::kBackgroundTracingSessionState);
   if (!dict) {
     SaveState();
@@ -169,8 +170,8 @@ void ChromeTracingDelegate::BackgroundTracingStateManager::Initialize() {
 
   const base::Value* upload_times = dict->FindListKey(kUploadTimesKey);
   if (upload_times) {
-    for (const auto& it : upload_times->GetList()) {
-      const auto& scenario_dict = base::Value::AsDictionaryValue(it);
+    for (const auto& scenario_dict : upload_times->GetList()) {
+      DCHECK(scenario_dict.is_dict());
       const std::string* scenario = scenario_dict.FindStringKey(kScenarioKey);
       const base::Value* timestamp_val =
           scenario_dict.FindKey(kUploadTimestampKey);
@@ -206,12 +207,12 @@ void ChromeTracingDelegate::BackgroundTracingStateManager::SaveState(
         scenario_upload_times,
     ChromeTracingDelegate::BackgroundTracingState state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::DictionaryValue dict;
-  dict.SetInteger(kTracingStateKey, static_cast<int>(state));
-  base::ListValue upload_times;
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey(kTracingStateKey, static_cast<int>(state));
+  base::Value upload_times(base::Value::Type::LIST);
   for (const auto& it : scenario_upload_times) {
-    base::DictionaryValue scenario;
-    scenario.SetString(kScenarioKey, StripScenarioName(it.first));
+    base::Value scenario(base::Value::Type::DICTIONARY);
+    scenario.SetStringKey(kScenarioKey, StripScenarioName(it.first));
     scenario.SetKey(kUploadTimestampKey, base::TimeToValue(it.second));
     upload_times.Append(std::move(scenario));
   }
@@ -456,18 +457,17 @@ bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
 #endif
 }
 
-std::unique_ptr<base::DictionaryValue>
-ChromeTracingDelegate::GenerateMetadataDict() {
-  auto metadata_dict = std::make_unique<base::DictionaryValue>();
+absl::optional<base::Value> ChromeTracingDelegate::GenerateMetadataDict() {
+  base::Value metadata_dict(base::Value::Type::DICTIONARY);
   std::vector<std::string> variations;
   variations::GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece(),
                                                    &variations);
 
-  base::ListValue variations_list;
+  base::Value variations_list(base::Value::Type::LIST);
   for (const auto& it : variations)
     variations_list.Append(it);
 
-  metadata_dict->SetKey("field-trials", std::move(variations_list));
-  metadata_dict->SetString("revision", version_info::GetLastChange());
+  metadata_dict.SetKey("field-trials", std::move(variations_list));
+  metadata_dict.SetStringKey("revision", version_info::GetLastChange());
   return metadata_dict;
 }

@@ -33,10 +33,9 @@ bool AwTracingDelegate::IsAllowedToEndBackgroundScenario(
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue>
-AwTracingDelegate::GenerateMetadataDict() {
-  auto metadata_dict = std::make_unique<base::DictionaryValue>();
-  metadata_dict->SetString("revision", version_info::GetLastChange());
+absl::optional<base::Value> AwTracingDelegate::GenerateMetadataDict() {
+  base::Value metadata_dict(base::Value::Type::DICTIONARY);
+  metadata_dict.SetStringKey("revision", version_info::GetLastChange());
   return metadata_dict;
 }
 

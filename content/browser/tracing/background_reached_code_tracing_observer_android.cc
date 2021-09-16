@@ -7,6 +7,7 @@
 #include "base/android/reached_code_profiler.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/values.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -78,23 +79,23 @@ BackgroundReachedCodeTracingObserver::IncludeReachedCodeConfigIfNeeded(
     return config;
   }
 
-  auto rules_dict = std::make_unique<base::DictionaryValue>();
-  rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-  rules_dict->SetString("trigger_name", kReachedCodeTracingConfig);
-  rules_dict->SetInteger("trigger_delay", 30);
+  base::Value rules_dict(base::Value::Type::DICTIONARY);
+  rules_dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+  rules_dict.SetStringKey("trigger_name", kReachedCodeTracingConfig);
+  rules_dict.SetIntKey("trigger_delay", 30);
 
-  base::DictionaryValue dict;
-  base::ListValue rules_list;
+  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value rules_list(base::Value::Type::LIST);
   rules_list.Append(std::move(rules_dict));
   dict.SetKey("configs", std::move(rules_list));
-  dict.SetString(
+  dict.SetStringKey(
       "enabled_data_sources",
       base::StrCat({tracing::mojom::kMetaDataSourceName, ",",
                     tracing::mojom::kReachedCodeProfilerSourceName}));
-  dict.SetString("category", "CUSTOM");
-  dict.SetString("custom_categories", "-*");
+  dict.SetStringKey("category", "CUSTOM");
+  dict.SetStringKey("custom_categories", "-*");
 
-  config = BackgroundTracingConfigImpl::ReactiveFromDict(&dict);
+  config = BackgroundTracingConfigImpl::ReactiveFromDict(dict);
   return config;
 }
 

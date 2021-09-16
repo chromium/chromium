@@ -26,7 +26,7 @@ class CONTENT_EXPORT BackgroundTracingRule {
 
   virtual ~BackgroundTracingRule();
 
-  void Setup(const base::Value* dict);
+  void Setup(const base::Value& dict);
   BackgroundTracingConfigImpl::CategoryPreset category_preset() const {
     return category_preset_;
   }
@@ -52,7 +52,7 @@ class CONTENT_EXPORT BackgroundTracingRule {
   }
 
   static std::unique_ptr<BackgroundTracingRule> CreateRuleFromDict(
-      const base::Value* dict);
+      const base::Value& dict);
 
   void SetArgs(const base::Value& args) { args_ = args.CreateDeepCopy(); }
   const base::Value* args() const { return args_.get(); }

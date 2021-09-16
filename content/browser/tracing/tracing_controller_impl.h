@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace perfetto {
 namespace protos {
@@ -36,7 +37,7 @@ namespace trace_event {
 class TraceConfig;
 }  // namespace trace_event
 
-class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace tracing {
@@ -91,7 +92,7 @@ class TracingControllerImpl : public TracingController,
   ~TracingControllerImpl() override;
   void AddAgents();
   void ConnectToServiceIfNeeded();
-  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict();
+  absl::optional<base::Value> GenerateMetadataDict();
   void GenerateMetadataPacket(perfetto::protos::pbzero::TracePacket* packet,
                               bool privacy_filtering_enabled);
 

@@ -9,10 +9,11 @@
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class DictionaryValue;
-}
+class Value;
+}  // namespace base
 
 namespace content {
 class BackgroundTracingConfig;
@@ -38,7 +39,7 @@ class CONTENT_EXPORT TracingDelegate {
   virtual bool IsSystemWideTracingEnabled();
 
   // Used to add any additional metadata to traces.
-  virtual std::unique_ptr<base::DictionaryValue> GenerateMetadataDict();
+  virtual absl::optional<base::Value> GenerateMetadataDict();
 };
 
 }  // namespace content

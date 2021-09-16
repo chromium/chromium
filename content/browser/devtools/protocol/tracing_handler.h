@@ -25,6 +25,8 @@
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace base {
+class DictionaryValue;
+
 namespace trace_event {
 class TraceConfig;
 }

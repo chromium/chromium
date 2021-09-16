@@ -18,6 +18,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace tracing {
 namespace mojom {
@@ -157,7 +162,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   ~BackgroundTracingManagerImpl() override;
 
   bool IsSupportedConfig(BackgroundTracingConfigImpl* config);
-  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict();
+  absl::optional<base::Value> GenerateMetadataDict();
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
       bool privacy_filtering_enabled);
