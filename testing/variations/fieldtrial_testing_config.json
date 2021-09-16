@@ -10071,7 +10071,7 @@
             ]
         }
     ],
-    "WebViewZeroCopyVideoWithParam": [
+    "WebViewSurfaceControl": [
         {
             "platforms": [
                 "android_webview"
@@ -10079,10 +10079,8 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "WebViewZeroCopyVideoBlocklist": "MIBOX, MITV, PHILIPS, SONY, TPM191E"
-                    },
                     "enable_features": [
+                        "WebViewSurfaceControl",
                         "WebViewZeroCopyVideo"
                     ]
                 }
