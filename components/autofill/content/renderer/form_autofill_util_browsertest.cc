@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
@@ -178,6 +179,17 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
  public:
   FormAutofillUtilsTest() {}
   ~FormAutofillUtilsTest() override {}
+};
+
+class FormAutofillUtilsTestWithIframesEnabled : public FormAutofillUtilsTest {
+ public:
+  FormAutofillUtilsTestWithIframesEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAcrossIframes);
+  }
+  ~FormAutofillUtilsTestWithIframesEnabled() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
@@ -754,6 +766,43 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByInvalid) {
   EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element), u"");
 }
 
+// Tests IsOwnedByFrame().
+TEST_F(FormAutofillUtilsTestWithIframesEnabled, IsOwnedByFrame) {
+  LoadHTML(R"(
+    <body>
+      <div id="div"></div>
+      <iframe id="child_frame"></iframe>
+    </body>
+  )");
+
+  auto GetElementById = [&](base::StringPiece id) {
+    WebDocument doc = GetMainFrame()->GetDocument();
+    return doc.GetElementById(blink::WebString::FromASCII(std::string(id)));
+  };
+  auto GetIframeById = [&](base::StringPiece id) {
+    return content::RenderFrame::FromWebFrame(
+        blink::WebFrame::FromFrameOwnerElement(GetElementById(id))
+            ->ToWebLocalFrame());
+  };
+
+  content::RenderFrame* main_frame = GetMainRenderFrame();
+  content::RenderFrame* child_frame = GetIframeById("child_frame");
+  WebElement div = GetElementById("div");
+
+  ASSERT_TRUE(main_frame);
+  ASSERT_TRUE(child_frame);
+  ASSERT_FALSE(div.IsNull());
+
+  EXPECT_FALSE(IsOwnedByFrame(WebElement(), nullptr));
+  EXPECT_FALSE(IsOwnedByFrame(WebElement(), main_frame));
+  EXPECT_FALSE(IsOwnedByFrame(div, nullptr));
+  EXPECT_FALSE(IsOwnedByFrame(div, child_frame));
+  EXPECT_TRUE(IsOwnedByFrame(div, main_frame));
+  ExecuteJavaScriptForTests(R"(document.getElementById('div').remove();)");
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(IsOwnedByFrame(div, main_frame));
+}
+
 TEST_F(FormAutofillUtilsTest, IsFormVisible) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
@@ -1117,16 +1166,11 @@ struct FieldFramesTestParam {
 };
 
 class FieldFramesTest
-    : public content::RenderViewTest,
+    : public FormAutofillUtilsTestWithIframesEnabled,
       public testing::WithParamInterface<FieldFramesTestParam> {
  public:
-  FieldFramesTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAcrossIframes);
-  }
+  FieldFramesTest() = default;
   ~FieldFramesTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test getting the unowned form control elements from the WebDocument with the
@@ -1395,10 +1439,8 @@ TEST_F(FormAutofillUtilsTest, MaxParseableFrames) {
 
 // Tests that if the number of iframes exceeds MaxParseableChildFrames(),
 // neither fields nor child frames of that form are extracted.
-TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillAcrossIframes);
-
+TEST_F(FormAutofillUtilsTestWithIframesEnabled,
+       ExtractNoFramesIfTooManyIframes) {
   auto CreateFormElement = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);
@@ -1440,10 +1482,8 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
 
 // Tests that if the number of fields exceeds |kMaxParseableFields|, neither
 // fields nor child frames of that form are extracted.
-TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillAcrossIframes);
-
+TEST_F(FormAutofillUtilsTestWithIframesEnabled,
+       ExtractNoFieldsOrFramesIfTooManyFields) {
   auto CreateFormElement = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);

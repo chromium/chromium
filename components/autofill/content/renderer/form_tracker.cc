@@ -192,6 +192,16 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
 
 void FormTracker::WillSubmitForm(const WebFormElement& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+
+  // A form submission may target a frame other than the frame that owns |form|.
+  // The WillSubmitForm() event is only fired on the target frame's FormTracker
+  // (provided that both have the same origin). In such a case, we ignore the
+  // form submission event. If we didn't, we would send |form| to an
+  // AutofillAgent and then to a ContentAutofillDriver etc. which haven't seen
+  // this form before. See crbug.com/1240247#c13 for details.
+  if (!form_util::IsOwnedByFrame(form, render_frame()))
+    return;
+
   FireFormSubmitted(form);
 }
 

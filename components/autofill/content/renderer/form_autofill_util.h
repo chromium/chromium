@@ -38,6 +38,10 @@ class WebLocalFrame;
 class WebNode;
 }  // namespace blink
 
+namespace content {
+class RenderFrame;
+}  // namespace content
+
 namespace autofill {
 
 struct FormData;
@@ -294,6 +298,11 @@ void ClearPreviewedElements(
     std::vector<blink::WebFormControlElement>& control_elements,
     const blink::WebFormControlElement& initiating_element,
     blink::WebAutofillState old_autofill_state);
+
+// Indicates if |node| is owned by |frame| in the sense of
+// https://dom.spec.whatwg.org/#concept-node-document. Note that being owned by
+// a frame does not require being attached to its DOM.
+bool IsOwnedByFrame(const blink::WebNode& node, content::RenderFrame* frame);
 
 // Checks if the webpage is empty.
 // This kind of webpage is considered as empty:
