@@ -2042,8 +2042,10 @@ void DeviceStatusCollector::FetchCrosHealthdData(
   SamplingProbeResultCallback completion_callback;
   switch (mode) {
     case CrosHealthdCollectionMode::kFull: {
-      if (report_vpd_info_ || report_system_info_)
+      if (report_vpd_info_ || report_system_info_) {
         categories_to_probe.push_back(ProbeCategoryEnum::kSystem);
+        categories_to_probe.push_back(ProbeCategoryEnum::kSystem2);
+      }
       if (report_storage_status_) {
         categories_to_probe.push_back(
             ProbeCategoryEnum::kNonRemovableBlockDevices);
