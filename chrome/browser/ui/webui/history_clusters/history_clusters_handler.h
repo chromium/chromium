@@ -25,12 +25,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-#if !defined(CHROME_BRANDED)
-namespace history {
-class QueryResults;
-}  // namespace history
-#endif
-
 namespace history_clusters {
 
 // Handles bidirectional communication between the history clusters page and the
@@ -67,23 +61,6 @@ class HistoryClustersHandler : public mojom::PageHandler,
   // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
   void OnVisitsRemoved(std::vector<mojom::URLVisitPtr> visits);
-
-#if !defined(CHROME_BRANDED)
-  using QueryResultsCallback =
-      base::OnceCallback<void(const absl::optional<base::Time>&,
-                              std::vector<mojom::ClusterPtr>)>;
-  void QueryHistoryService(const std::string& query,
-                           base::Time end_time,
-                           size_t max_count,
-                           std::vector<mojom::ClusterPtr> cluster_mojoms,
-                           QueryResultsCallback callback);
-  void OnHistoryQueryResults(const std::string& query,
-                             base::Time end_time,
-                             size_t max_count,
-                             std::vector<mojom::ClusterPtr> cluster_mojoms,
-                             QueryResultsCallback callback,
-                             history::QueryResults results);
-#endif
 
   Profile* profile_;
   content::WebContents* web_contents_;
