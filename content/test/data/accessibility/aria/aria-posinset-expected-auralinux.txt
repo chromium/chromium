@@ -9,7 +9,7 @@
 ++[list box] setsize:2
 ++++[list item] name='Item 1' selectable posinset:1 setsize:2
 ++++[list item] name='Item 2' selectable posinset:2 setsize:2
-++[form]
+++[section]
 ++++[radio button] checkable:true posinset:3 setsize:4
 ++++[static] name='1'
 ++++[static] name='<newline>'
@@ -26,7 +26,7 @@
 ++++[radio button] name='Chiffon cakes' checked checkable:true posinset:1 setsize:2
 ++++[static] name='<newline>'
 ++++[radio button] name='Chocolate cakes' checkable:true posinset:2 setsize:2
-++[form]
+++[section]
 ++++[paragraph]
 ++++++[push button] name='changedFromRadio'
 ++++++[label]

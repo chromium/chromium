@@ -1010,8 +1010,13 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return ax::mojom::blink::Role::kRubyAnnotation;
   }
 
-  if (IsA<HTMLFormElement>(*GetNode()))
-    return ax::mojom::blink::Role::kForm;
+  if (IsA<HTMLFormElement>(*GetNode())) {
+    // Only treat <form> as role="form" when it has an accessible name, which
+    // can only occur when the name is assigned by the author via aria-label,
+    // aria-labelledby, or title. Otherwise, treat as a <section>.
+    return IsNameFromAuthorAttribute() ? ax::mojom::blink::Role::kForm
+                                       : ax::mojom::blink::Role::kSection;
+  }
 
   if (GetNode()->HasTagName(html_names::kAbbrTag))
     return ax::mojom::blink::Role::kAbbr;

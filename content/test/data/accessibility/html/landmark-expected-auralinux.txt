@@ -7,7 +7,7 @@
 ++++[static] name='This is an address element.'
 ++[landmark]
 ++++[static] name='This is a footer element.'
-++[form] xml-roles:form
+++[section]
 ++++[static] name='This is a form element.'
 ++[landmark] xml-roles:main
 ++++[static] name='This is a main element.'

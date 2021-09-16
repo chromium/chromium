@@ -13,7 +13,7 @@ rootWebArea
 ++++++footer
 ++++++++staticText name='This is a footer element.'
 ++++++++++inlineTextBox name='This is a footer element.'
-++++++form
+++++++section
 ++++++++staticText name='This is a form element.'
 ++++++++++inlineTextBox name='This is a form element.'
 ++++++main

@@ -19,7 +19,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE offset:0 invalid:true offset:1 offset:6 
 ++++ROLE_SYSTEM_STATICTEXT name='invalid=<default>' offset:0 ia2_hypertext='invalid=<default>'
 ++IA2_ROLE_SECTION IA2_STATE_INVALID_ENTRY offset:0 invalid:unknown ia2_hypertext='invalid=unknown'
 ++++ROLE_SYSTEM_STATICTEXT name='invalid=unknown' offset:0 invalid:unknown ia2_hypertext='invalid=unknown'
-++IA2_ROLE_FORM offset:0 invalid:true ia2_hypertext='<obj0>'
+++IA2_ROLE_SECTION offset:0 invalid:true ia2_hypertext='<obj0>'
 ++++ROLE_SYSTEM_TEXT value='1234' FOCUSABLE IA2_STATE_INVALID_ENTRY offset:0 invalid:true ia2_hypertext='1234'
 ++ROLE_SYSTEM_TEXT value='a' FOCUSABLE IA2_STATE_INVALID_ENTRY offset:0 invalid:true ia2_hypertext='a'
 ++ROLE_SYSTEM_TEXT value='a' FOCUSABLE offset:0 ia2_hypertext='a'

@@ -19,7 +19,7 @@
 ++++[static] name='invalid=<default>'
 ++[section] invalid-entry
 ++++[static] name='invalid=unknown'
-++[form]
+++[section]
 ++++[entry] invalid-entry selectable-text
 ++[entry] invalid-entry selectable-text
 ++[entry] selectable-text

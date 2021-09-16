@@ -32,7 +32,7 @@ rootWebArea
 ++++++genericContainer ariaInvalidValue='unknown' invalidState=other
 ++++++++staticText name='invalid=unknown'
 ++++++++++inlineTextBox name='invalid=unknown'
-++++++form
+++++++section
 ++++++++textField value='1234' invalidState=true
 ++++++++++genericContainer
 ++++++++++++staticText name='1234'

@@ -9,7 +9,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++AXList AXARIASetSize=2 AXRoleDescription='list'
 ++++AXStaticText AXARIAPosInSet=1 AXARIASetSize=2 AXRoleDescription='text' AXValue='Item 1'
 ++++AXStaticText AXARIAPosInSet=2 AXARIASetSize=2 AXRoleDescription='text' AXValue='Item 2'
-++AXGroup AXRoleDescription='form'
+++AXGroup AXRoleDescription='group'
 ++++AXRadioButton AXARIAPosInSet=3 AXARIASetSize=4 AXRoleDescription='radio button' AXValue=0
 ++++AXStaticText AXRoleDescription='text' AXValue='1'
 ++++AXGroup AXRoleDescription='group' AXTitle='<newline>'
@@ -26,7 +26,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++++AXRadioButton AXARIAPosInSet=1 AXARIASetSize=2 AXRoleDescription='radio button' AXTitle='Chiffon cakes' AXValue=1
 ++++AXGroup AXRoleDescription='group' AXTitle='<newline>'
 ++++AXRadioButton AXARIAPosInSet=2 AXARIASetSize=2 AXRoleDescription='radio button' AXTitle='Chocolate cakes' AXValue=0
-++AXGroup AXRoleDescription='form'
+++AXGroup AXRoleDescription='group'
 ++++AXGroup AXRoleDescription='group'
 ++++++AXButton AXRoleDescription='button' AXTitle='changedFromRadio'
 ++++++AXGroup AXRoleDescription='group'
