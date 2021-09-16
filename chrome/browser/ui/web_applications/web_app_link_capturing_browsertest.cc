@@ -352,7 +352,8 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
                        CaptureLinksNone) {
-  InstallTestApp("/web_apps/capture_links_none.html", /*await_metric=*/true);
+  InstallTestApp("/web_apps/get_manifest.html?capture_links_none.json",
+                 /*await_metric=*/true);
 
   histogram_tester_.ExpectBucketCount(
       "Blink.UseCounter.Features",
@@ -383,7 +384,7 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
                        MAYBE_CaptureLinksNewClient) {
-  InstallTestApp("/web_apps/capture_links_new_client.html",
+  InstallTestApp("/web_apps/get_manifest.html?capture_links_new_client.json",
                  /*await_metric=*/true);
 
   histogram_tester_.ExpectBucketCount(
@@ -424,7 +425,7 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
                        InAppScopeNavigationIgnored) {
-  InstallTestApp("/web_apps/capture_links_new_client.html",
+  InstallTestApp("/web_apps/get_manifest.html?capture_links_new_client.json",
                  /*await_metric=*/true);
 
   histogram_tester_.ExpectBucketCount(
@@ -446,8 +447,9 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
                        CaptureLinksExistingClientNavigate) {
-  InstallTestApp("/web_apps/capture_links_existing_client_navigate.html",
-                 /*await_metric=*/true);
+  InstallTestApp(
+      "/web_apps/get_manifest.html?capture_links_existing_client_navigate.json",
+      /*await_metric=*/true);
 
   histogram_tester_.ExpectBucketCount(
       "Blink.UseCounter.Features",

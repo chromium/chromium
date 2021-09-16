@@ -89,9 +89,10 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
 
   // LatestWebAppInstallSource should be correctly set and reported to UMA for
   // both installable and non-installable sites.
-  for (const GURL& url : {GetInstallableAppURL(),
-                          embedded_test_server()->GetURL(
-                              "/web_apps/theme_color_only_manifest.html")}) {
+  for (const GURL& url :
+       {GetInstallableAppURL(),
+        embedded_test_server()->GetURL(
+            "/web_apps/get_manifest.html?theme_color_only.json")}) {
     base::HistogramTester histogram_tester;
     NavigateToURLAndWait(browser(), url);
     AppId app_id = InstallShortcutAppForCurrentUrl();
@@ -201,9 +202,9 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, WorksAfterDelayedIFrameLoad) {
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        UseNonPromotableManifestData) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  NavigateToURLAndWait(browser(),
-                       embedded_test_server()->GetURL(
-                           "/web_apps/theme_color_only_manifest.html"));
+  NavigateToURLAndWait(
+      browser(), embedded_test_server()->GetURL(
+                     "/web_apps/get_manifest.html?theme_color_only.json"));
   AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetRGB(0x12, 0x34, 0x56));
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, IgnoreInvalidManifestData) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
-      "/web_apps/invalid_start_url_manifest.html");
+      "/web_apps/get_manifest.html?invalid_start_url.json");
   NavigateToURLAndWait(browser(), url);
   AppId app_id = InstallShortcutAppForCurrentUrl();
   EXPECT_EQ(registrar().GetAppStartUrl(app_id), url);
