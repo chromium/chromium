@@ -49,10 +49,10 @@ class ResponsivenessMetrics {
 
  private:
   // Record UKM for user interaction latencies.
-  void RecordUserInteractionUKM(LocalDOMWindow* window,
-                                UserInteractionType interaction_type,
-                                base::TimeDelta max_event_duration,
-                                base::TimeDelta total_devent_duration);
+  void RecordUserInteractionUKM(
+      LocalDOMWindow* window,
+      UserInteractionType interaction_type,
+      WTF::Vector<ResponsivenessMetrics::EventTimestamps> timestamps);
 
   void RecordKeyboardInteractions(LocalDOMWindow* window,
                                   const AtomicString& event_type,

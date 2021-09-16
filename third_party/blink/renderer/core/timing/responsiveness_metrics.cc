@@ -57,10 +57,15 @@ ResponsivenessMetrics::~ResponsivenessMetrics() = default;
 void ResponsivenessMetrics::RecordUserInteractionUKM(
     LocalDOMWindow* window,
     UserInteractionType interaction_type,
-    base::TimeDelta max_event_duration,
-    base::TimeDelta total_event_duration) {
+    WTF::Vector<ResponsivenessMetrics::EventTimestamps> timestamps) {
   if (!window)
     return;
+
+  for (ResponsivenessMetrics::EventTimestamps timestamp : timestamps) {
+    if (timestamp.start_time == base::TimeTicks()) {
+      return;
+    }
+  }
 
   ukm::UkmRecorder* ukm_recorder = window->UkmRecorder();
   ukm::SourceId source_id = window->UkmSourceID();
@@ -69,8 +74,8 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
                                    kMaxValueForSampling) <= kUkmSamplingRate)) {
     ukm::builders::Responsiveness_UserInteraction(source_id)
         .SetInteractionType(static_cast<int>(interaction_type))
-        .SetMaxEventDuration(max_event_duration.InMilliseconds())
-        .SetTotalEventDuration(total_event_duration.InMilliseconds())
+        .SetMaxEventDuration(MaxEventDuration(timestamps).InMilliseconds())
+        .SetTotalEventDuration(TotalEventDuration(timestamps).InMilliseconds())
         .Record(ukm_recorder);
   }
 }
@@ -109,8 +114,7 @@ void ResponsivenessMetrics::FlushPendingInteraction(LocalDOMWindow* window) {
     RecordUserInteractionUKM(window,
                              is_drag_ ? UserInteractionType::kDrag
                                       : UserInteractionType::kTapOrClick,
-                             MaxEventDuration(timestamps),
-                             TotalEventDuration(timestamps));
+                             timestamps);
   }
   ResetPendingPointers();
 }
@@ -150,8 +154,7 @@ void ResponsivenessMetrics::RecordTapOrClickOrDrag(
     RecordUserInteractionUKM(window,
                              is_drag_ ? UserInteractionType::kDrag
                                       : UserInteractionType::kTapOrClick,
-                             MaxEventDuration(timestamps),
-                             TotalEventDuration(timestamps));
+                             timestamps);
     ResetPendingPointers();
   }
 }
@@ -169,10 +172,10 @@ void ResponsivenessMetrics::RecordKeyboardInteractions(
       // interaction level latency.
       EventTimestamps key_down_timestamps =
           key_down_timestamps_map_.at(key_code);
-      base::TimeDelta event_duration =
-          key_down_timestamps.end_time - key_down_timestamps.start_time;
+      WTF::Vector<EventTimestamps> timestamps;
+      timestamps.push_back(key_down_timestamps);
       RecordUserInteractionUKM(window, UserInteractionType::kKeyboard,
-                               event_duration, event_duration);
+                               timestamps);
     }
     key_down_timestamps_map_[key_code] = event_timestamps;
   } else if (event_type == event_type_names::kKeyup) {
@@ -188,17 +191,16 @@ void ResponsivenessMetrics::RecordKeyboardInteractions(
       timestamps.push_back(key_down_timestamps);
       timestamps.push_back(event_timestamps);
       RecordUserInteractionUKM(window, UserInteractionType::kKeyboard,
-                               MaxEventDuration(timestamps),
-                               TotalEventDuration(timestamps));
+                               timestamps);
       // Remove the stale keydown.
       key_down_timestamps_map_.erase(key_code);
     } else {
       // Can't find a corresponding keydown. We regard the duration of the keyup
       // as an interaction latency.
-      base::TimeDelta event_duration =
-          event_timestamps.end_time - event_timestamps.start_time;
+      WTF::Vector<EventTimestamps> timestamps;
+      timestamps.push_back(event_timestamps);
       RecordUserInteractionUKM(window, UserInteractionType::kKeyboard,
-                               event_duration, event_duration);
+                               timestamps);
     }
   }
 }
