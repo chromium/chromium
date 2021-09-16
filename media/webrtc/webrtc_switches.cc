@@ -13,7 +13,7 @@ namespace switches {
 // algorithm in WebRTC used with audio tracks from getUserMedia.
 // The valid range is 12-255. Values outside that range will be clamped
 // to the lowest or highest valid value inside WebRTC.
-// TODO(tommi): Remove this switch when crbug.com/555577 is fixed.
+// TODO(crbug.com/555577): Remove this switch when fixed.
 const char kAgcStartupMinVolume[] = "agc-startup-min-volume";
 
 }  // namespace switches

@@ -29,10 +29,9 @@ webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters);
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 bool LeftAndRightChannelsAreSymmetric(const AudioBus& audio);
 
-// Creates and configures a webrtc::AudioProcessing audio processing module
-// (APM), based on the provided parameters. The optional parameter
-// |agc_startup_min_volume| exists for legacy reasons. It is preferred to
-// instead use field trials for testing new parameters.
+// Creates and configures a `webrtc::AudioProcessing` audio processing module
+// (APM), based on the provided parameters and on features and field trials.
+// TODO(crbug.com/555577): Remove `agc_startup_min_volume` when fixed.
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     const AudioProcessingSettings& settings,
@@ -52,49 +51,6 @@ void StartEchoCancellationDump(webrtc::AudioProcessing* audio_processing,
 // |audio_processing|.
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 void StopEchoCancellationDump(webrtc::AudioProcessing* audio_processing);
-
-// WebRTC Hybrid AGC experiment parameters.
-struct COMPONENT_EXPORT(MEDIA_WEBRTC) WebRtcHybridAgcParams {
-  bool dry_run;
-  int vad_reset_period_ms;
-  int adjacent_speech_frames_threshold;
-  float max_gain_change_db_per_second;
-  float max_output_noise_level_dbfs;
-  bool sse2_allowed;
-  bool avx2_allowed;
-  bool neon_allowed;
-};
-
-// WebRTC analog AGC clipping control parameters.
-struct COMPONENT_EXPORT(MEDIA_WEBRTC) WebRtcAnalogAgcClippingControlParams {
-  int mode;
-  // Mode can be the following:
-  // 0: Clipping event prediction,
-  // 1: Adaptive step clipping peak prediction,
-  // 2: Fixed step clipping peak prediction.
-
-  int window_length;
-  int reference_window_length;
-  int reference_window_delay;
-  float clipping_threshold;
-  float crest_factor_margin;
-  int clipped_level_step;
-  float clipped_ratio_threshold;
-  int clipped_wait_frames;
-  bool use_predicted_step;
-};
-
-// Configures automatic gain control in `apm_config`. If analog gain control is
-// enabled and `hybrid_agc_params` is specified, then the hybrid AGC
-// configuration will be used - i.e., analog AGC1 and adaptive digital AGC2.
-// TODO(bugs.webrtc.org/7494): Clean up once hybrid AGC experiment finalized.
-COMPONENT_EXPORT(MEDIA_WEBRTC)
-void ConfigAutomaticGainControl(
-    const AudioProcessingSettings& settings,
-    const absl::optional<WebRtcHybridAgcParams>& hybrid_agc_params,
-    const absl::optional<WebRtcAnalogAgcClippingControlParams>&
-        clipping_control_params,
-    webrtc::AudioProcessing::Config& apm_config);
 
 }  // namespace media
 
