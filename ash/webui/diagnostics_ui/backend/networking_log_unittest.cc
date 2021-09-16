@@ -37,14 +37,18 @@ mojom::NetworkPtr CreateWiFiNetworkPtr(uint32_t signal_strength,
                              guid, name, mac_address, std::move(ip_config));
 }
 
-// TODO(michaelcheco): Add missing Ethernet type properties.
-mojom::NetworkPtr CreateEthernetNetworkPtr(const std::string& guid,
-                                           const std::string& name,
-                                           const std::string& mac_address) {
+mojom::NetworkPtr CreateEthernetNetworkPtr(
+    const std::string& guid,
+    const std::string& name,
+    const std::string& mac_address,
+    const mojom::AuthenticationType& authentication) {
+  auto type_props = mojom::NetworkTypeProperties::New();
+  auto ethernet_props = mojom::EthernetStateProperties::New(authentication);
+  type_props->set_ethernet(std::move(ethernet_props));
   return mojom::Network::New(mojom::NetworkState::kOnline,
                              mojom::NetworkType::kEthernet,
-                             mojom::NetworkTypeProperties::New(), guid, name,
-                             mac_address, mojom::IPConfigProperties::New());
+                             std::move(type_props), guid, name, mac_address,
+                             mojom::IPConfigProperties::New());
 }
 
 // TODO(michaelcheco): Add missing Cellular type properties.
@@ -118,14 +122,15 @@ TEST_F(NetworkingLogTest, DetailedLogContentsWiFi) {
   EXPECT_EQ("Subnet Mask: " + expected_subnet_mask, log_lines[13]);
 }
 
-// TODO(michaelcheco): Update test when Cellular type properties are added.
 TEST_F(NetworkingLogTest, DetailedLogContentsEthernet) {
   const std::string expected_guid = "guid";
   const std::string expected_name = "name";
   const std::string expected_mac_address = "84:C5:A6:30:3F:31";
+  const std::string expected_authentication = "EAP";
 
   mojom::NetworkPtr test_info = CreateEthernetNetworkPtr(
-      expected_guid, expected_name, expected_mac_address);
+      expected_guid, expected_name, expected_mac_address,
+      mojom::AuthenticationType::k8021x);
 
   NetworkingLog log;
 
@@ -134,16 +139,17 @@ TEST_F(NetworkingLogTest, DetailedLogContentsEthernet) {
   const std::string log_as_string = log.GetContents();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
 
-  // Expect one title line and 8 content lines.
-  EXPECT_EQ(9u, log_lines.size());
+  // Expect one title line and 9 content lines.
+  EXPECT_EQ(10u, log_lines.size());
   EXPECT_EQ("--- Networking Info ---", log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: Ethernet", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);
   EXPECT_EQ("MAC Address: " + expected_mac_address, log_lines[4]);
+  EXPECT_EQ("Authentication: " + expected_authentication, log_lines[5]);
 }
 
-// TODO(michaelcheco): Update test when Ethernet type properties are added.
+// TODO(michaelcheco): Update test when Cellular type properties are added.
 TEST_F(NetworkingLogTest, DetailedLogContentsCellular) {
   const std::string expected_guid = "guid";
   const std::string expected_name = "name";

@@ -28,6 +28,9 @@ const char kNetworkTypeTitle[] = "Type: ";
 const char kNetworkStateTitle[] = "State: ";
 const char kMacAddressTitle[] = "MAC Address: ";
 
+// EthernetStateProperties constants:
+const char kEthernetAuthenticationTitle[] = "Authentication: ";
+
 // WiFiStateProperties constants:
 const char kWifiSignalStrengthTitle[] = "Signal Strength: ";
 const char kWifiFrequencyTitle[] = "Frequency: ";
@@ -82,9 +85,21 @@ void AddCellularInfoToLog(const mojom::NetworkTypeProperties& type_props,
   // TODO(michaelcheco): Add Cellular type properties to log.
 }
 
+std::string GetEthernetAuthenticationType(mojom::AuthenticationType type) {
+  switch (type) {
+    case mojom::AuthenticationType::kNone:
+      return "None";
+    case mojom::AuthenticationType::k8021x:
+      return "EAP";
+  }
+}
+
 void AddEthernetInfoToLog(const mojom::NetworkTypeProperties& type_props,
                           std::stringstream& output) {
-  // TODO(michaelcheco): Add Ethernet type properties to log.
+  output << kEthernetAuthenticationTitle
+         << GetEthernetAuthenticationType(
+                type_props.get_ethernet()->authentication)
+         << kNewline;
 }
 
 void AddTypePropertiesToLog(const mojom::NetworkTypeProperties& type_props,
