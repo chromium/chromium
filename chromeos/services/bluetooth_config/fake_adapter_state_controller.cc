@@ -13,6 +13,11 @@ FakeAdapterStateController::FakeAdapterStateController() = default;
 
 FakeAdapterStateController::~FakeAdapterStateController() = default;
 
+mojom::BluetoothSystemState FakeAdapterStateController::GetAdapterState()
+    const {
+  return system_state_;
+}
+
 void FakeAdapterStateController::SetSystemState(
     mojom::BluetoothSystemState system_state) {
   if (system_state_ == system_state)
@@ -21,11 +26,6 @@ void FakeAdapterStateController::SetSystemState(
   system_state_ = system_state;
   NotifyAdapterStateChanged();
   base::RunLoop().RunUntilIdle();
-}
-
-mojom::BluetoothSystemState FakeAdapterStateController::GetAdapterState()
-    const {
-  return system_state_;
 }
 
 void FakeAdapterStateController::SetBluetoothEnabledState(bool enabled) {
