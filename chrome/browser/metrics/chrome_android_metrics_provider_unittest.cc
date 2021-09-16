@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 class ChromeAndroidMetricsProviderTest : public testing::Test {
  public:
@@ -29,12 +30,23 @@ TEST_F(ChromeAndroidMetricsProviderTest, OnDidCreateMetricsLog_CustomTabs) {
 
 TEST_F(ChromeAndroidMetricsProviderTest,
        ProvideCurrentSessionData_MultiWindowMode) {
-  metrics_provider_.ProvideCurrentSessionData(nullptr /* uma_proto */);
+  metrics::ChromeUserMetricsExtension uma_proto;
+  metrics_provider_.ProvideCurrentSessionData(&uma_proto);
   histogram_tester_.ExpectTotalCount("Android.MultiWindowMode.Active", 1);
 }
 
 TEST_F(ChromeAndroidMetricsProviderTest,
        ProvideCurrentSessionData_AppNotifications) {
-  metrics_provider_.ProvideCurrentSessionData(nullptr /* uma_proto */);
+  metrics::ChromeUserMetricsExtension uma_proto;
+  metrics_provider_.ProvideCurrentSessionData(&uma_proto);
   histogram_tester_.ExpectTotalCount("Android.AppNotificationStatus", 1);
+}
+
+TEST_F(ChromeAndroidMetricsProviderTest,
+       ProvideCurrentSessionData_DarkModeState) {
+  metrics::ChromeUserMetricsExtension uma_proto;
+  ASSERT_FALSE(uma_proto.system_profile().os().has_dark_mode_state());
+
+  metrics_provider_.ProvideCurrentSessionData(&uma_proto);
+  ASSERT_TRUE(uma_proto.system_profile().os().has_dark_mode_state());
 }
