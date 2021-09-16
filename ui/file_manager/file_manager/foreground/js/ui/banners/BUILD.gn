@@ -27,6 +27,7 @@ html_to_js("web_components") {
     "holding_space_welcome_banner.js",
     "local_disk_low_space_banner.js",
     "photos_welcome_banner.js",
+    "shared_with_crostini_pluginvm_banner.js",
     "state_banner.js",
     "trash_banner.js",
     "warning_banner.js",
@@ -49,6 +50,7 @@ js_type_check("closure_compile_jsmodules") {
     ":holding_space_welcome_banner",
     ":local_disk_low_space_banner",
     ":photos_welcome_banner",
+    ":shared_with_crostini_pluginvm_banner",
     ":state_banner",
     ":trash_banner",
     ":warning_banner",
@@ -112,6 +114,16 @@ js_library("photos_welcome_banner") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:banner",
+  ]
+}
+
+js_library("shared_with_crostini_pluginvm_banner") {
+  deps = [
+    ":state_banner",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:banner",
+    "//ui/file_manager/file_manager/foreground/js:constants",
   ]
 }
 

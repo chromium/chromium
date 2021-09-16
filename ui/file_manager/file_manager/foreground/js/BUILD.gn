@@ -194,14 +194,17 @@ js_library("actions_model") {
 
 js_library("banner_controller") {
   deps = [
+    ":constants",
     ":directory_model",
     "ui/banners:drive_welcome_banner",
     "ui/banners:holding_space_welcome_banner",
     "ui/banners:local_disk_low_space_banner",
+    "ui/banners:shared_with_crostini_pluginvm_banner",
     "ui/banners:trash_banner",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/file_manager/file_manager/externs:banner",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:crostini",
