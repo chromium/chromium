@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_extension.h"
+#include "net/websockets/websocket_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -95,9 +96,6 @@ class WebSocketEncoderTest : public testing::Test {
                                                     int mask,
                                                     int partitions,
                                                     bool compressed) {
-    typedef int OpCode;
-    constexpr OpCode kOpCodeContinuation = 0x0;
-    constexpr OpCode kOpCodeText = 0x1;
     constexpr uint8_t kFinalBit = 0x80;
     constexpr uint8_t kReserved1Bit = 0x40;
     constexpr uint8_t kMaskBit = 0x80;
@@ -112,11 +110,11 @@ class WebSocketEncoderTest : public testing::Test {
     std::string mask_bytes;
 
     if (mask == 0) {
-      server_->EncodeFrame(original_text, mask, &encoded);
+      server_->EncodeTextFrame(original_text, mask, &encoded);
       num_mask_header = 0;
       mask_key_bit = 0;
     } else {
-      client_->EncodeFrame(original_text, mask, &encoded);
+      client_->EncodeTextFrame(original_text, mask, &encoded);
       num_mask_header = 4;
       mask_key_bit = kMaskBit;
       mask_bytes = encoded.substr(2, 4);
@@ -131,9 +129,9 @@ class WebSocketEncoderTest : public testing::Test {
     for (int i = 0; i < partitions; ++i) {
       char first_byte = 0;
       if (i == 0)
-        first_byte |= kOpCodeText;
+        first_byte |= WebSocketFrameHeader::OpCodeEnum::kOpCodeText;
       else
-        first_byte |= kOpCodeContinuation;
+        first_byte |= WebSocketFrameHeader::OpCodeEnum::kOpCodeContinuation;
       if (i == partitions - 1)
         first_byte |= kFinalBit;
       if (compressed)
@@ -189,7 +187,7 @@ TEST_F(WebSocketEncoderTest, ClientToServer) {
   int bytes_consumed;
   std::string decoded;
 
-  client_->EncodeFrame(frame, mask, &encoded);
+  client_->EncodeTextFrame(frame, mask, &encoded);
   EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             server_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ("ClientToServer", decoded);
@@ -217,7 +215,7 @@ TEST_F(WebSocketEncoderTest, ServerToClient) {
   int bytes_consumed;
   std::string decoded;
 
-  server_->EncodeFrame(frame, mask, &encoded);
+  server_->EncodeTextFrame(frame, mask, &encoded);
   EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             client_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ("ServerToClient", decoded);
@@ -371,7 +369,7 @@ TEST_F(WebSocketEncoderCompressionTest, ClientToServer) {
   int bytes_consumed;
   std::string decoded;
 
-  client_->EncodeFrame(frame, mask, &encoded);
+  client_->EncodeTextFrame(frame, mask, &encoded);
   EXPECT_LT(encoded.length(), frame.length());
   EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             server_->DecodeFrame(encoded, &bytes_consumed, &decoded));
@@ -386,7 +384,7 @@ TEST_F(WebSocketEncoderCompressionTest, ServerToClient) {
   int bytes_consumed;
   std::string decoded;
 
-  server_->EncodeFrame(frame, mask, &encoded);
+  server_->EncodeTextFrame(frame, mask, &encoded);
   EXPECT_LT(encoded.length(), frame.length());
   EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             client_->DecodeFrame(encoded, &bytes_consumed, &decoded));
@@ -413,7 +411,7 @@ TEST_F(WebSocketEncoderCompressionTest, LongFrame) {
   int bytes_consumed;
   std::string decoded;
 
-  server_->EncodeFrame(frame, mask, &encoded);
+  server_->EncodeTextFrame(frame, mask, &encoded);
   EXPECT_LT(encoded.length(), frame.length());
   EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             client_->DecodeFrame(encoded, &bytes_consumed, &decoded));
@@ -490,6 +488,17 @@ TEST_F(WebSocketEncoderCompressionTest, DecodeFragmentedMessageServerToClient) {
             client_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("abcdefghijklmnop", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
+}
+
+TEST_F(WebSocketEncoderCompressionTest, CheckPongFrameNotCompressed) {
+  constexpr uint8_t kReserved1Bit = 0x40;
+  const std::string kOriginalText = "abcdefghijklmnop";
+  constexpr int kMask = 0;
+  std::string encoded;
+
+  server_->EncodePongFrame(kOriginalText, kMask, &encoded);
+  EXPECT_FALSE(encoded[1] & kReserved1Bit);
+  EXPECT_EQ(kOriginalText, encoded.substr(2));
 }
 
 }  // namespace net

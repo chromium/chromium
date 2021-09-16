@@ -88,7 +88,7 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
       return;
     int mask = base::RandInt(0, 0x7FFFFFFF);
     std::string encoded_frame;
-    encoder_->EncodeFrame(message, mask, &encoded_frame);
+    encoder_->EncodeTextFrame(message, mask, &encoded_frame);
     SendData(encoded_frame);
   }
 

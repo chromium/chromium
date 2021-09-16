@@ -46,6 +46,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/websockets/websocket_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -311,6 +312,40 @@ class WebSocketTest : public HttpServerTest {
   void OnWebSocketMessage(int connection_id, std::string data) override {}
 };
 
+class WebSocketAcceptingTest : public WebSocketTest {
+  void OnWebSocketRequest(int connection_id,
+                          const HttpServerRequestInfo& info) override {
+    HttpServerTest::OnHttpRequest(connection_id, info);
+    server_->AcceptWebSocket(connection_id, info, TRAFFIC_ANNOTATION_FOR_TESTS);
+  }
+};
+
+constexpr uint8_t kFinalBit = 0x80;
+constexpr uint8_t kMaskBit = 0x80;
+constexpr size_t kMaskingKeyWidthInBytes = 4;
+
+std::string EncodePingFrameClient(std::string message) {
+  int mask = 654321;
+  const std::string kPingFrameHeader = {
+      static_cast<char>(kFinalBit |
+                        WebSocketFrameHeader::OpCodeEnum::kOpCodePing),
+      static_cast<char>(kMaskBit | message.length())};
+  const std::string kMaskBytes(reinterpret_cast<char*>(&mask), 4);
+  for (size_t i = 0; i < message.length(); ++i)  // Mask the payload.
+    message[i] = message[i] ^ kMaskBytes[i % kMaskingKeyWidthInBytes];
+  const std::string kPingFrame = kPingFrameHeader + kMaskBytes + message;
+  return kPingFrame;
+}
+
+std::string EncodePongFrameServer(std::string message) {
+  const std::string kPongFrameHeader = {
+      static_cast<char>(kFinalBit |
+                        WebSocketFrameHeader::OpCodeEnum::kOpCodePong),
+      static_cast<char>(message.length())};
+  const std::string kPongFrame = kPongFrameHeader + message;
+  return kPongFrame;
+}
+
 TEST_F(HttpServerTest, Request) {
   TestHttpClient client;
   CreateConnection(&client);
@@ -483,6 +518,46 @@ TEST_F(WebSocketTest, RequestWebSocketTrailingJunk) {
       "\r\nHello? Anyone");
   RunUntilConnectionIdClosed(1);
   client.ExpectUsedThenDisconnectedWithNoData();
+}
+
+TEST_F(WebSocketAcceptingTest, SendPingFrameWithNoMessage) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  RunUntilRequestsReceived(1);
+  ASSERT_TRUE(client.ReadResponse(&response));
+  const std::string kMessage = "";
+  const std::string kPingFrame = EncodePingFrameClient(kMessage);
+  const std::string kPongFrame = EncodePongFrameServer(kMessage);
+  client.Send(kPingFrame);
+  ASSERT_TRUE(client.Read(&response, kPongFrame.length()));
+  EXPECT_EQ(response, kPongFrame);
+}
+
+TEST_F(WebSocketAcceptingTest, SendPingFrameWithMessage) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  RunUntilRequestsReceived(1);
+  ASSERT_TRUE(client.ReadResponse(&response));
+  const std::string kMessage = "hello";
+  const std::string kPingFrame = EncodePingFrameClient(kMessage);
+  const std::string kPongFrame = EncodePongFrameServer(kMessage);
+  client.Send(kPingFrame);
+  ASSERT_TRUE(client.Read(&response, kPongFrame.length()));
+  EXPECT_EQ(response, kPongFrame);
 }
 
 TEST_F(HttpServerTest, RequestWithTooLargeBody) {
