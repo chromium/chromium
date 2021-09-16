@@ -48,7 +48,7 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
   undo_button_->SetText(kUndoButtonText);
   undo_button_->SetImageLabelSpacing(
       views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL));
+          views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL));
   undo_button_->SetBackground(nullptr);
   undo_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   undo_button_->SetMaxSize(
@@ -67,7 +67,7 @@ void UndoWindow::OnThemeChanged() {
               ash::ColorProvider::ContentLayerType::kIconColorPrimary)));
   undo_button_->SetEnabledTextColors(
       ash::ColorProvider::Get()->GetContentLayerColor(
-          ash::ColorProvider::ContentLayerType::kTextColorPrimary));
+          ash::ColorProvider::ContentLayerType::kTextColorSecondary));
   BubbleDialogDelegateView::OnThemeChanged();
 }
 
