@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   EXPECT_FALSE(was_uninstalled);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if defined(OS_MAC)
 // https://crbug.com/1224161
 #define MAYBE_TrackParentWindowDestructionAfterViewCreation \
   DISABLED_TrackParentWindowDestructionAfterViewCreation
