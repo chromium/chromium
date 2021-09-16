@@ -1365,6 +1365,7 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
+      'android-lollipop-arm-rel', # Not enough capacity. https://crbug.com/1248257
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
     'modifications': {
