@@ -141,6 +141,11 @@
   [self.alertCoordinator start];
 }
 
+- (void)setUpdatedPasswordForm:
+    (const password_manager::PasswordForm&)passwordForm {
+  [self.delegate setMostRecentlyUpdatedPasswordDetails:passwordForm];
+}
+
 #pragma mark - AddPasswordHandler
 
 - (void)showPasscodeDialog {

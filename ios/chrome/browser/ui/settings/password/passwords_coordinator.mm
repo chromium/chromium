@@ -219,6 +219,11 @@
   self.addPasswordCoordinator = nil;
 }
 
+- (void)setMostRecentlyUpdatedPasswordDetails:
+    (const password_manager::PasswordForm&)password {
+  [self.passwordsViewController setMostRecentlyUpdatedPasswordDetails:password];
+}
+
 #pragma mark Private
 
 - (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager {

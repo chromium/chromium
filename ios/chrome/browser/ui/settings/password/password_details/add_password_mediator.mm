@@ -84,6 +84,7 @@ using base::SysUTF8ToNSString;
   }
 
   _manager->AddPasswordForm(passwordForm);
+  [self.delegate setUpdatedPasswordForm:passwordForm];
   [self.delegate dismissPasswordDetailsTableViewController];
 }
 
@@ -98,6 +99,7 @@ using base::SysUTF8ToNSString;
         form.username_value == self.cachedPasswordForm->username_value) {
       _manager->EditPasswordForm(form, self.cachedPasswordForm->username_value,
                                  self.cachedPasswordForm->password_value);
+      [self.delegate setUpdatedPasswordForm:self.cachedPasswordForm.value()];
       break;
     }
   }

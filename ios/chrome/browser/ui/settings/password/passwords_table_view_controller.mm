@@ -60,6 +60,7 @@
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -138,16 +139,6 @@ void RemoveFormsToBeDeleted(
 @property(nonatomic) password_manager::PasswordForm form;
 @end
 @implementation PasswordFormContentItem
-@end
-
-// Use the type of the items to convey the Saved/Blocked status.
-@interface SavedFormContentItem : PasswordFormContentItem
-@end
-@implementation SavedFormContentItem
-@end
-@interface BlockedFormContentItem : PasswordFormContentItem
-@end
-@implementation BlockedFormContentItem
 @end
 
 @protocol PasswordExportActivityViewControllerDelegate <NSObject>
@@ -261,6 +252,14 @@ void RemoveFormsToBeDeleted(
 // Button to add new password profile in the toolbar.
 @property(nonatomic, strong) UIBarButtonItem* addPasswordButton;
 
+// Stores the most recently created or updated password form.
+@property(nonatomic, assign) absl::optional<password_manager::PasswordForm>
+    mostRecentlyUpdatedPassword;
+
+// Stores the PasswordFormContentItem which has form attribute's username and
+// site equivalent to that of |mostRecentlyUpdatedPassword|.
+@property(nonatomic, weak) PasswordFormContentItem* mostRecentlyUpdatedItem;
+
 @end
 
 @implementation PasswordsTableViewController
@@ -305,6 +304,11 @@ void RemoveFormsToBeDeleted(
   _passwordExporter = [[PasswordExporter alloc]
       initWithReauthenticationModule:_reauthenticationModule
                             delegate:self];
+}
+
+- (void)setMostRecentlyUpdatedPasswordDetails:
+    (const password_manager::PasswordForm&)password {
+  self.mostRecentlyUpdatedPassword = password;
 }
 
 #pragma mark - UIViewController
@@ -655,25 +659,33 @@ void RemoveFormsToBeDeleted(
   return exportPasswordsItem;
 }
 
-- (SavedFormContentItem*)
+- (PasswordFormContentItem*)
     savedFormItemWithText:(NSString*)text
             andDetailText:(NSString*)detailText
                   forForm:(const password_manager::PasswordForm&)form {
-  SavedFormContentItem* passwordItem =
-      [[SavedFormContentItem alloc] initWithType:ItemTypeSavedPassword];
+  PasswordFormContentItem* passwordItem =
+      [[PasswordFormContentItem alloc] initWithType:ItemTypeSavedPassword];
   passwordItem.text = text;
   passwordItem.form = form;
   passwordItem.detailText = detailText;
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  if (self.mostRecentlyUpdatedPassword) {
+    if (self.mostRecentlyUpdatedPassword->username_value ==
+            form.username_value &&
+        self.mostRecentlyUpdatedPassword->signon_realm == form.signon_realm) {
+      self.mostRecentlyUpdatedItem = passwordItem;
+      self.mostRecentlyUpdatedPassword = absl::nullopt;
+    }
+  }
   return passwordItem;
 }
 
-- (BlockedFormContentItem*)
+- (PasswordFormContentItem*)
     blockedFormItemWithText:(NSString*)text
                     forForm:(const password_manager::PasswordForm&)form {
-  BlockedFormContentItem* passwordItem =
-      [[BlockedFormContentItem alloc] initWithType:ItemTypeBlocked];
+  PasswordFormContentItem* passwordItem =
+      [[PasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.text = text;
   passwordItem.form = form;
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
@@ -866,6 +878,7 @@ void RemoveFormsToBeDeleted(
       [self filterItems:self.searchTerm];
       [self.tableView reloadSections:sectionsToUpdate
                     withRowAnimation:UITableViewRowAnimationAutomatic];
+      [self scrollToLastUpdatedItem];
     } else if (_savedForms.empty() && _blockedForms.empty()) {
       [self setEditing:NO animated:YES];
     }
@@ -1414,7 +1427,8 @@ void RemoveFormsToBeDeleted(
     PasswordFormContentItem* item =
         base::mac::ObjCCastStrict<PasswordFormContentItem>(
             [self.tableViewModel itemAtIndexPath:indexPath]);
-    BOOL blocked = [item isKindOfClass:[BlockedFormContentItem class]];
+    NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+    BOOL blocked = (itemType == ItemTypeBlocked);
     blocked ? blockedToDelete.push_back(item.form)
             : passwordsToDelete.push_back(item.form);
   }
@@ -1493,6 +1507,19 @@ void RemoveFormsToBeDeleted(
   }
 }
 
+// Scrolls the password lists such that most recently updated
+// SavedFormContentItem is in the middle of the screen.
+- (void)scrollToLastUpdatedItem {
+  if (self.mostRecentlyUpdatedItem) {
+    NSIndexPath* indexPath =
+        [self.tableViewModel indexPathForItem:self.mostRecentlyUpdatedItem];
+    [self.tableView scrollToRowAtIndexPath:indexPath
+                          atScrollPosition:UITableViewScrollPositionMiddle
+                                  animated:NO];
+    self.mostRecentlyUpdatedItem = nil;
+  }
+}
+
 #pragma mark UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -1519,8 +1546,8 @@ void RemoveFormsToBeDeleted(
     case ItemTypeSavedPassword: {
       DCHECK_EQ(SectionIdentifierSavedPasswords,
                 [model sectionIdentifierForSection:indexPath.section]);
-      SavedFormContentItem* saveFormItem =
-          base::mac::ObjCCastStrict<SavedFormContentItem>(
+      PasswordFormContentItem* saveFormItem =
+          base::mac::ObjCCastStrict<PasswordFormContentItem>(
               [model itemAtIndexPath:indexPath]);
       [self.handler showDetailedViewForForm:saveFormItem.form];
       break;
@@ -1528,8 +1555,8 @@ void RemoveFormsToBeDeleted(
     case ItemTypeBlocked: {
       DCHECK_EQ(SectionIdentifierBlocked,
                 [model sectionIdentifierForSection:indexPath.section]);
-      BlockedFormContentItem* blockedItem =
-          base::mac::ObjCCastStrict<BlockedFormContentItem>(
+      PasswordFormContentItem* blockedItem =
+          base::mac::ObjCCastStrict<PasswordFormContentItem>(
               [model itemAtIndexPath:indexPath]);
       [self.handler showDetailedViewForForm:blockedItem.form];
       break;
@@ -1604,9 +1631,8 @@ void RemoveFormsToBeDeleted(
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
   // Only password cells are editable.
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  return [item isKindOfClass:[SavedFormContentItem class]] ||
-         [item isKindOfClass:[BlockedFormContentItem class]];
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  return itemType == ItemTypeSavedPassword || itemType == ItemTypeBlocked;
 }
 
 - (void)tableView:(UITableView*)tableView

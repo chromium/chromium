@@ -364,7 +364,8 @@ void CopyPasswordDetailWithID(int detail_id) {
   if ([self isRunningTest:@selector(testToolbarAddPasswordButton)] ||
       [self isRunningTest:@selector(testNoAddButtonInEditMode)] ||
       [self isRunningTest:@selector(testAddNewPasswordCredential)] ||
-      [self isRunningTest:@selector(testAddNewDuplicatedPasswordCredential)]) {
+      [self isRunningTest:@selector(testAddNewDuplicatedPasswordCredential)] ||
+      [self isRunningTest:@selector(testAutoScroll)]) {
     config.features_enabled.push_back(
         password_manager::features::kSupportForAddPasswordsInSettings);
   }
@@ -1864,6 +1865,101 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_textFieldValue(@"new password")];
+}
+
+// Tests that when a new credential is saved or an existing one is updated via
+// the add credential flow, the VC auto scrolls to the newly created or the
+// updated entry.
+- (void)testAutoScroll {
+  for (int i = 0; i < 20; i++) {
+    NSString* username = [NSString stringWithFormat:@"username %d", i];
+    NSString* password = [NSString stringWithFormat:@"password %d", i];
+    NSString* site = [NSString stringWithFormat:@"https://example%d.com", i];
+    GREYAssert([PasswordSettingsAppInterface saveExamplePassword:password
+                                                        userName:username
+                                                          origin:site],
+               @"Stored form was not found in the PasswordStore results.");
+  }
+
+  OpenPasswordSettings();
+
+  BOOL isSwitchEnabled =
+      [PasswordSettingsAppInterface isCredentialsServiceEnabled];
+
+  // Enable switch if it is disabled.
+  if (!isSwitchEnabled) {
+    [GetInteractionForListItem(
+        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
+                                             isSwitchEnabled),
+        kGREYDirectionUp) performAction:TurnSettingsSwitchOn(!isSwitchEnabled)];
+
+    // Check that the switch has been modified.
+    [GetInteractionForListItem(
+        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
+                                             !isSwitchEnabled),
+        kGREYDirectionUp) assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  // Press "Add".
+  [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+      performAction:grey_tap()];
+
+  // Fill form.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailWebsite()]
+      performAction:grey_replaceText(@"https://zexample.com")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      performAction:grey_replaceText(@"zconcrete username")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      performAction:grey_replaceText(@"new password")];
+
+  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
+      performAction:grey_tap()];
+
+  // The newly created credential exists.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   ButtonWithAccessibilityLabel(
+                                       @"zexample.com, zconcrete username"),
+                                   grey_interactable(), nil)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+
+  // Create a duplicate credential to test the autoscroll functionality when an
+  // existing credetial is updated.
+  [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+      performAction:grey_tap()];
+
+  // Fill form.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailWebsite()]
+      performAction:grey_replaceText(@"https://zexample.com")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      performAction:grey_replaceText(@"zconcrete username")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      performAction:grey_replaceText(@"znew password")];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:ReplacePasswordButton()]
+      performAction:grey_tap()];
+
+  // The updated credential exists.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   ButtonWithAccessibilityLabel(
+                                       @"zexample.com, zconcrete username"),
+                                   grey_interactable(), nil)]
+      performAction:grey_tap()];
 }
 
 // Checks that deleting a compromised password from password issues goes back
