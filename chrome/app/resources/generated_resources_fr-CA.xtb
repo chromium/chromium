@@ -694,6 +694,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1719312230114180055">Remarque : Votre empreinte digitale peut être moins sécurisée qu'un mot de passe ou un NIP fiables.</translation>
 <translation id="1720318856472900922">Authentification du serveur WWW TLS</translation>
 <translation id="1720941539803966190">Fermer le tutoriel</translation>
+<translation id="172123215662733643">Rechercher des images au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Il vous faut l'autorisation de <ph name="NAME" /> pour consulter ce site</translation>
 <translation id="1722460139690167654">Votre appareil <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> est géré<ph name="END_LINK" /> par <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nouvelle fenêtre</translation>
@@ -1266,6 +1267,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
     Si vous décidez plus tard que la fonctionnalité Voice Match ne convient pas à votre enfant, retirez-la simplement dans les paramètres de l'Assistant. Pour afficher ou supprimer les extraits audio enregistrés par votre enfant lors de la configuration de la fonctionnalité Voice Match, accédez à l'adresse <ph name="VOICE_MATCH_SETTINGS_URL" /> à partir du compte de votre enfant.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">Rechercher une partie de la page au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="230927227160767054">Cette page veut installer un gestionnaire de services.</translation>
 <translation id="2309620859903500144">L'accès à vos capteurs de mouvement et de luminosité a été bloqué pour ce site.</translation>
 <translation id="2312219318583366810">URL de la page</translation>
@@ -1832,6 +1834,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="289695669188700754">Identifiant de la clé : <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ce paramètre personnalisé sera retiré lorsque vous fermerez toutes vos fenêtres de navigation privée</translation>
 <translation id="2897878306272793870">Voulez-vous vraiment ouvrir <ph name="TAB_COUNT" /> onglets?</translation>
+<translation id="2900477968385519153">Rechercher sur votre écran au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">Le fichier utilise des fonctionnalités qui ne sont pas prises en charge</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> n'a pas pu communiquer avec cette imprimante. Assurez-vous que l'imprimante est bien branchée, puis recommencez.</translation>
 <translation id="2902312830803030883">Autres actions</translation>
@@ -2102,6 +2105,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3183143381919926261">Réseaux de données cellulaires</translation>
 <translation id="3183944777708523606">Position des moniteurs</translation>
 <translation id="3184536091884214176">Configurez ou gérez les imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{Cette application est bloquée}one{Cette application est bloquée}other{Certaines applications sont bloquées}}</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3188465121994729530">Moyenne mobile</translation>
 <translation id="3189187154924005138">Grand curseur</translation>
@@ -2270,6 +2274,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3390741581549395454">Les applications et les fichiers Linux ont été sauvegardés. La mise à niveau commencera bientôt.</translation>
 <translation id="3391512812407811893">Essai du bac à sable de confidentialité</translation>
 <translation id="339178315942519818">Affichez les notifications de vos applications de clavardage sur votre <ph name="DEVICE_TYPE" /></translation>
+<translation id="3393554941209044235">Analyse de document par Chrome</translation>
 <translation id="3394850431319394743">Autorisé à utiliser des identifiants pour faire jouer du contenu protégé</translation>
 <translation id="3396800784455899911">En cliquant sur le bouton « Accepter et continuer », vous acceptez le traitement décrit ci-dessus pour ces services Google.</translation>
 <translation id="339722927132407568">Fige</translation>
@@ -3062,6 +3067,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4220648711404560261">Une erreur s'est produite lors de l'activation.</translation>
 <translation id="4225020013797061859">Appuyez sur un commutateur ou une touche pour attribuer l'action « <ph name="ACTION" /> »</translation>
 <translation id="4225397296022057997">Sur tous les sites</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Cette extension n'est pas autorisée}one{Cette extension n'est pas autorisée}other{Certaines extensions ne sont pas autorisées}}</translation>
 <translation id="4231095370974836764">Installez des applications et des jeux de Google Play sur votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
 <translation id="4235965441080806197">Annuler la connexion</translation>
@@ -3232,6 +3238,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4415748029120993980">Courbe elliptique SECG secp384r1 (aussi appelée NIST P-384)</translation>
 <translation id="4416450511678320850">Aucune application n'est offerte pour gérer ce contenu</translation>
 <translation id="4416582610654027550">Entrez une URL valide</translation>
+<translation id="4417162649853416189">Faire glisser sur les images pour rechercher au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4419409365248380979">Toujours autoriser <ph name="HOST" /> à enregistrer des témoins</translation>
 <translation id="4421932782753506458">Félix</translation>
 <translation id="4423376891418188461">Restaurer les paramètres</translation>
@@ -3358,6 +3365,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4551763574344810652">Appuyez sur <ph name="MODIFIER_KEY_DESCRIPTION" /> pour annuler l'action</translation>
 <translation id="4553526521109675518">Vous devez redémarrer votre Chromebook pour changer la langue de l'appareil. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Recommencer la configuration</translation>
+<translation id="4554491709904933912">Faire glisser sur les images pour rechercher au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4554591392113183336">La version d'extension externe est égale ou inférieure à celle existante.</translation>
 <translation id="4555769855065597957">Ombre</translation>
 <translation id="4555863373929230635">Pour enregistrer des mots de passe dans votre compte Google, connectez-vous et activez la synchronisation.</translation>
@@ -4132,6 +4140,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5427278936122846523">Toujours traduire</translation>
 <translation id="5427459444770871191">Rotation dans le sens &amp;horaire</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (une mise à jour est offerte)</translation>
+<translation id="5429373054983029602">Rechercher sur votre écran au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Une mise à jour pour le micrologiciel du module de plateforme de confiance doit être installée. Consultez <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">Partage de connexion instantané</translation>
 <translation id="5431318178759467895">Couleur</translation>
@@ -4198,6 +4207,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5495466433285976480">Cette fonctionnalité a pour effet de supprimer tous les utilisateurs, les fichiers, les données et les autres paramètres locaux au prochain redémarrage. Tous les utilisateurs devront se reconnecter.</translation>
 <translation id="5495597166260341369">Maintenir l'écran activé</translation>
+<translation id="549580971452855947">Faire glisser pour rechercher des images au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5496587651328244253">Organiser</translation>
 <translation id="5496730470963166430">Non autorisés à afficher des fenêtres contextuelles ni à utiliser de redirections</translation>
 <translation id="5497251278400702716">Ce fichier</translation>
@@ -4307,6 +4317,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5604884720628869833">Appareil <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Clavier</translation>
 <translation id="5605623530403479164">Autres moteurs de recherche</translation>
 <translation id="5605758115928394442">Nous avons envoyé une notification à votre téléphone pour confirmer votre identité.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Cette extension est bloquée}one{Cette extension est bloquée}other{Ces extensions sont bloquées}}</translation>
 <translation id="560834977503641186">Synchronisation Wi-Fi, en savoir plus</translation>
 <translation id="5608580678041221894">Touchez les touches suivantes pour ajuster ou déplacer la zone de recadrage</translation>
 <translation id="5609231933459083978">L'application ne semble pas valide.</translation>
@@ -5053,6 +5064,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6434325376267409267">Votre appareil doit être mis à jour avant que vous puissiez utiliser <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Afficher dans la boutique Chrome Web Store</translation>
 <translation id="6436610005579237680">Pour recevoir des réponses plus personnalisées, autorisez l'Assistant Google à utiliser une capture de votre écran actuel quand vous posez des questions. Votre Assistant peut aussi se servir des renseignements sur les chansons ou les vidéos en cours de lecture.</translation>
+<translation id="6436778875248895551">L'extension « <ph name="EXTENSION_NAME" /> » a été bloquée par votre administrateur</translation>
 <translation id="6438234780621650381">Réinitialiser les paramètres</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Lecture audio</translation>
 <translation id="6442187272350399447">Impressionnant</translation>
@@ -5199,10 +5211,12 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6593881952206664229">Les éléments multimédias protégés par droits d'auteur pourraient ne pas être lus</translation>
 <translation id="6594011207075825276">Recherche d'appareils en série en cours…</translation>
 <translation id="6595187330192059106">Toujours bloquer le plein contrôle de vos appareils MIDI pour <ph name="HOST" />.</translation>
+<translation id="6595792813574514527">Faire glisser pour rechercher des images au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6596325263575161958">Options de chiffrement</translation>
 <translation id="6596816719288285829">Adresse IP</translation>
 <translation id="6597017209724497268">Échantillons</translation>
 <translation id="6597148444736186483">Pour vous déconnecter du compte principal sur cet appareil, cliquez sur l'horloge à l'écran. Dans le menu qui s'affiche, cliquez sur « Déconnexion ».</translation>
+<translation id="6597331566371766302">Les extensions suivantes ont été bloquées par votre administrateur :</translation>
 <translation id="6601395831301182804">Voulez-vous activer ChromeVox, le lecteur d'écran intégré de Chrome OS? Le cas échéant, appuyez sur la barre d'espacement.</translation>
 <translation id="6601612474695404578">Certains sites utilisent des témoins tiers pour charger leurs pages. Si un site ne fonctionne pas, vous pouvez essayer d'autoriser les témoins.</translation>
 <translation id="6602937173026466876">Accès à vos imprimantes</translation>
@@ -5335,6 +5349,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6757101664402245801">URL copiée</translation>
 <translation id="6758056191028427665">Donnez-nous votre avis sur nos services.</translation>
 <translation id="6759193508432371551">Rétablir les paramètres par défaut</translation>
+<translation id="676158322851696513">« <ph name="EXTENSION_NAME" /> »</translation>
 <translation id="6762833852331690540">Activé</translation>
 <translation id="676560328519657314">Vos modes de paiement dans Google Pay</translation>
 <translation id="6767566652486411142">Choisir une autre langue…</translation>
@@ -5766,6 +5781,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7230222852462421043">&amp;Restaurer la fenêtre</translation>
 <translation id="7230787553283372882">Personnalisez la taille de votre texte</translation>
 <translation id="7232750842195536390">Échec du changement de nom</translation>
+<translation id="723343421145275488">Rechercher des images au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Annulation de la restauration Linux en cours…</translation>
 <translation id="7235716375204803342">Récupération des activités en cours…</translation>
 <translation id="7235737137505019098">Votre clé de sécurité n'a pas suffisamment d'espace libre pour qu'on y enregistre des comptes supplémentaires.</translation>
@@ -6214,6 +6230,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7691698019618282776">Mise à niveau de Crostini</translation>
 <translation id="7696063401938172191">Sur votre « <ph name="PHONE_NAME" /> » :</translation>
 <translation id="7697166915480294040">Les renseignements sont masqués quand vous partagez votre écran</translation>
+<translation id="7698507637739331665">Certains éléments sont bloqués</translation>
 <translation id="7701040980221191251">Aucun</translation>
 <translation id="7701869757853594372">Descripteurs de l'UTILISATEUR</translation>
 <translation id="7702574632857388784">Supprimer <ph name="FILE_NAME" /> de la liste</translation>
@@ -6391,6 +6408,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7861215335140947162">&amp;Téléchargements</translation>
 <translation id="7861846108263890455">Langue du compte Google</translation>
 <translation id="7864539943188674973">Désactiver Bluetooth</translation>
+<translation id="7865127013871431856">Options de traduction</translation>
 <translation id="7869143217755017858">Désactiver le mode sombre</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />, associé</translation>
 <translation id="7870730066603611552">Examiner les options de synchronisation après configuration</translation>
@@ -6710,6 +6728,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8184318863960255706">Renseignements supplémentaires</translation>
 <translation id="8184472985242519288">Uniforme</translation>
 <translation id="8186609076106987817">Le serveur n'a pas trouvé le fichier.</translation>
+<translation id="8186704951085064172">Rechercher une partie de la page au moyen de <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="8188389033983459049">Vérifiez les paramètres de votre appareil et activez cette option pour continuer</translation>
 <translation id="8189306097519446565">Comptes scolaires</translation>
 <translation id="8189750580333936930">Bac à sable de confidentialité</translation>
