@@ -8,13 +8,12 @@ import android.accounts.Account;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
+import org.chromium.chrome.browser.signin.ui.R;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.signin.ui.frebottomgroup.FREBottomGroupCoordinator.Listener;
@@ -35,8 +34,7 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
     private final AccountManagerFacade mAccountManagerFacade;
     private final Listener mListener;
     private final PropertyModel mModel;
-    // TODO(crbug/1227314): ProfileDataCache needs to be adjusted for supervised accounts users.
-    private @NonNull ProfileDataCache mProfileDataCache;
+    private final ProfileDataCache mProfileDataCache;
     private AccountPickerDialogCoordinator mDialogCoordinator;
     private String mSelectedAccountName;
 
@@ -165,8 +163,11 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
                 if (isChild && mDialogCoordinator != null) {
                     mDialogCoordinator.dismissDialog();
                 }
+                // Selected account data will be updated in #onProfileDataUpdated()
+                mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
             });
         } else {
+            mProfileDataCache.setBadge(0);
             mModel.set(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED, false);
         }
     }

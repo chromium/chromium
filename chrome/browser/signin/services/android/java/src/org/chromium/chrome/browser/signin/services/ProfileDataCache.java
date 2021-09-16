@@ -64,7 +64,6 @@ public class ProfileDataCache implements AccountInfoService.Observer {
         private final @Px int mBorderSize;
 
         private BadgeConfig(Context context, @DrawableRes int badgeResId) {
-            assert badgeResId != 0 : "badgeResId shouldn't be 0!";
             Resources resources = context.getResources();
             mBadge = AppCompatResources.getDrawable(context, badgeResId);
             mBadgeSize = resources.getDimensionPixelSize(R.dimen.badge_size);
@@ -94,7 +93,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
 
     private final Context mContext;
     private final int mImageSize;
-    private @Nullable final BadgeConfig mBadgeConfig;
+    private @Nullable BadgeConfig mBadgeConfig;
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
@@ -121,8 +120,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
 
     /**
      * @param context Context of the application to extract resources from.
-     * @param badgeResId Resource id of the badge to be attached. If it is 0 then no badge is
-     *         attached.
+     * @param badgeResId Resource id of the badge to be attached.
      * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
      *         and a badge of given badgeResId provided
      */
@@ -155,6 +153,18 @@ public class ProfileDataCache implements AccountInfoService.Observer {
             return new DisplayableProfileData(accountEmail, mPlaceholderImage, null, null);
         }
         return profileData;
+    }
+
+    /**
+     * Sets a {@link BadgeConfig} and then populates the cache with the new Badge.
+     * @param badgeResId Resource id of the badge to be attached. If 0 then the current Badge is
+     * removed.
+     */
+    public void setBadge(@DrawableRes int badgeResId) {
+        if (badgeResId == 0 && mBadgeConfig == null) return;
+        mBadgeConfig = badgeResId == 0 ? null : new BadgeConfig(mContext, badgeResId);
+        mCachedProfileData.clear();
+        AccountInfoServiceProvider.getPromise().then(this::populateCache);
     }
 
     /**
