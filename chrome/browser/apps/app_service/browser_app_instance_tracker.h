@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
@@ -46,8 +45,6 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
                                   public AppRegistryCache::Observer,
                                   public BrowserListObserver {
  public:
-  static const base::Feature kEnabled;
-
   BrowserAppInstanceTracker(Profile* profile,
                             AppRegistryCache& app_registry_cache);
   ~BrowserAppInstanceTracker() override;
@@ -58,7 +55,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   // A factory method to make the creation of the tracker optional to keep it
   // behind a flag.
   // TODO(crbug.com/1203992): Remove this when the
-  // |BrowserAppInstanceTracker::kEnabled| flag is removed.
+  // |kBrowserAppInstanceTracking| flag is removed.
   static std::unique_ptr<BrowserAppInstanceTracker> Create(
       Profile* profile,
       AppRegistryCache& app_registry_cache);

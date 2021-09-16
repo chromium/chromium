@@ -249,7 +249,7 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   app_window_controllers_.emplace_back(std::move(app_service_controller));
   // Create the browser monitor which will inform the shelf of status changes.
   browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
-  if (base::FeatureList::IsEnabled(apps::BrowserAppInstanceTracker::kEnabled)) {
+  if (base::FeatureList::IsEnabled(features::kBrowserAppInstanceTracking)) {
     browser_app_instance_tracker_ =
         apps::AppServiceProxyFactory::GetForProfile(profile)
             ->BrowserAppInstanceTracker();
@@ -544,7 +544,7 @@ void ChromeShelfController::ActiveUserChanged(const AccountId& account_id) {
   // Update the V1 applications.
   browser_status_monitor_->ActiveUserChanged(account_id.GetUserEmail());
   // Switch app tracker instance.
-  if (base::FeatureList::IsEnabled(apps::BrowserAppInstanceTracker::kEnabled)) {
+  if (base::FeatureList::IsEnabled(features::kBrowserAppInstanceTracking)) {
     browser_app_instance_tracker_ = apps::AppServiceProxyFactory::GetForProfile(
                                         ProfileManager::GetActiveUserProfile())
                                         ->BrowserAppInstanceTracker();

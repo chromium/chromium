@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -116,9 +116,6 @@ class BrowserAppInstanceTracker::WebContentsObserver
   BrowserAppInstanceTracker* owner_;
 };
 
-const base::Feature BrowserAppInstanceTracker::kEnabled{
-    "EnableBrowserAppsTracker", base::FEATURE_DISABLED_BY_DEFAULT};
-
 BrowserAppInstanceTracker::BrowserAppInstanceTracker(
     Profile* profile,
     AppRegistryCache& app_registry_cache)
@@ -144,7 +141,7 @@ BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
 std::unique_ptr<BrowserAppInstanceTracker> BrowserAppInstanceTracker::Create(
     Profile* profile,
     AppRegistryCache& app_registry_cache) {
-  if (!base::FeatureList::IsEnabled(kEnabled)) {
+  if (!base::FeatureList::IsEnabled(features::kBrowserAppInstanceTracking)) {
     return nullptr;
   }
   return std::make_unique<BrowserAppInstanceTracker>(profile,

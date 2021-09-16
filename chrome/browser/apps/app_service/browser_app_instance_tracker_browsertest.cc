@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -200,12 +199,6 @@ class Recorder : public apps::BrowserAppInstanceObserver {
 }  // namespace
 
 class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
- public:
-  BrowserAppInstanceTrackerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        apps::BrowserAppInstanceTracker::kEnabled);
-  }
-
  protected:
   Browser* CreateBrowser() {
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -322,7 +315,6 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<Tracker> tracker_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   const base::ProcessId pid_ = base::Process::Current().Pid();
 };
 

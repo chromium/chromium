@@ -100,6 +100,11 @@ const base::Feature kBackgroundModeAllowRestart{
 const base::Feature kBorealis{"Borealis", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_CHROMEOS)
+const base::Feature kBrowserAppInstanceTracking{
+    "EnableBrowserAppsTracker", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 // Enables change picture video mode.
 const base::Feature kChangePictureVideoMode{"ChangePictureVideoMode",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
