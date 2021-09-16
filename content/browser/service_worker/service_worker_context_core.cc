@@ -141,10 +141,7 @@ bool IsSameOriginClientContainerHost(
       container_host->IsInBackForwardCache()) {
     return false;
   }
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerContainerHost
-  // implements StorageKey.
-  return blink::StorageKey(url::Origin::Create(container_host->GetOrigin())) ==
-             key &&
+  return container_host->key() == key &&
          (allow_reserved_client || container_host->is_execution_ready());
 }
 
@@ -161,10 +158,8 @@ bool IsSameOriginWindowClientContainerHost(
     if (container_host->IsInBackForwardCache())
       return false;
   }
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerContainerHost
-  // implements StorageKey.
   return container_host->IsContainerForWindowClient() &&
-         blink::StorageKey(url::Origin::Create(container_host->url())) == key &&
+         container_host->key() == key &&
          (allow_reserved_client || container_host->is_execution_ready());
 }
 
@@ -200,11 +195,8 @@ class ClearAllServiceWorkersHelper
       }
     }
     for (const auto& registration_info : registrations) {
-      // TODO(crbug.com/1199077): Update this when ServiceWorkerRegistrationInfo
-      // implements StorageKey.
       context->UnregisterServiceWorker(
-          registration_info.scope,
-          blink::StorageKey(url::Origin::Create(registration_info.scope)),
+          registration_info.scope, registration_info.key,
           /*is_immediate=*/false,
           base::BindOnce(&ClearAllServiceWorkersHelper::OnResult, this));
     }
