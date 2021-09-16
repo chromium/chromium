@@ -26,7 +26,7 @@
 namespace blink {
 
 struct SameSizeAsCSSValueList : CSSValue {
-  Vector<Member<CSSValue>, 4> list_values;
+  HeapVector<Member<CSSValue>, 4> list_values;
 };
 ASSERT_SIZE(CSSValueList, SameSizeAsCSSValueList);
 

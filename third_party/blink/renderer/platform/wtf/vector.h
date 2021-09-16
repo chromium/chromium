@@ -1502,6 +1502,11 @@ inline Vector<T, inlineCapacity, Allocator>::Vector() {
                     !IsTraceable<T>::value,
                 "Cannot put DISALLOW_NEW objects that "
                 "have trace methods into an off-heap Vector");
+  static_assert(
+      Allocator::kIsGarbageCollected || !IsMemberType<T>::value,
+      "Cannot put Member into an off-heap Vector. Use HeapVector instead.");
+  static_assert(Allocator::kIsGarbageCollected || !IsWeakMemberType<T>::value,
+                "WeakMember is not allowed in Vector nor HeapVector.");
   static_assert(Allocator::kIsGarbageCollected ||
                     !IsPointerToGarbageCollectedType<T>::value,
                 "Cannot put raw pointers to garbage-collected classes into "
@@ -1521,6 +1526,11 @@ inline Vector<T, inlineCapacity, Allocator>::Vector(wtf_size_t size)
                     !IsTraceable<T>::value,
                 "Cannot put DISALLOW_NEW objects that "
                 "have trace methods into an off-heap Vector");
+  static_assert(
+      Allocator::kIsGarbageCollected || !IsMemberType<T>::value,
+      "Cannot put Member into an off-heap Vector. Use HeapVector instead.");
+  static_assert(Allocator::kIsGarbageCollected || !IsWeakMemberType<T>::value,
+                "WeakMember is not allowed in Vector nor HeapVector.");
   static_assert(Allocator::kIsGarbageCollected ||
                     !IsPointerToGarbageCollectedType<T>::value,
                 "Cannot put raw pointers to garbage-collected classes into "
@@ -1535,22 +1545,22 @@ template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline Vector<T, inlineCapacity, Allocator>::Vector(wtf_size_t size,
                                                     const T& val)
     : Base(size) {
-  // TODO(yutak): Introduce these assertions. Some use sites call this function
-  // in the context where T is an incomplete type.
-  //
-  // static_assert(!std::is_polymorphic<T>::value ||
-  //               !VectorTraits<T>::canInitializeWithMemset,
-  //               "Cannot initialize with memset if there is a vtable");
-  // static_assert(Allocator::isGarbageCollected ||
-  //               !IsDisallowNew<T>::value ||
-  //               !IsTraceable<T>::value,
-  //               "Cannot put DISALLOW_NEW objects that "
-  //               "have trace methods into an off-heap Vector");
-  // static_assert(Allocator::isGarbageCollected ||
-  //               !IsPointerToGarbageCollectedType<T>::value,
-  //               "Cannot put raw pointers to garbage-collected classes into "
-  //               "an off-heap Vector.  Use HeapVector<Member<T>> instead.");
-
+  static_assert(!std::is_polymorphic<T>::value ||
+                    !VectorTraits<T>::kCanInitializeWithMemset,
+                "Cannot initialize with memset if there is a vtable");
+  static_assert(Allocator::kIsGarbageCollected || !IsDisallowNew<T>::value ||
+                    !IsTraceable<T>::value,
+                "Cannot put DISALLOW_NEW objects that "
+                "have trace methods into an off-heap Vector");
+  static_assert(
+      Allocator::kIsGarbageCollected || !IsMemberType<T>::value,
+      "Cannot put Member into an off-heap Vector. Use HeapVector instead.");
+  static_assert(Allocator::kIsGarbageCollected || !IsWeakMemberType<T>::value,
+                "WeakMember is not allowed in Vector nor HeapVector.");
+  static_assert(Allocator::kIsGarbageCollected ||
+                    !IsPointerToGarbageCollectedType<T>::value,
+                "Cannot put raw pointers to garbage-collected classes into "
+                "an off-heap Vector.  Use HeapVector<Member<T>> instead.");
   ANNOTATE_NEW_BUFFER(begin(), capacity(), size);
   size_ = size;
   TypeOperations::UninitializedFill(begin(), end(), val);
