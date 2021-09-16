@@ -182,7 +182,7 @@ suite('SiteDetails', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     websiteUsageProxy = new TestWebsiteUsageBrowserProxy();
-    WebsiteUsageBrowserProxyImpl.instance_ = websiteUsageProxy;
+    WebsiteUsageBrowserProxyImpl.setInstance(websiteUsageProxy);
 
     PolymerTest.clearBody();
   });

@@ -13,9 +13,9 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -25,18 +25,20 @@ import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constan
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {RawSiteException} from './site_settings_prefs_browser_proxy.js';
 
+export interface SiteDetailsPermissionElement {
+  $: {
+    permission: HTMLSelectElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {SiteSettingsMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SiteDetailsPermissionElementBase = mixinBehaviors(
-    [I18nBehavior, WebUIListenerBehavior], SiteSettingsMixin(PolymerElement));
+const SiteDetailsPermissionElementBase =
+    mixinBehaviors(
+        [I18nBehavior, WebUIListenerBehavior],
+        SiteSettingsMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
+      SiteSettingsMixinInterface
+    };
 
-/** @polymer */
 export class SiteDetailsPermissionElement extends
     SiteDetailsPermissionElementBase {
   static get is() {
@@ -59,14 +61,11 @@ export class SiteDetailsPermissionElement extends
       /**
        * The site that this widget is showing details for, or null if this
        * widget should be hidden.
-       * @type {RawSiteException}
        */
       site: Object,
 
       /**
        * The default setting for this permission category.
-       * @type {ContentSetting}
-       * @private
        */
       defaultSetting_: String,
 
@@ -81,22 +80,27 @@ export class SiteDetailsPermissionElement extends
     return ['siteChanged_(site)'];
   }
 
-  /** @override */
+  useAutomaticLabel: boolean;
+  site: RawSiteException;
+  private defaultSetting_: ContentSetting;
+  label: string;
+  icon: string;
+
   connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
         'contentSettingCategoryChanged',
-        this.onDefaultSettingChanged_.bind(this));
+        (category: ContentSettingsTypes) =>
+            this.onDefaultSettingChanged_(category));
   }
 
   /**
    * Updates the drop-down value after |site| has changed. If |site| is null,
    * this element will hide.
-   * @param {?RawSiteException} site The site to display.
-   * @private
+   * @param site The site to display.
    */
-  siteChanged_(site) {
+  private siteChanged_(site: RawSiteException|null) {
     if (!site) {
       return;
     }
@@ -106,7 +110,7 @@ export class SiteDetailsPermissionElement extends
       this.$.permission.value = ContentSetting.DEFAULT;
     } else {
       // The default setting is unknown, so consult the C++ backend for it.
-      this.updateDefaultPermission_(site);
+      this.updateDefaultPermission_();
       this.$.permission.value = site.setting;
     }
 
@@ -119,10 +123,8 @@ export class SiteDetailsPermissionElement extends
 
   /**
    * Updates the default permission setting for this permission category.
-   * @param {!RawSiteException} site The site to display.
-   * @private
    */
-  updateDefaultPermission_(site) {
+  private updateDefaultPermission_() {
     this.browserProxy.getDefaultValueForContentType(this.category)
         .then((defaultValue) => {
           this.defaultSetting_ = defaultValue.setting;
@@ -131,46 +133,42 @@ export class SiteDetailsPermissionElement extends
 
   /**
    * Handles the category permission changing for this origin.
-   * @param {!ContentSettingsTypes} category The permission category
-   *     that has changed default permission.
-   * @private
+   * @param category The permission category that has changed default
+   *     permission.
    */
-  onDefaultSettingChanged_(category) {
+  private onDefaultSettingChanged_(category: ContentSettingsTypes) {
     if (category === this.category) {
-      this.updateDefaultPermission_(this.site);
+      this.updateDefaultPermission_();
     }
   }
 
   /**
    * Handles the category permission changing for this origin.
-   * @private
    */
-  onPermissionSelectionChange_() {
+  private onPermissionSelectionChange_() {
     this.browserProxy.setOriginPermissions(
         this.site.origin, this.category, this.$.permission.value);
   }
 
   /**
-   * Returns if we should use the custom labels for the sound type.
-   * @param {!ContentSettingsTypes} category The permission type.
-   * @return {boolean}
-   * @private
+   * @param category The permission type.
+   * @return if we should use the custom labels for the sound type.
    */
-  useCustomSoundLabels_(category) {
+  private useCustomSoundLabels_(category: ContentSettingsTypes): boolean {
     return category === ContentSettingsTypes.SOUND;
   }
 
   /**
    * Updates the string used for this permission category's default setting.
-   * @param {!ContentSetting} defaultSetting Value of the default
-   *     setting for this permission category.
-   * @param {!ContentSettingsTypes} category The permission type.
-   * @param {boolean} useAutomaticLabel Whether to use the automatic label
-   *     if the default setting value is allow.
-   * @return {string}
-   * @private
+   * @param defaultSetting Value of the default setting for this permission
+   *     category.
+   * @param category The permission type.
+   * @param useAutomaticLabel Whether to use the automatic label if the default
+   *     setting value is allow.
    */
-  defaultSettingString_(defaultSetting, category, useAutomaticLabel) {
+  private defaultSettingString_(
+      defaultSetting: ContentSetting, category: ContentSettingsTypes,
+      useAutomaticLabel: boolean): string {
     if (defaultSetting === undefined || category === undefined ||
         useAutomaticLabel === undefined) {
       return '';
@@ -192,17 +190,18 @@ export class SiteDetailsPermissionElement extends
     }
     assertNotReached(
         `No string for ${this.category}'s default of ${defaultSetting}`);
+    return '';
   }
 
   /**
    * Updates the string used for this permission category's block setting.
-   * @param {!ContentSettingsTypes} category The permission type.
-   * @param {string} blockString 'Block' label.
-   * @param {string} muteString 'Mute' label.
-   * @return {string}
-   * @private
+   * @param category The permission type.
+   * @param blockString 'Block' label.
+   * @param muteString 'Mute' label.
    */
-  blockSettingString_(category, blockString, muteString) {
+  private blockSettingString_(
+      category: ContentSettingsTypes, blockString: string,
+      muteString: string): string {
     if (this.useCustomSoundLabels_(category)) {
       return muteString;
     }
@@ -210,10 +209,9 @@ export class SiteDetailsPermissionElement extends
   }
 
   /**
-   * Returns true if |this| should be hidden.
-   * @private
+   * @return true if |this| should be hidden.
    */
-  shouldHideCategory_() {
+  private shouldHideCategory_() {
     return !this.site;
   }
 
@@ -221,15 +219,15 @@ export class SiteDetailsPermissionElement extends
    * Returns true if there's a string to display that provides more information
    * about this permission's setting. Currently, this only gets called when
    * |this.site| is updated.
-   * @param {!SiteSettingSource} source The source of the permission.
-   * @param {!ContentSettingsTypes} category The permission type.
-   * @param {!ContentSetting} setting The permission setting.
-   * @param {?string} settingDetail A sublabel for the permission.
-   * @return {boolean} Whether the permission will have a source string to
-   *     display.
-   * @private
+   * @param source The source of the permission.
+   * @param category The permission type.
+   * @param setting The permission setting.
+   * @param settingDetail A sublabel for the permission.
+   * @return Whether the permission will have a source string to display.
    */
-  hasPermissionInfoString_(source, category, setting, settingDetail) {
+  private hasPermissionInfoString_(
+      source: SiteSettingSource, category: ContentSettingsTypes,
+      setting: ContentSetting, settingDetail: string|null): boolean {
     // This method assumes that an empty string will be returned for categories
     // that have no permission info string.
     return this.permissionInfoString_(
@@ -244,15 +242,15 @@ export class SiteDetailsPermissionElement extends
   /**
    * Checks if there's a additional information to display, and returns the
    * class name to apply to permissions if so.
-   * @param {!SiteSettingSource} source The source of the permission.
-   * @param {!ContentSettingsTypes} category The permission type.
-   * @param {!ContentSetting} setting The permission setting.
-   * @param {?string} settingDetail A sublabel for the permission.
-   * @return {string} CSS class applied when there is an additional description
-   *     string.
-   * @private
+   * @param source The source of the permission.
+   * @param category The permission type.
+   * @param setting The permission setting.
+   * @param settingDetail A sublabel for the permission.
+   * @return CSS class applied when there is an additional description string.
    */
-  permissionInfoStringClass_(source, category, setting, settingDetail) {
+  private permissionInfoStringClass_(
+      source: SiteSettingSource, category: ContentSettingsTypes,
+      setting: ContentSetting, settingDetail: string|null): string {
     return this.hasPermissionInfoString_(
                source, category, setting, settingDetail) ?
         'two-line' :
@@ -260,12 +258,10 @@ export class SiteDetailsPermissionElement extends
   }
 
   /**
-   * Returns true if this permission can be controlled by the user.
-   * @param {!SiteSettingSource} source The source of the permission.
-   * @return {boolean}
-   * @private
+   * @param source The source of the permission.
+   * @return Whether this permission can be controlled by the user.
    */
-  isPermissionUserControlled_(source) {
+  private isPermissionUserControlled_(source: SiteSettingSource): boolean {
     return !(
         source === SiteSettingSource.ALLOWLIST ||
         source === SiteSettingSource.POLICY ||
@@ -275,12 +271,10 @@ export class SiteDetailsPermissionElement extends
   }
 
   /**
-   * Returns true if the 'allow' option should be shown.
-   * @param {!ContentSettingsTypes} category The permission type.
-   * @return {boolean}
-   * @private
+   * @param category The permission type.
+   * @return Whether if the 'allow' option should be shown.
    */
-  showAllowedSetting_(category) {
+  private showAllowedSetting_(category: ContentSettingsTypes) {
     return !(
         category === ContentSettingsTypes.SERIAL_PORTS ||
         category === ContentSettingsTypes.USB_DEVICES ||
@@ -291,14 +285,14 @@ export class SiteDetailsPermissionElement extends
   }
 
   /**
-   * Returns true if the 'ask' option should be shown.
-   * @param {!ContentSettingsTypes} category The permission type.
-   * @param {!ContentSetting} setting The setting of the permission.
-   * @param {!SiteSettingSource} source The source of the permission.
-   * @return {boolean}
-   * @private
+   * @param category The permission type.
+   * @param setting The setting of the permission.
+   * @param source The source of the permission.
+   * @return Whether the 'ask' option should be shown.
    */
-  showAskSetting_(category, setting, source) {
+  private showAskSetting_(
+      category: ContentSettingsTypes, setting: ContentSetting,
+      source: SiteSettingSource): boolean {
     // For chooser-based permissions 'ask' takes the place of 'allow'.
     if (category === ContentSettingsTypes.SERIAL_PORTS ||
         category === ContentSettingsTypes.USB_DEVICES ||
@@ -320,11 +314,10 @@ export class SiteDetailsPermissionElement extends
   /**
    * Returns true if the permission is set to a non-default 'ask'. Currently,
    * this only gets called when |this.site| is updated.
-   * @param {!ContentSetting} setting The setting of the permission.
-   * @param {!SiteSettingSource} source The source of the permission.
-   * @private
+   * @param setting The setting of the permission.
+   * @param source The source of the permission.
    */
-  isNonDefaultAsk_(setting, source) {
+  private isNonDefaultAsk_(setting: ContentSetting, source: SiteSettingSource) {
     if (setting !== ContentSetting.ASK ||
         source === SiteSettingSource.DEFAULT) {
       return false;
@@ -342,37 +335,31 @@ export class SiteDetailsPermissionElement extends
   /**
    * Updates the information string for the current permission.
    * Currently, this only gets called when |this.site| is updated.
-   * @param {!SiteSettingSource} source The source of the permission.
-   * @param {!ContentSettingsTypes} category The permission type.
-   * @param {!ContentSetting} setting The permission setting.
-   * @param {?string} settingDetail If non-empty, the string to display as the
+   * @param source The source of the permission.
+   * @param category The permission type.
+   * @param setting The permission setting.
+   * @param settingDetail If non-empty, the string to display as the
    *     permission info. This overrides other calculations made by this
    *     function, and is used for situations where extra data about the
    *     permission is required to compose the substring.
-   * @param {?string} allowlistString The string to show if the permission is
+   * @param  allowlistString The string to show if the permission is
    *     allowlisted.
-   * @param {?string} adsBlacklistString The string to show if the site is
+   * @param adsBlacklistString The string to show if the site is
    *     blacklisted for showing bad ads.
-   * @param {?string} adsBlockString The string to show if ads are blocked, but
+   * @param adsBlockString The string to show if ads are blocked, but
    *     the site is not blacklisted.
-   * @param {?string} embargoString
-   * @param {?string} insecureOriginString
-   * @param {?string} killSwitchString
-   * @param {?string} extensionAllowString
-   * @param {?string} extensionBlockString
-   * @param {?string} extensionAskString
-   * @param {?string} policyAllowString
-   * @param {?string} policyBlockString
-   * @param {?string} policyAskString
-   * @return {?string} The permission information string to display in the HTML.
-   * @private
+   * @return The permission information string to display in the HTML.
    */
-  permissionInfoString_(
-      source, category, setting, settingDetail, allowlistString,
-      adsBlacklistString, adsBlockString, embargoString, insecureOriginString,
-      killSwitchString, extensionAllowString, extensionBlockString,
-      extensionAskString, policyAllowString, policyBlockString,
-      policyAskString) {
+  private permissionInfoString_(
+      source: SiteSettingSource, category: ContentSettingsTypes,
+      setting: ContentSetting, settingDetail: string|null,
+      allowlistString: string|null, adsBlacklistString: string|null,
+      adsBlockString: string|null, embargoString: string|null,
+      insecureOriginString: string|null, killSwitchString: string|null,
+      extensionAllowString: string|null, extensionBlockString: string|null,
+      extensionAskString: string|null, policyAllowString: string|null,
+      policyBlockString: string|null,
+      policyAskString: string|null): (string|null) {
     if (source === undefined || category === undefined ||
         setting === undefined) {
       return null;
@@ -386,14 +373,14 @@ export class SiteDetailsPermissionElement extends
       return settingDetail;
     }
 
-    /** @type {Object<!ContentSetting, ?string>} */
-    const extensionStrings = {};
+    // TODO(crbug.com/1234307) Change "key: string" to "key: ContentSetting"
+    // when constants.js is migrated to TS (here and below).
+    const extensionStrings: {[key: string]: string|null} = {};
     extensionStrings[ContentSetting.ALLOW] = extensionAllowString;
     extensionStrings[ContentSetting.BLOCK] = extensionBlockString;
     extensionStrings[ContentSetting.ASK] = extensionAskString;
 
-    /** @type {Object<!ContentSetting, ?string>} */
-    const policyStrings = {};
+    const policyStrings: {[key: string]: string|null} = {};
     policyStrings[ContentSetting.ALLOW] = policyAllowString;
     policyStrings[ContentSetting.BLOCK] = policyBlockString;
     policyStrings[ContentSetting.ASK] = policyAskString;
@@ -434,6 +421,13 @@ export class SiteDetailsPermissionElement extends
       return '';
     }
     assertNotReached(`No string for ${category} setting source '${source}'`);
+    return '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'site-details-permission': SiteDetailsPermissionElement;
   }
 }
 

@@ -28,17 +28,17 @@ import {ChooserType, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD} from './cons
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {SiteException} from './site_settings_prefs_browser_proxy.js';
 
+interface SiteListEntryElement {
+  $: {
+    actionMenuButton: HTMLElement,
+  }
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {BaseMixinInterface}
- * @implements {SiteSettingsMixinInterface}
- */
-const SiteListEntryElementBase = mixinBehaviors(
-    [FocusRowBehavior], SiteSettingsMixin(BaseMixin(PolymerElement)));
+const SiteListEntryElementBase =
+    mixinBehaviors(
+        [FocusRowBehavior], SiteSettingsMixin(BaseMixin(PolymerElement))) as
+    {new (): PolymerElement & BaseMixinInterface & SiteSettingsMixinInterface};
 
-/** @polymer */
 class SiteListEntryElement extends SiteListEntryElementBase {
   static get is() {
     return 'site-list-entry';
@@ -53,7 +53,6 @@ class SiteListEntryElement extends SiteListEntryElementBase {
       /**
        * Some content types (like Location) do not allow the user to manually
        * edit the exception list from within Settings.
-       * @private
        */
       readOnlyList: {
         type: Boolean,
@@ -62,7 +61,6 @@ class SiteListEntryElement extends SiteListEntryElementBase {
 
       /**
        * Site to display in the widget.
-       * @type {!SiteException}
        */
       model: {
         type: Object,
@@ -72,7 +70,6 @@ class SiteListEntryElement extends SiteListEntryElementBase {
       /**
        * If the site represented is part of a chooser exception, the chooser
        * type will be stored here to allow the permission to be manipulated.
-       * @private {!ChooserType}
        */
       chooserType: {
         type: String,
@@ -82,20 +79,17 @@ class SiteListEntryElement extends SiteListEntryElementBase {
       /**
        * If the site represented is part of a chooser exception, the chooser
        * object will be stored here to allow the permission to be manipulated.
-       * @private
        */
       chooserObject: {
         type: Object,
         value: null,
       },
 
-      /** @private */
       showPolicyPrefIndicator_: {
         type: Boolean,
         computed: 'computeShowPolicyPrefIndicator_(model)',
       },
 
-      /** @private */
       allowNavigateToSiteDetail_: {
         type: Boolean,
         value: false,
@@ -103,21 +97,25 @@ class SiteListEntryElement extends SiteListEntryElementBase {
     };
   }
 
-  /** @private */
-  onShowTooltip_() {
+  private readOnlyList: boolean;
+  model: SiteException;
+  private chooserType: ChooserType;
+  private chooserObject: object;
+  private showPolicyPrefIndicator_: boolean;
+  private allowNavigateToSiteDetail_: boolean;
+
+  private onShowTooltip_() {
     const indicator =
-        assert(this.shadowRoot.querySelector('cr-policy-pref-indicator'));
+        assert(this.shadowRoot!.querySelector('cr-policy-pref-indicator')!);
     // The tooltip text is used by an paper-tooltip contained inside the
-    // cr-policy-pref-indicator. The text is currently held in a private
-    // property. This text is needed here to send up to the common tooltip
-    // component.
-    const text = indicator.indicatorTooltip_;
+    // cr-policy-pref-indicator. This text is needed here to send up to the
+    // common tooltip component.
+    const text = indicator.indicatorTooltip;
     this.fire('show-tooltip', {target: indicator, text});
   }
 
-  /** @private */
-  onShowIncognitoTooltip_() {
-    const tooltip = assert(this.shadowRoot.querySelector('#incognitoTooltip'));
+  private onShowIncognitoTooltip_() {
+    const tooltip = assert(this.shadowRoot!.querySelector('#incognitoTooltip'));
     // The tooltip text is used by an paper-tooltip contained inside the
     // cr-policy-pref-indicator. The text is currently held in a private
     // property. This text is needed here to send up to the common tooltip
@@ -126,11 +124,7 @@ class SiteListEntryElement extends SiteListEntryElementBase {
     this.fire('show-tooltip', {target: tooltip, text});
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldHideResetButton_() {
+  private shouldHideResetButton_(): boolean {
     if (this.model === undefined) {
       return false;
     }
@@ -140,11 +134,7 @@ class SiteListEntryElement extends SiteListEntryElementBase {
         !(this.readOnlyList || !!this.model.embeddingOrigin);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldHideActionMenu_() {
+  private shouldHideActionMenu_(): boolean {
     if (this.model === undefined) {
       return false;
     }
@@ -156,9 +146,8 @@ class SiteListEntryElement extends SiteListEntryElementBase {
 
   /**
    * A handler for selecting a site (by clicking on the origin).
-   * @private
    */
-  onOriginTap_() {
+  private onOriginTap_() {
     if (!this.allowNavigateToSiteDetail_) {
       return;
     }
@@ -171,9 +160,8 @@ class SiteListEntryElement extends SiteListEntryElementBase {
    * Returns the appropriate display name to show for the exception.
    * This can, for example, be the website that is affected itself,
    * or the website whose third parties are also affected.
-   * @return {string}
    */
-  computeDisplayName_() {
+  private computeDisplayName_(): string {
     if (this.model.embeddingOrigin &&
         this.model.category === ContentSettingsTypes.COOKIES &&
         this.model.origin.trim() === SITE_EXCEPTION_WILDCARD) {
@@ -186,9 +174,8 @@ class SiteListEntryElement extends SiteListEntryElementBase {
    * Returns the appropriate site description to display. This can, for example,
    * be blank, an 'embedded on <site>' string, or a third-party exception
    * description string.
-   * @return {string}
    */
-  computeSiteDescription_() {
+  private computeSiteDescription_(): string {
     // If the SiteException specifies its own label, use that.
     if (this.model.settingDetail) {
       return this.model.settingDetail;
@@ -224,18 +211,13 @@ class SiteListEntryElement extends SiteListEntryElementBase {
     return description;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowPolicyPrefIndicator_() {
+  private computeShowPolicyPrefIndicator_(): boolean {
     return this.model.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED &&
         !!this.model.controlledBy;
   }
 
-  /** @private */
-  onResetButtonTap_() {
+  private onResetButtonTap_() {
     // Use the appropriate method to reset a chooser exception.
     if (this.chooserType !== ChooserType.NONE && this.chooserObject !== null) {
       this.browserProxy.resetChooserExceptionForSite(
@@ -249,8 +231,7 @@ class SiteListEntryElement extends SiteListEntryElementBase {
         this.model.incognito);
   }
 
-  /** @private */
-  onShowActionMenuTap_() {
+  private onShowActionMenuTap_() {
     // Chooser exceptions do not support the action menu, so do nothing.
     if (this.chooserType !== ChooserType.NONE) {
       return;
@@ -261,8 +242,7 @@ class SiteListEntryElement extends SiteListEntryElementBase {
         {anchor: this.$.actionMenuButton, model: this.model});
   }
 
-  /** @private */
-  onModelChanged_() {
+  private onModelChanged_() {
     if (!this.model) {
       this.allowNavigateToSiteDetail_ = false;
       return;

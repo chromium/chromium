@@ -11,25 +11,17 @@ js_type_check("closure_compile") {
   closure_flags = settings_closure_flags
   deps = [
     ":all_sites",
-    ":android_info_browser_proxy",
     ":category_default_setting",
     ":category_setting_exceptions",
     ":constants",
     ":cookie_info",
     ":local_data_browser_proxy",
-    ":media_picker",
-    ":settings_category_default_radio_group",
     ":site_data",
     ":site_data_details_subpage",
     ":site_data_entry",
-    ":site_details",
-    ":site_details_permission",
     ":site_entry",
-    ":site_list",
-    ":site_list_entry",
     ":site_settings_mixin",
     ":site_settings_prefs_browser_proxy",
-    ":website_usage_browser_proxy",
   ]
 }
 
@@ -50,10 +42,6 @@ js_library("all_sites") {
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("android_info_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("category_default_setting") {
@@ -92,27 +80,6 @@ js_library("local_data_browser_proxy") {
     ":cookie_info",
     "//ui/webui/resources/js:cr.m",
   ]
-}
-
-js_library("media_picker") {
-  deps = [
-    ":site_settings_mixin",
-    ":site_settings_prefs_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("settings_category_default_radio_group") {
-  deps = [
-    ":constants",
-    ":site_settings_mixin",
-    "../controls:settings_radio_group",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
 }
 
 js_library("site_data") {
@@ -157,34 +124,6 @@ js_library("site_data_entry") {
   ]
 }
 
-js_library("site_details") {
-  deps = [
-    ":constants",
-    ":site_details_permission",
-    ":site_settings_mixin",
-    ":website_usage_browser_proxy",
-    "..:metrics_browser_proxy",
-    "..:router",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("site_details_permission") {
-  deps = [
-    ":constants",
-    ":site_settings_mixin",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
 js_library("site_entry") {
   deps = [
     ":constants",
@@ -200,37 +139,6 @@ js_library("site_entry") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
-  ]
-}
-
-js_library("site_list") {
-  deps = [
-    ":android_info_browser_proxy",
-    ":constants",
-    ":site_list_entry",
-    ":site_settings_mixin",
-    ":site_settings_prefs_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/paper-tooltip:paper-tooltip",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:list_property_update_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("site_list_entry") {
-  deps = [
-    ":constants",
-    ":site_settings_mixin",
-    "..:base_mixin",
-    "..:route",
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_indicator.m",
     "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
   ]
 }
@@ -255,10 +163,6 @@ js_library("site_settings_prefs_browser_proxy") {
   externs_list = [ "$externs_path/settings_private.js" ]
 }
 
-js_library("website_usage_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "add_site_dialog.ts",
@@ -270,18 +174,18 @@ html_to_js("web_components") {
     "chooser_exception_list_entry.ts",
     "clear_storage_dialog_css.ts",
     "edit_exception_dialog.ts",
-    "media_picker.js",
+    "media_picker.ts",
     "pdf_documents.ts",
     "protocol_handlers.ts",
-    "settings_category_default_radio_group.js",
+    "settings_category_default_radio_group.ts",
     "site_data.js",
     "site_data_details_subpage.js",
     "site_data_entry.js",
-    "site_details.js",
-    "site_details_permission.js",
+    "site_details.ts",
+    "site_details_permission.ts",
     "site_entry.js",
-    "site_list.js",
-    "site_list_entry.js",
+    "site_list.ts",
+    "site_list_entry.ts",
     "zoom_levels.ts",
   ]
 }

@@ -23,8 +23,9 @@ import './site_list_entry.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -36,21 +37,24 @@ import {ContentSetting, ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {RawSiteException, SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SiteSettingsMixinInterface}
- * @implements {ListPropertyUpdateBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SiteListElementBase = mixinBehaviors(
-    [
-      WebUIListenerBehavior,
-      ListPropertyUpdateBehavior,
-    ],
-    SiteSettingsMixin(PolymerElement));
+export interface SiteListElement {
+  $: {
+    addSite: HTMLElement,
+    category: HTMLElement,
+    tooltip: PaperTooltipElement,
+  };
+}
 
-/** @polymer */
+const SiteListElementBase = mixinBehaviors(
+                                [
+                                  WebUIListenerBehavior,
+                                  ListPropertyUpdateBehavior,
+                                ],
+                                SiteSettingsMixin(PolymerElement)) as {
+  new (): PolymerElement & WebUIListenerBehavior & ListPropertyUpdateBehavior &
+  SiteSettingsMixinInterface
+};
+
 export class SiteListElement extends SiteListElementBase {
   static get is() {
     return 'site-list';
@@ -75,19 +79,16 @@ export class SiteListElement extends SiteListElementBase {
 
       /**
        * The site serving as the model for the currently open action menu.
-       * @private {?SiteException}
        */
       actionMenuSite_: Object,
 
       /**
        * Whether the "edit exception" dialog should be shown.
-       * @private
        */
       showEditExceptionDialog_: Boolean,
 
       /**
        * Array of sites to display in the widget.
-       * @type {!Array<SiteException>}
        */
       sites: {
         type: Array,
@@ -106,12 +107,10 @@ export class SiteListElement extends SiteListElementBase {
         value: INVALID_CATEGORY_SUBTYPE,
       },
 
-      /** @private */
       hasIncognito_: Boolean,
 
       /**
        * Whether to show the Add button next to the header.
-       * @private
        */
       showAddSiteButton_: {
         type: Boolean,
@@ -119,31 +118,26 @@ export class SiteListElement extends SiteListElementBase {
             'categorySubtype)',
       },
 
-      /** @private */
       showAddSiteDialog_: Boolean,
 
       /**
        * Whether to show the Allow action in the action menu.
-       * @private
        */
       showAllowAction_: Boolean,
 
       /**
        * Whether to show the Block action in the action menu.
-       * @private
        */
       showBlockAction_: Boolean,
 
       /**
        * Whether to show the 'Clear on exit' action in the action
        * menu.
-       * @private
        */
       showSessionOnlyAction_: Boolean,
 
       /**
        * All possible actions in the action menu.
-       * @private
        */
       actions_: {
         readOnly: true,
@@ -156,23 +150,41 @@ export class SiteListElement extends SiteListElementBase {
         }
       },
 
-      /** @private */
       lastFocused_: Object,
-
-      /** @private */
       listBlurred_: Boolean,
-
-      /** @private */
       tooltipText_: String,
-
       searchFilter: String,
-
     };
   }
 
   static get observers() {
     return ['configureWidget_(category, categorySubtype)'];
   }
+
+  readOnlyList: boolean;
+  categoryHeader: string;
+  private actionMenuSite_: SiteException|null;
+  private showEditExceptionDialog_: boolean;
+  sites: Array<SiteException>;
+  categorySubtype: ContentSetting;
+  private hasIncognito_: boolean;
+  private showAddSiteButton_: boolean;
+  private showAddSiteDialog_: boolean;
+  private showAllowAction_: boolean;
+  private showBlockAction_: boolean;
+  private showSessionOnlyAction_: boolean;
+  private lastFocused_: HTMLElement;
+  private listBlurred_: boolean;
+  private tooltipText_: string;
+  searchFilter: string;
+
+  private activeDialogAnchor_: HTMLElement|null;
+  private browserProxy_: SiteSettingsPrefsBrowserProxy =
+      SiteSettingsPrefsBrowserProxyImpl.getInstance();
+
+  // <if expr="chromeos">
+  private androidSmsInfo_: AndroidSmsInfo|null;
+  // </if>
 
   constructor() {
     super();
@@ -181,7 +193,6 @@ export class SiteListElement extends SiteListElementBase {
     /**
      * Android messages info object containing messages feature state and
      * exception origin.
-     * @private {?AndroidSmsInfo}
      */
     this.androidSmsInfo_ = null;
     // </if>
@@ -189,39 +200,36 @@ export class SiteListElement extends SiteListElementBase {
     /**
      * The element to return focus to, when the currently active dialog is
      * closed.
-     * @private {?HTMLElement}
      */
     this.activeDialogAnchor_ = null;
-
-    /** @private {!SiteSettingsPrefsBrowserProxy} */
-    this.browserProxy_ = SiteSettingsPrefsBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
   ready() {
     super.ready();
 
     this.addWebUIListener(
         'contentSettingSitePermissionChanged',
-        this.siteWithinCategoryChanged_.bind(this));
+        (category: ContentSettingsTypes) =>
+            this.siteWithinCategoryChanged_(category));
     this.addWebUIListener(
-        'onIncognitoStatusChanged', this.onIncognitoStatusChanged_.bind(this));
+        'onIncognitoStatusChanged',
+        (hasIncognito: boolean) =>
+            this.onIncognitoStatusChanged_(hasIncognito));
     // <if expr="chromeos">
-    this.addWebUIListener('settings.onAndroidSmsInfoChange', (info) => {
-      this.androidSmsInfo_ = info;
-      this.populateList_();
-    });
+    this.addWebUIListener(
+        'settings.onAndroidSmsInfoChange', (info: AndroidSmsInfo) => {
+          this.androidSmsInfo_ = info;
+          this.populateList_();
+        });
     // </if>
     this.browserProxy.updateIncognitoStatus();
   }
 
   /**
    * Called when a site changes permission.
-   * @param {string} category The category of the site that changed.
-   * @param {string} site The site that changed.
-   * @private
+   * @param category The category of the site that changed.
    */
-  siteWithinCategoryChanged_(category, site) {
+  private siteWithinCategoryChanged_(category: ContentSettingsTypes) {
     if (category === this.category) {
       this.configureWidget_();
     }
@@ -231,9 +239,8 @@ export class SiteListElement extends SiteListElementBase {
    * Called for each site list when incognito is enabled or disabled. Only
    * called on change (opening N incognito windows only fires one message).
    * Another message is sent when the *last* incognito window closes.
-   * @private
    */
-  onIncognitoStatusChanged_(hasIncognito) {
+  private onIncognitoStatusChanged_(hasIncognito: boolean) {
     this.hasIncognito_ = hasIncognito;
 
     // The SESSION_ONLY list won't have any incognito exceptions. (Minor
@@ -249,9 +256,8 @@ export class SiteListElement extends SiteListElementBase {
 
   /**
    * Configures the action menu, visibility of the widget and shows the list.
-   * @private
    */
-  configureWidget_() {
+  private configureWidget_() {
     if (this.category === undefined) {
       return;
     }
@@ -263,7 +269,7 @@ export class SiteListElement extends SiteListElementBase {
     // </if>
 
     // <if expr="chromeos">
-    this.updateAndroidSmsInfo_().then(this.populateList_.bind(this));
+    this.updateAndroidSmsInfo_().then(() => this.populateList_());
     // </if>
 
     // The Session permissions are only for cookies.
@@ -274,45 +280,35 @@ export class SiteListElement extends SiteListElementBase {
 
   /**
    * Whether there are any site exceptions added for this content setting.
-   * @return {boolean}
-   * @private
    */
-  hasSites_() {
+  private hasSites_(): boolean {
     return this.sites.length > 0;
   }
 
   /**
    * Whether the Add Site button is shown in the header for the current category
    * and category subtype.
-   * @return {boolean}
-   * @private
    */
-  computeShowAddSiteButton_() {
+  private computeShowAddSiteButton_(): boolean {
     return !(
         this.readOnlyList ||
         (this.category === ContentSettingsTypes.FILE_SYSTEM_WRITE &&
          this.categorySubtype === ContentSetting.ALLOW));
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showNoSearchResults_() {
+  private showNoSearchResults_(): boolean {
     return this.sites.length > 0 && this.getFilteredSites_().length === 0;
   }
 
   /**
    * A handler for the Add Site button.
-   * @private
    */
-  onAddSiteTap_() {
+  private onAddSiteTap_() {
     assert(!this.readOnlyList);
     this.showAddSiteDialog_ = true;
   }
 
-  /** @private */
-  onAddSiteDialogClosed_() {
+  private onAddSiteDialogClosed_() {
     this.showAddSiteDialog_ = false;
     focusWithoutInk(assert(this.$.addSite));
   }
@@ -320,10 +316,8 @@ export class SiteListElement extends SiteListElementBase {
   /**
    * Need to use common tooltip since the tooltip in the entry is cut off from
    * the iron-list.
-   * @param {!CustomEvent<!{target: HTMLElement, text: string}>} e
-   * @private
    */
-  onShowTooltip_(e) {
+  private onShowTooltip_(e: CustomEvent<{target: HTMLElement, text: string}>) {
     this.tooltipText_ = e.detail.text;
     const target = e.detail.target;
     // paper-tooltip normally determines the target from the |for| property,
@@ -331,7 +325,7 @@ export class SiteListElement extends SiteListElementBase {
     // potential targets.
     const tooltip = this.$.tooltip;
     tooltip.target = target;
-    /** @type {{updatePosition: Function}} */ (tooltip).updatePosition();
+    tooltip.updatePosition();
     const hide = () => {
       this.$.tooltip.hide();
       target.removeEventListener('mouseleave', hide);
@@ -350,9 +344,8 @@ export class SiteListElement extends SiteListElementBase {
   /**
    * Load android sms info if required and sets it to the |androidSmsInfo_|
    * property. Returns a promise that resolves when load is complete.
-   * @private
    */
-  updateAndroidSmsInfo_() {
+  private updateAndroidSmsInfo_() {
     // |androidSmsInfo_| is only relevant for NOTIFICATIONS category. Don't
     // bother fetching it for other categories.
     if (this.category === ContentSettingsTypes.NOTIFICATIONS &&
@@ -360,9 +353,10 @@ export class SiteListElement extends SiteListElementBase {
         loadTimeData.getBoolean('multideviceAllowedByPolicy') &&
         !this.androidSmsInfo_) {
       const androidInfoBrowserProxy = AndroidInfoBrowserProxyImpl.getInstance();
-      return androidInfoBrowserProxy.getAndroidSmsInfo().then((info) => {
-        this.androidSmsInfo_ = info;
-      });
+      return androidInfoBrowserProxy.getAndroidSmsInfo().then(
+          (info: AndroidSmsInfo) => {
+            this.androidSmsInfo_ = info;
+          });
     }
 
     return Promise.resolve();
@@ -371,14 +365,14 @@ export class SiteListElement extends SiteListElementBase {
   /**
    * Processes exceptions and adds showAndroidSmsNote field to
    * the required exception item.
-   * @private
    */
-  processExceptionsForAndroidSmsInfo_(sites) {
+  private processExceptionsForAndroidSmsInfo_(sites: Array<SiteException>):
+      Array<SiteException> {
     if (!this.androidSmsInfo_ || !this.androidSmsInfo_.enabled) {
       return sites;
     }
     return sites.map((site) => {
-      if (site.origin === this.androidSmsInfo_.origin) {
+      if (site.origin === this.androidSmsInfo_!.origin) {
         return Object.assign({showAndroidSmsNote: true}, site);
       } else {
         return site;
@@ -389,9 +383,8 @@ export class SiteListElement extends SiteListElementBase {
 
   /**
    * Populate the sites list for display.
-   * @private
    */
-  populateList_() {
+  private populateList_() {
     this.browserProxy_.getExceptionList(this.category).then(exceptionList => {
       this.processExceptions_(exceptionList);
       this.closeActionMenu_();
@@ -400,10 +393,8 @@ export class SiteListElement extends SiteListElementBase {
 
   /**
    * Process the exception list returned from the native layer.
-   * @param {!Array<RawSiteException>} exceptionList
-   * @private
    */
-  processExceptions_(exceptionList) {
+  private processExceptions_(exceptionList: Array<RawSiteException>) {
     let sites = exceptionList
                     .filter(
                         site => site.setting !== ContentSetting.DEFAULT &&
@@ -418,9 +409,8 @@ export class SiteListElement extends SiteListElementBase {
 
   /**
    * Set up the values to use for the action menu.
-   * @private
    */
-  setUpActionMenu_() {
+  private setUpActionMenu_() {
     this.showAllowAction_ = this.categorySubtype !== ContentSetting.ALLOW;
     this.showBlockAction_ = this.categorySubtype !== ContentSetting.BLOCK;
     this.showSessionOnlyAction_ =
@@ -429,11 +419,10 @@ export class SiteListElement extends SiteListElementBase {
   }
 
   /**
-   * @return {boolean} Whether to show the "Session Only" menu item for the
-   *     currently active site.
-   * @private
+   * @return Whether to show the "Session Only" menu item for the currently
+   *     active site.
    */
-  showSessionOnlyActionForSite_() {
+  private showSessionOnlyActionForSite_(): boolean {
     // It makes no sense to show "clear on exit" for exceptions that only apply
     // to incognito. It gives the impression that they might under some
     // circumstances not be cleared on exit, which isn't true.
@@ -444,47 +433,36 @@ export class SiteListElement extends SiteListElementBase {
     return this.showSessionOnlyAction_;
   }
 
-  /**
-   * @param {!ContentSetting} contentSetting
-   * @private
-   */
-  setContentSettingForActionMenuSite_(contentSetting) {
+  private setContentSettingForActionMenuSite_(contentSetting: ContentSetting) {
     assert(this.actionMenuSite_);
     this.browserProxy.setCategoryPermissionForPattern(
-        this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,
-        this.category, contentSetting, this.actionMenuSite_.incognito);
+        this.actionMenuSite_!.origin, this.actionMenuSite_!.embeddingOrigin,
+        this.category, contentSetting, this.actionMenuSite_!.incognito);
   }
 
-  /** @private */
-  onAllowTap_() {
+  private onAllowTap_() {
     this.setContentSettingForActionMenuSite_(ContentSetting.ALLOW);
     this.closeActionMenu_();
   }
 
-  /** @private */
-  onBlockTap_() {
+  private onBlockTap_() {
     this.setContentSettingForActionMenuSite_(ContentSetting.BLOCK);
     this.closeActionMenu_();
   }
 
-  /** @private */
-  onSessionOnlyTap_() {
+  private onSessionOnlyTap_() {
     this.setContentSettingForActionMenuSite_(ContentSetting.SESSION_ONLY);
     this.closeActionMenu_();
   }
 
-  /** @private */
-  onEditTap_() {
+  private onEditTap_() {
     // Close action menu without resetting |this.actionMenuSite_| since it is
     // bound to the dialog.
-    /** @type {!CrActionMenuElement} */ (
-        this.shadowRoot.querySelector('cr-action-menu'))
-        .close();
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
     this.showEditExceptionDialog_ = true;
   }
 
-  /** @private */
-  onEditExceptionDialogClosed_() {
+  private onEditExceptionDialogClosed_() {
     this.showEditExceptionDialog_ = false;
     this.actionMenuSite_ = null;
     if (this.activeDialogAnchor_) {
@@ -493,52 +471,37 @@ export class SiteListElement extends SiteListElementBase {
     }
   }
 
-  /** @private */
-  onResetTap_() {
-    const site = this.actionMenuSite_;
-    assert(site);
+  private onResetTap_() {
+    const site = assert(this.actionMenuSite_!);
     this.browserProxy.resetCategoryPermissionForPattern(
-        site.origin, site.embeddingOrigin, this.category, site.incognito);
+        site!.origin, site!.embeddingOrigin, this.category, site!.incognito);
     this.closeActionMenu_();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onShowActionMenu_(e) {
-    this.activeDialogAnchor_ = /** @type {!HTMLElement} */ (e.detail.anchor);
+  private onShowActionMenu_(
+      e: CustomEvent<{anchor: HTMLElement, model: SiteException}>) {
+    this.activeDialogAnchor_ = e.detail.anchor;
     this.actionMenuSite_ = e.detail.model;
-    /** @type {!CrActionMenuElement} */ (
-        this.shadowRoot.querySelector('cr-action-menu'))
-        .showAt(this.activeDialogAnchor_);
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
+        this.activeDialogAnchor_);
   }
 
-  /** @private */
-  closeActionMenu_() {
+  private closeActionMenu_() {
     this.actionMenuSite_ = null;
     this.activeDialogAnchor_ = null;
-    const actionMenu =
-        /** @type {!CrActionMenuElement} */ (
-            this.shadowRoot.querySelector('cr-action-menu'));
+    const actionMenu = this.shadowRoot!.querySelector('cr-action-menu')!;
     if (actionMenu.open) {
       actionMenu.close();
     }
   }
 
-  /**
-   * @return {!Array<!SiteException>}
-   * @private
-   */
-  getFilteredSites_() {
+  private getFilteredSites_(): Array<SiteException> {
     if (!this.searchFilter) {
       return this.sites.slice();
     }
 
-    const propNames = [
-      'displayName',
-      'origin',
-    ];
+    type SearchableProperty = 'displayName'|'origin';
+    const propNames: Array<SearchableProperty> = ['displayName', 'origin'];
     const searchFilter = this.searchFilter.toLowerCase();
     return this.sites.filter(
         site => propNames.some(

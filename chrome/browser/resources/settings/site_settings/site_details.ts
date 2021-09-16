@@ -23,10 +23,11 @@ import './all_sites_icons.js';
 import './clear_storage_dialog_css.js';
 import './site_details_permission.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -39,18 +40,21 @@ import {SiteDetailsPermissionElement} from './site_details_permission.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './website_usage_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SiteSettingsMixinInterface}
- * @implements {RouteObserverMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SiteDetailsElementBase = mixinBehaviors(
-    [I18nBehavior, WebUIListenerBehavior],
-    SiteSettingsMixin(RouteObserverMixin(PolymerElement)));
+interface SiteDetailsElement {
+  $: {
+    confirmClearStorage: CrDialogElement,
+    confirmResetSettings: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const SiteDetailsElementBase =
+    mixinBehaviors(
+        [I18nBehavior, WebUIListenerBehavior],
+        SiteSettingsMixin(RouteObserverMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
+      SiteSettingsMixinInterface & RouteObserverMixinInterface
+    };
+
 class SiteDetailsElement extends SiteDetailsElementBase {
   static get is() {
     return 'site-details';
@@ -78,13 +82,11 @@ class SiteDetailsElement extends SiteDetailsElementBase {
 
       /**
        * The origin that this widget is showing details for.
-       * @private
        */
       origin_: String,
 
       /**
        * The amount of data stored for the origin.
-       * @private
        */
       storedData_: {
         type: String,
@@ -93,14 +95,12 @@ class SiteDetailsElement extends SiteDetailsElementBase {
 
       /**
        * The number of cookies stored for the origin.
-       * @private
        */
       numCookies_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       enableExperimentalWebPlatformFeatures_: {
         type: Boolean,
         value() {
@@ -109,14 +109,12 @@ class SiteDetailsElement extends SiteDetailsElementBase {
         },
       },
 
-      /** @private */
       enableWebBluetoothNewPermissionsBackend_: {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
       },
 
-      /** @private */
       contentSettingsTypesEnum_: {
         type: Object,
         value: ContentSettingsTypes,
@@ -124,27 +122,31 @@ class SiteDetailsElement extends SiteDetailsElementBase {
     };
   }
 
-  constructor() {
-    super();
+  blockAutoplayEnabled: boolean;
+  pageTitle: string;
+  private origin_: string;
+  private storedData_: string;
+  private numCookies_: string;
+  private enableExperimentalWebPlatformFeatures_: boolean;
+  private enableWebBluetoothNewPermissionsBackend_: boolean;
 
-    /** @private {string} */
-    this.fetchingForHost_ = '';
+  private fetchingForHost_: string = '';
+  private websiteUsageProxy_: WebsiteUsageBrowserProxy =
+      WebsiteUsageBrowserProxyImpl.getInstance();
 
-    /** @private {!WebsiteUsageBrowserProxy} */
-    this.websiteUsageProxy_ = WebsiteUsageBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener('usage-total-changed', (host, data, cookies) => {
-      this.onUsageTotalChanged_(host, data, cookies);
-    });
+    this.addWebUIListener(
+        'usage-total-changed',
+        (host: string, data: string, cookies: string) => {
+          this.onUsageTotalChanged_(host, data, cookies);
+        });
 
     this.addWebUIListener(
         'contentSettingSitePermissionChanged',
-        this.onPermissionChanged_.bind(this));
+        (category: ContentSettingsTypes, origin: string) =>
+            this.onPermissionChanged_(category, origin));
 
     // Refresh block autoplay status from the backend.
     this.browserProxy.fetchBlockAutoplayStatus();
@@ -152,9 +154,8 @@ class SiteDetailsElement extends SiteDetailsElementBase {
 
   /**
    * RouteObserverMixin
-   * @override
    */
-  currentRouteChanged(route) {
+  currentRouteChanged(route: Route) {
     if (route !== routes.SITE_SETTINGS_SITE_DETAILS) {
       return;
     }
@@ -179,14 +180,10 @@ class SiteDetailsElement extends SiteDetailsElementBase {
 
   /**
    * Called when a site within a category has been changed.
-   * @param {!ContentSettingsTypes} category The category that
-   *     changed.
-   * @param {string} origin The origin of the site that changed.
-   * @param {string} embeddingOrigin The embedding origin of the site that
-   *     changed.
-   * @private
+   * @param category The category that changed.
+   * @param origin The origin of the site that changed.
    */
-  onPermissionChanged_(category, origin, embeddingOrigin) {
+  private onPermissionChanged_(category: ContentSettingsTypes, origin: string) {
     if (this.origin_ === undefined || this.origin_ === '' ||
         origin === undefined || origin === '') {
       return;
@@ -201,14 +198,11 @@ class SiteDetailsElement extends SiteDetailsElementBase {
 
   /**
    * Callback for when the usage total is known.
-   * @param {string} host The host that the usage was fetched for.
-   * @param {string} usage The string showing how much data the given host
-   *     is using.
-   * @param {string} cookies The string showing how many cookies the given host
-   *     is using.
-   * @private
+   * @param host The host that the usage was fetched for.
+   * @param usage The string showing how much data the given host is using.
+   * @param cookies The string showing how many cookies the given host is using.
    */
-  onUsageTotalChanged_(host, usage, cookies) {
+  private onUsageTotalChanged_(host: string, usage: string, cookies: string) {
     if (this.fetchingForHost_ === host) {
       this.storedData_ = usage;
       this.numCookies_ = cookies;
@@ -218,30 +212,27 @@ class SiteDetailsElement extends SiteDetailsElementBase {
   /**
    * Retrieves the permissions listed in |categoryList| from the backend for
    * |this.origin_|.
-   * @param {!Array<!ContentSettingsTypes>} categoryList The list
-   *     of categories to update permissions for.
-   * @param {boolean} hideOthers If true, permissions for categories not in
+   * @param categoryList The list of categories to update permissions for.
+   * @param hideOthers If true, permissions for categories not in
    *     |categoryList| will be hidden.
-   * @private
    */
-  updatePermissions_(categoryList, hideOthers) {
-    const permissionsMap =
-        /**
-         * @type {!Object<!ContentSettingsTypes,
-         *         !SiteDetailsPermissionElement>}
-         */
-        (Array.prototype.reduce.call(
-            this.root.querySelectorAll('site-details-permission'),
+  private updatePermissions_(
+      categoryList: Array<ContentSettingsTypes>, hideOthers: boolean) {
+    const permissionsMap: {[key: string]: SiteDetailsPermissionElement} =
+        Array.prototype.reduce.call(
+            this.shadowRoot!.querySelectorAll('site-details-permission'),
             (map, element) => {
               if (categoryList.includes(element.category)) {
-                map[element.category] = element;
+                (map as {[key: string]:
+                             SiteDetailsPermissionElement})[element.category] =
+                    element;
               } else if (hideOthers) {
                 // This will hide any permission not in the category list.
                 element.site = null;
               }
               return map;
             },
-            {}));
+            {}) as {[key: string]: SiteDetailsPermissionElement};
 
     this.browserProxy.getOriginPermissions(this.origin_, categoryList)
         .then((exceptionList) => {
@@ -261,36 +252,30 @@ class SiteDetailsElement extends SiteDetailsElementBase {
         });
   }
 
-  /** @private */
-  onCloseDialog_(e) {
-    e.target.closest('cr-dialog').close();
+  private onCloseDialog_(e: Event) {
+    (e.target as HTMLElement).closest('cr-dialog')!.close();
   }
 
   /**
    * Confirms the resetting of all content settings for an origin.
-   * @param {!Event} e
-   * @private
    */
-  onConfirmClearSettings_(e) {
+  private onConfirmClearSettings_(e: Event) {
     e.preventDefault();
     this.$.confirmResetSettings.showModal();
   }
 
   /**
    * Confirms the clearing of storage for an origin.
-   * @param {!Event} e
-   * @private
    */
-  onConfirmClearStorage_(e) {
+  private onConfirmClearStorage_(e: Event) {
     e.preventDefault();
     this.$.confirmClearStorage.showModal();
   }
 
   /**
    * Resets all permissions for the current origin.
-   * @private
    */
-  onResetSettings_(e) {
+  private onResetSettings_(e: Event) {
     this.browserProxy.setOriginPermissions(
         this.origin_, null, ContentSetting.DEFAULT);
 
@@ -299,9 +284,8 @@ class SiteDetailsElement extends SiteDetailsElementBase {
 
   /**
    * Clears all data stored, except cookies, for the current origin.
-   * @private
    */
-  onClearStorage_(e) {
+  private onClearStorage_(e: Event) {
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.SITE_DETAILS_CLEAR_DATA);
     if (this.hasUsage_(this.storedData_, this.numCookies_)) {
@@ -315,33 +299,28 @@ class SiteDetailsElement extends SiteDetailsElementBase {
 
   /**
    * Checks whether this site has any usage information to show.
-   * @return {boolean} Whether there is any usage information to show (e.g.
-   *     disk or battery).
-   * @private
+   * @return Whether there is any usage information to show (e.g. disk or
+   *     battery).
    */
-  hasUsage_(storage, cookies) {
+  private hasUsage_(storage: string, cookies: string): boolean {
     return storage !== '' || cookies !== '';
   }
 
   /**
    * Checks whether this site has both storage and cookies information to show.
-   * @return {boolean} Whether there are both storage and cookies information to
-   *     show.
-   * @private
+   * @return Whether there are both storage and cookies information to show.
    */
-  hasDataAndCookies_(storage, cookies) {
+  private hasDataAndCookies_(storage: string, cookies: string): boolean {
     return storage !== '' && cookies !== '';
   }
 
-  /** @private */
-  onResetSettingsDialogClosed_() {
+  private onResetSettingsDialogClosed_() {
     focusWithoutInk(
-        assert(this.shadowRoot.querySelector('#resetSettingsButton')));
+        assert(this.shadowRoot!.querySelector('#resetSettingsButton')!));
   }
 
-  /** @private */
-  onClearStorageDialogClosed_() {
-    focusWithoutInk(assert(this.shadowRoot.querySelector('#clearStorage')));
+  private onClearStorageDialogClosed_() {
+    focusWithoutInk(assert(this.shadowRoot!.querySelector('#clearStorage')!));
   }
 }
 

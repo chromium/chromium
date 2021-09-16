@@ -158,7 +158,7 @@ preprocess_if_expr("preprocess") {
     "site_settings/local_data_browser_proxy.js",
     "site_settings/site_settings_mixin.js",
     "site_settings/site_settings_prefs_browser_proxy.js",
-    "site_settings/website_usage_browser_proxy.js",
+    "site_settings/website_usage_browser_proxy.ts",
 
     # Files holding TypeScript types, necessary only during the migration. These
     # files are purposefully *not* listed in the :build_ts target's |in_files|
@@ -176,7 +176,7 @@ preprocess_if_expr("preprocess") {
     in_files += [
       "autofill_page/blocking_request_manager.ts",
       "people_page/account_manager_browser_proxy.js",
-      "site_settings/android_info_browser_proxy.js",
+      "site_settings/android_info_browser_proxy.ts",
     ]
   } else {
     if (!is_chromeos_lacros) {
@@ -316,18 +316,18 @@ preprocess_if_expr("preprocess_generated") {
     "site_settings/chooser_exception_list_entry.ts",
     "site_settings/clear_storage_dialog_css.ts",
     "site_settings/edit_exception_dialog.ts",
-    "site_settings/media_picker.js",
+    "site_settings/media_picker.ts",
     "site_settings/pdf_documents.ts",
     "site_settings/protocol_handlers.ts",
-    "site_settings/settings_category_default_radio_group.js",
+    "site_settings/settings_category_default_radio_group.ts",
     "site_settings/site_data.js",
     "site_settings/site_data_details_subpage.js",
     "site_settings/site_data_entry.js",
-    "site_settings/site_details.js",
-    "site_settings/site_details_permission.js",
+    "site_settings/site_details.ts",
+    "site_settings/site_details_permission.ts",
     "site_settings/site_entry.js",
-    "site_settings/site_list.js",
-    "site_settings/site_list_entry.js",
+    "site_settings/site_list.ts",
+    "site_settings/site_list_entry.ts",
     "site_settings/zoom_levels.ts",
     "site_settings_page/recent_site_permissions.ts",
     "site_settings_page/site_settings_list.ts",
@@ -481,8 +481,6 @@ js_library("lazy_load") {
   deps = [
     "site_settings:category_setting_exceptions",
     "site_settings:local_data_browser_proxy",
-    "site_settings:settings_category_default_radio_group",
-    "site_settings:site_list",
     "site_settings:site_settings_prefs_browser_proxy",
   ]
 
@@ -792,24 +790,24 @@ ts_library("build_ts") {
     "site_settings/cookie_info.js",
     "site_settings/edit_exception_dialog.ts",
     "site_settings/local_data_browser_proxy.js",
-    "site_settings/media_picker.js",
+    "site_settings/media_picker.ts",
     "site_settings_page/recent_site_permissions.ts",
     "site_settings_page/site_settings_list.ts",
     "site_settings_page/site_settings_page.ts",
     "site_settings/pdf_documents.ts",
     "site_settings/protocol_handlers.ts",
-    "site_settings/settings_category_default_radio_group.js",
+    "site_settings/settings_category_default_radio_group.ts",
     "site_settings/site_data_details_subpage.js",
     "site_settings/site_data_entry.js",
     "site_settings/site_data.js",
-    "site_settings/site_details.js",
-    "site_settings/site_details_permission.js",
+    "site_settings/site_details.ts",
+    "site_settings/site_details_permission.ts",
     "site_settings/site_entry.js",
-    "site_settings/site_list_entry.js",
-    "site_settings/site_list.js",
+    "site_settings/site_list_entry.ts",
+    "site_settings/site_list.ts",
     "site_settings/site_settings_mixin.js",
     "site_settings/site_settings_prefs_browser_proxy.js",
-    "site_settings/website_usage_browser_proxy.js",
+    "site_settings/website_usage_browser_proxy.ts",
     "site_settings/zoom_levels.ts",
   ]
 
@@ -829,7 +827,7 @@ ts_library("build_ts") {
     in_files += [
       "autofill_page/blocking_request_manager.ts",
       "people_page/account_manager_browser_proxy.js",
-      "site_settings/android_info_browser_proxy.js",
+      "site_settings/android_info_browser_proxy.ts",
     ]
   } else {
     if (!is_chromeos_lacros) {
