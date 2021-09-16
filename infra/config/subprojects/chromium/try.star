@@ -416,6 +416,8 @@ try_.chromium_android_builder(
     cores = 16,
     goma_jobs = goma.jobs.J300,
     ssd = True,
+    use_java_coverage = True,
+    coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(),
     # TODO(crbug/1202741)
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
