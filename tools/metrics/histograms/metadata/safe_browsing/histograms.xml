@@ -1130,7 +1130,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.MainProfile.SafeBrowsingState"
-    enum="SafeBrowsingState" expires_after="2022-05-01">
+    enum="SafeBrowsingState" expires_after="2022-10-01">
   <owner>jeffcyr@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

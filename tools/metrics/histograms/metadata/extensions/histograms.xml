@@ -1118,9 +1118,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.EsbAllowlistOmahaAttribute"
-    enum="ExtensionAllowlistOmahaAttributeValue" expires_after="2021-10-01">
+    enum="ExtensionAllowlistOmahaAttributeValue" expires_after="2022-10-01">
   <owner>jeffcyr@google.com</owner>
-  <owner>lucferron@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Reports the value of the Safe Browsing CRX allowlist custom omaha attribute
     when an update check occurs for an extension.
@@ -2559,9 +2559,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.InstallFrictionDialogAction"
-    enum="ExtensionInstallFrictionDialogAction" expires_after="2021-10-01">
+    enum="ExtensionInstallFrictionDialogAction" expires_after="2022-10-01">
   <owner>jeffcyr@google.com</owner>
-  <owner>lucferron@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Action taken in the extension install friction dialog displayed to Enhanced
     Safe Browsing users before installing an extension that is not included in
@@ -3157,9 +3157,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.NotAllowlistedDisabled" units="extensions"
-    expires_after="2021-10-01">
+    expires_after="2022-10-01">
   <owner>jeffcyr@google.com</owner>
-  <owner>lucferron@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The total number of disabled extensions that are not present in the Enhanced
     Safe Browsing CRX allowlist. Recorded for all users on profile
@@ -3168,9 +3168,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.NotAllowlistedDisabledAndEsbUser"
-    units="extensions" expires_after="2021-10-01">
+    units="extensions" expires_after="2022-10-01">
   <owner>jeffcyr@google.com</owner>
-  <owner>lucferron@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The total number of disabled extensions that are not present in the Enhanced
     Safe Browsing CRX allowlist. Recorded for only for Enhanced Safe Browsing
@@ -3179,9 +3179,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.NotAllowlistedEnabled" units="extensions"
-    expires_after="2021-12-05">
+    expires_after="2022-10-01">
   <owner>jeffcyr@google.com</owner>
-  <owner>lucferron@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The total number of enabled extensions that are not present in the Enhanced
     Safe Browsing CRX allowlist. Recorded for all users on profile
@@ -3190,9 +3190,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.NotAllowlistedEnabledAndEsbUser" units="extensions"
-    expires_after="2021-10-01">
+    expires_after="2022-10-01">
   <owner>jeffcyr@google.com</owner>
-  <owner>lucferron@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The total number of enabled extensions that are not present in the Enhanced
     Safe Browsing CRX allowlist. Recorded for only for Enhanced Safe Browsing
@@ -4102,9 +4102,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.WebStoreInstall.EsbAllowlistParameter"
-    enum="WebStoreInstallAllowlistParameter" expires_after="2021-10-01">
+    enum="WebStoreInstallAllowlistParameter" expires_after="2022-10-01">
   <owner>jeffcyr@google.com</owner>
-  <owner>lucferron@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Reports the Safe Browsing CRX allowlist state received from Chrome Web Store
     when a user presses on &quot;Add to Chrome&quot; in Chrome Web Store.
@@ -4113,9 +4113,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Extensions.WebStoreInstall.NotAllowlistedInstalledWithFriction"
-    enum="Boolean" expires_after="2021-10-01">
+    enum="Boolean" expires_after="2022-10-01">
   <owner>jeffcyr@google.com</owner>
-  <owner>lucferron@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Reports when a user with install friction dialog enabled tries to install an
     extension that is not included in the Safe Browsing CRX allowlist. 'True' if
@@ -4126,9 +4126,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Extensions.WebStoreInstall.NotAllowlistedInstalledWithoutFriction"
-    enum="Boolean" expires_after="2021-10-01">
+    enum="Boolean" expires_after="2022-10-01">
   <owner>jeffcyr@google.com</owner>
-  <owner>lucferron@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Reports when a user with install friction dialog disabled tries to install
     an extension that is not included in the Safe Browsing CRX allowlist. 'True'
