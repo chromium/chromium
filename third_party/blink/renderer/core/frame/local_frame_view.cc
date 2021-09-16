@@ -211,6 +211,13 @@ void LogCursorSizeCounter(LocalFrame* frame, const ui::Cursor& cursor) {
   }
 }
 
+FloatQuad GetQuadForTimelinePaintEvent(const scoped_refptr<cc::Layer>& layer) {
+  gfx::RectF rect(layer->update_rect());
+  if (layer->transform_tree_index() != -1)
+    layer->ScreenSpaceTransform().TransformRect(&rect);
+  return FloatQuad(FloatRect(rect));
+}
+
 // Default value for how long we want to delay the
 // compositor commit beyond the start of document lifecycle updates to avoid
 // flash between navigations. The delay should be small enough so that it won't
@@ -3080,6 +3087,22 @@ const cc::Layer* LocalFrameView::RootCcLayer() const {
                                     : nullptr;
 }
 
+void LocalFrameView::CreatePaintTimelineEvents() {
+  // For pre-CAP, this is done in CompositedLayerMapping::PaintContents()
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+  if (const cc::Layer* root_layer = paint_artifact_compositor_->RootLayer()) {
+    for (const auto& layer : root_layer->children()) {
+      if (!layer->update_rect().IsEmpty()) {
+        DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+            "devtools.timeline,rail", "Paint", inspector_paint_event::Data,
+            &GetFrame(), /*layout_object=*/nullptr,
+            GetQuadForTimelinePaintEvent(layer), layer->id());
+      }
+    }
+  }
+}
+
 void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   TRACE_EVENT0("blink", "LocalFrameView::pushPaintArtifactToCompositor");
   if (!frame_->GetSettings()->GetAcceleratedCompositingEnabled()) {
@@ -3110,8 +3133,10 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
   // Skip updating property trees, pushing cc::Layers, and issuing raster
   // invalidations if possible.
   if (!paint_artifact_compositor_->NeedsUpdate()) {
-    if (repainted)
+    if (repainted) {
       paint_artifact_compositor_->UpdateRepaintedLayers(pre_composited_layers_);
+      CreatePaintTimelineEvents();
+    }
     // TODO(pdr): Should we clear the property tree state change bits (
     // |PaintArtifactCompositor::ClearPropertyTreeChangedState|)?
     return;
@@ -3164,6 +3189,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
       pre_composited_layers_, viewport_properties, scroll_translation_nodes,
       std::move(document_transition_requests));
 
+  CreatePaintTimelineEvents();
   probe::LayerTreePainted(&GetFrame());
 }
 

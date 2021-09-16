@@ -41,10 +41,13 @@
   await PerformanceTestRunner.invokeAsyncWithTimeline('performActions');
   var events = PerformanceTestRunner.mainTrackEvents();
   for (var event of events) {
-    if (event.name === TimelineModel.TimelineModel.RecordType.Paint) {
+    // When CompositeAfterPaint is enabled, a Paint trace event will be
+    // generated which encompasses the entire paint cycle for the page. That
+    // event will not correspond to any captured picture, and we just ignore it
+    // for the purpose of this test.
+    if (event.name === TimelineModel.TimelineModel.RecordType.Paint &&
+        TimelineModel.TimelineData.forEvent(event).picture) {
       paintEvents.push(event);
-      if (!TimelineModel.TimelineData.forEvent(event).picture)
-        TestRunner.addResult('Event without picture at ' + paintEvents.length);
     }
   }
 

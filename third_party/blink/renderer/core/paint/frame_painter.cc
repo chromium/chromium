@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/frame_paint_timing.h"
@@ -19,6 +20,21 @@
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
 namespace blink {
+
+namespace {
+
+FloatQuad GetQuadForTraceEvent(const LocalFrameView& frame_view,
+                               const CullRect& cull_rect) {
+  FloatQuad quad(FloatRect(cull_rect.Rect()));
+  if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
+    quad.Move(FloatSize(owner->PhysicalContentBoxOffset()));
+    owner->LocalToAbsoluteQuad(
+        quad, kTraverseDocumentBoundaries | kUseGeometryMapperMode);
+  }
+  return quad;
+}
+
+}  // namespace
 
 bool FramePainter::in_paint_contents_ = false;
 
@@ -65,9 +81,11 @@ void FramePainter::PaintContents(GraphicsContext& context,
          DocumentLifecycle::kCompositingAssignmentsClean);
 
   FramePaintTiming frame_paint_timing(context, &GetFrameView().GetFrame());
-  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+
+  DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
       "devtools.timeline,rail", "Paint", inspector_paint_event::Data,
-      layout_view, PhysicalRect(cull_rect.Rect()), nullptr);
+      &GetFrameView().GetFrame(), layout_view,
+      GetQuadForTraceEvent(GetFrameView(), cull_rect), /*layer_id=*/0);
 
   bool is_top_level_painter = !in_paint_contents_;
   in_paint_contents_ = true;

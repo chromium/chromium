@@ -893,6 +893,7 @@ class CORE_EXPORT LocalFrameView final
 
   bool PaintTree(PaintBenchmarkMode, PaintController::CycleScope&);
   void PushPaintArtifactToCompositor(bool repainted);
+  void CreatePaintTimelineEvents();
 
   void ClearLayoutSubtreeRootsAndMarkContainingBlocks();
 

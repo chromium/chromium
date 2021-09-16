@@ -1836,8 +1836,12 @@ void CompositedLayerMapping::PaintContents(
 
   DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
       "devtools.timeline,rail", "Paint", inspector_paint_event::Data,
-      &owning_layer_->GetLayoutObject(), PhysicalRect(interest_rect),
-      graphics_layer);
+      owning_layer_->GetLayoutObject().GetFrame(),
+      &owning_layer_->GetLayoutObject(),
+      owning_layer_->GetLayoutObject().LocalToAbsoluteQuad(
+          FloatQuad(interest_rect),
+          kTraverseDocumentBoundaries | kUseGeometryMapperMode),
+      graphics_layer->CcLayer().id());
 
   PaintLayerFlags paint_layer_flags =
       PaintLayerFlagsFromGraphicsLayerPaintingPhase(

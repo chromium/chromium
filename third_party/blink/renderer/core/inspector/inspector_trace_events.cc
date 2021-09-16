@@ -1105,35 +1105,16 @@ void inspector_xhr_load_event::Data(perfetto::TracedValue trace_context,
   SetCallStack(dict);
 }
 
-static FloatPoint LocalCoordToFloatPoint(LocalFrameView* view,
-                                         const FloatPoint& local) {
-  return FloatPoint(view->ConvertToRootFrame(RoundedIntPoint(local)));
-}
-
-static void LocalToPageQuad(const LayoutObject& layout_object,
-                            const PhysicalRect& rect,
-                            FloatQuad* quad) {
-  LocalFrame* frame = layout_object.GetFrame();
-  LocalFrameView* view = frame->View();
-  FloatQuad absolute = layout_object.LocalRectToAbsoluteQuad(rect);
-  quad->SetP1(LocalCoordToFloatPoint(view, absolute.P1()));
-  quad->SetP2(LocalCoordToFloatPoint(view, absolute.P2()));
-  quad->SetP3(LocalCoordToFloatPoint(view, absolute.P3()));
-  quad->SetP4(LocalCoordToFloatPoint(view, absolute.P4()));
-}
-
 void inspector_paint_event::Data(perfetto::TracedValue context,
-                                 LayoutObject* layout_object,
-                                 const PhysicalRect& clip_rect,
-                                 const GraphicsLayer* graphics_layer) {
+                                 Frame* frame,
+                                 const LayoutObject* layout_object,
+                                 const FloatQuad& quad,
+                                 int layer_id) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("frame", IdentifiersFactory::FrameId(layout_object->GetFrame()));
-  FloatQuad quad;
-  LocalToPageQuad(*layout_object, clip_rect, &quad);
+  dict.Add("frame", IdentifiersFactory::FrameId(frame));
   CreateQuad(dict.AddItem("clip"), quad);
   SetGeneratingNodeInfo(dict, layout_object, "nodeId");
-  int graphics_layer_id = graphics_layer ? graphics_layer->CcLayer().id() : 0;
-  dict.Add("layerId", graphics_layer_id);
+  dict.Add("layerId", layer_id);
   SetCallStack(dict);
 }
 
