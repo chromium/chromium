@@ -50,6 +50,7 @@ export const State = {
   PRINT_PERFORMANCE_LOGS: 'print-performance-logs',
   // Starts/Ends when start/stop event of MediaRecorder is triggered.
   RECORDING: 'recording',
+  RECORDING_GIF: 'recording-gif',
   // Binds with paused state of MediaRecorder.
   RECORDING_PAUSED: 'recording-paused',
   // Controls appearance of paused/resumed UI.
