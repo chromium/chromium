@@ -49,8 +49,6 @@ public class QuickActionSearchWidgetProviderDelegate {
         mSearchActivityComponent = searchActivityComponent;
         mWidgetReceiverComponent = widgetReceiverComponent;
         mStartIncognitoTabIntent = startIncognitoTabIntent;
-        mStartIncognitoTabIntent.addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
     }
 
     /**
