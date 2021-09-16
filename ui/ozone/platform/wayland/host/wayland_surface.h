@@ -53,6 +53,8 @@ class WaylandSurface {
 
   int32_t buffer_scale() const { return buffer_scale_; }
 
+  bool has_buffer_attached() const { return has_buffer_attached_; }
+
   // Returns an id that identifies the |wl_surface_|.
   uint32_t GetSurfaceId() const;
   // Returns a gfx::AcceleratedWidget that identifies the WaylandWindow that
@@ -194,6 +196,9 @@ class WaylandSurface {
   // will scale the (cropped) buffer content to fit the |display_size_dip_|.
   // If empty, no scaling is applied.
   gfx::Size display_size_dip_ = gfx::Size();
+
+  // Tells if the surface has a buffer attached.
+  bool has_buffer_attached_ = false;
 
   void ExplicitRelease(struct zwp_linux_buffer_release_v1* linux_buffer_release,
                        absl::optional<int32_t> fence);

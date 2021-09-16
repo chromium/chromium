@@ -213,8 +213,11 @@ class WaylandBufferManagerHost::Surface {
     if (!wayland_surface_)
       return;
 
-    wayland_surface_->AttachBuffer(nullptr);
-    wayland_surface_->Commit();
+    if (wayland_surface_->has_buffer_attached()) {
+      wayland_surface_->AttachBuffer(nullptr);
+      wayland_surface_->Commit();
+    }
+
     wl_frame_callback_.reset();
 
     for (auto& pending_commit : pending_commits_) {

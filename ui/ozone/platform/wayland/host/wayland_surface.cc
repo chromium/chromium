@@ -109,6 +109,8 @@ void WaylandSurface::AttachBuffer(wl_buffer* buffer) {
   wl_surface_attach(surface_.get(), buffer, 0, 0);
   buffer_attached_since_last_commit_ = buffer;
   connection_->ScheduleFlush();
+
+  has_buffer_attached_ = !!buffer_attached_since_last_commit_;
 }
 
 void WaylandSurface::UpdateBufferDamageRegion(

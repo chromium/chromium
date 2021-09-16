@@ -1889,6 +1889,22 @@ TEST_P(WaylandBufferManagerTest,
   DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
 }
 
+TEST_P(WaylandBufferManagerTest,
+       DoesNotAttachAndCommitOnHideIfNoBuffersAttached) {
+  EXPECT_TRUE(window_->IsVisible());
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+
+  constexpr uint32_t kNumberOfCommits = 0;
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
+
+  window_->Hide();
+
+  Sync();
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandBufferManagerTest,
                          Values(wl::ServerConfig{
