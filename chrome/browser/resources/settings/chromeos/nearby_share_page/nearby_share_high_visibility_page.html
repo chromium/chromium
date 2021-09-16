@@ -12,8 +12,10 @@
   <template>
     <style>
       #content {
-        background: linear-gradient(to top, var(--google-blue-50) 5%,
-            rgba(255, 255, 255, 0) 50%);
+        --background-gradient-start-color: var(--google-blue-50);
+
+        background: linear-gradient(to top,
+            var(--background-gradient-start-color) 5%, transparent 50%);
         display: flex;
         flex-direction: column-reverse;
         height: 100%;
@@ -21,9 +23,16 @@
         width: 100%;
       }
 
+      @media (prefers-color-scheme: dark) {
+        #content {
+          --background-gradient-start-color:
+              rgba(var(--google-blue-300-rgb), 0.2);
+        }
+      }
+
       #help {
         align-items: flex-start;
-        color: var(--google-gray-500);
+        color: var(--cros-text-color-disabled);
         display: flex;
         flex-direction: row;
         font-size: 9px;
@@ -44,8 +53,12 @@
         width: 20px;
       }
 
+      .icon-help-state {
+        fill: var(--cros-icon-color-disabled);
+      }
+
       .icon-error-state {
-        fill: var(--google-red-600);
+        fill: var(--cros-icon-color-alert);
       }
 
       #error {
@@ -56,13 +69,13 @@
       }
 
       #errorTitle {
-        color: var(--google-red-600);
+        color: var(--cros-text-color-alert);
         font-weight: bold;
         margin-bottom: 3px;
       }
 
       #errorDescription {
-        color: var(--google-grey-700);
+        color: var(--cros-text-color-secondary);
         line-height: 13px;
       }
 
@@ -87,7 +100,9 @@
         </cr-lottie>
         <div id="help">
           <template is="dom-if" if="[[!getErrorTitle_(errorState_)]]">
-            <iron-icon id="infoIcon" icon="nearby20:info"></iron-icon>
+            <iron-icon id="infoIcon" icon="nearby20:info"
+                class="icon-help-state">
+            </iron-icon>
             <div id="helpText">
               <localized-link
                   localized-string="$i18n{nearbyShareHighVisibilityHelpText}"
