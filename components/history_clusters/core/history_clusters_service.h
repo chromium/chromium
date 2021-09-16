@@ -156,10 +156,6 @@ class HistoryClustersService : public KeyedService {
   // A list of observers for this service.
   base::ObserverList<Observer> observers_;
 
-  // Used to asyncly call into `backend_` after async history request. This can
-  // be nullptr.
-  std::unique_ptr<base::WeakPtrFactory<ClusteringBackend>>
-      backend_weak_factory_;
   // Weak pointers issued from this factory never get invalidated before the
   // service is destroyed.
   base::WeakPtrFactory<HistoryClustersService> weak_ptr_factory_{this};

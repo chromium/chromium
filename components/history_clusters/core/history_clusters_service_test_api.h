@@ -46,13 +46,7 @@ class HistoryClustersServiceTestApi {
 
   void SetClusteringBackendForTest(std::unique_ptr<ClusteringBackend> backend) {
     DCHECK(backend.get());
-
     history_clusters_service_->backend_ = std::move(backend);
-    // TODO(tommycli): Eliminate this `backend_weak_factory_` idiom. It's error
-    // prone, and I think we can work around the need for it.
-    history_clusters_service_->backend_weak_factory_ =
-        std::make_unique<base::WeakPtrFactory<ClusteringBackend>>(
-            history_clusters_service_->backend_.get());
   }
 
   HistoryClustersService* const history_clusters_service_;

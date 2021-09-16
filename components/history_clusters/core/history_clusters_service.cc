@@ -394,14 +394,6 @@ HistoryClustersService::HistoryClustersService(
         base::BindRepeating(&HistoryClustersService::NotifyDebugMessage,
                             weak_ptr_factory_.GetWeakPtr()));
   }
-
-  // Create a WeakPtrFactory for calling into the backend.
-  // TODO(tommycli): It seems weird that we need both this and `backend_`.
-  if (backend_) {
-    backend_weak_factory_ =
-        std::make_unique<base::WeakPtrFactory<ClusteringBackend>>(
-            backend_.get());
-  }
 }
 
 HistoryClustersService::~HistoryClustersService() = default;
@@ -477,7 +469,7 @@ void HistoryClustersService::QueryClusters(
                                             : base::TimeToISO8601(end_time)));
   NotifyDebugMessage("  max_count = " + base::NumberToString(max_count));
 
-  if (!backend_ || !backend_weak_factory_) {
+  if (!backend_) {
     NotifyDebugMessage(
         "HistoryClustersService::QueryClusters Error: ClusteringBackend is "
         "nullptr. Returning empty cluster vector.");
