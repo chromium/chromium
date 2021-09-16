@@ -10,6 +10,10 @@
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "content/public/browser/navigation_entry.h"
 #include "weblayer/browser/browser_context_impl.h"
+#include "weblayer/browser/browser_process.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 
 namespace weblayer {
 
@@ -53,11 +57,13 @@ WebLayerSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
       display_options, should_trigger_reporting,
       // WebLayer doesn't integrate //components/history.
       /*history_service=*/nullptr,
-      // TODO(crbug.com/1231997): Consider bringing up each of the following
-      // three objects in WL.
-      /*safe_browsing_navigation_observer_manager=*/nullptr,
-      /*safe_browsing_metrics_collector=*/nullptr,
-      /*trigger_manager=*/nullptr);
+      SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+          browser_context),
+      SafeBrowsingMetricsCollectorFactory::GetForBrowserContext(
+          browser_context),
+      BrowserProcess::GetInstance()
+          ->GetSafeBrowsingService()
+          ->GetTriggerManager());
 }
 
 }  // namespace weblayer
