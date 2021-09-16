@@ -501,6 +501,9 @@ const char kExtensionConfigureCommandsSubPage[] = "configureCommands";
 const char* const kChromeHostURLs[] = {
     kChromeUIAboutHost,
     kChromeUIAccessibilityHost,
+#if !defined(OS_ANDROID)
+    kChromeUIAppServiceInternalsHost,
+#endif
     kChromeUIAutofillInternalsHost,
     kChromeUIBluetoothInternalsHost,
     kChromeUIChromeURLsHost,
