@@ -108,7 +108,7 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
     RenderFrameHostImpl* current_rfh,
     const UrlInfo& destination_effective_url_info) {
   // Only main frames are eligible to swap BrowsingInstances.
-  if (!current_rfh->frame_tree_node()->IsMainFrame())
+  if (!current_rfh->is_main_frame())
     return false;
 
   // Skip cases when there are other windows that might script this one.

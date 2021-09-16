@@ -163,8 +163,7 @@ void FrameAutoAttacher::UpdatePortals() {
     return;
 
   Hosts new_hosts;
-  if (render_frame_host_ &&
-      render_frame_host_->frame_tree_node()->IsMainFrame()) {
+  if (render_frame_host_ && render_frame_host_->is_main_frame()) {
     WebContentsImpl* outer_web_contents = static_cast<WebContentsImpl*>(
         WebContents::FromRenderFrameHost(render_frame_host_));
     for (WebContents* web_contents :

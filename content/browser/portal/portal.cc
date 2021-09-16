@@ -83,8 +83,7 @@ void Portal::BindPortalHostReceiver(
 
   // This guards against the blink::mojom::PortalHost interface being used
   // outside the main frame of a Portal's guest.
-  if (!web_contents || !web_contents->IsPortal() ||
-      !frame->frame_tree_node()->IsMainFrame()) {
+  if (!web_contents || !web_contents->IsPortal() || !frame->is_main_frame()) {
     mojo::ReportBadMessage(
         "blink.mojom.PortalHost can only be used by the the main frame of a "
         "Portal's guest.");

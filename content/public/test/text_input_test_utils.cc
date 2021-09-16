@@ -305,7 +305,7 @@ bool DestroyRenderWidgetHost(int32_t process_id,
     rfh = rfh->GetParent();
 
   FrameTreeNode* ftn = rfh->frame_tree_node();
-  if (ftn->IsMainFrame()) {
+  if (rfh->is_main_frame()) {
     WebContents::FromRenderFrameHost(rfh)->Close();
   } else {
     ftn->frame_tree()->RemoveFrame(ftn);

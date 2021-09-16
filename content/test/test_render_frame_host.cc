@@ -538,7 +538,7 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
     params->should_replace_current_entry |= (GetLastCommittedURL() == url);
   } else {
     params->should_replace_current_entry |=
-        (!frame_tree_node()->IsMainFrame() &&
+        (!is_main_frame() &&
          frame_tree_node()
              ->is_on_initial_empty_document_or_subsequent_empty_documents());
   }
@@ -633,12 +633,12 @@ void TestRenderFrameHost::SimulateLoadingCompleted(
     return;
 
   if (loading_scenario == LoadingScenario::NewDocumentNavigation) {
-    if (frame_tree_node_->IsMainFrame())
+    if (is_main_frame())
       DocumentAvailableInMainFrame(/* uses_temporary_zoom_level */ false);
 
     DidDispatchDOMContentLoadedEvent();
 
-    if (frame_tree_node_->IsMainFrame())
+    if (is_main_frame())
       DocumentOnLoadCompleted();
 
     DidFinishLoad(GetLastCommittedURL());

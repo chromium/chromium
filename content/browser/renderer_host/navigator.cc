@@ -755,7 +755,7 @@ void Navigator::NavigateFromFrameProxy(
 
   // Allow the delegate to cancel the cross-process navigation.
   if (!delegate_->ShouldAllowRendererInitiatedCrossProcessNavigation(
-          render_frame_host->frame_tree_node()->IsMainFrame()))
+          render_frame_host->is_main_frame()))
     return;
 
   // TODO(creis): Determine if this transfer started as a browser-initiated

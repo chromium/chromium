@@ -523,7 +523,7 @@ void EmulationHandler::UpdateTouchEventEmulationState() {
     return;
   // We only have a single TouchEmulator for all frames, so let the main frame's
   // EmulationHandler enable/disable it.
-  if (!host_->frame_tree_node()->IsMainFrame())
+  if (!host_->is_main_frame())
     return;
 
   if (touch_emulation_enabled_) {
@@ -544,7 +544,7 @@ void EmulationHandler::UpdateDeviceEmulationState() {
   if (!host_)
     return;
   // Device emulation only happens on the main frame.
-  if (!host_->frame_tree_node()->IsMainFrame())
+  if (!host_->is_main_frame())
     return;
 
   // TODO(eseckler): Once we change this to mojo, we should wait for an ack to

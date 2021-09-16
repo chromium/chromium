@@ -2457,7 +2457,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   // directly, passing them to the destination RenderFrameHost.  See
   // https://crbug.com/536906.
   std::unique_ptr<NavigationEntryImpl> entry;
-  if (!node->IsMainFrame()) {
+  if (!render_frame_host->is_main_frame()) {
     // Subframe case: create FrameNavigationEntry.
     if (GetLastCommittedEntry()) {
       entry = GetLastCommittedEntry()->Clone();

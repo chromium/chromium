@@ -2762,8 +2762,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
   // frames arguably are renderer-created.
   //
   // TODO(https://crbug.com/1194421): Address the prerendering case.
-  if (frame_tree_node_->IsMainFrame() &&
-      !renderer_initiated_creation_of_main_frame &&
+  if (is_main_frame() && !renderer_initiated_creation_of_main_frame &&
       lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
     policies->ip_address_space = network::mojom::IPAddressSpace::kLocal;
   }
@@ -3067,7 +3066,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(
     // (1) to allow the process to be potentially reused by future navigations
     // withjin a short time window, and
     // (2) to give the subframe unload handlers a chance to execute.
-    if (!frame_tree_node_->IsMainFrame() && IsActive()) {
+    if (!is_main_frame() && IsActive()) {
       base::TimeDelta subframe_shutdown_timeout =
           frame_tree_->IsBeingDestroyed()
               ? base::TimeDelta()
@@ -3263,7 +3262,7 @@ void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {
     target_render_frame_proxy =
         frame_tree_node()->render_manager()->GetProxyToParent();
     DCHECK(target_render_frame_proxy);
-  } else if (frame_tree_node()->IsMainFrame()) {
+  } else if (is_main_frame()) {
     // The main frame in an inner web contents could have a delegate in the
     // outer web contents, so we need to account for that as well.
     target_render_frame_proxy =
@@ -3401,8 +3400,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     // this new subframe. Ignore the call because otherwise we will hit a
     // browser CHECK. Also trigger a DumpWithoutCrashing for debugging purposes.
     // TODO(https://crbug.com/1243541): Add tracing, debug, and remove this.
-    SCOPED_CRASH_KEY_BOOL("NoRVH", "is_main_frame",
-                          frame_tree_node_->IsMainFrame());
+    SCOPED_CRASH_KEY_BOOL("NoRVH", "is_main_frame", is_main_frame());
     SCOPED_CRASH_KEY_BOOL("NoRVH", "is_created_by_script",
                           is_created_by_script);
     SCOPED_CRASH_KEY_STRING32("NoRVH", "lifecycle_state",
@@ -3589,7 +3587,7 @@ void RenderFrameHostImpl::DidNavigate(
     // ensure that this navigation has updated all relevant properties of
     // RenderFrameHost / Page (e.g. RenderFrameHost::GetLastCommittedURL).
     FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-    if (frame_tree_node->IsMainFrame()) {
+    if (is_main_frame()) {
       frame_tree_node->frame_tree()->delegate()->NotifyPageChanged(GetPage());
     }
   }
@@ -3606,7 +3604,7 @@ void RenderFrameHostImpl::SetLastCommittedOriginForTesting(
 
 const url::Origin& RenderFrameHostImpl::ComputeTopFrameOrigin(
     const url::Origin& frame_origin) const {
-  if (frame_tree_node_->IsMainFrame()) {
+  if (is_main_frame()) {
     return frame_origin;
   }
 
@@ -3635,9 +3633,8 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoForNavigation(
     const GURL& destination,
     bool anonymous) {
   net::IsolationInfo::RequestType request_type =
-      frame_tree_node_->IsMainFrame()
-          ? net::IsolationInfo::RequestType::kMainFrame
-          : net::IsolationInfo::RequestType::kSubFrame;
+      is_main_frame() ? net::IsolationInfo::RequestType::kMainFrame
+                      : net::IsolationInfo::RequestType::kSubFrame;
   return ComputeIsolationInfoInternal(url::Origin::Create(destination),
                                       request_type, anonymous);
 }
@@ -5310,7 +5307,7 @@ void RenderFrameHostImpl::DidContainInsecureFormAction() {
 
 void RenderFrameHostImpl::DocumentAvailableInMainFrame(
     bool uses_temporary_zoom_level) {
-  if (!frame_tree_node_->IsMainFrame()) {
+  if (!is_main_frame()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME);
     return;
@@ -5655,7 +5652,7 @@ void RenderFrameHostImpl::ForwardResourceTimingToParent(
 
 RenderWidgetHostViewBase* RenderFrameHostImpl::GetViewForAccessibility() {
   return static_cast<RenderWidgetHostViewBase*>(
-      frame_tree_node_->IsMainFrame()
+      is_main_frame()
           ? render_view_host_->GetWidget()->GetView()
           : GetMainFrame()->render_view_host_->GetWidget()->GetView());
 }
@@ -5664,7 +5661,7 @@ void RenderFrameHostImpl::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate) {
-  DCHECK(frame_tree_node_->IsMainFrame());
+  DCHECK(is_main_frame());
 
   // TODO(https://crbug.com/1154852): Asking for the LocalMainFrame interface
   // before the RenderFrame is created is racy.
@@ -7189,7 +7186,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   // which the frame was at the time of generating the MHTML
   // (e.g. "http://localhost"). In such cases, don't verify the URL, but require
   // the URL to commit in the process of the main frame.
-  if (!frame_tree_node()->IsMainFrame()) {
+  if (!is_main_frame()) {
     RenderFrameHostImpl* main_frame = GetMainFrame();
     if (main_frame->is_mhtml_document()) {
       if (IsSameSiteInstance(main_frame))
@@ -7290,8 +7287,7 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
   // TAB_CLOSE and DISCARD should only dispatch beforeunload on main frames.
   DCHECK(type == BeforeUnloadType::BROWSER_INITIATED_NAVIGATION ||
          type == BeforeUnloadType::RENDERER_INITIATED_NAVIGATION ||
-         type == BeforeUnloadType::INNER_DELEGATE_ATTACH ||
-         frame_tree_node_->IsMainFrame());
+         type == BeforeUnloadType::INNER_DELEGATE_ATTACH || is_main_frame());
 
   if (!for_navigation) {
     // Cancel any pending navigations, to avoid their navigation commit/fail
@@ -7620,7 +7616,7 @@ bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
   if (!old_frame_host->IsNavigationSameSite(dest_url_info)) {
     return false;
   }
-  DCHECK(frame_tree_node_->IsMainFrame());
+  DCHECK(is_main_frame());
   DCHECK_NE(old_frame_host, this);
   DCHECK_NE(old_frame_host->GetSiteInstance(), GetSiteInstance());
   return true;
@@ -8251,7 +8247,7 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
       },
       base::Unretained(this)));
 
-  if (frame_tree_node_->IsMainFrame()) {
+  if (is_main_frame()) {
     associated_registry_->AddInterface(base::BindRepeating(
         [](RenderFrameHostImpl* impl,
            mojo::PendingAssociatedReceiver<blink::mojom::LocalMainFrameHost>
@@ -8472,7 +8468,7 @@ RenderFrameHostImpl::GetAssociatedLocalFrame() {
 
 blink::mojom::LocalMainFrame*
 RenderFrameHostImpl::GetAssociatedLocalMainFrame() {
-  DCHECK(frame_tree_node_->IsMainFrame());
+  DCHECK(is_main_frame());
   if (!local_main_frame_)
     GetRemoteAssociatedInterfaces()->GetInterface(&local_main_frame_);
   return local_main_frame_.get();
@@ -9227,9 +9223,8 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
       GetProcess()->GetBrowserContext()->IsOffTheRecord()
           ? media::MediaMetricsProvider::BrowsingMode::kIncognito
           : media::MediaMetricsProvider::BrowsingMode::kNormal,
-      frame_tree_node_->IsMainFrame()
-          ? media::MediaMetricsProvider::FrameStatus::kTopFrame
-          : media::MediaMetricsProvider::FrameStatus::kNotTopFrame,
+      is_main_frame() ? media::MediaMetricsProvider::FrameStatus::kTopFrame
+                      : media::MediaMetricsProvider::FrameStatus::kNotTopFrame,
       GetPage().last_main_document_source_id(),
       media::learning::FeatureValue(GetLastCommittedOrigin().host()),
       std::move(save_stats_cb),
@@ -9923,8 +9918,8 @@ bool RenderFrameHostImpl::IsNavigationSameSite(const UrlInfo& dest_url_info) {
     return false;
   }
   return GetSiteInstance()->IsNavigationSameSite(
-      last_successful_url(), GetLastCommittedOrigin(),
-      frame_tree_node()->IsMainFrame(), dest_url_info);
+      last_successful_url(), GetLastCommittedOrigin(), is_main_frame(),
+      dest_url_info);
 }
 
 bool RenderFrameHostImpl::ValidateDidCommitParams(
@@ -10351,8 +10346,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   }
 
   if (!is_same_document_navigation) {
-    DCHECK_EQ(navigation_request->is_overriding_user_agent() &&
-                  frame_tree_node_->IsMainFrame(),
+    DCHECK_EQ(navigation_request->is_overriding_user_agent() && is_main_frame(),
               params->is_overriding_user_agent);
     if (navigation_request->IsPrerenderedPageActivation()) {
       DCHECK(blink::features::IsPrerender2Enabled());
@@ -10528,8 +10522,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   is_mhtml_document_ = navigation_request->IsWaitingToCommit() &&
                        navigation_request->IsMhtmlOrSubframe();
 
-  is_overriding_user_agent_ = navigation_request->is_overriding_user_agent() &&
-                              frame_tree_node_->IsMainFrame();
+  is_overriding_user_agent_ =
+      navigation_request->is_overriding_user_agent() && is_main_frame();
 
   // Mark whether then navigation was intended as a loadDataWithBaseURL or not.
   // If |renderer_url_info_.is_loaded_from_load_data_with_base_url| is true, we
