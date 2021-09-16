@@ -6889,24 +6889,5 @@ crbug.com/1249176 [ Mac11-arm64 ] fast/forms/plaintext-mode-2.html [ Failure Pas
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-canvas.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/inspector-protocol/page/consecutive-navigate.js [ Pass Timeout ]
 
-# Fix test expectations for webidl/ecmascript-binding
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/class-string-iterator-prototype-object.any.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/class-string-iterator-prototype-object.any.worker.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/constructors.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/default-iterator-object.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/global-object-implicit-this-value-cross-realm.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/global-object-implicit-this-value.any.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/global-object-implicit-this-value.any.serviceworker.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/global-object-implicit-this-value.any.sharedworker.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/global-object-implicit-this-value.any.worker.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/invalid-this-value-cross-realm.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/iterator-prototype-object.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/put-forwards.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/sequence-conversion.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/window-named-properties-object.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/es-exceptions/DOMException-custom-bindings.any.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/es-exceptions/DOMException-custom-bindings.any.worker.html [ Failure ]
-crbug.com/1249673 external/wpt/webidl/ecmascript-binding/legacy-platform-object/OwnPropertyKeys.html [ Failure ]
-
 # Sheriff 2021-09-15
 crbug.com/1250066 [ Win ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
