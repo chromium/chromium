@@ -173,21 +173,13 @@ public class SectionHeaderView extends LinearLayout {
             touchSize = 0;
         }
 
-        // TODO(crbug.com/1249623): maybe remove post.
-        post(() -> {
-            Rect rect = new Rect();
-            mMenuView.getHitRect(rect);
-
-            int halfWidthDelta = Math.max((touchSize - mMenuView.getWidth()) / 2, 0);
-            int halfHeightDelta = Math.max((touchSize - mMenuView.getHeight()) / 2, 0);
-
-            rect.left -= halfWidthDelta;
-            rect.right += halfWidthDelta;
-            rect.top -= halfHeightDelta;
-            rect.bottom += halfHeightDelta;
-
-            setTouchDelegate(new TouchDelegate(rect, mMenuView));
-        });
+        // #getHitRect() will not be valid until the first layout pass completes. Additionally, if
+        // the header's enabled state changes, |mMenuView| will move slightly sideways, and the
+        // touch target needs to be adjusted. This is a bit chatty during animations, but it should
+        // also be fairly cheap.
+        mMenuView.addOnLayoutChangeListener(
+                (View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
+                        int oldRight, int oldBottom) -> adjustMenuTouchDelegate(touchSize));
     }
 
     /** Updates header text for this view. */
@@ -456,6 +448,21 @@ public class SectionHeaderView extends LinearLayout {
                         })
                         .setHighlightParams(params)
                         .build());
+    }
+
+    private void adjustMenuTouchDelegate(int touchSize) {
+        Rect rect = new Rect();
+        mMenuView.getHitRect(rect);
+
+        int halfWidthDelta = Math.max((touchSize - mMenuView.getWidth()) / 2, 0);
+        int halfHeightDelta = Math.max((touchSize - mMenuView.getHeight()) / 2, 0);
+
+        rect.left -= halfWidthDelta;
+        rect.right += halfWidthDelta;
+        rect.top -= halfHeightDelta;
+        rect.bottom += halfHeightDelta;
+
+        setTouchDelegate(new TouchDelegate(rect, mMenuView));
     }
 
     private void displayMenu(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
