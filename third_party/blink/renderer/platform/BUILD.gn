@@ -430,6 +430,7 @@ component("platform") {
     "bindings/idl_member_installer.h",
     "bindings/microtask.cc",
     "bindings/microtask.h",
+    "bindings/multi_worlds_v8_reference.cc",
     "bindings/multi_worlds_v8_reference.h",
     "bindings/name_client.h",
     "bindings/no_alloc_direct_call_exception_state.cc",

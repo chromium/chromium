@@ -5,13 +5,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_MULTI_WORLDS_V8_REFERENCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_MULTI_WORLDS_V8_REFERENCE_H_
 
+#include "base/notreached.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
 class MultiWorldsV8Reference : public GarbageCollected<MultiWorldsV8Reference> {
  public:
-  virtual void Trace(Visitor*) const {}
+  MultiWorldsV8Reference(v8::Isolate* isolate, v8::Local<v8::Object> object);
+
+  v8::Local<v8::Object> GetObject(ScriptState* script_state);
+
+  virtual void Trace(Visitor*) const;
+
+ private:
+  TraceWrapperV8Reference<v8::Object> object_;
+  Member<ScriptState> script_state_;
 };
 
 }  // namespace blink
