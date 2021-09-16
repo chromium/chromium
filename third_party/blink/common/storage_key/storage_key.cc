@@ -26,14 +26,38 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 }
 
 // static
-// Currently is the same as as Deserialize(), but this will change in an
-// upcoming CL.
 absl::optional<StorageKey> StorageKey::DeserializeForServiceWorker(
     base::StringPiece in) {
   // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
   // serialization.
-  // TODO(https://crbug.com/1199077): Add top_level_site_ behind a feature.
-  return Deserialize(in);
+
+  // As per the SerializeForServiceWorker() call, we have to expect the
+  // following structure: <StorageKey 'key'.origin> + [ "^" + <StorageKey
+  // `key`.top_level_site> ] The brackets indicate an optional component.
+
+  url::Origin key_origin;
+  net::SchemefulSite key_top_level_site;
+
+  // Let's check for the delimiting caret, if it's there then a top_level_site
+  // is included.
+  size_t pos = in.find_first_of('^');
+  if (pos != std::string::npos) {
+    // The origin is the portion up to, but not including, the caret.
+    key_origin = url::Origin::Create(GURL(in.substr(0, pos)));
+    // The top_level_site is the portion beyond the caret.
+    key_top_level_site =
+        net::SchemefulSite(GURL(in.substr(pos + 1, std::string::npos)));
+  } else {
+    // In this case the top_level_site is implicitly the same site as the
+    // origin.
+    key_origin = url::Origin::Create(GURL(in));
+    key_top_level_site = net::SchemefulSite(key_origin);
+  }
+
+  if (key_origin.opaque() || key_top_level_site.opaque())
+    return absl::nullopt;
+
+  return StorageKey(key_origin, key_top_level_site);
 }
 
 // static
@@ -78,13 +102,27 @@ std::string StorageKey::SerializeForLocalStorage() const {
   return origin_.Serialize();
 }
 
-// Currently is the same as as Serialize(), but this will change in an upcoming
-// CL.
 std::string StorageKey::SerializeForServiceWorker() const {
   // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
   // serialization.
-  // TODO(https://crbug.com/1199077): Add top_level_site_ behind a feature.
-  return Serialize();
+  DCHECK(!origin_.opaque());
+  DCHECK(!top_level_site_.opaque());
+
+  // If storage partitioning is enabled we need to serialize the key to fit the
+  // following structure: <StorageKey 'key'.origin> + [ "^" + <StorageKey
+  // `key`.top_level_site> ]
+  //
+  // The top_level_site is optional if it's the same site as the origin in order
+  // to enable backwards compatibility for 1p contexts.
+  // In the case of a 1p context the serialization structure is therefore the
+  // same as if features::kThirdPartyStoragePartitioning was disabled.
+
+  if (IsThirdPartyStoragePartitioningEnabled() &&
+      top_level_site_ != net::SchemefulSite(origin_)) {
+    return origin_.GetURL().spec() + "^" + top_level_site_.Serialize();
+  }
+
+  return origin_.GetURL().spec();
 }
 
 std::string StorageKey::GetDebugString() const {

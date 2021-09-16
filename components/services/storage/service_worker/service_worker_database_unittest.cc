@@ -15,9 +15,11 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -429,6 +431,47 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data4, resources4, &deleted_version));
 
+  // Add some partitioned keys.
+  // Make sure kThirdPartyStoragePartitioning is enabled so the keys are
+  // inserted as partitioned.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kThirdPartyStoragePartitioning);
+
+  GURL origin5 = GURL("https://example.org");
+  net::SchemefulSite top_level_site1(GURL("https://toplevel.com"));
+  blink::StorageKey key5(url::Origin::Create(origin5), top_level_site1);
+  RegistrationData data5;
+  data5.registration_id = 567;
+  data5.scope = URL(origin5, "/hoge");
+  data5.key = key5;
+  data5.script = URL(origin5, "/script5.js");
+  data5.version_id = 890;
+  data5.resources_total_size_bytes = 500;
+  std::vector<ResourceRecordPtr> resources5;
+  resources5.push_back(CreateResource(5, data5.script, 500));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data5, resources5, &deleted_version));
+
+  GURL origin6 = GURL("https://example.org");
+  net::SchemefulSite top_level_site2(GURL("https://toplevel2.com"));
+  blink::StorageKey key6(url::Origin::Create(origin6), top_level_site2);
+  RegistrationData data6;
+  data6.registration_id = 678;
+  data6.scope = URL(origin6, "/hoge");
+  data6.key = key6;
+  data6.script = URL(origin6, "/script6.js");
+  data6.version_id = 8910;
+  data6.resources_total_size_bytes = 600;
+  std::vector<ResourceRecordPtr> resources6;
+  resources6.push_back(CreateResource(6, data6.script, 600));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data6, resources6, &deleted_version));
+
+  scoped_feature_list.Reset();
+  // Because kThirdPartyStoragePartitioning is disabled now we shouldn't get the
+  // partitioned keys in the following checks.
+
   keys.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&keys));
@@ -464,6 +507,20 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   EXPECT_EQ(2U, keys.size());
   EXPECT_TRUE(base::Contains(keys, key1));
   EXPECT_TRUE(base::Contains(keys, key2));
+
+  // Now re-enable kThirdPartyStoragePartitioning and check for the partitioned
+  // keys.
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kThirdPartyStoragePartitioning);
+
+  keys.clear();
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetStorageKeysWithRegistrations(&keys));
+  EXPECT_EQ(4U, keys.size());
+  EXPECT_TRUE(base::Contains(keys, key1));
+  EXPECT_TRUE(base::Contains(keys, key2));
+  EXPECT_TRUE(base::Contains(keys, key5));
+  EXPECT_TRUE(base::Contains(keys, key6));
 }
 
 TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
@@ -654,6 +711,50 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data4, resources4, &deleted_version));
 
+  // Add partitioned keys.
+  // Make sure kThirdPartyStoragePartitioning is enabled so the keys are
+  // inserted as partitioned.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kThirdPartyStoragePartitioning);
+
+  GURL origin5("https://www5.example.com");
+  net::SchemefulSite top_level_site1(GURL("https://toplevel.com"));
+  RegistrationData data5;
+  data5.registration_id = 500;
+  data5.scope = URL(origin5, "/hoge");
+  data5.key =
+      blink::StorageKey(url::Origin::Create(data5.scope), top_level_site1);
+  data5.script = URL(origin5, "/script5.js");
+  data5.version_id = 5000;
+  data5.resources_total_size_bytes = 500;
+  data5.cross_origin_embedder_policy =
+      CrossOriginEmbedderPolicyCredentialless();
+  std::vector<ResourceRecordPtr> resources5;
+  resources5.push_back(CreateResource(5, data5.script, 500));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data5, resources5, &deleted_version));
+
+  GURL origin6("https://www6.example.com");
+  net::SchemefulSite top_level_site2(GURL("https://toplevel2.com"));
+  RegistrationData data6;
+  data6.registration_id = 600;
+  data6.scope = URL(origin6, "/hoge");
+  data6.key =
+      blink::StorageKey(url::Origin::Create(data6.scope), top_level_site2);
+  data6.script = URL(origin6, "/script6.js");
+  data6.version_id = 6000;
+  data6.resources_total_size_bytes = 600;
+  data6.cross_origin_embedder_policy =
+      CrossOriginEmbedderPolicyCredentialless();
+  std::vector<ResourceRecordPtr> resources6;
+  resources6.push_back(CreateResource(6, data6.script, 600));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data6, resources6, &deleted_version));
+
+  // Disable partitioning to ensure the partitioned keys are not found.
+  scoped_feature_list.Reset();
+
   registrations.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetAllRegistrations(&registrations));
@@ -663,6 +764,18 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   VerifyRegistrationData(data2, *registrations[1]);
   VerifyRegistrationData(data3, *registrations[2]);
   VerifyRegistrationData(data4, *registrations[3]);
+
+  // Re-enable partitioning and check for the partitioned keys.
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kThirdPartyStoragePartitioning);
+
+  registrations.clear();
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->GetAllRegistrations(&registrations));
+  EXPECT_EQ(6U, registrations.size());
+
+  VerifyRegistrationData(data5, *registrations[4]);
+  VerifyRegistrationData(data6, *registrations[5]);
 }
 
 TEST(ServiceWorkerDatabaseTest, Registration_Basic) {

@@ -49,7 +49,8 @@
 //   Note: This has changed from `GURL origin` to StorageKey but the name will
 //   be updated in the future to avoid a migration.
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
-//   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey 'key'>
+//   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey 'key'.origin> + [ "^" +
+//   <StorageKey `key`.top_level_site> ]
 //   value: <empty>
 //
 //   key: "PRES:" + <int64_t 'purgeable_resource_id'>
@@ -58,7 +59,8 @@
 //   Note: This has changed from `GURL origin` to StorageKey but the name will
 //   be updated in the future to avoid a migration.
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
-//   key: "REG:" + <StorageKey 'key'> + '\x00' + <int64_t 'registration_id'>
+//   key: "REG:" + <StorageKey 'key'.origin> + [ "^" + <StorageKey
+//   `key`.top_level_site> ] + '\x00' + <int64_t 'registration_id'>
 //     (ex. "REG:http://example.com\x00123456")
 //   value: <ServiceWorkerRegistrationData (except for the StorageKey)
 //   serialized as a string>
@@ -85,7 +87,8 @@
 //   be updated in the future to avoid a migration.
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
 //   key: "REGID_TO_ORIGIN:" + <int64_t 'registration_id'>
-//   value: <GURL 'origin'>
+//   value: <StorageKey 'key'.origin> + [ "^" + <StorageKey
+//   `key`.top_level_site> ]
 //
 //   OBSOLETE: https://crbug.com/539713
 //   key: "INITDATA_DISKCACHE_MIGRATION_NOT_NEEDED"
@@ -102,6 +105,26 @@
 //   OBSOLETE: https://crbug.com/788604
 //   key: "INITDATA_FOREIGN_FETCH_ORIGIN:" + <GURL 'origin'>
 //   value: <empty>
+namespace {
+
+// Returns true if the registration key string is partitioned but storage
+// partitioning is currently disabled.
+bool ShouldSkipKeyDueToPartitioning(const std::string& reg_key_string) {
+  // Don't skip anything if storage partitioning is enabled.
+  if (blink::StorageKey::IsThirdPartyStoragePartitioningEnabled())
+    return false;
+
+  // If partitioning is disabled then skip partitioned 3p keys. Partitioned keys
+  // have a '^' (caret) as a delimter.
+  if (reg_key_string.find_first_of('^') != std::string::npos)
+    return true;
+
+  // Otherwise this is a 1p context key, don't skip it.
+  return false;
+}
+
+}  // namespace
+
 namespace storage {
 
 namespace service_worker_internals {
@@ -378,6 +401,9 @@ ServiceWorkerDatabase::GetStorageKeysWithRegistrations(
                         service_worker_internals::kUniqueOriginKey, &key_str))
         break;
 
+      if (ShouldSkipKeyDueToPartitioning(key_str))
+        continue;
+
       absl::optional<blink::StorageKey> key =
           blink::StorageKey::DeserializeForServiceWorker(key_str);
       if (!key) {
@@ -564,10 +590,14 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetAllRegistrations(
       if (separator_pos == std::string::npos)
         break;
 
-      // Then deserialize only the sub-string before the separator.
+      // Get only the sub-string before the separator.
+      std::string reg_key_string = prefix_string.substr(0, separator_pos);
+
+      if (ShouldSkipKeyDueToPartitioning(reg_key_string))
+        continue;
+
       absl::optional<blink::StorageKey> key =
-          blink::StorageKey::DeserializeForServiceWorker(
-              prefix_string.substr(0, separator_pos));
+          blink::StorageKey::DeserializeForServiceWorker(reg_key_string);
       if (!key)
         break;
 
@@ -638,6 +668,10 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationStorageKey(
     return status;
   }
 
+  // If storage partitioning is disabled we shouldn't have any handles to
+  // registration IDs associated with partitioned entries.
+  DCHECK(!ShouldSkipKeyDueToPartitioning(value));
+
   absl::optional<blink::StorageKey> parsed =
       blink::StorageKey::DeserializeForServiceWorker(value);
   if (!parsed) {
@@ -675,8 +709,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteRegistration(
       << "sizes of the resources.";
 
   WriteRegistrationDataInBatch(registration, &batch);
-  // TODO(crbug.com/1199077): Update when RegistrationData uses StorageKey
-  blink::StorageKey key(url::Origin::Create(registration.scope.GetOrigin()));
+  blink::StorageKey key = registration.key;
 
   batch.Put(CreateRegistrationIdToStorageKey(registration.registration_id),
             key.SerializeForServiceWorker());
@@ -1805,7 +1838,7 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
   std::string value;
   bool success = data.SerializeToString(&value);
   DCHECK(success);
-  blink::StorageKey key(url::Origin::Create(registration.scope));
+  blink::StorageKey key = registration.key;
   batch->Put(CreateRegistrationKey(data.registration_id(), key), value);
 }
 
