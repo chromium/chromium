@@ -42,7 +42,6 @@ class BrowserAppInstanceObserver;
 // - browser instances (registered with app ID |extension_misc::kChromeAppId|).
 class BrowserAppInstanceTracker : public TabStripModelObserver,
                                   public BrowserTabStripTrackerDelegate,
-                                  public aura::WindowObserver,
                                   public wm::ActivationChangeObserver,
                                   public AppRegistryCache::Observer,
                                   public BrowserListObserver {
@@ -106,10 +105,6 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
       const TabStripSelectionChange& selection) override;
 
   bool ShouldTrackBrowser(Browser* browser) override;
-
-  // aura::WindowObserver overrides:
-  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
-  void OnWindowDestroying(aura::Window* window) override;
 
   // wm::ActivationChangeObserver overrides:
   void OnWindowActivated(ActivationReason reason,
@@ -184,7 +179,6 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   virtual BrowserAppInstanceId GenerateId() const;
 
   bool IsBrowserTracked(Browser* browser) const;
-  bool IsWindowTracked(aura::Window* window) const;
   bool IsActivationClientTracked(wm::ActivationClient* client) const;
 
   Profile* profile_;
@@ -195,10 +189,6 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   // A set of observed browsers: browsers where at least one tab has been added.
   // Events for all other browsers are filtered out.
   std::set<Browser*> tracked_browsers_;
-
-  // A set of observed browser windows.
-  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-      browser_window_observations_{this};
 
   // A set of observed activation clients for all browser's windows.
   base::ScopedMultiSourceObservation<wm::ActivationClient,

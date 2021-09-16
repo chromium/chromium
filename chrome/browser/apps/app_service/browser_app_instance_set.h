@@ -46,18 +46,15 @@ class BrowserAppInstanceSet {
   bool MaybeUpdateInstance(BrowserAppInstance& instance,
                            aura::Window* window,
                            const absl::optional<std::string>& title,
-                           bool is_browser_visible,
                            bool is_browser_active,
                            const absl::optional<bool>& is_web_contents_active) {
     if (instance.window == window && instance.title == title &&
-        instance.is_browser_visible == is_browser_visible &&
         instance.is_browser_active == is_browser_active &&
         instance.is_web_contents_active == is_web_contents_active) {
       return false;
     }
     instance.window = window;
     instance.title = title;
-    instance.is_browser_visible = is_browser_visible;
     instance.is_browser_active = is_browser_active;
     instance.is_web_contents_active = is_web_contents_active;
     for (auto& observer : observers_) {
