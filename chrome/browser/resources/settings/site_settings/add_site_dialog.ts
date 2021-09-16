@@ -13,6 +13,10 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import '../settings_shared_css.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,14 +25,19 @@ import {loadTimeData} from '../i18n_setup.js';
 import {ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SiteSettingsMixinInterface}
- */
-const AddSiteDialogElementBase = SiteSettingsMixin(PolymerElement);
+export interface AddSiteDialogElement {
+  $: {
+    add: CrButtonElement,
+    dialog: CrDialogElement,
+    incognito: CrCheckboxElement,
+    site: CrInputElement,
+    thirdParties: CrCheckboxElement,
+  };
+}
 
-/** @polymer */
+const AddSiteDialogElementBase = SiteSettingsMixin(PolymerElement) as unknown as
+    {new (): PolymerElement & SiteSettingsMixinInterface};
+
 export class AddSiteDialogElement extends AddSiteDialogElementBase {
   static get is() {
     return 'add-site-dialog';
@@ -42,13 +51,11 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
     return {
       /**
        * What kind of setting, e.g. Location, Camera, Cookies, and so on.
-       * @type {ContentSettingsTypes}
        */
       category: String,
 
       /**
        * Whether this is about an Allow, Block, SessionOnly, or other.
-       * @type {ContentSetting}
        */
       contentSetting: String,
 
@@ -59,19 +66,22 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
 
       /**
        * The site to add an exception for.
-       * @private
        */
       site_: String,
 
       /**
        * The error message to display when the pattern is invalid.
-       * @private
        */
       errorMessage_: String,
     };
   }
 
-  /** @override */
+  category: ContentSettingsTypes;
+  contentSetting: ContentSetting;
+  hasIncognito: boolean;
+  private site_: string;
+  private errorMessage_: string;
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -84,9 +94,8 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
 
   /**
    * Validates that the pattern entered is valid.
-   * @private
    */
-  validate_() {
+  private validate_() {
     // If input is empty, disable the action button, but don't show the red
     // invalid message.
     if (this.$.site.value.trim() === '') {
@@ -103,17 +112,15 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
         });
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.cancel();
   }
 
   /**
    * The tap handler for the Add [Site] button (adds the pattern and closes
    * the dialog).
-   * @private
    */
-  onSubmit_() {
+  private onSubmit_() {
     assert(!this.$.add.disabled);
     let primaryPattern = this.site_;
     let secondaryPattern = SITE_EXCEPTION_WILDCARD;
@@ -130,24 +137,18 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
     this.$.dialog.close();
   }
 
-  /** @private */
-  showIncognitoSessionOnly_() {
+  private showIncognitoSessionOnly_() {
     return this.hasIncognito && !loadTimeData.getBoolean('isGuest') &&
         this.contentSetting !== ContentSetting.SESSION_ONLY;
   }
 
-  /** @private */
-  hasIncognitoChanged_() {
+  private hasIncognitoChanged_() {
     if (!this.hasIncognito) {
       this.$.incognito.checked = false;
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldHideThirdPartyCookieCheckbox_() {
+  private shouldHideThirdPartyCookieCheckbox_(): boolean {
     return this.category !== ContentSettingsTypes.COOKIES;
   }
 }

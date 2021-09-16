@@ -23,7 +23,7 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -32,40 +32,38 @@ import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mix
 
 /**
  * All possible actions in the menu.
- * @enum {string}
  */
-const MenuActions = {
-  SET_DEFAULT: 'SetDefault',
-  REMOVE: 'Remove',
+enum MenuActions {
+  SET_DEFAULT = 'SetDefault',
+  REMOVE = 'Remove',
+}
+
+export type HandlerEntry = {
+  host: string,
+  is_default: boolean,
+  protocol: string,
+  protocol_display_name: string,
+  spec: string,
 };
 
-/**
- * @typedef {{host: string,
- *            is_default: boolean,
- *            protocol: string,
- *            protocol_display_name: string,
- *            spec: string}}
- */
-export let HandlerEntry;
+export type ProtocolEntry = {
+  handlers: Array<HandlerEntry>,
+  protocol: string,
+  protocol_display_name: string,
+};
 
-/**
- * @typedef {{handlers: !Array<!HandlerEntry>,
- *            protocol: string,
- *            protocol_display_name: string}}
- */
-export let ProtocolEntry;
+interface RepeaterEvent extends Event {
+  model: {
+    item: HandlerEntry,
+  }
+}
 
+const ProtocolHandlersElementBase = mixinBehaviors(
+                                        [WebUIListenerBehavior],
+                                        SiteSettingsMixin(PolymerElement)) as {
+  new (): PolymerElement & WebUIListenerBehavior & SiteSettingsMixinInterface
+};
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SiteSettingsMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const ProtocolHandlersElementBase =
-    mixinBehaviors([WebUIListenerBehavior], SiteSettingsMixin(PolymerElement));
-
-/** @polymer */
 class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   static get is() {
     return 'protocol-handlers';
@@ -79,13 +77,11 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
     return {
       /**
        * Array of protocols and their handlers.
-       * @type {!Array<!ProtocolEntry>}
        */
       protocols: Array,
 
       /**
        * The targeted object for menu operations.
-       * @private {?HandlerEntry}
        */
       actionMenuModel_: Object,
 
@@ -95,134 +91,128 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
 
       /**
        * Array of ignored (blocked) protocols.
-       * @type {!Array<!HandlerEntry>}
        */
       ignoredProtocols: Array,
 
-      /** @private {chrome.settingsPrivate.PrefObject} */
       handlersEnabledPref_: {
         type: Object,
         value() {
-          return /** @type {chrome.settingsPrivate.PrefObject} */ ({
+          return {
             type: chrome.settingsPrivate.PrefType.BOOLEAN,
             value: false,
-          });
+          };
         },
       },
 
     };
   }
 
-  /** @override */
+  protocols: Array<ProtocolEntry>;
+  private actionMenuModel_: HandlerEntry|null;
+  toggleOffLabel: string;
+  toggleOnLabel: string;
+  ignoredProtocols: Array<HandlerEntry>;
+  private handlersEnabledPref_: chrome.settingsPrivate.PrefObject;
+
   ready() {
     super.ready();
 
     this.addWebUIListener(
-        'setHandlersEnabled', this.setHandlersEnabled_.bind(this));
+        'setHandlersEnabled',
+        (enabled: boolean) => this.setHandlersEnabled_(enabled));
     this.addWebUIListener(
-        'setProtocolHandlers', this.setProtocolHandlers_.bind(this));
+        'setProtocolHandlers',
+        (protocols: Array<ProtocolEntry>) =>
+            this.setProtocolHandlers_(protocols));
     this.addWebUIListener(
         'setIgnoredProtocolHandlers',
-        this.setIgnoredProtocolHandlers_.bind(this));
+        (ignoredProtocols: Array<HandlerEntry>) =>
+            this.setIgnoredProtocolHandlers_(ignoredProtocols));
     this.browserProxy.observeProtocolHandlers();
   }
 
   /**
    * Obtains the description for the main toggle.
-   * @return {string} The description to use.
-   * @private
+   * @return The description to use.
    */
-  computeHandlersDescription_() {
+  private computeHandlersDescription_(): string {
     return this.handlersEnabledPref_.value ? this.toggleOnLabel :
                                              this.toggleOffLabel;
   }
 
   /**
    * Updates the main toggle to set it enabled/disabled.
-   * @param {boolean} enabled The state to set.
-   * @private
+   * @param enabled The state to set.
    */
-  setHandlersEnabled_(enabled) {
+  private setHandlersEnabled_(enabled: boolean) {
     this.set('handlersEnabledPref_.value', enabled);
   }
 
   /**
    * Updates the list of protocol handlers.
-   * @param {!Array<!ProtocolEntry>} protocols The new protocol handler list.
-   * @private
+   * @param protocols The new protocol handler list.
    */
-  setProtocolHandlers_(protocols) {
+  private setProtocolHandlers_(protocols: Array<ProtocolEntry>) {
     this.protocols = protocols;
   }
 
   /**
    * Updates the list of ignored protocol handlers.
-   * @param {!Array<!HandlerEntry>} ignoredProtocols The new (ignored) protocol
-   *     handler list.
-   * @private
+   * @param ignoredProtocols The new (ignored) protocol handler list.
    */
-  setIgnoredProtocolHandlers_(ignoredProtocols) {
+  private setIgnoredProtocolHandlers_(ignoredProtocols: Array<HandlerEntry>) {
     this.ignoredProtocols = ignoredProtocols;
   }
 
   /**
    * Closes action menu and resets action menu model
-   * @private
    */
-  closeActionMenu_() {
-    this.shadowRoot.querySelector('cr-action-menu').close();
+  private closeActionMenu_() {
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
     this.actionMenuModel_ = null;
   }
 
   /**
    * A handler when the toggle is flipped.
-   * @private
    */
-  onToggleChange_() {
+  private onToggleChange_() {
     this.browserProxy.setProtocolHandlerDefault(
         !!this.handlersEnabledPref_.value);
   }
 
   /**
    * The handler for when "Set Default" is selected in the action menu.
-   * @private
    */
-  onDefaultClick_() {
-    const item = this.actionMenuModel_;
+  private onDefaultClick_() {
+    const item = this.actionMenuModel_!;
     this.browserProxy.setProtocolDefault(item.protocol, item.spec);
     this.closeActionMenu_();
   }
 
   /**
    * The handler for when "Remove" is selected in the action menu.
-   * @private
    */
-  onRemoveClick_() {
-    const item = this.actionMenuModel_;
+  private onRemoveClick_() {
+    const item = this.actionMenuModel_!;
     this.browserProxy.removeProtocolHandler(item.protocol, item.spec);
     this.closeActionMenu_();
   }
 
   /**
    * Handler for removing handlers that were blocked
-   * @private
    */
-  onRemoveIgnored_(event) {
+  private onRemoveIgnored_(event: RepeaterEvent) {
     const item = event.model.item;
     this.browserProxy.removeProtocolHandler(item.protocol, item.spec);
   }
 
   /**
    * A handler to show the action menu next to the clicked menu button.
-   * @param {!{model: !{item: HandlerEntry}}} event
-   * @private
    */
-  showMenu_(event) {
+  private showMenu_(event: RepeaterEvent) {
     this.actionMenuModel_ = event.model.item;
-    /** @type {!CrActionMenuElement} */ (
-        this.shadowRoot.querySelector('cr-action-menu'))
-        .showAt(
-            /** @type {!Element} */ (/** @type {!Event} */ (event).target));
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
+        event.target as HTMLElement);
   }
 }
 

@@ -14,7 +14,6 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../settings_shared_css.js';
 import './site_list_entry.js';
 
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ChooserException} from './site_settings_prefs_browser_proxy.js';
@@ -33,14 +32,15 @@ class ChooserExceptionListEntryElement extends PolymerElement {
     return {
       /**
        * Chooser exception object to display in the widget.
-       * @type {!ChooserException}
        */
       exception: Object,
 
-      /** @private */
       lastFocused_: Object,
     };
   }
+
+  exception: ChooserException;
+  private lastFocused_: HTMLElement|null;
 }
 
 customElements.define(

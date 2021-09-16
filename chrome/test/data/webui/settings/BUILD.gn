@@ -104,7 +104,6 @@ js_type_check("closure_compile") {
     #":security_keys_subpage_test",
 
     #":settings_animated_pages_test",
-    ":settings_category_default_radio_group_tests",
 
     #":settings_main_test",
     #":settings_menu_test",
@@ -125,7 +124,6 @@ js_type_check("closure_compile") {
     #":site_entry_tests",
     #":site_favicon_test",
     #":site_list_entry_tests",
-    ":site_list_tests",
 
     #":site_list_tests_cros",
 
@@ -150,7 +148,6 @@ js_type_check("closure_compile") {
     #":test_profile_info_browser_proxy",
     #":test_reset_browser_proxy",
     #":test_search_engines_browser_proxy",
-    ":test_site_settings_prefs_browser_proxy",
     ":test_sync_browser_proxy",
     ":test_util",
 
@@ -259,18 +256,6 @@ js_library("search_page_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("settings_category_default_radio_group_tests") {
-  deps = [
-    ":test_site_settings_prefs_browser_proxy",
-    ":test_util",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
 js_library("settings_menu_interactive_ui_test") {
   deps = [
     "..:chai_assert",
@@ -289,18 +274,6 @@ js_library("settings_ui_tests") {
     "..:test_util",
     "//chrome/browser/resources/settings:settings",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("site_list_tests") {
-  deps = [
-    ":test_site_settings_prefs_browser_proxy",
-    ":test_util",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -340,14 +313,6 @@ js_library("test_search_engines_browser_proxy") {
   deps = [
     "..:test_browser_proxy",
     "//chrome/browser/resources/settings:settings",
-  ]
-}
-
-js_library("test_site_settings_prefs_browser_proxy") {
-  deps = [
-    ":test_util",
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:lazy_load",
   ]
 }
 

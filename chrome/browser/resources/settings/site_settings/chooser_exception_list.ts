@@ -13,30 +13,32 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared_css.js';
 import './chooser_exception_list_entry.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {ChooserType, ContentSettingsTypes} from './constants.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
-import {ChooserException, RawChooserException} from './site_settings_prefs_browser_proxy.js';
+import {ChooserException, RawChooserException, SiteException} from './site_settings_prefs_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {ListPropertyUpdateBehaviorInterface}
- * @implements {SiteSettingsMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const ChooserExceptionListElementBase = mixinBehaviors(
-    [I18nBehavior, ListPropertyUpdateBehavior, WebUIListenerBehavior],
-    SiteSettingsMixin(PolymerElement));
+interface ChooserExceptionListElement {
+  $: {
+    tooltip: PaperTooltipElement,
+  };
+}
 
-/** @polymer */
+const ChooserExceptionListElementBase =
+    mixinBehaviors(
+        [I18nBehavior, ListPropertyUpdateBehavior, WebUIListenerBehavior],
+        SiteSettingsMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nBehavior & ListPropertyUpdateBehavior &
+      WebUIListenerBehavior & SiteSettingsMixinInterface
+    };
+
 class ChooserExceptionListElement extends ChooserExceptionListElementBase {
   static get is() {
     return 'chooser-exception-list';
@@ -50,7 +52,6 @@ class ChooserExceptionListElement extends ChooserExceptionListElementBase {
     return {
       /**
        * Array of chooser exceptions to display in the widget.
-       * @type {!Array<ChooserException>}
        */
       chooserExceptions: {
         type: Array,
@@ -63,7 +64,6 @@ class ChooserExceptionListElement extends ChooserExceptionListElementBase {
        * The string ID of the chooser type that this element is displaying data
        * for.
        * See site_settings/constants.js for possible values.
-       * @type {!ChooserType}
        */
       chooserType: {
         observer: 'chooserTypeChanged_',
@@ -71,42 +71,47 @@ class ChooserExceptionListElement extends ChooserExceptionListElementBase {
         value: ChooserType.NONE,
       },
 
-      /** @private */
       emptyListMessage_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       hasIncognito_: Boolean,
-
-      /** @private */
       tooltipText_: String,
     };
   }
 
-  /** @override */
+  chooserExceptions: Array<ChooserException>;
+  chooserType: ChooserType;
+  private emptyListMessage_: string;
+  private hasIncognito_: boolean;
+  private tooltipText_: string;
+
   connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
         'contentSettingChooserPermissionChanged',
-        this.objectWithinChooserTypeChanged_.bind(this));
+        (category: ContentSettingsTypes, chooserType: ChooserType) => {
+          this.objectWithinChooserTypeChanged_(category, chooserType);
+        });
     this.addWebUIListener(
-        'onIncognitoStatusChanged', this.onIncognitoStatusChanged_.bind(this));
+        'onIncognitoStatusChanged',
+        (hasIncognito: boolean) =>
+            this.onIncognitoStatusChanged_(hasIncognito));
     this.browserProxy.updateIncognitoStatus();
   }
 
   /**
    * Called when a chooser exception changes permission and updates the element
    * if |category| is equal to the settings category of this element.
-   * @param {ContentSettingsTypes} category The content settings type
-   *     that represents this permission category.
-   * @param {ChooserType} chooserType The content settings type that
-   *     represents the chooser data for this permission.
-   * @private
+   * @param category The content settings type that represents this permission
+   *     category.
+   * @param chooserType The content settings type that represents the chooser
+   *     data for this permission.
    */
-  objectWithinChooserTypeChanged_(category, chooserType) {
+  private objectWithinChooserTypeChanged_(
+      category: ContentSettingsTypes, chooserType: ChooserType) {
     if (category === this.category && chooserType === this.chooserType) {
       this.chooserTypeChanged_();
     }
@@ -116,18 +121,16 @@ class ChooserExceptionListElement extends ChooserExceptionListElementBase {
    * Called for each chooser-exception-list when incognito is enabled or
    * disabled. Only called on change (opening N incognito windows only fires one
    * message). Another message is sent when the *last* incognito window closes.
-   * @private
    */
-  onIncognitoStatusChanged_(hasIncognito) {
+  private onIncognitoStatusChanged_(hasIncognito: boolean) {
     this.hasIncognito_ = hasIncognito;
     this.populateList_();
   }
 
   /**
    * Configures the visibility of the widget and shows the list.
-   * @private
    */
-  chooserTypeChanged_() {
+  private chooserTypeChanged_() {
     if (this.chooserType === ChooserType.NONE) {
       return;
     }
@@ -154,21 +157,17 @@ class ChooserExceptionListElement extends ChooserExceptionListElementBase {
   }
 
   /**
-   * Returns true if there are any chooser exceptions for this chooser type.
-   * @return {boolean}
-   * @private
+   * @return true if there are any chooser exceptions for this chooser type.
    */
-  hasExceptions_() {
+  private hasExceptions_(): boolean {
     return this.chooserExceptions.length > 0;
   }
 
   /**
    * Need to use a common tooltip since the tooltip in the entry is cut off from
    * the iron-list.
-   * @param{!CustomEvent<!{target: HTMLElement, text: string}>} e
-   * @private
    */
-  onShowTooltip_(e) {
+  private onShowTooltip_(e: CustomEvent<{target: HTMLElement, text: string}>) {
     this.tooltipText_ = e.detail.text;
     const target = e.detail.target;
     // paper-tooltip normally determines the target from the |for| property,
@@ -191,19 +190,16 @@ class ChooserExceptionListElement extends ChooserExceptionListElementBase {
 
   /**
    * Populate the chooser exception list for display.
-   * @private
    */
-  populateList_() {
+  private populateList_() {
     this.browserProxy.getChooserExceptionList(this.chooserType)
         .then(exceptionList => this.processExceptions_(exceptionList));
   }
 
   /**
    * Process the chooser exception list returned from the native layer.
-   * @param {!Array<RawChooserException>} exceptionList
-   * @private
    */
-  processExceptions_(exceptionList) {
+  private processExceptions_(exceptionList: Array<RawChooserException>) {
     const exceptions = exceptionList.map(exception => {
       const sites = exception.sites.map(site => this.expandSiteException(site));
       return Object.assign(exception, {sites});
@@ -215,7 +211,8 @@ class ChooserExceptionListElement extends ChooserExceptionListElementBase {
       // The chooser objects have not been changed, so check if their site
       // permissions have changed. The |exceptions| and |this.chooserExceptions|
       // arrays should be the same length.
-      const siteUidGetter = x => x.origin + x.embeddingOrigin + x.incognito;
+      const siteUidGetter = (x: SiteException) =>
+          x.origin + x.embeddingOrigin + x.incognito;
       exceptions.forEach((exception, index) => {
         const propertyPath = 'chooserExceptions.' + index + '.sites';
         this.updateList(propertyPath, siteUidGetter, exception.sites);

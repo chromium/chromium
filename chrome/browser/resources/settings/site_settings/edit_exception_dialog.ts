@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -17,8 +18,12 @@ import {loadTimeData} from '../i18n_setup.js';
 import {SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
+export interface SettingsEditExceptionDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
 export class SettingsEditExceptionDialogElement extends PolymerElement {
   static get is() {
     return 'settings-edit-exception-dialog';
@@ -30,26 +35,20 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * @type {!SiteException}
-       */
       model: {
         type: Object,
         observer: 'modelChanged_',
       },
 
-      /** @private */
       origin_: String,
 
       /**
        * The localized error message to display when the pattern is invalid.
-       * @private
        */
       errorMessage_: String,
 
       /**
        * Whether the current input is invalid.
-       * @private
        */
       invalid_: {
         type: Boolean,
@@ -58,14 +57,13 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  model: SiteException;
+  private origin_: string;
+  private errorMessage_: string;
+  private invalid_: boolean;
+  private browserProxy_: SiteSettingsPrefsBrowserProxy =
+      SiteSettingsPrefsBrowserProxyImpl.getInstance();
 
-    /** @private {!SiteSettingsPrefsBrowserProxy} */
-    this.browserProxy_ = SiteSettingsPrefsBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -74,13 +72,11 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.close();
   }
 
-  /** @private */
-  onActionButtonTap_() {
+  private onActionButtonTap_() {
     if (this.model.origin !== this.origin_) {
       // The way to "edit" an exception is to remove it and and a new one.
       this.browserProxy_.resetCategoryPermissionForPattern(
@@ -95,9 +91,8 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  /** @private */
-  validate_() {
-    if (this.shadowRoot.querySelector('cr-input').value.trim() === '') {
+  private validate_() {
+    if (this.shadowRoot!.querySelector('cr-input')!.value.trim() === '') {
       this.invalid_ = true;
       return;
     }
@@ -109,8 +104,7 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
         });
   }
 
-  /** @private */
-  modelChanged_() {
+  private modelChanged_() {
     if (!this.model) {
       this.$.dialog.cancel();
     }
