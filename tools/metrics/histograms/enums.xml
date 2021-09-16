@@ -33263,7 +33263,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="OBSOLETE_CSSValueAppearanceButtonForNonButtonRendered"/>
   <int value="2775" label="OBSOLETE_CSSValueAppearanceButtonForOthersRendered"/>
   <int value="2776" label="CustomCursorIntersectsViewport"/>
-  <int value="2777" label="ClientHintsLang"/>
+  <int value="2777" label="OBSOLETE_ClientHintsLang"/>
   <int value="2778" label="LinkRelPreloadImageSrcset"/>
   <int value="2779" label="V8HTMLMediaElement_Remote_AttributeGetter"/>
   <int value="2780" label="V8RemotePlayback_WatchAvailability_Method"/>
@@ -34579,6 +34579,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4033" label="OffscreenCanvas_BitmapRenderer"/>
   <int value="4034" label="OffscreenCanvas_WebGPU"/>
   <int value="4035" label="CanvasRenderingContext2DHasOverdraw"/>
+  <int value="4036" label="DigitalGoodsConsume"/>
+  <int value="4037" label="DigitalGoodsListPurchaseHistory"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

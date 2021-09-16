@@ -3343,6 +3343,8 @@ enum WebFeature {
   kOffscreenCanvas_BitmapRenderer = 4033,
   kOffscreenCanvas_WebGPU = 4034,
   kCanvasRenderingContext2DHasOverdraw = 4035,
+  kDigitalGoodsConsume = 4036,
+  kDigitalGoodsListPurchaseHistory = 4037,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
