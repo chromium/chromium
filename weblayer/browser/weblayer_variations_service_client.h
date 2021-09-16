@@ -26,8 +26,7 @@ class WebLayerVariationsServiceClient
 
  private:
   // variations::VariationsServiceClient:
-  base::OnceCallback<base::Version(void)> GetVersionForSimulationCallback()
-      override;
+  base::Version GetVersionForSimulation() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   version_info::Channel GetChannel() override;

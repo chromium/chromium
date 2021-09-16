@@ -15,6 +15,7 @@ source_set("variations") {
     "//components/variations",
     "//components/variations/net",
     "//components/variations/service",
+    "//components/version_info",
     "//components/version_info/android:channel_getter",
   ]
 }

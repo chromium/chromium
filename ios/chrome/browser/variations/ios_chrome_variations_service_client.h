@@ -22,8 +22,8 @@ class IOSChromeVariationsServiceClient
   ~IOSChromeVariationsServiceClient() override;
 
  private:
-  // variations::VariationsServiceClient implementation.
-  VersionCallback GetVersionForSimulationCallback() override;
+  // variations::VariationsServiceClient:
+  base::Version GetVersionForSimulation() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   version_info::Channel GetChannel() override;

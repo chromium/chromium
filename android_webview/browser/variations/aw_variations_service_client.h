@@ -25,7 +25,7 @@ class AwVariationsServiceClient : public variations::VariationsServiceClient {
   ~AwVariationsServiceClient() override;
 
  private:
-  VersionCallback GetVersionForSimulationCallback() override;
+  base::Version GetVersionForSimulation() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   version_info::Channel GetChannel() override;

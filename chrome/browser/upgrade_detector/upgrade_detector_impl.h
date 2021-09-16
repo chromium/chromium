@@ -28,11 +28,6 @@ class UpgradeDetectorImpl : public UpgradeDetector,
                             public BuildStateObserver,
                             public variations::VariationsService::Observer {
  public:
-  // Returns the currently installed Chrome version, which may be newer than the
-  // one currently running. Not supported on Android, iOS or ChromeOS. Must be
-  // run on a thread where I/O operations are allowed.
-  static base::Version GetCurrentlyInstalledVersion();
-
   // Returns the global instance.
   static UpgradeDetectorImpl* GetInstance();
 

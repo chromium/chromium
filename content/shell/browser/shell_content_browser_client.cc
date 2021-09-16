@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/base_switches.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
@@ -165,10 +164,7 @@ class ShellVariationsServiceClient
   ~ShellVariationsServiceClient() override = default;
 
   // variations::VariationsServiceClient:
-  base::OnceCallback<base::Version()> GetVersionForSimulationCallback()
-      override {
-    return base::BindOnce([] { return base::Version(); });
-  }
+  base::Version GetVersionForSimulation() override { return base::Version(); }
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       override {
     return nullptr;

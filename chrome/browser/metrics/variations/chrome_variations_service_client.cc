@@ -4,7 +4,6 @@
 
 #include "chrome/browser/metrics/variations/chrome_variations_service_client.h"
 
-#include "base/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -17,7 +16,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/upgrade_detector/upgrade_detector_impl.h"
+#include "chrome/browser/upgrade_detector/build_state.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -30,32 +29,20 @@
 #include "chromeos/tpm/install_attributes.h"
 #endif
 
-namespace {
+ChromeVariationsServiceClient::ChromeVariationsServiceClient() = default;
 
-// Gets the version number to use for variations seed simulation. Must be called
-// on a thread where IO is allowed.
-base::Version GetVersionForSimulation() {
+ChromeVariationsServiceClient::~ChromeVariationsServiceClient() = default;
+
+base::Version ChromeVariationsServiceClient::GetVersionForSimulation() {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::Version installed_version =
-      UpgradeDetectorImpl::GetCurrentlyInstalledVersion();
-  if (installed_version.IsValid())
-    return installed_version;
+  const auto* build_state = g_browser_process->GetBuildState();
+  if (build_state->installed_version().has_value())
+    return *build_state->installed_version();
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // TODO(asvitkine): Get the version that will be used on restart instead of
   // the current version on Android, iOS and ChromeOS.
   return version_info::GetVersion();
-}
-
-}  // namespace
-
-ChromeVariationsServiceClient::ChromeVariationsServiceClient() {}
-
-ChromeVariationsServiceClient::~ChromeVariationsServiceClient() {}
-
-ChromeVariationsServiceClient::VersionCallback
-ChromeVariationsServiceClient::GetVersionForSimulationCallback() {
-  return base::BindOnce(&GetVersionForSimulation);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

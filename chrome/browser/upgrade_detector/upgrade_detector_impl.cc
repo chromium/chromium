@@ -114,11 +114,6 @@ UpgradeDetectorImpl::~UpgradeDetectorImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-// static
-base::Version UpgradeDetectorImpl::GetCurrentlyInstalledVersion() {
-  return GetInstalledVersion().installed_version;
-}
-
 void UpgradeDetectorImpl::StartUpgradeNotificationTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The timer may already be running (e.g. due to both a software upgrade and
