@@ -153,7 +153,7 @@ void ContentIndexServiceImpl::GetDescriptions(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   content_index_context_->database().GetDescriptions(
-      service_worker_registration_id, std::move(callback));
+      service_worker_registration_id, origin_, std::move(callback));
 }
 
 }  // namespace content

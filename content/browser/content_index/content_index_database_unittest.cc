@@ -114,7 +114,7 @@ class ContentIndexDatabaseTest : public ::testing::Test {
 
   void SetUp() override {
     // Register Service Worker.
-    service_worker_registration_id_ = RegisterServiceWorker();
+    service_worker_registration_id_ = RegisterServiceWorker(origin_);
     ASSERT_NE(service_worker_registration_id_,
               blink::mojom::kInvalidServiceWorkerRegistrationId);
     database_ = std::make_unique<ContentIndexDatabase>(
@@ -164,7 +164,7 @@ class ContentIndexDatabaseTest : public ::testing::Test {
     base::RunLoop run_loop;
     std::vector<blink::mojom::ContentDescriptionPtr> descriptions;
     database_->GetDescriptions(
-        service_worker_registration_id_,
+        service_worker_registration_id_, origin_,
         base::BindOnce(&GetDescriptionsCallback, run_loop.QuitClosure(),
                        out_error, &descriptions));
     run_loop.Run();
@@ -222,6 +222,11 @@ class ContentIndexDatabaseTest : public ::testing::Test {
     return service_worker_registration_id_;
   }
 
+  void set_service_worker_registration_id(
+      int64_t service_worker_registration_id) {
+    service_worker_registration_id_ = service_worker_registration_id;
+  }
+
   ContentIndexDatabase* database() { return database_.get(); }
 
   BrowserTaskEnvironment& task_environment() { return task_environment_; }
@@ -230,15 +235,14 @@ class ContentIndexDatabaseTest : public ::testing::Test {
 
   GURL launch_url() { return origin_.GetURL(); }
 
- private:
-  int64_t RegisterServiceWorker() {
-    GURL script_url(origin_.GetURL().spec() + "sw.js");
+  int64_t RegisterServiceWorker(const url::Origin& origin) {
+    GURL script_url(origin.GetURL().spec() + "sw.js");
     int64_t service_worker_registration_id =
         blink::mojom::kInvalidServiceWorkerRegistrationId;
 
     {
       blink::mojom::ServiceWorkerRegistrationOptions options;
-      options.scope = origin_.GetURL();
+      options.scope = origin.GetURL();
       base::RunLoop run_loop;
       embedded_worker_test_helper_.context()->RegisterServiceWorker(
           script_url, options, blink::mojom::FetchClientSettingsObject::New(),
@@ -258,7 +262,7 @@ class ContentIndexDatabaseTest : public ::testing::Test {
     {
       base::RunLoop run_loop;
       embedded_worker_test_helper_.context()->registry()->FindRegistrationForId(
-          service_worker_registration_id, origin_,
+          service_worker_registration_id, origin,
           base::BindOnce(&DidFindServiceWorkerRegistration,
                          &service_worker_registration_,
                          run_loop.QuitClosure()));
@@ -276,6 +280,7 @@ class ContentIndexDatabaseTest : public ::testing::Test {
     return service_worker_registration_id;
   }
 
+ private:
   BrowserTaskEnvironment task_environment_;  // Must be first member.
   ContentIndexTestBrowserContext browser_context_;
   url::Origin origin_ = url::Origin::Create(GURL("https://example.com"));
@@ -312,6 +317,24 @@ TEST_F(ContentIndexDatabaseTest, DatabaseOperations) {
   ASSERT_EQ(descriptions.size(), 1u);
   auto expected_description = CreateDescription("id1");
   EXPECT_TRUE(descriptions[0]->Equals(*expected_description));
+}
+
+TEST_F(ContentIndexDatabaseTest, DatabaseOperationsBadSWID) {
+  url::Origin other_origin = url::Origin::Create(GURL("https://other.com"));
+  int64_t other_service_worker_registration_id =
+      RegisterServiceWorker(other_origin);
+  ASSERT_NE(other_service_worker_registration_id,
+            blink::mojom::kInvalidServiceWorkerRegistrationId);
+  set_service_worker_registration_id(other_service_worker_registration_id);
+
+  blink::mojom::ContentIndexError error;
+  auto descriptions = GetDescriptions(&error);
+  EXPECT_TRUE(descriptions.empty());
+  EXPECT_EQ(error, blink::mojom::ContentIndexError::STORAGE_ERROR);
+
+  EXPECT_EQ(AddEntry(CreateDescription("id1")),
+            blink::mojom::ContentIndexError::STORAGE_ERROR);
+  EXPECT_EQ(DeleteEntry("id2"), blink::mojom::ContentIndexError::STORAGE_ERROR);
 }
 
 TEST_F(ContentIndexDatabaseTest, AddDuplicateIdWillOverwrite) {
