@@ -2587,11 +2587,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       TextUnit_Word, "<ol><li>item one</li><li>item two</li></ol>",
       {L"1", L". ", L"item ", L"one", L"2", L". ", L"item ", L"two"});
 
-  // The following test should be enabled when crbug.com/1028830 is fixed.
-  // AssertMoveByUnitForMarkup(TextUnit_Word,
-  //                           "<ul><li>item one</li><li>item two</li></ul>",
-  //                           {L"• ", L"item ", L"one", L"• ", L"item ",
-  //                           L"two"});
+  AssertMoveByUnitForMarkup(TextUnit_Word,
+                            "<ul><li>item one</li><li>item two</li></ul>",
+                            {L"• ", L"item ", L"one", L"• ", L"item ", L"two"});
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
