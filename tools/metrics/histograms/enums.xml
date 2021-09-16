@@ -43496,6 +43496,10 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="19" label="Intel ElkhartLake"/>
   <int value="20" label="Intel JaspterLake"/>
   <int value="21" label="Intel TigerLake"/>
+  <int value="22" label="Intel AlderLake"/>
+  <int value="23" label="Intel AmberLake"/>
+  <int value="24" label="Intel RocketLake"/>
+  <int value="25" label="Intel DG1"/>
 </enum>
 
 <enum name="IntelMaxMicroArchitecture">

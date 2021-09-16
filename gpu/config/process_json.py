@@ -669,6 +669,7 @@ def write_intel_gpu_series_list(entry_id, is_exception, exception_id,
       'apollolake': 'kApollolake',
       'skylake': 'kSkylake',
       'geminilake': 'kGeminilake',
+      'amberlake': 'kAmberlake',
       'kabylake': 'kKabylake',
       'coffeelake': 'kCoffeelake',
       'whiskeylake': 'kWhiskeylake',
@@ -678,6 +679,8 @@ def write_intel_gpu_series_list(entry_id, is_exception, exception_id,
       'elkhartlake': 'kElkhartlake',
       'jasperlake': 'kJasperlake',
       'tigerlake': 'kTigerlake',
+      'rocketlake': 'kRocketlake',
+      'dg1': 'kDG1',
       'alderlake': 'kAlderlake'
     }
     for series in intel_gpu_series_list:
