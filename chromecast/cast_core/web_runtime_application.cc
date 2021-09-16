@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/web_runtime_application_service.h"
+#include "chromecast/cast_core/web_runtime_application.h"
 
 #include "chromecast/cast_core/bindings_manager_web_runtime.h"
 #include "chromecast/cast_core/grpc_webui_controller_factory.h"
@@ -13,20 +13,20 @@
 
 namespace chromecast {
 
-WebRuntimeApplicationService::WebRuntimeApplicationService(
+WebRuntimeApplication::WebRuntimeApplication(
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : RuntimeApplicationServiceBase(mojom::RendererType::MOJO_RENDERER,
-                                    web_service,
-                                    std::move(task_runner)) {}
+    : RuntimeApplicationBase(mojom::RendererType::MOJO_RENDERER,
+                             web_service,
+                             std::move(task_runner)) {}
 
-WebRuntimeApplicationService::~WebRuntimeApplicationService() {
+WebRuntimeApplication::~WebRuntimeApplication() {
   StopApplication();
 }
 
-bool WebRuntimeApplicationService::Load(
+bool WebRuntimeApplication::Load(
     const cast::runtime::LoadApplicationRequest& request) {
-  if (!RuntimeApplicationServiceBase::Load(request)) {
+  if (!RuntimeApplicationBase::Load(request)) {
     return false;
   }
 
@@ -37,7 +37,7 @@ bool WebRuntimeApplicationService::Load(
   return true;
 }
 
-void WebRuntimeApplicationService::SetUrlRewriteRules(
+void WebRuntimeApplication::SetUrlRewriteRules(
     const cast::v2::SetUrlRewriteRulesRequest& request,
     cast::v2::SetUrlRewriteRulesResponse* response,
     GrpcMethod* callback) {
@@ -51,17 +51,16 @@ void WebRuntimeApplicationService::SetUrlRewriteRules(
     url_rewrite_adapter_->UpdateRules(request.rules());
   }
 
-  RuntimeApplicationServiceBase::SetUrlRewriteRules(request, response,
-                                                    callback);
+  RuntimeApplicationBase::SetUrlRewriteRules(request, response, callback);
 }
 
-void WebRuntimeApplicationService::HandleMessage(
+void WebRuntimeApplication::HandleMessage(
     const cast::web::Message& message,
     cast::web::MessagePortStatus* response) {
   bindings_manager_->HandleMessage(message, response);
 }
 
-void WebRuntimeApplicationService::RenderFrameCreated(
+void WebRuntimeApplication::RenderFrameCreated(
     int render_process_id,
     int render_frame_id,
     mojo::PendingAssociatedRemote<
@@ -71,7 +70,7 @@ void WebRuntimeApplicationService::RenderFrameCreated(
   url_rewrite_adapter_->AddRenderFrame(std::move(remote_settings_manager));
 }
 
-CastWebView::Scoped WebRuntimeApplicationService::CreateWebView(
+CastWebView::Scoped WebRuntimeApplication::CreateWebView(
     CoreApplicationServiceGrpc* grpc_stub) {
   // Register GrpcWebUI for handling Cast apps with URLs in the form
   // chrome*://* that use WebUIs.
@@ -79,10 +78,10 @@ CastWebView::Scoped WebRuntimeApplicationService::CreateWebView(
   content::WebUIControllerFactory::RegisterFactory(
       new GrpcWebUiControllerFactory(std::move(hosts), *grpc_stub));
 
-  return RuntimeApplicationServiceBase::CreateWebView(grpc_stub);
+  return RuntimeApplicationBase::CreateWebView(grpc_stub);
 }
 
-GURL WebRuntimeApplicationService::ProcessWebView(
+GURL WebRuntimeApplication::ProcessWebView(
     CoreApplicationServiceGrpc* grpc_stub,
     CastWebContents* cast_web_contents) {
   cast::bindings::GetAllResponse bindings_response;

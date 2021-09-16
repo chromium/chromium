@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_SERVICE_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_SERVICE_H_
+#ifndef CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_DISPATCHER_H_
+#define CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_DISPATCHER_H_
 
 #include <memory>
 
@@ -28,18 +28,18 @@ namespace chromecast {
 class CastWebService;
 class CastWebViewFactory;
 class CastWindowManager;
-class RuntimeApplicationService;
+class RuntimeApplication;
 
-class RuntimeService final : public GrpcServer,
-                             public RuntimeServiceDelegate,
-                             public MetricsRecorderGrpc {
+class RuntimeApplicationDispatcher final : public GrpcServer,
+                                           public RuntimeServiceDelegate,
+                                           public MetricsRecorderGrpc {
  public:
-  RuntimeService(
+  RuntimeApplicationDispatcher(
       content::BrowserContext* browser_context,
       CastWindowManager* window_manager,
       CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
       cast_streaming::NetworkContextGetter network_context_getter);
-  ~RuntimeService() override;
+  ~RuntimeApplicationDispatcher() override;
 
   // Starts and stops the runtime service, including the gRPC completion queue.
   bool Start(const std::string& runtime_id,
@@ -71,22 +71,22 @@ class RuntimeService final : public GrpcServer,
 
  private:
   // This class handles asynchronously calling MetricsRecorderService->Record
-  // and notifying RuntimeService when it completes.  There should only be one
-  // of these at a time.
+  // and notifying RuntimeApplicationDispatcher when it completes.  There should
+  // only be one of these at a time.
   class AsyncMetricsRecord final : public GrpcCall {
    public:
     AsyncMetricsRecord(
         const cast::metrics::RecordRequest& request,
         cast::metrics::MetricsRecorderService::Stub* metrics_recorder_stub,
         grpc::CompletionQueue* cq,
-        base::WeakPtr<RuntimeService> runtime_service);
+        base::WeakPtr<RuntimeApplicationDispatcher> runtime_service);
     ~AsyncMetricsRecord() override;
 
     // GrpcCall implementation:
     void StepGRPC(grpc::Status status) override;
 
    private:
-    base::WeakPtr<RuntimeService> runtime_service_;
+    base::WeakPtr<RuntimeApplicationDispatcher> runtime_service_;
 
     cast::metrics::RecordResponse response_;
     std::unique_ptr<
@@ -106,7 +106,7 @@ class RuntimeService final : public GrpcServer,
 
   cast_streaming::NetworkContextGetter network_context_getter_;
 
-  std::unique_ptr<RuntimeApplicationService> app_service_;
+  std::unique_ptr<RuntimeApplication> app_;
 
   // These variables support the runtime heartbeat stream.  |heartbeat_| will
   // live until Finish() is called, but it is a GrpcMethod so it is unowned.
@@ -125,9 +125,9 @@ class RuntimeService final : public GrpcServer,
   cast::runtime::RuntimeService::AsyncService grpc_runtime_service_;
   std::unique_ptr<CastRuntimeMetricsRecorderService> metrics_recorder_service_;
 
-  base::WeakPtrFactory<RuntimeService> weak_factory_{this};
+  base::WeakPtrFactory<RuntimeApplicationDispatcher> weak_factory_{this};
 };
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_SERVICE_H_
+#endif  // CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_DISPATCHER_H_

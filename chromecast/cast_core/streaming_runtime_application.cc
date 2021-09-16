@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/streaming_runtime_application_service.h"
+#include "chromecast/cast_core/streaming_runtime_application.h"
 
 #include "base/strings/stringprintf.h"
 #include "chromecast/cast_core/message_port_service.h"
@@ -28,34 +28,34 @@ const char kStreamingPageUrlTemplate[] =
 
 }  // namespace
 
-StreamingRuntimeApplicationService::StreamingRuntimeApplicationService(
+StreamingRuntimeApplication::StreamingRuntimeApplication(
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter)
-    : RuntimeApplicationServiceBase(mojom::RendererType::REMOTING_RENDERER,
-                                    web_service,
-                                    std::move(task_runner)),
+    : RuntimeApplicationBase(mojom::RendererType::REMOTING_RENDERER,
+                             web_service,
+                             std::move(task_runner)),
       network_context_getter_(std::move(network_context_getter)) {}
 
-StreamingRuntimeApplicationService::~StreamingRuntimeApplicationService() {
+StreamingRuntimeApplication::~StreamingRuntimeApplication() {
   StopApplication();
 }
 
-void StreamingRuntimeApplicationService::HandleMessage(
+void StreamingRuntimeApplication::HandleMessage(
     const cast::web::Message& message,
     cast::web::MessagePortStatus* response) {
   message_port_service_->HandleMessage(message, response);
 }
 
-void StreamingRuntimeApplicationService::OnStreamingSessionStarted() {
+void StreamingRuntimeApplication::OnStreamingSessionStarted() {
   SetApplicationStarted();
 }
 
-void StreamingRuntimeApplicationService::OnError() {
+void StreamingRuntimeApplication::OnError() {
   StopApplication();
 }
 
-void StreamingRuntimeApplicationService::StartAvSettingsQuery(
+void StreamingRuntimeApplication::StartAvSettingsQuery(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port) {
   // Connect the port to allow for sending messages. Querying will be done by
   // the associated |receiver_session_client_|.
@@ -63,7 +63,7 @@ void StreamingRuntimeApplicationService::StartAvSettingsQuery(
                                        std::move(message_port));
 }
 
-GURL StreamingRuntimeApplicationService::ProcessWebView(
+GURL StreamingRuntimeApplication::ProcessWebView(
     CoreApplicationServiceGrpc* grpc_stub,
     CastWebContents* cast_web_contents) {
   message_port_service_ = std::make_unique<MessagePortService>(
@@ -88,9 +88,9 @@ GURL StreamingRuntimeApplicationService::ProcessWebView(
       base::StringPrintf(kStreamingPageUrlTemplate, streaming_url.c_str()));
 }
 
-void StreamingRuntimeApplicationService::StopApplication() {
+void StreamingRuntimeApplication::StopApplication() {
   receiver_session_client_.reset();
-  RuntimeApplicationServiceBase::StopApplication();
+  RuntimeApplicationBase::StopApplication();
   message_port_service_.reset();
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_SERVICE_BASE_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_SERVICE_BASE_H_
+#ifndef CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_BASE_H_
+#define CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_BASE_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc_server.h"
-#include "chromecast/cast_core/runtime_application_service.h"
+#include "chromecast/cast_core/runtime_application.h"
 #include "chromecast/cast_core/runtime_application_service_grpc_impl.h"
 #include "chromecast/cast_core/runtime_message_port_application_service_grpc_impl.h"
 #include "third_party/openscreen/src/cast/cast_core/api/v2/core_application_service.grpc.pb.h"
@@ -21,26 +21,24 @@ namespace chromecast {
 
 class CastWebService;
 
-// This class is for sharing code between Web and streaming
-// RuntimeApplicationService implementations, including Load and Launch
-// behavior.
-class RuntimeApplicationServiceBase
-    : public RuntimeApplicationService,
+// This class is for sharing code between Web and streaming RuntimeApplication
+// implementations, including Load and Launch behavior.
+class RuntimeApplicationBase
+    : public RuntimeApplication,
       public GrpcServer,
       public RuntimeApplicationServiceDelegate,
       public RuntimeMessagePortApplicationServiceDelegate,
       public CastWebView::Delegate {
  public:
-  ~RuntimeApplicationServiceBase() override;
+  ~RuntimeApplicationBase() override;
 
  protected:
   using CoreApplicationServiceGrpc = cast::v2::CoreApplicationService::Stub;
 
   // |web_service| is expected to exist for the lifetime of this instance.
-  RuntimeApplicationServiceBase(
-      mojom::RendererType renderer_type_used,
-      CastWebService* web_service,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  RuntimeApplicationBase(mojom::RendererType renderer_type_used,
+                         CastWebService* web_service,
+                         scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Processes an incoming |message|, returning the status of this processing in
   // |response| after being received over gRPC.
@@ -69,7 +67,7 @@ class RuntimeApplicationServiceBase
     return task_runner_;
   }
 
-  // RuntimeApplicationService implementation:
+  // RuntimeApplication implementation:
   bool Load(const cast::runtime::LoadApplicationRequest& request) override;
   bool Launch(const cast::runtime::LaunchApplicationRequest& request) override;
 
@@ -115,9 +113,9 @@ class RuntimeApplicationServiceBase
   // Renderer type used by this application.
   mojom::RendererType renderer_type_;
 
-  base::WeakPtrFactory<RuntimeApplicationServiceBase> weak_factory_{this};
+  base::WeakPtrFactory<RuntimeApplicationBase> weak_factory_{this};
 };
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_SERVICE_BASE_H_
+#endif  // CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_BASE_H_

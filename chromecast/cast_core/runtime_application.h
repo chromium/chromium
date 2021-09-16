@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_SERVICE_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_SERVICE_H_
+#ifndef CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_H_
+#define CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_H_
 
 #include <string>
 
@@ -15,10 +15,10 @@ namespace chromecast {
 // lifecycle is very simple: Load() -> Launch() -> Destruction.  Implementations
 // of this interface will additionally communicate over various gRPC interfaces.
 // For example, Launch needs to respond with SetApplicationStatus.
-class RuntimeApplicationService {
+class RuntimeApplication {
  public:
-  RuntimeApplicationService();
-  virtual ~RuntimeApplicationService() = 0;
+  RuntimeApplication();
+  virtual ~RuntimeApplication() = 0;
 
   // NOTE: These fields are the empty string until after Load().
   const std::string& app_id() const { return app_id_; }
@@ -68,4 +68,4 @@ class RuntimeApplicationService {
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_SERVICE_H_
+#endif  // CHROMECAST_CAST_CORE_RUNTIME_APPLICATION_H_

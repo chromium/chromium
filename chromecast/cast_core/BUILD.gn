@@ -17,7 +17,7 @@ group("cast_core") {
   ]
 
   if (is_linux) {
-    deps += [ ":core_service" ]
+    deps += [ ":application_dispatch" ]
   }
 
   if (enable_cast_media_runtime) {
@@ -178,18 +178,18 @@ if (is_linux) {
     deps = [ "//chromecast/bindings:bindings_manager_cast" ]
   }
 
-  cast_source_set("core_service") {
+  cast_source_set("application_dispatch") {
     sources = [
-      "runtime_application_service.cc",
-      "runtime_application_service.h",
-      "runtime_application_service_base.cc",
-      "runtime_application_service_base.h",
-      "runtime_service.cc",
-      "runtime_service.h",
-      "streaming_runtime_application_service.cc",
-      "streaming_runtime_application_service.h",
-      "web_runtime_application_service.cc",
-      "web_runtime_application_service.h",
+      "runtime_application.cc",
+      "runtime_application.h",
+      "runtime_application_base.cc",
+      "runtime_application_base.h",
+      "runtime_application_dispatcher.cc",
+      "runtime_application_dispatcher.h",
+      "streaming_runtime_application.cc",
+      "streaming_runtime_application.h",
+      "web_runtime_application.cc",
+      "web_runtime_application.h",
     ]
 
     public_deps = [
@@ -307,7 +307,7 @@ cast_source_set("runtime_service") {
     ]
 
     public_deps += [
-      ":core_service",
+      ":application_dispatch",
       ":metrics_recorder",
     ]
 

@@ -9,7 +9,7 @@
 
 #include "chromecast/cast_core/cast_runtime_metrics_recorder.h"
 #include "chromecast/cast_core/cast_runtime_service.h"
-#include "chromecast/cast_core/runtime_service.h"
+#include "chromecast/cast_core/runtime_application_dispatcher.h"
 
 namespace content {
 class BrowserContext;
@@ -43,7 +43,7 @@ class CastRuntimeServiceImpl
   std::unique_ptr<CastEventBuilder> CreateEventBuilder() override;
 
  private:
-  RuntimeService runtime_service_;
+  RuntimeApplicationDispatcher app_dispatcher_;
 };
 
 }  // namespace chromecast

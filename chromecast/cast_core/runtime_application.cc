@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime_application_service.h"
+#include "chromecast/cast_core/runtime_application.h"
 
 namespace chromecast {
 
-RuntimeApplicationService::RuntimeApplicationService() = default;
+RuntimeApplication::RuntimeApplication() = default;
 
-RuntimeApplicationService::~RuntimeApplicationService() = default;
+RuntimeApplication::~RuntimeApplication() = default;
 
 }  // namespace chromecast

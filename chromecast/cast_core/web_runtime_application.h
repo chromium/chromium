@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_WEB_RUNTIME_APPLICATION_SERVICE_H_
-#define CHROMECAST_CAST_CORE_WEB_RUNTIME_APPLICATION_SERVICE_H_
+#ifndef CHROMECAST_CAST_CORE_WEB_RUNTIME_APPLICATION_H_
+#define CHROMECAST_CAST_CORE_WEB_RUNTIME_APPLICATION_H_
 
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/cast_web_contents_observer.h"
-#include "chromecast/cast_core/runtime_application_service_base.h"
+#include "chromecast/cast_core/runtime_application_base.h"
 
 namespace chromecast {
 
@@ -15,17 +15,16 @@ class BindingsManagerWebRuntime;
 class CastWebService;
 class UrlRewriteRulesAdapter;
 
-class WebRuntimeApplicationService final : public RuntimeApplicationServiceBase,
-                                           public CastWebContentsObserver {
+class WebRuntimeApplication final : public RuntimeApplicationBase,
+                                    public CastWebContentsObserver {
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
-  WebRuntimeApplicationService(
-      CastWebService* web_service,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
-  ~WebRuntimeApplicationService() override;
+  WebRuntimeApplication(CastWebService* web_service,
+                        scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ~WebRuntimeApplication() override;
 
  private:
-  // RuntimeApplicationServiceBase implementation:
+  // RuntimeApplicationBase implementation:
   void HandleMessage(const cast::web::Message& message,
                      cast::web::MessagePortStatus* response) override;
   bool Load(const cast::runtime::LoadApplicationRequest& request) override;
@@ -52,4 +51,4 @@ class WebRuntimeApplicationService final : public RuntimeApplicationServiceBase,
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_CAST_CORE_WEB_RUNTIME_APPLICATION_SERVICE_H_
+#endif  // CHROMECAST_CAST_CORE_WEB_RUNTIME_APPLICATION_H_

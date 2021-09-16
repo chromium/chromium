@@ -29,10 +29,10 @@ CastRuntimeServiceImpl::CastRuntimeServiceImpl(
     content::BrowserContext* browser_context,
     CastWindowManager* window_manager,
     NetworkContextGetter network_context_getter)
-    : runtime_service_(browser_context,
-                       window_manager,
-                       this,
-                       std::move(network_context_getter)) {}
+    : app_dispatcher_(browser_context,
+                      window_manager,
+                      this,
+                      std::move(network_context_getter)) {}
 
 CastRuntimeServiceImpl::~CastRuntimeServiceImpl() = default;
 
@@ -44,7 +44,7 @@ void CastRuntimeServiceImpl::StartInternal() {
       command_line->GetSwitchValueASCII(kCastCoreRuntimeIdSwitch);
   std::string runtime_service_path =
       command_line->GetSwitchValueASCII(kRuntimeServicePathSwitch);
-  if (!runtime_service_.Start(runtime_id, runtime_service_path)) {
+  if (!app_dispatcher_.Start(runtime_id, runtime_service_path)) {
     base::Process::TerminateCurrentProcessImmediately(1);
   }
 }
@@ -52,7 +52,7 @@ void CastRuntimeServiceImpl::StartInternal() {
 void CastRuntimeServiceImpl::StopInternal() {
   CastRuntimeService::StopInternal();
 
-  runtime_service_.Stop();
+  app_dispatcher_.Stop();
 }
 
 std::unique_ptr<CastEventBuilder> CastRuntimeServiceImpl::CreateEventBuilder() {
@@ -60,7 +60,7 @@ std::unique_ptr<CastEventBuilder> CastRuntimeServiceImpl::CreateEventBuilder() {
 }
 
 const std::string& CastRuntimeServiceImpl::GetAudioChannelEndpoint() {
-  return runtime_service_.GetCastMediaServiceGrpcEndpoint();
+  return app_dispatcher_.GetCastMediaServiceGrpcEndpoint();
 }
 
 }  // namespace chromecast

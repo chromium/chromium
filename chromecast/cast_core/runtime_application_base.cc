@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime_application_service_base.h"
+#include "chromecast/cast_core/runtime_application_base.h"
 
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
@@ -14,7 +14,7 @@
 
 namespace chromecast {
 
-RuntimeApplicationServiceBase::RuntimeApplicationServiceBase(
+RuntimeApplicationBase::RuntimeApplicationBase(
     mojom::RendererType renderer_type_used,
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
@@ -26,11 +26,11 @@ RuntimeApplicationServiceBase::RuntimeApplicationServiceBase(
   DCHECK(task_runner_);
 }
 
-RuntimeApplicationServiceBase::~RuntimeApplicationServiceBase() {
+RuntimeApplicationBase::~RuntimeApplicationBase() {
   CHECK(is_application_stopped_);
 }
 
-bool RuntimeApplicationServiceBase::Load(
+bool RuntimeApplicationBase::Load(
     const cast::runtime::LoadApplicationRequest& request) {
   if (!request.has_application_config() ||
       !request.has_runtime_application_service_info()) {
@@ -63,7 +63,7 @@ bool RuntimeApplicationServiceBase::Load(
   return true;
 }
 
-bool RuntimeApplicationServiceBase::Launch(
+bool RuntimeApplicationBase::Launch(
     const cast::runtime::LaunchApplicationRequest& request) {
   if (!request.has_cast_media_service_info()) {
     return false;
@@ -74,13 +74,13 @@ bool RuntimeApplicationServiceBase::Launch(
 
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&RuntimeApplicationServiceBase::FinishLaunch,
+      base::BindOnce(&RuntimeApplicationBase::FinishLaunch,
                      weak_factory_.GetWeakPtr(),
                      request.core_application_service_info().grpc_endpoint()));
   return true;
 }
 
-void RuntimeApplicationServiceBase::FinishLaunch(
+void RuntimeApplicationBase::FinishLaunch(
     std::string core_application_service_endpoint) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -100,10 +100,9 @@ void RuntimeApplicationServiceBase::FinishLaunch(
       chromecast::VisibilityPriority::STICKY_ACTIVITY);
 }
 
-void RuntimeApplicationServiceBase::PostMessage(
-    const cast::web::Message& request,
-    cast::web::MessagePortStatus* response,
-    GrpcMethod* callback) {
+void RuntimeApplicationBase::PostMessage(const cast::web::Message& request,
+                                         cast::web::MessagePortStatus* response,
+                                         GrpcMethod* callback) {
   if (cast_session_id().empty()) {
     callback->StepGRPC(grpc::Status(grpc::StatusCode::NOT_FOUND,
                                     "No active cast session for PostMessage"));
@@ -113,14 +112,14 @@ void RuntimeApplicationServiceBase::PostMessage(
   callback->StepGRPC(grpc::Status::OK);
 }
 
-void RuntimeApplicationServiceBase::SetUrlRewriteRules(
+void RuntimeApplicationBase::SetUrlRewriteRules(
     const cast::v2::SetUrlRewriteRulesRequest& request,
     cast::v2::SetUrlRewriteRulesResponse* response,
     GrpcMethod* callback) {
   callback->StepGRPC(grpc::Status::OK);
 }
 
-void RuntimeApplicationServiceBase::SetApplicationStarted() {
+void RuntimeApplicationBase::SetApplicationStarted() {
   grpc::ClientContext context;
   cast::v2::ApplicationStatusRequest app_status;
   cast::v2::ApplicationStatusResponse unused;
@@ -135,7 +134,7 @@ void RuntimeApplicationServiceBase::SetApplicationStarted() {
   }
 }
 
-CastWebView::Scoped RuntimeApplicationServiceBase::CreateWebView(
+CastWebView::Scoped RuntimeApplicationBase::CreateWebView(
     CoreApplicationServiceGrpc* grpc_stub) {
   CastWebView::CreateParams create_params;
   create_params.delegate = weak_factory_.GetWeakPtr();
@@ -150,11 +149,11 @@ CastWebView::Scoped RuntimeApplicationServiceBase::CreateWebView(
   return web_service_->CreateWebViewInternal(create_params, std::move(params));
 }
 
-bool RuntimeApplicationServiceBase::CanHandleGesture(GestureType gesture_type) {
+bool RuntimeApplicationBase::CanHandleGesture(GestureType gesture_type) {
   return false;
 }
 
-void RuntimeApplicationServiceBase::StopApplication() {
+void RuntimeApplicationBase::StopApplication() {
   is_application_stopped_ = true;
 
   if (cast_session_id().empty()) {
@@ -186,7 +185,7 @@ void RuntimeApplicationServiceBase::StopApplication() {
   set_cast_session_id(std::string());
 }
 
-void RuntimeApplicationServiceBase::ConsumeGesture(
+void RuntimeApplicationBase::ConsumeGesture(
     GestureType gesture_type,
     GestureHandledCallback handled_callback) {
   std::move(handled_callback).Run(false);
