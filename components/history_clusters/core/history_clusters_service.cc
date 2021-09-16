@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <numeric>
 #include <string>
 #include <utility>
@@ -368,6 +369,9 @@ std::string GetDebugJSONForClusters(
   return debug_string;
 }
 
+// TODO(tommycli): Explicitly link this number to what's in WebUI.
+constexpr int kMaxCountForKeywordCacheBatch = 10;
+
 }  // namespace
 
 HistoryClustersService::HistoryClustersService(
@@ -524,12 +528,15 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
   if ((base::Time::Now() - all_keywords_cache_timestamp_) >
           base::TimeDelta::FromHours(2) &&
       !cache_query_task_tracker_.HasTrackedTasks()) {
-    // TODO(tommycli): Make sure we are hitting the local database, and not the
-    //  remote model service once cluster persistence is ready.
+    // Update the timestamp right away, to prevent this from running again.
+    // (The cache_query_task_tracker_ should also do this.)
+    all_keywords_cache_timestamp_ = base::Time::Now();
+
     QueryClusters(
-        /*query=*/"", /*end_time=*/base::Time(), /*max_count=*/0,
+        /*query=*/"", /*end_time=*/base::Time(), kMaxCountForKeywordCacheBatch,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
-                       weak_ptr_factory_.GetWeakPtr()),
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::make_unique<std::set<std::u16string>>()),
         &cache_query_task_tracker_);
   }
 
@@ -640,17 +647,34 @@ std::vector<Cluster> HistoryClustersService::CollapseDuplicateVisits(
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(
+    std::unique_ptr<std::set<std::u16string>> keyword_accumulator,
     QueryClustersResult result) {
-  all_keywords_cache_.clear();
+  // Copy keywords from every cluster into a the accumulator set.
   for (auto& cluster : result.clusters) {
-    for (auto& keyword : cluster.keywords) {
-      // Each `keyword` may itself have multiple terms that we need to extract.
-      query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),
-                                                   &all_keywords_cache_);
-    }
+    keyword_accumulator->insert(cluster.keywords.begin(),
+                                cluster.keywords.end());
   }
 
-  all_keywords_cache_timestamp_ = base::Time::Now();
+  // If there's still more to get, ask for another batch of keywords.
+  if (result.continuation_end_time) {
+    QueryClusters(
+        /*query=*/"", *result.continuation_end_time,
+        kMaxCountForKeywordCacheBatch,
+        base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       // Pass on the accumulator set to the next callback.
+                       std::move(keyword_accumulator)),
+        &cache_query_task_tracker_);
+    return;
+  }
+
+  // We've got all the keywords now, time to populate the cache.
+  all_keywords_cache_.clear();
+  for (auto& keyword : *keyword_accumulator) {
+    // Each `keyword` may itself have multiple terms that we need to extract.
+    query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),
+                                                 &all_keywords_cache_);
+  }
 }
 
 void HistoryClustersService::OnGotHistoryVisits(

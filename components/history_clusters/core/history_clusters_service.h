@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -114,9 +115,12 @@ class HistoryClustersService : public KeyedService {
   friend class HistoryClustersServiceTestApi;
 
   // This is a callback used for the `QueryClusters()` call from
-  // `DoesQueryMatchAnyCluster()`. Populates the cluster keyword cache from the
-  // keywords in `clusters`.
-  void PopulateClusterKeywordCache(QueryClustersResult result);
+  // `DoesQueryMatchAnyCluster()`. Accumulates the keywords in `result` within
+  // `keyword_accumulator`. If History is not yet exhausted, will request
+  // another batch of clusters. Otherwise, will update the keyword cache.
+  void PopulateClusterKeywordCache(
+      std::unique_ptr<std::set<std::u16string>> keyword_accumulator,
+      QueryClustersResult result);
 
   // Internally used callback for `QueryClusters()`.
   void OnGotHistoryVisits(const std::string& query,
