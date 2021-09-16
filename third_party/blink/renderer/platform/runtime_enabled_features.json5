@@ -517,7 +517,8 @@
     },
     {
       // https://drafts.csswg.org/css-counter-styles/#counter-style-speak-as
-      name: "CSSAtRuleCounterStyleSpeakAsDescriptor"
+      name: "CSSAtRuleCounterStyleSpeakAsDescriptor",
+      status: "test",
     },
     {
       name: "CSSCalcAsInt",

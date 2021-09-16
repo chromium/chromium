@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
+#include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
@@ -115,9 +116,12 @@ class StyleEngineTest : public testing::Test {
 
   String GetListMarkerText(LayoutObject* list_item) {
     LayoutObject* marker = ListMarker::MarkerFromListItem(list_item);
-    if (auto* legacy_marker = DynamicTo<LayoutListMarker>(marker))
-      return legacy_marker->TextAlternative();
-    return ListMarker::Get(marker)->TextAlternative(*marker);
+    if (auto* legacy_marker = DynamicTo<LayoutListMarker>(marker)) {
+      const CounterStyle& counter_style = legacy_marker->GetCounterStyle();
+      return counter_style.GetPrefix() + legacy_marker->GetText() +
+             counter_style.GetSuffix();
+    }
+    return ListMarker::Get(marker)->GetTextChild(*marker).GetText();
   }
 
   StyleRuleScrollTimeline* FindScrollTimelineRule(AtomicString name) {
