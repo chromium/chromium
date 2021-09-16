@@ -2,13 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#dim-preview {
-  background: rgba(0, 0, 0, 0.6);
-  bottom: calc(var(--bottom-line) * 2);
-  left: calc(var(--left-line) * 2);
-  position: absolute;
-  right: calc(var(--right-line) * 2);
-  top: 0;
+body.view-document-mode-dialog #preview-video {
+  filter: brightness(0.6);
 }
 
 #view-document-mode-dialog .dialog-popup {
