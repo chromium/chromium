@@ -5135,7 +5135,34 @@
       },
     },
 
-    'updater_gtests': {
+    'updater_gtests_mac': {
+      'updater_tests': {
+        'args': [
+          # Timeouts based on empirical observations of test runtimes, 2021-07.
+          '--test-launcher-timeout=90000',
+          '--ui-test-action-max-timeout=45000',
+          '--ui-test-action-timeout=40000',
+        ],
+      },
+      'updater_tests_system': {
+        'args': [
+          # Timeouts based on empirical observations of test runtimes, 2021-07.
+          '--test-launcher-timeout=90000',
+          '--ui-test-action-max-timeout=45000',
+          '--ui-test-action-timeout=40000',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              # These tests require passwordless sudo on mac.
+              'pool': 'chromium.updater.mac',
+            }
+          ]
+        },
+      },
+    },
+
+    'updater_gtests_win': {
       'updater_tests': {
         'args': [
           # Timeouts based on empirical observations of test runtimes, 2021-07.
@@ -5161,7 +5188,7 @@
       },
     },
 
-    'updater_gtests_uac': {
+    'updater_gtests_win_uac': {
       'updater_tests': {
         'args': [
           '--deelevate',
@@ -5187,7 +5214,6 @@
         }
       },
     },
-
 
     'upload_perfetto': {
       'upload_trace_processor': {},

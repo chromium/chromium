@@ -42,7 +42,6 @@
           "dimension_sets": [
             {
               "cpu": "arm-64",
-              "integrity": "high",
               "os": "Mac-11",
               "pool": "chromium.updater.mac"
             }
@@ -95,7 +94,6 @@
           "dimension_sets": [
             {
               "cpu": "arm-64",
-              "integrity": "high",
               "os": "Mac-11",
               "pool": "chromium.updater.mac"
             }
@@ -148,7 +146,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-10.11",
               "pool": "chromium.updater.mac"
             }
@@ -201,7 +198,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-10.11",
               "pool": "chromium.updater.mac"
             }
@@ -254,7 +250,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-10.12",
               "pool": "chromium.updater.mac"
             }
@@ -307,7 +302,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-10.12",
               "pool": "chromium.updater.mac"
             }
@@ -360,7 +354,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-10.13",
               "pool": "chromium.updater.mac"
             }
@@ -413,7 +406,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-10.13",
               "pool": "chromium.updater.mac"
             }
@@ -466,7 +458,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-10.14",
               "pool": "chromium.updater.mac"
             }
@@ -519,7 +510,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-10.14",
               "pool": "chromium.updater.mac"
             }
@@ -572,7 +562,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-10.15",
               "pool": "chromium.updater.mac"
             }
@@ -625,7 +614,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-10.15",
               "pool": "chromium.updater.mac"
             }
@@ -678,7 +666,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-11",
               "pool": "chromium.updater.mac"
             }
@@ -731,7 +718,6 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "integrity": "high",
               "os": "Mac-11",
               "pool": "chromium.updater.mac"
             }

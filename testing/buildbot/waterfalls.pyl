@@ -5596,7 +5596,7 @@
           ]
         },
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
       },
       'mac-arm64-updater-tester-rel': {
@@ -5610,12 +5610,12 @@
           ]
         },
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
       },
       'mac10.11-updater-tester-dbg': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5629,7 +5629,7 @@
       },
       'mac10.11-updater-tester-rel': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
        'swarming': {
           'dimension_sets': [
@@ -5643,7 +5643,7 @@
       },
       'mac10.12-updater-tester-dbg': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5657,7 +5657,7 @@
       },
       'mac10.12-updater-tester-rel': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5671,7 +5671,7 @@
       },
       'mac10.13-updater-tester-dbg': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5685,7 +5685,7 @@
       },
       'mac10.13-updater-tester-rel': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5699,7 +5699,7 @@
       },
       'mac10.14-updater-tester-dbg': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5713,7 +5713,7 @@
       },
       'mac10.14-updater-tester-rel': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5727,7 +5727,7 @@
       },
       'mac10.15-updater-tester-dbg': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5741,7 +5741,7 @@
       },
       'mac10.15-updater-tester-rel': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5755,7 +5755,7 @@
       },
       'mac11.0-updater-tester-dbg': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5769,7 +5769,7 @@
       },
       'mac11.0-updater-tester-rel': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_mac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5787,7 +5787,7 @@
           'x86-64',
         ],
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_win',
         },
         'swarming': {
           'dimension_sets': [
@@ -5803,7 +5803,7 @@
           'x86-64',
         ],
         'test_suites': {
-          'gtest_tests': 'updater_gtests_uac',
+          'gtest_tests': 'updater_gtests_win_uac',
         },
         'swarming': {
           'dimension_sets': [
@@ -5819,7 +5819,7 @@
           'x86-64',
         ],
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_win',
         },
         'swarming': {
           'dimension_sets': [
@@ -5835,7 +5835,7 @@
           'x86-32'
         ],
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_win',
         },
         'swarming': {
           'dimension_sets': [
@@ -5851,7 +5851,7 @@
           'x86-32'
         ],
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_win',
         },
         'swarming': {
           'dimension_sets': [
@@ -5867,7 +5867,7 @@
           'x86-64'
         ],
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_win',
         },
         'swarming': {
           'dimension_sets': [
@@ -5883,7 +5883,7 @@
           'x86-64'
         ],
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_win',
         },
         'swarming': {
           'dimension_sets': [
