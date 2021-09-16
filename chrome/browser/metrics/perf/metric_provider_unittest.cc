@@ -468,7 +468,8 @@ TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncEnabled) {
   base::HistogramTester histogram_tester;
   std::vector<SampledProfile> stored_profiles;
   metric_provider_->OnUserLoggedIn();
-  feature_list_.InitAndDisableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list_.InitAndDisableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   // Set up two testing profiles, both with App Sync enabled. The Default
   // profile has App Sync disabled but is skipped.
@@ -497,7 +498,8 @@ TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncDisabled) {
   base::HistogramTester histogram_tester;
   std::vector<SampledProfile> stored_profiles;
   metric_provider_->OnUserLoggedIn();
-  feature_list_.InitAndDisableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list_.InitAndDisableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   // Set up two testing profiles, one with App Sync enabled and the other
   // disabled.
