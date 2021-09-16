@@ -12,7 +12,12 @@
 
 using ukm::builders::PageLoad;
 
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstInputDelay) {
+#if defined(OS_CHROMEOS)
+#define MAYBE_FirstInputDelay DISABLED_FirstInputDelay
+#else
+#define MAYBE_FirstInputDelay FirstInputDelay
+#endif
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_FirstInputDelay) {
   LoadHTML(R"HTML(
     <p>Sample website</p>
     <script>
