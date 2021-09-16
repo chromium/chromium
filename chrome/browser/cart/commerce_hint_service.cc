@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/cart/cart_features.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -31,13 +32,6 @@
 namespace cart {
 
 namespace {
-// TODO(crbug.com/1207197): Pull below methods to a utility class to share with
-// other classes.
-constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
-    &ntp_features::kNtpChromeCartModule, "partner-merchant-pattern",
-    // This regex does not match anything.
-    "\\b\\B"};
-
 // TODO(crbug/1164236): support multiple cart systems in the same domain.
 // Returns eTLB+1 domain.
 std::string GetDomain(const GURL& url) {
@@ -48,8 +42,8 @@ std::string GetDomain(const GURL& url) {
 const re2::RE2& GetPartnerMerchantPattern() {
   re2::RE2::Options options;
   options.set_case_sensitive(false);
-  static base::NoDestructor<re2::RE2> instance(kPartnerMerchantPattern.Get(),
-                                               options);
+  static base::NoDestructor<re2::RE2> instance(
+      cart_features::kPartnerMerchantPattern.Get(), options);
   return *instance;
 }
 
