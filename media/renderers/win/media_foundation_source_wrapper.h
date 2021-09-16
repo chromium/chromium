@@ -20,6 +20,8 @@
 
 namespace media {
 
+class MediaLog;
+
 // IMFMediaSource implementation
 // (https://docs.microsoft.com/en-us/windows/win32/api/mfidl/nn-mfidl-imfmediasource)
 // based on the given |media_resource|.
@@ -47,6 +49,7 @@ class MediaFoundationSourceWrapper
 
   HRESULT RuntimeClassInitialize(
       MediaResource* media_resource,
+      MediaLog* media_log,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Note: All COM interface (IMFXxx) methods are called on the MF threadpool

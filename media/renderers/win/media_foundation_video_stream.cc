@@ -234,6 +234,7 @@ HRESULT MediaFoundationVideoStream::Create(
     int stream_id,
     IMFMediaSource* parent_source,
     DemuxerStream* demuxer_stream,
+    std::unique_ptr<MediaLog> media_log,
     MediaFoundationStreamWrapper** stream_out) {
   DVLOG(1) << __func__ << ": stream_id=" << stream_id;
 
@@ -243,7 +244,8 @@ HRESULT MediaFoundationVideoStream::Create(
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kH264:
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationH264VideoStream>(
-          &video_stream, stream_id, parent_source, demuxer_stream));
+          &video_stream, stream_id, parent_source, demuxer_stream,
+          std::move(media_log)));
       break;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -254,15 +256,18 @@ HRESULT MediaFoundationVideoStream::Create(
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) || BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationHEVCVideoStream>(
-          &video_stream, stream_id, parent_source, demuxer_stream));
+          &video_stream, stream_id, parent_source, demuxer_stream,
+          std::move(media_log)));
       break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) ||
         // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
     default:
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationVideoStream>(
-          &video_stream, stream_id, parent_source, demuxer_stream));
+          &video_stream, stream_id, parent_source, demuxer_stream,
+          std::move(media_log)));
       break;
   }
+
   *stream_out =
       static_cast<MediaFoundationStreamWrapper*>(video_stream.Detach());
   return S_OK;

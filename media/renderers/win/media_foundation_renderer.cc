@@ -195,7 +195,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   }
 
   RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationSourceWrapper>(
-      &mf_source_, media_resource, task_runner_));
+      &mf_source_, media_resource, media_log_.get(), task_runner_));
 
   if (force_dcomp_mode_for_testing_)
     ignore_result(SetDCompModeInternal());

@@ -199,6 +199,7 @@ HRESULT MediaFoundationAudioStream::Create(
     int stream_id,
     IMFMediaSource* parent_source,
     DemuxerStream* demuxer_stream,
+    std::unique_ptr<MediaLog> media_log,
     MediaFoundationStreamWrapper** stream_out) {
   DVLOG(1) << __func__ << ": stream_id=" << stream_id;
 
@@ -208,12 +209,14 @@ HRESULT MediaFoundationAudioStream::Create(
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case AudioCodec::kAAC:
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationAACAudioStream>(
-          &audio_stream, stream_id, parent_source, demuxer_stream));
+          &audio_stream, stream_id, parent_source, demuxer_stream,
+          std::move(media_log)));
       break;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     default:
       RETURN_IF_FAILED(MakeAndInitialize<MediaFoundationAudioStream>(
-          &audio_stream, stream_id, parent_source, demuxer_stream));
+          &audio_stream, stream_id, parent_source, demuxer_stream,
+          std::move(media_log)));
       break;
   }
   *stream_out =
