@@ -595,7 +595,7 @@ Try tapping the mic to ask me anything.
         More settings
       </message>
       <message name="IDS_SCANNING_APP_SCAN_PREVIEW_HELPER_TEXT" desc="The text displayed in the scan preview that explains how to scan a document.">
-        Place your document on the scanner and select Scan to get started
+        To get started, place your document on the scanner
       </message>
       <message name="IDS_SCANNING_APP_SCAN_BUTTON_TEXT" desc="The text displayed for the button that starts a scan.">
         {NUMBER_OF_PAGES, plural,
@@ -697,13 +697,13 @@ Try tapping the mic to ask me anything.
         Show in folder
       </message>
       <message name="IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_TEXT" desc="The description for the checkbox that starts a multi-page scan job. This checkbox allows users to scan multiple pages from their scanner into a new PDF file.">
-        Scan multiple pages to one PDF
+        Save multiple pages to one PDF
       </message>
       <message name="IDS_SCANNING_APP_SAVE_BUTTON_LABEL" desc="The label for the button to save a scan to a PDF file">
-        Save
+        End &#38; save
       </message>
       <message name="IDS_SCANNING_APP_MULTI_PAGE_SCAN_INSTRUCTIONS_TEXT" desc="The text instructions for a multi-page scan job to tell the user to scan another page from their scanner.">
-        Place another page on the scanner and select Scan to add page.
+        Place another page on the scanner
       </message>
       <message name="IDS_SCANNING_APP_ACTION_TOOLBAR_PAGE_COUNT_TEXT" desc="The text in the action toolbar that shows the current page number and the total number of pages scanned.">
         <ph name="CURRENT_PAGE">$1<ex>2</ex></ph> of <ph name="TOTAL_PAGES">$2<ex>4</ex></ph>
@@ -724,7 +724,7 @@ Try tapping the mic to ask me anything.
         Are you sure you want to remove page <ph name="CURRENT_PAGE">$1<ex>2</ex></ph>?
       </message>
       <message name="IDS_SCANNING_APP_RESCAN_PAGE_CONFIRMATION_TEXT" desc="The text to confirm to the user they want to rescan a page from their current multi-page scan session.">
-        Place your document on the scanner and select Rescan to scan and replace page <ph name="CURRENT_PAGE">$1<ex>2</ex></ph>.
+        Place your document on the scanner
       </message>
       <message name="IDS_SCANNING_APP_MULTI_PAGE_SCAN_PROGRESS_TEXT" desc="The text displayed in the multi-page scan section to indicate which page is currently being scanned.">
         Scanning page <ph name="PAGE_NUMBER">$1<ex>4</ex></ph>...
