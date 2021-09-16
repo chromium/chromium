@@ -597,6 +597,10 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   // Use this opportunity, before assigning work to this worker, to create/wake
   // additional workers if needed (doing this here allows us to reduce
   // potentially expensive create/wake directly on PostTask()).
+  //
+  // Note: FlushWorkerCreation() below releases |outer_->lock_|. It is thus
+  // important that all other operations come after it to keep this method
+  // transactional.
   if (!outer_->after_start().wakeup_after_getwork &&
       outer_->after_start().wakeup_strategy !=
           WakeUpStrategy::kCentralizedWakeUps) {
