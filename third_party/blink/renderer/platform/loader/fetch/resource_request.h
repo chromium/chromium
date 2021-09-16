@@ -216,8 +216,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool AllowStoredCredentials() const;
   void SetAllowStoredCredentials(bool allow_credentials);
 
-  // TODO(yhirano): Describe what Priority and IntraPriorityValue are.
+  // The initial priority for the request.
+  ResourceLoadPriority InitialPriority() const;
+
+  // The current priority for the request (in case it was changed).
   ResourceLoadPriority Priority() const;
+
+  // Sub-priority for ordering requests at the same priority level.
+  // Used for visible images to load larger images before small.
   int IntraPriorityValue() const;
   bool PriorityHasBeenSet() const;
   void SetPriority(ResourceLoadPriority, int intra_priority_value = 0);
@@ -560,6 +566,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool skip_service_worker_ : 1;
   bool download_to_cache_only_ : 1;
   bool site_for_cookies_set_ : 1;
+  ResourceLoadPriority initial_priority_;
   ResourceLoadPriority priority_;
   int intra_priority_value_;
   PreviewsState previews_state_;

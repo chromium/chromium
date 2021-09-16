@@ -2,31 +2,31 @@
 <script src=../resources/testharness.js></script>
 <script src=../resources/testharnessreport.js></script>
 
-<!-- Setup getResourcePriority promises.  -->
+<!-- Setup getInitialResourcePriority promises.  -->
 <script>
 const priority_tests = [
   {
-    promise: internals.getResourcePriority(new URL('../resources/dummy.css', location), document),
-    expected_priority: kVeryHigh,
-    description: 'low importance on <link rel=stylesheet> must have no effect on resource load priority'
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css', location), document),
+    expected_priority: kHigh,
+    description: 'low importance on <link rel=stylesheet> must load with kHigh priority'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/dummy.css?1', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css?1', location), document),
     expected_priority: kVeryHigh,
     description: 'high importance on <link rel=stylesheet> must have no effect on resource load priority'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/dummy.css?2', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css?2', location), document),
     expected_priority: kVeryHigh,
     description: 'auto importance on <link rel=stylesheet> must have no effect on resource load priority'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/dummy.css?3', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css?3', location), document),
     expected_priority: kVeryHigh,
     description: 'invalid importance on <link rel=stylesheet> must have no effect on resource load priority'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/dummy.css?4', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.css?4', location), document),
     expected_priority: kVeryHigh,
     description: 'missing importance on <link rel=stylesheet> must have no effect on resource load priority'
   }
@@ -54,7 +54,7 @@ const priority_tests = [
   }, 'all stylesheets must be fetched by the preload scanner');
 
   // Setup the tests described by |priority_tests|.
-  for (test of priority_tests) {
+  for (const test of priority_tests) {
     promise_test(async () => {
       const priority = await test.promise;
       assert_equals(priority, test.expected_priority);

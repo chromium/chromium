@@ -100,6 +100,7 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       skip_service_worker_(false),
       download_to_cache_only_(false),
       site_for_cookies_set_(false),
+      initial_priority_(ResourceLoadPriority::kUnresolved),
       priority_(ResourceLoadPriority::kUnresolved),
       intra_priority_value_(0),
       previews_state_(PreviewsTypes::kPreviewsUnspecified),
@@ -346,6 +347,10 @@ void ResourceRequestHead::SetAllowStoredCredentials(bool allow_credentials) {
   allow_stored_credentials_ = allow_credentials;
 }
 
+ResourceLoadPriority ResourceRequestHead::InitialPriority() const {
+  return initial_priority_;
+}
+
 ResourceLoadPriority ResourceRequestHead::Priority() const {
   return priority_;
 }
@@ -360,6 +365,8 @@ bool ResourceRequestHead::PriorityHasBeenSet() const {
 
 void ResourceRequestHead::SetPriority(ResourceLoadPriority priority,
                                       int intra_priority_value) {
+  if (!PriorityHasBeenSet())
+    initial_priority_ = priority;
   priority_ = priority;
   intra_priority_value_ = intra_priority_value;
 }

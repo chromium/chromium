@@ -880,9 +880,9 @@ bool Internals::isLoadingFromMemoryCache(const String& url) {
   return resource && resource->GetStatus() == ResourceStatus::kCached;
 }
 
-ScriptPromise Internals::getResourcePriority(ScriptState* script_state,
-                                             const String& url,
-                                             Document* document) {
+ScriptPromise Internals::getInitialResourcePriority(ScriptState* script_state,
+                                                    const String& url,
+                                                    Document* document) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();

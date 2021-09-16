@@ -36,9 +36,9 @@
     boolean isLoadingFromMemoryCache(DOMString url);
 
     // Call this function with the URL of a resource that has not yet been
-    // fetched. It returns a promise that resolves with the priority of the
-    // request, once it has been made.
-    [CallWith=ScriptState] Promise<unsigned long> getResourcePriority(DOMString url, Document document);
+    // fetched. It returns a promise that resolves with the initial priority
+    // of the request, once it has been made.
+    [CallWith=ScriptState] Promise<unsigned long> getInitialResourcePriority(DOMString url, Document document);
 
     DOMString getResourceHeader(DOMString url, DOMString header, Document document);
 
