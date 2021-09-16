@@ -78,6 +78,10 @@ class ASH_EXPORT AppListControllerImpl
       public apps::AppRegistryCache::Observer {
  public:
   AppListControllerImpl();
+
+  AppListControllerImpl(const AppListControllerImpl&) = delete;
+  AppListControllerImpl& operator=(const AppListControllerImpl&) = delete;
+
   ~AppListControllerImpl() override;
 
   enum HomeLauncherTransitionState {
@@ -589,8 +593,6 @@ class ASH_EXPORT AppListControllerImpl
       split_view_observation_{this};
 
   base::WeakPtrFactory<AppListControllerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppListControllerImpl);
 };
 
 }  // namespace ash

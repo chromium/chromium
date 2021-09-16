@@ -18,6 +18,10 @@ class TopShortcutButton : public views::ImageButton {
   TopShortcutButton(PressedCallback callback,
                     const gfx::VectorIcon& icon,
                     int accessible_name_id);
+
+  TopShortcutButton(const TopShortcutButton&) = delete;
+  TopShortcutButton& operator=(const TopShortcutButton&) = delete;
+
   ~TopShortcutButton() override;
 
   // views::View:
@@ -30,8 +34,6 @@ class TopShortcutButton : public views::ImageButton {
 
  private:
   const gfx::VectorIcon& icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopShortcutButton);
 };
 
 }  // namespace ash

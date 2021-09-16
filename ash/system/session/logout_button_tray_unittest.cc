@@ -29,6 +29,10 @@ constexpr char kUserEmail[] = "user1@test.com";
 class LogoutButtonTrayTest : public NoSessionAshTestBase {
  public:
   LogoutButtonTrayTest() = default;
+
+  LogoutButtonTrayTest(const LogoutButtonTrayTest&) = delete;
+  LogoutButtonTrayTest& operator=(const LogoutButtonTrayTest&) = delete;
+
   ~LogoutButtonTrayTest() override = default;
 
   // NoSessionAshTestBase:
@@ -41,9 +45,6 @@ class LogoutButtonTrayTest : public NoSessionAshTestBase {
     return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
         AccountId::FromUserEmail(kUserEmail));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LogoutButtonTrayTest);
 };
 
 TEST_F(LogoutButtonTrayTest, Visibility) {

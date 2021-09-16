@@ -31,6 +31,10 @@ class ASH_EXPORT LogoutButtonTray : public TrayBackgroundView,
                                     public SessionObserver {
  public:
   explicit LogoutButtonTray(Shelf* shelf);
+
+  LogoutButtonTray(const LogoutButtonTray&) = delete;
+  LogoutButtonTray& operator=(const LogoutButtonTray&) = delete;
+
   ~LogoutButtonTray() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -65,8 +69,6 @@ class ASH_EXPORT LogoutButtonTray : public TrayBackgroundView,
 
   // Observes user profile prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoutButtonTray);
 };
 
 }  // namespace ash

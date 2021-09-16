@@ -31,6 +31,10 @@ namespace ash {
 class PowerEventObserverTest : public AshTestBase {
  public:
   PowerEventObserverTest() = default;
+
+  PowerEventObserverTest(const PowerEventObserverTest&) = delete;
+  PowerEventObserverTest& operator=(const PowerEventObserverTest&) = delete;
+
   ~PowerEventObserverTest() override = default;
 
   // AshTestBase:
@@ -62,9 +66,6 @@ class PowerEventObserverTest : public AshTestBase {
   }
 
   std::unique_ptr<PowerEventObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerEventObserverTest);
 };
 
 TEST_F(PowerEventObserverTest, LockBeforeSuspend) {

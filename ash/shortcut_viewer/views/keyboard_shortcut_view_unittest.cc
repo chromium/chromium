@@ -30,6 +30,10 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
  public:
   KeyboardShortcutViewTest()
       : ash::AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  KeyboardShortcutViewTest(const KeyboardShortcutViewTest&) = delete;
+  KeyboardShortcutViewTest& operator=(const KeyboardShortcutViewTest&) = delete;
+
   ~KeyboardShortcutViewTest() override = default;
 
   views::Widget* Toggle() { return KeyboardShortcutView::Toggle(GetContext()); }
@@ -84,8 +88,6 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
   KeyboardShortcutView* GetView() const {
     return KeyboardShortcutView::GetInstanceForTesting();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardShortcutViewTest);
 };
 
 // Shows and closes the widget for KeyboardShortcutViewer.

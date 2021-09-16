@@ -47,6 +47,10 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* context) {
 class PipTest : public AshTestBase {
  public:
   PipTest() = default;
+
+  PipTest(const PipTest&) = delete;
+  PipTest& operator=(const PipTest&) = delete;
+
   ~PipTest() override = default;
 
   void SetUp() override {
@@ -56,9 +60,6 @@ class PipTest : public AshTestBase {
   }
 
   void TearDown() override { AshTestBase::TearDown(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PipTest);
 };
 
 TEST_F(PipTest, ShowInactive) {

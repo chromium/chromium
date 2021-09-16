@@ -20,6 +20,11 @@ class ASH_EXPORT SelectToSpeakEventHandler : public ui::EventHandler {
  public:
   explicit SelectToSpeakEventHandler(
       SelectToSpeakEventHandlerDelegate* delegate);
+
+  SelectToSpeakEventHandler(const SelectToSpeakEventHandler&) = delete;
+  SelectToSpeakEventHandler& operator=(const SelectToSpeakEventHandler&) =
+      delete;
+
   ~SelectToSpeakEventHandler() override;
 
   // Called when the Select-to-Speak extension changes state. |is_selecting| is
@@ -103,8 +108,6 @@ class ASH_EXPORT SelectToSpeakEventHandler : public ui::EventHandler {
 
   // The delegate used to send key events to the Select-to-Speak extension.
   SelectToSpeakEventHandlerDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectToSpeakEventHandler);
 };
 
 }  // namespace ash

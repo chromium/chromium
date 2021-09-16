@@ -44,6 +44,11 @@ class ASH_EXPORT AccessibilityDetailedView
   static constexpr char kClassName[] = "AccessibilityDetailedView";
 
   explicit AccessibilityDetailedView(DetailedViewDelegate* delegate);
+
+  AccessibilityDetailedView(const AccessibilityDetailedView&) = delete;
+  AccessibilityDetailedView& operator=(const AccessibilityDetailedView&) =
+      delete;
+
   ~AccessibilityDetailedView() override;
 
   void OnAccessibilityStatusChanged();
@@ -123,8 +128,6 @@ class ASH_EXPORT AccessibilityDetailedView
   bool sticky_keys_enabled_ = false;
 
   LoginStatus login_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityDetailedView);
 };
 
 }  // namespace tray

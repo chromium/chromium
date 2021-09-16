@@ -54,6 +54,10 @@ void SetCurrentIme(const std::string& current_ime_id,
 class ImeMenuTrayTest : public AshTestBase {
  public:
   ImeMenuTrayTest() = default;
+
+  ImeMenuTrayTest(const ImeMenuTrayTest&) = delete;
+  ImeMenuTrayTest& operator=(const ImeMenuTrayTest&) = delete;
+
   ~ImeMenuTrayTest() override = default;
 
  protected:
@@ -122,9 +126,6 @@ class ImeMenuTrayTest : public AshTestBase {
       return false;
     return ImeListViewTestApi(GetTray()->ime_list_view_).GetToggleView();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImeMenuTrayTest);
 };
 
 // Tests that visibility of IME menu tray should be consistent with the

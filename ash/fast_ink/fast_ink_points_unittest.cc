@@ -19,6 +19,9 @@ class FastInkPointsTest : public testing::Test {
         event_time_(base::TimeTicks()),
         screen_size_(1000, 1000) {}
 
+  FastInkPointsTest(const FastInkPointsTest&) = delete;
+  FastInkPointsTest& operator=(const FastInkPointsTest&) = delete;
+
   ~FastInkPointsTest() override = default;
 
  protected:
@@ -75,9 +78,6 @@ class FastInkPointsTest : public testing::Test {
     Diff(velocity, position);
     Diff(acceleration, velocity);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FastInkPointsTest);
 };
 
 }  // namespace

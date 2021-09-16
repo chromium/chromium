@@ -22,13 +22,16 @@ namespace {
 class CaptureWindowActivationDelegate : public ::wm::ActivationDelegate {
  public:
   CaptureWindowActivationDelegate() = default;
+
+  CaptureWindowActivationDelegate(const CaptureWindowActivationDelegate&) =
+      delete;
+  CaptureWindowActivationDelegate& operator=(
+      const CaptureWindowActivationDelegate&) = delete;
+
   ~CaptureWindowActivationDelegate() override = default;
 
   // wm::ActivationDelegate overrides:
   bool ShouldActivate() const override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CaptureWindowActivationDelegate);
 };
 
 // Creates a window for capturing drag events.

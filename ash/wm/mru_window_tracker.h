@@ -42,6 +42,10 @@ class ASH_EXPORT MruWindowTracker : public ::wm::ActivationChangeObserver,
   using WindowList = std::vector<aura::Window*>;
 
   MruWindowTracker();
+
+  MruWindowTracker(const MruWindowTracker&) = delete;
+  MruWindowTracker& operator=(const MruWindowTracker&) = delete;
+
   ~MruWindowTracker() override;
 
   // Returns the set windows in the mru list regardless of whether they can be
@@ -117,8 +121,6 @@ class ASH_EXPORT MruWindowTracker : public ::wm::ActivationChangeObserver,
   std::vector<aura::Window*> mru_windows_;
 
   bool ignore_window_activations_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MruWindowTracker);
 };
 
 }  // namespace ash

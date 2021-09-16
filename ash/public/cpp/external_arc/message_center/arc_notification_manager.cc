@@ -101,6 +101,10 @@ class VisibilityManager : public message_center::MessageCenterObserver {
 class ArcNotificationManager::InstanceOwner {
  public:
   InstanceOwner() = default;
+
+  InstanceOwner(const InstanceOwner&) = delete;
+  InstanceOwner& operator=(const InstanceOwner&) = delete;
+
   ~InstanceOwner() = default;
 
   void SetInstanceRemote(
@@ -127,8 +131,6 @@ class ArcNotificationManager::InstanceOwner {
   ConnectionHolder<NotificationsInstance, NotificationsHost> holder_;
   std::unique_ptr<MojoChannel<NotificationsInstance, NotificationsHost>>
       channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceOwner);
 };
 
 // static

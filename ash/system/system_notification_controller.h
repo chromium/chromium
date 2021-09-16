@@ -29,6 +29,11 @@ class WifiToggleNotificationController;
 class SystemNotificationController {
  public:
   SystemNotificationController();
+
+  SystemNotificationController(const SystemNotificationController&) = delete;
+  SystemNotificationController& operator=(const SystemNotificationController&) =
+      delete;
+
   ~SystemNotificationController();
 
  private:
@@ -48,8 +53,6 @@ class SystemNotificationController {
   const std::unique_ptr<TracingNotificationController> tracing_;
   const std::unique_ptr<UpdateNotificationController> update_;
   const std::unique_ptr<WifiToggleNotificationController> wifi_toggle_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemNotificationController);
 };
 
 }  // namespace ash

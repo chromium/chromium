@@ -43,6 +43,10 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   static constexpr int kDividerEdgeInsetForTouch = 8;
 
   explicit SplitViewDivider(SplitViewController* controller);
+
+  SplitViewDivider(const SplitViewDivider&) = delete;
+  SplitViewDivider& operator=(const SplitViewDivider&) = delete;
+
   ~SplitViewDivider() override;
 
   // static version of GetDividerBoundsInScreen(bool is_dragging) function.
@@ -122,8 +126,6 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Tracks observed transient windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       transient_windows_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewDivider);
 };
 
 }  // namespace ash

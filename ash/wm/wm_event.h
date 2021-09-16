@@ -123,6 +123,10 @@ class DisplayMetricsChangedWMEvent;
 class ASH_EXPORT WMEvent {
  public:
   explicit WMEvent(WMEventType type);
+
+  WMEvent(const WMEvent&) = delete;
+  WMEvent& operator=(const WMEvent&) = delete;
+
   virtual ~WMEvent();
 
   WMEventType type() const { return type_; }
@@ -154,7 +158,6 @@ class ASH_EXPORT WMEvent {
 
  private:
   WMEventType type_;
-  DISALLOW_COPY_AND_ASSIGN(WMEvent);
 };
 
 // An WMEvent to request new bounds for the window.
@@ -165,6 +168,10 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
       bool animate = false,
       base::TimeDelta duration = WindowState::kBoundsChangeSlideDuration);
   SetBoundsWMEvent(const gfx::Rect& requested_bounds, int64_t display_id);
+
+  SetBoundsWMEvent(const SetBoundsWMEvent&) = delete;
+  SetBoundsWMEvent& operator=(const SetBoundsWMEvent&) = delete;
+
   ~SetBoundsWMEvent() override;
 
   const gfx::Rect& requested_bounds() const { return requested_bounds_; }
@@ -180,8 +187,6 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
   const int64_t display_id_ = display::kInvalidDisplayId;
   const bool animate_;
   const base::TimeDelta duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetBoundsWMEvent);
 };
 
 // A WMEvent sent when display metrics have changed.
@@ -189,6 +194,11 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
 class ASH_EXPORT DisplayMetricsChangedWMEvent : public WMEvent {
  public:
   explicit DisplayMetricsChangedWMEvent(int display_metrics);
+
+  DisplayMetricsChangedWMEvent(const DisplayMetricsChangedWMEvent&) = delete;
+  DisplayMetricsChangedWMEvent& operator=(const DisplayMetricsChangedWMEvent&) =
+      delete;
+
   ~DisplayMetricsChangedWMEvent() override;
 
   bool primary_changed() const {
@@ -199,8 +209,6 @@ class ASH_EXPORT DisplayMetricsChangedWMEvent : public WMEvent {
 
  private:
   const uint32_t changed_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayMetricsChangedWMEvent);
 };
 
 }  // namespace ash

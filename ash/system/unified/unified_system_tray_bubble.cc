@@ -38,6 +38,9 @@ class ContainerView : public views::View {
     AddChildView(unified_view);
   }
 
+  ContainerView(const ContainerView&) = delete;
+  ContainerView& operator=(const ContainerView&) = delete;
+
   ~ContainerView() override = default;
 
   // views::View:
@@ -59,8 +62,6 @@ class ContainerView : public views::View {
 
  private:
   UnifiedSystemTrayView* const unified_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContainerView);
 };
 
 }  // namespace

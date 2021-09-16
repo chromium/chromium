@@ -19,6 +19,10 @@ class ASH_EXPORT CloseDeskButton : public views::ImageButton,
                                    public views::ViewTargeterDelegate {
  public:
   explicit CloseDeskButton(PressedCallback callback);
+
+  CloseDeskButton(const CloseDeskButton&) = delete;
+  CloseDeskButton& operator=(const CloseDeskButton&) = delete;
+
   ~CloseDeskButton() override;
 
   // The size of the close button.
@@ -37,8 +41,6 @@ class ASH_EXPORT CloseDeskButton : public views::ImageButton,
  private:
   float highlight_opacity_ = 0.f;
   SkColor inkdrop_base_color_ = gfx::kPlaceholderColor;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseDeskButton);
 };
 
 }  // namespace ash

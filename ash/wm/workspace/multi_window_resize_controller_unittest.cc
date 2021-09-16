@@ -43,15 +43,16 @@ namespace {
 class TestWidgetDelegate : public views::WidgetDelegateView {
  public:
   TestWidgetDelegate() {}
+
+  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
+  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
+
   ~TestWidgetDelegate() override = default;
 
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
     return std::make_unique<NonClientFrameViewAsh>(widget);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
 };
 
 }  // namespace
@@ -59,6 +60,12 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 class MultiWindowResizeControllerTest : public AshTestBase {
  public:
   MultiWindowResizeControllerTest() = default;
+
+  MultiWindowResizeControllerTest(const MultiWindowResizeControllerTest&) =
+      delete;
+  MultiWindowResizeControllerTest& operator=(
+      const MultiWindowResizeControllerTest&) = delete;
+
   ~MultiWindowResizeControllerTest() override = default;
 
   void SetUp() override {
@@ -96,9 +103,6 @@ class MultiWindowResizeControllerTest : public AshTestBase {
   }
 
   MultiWindowResizeController* resize_controller_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MultiWindowResizeControllerTest);
 };
 
 // Assertions around moving mouse over 2 windows.
@@ -560,6 +564,10 @@ namespace {
 class TestWindowStateDelegate : public WindowStateDelegate {
  public:
   TestWindowStateDelegate() = default;
+
+  TestWindowStateDelegate(const TestWindowStateDelegate&) = delete;
+  TestWindowStateDelegate& operator=(const TestWindowStateDelegate&) = delete;
+
   ~TestWindowStateDelegate() override = default;
 
   // WindowStateDelegate:
@@ -583,7 +591,6 @@ class TestWindowStateDelegate : public WindowStateDelegate {
  private:
   gfx::PointF location_;
   int component_ = -1;
-  DISALLOW_COPY_AND_ASSIGN(TestWindowStateDelegate);
 };
 
 }  // namespace

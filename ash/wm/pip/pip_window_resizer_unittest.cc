@@ -43,6 +43,10 @@ class FakeWindowState : public WindowState::State {
  public:
   explicit FakeWindowState(WindowStateType initial_state_type)
       : state_type_(initial_state_type) {}
+
+  FakeWindowState(const FakeWindowState&) = delete;
+  FakeWindowState& operator=(const FakeWindowState&) = delete;
+
   ~FakeWindowState() override = default;
 
   // WindowState::State overrides:
@@ -68,8 +72,6 @@ class FakeWindowState : public WindowState::State {
   WindowStateType state_type_;
   gfx::Rect last_bounds_;
   WindowState* last_window_state_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWindowState);
 };
 
 }  // namespace
@@ -81,6 +83,10 @@ class PipWindowResizerTest : public AshTestBase,
                                  std::tuple<std::string, std::size_t>> {
  public:
   PipWindowResizerTest() = default;
+
+  PipWindowResizerTest(const PipWindowResizerTest&) = delete;
+  PipWindowResizerTest& operator=(const PipWindowResizerTest&) = delete;
+
   ~PipWindowResizerTest() override = default;
 
   void SetUp() override {
@@ -187,8 +193,6 @@ class PipWindowResizerTest : public AshTestBase,
     for (aura::Window* root : Shell::GetAllRootWindows())
       Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PipWindowResizerTest);
 };
 
 TEST_P(PipWindowResizerTest, PipWindowCanDrag) {

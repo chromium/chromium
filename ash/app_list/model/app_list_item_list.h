@@ -31,6 +31,10 @@ class AppListItem;
 class APP_LIST_MODEL_EXPORT AppListItemList {
  public:
   AppListItemList();
+
+  AppListItemList(const AppListItemList&) = delete;
+  AppListItemList& operator=(const AppListItemList&) = delete;
+
   virtual ~AppListItemList();
 
   void AddObserver(AppListItemListObserver* observer);
@@ -117,8 +121,6 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
 
   std::vector<std::unique_ptr<AppListItem>> app_list_items_;
   base::ObserverList<AppListItemListObserver, true> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListItemList);
 };
 
 }  // namespace ash

@@ -17,6 +17,11 @@ class UnifiedSystemTrayController;
 class NetworkFeaturePodController : public FeaturePodControllerBase {
  public:
   NetworkFeaturePodController(UnifiedSystemTrayController* tray_controller);
+
+  NetworkFeaturePodController(const NetworkFeaturePodController&) = delete;
+  NetworkFeaturePodController& operator=(const NetworkFeaturePodController&) =
+      delete;
+
   ~NetworkFeaturePodController() override;
 
   // FeaturePodControllerBase:
@@ -31,8 +36,6 @@ class NetworkFeaturePodController : public FeaturePodControllerBase {
   // Unowned.
   UnifiedSystemTrayController* tray_controller_;
   NetworkFeaturePodButton* button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkFeaturePodController);
 };
 
 }  // namespace ash

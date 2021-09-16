@@ -91,6 +91,10 @@ class ASH_EXPORT SplitViewDragIndicators {
       SplitViewController::SnapPosition snap_position);
 
   SplitViewDragIndicators(aura::Window* root_window);
+
+  SplitViewDragIndicators(const SplitViewDragIndicators&) = delete;
+  SplitViewDragIndicators& operator=(const SplitViewDragIndicators&) = delete;
+
   ~SplitViewDragIndicators();
 
   void SetDraggedWindow(aura::Window* dragged_window);
@@ -118,8 +122,6 @@ class ASH_EXPORT SplitViewDragIndicators {
   // and displays regions and text indicating where users should drag windows
   // enter split view.
   std::unique_ptr<views::Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewDragIndicators);
 };
 
 }  // namespace ash

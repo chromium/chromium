@@ -24,6 +24,10 @@ class ASH_PUBLIC_EXPORT ViewShadow : public views::ViewObserver,
                                      public ui::LayerOwner::Observer {
  public:
   ViewShadow(views::View* view, int elevation);
+
+  ViewShadow(const ViewShadow&) = delete;
+  ViewShadow& operator=(const ViewShadow&) = delete;
+
   ~ViewShadow() override;
 
   // Update the corner radius of the view along with the shadow.
@@ -41,8 +45,6 @@ class ASH_PUBLIC_EXPORT ViewShadow : public views::ViewObserver,
 
   views::View* view_;
   std::unique_ptr<ui::Shadow> shadow_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewShadow);
 };
 
 }  // namespace ash

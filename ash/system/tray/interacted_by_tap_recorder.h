@@ -18,6 +18,10 @@ namespace ash {
 class InteractedByTapRecorder : public ui::EventHandler {
  public:
   InteractedByTapRecorder(views::View* target_view);
+
+  InteractedByTapRecorder(const InteractedByTapRecorder&) = delete;
+  InteractedByTapRecorder& operator=(const InteractedByTapRecorder&) = delete;
+
   ~InteractedByTapRecorder() override = default;
 
   // Type of interaction. This enum is used to back an UMA histogram and should
@@ -31,8 +35,6 @@ class InteractedByTapRecorder : public ui::EventHandler {
  private:
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override;
-
-  DISALLOW_COPY_AND_ASSIGN(InteractedByTapRecorder);
 };
 
 }  // namespace ash

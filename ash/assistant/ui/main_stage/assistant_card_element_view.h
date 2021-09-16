@@ -25,6 +25,10 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantCardElementView
  public:
   AssistantCardElementView(AssistantViewDelegate* delegate,
                            const AssistantCardElement* card_element);
+
+  AssistantCardElementView(const AssistantCardElementView&) = delete;
+  AssistantCardElementView& operator=(const AssistantCardElementView&) = delete;
+
   ~AssistantCardElementView() override;
 
   // AssistantUiElementView:
@@ -59,8 +63,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantCardElementView
 
   // Rect of the focused node in the |contents_view_|.
   gfx::Rect focused_node_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantCardElementView);
 };
 
 }  // namespace ash

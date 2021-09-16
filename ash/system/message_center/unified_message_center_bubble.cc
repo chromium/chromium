@@ -38,6 +38,9 @@ class UnifiedMessageCenterBubble::Border : public ui::LayerDelegate {
     layer_.SetFillsBoundsOpaquely(false);
   }
 
+  Border(const Border&) = delete;
+  Border& operator=(const Border&) = delete;
+
   ~Border() override = default;
 
   ui::Layer* layer() { return &layer_; }
@@ -62,8 +65,6 @@ class UnifiedMessageCenterBubble::Border : public ui::LayerDelegate {
                                   float new_device_scale_factor) override {}
 
   ui::Layer layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Border);
 };
 
 UnifiedMessageCenterBubble::UnifiedMessageCenterBubble(UnifiedSystemTray* tray)

@@ -82,6 +82,11 @@ class ASH_EXPORT ResultSelectionController {
   ResultSelectionController(
       const ResultSelectionModel* result_container_views,
       const base::RepeatingClosure& selection_change_callback);
+
+  ResultSelectionController(const ResultSelectionController&) = delete;
+  ResultSelectionController& operator=(const ResultSelectionController&) =
+      delete;
+
   ~ResultSelectionController();
 
   // Returns the currently selected result.
@@ -177,8 +182,6 @@ class ASH_EXPORT ResultSelectionController {
 
   // The |ResultLocationDetails| for the currently selected result view
   std::unique_ptr<ResultLocationDetails> selected_location_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResultSelectionController);
 };
 
 }  // namespace ash

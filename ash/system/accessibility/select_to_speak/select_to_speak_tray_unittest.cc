@@ -43,6 +43,10 @@ ui::GestureEvent CreateTapEvent() {
 class SelectToSpeakTrayTest : public AshTestBase {
  public:
   SelectToSpeakTrayTest() = default;
+
+  SelectToSpeakTrayTest(const SelectToSpeakTrayTest&) = delete;
+  SelectToSpeakTrayTest& operator=(const SelectToSpeakTrayTest&) = delete;
+
   ~SelectToSpeakTrayTest() override = default;
 
   void SetUp() override {
@@ -75,9 +79,6 @@ class SelectToSpeakTrayTest : public AshTestBase {
         return gfx::CreateVectorIcon(kSystemTrayStopNewuiIcon, color);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectToSpeakTrayTest);
 };
 
 // Ensures that creation doesn't cause any crashes and adds the image icon.

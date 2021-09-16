@@ -29,6 +29,12 @@ class SessionStateNotificationBlockerTest
       public message_center::NotificationBlocker::Observer {
  public:
   SessionStateNotificationBlockerTest() = default;
+
+  SessionStateNotificationBlockerTest(
+      const SessionStateNotificationBlockerTest&) = delete;
+  SessionStateNotificationBlockerTest& operator=(
+      const SessionStateNotificationBlockerTest&) = delete;
+
   ~SessionStateNotificationBlockerTest() override = default;
 
   // tests::AshTestBase overrides:
@@ -94,8 +100,6 @@ class SessionStateNotificationBlockerTest
 
   int state_changed_count_ = 0;
   std::unique_ptr<message_center::NotificationBlocker> blocker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStateNotificationBlockerTest);
 };
 
 TEST_F(SessionStateNotificationBlockerTest, BaseTest) {

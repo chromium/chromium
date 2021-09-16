@@ -20,6 +20,11 @@ class TestEventRewriterContinuation
     : public ui::test::TestEventRewriterContinuation {
  public:
   TestEventRewriterContinuation() = default;
+
+  TestEventRewriterContinuation(const TestEventRewriterContinuation&) = delete;
+  TestEventRewriterContinuation& operator=(
+      const TestEventRewriterContinuation&) = delete;
+
   ~TestEventRewriterContinuation() override = default;
 
   ui::EventDispatchDetails SendEvent(const ui::Event* event) override {
@@ -40,12 +45,16 @@ class TestEventRewriterContinuation
   std::unique_ptr<ui::Event> rewritten_event;
 
   base::WeakPtrFactory<TestEventRewriterContinuation> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(TestEventRewriterContinuation);
 };
 
 class KeyboardDrivenEventRewriterTest : public testing::Test {
  public:
   KeyboardDrivenEventRewriterTest() = default;
+
+  KeyboardDrivenEventRewriterTest(const KeyboardDrivenEventRewriterTest&) =
+      delete;
+  KeyboardDrivenEventRewriterTest& operator=(
+      const KeyboardDrivenEventRewriterTest&) = delete;
 
   ~KeyboardDrivenEventRewriterTest() override = default;
 
@@ -70,9 +79,6 @@ class KeyboardDrivenEventRewriterTest : public testing::Test {
   }
 
   KeyboardDrivenEventRewriter rewriter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardDrivenEventRewriterTest);
 };
 
 TEST_F(KeyboardDrivenEventRewriterTest, PassThrough) {

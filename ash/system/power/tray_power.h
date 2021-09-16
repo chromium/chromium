@@ -22,6 +22,9 @@ class PowerTrayView : public TrayItemView,
  public:
   explicit PowerTrayView(Shelf* shelf);
 
+  PowerTrayView(const PowerTrayView&) = delete;
+  PowerTrayView& operator=(const PowerTrayView&) = delete;
+
   ~PowerTrayView() override;
 
   // views::View:
@@ -51,8 +54,6 @@ class PowerTrayView : public TrayItemView,
   session_manager::SessionState session_state_ =
       session_manager::SessionState::UNKNOWN;
   ScopedSessionObserver session_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PowerTrayView);
 };
 
 }  // namespace tray

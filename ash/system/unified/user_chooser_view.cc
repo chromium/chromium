@@ -48,10 +48,11 @@ namespace {
 class AddUserButton : public views::Button {
  public:
   explicit AddUserButton(UserChooserDetailedViewController* controller);
-  ~AddUserButton() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AddUserButton);
+  AddUserButton(const AddUserButton&) = delete;
+  AddUserButton& operator=(const AddUserButton&) = delete;
+
+  ~AddUserButton() override = default;
 };
 
 AddUserButton::AddUserButton(UserChooserDetailedViewController* controller)

@@ -41,6 +41,11 @@ VirtualKeyboardController* GetVirtualKeyboardController() {
 class VirtualKeyboardControllerTest : public AshTestBase {
  public:
   VirtualKeyboardControllerTest() = default;
+
+  VirtualKeyboardControllerTest(const VirtualKeyboardControllerTest&) = delete;
+  VirtualKeyboardControllerTest& operator=(
+      const VirtualKeyboardControllerTest&) = delete;
+
   ~VirtualKeyboardControllerTest() override = default;
 
   display::Display GetPrimaryDisplay() {
@@ -55,9 +60,6 @@ class VirtualKeyboardControllerTest : public AshTestBase {
   keyboard::KeyboardUIController* keyboard_ui_controller() {
     return keyboard::KeyboardUIController::Get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardControllerTest);
 };
 
 // Mock event blocker that enables the internal keyboard when it's destructor
@@ -65,15 +67,16 @@ class VirtualKeyboardControllerTest : public AshTestBase {
 class MockEventBlocker : public InternalInputDevicesEventBlocker {
  public:
   MockEventBlocker() = default;
+
+  MockEventBlocker(const MockEventBlocker&) = delete;
+  MockEventBlocker& operator=(const MockEventBlocker&) = delete;
+
   ~MockEventBlocker() override {
     std::vector<ui::InputDevice> keyboard_devices;
     keyboard_devices.push_back(ui::InputDevice(
         1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard"));
     ui::DeviceDataManagerTestApi().SetKeyboardDevices(keyboard_devices);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEventBlocker);
 };
 
 // Tests that reenabling keyboard devices while shutting down does not
@@ -198,6 +201,12 @@ class VirtualKeyboardControllerAutoTest : public VirtualKeyboardControllerTest,
                                           public VirtualKeyboardObserver {
  public:
   VirtualKeyboardControllerAutoTest() : notified_(false), suppressed_(false) {}
+
+  VirtualKeyboardControllerAutoTest(const VirtualKeyboardControllerAutoTest&) =
+      delete;
+  VirtualKeyboardControllerAutoTest& operator=(
+      const VirtualKeyboardControllerAutoTest&) = delete;
+
   ~VirtualKeyboardControllerAutoTest() override = default;
 
   void SetUp() override {
@@ -230,8 +239,6 @@ class VirtualKeyboardControllerAutoTest : public VirtualKeyboardControllerTest,
 
   // Whether the keeyboard is suppressed.
   bool suppressed_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardControllerAutoTest);
 };
 
 // Tests that the onscreen keyboard is disabled if an internal keyboard is
@@ -383,6 +390,12 @@ class VirtualKeyboardControllerAlwaysEnabledTest
  public:
   VirtualKeyboardControllerAlwaysEnabledTest()
       : VirtualKeyboardControllerAutoTest() {}
+
+  VirtualKeyboardControllerAlwaysEnabledTest(
+      const VirtualKeyboardControllerAlwaysEnabledTest&) = delete;
+  VirtualKeyboardControllerAlwaysEnabledTest& operator=(
+      const VirtualKeyboardControllerAlwaysEnabledTest&) = delete;
+
   ~VirtualKeyboardControllerAlwaysEnabledTest() override = default;
 
   void SetUp() override {
@@ -390,9 +403,6 @@ class VirtualKeyboardControllerAlwaysEnabledTest
         keyboard::switches::kEnableVirtualKeyboard);
     VirtualKeyboardControllerAutoTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardControllerAlwaysEnabledTest);
 };
 
 // Tests that the controller cannot suppress the keyboard if the virtual

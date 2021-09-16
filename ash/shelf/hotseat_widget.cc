@@ -402,6 +402,10 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
     SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   }
+
+  DelegateView(const DelegateView&) = delete;
+  DelegateView& operator=(const DelegateView&) = delete;
+
   ~DelegateView() override;
 
   // views::ViewTargetDelegate:
@@ -474,8 +478,6 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
   // The most recent color that the |translucent_background_| has been animated
   // to.
   SkColor target_color_ = SK_ColorTRANSPARENT;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegateView);
 };
 
 HotseatWidget::DelegateView::~DelegateView() {

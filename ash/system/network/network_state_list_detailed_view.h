@@ -36,6 +36,10 @@ class ASH_EXPORT NetworkStateListDetailedView
     : public TrayDetailedView,
       public TrayNetworkStateObserver {
  public:
+  NetworkStateListDetailedView(const NetworkStateListDetailedView&) = delete;
+  NetworkStateListDetailedView& operator=(const NetworkStateListDetailedView&) =
+      delete;
+
   ~NetworkStateListDetailedView() override;
 
   void Init();
@@ -121,8 +125,6 @@ class ASH_EXPORT NetworkStateListDetailedView
   base::RepeatingTimer network_scan_repeating_timer_;
 
   base::WeakPtrFactory<NetworkStateListDetailedView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateListDetailedView);
 };
 
 }  // namespace tray

@@ -15,6 +15,10 @@ namespace ash {
 class TestMediaClient : public MediaClient {
  public:
   TestMediaClient();
+
+  TestMediaClient(const TestMediaClient&) = delete;
+  TestMediaClient& operator=(const TestMediaClient&) = delete;
+
   ~TestMediaClient() override;
 
   // MediaClient:
@@ -59,8 +63,6 @@ class TestMediaClient : public MediaClient {
   int handle_media_seek_backward_count_ = 0;
   int handle_media_seek_forward_count_ = 0;
   bool media_sessions_suspended_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaClient);
 };
 
 }  // namespace ash

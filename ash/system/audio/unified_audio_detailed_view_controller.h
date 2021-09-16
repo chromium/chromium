@@ -28,6 +28,12 @@ class ASH_EXPORT UnifiedAudioDetailedViewController
  public:
   explicit UnifiedAudioDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedAudioDetailedViewController(
+      const UnifiedAudioDetailedViewController&) = delete;
+  UnifiedAudioDetailedViewController& operator=(
+      const UnifiedAudioDetailedViewController&) = delete;
+
   ~UnifiedAudioDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -43,8 +49,6 @@ class ASH_EXPORT UnifiedAudioDetailedViewController
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
   tray::AudioDetailedView* view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedAudioDetailedViewController);
 };
 
 }  // namespace ash

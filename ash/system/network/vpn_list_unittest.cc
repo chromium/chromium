@@ -45,6 +45,10 @@ std::vector<VpnProviderPtr> CopyProviders(
 class VpnListTest : public AshTestBase {
  public:
   VpnListTest() = default;
+
+  VpnListTest(const VpnListTest&) = delete;
+  VpnListTest& operator=(const VpnListTest&) = delete;
+
   ~VpnListTest() override = default;
 
   void SetUp() override {
@@ -62,8 +66,6 @@ class VpnListTest : public AshTestBase {
  private:
   std::unique_ptr<TrayNetworkStateModel> network_state_model_;
   std::unique_ptr<VpnList> vpn_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpnListTest);
 };
 
 TEST_F(VpnListTest, BuiltInProvider) {

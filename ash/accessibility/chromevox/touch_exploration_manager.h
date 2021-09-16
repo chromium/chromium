@@ -41,6 +41,10 @@ class ASH_EXPORT TouchExplorationManager
  public:
   explicit TouchExplorationManager(
       RootWindowController* root_window_controller);
+
+  TouchExplorationManager(const TouchExplorationManager&) = delete;
+  TouchExplorationManager& operator=(const TouchExplorationManager&) = delete;
+
   ~TouchExplorationManager() override;
 
   // AccessibilityObserver overrides:
@@ -97,8 +101,6 @@ class ASH_EXPORT TouchExplorationManager
   CrasAudioHandler* audio_handler_;
   aura::Window* observing_window_;
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationManager);
 };
 
 }  // namespace ash

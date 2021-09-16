@@ -28,6 +28,10 @@ class APP_LIST_MODEL_EXPORT SearchModel {
   using SearchResults = ui::ListModel<SearchResult>;
 
   SearchModel();
+
+  SearchModel(const SearchModel&) = delete;
+  SearchModel& operator=(const SearchModel&) = delete;
+
   ~SearchModel();
 
   // Whether tablet mode is active. Controlled by AppListView.
@@ -75,8 +79,6 @@ class APP_LIST_MODEL_EXPORT SearchModel {
  private:
   std::unique_ptr<SearchBoxModel> search_box_;
   std::unique_ptr<SearchResults> results_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchModel);
 };
 
 }  // namespace ash

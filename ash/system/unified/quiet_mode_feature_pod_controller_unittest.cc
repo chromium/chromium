@@ -15,6 +15,12 @@ namespace ash {
 class QuietModeFeaturePodControllerTest : public NoSessionAshTestBase {
  public:
   QuietModeFeaturePodControllerTest() = default;
+
+  QuietModeFeaturePodControllerTest(const QuietModeFeaturePodControllerTest&) =
+      delete;
+  QuietModeFeaturePodControllerTest& operator=(
+      const QuietModeFeaturePodControllerTest&) = delete;
+
   ~QuietModeFeaturePodControllerTest() override = default;
 
   void SetUp() override {
@@ -51,8 +57,6 @@ class QuietModeFeaturePodControllerTest : public NoSessionAshTestBase {
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<QuietModeFeaturePodController> controller_;
   std::unique_ptr<FeaturePodButton> button_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuietModeFeaturePodControllerTest);
 };
 
 TEST_F(QuietModeFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {

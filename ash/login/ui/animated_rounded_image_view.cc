@@ -23,6 +23,10 @@ class SingleFrameImageDecoder
  public:
   explicit SingleFrameImageDecoder(const gfx::ImageSkia& image)
       : image_(image) {}
+
+  SingleFrameImageDecoder(const SingleFrameImageDecoder&) = delete;
+  SingleFrameImageDecoder& operator=(const SingleFrameImageDecoder&) = delete;
+
   ~SingleFrameImageDecoder() override = default;
 
   // AnimatedRoundedImageView::AnimationDecoder:
@@ -34,8 +38,6 @@ class SingleFrameImageDecoder
 
  private:
   gfx::ImageSkia image_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleFrameImageDecoder);
 };
 
 }  // namespace

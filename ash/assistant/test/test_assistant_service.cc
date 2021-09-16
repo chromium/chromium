@@ -29,6 +29,11 @@ using chromeos::assistant::AssistantSuggestion;
 class LibassistantContractChecker : public AssistantInteractionSubscriber {
  public:
   LibassistantContractChecker() = default;
+
+  LibassistantContractChecker(const LibassistantContractChecker&) = delete;
+  LibassistantContractChecker& operator=(const LibassistantContractChecker&) =
+      delete;
+
   ~LibassistantContractChecker() override = default;
 
   // DefaultAssistantInteractionSubscriber implementation:
@@ -88,8 +93,6 @@ class LibassistantContractChecker : public AssistantInteractionSubscriber {
   };
 
   ConversationState current_state_ = ConversationState::kNotStarted;
-
-  DISALLOW_COPY_AND_ASSIGN(LibassistantContractChecker);
 };
 
 // Subscriber that tracks the current interaction.
@@ -133,6 +136,10 @@ class InteractionResponse::Response {
 class TextResponse : public InteractionResponse::Response {
  public:
   explicit TextResponse(const std::string& text) : text_(text) {}
+
+  TextResponse(const TextResponse&) = delete;
+  TextResponse& operator=(const TextResponse&) = delete;
+
   ~TextResponse() override = default;
 
   void SendTo(
@@ -142,8 +149,6 @@ class TextResponse : public InteractionResponse::Response {
 
  private:
   std::string text_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextResponse);
 };
 
 class SuggestionsResponse : public InteractionResponse::Response {
@@ -173,6 +178,10 @@ class ResolutionResponse : public InteractionResponse::Response {
 
   explicit ResolutionResponse(Resolution resolution)
       : resolution_(resolution) {}
+
+  ResolutionResponse(const ResolutionResponse&) = delete;
+  ResolutionResponse& operator=(const ResolutionResponse&) = delete;
+
   ~ResolutionResponse() override = default;
 
   void SendTo(
@@ -182,8 +191,6 @@ class ResolutionResponse : public InteractionResponse::Response {
 
  private:
   Resolution resolution_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolutionResponse);
 };
 
 TestAssistantService::TestAssistantService()

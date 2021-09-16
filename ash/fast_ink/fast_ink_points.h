@@ -33,6 +33,10 @@ class ASH_EXPORT FastInkPoints {
   // Constructor with a parameter to choose the fade out time of the points in
   // the collection. Zero means no fadeout.
   explicit FastInkPoints(base::TimeDelta life_duration);
+
+  FastInkPoints(const FastInkPoints&) = delete;
+  FastInkPoints& operator=(const FastInkPoints&) = delete;
+
   ~FastInkPoints();
 
   // Adds a point.
@@ -82,8 +86,6 @@ class ASH_EXPORT FastInkPoints {
   // The latest time of the collection of points. This gets updated when new
   // points are added or when MoveForwardToTime is called.
   base::TimeTicks collection_latest_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(FastInkPoints);
 };
 
 }  // namespace fast_ink

@@ -138,12 +138,14 @@ class ScopedWindowPositionerDisabler {
     WindowPositioner::DisableAutoPositioning(true);
   }
 
+  ScopedWindowPositionerDisabler(const ScopedWindowPositionerDisabler&) =
+      delete;
+  ScopedWindowPositionerDisabler& operator=(
+      const ScopedWindowPositionerDisabler&) = delete;
+
   ~ScopedWindowPositionerDisabler() {
     WindowPositioner::DisableAutoPositioning(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowPositionerDisabler);
 };
 
 }  // namespace
@@ -155,6 +157,9 @@ class DeskContainerObserver : public aura::WindowObserver {
     DCHECK_EQ(container_->GetId(), owner_->container_id());
     container->AddObserver(this);
   }
+
+  DeskContainerObserver(const DeskContainerObserver&) = delete;
+  DeskContainerObserver& operator=(const DeskContainerObserver&) = delete;
 
   ~DeskContainerObserver() override { container_->RemoveObserver(this); }
 
@@ -196,8 +201,6 @@ class DeskContainerObserver : public aura::WindowObserver {
 
   Desk* const owner_;
   aura::Window* const container_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeskContainerObserver);
 };
 
 // -----------------------------------------------------------------------------

@@ -59,6 +59,10 @@ class ASH_EXPORT AssistantControllerImpl
       public ColorModeObserver {
  public:
   AssistantControllerImpl();
+
+  AssistantControllerImpl(const AssistantControllerImpl&) = delete;
+  AssistantControllerImpl& operator=(const AssistantControllerImpl&) = delete;
+
   ~AssistantControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -175,8 +179,6 @@ class ASH_EXPORT AssistantControllerImpl
       color_mode_observer_{this};
 
   base::WeakPtrFactory<AssistantControllerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantControllerImpl);
 };
 
 }  // namespace ash

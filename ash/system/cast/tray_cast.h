@@ -22,6 +22,10 @@ class CastDetailedView : public TrayDetailedView,
                          public CastConfigController::Observer {
  public:
   explicit CastDetailedView(DetailedViewDelegate* delegate);
+
+  CastDetailedView(const CastDetailedView&) = delete;
+  CastDetailedView& operator=(const CastDetailedView&) = delete;
+
   ~CastDetailedView() override;
 
   // CastConfigController::Observer:
@@ -42,8 +46,6 @@ class CastDetailedView : public TrayDetailedView,
   std::map<std::string, SinkAndRoute> sinks_and_routes_;
   // A mapping from the view pointer to the associated activity sink id.
   std::map<views::View*, std::string> view_to_sink_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastDetailedView);
 };
 
 }  // namespace tray

@@ -24,6 +24,10 @@ class CustomWindowDelegate : public aura::WindowDelegate {
  public:
   explicit CustomWindowDelegate(exo::NotificationSurface* notification_surface)
       : notification_surface_(notification_surface) {}
+
+  CustomWindowDelegate(const CustomWindowDelegate&) = delete;
+  CustomWindowDelegate& operator=(const CustomWindowDelegate&) = delete;
+
   ~CustomWindowDelegate() override {}
 
   // Overridden from aura::WindowDelegate:
@@ -72,8 +76,6 @@ class CustomWindowDelegate : public aura::WindowDelegate {
 
  private:
   exo::NotificationSurface* const notification_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomWindowDelegate);
 };
 
 }  // namespace

@@ -72,6 +72,10 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   };
 
   ShelfModel();
+
+  ShelfModel(const ShelfModel&) = delete;
+  ShelfModel& operator=(const ShelfModel&) = delete;
+
   ~ShelfModel();
 
   // Adds an item to the shelf, using the default factory to construct a
@@ -247,8 +251,6 @@ class ASH_PUBLIC_EXPORT ShelfModel {
 
   std::map<ShelfID, std::unique_ptr<ShelfItemDelegate>>
       id_to_item_delegate_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfModel);
 };
 
 }  // namespace ash

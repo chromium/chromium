@@ -25,6 +25,10 @@ class AssistantSetupController : public AssistantControllerObserver,
  public:
   explicit AssistantSetupController(
       AssistantControllerImpl* assistant_controller);
+
+  AssistantSetupController(const AssistantSetupController&) = delete;
+  AssistantSetupController& operator=(const AssistantSetupController&) = delete;
+
   ~AssistantSetupController() override;
 
   // AssistantControllerObserver:
@@ -48,8 +52,6 @@ class AssistantSetupController : public AssistantControllerObserver,
       assistant_controller_observation_{this};
 
   base::WeakPtrFactory<AssistantSetupController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantSetupController);
 };
 
 }  // namespace ash

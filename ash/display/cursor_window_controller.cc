@@ -50,6 +50,10 @@ const int kMaxLargeCursorSize = 64;
 class CursorWindowDelegate : public aura::WindowDelegate {
  public:
   CursorWindowDelegate() = default;
+
+  CursorWindowDelegate(const CursorWindowDelegate&) = delete;
+  CursorWindowDelegate& operator=(const CursorWindowDelegate&) = delete;
+
   ~CursorWindowDelegate() override = default;
 
   // aura::WindowDelegate overrides:
@@ -95,8 +99,6 @@ class CursorWindowDelegate : public aura::WindowDelegate {
  private:
   gfx::ImageSkia cursor_image_;
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorWindowDelegate);
 };
 
 CursorWindowController::CursorWindowController()

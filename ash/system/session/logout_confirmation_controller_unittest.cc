@@ -181,6 +181,10 @@ TEST_F(LogoutConfirmationControllerTest, DurationExpiredAfterDeniedRequest) {
 class LastWindowClosedTest : public NoSessionAshTestBase {
  public:
   LastWindowClosedTest() = default;
+
+  LastWindowClosedTest(const LastWindowClosedTest&) = delete;
+  LastWindowClosedTest& operator=(const LastWindowClosedTest&) = delete;
+
   ~LastWindowClosedTest() override = default;
 
   // Simulate a managed guest session (non-demo session) login.
@@ -204,9 +208,6 @@ class LastWindowClosedTest : public NoSessionAshTestBase {
     return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
         AccountId::FromUserEmail(kUserEmail));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LastWindowClosedTest);
 };
 
 TEST_F(LastWindowClosedTest, RegularSession) {

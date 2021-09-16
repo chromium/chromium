@@ -30,6 +30,12 @@ class ASH_EXPORT TestLockScreenActionBackgroundController
     : public LockScreenActionBackgroundController {
  public:
   TestLockScreenActionBackgroundController();
+
+  TestLockScreenActionBackgroundController(
+      const TestLockScreenActionBackgroundController&) = delete;
+  TestLockScreenActionBackgroundController& operator=(
+      const TestLockScreenActionBackgroundController&) = delete;
+
   ~TestLockScreenActionBackgroundController() override;
 
   // LockScreenBackgroundController:
@@ -53,8 +59,6 @@ class ASH_EXPORT TestLockScreenActionBackgroundController
  private:
   // Testing widget created when the background is shown.
   std::unique_ptr<views::Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLockScreenActionBackgroundController);
 };
 
 }  // namespace ash

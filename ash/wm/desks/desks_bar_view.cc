@@ -128,6 +128,9 @@ class DeskBarHoverObserver : public ui::EventObserver {
              ui::ET_GESTURE_LONG_PRESS, ui::ET_GESTURE_LONG_TAP,
              ui::ET_GESTURE_TAP, ui::ET_GESTURE_TAP_DOWN})) {}
 
+  DeskBarHoverObserver(const DeskBarHoverObserver&) = delete;
+  DeskBarHoverObserver& operator=(const DeskBarHoverObserver&) = delete;
+
   ~DeskBarHoverObserver() override = default;
 
   // ui::EventObserver:
@@ -164,8 +167,6 @@ class DeskBarHoverObserver : public ui::EventObserver {
   DesksBarView* owner_;
 
   std::unique_ptr<views::EventMonitor> event_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeskBarHoverObserver);
 };
 
 // -----------------------------------------------------------------------------

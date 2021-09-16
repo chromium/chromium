@@ -29,13 +29,14 @@ namespace ash {
 class ASH_EXPORT CursorManager : public ::wm::CursorManager {
  public:
   explicit CursorManager(std::unique_ptr<::wm::NativeCursorManager> delegate);
+
+  CursorManager(const CursorManager&) = delete;
+  CursorManager& operator=(const CursorManager&) = delete;
+
   ~CursorManager() override;
 
   // aura::client::CursorClient:
   bool ShouldHideCursorOnKeyEvent(const ui::KeyEvent& event) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CursorManager);
 };
 
 }  // namespace ash

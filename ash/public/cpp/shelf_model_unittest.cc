@@ -70,6 +70,10 @@ class TestShelfModelObserver : public ShelfModelObserver {
 class ShelfModelTest : public testing::Test {
  public:
   ShelfModelTest() = default;
+
+  ShelfModelTest(const ShelfModelTest&) = delete;
+  ShelfModelTest& operator=(const ShelfModelTest&) = delete;
+
   ~ShelfModelTest() override = default;
 
   void SetUp() override {
@@ -95,9 +99,6 @@ class ShelfModelTest : public testing::Test {
 
   std::unique_ptr<ShelfModel> model_;
   std::unique_ptr<TestShelfModelObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfModelTest);
 };
 
 TEST_F(ShelfModelTest, BasicAssertions) {

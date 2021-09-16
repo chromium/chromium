@@ -32,6 +32,10 @@ class ASH_EXPORT PinKeyboardAnimation : public ui::LayerAnimationElement {
                        int height,
                        base::TimeDelta duration,
                        gfx::Tween::Type tween_type);
+
+  PinKeyboardAnimation(const PinKeyboardAnimation&) = delete;
+  PinKeyboardAnimation& operator=(const PinKeyboardAnimation&) = delete;
+
   ~PinKeyboardAnimation() override;
 
   // ui::LayerAnimationElement:
@@ -48,8 +52,6 @@ class ASH_EXPORT PinKeyboardAnimation : public ui::LayerAnimationElement {
   gfx::Tween::Type tween_type_;
   float start_opacity_ = 0;
   float end_opacity_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(PinKeyboardAnimation);
 };
 
 }  // namespace ash

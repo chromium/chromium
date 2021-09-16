@@ -60,6 +60,9 @@ class DriveFsConnectionImpl : public DriveFsConnection {
       : bootstrap_listener_(std::move(bootstrap_listener)),
         config_(std::move(config)) {}
 
+  DriveFsConnectionImpl(const DriveFsConnectionImpl&) = delete;
+  DriveFsConnectionImpl& operator=(const DriveFsConnectionImpl&) = delete;
+
   ~DriveFsConnectionImpl() override = default;
 
   base::UnguessableToken Connect(mojom::DriveFsDelegate* delegate,
@@ -102,8 +105,6 @@ class DriveFsConnectionImpl : public DriveFsConnection {
   mojo::Remote<mojom::DriveFs> drivefs_;
 
   base::OnceClosure on_disconnected_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsConnectionImpl);
 };
 
 std::unique_ptr<DriveFsConnection> DriveFsConnection::Create(

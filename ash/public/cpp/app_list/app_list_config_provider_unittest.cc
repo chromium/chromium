@@ -69,6 +69,12 @@ class TestAppListConfigProviderObserver
     : public AppListConfigProvider::Observer {
  public:
   TestAppListConfigProviderObserver() = default;
+
+  TestAppListConfigProviderObserver(const TestAppListConfigProviderObserver&) =
+      delete;
+  TestAppListConfigProviderObserver& operator=(
+      const TestAppListConfigProviderObserver&) = delete;
+
   ~TestAppListConfigProviderObserver() override = default;
 
   // AppListConfigProvider::Observer:
@@ -86,8 +92,6 @@ class TestAppListConfigProviderObserver
 
  private:
   std::vector<ash::AppListConfigType> created_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppListConfigProviderObserver);
 };
 
 }  // namespace

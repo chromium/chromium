@@ -321,6 +321,10 @@ void ClearWorkspaceControllers(aura::Window* root) {
 class RootWindowTargeter : public aura::WindowTargeter {
  public:
   RootWindowTargeter() = default;
+
+  RootWindowTargeter(const RootWindowTargeter&) = delete;
+  RootWindowTargeter& operator=(const RootWindowTargeter&) = delete;
+
   ~RootWindowTargeter() override = default;
 
  protected:
@@ -387,8 +391,6 @@ class RootWindowTargeter : public aura::WindowTargeter {
   }
 
   ui::EventType last_mouse_event_type_ = ui::ET_UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowTargeter);
 };
 
 class RootWindowMenuModelAdapter : public AppMenuModelAdapter {
@@ -404,6 +406,10 @@ class RootWindowMenuModelAdapter : public AppMenuModelAdapter {
                             source_type,
                             std::move(on_menu_closed_callback),
                             is_tablet_mode) {}
+
+  RootWindowMenuModelAdapter(const RootWindowMenuModelAdapter&) = delete;
+  RootWindowMenuModelAdapter& operator=(const RootWindowMenuModelAdapter&) =
+      delete;
 
   ~RootWindowMenuModelAdapter() override = default;
 
@@ -431,8 +437,6 @@ class RootWindowMenuModelAdapter : public AppMenuModelAdapter {
           ui::MENU_SOURCE_TYPE_LAST);
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowMenuModelAdapter);
 };
 
 // A layout manager that fills its container when the child window's resize

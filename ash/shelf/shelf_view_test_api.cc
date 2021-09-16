@@ -24,6 +24,10 @@ namespace {
 class TestAPIAnimationObserver : public views::BoundsAnimatorObserver {
  public:
   TestAPIAnimationObserver() = default;
+
+  TestAPIAnimationObserver(const TestAPIAnimationObserver&) = delete;
+  TestAPIAnimationObserver& operator=(const TestAPIAnimationObserver&) = delete;
+
   ~TestAPIAnimationObserver() override = default;
 
   // views::BoundsAnimatorObserver overrides:
@@ -31,9 +35,6 @@ class TestAPIAnimationObserver : public views::BoundsAnimatorObserver {
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override {
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAPIAnimationObserver);
 };
 
 }  // namespace

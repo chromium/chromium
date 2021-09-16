@@ -65,6 +65,10 @@ class ASH_EXPORT AppListPresenterImpl
 
   // |controller| must outlive |this|.
   explicit AppListPresenterImpl(AppListControllerImpl* controller);
+
+  AppListPresenterImpl(const AppListPresenterImpl&) = delete;
+  AppListPresenterImpl& operator=(const AppListPresenterImpl&) = delete;
+
   ~AppListPresenterImpl() override;
 
   // Returns app list window or nullptr if it is not visible.
@@ -235,8 +239,6 @@ class ASH_EXPORT AppListPresenterImpl
   // Data we need to store for metrics.
   absl::optional<base::Time> last_open_time_;
   absl::optional<AppListShowSource> last_open_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListPresenterImpl);
 };
 
 }  // namespace ash

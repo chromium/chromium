@@ -23,6 +23,11 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
                                      public views::ViewObserver {
  public:
   FeaturePodsContainerViewTest() = default;
+
+  FeaturePodsContainerViewTest(const FeaturePodsContainerViewTest&) = delete;
+  FeaturePodsContainerViewTest& operator=(const FeaturePodsContainerViewTest&) =
+      delete;
+
   ~FeaturePodsContainerViewTest() override = default;
 
   // AshTestBase:
@@ -82,8 +87,6 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   int preferred_size_changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FeaturePodsContainerViewTest);
 };
 
 TEST_F(FeaturePodsContainerViewTest, ExpandedAndCollapsed) {

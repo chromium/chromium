@@ -35,6 +35,10 @@ class WindowScaleAnimation : public ui::ImplicitAnimationObserver,
   WindowScaleAnimation(aura::Window* window,
                        WindowScaleType scale_type,
                        base::OnceClosure opt_callback);
+
+  WindowScaleAnimation(const WindowScaleAnimation&) = delete;
+  WindowScaleAnimation& operator=(const WindowScaleAnimation&) = delete;
+
   ~WindowScaleAnimation() override;
 
   // ui::ImplicitAnimationObserver:
@@ -55,8 +59,6 @@ class WindowScaleAnimation : public ui::ImplicitAnimationObserver,
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowScaleAnimation);
 };
 
 }  // namespace ash

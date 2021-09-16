@@ -753,6 +753,11 @@ TEST_F(ShelfWidgetTest,
 class ShelfWidgetAfterLoginTest : public AshTestBase {
  public:
   ShelfWidgetAfterLoginTest() { set_start_session(false); }
+
+  ShelfWidgetAfterLoginTest(const ShelfWidgetAfterLoginTest&) = delete;
+  ShelfWidgetAfterLoginTest& operator=(const ShelfWidgetAfterLoginTest&) =
+      delete;
+
   ~ShelfWidgetAfterLoginTest() override = default;
 
   void TestShelf(ShelfAlignment alignment,
@@ -775,9 +780,6 @@ class ShelfWidgetAfterLoginTest : public AshTestBase {
     EXPECT_EQ(expected_shelf_visibility_state, shelf->GetVisibilityState());
     EXPECT_EQ(expected_shelf_auto_hide_state, shelf->GetAutoHideState());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfWidgetAfterLoginTest);
 };
 
 TEST_F(ShelfWidgetAfterLoginTest, InitialValues) {
@@ -834,6 +836,12 @@ TEST_F(ShelfWidgetAfterLoginTest, CreateLockedShelf) {
 class ShelfWidgetViewsVisibilityTest : public AshTestBase {
  public:
   ShelfWidgetViewsVisibilityTest() { set_start_session(false); }
+
+  ShelfWidgetViewsVisibilityTest(const ShelfWidgetViewsVisibilityTest&) =
+      delete;
+  ShelfWidgetViewsVisibilityTest& operator=(
+      const ShelfWidgetViewsVisibilityTest&) = delete;
+
   ~ShelfWidgetViewsVisibilityTest() override = default;
 
   enum ShelfVisibility {
@@ -879,8 +887,6 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
  private:
   ShelfWidget* primary_shelf_widget_ = nullptr;
   ShelfWidget* secondary_shelf_widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfWidgetViewsVisibilityTest);
 };
 
 TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {

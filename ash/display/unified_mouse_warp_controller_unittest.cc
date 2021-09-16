@@ -41,6 +41,12 @@ struct WarpGroup {
 class UnifiedMouseWarpControllerTest : public AshTestBase {
  public:
   UnifiedMouseWarpControllerTest() = default;
+
+  UnifiedMouseWarpControllerTest(const UnifiedMouseWarpControllerTest&) =
+      delete;
+  UnifiedMouseWarpControllerTest& operator=(
+      const UnifiedMouseWarpControllerTest&) = delete;
+
   ~UnifiedMouseWarpControllerTest() override = default;
 
   void SetUp() override {
@@ -178,9 +184,6 @@ class UnifiedMouseWarpControllerTest : public AshTestBase {
     // Touch the bottom edge of the second display.
     EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(610, 499)));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnifiedMouseWarpControllerTest);
 };
 
 // Verifies if MouseCursorEventFilter's bounds calculation works correctly.

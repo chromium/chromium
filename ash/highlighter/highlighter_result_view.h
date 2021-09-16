@@ -33,6 +33,10 @@ enum class HighlighterGestureType;
 class HighlighterResultView : public views::View {
  public:
   HighlighterResultView();
+
+  HighlighterResultView(const HighlighterResultView&) = delete;
+  HighlighterResultView& operator=(const HighlighterResultView&) = delete;
+
   ~HighlighterResultView() override;
 
   static views::UniqueWidgetPtr Create(aura::Window* root_window);
@@ -47,8 +51,6 @@ class HighlighterResultView : public views::View {
 
   std::unique_ptr<ui::Layer> result_layer_;
   std::unique_ptr<base::OneShotTimer> animation_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(HighlighterResultView);
 };
 
 }  // namespace ash

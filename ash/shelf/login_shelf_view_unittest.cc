@@ -62,6 +62,10 @@ void ExpectNotFocused(views::View* view) {
 class LoginShelfViewTest : public LoginTestBase {
  public:
   LoginShelfViewTest() = default;
+
+  LoginShelfViewTest(const LoginShelfViewTest&) = delete;
+  LoginShelfViewTest& operator=(const LoginShelfViewTest&) = delete;
+
   ~LoginShelfViewTest() override = default;
 
   void SetUp() override {
@@ -165,8 +169,6 @@ class LoginShelfViewTest : public LoginTestBase {
   // |CreateActionBackgroundController|.
   TestLockScreenActionBackgroundController* action_background_controller_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginShelfViewTest);
 };
 
 // Checks the login shelf updates UI after session state changes.

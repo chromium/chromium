@@ -21,6 +21,11 @@ class ASH_EXPORT DisplayConfigurationObserver
       public TabletModeObserver {
  public:
   DisplayConfigurationObserver();
+
+  DisplayConfigurationObserver(const DisplayConfigurationObserver&) = delete;
+  DisplayConfigurationObserver& operator=(const DisplayConfigurationObserver&) =
+      delete;
+
   ~DisplayConfigurationObserver() override;
 
   bool save_preference() const { return save_preference_; }
@@ -44,8 +49,6 @@ class ASH_EXPORT DisplayConfigurationObserver
   bool was_in_mirror_mode_ = false;
 
   base::WeakPtrFactory<DisplayConfigurationObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayConfigurationObserver);
 };
 
 }  // namespace ash

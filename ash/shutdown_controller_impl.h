@@ -27,6 +27,10 @@ class ASH_EXPORT ShutdownControllerImpl : public ShutdownController {
   };
 
   ShutdownControllerImpl();
+
+  ShutdownControllerImpl(const ShutdownControllerImpl&) = delete;
+  ShutdownControllerImpl& operator=(const ShutdownControllerImpl&) = delete;
+
   ~ShutdownControllerImpl() override;
 
   void AddObserver(Observer* observer);
@@ -43,8 +47,6 @@ class ASH_EXPORT ShutdownControllerImpl : public ShutdownController {
   bool reboot_on_shutdown_ = false;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownControllerImpl);
 };
 
 }  // namespace ash

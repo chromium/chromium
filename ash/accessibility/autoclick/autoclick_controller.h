@@ -52,6 +52,10 @@ class ASH_EXPORT AutoclickController
   };
 
   AutoclickController();
+
+  AutoclickController(const AutoclickController&) = delete;
+  AutoclickController& operator=(const AutoclickController&) = delete;
+
   ~AutoclickController() override;
 
   // Set whether autoclicking is enabled. If |show_confirmation_dialog|, a
@@ -217,8 +221,6 @@ class ASH_EXPORT AutoclickController
 
   // Holds a weak pointer to the dialog shown when autoclick is being disabled.
   base::WeakPtr<AccessibilityFeatureDisableDialog> disable_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickController);
 };
 
 }  // namespace ash

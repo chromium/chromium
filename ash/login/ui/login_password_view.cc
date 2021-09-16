@@ -305,6 +305,10 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
   EasyUnlockIcon() : views::ImageButton(PressedCallback()) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
+
+  EasyUnlockIcon(const EasyUnlockIcon&) = delete;
+  EasyUnlockIcon& operator=(const EasyUnlockIcon&) = delete;
+
   ~EasyUnlockIcon() override = default;
 
   void Init(const OnEasyUnlockIconHovered& on_hovered,
@@ -436,8 +440,6 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
   bool immediately_hover_for_test_ = false;
 
   EasyUnlockIconState icon_state_ = EasyUnlockIconState::LOCKED;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockIcon);
 };
 
 class LoginPasswordView::DisplayPasswordButton

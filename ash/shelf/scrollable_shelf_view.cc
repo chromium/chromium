@@ -180,6 +180,11 @@ class ScrollableShelfContainerView : public ShelfContainerView,
         scrollable_shelf_view_(scrollable_shelf_view) {
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
+
+  ScrollableShelfContainerView(const ScrollableShelfContainerView&) = delete;
+  ScrollableShelfContainerView& operator=(const ScrollableShelfContainerView&) =
+      delete;
+
   ~ScrollableShelfContainerView() override = default;
 
   // ShelfContainerView:
@@ -194,8 +199,6 @@ class ScrollableShelfContainerView : public ShelfContainerView,
                          const gfx::Rect& rect) const override;
 
   ScrollableShelfView* scrollable_shelf_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollableShelfContainerView);
 };
 
 void ScrollableShelfContainerView::TranslateShelfView(
@@ -245,6 +248,10 @@ class ScrollableShelfFocusSearch : public views::FocusSearch {
                     /*accessibility_mode=*/true),
         scrollable_shelf_view_(scrollable_shelf_view) {}
 
+  ScrollableShelfFocusSearch(const ScrollableShelfFocusSearch&) = delete;
+  ScrollableShelfFocusSearch& operator=(const ScrollableShelfFocusSearch&) =
+      delete;
+
   ~ScrollableShelfFocusSearch() override = default;
 
   // views::FocusSearch
@@ -290,8 +297,6 @@ class ScrollableShelfFocusSearch : public views::FocusSearch {
 
  private:
   ScrollableShelfView* scrollable_shelf_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollableShelfFocusSearch);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

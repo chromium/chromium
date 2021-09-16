@@ -20,6 +20,12 @@ class UnifiedNotifierSettingsController : public DetailedViewController {
  public:
   explicit UnifiedNotifierSettingsController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedNotifierSettingsController(const UnifiedNotifierSettingsController&) =
+      delete;
+  UnifiedNotifierSettingsController& operator=(
+      const UnifiedNotifierSettingsController&) = delete;
+
   ~UnifiedNotifierSettingsController() override;
 
   // DetailedViewControllerBase:
@@ -28,8 +34,6 @@ class UnifiedNotifierSettingsController : public DetailedViewController {
 
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedNotifierSettingsController);
 };
 
 }  // namespace ash

@@ -48,6 +48,10 @@ class FolderImageSource : public gfx::CanvasImageSource {
   FolderImageSource(const AppListConfig& app_list_config,
                     const Icons& icons,
                     const gfx::Size& size);
+
+  FolderImageSource(const FolderImageSource&) = delete;
+  FolderImageSource& operator=(const FolderImageSource&) = delete;
+
   ~FolderImageSource() override;
 
  private:
@@ -63,8 +67,6 @@ class FolderImageSource : public gfx::CanvasImageSource {
   const AppListConfig& app_list_config_;
   Icons icons_;
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(FolderImageSource);
 };
 
 FolderImageSource::FolderImageSource(const AppListConfig& app_list_config,

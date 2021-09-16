@@ -40,6 +40,11 @@ class ASH_EXPORT ShelfApplicationMenuModel
   ShelfApplicationMenuModel(const std::u16string& title,
                             Items items,
                             ShelfItemDelegate* delegate);
+
+  ShelfApplicationMenuModel(const ShelfApplicationMenuModel&) = delete;
+  ShelfApplicationMenuModel& operator=(const ShelfApplicationMenuModel&) =
+      delete;
+
   ~ShelfApplicationMenuModel() override;
 
   // ui::SimpleMenuModel::Delegate:
@@ -58,8 +63,6 @@ class ASH_EXPORT ShelfApplicationMenuModel
 
   // A set containing the enabled command IDs.
   base::flat_set<int> enabled_commands_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfApplicationMenuModel);
 };
 
 }  // namespace ash

@@ -175,6 +175,12 @@ class DummyBrightnessControlDelegate : public BrightnessControlDelegate {
  public:
   DummyBrightnessControlDelegate()
       : handle_brightness_down_count_(0), handle_brightness_up_count_(0) {}
+
+  DummyBrightnessControlDelegate(const DummyBrightnessControlDelegate&) =
+      delete;
+  DummyBrightnessControlDelegate& operator=(
+      const DummyBrightnessControlDelegate&) = delete;
+
   ~DummyBrightnessControlDelegate() override = default;
 
   void HandleBrightnessDown(const ui::Accelerator& accelerator) override {
@@ -201,8 +207,6 @@ class DummyBrightnessControlDelegate : public BrightnessControlDelegate {
   int handle_brightness_down_count_;
   int handle_brightness_up_count_;
   ui::Accelerator last_accelerator_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyBrightnessControlDelegate);
 };
 
 class DummyKeyboardBrightnessControlDelegate
@@ -211,6 +215,12 @@ class DummyKeyboardBrightnessControlDelegate
   DummyKeyboardBrightnessControlDelegate()
       : handle_keyboard_brightness_down_count_(0),
         handle_keyboard_brightness_up_count_(0) {}
+
+  DummyKeyboardBrightnessControlDelegate(
+      const DummyKeyboardBrightnessControlDelegate&) = delete;
+  DummyKeyboardBrightnessControlDelegate& operator=(
+      const DummyKeyboardBrightnessControlDelegate&) = delete;
+
   ~DummyKeyboardBrightnessControlDelegate() override = default;
 
   void HandleKeyboardBrightnessDown(
@@ -238,8 +248,6 @@ class DummyKeyboardBrightnessControlDelegate
   int handle_keyboard_brightness_down_count_;
   int handle_keyboard_brightness_up_count_;
   ui::Accelerator last_accelerator_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyKeyboardBrightnessControlDelegate);
 };
 
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
@@ -276,6 +284,11 @@ class AcceleratorControllerTest : public AshTestBase {
     delegate_provider_ =
         std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
   }
+
+  AcceleratorControllerTest(const AcceleratorControllerTest&) = delete;
+  AcceleratorControllerTest& operator=(const AcceleratorControllerTest&) =
+      delete;
+
   ~AcceleratorControllerTest() override = default;
 
   void SetUp() override {
@@ -411,9 +424,6 @@ class AcceleratorControllerTest : public AshTestBase {
   std::unique_ptr<AcceleratorControllerImpl::TestApi> test_api_;
   MockNewWindowDelegate* new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorControllerTest);
 };
 
 namespace {
@@ -1610,6 +1620,12 @@ class SideVolumeButtonAcceleratorTest
 
   SideVolumeButtonAcceleratorTest()
       : region_(GetParam().first), side_(GetParam().second) {}
+
+  SideVolumeButtonAcceleratorTest(const SideVolumeButtonAcceleratorTest&) =
+      delete;
+  SideVolumeButtonAcceleratorTest& operator=(
+      const SideVolumeButtonAcceleratorTest&) = delete;
+
   ~SideVolumeButtonAcceleratorTest() override = default;
 
   void SetUp() override {
@@ -1632,8 +1648,6 @@ class SideVolumeButtonAcceleratorTest
 
  private:
   std::string region_, side_;
-
-  DISALLOW_COPY_AND_ASSIGN(SideVolumeButtonAcceleratorTest);
 };
 
 // Tests the the action of side volume button will get flipped in corresponding
@@ -1850,6 +1864,12 @@ TEST_F(AcceleratorControllerTest, ToggleCapsLockAccelerators) {
 class PreferredReservedAcceleratorsTest : public AshTestBase {
  public:
   PreferredReservedAcceleratorsTest() = default;
+
+  PreferredReservedAcceleratorsTest(const PreferredReservedAcceleratorsTest&) =
+      delete;
+  PreferredReservedAcceleratorsTest& operator=(
+      const PreferredReservedAcceleratorsTest&) = delete;
+
   ~PreferredReservedAcceleratorsTest() override = default;
 
   // AshTestBase:
@@ -1862,9 +1882,6 @@ class PreferredReservedAcceleratorsTest : public AshTestBase {
             chromeos::PowerManagerClient::LidState::OPEN,
             chromeos::PowerManagerClient::TabletMode::ON});
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PreferredReservedAcceleratorsTest);
 };
 
 TEST_F(PreferredReservedAcceleratorsTest, AcceleratorsWithFullscreen) {
@@ -2470,6 +2487,11 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 class DeprecatedAcceleratorTester : public AcceleratorControllerTest {
  public:
   DeprecatedAcceleratorTester() = default;
+
+  DeprecatedAcceleratorTester(const DeprecatedAcceleratorTester&) = delete;
+  DeprecatedAcceleratorTester& operator=(const DeprecatedAcceleratorTester&) =
+      delete;
+
   ~DeprecatedAcceleratorTester() override = default;
 
   ui::Accelerator CreateAccelerator(const AcceleratorData& data) const {
@@ -2494,9 +2516,6 @@ class DeprecatedAcceleratorTester : public AcceleratorControllerTest {
   bool IsMessageCenterEmpty() const {
     return message_center()->GetVisibleNotifications().empty();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeprecatedAcceleratorTester);
 };
 
 TEST_F(DeprecatedAcceleratorTester, TestDeprecatedAcceleratorsBehavior) {
@@ -2576,6 +2595,11 @@ constexpr char kUserEmail[] = "user@magnifier";
 class MagnifiersAcceleratorsTester : public AcceleratorControllerTest {
  public:
   MagnifiersAcceleratorsTester() = default;
+
+  MagnifiersAcceleratorsTester(const MagnifiersAcceleratorsTester&) = delete;
+  MagnifiersAcceleratorsTester& operator=(const MagnifiersAcceleratorsTester&) =
+      delete;
+
   ~MagnifiersAcceleratorsTester() override = default;
 
   DockedMagnifierController* docked_magnifier_controller() const {
@@ -2597,9 +2621,6 @@ class MagnifiersAcceleratorsTester : public AcceleratorControllerTest {
     // Create user session and simulate its login.
     SimulateUserLogin(kUserEmail);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MagnifiersAcceleratorsTester);
 };
 
 // TODO (afakhry): Remove this class after refactoring MagnificationManager.
@@ -2833,6 +2854,11 @@ class MediaSessionAcceleratorTest
       public testing::WithParamInterface<MediaSessionAcceleratorTestConfig> {
  public:
   MediaSessionAcceleratorTest() = default;
+
+  MediaSessionAcceleratorTest(const MediaSessionAcceleratorTest&) = delete;
+  MediaSessionAcceleratorTest& operator=(const MediaSessionAcceleratorTest&) =
+      delete;
+
   ~MediaSessionAcceleratorTest() override = default;
 
   // AcceleratorControllerTest:
@@ -2915,8 +2941,6 @@ class MediaSessionAcceleratorTest
 
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionAcceleratorTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(

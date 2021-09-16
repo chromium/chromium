@@ -58,14 +58,18 @@ class ASH_EXPORT ContentsView : public views::View,
         : contents_view_(contents_view) {
       contents_view_->set_active_state_without_animation_ = true;
     }
+
+    ScopedSetActiveStateAnimationDisabler(
+        const ScopedSetActiveStateAnimationDisabler&) = delete;
+    ScopedSetActiveStateAnimationDisabler& operator=(
+        const ScopedSetActiveStateAnimationDisabler&) = delete;
+
     ~ScopedSetActiveStateAnimationDisabler() {
       contents_view_->set_active_state_without_animation_ = false;
     }
 
    private:
     ContentsView* const contents_view_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedSetActiveStateAnimationDisabler);
   };
 
   explicit ContentsView(AppListView* app_list_view);

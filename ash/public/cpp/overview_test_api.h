@@ -44,6 +44,10 @@ using OverviewInfo = base::flat_map<aura::Window*, OverviewItemInfo>;
 class ASH_EXPORT OverviewTestApi {
  public:
   OverviewTestApi();
+
+  OverviewTestApi(const OverviewTestApi&) = delete;
+  OverviewTestApi& operator=(const OverviewTestApi&) = delete;
+
   ~OverviewTestApi();
 
   using DoneCallback = base::OnceCallback<void(bool animation_succeeded)>;
@@ -63,9 +67,6 @@ class ASH_EXPORT OverviewTestApi {
   // Returns overview info for the current overview items if overview is
   // started. Otherwise, returns absl::nullopt;
   absl::optional<OverviewInfo> GetOverviewInfo() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverviewTestApi);
 };
 
 }  // namespace ash

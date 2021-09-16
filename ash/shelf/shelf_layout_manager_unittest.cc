@@ -167,6 +167,10 @@ void AddApp() {
 class TestDisplayObserver : public display::DisplayObserver {
  public:
   TestDisplayObserver() = default;
+
+  TestDisplayObserver(const TestDisplayObserver&) = delete;
+  TestDisplayObserver& operator=(const TestDisplayObserver&) = delete;
+
   ~TestDisplayObserver() override = default;
 
   int metrics_change_count() const { return metrics_change_count_; }
@@ -180,8 +184,6 @@ class TestDisplayObserver : public display::DisplayObserver {
 
   display::ScopedDisplayObserver display_observer_{this};
   int metrics_change_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayObserver);
 };
 
 class WallpaperShownWaiter : public WallpaperControllerObserver {
@@ -189,6 +191,9 @@ class WallpaperShownWaiter : public WallpaperControllerObserver {
   WallpaperShownWaiter() {
     Shell::Get()->wallpaper_controller()->AddObserver(this);
   }
+
+  WallpaperShownWaiter(const WallpaperShownWaiter&) = delete;
+  WallpaperShownWaiter& operator=(const WallpaperShownWaiter&) = delete;
 
   ~WallpaperShownWaiter() override {
     Shell::Get()->wallpaper_controller()->RemoveObserver(this);
@@ -203,8 +208,6 @@ class WallpaperShownWaiter : public WallpaperControllerObserver {
   void OnFirstWallpaperShown() override { run_loop_.Quit(); }
 
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperShownWaiter);
 };
 
 }  // namespace
@@ -3990,6 +3993,12 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, NoDragForDownwardEvent) {
 class ShelfLayoutManagerKeyboardTest : public AshTestBase {
  public:
   ShelfLayoutManagerKeyboardTest() = default;
+
+  ShelfLayoutManagerKeyboardTest(const ShelfLayoutManagerKeyboardTest&) =
+      delete;
+  ShelfLayoutManagerKeyboardTest& operator=(
+      const ShelfLayoutManagerKeyboardTest&) = delete;
+
   ~ShelfLayoutManagerKeyboardTest() override = default;
 
   // AshTestBase:
@@ -4033,8 +4042,6 @@ class ShelfLayoutManagerKeyboardTest : public AshTestBase {
 
  private:
   gfx::Rect keyboard_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfLayoutManagerKeyboardTest);
 };
 
 TEST_F(ShelfLayoutManagerKeyboardTest, ShelfNotMoveOnKeyboardOpen) {

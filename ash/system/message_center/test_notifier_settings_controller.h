@@ -14,6 +14,12 @@ namespace ash {
 class TestNotifierSettingsController : public NotifierSettingsController {
  public:
   TestNotifierSettingsController();
+
+  TestNotifierSettingsController(const TestNotifierSettingsController&) =
+      delete;
+  TestNotifierSettingsController& operator=(
+      const TestNotifierSettingsController&) = delete;
+
   ~TestNotifierSettingsController() override;
 
   void set_no_notifiers(bool no_notifiers) { no_notifiers_ = no_notifiers; }
@@ -30,8 +36,6 @@ class TestNotifierSettingsController : public NotifierSettingsController {
   bool no_notifiers_ = false;
 
   base::ObserverList<NotifierSettingsObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNotifierSettingsController);
 };
 
 }  // namespace ash

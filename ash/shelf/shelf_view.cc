@@ -128,6 +128,9 @@ class BoundsAnimatorDisabler {
         base::TimeDelta::FromMilliseconds(1));
   }
 
+  BoundsAnimatorDisabler(const BoundsAnimatorDisabler&) = delete;
+  BoundsAnimatorDisabler& operator=(const BoundsAnimatorDisabler&) = delete;
+
   ~BoundsAnimatorDisabler() {
     bounds_animator_->SetAnimationDuration(old_duration_);
   }
@@ -137,8 +140,6 @@ class BoundsAnimatorDisabler {
   base::TimeDelta old_duration_;
   // The bounds animator which gets used.
   views::BoundsAnimator* bounds_animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoundsAnimatorDisabler);
 };
 
 // Custom FocusSearch used to navigate the shelf in the order items are in
@@ -147,6 +148,10 @@ class ShelfFocusSearch : public views::FocusSearch {
  public:
   explicit ShelfFocusSearch(ShelfView* shelf_view)
       : FocusSearch(nullptr, true, true), shelf_view_(shelf_view) {}
+
+  ShelfFocusSearch(const ShelfFocusSearch&) = delete;
+  ShelfFocusSearch& operator=(const ShelfFocusSearch&) = delete;
+
   ~ShelfFocusSearch() override = default;
 
   // views::FocusSearch:
@@ -186,8 +191,6 @@ class ShelfFocusSearch : public views::FocusSearch {
 
  private:
   ShelfView* shelf_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfFocusSearch);
 };
 
 void ReportMoveAnimationSmoothness(int smoothness) {
@@ -318,6 +321,10 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
  public:
   FadeOutAnimationDelegate(ShelfView* host, std::unique_ptr<views::View> view)
       : shelf_view_(host), view_(std::move(view)) {}
+
+  FadeOutAnimationDelegate(const FadeOutAnimationDelegate&) = delete;
+  FadeOutAnimationDelegate& operator=(const FadeOutAnimationDelegate&) = delete;
+
   ~FadeOutAnimationDelegate() override = default;
 
   // AnimationDelegate overrides:
@@ -338,8 +345,6 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
  private:
   ShelfView* shelf_view_;
   std::unique_ptr<views::View> view_;
-
-  DISALLOW_COPY_AND_ASSIGN(FadeOutAnimationDelegate);
 };
 
 // AnimationDelegate used to trigger fading an element in. When an item is
@@ -349,6 +354,11 @@ class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
  public:
   StartFadeAnimationDelegate(ShelfView* host, views::View* view)
       : shelf_view_(host), view_(view) {}
+
+  StartFadeAnimationDelegate(const StartFadeAnimationDelegate&) = delete;
+  StartFadeAnimationDelegate& operator=(const StartFadeAnimationDelegate&) =
+      delete;
+
   ~StartFadeAnimationDelegate() override = default;
 
   // AnimationDelegate overrides:
@@ -362,8 +372,6 @@ class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
  private:
   ShelfView* shelf_view_;
   views::View* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartFadeAnimationDelegate);
 };
 
 // static

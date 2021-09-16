@@ -27,6 +27,9 @@ class ScopedTestStateObserver : public TrayActionObserver {
     tray_action_->AddObserver(this);
   }
 
+  ScopedTestStateObserver(const ScopedTestStateObserver&) = delete;
+  ScopedTestStateObserver& operator=(const ScopedTestStateObserver&) = delete;
+
   ~ScopedTestStateObserver() override { tray_action_->RemoveObserver(this); }
 
   // TrayActionObserver:
@@ -44,8 +47,6 @@ class ScopedTestStateObserver : public TrayActionObserver {
   TrayAction* tray_action_;
 
   std::vector<TrayActionState> observed_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestStateObserver);
 };
 
 using TrayActionTest = AshTestBase;

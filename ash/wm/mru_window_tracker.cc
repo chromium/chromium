@@ -42,6 +42,11 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
   explicit ScopedWindowClosingObserver(aura::Window* window) : window_(window) {
     window_->AddObserver(this);
   }
+
+  ScopedWindowClosingObserver(const ScopedWindowClosingObserver&) = delete;
+  ScopedWindowClosingObserver& operator=(const ScopedWindowClosingObserver&) =
+      delete;
+
   ~ScopedWindowClosingObserver() override {
     window_->RemoveObserver(this);
     window_ = nullptr;
@@ -52,8 +57,6 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
 
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowClosingObserver);
 };
 
 bool IsNonSysModalWindowConsideredActivatable(aura::Window* window) {

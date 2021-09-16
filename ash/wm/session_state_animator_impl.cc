@@ -169,6 +169,11 @@ class CallbackAnimationObserver : public ui::LayerAnimationObserver {
  public:
   explicit CallbackAnimationObserver(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
+
+  CallbackAnimationObserver(const CallbackAnimationObserver&) = delete;
+  CallbackAnimationObserver& operator=(const CallbackAnimationObserver&) =
+      delete;
+
   ~CallbackAnimationObserver() override = default;
 
  private:
@@ -188,8 +193,6 @@ class CallbackAnimationObserver : public ui::LayerAnimationObserver {
   void OnLayerAnimationScheduled(ui::LayerAnimationSequence* seq) override {}
 
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackAnimationObserver);
 };
 
 bool IsLayerAnimated(ui::Layer* layer,

@@ -92,6 +92,10 @@ class FocusChangeListenerStub : public views::FocusChangeListener {
       : focus_manager_(view->GetFocusManager()) {
     focus_manager_->AddFocusChangeListener(this);
   }
+
+  FocusChangeListenerStub(const FocusChangeListenerStub&) = delete;
+  FocusChangeListenerStub& operator=(const FocusChangeListenerStub&) = delete;
+
   ~FocusChangeListenerStub() override {
     focus_manager_->RemoveFocusChangeListener(this);
   }
@@ -112,8 +116,6 @@ class FocusChangeListenerStub : public views::FocusChangeListener {
  private:
   std::vector<views::View*> focused_views_;
   views::FocusManager* focus_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusChangeListenerStub);
 };
 
 // |ViewObserver| that simply remembers whether the given view was drawn

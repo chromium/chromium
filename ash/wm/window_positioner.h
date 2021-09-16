@@ -47,14 +47,16 @@ class ASH_EXPORT WindowPositioner {
   static void RearrangeVisibleWindowOnShow(aura::Window* added_window);
 
   WindowPositioner();
+
+  WindowPositioner(const WindowPositioner&) = delete;
+  WindowPositioner& operator=(const WindowPositioner&) = delete;
+
   ~WindowPositioner();
 
  protected:
   friend class WindowPositionerTest;
 
   static constexpr int kWindowOffset = 32;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPositioner);
 };
 
 }  // namespace ash

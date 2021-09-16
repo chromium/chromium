@@ -44,6 +44,10 @@ display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
 class MirrorOnBootTest : public AshTestBase {
  public:
   MirrorOnBootTest() = default;
+
+  MirrorOnBootTest(const MirrorOnBootTest&) = delete;
+  MirrorOnBootTest& operator=(const MirrorOnBootTest&) = delete;
+
   ~MirrorOnBootTest() override = default;
 
   void SetUp() override {
@@ -53,9 +57,6 @@ class MirrorOnBootTest : public AshTestBase {
         ::switches::kEnableSoftwareMirroring);
     AshTestBase::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MirrorOnBootTest);
 };
 
 }  // namespace

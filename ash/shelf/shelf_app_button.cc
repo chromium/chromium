@@ -156,6 +156,9 @@ class ShelfAppButton::AppStatusIndicatorView
     SetCanProcessEventsWithinSubtree(false);
   }
 
+  AppStatusIndicatorView(const AppStatusIndicatorView&) = delete;
+  AppStatusIndicatorView& operator=(const AppStatusIndicatorView&) = delete;
+
   ~AppStatusIndicatorView() override {
     ShelfAppButtonAnimation::GetInstance()->RemoveObserver(this);
   }
@@ -245,8 +248,6 @@ class ShelfAppButton::AppStatusIndicatorView
   bool active_ = false;
   bool horizontal_shelf_ = true;
   base::TimeTicks animation_end_time_;  // For attention throbbing underline.
-
-  DISALLOW_COPY_AND_ASSIGN(AppStatusIndicatorView);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

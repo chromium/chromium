@@ -39,6 +39,10 @@ class ASH_EXPORT TrayDetailedView : public views::View,
                                     public ViewClickListener {
  public:
   explicit TrayDetailedView(DetailedViewDelegate* delegate);
+
+  TrayDetailedView(const TrayDetailedView&) = delete;
+  TrayDetailedView& operator=(const TrayDetailedView&) = delete;
+
   ~TrayDetailedView() override;
 
   // ViewClickListener:
@@ -158,8 +162,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   views::Label* sub_header_label_ = nullptr;
   views::ImageView* sub_header_image_view_ = nullptr;
   const gfx::VectorIcon* sub_header_icon_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayDetailedView);
 };
 
 }  // namespace ash

@@ -23,6 +23,11 @@ const std::string kHistogramName = "Dummy.Histogram";
 class TaskSwitchTimeTrackerTest : public testing::Test {
  public:
   TaskSwitchTimeTrackerTest();
+
+  TaskSwitchTimeTrackerTest(const TaskSwitchTimeTrackerTest&) = delete;
+  TaskSwitchTimeTrackerTest& operator=(const TaskSwitchTimeTrackerTest&) =
+      delete;
+
   ~TaskSwitchTimeTrackerTest() override;
 
   // testing::Test:
@@ -42,9 +47,6 @@ class TaskSwitchTimeTrackerTest : public testing::Test {
 
   // A Test API that wraps the test target.
   std::unique_ptr<TaskSwitchTimeTrackerTestAPI> time_tracker_test_api_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskSwitchTimeTrackerTest);
 };
 
 TaskSwitchTimeTrackerTest::TaskSwitchTimeTrackerTest() = default;

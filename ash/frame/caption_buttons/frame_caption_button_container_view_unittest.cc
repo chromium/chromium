@@ -33,6 +33,11 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
 
   FrameCaptionButtonContainerViewTest() = default;
 
+  FrameCaptionButtonContainerViewTest(
+      const FrameCaptionButtonContainerViewTest&) = delete;
+  FrameCaptionButtonContainerViewTest& operator=(
+      const FrameCaptionButtonContainerViewTest&) = delete;
+
   ~FrameCaptionButtonContainerViewTest() override = default;
 
   // Creates a widget which allows maximizing based on |maximize_allowed|.
@@ -96,9 +101,6 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
     generator->ClickLeftButton();
     base::RunLoop().RunUntilIdle();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameCaptionButtonContainerViewTest);
 };
 
 // Test how the allowed actions affect which caption buttons are visible.

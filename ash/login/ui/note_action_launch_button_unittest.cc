@@ -38,6 +38,11 @@ constexpr float kSqrt2 = 1.4142;
 class NoteActionLaunchButtonTest : public LoginTestBase {
  public:
   NoteActionLaunchButtonTest() = default;
+
+  NoteActionLaunchButtonTest(const NoteActionLaunchButtonTest&) = delete;
+  NoteActionLaunchButtonTest& operator=(const NoteActionLaunchButtonTest&) =
+      delete;
+
   ~NoteActionLaunchButtonTest() override = default;
 
   void SetUp() override {
@@ -69,8 +74,6 @@ class NoteActionLaunchButtonTest : public LoginTestBase {
 
  private:
   TestTrayActionClient tray_action_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoteActionLaunchButtonTest);
 };
 
 // Verifies that note action button is not visible if lock screen note taking

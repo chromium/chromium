@@ -18,6 +18,10 @@ namespace ash {
 class TestShellDelegate : public ShellDelegate {
  public:
   TestShellDelegate();
+
+  TestShellDelegate(const TestShellDelegate&) = delete;
+  TestShellDelegate& operator=(const TestShellDelegate&) = delete;
+
   ~TestShellDelegate() override;
 
   // Allows tests to override the MultiDeviceSetup binding behavior for this
@@ -75,8 +79,6 @@ class TestShellDelegate : public ShellDelegate {
   bool session_restore_in_progress_ = false;
 
   MultiDeviceSetupBinder multidevice_setup_binder_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestShellDelegate);
 };
 
 }  // namespace ash

@@ -34,6 +34,11 @@ class ASH_EXPORT TrayBluetoothHelperLegacy
       public device::BluetoothAdapter::Observer {
  public:
   TrayBluetoothHelperLegacy();
+
+  TrayBluetoothHelperLegacy(const TrayBluetoothHelperLegacy&) = delete;
+  TrayBluetoothHelperLegacy& operator=(const TrayBluetoothHelperLegacy&) =
+      delete;
+
   ~TrayBluetoothHelperLegacy() override;
 
   // Completes initialization after the Bluetooth adapter is ready.
@@ -82,8 +87,6 @@ class ASH_EXPORT TrayBluetoothHelperLegacy
 
   // Object could be deleted during a prolonged Bluetooth operation.
   base::WeakPtrFactory<TrayBluetoothHelperLegacy> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TrayBluetoothHelperLegacy);
 };
 
 }  // namespace ash

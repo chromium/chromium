@@ -35,6 +35,11 @@ using chromeos::assistant::prefs::kAssistantOnboardingModeEducation;
 class TestAssistantStateObserver : public AssistantStateObserver {
  public:
   TestAssistantStateObserver() = default;
+
+  TestAssistantStateObserver(const TestAssistantStateObserver&) = delete;
+  TestAssistantStateObserver& operator=(const TestAssistantStateObserver&) =
+      delete;
+
   ~TestAssistantStateObserver() override = default;
 
   // AssistantStateObserver:
@@ -82,8 +87,6 @@ class TestAssistantStateObserver : public AssistantStateObserver {
   bool launch_with_mic_open_ = false;
   bool notification_enabled_ = false;
   AssistantOnboardingMode onboarding_mode_ = AssistantOnboardingMode::kDefault;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAssistantStateObserver);
 };
 
 class AssistantStateControllerTest : public AshTestBase {

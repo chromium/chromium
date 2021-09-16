@@ -29,6 +29,12 @@ class ASH_EXPORT UnifiedBluetoothDetailedViewController
  public:
   explicit UnifiedBluetoothDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedBluetoothDetailedViewController(
+      const UnifiedBluetoothDetailedViewController&) = delete;
+  UnifiedBluetoothDetailedViewController& operator=(
+      const UnifiedBluetoothDetailedViewController&) = delete;
+
   ~UnifiedBluetoothDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -52,8 +58,6 @@ class ASH_EXPORT UnifiedBluetoothDetailedViewController
   BluetoothDeviceList connecting_devices_;
   BluetoothDeviceList paired_not_connected_devices_;
   BluetoothDeviceList discovered_not_paired_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedBluetoothDetailedViewController);
 };
 
 }  // namespace ash

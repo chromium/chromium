@@ -47,6 +47,12 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
  public:
   explicit MultiDeviceNotificationPresenter(
       message_center::MessageCenter* message_center);
+
+  MultiDeviceNotificationPresenter(const MultiDeviceNotificationPresenter&) =
+      delete;
+  MultiDeviceNotificationPresenter& operator=(
+      const MultiDeviceNotificationPresenter&) = delete;
+
   ~MultiDeviceNotificationPresenter() override;
 
   // Removes the notification created by NotifyPotentialHostExists() or does
@@ -136,8 +142,6 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
 
   base::WeakPtrFactory<MultiDeviceNotificationPresenter> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceNotificationPresenter);
 };
 
 }  // namespace ash

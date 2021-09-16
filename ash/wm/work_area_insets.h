@@ -32,6 +32,10 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   static WorkAreaInsets* ForWindow(const aura::Window* window);
 
   explicit WorkAreaInsets(RootWindowController* root_window_controller);
+
+  WorkAreaInsets(const WorkAreaInsets&) = delete;
+  WorkAreaInsets& operator=(const WorkAreaInsets&) = delete;
+
   ~WorkAreaInsets() override;
 
   // Returns cached height of the accessibility panel in DIPs for this root
@@ -139,8 +143,6 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
 
   // Indicates if the persistent desk bar height is in change.
   bool persistent_desk_bar_height_in_change_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkAreaInsets);
 };
 
 }  // namespace ash

@@ -47,6 +47,10 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   };
 
   ShelfConfig();
+
+  ShelfConfig(const ShelfConfig&) = delete;
+  ShelfConfig& operator=(const ShelfConfig&) = delete;
+
   ~ShelfConfig() override;
 
   static ShelfConfig* Get();
@@ -347,8 +351,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfConfig);
 };
 
 }  // namespace ash

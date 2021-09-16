@@ -60,6 +60,11 @@ class ASH_EXPORT MultiUserWindowManagerImpl
 
   MultiUserWindowManagerImpl(MultiUserWindowManagerDelegate* delegate,
                              const AccountId& account_id);
+
+  MultiUserWindowManagerImpl(const MultiUserWindowManagerImpl&) = delete;
+  MultiUserWindowManagerImpl& operator=(const MultiUserWindowManagerImpl&) =
+      delete;
+
   ~MultiUserWindowManagerImpl() override;
 
   static MultiUserWindowManagerImpl* Get();
@@ -114,6 +119,10 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   class WindowEntry {
    public:
     explicit WindowEntry(const AccountId& account_id);
+
+    WindowEntry(const WindowEntry&) = delete;
+    WindowEntry& operator=(const WindowEntry&) = delete;
+
     ~WindowEntry();
 
     // Returns the owner of this window. This cannot be changed.
@@ -143,8 +152,6 @@ class ASH_EXPORT MultiUserWindowManagerImpl
 
     // True if the window should be visible for the user which shows the window.
     bool show_ = true;
-
-    DISALLOW_COPY_AND_ASSIGN(WindowEntry);
   };
 
   using TransientWindowToVisibility = base::flat_map<aura::Window*, bool>;
@@ -229,8 +236,6 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   std::unique_ptr<UserSwitchAnimator> animation_;
 
   base::ObserverList<MultiUserWindowManagerObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiUserWindowManagerImpl);
 };
 
 }  // namespace ash

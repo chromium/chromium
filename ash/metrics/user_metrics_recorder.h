@@ -33,6 +33,9 @@ class ASH_EXPORT UserMetricsRecorder {
   // to calling UserMetricsRecorder(true).
   UserMetricsRecorder();
 
+  UserMetricsRecorder(const UserMetricsRecorder&) = delete;
+  UserMetricsRecorder& operator=(const UserMetricsRecorder&) = delete;
+
   virtual ~UserMetricsRecorder();
 
   // Record user clicks on tray on lock, login screens and in OOBE.
@@ -108,8 +111,6 @@ class ASH_EXPORT UserMetricsRecorder {
 
   // Metric recorder to track app use in demo sessions.
   std::unique_ptr<DemoSessionMetricsRecorder> demo_session_metrics_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMetricsRecorder);
 };
 
 }  // namespace ash

@@ -22,6 +22,10 @@ class Shelf;
 class TrayContainer : public views::View {
  public:
   explicit TrayContainer(Shelf* shelf);
+
+  TrayContainer(const TrayContainer&) = delete;
+  TrayContainer& operator=(const TrayContainer&) = delete;
+
   ~TrayContainer() override;
 
   // Calculates the ideal bounds that this view should have depending on the
@@ -81,8 +85,6 @@ class TrayContainer : public views::View {
 
   int main_axis_margin_ = 0;
   int cross_axis_margin_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayContainer);
 };
 
 }  // namespace ash

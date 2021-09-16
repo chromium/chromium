@@ -19,6 +19,11 @@ class TestKeyboardLayoutDelegate : public KeyboardLayoutDelegate {
   // |root_window| is the window that is always returned by the
   // KeyboardLayoutDelegate methods.
   explicit TestKeyboardLayoutDelegate(aura::Window* root_window);
+
+  TestKeyboardLayoutDelegate(const TestKeyboardLayoutDelegate&) = delete;
+  TestKeyboardLayoutDelegate& operator=(const TestKeyboardLayoutDelegate&) =
+      delete;
+
   ~TestKeyboardLayoutDelegate() override = default;
 
   // Overridden from keyboard::KeyboardLayoutDelegate
@@ -29,8 +34,6 @@ class TestKeyboardLayoutDelegate : public KeyboardLayoutDelegate {
 
  private:
   aura::Window* root_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKeyboardLayoutDelegate);
 };
 
 }  // namespace keyboard

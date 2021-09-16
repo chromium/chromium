@@ -21,6 +21,10 @@ class AssistantQuery;
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantQueryView : public views::View {
  public:
   AssistantQueryView();
+
+  AssistantQueryView(const AssistantQueryView&) = delete;
+  AssistantQueryView& operator=(const AssistantQueryView&) = delete;
+
   ~AssistantQueryView() override;
 
   // views::View:
@@ -38,8 +42,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantQueryView : public views::View {
 
   views::Label* high_confidence_label_;  // Owned by view hierarchy.
   views::Label* low_confidence_label_;   // Owned by view hierarchy.
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantQueryView);
 };
 
 }  // namespace ash

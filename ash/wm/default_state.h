@@ -22,6 +22,10 @@ enum class WindowStateType;
 class DefaultState : public BaseState {
  public:
   explicit DefaultState(chromeos::WindowStateType initial_state_type);
+
+  DefaultState(const DefaultState&) = delete;
+  DefaultState& operator=(const DefaultState&) = delete;
+
   ~DefaultState() override;
 
   // WindowState::State overrides:
@@ -79,8 +83,6 @@ class DefaultState : public BaseState {
 
   // The window state only gets remembered for DCHECK reasons.
   WindowState* stored_window_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultState);
 };
 
 }  // namespace ash

@@ -37,6 +37,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   SearchBoxView(SearchBoxViewDelegate* delegate,
                 AppListViewDelegate* view_delegate,
                 AppListView* app_list_view = nullptr);
+
+  SearchBoxView(const SearchBoxView&) = delete;
+  SearchBoxView& operator=(const SearchBoxView&) = delete;
+
   ~SearchBoxView() override;
 
   // Must be called before the user interacts with the search box. Cannot be
@@ -208,8 +212,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   ResultSelectionController* result_selection_controller_ = nullptr;
 
   base::WeakPtrFactory<SearchBoxView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxView);
 };
 
 }  // namespace ash

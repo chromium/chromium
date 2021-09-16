@@ -31,20 +31,25 @@ const char kDummyNotificationKey[] = "DUMMY_NOTIFICATION_KEY";
 class TestArcAppIdProvider : public ArcAppIdProvider {
  public:
   TestArcAppIdProvider() = default;
+
+  TestArcAppIdProvider(const TestArcAppIdProvider&) = delete;
+  TestArcAppIdProvider& operator=(const TestArcAppIdProvider&) = delete;
+
   ~TestArcAppIdProvider() override = default;
 
   // ArcAppIdProvider:
   std::string GetAppIdByPackageName(const std::string& package_name) override {
     return {};
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestArcAppIdProvider);
 };
 
 class MockMessageCenter : public message_center::FakeMessageCenter {
  public:
   MockMessageCenter() = default;
+
+  MockMessageCenter(const MockMessageCenter&) = delete;
+  MockMessageCenter& operator=(const MockMessageCenter&) = delete;
+
   ~MockMessageCenter() override = default;
 
   void AddNotification(
@@ -83,23 +88,24 @@ class MockMessageCenter : public message_center::FakeMessageCenter {
   std::map<std::string, std::unique_ptr<message_center::Notification>>
       owned_notifications_;
   bool in_quiet_mode_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMessageCenter);
 };
 
 class FakeArcNotificationManagerDelegate
     : public ArcNotificationManagerDelegate {
  public:
   FakeArcNotificationManagerDelegate() = default;
+
+  FakeArcNotificationManagerDelegate(
+      const FakeArcNotificationManagerDelegate&) = delete;
+  FakeArcNotificationManagerDelegate& operator=(
+      const FakeArcNotificationManagerDelegate&) = delete;
+
   ~FakeArcNotificationManagerDelegate() override = default;
 
   // ArcNotificationManagerDelegate:
   bool IsPublicSessionOrKiosk() const override { return false; }
   void ShowMessageCenter() override {}
   void HideMessageCenter() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeArcNotificationManagerDelegate);
 };
 
 }  // anonymous namespace
@@ -107,6 +113,11 @@ class FakeArcNotificationManagerDelegate
 class ArcNotificationManagerTest : public testing::Test {
  public:
   ArcNotificationManagerTest() = default;
+
+  ArcNotificationManagerTest(const ArcNotificationManagerTest&) = delete;
+  ArcNotificationManagerTest& operator=(const ArcNotificationManagerTest&) =
+      delete;
+
   ~ArcNotificationManagerTest() override = default;
 
  protected:
@@ -174,8 +185,6 @@ class ArcNotificationManagerTest : public testing::Test {
   std::unique_ptr<mojo::Receiver<arc::mojom::NotificationsInstance>> receiver_;
   std::unique_ptr<ArcNotificationManager> arc_notification_manager_;
   std::unique_ptr<MockMessageCenter> message_center_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationManagerTest);
 };
 
 TEST_F(ArcNotificationManagerTest, NotificationCreatedAndRemoved) {

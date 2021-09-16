@@ -24,6 +24,10 @@ class ASH_EXPORT TimeTrayItemView : public TrayItemView,
                                     public UnifiedSystemTrayModel::Observer {
  public:
   TimeTrayItemView(Shelf* shelf, UnifiedSystemTrayModel* model);
+
+  TimeTrayItemView(const TimeTrayItemView&) = delete;
+  TimeTrayItemView& operator=(const TimeTrayItemView&) = delete;
+
   ~TimeTrayItemView() override;
 
   void UpdateAlignmentForShelf(Shelf* shelf);
@@ -55,7 +59,6 @@ class ASH_EXPORT TimeTrayItemView : public TrayItemView,
   base::ScopedObservation<UnifiedSystemTrayModel,
                           UnifiedSystemTrayModel::Observer>
       system_tray_model_observation_{this};
-  DISALLOW_COPY_AND_ASSIGN(TimeTrayItemView);
 };
 
 }  // namespace tray

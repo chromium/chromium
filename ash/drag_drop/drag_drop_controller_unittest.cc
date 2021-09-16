@@ -410,6 +410,10 @@ class MockShellDelegate : public TestShellDelegate {
 class DragDropControllerTest : public AshTestBase {
  public:
   DragDropControllerTest() = default;
+
+  DragDropControllerTest(const DragDropControllerTest&) = delete;
+  DragDropControllerTest& operator=(const DragDropControllerTest&) = delete;
+
   ~DragDropControllerTest() override = default;
 
   void SetUp() override {
@@ -485,9 +489,6 @@ class DragDropControllerTest : public AshTestBase {
 
   std::unique_ptr<TestDragDropController> drag_drop_controller_;
   NiceMock<MockShellDelegate>* mock_shell_delegate_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DragDropControllerTest);
 };
 
 TEST_F(DragDropControllerTest, DragDropInSingleViewTest) {

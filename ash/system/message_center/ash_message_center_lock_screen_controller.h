@@ -29,6 +29,12 @@ class AshMessageCenterLockScreenController
   static ASH_EXPORT bool IsAllowed();
 
   AshMessageCenterLockScreenController();
+
+  AshMessageCenterLockScreenController(
+      const AshMessageCenterLockScreenController&) = delete;
+  AshMessageCenterLockScreenController& operator=(
+      const AshMessageCenterLockScreenController&) = delete;
+
   ~AshMessageCenterLockScreenController() override;
 
   // message_center::LockScreenController:
@@ -72,8 +78,6 @@ class AshMessageCenterLockScreenController
   base::OnceClosure cancel_task_;
 
   ScopedSessionObserver scoped_session_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AshMessageCenterLockScreenController);
 };
 
 }  // namespace ash

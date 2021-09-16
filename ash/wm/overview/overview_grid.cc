@@ -287,6 +287,10 @@ bool ShouldExcludeItemFromGridLayout(
 class OverviewGrid::TargetWindowObserver : public aura::WindowObserver {
  public:
   TargetWindowObserver() = default;
+
+  TargetWindowObserver(const TargetWindowObserver&) = delete;
+  TargetWindowObserver& operator=(const TargetWindowObserver&) = delete;
+
   ~TargetWindowObserver() override { StopObserving(); }
 
   void StartObserving(aura::Window* window) {
@@ -343,8 +347,6 @@ class OverviewGrid::TargetWindowObserver : public aura::WindowObserver {
   }
 
   aura::Window* target_window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TargetWindowObserver);
 };
 
 OverviewGrid::OverviewGrid(aura::Window* root_window,

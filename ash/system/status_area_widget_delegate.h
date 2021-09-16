@@ -23,6 +23,10 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
                                             public views::WidgetDelegate {
  public:
   explicit StatusAreaWidgetDelegate(Shelf* shelf);
+
+  StatusAreaWidgetDelegate(const StatusAreaWidgetDelegate&) = delete;
+  StatusAreaWidgetDelegate& operator=(const StatusAreaWidgetDelegate&) = delete;
+
   ~StatusAreaWidgetDelegate() override;
 
   // Calculates the bounds that this view should have given its constraints,
@@ -85,8 +89,6 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
   // When true, the default focus of the status area widget is the last
   // focusable child.
   bool default_last_focusable_child_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusAreaWidgetDelegate);
 };
 
 }  // namespace ash

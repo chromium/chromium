@@ -16,6 +16,11 @@ namespace ash {
 class VideoActivityNotifierTest : public AshTestBase {
  public:
   VideoActivityNotifierTest() = default;
+
+  VideoActivityNotifierTest(const VideoActivityNotifierTest&) = delete;
+  VideoActivityNotifierTest& operator=(const VideoActivityNotifierTest&) =
+      delete;
+
   ~VideoActivityNotifierTest() override = default;
 
   void SetUp() override {
@@ -37,8 +42,6 @@ class VideoActivityNotifierTest : public AshTestBase {
 
   std::unique_ptr<VideoDetector> detector_;
   std::unique_ptr<VideoActivityNotifier> notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoActivityNotifierTest);
 };
 
 // Test that powerd is notified immediately when video changes to a new playing

@@ -73,6 +73,9 @@ class TestFocusController : public ui::EventHandler {
     root_->AddPreTargetHandler(this);
   }
 
+  TestFocusController(const TestFocusController&) = delete;
+  TestFocusController& operator=(const TestFocusController&) = delete;
+
   ~TestFocusController() override { root_->RemovePreTargetHandler(this); }
 
  private:
@@ -86,7 +89,6 @@ class TestFocusController : public ui::EventHandler {
   }
 
   aura::Window* root_;
-  DISALLOW_COPY_AND_ASSIGN(TestFocusController);
 };
 
 class KeyboardContainerObserver : public aura::WindowObserver {
@@ -96,6 +98,11 @@ class KeyboardContainerObserver : public aura::WindowObserver {
       : window_(window), run_loop_(run_loop) {
     window_->AddObserver(this);
   }
+
+  KeyboardContainerObserver(const KeyboardContainerObserver&) = delete;
+  KeyboardContainerObserver& operator=(const KeyboardContainerObserver&) =
+      delete;
+
   ~KeyboardContainerObserver() override { window_->RemoveObserver(this); }
 
  private:
@@ -106,8 +113,6 @@ class KeyboardContainerObserver : public aura::WindowObserver {
 
   aura::Window* window_;
   base::RunLoop* const run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardContainerObserver);
 };
 
 class SetModeCallbackInvocationCounter {
@@ -143,6 +148,10 @@ class KeyboardUIControllerTest : public aura::test::AuraTestBase,
                                  public ash::KeyboardControllerObserver {
  public:
   KeyboardUIControllerTest() = default;
+
+  KeyboardUIControllerTest(const KeyboardUIControllerTest&) = delete;
+  KeyboardUIControllerTest& operator=(const KeyboardUIControllerTest&) = delete;
+
   ~KeyboardUIControllerTest() override = default;
 
   void SetUp() override {
@@ -266,7 +275,6 @@ class KeyboardUIControllerTest : public aura::test::AuraTestBase,
   std::unique_ptr<ui::TextInputClient> test_text_input_client_;
   bool keyboard_disabled_ = false;
   ui::ScopedTestInputMethodFactory scoped_test_input_method_factory_;
-  DISALLOW_COPY_AND_ASSIGN(KeyboardUIControllerTest);
 };
 
 // TODO(https://crbug.com/849995): This is testing KeyboardLayoutManager /
@@ -495,6 +503,12 @@ TEST_F(KeyboardUIControllerTest, DisableKeyboard) {
 class KeyboardControllerAnimationTest : public KeyboardUIControllerTest {
  public:
   KeyboardControllerAnimationTest() = default;
+
+  KeyboardControllerAnimationTest(const KeyboardControllerAnimationTest&) =
+      delete;
+  KeyboardControllerAnimationTest& operator=(
+      const KeyboardControllerAnimationTest&) = delete;
+
   ~KeyboardControllerAnimationTest() override = default;
 
   void SetUp() override {
@@ -513,9 +527,6 @@ class KeyboardControllerAnimationTest : public KeyboardUIControllerTest {
 
  protected:
   aura::Window* keyboard_window() { return controller().GetKeyboardWindow(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerAnimationTest);
 };
 
 TEST_F(KeyboardControllerAnimationTest, ContainerAnimation) {
@@ -781,13 +792,16 @@ TEST_F(KeyboardUIControllerTest,
 class MockKeyboardControllerObserver : public ash::KeyboardControllerObserver {
  public:
   MockKeyboardControllerObserver() = default;
+
+  MockKeyboardControllerObserver(const MockKeyboardControllerObserver&) =
+      delete;
+  MockKeyboardControllerObserver& operator=(
+      const MockKeyboardControllerObserver&) = delete;
+
   ~MockKeyboardControllerObserver() override = default;
 
   // KeyboardControllerObserver:
   MOCK_METHOD(void, OnKeyboardEnabledChanged, (bool is_enabled), (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockKeyboardControllerObserver);
 };
 
 TEST_F(KeyboardUIControllerTest, OnKeyboardEnabledChangedToEnabled) {

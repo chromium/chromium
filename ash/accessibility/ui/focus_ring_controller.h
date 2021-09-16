@@ -30,6 +30,10 @@ class ASH_EXPORT FocusRingController : public AccessibilityLayerDelegate,
                                        public views::FocusChangeListener {
  public:
   FocusRingController();
+
+  FocusRingController(const FocusRingController&) = delete;
+  FocusRingController& operator=(const FocusRingController&) = delete;
+
   ~FocusRingController() override;
 
   // Turns on/off the focus ring.
@@ -64,8 +68,6 @@ class ASH_EXPORT FocusRingController : public AccessibilityLayerDelegate,
 
   views::Widget* widget_;
   std::unique_ptr<FocusRingLayer> focus_ring_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusRingController);
 };
 
 }  // namespace ash

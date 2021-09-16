@@ -63,6 +63,10 @@ class WallpaperResizerTest : public testing::Test,
                              public WallpaperResizerObserver {
  public:
   WallpaperResizerTest() : worker_thread_("WallpaperResizerTest") {}
+
+  WallpaperResizerTest(const WallpaperResizerTest&) = delete;
+  WallpaperResizerTest& operator=(const WallpaperResizerTest&) = delete;
+
   ~WallpaperResizerTest() override {}
 
   void SetUp() override { ASSERT_TRUE(worker_thread_.Start()); }
@@ -97,8 +101,6 @@ class WallpaperResizerTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> active_runloop_;
   base::Thread worker_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperResizerTest);
 };
 
 TEST_F(WallpaperResizerTest, BasicResize) {

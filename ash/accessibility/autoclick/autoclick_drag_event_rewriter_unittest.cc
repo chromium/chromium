@@ -41,6 +41,10 @@ class CopyingSink : public ui::EventSink {
 class EventRecorder : public ui::EventRewriter {
  public:
   EventRecorder() = default;
+
+  EventRecorder(const EventRecorder&) = delete;
+  EventRecorder& operator=(const EventRecorder&) = delete;
+
   ~EventRecorder() override = default;
 
   // ui::EventRewriter:
@@ -55,14 +59,16 @@ class EventRecorder : public ui::EventRewriter {
   // Count of events sent to the rewriter.
   size_t recorded_event_count_ = 0;
   ui::EventType last_recorded_event_type_ = ui::EventType::ET_UNKNOWN;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventRecorder);
 };
 
 class AutoclickDragEventRewriterTest : public AshTestBase {
  public:
   AutoclickDragEventRewriterTest() = default;
+
+  AutoclickDragEventRewriterTest(const AutoclickDragEventRewriterTest&) =
+      delete;
+  AutoclickDragEventRewriterTest& operator=(
+      const AutoclickDragEventRewriterTest&) = delete;
 
   ~AutoclickDragEventRewriterTest() override = default;
 
@@ -92,9 +98,6 @@ class AutoclickDragEventRewriterTest : public AshTestBase {
   EventRecorder event_recorder_;
 
   AutoclickDragEventRewriter drag_event_rewriter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoclickDragEventRewriterTest);
 };
 
 TEST_F(AutoclickDragEventRewriterTest, EventsNotConsumedWhenDisabled) {

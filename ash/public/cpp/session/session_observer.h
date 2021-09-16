@@ -67,12 +67,14 @@ class ASH_PUBLIC_EXPORT SessionObserver : public base::CheckedObserver {
 class ASH_PUBLIC_EXPORT ScopedSessionObserver {
  public:
   explicit ScopedSessionObserver(SessionObserver* observer);
+
+  ScopedSessionObserver(const ScopedSessionObserver&) = delete;
+  ScopedSessionObserver& operator=(const ScopedSessionObserver&) = delete;
+
   virtual ~ScopedSessionObserver();
 
  private:
   SessionObserver* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSessionObserver);
 };
 
 }  // namespace ash

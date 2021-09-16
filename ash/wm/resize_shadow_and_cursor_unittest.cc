@@ -39,6 +39,10 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
     SetCanMinimize(true);
     SetCanResize(true);
   }
+
+  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
+  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
+
   ~TestWidgetDelegate() override = default;
 
   // views::WidgetDelegateView overrides:
@@ -46,9 +50,6 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
       views::Widget* widget) override {
     return std::make_unique<NonClientFrameViewAsh>(widget);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
 };
 
 }  // namespace
@@ -58,6 +59,11 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 class ResizeShadowAndCursorTest : public AshTestBase {
  public:
   ResizeShadowAndCursorTest() = default;
+
+  ResizeShadowAndCursorTest(const ResizeShadowAndCursorTest&) = delete;
+  ResizeShadowAndCursorTest& operator=(const ResizeShadowAndCursorTest&) =
+      delete;
+
   ~ResizeShadowAndCursorTest() override = default;
 
   // AshTestBase override:
@@ -132,8 +138,6 @@ class ResizeShadowAndCursorTest : public AshTestBase {
 
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeShadowAndCursorTest);
 };
 
 // Test whether the resize shadows are visible and the cursor type based on the

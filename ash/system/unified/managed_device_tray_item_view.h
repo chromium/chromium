@@ -20,6 +20,11 @@ class ManagedDeviceTrayItemView : public TrayItemView,
                                   public EnterpriseDomainObserver {
  public:
   explicit ManagedDeviceTrayItemView(Shelf* shelf);
+
+  ManagedDeviceTrayItemView(const ManagedDeviceTrayItemView&) = delete;
+  ManagedDeviceTrayItemView& operator=(const ManagedDeviceTrayItemView&) =
+      delete;
+
   ~ManagedDeviceTrayItemView() override;
 
   // SessionObserver:
@@ -35,8 +40,6 @@ class ManagedDeviceTrayItemView : public TrayItemView,
 
  private:
   void Update();
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedDeviceTrayItemView);
 };
 
 }  // namespace ash

@@ -20,6 +20,10 @@ class DisplayShutdownObserver : public SessionObserver {
  public:
   explicit DisplayShutdownObserver(
       display::DisplayConfigurator* display_configurator);
+
+  DisplayShutdownObserver(const DisplayShutdownObserver&) = delete;
+  DisplayShutdownObserver& operator=(const DisplayShutdownObserver&) = delete;
+
   ~DisplayShutdownObserver() override;
 
  private:
@@ -28,8 +32,6 @@ class DisplayShutdownObserver : public SessionObserver {
 
   display::DisplayConfigurator* const display_configurator_;
   ScopedSessionObserver scoped_session_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayShutdownObserver);
 };
 
 }  // namespace ash

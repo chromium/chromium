@@ -19,6 +19,11 @@ class UnifiedVolumeSliderController : public UnifiedSliderListener {
   };
 
   UnifiedVolumeSliderController(Delegate* delegate, bool in_bubble);
+
+  UnifiedVolumeSliderController(const UnifiedVolumeSliderController&) = delete;
+  UnifiedVolumeSliderController& operator=(
+      const UnifiedVolumeSliderController&) = delete;
+
   ~UnifiedVolumeSliderController() override;
 
   // UnifiedSliderListener:
@@ -35,8 +40,6 @@ class UnifiedVolumeSliderController : public UnifiedSliderListener {
 
   // Whether the volume slider is in the bubble, as opposed to the system tray.
   const bool in_bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedVolumeSliderController);
 };
 
 }  // namespace ash

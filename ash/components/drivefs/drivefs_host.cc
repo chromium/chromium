@@ -57,6 +57,9 @@ class DriveFsHost::MountState : public DriveFsSession,
         drivefs_interface(), host_->network_connection_tracker_, host_->clock_);
   }
 
+  MountState(const MountState&) = delete;
+  MountState& operator=(const MountState&) = delete;
+
   ~MountState() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(host_->sequence_checker_);
     if (team_drives_fetched_) {
@@ -198,8 +201,6 @@ class DriveFsHost::MountState : public DriveFsSession,
 
   bool token_fetch_attempted_ = false;
   bool team_drives_fetched_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MountState);
 };
 
 DriveFsHost::DriveFsHost(

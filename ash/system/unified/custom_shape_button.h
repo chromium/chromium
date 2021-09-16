@@ -14,6 +14,10 @@ namespace ash {
 class CustomShapeButton : public views::ImageButton {
  public:
   explicit CustomShapeButton(PressedCallback callback);
+
+  CustomShapeButton(const CustomShapeButton&) = delete;
+  CustomShapeButton& operator=(const CustomShapeButton&) = delete;
+
   ~CustomShapeButton() override;
 
   // Return the custom shape for the button in SkPath.
@@ -26,9 +30,6 @@ class CustomShapeButton : public views::ImageButton {
 
  protected:
   void PaintCustomShapePath(gfx::Canvas* canvas);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CustomShapeButton);
 };
 
 }  // namespace ash

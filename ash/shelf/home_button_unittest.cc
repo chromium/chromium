@@ -49,6 +49,10 @@ class HomeButtonTest : public AshTestBase,
                        public testing::WithParamInterface<bool> {
  public:
   HomeButtonTest() = default;
+
+  HomeButtonTest(const HomeButtonTest&) = delete;
+  HomeButtonTest& operator=(const HomeButtonTest&) = delete;
+
   ~HomeButtonTest() override = default;
 
   // AshTestBase:
@@ -99,8 +103,6 @@ class HomeButtonTest : public AshTestBase,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HomeButtonTest);
 };
 
 // Tests home button visibility animations.

@@ -24,6 +24,10 @@ namespace ash {
 class MruWindowTrackerTest : public AshTestBase {
  public:
   MruWindowTrackerTest() = default;
+
+  MruWindowTrackerTest(const MruWindowTrackerTest&) = delete;
+  MruWindowTrackerTest& operator=(const MruWindowTrackerTest&) = delete;
+
   ~MruWindowTrackerTest() override = default;
 
   std::unique_ptr<aura::Window> CreateTestWindow() {
@@ -33,9 +37,6 @@ class MruWindowTrackerTest : public AshTestBase {
   MruWindowTracker* mru_window_tracker() {
     return Shell::Get()->mru_window_tracker();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MruWindowTrackerTest);
 };
 
 // Basic test that the activation order is tracked.

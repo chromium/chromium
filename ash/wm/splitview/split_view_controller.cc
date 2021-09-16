@@ -242,6 +242,9 @@ class SplitViewController::TabDraggedWindowObserver
     dragged_window_->AddObserver(this);
   }
 
+  TabDraggedWindowObserver(const TabDraggedWindowObserver&) = delete;
+  TabDraggedWindowObserver& operator=(const TabDraggedWindowObserver&) = delete;
+
   ~TabDraggedWindowObserver() override {
     if (dragged_window_)
       dragged_window_->RemoveObserver(this);
@@ -295,8 +298,6 @@ class SplitViewController::TabDraggedWindowObserver
   aura::Window* dragged_window_;
   SplitViewController::SnapPosition desired_snap_position_;
   gfx::Point last_location_in_screen_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabDraggedWindowObserver);
 };
 
 // Animates the divider to its closest fixed position.

@@ -68,6 +68,11 @@ class TestMessagePopupCollection : public AshMessagePopupCollection {
 class AshMessagePopupCollectionTest : public AshTestBase {
  public:
   AshMessagePopupCollectionTest() = default;
+
+  AshMessagePopupCollectionTest(const AshMessagePopupCollectionTest&) = delete;
+  AshMessagePopupCollectionTest& operator=(
+      const AshMessagePopupCollectionTest&) = delete;
+
   ~AshMessagePopupCollectionTest() override = default;
 
   void SetUp() override {
@@ -144,8 +149,6 @@ class AshMessagePopupCollectionTest : public AshTestBase {
  private:
   int notification_id_ = 0;
   std::unique_ptr<AshMessagePopupCollection> popup_collection_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshMessagePopupCollectionTest);
 };
 
 TEST_F(AshMessagePopupCollectionTest, ShelfAlignment) {

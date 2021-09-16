@@ -108,6 +108,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
             Shelf* shelf,
             Delegate* delegate,
             ShelfButtonDelegate* button_delegate);
+
+  ShelfView(const ShelfView&) = delete;
+  ShelfView& operator=(const ShelfView&) = delete;
+
   ~ShelfView() override;
 
   Shelf* shelf() const { return shelf_; }
@@ -705,8 +709,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   base::RepeatingClosure context_menu_shown_callback_;
 
   base::WeakPtrFactory<ShelfView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfView);
 };
 
 }  // namespace ash

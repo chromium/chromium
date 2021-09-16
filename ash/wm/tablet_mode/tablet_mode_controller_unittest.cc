@@ -106,6 +106,10 @@ extern const size_t kAccelerometerVerticalHingeUnstableAnglesTestDataLength;
 class TabletModeControllerTest : public AshTestBase {
  public:
   TabletModeControllerTest() = default;
+
+  TabletModeControllerTest(const TabletModeControllerTest&) = delete;
+  TabletModeControllerTest& operator=(const TabletModeControllerTest&) = delete;
+
   ~TabletModeControllerTest() override = default;
 
   void SetUp() override {
@@ -239,8 +243,6 @@ class TabletModeControllerTest : public AshTestBase {
 
   // Tracks user action counts.
   base::UserActionTester user_action_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerTest);
 };
 
 // Verify TabletMode enabled/disabled user action metrics are recorded.
@@ -1086,6 +1088,12 @@ class TabletModeControllerForceTabletModeTest
     : public TabletModeControllerTest {
  public:
   TabletModeControllerForceTabletModeTest() = default;
+
+  TabletModeControllerForceTabletModeTest(
+      const TabletModeControllerForceTabletModeTest&) = delete;
+  TabletModeControllerForceTabletModeTest& operator=(
+      const TabletModeControllerForceTabletModeTest&) = delete;
+
   ~TabletModeControllerForceTabletModeTest() override = default;
 
   // AshTestBase:
@@ -1094,9 +1102,6 @@ class TabletModeControllerForceTabletModeTest
         switches::kAshUiMode, switches::kAshUiModeTablet);
     TabletModeControllerTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerForceTabletModeTest);
 };
 
 // Verify when the force touch view mode flag is turned on, tablet mode is on
@@ -1142,6 +1147,12 @@ class TabletModeControllerForceClamshellModeTest
     : public TabletModeControllerTest {
  public:
   TabletModeControllerForceClamshellModeTest() = default;
+
+  TabletModeControllerForceClamshellModeTest(
+      const TabletModeControllerForceClamshellModeTest&) = delete;
+  TabletModeControllerForceClamshellModeTest& operator=(
+      const TabletModeControllerForceClamshellModeTest&) = delete;
+
   ~TabletModeControllerForceClamshellModeTest() override = default;
 
   // AshTestBase:
@@ -1150,9 +1161,6 @@ class TabletModeControllerForceClamshellModeTest
         switches::kAshUiMode, switches::kAshUiModeClamshell);
     TabletModeControllerTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerForceClamshellModeTest);
 };
 
 // Tests that when the force touch view mode flag is set to clamshell, clamshell
@@ -1704,6 +1712,12 @@ TEST_F(TabletModeControllerOnDeviceTest, DoNotEnterClamshellWithNoInputDevice) {
 class TabletModeControllerScreenshotTest : public TabletModeControllerTest {
  public:
   TabletModeControllerScreenshotTest() = default;
+
+  TabletModeControllerScreenshotTest(
+      const TabletModeControllerScreenshotTest&) = delete;
+  TabletModeControllerScreenshotTest& operator=(
+      const TabletModeControllerScreenshotTest&) = delete;
+
   ~TabletModeControllerScreenshotTest() override = default;
 
   void SetUp() override {
@@ -1736,8 +1750,6 @@ class TabletModeControllerScreenshotTest : public TabletModeControllerTest {
  private:
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
       scoped_animation_duration_scale_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerScreenshotTest);
 };
 
 // Tests that when there are no animations, no screenshot is taken.

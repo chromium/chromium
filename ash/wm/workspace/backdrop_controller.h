@@ -53,6 +53,10 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
                                       public WindowBackdrop::Observer {
  public:
   explicit BackdropController(aura::Window* container);
+
+  BackdropController(const BackdropController&) = delete;
+  BackdropController& operator=(const BackdropController&) = delete;
+
   ~BackdropController() override;
 
   void OnWindowAddedToLayout(aura::Window* window);
@@ -184,8 +188,6 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
       window_backdrop_observations_{this};
 
   base::WeakPtrFactory<BackdropController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackdropController);
 };
 
 }  // namespace ash

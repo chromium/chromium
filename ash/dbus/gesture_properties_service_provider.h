@@ -30,6 +30,12 @@ class ASH_EXPORT GesturePropertiesServiceProvider
     : public chromeos::CrosDBusService::ServiceProviderInterface {
  public:
   GesturePropertiesServiceProvider();
+
+  GesturePropertiesServiceProvider(const GesturePropertiesServiceProvider&) =
+      delete;
+  GesturePropertiesServiceProvider& operator=(
+      const GesturePropertiesServiceProvider&) = delete;
+
   ~GesturePropertiesServiceProvider() override;
 
   void set_service_for_test(
@@ -69,8 +75,6 @@ class ASH_EXPORT GesturePropertiesServiceProvider
   ui::ozone::mojom::GesturePropertiesService* service_for_test_ = nullptr;
 
   base::WeakPtrFactory<GesturePropertiesServiceProvider> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(GesturePropertiesServiceProvider);
 };
 
 }  // namespace ash

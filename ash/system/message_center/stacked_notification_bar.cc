@@ -81,6 +81,9 @@ class StackingBarLabelButton : public views::LabelButton {
     }
   }
 
+  StackingBarLabelButton(const StackingBarLabelButton&) = delete;
+  StackingBarLabelButton& operator=(const StackingBarLabelButton&) = delete;
+
   ~StackingBarLabelButton() override = default;
 
   // views::LabelButton:
@@ -109,7 +112,6 @@ class StackingBarLabelButton : public views::LabelButton {
 
  private:
   UnifiedMessageCenterView* message_center_view_;
-  DISALLOW_COPY_AND_ASSIGN(StackingBarLabelButton);
 };
 
 }  // namespace

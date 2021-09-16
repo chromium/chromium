@@ -25,6 +25,11 @@ namespace ash {
 class ASH_EXPORT UnifiedMouseWarpController : public MouseWarpController {
  public:
   UnifiedMouseWarpController();
+
+  UnifiedMouseWarpController(const UnifiedMouseWarpController&) = delete;
+  UnifiedMouseWarpController& operator=(const UnifiedMouseWarpController&) =
+      delete;
+
   ~UnifiedMouseWarpController() override;
 
   // MouseWarpController:
@@ -80,8 +85,6 @@ class ASH_EXPORT UnifiedMouseWarpController : public MouseWarpController {
   // True if the edge boundaries between displays (where mouse cursor should
   // warp) have been computed.
   bool display_boundaries_computed_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedMouseWarpController);
 };
 
 }  // namespace ash

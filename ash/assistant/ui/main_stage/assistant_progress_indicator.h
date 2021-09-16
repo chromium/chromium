@@ -15,6 +15,11 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantProgressIndicator
     : public views::View {
  public:
   AssistantProgressIndicator();
+
+  AssistantProgressIndicator(const AssistantProgressIndicator&) = delete;
+  AssistantProgressIndicator& operator=(const AssistantProgressIndicator&) =
+      delete;
+
   ~AssistantProgressIndicator() override;
 
   // views::View:
@@ -32,8 +37,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantProgressIndicator
   // Caches the last call to VisibilityChanged. Because we trigger this event
   // artificially, we want to make sure that we don't over trigger.
   bool is_drawn_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantProgressIndicator);
 };
 
 }  // namespace ash

@@ -63,6 +63,10 @@ class WmHighlightItemBorder;
 class ASH_EXPORT DeskPreviewView : public views::Button {
  public:
   DeskPreviewView(PressedCallback callback, DeskMiniView* mini_view);
+
+  DeskPreviewView(const DeskPreviewView&) = delete;
+  DeskPreviewView& operator=(const DeskPreviewView&) = delete;
+
   ~DeskPreviewView() override;
 
   // Returns the height of the DeskPreviewView, which is a function of the
@@ -120,8 +124,6 @@ class ASH_EXPORT DeskPreviewView : public views::Button {
 
   ui::Layer shadow_layer_;
   std::unique_ptr<ShadowRenderer> shadow_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeskPreviewView);
 };
 
 }  // namespace ash

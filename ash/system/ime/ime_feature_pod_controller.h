@@ -19,6 +19,10 @@ class ASH_EXPORT IMEFeaturePodController : public FeaturePodControllerBase,
                                            public IMEObserver {
  public:
   IMEFeaturePodController(UnifiedSystemTrayController* tray_controller);
+
+  IMEFeaturePodController(const IMEFeaturePodController&) = delete;
+  IMEFeaturePodController& operator=(const IMEFeaturePodController&) = delete;
+
   ~IMEFeaturePodController() override;
 
   // FeaturePodControllerBase:
@@ -36,8 +40,6 @@ class ASH_EXPORT IMEFeaturePodController : public FeaturePodControllerBase,
   // Unowned.
   UnifiedSystemTrayController* const tray_controller_;
   FeaturePodButton* button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(IMEFeaturePodController);
 };
 
 }  // namespace ash

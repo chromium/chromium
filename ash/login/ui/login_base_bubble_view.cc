@@ -52,6 +52,9 @@ class LoginBubbleHandler : public ui::EventHandler {
     Shell::Get()->AddPreTargetHandler(this);
   }
 
+  LoginBubbleHandler(const LoginBubbleHandler&) = delete;
+  LoginBubbleHandler& operator=(const LoginBubbleHandler&) = delete;
+
   ~LoginBubbleHandler() override { Shell::Get()->RemovePreTargetHandler(this); }
 
   // ui::EventHandler:
@@ -115,8 +118,6 @@ class LoginBubbleHandler : public ui::EventHandler {
   }
 
   LoginBaseBubbleView* bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginBubbleHandler);
 };
 
 LoginBaseBubbleView::LoginBaseBubbleView(views::View* anchor_view)

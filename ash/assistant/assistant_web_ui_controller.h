@@ -27,6 +27,10 @@ class ASH_EXPORT AssistantWebUiController : public views::WidgetObserver,
                                             public AssistantStateObserver {
  public:
   AssistantWebUiController();
+
+  AssistantWebUiController(const AssistantWebUiController&) = delete;
+  AssistantWebUiController& operator=(const AssistantWebUiController&) = delete;
+
   ~AssistantWebUiController() override;
 
   // views::WidgetObserver:
@@ -64,8 +68,6 @@ class ASH_EXPORT AssistantWebUiController : public views::WidgetObserver,
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantWebUiController);
 };
 
 }  // namespace ash

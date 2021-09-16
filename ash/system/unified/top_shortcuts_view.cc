@@ -43,10 +43,11 @@ namespace {
 class UserAvatarButton : public views::Button {
  public:
   explicit UserAvatarButton(PressedCallback callback);
-  ~UserAvatarButton() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserAvatarButton);
+  UserAvatarButton(const UserAvatarButton&) = delete;
+  UserAvatarButton& operator=(const UserAvatarButton&) = delete;
+
+  ~UserAvatarButton() override = default;
 };
 
 UserAvatarButton::UserAvatarButton(PressedCallback callback)

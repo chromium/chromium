@@ -47,6 +47,10 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   };
 
   explicit ActiveNetworkIcon(TrayNetworkStateModel* model);
+
+  ActiveNetworkIcon(const ActiveNetworkIcon&) = delete;
+  ActiveNetworkIcon& operator=(const ActiveNetworkIcon&) = delete;
+
   ~ActiveNetworkIcon() override;
 
   // Provides the a11y and tooltip strings for |type|. Output parameters can
@@ -97,8 +101,6 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   base::Time uninitialized_state_time_;
   base::OneShotTimer purge_timer_;
   base::WeakPtrFactory<ActiveNetworkIcon> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveNetworkIcon);
 };
 
 }  // namespace ash

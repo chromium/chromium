@@ -43,6 +43,11 @@ class ASH_EXPORT UnifiedSystemTrayController
   UnifiedSystemTrayController(UnifiedSystemTrayModel* model,
                               UnifiedSystemTrayBubble* bubble = nullptr,
                               views::View* owner_view = nullptr);
+
+  UnifiedSystemTrayController(const UnifiedSystemTrayController&) = delete;
+  UnifiedSystemTrayController& operator=(const UnifiedSystemTrayController&) =
+      delete;
+
   ~UnifiedSystemTrayController() override;
 
   // Create the view. The created view is unowned.
@@ -255,8 +260,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   absl::optional<ui::ThroughputTracker> animation_tracker_;
 
   bool showing_audio_detailed_view_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayController);
 };
 
 }  // namespace ash

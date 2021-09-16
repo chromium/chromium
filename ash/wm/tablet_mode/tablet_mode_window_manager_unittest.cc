@@ -72,6 +72,11 @@ void SetShelfAutoHideBehaviorPref(int64_t display_id,
 class TabletModeWindowManagerTest : public AshTestBase {
  public:
   TabletModeWindowManagerTest() = default;
+
+  TabletModeWindowManagerTest(const TabletModeWindowManagerTest&) = delete;
+  TabletModeWindowManagerTest& operator=(const TabletModeWindowManagerTest&) =
+      delete;
+
   ~TabletModeWindowManagerTest() override = default;
 
   // Initialize parameters for test windows.  If |can_maximize| is not
@@ -179,9 +184,6 @@ class TabletModeWindowManagerTest : public AshTestBase {
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabletModeWindowManagerTest);
 };
 
 // Test that creating the object and destroying it without any windows should
@@ -1420,6 +1422,10 @@ namespace {
 class TestObserver : public WindowStateObserver {
  public:
   TestObserver() = default;
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   // WindowStateObserver:
@@ -1465,8 +1471,6 @@ class TestObserver : public WindowStateObserver {
   int post_count_ = 0;
   bool post_layer_visibility_ = false;
   WindowStateType last_old_state_ = WindowStateType::kDefault;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace

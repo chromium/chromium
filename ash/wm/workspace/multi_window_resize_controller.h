@@ -39,6 +39,11 @@ class ASH_EXPORT MultiWindowResizeController
       public OverviewObserver {
  public:
   MultiWindowResizeController();
+
+  MultiWindowResizeController(const MultiWindowResizeController&) = delete;
+  MultiWindowResizeController& operator=(const MultiWindowResizeController&) =
+      delete;
+
   ~MultiWindowResizeController() override;
 
   // If necessary, shows the resize widget. |window| is the window the mouse
@@ -197,8 +202,6 @@ class ASH_EXPORT MultiWindowResizeController
   // |resize_widget_| is non-NULL (ie the widget is showing) we ignore calls
   // to Show().
   std::unique_ptr<views::MouseWatcher> mouse_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiWindowResizeController);
 };
 
 }  // namespace ash

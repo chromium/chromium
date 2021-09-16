@@ -47,6 +47,10 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
                                       public WindowTreeHostManager::Observer {
  public:
   DragDropController();
+
+  DragDropController(const DragDropController&) = delete;
+  DragDropController& operator=(const DragDropController&) = delete;
+
   ~DragDropController() override;
 
   void set_should_block_during_drag_drop(bool should_block_during_drag_drop) {
@@ -171,8 +175,6 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   ToplevelWindowDragDelegate* toplevel_window_drag_delegate_ = nullptr;
 
   base::WeakPtrFactory<DragDropController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DragDropController);
 };
 
 }  // namespace ash

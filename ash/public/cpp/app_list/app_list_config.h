@@ -237,6 +237,10 @@ class ASH_PUBLIC_EXPORT AppListConfig {
                 float scale_y,
                 float inner_tile_scale_y,
                 bool min_y_scale);
+
+  AppListConfig(const AppListConfig&) = delete;
+  AppListConfig& operator=(const AppListConfig&) = delete;
+
   ~AppListConfig();
 
   AppListConfigType type() const { return type_; }
@@ -466,8 +470,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // Max items per page allowed in a folder.
   const size_t max_folder_items_per_page_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListConfig);
 };
 
 }  // namespace ash

@@ -17,6 +17,10 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
  public:
   LoginErrorBubble();
   LoginErrorBubble(views::View* content, views::View* anchor_view);
+
+  LoginErrorBubble(const LoginErrorBubble&) = delete;
+  LoginErrorBubble& operator=(const LoginErrorBubble&) = delete;
+
   ~LoginErrorBubble() override;
 
   // If the content is theme-change sensitive, it should be updated by the
@@ -48,8 +52,6 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
   std::u16string accessible_name_;
 
   std::u16string message_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginErrorBubble);
 };
 
 }  // namespace ash

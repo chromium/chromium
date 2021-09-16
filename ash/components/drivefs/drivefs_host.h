@@ -56,6 +56,10 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
   class Delegate : public DriveFsAuth::Delegate {
    public:
     Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     ~Delegate() override = default;
 
     virtual drive::DriveNotificationManager& GetDriveNotificationManager() = 0;
@@ -68,9 +72,6 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
         mojom::ExtensionConnectionParamsPtr params,
         mojo::PendingReceiver<mojom::NativeMessagingPort> port,
         mojo::PendingRemote<mojom::NativeMessagingHost> host) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   DriveFsHost(const base::FilePath& profile_path,
@@ -80,6 +81,10 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
               const base::Clock* clock,
               chromeos::disks::DiskMountManager* disk_mount_manager,
               std::unique_ptr<base::OneShotTimer> timer);
+
+  DriveFsHost(const DriveFsHost&) = delete;
+  DriveFsHost& operator=(const DriveFsHost&) = delete;
+
   ~DriveFsHost();
 
   void AddObserver(DriveFsHostObserver* observer);
@@ -137,8 +142,6 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
 
   base::ObserverList<DriveFsHostObserver>::Unchecked observers_;
   DialogHandler dialog_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsHost);
 };
 
 }  // namespace drivefs

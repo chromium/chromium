@@ -47,6 +47,10 @@ bool AreAnimationsEnabled() {
 class DotBackground : public views::Background {
  public:
   DotBackground() = default;
+
+  DotBackground(const DotBackground&) = delete;
+  DotBackground& operator=(const DotBackground&) = delete;
+
   ~DotBackground() override = default;
 
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
@@ -60,9 +64,6 @@ class DotBackground : public views::Background {
 
     canvas->DrawCircle(center, radius, flags);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DotBackground);
 };
 
 }  // namespace

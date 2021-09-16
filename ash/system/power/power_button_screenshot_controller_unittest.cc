@@ -55,6 +55,12 @@ class KeyEventWindowDelegate : public aura::test::TestWindowDelegate {
 class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
  public:
   PowerButtonScreenshotControllerTest() = default;
+
+  PowerButtonScreenshotControllerTest(
+      const PowerButtonScreenshotControllerTest&) = delete;
+  PowerButtonScreenshotControllerTest& operator=(
+      const PowerButtonScreenshotControllerTest&) = delete;
+
   ~PowerButtonScreenshotControllerTest() override = default;
 
   // PowerButtonTestBase:
@@ -124,8 +130,6 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
 
   // Used to test capture mode invocations when the feature is on.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonScreenshotControllerTest);
 };
 
 class PowerButtonScreenshotControllerWithSystemKeysTest

@@ -25,14 +25,16 @@ class ASH_EXPORT AshTouchTransformController
   AshTouchTransformController(
       display::DisplayManager* display_manager,
       std::unique_ptr<display::TouchTransformSetter> setter);
+
+  AshTouchTransformController(const AshTouchTransformController&) = delete;
+  AshTouchTransformController& operator=(const AshTouchTransformController&) =
+      delete;
+
   ~AshTouchTransformController() override;
 
   // WindowTreeHostManager::Observer:
   void OnDisplaysInitialized() override;
   void OnDisplayConfigurationChanged() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AshTouchTransformController);
 };
 
 }  // namespace ash

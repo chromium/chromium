@@ -46,6 +46,10 @@ const int kRootHeight = 600;
 class TestLayerDelegate : public ui::LayerDelegate {
  public:
   TestLayerDelegate() = default;
+
+  TestLayerDelegate(const TestLayerDelegate&) = delete;
+  TestLayerDelegate& operator=(const TestLayerDelegate&) = delete;
+
   ~TestLayerDelegate() override = default;
 
   int paint_count() const { return paint_count_; }
@@ -59,8 +63,6 @@ class TestLayerDelegate : public ui::LayerDelegate {
                                   float new_device_scale_factor) override {}
 
   int paint_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayerDelegate);
 };
 
 }  // namespace
@@ -68,6 +70,10 @@ class TestLayerDelegate : public ui::LayerDelegate {
 class DragWindowResizerTest : public AshTestBase {
  public:
   DragWindowResizerTest() : transient_child_(nullptr) {}
+
+  DragWindowResizerTest(const DragWindowResizerTest&) = delete;
+  DragWindowResizerTest& operator=(const DragWindowResizerTest&) = delete;
+
   ~DragWindowResizerTest() override = default;
 
   void SetUp() override {
@@ -163,9 +169,6 @@ class DragWindowResizerTest : public AshTestBase {
   std::unique_ptr<aura::Window> system_modal_window_;
   aura::Window* transient_child_;
   std::unique_ptr<aura::Window> transient_parent_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DragWindowResizerTest);
 };
 
 // Verifies a window can be moved from the primary display to another.

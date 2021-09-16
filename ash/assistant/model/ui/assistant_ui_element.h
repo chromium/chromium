@@ -25,6 +25,9 @@ enum class AssistantUiElementType {
 // Base class for a UI element that will be rendered inside of Assistant UI.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiElement {
  public:
+  AssistantUiElement(const AssistantUiElement&) = delete;
+  AssistantUiElement& operator=(const AssistantUiElement&) = delete;
+
   virtual ~AssistantUiElement();
 
   bool operator==(const AssistantUiElement& other) const {
@@ -48,8 +51,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiElement {
   const AssistantUiElementType type_;
 
   virtual bool Compare(const AssistantUiElement& other) const = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantUiElement);
 };
 
 }  // namespace ash

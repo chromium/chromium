@@ -36,14 +36,16 @@ DummyButton::DummyButton() : views::Button(views::Button::PressedCallback()) {}
 class DummyEvent : public ui::Event {
  public:
   DummyEvent();
+
+  DummyEvent(const DummyEvent&) = delete;
+  DummyEvent& operator=(const DummyEvent&) = delete;
+
   ~DummyEvent() override;
   int unique_id() const { return unique_id_; }
 
  private:
   static int next_unique_id_;
   int unique_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyEvent);
 };
 
 int DummyEvent::next_unique_id_ = 0;
@@ -62,6 +64,12 @@ class ShelfButtonPressedMetricTrackerTest : public AshTestBase {
       kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName;
 
   ShelfButtonPressedMetricTrackerTest();
+
+  ShelfButtonPressedMetricTrackerTest(
+      const ShelfButtonPressedMetricTrackerTest&) = delete;
+  ShelfButtonPressedMetricTrackerTest& operator=(
+      const ShelfButtonPressedMetricTrackerTest&) = delete;
+
   ~ShelfButtonPressedMetricTrackerTest() override;
 
   // AshTestBase:
@@ -86,9 +94,6 @@ class ShelfButtonPressedMetricTrackerTest : public AshTestBase {
 
   // The TickClock injected in to the test target.
   base::SimpleTestTickClock tick_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfButtonPressedMetricTrackerTest);
 };
 
 const char* ShelfButtonPressedMetricTrackerTest::

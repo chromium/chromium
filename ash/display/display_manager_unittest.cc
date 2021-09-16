@@ -81,6 +81,10 @@ class DisplayManagerTest : public AshTestBase,
                            public aura::WindowObserver {
  public:
   DisplayManagerTest() = default;
+
+  DisplayManagerTest(const DisplayManagerTest&) = delete;
+  DisplayManagerTest& operator=(const DisplayManagerTest&) = delete;
+
   ~DisplayManagerTest() override = default;
 
   void SetUp() override {
@@ -185,8 +189,6 @@ class DisplayManagerTest : public AshTestBase,
   uint32_t changed_metrics_ = 0u;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayManagerTest);
 };
 
 TEST_F(DisplayManagerTest, UpdateDisplayTest) {
@@ -2148,6 +2150,10 @@ TEST_F(DisplayManagerTest, UpdateMouseCursorAfterRotateZoom) {
 class TestDisplayObserver : public display::DisplayObserver {
  public:
   TestDisplayObserver() : changed_(false) {}
+
+  TestDisplayObserver(const TestDisplayObserver&) = delete;
+  TestDisplayObserver& operator=(const TestDisplayObserver&) = delete;
+
   ~TestDisplayObserver() override = default;
 
   // display::DisplayObserver overrides:
@@ -2174,8 +2180,6 @@ class TestDisplayObserver : public display::DisplayObserver {
  private:
   MirrorWindowTestApi test_api;
   bool changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayObserver);
 };
 
 TEST_F(DisplayManagerTest, SoftwareMirroring) {
@@ -3165,6 +3169,10 @@ TEST_F(DisplayManagerTest, DontRegisterBadConfig) {
 class ScreenShutdownTest : public AshTestBase {
  public:
   ScreenShutdownTest() = default;
+
+  ScreenShutdownTest(const ScreenShutdownTest&) = delete;
+  ScreenShutdownTest& operator=(const ScreenShutdownTest&) = delete;
+
   ~ScreenShutdownTest() override = default;
 
   void TearDown() override {
@@ -3178,9 +3186,6 @@ class ScreenShutdownTest : public AshTestBase {
     EXPECT_EQ("500x300", all[0].size().ToString());
     EXPECT_EQ("800x400", all[1].size().ToString());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenShutdownTest);
 };
 
 TEST_F(ScreenShutdownTest, ScreenAfterShutdown) {
@@ -3206,13 +3211,13 @@ class FontTestHelper : public AshTestBase {
     SetUp();
   }
 
+  FontTestHelper(const FontTestHelper&) = delete;
+  FontTestHelper& operator=(const FontTestHelper&) = delete;
+
   ~FontTestHelper() override { TearDown(); }
 
   // AshTestBase:
   void TestBody() override { NOTREACHED(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FontTestHelper);
 };
 
 bool IsTextSubpixelPositioningEnabled() {
@@ -3557,6 +3562,11 @@ namespace {
 class DisplayManagerOrientationTest : public DisplayManagerTest {
  public:
   DisplayManagerOrientationTest() = default;
+
+  DisplayManagerOrientationTest(const DisplayManagerOrientationTest&) = delete;
+  DisplayManagerOrientationTest& operator=(
+      const DisplayManagerOrientationTest&) = delete;
+
   ~DisplayManagerOrientationTest() override = default;
 
   void SetUp() override {
@@ -3573,9 +3583,6 @@ class DisplayManagerOrientationTest : public DisplayManagerTest {
   AccelerometerUpdate portrait_primary;
   AccelerometerUpdate portrait_secondary;
   AccelerometerUpdate landscape_primary;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayManagerOrientationTest);
 };
 
 class TestObserver : public ScreenOrientationController::Observer {

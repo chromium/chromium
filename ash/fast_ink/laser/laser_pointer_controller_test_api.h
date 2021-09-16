@@ -21,6 +21,11 @@ class LaserPointerController;
 class LaserPointerControllerTestApi {
  public:
   explicit LaserPointerControllerTestApi(LaserPointerController* instance);
+
+  LaserPointerControllerTestApi(const LaserPointerControllerTestApi&) = delete;
+  LaserPointerControllerTestApi& operator=(
+      const LaserPointerControllerTestApi&) = delete;
+
   ~LaserPointerControllerTestApi();
 
   void SetEnabled(bool enabled);
@@ -33,8 +38,6 @@ class LaserPointerControllerTestApi {
 
  private:
   LaserPointerController* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(LaserPointerControllerTestApi);
 };
 
 }  // namespace ash

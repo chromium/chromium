@@ -51,6 +51,11 @@ class TestWallpaperColorCalculatorObserver
  public:
   TestWallpaperColorCalculatorObserver() {}
 
+  TestWallpaperColorCalculatorObserver(
+      const TestWallpaperColorCalculatorObserver&) = delete;
+  TestWallpaperColorCalculatorObserver& operator=(
+      const TestWallpaperColorCalculatorObserver&) = delete;
+
   ~TestWallpaperColorCalculatorObserver() override {}
 
   bool WasNotified() const { return notified_; }
@@ -60,8 +65,6 @@ class TestWallpaperColorCalculatorObserver
 
  private:
   bool notified_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperColorCalculatorObserver);
 };
 
 // Returns an image that will yield a color using the LumaRange::NORMAL and
@@ -84,6 +87,11 @@ gfx::ImageSkia CreateNonColorProducingImage(const gfx::Size& size) {
 class WallpaperColorCalculatorTest : public testing::Test {
  public:
   WallpaperColorCalculatorTest();
+
+  WallpaperColorCalculatorTest(const WallpaperColorCalculatorTest&) = delete;
+  WallpaperColorCalculatorTest& operator=(const WallpaperColorCalculatorTest&) =
+      delete;
+
   ~WallpaperColorCalculatorTest() override;
 
  protected:
@@ -108,8 +116,6 @@ class WallpaperColorCalculatorTest : public testing::Test {
  private:
   // Required for asynchronous calculations, e.g. by PostTaskAndReplyImpl.
   std::unique_ptr<base::ThreadTaskRunnerHandle> task_runner_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperColorCalculatorTest);
 };
 
 WallpaperColorCalculatorTest::WallpaperColorCalculatorTest()

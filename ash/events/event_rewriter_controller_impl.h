@@ -28,6 +28,11 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
                                                public aura::EnvObserver {
  public:
   EventRewriterControllerImpl();
+
+  EventRewriterControllerImpl(const EventRewriterControllerImpl&) = delete;
+  EventRewriterControllerImpl& operator=(const EventRewriterControllerImpl&) =
+      delete;
+
   ~EventRewriterControllerImpl() override;
 
   // EventRewriterController:
@@ -57,8 +62,6 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   AccessibilityEventRewriter* accessibility_event_rewriter_ = nullptr;
   KeyboardDrivenEventRewriter* keyboard_driven_event_rewriter_ = nullptr;
   ui::EventRewriterChromeOS* event_rewriter_chromeos_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(EventRewriterControllerImpl);
 };
 
 }  // namespace ash

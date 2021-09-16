@@ -109,6 +109,9 @@ class ASH_EXPORT SessionStateAnimator {
   //
   class ASH_EXPORT AnimationSequence {
    public:
+    AnimationSequence(const AnimationSequence&) = delete;
+    AnimationSequence& operator=(const AnimationSequence&) = delete;
+
     virtual ~AnimationSequence();
 
     // Apply animation |type| to all containers included in |container_mask|
@@ -160,8 +163,6 @@ class ASH_EXPORT SessionStateAnimator {
 
     // Callback to be called when the aniamtion is finished or aborted.
     AnimationCallback callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(AnimationSequence);
   };
 
   SessionStateAnimator();

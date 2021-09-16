@@ -17,6 +17,10 @@ namespace keyboard {
 class KEYBOARD_EXPORT KeyboardEventHandler : public ui::EventHandler {
  public:
   KeyboardEventHandler() = default;
+
+  KeyboardEventHandler(const KeyboardEventHandler&) = delete;
+  KeyboardEventHandler& operator=(const KeyboardEventHandler&) = delete;
+
   ~KeyboardEventHandler() override = default;
 
   // ui::EventHandler overrides:
@@ -26,8 +30,6 @@ class KEYBOARD_EXPORT KeyboardEventHandler : public ui::EventHandler {
 
  private:
   void ProcessPointerEvent(ui::LocatedEvent* event);
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEventHandler);
 };
 
 }  // namespace keyboard

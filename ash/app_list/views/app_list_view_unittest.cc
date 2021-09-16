@@ -152,16 +152,22 @@ class TestStartPageSearchResult : public TestSearchResult {
     set_display_type(ash::SearchResultDisplayType::kChip);
     set_is_recommendation(true);
   }
-  ~TestStartPageSearchResult() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestStartPageSearchResult);
+  TestStartPageSearchResult(const TestStartPageSearchResult&) = delete;
+  TestStartPageSearchResult& operator=(const TestStartPageSearchResult&) =
+      delete;
+
+  ~TestStartPageSearchResult() override = default;
 };
 
 class AppListViewTest : public views::ViewsTestBase,
                         public testing::WithParamInterface<bool> {
  public:
   AppListViewTest() = default;
+
+  AppListViewTest(const AppListViewTest&) = delete;
+  AppListViewTest& operator=(const AppListViewTest&) = delete;
+
   ~AppListViewTest() override = default;
 
   void SetUp() override {
@@ -406,8 +412,6 @@ class AppListViewTest : public views::ViewsTestBase,
   keyboard::KeyboardUIController keyboard_ui_controller_;
 
   bool is_rtl_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListViewTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(Rtl, AppListViewTest, ::testing::Bool());
@@ -440,6 +444,10 @@ class AppListViewFocusTest : public views::ViewsTestBase,
                              public testing::WithParamInterface<bool> {
  public:
   AppListViewFocusTest() = default;
+
+  AppListViewFocusTest(const AppListViewFocusTest&) = delete;
+  AppListViewFocusTest& operator=(const AppListViewFocusTest&) = delete;
+
   ~AppListViewFocusTest() override = default;
 
   // testing::Test
@@ -823,8 +831,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
   // Used by AppListFolderView::UpdatePreferredBounds.
   keyboard::KeyboardUIController keyboard_ui_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListViewFocusTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, AppListViewFocusTest, testing::Bool());

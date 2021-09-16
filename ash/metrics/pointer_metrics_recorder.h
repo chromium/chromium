@@ -116,14 +116,15 @@ enum class DownEventMetric2 {
 class ASH_EXPORT PointerMetricsRecorder : public ui::EventHandler {
  public:
   PointerMetricsRecorder();
+
+  PointerMetricsRecorder(const PointerMetricsRecorder&) = delete;
+  PointerMetricsRecorder& operator=(const PointerMetricsRecorder&) = delete;
+
   ~PointerMetricsRecorder() override;
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PointerMetricsRecorder);
 };
 
 }  // namespace ash

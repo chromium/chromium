@@ -81,6 +81,11 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
 
   DragWindowFromShelfController(aura::Window* window,
                                 const gfx::PointF& location_in_screen);
+
+  DragWindowFromShelfController(const DragWindowFromShelfController&) = delete;
+  DragWindowFromShelfController& operator=(
+      const DragWindowFromShelfController&) = delete;
+
   ~DragWindowFromShelfController() override;
 
   // Called during swiping up on the shelf.
@@ -216,8 +221,6 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 
   base::WeakPtrFactory<DragWindowFromShelfController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DragWindowFromShelfController);
 };
 
 }  // namespace ash

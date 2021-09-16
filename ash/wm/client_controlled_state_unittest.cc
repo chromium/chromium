@@ -33,6 +33,12 @@ class TestClientControlledStateDelegate
     : public ClientControlledState::Delegate {
  public:
   TestClientControlledStateDelegate() = default;
+
+  TestClientControlledStateDelegate(const TestClientControlledStateDelegate&) =
+      delete;
+  TestClientControlledStateDelegate& operator=(
+      const TestClientControlledStateDelegate&) = delete;
+
   ~TestClientControlledStateDelegate() override = default;
 
   void HandleWindowStateRequest(WindowState* window_state,
@@ -79,13 +85,15 @@ class TestClientControlledStateDelegate
   int64_t display_id_ = display::kInvalidDisplayId;
   gfx::Rect requested_bounds_;
   bool deleted_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClientControlledStateDelegate);
 };
 
 class TestWidgetDelegate : public views::WidgetDelegateView {
  public:
   TestWidgetDelegate() = default;
+
+  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
+  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
+
   ~TestWidgetDelegate() override = default;
 
   void EnableSnap() {
@@ -93,9 +101,6 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
     SetCanResize(true);
     GetWidget()->OnSizeConstraintsChanged();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
 };
 
 }  // namespace
@@ -103,6 +108,11 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 class ClientControlledStateTest : public AshTestBase {
  public:
   ClientControlledStateTest() = default;
+
+  ClientControlledStateTest(const ClientControlledStateTest&) = delete;
+  ClientControlledStateTest& operator=(const ClientControlledStateTest&) =
+      delete;
+
   ~ClientControlledStateTest() override = default;
 
   void SetUp() override {
@@ -151,8 +161,6 @@ class ClientControlledStateTest : public AshTestBase {
   TestClientControlledStateDelegate* state_delegate_ = nullptr;
   TestWidgetDelegate* widget_delegate_ = nullptr;  // owned by itself.
   std::unique_ptr<views::Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientControlledStateTest);
 };
 
 // Make sure that calling Maximize()/Minimize()/Fullscreen() result in

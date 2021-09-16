@@ -27,6 +27,10 @@ class ContainerView : public NonAccessibleView,
   ContainerView() {
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
+
+  ContainerView(const ContainerView&) = delete;
+  ContainerView& operator=(const ContainerView&) = delete;
+
   ~ContainerView() override = default;
 
   // views::ViewTargeterDelegate:
@@ -41,9 +45,6 @@ class ContainerView : public NonAccessibleView,
     };
     return std::any_of(children.cbegin(), children.cend(), hits_child);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContainerView);
 };
 
 }  // namespace

@@ -44,6 +44,10 @@ class SearchResultImageButton : public views::ImageButton {
  public:
   SearchResultImageButton(SearchResultActionsView* parent,
                           const SearchResult::Action& action);
+
+  SearchResultImageButton(const SearchResultImageButton&) = delete;
+  SearchResultImageButton& operator=(const SearchResultImageButton&) = delete;
+
   ~SearchResultImageButton() override {}
 
   // views::ImageButton:
@@ -65,8 +69,6 @@ class SearchResultImageButton : public views::ImageButton {
   SearchResultActionsView* parent_;
   const bool visible_on_hover_;
   bool to_be_activate_by_long_press_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultImageButton);
 };
 
 SearchResultImageButton::SearchResultImageButton(

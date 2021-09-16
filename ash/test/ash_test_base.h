@@ -91,6 +91,9 @@ class AshTestBase : public testing::Test {
   explicit AshTestBase(
       std::unique_ptr<base::test::TaskEnvironment> task_environment);
 
+  AshTestBase(const AshTestBase&) = delete;
+  AshTestBase& operator=(const AshTestBase&) = delete;
+
   ~AshTestBase() override;
 
   // testing::Test:
@@ -321,8 +324,6 @@ class AshTestBase : public testing::Test {
   std::unique_ptr<AshTestHelper> ash_test_helper_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshTestBase);
 };
 
 class NoSessionAshTestBase : public AshTestBase {
@@ -330,10 +331,11 @@ class NoSessionAshTestBase : public AshTestBase {
   NoSessionAshTestBase();
   explicit NoSessionAshTestBase(
       base::test::TaskEnvironment::TimeSource time_source);
-  ~NoSessionAshTestBase() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoSessionAshTestBase);
+  NoSessionAshTestBase(const NoSessionAshTestBase&) = delete;
+  NoSessionAshTestBase& operator=(const NoSessionAshTestBase&) = delete;
+
+  ~NoSessionAshTestBase() override;
 };
 
 }  // namespace ash

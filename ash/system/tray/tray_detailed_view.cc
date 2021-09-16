@@ -61,6 +61,10 @@ class ScrollContentsView : public views::View {
     box_layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
   }
+
+  ScrollContentsView(const ScrollContentsView&) = delete;
+  ScrollContentsView& operator=(const ScrollContentsView&) = delete;
+
   ~ScrollContentsView() override = default;
 
  protected:
@@ -258,8 +262,6 @@ class ScrollContentsView : public views::View {
 
   // Header child views that stick to the top of visible viewport when scrolled.
   std::vector<Header> headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollContentsView);
 };
 
 }  // namespace

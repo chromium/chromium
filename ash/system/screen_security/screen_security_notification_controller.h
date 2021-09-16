@@ -28,6 +28,12 @@ class ASH_EXPORT ScreenSecurityNotificationController
       public ShellObserver {
  public:
   ScreenSecurityNotificationController();
+
+  ScreenSecurityNotificationController(
+      const ScreenSecurityNotificationController&) = delete;
+  ScreenSecurityNotificationController& operator=(
+      const ScreenSecurityNotificationController&) = delete;
+
   ~ScreenSecurityNotificationController() override;
 
  private:
@@ -66,8 +72,6 @@ class ASH_EXPORT ScreenSecurityNotificationController
 
   base::WeakPtrFactory<ScreenSecurityNotificationController> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenSecurityNotificationController);
 };
 
 }  // namespace ash

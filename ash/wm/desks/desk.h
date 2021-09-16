@@ -51,6 +51,10 @@ class ASH_EXPORT Desk {
   };
 
   explicit Desk(int associated_container_id, bool desk_being_restored = false);
+
+  Desk(const Desk&) = delete;
+  Desk& operator=(const Desk&) = delete;
+
   ~Desk();
 
   static void SetWeeklyActiveDesks(int weekly_active_desks);
@@ -248,8 +252,6 @@ class ASH_EXPORT Desk {
   // A timer for marking |this| as interacted with only if the user remains on
   // |this| for a brief period of time.
   base::OneShotTimer active_desk_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Desk);
 };
 
 }  // namespace ash

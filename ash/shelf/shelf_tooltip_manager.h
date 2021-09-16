@@ -30,6 +30,10 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
                                        public ShelfObserver {
  public:
   explicit ShelfTooltipManager(Shelf* shelf);
+
+  ShelfTooltipManager(const ShelfTooltipManager&) = delete;
+  ShelfTooltipManager& operator=(const ShelfTooltipManager&) = delete;
+
   ~ShelfTooltipManager() override;
 
   // Closes the tooltip; uses an animation if |animate| is true.
@@ -84,8 +88,6 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
   ShelfTooltipDelegate* shelf_tooltip_delegate_ = nullptr;
 
   base::WeakPtrFactory<ShelfTooltipManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfTooltipManager);
 };
 
 }  // namespace ash

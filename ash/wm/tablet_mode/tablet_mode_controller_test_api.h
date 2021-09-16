@@ -23,6 +23,11 @@ class TabletModeControllerTestApi {
   static constexpr float kDegreesToRadians = 3.1415926f / 180.0f;
 
   TabletModeControllerTestApi();
+
+  TabletModeControllerTestApi(const TabletModeControllerTestApi&) = delete;
+  TabletModeControllerTestApi& operator=(const TabletModeControllerTestApi&) =
+      delete;
+
   ~TabletModeControllerTestApi();
 
   // Enters or exits tablet mode. Use these instead when stuff such as tray
@@ -99,8 +104,6 @@ class TabletModeControllerTestApi {
 
  private:
   TabletModeController* tablet_mode_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerTestApi);
 };
 
 }  // namespace ash

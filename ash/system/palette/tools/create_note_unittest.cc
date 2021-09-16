@@ -19,6 +19,12 @@ namespace ash {
 class TestNoteTakingControllerClient : public NoteTakingClient {
  public:
   TestNoteTakingControllerClient() = default;
+
+  TestNoteTakingControllerClient(const TestNoteTakingControllerClient&) =
+      delete;
+  TestNoteTakingControllerClient& operator=(
+      const TestNoteTakingControllerClient&) = delete;
+
   ~TestNoteTakingControllerClient() override = default;
 
   int GetCreateNoteCount() {
@@ -34,8 +40,6 @@ class TestNoteTakingControllerClient : public NoteTakingClient {
  private:
   bool can_create_ = true;
   int create_note_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNoteTakingControllerClient);
 };
 
 namespace {
@@ -44,6 +48,10 @@ namespace {
 class CreateNoteTest : public AshTestBase {
  public:
   CreateNoteTest() = default;
+
+  CreateNoteTest(const CreateNoteTest&) = delete;
+  CreateNoteTest& operator=(const CreateNoteTest&) = delete;
+
   ~CreateNoteTest() override = default;
 
   void SetUp() override {
@@ -63,9 +71,6 @@ class CreateNoteTest : public AshTestBase {
  protected:
   std::unique_ptr<MockPaletteToolDelegate> palette_tool_delegate_;
   std::unique_ptr<PaletteTool> tool_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CreateNoteTest);
 };
 
 }  // namespace

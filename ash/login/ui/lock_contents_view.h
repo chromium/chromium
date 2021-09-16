@@ -249,6 +249,10 @@ class ASH_EXPORT LockContentsView
    public:
     explicit UserState(const LoginUserInfo& user_info);
     UserState(UserState&&);
+
+    UserState(const UserState&) = delete;
+    UserState& operator=(const UserState&) = delete;
+
     ~UserState();
 
     AccountId account_id;
@@ -263,9 +267,6 @@ class ASH_EXPORT LockContentsView
     FingerprintState fingerprint_state;
     // When present, indicates that the TPM is locked.
     absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UserState);
   };
 
  private:

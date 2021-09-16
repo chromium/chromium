@@ -29,6 +29,10 @@ enum class AppListViewState;
 class AppListTestHelper {
  public:
   AppListTestHelper();
+
+  AppListTestHelper(const AppListTestHelper&) = delete;
+  AppListTestHelper& operator=(const AppListTestHelper&) = delete;
+
   ~AppListTestHelper();
 
   // Shows the app list on the default display.
@@ -104,8 +108,6 @@ class AppListTestHelper {
  private:
   AppListControllerImpl* app_list_controller_ = nullptr;
   std::unique_ptr<TestAppListClient> app_list_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListTestHelper);
 };
 
 }  // namespace ash

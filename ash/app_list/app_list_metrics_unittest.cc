@@ -82,6 +82,11 @@ int64_t GetPrimaryDisplayId() {
 class AppListAppLaunchedMetricTest : public AshTestBase {
  public:
   AppListAppLaunchedMetricTest() = default;
+
+  AppListAppLaunchedMetricTest(const AppListAppLaunchedMetricTest&) = delete;
+  AppListAppLaunchedMetricTest& operator=(const AppListAppLaunchedMetricTest&) =
+      delete;
+
   ~AppListAppLaunchedMetricTest() override = default;
 
   void SetUp() override {
@@ -210,8 +215,6 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
  private:
   SearchModel* search_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListAppLaunchedMetricTest);
 };
 
 // Test that the histogram records an app launch from the shelf while the half
@@ -509,6 +512,11 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromSearchBox) {
 class AppListShowSourceMetricTest : public AshTestBase {
  public:
   AppListShowSourceMetricTest() = default;
+
+  AppListShowSourceMetricTest(const AppListShowSourceMetricTest&) = delete;
+  AppListShowSourceMetricTest& operator=(const AppListShowSourceMetricTest&) =
+      delete;
+
   ~AppListShowSourceMetricTest() override = default;
 
  protected:
@@ -520,8 +528,6 @@ class AppListShowSourceMetricTest : public AshTestBase {
     GetEventGenerator()->MoveMouseTo(center);
     GetEventGenerator()->ClickLeftButton();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AppListShowSourceMetricTest);
 };
 
 // In tablet mode, test that AppListShowSource metric is only recorded when

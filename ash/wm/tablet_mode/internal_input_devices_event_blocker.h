@@ -16,6 +16,12 @@ class ASH_EXPORT InternalInputDevicesEventBlocker
     : public ui::InputDeviceEventObserver {
  public:
   InternalInputDevicesEventBlocker();
+
+  InternalInputDevicesEventBlocker(const InternalInputDevicesEventBlocker&) =
+      delete;
+  InternalInputDevicesEventBlocker& operator=(
+      const InternalInputDevicesEventBlocker&) = delete;
+
   ~InternalInputDevicesEventBlocker() override;
 
   // ui::InputDeviceEventObserver:
@@ -43,8 +49,6 @@ class ASH_EXPORT InternalInputDevicesEventBlocker
 
   bool is_touchpad_blocked_ = false;
   bool is_keyboard_blocked_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalInputDevicesEventBlocker);
 };
 
 }  // namespace ash

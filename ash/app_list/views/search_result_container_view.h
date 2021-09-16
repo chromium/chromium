@@ -40,6 +40,11 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
     virtual void OnSearchResultContainerResultsChanged() = 0;
   };
   explicit SearchResultContainerView(AppListViewDelegate* view_delegate);
+
+  SearchResultContainerView(const SearchResultContainerView&) = delete;
+  SearchResultContainerView& operator=(const SearchResultContainerView&) =
+      delete;
+
   ~SearchResultContainerView() override;
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
@@ -116,8 +121,6 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
 
   // The factory that consolidates multiple Update calls into one.
   base::WeakPtrFactory<SearchResultContainerView> update_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultContainerView);
 };
 
 }  // namespace ash

@@ -24,6 +24,10 @@ class ASH_EXPORT WorkspaceController : public aura::WindowObserver {
  public:
   // Installs WorkspaceLayoutManager on |viewport|.
   explicit WorkspaceController(aura::Window* viewport);
+
+  WorkspaceController(const WorkspaceController&) = delete;
+  WorkspaceController& operator=(const WorkspaceController&) = delete;
+
   ~WorkspaceController() override;
 
   // Returns the current window state.
@@ -45,8 +49,6 @@ class ASH_EXPORT WorkspaceController : public aura::WindowObserver {
 
   // Owned by |viewport_|.
   WorkspaceLayoutManager* layout_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceController);
 };
 
 // Sets the given |workspace_controller| as a property of |desk_container|. Only

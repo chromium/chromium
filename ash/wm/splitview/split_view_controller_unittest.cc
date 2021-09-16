@@ -84,6 +84,10 @@ class OverviewStatesObserver : public OverviewObserver {
       : root_window_(root_window) {
     Shell::Get()->overview_controller()->AddObserver(this);
   }
+
+  OverviewStatesObserver(const OverviewStatesObserver&) = delete;
+  OverviewStatesObserver& operator=(const OverviewStatesObserver&) = delete;
+
   ~OverviewStatesObserver() override {
     Shell::Get()->overview_controller()->RemoveObserver(this);
   }
@@ -107,8 +111,6 @@ class OverviewStatesObserver : public OverviewObserver {
  private:
   bool overview_animate_when_exiting_ = true;
   aura::Window* root_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewStatesObserver);
 };
 
 // The test BubbleDialogDelegateView for bubbles.
@@ -116,10 +118,12 @@ class TestBubbleDialogDelegateView : public views::BubbleDialogDelegateView {
  public:
   explicit TestBubbleDialogDelegateView(views::View* anchor_view)
       : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::NONE) {}
-  ~TestBubbleDialogDelegateView() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestBubbleDialogDelegateView);
+  TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
+  TestBubbleDialogDelegateView& operator=(const TestBubbleDialogDelegateView&) =
+      delete;
+
+  ~TestBubbleDialogDelegateView() override {}
 };
 
 bool IsTabletMode() {
@@ -131,6 +135,10 @@ bool IsTabletMode() {
 class SplitViewControllerTest : public AshTestBase {
  public:
   SplitViewControllerTest() = default;
+
+  SplitViewControllerTest(const SplitViewControllerTest&) = delete;
+  SplitViewControllerTest& operator=(const SplitViewControllerTest&) = delete;
+
   ~SplitViewControllerTest() override = default;
 
   // test::AshTestBase:
@@ -278,13 +286,15 @@ class SplitViewControllerTest : public AshTestBase {
   }
   std::vector<std::string> trace_names_;
   base::HistogramTester histograms_;
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewControllerTest);
 };
 
 class TestWindowStateDelegate : public WindowStateDelegate {
  public:
   TestWindowStateDelegate() = default;
+
+  TestWindowStateDelegate(const TestWindowStateDelegate&) = delete;
+  TestWindowStateDelegate& operator=(const TestWindowStateDelegate&) = delete;
+
   ~TestWindowStateDelegate() override = default;
 
   // WindowStateDelegate:
@@ -297,7 +307,6 @@ class TestWindowStateDelegate : public WindowStateDelegate {
 
  private:
   bool drag_in_progress_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TestWindowStateDelegate);
 };
 
 // Tests the basic functionalities.
@@ -2662,6 +2671,12 @@ class TestOverviewItemsOnOverviewModeEndObserver : public OverviewObserver {
   TestOverviewItemsOnOverviewModeEndObserver() {
     Shell::Get()->overview_controller()->AddObserver(this);
   }
+
+  TestOverviewItemsOnOverviewModeEndObserver(
+      const TestOverviewItemsOnOverviewModeEndObserver&) = delete;
+  TestOverviewItemsOnOverviewModeEndObserver& operator=(
+      const TestOverviewItemsOnOverviewModeEndObserver&) = delete;
+
   ~TestOverviewItemsOnOverviewModeEndObserver() override {
     Shell::Get()->overview_controller()->RemoveObserver(this);
   }
@@ -2672,8 +2687,6 @@ class TestOverviewItemsOnOverviewModeEndObserver : public OverviewObserver {
 
  private:
   int items_on_last_overview_end_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverviewItemsOnOverviewModeEndObserver);
 };
 
 TEST_F(SplitViewControllerTest, ItemsRemovedFromOverviewOnSnap) {
@@ -3061,6 +3074,10 @@ TEST_F(SplitViewControllerTest,
 class SplitViewTabDraggingTest : public SplitViewControllerTest {
  public:
   SplitViewTabDraggingTest() = default;
+
+  SplitViewTabDraggingTest(const SplitViewTabDraggingTest&) = delete;
+  SplitViewTabDraggingTest& operator=(const SplitViewTabDraggingTest&) = delete;
+
   ~SplitViewTabDraggingTest() override = default;
 
  protected:
@@ -3198,9 +3215,6 @@ class SplitViewTabDraggingTest : public SplitViewControllerTest {
     OverviewItem* overview_item = current_grid->GetDropTarget();
     return gfx::ToEnclosedRect(overview_item->GetTransformedBounds());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SplitViewTabDraggingTest);
 };
 
 // Test that in tablet mode, we only allow dragging on browser or chrome app
@@ -4888,6 +4902,11 @@ class TestWindowDelegateWithWidget : public views::WidgetDelegate {
     SetOwnedByWidget(true);
     SetFocusTraversesOut(true);
   }
+
+  TestWindowDelegateWithWidget(const TestWindowDelegateWithWidget&) = delete;
+  TestWindowDelegateWithWidget& operator=(const TestWindowDelegateWithWidget&) =
+      delete;
+
   ~TestWindowDelegateWithWidget() override = default;
 
   // views::WidgetDelegate:
@@ -4899,13 +4918,15 @@ class TestWindowDelegateWithWidget : public views::WidgetDelegate {
 
  private:
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowDelegateWithWidget);
 };
 
 class SplitViewAppDraggingTest : public SplitViewControllerTest {
  public:
   SplitViewAppDraggingTest() = default;
+
+  SplitViewAppDraggingTest(const SplitViewAppDraggingTest&) = delete;
+  SplitViewAppDraggingTest& operator=(const SplitViewAppDraggingTest&) = delete;
+
   ~SplitViewAppDraggingTest() override = default;
 
   // SplitViewControllerTest:
@@ -4977,9 +4998,6 @@ class SplitViewAppDraggingTest : public SplitViewControllerTest {
   std::unique_ptr<TabletModeWindowResizer> controller_;
 
   std::unique_ptr<aura::Window> window_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SplitViewAppDraggingTest);
 };
 
 // Tests that drag the window that cannot be snapped from top of the display

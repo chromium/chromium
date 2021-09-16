@@ -42,6 +42,10 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   };
 
   TimeView(ClockLayout clock_layout, ClockModel* model);
+
+  TimeView(const TimeView&) = delete;
+  TimeView& operator=(const TimeView&) = delete;
+
   ~TimeView() override;
 
   // Updates clock layout.
@@ -120,8 +124,6 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   base::OneShotTimer timer_;
 
   ClockModel* const model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeView);
 };
 
 }  // namespace tray

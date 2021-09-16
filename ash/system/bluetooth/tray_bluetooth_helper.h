@@ -43,6 +43,10 @@ class ASH_EXPORT TrayBluetoothHelper {
   };
 
   TrayBluetoothHelper();
+
+  TrayBluetoothHelper(const TrayBluetoothHelper&) = delete;
+  TrayBluetoothHelper& operator=(const TrayBluetoothHelper&) = delete;
+
   virtual ~TrayBluetoothHelper();
 
   void AddObserver(Observer* observer);
@@ -112,8 +116,6 @@ class ASH_EXPORT TrayBluetoothHelper {
   base::RepeatingTimer timer_;
 
   base::WeakPtrFactory<TrayBluetoothHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TrayBluetoothHelper);
 };
 
 }  // namespace ash

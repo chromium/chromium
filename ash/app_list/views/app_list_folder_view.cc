@@ -95,6 +95,9 @@ class BackgroundAnimation : public AppListFolderView::Animation,
         folder_view_(folder_view),
         background_view_(background_view) {}
 
+  BackgroundAnimation(const BackgroundAnimation&) = delete;
+  BackgroundAnimation& operator=(const BackgroundAnimation&) = delete;
+
   ~BackgroundAnimation() override = default;
 
  private:
@@ -160,8 +163,6 @@ class BackgroundAnimation : public AppListFolderView::Animation,
   views::View* const background_view_;    // Not owned.
 
   base::OnceClosure completion_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundAnimation);
 };
 
 // Decrease the opacity of the folder item's title when opening the folder.
@@ -188,6 +189,9 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation,
         ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
         kFolderTransitionDuration);
   }
+
+  FolderItemTitleAnimation(const FolderItemTitleAnimation&) = delete;
+  FolderItemTitleAnimation& operator=(const FolderItemTitleAnimation&) = delete;
 
   ~FolderItemTitleAnimation() override = default;
 
@@ -235,8 +239,6 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation,
   AppListItemView* const folder_item_view_;
 
   base::OnceClosure completion_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FolderItemTitleAnimation);
 };
 
 // Transit from the items within the folder item icon to the same items in the
@@ -251,6 +253,9 @@ class TopIconAnimation : public AppListFolderView::Animation,
       : show_(show),
         folder_view_(folder_view),
         folder_item_view_(folder_item_view) {}
+
+  TopIconAnimation(const TopIconAnimation&) = delete;
+  TopIconAnimation& operator=(const TopIconAnimation&) = delete;
 
   ~TopIconAnimation() override {
     for (auto* view : top_icon_views_)
@@ -404,8 +409,6 @@ class TopIconAnimation : public AppListFolderView::Animation,
   std::vector<TopIconAnimationView*> top_icon_views_;
 
   base::OnceClosure completion_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopIconAnimation);
 };
 
 // Transit from the bounds of the folder item icon to the opened folder's
@@ -420,6 +423,10 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
       : show_(show),
         hide_for_reparent_(hide_for_reparent),
         folder_view_(folder_view) {}
+
+  ContentsContainerAnimation(const ContentsContainerAnimation&) = delete;
+  ContentsContainerAnimation& operator=(const ContentsContainerAnimation&) =
+      delete;
 
   ~ContentsContainerAnimation() override { StopObservingImplicitAnimations(); }
 
@@ -498,8 +505,6 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
   bool is_animation_running_ = false;
 
   base::OnceClosure completion_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentsContainerAnimation);
 };
 
 }  // namespace

@@ -102,6 +102,9 @@ class AnimationObserver : public ui::ImplicitAnimationObserver {
     DCHECK(!on_animation_finished_.is_null());
   }
 
+  AnimationObserver(const AnimationObserver&) = delete;
+  AnimationObserver& operator=(const AnimationObserver&) = delete;
+
   ~AnimationObserver() override = default;
 
   // ui::ImplicitAnimationObserver:
@@ -117,8 +120,6 @@ class AnimationObserver : public ui::ImplicitAnimationObserver {
  private:
   base::OnceClosure on_animation_started_;
   base::OnceClosure on_animation_finished_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationObserver);
 };
 
 OverviewAnimationType GetExitOverviewAnimationTypeForMinimizedWindow(

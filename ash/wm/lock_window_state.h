@@ -25,6 +25,9 @@ class LockWindowState : public WindowState::State {
   // size.
   LockWindowState(aura::Window* window, bool exclude_shelf);
 
+  LockWindowState(const LockWindowState&) = delete;
+  LockWindowState& operator=(const LockWindowState&) = delete;
+
   ~LockWindowState() override;
 
   // WindowState::State overrides:
@@ -63,8 +66,6 @@ class LockWindowState : public WindowState::State {
   // Restrict window size to the work area defined by the shelf - i.e. window
   // bounds exclude system shelf bounds.
   bool exclude_shelf_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LockWindowState);
 };
 
 }  // namespace ash

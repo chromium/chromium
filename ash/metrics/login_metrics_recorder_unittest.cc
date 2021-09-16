@@ -39,6 +39,10 @@ constexpr char kUserClicksInOobeHistogramName[] = "Ash.Login.OOBE.UserClicks";
 class LoginMetricsRecorderTest : public LoginTestBase {
  public:
   LoginMetricsRecorderTest() = default;
+
+  LoginMetricsRecorderTest(const LoginMetricsRecorderTest&) = delete;
+  LoginMetricsRecorderTest& operator=(const LoginMetricsRecorderTest&) = delete;
+
   ~LoginMetricsRecorderTest() override = default;
 
   // LoginTestBase:
@@ -77,9 +81,6 @@ class LoginMetricsRecorderTest : public LoginTestBase {
 
   // Used to verify recorded data.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginMetricsRecorderTest);
 };
 
 }  // namespace

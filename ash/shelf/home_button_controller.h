@@ -31,6 +31,10 @@ class HomeButtonController : public AppListControllerObserver,
                              public AssistantUiModelObserver {
  public:
   explicit HomeButtonController(HomeButton* button);
+
+  HomeButtonController(const HomeButtonController&) = delete;
+  HomeButtonController& operator=(const HomeButtonController&) = delete;
+
   ~HomeButtonController() override;
 
   // Maybe handles a gesture event based on the event and whether the Assistant
@@ -83,8 +87,6 @@ class HomeButtonController : public AppListControllerObserver,
   // Owned by the button's view hierarchy.
   AssistantOverlay* assistant_overlay_ = nullptr;
   std::unique_ptr<base::OneShotTimer> assistant_animation_delay_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(HomeButtonController);
 };
 
 }  // namespace ash

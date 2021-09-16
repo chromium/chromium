@@ -43,6 +43,12 @@ class SearchResultTileItemListViewTest
       public ::testing::WithParamInterface<std::pair<bool, bool>> {
  public:
   SearchResultTileItemListViewTest() = default;
+
+  SearchResultTileItemListViewTest(const SearchResultTileItemListViewTest&) =
+      delete;
+  SearchResultTileItemListViewTest& operator=(
+      const SearchResultTileItemListViewTest&) = delete;
+
   ~SearchResultTileItemListViewTest() override = default;
 
   // Overridden from testing::Test:
@@ -201,8 +207,6 @@ class SearchResultTileItemListViewTest
   views::Widget* widget_;
   std::unique_ptr<views::Textfield> textfield_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultTileItemListViewTest);
 };
 
 TEST_P(SearchResultTileItemListViewTest, Basic) {

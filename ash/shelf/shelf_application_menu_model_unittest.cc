@@ -30,6 +30,12 @@ class ShelfApplicationMenuModelTestAPI {
   // Creates a test api to access the internals of the |menu|.
   explicit ShelfApplicationMenuModelTestAPI(ShelfApplicationMenuModel* menu)
       : menu_(menu) {}
+
+  ShelfApplicationMenuModelTestAPI(const ShelfApplicationMenuModelTestAPI&) =
+      delete;
+  ShelfApplicationMenuModelTestAPI& operator=(
+      const ShelfApplicationMenuModelTestAPI&) = delete;
+
   ~ShelfApplicationMenuModelTestAPI() = default;
 
   // Give public access to this metrics recording functions.
@@ -41,8 +47,6 @@ class ShelfApplicationMenuModelTestAPI {
  private:
   // The ShelfApplicationMenuModel to provide internal access to. Not owned.
   ShelfApplicationMenuModel* menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfApplicationMenuModelTestAPI);
 };
 
 // Verifies the menu contents given an empty item list.

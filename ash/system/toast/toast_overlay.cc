@@ -110,6 +110,9 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
  public:
   ToastDisplayObserver(ToastOverlay* overlay) : overlay_(overlay) {}
 
+  ToastDisplayObserver(const ToastDisplayObserver&) = delete;
+  ToastDisplayObserver& operator=(const ToastDisplayObserver&) = delete;
+
   ~ToastDisplayObserver() override {}
 
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -121,8 +124,6 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
   ToastOverlay* const overlay_;
 
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ToastDisplayObserver);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

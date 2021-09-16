@@ -25,6 +25,10 @@ namespace ash {
 class ASH_PUBLIC_EXPORT AssistantStateObserver : public base::CheckedObserver {
  public:
   AssistantStateObserver() = default;
+
+  AssistantStateObserver(const AssistantStateObserver&) = delete;
+  AssistantStateObserver& operator=(const AssistantStateObserver&) = delete;
+
   ~AssistantStateObserver() override = default;
 
   virtual void OnAssistantConsentStatusChanged(int consent_status) {}
@@ -44,9 +48,6 @@ class ASH_PUBLIC_EXPORT AssistantStateObserver : public base::CheckedObserver {
   virtual void OnArcPlayStoreEnabledChanged(bool enabled) {}
   virtual void OnLocaleChanged(const std::string& locale) {}
   virtual void OnLockedFullScreenStateChanged(bool enabled) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantStateObserver);
 };
 
 // Plain data class that holds Assistant related prefs and states. This is
@@ -57,6 +58,10 @@ class ASH_PUBLIC_EXPORT AssistantStateObserver : public base::CheckedObserver {
 class ASH_PUBLIC_EXPORT AssistantStateBase {
  public:
   AssistantStateBase();
+
+  AssistantStateBase(const AssistantStateBase&) = delete;
+  AssistantStateBase& operator=(const AssistantStateBase&) = delete;
+
   virtual ~AssistantStateBase();
 
   chromeos::assistant::AssistantStatus assistant_status() const {
@@ -188,9 +193,6 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::ObserverList<AssistantStateObserver> observers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantStateBase);
 };
 
 }  // namespace ash

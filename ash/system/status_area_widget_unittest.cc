@@ -120,6 +120,11 @@ TEST_F(StatusAreaWidgetTest, HanldeOnLocaleChange) {
 class SystemTrayFocusTestObserver : public SystemTrayObserver {
  public:
   SystemTrayFocusTestObserver() = default;
+
+  SystemTrayFocusTestObserver(const SystemTrayFocusTestObserver&) = delete;
+  SystemTrayFocusTestObserver& operator=(const SystemTrayFocusTestObserver&) =
+      delete;
+
   ~SystemTrayFocusTestObserver() override = default;
 
   int focus_out_count() { return focus_out_count_; }
@@ -134,13 +139,16 @@ class SystemTrayFocusTestObserver : public SystemTrayObserver {
  private:
   int focus_out_count_ = 0;
   int reverse_focus_out_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTrayFocusTestObserver);
 };
 
 class StatusAreaWidgetFocusTest : public AshTestBase {
  public:
   StatusAreaWidgetFocusTest() = default;
+
+  StatusAreaWidgetFocusTest(const StatusAreaWidgetFocusTest&) = delete;
+  StatusAreaWidgetFocusTest& operator=(const StatusAreaWidgetFocusTest&) =
+      delete;
+
   ~StatusAreaWidgetFocusTest() override = default;
 
   // AshTestBase:
@@ -167,9 +175,6 @@ class StatusAreaWidgetFocusTest : public AshTestBase {
 
  protected:
   std::unique_ptr<SystemTrayFocusTestObserver> test_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StatusAreaWidgetFocusTest);
 };
 
 // Tests that tab traversal through status area widget in non-active session
@@ -261,6 +266,11 @@ TEST_F(StatusAreaWidgetPaletteTest, Basics) {
 class UnifiedStatusAreaWidgetTest : public AshTestBase {
  public:
   UnifiedStatusAreaWidgetTest() = default;
+
+  UnifiedStatusAreaWidgetTest(const UnifiedStatusAreaWidgetTest&) = delete;
+  UnifiedStatusAreaWidgetTest& operator=(const UnifiedStatusAreaWidgetTest&) =
+      delete;
+
   ~UnifiedStatusAreaWidgetTest() override = default;
 
   // AshTestBase:
@@ -286,8 +296,6 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
   chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedStatusAreaWidgetTest);
 };
 
 TEST_F(UnifiedStatusAreaWidgetTest, Basics) {

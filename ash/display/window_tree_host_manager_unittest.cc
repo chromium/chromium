@@ -57,12 +57,15 @@ template <typename T>
 class Resetter {
  public:
   explicit Resetter(T* value) : value_(*value) { *value = 0; }
+
+  Resetter(const Resetter&) = delete;
+  Resetter& operator=(const Resetter&) = delete;
+
   ~Resetter() = default;
   T value() { return value_; }
 
  private:
   T value_;
-  DISALLOW_COPY_AND_ASSIGN(Resetter);
 };
 
 class TestObserver : public WindowTreeHostManager::Observer,
@@ -76,6 +79,9 @@ class TestObserver : public WindowTreeHostManager::Observer,
         ->AddObserver(this);
     ::wm::GetActivationClient(Shell::GetPrimaryRootWindow())->AddObserver(this);
   }
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
 
   ~TestObserver() override {
     Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
@@ -167,13 +173,15 @@ class TestObserver : public WindowTreeHostManager::Observer,
   int activation_changed_count_ = 0;
 
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class TestHelper {
  public:
   explicit TestHelper(AshTestBase* delegate);
+
+  TestHelper(const TestHelper&) = delete;
+  TestHelper& operator=(const TestHelper&) = delete;
+
   ~TestHelper();
 
   void SetSecondaryDisplayLayoutAndOffset(
@@ -188,7 +196,6 @@ class TestHelper {
 
  private:
   AshTestBase* delegate_;  // Not owned
-  DISALLOW_COPY_AND_ASSIGN(TestHelper);
 };
 
 TestHelper::TestHelper(AshTestBase* delegate) : delegate_(delegate) {}
@@ -224,6 +231,12 @@ class WindowTreeHostManagerShutdownTest : public AshTestBase,
                                           public TestHelper {
  public:
   WindowTreeHostManagerShutdownTest() : TestHelper(this) {}
+
+  WindowTreeHostManagerShutdownTest(const WindowTreeHostManagerShutdownTest&) =
+      delete;
+  WindowTreeHostManagerShutdownTest& operator=(
+      const WindowTreeHostManagerShutdownTest&) = delete;
+
   ~WindowTreeHostManagerShutdownTest() override = default;
 
   void TearDown() override {
@@ -235,18 +248,18 @@ class WindowTreeHostManagerShutdownTest : public AshTestBase,
     EXPECT_EQ("0,0 444x333", primary.bounds().ToString());
     EXPECT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowTreeHostManagerShutdownTest);
 };
 
 class WindowTreeHostManagerStartupTest : public AshTestBase, public TestHelper {
  public:
   WindowTreeHostManagerStartupTest() : TestHelper(this) {}
-  ~WindowTreeHostManagerStartupTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowTreeHostManagerStartupTest);
+  WindowTreeHostManagerStartupTest(const WindowTreeHostManagerStartupTest&) =
+      delete;
+  WindowTreeHostManagerStartupTest& operator=(
+      const WindowTreeHostManagerStartupTest&) = delete;
+
+  ~WindowTreeHostManagerStartupTest() override = default;
 };
 
 class TestEventHandler : public ui::EventHandler {
@@ -259,6 +272,10 @@ class TestEventHandler : public ui::EventHandler {
         scroll_y_offset_(0.0),
         scroll_x_offset_ordinal_(0.0),
         scroll_y_offset_ordinal_(0.0) {}
+
+  TestEventHandler(const TestEventHandler&) = delete;
+  TestEventHandler& operator=(const TestEventHandler&) = delete;
+
   ~TestEventHandler() override = default;
 
   void OnMouseEvent(ui::MouseEvent* event) override {
@@ -324,8 +341,6 @@ class TestEventHandler : public ui::EventHandler {
   float scroll_y_offset_;
   float scroll_x_offset_ordinal_;
   float scroll_y_offset_ordinal_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
 
 class TestMouseWatcherListener : public views::MouseWatcherListener {
@@ -344,10 +359,12 @@ class TestMouseWatcherListener : public views::MouseWatcherListener {
 class WindowTreeHostManagerTest : public AshTestBase, public TestHelper {
  public:
   WindowTreeHostManagerTest() : TestHelper(this) {}
-  ~WindowTreeHostManagerTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowTreeHostManagerTest);
+  WindowTreeHostManagerTest(const WindowTreeHostManagerTest&) = delete;
+  WindowTreeHostManagerTest& operator=(const WindowTreeHostManagerTest&) =
+      delete;
+
+  ~WindowTreeHostManagerTest() override = default;
 };
 
 TEST_F(WindowTreeHostManagerShutdownTest, Shutdown) {
@@ -1420,6 +1437,10 @@ namespace {
 class RootWindowTestObserver : public aura::WindowObserver {
  public:
   RootWindowTestObserver() = default;
+
+  RootWindowTestObserver(const RootWindowTestObserver&) = delete;
+  RootWindowTestObserver& operator=(const RootWindowTestObserver&) = delete;
+
   ~RootWindowTestObserver() override = default;
 
   void OnWindowBoundsChanged(aura::Window* window,
@@ -1436,8 +1457,6 @@ class RootWindowTestObserver : public aura::WindowObserver {
 
  private:
   gfx::Rect shelf_display_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowTestObserver);
 };
 
 }  // namespace

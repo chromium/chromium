@@ -164,6 +164,10 @@ TEST_F(DriveFsDiskMounterTest, MultipleMountNotifications) {
 class MockDiskMounter : public DiskMounter {
  public:
   MockDiskMounter() { ++gInstanceCounter; }
+
+  MockDiskMounter(const MockDiskMounter&) = delete;
+  MockDiskMounter& operator=(const MockDiskMounter&) = delete;
+
   ~MockDiskMounter() override { --gInstanceCounter; }
 
   void Mount(const base::UnguessableToken& token,
@@ -190,7 +194,6 @@ class MockDiskMounter : public DiskMounter {
  private:
   static int gInstanceCounter;
   base::OnceCallback<void(base::FilePath)> callback_;
-  DISALLOW_COPY_AND_ASSIGN(MockDiskMounter);
 };
 
 int MockDiskMounter::gInstanceCounter = 0;
@@ -199,6 +202,10 @@ class MockDriveFsConnection : public DriveFsConnection,
                               public mojom::DriveFsInterceptorForTesting {
  public:
   MockDriveFsConnection() = default;
+
+  MockDriveFsConnection(const MockDriveFsConnection&) = delete;
+  MockDriveFsConnection& operator=(const MockDriveFsConnection&) = delete;
+
   ~MockDriveFsConnection() override = default;
 
   base::UnguessableToken Connect(mojom::DriveFsDelegate* delegate,
@@ -228,8 +235,6 @@ class MockDriveFsConnection : public DriveFsConnection,
 
   mojom::DriveFsDelegate* delegate_ = nullptr;
   base::OnceClosure on_disconnected_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDriveFsConnection);
 };
 
 class DriveFsSessionForTest : public DriveFsSession {
@@ -248,6 +253,10 @@ class DriveFsSessionForTest : public DriveFsSession {
                        my_files_path,
                        desired_mount_dir_name,
                        observer) {}
+
+  DriveFsSessionForTest(const DriveFsSessionForTest&) = delete;
+  DriveFsSessionForTest& operator=(const DriveFsSessionForTest&) = delete;
+
   ~DriveFsSessionForTest() override = default;
 
  private:
@@ -270,7 +279,6 @@ class DriveFsSessionForTest : public DriveFsSession {
       ConnectToExtensionCallback callback) override {}
   void DisplayConfirmDialog(mojom::DialogReasonPtr error,
                             DisplayConfirmDialogCallback callback) override {}
-  DISALLOW_COPY_AND_ASSIGN(DriveFsSessionForTest);
 };
 
 class DriveFsSessionTest : public ::testing::Test,

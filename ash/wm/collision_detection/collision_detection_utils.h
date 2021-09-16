@@ -48,6 +48,10 @@ class ASH_EXPORT CollisionDetectionUtils {
   };
 
   CollisionDetectionUtils() = delete;
+
+  CollisionDetectionUtils(const CollisionDetectionUtils&) = delete;
+  CollisionDetectionUtils& operator=(const CollisionDetectionUtils&) = delete;
+
   ~CollisionDetectionUtils() = delete;
 
   // Returns the area that the window can be positioned inside for a given
@@ -117,8 +121,6 @@ class ASH_EXPORT CollisionDetectionUtils {
                                           const std::vector<gfx::Rect>& rects,
                                           const gfx::Rect& bounds_in_screen,
                                           RelativePriority priority);
-
-  DISALLOW_COPY_AND_ASSIGN(CollisionDetectionUtils);
 };
 
 }  // namespace ash

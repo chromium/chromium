@@ -16,6 +16,10 @@ namespace ash {
 class AshTestViewsDelegate : public views::TestViewsDelegate {
  public:
   AshTestViewsDelegate();
+
+  AshTestViewsDelegate(const AshTestViewsDelegate&) = delete;
+  AshTestViewsDelegate& operator=(const AshTestViewsDelegate&) = delete;
+
   ~AshTestViewsDelegate() override;
 
   // Overriden from TestViewsDelegate.
@@ -34,8 +38,6 @@ class AshTestViewsDelegate : public views::TestViewsDelegate {
   // ProcessAcceleratorWhileMenuShowing returns CLOSE_MENU if passed accelerator
   // matches with this.
   ui::Accelerator close_menu_accelerator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshTestViewsDelegate);
 };
 
 }  // namespace ash

@@ -25,15 +25,16 @@ using message_center::NotifierId;
 class NotifierSettingsViewTest : public AshTestBase {
  public:
   NotifierSettingsViewTest();
+
+  NotifierSettingsViewTest(const NotifierSettingsViewTest&) = delete;
+  NotifierSettingsViewTest& operator=(const NotifierSettingsViewTest&) = delete;
+
   ~NotifierSettingsViewTest() override;
 
   void SetNoNotifiers(bool no_notifiers) {
     ash_test_helper()->notifier_settings_controller()->set_no_notifiers(
         no_notifiers);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotifierSettingsViewTest);
 };
 
 NotifierSettingsViewTest::NotifierSettingsViewTest() = default;

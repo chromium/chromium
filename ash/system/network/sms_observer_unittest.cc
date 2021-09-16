@@ -42,12 +42,13 @@ std::unique_ptr<base::DictionaryValue> CreateMessage(
 class SmsObserverTest : public AshTestBase {
  public:
   SmsObserverTest() = default;
+
+  SmsObserverTest(const SmsObserverTest&) = delete;
+  SmsObserverTest& operator=(const SmsObserverTest&) = delete;
+
   ~SmsObserverTest() override = default;
 
   SmsObserver* GetSmsObserver() { return Shell::Get()->sms_observer_.get(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SmsObserverTest);
 };
 
 // Verify if notification is received after receiving a sms message with

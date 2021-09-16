@@ -24,6 +24,11 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantWebContainerView
 
   explicit AssistantWebContainerView(
       AssistantWebViewDelegate* web_container_view_delegate);
+
+  AssistantWebContainerView(const AssistantWebContainerView&) = delete;
+  AssistantWebContainerView& operator=(const AssistantWebContainerView&) =
+      delete;
+
   ~AssistantWebContainerView() override;
 
   // views::WidgetDelegateView:
@@ -56,8 +61,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantWebContainerView
 
   std::unique_ptr<AssistantWebView> contents_view_;
   AssistantWebView* contents_view_ptr_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantWebContainerView);
 };
 
 }  // namespace ash

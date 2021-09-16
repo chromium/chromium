@@ -39,6 +39,10 @@ constexpr int kInlineAnswerViewHeight = 80;
 class SearchResultListViewTest : public views::test::WidgetTest {
  public:
   SearchResultListViewTest() = default;
+
+  SearchResultListViewTest(const SearchResultListViewTest&) = delete;
+  SearchResultListViewTest& operator=(const SearchResultListViewTest&) = delete;
+
   ~SearchResultListViewTest() override = default;
 
   // Overridden from testing::Test:
@@ -147,8 +151,6 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> view_;
   views::Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultListViewTest);
 };
 
 TEST_F(SearchResultListViewTest, SpokenFeedback) {

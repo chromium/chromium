@@ -45,6 +45,10 @@ class ASH_EXPORT WindowResizer {
   static const int kBoundsChangeDirection_Vertical;
 
   explicit WindowResizer(WindowState* window_state);
+
+  WindowResizer(const WindowResizer&) = delete;
+  WindowResizer& operator=(const WindowResizer&) = delete;
+
   virtual ~WindowResizer();
 
   // Returns a bitmask of the kBoundsChange_ values.
@@ -118,8 +122,6 @@ class ASH_EXPORT WindowResizer {
   std::unique_ptr<PresentationTimeRecorder> recorder_;
 
   base::WeakPtrFactory<WindowResizer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowResizer);
 };
 
 // Creates a WindowResizer for |window|. Returns a unique_ptr with null if

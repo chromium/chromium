@@ -24,6 +24,12 @@ class ASH_EXPORT LockScreenActionBackgroundView
       public views::InkDropObserver {
  public:
   LockScreenActionBackgroundView();
+
+  LockScreenActionBackgroundView(const LockScreenActionBackgroundView&) =
+      delete;
+  LockScreenActionBackgroundView& operator=(
+      const LockScreenActionBackgroundView&) = delete;
+
   ~LockScreenActionBackgroundView() override;
 
   // Request the ink drop to be activated.
@@ -52,8 +58,6 @@ class ASH_EXPORT LockScreenActionBackgroundView
   views::InkDropState animating_to_state_;
 
   NoteBackground* background_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundView);
 };
 
 }  // namespace ash

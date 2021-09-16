@@ -28,6 +28,10 @@ class ArcNotificationItemImpl : public ArcNotificationItem {
                           message_center::MessageCenter* message_center,
                           const std::string& notification_key,
                           const AccountId& profile_id);
+
+  ArcNotificationItemImpl(const ArcNotificationItemImpl&) = delete;
+  ArcNotificationItemImpl& operator=(const ArcNotificationItemImpl&) = delete;
+
   ~ArcNotificationItemImpl() override;
 
   // ArcNotificationItem overrides:
@@ -91,8 +95,6 @@ class ArcNotificationItemImpl : public ArcNotificationItem {
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ArcNotificationItemImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationItemImpl);
 };
 
 }  // namespace ash

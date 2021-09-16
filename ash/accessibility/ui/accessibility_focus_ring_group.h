@@ -27,6 +27,11 @@ namespace ash {
 class ASH_EXPORT AccessibilityFocusRingGroup {
  public:
   AccessibilityFocusRingGroup();
+
+  AccessibilityFocusRingGroup(const AccessibilityFocusRingGroup&) = delete;
+  AccessibilityFocusRingGroup& operator=(const AccessibilityFocusRingGroup&) =
+      delete;
+
   virtual ~AccessibilityFocusRingGroup();
 
   void UpdateFocusRingsFromInfo(AccessibilityLayerDelegate* delegate);
@@ -77,8 +82,6 @@ class ASH_EXPORT AccessibilityFocusRingGroup {
   std::vector<AccessibilityFocusRing> focus_rings_;
   LayerAnimationInfo focus_animation_info_;
   bool no_fade_for_testing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingGroup);
 };
 
 }  // namespace ash

@@ -24,6 +24,10 @@ class UpdateObserver {
 class UpdateModel {
  public:
   UpdateModel();
+
+  UpdateModel(const UpdateModel&) = delete;
+  UpdateModel& operator=(const UpdateModel&) = delete;
+
   ~UpdateModel();
 
   void AddObserver(UpdateObserver* observer);
@@ -86,8 +90,6 @@ class UpdateModel {
   bool update_over_cellular_available_ = false;
 
   base::ObserverList<UpdateObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateModel);
 };
 
 }  // namespace ash

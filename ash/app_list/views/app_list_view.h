@@ -74,13 +74,16 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   class TestApi {
    public:
     explicit TestApi(AppListView* view);
+
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     ~TestApi();
 
     PagedAppsGridView* GetRootAppsGridView();
 
    private:
     AppListView* const view_;
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   class ASH_EXPORT ScopedAccessibilityAnnouncementLock {

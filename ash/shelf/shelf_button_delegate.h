@@ -33,6 +33,10 @@ class ShelfButtonDelegate {
   };
 
   ShelfButtonDelegate() {}
+
+  ShelfButtonDelegate(const ShelfButtonDelegate&) = delete;
+  ShelfButtonDelegate& operator=(const ShelfButtonDelegate&) = delete;
+
   ~ShelfButtonDelegate() = default;
 
   // Used to let the host view redirect focus.
@@ -57,9 +61,6 @@ class ShelfButtonDelegate {
   // active.
   virtual std::unique_ptr<ScopedActiveInkDropCount>
   CreateScopedActiveInkDropCount(const ShelfButton* button);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfButtonDelegate);
 };
 
 }  // namespace ash

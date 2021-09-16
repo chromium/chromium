@@ -38,6 +38,10 @@ class ASH_EXPORT ShelfContextMenuModel : public ui::SimpleMenuModel,
   };
 
   ShelfContextMenuModel(ShelfItemDelegate* delegate, int64_t display_id);
+
+  ShelfContextMenuModel(const ShelfContextMenuModel&) = delete;
+  ShelfContextMenuModel& operator=(const ShelfContextMenuModel&) = delete;
+
   ~ShelfContextMenuModel() override;
 
   // ui::SimpleMenuModel::Delegate overrides:
@@ -51,8 +55,6 @@ class ASH_EXPORT ShelfContextMenuModel : public ui::SimpleMenuModel,
   ShelfItemDelegate* delegate_;
   const int64_t display_id_;
   std::unique_ptr<ui::SimpleMenuModel> alignment_submenu_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfContextMenuModel);
 };
 
 }  // namespace ash

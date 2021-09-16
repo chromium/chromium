@@ -25,6 +25,9 @@ class TestObserver : public AppListItemListObserver {
  public:
   TestObserver() = default;
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   // AppListItemListObserver overriden:
@@ -56,8 +59,6 @@ class TestObserver : public AppListItemListObserver {
   size_t items_added_ = 0;
   size_t items_removed_ = 0;
   size_t items_moved_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 std::string GetItemId(int id) {
@@ -69,6 +70,10 @@ std::string GetItemId(int id) {
 class AppListItemListTest : public testing::Test {
  public:
   AppListItemListTest() = default;
+
+  AppListItemListTest(const AppListItemListTest&) = delete;
+  AppListItemListTest& operator=(const AppListItemListTest&) = delete;
+
   ~AppListItemListTest() override = default;
 
   // testing::Test overrides:
@@ -144,9 +149,6 @@ class AppListItemListTest : public testing::Test {
 
   AppListItemList item_list_;
   TestObserver observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppListItemListTest);
 };
 
 TEST_F(AppListItemListTest, FindItemIndex) {

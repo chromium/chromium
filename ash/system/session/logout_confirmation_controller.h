@@ -39,6 +39,11 @@ class ASH_EXPORT LogoutConfirmationController : public SessionObserver {
   enum class Source { kShelfExitButton, kCloseAllWindows };
 
   LogoutConfirmationController();
+
+  LogoutConfirmationController(const LogoutConfirmationController&) = delete;
+  LogoutConfirmationController& operator=(const LogoutConfirmationController&) =
+      delete;
+
   ~LogoutConfirmationController() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -86,8 +91,6 @@ class ASH_EXPORT LogoutConfirmationController : public SessionObserver {
   base::OneShotTimer logout_timer_;
 
   int confirm_logout_count_for_test_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoutConfirmationController);
 };
 
 }  // namespace ash

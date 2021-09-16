@@ -214,6 +214,10 @@ class VPNListNetworkEntry : public HoverHighlightView,
   VPNListNetworkEntry(VPNListView* vpn_list_view,
                       TrayNetworkStateModel* model,
                       const NetworkStateProperties* network);
+
+  VPNListNetworkEntry(const VPNListNetworkEntry&) = delete;
+  VPNListNetworkEntry& operator=(const VPNListNetworkEntry&) = delete;
+
   ~VPNListNetworkEntry() override;
 
   // network_icon::AnimationObserver:
@@ -232,8 +236,6 @@ class VPNListNetworkEntry : public HoverHighlightView,
   views::LabelButton* disconnect_button_ = nullptr;
 
   base::WeakPtrFactory<VPNListNetworkEntry> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VPNListNetworkEntry);
 };
 
 VPNListNetworkEntry::VPNListNetworkEntry(VPNListView* owner,

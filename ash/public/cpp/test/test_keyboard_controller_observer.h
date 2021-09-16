@@ -20,6 +20,12 @@ namespace ash {
 class TestKeyboardControllerObserver : public KeyboardControllerObserver {
  public:
   explicit TestKeyboardControllerObserver(KeyboardController* controller);
+
+  TestKeyboardControllerObserver(const TestKeyboardControllerObserver&) =
+      delete;
+  TestKeyboardControllerObserver& operator=(
+      const TestKeyboardControllerObserver&) = delete;
+
   ~TestKeyboardControllerObserver() override;
 
   // KeyboardControllerObserver:
@@ -44,8 +50,6 @@ class TestKeyboardControllerObserver : public KeyboardControllerObserver {
   std::set<keyboard::KeyboardEnableFlag> enable_flags_;
   keyboard::KeyboardConfig config_;
   int destroyed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKeyboardControllerObserver);
 };
 
 }  // namespace ash

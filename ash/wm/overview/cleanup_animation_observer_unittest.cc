@@ -27,6 +27,9 @@ class TestOverviewDelegate : public OverviewDelegate {
  public:
   TestOverviewDelegate() = default;
 
+  TestOverviewDelegate(const TestOverviewDelegate&) = delete;
+  TestOverviewDelegate& operator=(const TestOverviewDelegate&) = delete;
+
   ~TestOverviewDelegate() override {
     // Destroy widgets that may be still animating if shell shuts down soon
     // after exiting overview mode.
@@ -51,14 +54,16 @@ class TestOverviewDelegate : public OverviewDelegate {
 
  private:
   std::vector<std::unique_ptr<DelayedAnimationObserver>> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverviewDelegate);
 };
 
 class CleanupAnimationObserverTest : public AshTestBase,
                                      public views::WidgetObserver {
  public:
   CleanupAnimationObserverTest() = default;
+
+  CleanupAnimationObserverTest(const CleanupAnimationObserverTest&) = delete;
+  CleanupAnimationObserverTest& operator=(const CleanupAnimationObserverTest&) =
+      delete;
 
   ~CleanupAnimationObserverTest() override {
     if (widget_)
@@ -93,8 +98,6 @@ class CleanupAnimationObserverTest : public AshTestBase,
   }
 
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CleanupAnimationObserverTest);
 };
 
 }  // namespace

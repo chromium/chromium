@@ -26,6 +26,11 @@ class UnifiedSystemTrayController;
 class UnifiedSlidersContainerView : public views::View {
  public:
   explicit UnifiedSlidersContainerView(bool initially_expanded);
+
+  UnifiedSlidersContainerView(const UnifiedSlidersContainerView&) = delete;
+  UnifiedSlidersContainerView& operator=(const UnifiedSlidersContainerView&) =
+      delete;
+
   ~UnifiedSlidersContainerView() override;
 
   // Change the expanded state. 0.0 if collapsed, and 1.0 if expanded.
@@ -45,8 +50,6 @@ class UnifiedSlidersContainerView : public views::View {
 
  private:
   double expanded_amount_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSlidersContainerView);
 };
 
 // View class of the main bubble in UnifiedSystemTray.
@@ -62,6 +65,10 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
  public:
   UnifiedSystemTrayView(UnifiedSystemTrayController* controller,
                         bool initially_expanded);
+
+  UnifiedSystemTrayView(const UnifiedSystemTrayView&) = delete;
+  UnifiedSystemTrayView& operator=(const UnifiedSystemTrayView&) = delete;
+
   ~UnifiedSystemTrayView() override;
 
   // Set the maximum height that the view can take.
@@ -200,8 +207,6 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   views::FocusManager* focus_manager_ = nullptr;
 
   const std::unique_ptr<ui::EventHandler> interacted_by_tap_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayView);
 };
 
 }  // namespace ash

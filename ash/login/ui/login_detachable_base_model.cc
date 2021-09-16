@@ -27,6 +27,10 @@ class LoginDetachableBaseModelImpl : public LoginDetachableBaseModel,
     detachable_base_observation_.Observe(detachable_base_handler);
   }
 
+  LoginDetachableBaseModelImpl(const LoginDetachableBaseModelImpl&) = delete;
+  LoginDetachableBaseModelImpl& operator=(const LoginDetachableBaseModelImpl&) =
+      delete;
+
   ~LoginDetachableBaseModelImpl() override = default;
 
   // LoginDetachableBaseModel:
@@ -54,8 +58,6 @@ class LoginDetachableBaseModelImpl : public LoginDetachableBaseModel,
   DetachableBaseHandler* detachable_base_handler_;
   base::ScopedObservation<DetachableBaseHandler, DetachableBaseObserver>
       detachable_base_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDetachableBaseModelImpl);
 };
 
 }  // namespace

@@ -37,6 +37,10 @@ class AlwaysMaximizeTestState : public WindowState::State {
  public:
   explicit AlwaysMaximizeTestState(WindowStateType initial_state_type)
       : state_type_(initial_state_type) {}
+
+  AlwaysMaximizeTestState(const AlwaysMaximizeTestState&) = delete;
+  AlwaysMaximizeTestState& operator=(const AlwaysMaximizeTestState&) = delete;
+
   ~AlwaysMaximizeTestState() override = default;
 
   // WindowState::State overrides:
@@ -56,8 +60,6 @@ class AlwaysMaximizeTestState : public WindowState::State {
 
  private:
   WindowStateType state_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlwaysMaximizeTestState);
 };
 
 using WindowStateTest = AshTestBase;

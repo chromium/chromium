@@ -33,6 +33,9 @@ class TestNotificationView : public message_center::NotificationView {
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   }
 
+  TestNotificationView(const TestNotificationView&) = delete;
+  TestNotificationView& operator=(const TestNotificationView&) = delete;
+
   ~TestNotificationView() override = default;
 
   // message_center::NotificationView:
@@ -49,14 +52,16 @@ class TestNotificationView : public message_center::NotificationView {
  private:
   int top_radius_ = 0;
   int bottom_radius_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNotificationView);
 };
 
 class TestUnifiedMessageListView : public UnifiedMessageListView {
  public:
   explicit TestUnifiedMessageListView(UnifiedSystemTrayModel* model)
       : UnifiedMessageListView(nullptr, model) {}
+
+  TestUnifiedMessageListView(const TestUnifiedMessageListView&) = delete;
+  TestUnifiedMessageListView& operator=(const TestUnifiedMessageListView&) =
+      delete;
 
   ~TestUnifiedMessageListView() override = default;
 
@@ -90,8 +95,6 @@ class TestUnifiedMessageListView : public UnifiedMessageListView {
 
  private:
   std::vector<message_center::Notification*> stacked_notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUnifiedMessageListView);
 };
 
 }  // namespace
@@ -100,6 +103,11 @@ class UnifiedMessageListViewTest : public AshTestBase,
                                    public views::ViewObserver {
  public:
   UnifiedMessageListViewTest() = default;
+
+  UnifiedMessageListViewTest(const UnifiedMessageListViewTest&) = delete;
+  UnifiedMessageListViewTest& operator=(const UnifiedMessageListViewTest&) =
+      delete;
+
   ~UnifiedMessageListViewTest() override = default;
 
   // AshTestBase:
@@ -197,8 +205,6 @@ class UnifiedMessageListViewTest : public AshTestBase,
 
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<TestUnifiedMessageListView> message_list_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedMessageListViewTest);
 };
 
 TEST_F(UnifiedMessageListViewTest, Open) {

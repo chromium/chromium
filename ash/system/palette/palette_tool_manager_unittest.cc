@@ -50,6 +50,10 @@ class PaletteToolManagerTest : public ::testing::Test,
  public:
   PaletteToolManagerTest()
       : palette_tool_manager_(new PaletteToolManager(this)) {}
+
+  PaletteToolManagerTest(const PaletteToolManagerTest&) = delete;
+  PaletteToolManagerTest& operator=(const PaletteToolManagerTest&) = delete;
+
   ~PaletteToolManagerTest() override = default;
 
  protected:
@@ -79,9 +83,6 @@ class PaletteToolManagerTest : public ::testing::Test,
 
   int tool_changed_count_ = 0;
   std::unique_ptr<PaletteToolManager> palette_tool_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaletteToolManagerTest);
 };
 
 }  // namespace

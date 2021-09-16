@@ -27,6 +27,10 @@ class LocaleModel {
   };
 
   LocaleModel();
+
+  LocaleModel(const LocaleModel&) = delete;
+  LocaleModel& operator=(const LocaleModel&) = delete;
+
   ~LocaleModel();
 
   void AddObserver(Observer* observer);
@@ -50,8 +54,6 @@ class LocaleModel {
   std::string current_locale_iso_code_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleModel);
 };
 
 }  // namespace ash

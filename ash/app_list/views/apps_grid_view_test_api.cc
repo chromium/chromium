@@ -29,6 +29,10 @@ class BoundsAnimatorWaiter : public views::BoundsAnimatorObserver {
       : animator_(animator) {
     animator->AddObserver(this);
   }
+
+  BoundsAnimatorWaiter(const BoundsAnimatorWaiter&) = delete;
+  BoundsAnimatorWaiter& operator=(const BoundsAnimatorWaiter&) = delete;
+
   ~BoundsAnimatorWaiter() override { animator_->RemoveObserver(this); }
 
   void Wait() {
@@ -49,8 +53,6 @@ class BoundsAnimatorWaiter : public views::BoundsAnimatorObserver {
 
   views::BoundsAnimator* animator_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoundsAnimatorWaiter);
 };
 
 }  // namespace

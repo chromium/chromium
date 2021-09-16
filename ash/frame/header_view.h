@@ -55,6 +55,10 @@ class ASH_EXPORT HeaderView
   // However, clicking a caption button should act on the target widget.
   HeaderView(views::Widget* target_widget,
              views::NonClientFrameView* frame_view);
+
+  HeaderView(const HeaderView&) = delete;
+  HeaderView& operator=(const HeaderView&) = delete;
+
   ~HeaderView() override;
 
   METADATA_HEADER(HeaderView);
@@ -181,8 +185,6 @@ class ASH_EXPORT HeaderView
   // Observes property changes to |target_widget_|'s window.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HeaderView);
 };
 
 }  // namespace ash

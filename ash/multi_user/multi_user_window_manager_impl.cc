@@ -75,6 +75,9 @@ class AnimationSetter {
     ::wm::SetWindowVisibilityAnimationDuration(window_, animation_time);
   }
 
+  AnimationSetter(const AnimationSetter&) = delete;
+  AnimationSetter& operator=(const AnimationSetter&) = delete;
+
   ~AnimationSetter() {
     ::wm::SetWindowVisibilityAnimationType(window_, previous_animation_type_);
     ::wm::SetWindowVisibilityAnimationDuration(window_,
@@ -90,8 +93,6 @@ class AnimationSetter {
 
   // Previous animation time.
   const base::TimeDelta previous_animation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationSetter);
 };
 
 MultiUserWindowManagerImpl::WindowEntry::WindowEntry(

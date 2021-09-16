@@ -21,6 +21,10 @@ namespace ash {
 class TopShortcutsViewTest : public NoSessionAshTestBase {
  public:
   TopShortcutsViewTest() = default;
+
+  TopShortcutsViewTest(const TopShortcutsViewTest&) = delete;
+  TopShortcutsViewTest& operator=(const TopShortcutsViewTest&) = delete;
+
   ~TopShortcutsViewTest() override = default;
 
   void SetUp() override {
@@ -68,8 +72,6 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<TopShortcutsView> top_shortcuts_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopShortcutsViewTest);
 };
 
 // Settings button and lock button are hidden before login.

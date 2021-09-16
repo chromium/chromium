@@ -21,6 +21,10 @@ class ASH_EXPORT LockScreenNoteLauncher : public TrayActionObserver {
   using LaunchCallback = base::OnceCallback<void(bool success)>;
 
   LockScreenNoteLauncher();
+
+  LockScreenNoteLauncher(const LockScreenNoteLauncher&) = delete;
+  LockScreenNoteLauncher& operator=(const LockScreenNoteLauncher&) = delete;
+
   ~LockScreenNoteLauncher() override;
 
   // Whether the lock screen note state indicates that a note action launch can
@@ -50,8 +54,6 @@ class ASH_EXPORT LockScreenNoteLauncher : public TrayActionObserver {
 
   base::ScopedObservation<TrayAction, TrayActionObserver>
       tray_action_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenNoteLauncher);
 };
 
 }  // namespace ash

@@ -42,6 +42,10 @@ class VPNListView : public NetworkStateListDetailedView,
   using VpnProviderPtr = chromeos::network_config::mojom::VpnProviderPtr;
 
   VPNListView(DetailedViewDelegate* delegate, LoginStatus login);
+
+  VPNListView(const VPNListView&) = delete;
+  VPNListView& operator=(const VPNListView&) = delete;
+
   ~VPNListView() override;
 
   // NetworkStateListDetailedView:
@@ -96,8 +100,6 @@ class VPNListView : public NetworkStateListDetailedView,
   bool list_empty_ = true;
 
   base::WeakPtrFactory<VPNListView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VPNListView);
 };
 
 }  // namespace tray

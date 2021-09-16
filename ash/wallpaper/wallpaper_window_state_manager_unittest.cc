@@ -27,13 +27,15 @@ class WallpaperWindowStateManagerTest : public AshTestBase {
       : window_state_manager_(std::make_unique<WallpaperWindowStateManager>()) {
   }
 
+  WallpaperWindowStateManagerTest(const WallpaperWindowStateManagerTest&) =
+      delete;
+  WallpaperWindowStateManagerTest& operator=(
+      const WallpaperWindowStateManagerTest&) = delete;
+
   ~WallpaperWindowStateManagerTest() override = default;
 
  protected:
   std::unique_ptr<WallpaperWindowStateManager> window_state_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WallpaperWindowStateManagerTest);
 };
 
 TEST_F(WallpaperWindowStateManagerTest, HideAndRestoreWindows) {

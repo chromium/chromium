@@ -41,6 +41,11 @@ class TestSessionControllerClient : public SessionControllerClient {
  public:
   TestSessionControllerClient(SessionControllerImpl* controller,
                               TestPrefServiceProvider* prefs_provider);
+
+  TestSessionControllerClient(const TestSessionControllerClient&) = delete;
+  TestSessionControllerClient& operator=(const TestSessionControllerClient&) =
+      delete;
+
   ~TestSessionControllerClient() override;
 
   static void DisableAutomaticallyProvideSigninPref();
@@ -157,8 +162,6 @@ class TestSessionControllerClient : public SessionControllerClient {
   std::unique_ptr<views::Widget> multi_profile_login_widget_;
 
   base::WeakPtrFactory<TestSessionControllerClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionControllerClient);
 };
 
 }  // namespace ash

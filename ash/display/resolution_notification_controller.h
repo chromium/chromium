@@ -29,6 +29,12 @@ class ASH_EXPORT ResolutionNotificationController
       public WindowTreeHostManager::Observer {
  public:
   ResolutionNotificationController();
+
+  ResolutionNotificationController(const ResolutionNotificationController&) =
+      delete;
+  ResolutionNotificationController& operator=(
+      const ResolutionNotificationController&) = delete;
+
   ~ResolutionNotificationController() override;
 
   // If |display_id| is not the internal display and |source| is |kSourceUser|
@@ -98,8 +104,6 @@ class ASH_EXPORT ResolutionNotificationController
   base::WeakPtr<DisplayChangeDialog> confirmation_dialog_;
 
   base::WeakPtrFactory<ResolutionNotificationController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResolutionNotificationController);
 };
 
 }  // namespace ash

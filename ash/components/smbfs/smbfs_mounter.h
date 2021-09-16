@@ -78,6 +78,10 @@ class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
                const MountOptions& options,
                SmbFsHost::Delegate* delegate,
                chromeos::disks::DiskMountManager* disk_mount_manager);
+
+  SmbFsMounter(const SmbFsMounter&) = delete;
+  SmbFsMounter& operator=(const SmbFsMounter&) = delete;
+
   virtual ~SmbFsMounter();
 
   // Initiate the filesystem mount request, and run |callback| when completed.
@@ -135,8 +139,6 @@ class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
   mojo::Remote<mojom::SmbFsBootstrap> bootstrap_;
 
   base::WeakPtrFactory<SmbFsMounter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SmbFsMounter);
 };
 
 }  // namespace smbfs

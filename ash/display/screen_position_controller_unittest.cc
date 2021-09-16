@@ -36,6 +36,11 @@ ScreenPositionController* GetScreenPositionController() {
 class ScreenPositionControllerTest : public AshTestBase {
  public:
   ScreenPositionControllerTest() = default;
+
+  ScreenPositionControllerTest(const ScreenPositionControllerTest&) = delete;
+  ScreenPositionControllerTest& operator=(const ScreenPositionControllerTest&) =
+      delete;
+
   ~ScreenPositionControllerTest() override = default;
 
   void SetUp() override {
@@ -71,9 +76,6 @@ class ScreenPositionControllerTest : public AshTestBase {
  protected:
   std::unique_ptr<aura::Window> window_;
   aura::test::TestWindowDelegate window_delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenPositionControllerTest);
 };
 
 }  // namespace
@@ -277,6 +279,11 @@ class ConvertToScreenEventHandler : public ui::EventHandler {
   ConvertToScreenEventHandler() : could_convert_to_screen_(true) {
     aura::Env::GetInstance()->AddPreTargetHandler(this);
   }
+
+  ConvertToScreenEventHandler(const ConvertToScreenEventHandler&) = delete;
+  ConvertToScreenEventHandler& operator=(const ConvertToScreenEventHandler&) =
+      delete;
+
   ~ConvertToScreenEventHandler() override {
     aura::Env::GetInstance()->RemovePreTargetHandler(this);
   }
@@ -295,8 +302,6 @@ class ConvertToScreenEventHandler : public ui::EventHandler {
   }
 
   bool could_convert_to_screen_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConvertToScreenEventHandler);
 };
 
 }  // namespace

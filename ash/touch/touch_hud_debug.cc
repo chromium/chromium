@@ -176,6 +176,9 @@ class TouchHudCanvas : public views::View {
     flags_.setStyle(cc::PaintFlags::kFill_Style);
   }
 
+  TouchHudCanvas(const TouchHudCanvas&) = delete;
+  TouchHudCanvas& operator=(const TouchHudCanvas&) = delete;
+
   ~TouchHudCanvas() override = default;
 
   void SetScale(int scale) {
@@ -243,8 +246,6 @@ class TouchHudCanvas : public views::View {
   SkColor colors_[kMaxPaths];
 
   int scale_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHudCanvas);
 };
 
 TouchHudDebug::TouchHudDebug(aura::Window* initial_root)

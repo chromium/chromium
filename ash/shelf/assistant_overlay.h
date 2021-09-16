@@ -20,6 +20,10 @@ class ASH_EXPORT AssistantOverlay : public views::View,
                                     public ui::ImplicitAnimationObserver {
  public:
   explicit AssistantOverlay(HomeButton* host_view);
+
+  AssistantOverlay(const AssistantOverlay&) = delete;
+  AssistantOverlay& operator=(const AssistantOverlay&) = delete;
+
   ~AssistantOverlay() override;
 
   void StartAnimation(bool show_icon);
@@ -60,8 +64,6 @@ class ASH_EXPORT AssistantOverlay : public views::View,
 
   views::CircleLayerDelegate circle_layer_delegate_;
   std::unique_ptr<HomeButton::ScopedNoClipRect> scoped_no_clip_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantOverlay);
 };
 
 }  // namespace ash

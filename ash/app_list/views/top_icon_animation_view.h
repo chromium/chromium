@@ -49,6 +49,10 @@ class TopIconAnimationView : public views::View,
                        const gfx::Rect& scaled_rect,
                        bool open_folder,
                        bool item_in_folder_icon);
+
+  TopIconAnimationView(const TopIconAnimationView&) = delete;
+  TopIconAnimationView& operator=(const TopIconAnimationView&) = delete;
+
   ~TopIconAnimationView() override;
 
   void AddObserver(TopIconAnimationObserver* observer);
@@ -84,8 +88,6 @@ class TopIconAnimationView : public views::View,
   bool item_in_folder_icon_;
 
   base::ObserverList<TopIconAnimationObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopIconAnimationView);
 };
 
 }  // namespace ash

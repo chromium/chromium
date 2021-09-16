@@ -106,6 +106,9 @@ class ShortcutsListScrollView : public views::ScrollView {
     GetViewAccessibility().OverrideRole(ax::mojom::Role::kScrollView);
   }
 
+  ShortcutsListScrollView(const ShortcutsListScrollView&) = delete;
+  ShortcutsListScrollView& operator=(const ShortcutsListScrollView&) = delete;
+
   ~ShortcutsListScrollView() override = default;
 
   // views::View:
@@ -115,9 +118,6 @@ class ShortcutsListScrollView : public views::ScrollView {
   }
 
   void OnBlur() override { SetHasFocusIndicator(false); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShortcutsListScrollView);
 };
 
 std::unique_ptr<ShortcutsListScrollView> CreateScrollView(

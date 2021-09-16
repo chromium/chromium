@@ -57,6 +57,11 @@ namespace {
 class TestDisplayRemoveObserver : public display::DisplayObserver {
  public:
   TestDisplayRemoveObserver() = default;
+
+  TestDisplayRemoveObserver(const TestDisplayRemoveObserver&) = delete;
+  TestDisplayRemoveObserver& operator=(const TestDisplayRemoveObserver&) =
+      delete;
+
   ~TestDisplayRemoveObserver() override = default;
 
   int added_displays() const { return added_displays_; }
@@ -81,8 +86,6 @@ class TestDisplayRemoveObserver : public display::DisplayObserver {
 
   int added_displays_ = 0;
   int removed_displays_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayRemoveObserver);
 };
 
 }  // namespace

@@ -35,6 +35,10 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   using AppListItemMetadata = ash::AppListItemMetadata;
 
   explicit AppListItem(const std::string& id);
+
+  AppListItem(const AppListItem&) = delete;
+  AppListItem& operator=(const AppListItem&) = delete;
+
   virtual ~AppListItem();
 
   void SetIcon(AppListConfigType config_type, const gfx::ImageSkia& icon);
@@ -167,8 +171,6 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   bool has_notification_badge_ = false;
 
   base::ObserverList<AppListItemObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListItem);
 };
 
 }  // namespace ash

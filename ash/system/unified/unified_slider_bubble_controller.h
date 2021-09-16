@@ -35,6 +35,11 @@ class ASH_EXPORT UnifiedSliderBubbleController
   };
 
   explicit UnifiedSliderBubbleController(UnifiedSystemTray* tray);
+
+  UnifiedSliderBubbleController(const UnifiedSliderBubbleController&) = delete;
+  UnifiedSliderBubbleController& operator=(
+      const UnifiedSliderBubbleController&) = delete;
+
   ~UnifiedSliderBubbleController() override;
 
   // Show a slider of |slider_type|. If the slider of same type is already
@@ -92,8 +97,6 @@ class ASH_EXPORT UnifiedSliderBubbleController
   // Controller of the current slider view. If a slider is not shown, it's null.
   // Owned.
   std::unique_ptr<UnifiedSliderListener> slider_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSliderBubbleController);
 };
 
 }  // namespace ash

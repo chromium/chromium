@@ -35,6 +35,10 @@ class ASH_EXPORT ScreenPinningController
       aura::WindowObserver {
  public:
   ScreenPinningController();
+
+  ScreenPinningController(const ScreenPinningController&) = delete;
+  ScreenPinningController& operator=(const ScreenPinningController&) = delete;
+
   ~ScreenPinningController() override;
 
   // Sets a pinned window. It is not allowed to call this when there already
@@ -114,8 +118,6 @@ class ASH_EXPORT ScreenPinningController
       system_modal_container_window_observer_;
   std::unique_ptr<SystemModalContainerChildWindowObserver>
       system_modal_container_child_window_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenPinningController);
 };
 
 }  // namespace ash

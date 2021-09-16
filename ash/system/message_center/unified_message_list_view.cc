@@ -96,6 +96,9 @@ class UnifiedMessageListView::MessageViewContainer
     AddChildView(message_view_);
   }
 
+  MessageViewContainer(const MessageViewContainer&) = delete;
+  MessageViewContainer& operator=(const MessageViewContainer&) = delete;
+
   ~MessageViewContainer() override { message_view_->RemoveObserver(this); }
 
   // Update the border and background corners based on if the notification is
@@ -251,8 +254,6 @@ class UnifiedMessageListView::MessageViewContainer
   MessageView* const message_view_;
   UnifiedMessageListView* const list_view_;
   NotificationSwipeControlView* const control_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageViewContainer);
 };
 
 UnifiedMessageListView::UnifiedMessageListView(

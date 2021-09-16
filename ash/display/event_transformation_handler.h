@@ -24,6 +24,11 @@ class ASH_EXPORT EventTransformationHandler : public ui::EventHandler {
   };
 
   EventTransformationHandler();
+
+  EventTransformationHandler(const EventTransformationHandler&) = delete;
+  EventTransformationHandler& operator=(const EventTransformationHandler&) =
+      delete;
+
   ~EventTransformationHandler() override;
 
   void set_transformation_mode(TransformationMode transformation_mode) {
@@ -35,8 +40,6 @@ class ASH_EXPORT EventTransformationHandler : public ui::EventHandler {
 
  private:
   TransformationMode transformation_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventTransformationHandler);
 };
 
 }  // namespace ash

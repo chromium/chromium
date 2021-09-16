@@ -19,6 +19,11 @@ class NotificationMenuViewTestAPI {
  public:
   explicit NotificationMenuViewTestAPI(
       NotificationMenuView* notification_menu_view);
+
+  NotificationMenuViewTestAPI(const NotificationMenuViewTestAPI&) = delete;
+  NotificationMenuViewTestAPI& operator=(const NotificationMenuViewTestAPI&) =
+      delete;
+
   ~NotificationMenuViewTestAPI();
 
   // Returns the numeric string contained in the counter view.
@@ -32,8 +37,6 @@ class NotificationMenuViewTestAPI {
 
  private:
   NotificationMenuView* const notification_menu_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuViewTestAPI);
 };
 
 }  // namespace ash

@@ -15,6 +15,11 @@ namespace ash {
 class CastNotificationController : public CastConfigController::Observer {
  public:
   CastNotificationController();
+
+  CastNotificationController(const CastNotificationController&) = delete;
+  CastNotificationController& operator=(const CastNotificationController&) =
+      delete;
+
   ~CastNotificationController() override;
 
   // CastConfigControllerObserver:
@@ -28,8 +33,6 @@ class CastNotificationController : public CastConfigController::Observer {
   std::string displayed_route_id_;
 
   base::WeakPtrFactory<CastNotificationController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastNotificationController);
 };
 
 }  // namespace ash

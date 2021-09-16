@@ -154,6 +154,9 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
         kSplitviewLabelBackgroundColor));
   }
 
+  RotatedImageLabelView(const RotatedImageLabelView&) = delete;
+  RotatedImageLabelView& operator=(const RotatedImageLabelView&) = delete;
+
   ~RotatedImageLabelView() override = default;
 
   void SetLabelText(const std::u16string& text) { label_->SetText(text); }
@@ -227,8 +230,6 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
 
   views::View* label_parent_ = nullptr;
   views::Label* label_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RotatedImageLabelView);
 };
 
 // View which contains two highlights on each side indicator where a user should
@@ -259,6 +260,10 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     left_rotated_view_->layer()->SetOpacity(0.f);
     right_rotated_view_->layer()->SetOpacity(0.f);
   }
+
+  SplitViewDragIndicatorsView(const SplitViewDragIndicatorsView&) = delete;
+  SplitViewDragIndicatorsView& operator=(const SplitViewDragIndicatorsView&) =
+      delete;
 
   ~SplitViewDragIndicatorsView() override {
     if (dragged_window_)
@@ -620,8 +625,6 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
       WindowDraggingState::kNoDrag;
 
   aura::Window* dragged_window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewDragIndicatorsView);
 };
 
 SplitViewDragIndicators::SplitViewDragIndicators(aura::Window* root_window) {

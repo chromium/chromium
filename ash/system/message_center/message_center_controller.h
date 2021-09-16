@@ -37,6 +37,10 @@ class ASH_EXPORT MessageCenterController
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   MessageCenterController();
+
+  MessageCenterController(const MessageCenterController&) = delete;
+  MessageCenterController& operator=(const MessageCenterController&) = delete;
+
   ~MessageCenterController() override;
 
   // ArcNotificationsHostInitializer:
@@ -73,8 +77,6 @@ class ASH_EXPORT MessageCenterController
       phone_hub_notification_controller_;
 
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterController);
 };
 
 }  // namespace ash

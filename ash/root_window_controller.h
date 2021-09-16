@@ -73,6 +73,9 @@ class ASH_EXPORT RootWindowController {
   // PRIMARY and all others SECONDARY.
   enum class RootWindowType { PRIMARY, SECONDARY };
 
+  RootWindowController(const RootWindowController&) = delete;
+  RootWindowController& operator=(const RootWindowController&) = delete;
+
   ~RootWindowController();
 
   // Creates and Initialize the RootWindowController for primary display.
@@ -322,8 +325,6 @@ class ASH_EXPORT RootWindowController {
   std::unique_ptr<WorkAreaInsets> work_area_insets_;
 
   static std::vector<RootWindowController*>* root_window_controllers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowController);
 };
 
 }  // namespace ash

@@ -27,6 +27,10 @@ class TimeToClickRecorder : public ui::EventHandler {
   };
 
   TimeToClickRecorder(Delegate* delegate, views::View* target_view);
+
+  TimeToClickRecorder(const TimeToClickRecorder&) = delete;
+  TimeToClickRecorder& operator=(const TimeToClickRecorder&) = delete;
+
   ~TimeToClickRecorder() override = default;
 
  private:
@@ -34,8 +38,6 @@ class TimeToClickRecorder : public ui::EventHandler {
   void OnEvent(ui::Event* event) override;
 
   Delegate* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeToClickRecorder);
 };
 
 }  // namespace ash

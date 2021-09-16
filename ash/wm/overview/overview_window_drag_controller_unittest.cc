@@ -69,6 +69,9 @@ class WindowCloseWaiter : public aura::WindowObserver {
     window_->AddObserver(this);
   }
 
+  WindowCloseWaiter(const WindowCloseWaiter&) = delete;
+  WindowCloseWaiter& operator=(const WindowCloseWaiter&) = delete;
+
   ~WindowCloseWaiter() override {
     if (window_)
       window_->RemoveObserver(this);
@@ -91,8 +94,6 @@ class WindowCloseWaiter : public aura::WindowObserver {
  private:
   aura::Window* window_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowCloseWaiter);
 };
 
 }  // namespace
@@ -221,6 +222,12 @@ TEST_F(OverviewWindowDragControllerTest, WindowDestroyedDuringDragging) {
 class OverviewWindowDragControllerDesksPortraitTabletTest : public AshTestBase {
  public:
   OverviewWindowDragControllerDesksPortraitTabletTest() = default;
+
+  OverviewWindowDragControllerDesksPortraitTabletTest(
+      const OverviewWindowDragControllerDesksPortraitTabletTest&) = delete;
+  OverviewWindowDragControllerDesksPortraitTabletTest& operator=(
+      const OverviewWindowDragControllerDesksPortraitTabletTest&) = delete;
+
   ~OverviewWindowDragControllerDesksPortraitTabletTest() override = default;
 
   OverviewController* overview_controller() {
@@ -311,9 +318,6 @@ class OverviewWindowDragControllerDesksPortraitTabletTest : public AshTestBase {
     EXPECT_EQ(GetExpectedDesksBarShiftAmount(),
               desks_bar_widget()->GetWindowBoundsInScreen().y());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverviewWindowDragControllerDesksPortraitTabletTest);
 };
 
 TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,

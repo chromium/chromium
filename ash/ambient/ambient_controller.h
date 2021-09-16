@@ -62,6 +62,10 @@ class ASH_EXPORT AmbientController
 
   explicit AmbientController(
       mojo::PendingRemote<device::mojom::Fingerprint> fingerprint);
+
+  AmbientController(const AmbientController&) = delete;
+  AmbientController& operator=(const AmbientController&) = delete;
+
   ~AmbientController() override;
 
   // AmbientUiModelObserver:
@@ -229,7 +233,6 @@ class ASH_EXPORT AmbientController
   bool is_screen_off_ = false;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AmbientController);
 };
 
 }  // namespace ash

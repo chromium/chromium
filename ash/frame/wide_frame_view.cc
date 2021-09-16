@@ -33,6 +33,10 @@ class WideFrameTargeter : public aura::WindowTargeter {
  public:
   explicit WideFrameTargeter(HeaderView* header_view)
       : header_view_(header_view) {}
+
+  WideFrameTargeter(const WideFrameTargeter&) = delete;
+  WideFrameTargeter& operator=(const WideFrameTargeter&) = delete;
+
   ~WideFrameTargeter() override = default;
 
   // aura::WindowTargeter:
@@ -55,7 +59,6 @@ class WideFrameTargeter : public aura::WindowTargeter {
 
  private:
   HeaderView* header_view_;
-  DISALLOW_COPY_AND_ASSIGN(WideFrameTargeter);
 };
 
 }  // namespace

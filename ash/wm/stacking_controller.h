@@ -16,14 +16,15 @@ class ASH_EXPORT StackingController
     : public aura::client::WindowParentingClient {
  public:
   StackingController();
+
+  StackingController(const StackingController&) = delete;
+  StackingController& operator=(const StackingController&) = delete;
+
   ~StackingController() override;
 
   // Overridden from aura::client::WindowParentingClient:
   aura::Window* GetDefaultParent(aura::Window* window,
                                  const gfx::Rect& bounds) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StackingController);
 };
 
 }  // namespace ash

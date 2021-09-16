@@ -19,6 +19,12 @@ namespace ash {
 class ShelfWindowWatcherItemDelegate : public ShelfItemDelegate {
  public:
   ShelfWindowWatcherItemDelegate(const ShelfID& id, aura::Window* window);
+
+  ShelfWindowWatcherItemDelegate(const ShelfWindowWatcherItemDelegate&) =
+      delete;
+  ShelfWindowWatcherItemDelegate& operator=(
+      const ShelfWindowWatcherItemDelegate&) = delete;
+
   ~ShelfWindowWatcherItemDelegate() override;
 
  private:
@@ -38,8 +44,6 @@ class ShelfWindowWatcherItemDelegate : public ShelfItemDelegate {
 
   // The window associated with this item. Not owned.
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfWindowWatcherItemDelegate);
 };
 
 }  // namespace ash

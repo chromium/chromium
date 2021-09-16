@@ -37,6 +37,11 @@ class ASH_EXPORT PowerButtonDisplayController
   PowerButtonDisplayController(
       BacklightsForcedOffSetter* backlights_forced_off_setter,
       const base::TickClock* tick_clock);
+
+  PowerButtonDisplayController(const PowerButtonDisplayController&) = delete;
+  PowerButtonDisplayController& operator=(const PowerButtonDisplayController&) =
+      delete;
+
   ~PowerButtonDisplayController() override;
 
   bool IsScreenOn() const;
@@ -90,8 +95,6 @@ class ASH_EXPORT PowerButtonDisplayController
   std::unique_ptr<ScopedBacklightsForcedOff> backlights_forced_off_;
 
   base::WeakPtrFactory<PowerButtonDisplayController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonDisplayController);
 };
 
 }  // namespace ash

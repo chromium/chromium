@@ -38,6 +38,10 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
     SetCanMinimize(true);
     SetCanResize(resizable);
   }
+
+  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
+  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
+
   ~TestWidgetDelegate() override = default;
 
   FrameCaptionButtonContainerView* caption_button_container() {
@@ -79,14 +83,16 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 
   // Not owned.
   FrameCaptionButtonContainerView* caption_button_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
 };
 
 class FrameSizeButtonTest : public AshTestBase {
  public:
   FrameSizeButtonTest() = default;
   explicit FrameSizeButtonTest(bool resizable) : resizable_(resizable) {}
+
+  FrameSizeButtonTest(const FrameSizeButtonTest&) = delete;
+  FrameSizeButtonTest& operator=(const FrameSizeButtonTest&) = delete;
+
   ~FrameSizeButtonTest() override = default;
 
   // Returns the center point of |view| in screen coordinates.
@@ -152,8 +158,6 @@ class FrameSizeButtonTest : public AshTestBase {
   views::FrameCaptionButton* size_button_;
   views::FrameCaptionButton* close_button_;
   bool resizable_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSizeButtonTest);
 };
 
 }  // namespace
@@ -448,6 +452,10 @@ TEST_F(FrameSizeButtonTest, SizeButtonPressedWhenSnapButtonHovered) {
 class FrameSizeButtonTestRTL : public FrameSizeButtonTest {
  public:
   FrameSizeButtonTestRTL() = default;
+
+  FrameSizeButtonTestRTL(const FrameSizeButtonTestRTL&) = delete;
+  FrameSizeButtonTestRTL& operator=(const FrameSizeButtonTestRTL&) = delete;
+
   ~FrameSizeButtonTestRTL() override = default;
 
   void SetUp() override {
@@ -464,8 +472,6 @@ class FrameSizeButtonTestRTL : public FrameSizeButtonTest {
 
  private:
   std::string original_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSizeButtonTestRTL);
 };
 
 // Test that clicking + dragging to a button adjacent to the size button presses
@@ -519,10 +525,13 @@ namespace {
 class FrameSizeButtonNonResizableTest : public FrameSizeButtonTest {
  public:
   FrameSizeButtonNonResizableTest() : FrameSizeButtonTest(false) {}
-  ~FrameSizeButtonNonResizableTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameSizeButtonNonResizableTest);
+  FrameSizeButtonNonResizableTest(const FrameSizeButtonNonResizableTest&) =
+      delete;
+  FrameSizeButtonNonResizableTest& operator=(
+      const FrameSizeButtonNonResizableTest&) = delete;
+
+  ~FrameSizeButtonNonResizableTest() override {}
 };
 
 }  // namespace

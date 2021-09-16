@@ -197,6 +197,12 @@ class ClearPasswordAndHideAnimationObserver
  public:
   explicit ClearPasswordAndHideAnimationObserver(LoginPasswordView* view)
       : password_view_(view) {}
+
+  ClearPasswordAndHideAnimationObserver(
+      const ClearPasswordAndHideAnimationObserver&) = delete;
+  ClearPasswordAndHideAnimationObserver& operator=(
+      const ClearPasswordAndHideAnimationObserver&) = delete;
+
   ~ClearPasswordAndHideAnimationObserver() override = default;
 
   // ui::ImplicitAnimationObserver:
@@ -208,8 +214,6 @@ class ClearPasswordAndHideAnimationObserver
 
  private:
   LoginPasswordView* const password_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClearPasswordAndHideAnimationObserver);
 };
 
 // The label shown below the fingerprint icon.
@@ -413,6 +417,9 @@ class LoginAuthUserView::FingerprintView : public views::View {
     DisplayCurrentState();
   }
 
+  FingerprintView(const FingerprintView&) = delete;
+  FingerprintView& operator=(const FingerprintView&) = delete;
+
   ~FingerprintView() override = default;
 
   void SetState(FingerprintState state) {
@@ -540,8 +547,6 @@ class LoginAuthUserView::FingerprintView : public views::View {
 
   // Affects DISABLED_FROM_TIMEOUT message.
   bool can_use_pin_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintView);
 };
 
 // Consists of challenge-response icon view and a label.
@@ -591,6 +596,9 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
         /*size_delta=*/1, gfx::Font::FontStyle::ITALIC,
         gfx::Font::Weight::NORMAL));
   }
+
+  ChallengeResponseView(const ChallengeResponseView&) = delete;
+  ChallengeResponseView& operator=(const ChallengeResponseView&) = delete;
 
   ~ChallengeResponseView() override = default;
 
@@ -675,8 +683,6 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
   views::ImageView* icon_ = nullptr;
   views::Label* label_ = nullptr;
   base::OneShotTimer reset_state_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChallengeResponseView);
 };
 
 // The message shown to the user when auth is disabled. This could happen when:

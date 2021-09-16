@@ -52,6 +52,10 @@ class TestEventHandler : public ui::EventHandler {
         scroll_y_offset_(0.0),
         scroll_x_offset_ordinal_(0.0),
         scroll_y_offset_ordinal_(0.0) {}
+
+  TestEventHandler(const TestEventHandler&) = delete;
+  TestEventHandler& operator=(const TestEventHandler&) = delete;
+
   ~TestEventHandler() override = default;
 
   void OnMouseEvent(ui::MouseEvent* event) override {
@@ -114,13 +118,16 @@ class TestEventHandler : public ui::EventHandler {
   float scroll_y_offset_;
   float scroll_x_offset_ordinal_;
   float scroll_y_offset_ordinal_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
 
 class RootWindowTransformersTest : public AshTestBase {
  public:
   RootWindowTransformersTest() = default;
+
+  RootWindowTransformersTest(const RootWindowTransformersTest&) = delete;
+  RootWindowTransformersTest& operator=(const RootWindowTransformersTest&) =
+      delete;
+
   ~RootWindowTransformersTest() override = default;
 
   float GetStoredZoomScale(int64_t id) {
@@ -140,13 +147,17 @@ class RootWindowTransformersTest : public AshTestBase {
         CreateRootWindowTransformerForMirroredDisplay(source_display_info,
                                                       mirror_display_info));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowTransformersTest);
 };
 
 class UnfiedRootWindowTransformersTest : public RootWindowTransformersTest {
  public:
   UnfiedRootWindowTransformersTest() = default;
+
+  UnfiedRootWindowTransformersTest(const UnfiedRootWindowTransformersTest&) =
+      delete;
+  UnfiedRootWindowTransformersTest& operator=(
+      const UnfiedRootWindowTransformersTest&) = delete;
+
   ~UnfiedRootWindowTransformersTest() override = default;
 
   // RootWindowTransformersTest:
@@ -158,8 +169,6 @@ class UnfiedRootWindowTransformersTest : public RootWindowTransformersTest {
 
     RootWindowTransformersTest::SetUp();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(UnfiedRootWindowTransformersTest);
 };
 
 }  // namespace

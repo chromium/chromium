@@ -15,10 +15,13 @@ namespace ash {
 class ScopedSkipUserSessionBlockedCheck {
  public:
   ScopedSkipUserSessionBlockedCheck();
-  ~ScopedSkipUserSessionBlockedCheck();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedSkipUserSessionBlockedCheck);
+  ScopedSkipUserSessionBlockedCheck(const ScopedSkipUserSessionBlockedCheck&) =
+      delete;
+  ScopedSkipUserSessionBlockedCheck& operator=(
+      const ScopedSkipUserSessionBlockedCheck&) = delete;
+
+  ~ScopedSkipUserSessionBlockedCheck();
 };
 
 }  // namespace ash

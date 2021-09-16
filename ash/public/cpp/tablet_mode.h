@@ -20,6 +20,10 @@ class ASH_PUBLIC_EXPORT TabletMode {
   class Waiter : public TabletModeObserver {
    public:
     explicit Waiter(bool enable);
+
+    Waiter(const Waiter&) = delete;
+    Waiter& operator=(const Waiter&) = delete;
+
     ~Waiter() override;
 
     void Wait();
@@ -31,8 +35,6 @@ class ASH_PUBLIC_EXPORT TabletMode {
    private:
     bool enable_;
     base::RunLoop run_loop_;
-
-    DISALLOW_COPY_AND_ASSIGN(Waiter);
   };
 
   // Returns true if the device's board is tablet mode capable.

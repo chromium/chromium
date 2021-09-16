@@ -49,6 +49,10 @@ class ASH_EXPORT ClientControlledState : public BaseState {
       gfx::Rect* bounds);
 
   explicit ClientControlledState(std::unique_ptr<Delegate> delegate);
+
+  ClientControlledState(const ClientControlledState&) = delete;
+  ClientControlledState& operator=(const ClientControlledState&) = delete;
+
   ~ClientControlledState() override;
 
   // Resets |delegate_|.
@@ -109,8 +113,6 @@ class ASH_EXPORT ClientControlledState : public BaseState {
       WindowState::kBoundsChangeSlideDuration;
 
   BoundsChangeAnimationType next_bounds_change_animation_type_ = kAnimationNone;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientControlledState);
 };
 
 }  // namespace ash

@@ -46,6 +46,12 @@ class ASH_EXPORT AssistantScreenContextControllerImpl
 
   explicit AssistantScreenContextControllerImpl(
       AssistantControllerImpl* assistant_controller);
+
+  AssistantScreenContextControllerImpl(
+      const AssistantScreenContextControllerImpl&) = delete;
+  AssistantScreenContextControllerImpl& operator=(
+      const AssistantScreenContextControllerImpl&) = delete;
+
   ~AssistantScreenContextControllerImpl() override;
 
   // Provides a pointer to the |assistant| owned by AssistantService.
@@ -109,8 +115,6 @@ class ASH_EXPORT AssistantScreenContextControllerImpl
 
   base::WeakPtrFactory<AssistantScreenContextControllerImpl> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantScreenContextControllerImpl);
 };
 
 }  // namespace ash

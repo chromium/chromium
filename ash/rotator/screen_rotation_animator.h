@@ -40,6 +40,10 @@ class ASH_EXPORT ScreenRotationAnimator {
   static ScreenRotationAnimator* GetForRootWindow(aura::Window* root_window);
 
   explicit ScreenRotationAnimator(aura::Window* root_window);
+
+  ScreenRotationAnimator(const ScreenRotationAnimator&) = delete;
+  ScreenRotationAnimator& operator=(const ScreenRotationAnimator&) = delete;
+
   virtual ~ScreenRotationAnimator();
 
   // Rotates the display::Display specified by |display_id| of the |root_window|
@@ -196,8 +200,6 @@ class ASH_EXPORT ScreenRotationAnimator {
   display::Display::Rotation target_rotation_ = display::Display::ROTATE_0;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_scale_mode_;
   base::WeakPtrFactory<ScreenRotationAnimator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenRotationAnimator);
 };
 
 }  // namespace ash

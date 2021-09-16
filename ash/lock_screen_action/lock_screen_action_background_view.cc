@@ -59,12 +59,13 @@ class LockScreenActionBackgroundView::NoteBackground : public views::View {
     views::InkDrop::Get(this)->SetBaseColor(SK_ColorBLACK);
   }
 
+  NoteBackground(const NoteBackground&) = delete;
+  NoteBackground& operator=(const NoteBackground&) = delete;
+
   ~NoteBackground() override = default;
 
  private:
   views::InkDropObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoteBackground);
 };
 
 LockScreenActionBackgroundView::LockScreenActionBackgroundView() {

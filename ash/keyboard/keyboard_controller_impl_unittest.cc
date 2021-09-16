@@ -127,6 +127,11 @@ class TestContainerBehavior : public keyboard::ContainerBehavior {
 class KeyboardControllerImplTest : public AshTestBase {
  public:
   KeyboardControllerImplTest() = default;
+
+  KeyboardControllerImplTest(const KeyboardControllerImplTest&) = delete;
+  KeyboardControllerImplTest& operator=(const KeyboardControllerImplTest&) =
+      delete;
+
   ~KeyboardControllerImplTest() override = default;
 
   void SetUp() override {
@@ -197,9 +202,6 @@ class KeyboardControllerImplTest : public AshTestBase {
     EXPECT_EQ(test_observer()->config().spell_check, expected_value);
     EXPECT_EQ(test_observer()->config().voice_input, expected_value);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerImplTest);
 };
 
 }  // namespace

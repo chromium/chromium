@@ -16,6 +16,10 @@ namespace ash {
 class ModeIndicatorObserver : public views::WidgetObserver {
  public:
   ModeIndicatorObserver();
+
+  ModeIndicatorObserver(const ModeIndicatorObserver&) = delete;
+  ModeIndicatorObserver& operator=(const ModeIndicatorObserver&) = delete;
+
   ~ModeIndicatorObserver() override;
 
   void AddModeIndicatorWidget(views::Widget* widget);
@@ -28,8 +32,6 @@ class ModeIndicatorObserver : public views::WidgetObserver {
 
  private:
   views::Widget* active_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModeIndicatorObserver);
 };
 
 }  // namespace ash

@@ -100,6 +100,9 @@ class DragWindowFromShelfController::WindowsHider
     window_util::MinimizeAndHideWithoutAnimation(hidden_windows_);
   }
 
+  WindowsHider(const WindowsHider&) = delete;
+  WindowsHider& operator=(const WindowsHider&) = delete;
+
   ~WindowsHider() override {
     for (auto* window : hidden_windows_) {
       window->RemoveObserver(this);
@@ -138,8 +141,6 @@ class DragWindowFromShelfController::WindowsHider
  private:
   aura::Window* dragged_window_;
   std::vector<aura::Window*> hidden_windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowsHider);
 };
 
 // static

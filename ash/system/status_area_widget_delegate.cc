@@ -39,10 +39,12 @@ class StatusAreaWidgetDelegateAnimationSettings
     SetTweenType(gfx::Tween::EASE_OUT);
   }
 
-  ~StatusAreaWidgetDelegateAnimationSettings() override = default;
+  StatusAreaWidgetDelegateAnimationSettings(
+      const StatusAreaWidgetDelegateAnimationSettings&) = delete;
+  StatusAreaWidgetDelegateAnimationSettings& operator=(
+      const StatusAreaWidgetDelegateAnimationSettings&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(StatusAreaWidgetDelegateAnimationSettings);
+  ~StatusAreaWidgetDelegateAnimationSettings() override = default;
 };
 
 // Gradient background for the status area shown when it overflows into the

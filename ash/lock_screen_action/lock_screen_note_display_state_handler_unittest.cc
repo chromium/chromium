@@ -40,6 +40,10 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
     power_manager_->set_user_activity_callback(base::BindRepeating(
         &TestPowerManagerObserver::OnUserActivity, base::Unretained(this)));
   }
+
+  TestPowerManagerObserver(const TestPowerManagerObserver&) = delete;
+  TestPowerManagerObserver& operator=(const TestPowerManagerObserver&) = delete;
+
   ~TestPowerManagerObserver() override {
     power_manager_->set_user_activity_callback(base::RepeatingClosure());
   }
@@ -70,8 +74,6 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestPowerManagerObserver);
 };
 
 }  // namespace
@@ -79,6 +81,12 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
 class LockScreenNoteDisplayStateHandlerTest : public AshTestBase {
  public:
   LockScreenNoteDisplayStateHandlerTest() = default;
+
+  LockScreenNoteDisplayStateHandlerTest(
+      const LockScreenNoteDisplayStateHandlerTest&) = delete;
+  LockScreenNoteDisplayStateHandlerTest& operator=(
+      const LockScreenNoteDisplayStateHandlerTest&) = delete;
+
   ~LockScreenNoteDisplayStateHandlerTest() override = default;
 
   // AshTestBase:
@@ -189,8 +197,6 @@ class LockScreenNoteDisplayStateHandlerTest : public AshTestBase {
   }
 
   base::SimpleTestTickClock tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenNoteDisplayStateHandlerTest);
 };
 
 TEST_F(LockScreenNoteDisplayStateHandlerTest, EjectWhenScreenOn) {

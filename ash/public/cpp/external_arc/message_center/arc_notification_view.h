@@ -35,6 +35,10 @@ class ArcNotificationView : public message_center::MessageView,
   // |content_view| is a view to be hosted in this view.
   ArcNotificationView(ArcNotificationItem* item,
                       const message_center::Notification& notification);
+
+  ArcNotificationView(const ArcNotificationView&) = delete;
+  ArcNotificationView& operator=(const ArcNotificationView&) = delete;
+
   ~ArcNotificationView() override;
 
   // These method are called by the content view when focus handling is deferred
@@ -95,8 +99,6 @@ class ArcNotificationView : public message_center::MessageView,
   ArcNotificationContentView* const content_view_;
 
   std::unique_ptr<views::Painter> focus_painter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationView);
 };
 
 }  // namespace ash

@@ -36,6 +36,11 @@ class TestViewsDelegate : public ash::AshTestViewsDelegate {
 class AssistantWebContainerViewTest : public AssistantAshTestBase {
  public:
   AssistantWebContainerViewTest() = default;
+
+  AssistantWebContainerViewTest(const AssistantWebContainerViewTest&) = delete;
+  AssistantWebContainerViewTest& operator=(
+      const AssistantWebContainerViewTest&) = delete;
+
   ~AssistantWebContainerViewTest() override = default;
 
  protected:
@@ -60,8 +65,6 @@ class AssistantWebContainerViewTest : public AssistantAshTestBase {
  private:
   std::unique_ptr<TestViewsDelegate> views_delegate_ =
       std::make_unique<TestViewsDelegate>();
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantWebContainerViewTest);
 };
 
 }  // namespace

@@ -60,6 +60,10 @@ class AnimationWaiter : public ui::LayerAnimationObserver {
       : animator_(host->layer()->GetAnimator()) {
     animator_->AddObserver(this);
   }
+
+  AnimationWaiter(const AnimationWaiter&) = delete;
+  AnimationWaiter& operator=(const AnimationWaiter&) = delete;
+
   ~AnimationWaiter() override { animator_->RemoveObserver(this); }
 
   // ui::LayerAnimationObserver:
@@ -78,8 +82,6 @@ class AnimationWaiter : public ui::LayerAnimationObserver {
  private:
   ui::LayerAnimator* animator_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationWaiter);
 };
 
 }  // namespace
@@ -87,6 +89,12 @@ class AnimationWaiter : public ui::LayerAnimationObserver {
 class LockScreenMediaControlsViewTest : public LoginTestBase {
  public:
   LockScreenMediaControlsViewTest() = default;
+
+  LockScreenMediaControlsViewTest(const LockScreenMediaControlsViewTest&) =
+      delete;
+  LockScreenMediaControlsViewTest& operator=(
+      const LockScreenMediaControlsViewTest&) = delete;
+
   ~LockScreenMediaControlsViewTest() override = default;
 
   void SetUp() override {
@@ -265,8 +273,6 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   LockContentsView* lock_contents_view_ = nullptr;
   std::unique_ptr<TestMediaController> media_controller_;
   std::set<MediaSessionAction> actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenMediaControlsViewTest);
 };
 
 TEST_F(LockScreenMediaControlsViewTest, DoNotUpdateMetadataBetweenSessions) {

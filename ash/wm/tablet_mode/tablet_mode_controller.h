@@ -96,6 +96,10 @@ class ASH_EXPORT TabletModeController
   GetObservedTabletTransitionProperty();
 
   TabletModeController();
+
+  TabletModeController(const TabletModeController&) = delete;
+  TabletModeController& operator=(const TabletModeController&) = delete;
+
   ~TabletModeController() override;
 
   void Shutdown();
@@ -499,8 +503,6 @@ class ASH_EXPORT TabletModeController
   bool initial_input_device_set_up_finished_ = false;
 
   base::WeakPtrFactory<TabletModeController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeController);
 };
 
 }  // namespace ash

@@ -28,6 +28,11 @@ namespace ash {
 class SystemWallpaperController : public aura::WindowObserver {
  public:
   SystemWallpaperController(aura::Window* root_window, SkColor color);
+
+  SystemWallpaperController(const SystemWallpaperController&) = delete;
+  SystemWallpaperController& operator=(const SystemWallpaperController&) =
+      delete;
+
   ~SystemWallpaperController() override;
 
   void SetColor(SkColor color);
@@ -44,8 +49,6 @@ class SystemWallpaperController : public aura::WindowObserver {
   aura::Window* root_window_;  // not owned
 
   std::unique_ptr<ui::Layer> layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemWallpaperController);
 };
 
 }  // namespace ash

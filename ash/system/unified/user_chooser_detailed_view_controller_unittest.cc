@@ -35,6 +35,12 @@ AccountId GetActiveUser() {
 class UserChooserDetailedViewControllerTest : public AshTestBase {
  public:
   UserChooserDetailedViewControllerTest() = default;
+
+  UserChooserDetailedViewControllerTest(
+      const UserChooserDetailedViewControllerTest&) = delete;
+  UserChooserDetailedViewControllerTest& operator=(
+      const UserChooserDetailedViewControllerTest&) = delete;
+
   ~UserChooserDetailedViewControllerTest() override = default;
 
   // AshTestBase
@@ -51,7 +57,6 @@ class UserChooserDetailedViewControllerTest : public AshTestBase {
  private:
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animations_;
   std::unique_ptr<SystemTrayTestApi> tray_test_api_;
-  DISALLOW_COPY_AND_ASSIGN(UserChooserDetailedViewControllerTest);
 };
 
 TEST_F(UserChooserDetailedViewControllerTest,

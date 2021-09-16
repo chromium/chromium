@@ -16,6 +16,11 @@ class WallpaperControllerImpl;
 class ASH_EXPORT WallpaperControllerTestApi {
  public:
   explicit WallpaperControllerTestApi(WallpaperControllerImpl* controller);
+
+  WallpaperControllerTestApi(const WallpaperControllerTestApi&) = delete;
+  WallpaperControllerTestApi& operator=(const WallpaperControllerTestApi&) =
+      delete;
+
   virtual ~WallpaperControllerTestApi();
 
   // Creates and sets a new wallpaper that causes the prominent color of the
@@ -36,8 +41,6 @@ class ASH_EXPORT WallpaperControllerTestApi {
 
  private:
   WallpaperControllerImpl* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerTestApi);
 };
 
 }  // namespace ash

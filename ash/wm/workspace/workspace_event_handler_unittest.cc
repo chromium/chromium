@@ -51,6 +51,11 @@ void ClickButtonWithFlags(ui::test::EventGenerator* generator,
 class WorkspaceEventHandlerTest : public AshTestBase {
  public:
   WorkspaceEventHandlerTest() = default;
+
+  WorkspaceEventHandlerTest(const WorkspaceEventHandlerTest&) = delete;
+  WorkspaceEventHandlerTest& operator=(const WorkspaceEventHandlerTest&) =
+      delete;
+
   ~WorkspaceEventHandlerTest() override = default;
 
  protected:
@@ -67,9 +72,6 @@ class WorkspaceEventHandlerTest : public AshTestBase {
                             aura::client::kResizeBehaviorCanMaximize);
     return window;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceEventHandlerTest);
 };
 
 // Keeps track of the properties changed of a particular window.
@@ -78,6 +80,9 @@ class WindowPropertyObserver : public aura::WindowObserver {
   explicit WindowPropertyObserver(aura::Window* window) : window_(window) {
     window->AddObserver(this);
   }
+
+  WindowPropertyObserver(const WindowPropertyObserver&) = delete;
+  WindowPropertyObserver& operator=(const WindowPropertyObserver&) = delete;
 
   ~WindowPropertyObserver() override { window_->RemoveObserver(this); }
 
@@ -94,8 +99,6 @@ class WindowPropertyObserver : public aura::WindowObserver {
 
   aura::Window* window_;
   std::vector<const void*> properties_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPropertyObserver);
 };
 
 TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisResizeEdge) {

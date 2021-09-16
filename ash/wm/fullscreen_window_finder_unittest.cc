@@ -23,6 +23,11 @@ using ::chromeos::WindowPinType;
 class FullscreenWindowFinderTest : public AshTestBase {
  public:
   FullscreenWindowFinderTest() = default;
+
+  FullscreenWindowFinderTest(const FullscreenWindowFinderTest&) = delete;
+  FullscreenWindowFinderTest& operator=(const FullscreenWindowFinderTest&) =
+      delete;
+
   ~FullscreenWindowFinderTest() override = default;
 
   void SetUp() override {
@@ -42,9 +47,6 @@ class FullscreenWindowFinderTest : public AshTestBase {
 
  protected:
   std::unique_ptr<aura::Window> test_window_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenWindowFinderTest);
 };
 
 // Test that a non-fullscreen window isn't found by GetWindowForFullscreenMode.

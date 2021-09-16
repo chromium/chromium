@@ -16,13 +16,14 @@ namespace ash {
 class SignOutButton : public RoundedLabelButton {
  public:
   explicit SignOutButton(PressedCallback callback);
+
+  SignOutButton(const SignOutButton&) = delete;
+  SignOutButton& operator=(const SignOutButton&) = delete;
+
   ~SignOutButton() override;
 
   // views::RoundedLabelButton:
   const char* GetClassName() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SignOutButton);
 };
 
 }  // namespace ash

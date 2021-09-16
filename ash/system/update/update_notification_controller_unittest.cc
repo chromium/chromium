@@ -58,6 +58,12 @@ class AddNotificationWaiter : public message_center::MessageCenterObserver {
 class UpdateNotificationControllerTest : public AshTestBase {
  public:
   UpdateNotificationControllerTest() = default;
+
+  UpdateNotificationControllerTest(const UpdateNotificationControllerTest&) =
+      delete;
+  UpdateNotificationControllerTest& operator=(
+      const UpdateNotificationControllerTest&) = delete;
+
   ~UpdateNotificationControllerTest() override = default;
 
  protected:
@@ -112,9 +118,6 @@ class UpdateNotificationControllerTest : public AshTestBase {
         ->system_notification_controller()
         ->update_->confirmation_dialog_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateNotificationControllerTest);
 };
 
 // Tests that the update icon becomes visible when an update becomes

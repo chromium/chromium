@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSearch {
   DriveFsSearch(mojom::DriveFs* drivefs,
                 network::NetworkConnectionTracker* network_connection_tracker,
                 const base::Clock* clock);
+
+  DriveFsSearch(const DriveFsSearch&) = delete;
+  DriveFsSearch& operator=(const DriveFsSearch&) = delete;
+
   ~DriveFsSearch();
 
   // Starts DriveFs search query and returns whether it will be
@@ -51,7 +55,6 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSearch {
   base::Time last_shared_with_me_response_;
 
   base::WeakPtrFactory<DriveFsSearch> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DriveFsSearch);
 };
 
 }  // namespace drivefs

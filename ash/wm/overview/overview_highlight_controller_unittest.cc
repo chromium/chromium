@@ -36,6 +36,12 @@ namespace ash {
 class OverviewHighlightControllerTest : public AshTestBase {
  public:
   OverviewHighlightControllerTest() = default;
+
+  OverviewHighlightControllerTest(const OverviewHighlightControllerTest&) =
+      delete;
+  OverviewHighlightControllerTest& operator=(
+      const OverviewHighlightControllerTest&) = delete;
+
   ~OverviewHighlightControllerTest() override = default;
 
   // AshTestBase:
@@ -55,9 +61,6 @@ class OverviewHighlightControllerTest : public AshTestBase {
       SendKey(key);
     } while (!GetOverviewHighlightedWindow());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverviewHighlightControllerTest);
 };
 
 // Tests traversing some windows in overview mode with the tab key.
@@ -339,6 +342,12 @@ class DesksOverviewHighlightControllerTest
     : public OverviewHighlightControllerTest {
  public:
   DesksOverviewHighlightControllerTest() = default;
+
+  DesksOverviewHighlightControllerTest(
+      const DesksOverviewHighlightControllerTest&) = delete;
+  DesksOverviewHighlightControllerTest& operator=(
+      const DesksOverviewHighlightControllerTest&) = delete;
+
   ~DesksOverviewHighlightControllerTest() override = default;
 
   // OverviewHighlightControllerTest:
@@ -372,9 +381,6 @@ class DesksOverviewHighlightControllerTest
     EXPECT_EQ(view->bounds().height(),
               view->GetWidget()->GetWindowBoundsInScreen().height());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesksOverviewHighlightControllerTest);
 };
 
 // Tests that we can tab through the desk mini views, new desk button and

@@ -18,6 +18,11 @@ class ASH_PUBLIC_EXPORT ArcInputMethodSurfaceManager
       public ArcInputMethodBoundsTracker {
  public:
   ArcInputMethodSurfaceManager();
+
+  ArcInputMethodSurfaceManager(const ArcInputMethodSurfaceManager&) = delete;
+  ArcInputMethodSurfaceManager& operator=(const ArcInputMethodSurfaceManager&) =
+      delete;
+
   ~ArcInputMethodSurfaceManager() override;
 
   // exo::InputMethodSurfaceManager:
@@ -28,8 +33,6 @@ class ASH_PUBLIC_EXPORT ArcInputMethodSurfaceManager
 
  private:
   exo::InputMethodSurface* input_method_surface_ = nullptr;  // Not owned
-
-  DISALLOW_COPY_AND_ASSIGN(ArcInputMethodSurfaceManager);
 };
 
 }  // namespace ash

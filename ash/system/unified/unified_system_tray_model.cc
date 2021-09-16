@@ -29,6 +29,10 @@ class UnifiedSystemTrayModel::DBusObserver
     : public chromeos::PowerManagerClient::Observer {
  public:
   explicit DBusObserver(UnifiedSystemTrayModel* owner);
+
+  DBusObserver(const DBusObserver&) = delete;
+  DBusObserver& operator=(const DBusObserver&) = delete;
+
   ~DBusObserver() override;
 
  private:
@@ -43,8 +47,6 @@ class UnifiedSystemTrayModel::DBusObserver
   UnifiedSystemTrayModel* const owner_;
 
   base::WeakPtrFactory<DBusObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DBusObserver);
 };
 
 class UnifiedSystemTrayModel::SizeObserver : public display::DisplayObserver,

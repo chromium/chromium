@@ -40,13 +40,13 @@ class UserChangeActionDisabler {
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(true);
   }
 
+  UserChangeActionDisabler(const UserChangeActionDisabler&) = delete;
+  UserChangeActionDisabler& operator=(const UserChangeActionDisabler&) = delete;
+
   ~UserChangeActionDisabler() {
     WindowPositioner::DisableAutoPositioning(false);
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserChangeActionDisabler);
 };
 
 // Defines an animation watcher for the 'hide' animation of the first maximized

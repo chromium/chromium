@@ -20,6 +20,10 @@ class NotificationMenuHeaderView : public views::View {
  public:
   NotificationMenuHeaderView();
 
+  NotificationMenuHeaderView(const NotificationMenuHeaderView&) = delete;
+  NotificationMenuHeaderView& operator=(const NotificationMenuHeaderView&) =
+      delete;
+
   ~NotificationMenuHeaderView() override;
 
   void UpdateCounter(int number_of_notifications);
@@ -40,8 +44,6 @@ class NotificationMenuHeaderView : public views::View {
   // Holds a numeric string that indicates how many notifications are active.
   // Owned by the views hierarchy.
   views::Label* counter_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuHeaderView);
 };
 
 }  // namespace ash

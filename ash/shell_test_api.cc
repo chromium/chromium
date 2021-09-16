@@ -50,6 +50,9 @@ class PointerMoveLoopWaiter : public ui::CompositorObserver {
     window_tree_host_->compositor()->AddObserver(this);
   }
 
+  PointerMoveLoopWaiter(const PointerMoveLoopWaiter&) = delete;
+  PointerMoveLoopWaiter& operator=(const PointerMoveLoopWaiter&) = delete;
+
   ~PointerMoveLoopWaiter() override {
     window_tree_host_->compositor()->RemoveObserver(this);
   }
@@ -74,8 +77,6 @@ class PointerMoveLoopWaiter : public ui::CompositorObserver {
  private:
   aura::WindowTreeHost* window_tree_host_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PointerMoveLoopWaiter);
 };
 
 class WindowAnimationWaiter : public ui::LayerAnimationObserver {

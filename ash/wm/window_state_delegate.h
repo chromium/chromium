@@ -19,6 +19,10 @@ class WindowState;
 class ASH_EXPORT WindowStateDelegate {
  public:
   WindowStateDelegate();
+
+  WindowStateDelegate(const WindowStateDelegate&) = delete;
+  WindowStateDelegate& operator=(const WindowStateDelegate&) = delete;
+
   virtual ~WindowStateDelegate();
 
   // Invoked when the user uses Shift+F4/F4 to toggle the window fullscreen
@@ -38,9 +42,6 @@ class ASH_EXPORT WindowStateDelegate {
   // Invoked when the user finished drag operation. |cancel| is true
   // if the drag operation was canceled.
   virtual void OnDragFinished(bool cancel, const gfx::PointF& location) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowStateDelegate);
 };
 
 }  // namespace ash

@@ -17,6 +17,11 @@ namespace ash {
 class ASH_EXPORT KeyboardDrivenEventRewriter : public ui::EventRewriter {
  public:
   KeyboardDrivenEventRewriter();
+
+  KeyboardDrivenEventRewriter(const KeyboardDrivenEventRewriter&) = delete;
+  KeyboardDrivenEventRewriter& operator=(const KeyboardDrivenEventRewriter&) =
+      delete;
+
   ~KeyboardDrivenEventRewriter() override;
 
   // Calls Rewrite for testing.
@@ -43,8 +48,6 @@ class ASH_EXPORT KeyboardDrivenEventRewriter : public ui::EventRewriter {
   // If true, Shift + Arrow keys are rewritten to Tab/Shift-Tab keys.
   // This only applies when the KeyboardDrivenEventRewriter is active.
   bool arrow_to_tab_rewriting_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardDrivenEventRewriter);
 };
 
 }  // namespace ash

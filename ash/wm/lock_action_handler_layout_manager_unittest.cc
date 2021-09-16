@@ -54,6 +54,10 @@ class TestWindowDelegate : public views::WidgetDelegate {
     SetOwnedByWidget(true);
     SetFocusTraversesOut(true);
   }
+
+  TestWindowDelegate(const TestWindowDelegate&) = delete;
+  TestWindowDelegate& operator=(const TestWindowDelegate&) = delete;
+
   ~TestWindowDelegate() override = default;
 
   // views::WidgetDelegate:
@@ -65,8 +69,6 @@ class TestWindowDelegate : public views::WidgetDelegate {
 
  private:
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowDelegate);
 };
 
 }  // namespace
@@ -74,6 +76,12 @@ class TestWindowDelegate : public views::WidgetDelegate {
 class LockActionHandlerLayoutManagerTest : public AshTestBase {
  public:
   LockActionHandlerLayoutManagerTest() = default;
+
+  LockActionHandlerLayoutManagerTest(
+      const LockActionHandlerLayoutManagerTest&) = delete;
+  LockActionHandlerLayoutManagerTest& operator=(
+      const LockActionHandlerLayoutManagerTest&) = delete;
+
   ~LockActionHandlerLayoutManagerTest() override = default;
 
   void SetUp() override {
@@ -156,8 +164,6 @@ class LockActionHandlerLayoutManagerTest : public AshTestBase {
       action_background_controller_factory_;
 
   TestTrayActionClient tray_action_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockActionHandlerLayoutManagerTest);
 };
 
 class LockActionHandlerLayoutManagerTestWithTestBackgroundController

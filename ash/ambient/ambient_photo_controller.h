@@ -49,6 +49,10 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   using PhotoDownloadCallback = base::OnceCallback<void(const gfx::ImageSkia&)>;
 
   AmbientPhotoController();
+
+  AmbientPhotoController(const AmbientPhotoController&) = delete;
+  AmbientPhotoController& operator=(const AmbientPhotoController&) = delete;
+
   ~AmbientPhotoController() override;
 
   // Start/stop updating the screen contents.
@@ -230,8 +234,6 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   gfx::ImageSkia related_image_;
 
   base::WeakPtrFactory<AmbientPhotoController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AmbientPhotoController);
 };
 
 }  // namespace ash

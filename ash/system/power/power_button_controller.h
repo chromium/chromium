@@ -88,6 +88,10 @@ class ASH_EXPORT PowerButtonController
 
   explicit PowerButtonController(
       BacklightsForcedOffSetter* backlights_forced_off_setter);
+
+  PowerButtonController(const PowerButtonController&) = delete;
+  PowerButtonController& operator=(const PowerButtonController&) = delete;
+
   ~PowerButtonController() override;
 
   // Handles events from "legacy" ACPI power buttons. On devices with these
@@ -282,8 +286,6 @@ class ASH_EXPORT PowerButtonController
       active_window_paint_as_active_lock_;
 
   base::WeakPtrFactory<PowerButtonController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonController);
 };
 
 }  // namespace ash

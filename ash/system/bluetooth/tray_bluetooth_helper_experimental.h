@@ -24,6 +24,12 @@ class TrayBluetoothHelperExperimental
   explicit TrayBluetoothHelperExperimental(
       mojo::PendingRemote<device::mojom::BluetoothSystemFactory>
           bluetooth_system_factory);
+
+  TrayBluetoothHelperExperimental(const TrayBluetoothHelperExperimental&) =
+      delete;
+  TrayBluetoothHelperExperimental& operator=(
+      const TrayBluetoothHelperExperimental&) = delete;
+
   ~TrayBluetoothHelperExperimental() override;
 
   // TrayBluetoothHelper:
@@ -50,8 +56,6 @@ class TrayBluetoothHelperExperimental
   device::mojom::BluetoothSystem::State cached_state_ =
       device::mojom::BluetoothSystem::State::kUnavailable;
   device::mojom::BluetoothSystem::ScanState cached_scan_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayBluetoothHelperExperimental);
 };
 
 }  // namespace ash

@@ -15,11 +15,12 @@ namespace ash {
 class ASH_EXPORT UnfocusableLabel : public views::Label {
  public:
   UnfocusableLabel() = default;
+
+  UnfocusableLabel(const UnfocusableLabel&) = delete;
+  UnfocusableLabel& operator=(const UnfocusableLabel&) = delete;
+
   ~UnfocusableLabel() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnfocusableLabel);
 };
 
 }  // namespace ash

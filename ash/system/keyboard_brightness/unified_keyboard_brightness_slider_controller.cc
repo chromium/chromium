@@ -28,6 +28,10 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
     OnKeyboardBrightnessChanged(false /* by_user */);
   }
 
+  UnifiedKeyboardBrightnessView(const UnifiedKeyboardBrightnessView&) = delete;
+  UnifiedKeyboardBrightnessView& operator=(
+      const UnifiedKeyboardBrightnessView&) = delete;
+
   ~UnifiedKeyboardBrightnessView() override { model_->RemoveObserver(this); }
 
   // UnifiedSystemTrayModel::Observer:
@@ -37,8 +41,6 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
 
  private:
   UnifiedSystemTrayModel* const model_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedKeyboardBrightnessView);
 };
 
 }  // namespace

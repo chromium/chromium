@@ -47,6 +47,10 @@ class ArcNotificationContentView::MouseEnterExitHandler
       : owner_(owner) {
     DCHECK(owner);
   }
+
+  MouseEnterExitHandler(const MouseEnterExitHandler&) = delete;
+  MouseEnterExitHandler& operator=(const MouseEnterExitHandler&) = delete;
+
   ~MouseEnterExitHandler() override = default;
 
   // ui::EventHandler
@@ -60,13 +64,15 @@ class ArcNotificationContentView::MouseEnterExitHandler
 
  private:
   ArcNotificationContentView* const owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseEnterExitHandler);
 };
 
 class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
  public:
   explicit EventForwarder(ArcNotificationContentView* owner) : owner_(owner) {}
+
+  EventForwarder(const EventForwarder&) = delete;
+  EventForwarder& operator=(const EventForwarder&) = delete;
+
   ~EventForwarder() override = default;
 
  private:
@@ -202,8 +208,6 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
 
   ArcNotificationContentView* const owner_;
   bool is_current_slide_handled_by_android_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(EventForwarder);
 };
 
 class ArcNotificationContentView::SlideHelper {
@@ -217,6 +221,10 @@ class ArcNotificationContentView::SlideHelper {
       owner_->surface_->GetWindow()->layer()->SetOpacity(1.0f);
     }
   }
+
+  SlideHelper(const SlideHelper&) = delete;
+  SlideHelper& operator=(const SlideHelper&) = delete;
+
   virtual ~SlideHelper() = default;
 
   void Update(bool slide_in_progress) {
@@ -236,8 +244,6 @@ class ArcNotificationContentView::SlideHelper {
 
   // True if the view is not at the original position.
   bool slide_in_progress_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SlideHelper);
 };
 
 

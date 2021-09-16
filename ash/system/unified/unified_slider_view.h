@@ -32,6 +32,10 @@ class UnifiedSliderButton : public views::ImageButton {
   UnifiedSliderButton(PressedCallback callback,
                       const gfx::VectorIcon& icon,
                       int accessible_name_id);
+
+  UnifiedSliderButton(const UnifiedSliderButton&) = delete;
+  UnifiedSliderButton& operator=(const UnifiedSliderButton&) = delete;
+
   ~UnifiedSliderButton() override;
 
   // Set the vector icon shown in a circle.
@@ -54,8 +58,6 @@ class UnifiedSliderButton : public views::ImageButton {
   bool toggled_ = false;
 
   const gfx::VectorIcon* icon_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSliderButton);
 };
 
 // Base view class of a slider row in UnifiedSystemTray. It has a button on the
@@ -68,6 +70,10 @@ class UnifiedSliderView : public views::View {
                     const gfx::VectorIcon& icon,
                     int accessible_name_id,
                     bool readonly = false);
+
+  UnifiedSliderView(const UnifiedSliderView&) = delete;
+  UnifiedSliderView& operator=(const UnifiedSliderView&) = delete;
+
   ~UnifiedSliderView() override;
 
   UnifiedSliderButton* button() { return button_; }
@@ -90,8 +96,6 @@ class UnifiedSliderView : public views::View {
   UnifiedSliderButton* const button_;
   views::Slider* const slider_;
   views::Label* toast_label_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSliderView);
 };
 
 }  // namespace ash

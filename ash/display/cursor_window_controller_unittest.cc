@@ -30,6 +30,11 @@ namespace ash {
 class CursorWindowControllerTest : public AshTestBase {
  public:
   CursorWindowControllerTest() = default;
+
+  CursorWindowControllerTest(const CursorWindowControllerTest&) = delete;
+  CursorWindowControllerTest& operator=(const CursorWindowControllerTest&) =
+      delete;
+
   ~CursorWindowControllerTest() override = default;
 
   // AshTestBase:
@@ -79,8 +84,6 @@ class CursorWindowControllerTest : public AshTestBase {
  private:
   // Not owned.
   CursorWindowController* cursor_window_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorWindowControllerTest);
 };
 
 // Test that the composited cursor moves to another display when the real cursor

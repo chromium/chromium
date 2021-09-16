@@ -47,6 +47,10 @@ class ASH_PUBLIC_EXPORT PaginationModel : public views::AnimationDelegateViews {
   };
 
   explicit PaginationModel(views::View* owner_view);
+
+  PaginationModel(const PaginationModel&) = delete;
+  PaginationModel& operator=(const PaginationModel&) = delete;
+
   ~PaginationModel() override;
 
   void SetTotalPages(int total_pages);
@@ -148,8 +152,6 @@ class ASH_PUBLIC_EXPORT PaginationModel : public views::AnimationDelegateViews {
   base::TimeTicks last_overscroll_animation_start_time_;
 
   base::ObserverList<PaginationModelObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaginationModel);
 };
 
 }  // namespace ash

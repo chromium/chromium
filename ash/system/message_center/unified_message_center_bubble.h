@@ -32,6 +32,11 @@ class ASH_EXPORT UnifiedMessageCenterBubble
       public views::WidgetObserver {
  public:
   explicit UnifiedMessageCenterBubble(UnifiedSystemTray* tray);
+
+  UnifiedMessageCenterBubble(const UnifiedMessageCenterBubble&) = delete;
+  UnifiedMessageCenterBubble& operator=(const UnifiedMessageCenterBubble&) =
+      delete;
+
   ~UnifiedMessageCenterBubble() override;
 
   // We need the code to show the bubble explicitly separated from the
@@ -111,8 +116,6 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   TrayBubbleView* bubble_view_ = nullptr;
   UnifiedMessageCenterView* message_center_view_ = nullptr;
   std::unique_ptr<TimeToClickRecorder> time_to_click_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedMessageCenterBubble);
 };
 
 }  // namespace ash

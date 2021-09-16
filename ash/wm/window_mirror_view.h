@@ -30,6 +30,10 @@ class ASH_EXPORT WindowMirrorView : public views::View,
   WindowMirrorView(aura::Window* source,
                    bool trilinear_filtering_on_init,
                    bool show_non_client_view = false);
+
+  WindowMirrorView(const WindowMirrorView&) = delete;
+  WindowMirrorView& operator=(const WindowMirrorView&) = delete;
+
   ~WindowMirrorView() override;
 
   // Returns the source of the mirror.
@@ -82,8 +86,6 @@ class ASH_EXPORT WindowMirrorView : public views::View,
 
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_occlusion_tracker_visible_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowMirrorView);
 };
 
 }  // namespace ash

@@ -22,6 +22,10 @@ namespace ash {
 class TestKeyboardUI : public keyboard::KeyboardUI {
  public:
   TestKeyboardUI();
+
+  TestKeyboardUI(const TestKeyboardUI&) = delete;
+  TestKeyboardUI& operator=(const TestKeyboardUI&) = delete;
+
   ~TestKeyboardUI() override;
 
   // Overridden from KeyboardUI:
@@ -36,19 +40,20 @@ class TestKeyboardUI : public keyboard::KeyboardUI {
 
   aura::test::TestWindowDelegate delegate_;
   std::unique_ptr<aura::Window> keyboard_window_;
-  DISALLOW_COPY_AND_ASSIGN(TestKeyboardUI);
 };
 
 class TestKeyboardUIFactory : public keyboard::KeyboardUIFactory {
  public:
   TestKeyboardUIFactory();
+
+  TestKeyboardUIFactory(const TestKeyboardUIFactory&) = delete;
+  TestKeyboardUIFactory& operator=(const TestKeyboardUIFactory&) = delete;
+
   ~TestKeyboardUIFactory() override;
 
  private:
   // keyboard::KeyboardUIFactory:
   std::unique_ptr<keyboard::KeyboardUI> CreateKeyboardUI() override;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKeyboardUIFactory);
 };
 
 }  // namespace ash

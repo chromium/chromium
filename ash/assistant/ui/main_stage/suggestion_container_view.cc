@@ -55,6 +55,10 @@ class SuggestionChipAnimator : public ElementAnimator {
   SuggestionChipAnimator(SuggestionChipView* chip,
                          const SuggestionContainerView* parent)
       : ElementAnimator(chip), parent_(parent) {}
+
+  SuggestionChipAnimator(const SuggestionChipAnimator&) = delete;
+  SuggestionChipAnimator& operator=(const SuggestionChipAnimator&) = delete;
+
   ~SuggestionChipAnimator() override = default;
 
   void AnimateIn(ui::CallbackLayerAnimationObserver* observer) override {
@@ -93,8 +97,6 @@ class SuggestionChipAnimator : public ElementAnimator {
   }
 
   const SuggestionContainerView* const parent_;  // |parent_| owns |this|.
-
-  DISALLOW_COPY_AND_ASSIGN(SuggestionChipAnimator);
 };
 
 // SuggestionContainerView -----------------------------------------------------

@@ -80,6 +80,10 @@ class TestObserver : public mojom::CrosDisplayConfigObserver {
 class CrosDisplayConfigTest : public AshTestBase {
  public:
   CrosDisplayConfigTest() {}
+
+  CrosDisplayConfigTest(const CrosDisplayConfigTest&) = delete;
+  CrosDisplayConfigTest& operator=(const CrosDisplayConfigTest&) = delete;
+
   ~CrosDisplayConfigTest() override {}
 
   void SetUp() override {
@@ -222,8 +226,6 @@ class CrosDisplayConfigTest : public AshTestBase {
   CrosDisplayConfig* cros_display_config_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrosDisplayConfigTest);
 };
 
 TEST_F(CrosDisplayConfigTest, OnDisplayConfigChanged) {

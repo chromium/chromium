@@ -20,6 +20,11 @@ namespace test {
 class TestPaginationModelObserver : public PaginationModelObserver {
  public:
   TestPaginationModelObserver() = default;
+
+  TestPaginationModelObserver(const TestPaginationModelObserver&) = delete;
+  TestPaginationModelObserver& operator=(const TestPaginationModelObserver&) =
+      delete;
+
   ~TestPaginationModelObserver() override = default;
 
   void Reset() {
@@ -117,13 +122,15 @@ class TestPaginationModelObserver : public PaginationModelObserver {
   int transition_start_call_count_ = 0;
   int transition_ended_call_count_ = 0;
   base::RunLoop* wait_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPaginationModelObserver);
 };
 
 class PaginationModelTest : public views::test::WidgetTest {
  public:
   PaginationModelTest() = default;
+
+  PaginationModelTest(const PaginationModelTest&) = delete;
+  PaginationModelTest& operator=(const PaginationModelTest&) = delete;
+
   ~PaginationModelTest() override = default;
 
   // testing::Test overrides:
@@ -184,8 +191,6 @@ class PaginationModelTest : public views::test::WidgetTest {
   WidgetAutoclosePtr widget_;
   std::unique_ptr<PaginationModel> pagination_;
   std::unique_ptr<base::RunLoop> paging_animation_wait_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaginationModelTest);
 };
 
 TEST_F(PaginationModelTest, SelectPage) {

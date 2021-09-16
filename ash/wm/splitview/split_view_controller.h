@@ -138,6 +138,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                   const display::Display& display);
 
   explicit SplitViewController(aura::Window* root_window);
+
+  SplitViewController(const SplitViewController&) = delete;
+  SplitViewController& operator=(const SplitViewController&) = delete;
+
   ~SplitViewController() override;
 
   // Returns true if split view mode is active. Please see SplitViewType above
@@ -620,8 +624,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // tablet resize mode can switch to normal mode (letting windows be resized)
   // even if the divider isn't moved.
   base::OneShotTimer resize_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewController);
 };
 
 }  // namespace ash

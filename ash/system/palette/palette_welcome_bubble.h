@@ -30,6 +30,10 @@ class ASH_EXPORT PaletteWelcomeBubble : public SessionObserver,
                                         public ui::EventHandler {
  public:
   explicit PaletteWelcomeBubble(PaletteTray* tray);
+
+  PaletteWelcomeBubble(const PaletteWelcomeBubble&) = delete;
+  PaletteWelcomeBubble& operator=(const PaletteWelcomeBubble&) = delete;
+
   ~PaletteWelcomeBubble() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -72,8 +76,6 @@ class ASH_EXPORT PaletteWelcomeBubble : public SessionObserver,
   PrefService* active_user_pref_service_ = nullptr;  // Not owned.
 
   WelcomeBubbleView* bubble_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PaletteWelcomeBubble);
 };
 
 }  // namespace ash

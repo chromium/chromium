@@ -133,6 +133,12 @@ class ScopedOverviewTransformWindow::LayerCachingAndFilteringObserver
     layer_->AddCacheRenderSurfaceRequest();
     layer_->AddTrilinearFilteringRequest();
   }
+
+  LayerCachingAndFilteringObserver(const LayerCachingAndFilteringObserver&) =
+      delete;
+  LayerCachingAndFilteringObserver& operator=(
+      const LayerCachingAndFilteringObserver&) = delete;
+
   ~LayerCachingAndFilteringObserver() override {
     if (layer_) {
       layer_->RemoveTrilinearFilteringRequest();
@@ -149,8 +155,6 @@ class ScopedOverviewTransformWindow::LayerCachingAndFilteringObserver
 
  private:
   ui::Layer* layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerCachingAndFilteringObserver);
 };
 
 ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(

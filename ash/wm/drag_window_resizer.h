@@ -27,6 +27,10 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
   // displays to |next_window_resizer|.
   DragWindowResizer(std::unique_ptr<WindowResizer> next_window_resizer,
                     WindowState* window_state);
+
+  DragWindowResizer(const DragWindowResizer&) = delete;
+  DragWindowResizer& operator=(const DragWindowResizer&) = delete;
+
   ~DragWindowResizer() override;
 
   // WindowResizer:
@@ -65,8 +69,6 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
   static DragWindowResizer* instance_;
 
   base::WeakPtrFactory<DragWindowResizer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DragWindowResizer);
 };
 
 }  // namespace ash

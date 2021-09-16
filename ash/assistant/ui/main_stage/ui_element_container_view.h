@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
     : public AnimatedContainerView {
  public:
   explicit UiElementContainerView(AssistantViewDelegate* delegate);
+
+  UiElementContainerView(const UiElementContainerView&) = delete;
+  UiElementContainerView& operator=(const UiElementContainerView&) = delete;
+
   ~UiElementContainerView() override;
 
   void OnOverflowIndicatorVisibilityChanged(bool is_visible);
@@ -59,8 +63,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
 
   // Factory instance used to construct views for modeled UI elements.
   std::unique_ptr<AssistantUiElementViewFactory> view_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiElementContainerView);
 };
 
 }  // namespace ash

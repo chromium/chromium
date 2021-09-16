@@ -25,6 +25,10 @@ class ASH_EXPORT WindowPreviewView
       public aura::WindowObserver {
  public:
   WindowPreviewView(aura::Window* window, bool trilinear_filtering_on_init);
+
+  WindowPreviewView(const WindowPreviewView&) = delete;
+  WindowPreviewView& operator=(const WindowPreviewView&) = delete;
+
   ~WindowPreviewView() override;
 
   // Recreate the preview views for the window and all its transient
@@ -68,8 +72,6 @@ class ASH_EXPORT WindowPreviewView
   // `transient_child->parent()` is set. We track those here so that we can add
   // them to the view once they're parented.
   base::flat_set<aura::Window*> unparented_transient_children_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPreviewView);
 };
 
 }  // namespace ash

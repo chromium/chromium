@@ -49,6 +49,10 @@ class COMPONENT_EXPORT(ASH_POWER) DarkResumeController
  public:
   explicit DarkResumeController(
       mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider);
+
+  DarkResumeController(const DarkResumeController&) = delete;
+  DarkResumeController& operator=(const DarkResumeController&) = delete;
+
   ~DarkResumeController() override;
 
   // Time after a dark resume when wake lock count is checked and a decision is
@@ -127,8 +131,6 @@ class COMPONENT_EXPORT(ASH_POWER) DarkResumeController
   // tasks or callbacks need to be added separate from the dark resume state
   // machine lifetime then a separate factory needs to be created and used.
   base::WeakPtrFactory<DarkResumeController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DarkResumeController);
 };
 
 }  // namespace system

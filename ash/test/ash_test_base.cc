@@ -73,6 +73,11 @@ class AshEventGeneratorDelegate
     : public aura::test::EventGeneratorDelegateAura {
  public:
   AshEventGeneratorDelegate() = default;
+
+  AshEventGeneratorDelegate(const AshEventGeneratorDelegate&) = delete;
+  AshEventGeneratorDelegate& operator=(const AshEventGeneratorDelegate&) =
+      delete;
+
   ~AshEventGeneratorDelegate() override = default;
 
   // aura::test::EventGeneratorDelegateAura overrides:
@@ -81,9 +86,6 @@ class AshEventGeneratorDelegate
     display::Display display = screen->GetDisplayNearestPoint(point_in_screen);
     return Shell::GetRootWindowForDisplayId(display.id())->GetHost()->window();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AshEventGeneratorDelegate);
 };
 
 }  // namespace

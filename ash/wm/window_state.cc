@@ -96,6 +96,10 @@ bool IsTemporarilyHiddenForFullrestore(aura::Window* window) {
 class BoundsSetter : public aura::LayoutManager {
  public:
   BoundsSetter() = default;
+
+  BoundsSetter(const BoundsSetter&) = delete;
+  BoundsSetter& operator=(const BoundsSetter&) = delete;
+
   ~BoundsSetter() override = default;
 
   // aura::LayoutManager overrides:
@@ -111,9 +115,6 @@ class BoundsSetter : public aura::LayoutManager {
   void SetBounds(aura::Window* window, const gfx::Rect& bounds) {
     SetChildBoundsDirect(window, bounds);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BoundsSetter);
 };
 
 WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {

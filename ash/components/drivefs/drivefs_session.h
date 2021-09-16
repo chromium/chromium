@@ -23,6 +23,10 @@ namespace drivefs {
 class COMPONENT_EXPORT(DRIVEFS) DiskMounter {
  public:
   DiskMounter() = default;
+
+  DiskMounter(const DiskMounter&) = delete;
+  DiskMounter& operator=(const DiskMounter&) = delete;
+
   virtual ~DiskMounter() = default;
   virtual void Mount(const base::UnguessableToken& token,
                      const base::FilePath& data_path,
@@ -32,9 +36,6 @@ class COMPONENT_EXPORT(DRIVEFS) DiskMounter {
 
   static std::unique_ptr<DiskMounter> Create(
       chromeos::disks::DiskMountManager* disk_mount_manager);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiskMounter);
 };
 
 class DriveFsConnection;
@@ -54,15 +55,16 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSession : public mojom::DriveFsDelegate {
     };
 
     MountObserver() = default;
+
+    MountObserver(const MountObserver&) = delete;
+    MountObserver& operator=(const MountObserver&) = delete;
+
     virtual ~MountObserver() = default;
     virtual void OnMounted(const base::FilePath& mount_path) = 0;
     virtual void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) = 0;
     virtual void OnMountFailed(
         MountFailure failure,
         absl::optional<base::TimeDelta> remount_delay) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(MountObserver);
   };
 
   DriveFsSession(base::OneShotTimer* timer,
@@ -72,6 +74,10 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSession : public mojom::DriveFsDelegate {
                  const base::FilePath& my_files_path,
                  const std::string& desired_mount_dir_name,
                  MountObserver* observer);
+
+  DriveFsSession(const DriveFsSession&) = delete;
+  DriveFsSession& operator=(const DriveFsSession&) = delete;
+
   ~DriveFsSession() override;
 
   // Returns whether DriveFS is mounted.
@@ -113,8 +119,6 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSession : public mojom::DriveFsDelegate {
   bool drivefs_has_started_ = false;
   bool drivefs_has_terminated_ = false;
   bool is_mounted_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsSession);
 };
 
 }  // namespace drivefs

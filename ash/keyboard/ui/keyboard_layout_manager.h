@@ -20,6 +20,10 @@ class KeyboardUIController;
 class KEYBOARD_EXPORT KeyboardLayoutManager : public aura::LayoutManager {
  public:
   explicit KeyboardLayoutManager(KeyboardUIController* controller);
+
+  KeyboardLayoutManager(const KeyboardLayoutManager&) = delete;
+  KeyboardLayoutManager& operator=(const KeyboardLayoutManager&) = delete;
+
   ~KeyboardLayoutManager() override;
 
   // Overridden from aura::LayoutManager
@@ -34,8 +38,6 @@ class KEYBOARD_EXPORT KeyboardLayoutManager : public aura::LayoutManager {
 
  private:
   KeyboardUIController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardLayoutManager);
 };
 
 }  // namespace keyboard

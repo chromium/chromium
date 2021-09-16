@@ -32,6 +32,10 @@ class AppListTestViewDelegate : public AppListViewDelegate,
                                 public ui::SimpleMenuModel::Delegate {
  public:
   AppListTestViewDelegate();
+
+  AppListTestViewDelegate(const AppListTestViewDelegate&) = delete;
+  AppListTestViewDelegate& operator=(const AppListTestViewDelegate&) = delete;
+
   ~AppListTestViewDelegate() override;
 
   int dismiss_count() const { return dismiss_count_; }
@@ -144,8 +148,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   std::unique_ptr<AppListTestModel> model_;
   std::unique_ptr<SearchModel> search_model_;
   std::vector<SkColor> wallpaper_prominent_colors_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListTestViewDelegate);
 };
 
 }  // namespace test

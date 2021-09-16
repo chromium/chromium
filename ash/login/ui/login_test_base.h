@@ -25,6 +25,10 @@ class LoginDataDispatcher;
 class LoginTestBase : public AshTestBase {
  public:
   LoginTestBase();
+
+  LoginTestBase(const LoginTestBase&) = delete;
+  LoginTestBase& operator=(const LoginTestBase&) = delete;
+
   ~LoginTestBase() override;
 
   // Shows a full Lock/Login screen. These methods are useful for when we want
@@ -84,8 +88,6 @@ class LoginTestBase : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   std::vector<LoginUserInfo> users_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginTestBase);
 };
 
 }  // namespace ash

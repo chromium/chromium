@@ -19,6 +19,10 @@ class PhantomWindowController;
 class ASH_EXPORT SnapControllerImpl : public chromeos::SnapController {
  public:
   SnapControllerImpl();
+
+  SnapControllerImpl(const SnapControllerImpl&) = delete;
+  SnapControllerImpl& operator=(const SnapControllerImpl&) = delete;
+
   ~SnapControllerImpl() override;
 
   bool CanSnap(aura::Window* window) override;
@@ -28,8 +32,6 @@ class ASH_EXPORT SnapControllerImpl : public chromeos::SnapController {
 
  private:
   std::unique_ptr<PhantomWindowController> phantom_window_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapControllerImpl);
 };
 
 }  // namespace ash

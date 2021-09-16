@@ -218,6 +218,10 @@ void WaitUntilCustomWallpapersDeleted(const AccountId& account_id) {
 class TaskObserver : public base::TaskObserver {
  public:
   TaskObserver() : processed_(false) {}
+
+  TaskObserver(const TaskObserver&) = delete;
+  TaskObserver& operator=(const TaskObserver&) = delete;
+
   ~TaskObserver() override = default;
 
   // TaskObserver:
@@ -232,7 +236,6 @@ class TaskObserver : public base::TaskObserver {
 
  private:
   bool processed_;
-  DISALLOW_COPY_AND_ASSIGN(TaskObserver);
 };
 
 // See content::RunAllTasksUntilIdle().
@@ -326,6 +329,11 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
     controller_->AddObserver(this);
   }
 
+  TestWallpaperControllerObserver(const TestWallpaperControllerObserver&) =
+      delete;
+  TestWallpaperControllerObserver& operator=(
+      const TestWallpaperControllerObserver&) = delete;
+
   ~TestWallpaperControllerObserver() override {
     controller_->RemoveObserver(this);
   }
@@ -344,8 +352,6 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
   int colors_changed_count_ = 0;
   int blur_changed_count_ = 0;
   int first_shown_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperControllerObserver);
 };
 
 }  // namespace
@@ -353,6 +359,10 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
 class WallpaperControllerTest : public AshTestBase {
  public:
   WallpaperControllerTest() = default;
+
+  WallpaperControllerTest(const WallpaperControllerTest&) = delete;
+  WallpaperControllerTest& operator=(const WallpaperControllerTest&) = delete;
+
   ~WallpaperControllerTest() override = default;
 
   void SetUp() override {
@@ -655,8 +665,6 @@ class WallpaperControllerTest : public AshTestBase {
 
  private:
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerTest);
 };
 
 TEST_F(WallpaperControllerTest, Client) {

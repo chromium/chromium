@@ -63,6 +63,10 @@ class WindowMoveToDeskAnimation : public ui::ImplicitAnimationObserver {
     layer->SetTransform(GetWindowEndTransform(window, going_left));
   }
 
+  WindowMoveToDeskAnimation(const WindowMoveToDeskAnimation&) = delete;
+  WindowMoveToDeskAnimation& operator=(const WindowMoveToDeskAnimation&) =
+      delete;
+
   ~WindowMoveToDeskAnimation() override = default;
 
   // ui::ImplicitAnimationObserver:
@@ -70,8 +74,6 @@ class WindowMoveToDeskAnimation : public ui::ImplicitAnimationObserver {
 
  private:
   std::unique_ptr<ui::LayerTreeOwner> old_window_layer_tree_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowMoveToDeskAnimation);
 };
 
 }  // namespace

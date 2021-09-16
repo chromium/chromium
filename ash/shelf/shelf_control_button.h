@@ -18,6 +18,10 @@ class ShelfButtonDelegate;
 class ASH_EXPORT ShelfControlButton : public ShelfButton {
  public:
   ShelfControlButton(Shelf* shelf, ShelfButtonDelegate* shelf_button_delegate_);
+
+  ShelfControlButton(const ShelfControlButton&) = delete;
+  ShelfControlButton& operator=(const ShelfControlButton&) = delete;
+
   ~ShelfControlButton() override;
 
   // Get the center point of the button used to draw its background and ink
@@ -41,8 +45,6 @@ class ASH_EXPORT ShelfControlButton : public ShelfButton {
 
  private:
   gfx::Rect ideal_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfControlButton);
 };
 
 }  // namespace ash

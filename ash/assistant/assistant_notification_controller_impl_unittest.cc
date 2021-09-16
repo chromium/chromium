@@ -166,6 +166,12 @@ class AssistantNotificationModelObserverMock
     : public AssistantNotificationModelObserver {
  public:
   AssistantNotificationModelObserverMock() = default;
+
+  AssistantNotificationModelObserverMock(
+      const AssistantNotificationModelObserverMock&) = delete;
+  AssistantNotificationModelObserverMock& operator=(
+      const AssistantNotificationModelObserverMock&) = delete;
+
   ~AssistantNotificationModelObserverMock() override = default;
 
   MOCK_METHOD(void,
@@ -181,9 +187,6 @@ class AssistantNotificationModelObserverMock
               (const AssistantNotification& notification, bool from_server),
               (override));
   MOCK_METHOD(void, OnAllNotificationsRemoved, (bool from_server), (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantNotificationModelObserverMock);
 };
 
 class AssistantServiceMock : public TestAssistantService {

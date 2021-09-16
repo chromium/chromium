@@ -20,6 +20,12 @@ class ASH_EXPORT RotationLockFeaturePodController
       public ScreenOrientationController::Observer {
  public:
   RotationLockFeaturePodController();
+
+  RotationLockFeaturePodController(const RotationLockFeaturePodController&) =
+      delete;
+  RotationLockFeaturePodController& operator=(
+      const RotationLockFeaturePodController&) = delete;
+
   ~RotationLockFeaturePodController() override;
 
   // FeaturePodControllerBase:
@@ -37,8 +43,6 @@ class ASH_EXPORT RotationLockFeaturePodController
   void UpdateButton();
 
   FeaturePodButton* button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RotationLockFeaturePodController);
 };
 
 }  // namespace ash

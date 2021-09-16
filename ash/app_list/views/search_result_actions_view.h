@@ -22,6 +22,10 @@ class SearchResultView;
 class ASH_EXPORT SearchResultActionsView : public views::View {
  public:
   explicit SearchResultActionsView(SearchResultActionsViewDelegate* delegate);
+
+  SearchResultActionsView(const SearchResultActionsView&) = delete;
+  SearchResultActionsView& operator=(const SearchResultActionsView&) = delete;
+
   ~SearchResultActionsView() override;
 
   void SetActions(const SearchResult::Actions& actions);
@@ -80,8 +84,6 @@ class ASH_EXPORT SearchResultActionsView : public views::View {
 
   SearchResultActionsViewDelegate* const delegate_;  // Not owned.
   std::list<base::CallbackListSubscription> subscriptions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultActionsView);
 };
 
 }  // namespace ash

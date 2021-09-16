@@ -23,6 +23,10 @@ class WindowPreviewView;
 class WindowPreviewViewTestApi {
  public:
   explicit WindowPreviewViewTestApi(WindowPreviewView* preview_view);
+
+  WindowPreviewViewTestApi(const WindowPreviewViewTestApi&) = delete;
+  WindowPreviewViewTestApi& operator=(const WindowPreviewViewTestApi&) = delete;
+
   ~WindowPreviewViewTestApi();
 
   gfx::RectF GetUnionRect() const;
@@ -36,8 +40,6 @@ class WindowPreviewViewTestApi {
 
  private:
   WindowPreviewView* preview_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPreviewViewTestApi);
 };
 
 }  // namespace ash

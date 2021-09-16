@@ -28,6 +28,11 @@ class ASH_EXPORT QuietModeFeaturePodController
  public:
   explicit QuietModeFeaturePodController(
       UnifiedSystemTrayController* tray_controller);
+
+  QuietModeFeaturePodController(const QuietModeFeaturePodController&) = delete;
+  QuietModeFeaturePodController& operator=(
+      const QuietModeFeaturePodController&) = delete;
+
   ~QuietModeFeaturePodController() override;
 
   // FeaturePodControllerBase:
@@ -53,8 +58,6 @@ class ASH_EXPORT QuietModeFeaturePodController
   FeaturePodButton* button_ = nullptr;
 
   absl::optional<int> last_disabled_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuietModeFeaturePodController);
 };
 
 }  // namespace ash

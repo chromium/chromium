@@ -96,6 +96,11 @@ AudioDevice CreateAudioDevice(const AudioNodeInfo& info, int version) {
 class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
  public:
   AudioDevicesPrefHandlerTest() = default;
+
+  AudioDevicesPrefHandlerTest(const AudioDevicesPrefHandlerTest&) = delete;
+  AudioDevicesPrefHandlerTest& operator=(const AudioDevicesPrefHandlerTest&) =
+      delete;
+
   ~AudioDevicesPrefHandlerTest() override = default;
 
   void SetUp() override {
@@ -216,9 +221,6 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
 
   scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioDevicesPrefHandlerTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(Input, AudioDevicesPrefHandlerTest, Values(true));

@@ -62,6 +62,10 @@ class TestOverviewObserver : public OverviewObserver {
       : should_monitor_animation_state_(should_monitor_animation_state) {
     Shell::Get()->overview_controller()->AddObserver(this);
   }
+
+  TestOverviewObserver(const TestOverviewObserver&) = delete;
+  TestOverviewObserver& operator=(const TestOverviewObserver&) = delete;
+
   ~TestOverviewObserver() override {
     Shell::Get()->overview_controller()->RemoveObserver(this);
   }
@@ -175,8 +179,6 @@ class TestOverviewObserver : public OverviewObserver {
   bool should_monitor_animation_state_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverviewObserver);
 };
 
 void WaitForOcclusionStateChange(aura::Window* window) {

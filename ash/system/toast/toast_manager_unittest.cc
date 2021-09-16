@@ -36,6 +36,10 @@ class DummyEvent : public ui::Event {
 class ToastManagerImplTest : public AshTestBase {
  public:
   ToastManagerImplTest() = default;
+
+  ToastManagerImplTest(const ToastManagerImplTest&) = delete;
+  ToastManagerImplTest& operator=(const ToastManagerImplTest&) = delete;
+
   ~ToastManagerImplTest() override = default;
 
  private:
@@ -122,8 +126,6 @@ class ToastManagerImplTest : public AshTestBase {
  private:
   ToastManagerImpl* manager_ = nullptr;
   unsigned int serial_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ToastManagerImplTest);
 };
 
 TEST_F(ToastManagerImplTest, ShowAndCloseAutomatically) {

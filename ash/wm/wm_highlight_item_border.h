@@ -23,6 +23,10 @@ class WmHighlightItemBorder : public views::Border {
   explicit WmHighlightItemBorder(
       int corner_radius,
       gfx::Insets padding = gfx::Insets(0));
+
+  WmHighlightItemBorder(const WmHighlightItemBorder&) = delete;
+  WmHighlightItemBorder& operator=(const WmHighlightItemBorder&) = delete;
+
   ~WmHighlightItemBorder() override = default;
 
   // This highlight meant to indicate focus. No border will be painted if
@@ -38,8 +42,6 @@ class WmHighlightItemBorder : public views::Border {
   const int corner_radius_;
 
   gfx::Insets border_insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(WmHighlightItemBorder);
 };
 
 }  // namespace ash

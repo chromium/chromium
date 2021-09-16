@@ -34,6 +34,10 @@ namespace {
 class TestNetworkObserver : public NetworkObserver {
  public:
   TestNetworkObserver() = default;
+
+  TestNetworkObserver(const TestNetworkObserver&) = delete;
+  TestNetworkObserver& operator=(const TestNetworkObserver&) = delete;
+
   ~TestNetworkObserver() override = default;
 
   // ash::NetworkObserver:
@@ -45,8 +49,6 @@ class TestNetworkObserver : public NetworkObserver {
 
  private:
   bool wifi_enabled_status_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkObserver);
 };
 
 }  // namespace

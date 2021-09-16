@@ -14,6 +14,10 @@ namespace ash {
 class ASH_EXPORT ImmersiveContextAsh : public chromeos::ImmersiveContext {
  public:
   ImmersiveContextAsh();
+
+  ImmersiveContextAsh(const ImmersiveContextAsh&) = delete;
+  ImmersiveContextAsh& operator=(const ImmersiveContextAsh&) = delete;
+
   ~ImmersiveContextAsh() override;
 
   // ImmersiveContext:
@@ -22,9 +26,6 @@ class ASH_EXPORT ImmersiveContextAsh : public chromeos::ImmersiveContext {
       bool entering) override;
   gfx::Rect GetDisplayBoundsInScreen(views::Widget* widget) override;
   bool DoesAnyWindowHaveCapture() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveContextAsh);
 };
 
 }  // namespace ash

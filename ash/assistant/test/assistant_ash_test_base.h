@@ -52,6 +52,10 @@ class AssistantAshTestBase : public AshTestBase {
 
   AssistantAshTestBase();
   explicit AssistantAshTestBase(base::test::TaskEnvironment::TimeSource time);
+
+  AssistantAshTestBase(const AssistantAshTestBase&) = delete;
+  AssistantAshTestBase& operator=(const AssistantAshTestBase&) = delete;
+
   ~AssistantAshTestBase() override;
 
   // AshTestBase:
@@ -219,8 +223,6 @@ class AssistantAshTestBase : public AshTestBase {
 
   std::unique_ptr<chromeos::assistant::ScopedAssistantBrowserDelegate>
       delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAshTestBase);
 };
 
 }  // namespace ash

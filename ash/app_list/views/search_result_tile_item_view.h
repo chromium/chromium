@@ -36,6 +36,10 @@ class ASH_EXPORT SearchResultTileItemView
       public views::ContextMenuController {
  public:
   explicit SearchResultTileItemView(AppListViewDelegate* view_delegate);
+
+  SearchResultTileItemView(const SearchResultTileItemView&) = delete;
+  SearchResultTileItemView& operator=(const SearchResultTileItemView&) = delete;
+
   ~SearchResultTileItemView() override;
 
   void OnResultChanged() override;
@@ -138,8 +142,6 @@ class ASH_EXPORT SearchResultTileItemView
   std::unique_ptr<AppListMenuModelAdapter> context_menu_;
 
   base::WeakPtrFactory<SearchResultTileItemView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultTileItemView);
 };
 
 }  // namespace ash

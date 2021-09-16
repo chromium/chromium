@@ -19,6 +19,12 @@ class ASH_EXPORT LockScreenActionBackgroundControllerStub
     : public LockScreenActionBackgroundController {
  public:
   LockScreenActionBackgroundControllerStub();
+
+  LockScreenActionBackgroundControllerStub(
+      const LockScreenActionBackgroundControllerStub&) = delete;
+  LockScreenActionBackgroundControllerStub& operator=(
+      const LockScreenActionBackgroundControllerStub&) = delete;
+
   ~LockScreenActionBackgroundControllerStub() override;
 
   // LockScreenActionBackgroundController:
@@ -26,9 +32,6 @@ class ASH_EXPORT LockScreenActionBackgroundControllerStub
   bool ShowBackground() override;
   bool HideBackgroundImmediately() override;
   bool HideBackground() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundControllerStub);
 };
 
 }  // namespace ash

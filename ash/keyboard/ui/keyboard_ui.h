@@ -28,6 +28,10 @@ class KEYBOARD_EXPORT KeyboardUI {
   using LoadCallback = base::OnceCallback<void()>;
 
   KeyboardUI();
+
+  KeyboardUI(const KeyboardUI&) = delete;
+  KeyboardUI& operator=(const KeyboardUI&) = delete;
+
   virtual ~KeyboardUI();
 
   // Begin loading the virtual keyboard window asynchronously.
@@ -80,8 +84,6 @@ class KEYBOARD_EXPORT KeyboardUI {
 
  private:
   KeyboardUIController* keyboard_controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardUI);
 };
 
 }  // namespace keyboard

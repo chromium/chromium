@@ -27,6 +27,11 @@ class FakeDriveFsBootstrapListener : public DriveFsBootstrapListener {
  public:
   explicit FakeDriveFsBootstrapListener(
       mojo::PendingRemote<drivefs::mojom::DriveFsBootstrap> bootstrap);
+
+  FakeDriveFsBootstrapListener(const FakeDriveFsBootstrapListener&) = delete;
+  FakeDriveFsBootstrapListener& operator=(const FakeDriveFsBootstrapListener&) =
+      delete;
+
   ~FakeDriveFsBootstrapListener() override;
 
  private:
@@ -34,14 +39,16 @@ class FakeDriveFsBootstrapListener : public DriveFsBootstrapListener {
   mojo::PendingRemote<mojom::DriveFsBootstrap> bootstrap() override;
 
   mojo::PendingRemote<drivefs::mojom::DriveFsBootstrap> bootstrap_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveFsBootstrapListener);
 };
 
 class FakeDriveFs : public drivefs::mojom::DriveFs,
                     public drivefs::mojom::DriveFsBootstrap {
  public:
   explicit FakeDriveFs(const base::FilePath& mount_path);
+
+  FakeDriveFs(const FakeDriveFs&) = delete;
+  FakeDriveFs& operator=(const FakeDriveFs&) = delete;
+
   ~FakeDriveFs() override;
 
   void RegisterMountingForAccountId(
@@ -147,8 +154,6 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
       pending_delegate_receiver_;
 
   base::WeakPtrFactory<FakeDriveFs> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveFs);
 };
 
 }  // namespace drivefs

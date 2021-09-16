@@ -90,6 +90,11 @@ class PassthroughAnimationDecoder
  public:
   explicit PassthroughAnimationDecoder(const AnimationFrames& frames)
       : frames_(frames) {}
+
+  PassthroughAnimationDecoder(const PassthroughAnimationDecoder&) = delete;
+  PassthroughAnimationDecoder& operator=(const PassthroughAnimationDecoder&) =
+      delete;
+
   ~PassthroughAnimationDecoder() override = default;
 
   // AnimatedRoundedImageView::AnimationDecoder:
@@ -97,7 +102,6 @@ class PassthroughAnimationDecoder
 
  private:
   AnimationFrames frames_;
-  DISALLOW_COPY_AND_ASSIGN(PassthroughAnimationDecoder);
 };
 
 class IconRoundedView : public views::View {
@@ -292,6 +296,10 @@ class LoginUserView::UserLabel : public NonAccessibleView {
 
     AddChildView(user_name_);
   }
+
+  UserLabel(const UserLabel&) = delete;
+  UserLabel& operator=(const UserLabel&) = delete;
+
   ~UserLabel() override = default;
 
   void UpdateForUser(const LoginUserInfo& user) {
@@ -317,8 +325,6 @@ class LoginUserView::UserLabel : public NonAccessibleView {
  private:
   views::Label* user_name_ = nullptr;
   const int label_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserLabel);
 };
 
 // A button embedded inside of LoginUserView, which is activated whenever the
@@ -329,6 +335,10 @@ class LoginUserView::TapButton : public views::Button {
  public:
   TapButton(PressedCallback callback, LoginUserView* parent)
       : views::Button(std::move(callback)), parent_(parent) {}
+
+  TapButton(const TapButton&) = delete;
+  TapButton& operator=(const TapButton&) = delete;
+
   ~TapButton() override = default;
 
   // views::Button:
@@ -348,8 +358,6 @@ class LoginUserView::TapButton : public views::Button {
 
  private:
   LoginUserView* const parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(TapButton);
 };
 
 // LoginUserView is defined after LoginUserView::UserLabel so it can access the

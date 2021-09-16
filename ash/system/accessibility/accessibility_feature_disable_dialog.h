@@ -21,6 +21,12 @@ class AccessibilityFeatureDisableDialog : public views::DialogDelegateView {
   AccessibilityFeatureDisableDialog(int window_title_text_id,
                                     base::OnceClosure on_accept_callback,
                                     base::OnceClosure on_cancel_callback);
+
+  AccessibilityFeatureDisableDialog(const AccessibilityFeatureDisableDialog&) =
+      delete;
+  AccessibilityFeatureDisableDialog& operator=(
+      const AccessibilityFeatureDisableDialog&) = delete;
+
   ~AccessibilityFeatureDisableDialog() override;
 
   base::WeakPtr<AccessibilityFeatureDisableDialog> GetWeakPtr();
@@ -33,8 +39,6 @@ class AccessibilityFeatureDisableDialog : public views::DialogDelegateView {
 
   base::WeakPtrFactory<AccessibilityFeatureDisableDialog> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFeatureDisableDialog);
 };
 
 }  // namespace ash

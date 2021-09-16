@@ -59,6 +59,10 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   SearchResultView(SearchResultListView* list_view,
                    AppListViewDelegate* view_delegate,
                    SearchResultViewType view_type);
+
+  SearchResultView(const SearchResultView&) = delete;
+  SearchResultView& operator=(const SearchResultView&) = delete;
+
   ~SearchResultView() override;
 
   // Sets/gets SearchResult displayed by this view.
@@ -147,8 +151,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   SearchResultViewType view_type_;
 
   base::WeakPtrFactory<SearchResultView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultView);
 };
 
 }  // namespace ash

@@ -50,6 +50,10 @@ class ASH_EXPORT DetachableBaseHandler
  public:
   // |local_state| - PrefService of Local state. May be null in tests.
   explicit DetachableBaseHandler(PrefService* local_state);
+
+  DetachableBaseHandler(const DetachableBaseHandler&) = delete;
+  DetachableBaseHandler& operator=(const DetachableBaseHandler&) = delete;
+
   ~DetachableBaseHandler() override;
 
   // Registers the local state prefs for detachable base devices.
@@ -150,8 +154,6 @@ class ASH_EXPORT DetachableBaseHandler
   base::ObserverList<DetachableBaseObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<DetachableBaseHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DetachableBaseHandler);
 };
 
 }  // namespace ash

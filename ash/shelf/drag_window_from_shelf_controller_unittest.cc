@@ -61,6 +61,12 @@ const float kVelocityToRestoreBoundsThreshold =
 class DragWindowFromShelfControllerTest : public AshTestBase {
  public:
   DragWindowFromShelfControllerTest() = default;
+
+  DragWindowFromShelfControllerTest(const DragWindowFromShelfControllerTest&) =
+      delete;
+  DragWindowFromShelfControllerTest& operator=(
+      const DragWindowFromShelfControllerTest&) = delete;
+
   ~DragWindowFromShelfControllerTest() override = default;
 
   // AshTestBase:
@@ -120,8 +126,6 @@ class DragWindowFromShelfControllerTest : public AshTestBase {
 
  private:
   std::unique_ptr<DragWindowFromShelfController> window_drag_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragWindowFromShelfControllerTest);
 };
 
 // Tests that we may hide different sets of windows with a special flag

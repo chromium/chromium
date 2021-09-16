@@ -67,6 +67,9 @@ class LogoutConfirmationController::LastWindowClosedObserver
       ObserveForLastWindowClosed(root);
   }
 
+  LastWindowClosedObserver(const LastWindowClosedObserver&) = delete;
+  LastWindowClosedObserver& operator=(const LastWindowClosedObserver&) = delete;
+
   ~LastWindowClosedObserver() override {
     // Stop observing all displays.
     for (aura::Window* root : Shell::GetAllRootWindows()) {
@@ -137,8 +140,6 @@ class LogoutConfirmationController::LastWindowClosedObserver
     // Stop observing the container window when it closes.
     window->RemoveObserver(this);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LastWindowClosedObserver);
 };
 
 LogoutConfirmationController::LogoutConfirmationController()

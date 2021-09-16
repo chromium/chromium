@@ -15,6 +15,11 @@ namespace ash {
 class ASH_EXPORT AutoclickDragEventRewriter : public ui::EventRewriter {
  public:
   AutoclickDragEventRewriter() = default;
+
+  AutoclickDragEventRewriter(const AutoclickDragEventRewriter&) = delete;
+  AutoclickDragEventRewriter& operator=(const AutoclickDragEventRewriter&) =
+      delete;
+
   ~AutoclickDragEventRewriter() override = default;
 
   void SetEnabled(bool enabled);
@@ -27,8 +32,6 @@ class ASH_EXPORT AutoclickDragEventRewriter : public ui::EventRewriter {
 
  private:
   bool enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickDragEventRewriter);
 };
 
 }  // namespace ash

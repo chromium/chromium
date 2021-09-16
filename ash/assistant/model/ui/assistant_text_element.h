@@ -18,6 +18,10 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantTextElement
     : public AssistantUiElement {
  public:
   explicit AssistantTextElement(const std::string& text);
+
+  AssistantTextElement(const AssistantTextElement&) = delete;
+  AssistantTextElement& operator=(const AssistantTextElement&) = delete;
+
   ~AssistantTextElement() override;
 
   const std::string& text() const { return text_; }
@@ -27,8 +31,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantTextElement
 
   // AssistantUiElement:
   bool Compare(const AssistantUiElement& other) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantTextElement);
 };
 
 }  // namespace ash

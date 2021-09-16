@@ -19,6 +19,11 @@ class ShutdownConfirmationDialog;
 class ASH_EXPORT UpdateNotificationController : public UpdateObserver {
  public:
   UpdateNotificationController();
+
+  UpdateNotificationController(const UpdateNotificationController&) = delete;
+  UpdateNotificationController& operator=(const UpdateNotificationController&) =
+      delete;
+
   ~UpdateNotificationController() override;
 
   // UpdateObserver:
@@ -47,8 +52,6 @@ class ASH_EXPORT UpdateNotificationController : public UpdateObserver {
   ShutdownConfirmationDialog* confirmation_dialog_ = nullptr;
 
   base::WeakPtrFactory<UpdateNotificationController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateNotificationController);
 };
 
 }  // namespace ash

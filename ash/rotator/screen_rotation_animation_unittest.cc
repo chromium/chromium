@@ -23,6 +23,11 @@ namespace ash {
 class ScreenRotationAnimationTest : public AshTestBase {
  public:
   ScreenRotationAnimationTest() = default;
+
+  ScreenRotationAnimationTest(const ScreenRotationAnimationTest&) = delete;
+  ScreenRotationAnimationTest& operator=(const ScreenRotationAnimationTest&) =
+      delete;
+
   ~ScreenRotationAnimationTest() override = default;
 
   // AshTestBase:
@@ -30,8 +35,6 @@ class ScreenRotationAnimationTest : public AshTestBase {
 
  private:
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> non_zero_duration_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenRotationAnimationTest);
 };
 
 void ScreenRotationAnimationTest::SetUp() {

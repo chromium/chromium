@@ -70,6 +70,9 @@ class PageFlipWaiter : public PaginationModelObserver {
     model_->AddObserver(this);
   }
 
+  PageFlipWaiter(const PageFlipWaiter&) = delete;
+  PageFlipWaiter& operator=(const PageFlipWaiter&) = delete;
+
   ~PageFlipWaiter() override { model_->RemoveObserver(this); }
 
   void Wait() {
@@ -100,8 +103,6 @@ class PageFlipWaiter : public PaginationModelObserver {
   PaginationModel* model_ = nullptr;
   bool wait_ = false;
   std::string selected_pages_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageFlipWaiter);
 };
 
 // WindowDeletionWaiter waits for the specified window to be deleted.
@@ -110,6 +111,10 @@ class WindowDeletionWaiter : aura::WindowObserver {
   explicit WindowDeletionWaiter(aura::Window* window) : window_(window) {
     window_->AddObserver(this);
   }
+
+  WindowDeletionWaiter(const WindowDeletionWaiter&) = delete;
+  WindowDeletionWaiter& operator=(const WindowDeletionWaiter&) = delete;
+
   ~WindowDeletionWaiter() override = default;
 
   void Wait() { run_loop_.Run(); }
@@ -123,8 +128,6 @@ class WindowDeletionWaiter : aura::WindowObserver {
 
   base::RunLoop run_loop_;
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowDeletionWaiter);
 };
 
 // Find the window with type WINDOW_TYPE_MENU and returns the firstly found one.
@@ -150,6 +153,9 @@ class DragAfterPageFlipTask : public PaginationModelObserver {
     model_->AddObserver(this);
   }
 
+  DragAfterPageFlipTask(const DragAfterPageFlipTask&) = delete;
+  DragAfterPageFlipTask& operator=(const DragAfterPageFlipTask&) = delete;
+
   ~DragAfterPageFlipTask() override { model_->RemoveObserver(this); }
 
  private:
@@ -166,8 +172,6 @@ class DragAfterPageFlipTask : public PaginationModelObserver {
   PaginationModel* model_;
   AppsGridView* view_;
   ui::MouseEvent drag_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragAfterPageFlipTask);
 };
 
 class TestSuggestedSearchResult : public TestSearchResult {
@@ -176,10 +180,12 @@ class TestSuggestedSearchResult : public TestSearchResult {
     set_display_type(SearchResultDisplayType::kChip);
     set_is_recommendation(true);
   }
-  ~TestSuggestedSearchResult() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSuggestedSearchResult);
+  TestSuggestedSearchResult(const TestSuggestedSearchResult&) = delete;
+  TestSuggestedSearchResult& operator=(const TestSuggestedSearchResult&) =
+      delete;
+
+  ~TestSuggestedSearchResult() override = default;
 };
 
 }  // namespace

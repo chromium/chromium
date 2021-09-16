@@ -31,6 +31,10 @@ class ASH_EXPORT ShelfController : public SessionObserver,
                                    public ShelfModelObserver {
  public:
   ShelfController();
+
+  ShelfController(const ShelfController&) = delete;
+  ShelfController& operator=(const ShelfController&) = delete;
+
   ~ShelfController() override;
 
   // Removes observers from this object's dependencies.
@@ -78,8 +82,6 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   // Observed to update notification badging on shelf items. Also used to get
   // initial notification badge information when shelf items are added.
   apps::AppRegistryCache* cache_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfController);
 };
 
 }  // namespace ash

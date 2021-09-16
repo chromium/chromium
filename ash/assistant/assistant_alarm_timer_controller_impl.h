@@ -41,6 +41,12 @@ class AssistantAlarmTimerControllerImpl
  public:
   explicit AssistantAlarmTimerControllerImpl(
       AssistantControllerImpl* assistant_controller);
+
+  AssistantAlarmTimerControllerImpl(const AssistantAlarmTimerControllerImpl&) =
+      delete;
+  AssistantAlarmTimerControllerImpl& operator=(
+      const AssistantAlarmTimerControllerImpl&) = delete;
+
   ~AssistantAlarmTimerControllerImpl() override;
 
   // Provides a pointer to the |assistant| owned by AssistantService.
@@ -90,8 +96,6 @@ class AssistantAlarmTimerControllerImpl
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAlarmTimerControllerImpl);
 };
 
 }  // namespace ash

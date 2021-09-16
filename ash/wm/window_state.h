@@ -63,6 +63,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   class State {
    public:
     State() {}
+
+    State(const State&) = delete;
+    State& operator=(const State&) = delete;
+
     virtual ~State() {}
 
     // Update WindowState based on |event|.
@@ -85,9 +89,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
     // Called when the window is being destroyed.
     virtual void OnWindowDestroying(WindowState* window_state) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(State);
   };
 
   // Returns the WindowState for |window|. Creates WindowState if it doesn't
@@ -98,6 +99,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Returns the WindowState for the active window, null if there is no active
   // window.
   static WindowState* ForActiveWindow();
+
+  WindowState(const WindowState&) = delete;
+  WindowState& operator=(const WindowState&) = delete;
 
   // Call WindowState::Get() to instantiate this class.
   ~WindowState() override;
@@ -374,6 +378,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
    public:
     ScopedBoundsChangeAnimation(aura::Window* window,
                                 BoundsChangeAnimationType animation_type);
+
+    ScopedBoundsChangeAnimation(const ScopedBoundsChangeAnimation&) = delete;
+    ScopedBoundsChangeAnimation& operator=(const ScopedBoundsChangeAnimation&) =
+        delete;
+
     ~ScopedBoundsChangeAnimation() override;
 
     // aura::WindowObserver:
@@ -382,8 +391,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
    private:
     aura::Window* window_;
     BoundsChangeAnimationType previous_bounds_animation_type_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedBoundsChangeAnimation);
   };
 
   explicit WindowState(aura::Window* window);
@@ -516,8 +523,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // When the current (or last) PIP session started.
   base::TimeTicks pip_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowState);
 };
 
 }  // namespace ash

@@ -130,6 +130,9 @@ class TweenTester : public ui::LayerAnimationObserver {
     window->layer()->GetAnimator()->AddObserver(this);
   }
 
+  TweenTester(const TweenTester&) = delete;
+  TweenTester& operator=(const TweenTester&) = delete;
+
   ~TweenTester() override {
     window_->layer()->GetAnimator()->RemoveObserver(this);
     EXPECT_TRUE(will_animate_);
@@ -154,8 +157,6 @@ class TweenTester : public ui::LayerAnimationObserver {
   gfx::Tween::Type tween_type_ = gfx::Tween::LINEAR;
   aura::Window* window_;
   bool will_animate_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TweenTester);
 };
 
 // Class which tracks if a given widget has been destroyed.
@@ -190,6 +191,10 @@ class TestDestroyedWidgetObserver : public views::WidgetObserver {
 class OverviewSessionTest : public AshTestBase {
  public:
   OverviewSessionTest() = default;
+
+  OverviewSessionTest(const OverviewSessionTest&) = delete;
+  OverviewSessionTest& operator=(const OverviewSessionTest&) = delete;
+
   ~OverviewSessionTest() override = default;
 
   // AshTestBase:
@@ -414,8 +419,6 @@ class OverviewSessionTest : public AshTestBase {
 
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_api_;
   std::vector<std::string> trace_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewSessionTest);
 };
 
 // Tests that an a11y alert is sent on entering overview mode.
@@ -1609,13 +1612,15 @@ namespace {
 class TestDragWindowDelegate : public aura::test::TestWindowDelegate {
  public:
   TestDragWindowDelegate() { set_window_component(HTCAPTION); }
+
+  TestDragWindowDelegate(const TestDragWindowDelegate&) = delete;
+  TestDragWindowDelegate& operator=(const TestDragWindowDelegate&) = delete;
+
   ~TestDragWindowDelegate() override = default;
 
  private:
   // aura::Test::TestWindowDelegate:
   void OnWindowDestroyed(aura::Window* window) override { delete this; }
-
-  DISALLOW_COPY_AND_ASSIGN(TestDragWindowDelegate);
 };
 
 }  // namespace
@@ -4151,6 +4156,11 @@ TEST_F(TabletModeOverviewSessionTest, MinimizedRoundedCorners) {
 class SplitViewOverviewSessionTest : public OverviewSessionTest {
  public:
   SplitViewOverviewSessionTest() = default;
+
+  SplitViewOverviewSessionTest(const SplitViewOverviewSessionTest&) = delete;
+  SplitViewOverviewSessionTest& operator=(const SplitViewOverviewSessionTest&) =
+      delete;
+
   ~SplitViewOverviewSessionTest() override = default;
 
   enum class SelectorItemLocation {
@@ -4303,8 +4313,6 @@ class SplitViewOverviewSessionTest : public OverviewSessionTest {
     void OnWindowDestroying(aura::Window* window) override { window->Hide(); }
     void OnWindowDestroyed(aura::Window* window) override { delete this; }
   };
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewOverviewSessionTest);
 };
 
 // Tests that dragging an overview item to the edge of the screen snaps the
@@ -6194,6 +6202,12 @@ class SplitViewOverviewSessionInClamshellTest
       public ::testing::WithParamInterface<bool> {
  public:
   SplitViewOverviewSessionInClamshellTest() = default;
+
+  SplitViewOverviewSessionInClamshellTest(
+      const SplitViewOverviewSessionInClamshellTest&) = delete;
+  SplitViewOverviewSessionInClamshellTest& operator=(
+      const SplitViewOverviewSessionInClamshellTest&) = delete;
+
   ~SplitViewOverviewSessionInClamshellTest() override = default;
 
   // AshTestBase:
@@ -6223,18 +6237,19 @@ class SplitViewOverviewSessionInClamshellTest
     explicit TestWindowHitTestDelegate(int hit_test_component) {
       set_window_component(hit_test_component);
     }
+
+    TestWindowHitTestDelegate(const TestWindowHitTestDelegate&) = delete;
+    TestWindowHitTestDelegate& operator=(const TestWindowHitTestDelegate&) =
+        delete;
+
     ~TestWindowHitTestDelegate() override = default;
 
    private:
     // aura::Test::TestWindowDelegate:
     void OnWindowDestroyed(aura::Window* window) override { delete this; }
-
-    DISALLOW_COPY_AND_ASSIGN(TestWindowHitTestDelegate);
   };
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewOverviewSessionInClamshellTest);
 };
 
 // Test some basic functionalities in clamshell splitview mode.

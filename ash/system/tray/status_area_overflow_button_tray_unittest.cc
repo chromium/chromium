@@ -20,6 +20,12 @@ namespace ash {
 class StatusAreaOverflowButtonTrayTest : public AshTestBase {
  public:
   StatusAreaOverflowButtonTrayTest() = default;
+
+  StatusAreaOverflowButtonTrayTest(const StatusAreaOverflowButtonTrayTest&) =
+      delete;
+  StatusAreaOverflowButtonTrayTest& operator=(
+      const StatusAreaOverflowButtonTrayTest&) = delete;
+
   ~StatusAreaOverflowButtonTrayTest() override = default;
 
   void SetUp() override { AshTestBase::SetUp(); }
@@ -35,9 +41,6 @@ class StatusAreaOverflowButtonTrayTest : public AshTestBase {
     return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->overflow_button_tray();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StatusAreaOverflowButtonTrayTest);
 };
 
 TEST_F(StatusAreaOverflowButtonTrayTest, ToggleExpanded) {

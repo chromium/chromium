@@ -28,6 +28,9 @@ class ASH_EXPORT ActionableView : public views::Button {
 
   explicit ActionableView(TrayPopupInkDropStyle ink_drop_style);
 
+  ActionableView(const ActionableView&) = delete;
+  ActionableView& operator=(const ActionableView&) = delete;
+
   ~ActionableView() override;
 
  protected:
@@ -59,8 +62,6 @@ class ASH_EXPORT ActionableView : public views::Button {
 
   // Defines the flavor of ink drop ripple/highlight that should be constructed.
   const TrayPopupInkDropStyle ink_drop_style_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionableView);
 };
 
 }  // namespace ash

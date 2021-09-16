@@ -46,6 +46,12 @@ gfx::RectF GetShelfBoundsInFloat() {
 class SwipeHomeToOverviewControllerTest : public AshTestBase {
  public:
   SwipeHomeToOverviewControllerTest() = default;
+
+  SwipeHomeToOverviewControllerTest(const SwipeHomeToOverviewControllerTest&) =
+      delete;
+  SwipeHomeToOverviewControllerTest& operator=(
+      const SwipeHomeToOverviewControllerTest&) = delete;
+
   ~SwipeHomeToOverviewControllerTest() override = default;
 
   // AshTestBase:
@@ -138,8 +144,6 @@ class SwipeHomeToOverviewControllerTest : public AshTestBase {
 
  private:
   std::unique_ptr<SwipeHomeToOverviewController> home_to_overview_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwipeHomeToOverviewControllerTest);
 };
 
 // Verify that the metrics of home launcher animation are recorded correctly

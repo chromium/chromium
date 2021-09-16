@@ -19,6 +19,10 @@ class EnterpriseDomainObserver;
 class ASH_EXPORT EnterpriseDomainModel {
  public:
   EnterpriseDomainModel();
+
+  EnterpriseDomainModel(const EnterpriseDomainModel&) = delete;
+  EnterpriseDomainModel& operator=(const EnterpriseDomainModel&) = delete;
+
   ~EnterpriseDomainModel();
 
   void AddObserver(EnterpriseDomainObserver* observer);
@@ -54,8 +58,6 @@ class ASH_EXPORT EnterpriseDomainModel {
   bool active_directory_managed_ = false;
 
   base::ObserverList<EnterpriseDomainObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseDomainModel);
 };
 
 }  // namespace ash

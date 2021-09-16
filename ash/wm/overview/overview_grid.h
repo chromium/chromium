@@ -67,6 +67,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   OverviewGrid(aura::Window* root_window,
                const std::vector<aura::Window*>& window_list,
                OverviewSession* overview_session);
+
+  OverviewGrid(const OverviewGrid&) = delete;
+  OverviewGrid& operator=(const OverviewGrid&) = delete;
+
   ~OverviewGrid() override;
 
   // Exits overview mode.
@@ -516,8 +520,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // The widget that contains the view for all the existing templates.
   views::UniqueWidgetPtr desks_templates_grid_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewGrid);
 };
 
 }  // namespace ash

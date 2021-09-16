@@ -53,6 +53,9 @@ class ASH_EXPORT SizeRangeLayout : public views::LayoutManager {
   // smaller |max_size| value.
   SizeRangeLayout(const gfx::Size& min_size, const gfx::Size& max_size);
 
+  SizeRangeLayout(const SizeRangeLayout&) = delete;
+  SizeRangeLayout& operator=(const SizeRangeLayout&) = delete;
+
   ~SizeRangeLayout() override;
 
   // The absolute minimum possible width/height. Use this with SetMinSize() to
@@ -110,8 +113,6 @@ class ASH_EXPORT SizeRangeLayout : public views::LayoutManager {
 
   // The maximum preferred size.
   gfx::Size max_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(SizeRangeLayout);
 };
 
 }  // namespace ash

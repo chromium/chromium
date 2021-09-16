@@ -19,6 +19,12 @@ class ASH_EXPORT AccessibilityFeaturePodController
  public:
   AccessibilityFeaturePodController(
       UnifiedSystemTrayController* tray_controller);
+
+  AccessibilityFeaturePodController(const AccessibilityFeaturePodController&) =
+      delete;
+  AccessibilityFeaturePodController& operator=(
+      const AccessibilityFeaturePodController&) = delete;
+
   ~AccessibilityFeaturePodController() override;
 
   // FeaturePodControllerBase:
@@ -29,8 +35,6 @@ class ASH_EXPORT AccessibilityFeaturePodController
  private:
   // Unowned.
   UnifiedSystemTrayController* const tray_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFeaturePodController);
 };
 
 }  // namespace ash

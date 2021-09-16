@@ -29,6 +29,10 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   explicit AshWindowTreeHostPlatform(
       ui::PlatformWindowInitProperties properties);
 
+  AshWindowTreeHostPlatform(const AshWindowTreeHostPlatform&) = delete;
+  AshWindowTreeHostPlatform& operator=(const AshWindowTreeHostPlatform&) =
+      delete;
+
   ~AshWindowTreeHostPlatform() override;
 
  protected:
@@ -77,8 +81,6 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   ui::InputController* input_controller_;
 
   gfx::Rect last_cursor_confine_bounds_in_pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshWindowTreeHostPlatform);
 };
 
 }  // namespace ash

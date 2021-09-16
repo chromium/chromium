@@ -38,6 +38,10 @@ class InteractionResponse {
   class Response;
 
   InteractionResponse();
+
+  InteractionResponse(const InteractionResponse&) = delete;
+  InteractionResponse& operator=(const InteractionResponse&) = delete;
+
   ~InteractionResponse();
 
   // A simple textual response.
@@ -54,8 +58,6 @@ class InteractionResponse {
   void AddResponse(std::unique_ptr<Response> responses);
 
   std::vector<std::unique_ptr<Response>> responses_;
-
-  DISALLOW_COPY_AND_ASSIGN(InteractionResponse);
 };
 
 // Fake implementation of the Assistant service.
@@ -72,6 +74,10 @@ class InteractionResponse {
 class TestAssistantService : public chromeos::assistant::Assistant {
  public:
   TestAssistantService();
+
+  TestAssistantService(const TestAssistantService&) = delete;
+  TestAssistantService& operator=(const TestAssistantService&) = delete;
+
   ~TestAssistantService() override;
 
   // Set the response that will be invoked when the next interaction starts.
@@ -132,8 +138,6 @@ class TestAssistantService : public chromeos::assistant::Assistant {
   base::ObserverList<chromeos::assistant::AssistantInteractionSubscriber>
       interaction_subscribers_;
   bool running_active_interaction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAssistantService);
 };
 
 }  // namespace ash

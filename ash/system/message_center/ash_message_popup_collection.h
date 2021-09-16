@@ -43,6 +43,11 @@ class ASH_EXPORT AshMessagePopupCollection
   static const char kMessagePopupWidgetName[];
 
   explicit AshMessagePopupCollection(Shelf* shelf);
+
+  AshMessagePopupCollection(const AshMessagePopupCollection&) = delete;
+  AshMessagePopupCollection& operator=(const AshMessagePopupCollection&) =
+      delete;
+
   ~AshMessagePopupCollection() override;
 
   // Start observing the system.
@@ -128,8 +133,6 @@ class ASH_EXPORT AshMessagePopupCollection
   // Keeps track the last pop up added, used by throughout tracker. We only
   // record smoothness when this variable is in scope.
   message_center::MessagePopupView* last_pop_up_added_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AshMessagePopupCollection);
 };
 
 }  // namespace ash

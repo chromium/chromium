@@ -188,6 +188,9 @@ class MediaActionButton : public views::ImageButton {
         this, views::FocusRing::Get(this), absl::nullopt);
   }
 
+  MediaActionButton(const MediaActionButton&) = delete;
+  MediaActionButton& operator=(const MediaActionButton&) = delete;
+
   ~MediaActionButton() override = default;
 
   void SetAction(MediaSessionAction action,
@@ -214,8 +217,6 @@ class MediaActionButton : public views::ImageButton {
   }
 
   int const icon_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaActionButton);
 };
 
 }  // namespace

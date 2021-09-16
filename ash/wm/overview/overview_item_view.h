@@ -44,6 +44,10 @@ class ASH_EXPORT OverviewItemView
                    views::Button::PressedCallback close_callback,
                    aura::Window* window,
                    bool show_preview);
+
+  OverviewItemView(const OverviewItemView&) = delete;
+  OverviewItemView& operator=(const OverviewItemView&) = delete;
+
   ~OverviewItemView() override;
 
   // Fades the app icon and title out if |visibility| is kInvisible, in
@@ -100,8 +104,6 @@ class ASH_EXPORT OverviewItemView
   views::ImageButton* close_button_;
 
   HeaderVisibility current_header_visibility_ = HeaderVisibility::kVisible;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewItemView);
 };
 
 }  // namespace ash

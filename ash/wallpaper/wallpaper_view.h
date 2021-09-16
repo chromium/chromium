@@ -21,6 +21,10 @@ class WallpaperView : public WallpaperBaseView,
                       public views::ContextMenuController {
  public:
   explicit WallpaperView(float blur_sigma);
+
+  WallpaperView(const WallpaperView&) = delete;
+  WallpaperView& operator=(const WallpaperView&) = delete;
+
   ~WallpaperView() override;
 
   // Clears cached image. Must be called when wallpaper image is changed.
@@ -62,8 +66,6 @@ class WallpaperView : public WallpaperBaseView,
   // A cached downsampled image of the wallpaper image. It will help wallpaper
   // blur/brightness animations be more performant.
   absl::optional<gfx::ImageSkia> small_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperView);
 };
 
 std::unique_ptr<views::Widget> CreateWallpaperWidget(

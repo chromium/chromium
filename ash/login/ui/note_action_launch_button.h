@@ -32,6 +32,10 @@ class ASH_EXPORT NoteActionLaunchButton : public NonAccessibleView {
   class ASH_EXPORT TestApi {
    public:
     explicit TestApi(NoteActionLaunchButton* launch_button);
+
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     ~TestApi();
 
     // Gets the foreground, action image button view.
@@ -42,8 +46,6 @@ class ASH_EXPORT NoteActionLaunchButton : public NonAccessibleView {
 
    private:
     NoteActionLaunchButton* launch_button_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   explicit NoteActionLaunchButton(

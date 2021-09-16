@@ -91,6 +91,11 @@ class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
   ClippedFolderIconImageSource(const gfx::Size& size,
                                const gfx::ImageSkia& image)
       : gfx::CanvasImageSource(size), image_(image) {}
+
+  ClippedFolderIconImageSource(const ClippedFolderIconImageSource&) = delete;
+  ClippedFolderIconImageSource& operator=(const ClippedFolderIconImageSource&) =
+      delete;
+
   ~ClippedFolderIconImageSource() override = default;
 
   void Draw(gfx::Canvas* canvas) override {
@@ -110,8 +115,6 @@ class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
 
  private:
   const gfx::ImageSkia image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClippedFolderIconImageSource);
 };
 
 }  // namespace
@@ -171,6 +174,10 @@ class AppListItemView::IconImageView : public views::ImageView {
     SetCanProcessEventsWithinSubtree(false);
     SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   }
+
+  IconImageView(const IconImageView&) = delete;
+  IconImageView& operator=(const IconImageView&) = delete;
+
   ~IconImageView() override = default;
 
   // views::View:
@@ -253,8 +260,6 @@ class AppListItemView::IconImageView : public views::ImageView {
 
   // The insets to be clipped.
   gfx::Insets insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(IconImageView);
 };
 
 AppListItemView::AppListItemView(GridDelegate* grid_delegate,

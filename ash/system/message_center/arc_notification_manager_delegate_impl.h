@@ -14,15 +14,18 @@ class ArcNotificationManagerDelegateImpl
     : public ArcNotificationManagerDelegate {
  public:
   ArcNotificationManagerDelegateImpl();
+
+  ArcNotificationManagerDelegateImpl(
+      const ArcNotificationManagerDelegateImpl&) = delete;
+  ArcNotificationManagerDelegateImpl& operator=(
+      const ArcNotificationManagerDelegateImpl&) = delete;
+
   ~ArcNotificationManagerDelegateImpl() override;
 
   // ArcNotificationManagerDelegate:
   bool IsPublicSessionOrKiosk() const override;
   void ShowMessageCenter() override;
   void HideMessageCenter() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationManagerDelegateImpl);
 };
 
 }  // namespace ash

@@ -137,6 +137,9 @@ class NetworkStateListDetailedView::InfoBubble
     AddChildView(content);
   }
 
+  InfoBubble(const InfoBubble&) = delete;
+  InfoBubble& operator=(const InfoBubble&) = delete;
+
   ~InfoBubble() override {
     // The detailed view can be destructed before info bubble is destructed.
     // Call OnInfoBubbleDestroyed only if the detailed view is live.
@@ -173,8 +176,6 @@ class NetworkStateListDetailedView::InfoBubble
 
   // Not owned.
   NetworkStateListDetailedView* detailed_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBubble);
 };
 
 //------------------------------------------------------------------------------
@@ -183,6 +184,10 @@ class NetworkStateListDetailedView::InfoBubble
 class InfoThrobberLayout : public views::LayoutManager {
  public:
   InfoThrobberLayout() = default;
+
+  InfoThrobberLayout(const InfoThrobberLayout&) = delete;
+  InfoThrobberLayout& operator=(const InfoThrobberLayout&) = delete;
+
   ~InfoThrobberLayout() override = default;
 
   // views::LayoutManager
@@ -218,8 +223,6 @@ class InfoThrobberLayout : public views::LayoutManager {
     }
     return max_size;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(InfoThrobberLayout);
 };
 
 //------------------------------------------------------------------------------

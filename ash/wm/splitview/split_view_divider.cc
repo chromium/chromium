@@ -44,6 +44,11 @@ class AlwaysOnTopWindowTargeter : public aura::WindowTargeter {
  public:
   explicit AlwaysOnTopWindowTargeter(aura::Window* divider_window)
       : divider_window_(divider_window) {}
+
+  AlwaysOnTopWindowTargeter(const AlwaysOnTopWindowTargeter&) = delete;
+  AlwaysOnTopWindowTargeter& operator=(const AlwaysOnTopWindowTargeter&) =
+      delete;
+
   ~AlwaysOnTopWindowTargeter() override = default;
 
  private:
@@ -62,8 +67,6 @@ class AlwaysOnTopWindowTargeter : public aura::WindowTargeter {
   }
 
   aura::Window* divider_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlwaysOnTopWindowTargeter);
 };
 
 // The divider view class. Passes the mouse/gesture events to the controller.
@@ -83,6 +86,10 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
         AddChildView(std::make_unique<SplitViewDividerHandlerView>());
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
+
+  DividerView(const DividerView&) = delete;
+  DividerView& operator=(const DividerView&) = delete;
+
   ~DividerView() override = default;
 
   void DoSpawningAnimation(int spawn_position) {
@@ -229,8 +236,6 @@ class DividerView : public views::View, public views::ViewTargeterDelegate {
   SplitViewDividerHandlerView* divider_handler_view_ = nullptr;
   SplitViewController* controller_;
   SplitViewDivider* divider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DividerView);
 };
 
 }  // namespace

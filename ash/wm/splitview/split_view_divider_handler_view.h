@@ -17,6 +17,11 @@ namespace ash {
 class SplitViewDividerHandlerView : public views::View {
  public:
   SplitViewDividerHandlerView();
+
+  SplitViewDividerHandlerView(const SplitViewDividerHandlerView&) = delete;
+  SplitViewDividerHandlerView& operator=(const SplitViewDividerHandlerView&) =
+      delete;
+
   ~SplitViewDividerHandlerView() override;
 
   // Play the white handler's part in the divider spawn animation.
@@ -52,8 +57,6 @@ class SplitViewDividerHandlerView : public views::View {
 
   // Handles the spawning animation.
   std::unique_ptr<SpawningAnimation> spawning_animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewDividerHandlerView);
 };
 
 }  // namespace ash

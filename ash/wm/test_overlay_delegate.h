@@ -13,6 +13,10 @@ namespace ash {
 class TestOverlayDelegate : public OverlayEventFilter::Delegate {
  public:
   TestOverlayDelegate();
+
+  TestOverlayDelegate(const TestOverlayDelegate&) = delete;
+  TestOverlayDelegate& operator=(const TestOverlayDelegate&) = delete;
+
   virtual ~TestOverlayDelegate();
 
   int GetCancelCountAndReset();
@@ -24,8 +28,6 @@ class TestOverlayDelegate : public OverlayEventFilter::Delegate {
   aura::Window* GetWindow() override;
 
   int cancel_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverlayDelegate);
 };
 
 }  // namespace ash

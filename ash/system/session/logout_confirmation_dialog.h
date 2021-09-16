@@ -25,6 +25,10 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
  public:
   LogoutConfirmationDialog(LogoutConfirmationController* controller,
                            base::TimeTicks logout_time);
+
+  LogoutConfirmationDialog(const LogoutConfirmationDialog&) = delete;
+  LogoutConfirmationDialog& operator=(const LogoutConfirmationDialog&) = delete;
+
   ~LogoutConfirmationDialog() override;
 
   void Update(base::TimeTicks logout_time);
@@ -49,8 +53,6 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
   views::Label* label_;
 
   base::RepeatingTimer update_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoutConfirmationDialog);
 };
 
 }  // namespace ash

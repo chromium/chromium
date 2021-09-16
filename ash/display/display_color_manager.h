@@ -53,6 +53,10 @@ class ASH_EXPORT DisplayColorManager
   };
 
   DisplayColorManager(display::DisplayConfigurator* configurator);
+
+  DisplayColorManager(const DisplayColorManager&) = delete;
+  DisplayColorManager& operator=(const DisplayColorManager&) = delete;
+
   ~DisplayColorManager() override;
 
   DisplayCtmSupport displays_ctm_support() const {
@@ -170,8 +174,6 @@ class ASH_EXPORT DisplayColorManager
 
   // Factory for callbacks.
   base::WeakPtrFactory<DisplayColorManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayColorManager);
 };
 
 }  // namespace ash

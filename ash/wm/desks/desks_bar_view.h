@@ -36,6 +36,10 @@ class ASH_EXPORT DesksBarView : public views::View,
                                 public views::ScrollView::Observer {
  public:
   explicit DesksBarView(OverviewGrid* overview_grid);
+
+  DesksBarView(const DesksBarView&) = delete;
+  DesksBarView& operator=(const DesksBarView&) = delete;
+
   ~DesksBarView() override;
 
   static constexpr int kZeroStateBarHeight = 40;
@@ -280,8 +284,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   // persistent desks bar. Note that this button will only be created when
   // BentoBar is enabled.
   PersistentDesksBarVerticalDotsButton* vertical_dots_button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DesksBarView);
 };
 
 }  // namespace ash

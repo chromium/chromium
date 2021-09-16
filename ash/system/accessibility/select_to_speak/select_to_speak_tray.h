@@ -24,6 +24,10 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
                                      public SessionObserver {
  public:
   explicit SelectToSpeakTray(Shelf* shelf);
+
+  SelectToSpeakTray(const SelectToSpeakTray&) = delete;
+  SelectToSpeakTray& operator=(const SelectToSpeakTray&) = delete;
+
   ~SelectToSpeakTray() override;
 
   // TrayBackgroundView:
@@ -59,8 +63,6 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
   views::ImageView* icon_;
 
   ScopedSessionObserver session_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SelectToSpeakTray);
 };
 
 }  // namespace ash

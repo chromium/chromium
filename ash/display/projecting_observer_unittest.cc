@@ -55,6 +55,9 @@ class ProjectingObserverTest : public testing::Test {
     chromeos::PowerManagerClient::Shutdown();
   }
 
+  ProjectingObserverTest(const ProjectingObserverTest&) = delete;
+  ProjectingObserverTest& operator=(const ProjectingObserverTest&) = delete;
+
   ~ProjectingObserverTest() override = default;
 
  protected:
@@ -63,9 +66,6 @@ class ProjectingObserverTest : public testing::Test {
   }
 
   std::unique_ptr<ProjectingObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProjectingObserverTest);
 };
 
 TEST_F(ProjectingObserverTest, CheckNoDisplay) {

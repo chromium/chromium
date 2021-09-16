@@ -32,6 +32,10 @@ class StackedNotificationBar : public views::View,
  public:
   explicit StackedNotificationBar(
       UnifiedMessageCenterView* message_center_view);
+
+  StackedNotificationBar(const StackedNotificationBar&) = delete;
+  StackedNotificationBar& operator=(const StackedNotificationBar&) = delete;
+
   ~StackedNotificationBar() override;
 
   // Sets the icons and overflow count for hidden notifications as well as the
@@ -105,7 +109,6 @@ class StackedNotificationBar : public views::View,
   views::Label* const count_label_;
   views::Button* const clear_all_button_;
   views::Button* const expand_all_button_;
-  DISALLOW_COPY_AND_ASSIGN(StackedNotificationBar);
 };
 
 }  // namespace ash

@@ -42,6 +42,10 @@ class ASH_EXPORT SearchResultPageView
       public SearchBoxModelObserver {
  public:
   explicit SearchResultPageView(SearchModel* search_model);
+
+  SearchResultPageView(const SearchResultPageView&) = delete;
+  SearchResultPageView& operator=(const SearchResultPageView&) = delete;
+
   ~SearchResultPageView() override;
 
   void InitializeContainers(AppListViewDelegate* view_delegate,
@@ -225,8 +229,6 @@ class ASH_EXPORT SearchResultPageView
 
   base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
       search_box_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultPageView);
 };
 
 }  // namespace ash

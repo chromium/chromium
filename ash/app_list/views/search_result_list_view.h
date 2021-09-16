@@ -29,6 +29,10 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
  public:
   SearchResultListView(AppListMainView* main_view,
                        AppListViewDelegate* view_delegate);
+
+  SearchResultListView(const SearchResultListView&) = delete;
+  SearchResultListView& operator=(const SearchResultListView&) = delete;
+
   ~SearchResultListView() override;
 
   void SearchResultActivated(SearchResultView* view,
@@ -82,8 +86,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // Used for logging impressions shown to users.
   base::OneShotTimer impression_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultListView);
 };
 
 }  // namespace ash

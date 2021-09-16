@@ -23,6 +23,10 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
                                      public ::wm::ActivationChangeObserver {
  public:
   TrayBubbleWrapper(TrayBackgroundView* tray, TrayBubbleView* bubble_view);
+
+  TrayBubbleWrapper(const TrayBubbleWrapper&) = delete;
+  TrayBubbleWrapper& operator=(const TrayBubbleWrapper&) = delete;
+
   ~TrayBubbleWrapper() override;
 
   // TrayBubbleBase overrides:
@@ -48,8 +52,6 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
   TrayBackgroundView* tray_;
   TrayBubbleView* bubble_view_;  // unowned
   views::Widget* bubble_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayBubbleWrapper);
 };
 
 }  // namespace ash

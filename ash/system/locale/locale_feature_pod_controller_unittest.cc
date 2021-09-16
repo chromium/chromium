@@ -23,6 +23,12 @@ namespace {
 class LocaleFeaturePodControllerTest : public NoSessionAshTestBase {
  public:
   LocaleFeaturePodControllerTest() = default;
+
+  LocaleFeaturePodControllerTest(const LocaleFeaturePodControllerTest&) =
+      delete;
+  LocaleFeaturePodControllerTest& operator=(
+      const LocaleFeaturePodControllerTest&) = delete;
+
   ~LocaleFeaturePodControllerTest() override = default;
 
   void SetUp() override {
@@ -48,8 +54,6 @@ class LocaleFeaturePodControllerTest : public NoSessionAshTestBase {
  private:
   std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleFeaturePodControllerTest);
 };
 
 TEST_F(LocaleFeaturePodControllerTest, ButtonVisibility) {

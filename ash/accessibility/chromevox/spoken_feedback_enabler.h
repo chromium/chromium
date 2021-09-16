@@ -16,6 +16,10 @@ namespace ash {
 class ASH_EXPORT SpokenFeedbackEnabler {
  public:
   SpokenFeedbackEnabler();
+
+  SpokenFeedbackEnabler(const SpokenFeedbackEnabler&) = delete;
+  SpokenFeedbackEnabler& operator=(const SpokenFeedbackEnabler&) = delete;
+
   ~SpokenFeedbackEnabler();
 
  private:
@@ -28,8 +32,6 @@ class ASH_EXPORT SpokenFeedbackEnabler {
   // A timer that triggers repeatedly until either cancel or the desired time
   // elapsed.
   base::RepeatingTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpokenFeedbackEnabler);
 };
 
 }  // namespace ash

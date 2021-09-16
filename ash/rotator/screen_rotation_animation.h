@@ -38,6 +38,10 @@ class ASH_EXPORT ScreenRotationAnimation : public ui::LayerAnimationElement {
                           gfx::Point pivot,
                           base::TimeDelta duration,
                           gfx::Tween::Type twen_type);
+
+  ScreenRotationAnimation(const ScreenRotationAnimation&) = delete;
+  ScreenRotationAnimation& operator=(const ScreenRotationAnimation&) = delete;
+
   ~ScreenRotationAnimation() override;
 
  private:
@@ -59,8 +63,6 @@ class ASH_EXPORT ScreenRotationAnimation : public ui::LayerAnimationElement {
 
   // The target layer opacity to end the animation with.
   float target_opacity_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenRotationAnimation);
 };
 
 }  // namespace ash

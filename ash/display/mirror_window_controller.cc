@@ -102,6 +102,10 @@ class MirroringScreenPositionClient
 class NoneCaptureClient : public aura::client::CaptureClient {
  public:
   NoneCaptureClient() = default;
+
+  NoneCaptureClient(const NoneCaptureClient&) = delete;
+  NoneCaptureClient& operator=(const NoneCaptureClient&) = delete;
+
   ~NoneCaptureClient() override = default;
 
  private:
@@ -112,8 +116,6 @@ class NoneCaptureClient : public aura::client::CaptureClient {
   aura::Window* GetGlobalCaptureWindow() override { return nullptr; }
   void AddObserver(aura::client::CaptureClientObserver* observer) override {}
   void RemoveObserver(aura::client::CaptureClientObserver* observer) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(NoneCaptureClient);
 };
 
 display::DisplayManager::MultiDisplayMode GetCurrentMultiDisplayMode() {

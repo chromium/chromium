@@ -16,6 +16,12 @@ namespace ash {
 class SessionLimitNotificationControllerTest : public AshTestBase {
  public:
   SessionLimitNotificationControllerTest() = default;
+
+  SessionLimitNotificationControllerTest(
+      const SessionLimitNotificationControllerTest&) = delete;
+  SessionLimitNotificationControllerTest& operator=(
+      const SessionLimitNotificationControllerTest&) = delete;
+
   ~SessionLimitNotificationControllerTest() override = default;
 
  protected:
@@ -48,9 +54,6 @@ class SessionLimitNotificationControllerTest : public AshTestBase {
         SessionLimitNotificationController::kNotificationId,
         false /* by_user */);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionLimitNotificationControllerTest);
 };
 
 TEST_F(SessionLimitNotificationControllerTest, Notification) {

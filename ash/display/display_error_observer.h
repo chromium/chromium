@@ -18,15 +18,16 @@ class ASH_EXPORT DisplayErrorObserver
     : public display::DisplayConfigurator::Observer {
  public:
   DisplayErrorObserver();
+
+  DisplayErrorObserver(const DisplayErrorObserver&) = delete;
+  DisplayErrorObserver& operator=(const DisplayErrorObserver&) = delete;
+
   ~DisplayErrorObserver() override;
 
   // display::DisplayConfigurator::Observer overrides:
   void OnDisplayModeChangeFailed(
       const display::DisplayConfigurator::DisplayStateList& displays,
       display::MultipleDisplayState failed_new_state) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayErrorObserver);
 };
 
 }  // namespace ash

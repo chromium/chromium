@@ -39,6 +39,10 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   using UserSessions = std::vector<std::unique_ptr<UserSession>>;
 
   SessionControllerImpl();
+
+  SessionControllerImpl(const SessionControllerImpl&) = delete;
+  SessionControllerImpl& operator=(const SessionControllerImpl&) = delete;
+
   ~SessionControllerImpl() override;
 
   base::TimeDelta session_length_limit() const { return session_length_limit_; }
@@ -310,8 +314,6 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   std::unique_ptr<FullscreenController> fullscreen_controller_;
 
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionControllerImpl);
 };
 
 }  // namespace ash

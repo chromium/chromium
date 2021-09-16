@@ -247,6 +247,10 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
                                         public views::WidgetDelegate {
  public:
   Delegate(Shelf* shelf, ShelfView* shelf_view);
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   ~Delegate() override;
 
   // Initializes the view.
@@ -288,8 +292,6 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
   ui::Layer opaque_background_;
 
   Shelf* shelf_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)

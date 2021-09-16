@@ -37,6 +37,9 @@ class KSVSearchBoxView;
 class KeyboardShortcutView : public views::WidgetDelegateView,
                              public ash::SearchBoxViewDelegate {
  public:
+  KeyboardShortcutView(const KeyboardShortcutView&) = delete;
+  KeyboardShortcutView& operator=(const KeyboardShortcutView&) = delete;
+
   ~KeyboardShortcutView() override;
 
   // Toggle the Keyboard Shortcut Viewer window.
@@ -134,8 +137,6 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   bool did_first_paint_ = false;
 
   base::WeakPtrFactory<KeyboardShortcutView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardShortcutView);
 };
 
 }  // namespace keyboard_shortcut_viewer

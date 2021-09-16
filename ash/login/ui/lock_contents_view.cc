@@ -409,6 +409,10 @@ class LockContentsView::AutoLoginUserActivityHandler
     observation_.Observe(ui::UserActivityDetector::Get());
   }
 
+  AutoLoginUserActivityHandler(const AutoLoginUserActivityHandler&) = delete;
+  AutoLoginUserActivityHandler& operator=(const AutoLoginUserActivityHandler&) =
+      delete;
+
   ~AutoLoginUserActivityHandler() override = default;
 
   void OnUserActivity(const ui::Event* event) override {
@@ -420,8 +424,6 @@ class LockContentsView::AutoLoginUserActivityHandler
  private:
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoLoginUserActivityHandler);
 };
 
 LockContentsView::TestApi::TestApi(LockContentsView* view) : view_(view) {}

@@ -29,6 +29,11 @@ class PowerButtonScreenshotController;
 class PowerButtonControllerTestApi {
  public:
   explicit PowerButtonControllerTestApi(PowerButtonController* controller);
+
+  PowerButtonControllerTestApi(const PowerButtonControllerTestApi&) = delete;
+  PowerButtonControllerTestApi& operator=(const PowerButtonControllerTestApi&) =
+      delete;
+
   ~PowerButtonControllerTestApi();
 
   // Returns true when |controller_->pre_shutdown_timer_| is running.
@@ -80,8 +85,6 @@ class PowerButtonControllerTestApi {
 
  private:
   PowerButtonController* controller_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonControllerTestApi);
 };
 
 }  // namespace ash

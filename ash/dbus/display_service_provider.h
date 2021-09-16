@@ -21,6 +21,10 @@ class DisplayServiceProvider
  public:
   // The caller must ensure that |delegate| outlives this object.
   DisplayServiceProvider();
+
+  DisplayServiceProvider(const DisplayServiceProvider&) = delete;
+  DisplayServiceProvider& operator=(const DisplayServiceProvider&) = delete;
+
   ~DisplayServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -56,8 +60,6 @@ class DisplayServiceProvider
 
   std::unique_ptr<Impl> impl_;
   base::WeakPtrFactory<DisplayServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayServiceProvider);
 };
 
 }  // namespace ash

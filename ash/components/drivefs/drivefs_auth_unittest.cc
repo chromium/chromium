@@ -36,6 +36,9 @@ class AuthDelegateImpl : public DriveFsAuth::Delegate {
                    const AccountId& account_id)
       : identity_manager_(identity_manager), account_id_(account_id) {}
 
+  AuthDelegateImpl(const AuthDelegateImpl&) = delete;
+  AuthDelegateImpl& operator=(const AuthDelegateImpl&) = delete;
+
   ~AuthDelegateImpl() override = default;
 
  private:
@@ -56,8 +59,6 @@ class AuthDelegateImpl : public DriveFsAuth::Delegate {
 
   signin::IdentityManager* const identity_manager_;
   const AccountId account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthDelegateImpl);
 };
 
 class DriveFsAuthTest : public ::testing::Test {

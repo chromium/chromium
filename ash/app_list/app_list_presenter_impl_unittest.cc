@@ -36,6 +36,10 @@ int64_t GetPrimaryDisplayId() {
 class AppListPresenterImplTest : public AshTestBase {
  public:
   AppListPresenterImplTest() = default;
+
+  AppListPresenterImplTest(const AppListPresenterImplTest&) = delete;
+  AppListPresenterImplTest& operator=(const AppListPresenterImplTest&) = delete;
+
   ~AppListPresenterImplTest() override = default;
 
   AppListPresenterImpl* presenter() {
@@ -56,9 +60,6 @@ class AppListPresenterImplTest : public AshTestBase {
   bool IsShowingAssistantUI() {
     return presenter()->IsShowingEmbeddedAssistantUI();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppListPresenterImplTest);
 };
 
 // Tests that app launcher is dismissed when focus moves to another window.

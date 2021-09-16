@@ -30,6 +30,10 @@ namespace {
 class EventCapturer : public ui::EventHandler {
  public:
   EventCapturer() {}
+
+  EventCapturer(const EventCapturer&) = delete;
+  EventCapturer& operator=(const EventCapturer&) = delete;
+
   ~EventCapturer() override {}
 
   void Reset() {
@@ -56,13 +60,15 @@ class EventCapturer : public ui::EventHandler {
   std::unique_ptr<ui::KeyEvent> last_key_event_;
   std::unique_ptr<ui::MouseEvent> last_mouse_event_;
   std::unique_ptr<ui::TouchEvent> last_touch_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventCapturer);
 };
 
 class TestDelegate : public SelectToSpeakEventHandlerDelegate {
  public:
   TestDelegate() = default;
+
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
+
   virtual ~TestDelegate() = default;
 
   bool CapturedMouseEvent(ui::EventType event_type) {
@@ -96,13 +102,16 @@ class TestDelegate : public SelectToSpeakEventHandlerDelegate {
   gfx::Point last_mouse_location_;
   gfx::Point last_mouse_root_location_;
   std::set<ui::EventType> mouse_events_captured_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class SelectToSpeakEventHandlerTest : public AshTestBase {
  public:
   SelectToSpeakEventHandlerTest() = default;
+
+  SelectToSpeakEventHandlerTest(const SelectToSpeakEventHandlerTest&) = delete;
+  SelectToSpeakEventHandlerTest& operator=(
+      const SelectToSpeakEventHandlerTest&) = delete;
+
   ~SelectToSpeakEventHandlerTest() override = default;
 
   void SetUp() override {
@@ -138,9 +147,6 @@ class SelectToSpeakEventHandlerTest : public AshTestBase {
   EventCapturer event_capturer_;
   AccessibilityControllerImpl* controller_ = nullptr;
   std::unique_ptr<TestDelegate> delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectToSpeakEventHandlerTest);
 };
 
 TEST_F(SelectToSpeakEventHandlerTest, PressAndReleaseSearchNotHandled) {

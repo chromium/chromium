@@ -28,6 +28,12 @@ class MockTouchAccessibilityEnablerDelegate
     : public TouchAccessibilityEnablerDelegate {
  public:
   MockTouchAccessibilityEnablerDelegate() {}
+
+  MockTouchAccessibilityEnablerDelegate(
+      const MockTouchAccessibilityEnablerDelegate&) = delete;
+  MockTouchAccessibilityEnablerDelegate& operator=(
+      const MockTouchAccessibilityEnablerDelegate&) = delete;
+
   ~MockTouchAccessibilityEnablerDelegate() override {}
 
   void OnTwoFingerTouchStart() override { started_ = true; }
@@ -51,13 +57,16 @@ class MockTouchAccessibilityEnablerDelegate
   bool stopped_ = false;
   size_t feedback_progress_sound_count_ = 0;
   bool toggle_spoken_feedback_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTouchAccessibilityEnablerDelegate);
 };
 
 class TouchAccessibilityEnablerTest : public aura::test::AuraTestBase {
  public:
   TouchAccessibilityEnablerTest() {}
+
+  TouchAccessibilityEnablerTest(const TouchAccessibilityEnablerTest&) = delete;
+  TouchAccessibilityEnablerTest& operator=(
+      const TouchAccessibilityEnablerTest&) = delete;
+
   ~TouchAccessibilityEnablerTest() override {}
 
   void SetUp() override {
@@ -91,8 +100,6 @@ class TouchAccessibilityEnablerTest : public aura::test::AuraTestBase {
   MockTouchAccessibilityEnablerDelegate delegate_;
   std::unique_ptr<TouchAccessibilityEnabler> enabler_;
   ui::GestureDetector::Config gesture_detector_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchAccessibilityEnablerTest);
 };
 
 }  // namespace

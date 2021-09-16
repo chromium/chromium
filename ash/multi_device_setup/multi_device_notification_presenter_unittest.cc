@@ -40,6 +40,10 @@ const char16_t kTestDeviceType[] = u"Chrome device";
 class TestMessageCenter : public message_center::FakeMessageCenter {
  public:
   TestMessageCenter() = default;
+
+  TestMessageCenter(const TestMessageCenter&) = delete;
+  TestMessageCenter& operator=(const TestMessageCenter&) = delete;
+
   ~TestMessageCenter() override = default;
 
   // message_center::FakeMessageCenter:
@@ -92,8 +96,6 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 
  private:
   std::unique_ptr<message_center::Notification> notification_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMessageCenter);
 };
 
 }  // namespace

@@ -27,6 +27,9 @@ class WindowUserData : public aura::WindowObserver {
  public:
   WindowUserData() {}
 
+  WindowUserData(const WindowUserData&) = delete;
+  WindowUserData& operator=(const WindowUserData&) = delete;
+
   ~WindowUserData() override { clear(); }
 
   void clear() {
@@ -75,8 +78,6 @@ class WindowUserData : public aura::WindowObserver {
   }
 
   std::map<aura::Window*, std::unique_ptr<UserData>> window_to_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowUserData);
 };
 
 }  // namespace ash

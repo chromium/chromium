@@ -15,6 +15,12 @@ namespace ash {
 class WindowTransientDescendantIteratorTest : public AshTestBase {
  public:
   WindowTransientDescendantIteratorTest() = default;
+
+  WindowTransientDescendantIteratorTest(
+      const WindowTransientDescendantIteratorTest&) = delete;
+  WindowTransientDescendantIteratorTest& operator=(
+      const WindowTransientDescendantIteratorTest&) = delete;
+
   ~WindowTransientDescendantIteratorTest() override = default;
 
   // Creates a test set of windows parented like a linked list. The result
@@ -72,9 +78,6 @@ class WindowTransientDescendantIteratorTest : public AshTestBase {
     out_result->push_back(std::move(window_e));
     out_result->push_back(std::move(window_f));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowTransientDescendantIteratorTest);
 };
 
 // Tests that case that windows a parented transiently like a linked list.

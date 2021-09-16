@@ -73,6 +73,12 @@ TEST_F(ShelfControllerTest, ShelfIDUpdate) {
 class ShelfControllerNotificationIndicatorTest : public AshTestBase {
  public:
   ShelfControllerNotificationIndicatorTest() = default;
+
+  ShelfControllerNotificationIndicatorTest(
+      const ShelfControllerNotificationIndicatorTest&) = delete;
+  ShelfControllerNotificationIndicatorTest& operator=(
+      const ShelfControllerNotificationIndicatorTest&) = delete;
+
   ~ShelfControllerNotificationIndicatorTest() override = default;
 
   void SetUp() override {
@@ -101,8 +107,6 @@ class ShelfControllerNotificationIndicatorTest : public AshTestBase {
  private:
   AccountId account_id_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfControllerNotificationIndicatorTest);
 };
 
 // Tests that the ShelfController keeps the ShelfModel updated on calls to
@@ -131,10 +135,11 @@ TEST_F(ShelfControllerNotificationIndicatorTest, HasNotificationBasic) {
 class ShelfControllerPrefsTest : public AshTestBase {
  public:
   ShelfControllerPrefsTest() = default;
-  ~ShelfControllerPrefsTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfControllerPrefsTest);
+  ShelfControllerPrefsTest(const ShelfControllerPrefsTest&) = delete;
+  ShelfControllerPrefsTest& operator=(const ShelfControllerPrefsTest&) = delete;
+
+  ~ShelfControllerPrefsTest() override = default;
 };
 
 // Ensure shelf settings are updated on preference changes.

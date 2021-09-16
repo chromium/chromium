@@ -40,6 +40,9 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
       const gfx::Image& icon,
       const std::string& notification_id);
 
+  NotificationItemView(const NotificationItemView&) = delete;
+  NotificationItemView& operator=(const NotificationItemView&) = delete;
+
   ~NotificationItemView() override;
 
   // Updates the contents of the view.
@@ -87,8 +90,6 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
 
   // The identifier used by MessageCenter to identify this notification.
   const std::string notification_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationItemView);
 };
 
 }  // namespace ash

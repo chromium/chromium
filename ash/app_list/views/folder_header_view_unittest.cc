@@ -34,6 +34,11 @@ namespace {
 class TestFolderHeaderViewDelegate : public FolderHeaderViewDelegate {
  public:
   TestFolderHeaderViewDelegate() = default;
+
+  TestFolderHeaderViewDelegate(const TestFolderHeaderViewDelegate&) = delete;
+  TestFolderHeaderViewDelegate& operator=(const TestFolderHeaderViewDelegate&) =
+      delete;
+
   ~TestFolderHeaderViewDelegate() override = default;
 
   void SetItemName(AppListFolderItem* item, const std::string& name) override {
@@ -44,8 +49,6 @@ class TestFolderHeaderViewDelegate : public FolderHeaderViewDelegate {
 
  private:
   std::string folder_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFolderHeaderViewDelegate);
 };
 
 }  // namespace
@@ -53,6 +56,10 @@ class TestFolderHeaderViewDelegate : public FolderHeaderViewDelegate {
 class FolderHeaderViewTest : public views::ViewsTestBase {
  public:
   FolderHeaderViewTest() = default;
+
+  FolderHeaderViewTest(const FolderHeaderViewTest&) = delete;
+  FolderHeaderViewTest& operator=(const FolderHeaderViewTest&) = delete;
+
   ~FolderHeaderViewTest() override = default;
 
   // testing::Test overrides:
@@ -113,9 +120,6 @@ class FolderHeaderViewTest : public views::ViewsTestBase {
   std::unique_ptr<TestFolderHeaderViewDelegate> delegate_;
   std::unique_ptr<views::Textfield> textfield_;
   std::unique_ptr<views::Widget> widget_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FolderHeaderViewTest);
 };
 
 TEST_F(FolderHeaderViewTest, SetFolderName) {

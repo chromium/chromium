@@ -43,6 +43,10 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
                           AppListViewAppType type,
                           base::OnceClosure on_menu_closed_callback,
                           bool is_tablet_mode);
+
+  AppListMenuModelAdapter(const AppListMenuModelAdapter&) = delete;
+  AppListMenuModelAdapter& operator=(const AppListMenuModelAdapter&) = delete;
+
   ~AppListMenuModelAdapter() override;
 
   // Overridden from AppMenuModelAdapter:
@@ -61,8 +65,6 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
 
   // The type of app which is using this object to show a menu.
   const AppListViewAppType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListMenuModelAdapter);
 };
 
 }  // namespace ash

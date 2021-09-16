@@ -82,6 +82,9 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
 
+  FolderNameView(const FolderNameView&) = delete;
+  FolderNameView& operator=(const FolderNameView&) = delete;
+
   ~FolderNameView() override = default;
 
   gfx::Size CalculatePreferredSize() const override {
@@ -245,8 +248,6 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   // bool tracks whether the mouse has entered the view, avoiding repainting the
   // background on each mouse move event.
   bool has_mouse_already_entered_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FolderNameView);
 };
 
 FolderHeaderView::FolderHeaderView(FolderHeaderViewDelegate* delegate)

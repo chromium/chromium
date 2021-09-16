@@ -25,6 +25,10 @@ namespace ash {
 class ASH_EXPORT DualRoleNotification {
  public:
   explicit DualRoleNotification(message_center::MessageCenter* message_center);
+
+  DualRoleNotification(const DualRoleNotification&) = delete;
+  DualRoleNotification& operator=(const DualRoleNotification&) = delete;
+
   ~DualRoleNotification();
 
   // Creates or updates the notification.
@@ -39,8 +43,6 @@ class ASH_EXPORT DualRoleNotification {
   std::unique_ptr<PowerStatus::PowerSource> dual_role_sink_;
   size_t num_dual_role_sinks_;
   bool line_power_connected_;
-
-  DISALLOW_COPY_AND_ASSIGN(DualRoleNotification);
 };
 
 }  // namespace ash

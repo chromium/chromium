@@ -32,6 +32,10 @@ class SystemMenuButton : public views::ImageButton {
   SystemMenuButton(PressedCallback callback,
                    const gfx::VectorIcon& icon,
                    int accessible_name_id);
+
+  SystemMenuButton(const SystemMenuButton&) = delete;
+  SystemMenuButton& operator=(const SystemMenuButton&) = delete;
+
   ~SystemMenuButton() override;
 
   // Sets the normal and disabled icons based on that using default menu icon
@@ -44,8 +48,6 @@ class SystemMenuButton : public views::ImageButton {
  private:
   // Returns the size that the ink drop should be constructed with.
   gfx::Size GetInkDropSize() const;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMenuButton);
 };
 
 }  // namespace ash

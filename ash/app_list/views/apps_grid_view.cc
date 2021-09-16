@@ -111,6 +111,10 @@ class RowMoveAnimationDelegate : public views::AnimationDelegateViews {
         layer_(layer),
         layer_start_(layer ? layer->bounds() : gfx::Rect()),
         layer_target_(layer_target) {}
+
+  RowMoveAnimationDelegate(const RowMoveAnimationDelegate&) = delete;
+  RowMoveAnimationDelegate& operator=(const RowMoveAnimationDelegate&) = delete;
+
   ~RowMoveAnimationDelegate() override = default;
 
   // views::AnimationDelegateViews:
@@ -141,8 +145,6 @@ class RowMoveAnimationDelegate : public views::AnimationDelegateViews {
   std::unique_ptr<ui::Layer> layer_;
   const gfx::Rect layer_start_;
   const gfx::Rect layer_target_;
-
-  DISALLOW_COPY_AND_ASSIGN(RowMoveAnimationDelegate);
 };
 
 bool IsOEMFolderItem(AppListItem* item) {

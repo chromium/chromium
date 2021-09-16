@@ -60,6 +60,10 @@ class SearchBoxBackground : public views::Background {
       : corner_radius_(corner_radius) {
     SetNativeControlColor(color);
   }
+
+  SearchBoxBackground(const SearchBoxBackground&) = delete;
+  SearchBoxBackground& operator=(const SearchBoxBackground&) = delete;
+
   ~SearchBoxBackground() override = default;
 
   void SetCornerRadius(int corner_radius) { corner_radius_ = corner_radius; }
@@ -76,8 +80,6 @@ class SearchBoxBackground : public views::Background {
   }
 
   int corner_radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxBackground);
 };
 
 // To paint grey background on mic and back buttons, and close buttons for
@@ -131,6 +133,10 @@ class SearchBoxImageButton : public views::ImageButton {
 
     views::InstallCircleHighlightPathGenerator(this);
   }
+
+  SearchBoxImageButton(const SearchBoxImageButton&) = delete;
+  SearchBoxImageButton& operator=(const SearchBoxImageButton&) = delete;
+
   ~SearchBoxImageButton() override {}
 
   // views::View overrides:
@@ -171,8 +177,6 @@ class SearchBoxImageButton : public views::ImageButton {
   }
 
   const char* GetClassName() const override { return "SearchBoxImageButton"; }
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxImageButton);
 };
 
 // To show context menu of selected view instead of that of focused view which
@@ -182,6 +186,10 @@ class SearchBoxTextfield : public views::Textfield {
  public:
   explicit SearchBoxTextfield(SearchBoxViewBase* search_box_view)
       : search_box_view_(search_box_view) {}
+
+  SearchBoxTextfield(const SearchBoxTextfield&) = delete;
+  SearchBoxTextfield& operator=(const SearchBoxTextfield&) = delete;
+
   ~SearchBoxTextfield() override = default;
 
   // Overridden from views::View:
@@ -225,8 +233,6 @@ class SearchBoxTextfield : public views::Textfield {
 
  private:
   SearchBoxViewBase* const search_box_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxTextfield);
 };
 
 SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)

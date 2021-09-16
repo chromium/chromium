@@ -30,6 +30,11 @@ class UnifiedSystemTrayController;
 class TopShortcutButtonContainer : public views::View {
  public:
   TopShortcutButtonContainer();
+
+  TopShortcutButtonContainer(const TopShortcutButtonContainer&) = delete;
+  TopShortcutButtonContainer& operator=(const TopShortcutButtonContainer&) =
+      delete;
+
   ~TopShortcutButtonContainer() override;
 
   // views::View:
@@ -44,8 +49,6 @@ class TopShortcutButtonContainer : public views::View {
  private:
   views::View* user_avatar_button_ = nullptr;
   views::View* sign_out_button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TopShortcutButtonContainer);
 };
 
 // Top shortcuts view shown on the top of UnifiedSystemTrayView.

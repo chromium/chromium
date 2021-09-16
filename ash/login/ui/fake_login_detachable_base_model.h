@@ -24,6 +24,11 @@ class FakeLoginDetachableBaseModel : public LoginDetachableBaseModel {
   // |data_dispatcher| - the dispatcher to which the pairing status changes
   // should be forwarded.
   explicit FakeLoginDetachableBaseModel(LoginDataDispatcher* data_dispatcher);
+
+  FakeLoginDetachableBaseModel(const FakeLoginDetachableBaseModel&) = delete;
+  FakeLoginDetachableBaseModel& operator=(const FakeLoginDetachableBaseModel&) =
+      delete;
+
   ~FakeLoginDetachableBaseModel() override;
 
   // Sets the initial mapping for user -> last used detachable base.
@@ -60,8 +65,6 @@ class FakeLoginDetachableBaseModel : public LoginDetachableBaseModel {
 
   // Maps user account Id to the ID of the last used detachable base.
   std::map<AccountId, std::string> last_used_bases_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLoginDetachableBaseModel);
 };
 
 }  // namespace ash

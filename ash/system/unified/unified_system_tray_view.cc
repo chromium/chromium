@@ -46,6 +46,9 @@ class DetailedViewContainer : public views::View {
  public:
   DetailedViewContainer() = default;
 
+  DetailedViewContainer(const DetailedViewContainer&) = delete;
+  DetailedViewContainer& operator=(const DetailedViewContainer&) = delete;
+
   ~DetailedViewContainer() override = default;
 
   // views::View:
@@ -56,9 +59,6 @@ class DetailedViewContainer : public views::View {
   }
 
   const char* GetClassName() const override { return "DetailedViewContainer"; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DetailedViewContainer);
 };
 
 class AccessibilityFocusHelperView : public views::View {

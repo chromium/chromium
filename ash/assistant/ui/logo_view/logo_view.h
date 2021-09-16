@@ -24,6 +24,10 @@ class COMPONENT_EXPORT(ASSISTANT_UI) LogoView : public views::View {
   };
 
   LogoView();
+
+  LogoView(const LogoView&) = delete;
+  LogoView& operator=(const LogoView&) = delete;
+
   ~LogoView() override;
 
   // If |animate| is true, animates to the |state|.
@@ -35,9 +39,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) LogoView : public views::View {
 
   // Creates LogoView based on the build flag ENABLE_CROS_LIBASSISTANT.
   static std::unique_ptr<LogoView> Create();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LogoView);
 };
 
 }  // namespace ash

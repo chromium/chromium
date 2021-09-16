@@ -45,6 +45,11 @@ class ASH_EXPORT AssistantUiControllerImpl
  public:
   explicit AssistantUiControllerImpl(
       AssistantControllerImpl* assistant_controller);
+
+  AssistantUiControllerImpl(const AssistantUiControllerImpl&) = delete;
+  AssistantUiControllerImpl& operator=(const AssistantUiControllerImpl&) =
+      delete;
+
   ~AssistantUiControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -116,8 +121,6 @@ class ASH_EXPORT AssistantUiControllerImpl
 
   base::WeakPtrFactory<AssistantUiControllerImpl>
       weak_factory_for_delayed_visibility_changes_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantUiControllerImpl);
 };
 
 }  // namespace ash

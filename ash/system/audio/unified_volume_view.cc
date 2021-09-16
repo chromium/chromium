@@ -135,6 +135,9 @@ class LiveCaptionButton
         GetToggledBackgroundColor(), kTrayItemCornerRadius));
   }
 
+  LiveCaptionButton(const LiveCaptionButton&) = delete;
+  LiveCaptionButton& operator=(const LiveCaptionButton&) = delete;
+
   ~LiveCaptionButton() override = default;
 
   const char* GetClassName() const override { return "LiveCaptionButton"; }
@@ -160,9 +163,6 @@ class LiveCaptionButton
     return AshColorProvider::Get()->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LiveCaptionButton);
 };
 
 class MoreButton : public UnifiedVolumeViewButton<views::Button> {
@@ -180,6 +180,9 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
     more_image_->SetCanProcessEventsWithinSubtree(false);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO));
   }
+
+  MoreButton(const MoreButton&) = delete;
+  MoreButton& operator=(const MoreButton&) = delete;
 
   ~MoreButton() override = default;
 
@@ -199,8 +202,6 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
 
  private:
   views::ImageView* more_image_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MoreButton);
 };
 
 }  // namespace

@@ -51,6 +51,10 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
   enum class ModeSwitchSource { kClick, kKeyboard, kMaxValue = kKeyboard };
 
   WindowCycleController();
+
+  WindowCycleController(const WindowCycleController&) = delete;
+  WindowCycleController& operator=(const WindowCycleController&) = delete;
+
   ~WindowCycleController() override;
 
   // Returns true if cycling through windows is enabled. This is false at
@@ -214,8 +218,6 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
 
   base::ScopedObservation<DesksController, DesksController::Observer>
       desks_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowCycleController);
 };
 
 }  // namespace ash

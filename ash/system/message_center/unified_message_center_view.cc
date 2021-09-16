@@ -52,6 +52,9 @@ class ScrollerContentsView : public views::View {
     AddChildView(message_list_view);
   }
 
+  ScrollerContentsView(const ScrollerContentsView&) = delete;
+  ScrollerContentsView& operator=(const ScrollerContentsView&) = delete;
+
   ~ScrollerContentsView() override = default;
 
   // views::View:
@@ -60,9 +63,6 @@ class ScrollerContentsView : public views::View {
   }
 
   const char* GetClassName() const override { return "ScrollerContentsView"; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScrollerContentsView);
 };
 
 }  // namespace

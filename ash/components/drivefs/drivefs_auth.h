@@ -36,6 +36,10 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsAuth {
   class Delegate {
    public:
     Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() = default;
 
     virtual scoped_refptr<network::SharedURLLoaderFactory>
@@ -44,15 +48,16 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsAuth {
     virtual const AccountId& GetAccountId() = 0;
     virtual std::string GetObfuscatedAccountId() = 0;
     virtual bool IsMetricsCollectionEnabled() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   DriveFsAuth(const base::Clock* clock,
               const base::FilePath& profile_path,
               std::unique_ptr<base::OneShotTimer> timer,
               Delegate* delegate);
+
+  DriveFsAuth(const DriveFsAuth&) = delete;
+  DriveFsAuth& operator=(const DriveFsAuth&) = delete;
+
   virtual ~DriveFsAuth();
 
   const base::FilePath& GetProfilePath() const { return profile_path_; }
@@ -97,8 +102,6 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsAuth {
 
   std::string last_token_;
   base::Time last_token_expiry_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsAuth);
 };
 
 }  // namespace drivefs

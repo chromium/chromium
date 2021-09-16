@@ -33,6 +33,10 @@ class ASH_EXPORT FeaturePodIconButton : public views::ImageButton {
   };
 
   FeaturePodIconButton(PressedCallback callback, bool is_togglable);
+
+  FeaturePodIconButton(const FeaturePodIconButton&) = delete;
+  FeaturePodIconButton& operator=(const FeaturePodIconButton&) = delete;
+
   ~FeaturePodIconButton() override;
 
   // Change the toggle state. See FeaturePodButton::SetToggled.
@@ -70,14 +74,16 @@ class ASH_EXPORT FeaturePodIconButton : public views::ImageButton {
   DisabledButtonBehavior button_behavior_ = DisabledButtonBehavior::kNone;
 
   const gfx::VectorIcon* icon_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FeaturePodIconButton);
 };
 
 // Button internally used in FeaturePodButton. Should not be used directly.
 class ASH_EXPORT FeaturePodLabelButton : public views::Button {
  public:
   explicit FeaturePodLabelButton(PressedCallback callback);
+
+  FeaturePodLabelButton(const FeaturePodLabelButton&) = delete;
+  FeaturePodLabelButton& operator=(const FeaturePodLabelButton&) = delete;
+
   ~FeaturePodLabelButton() override;
 
   // Set the text of label shown below the icon. See FeaturePodButton::SetLabel.
@@ -113,8 +119,6 @@ class ASH_EXPORT FeaturePodLabelButton : public views::Button {
       AddEnabledChangedCallback(
           base::BindRepeating(&FeaturePodLabelButton::OnEnabledChanged,
                               base::Unretained(this)));
-
-  DISALLOW_COPY_AND_ASSIGN(FeaturePodLabelButton);
 };
 
 // A button in FeaturePodsView. These buttons are main entry points of features
@@ -127,6 +131,10 @@ class ASH_EXPORT FeaturePodButton : public views::View {
  public:
   FeaturePodButton(FeaturePodControllerBase* controller,
                    bool is_togglable = true);
+
+  FeaturePodButton(const FeaturePodButton&) = delete;
+  FeaturePodButton& operator=(const FeaturePodButton&) = delete;
+
   ~FeaturePodButton() override;
 
   // Set the vector icon shown in a circle.
@@ -208,8 +216,6 @@ class ASH_EXPORT FeaturePodButton : public views::View {
       AddEnabledChangedCallback(
           base::BindRepeating(&FeaturePodButton::OnEnabledChanged,
                               base::Unretained(this)));
-
-  DISALLOW_COPY_AND_ASSIGN(FeaturePodButton);
 };
 
 }  // namespace ash

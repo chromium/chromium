@@ -23,6 +23,10 @@ class TaskSwitchTimeTrackerTestAPI {
   // a base::SimpleTestTickClock that can be controlled.
   explicit TaskSwitchTimeTrackerTestAPI(const std::string& histogram_name);
 
+  TaskSwitchTimeTrackerTestAPI(const TaskSwitchTimeTrackerTestAPI&) = delete;
+  TaskSwitchTimeTrackerTestAPI& operator=(const TaskSwitchTimeTrackerTestAPI&) =
+      delete;
+
   ~TaskSwitchTimeTrackerTestAPI();
 
   TaskSwitchTimeTracker* time_tracker() { return time_tracker_.get(); }
@@ -38,8 +42,6 @@ class TaskSwitchTimeTrackerTestAPI {
 
   // The TaskSwitchTimeTracker to provide internal access to.
   std::unique_ptr<TaskSwitchTimeTracker> time_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskSwitchTimeTrackerTestAPI);
 };
 
 }  // namespace ash

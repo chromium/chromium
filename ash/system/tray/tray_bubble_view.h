@@ -43,6 +43,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   class ASH_EXPORT Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     // Called when the view is destroyed. Any pointers to the view should be
@@ -71,9 +75,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // Returns the accelerator action associated with the delegate's bubble
     // view.
     virtual absl::optional<AcceleratorAction> GetAcceleratorAction() const;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Anchor mode being set at creation.
@@ -210,6 +211,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   class RerouteEventHandler : public ui::EventHandler {
    public:
     RerouteEventHandler(TrayBubbleView* tray_bubble_view);
+
+    RerouteEventHandler(const RerouteEventHandler&) = delete;
+    RerouteEventHandler& operator=(const RerouteEventHandler&) = delete;
+
     ~RerouteEventHandler() override;
 
     // Overridden from ui::EventHandler
@@ -218,8 +223,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
    private:
     // TrayBubbleView to which key events are going to be rerouted. Not owned.
     TrayBubbleView* tray_bubble_view_;
-
-    DISALLOW_COPY_AND_ASSIGN(RerouteEventHandler);
   };
 
   void CloseBubbleView();

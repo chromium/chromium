@@ -27,6 +27,10 @@ class VirtualKeyboardModel;
 class SystemTrayModel : public SystemTray {
  public:
   SystemTrayModel();
+
+  SystemTrayModel(const SystemTrayModel&) = delete;
+  SystemTrayModel& operator=(const SystemTrayModel&) = delete;
+
   ~SystemTrayModel() override;
 
   // SystemTray:
@@ -91,8 +95,6 @@ class SystemTrayModel : public SystemTray {
 
   // Client interface in chrome browser. May be null in tests.
   SystemTrayClient* client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTrayModel);
 };
 
 }  // namespace ash

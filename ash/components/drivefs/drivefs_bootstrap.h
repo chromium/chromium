@@ -21,6 +21,10 @@ namespace drivefs {
 class COMPONENT_EXPORT(DRIVEFS) DriveFsBootstrapListener {
  public:
   DriveFsBootstrapListener();
+
+  DriveFsBootstrapListener(const DriveFsBootstrapListener&) = delete;
+  DriveFsBootstrapListener& operator=(const DriveFsBootstrapListener&) = delete;
+
   virtual ~DriveFsBootstrapListener();
 
   const base::UnguessableToken& pending_token() const { return pending_token_; }
@@ -42,14 +46,16 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsBootstrapListener {
   base::UnguessableToken pending_token_;
 
   bool connected_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsBootstrapListener);
 };
 
 // Establishes and holds mojo connection to DriveFS.
 class COMPONENT_EXPORT(DRIVEFS) DriveFsConnection {
  public:
   DriveFsConnection() = default;
+
+  DriveFsConnection(const DriveFsConnection&) = delete;
+  DriveFsConnection& operator=(const DriveFsConnection&) = delete;
+
   virtual ~DriveFsConnection() = default;
   virtual base::UnguessableToken Connect(mojom::DriveFsDelegate* delegate,
                                          base::OnceClosure on_disconnected) = 0;
@@ -58,9 +64,6 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsConnection {
   static std::unique_ptr<DriveFsConnection> Create(
       std::unique_ptr<DriveFsBootstrapListener> bootstrap_listener,
       mojom::DriveFsConfigurationPtr config);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DriveFsConnection);
 };
 
 }  // namespace drivefs

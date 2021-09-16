@@ -23,6 +23,11 @@ class ShutdownConfirmationDialog : public views::DialogDelegateView {
                              int dialog_text_id,
                              base::OnceClosure on_accept_callback,
                              base::OnceClosure on_cancel_callback);
+
+  ShutdownConfirmationDialog(const ShutdownConfirmationDialog&) = delete;
+  ShutdownConfirmationDialog& operator=(const ShutdownConfirmationDialog&) =
+      delete;
+
   ~ShutdownConfirmationDialog() override;
 
   // views::View:
@@ -30,8 +35,6 @@ class ShutdownConfirmationDialog : public views::DialogDelegateView {
 
  private:
   views::Label* label_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownConfirmationDialog);
 };
 
 }  // namespace ash

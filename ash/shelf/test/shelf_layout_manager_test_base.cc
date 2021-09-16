@@ -46,6 +46,9 @@ class ShelfDragCallback {
     EXPECT_EQ(auto_hidden_shelf_bounds_.size(), visible_shelf_bounds_.size());
   }
 
+  ShelfDragCallback(const ShelfDragCallback&) = delete;
+  ShelfDragCallback& operator=(const ShelfDragCallback&) = delete;
+
   virtual ~ShelfDragCallback() = default;
 
   void ProcessScroll(ui::EventType type, const gfx::Vector2dF& delta) {
@@ -163,8 +166,6 @@ class ShelfDragCallback {
   const gfx::Rect visible_shelf_bounds_;
   gfx::Vector2dF scroll_;
   bool was_visible_on_drag_start_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfDragCallback);
 };
 }  // namespace
 

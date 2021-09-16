@@ -104,6 +104,11 @@ class MaxSizeWidgetDelegate : public views::WidgetDelegateView {
 class SystemGestureEventFilterTest : public AshTestBase {
  public:
   SystemGestureEventFilterTest() : AshTestBase() {}
+
+  SystemGestureEventFilterTest(const SystemGestureEventFilterTest&) = delete;
+  SystemGestureEventFilterTest& operator=(const SystemGestureEventFilterTest&) =
+      delete;
+
   ~SystemGestureEventFilterTest() override = default;
 
   // Overridden from AshTestBase:
@@ -127,9 +132,6 @@ class SystemGestureEventFilterTest : public AshTestBase {
     display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
         .SetFirstDisplayAsInternalDisplay();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemGestureEventFilterTest);
 };
 
 ui::GestureEvent* CreateGesture(ui::EventType type,

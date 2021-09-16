@@ -46,6 +46,9 @@ class TouchPointView : public views::View,
     widget_observation_.Observe(parent_widget);
   }
 
+  TouchPointView(const TouchPointView&) = delete;
+  TouchPointView& operator=(const TouchPointView&) = delete;
+
   ~TouchPointView() override = default;
 
   // Begins fadeout animation. After this is called, |this| owns itself and is
@@ -123,8 +126,6 @@ class TouchPointView : public views::View,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TouchPointView);
 };
 
 TouchHudRenderer::TouchHudRenderer(views::Widget* parent_widget)

@@ -30,6 +30,12 @@ class ASH_EXPORT AccessibilityHighlightController
       public aura::client::CursorClientObserver {
  public:
   AccessibilityHighlightController();
+
+  AccessibilityHighlightController(const AccessibilityHighlightController&) =
+      delete;
+  AccessibilityHighlightController& operator=(
+      const AccessibilityHighlightController&) = delete;
+
   ~AccessibilityHighlightController() override;
 
   void HighlightFocus(bool focus);
@@ -71,8 +77,6 @@ class ASH_EXPORT AccessibilityHighlightController
   bool caret_ = false;
   bool caret_visible_ = false;
   gfx::Point caret_point_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityHighlightController);
 };
 
 }  // namespace ash

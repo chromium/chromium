@@ -25,6 +25,9 @@ class NetworkTrayView : public TrayItemView,
                         public SessionObserver,
                         public TrayNetworkStateObserver {
  public:
+  NetworkTrayView(const NetworkTrayView&) = delete;
+  NetworkTrayView& operator=(const NetworkTrayView&) = delete;
+
   ~NetworkTrayView() override;
 
   NetworkTrayView(Shelf* shelf, ActiveNetworkIcon::Type type);
@@ -73,8 +76,6 @@ class NetworkTrayView : public TrayItemView,
   // The tooltip for the icon. Includes the network name and signal strength
   // (for wireless networks).
   std::u16string tooltip_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkTrayView);
 };
 
 }  // namespace tray

@@ -38,6 +38,10 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
   PowerPrefs(chromeos::PowerPolicyController* power_policy_controller,
              chromeos::PowerManagerClient* power_manager_client,
              PrefService* local_state);
+
+  PowerPrefs(const PowerPrefs&) = delete;
+  PowerPrefs& operator=(const PowerPrefs&) = delete;
+
   ~PowerPrefs() override;
 
   // Registers power prefs with default values applicable to the local state
@@ -92,8 +96,6 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
   base::TimeTicks screen_idle_off_time_;
 
   PrefService* local_state_ = nullptr;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(PowerPrefs);
 };
 
 }  // namespace ash

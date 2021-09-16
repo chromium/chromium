@@ -122,6 +122,11 @@ void LogUserQuietModeEvent(const bool enabled) {
 class NotifierButtonWrapperView : public views::View {
  public:
   explicit NotifierButtonWrapperView(views::View* contents);
+
+  NotifierButtonWrapperView(const NotifierButtonWrapperView&) = delete;
+  NotifierButtonWrapperView& operator=(const NotifierButtonWrapperView&) =
+      delete;
+
   ~NotifierButtonWrapperView() override;
 
   // views::View:
@@ -142,8 +147,6 @@ class NotifierButtonWrapperView : public views::View {
 
   // NotifierButton to wrap.
   views::View* contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotifierButtonWrapperView);
 };
 
 NotifierButtonWrapperView::NotifierButtonWrapperView(views::View* contents)

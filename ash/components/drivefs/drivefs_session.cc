@@ -28,6 +28,9 @@ class DiskMounterImpl : public DiskMounter {
       chromeos::disks::DiskMountManager* disk_mount_manager)
       : disk_mount_manager_(disk_mount_manager) {}
 
+  DiskMounterImpl(const DiskMounterImpl&) = delete;
+  DiskMounterImpl& operator=(const DiskMounterImpl&) = delete;
+
   ~DiskMounterImpl() override = default;
 
   void Mount(const base::UnguessableToken& token,
@@ -76,8 +79,6 @@ class DiskMounterImpl : public DiskMounter {
   std::unique_ptr<chromeos::disks::MountPoint> mount_point_;
 
   base::WeakPtrFactory<DiskMounterImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DiskMounterImpl);
 };
 
 }  // namespace

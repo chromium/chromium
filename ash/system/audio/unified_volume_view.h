@@ -18,6 +18,10 @@ class UnifiedVolumeView : public UnifiedSliderView,
   UnifiedVolumeView(UnifiedVolumeSliderController* controller,
                     UnifiedVolumeSliderController::Delegate* delegate,
                     bool in_bubble);
+
+  UnifiedVolumeView(const UnifiedVolumeView&) = delete;
+  UnifiedVolumeView& operator=(const UnifiedVolumeView&) = delete;
+
   ~UnifiedVolumeView() override;
 
   // views::View:
@@ -44,8 +48,6 @@ class UnifiedVolumeView : public UnifiedSliderView,
 
   views::ToggleImageButton* const live_caption_button_;
   views::Button* const more_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedVolumeView);
 };
 
 }  // namespace ash

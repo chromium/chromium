@@ -29,6 +29,10 @@ class ASH_EXPORT FolderHeaderView : public views::View,
                                     public AppListItemObserver {
  public:
   explicit FolderHeaderView(FolderHeaderViewDelegate* delegate);
+
+  FolderHeaderView(const FolderHeaderView&) = delete;
+  FolderHeaderView& operator=(const FolderHeaderView&) = delete;
+
   ~FolderHeaderView() override;
 
   void SetFolderItem(AppListFolderItem* folder_item);
@@ -110,8 +114,6 @@ class ASH_EXPORT FolderHeaderView : public views::View,
   bool folder_name_visible_;
 
   bool is_tablet_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(FolderHeaderView);
 };
 
 }  // namespace ash

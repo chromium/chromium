@@ -101,6 +101,10 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
                                   public HotseatTransitionAnimator::Observer {
  public:
   DelegateView(ShelfWidget* shelf_widget, Shelf* shelf);
+
+  DelegateView(const DelegateView&) = delete;
+  DelegateView& operator=(const DelegateView&) = delete;
+
   ~DelegateView() override;
 
   void set_focus_cycler(FocusCycler* focus_cycler) {
@@ -202,8 +206,6 @@ class ShelfWidget::DelegateView : public views::WidgetDelegate,
   // Cache the state of the background blur so that it can be updated only
   // when necessary.
   bool background_is_currently_blurred_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegateView);
 };
 
 ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)

@@ -29,6 +29,10 @@ class WorkspaceEventHandlerTestHelper;
 class ASH_EXPORT WorkspaceEventHandler : public ui::EventHandler {
  public:
   explicit WorkspaceEventHandler(aura::Window* workspace_window);
+
+  WorkspaceEventHandler(const WorkspaceEventHandler&) = delete;
+  WorkspaceEventHandler& operator=(const WorkspaceEventHandler&) = delete;
+
   ~WorkspaceEventHandler() override;
 
   // ui::EventHandler:
@@ -56,8 +60,6 @@ class ASH_EXPORT WorkspaceEventHandler : public ui::EventHandler {
   // that of the initial click. Acting on a double click should only occur for
   // matching components. This will be set for left clicks, and tap events.
   int click_component_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceEventHandler);
 };
 
 }  // namespace ash

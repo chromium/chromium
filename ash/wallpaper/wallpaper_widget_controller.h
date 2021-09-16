@@ -36,6 +36,11 @@ class ASH_EXPORT WallpaperWidgetController
     : public ui::ImplicitAnimationObserver {
  public:
   explicit WallpaperWidgetController(aura::Window* root_window);
+
+  WallpaperWidgetController(const WallpaperWidgetController&) = delete;
+  WallpaperWidgetController& operator=(const WallpaperWidgetController&) =
+      delete;
+
   ~WallpaperWidgetController() override;
 
   // Initialize the widget. |lock| specifies if the wallpaper should be created
@@ -101,8 +106,6 @@ class ASH_EXPORT WallpaperWidgetController
   // Callbacks to be run when the |animating_widget_| stops animating and gets
   // set as the active widget.
   std::list<base::OnceClosure> animation_end_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperWidgetController);
 };
 
 }  // namespace ash

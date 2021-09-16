@@ -33,6 +33,12 @@ class ScopedOverviewAnimationSettings {
                                   aura::Window* window);
   ScopedOverviewAnimationSettings(OverviewAnimationType animation_type,
                                   ui::LayerAnimator* animator);
+
+  ScopedOverviewAnimationSettings(const ScopedOverviewAnimationSettings&) =
+      delete;
+  ScopedOverviewAnimationSettings& operator=(
+      const ScopedOverviewAnimationSettings&) = delete;
+
   ~ScopedOverviewAnimationSettings();
   void AddObserver(ui::ImplicitAnimationObserver* observer);
   void CacheRenderSurface();
@@ -46,8 +52,6 @@ class ScopedOverviewAnimationSettings {
 
   // Report smoothness of close animation.
   absl::optional<ui::AnimationThroughputReporter> close_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedOverviewAnimationSettings);
 };
 
 }  // namespace ash

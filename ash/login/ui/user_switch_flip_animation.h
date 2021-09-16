@@ -36,6 +36,10 @@ class ASH_EXPORT UserSwitchFlipAnimation : public ui::LayerAnimationElement {
                           base::TimeDelta duration,
                           gfx::Tween::Type tween_type,
                           base::OnceClosure on_midpoint);
+
+  UserSwitchFlipAnimation(const UserSwitchFlipAnimation&) = delete;
+  UserSwitchFlipAnimation& operator=(const UserSwitchFlipAnimation&) = delete;
+
   ~UserSwitchFlipAnimation() override;
 
   // ui::LayerAnimationElement:
@@ -55,8 +59,6 @@ class ASH_EXPORT UserSwitchFlipAnimation : public ui::LayerAnimationElement {
 
   // Called when the animation is 50% complete.
   base::OnceClosure on_midpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserSwitchFlipAnimation);
 };
 
 }  // namespace ash

@@ -239,6 +239,10 @@ using views::Widget;
 class AshVisibilityController : public ::wm::VisibilityController {
  public:
   AshVisibilityController() = default;
+
+  AshVisibilityController(const AshVisibilityController&) = delete;
+  AshVisibilityController& operator=(const AshVisibilityController&) = delete;
+
   ~AshVisibilityController() override = default;
 
  private:
@@ -247,8 +251,6 @@ class AshVisibilityController : public ::wm::VisibilityController {
                                                  bool visible) override {
     return AnimateOnChildWindowVisibilityChanged(window, visible);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AshVisibilityController);
 };
 
 }  // namespace

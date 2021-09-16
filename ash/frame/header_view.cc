@@ -36,6 +36,10 @@ using ::chromeos::kFrameInactiveColorKey;
 class HeaderView::HeaderContentView : public views::View {
  public:
   HeaderContentView(HeaderView* header_view) : header_view_(header_view) {}
+
+  HeaderContentView(const HeaderContentView&) = delete;
+  HeaderContentView& operator=(const HeaderContentView&) = delete;
+
   ~HeaderContentView() override = default;
 
   // views::View:
@@ -54,7 +58,6 @@ class HeaderView::HeaderContentView : public views::View {
   HeaderView* header_view_;
   views::PaintInfo::ScaleType scale_type_ =
       views::PaintInfo::ScaleType::kScaleWithEdgeSnapping;
-  DISALLOW_COPY_AND_ASSIGN(HeaderContentView);
 };
 
 HeaderView::HeaderView(views::Widget* target_widget,

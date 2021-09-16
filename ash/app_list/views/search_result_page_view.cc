@@ -148,6 +148,9 @@ class SearchResultPageView::HorizontalSeparator : public views::View {
         gfx::Insets(0, kSeparatorPadding, 0, kSeparatorPadding)));
   }
 
+  HorizontalSeparator(const HorizontalSeparator&) = delete;
+  HorizontalSeparator& operator=(const HorizontalSeparator&) = delete;
+
   ~HorizontalSeparator() override = default;
 
   // views::View overrides:
@@ -165,8 +168,6 @@ class SearchResultPageView::HorizontalSeparator : public views::View {
 
  private:
   const int preferred_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(HorizontalSeparator);
 };
 
 SearchResultPageView::SearchResultPageView(SearchModel* search_model)

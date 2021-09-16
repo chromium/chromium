@@ -33,14 +33,15 @@ class TestResultViewWithActions;
 class TestResultView : public SearchResultBaseView {
  public:
   TestResultView() = default;
+
+  TestResultView(const TestResultView&) = delete;
+  TestResultView& operator=(const TestResultView&) = delete;
+
   ~TestResultView() override = default;
 
   virtual TestResultViewWithActions* AsResultViewWithActions() {
     return nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestResultView);
 };
 
 class TestResultViewWithActions : public TestResultView,
@@ -76,12 +77,14 @@ class TestContainerDelegateHarness {
     app_list_test_delegate_ = std::make_unique<test::AppListTestViewDelegate>();
   }
 
+  TestContainerDelegateHarness(const TestContainerDelegateHarness&) = delete;
+  TestContainerDelegateHarness& operator=(const TestContainerDelegateHarness&) =
+      delete;
+
   ~TestContainerDelegateHarness() = default;
 
  protected:
   std::unique_ptr<test::AppListTestViewDelegate> app_list_test_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContainerDelegateHarness);
 };
 
 struct TestContainerParams {
@@ -138,6 +141,10 @@ class TestContainer : public TestContainerDelegateHarness,
 
     Update();
   }
+
+  TestContainer(const TestContainer&) = delete;
+  TestContainer& operator=(const TestContainer&) = delete;
+
   ~TestContainer() override = default;
 
   // SearchResultContainerView:
@@ -151,14 +158,16 @@ class TestContainer : public TestContainerDelegateHarness,
 
   std::map<std::string, std::unique_ptr<TestSearchResult>> results_;
   std::vector<std::unique_ptr<TestResultView>> search_result_views_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContainer);
 };
 
 class ResultSelectionTest : public testing::Test,
                             public testing::WithParamInterface<bool> {
  public:
   ResultSelectionTest() = default;
+
+  ResultSelectionTest(const ResultSelectionTest&) = delete;
+  ResultSelectionTest& operator=(const ResultSelectionTest&) = delete;
+
   ~ResultSelectionTest() override = default;
 
   void SetUp() override {
@@ -650,8 +659,6 @@ class ResultSelectionTest : public testing::Test,
 
   bool is_rtl_ = false;
   int selection_change_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ResultSelectionTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL, ResultSelectionTest, testing::Bool());

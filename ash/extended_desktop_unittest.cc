@@ -54,6 +54,11 @@ class MoveWindowByClickEventHandler : public ui::EventHandler {
  public:
   explicit MoveWindowByClickEventHandler(aura::Window* target)
       : target_(target) {}
+
+  MoveWindowByClickEventHandler(const MoveWindowByClickEventHandler&) = delete;
+  MoveWindowByClickEventHandler& operator=(
+      const MoveWindowByClickEventHandler&) = delete;
+
   ~MoveWindowByClickEventHandler() override = default;
 
  private:
@@ -67,13 +72,18 @@ class MoveWindowByClickEventHandler : public ui::EventHandler {
   }
 
   aura::Window* target_;
-  DISALLOW_COPY_AND_ASSIGN(MoveWindowByClickEventHandler);
 };
 
 // An event handler which records the event's locations.
 class EventLocationRecordingEventHandler : public ui::EventHandler {
  public:
   EventLocationRecordingEventHandler() { Reset(); }
+
+  EventLocationRecordingEventHandler(
+      const EventLocationRecordingEventHandler&) = delete;
+  EventLocationRecordingEventHandler& operator=(
+      const EventLocationRecordingEventHandler&) = delete;
+
   ~EventLocationRecordingEventHandler() override = default;
 
   // |location_| is relative to the target window.
@@ -99,13 +109,15 @@ class EventLocationRecordingEventHandler : public ui::EventHandler {
 
   gfx::Point root_location_;
   gfx::Point location_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventLocationRecordingEventHandler);
 };
 
 class EventLocationHandler : public ui::EventHandler {
  public:
   EventLocationHandler() = default;
+
+  EventLocationHandler(const EventLocationHandler&) = delete;
+  EventLocationHandler& operator=(const EventLocationHandler&) = delete;
+
   ~EventLocationHandler() override = default;
 
   const gfx::Point& press_location() const { return press_location_; }
@@ -122,8 +134,6 @@ class EventLocationHandler : public ui::EventHandler {
 
   gfx::Point press_location_;
   gfx::Point release_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventLocationHandler);
 };
 
 }  // namespace
@@ -131,6 +141,10 @@ class EventLocationHandler : public ui::EventHandler {
 class ExtendedDesktopTest : public AshTestBase {
  public:
   ExtendedDesktopTest() = default;
+
+  ExtendedDesktopTest(const ExtendedDesktopTest&) = delete;
+  ExtendedDesktopTest& operator=(const ExtendedDesktopTest&) = delete;
+
   ~ExtendedDesktopTest() override = default;
 
   void SetUp() override {
@@ -155,9 +169,6 @@ class ExtendedDesktopTest : public AshTestBase {
   gfx::Rect GetSystemTrayBoundsInScreen() {
     return GetPrimaryUnifiedSystemTray()->GetBoundsInScreen();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtendedDesktopTest);
 };
 
 // Test conditions that root windows in extended desktop mode must satisfy.

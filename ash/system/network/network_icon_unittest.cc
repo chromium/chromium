@@ -37,6 +37,10 @@ namespace network_icon {
 class NetworkIconTest : public AshTestBase {
  public:
   NetworkIconTest() = default;
+
+  NetworkIconTest(const NetworkIconTest&) = delete;
+  NetworkIconTest& operator=(const NetworkIconTest&) = delete;
+
   ~NetworkIconTest() override = default;
 
   void SetUp() override {
@@ -160,8 +164,6 @@ class NetworkIconTest : public AshTestBase {
   std::string wifi1_path_;
   std::string wifi2_path_;
   std::string cellular_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkIconTest);
 };
 
 // This tests that the correct icons are being generated for the correct

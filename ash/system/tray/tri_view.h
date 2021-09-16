@@ -68,6 +68,9 @@ class ASH_EXPORT TriView : public views::View {
   // |padding_between_containers|.
   TriView(Orientation orientation, int padding_between_containers);
 
+  TriView(const TriView&) = delete;
+  TriView& operator=(const TriView&) = delete;
+
   ~TriView() override;
 
   // Set the minimum height for all containers to |height|.
@@ -148,8 +151,6 @@ class ASH_EXPORT TriView : public views::View {
   // to manipulate the child views during construction/destruction so this flag
   // is used to disable the DCHECK during construction/destruction.
   bool enable_hierarchy_changed_dcheck_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TriView);
 };
 
 }  // namespace ash

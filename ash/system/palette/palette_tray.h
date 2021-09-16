@@ -49,6 +49,10 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
                                public ui::InputDeviceEventObserver {
  public:
   explicit PaletteTray(Shelf* shelf);
+
+  PaletteTray(const PaletteTray&) = delete;
+  PaletteTray& operator=(const PaletteTray&) = delete;
+
   ~PaletteTray() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -180,8 +184,6 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   ScopedSessionObserver scoped_session_observer_;
 
   base::WeakPtrFactory<PaletteTray> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaletteTray);
 };
 
 }  // namespace ash

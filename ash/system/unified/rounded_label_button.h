@@ -16,6 +16,10 @@ namespace ash {
 class RoundedLabelButton : public views::LabelButton {
  public:
   RoundedLabelButton(PressedCallback callback, const std::u16string& text);
+
+  RoundedLabelButton(const RoundedLabelButton&) = delete;
+  RoundedLabelButton& operator=(const RoundedLabelButton&) = delete;
+
   ~RoundedLabelButton() override;
 
   // views::LabelButton:
@@ -23,9 +27,6 @@ class RoundedLabelButton : public views::LabelButton {
   int GetHeightForWidth(int width) const override;
   const char* GetClassName() const override;
   void OnThemeChanged() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RoundedLabelButton);
 };
 
 }  // namespace ash

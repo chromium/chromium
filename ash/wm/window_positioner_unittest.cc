@@ -27,10 +27,11 @@ namespace ash {
 class WindowPositionerTest : public AshTestBase {
  public:
   WindowPositionerTest() = default;
-  ~WindowPositionerTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowPositionerTest);
+  WindowPositionerTest(const WindowPositionerTest&) = delete;
+  WindowPositionerTest& operator=(const WindowPositionerTest&) = delete;
+
+  ~WindowPositionerTest() override = default;
 };
 
 TEST_F(WindowPositionerTest, OpenDefaultWindowOnSecondDisplay) {

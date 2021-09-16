@@ -96,6 +96,10 @@ class FakeNotificationSurface : public exo::NotificationSurface {
                           const std::string& notification_key)
       : exo::NotificationSurface(manager, surface, notification_key),
         manager_(manager) {}
+
+  FakeNotificationSurface(const FakeNotificationSurface&) = delete;
+  FakeNotificationSurface& operator=(const FakeNotificationSurface&) = delete;
+
   ~FakeNotificationSurface() override { manager_->RemoveSurface(this); }
 
  private:
@@ -108,8 +112,6 @@ class FakeNotificationSurface : public exo::NotificationSurface {
   }
 
   exo::NotificationSurfaceManager* const manager_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNotificationSurface);
 };
 
 aura::Window* GetFocusedWindow() {
@@ -128,6 +130,12 @@ class DummyEvent : public ui::Event {
 class ArcNotificationContentViewTest : public AshTestBase {
  public:
   ArcNotificationContentViewTest() = default;
+
+  ArcNotificationContentViewTest(const ArcNotificationContentViewTest&) =
+      delete;
+  ArcNotificationContentViewTest& operator=(
+      const ArcNotificationContentViewTest&) = delete;
+
   ~ArcNotificationContentViewTest() override = default;
 
   void SetUp() override {
@@ -270,8 +278,6 @@ class ArcNotificationContentViewTest : public AshTestBase {
   // owned by the |wrapper_widget_|.
   ArcNotificationView* notification_view_ = nullptr;
   std::unique_ptr<views::Widget> wrapper_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationContentViewTest);
 };
 
 TEST_F(ArcNotificationContentViewTest, CreateSurfaceAfterNotification) {

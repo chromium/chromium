@@ -41,6 +41,12 @@ class ASH_EXPORT LockScreenActionBackgroundController {
       FactoryCallback* testing_factory_callback);
 
   LockScreenActionBackgroundController();
+
+  LockScreenActionBackgroundController(
+      const LockScreenActionBackgroundController&) = delete;
+  LockScreenActionBackgroundController& operator=(
+      const LockScreenActionBackgroundController&) = delete;
+
   virtual ~LockScreenActionBackgroundController();
 
   // Sets the window the background widget should use as its parent.
@@ -86,8 +92,6 @@ class ASH_EXPORT LockScreenActionBackgroundController {
       LockScreenActionBackgroundState::kHidden;
 
   base::ObserverList<LockScreenActionBackgroundObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundController);
 };
 
 }  // namespace ash

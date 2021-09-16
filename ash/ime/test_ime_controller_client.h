@@ -13,6 +13,10 @@ namespace ash {
 class TestImeControllerClient : public ImeControllerClient {
  public:
   TestImeControllerClient();
+
+  TestImeControllerClient(const TestImeControllerClient&) = delete;
+  TestImeControllerClient& operator=(const TestImeControllerClient&) = delete;
+
   ~TestImeControllerClient();
 
   // ImeControllerClient:
@@ -38,9 +42,6 @@ class TestImeControllerClient : public ImeControllerClient {
   bool is_mirroring_ = false;
   bool is_casting_ = false;
   int show_mode_indicator_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestImeControllerClient);
 };
 
 }  // namespace ash

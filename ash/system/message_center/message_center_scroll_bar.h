@@ -27,6 +27,10 @@ class MessageCenterScrollBar : public views::OverlayScrollBar {
 
   // |observer| can be null.
   explicit MessageCenterScrollBar(Observer* observer);
+
+  MessageCenterScrollBar(const MessageCenterScrollBar&) = delete;
+  MessageCenterScrollBar& operator=(const MessageCenterScrollBar&) = delete;
+
   ~MessageCenterScrollBar() override;
 
  private:
@@ -48,8 +52,6 @@ class MessageCenterScrollBar : public views::OverlayScrollBar {
 
   // Presentation time recorder for scrolling through notification list.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterScrollBar);
 };
 
 }  // namespace ash

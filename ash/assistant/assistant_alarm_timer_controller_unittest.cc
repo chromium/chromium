@@ -293,6 +293,11 @@ class ScopedNotificationModelObserver
         ->AddObserver(this);
   }
 
+  ScopedNotificationModelObserver(const ScopedNotificationModelObserver&) =
+      delete;
+  ScopedNotificationModelObserver& operator=(
+      const ScopedNotificationModelObserver&) = delete;
+
   ~ScopedNotificationModelObserver() override {
     Shell::Get()
         ->assistant_controller()
@@ -317,8 +322,6 @@ class ScopedNotificationModelObserver
 
  private:
   AssistantNotification last_notification_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedNotificationModelObserver);
 };
 
 }  // namespace

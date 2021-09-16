@@ -18,6 +18,10 @@ class NetworkFeaturePodButton : public FeaturePodButton,
                                 public TrayNetworkStateObserver {
  public:
   explicit NetworkFeaturePodButton(FeaturePodControllerBase* controller);
+
+  NetworkFeaturePodButton(const NetworkFeaturePodButton&) = delete;
+  NetworkFeaturePodButton& operator=(const NetworkFeaturePodButton&) = delete;
+
   ~NetworkFeaturePodButton() override;
 
   // Updates the button's icon and tooltip based on the current state of the
@@ -36,8 +40,6 @@ class NetworkFeaturePodButton : public FeaturePodButton,
 
  private:
   void UpdateTooltip(const std::u16string& connection_state_message);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkFeaturePodButton);
 };
 
 }  // namespace ash

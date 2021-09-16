@@ -61,6 +61,10 @@ class TestTextInputClient : public ui::DummyTextInputClient {
 class ArcNotificationViewTest : public AshTestBase {
  public:
   ArcNotificationViewTest() = default;
+
+  ArcNotificationViewTest(const ArcNotificationViewTest&) = delete;
+  ArcNotificationViewTest& operator=(const ArcNotificationViewTest&) = delete;
+
   ~ArcNotificationViewTest() override = default;
 
   // views::ViewsTestBase
@@ -204,8 +208,6 @@ class ArcNotificationViewTest : public AshTestBase {
   ArcNotificationView* notification_view_ = nullptr;  // owned by its widget.
 
   std::unique_ptr<MockArcNotificationItem> item_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationViewTest);
 };
 
 TEST_F(ArcNotificationViewTest, Events) {

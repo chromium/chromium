@@ -145,6 +145,9 @@ class SearchBoxFocusHost : public views::View {
   explicit SearchBoxFocusHost(views::Widget* search_box_widget)
       : search_box_widget_(search_box_widget) {}
 
+  SearchBoxFocusHost(const SearchBoxFocusHost&) = delete;
+  SearchBoxFocusHost& operator=(const SearchBoxFocusHost&) = delete;
+
   ~SearchBoxFocusHost() override = default;
 
   views::FocusTraversable* GetFocusTraversable() override {
@@ -158,8 +161,6 @@ class SearchBoxFocusHost : public views::View {
 
  private:
   views::Widget* search_box_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxFocusHost);
 };
 
 SkColor GetBackgroundShieldColor(const std::vector<SkColor>& colors,
@@ -209,6 +210,10 @@ class AppListEventTargeter : public aura::WindowTargeter {
  public:
   explicit AppListEventTargeter(AppListViewDelegate* delegate)
       : delegate_(delegate) {}
+
+  AppListEventTargeter(const AppListEventTargeter&) = delete;
+  AppListEventTargeter& operator=(const AppListEventTargeter&) = delete;
+
   ~AppListEventTargeter() override = default;
 
   // aura::WindowTargeter:
@@ -236,8 +241,6 @@ class AppListEventTargeter : public aura::WindowTargeter {
 
  private:
   AppListViewDelegate* delegate_;  // Weak. Owned by AppListService.
-
-  DISALLOW_COPY_AND_ASSIGN(AppListEventTargeter);
 };
 
 float ComputeSubpixelOffset(const display::Display& display, float value) {
@@ -439,6 +442,9 @@ class StateTransitionNotifier : public ui::ImplicitAnimationObserver {
  public:
   explicit StateTransitionNotifier(AppListView* view) : view_(view) {}
 
+  StateTransitionNotifier(const StateTransitionNotifier&) = delete;
+  StateTransitionNotifier& operator=(const StateTransitionNotifier&) = delete;
+
   ~StateTransitionNotifier() override = default;
 
   // Resets the notifier, and set a new target app list state.
@@ -507,8 +513,6 @@ class StateTransitionNotifier : public ui::ImplicitAnimationObserver {
   State state_ = State::kIdle;
   AppListView* const view_;
   absl::optional<AppListViewState> target_app_list_view_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(StateTransitionNotifier);
 };
 
 // The view for the app list background shield which changes color and radius.
@@ -526,6 +530,10 @@ class AppListBackgroundShieldView : public views::View {
     layer()->SetColor(color_);
     layer()->SetName("launcher/BackgroundShield");
   }
+
+  AppListBackgroundShieldView(const AppListBackgroundShieldView&) = delete;
+  AppListBackgroundShieldView& operator=(const AppListBackgroundShieldView&) =
+      delete;
 
   ~AppListBackgroundShieldView() override = default;
 
@@ -607,8 +615,6 @@ class AppListBackgroundShieldView : public views::View {
   SkColor color_;
 
   int shelf_background_corner_radius_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListBackgroundShieldView);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

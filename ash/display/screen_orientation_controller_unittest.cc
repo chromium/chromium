@@ -119,6 +119,12 @@ std::unique_ptr<aura::Window> CreateControlWindow() {
 class ScreenOrientationControllerTest : public AshTestBase {
  public:
   ScreenOrientationControllerTest() = default;
+
+  ScreenOrientationControllerTest(const ScreenOrientationControllerTest&) =
+      delete;
+  ScreenOrientationControllerTest& operator=(
+      const ScreenOrientationControllerTest&) = delete;
+
   ~ScreenOrientationControllerTest() override = default;
 
   // AshTestBase:
@@ -160,9 +166,6 @@ class ScreenOrientationControllerTest : public AshTestBase {
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationControllerTest);
 };
 
 // Tests that a Window can lock rotation.

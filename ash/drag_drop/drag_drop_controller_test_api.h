@@ -15,14 +15,17 @@ class DragDropControllerTestApi {
  public:
   DragDropControllerTestApi(DragDropController* controller)
       : controller_(controller) {}
+
+  DragDropControllerTestApi(const DragDropControllerTestApi&) = delete;
+  DragDropControllerTestApi& operator=(const DragDropControllerTestApi&) =
+      delete;
+
   ~DragDropControllerTestApi() = default;
 
   bool enabled() const { return controller_->enabled_; }
 
  private:
   DragDropController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragDropControllerTestApi);
 };
 
 }  // namespace ash

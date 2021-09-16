@@ -58,6 +58,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   using WindowList = std::vector<aura::Window*>;
 
   explicit OverviewSession(OverviewDelegate* delegate);
+
+  OverviewSession(const OverviewSession&) = delete;
+  OverviewSession& operator=(const OverviewSession&) = delete;
+
   ~OverviewSession() override;
 
   // Initialize with the windows that can be selected.
@@ -418,8 +422,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // Boolean to indicate whether chromeVox is enabled or not.
   bool chromevox_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewSession);
 };
 
 }  // namespace ash

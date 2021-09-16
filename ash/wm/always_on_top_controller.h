@@ -25,6 +25,10 @@ class ASH_EXPORT AlwaysOnTopController : public aura::WindowObserver,
  public:
   explicit AlwaysOnTopController(aura::Window* always_on_top_container,
                                  aura::Window* pip_container);
+
+  AlwaysOnTopController(const AlwaysOnTopController&) = delete;
+  AlwaysOnTopController& operator=(const AlwaysOnTopController&) = delete;
+
   ~AlwaysOnTopController() override;
 
   static void SetDisallowReparent(aura::Window* window);
@@ -59,8 +63,6 @@ class ASH_EXPORT AlwaysOnTopController : public aura::WindowObserver,
 
   aura::Window* always_on_top_container_;
   aura::Window* pip_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlwaysOnTopController);
 };
 
 }  // namespace ash

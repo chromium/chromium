@@ -27,6 +27,10 @@ class AppListTestModel : public AppListModel {
   class AppListTestItem : public AppListItem {
    public:
     AppListTestItem(const std::string& id, AppListTestModel* model);
+
+    AppListTestItem(const AppListTestItem&) = delete;
+    AppListTestItem& operator=(const AppListTestItem&) = delete;
+
     ~AppListTestItem() override;
     void Activate(int event_flags);
     std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel();
@@ -36,8 +40,6 @@ class AppListTestModel : public AppListModel {
 
    private:
     AppListTestModel* const model_;
-
-    DISALLOW_COPY_AND_ASSIGN(AppListTestItem);
   };
 
   static const char kItemType[];

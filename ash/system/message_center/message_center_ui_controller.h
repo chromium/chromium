@@ -33,6 +33,11 @@ class ASH_EXPORT MessageCenterUiController
       public SessionObserver {
  public:
   explicit MessageCenterUiController(MessageCenterUiDelegate* delegate);
+
+  MessageCenterUiController(const MessageCenterUiController&) = delete;
+  MessageCenterUiController& operator=(const MessageCenterUiController&) =
+      delete;
+
   ~MessageCenterUiController() override;
 
   // Shows or updates the message center bubble and hides the popup bubble.
@@ -105,8 +110,6 @@ class ASH_EXPORT MessageCenterUiController
 
   base::ScopedObservation<SessionController, SessionObserver> session_observer_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterUiController);
 };
 
 }  // namespace ash

@@ -23,6 +23,10 @@ enum class SourceView {
 class ShelfFocusCycler {
  public:
   explicit ShelfFocusCycler(Shelf* shelf);
+
+  ShelfFocusCycler(const ShelfFocusCycler&) = delete;
+  ShelfFocusCycler& operator=(const ShelfFocusCycler&) = delete;
+
   ~ShelfFocusCycler() = default;
 
   // Moves focus from one container to the next. |reverse| will move the focus
@@ -42,8 +46,6 @@ class ShelfFocusCycler {
  private:
   // Owned by RootWindowController.
   Shelf* shelf_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfFocusCycler);
 };
 
 }  // namespace ash

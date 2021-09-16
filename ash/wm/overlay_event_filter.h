@@ -38,6 +38,10 @@ class ASH_EXPORT OverlayEventFilter : public ui::EventHandler,
   };
 
   OverlayEventFilter();
+
+  OverlayEventFilter(const OverlayEventFilter&) = delete;
+  OverlayEventFilter& operator=(const OverlayEventFilter&) = delete;
+
   ~OverlayEventFilter() override;
 
   // Starts the filtering of events.  It also notifies the specified
@@ -66,8 +70,6 @@ class ASH_EXPORT OverlayEventFilter : public ui::EventHandler,
  private:
   Delegate* delegate_ = nullptr;
   ScopedSessionObserver scoped_session_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayEventFilter);
 };
 
 }  // namespace ash

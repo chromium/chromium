@@ -47,6 +47,10 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   // This should only be created or deleted by the creator
   // (TabletModeController).
   TabletModeWindowManager();
+
+  TabletModeWindowManager(const TabletModeWindowManager&) = delete;
+  TabletModeWindowManager& operator=(const TabletModeWindowManager&) = delete;
+
   ~TabletModeWindowManager() override;
 
   void Init();
@@ -192,8 +196,6 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
   // True when tablet mode is about to end.
   bool is_exiting_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeWindowManager);
 };
 
 }  // namespace ash

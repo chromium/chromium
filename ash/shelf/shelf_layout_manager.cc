@@ -265,6 +265,10 @@ class HotseatEventHandler : public ui::EventHandler,
     shelf_layout_manager_->AddObserver(this);
     Shell::Get()->AddPreTargetHandler(this);
   }
+
+  HotseatEventHandler(const HotseatEventHandler&) = delete;
+  HotseatEventHandler& operator=(const HotseatEventHandler&) = delete;
+
   ~HotseatEventHandler() override {
     shelf_layout_manager_->RemoveObserver(this);
     Shell::Get()->RemovePreTargetHandler(this);
@@ -288,7 +292,6 @@ class HotseatEventHandler : public ui::EventHandler,
   // Whether events should get forwarded to ShelfLayoutManager.
   bool should_forward_event_ = false;
   ShelfLayoutManager* const shelf_layout_manager_;  // unowned.
-  DISALLOW_COPY_AND_ASSIGN(HotseatEventHandler);
 };
 
 }  // namespace

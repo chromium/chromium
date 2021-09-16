@@ -61,13 +61,15 @@ class TestWindowDelegate : public aura::test::TestWindowDelegate {
   explicit TestWindowDelegate(int hittest_code) {
     set_window_component(hittest_code);
   }
+
+  TestWindowDelegate(const TestWindowDelegate&) = delete;
+  TestWindowDelegate& operator=(const TestWindowDelegate&) = delete;
+
   ~TestWindowDelegate() override = default;
 
  private:
   // Overridden from aura::Test::TestWindowDelegate:
   void OnWindowDestroyed(aura::Window* window) override { delete this; }
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowDelegate);
 };
 
 class ResizeLoopWindowObserver : public aura::WindowObserver {
@@ -75,6 +77,10 @@ class ResizeLoopWindowObserver : public aura::WindowObserver {
   explicit ResizeLoopWindowObserver(aura::Window* w) : window_(w) {
     window_->AddObserver(this);
   }
+
+  ResizeLoopWindowObserver(const ResizeLoopWindowObserver&) = delete;
+  ResizeLoopWindowObserver& operator=(const ResizeLoopWindowObserver&) = delete;
+
   ~ResizeLoopWindowObserver() override {
     if (window_)
       window_->RemoveObserver(this);
@@ -99,13 +105,17 @@ class ResizeLoopWindowObserver : public aura::WindowObserver {
  private:
   aura::Window* window_;
   bool in_resize_loop_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeLoopWindowObserver);
 };
 
 class ToplevelWindowEventHandlerTest : public AshTestBase {
  public:
   ToplevelWindowEventHandlerTest() = default;
+
+  ToplevelWindowEventHandlerTest(const ToplevelWindowEventHandlerTest&) =
+      delete;
+  ToplevelWindowEventHandlerTest& operator=(
+      const ToplevelWindowEventHandlerTest&) = delete;
+
   ~ToplevelWindowEventHandlerTest() override = default;
 
  protected:
@@ -133,9 +143,6 @@ class ToplevelWindowEventHandlerTest : public AshTestBase {
   }
 
   std::unique_ptr<ToplevelWindowEventHandler> handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ToplevelWindowEventHandlerTest);
 };
 }  // namespace
 
@@ -1149,6 +1156,12 @@ TEST_F(ToplevelWindowEventHandlerTest, EnterResizeLoopOnResize) {
 class ToplevelWindowEventHandlerDragTest : public AshTestBase {
  public:
   ToplevelWindowEventHandlerDragTest() = default;
+
+  ToplevelWindowEventHandlerDragTest(
+      const ToplevelWindowEventHandlerDragTest&) = delete;
+  ToplevelWindowEventHandlerDragTest& operator=(
+      const ToplevelWindowEventHandlerDragTest&) = delete;
+
   ~ToplevelWindowEventHandlerDragTest() override = default;
 
   void SetUp() override {
@@ -1182,9 +1195,6 @@ class ToplevelWindowEventHandlerDragTest : public AshTestBase {
 
   std::unique_ptr<aura::Window> dragged_window_;
   std::unique_ptr<aura::Window> non_dragged_window_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ToplevelWindowEventHandlerDragTest);
 };
 
 // In tablet mode, the window's resizability shouldn't be taken into account

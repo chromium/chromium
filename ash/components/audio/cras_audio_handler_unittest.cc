@@ -207,6 +207,9 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     return output_channel_remixing_changed_count_;
   }
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
  protected:
@@ -251,8 +254,6 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
   int output_volume_changed_count_ = 0;
   int input_gain_changed_count_ = 0;
   int output_channel_remixing_changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class SystemMonitorObserver
@@ -277,6 +278,10 @@ class SystemMonitorObserver
 class FakeVideoCaptureManager {
  public:
   FakeVideoCaptureManager() = default;
+
+  FakeVideoCaptureManager(const FakeVideoCaptureManager&) = delete;
+  FakeVideoCaptureManager& operator=(const FakeVideoCaptureManager&) = delete;
+
   virtual ~FakeVideoCaptureManager() = default;
 
   void AddObserver(media::VideoCaptureObserver* observer) {
@@ -297,7 +302,6 @@ class FakeVideoCaptureManager {
 
  private:
   base::ObserverList<media::VideoCaptureObserver>::Unchecked observers_;
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoCaptureManager);
 };
 
 }  // namespace
@@ -308,6 +312,10 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   CrasAudioHandlerTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
+
+  CrasAudioHandlerTest(const CrasAudioHandlerTest&) = delete;
+  CrasAudioHandlerTest& operator=(const CrasAudioHandlerTest&) = delete;
+
   ~CrasAudioHandlerTest() override = default;
 
   void SetUp() override {
@@ -492,9 +500,6 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   std::unique_ptr<FakeMediaControllerManager> fake_manager_;
   std::unique_ptr<FakeVideoCaptureManager> video_capture_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrasAudioHandlerTest);
 };
 
 class HDMIRediscoverWaiter {

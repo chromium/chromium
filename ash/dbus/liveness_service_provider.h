@@ -36,6 +36,10 @@ class LivenessServiceProvider
     : public chromeos::CrosDBusService::ServiceProviderInterface {
  public:
   LivenessServiceProvider();
+
+  LivenessServiceProvider(const LivenessServiceProvider&) = delete;
+  LivenessServiceProvider& operator=(const LivenessServiceProvider&) = delete;
+
   ~LivenessServiceProvider() override;
 
   // chromeos::CrosDBusService::ServiceProviderInterface overrides:
@@ -55,8 +59,6 @@ class LivenessServiceProvider
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<LivenessServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LivenessServiceProvider);
 };
 
 }  // namespace ash

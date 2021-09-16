@@ -22,6 +22,10 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantCardElement
  public:
   explicit AssistantCardElement(const std::string& html,
                                 const std::string& fallback);
+
+  AssistantCardElement(const AssistantCardElement&) = delete;
+  AssistantCardElement& operator=(const AssistantCardElement&) = delete;
+
   ~AssistantCardElement() override;
 
   // AssistantUiElement:
@@ -48,8 +52,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantCardElement
 
   // AssistantUiElement:
   bool Compare(const AssistantUiElement& other) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantCardElement);
 };
 
 }  // namespace ash

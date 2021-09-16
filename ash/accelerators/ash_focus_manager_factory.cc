@@ -24,13 +24,15 @@ namespace {
 class PostTargetAcceleratorHandler : public views::FocusManagerDelegate {
  public:
   PostTargetAcceleratorHandler() = default;
+
+  PostTargetAcceleratorHandler(const PostTargetAcceleratorHandler&) = delete;
+  PostTargetAcceleratorHandler& operator=(const PostTargetAcceleratorHandler&) =
+      delete;
+
   ~PostTargetAcceleratorHandler() override = default;
 
   // views::FocusManagerDelegate overrides:
   bool ProcessAccelerator(const ui::Accelerator& accelerator) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PostTargetAcceleratorHandler);
 };
 
 bool PostTargetAcceleratorHandler::ProcessAccelerator(

@@ -44,6 +44,11 @@ class ASH_EXPORT TouchCalibratorController
   static const base::TimeDelta kTouchIntervalThreshold;
 
   TouchCalibratorController();
+
+  TouchCalibratorController(const TouchCalibratorController&) = delete;
+  TouchCalibratorController& operator=(const TouchCalibratorController&) =
+      delete;
+
   ~TouchCalibratorController() override;
 
   // ui::EventHandler
@@ -131,8 +136,6 @@ class ASH_EXPORT TouchCalibratorController
   // linked to. We need to undo these transformations before recording the event
   // locations.
   gfx::Transform event_transformer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchCalibratorController);
 };
 
 }  // namespace ash

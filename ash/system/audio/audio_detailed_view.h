@@ -30,6 +30,9 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView {
  public:
   explicit AudioDetailedView(DetailedViewDelegate* delegate);
 
+  AudioDetailedView(const AudioDetailedView&) = delete;
+  AudioDetailedView& operator=(const AudioDetailedView&) = delete;
+
   ~AudioDetailedView() override;
 
   void Update();
@@ -66,8 +69,6 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView {
   AudioDeviceList output_devices_;
   AudioDeviceList input_devices_;
   AudioDeviceMap device_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDetailedView);
 };
 
 }  // namespace tray

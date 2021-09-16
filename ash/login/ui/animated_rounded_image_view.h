@@ -36,6 +36,10 @@ class AnimatedRoundedImageView : public views::View {
   // Constructs a new rounded image view with rounded corners of radius
   // |corner_radius|.
   AnimatedRoundedImageView(const gfx::Size& size, int corner_radius);
+
+  AnimatedRoundedImageView(const AnimatedRoundedImageView&) = delete;
+  AnimatedRoundedImageView& operator=(const AnimatedRoundedImageView&) = delete;
+
   ~AnimatedRoundedImageView() override;
 
   // Show an animation with specified playback mode.
@@ -73,8 +77,6 @@ class AnimatedRoundedImageView : public views::View {
   const int corner_radius_;
 
   base::OneShotTimer update_frame_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimatedRoundedImageView);
 };
 
 }  // namespace ash

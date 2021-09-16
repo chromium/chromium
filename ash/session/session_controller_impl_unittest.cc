@@ -37,6 +37,10 @@ namespace {
 class TestSessionObserver : public SessionObserver {
  public:
   TestSessionObserver() : active_account_id_(EmptyAccountId()) {}
+
+  TestSessionObserver(const TestSessionObserver&) = delete;
+  TestSessionObserver& operator=(const TestSessionObserver&) = delete;
+
   ~TestSessionObserver() override = default;
 
   // SessionObserver:
@@ -85,8 +89,6 @@ class TestSessionObserver : public SessionObserver {
   std::vector<AccountId> user_session_account_ids_;
   PrefService* last_user_pref_service_ = nullptr;
   int user_prefs_changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionObserver);
 };
 
 void FillDefaultSessionInfo(SessionInfo* info) {
@@ -100,6 +102,11 @@ void FillDefaultSessionInfo(SessionInfo* info) {
 class SessionControllerImplTest : public testing::Test {
  public:
   SessionControllerImplTest() = default;
+
+  SessionControllerImplTest(const SessionControllerImplTest&) = delete;
+  SessionControllerImplTest& operator=(const SessionControllerImplTest&) =
+      delete;
+
   ~SessionControllerImplTest() override = default;
 
   // testing::Test:
@@ -140,8 +147,6 @@ class SessionControllerImplTest : public testing::Test {
  private:
   std::unique_ptr<SessionControllerImpl> controller_;
   TestSessionObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionControllerImplTest);
 };
 
 // Tests that the simple session info is reflected properly.
@@ -573,6 +578,10 @@ class CanSwitchUserTest : public AshTestBase {
     DECLINE_DIALOG,  // A dialog should be shown and we do not accept it.
   };
   CanSwitchUserTest() = default;
+
+  CanSwitchUserTest(const CanSwitchUserTest&) = delete;
+  CanSwitchUserTest& operator=(const CanSwitchUserTest&) = delete;
+
   ~CanSwitchUserTest() override = default;
 
   void TearDown() override {
@@ -668,8 +677,6 @@ class CanSwitchUserTest : public AshTestBase {
   int stop_capture_callback_hit_count_ = 0;
   int stop_share_callback_hit_count_ = 0;
   int switch_callback_hit_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CanSwitchUserTest);
 };
 
 // Test that when there is no screen operation going on the user switch will be

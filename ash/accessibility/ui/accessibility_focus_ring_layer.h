@@ -20,6 +20,11 @@ namespace ash {
 class ASH_EXPORT AccessibilityFocusRingLayer : public FocusRingLayer {
  public:
   explicit AccessibilityFocusRingLayer(AccessibilityLayerDelegate* delegate);
+
+  AccessibilityFocusRingLayer(const AccessibilityFocusRingLayer&) = delete;
+  AccessibilityFocusRingLayer& operator=(const AccessibilityFocusRingLayer&) =
+      delete;
+
   ~AccessibilityFocusRingLayer() override;
 
   // Create the layer and update its bounds and position in the hierarchy.
@@ -54,8 +59,6 @@ class ASH_EXPORT AccessibilityFocusRingLayer : public FocusRingLayer {
   // The color of the background. When fully transparent, no background will be
   // drawn.
   SkColor background_color_ = SK_ColorTRANSPARENT;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingLayer);
 };
 
 }  // namespace ash

@@ -38,6 +38,10 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
  public:
   // |window| is the container for this layout manager.
   explicit WorkspaceLayoutManager(aura::Window* window);
+
+  WorkspaceLayoutManager(const WorkspaceLayoutManager&) = delete;
+  WorkspaceLayoutManager& operator=(const WorkspaceLayoutManager&) = delete;
+
   ~WorkspaceLayoutManager() override;
 
   BackdropController* backdrop_controller() {
@@ -107,6 +111,10 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   class BubbleWindowObserver : public aura::WindowObserver {
    public:
     BubbleWindowObserver(WorkspaceLayoutManager* workspace_layout_manager);
+
+    BubbleWindowObserver(const BubbleWindowObserver&) = delete;
+    BubbleWindowObserver& operator=(const BubbleWindowObserver&) = delete;
+
     ~BubbleWindowObserver() override;
 
     void ObserveWindow(aura::Window* window);
@@ -126,8 +134,6 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
     WindowSet windows_;
 
     void StopOberservingWindow(aura::Window* window);
-
-    DISALLOW_COPY_AND_ASSIGN(BubbleWindowObserver);
   };
 
   // Adjusts the bounds of all managed windows when the display area changes.
@@ -189,8 +195,6 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   // A window which covers the full container and which gets inserted behind the
   // topmost visible window.
   std::unique_ptr<BackdropController> backdrop_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceLayoutManager);
 };
 
 }  // namespace ash

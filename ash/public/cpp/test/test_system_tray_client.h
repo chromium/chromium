@@ -15,6 +15,10 @@ namespace ash {
 class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
  public:
   TestSystemTrayClient();
+
+  TestSystemTrayClient(const TestSystemTrayClient&) = delete;
+  TestSystemTrayClient& operator=(const TestSystemTrayClient&) = delete;
+
   ~TestSystemTrayClient() override;
 
   // SystemTrayClient:
@@ -83,8 +87,6 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_os_settings_privacy_and_security_count_ = 0;
   int show_wifi_sync_settings_count_ = 0;
   int show_sim_unlock_settings_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSystemTrayClient);
 };
 
 }  // namespace ash

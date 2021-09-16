@@ -18,6 +18,12 @@ class TestArcInputMethodSurfaceManagerObserver
     : public ArcInputMethodSurfaceManager::Observer {
  public:
   TestArcInputMethodSurfaceManagerObserver() = default;
+
+  TestArcInputMethodSurfaceManagerObserver(
+      const TestArcInputMethodSurfaceManagerObserver&) = delete;
+  TestArcInputMethodSurfaceManagerObserver& operator=(
+      const TestArcInputMethodSurfaceManagerObserver&) = delete;
+
   ~TestArcInputMethodSurfaceManagerObserver() override = default;
 
   void OnArcInputMethodBoundsChanged(const gfx::Rect& bounds) override {
@@ -27,9 +33,6 @@ class TestArcInputMethodSurfaceManagerObserver
 
   int bounds_changed_calls_ = 0;
   gfx::Rect last_bounds_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestArcInputMethodSurfaceManagerObserver);
 };
 
 }  // namespace
@@ -37,6 +40,12 @@ class TestArcInputMethodSurfaceManagerObserver
 class ArcInputMethodSurfaceManagerTest : public AshTestBase {
  public:
   ArcInputMethodSurfaceManagerTest() = default;
+
+  ArcInputMethodSurfaceManagerTest(const ArcInputMethodSurfaceManagerTest&) =
+      delete;
+  ArcInputMethodSurfaceManagerTest& operator=(
+      const ArcInputMethodSurfaceManagerTest&) = delete;
+
   ~ArcInputMethodSurfaceManagerTest() override = default;
 
   void SetUp() override {
@@ -51,8 +60,6 @@ class ArcInputMethodSurfaceManagerTest : public AshTestBase {
 
  private:
   std::unique_ptr<exo::WMHelper> wm_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcInputMethodSurfaceManagerTest);
 };
 
 TEST_F(ArcInputMethodSurfaceManagerTest, AddRemoveSurface) {

@@ -61,6 +61,10 @@ class EnsureMinHeightView : public NonAccessibleView {
  public:
   EnsureMinHeightView()
       : NonAccessibleView(kScrollableUsersListContentViewName) {}
+
+  EnsureMinHeightView(const EnsureMinHeightView&) = delete;
+  EnsureMinHeightView& operator=(const EnsureMinHeightView&) = delete;
+
   ~EnsureMinHeightView() override = default;
 
   // NonAccessibleView:
@@ -75,9 +79,6 @@ class EnsureMinHeightView : public NonAccessibleView {
     }
     NonAccessibleView::Layout();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnsureMinHeightView);
 };
 
 struct LayoutParams {

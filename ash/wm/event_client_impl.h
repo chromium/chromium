@@ -16,6 +16,10 @@ class ScopedSkipUserSessionBlockedCheck;
 class ASH_EXPORT EventClientImpl : public aura::client::EventClient {
  public:
   EventClientImpl();
+
+  EventClientImpl(const EventClientImpl&) = delete;
+  EventClientImpl& operator=(const EventClientImpl&) = delete;
+
   ~EventClientImpl() override;
 
  private:
@@ -37,8 +41,6 @@ class ASH_EXPORT EventClientImpl : public aura::client::EventClient {
   // Flag indicating whether the user sesion checks in
   // GetCanProcessEventsWithinSubtree should be skipped.
   bool skip_user_session_blocked_check_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(EventClientImpl);
 };
 
 }  // namespace ash

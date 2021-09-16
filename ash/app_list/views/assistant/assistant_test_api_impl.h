@@ -23,6 +23,10 @@ class ContentsView;
 class AssistantTestApiImpl : public AssistantTestApi {
  public:
   AssistantTestApiImpl();
+
+  AssistantTestApiImpl(const AssistantTestApiImpl&) = delete;
+  AssistantTestApiImpl& operator=(const AssistantTestApiImpl&) = delete;
+
   ~AssistantTestApiImpl() override;
 
   // AssistantTestApi overrides:
@@ -67,8 +71,6 @@ class AssistantTestApiImpl : public AssistantTestApi {
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
       scoped_animation_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantTestApiImpl);
 };
 
 }  // namespace ash

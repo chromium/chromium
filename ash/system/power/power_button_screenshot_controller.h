@@ -29,6 +29,12 @@ class ASH_EXPORT PowerButtonScreenshotController : public ui::EventHandler {
       base::TimeDelta::FromMilliseconds(150);
 
   explicit PowerButtonScreenshotController(const base::TickClock* tick_clock);
+
+  PowerButtonScreenshotController(const PowerButtonScreenshotController&) =
+      delete;
+  PowerButtonScreenshotController& operator=(
+      const PowerButtonScreenshotController&) = delete;
+
   ~PowerButtonScreenshotController() override;
 
   // Returns true if power button event is consumed by |this|, otherwise false.
@@ -75,8 +81,6 @@ class ASH_EXPORT PowerButtonScreenshotController : public ui::EventHandler {
 
   // Time source for performed action times.
   const base::TickClock* tick_clock_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonScreenshotController);
 };
 
 }  // namespace ash

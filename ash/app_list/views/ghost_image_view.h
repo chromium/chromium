@@ -27,6 +27,10 @@ class GhostImageView : public views::ImageView,
                        public ui::ImplicitAnimationObserver {
  public:
   GhostImageView(bool is_folder, bool is_in_folder, int page);
+
+  GhostImageView(const GhostImageView&) = delete;
+  GhostImageView& operator=(const GhostImageView&) = delete;
+
   ~GhostImageView() override;
 
   // Initialize the GhostImageView.
@@ -81,8 +85,6 @@ class GhostImageView : public views::ImageView,
   // The origins of the top icons within a folder icon. Used for the folder
   // ghost image.
   std::vector<gfx::Point> inner_folder_icon_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(GhostImageView);
 };
 
 }  // namespace ash

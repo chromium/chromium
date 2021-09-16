@@ -28,6 +28,12 @@ class AssistantNotificationExpiryMonitor {
 
   explicit AssistantNotificationExpiryMonitor(
       AssistantNotificationControllerImpl* controller);
+
+  AssistantNotificationExpiryMonitor(
+      const AssistantNotificationExpiryMonitor&) = delete;
+  AssistantNotificationExpiryMonitor& operator=(
+      const AssistantNotificationExpiryMonitor&) = delete;
+
   ~AssistantNotificationExpiryMonitor();
 
  private:
@@ -48,8 +54,6 @@ class AssistantNotificationExpiryMonitor {
   base::OneShotTimer timer_;
   AssistantNotificationControllerImpl* const controller_;
   std::unique_ptr<Observer> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantNotificationExpiryMonitor);
 };
 
 }  // namespace ash

@@ -33,6 +33,10 @@ class TestObserver : public AppListModelObserver {
         items_added_(0),
         items_removed_(0),
         items_updated_(0) {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override {}
 
   // AppListModelObserver
@@ -63,8 +67,6 @@ class TestObserver : public AppListModelObserver {
   size_t items_added_;
   size_t items_removed_;
   size_t items_updated_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -72,6 +74,10 @@ class TestObserver : public AppListModelObserver {
 class AppListModelTest : public testing::Test {
  public:
   AppListModelTest() {}
+
+  AppListModelTest(const AppListModelTest&) = delete;
+  AppListModelTest& operator=(const AppListModelTest&) = delete;
+
   ~AppListModelTest() override {}
 
   // testing::Test overrides:
@@ -102,9 +108,6 @@ class AppListModelTest : public testing::Test {
 
   test::AppListTestModel model_;
   TestObserver observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppListModelTest);
 };
 
 TEST_F(AppListModelTest, SetStatus) {

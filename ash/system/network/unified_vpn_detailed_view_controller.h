@@ -24,6 +24,12 @@ class UnifiedVPNDetailedViewController : public DetailedViewController {
  public:
   explicit UnifiedVPNDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedVPNDetailedViewController(const UnifiedVPNDetailedViewController&) =
+      delete;
+  UnifiedVPNDetailedViewController& operator=(
+      const UnifiedVPNDetailedViewController&) = delete;
+
   ~UnifiedVPNDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -34,8 +40,6 @@ class UnifiedVPNDetailedViewController : public DetailedViewController {
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
   tray::VPNListView* view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedVPNDetailedViewController);
 };
 
 }  // namespace ash

@@ -38,6 +38,10 @@ const uint32_t kAllMagnetismEdges = MAGNETISM_EDGE_TOP | MAGNETISM_EDGE_LEFT |
 class MagnetismEdgeMatcher {
  public:
   MagnetismEdgeMatcher(const gfx::Rect& bounds, MagnetismEdge edge);
+
+  MagnetismEdgeMatcher(const MagnetismEdgeMatcher&) = delete;
+  MagnetismEdgeMatcher& operator=(const MagnetismEdgeMatcher&) = delete;
+
   ~MagnetismEdgeMatcher();
 
   MagnetismEdge edge() const { return edge_; }
@@ -127,8 +131,6 @@ class MagnetismEdgeMatcher {
   // updated as ShouldAttach() is invoked. When empty the edge is completely
   // obscured by other bounds.
   Ranges ranges_;
-
-  DISALLOW_COPY_AND_ASSIGN(MagnetismEdgeMatcher);
 };
 
 enum SecondaryMagnetismEdge {
@@ -163,6 +165,10 @@ class ASH_EXPORT MagnetismMatcher {
 
   // |edges| is a bitmask of MagnetismEdges to match against.
   MagnetismMatcher(const gfx::Rect& bounds, uint32_t edges);
+
+  MagnetismMatcher(const MagnetismMatcher&) = delete;
+  MagnetismMatcher& operator=(const MagnetismMatcher&) = delete;
+
   ~MagnetismMatcher();
 
   // Returns true if |bounds| is close enough to the initial bounds that the two
@@ -183,8 +189,6 @@ class ASH_EXPORT MagnetismMatcher {
   const int32_t edges_;
 
   std::vector<std::unique_ptr<MagnetismEdgeMatcher>> matchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MagnetismMatcher);
 };
 
 }  // namespace ash

@@ -23,6 +23,10 @@ namespace ash {
 class MicPartShape : public Shape {
  public:
   explicit MicPartShape(float dot_size);
+
+  MicPartShape(const MicPartShape&) = delete;
+  MicPartShape& operator=(const MicPartShape&) = delete;
+
   ~MicPartShape() override;
 
   // Calculate the |first_path_|, |first_stroke_width_|, and |cap_| based on
@@ -31,8 +35,6 @@ class MicPartShape : public Shape {
 
  private:
   std::unique_ptr<chromeos::assistant::Mic> mic_;
-
-  DISALLOW_COPY_AND_ASSIGN(MicPartShape);
 };
 
 }  // namespace ash

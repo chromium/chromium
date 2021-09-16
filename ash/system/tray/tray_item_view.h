@@ -52,6 +52,10 @@ class ASH_EXPORT TrayItemView : public views::View,
                                 public views::AnimationDelegateViews {
  public:
   explicit TrayItemView(Shelf* shelf);
+
+  TrayItemView(const TrayItemView&) = delete;
+  TrayItemView& operator=(const TrayItemView&) = delete;
+
   ~TrayItemView() override;
 
   // Convenience function for creating a child Label or ImageView.
@@ -121,8 +125,6 @@ class ASH_EXPORT TrayItemView : public views::View,
   // Only one of |label_| and |image_view_| should be non-null.
   IconizedLabel* label_;
   views::ImageView* image_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayItemView);
 };
 
 }  // namespace ash

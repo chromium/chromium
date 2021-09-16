@@ -36,6 +36,10 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
                       ui::MenuSourceType source_type,
                       base::OnceClosure on_menu_closed_callback,
                       bool is_tablet_mode);
+
+  AppMenuModelAdapter(const AppMenuModelAdapter&) = delete;
+  AppMenuModelAdapter& operator=(const AppMenuModelAdapter&) = delete;
+
   ~AppMenuModelAdapter() override;
 
   // Builds the view tree and shows the menu.
@@ -109,8 +113,6 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
 
   // Whether tablet mode is active.
   bool is_tablet_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenuModelAdapter);
 };
 
 }  // namespace ash

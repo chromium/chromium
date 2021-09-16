@@ -19,6 +19,10 @@ namespace ash {
 class BaseState : public WindowState::State {
  public:
   explicit BaseState(chromeos::WindowStateType initial_state_type);
+
+  BaseState(const BaseState&) = delete;
+  BaseState& operator=(const BaseState&) = delete;
+
   ~BaseState() override;
 
   // WindowState::State:
@@ -68,9 +72,6 @@ class BaseState : public WindowState::State {
 
   // The current type of the window.
   chromeos::WindowStateType state_type_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BaseState);
 };
 
 }  // namespace ash

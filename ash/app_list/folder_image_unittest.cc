@@ -62,6 +62,9 @@ class FolderImageTest
  public:
   FolderImageTest() = default;
 
+  FolderImageTest(const FolderImageTest&) = delete;
+  FolderImageTest& operator=(const FolderImageTest&) = delete;
+
   ~FolderImageTest() override = default;
 
   void SetUp() override {
@@ -98,9 +101,6 @@ class FolderImageTest
   std::unique_ptr<FolderImage> folder_image_;
 
   TestFolderImageObserver observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FolderImageTest);
 };
 INSTANTIATE_TEST_SUITE_P(All,
                          FolderImageTest,

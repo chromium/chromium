@@ -37,6 +37,10 @@ namespace {
 class MockTextInputClient : public ui::DummyTextInputClient {
  public:
   MockTextInputClient() : ui::DummyTextInputClient(ui::TEXT_INPUT_TYPE_TEXT) {}
+
+  MockTextInputClient(const MockTextInputClient&) = delete;
+  MockTextInputClient& operator=(const MockTextInputClient&) = delete;
+
   ~MockTextInputClient() override = default;
 
   void SetCaretBounds(const gfx::Rect& bounds) { caret_bounds_ = bounds; }
@@ -45,8 +49,6 @@ class MockTextInputClient : public ui::DummyTextInputClient {
   gfx::Rect GetCaretBounds() const override { return caret_bounds_; }
 
   gfx::Rect caret_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTextInputClient);
 };
 
 }  // namespace

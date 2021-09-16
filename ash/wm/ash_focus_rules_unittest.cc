@@ -38,6 +38,12 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
     InitializeAndSetClient();
     CreatePredefinedUserSessions(1);
   }
+
+  LockScreenSessionControllerClient(const LockScreenSessionControllerClient&) =
+      delete;
+  LockScreenSessionControllerClient& operator=(
+      const LockScreenSessionControllerClient&) = delete;
+
   ~LockScreenSessionControllerClient() override = default;
 
   // TestSessionControllerClient:
@@ -80,8 +86,6 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
   }
 
   std::unique_ptr<views::Widget> lock_screen_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenSessionControllerClient);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +95,11 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
 class LockScreenAshFocusRulesTest : public AshTestBase {
  public:
   LockScreenAshFocusRulesTest() = default;
+
+  LockScreenAshFocusRulesTest(const LockScreenAshFocusRulesTest&) = delete;
+  LockScreenAshFocusRulesTest& operator=(const LockScreenAshFocusRulesTest&) =
+      delete;
+
   ~LockScreenAshFocusRulesTest() override = default;
 
   void SetUp() override {
@@ -157,8 +166,6 @@ class LockScreenAshFocusRulesTest : public AshTestBase {
   }
 
   std::unique_ptr<LockScreenSessionControllerClient> session_controller_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAshFocusRulesTest);
 };
 
 }  // namespace

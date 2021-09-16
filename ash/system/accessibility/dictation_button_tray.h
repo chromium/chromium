@@ -30,6 +30,10 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
                                        public SessionObserver {
  public:
   explicit DictationButtonTray(Shelf* shelf);
+
+  DictationButtonTray(const DictationButtonTray&) = delete;
+  DictationButtonTray& operator=(const DictationButtonTray&) = delete;
+
   ~DictationButtonTray() override;
 
   // ActionableView:
@@ -75,8 +79,6 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
   views::ImageView* icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(DictationButtonTray);
 };
 
 }  // namespace ash

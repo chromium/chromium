@@ -63,6 +63,10 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   ShelfAppButton(ShelfView* shelf_view,
                  ShelfButtonDelegate* shelf_button_delegate);
+
+  ShelfAppButton(const ShelfAppButton&) = delete;
+  ShelfAppButton& operator=(const ShelfAppButton&) = delete;
+
   ~ShelfAppButton() override;
 
   // Sets the image to display for this entry.
@@ -222,8 +226,6 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // Used to track whether the menu was deleted while running. Must be last.
   base::WeakPtrFactory<ShelfAppButton> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfAppButton);
 };
 
 }  // namespace ash

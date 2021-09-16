@@ -83,6 +83,9 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
         this));
   }
 
+  PageIndicatorButton(const PageIndicatorButton&) = delete;
+  PageIndicatorButton& operator=(const PageIndicatorButton&) = delete;
+
   ~PageIndicatorButton() override {}
 
   void SetSelected(bool selected) {
@@ -146,8 +149,6 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
   SkColor ripple_base_color_ = gfx::kPlaceholderColor;
   float highlight_opacity_ = 0.f;
   float inkdrop_opacity_ = 0.f;
-
-  DISALLOW_COPY_AND_ASSIGN(PageIndicatorButton);
 };
 
 PageIndicatorView::PageIndicatorView(UnifiedSystemTrayController* controller,

@@ -64,6 +64,10 @@ class ASH_EXPORT UnifiedMessageCenterView
   UnifiedMessageCenterView(UnifiedSystemTrayView* parent,
                            UnifiedSystemTrayModel* model,
                            UnifiedMessageCenterBubble* bubble);
+
+  UnifiedMessageCenterView(const UnifiedMessageCenterView&) = delete;
+  UnifiedMessageCenterView& operator=(const UnifiedMessageCenterView&) = delete;
+
   ~UnifiedMessageCenterView() override;
 
   // Initializes the `UnifiedMessageListView` with existing notifications.
@@ -193,8 +197,6 @@ class ASH_EXPORT UnifiedMessageCenterView
   const std::unique_ptr<views::FocusSearch> focus_search_;
 
   views::FocusManager* focus_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedMessageCenterView);
 };
 
 }  // namespace ash

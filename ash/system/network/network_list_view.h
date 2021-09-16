@@ -40,6 +40,10 @@ class NetworkListView : public NetworkStateListDetailedView,
                         public network_icon::AnimationObserver {
  public:
   NetworkListView(DetailedViewDelegate* delegate, LoginStatus login);
+
+  NetworkListView(const NetworkListView&) = delete;
+  NetworkListView& operator=(const NetworkListView&) = delete;
+
   ~NetworkListView() override;
 
   // NetworkStateListDetailedView:
@@ -161,8 +165,6 @@ class NetworkListView : public NetworkStateListDetailedView,
   NetworkInfoMap last_network_info_map_;
 
   base::WeakPtrFactory<NetworkListView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkListView);
 };
 
 }  // namespace tray

@@ -24,6 +24,12 @@ class ASH_EXPORT LockScreenActionBackgroundViewTestApi {
   explicit LockScreenActionBackgroundViewTestApi(
       LockScreenActionBackgroundView* action_background_view)
       : action_background_view_(action_background_view) {}
+
+  LockScreenActionBackgroundViewTestApi(
+      const LockScreenActionBackgroundViewTestApi&) = delete;
+  LockScreenActionBackgroundViewTestApi& operator=(
+      const LockScreenActionBackgroundViewTestApi&) = delete;
+
   ~LockScreenActionBackgroundViewTestApi() = default;
 
   views::View* GetBackground() {
@@ -32,8 +38,6 @@ class ASH_EXPORT LockScreenActionBackgroundViewTestApi {
 
  private:
   LockScreenActionBackgroundView* action_background_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundViewTestApi);
 };
 
 }  // namespace ash

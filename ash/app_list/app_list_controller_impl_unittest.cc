@@ -151,6 +151,11 @@ class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
 class AppListControllerImplTest : public AshTestBase {
  public:
   AppListControllerImplTest() = default;
+
+  AppListControllerImplTest(const AppListControllerImplTest&) = delete;
+  AppListControllerImplTest& operator=(const AppListControllerImplTest&) =
+      delete;
+
   ~AppListControllerImplTest() override = default;
 
   void SetUp() override {
@@ -186,8 +191,6 @@ class AppListControllerImplTest : public AshTestBase {
   int populated_item_count_ = 0;
 
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListControllerImplTest);
 };
 
 // Tests that the AppList hides when shelf alignment changes. This necessary
@@ -974,6 +977,10 @@ class AppListAnimationTest : public AshTestBase,
                              public testing::WithParamInterface<bool> {
  public:
   AppListAnimationTest() = default;
+
+  AppListAnimationTest(const AppListAnimationTest&) = delete;
+  AppListAnimationTest& operator=(const AppListAnimationTest&) = delete;
+
   ~AppListAnimationTest() override = default;
 
   void SetUp() override {
@@ -1028,8 +1035,6 @@ class AppListAnimationTest : public AshTestBase,
  private:
   // Set during setup.
   gfx::Rect shown_shelf_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListAnimationTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(AutoHideShelf, AppListAnimationTest, testing::Bool());
@@ -1172,6 +1177,12 @@ TEST_P(AppListAnimationTest, SearchBoxOpacityDuringShowAndClose) {
 class AppListControllerImplMetricsTest : public AshTestBase {
  public:
   AppListControllerImplMetricsTest() = default;
+
+  AppListControllerImplMetricsTest(const AppListControllerImplMetricsTest&) =
+      delete;
+  AppListControllerImplMetricsTest& operator=(
+      const AppListControllerImplMetricsTest&) = delete;
+
   ~AppListControllerImplMetricsTest() override = default;
 
   void SetUp() override {
@@ -1188,9 +1199,6 @@ class AppListControllerImplMetricsTest : public AshTestBase {
 
   AppListControllerImpl* controller_;
   const base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppListControllerImplMetricsTest);
 };
 
 // One edge case may do harm to the presentation metrics reporter for tablet

@@ -18,6 +18,10 @@ class VPNFeaturePodController : public FeaturePodControllerBase,
                                 public TrayNetworkStateObserver {
  public:
   VPNFeaturePodController(UnifiedSystemTrayController* tray_controller);
+
+  VPNFeaturePodController(const VPNFeaturePodController&) = delete;
+  VPNFeaturePodController& operator=(const VPNFeaturePodController&) = delete;
+
   ~VPNFeaturePodController() override;
 
   // FeaturePodControllerBase:
@@ -34,8 +38,6 @@ class VPNFeaturePodController : public FeaturePodControllerBase,
   // Unowned.
   UnifiedSystemTrayController* const tray_controller_;
   FeaturePodButton* button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(VPNFeaturePodController);
 };
 
 }  // namespace ash

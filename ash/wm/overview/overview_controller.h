@@ -32,6 +32,10 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
                                       public ::wm::ActivationChangeObserver {
  public:
   OverviewController();
+
+  OverviewController(const OverviewController&) = delete;
+  OverviewController& operator=(const OverviewController&) = delete;
+
   ~OverviewController() override;
 
   // Starts/Ends overview with `type`. Returns true if enter or exit overview
@@ -164,8 +168,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock_;
 
   base::WeakPtrFactory<OverviewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewController);
 };
 
 }  // namespace ash

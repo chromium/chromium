@@ -28,6 +28,10 @@ class ASH_EXPORT WallpaperWindowStateManager : public aura::WindowObserver {
 
   WallpaperWindowStateManager();
 
+  WallpaperWindowStateManager(const WallpaperWindowStateManager&) = delete;
+  WallpaperWindowStateManager& operator=(const WallpaperWindowStateManager&) =
+      delete;
+
   ~WallpaperWindowStateManager() override;
 
   // Store all unminimized windows except |active_window| and minimize them.
@@ -51,8 +55,6 @@ class ASH_EXPORT WallpaperWindowStateManager : public aura::WindowObserver {
 
   // Map of user id hash and associated list of minimized windows.
   UserIDHashWindowListMap user_id_hash_window_list_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperWindowStateManager);
 };
 
 }  // namespace ash

@@ -24,6 +24,10 @@ class ASH_EXPORT FocusCycler {
   enum Direction { FORWARD, BACKWARD };
 
   FocusCycler();
+
+  FocusCycler(const FocusCycler&) = delete;
+  FocusCycler& operator=(const FocusCycler&) = delete;
+
   ~FocusCycler();
 
   // Returns the widget the FocusCycler is attempting to activate or NULL if
@@ -53,8 +57,6 @@ class ASH_EXPORT FocusCycler {
 
   // See description above getter.
   views::Widget* widget_activating_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusCycler);
 };
 
 }  // namespace ash

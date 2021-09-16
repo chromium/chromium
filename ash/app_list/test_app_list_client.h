@@ -20,6 +20,10 @@ namespace ash {
 class TestAppListClient : public AppListClient {
  public:
   TestAppListClient();
+
+  TestAppListClient(const TestAppListClient&) = delete;
+  TestAppListClient& operator=(const TestAppListClient&) = delete;
+
   ~TestAppListClient() override;
 
   // AppListClient:
@@ -92,8 +96,6 @@ class TestAppListClient : public AppListClient {
   int activate_item_count_ = 0;
   std::string activate_item_last_id_;
   std::string last_opened_search_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppListClient);
 };
 
 }  // namespace ash

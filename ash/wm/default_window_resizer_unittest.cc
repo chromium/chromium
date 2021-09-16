@@ -20,6 +20,10 @@ namespace ash {
 class DefaultWindowResizerTest : public AshTestBase {
  public:
   DefaultWindowResizerTest() = default;
+
+  DefaultWindowResizerTest(const DefaultWindowResizerTest&) = delete;
+  DefaultWindowResizerTest& operator=(const DefaultWindowResizerTest&) = delete;
+
   ~DefaultWindowResizerTest() override = default;
 
   void SetUp() override {
@@ -53,9 +57,6 @@ class DefaultWindowResizerTest : public AshTestBase {
   aura::test::TestWindowDelegate delegate_;
   std::unique_ptr<aura::Window> aspect_ratio_window_;
   base::HistogramTester histograms_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultWindowResizerTest);
 };
 
 // Tests window resizing with a square aspect ratio.

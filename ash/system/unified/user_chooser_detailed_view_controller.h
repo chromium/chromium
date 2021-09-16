@@ -20,6 +20,12 @@ class ASH_EXPORT UserChooserDetailedViewController
  public:
   explicit UserChooserDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UserChooserDetailedViewController(const UserChooserDetailedViewController&) =
+      delete;
+  UserChooserDetailedViewController& operator=(
+      const UserChooserDetailedViewController&) = delete;
+
   ~UserChooserDetailedViewController() override;
 
   // Return true if user chooser is enabled. Called from the view.
@@ -40,8 +46,6 @@ class ASH_EXPORT UserChooserDetailedViewController
 
  private:
   UnifiedSystemTrayController* tray_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserChooserDetailedViewController);
 };
 
 }  // namespace ash

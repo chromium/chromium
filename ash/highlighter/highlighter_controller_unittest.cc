@@ -25,6 +25,10 @@ namespace {
 class TestHighlighterObserver : public HighlighterController::Observer {
  public:
   TestHighlighterObserver() = default;
+
+  TestHighlighterObserver(const TestHighlighterObserver&) = delete;
+  TestHighlighterObserver& operator=(const TestHighlighterObserver&) = delete;
+
   ~TestHighlighterObserver() override = default;
 
   // HighlighterController::Observer:
@@ -54,14 +58,16 @@ class TestHighlighterObserver : public HighlighterController::Observer {
   int disabled_by_session_abort_ = 0;
   int disabled_by_session_complete_ = 0;
   gfx::Rect last_recognized_rect_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestHighlighterObserver);
 };
 
 class HighlighterControllerTest : public AssistantAshTestBase {
  public:
   HighlighterControllerTest() = default;
+
+  HighlighterControllerTest(const HighlighterControllerTest&) = delete;
+  HighlighterControllerTest& operator=(const HighlighterControllerTest&) =
+      delete;
+
   ~HighlighterControllerTest() override = default;
 
   void SetUp() override {
@@ -111,9 +117,6 @@ class HighlighterControllerTest : public AssistantAshTestBase {
   std::unique_ptr<PaletteTool> tool_;
 
   HighlighterController* controller_ = nullptr;  // Not owned.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HighlighterControllerTest);
 };
 
 }  // namespace

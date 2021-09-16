@@ -34,6 +34,10 @@ class ASH_EXPORT AppsContainerView : public AppListPage,
                                      public AppListFolderController {
  public:
   AppsContainerView(ContentsView* contents_view, AppListModel* model);
+
+  AppsContainerView(const AppsContainerView&) = delete;
+  AppsContainerView& operator=(const AppsContainerView&) = delete;
+
   ~AppsContainerView() override;
 
   // Resets the app list to a state where it shows the main grid view. This is
@@ -215,8 +219,6 @@ class ASH_EXPORT AppsContainerView : public AppListPage,
   CachedContainerMargins cached_container_margins_;
 
   base::WeakPtrFactory<AppsContainerView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppsContainerView);
 };
 
 }  // namespace ash

@@ -47,6 +47,11 @@ enum class MicState {
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantInteractionModel {
  public:
   AssistantInteractionModel();
+
+  AssistantInteractionModel(const AssistantInteractionModel&) = delete;
+  AssistantInteractionModel& operator=(const AssistantInteractionModel&) =
+      delete;
+
   ~AssistantInteractionModel();
 
   // Adds/removes the specified interaction model |observer|.
@@ -152,8 +157,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantInteractionModel {
   scoped_refptr<AssistantResponse> response_;
 
   mutable base::ObserverList<AssistantInteractionModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantInteractionModel);
 };
 
 }  // namespace ash

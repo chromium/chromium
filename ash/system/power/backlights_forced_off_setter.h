@@ -29,6 +29,11 @@ class ASH_EXPORT BacklightsForcedOffSetter
       public ScreenBacklight {
  public:
   BacklightsForcedOffSetter();
+
+  BacklightsForcedOffSetter(const BacklightsForcedOffSetter&) = delete;
+  BacklightsForcedOffSetter& operator=(const BacklightsForcedOffSetter&) =
+      delete;
+
   ~BacklightsForcedOffSetter() override;
 
   bool backlights_forced_off() const {
@@ -99,8 +104,6 @@ class ASH_EXPORT BacklightsForcedOffSetter
       power_manager_observation_{this};
 
   base::WeakPtrFactory<BacklightsForcedOffSetter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BacklightsForcedOffSetter);
 };
 
 }  // namespace ash

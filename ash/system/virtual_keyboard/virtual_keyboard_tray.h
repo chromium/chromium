@@ -26,6 +26,10 @@ class VirtualKeyboardTray : public TrayBackgroundView,
                             public SessionObserver {
  public:
   explicit VirtualKeyboardTray(Shelf* shelf);
+
+  VirtualKeyboardTray(const VirtualKeyboardTray&) = delete;
+  VirtualKeyboardTray& operator=(const VirtualKeyboardTray&) = delete;
+
   ~VirtualKeyboardTray() override;
 
   // TrayBackgroundView:
@@ -57,8 +61,6 @@ class VirtualKeyboardTray : public TrayBackgroundView,
   Shelf* shelf_;
 
   ScopedSessionObserver session_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardTray);
 };
 
 }  // namespace ash

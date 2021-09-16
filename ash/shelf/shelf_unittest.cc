@@ -30,6 +30,10 @@ namespace {
 class ShelfTest : public AshTestBase {
  public:
   ShelfTest() = default;
+
+  ShelfTest(const ShelfTest&) = delete;
+  ShelfTest& operator=(const ShelfTest&) = delete;
+
   ~ShelfTest() override = default;
 
   void SetUp() override {
@@ -57,8 +61,6 @@ class ShelfTest : public AshTestBase {
   ShelfView* shelf_view_ = nullptr;
   ShelfModel* shelf_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfTest);
 };
 
 // Confirms that ShelfItem reflects the appropriated state.

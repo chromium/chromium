@@ -24,6 +24,10 @@ namespace ash {
 class UnifiedSystemTrayTest : public AshTestBase {
  public:
   UnifiedSystemTrayTest() = default;
+
+  UnifiedSystemTrayTest(const UnifiedSystemTrayTest&) = delete;
+  UnifiedSystemTrayTest& operator=(const UnifiedSystemTrayTest&) = delete;
+
   ~UnifiedSystemTrayTest() override = default;
 
  protected:
@@ -58,9 +62,6 @@ class UnifiedSystemTrayTest : public AshTestBase {
   ImeModeView* ime_mode_view() {
     return GetPrimaryUnifiedSystemTray()->ime_mode_view_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayTest);
 };
 
 TEST_F(UnifiedSystemTrayTest, ShowVolumeSliderBubble) {

@@ -35,6 +35,12 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
  public:
   DemoSessionMetricsRecorderTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  DemoSessionMetricsRecorderTest(const DemoSessionMetricsRecorderTest&) =
+      delete;
+  DemoSessionMetricsRecorderTest& operator=(
+      const DemoSessionMetricsRecorderTest&) = delete;
+
   ~DemoSessionMetricsRecorderTest() override = default;
 
   // AshTestBase:
@@ -153,9 +159,6 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
 
   // Owned by metics_recorder_.
   base::MockRepeatingTimer* mock_timer_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionMetricsRecorderTest);
 };
 
 // Verify samples are correct when one app window is active.

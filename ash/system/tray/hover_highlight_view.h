@@ -40,6 +40,10 @@ class HoverHighlightView : public ActionableView {
 
   // If |listener| is null then no action is taken on click.
   explicit HoverHighlightView(ViewClickListener* listener);
+
+  HoverHighlightView(const HoverHighlightView&) = delete;
+  HoverHighlightView& operator=(const HoverHighlightView&) = delete;
+
   ~HoverHighlightView() override;
 
   // Convenience function for populating the view with an icon and a label. This
@@ -127,8 +131,6 @@ class HoverHighlightView : public ActionableView {
       AddEnabledChangedCallback(
           base::BindRepeating(&HoverHighlightView::OnEnabledChanged,
                               base::Unretained(this)));
-
-  DISALLOW_COPY_AND_ASSIGN(HoverHighlightView);
 };
 
 }  // namespace ash

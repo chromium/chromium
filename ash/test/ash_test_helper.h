@@ -73,6 +73,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // single-threaded phase without a backing task environment or ViewsDelegate,
   // and must not create those lest the caller wish to do so.
   explicit AshTestHelper(ui::ContextFactory* context_factory = nullptr);
+
+  AshTestHelper(const AshTestHelper&) = delete;
+  AshTestHelper& operator=(const AshTestHelper&) = delete;
+
   ~AshTestHelper() override;
 
   // Calls through to SetUp() below, see comments there.
@@ -162,8 +166,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // global that is registered via InputMethodManager::Initialize().
   chromeos::input_method::MockInputMethodManager* input_method_manager_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AshTestHelper);
 };
 
 }  // namespace ash

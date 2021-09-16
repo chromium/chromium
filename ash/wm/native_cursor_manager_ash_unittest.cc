@@ -30,6 +30,11 @@ namespace {
 class MouseEventLocationDelegate : public aura::test::TestWindowDelegate {
  public:
   MouseEventLocationDelegate() = default;
+
+  MouseEventLocationDelegate(const MouseEventLocationDelegate&) = delete;
+  MouseEventLocationDelegate& operator=(const MouseEventLocationDelegate&) =
+      delete;
+
   ~MouseEventLocationDelegate() override = default;
 
   gfx::Point GetMouseEventLocationAndReset() {
@@ -45,8 +50,6 @@ class MouseEventLocationDelegate : public aura::test::TestWindowDelegate {
 
  private:
   gfx::Point mouse_event_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseEventLocationDelegate);
 };
 
 }  // namespace

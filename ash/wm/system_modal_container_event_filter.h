@@ -18,6 +18,12 @@ class ASH_EXPORT SystemModalContainerEventFilter : public ui::EventHandler {
  public:
   explicit SystemModalContainerEventFilter(
       SystemModalContainerEventFilterDelegate* delegate);
+
+  SystemModalContainerEventFilter(const SystemModalContainerEventFilter&) =
+      delete;
+  SystemModalContainerEventFilter& operator=(
+      const SystemModalContainerEventFilter&) = delete;
+
   ~SystemModalContainerEventFilter() override;
 
   // ui::EventHandler:
@@ -25,8 +31,6 @@ class ASH_EXPORT SystemModalContainerEventFilter : public ui::EventHandler {
 
  private:
   SystemModalContainerEventFilterDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemModalContainerEventFilter);
 };
 
 }  // namespace ash

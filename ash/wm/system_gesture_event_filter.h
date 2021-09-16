@@ -17,6 +17,10 @@ class WmGestureHandler;
 class SystemGestureEventFilter : public ui::EventHandler {
  public:
   SystemGestureEventFilter();
+
+  SystemGestureEventFilter(const SystemGestureEventFilter&) = delete;
+  SystemGestureEventFilter& operator=(const SystemGestureEventFilter&) = delete;
+
   ~SystemGestureEventFilter() override;
 
   // Overridden from ui::EventHandler:
@@ -27,8 +31,6 @@ class SystemGestureEventFilter : public ui::EventHandler {
   friend class SystemGestureEventFilterTest;
 
   std::unique_ptr<WmGestureHandler> wm_gesture_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemGestureEventFilter);
 };
 
 }  // namespace ash

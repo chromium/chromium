@@ -36,6 +36,10 @@ namespace ash {
 class ScreenLayoutObserverTest : public AshTestBase {
  public:
   ScreenLayoutObserverTest();
+
+  ScreenLayoutObserverTest(const ScreenLayoutObserverTest&) = delete;
+  ScreenLayoutObserverTest& operator=(const ScreenLayoutObserverTest&) = delete;
+
   ~ScreenLayoutObserverTest() override;
 
   // AshTestBase:
@@ -64,8 +68,6 @@ class ScreenLayoutObserverTest : public AshTestBase {
 
  private:
   const message_center::Notification* GetDisplayNotification() const;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLayoutObserverTest);
 };
 
 ScreenLayoutObserverTest::ScreenLayoutObserverTest() {

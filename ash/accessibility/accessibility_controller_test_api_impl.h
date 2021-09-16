@@ -15,14 +15,17 @@ class AccessibilityControllerTestApiImpl
     : public AccessibilityControllerTestApi {
  public:
   AccessibilityControllerTestApiImpl();
+
+  AccessibilityControllerTestApiImpl(
+      const AccessibilityControllerTestApiImpl&) = delete;
+  AccessibilityControllerTestApiImpl& operator=(
+      const AccessibilityControllerTestApiImpl&) = delete;
+
   ~AccessibilityControllerTestApiImpl() override;
 
   // AccessibilityControllerTestApi:
   void SetLargeCursorEnabled(bool enabled) override;
   bool IsLargeCursorEnabled() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerTestApiImpl);
 };
 
 }  // namespace ash

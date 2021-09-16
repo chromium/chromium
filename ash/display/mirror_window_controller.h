@@ -43,6 +43,10 @@ class ASH_EXPORT MirrorWindowController
       public AshWindowTreeHostMirroringDelegate {
  public:
   MirrorWindowController();
+
+  MirrorWindowController(const MirrorWindowController&) = delete;
+  MirrorWindowController& operator=(const MirrorWindowController&) = delete;
+
   ~MirrorWindowController() override;
 
   // Updates the root window's bounds using |display_info|.
@@ -103,8 +107,6 @@ class ASH_EXPORT MirrorWindowController
   int64_t reflecting_source_id_ = display::kInvalidDisplayId;
 
   std::unique_ptr<aura::client::ScreenPositionClient> screen_position_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MirrorWindowController);
 };
 
 }  // namespace ash

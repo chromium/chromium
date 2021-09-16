@@ -23,6 +23,10 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
  public:
   AshWindowTreeHostUnified(const gfx::Rect& initial_bounds,
                            AshWindowTreeHostMirroringDelegate* delegate);
+
+  AshWindowTreeHostUnified(const AshWindowTreeHostUnified&) = delete;
+  AshWindowTreeHostUnified& operator=(const AshWindowTreeHostUnified&) = delete;
+
   ~AshWindowTreeHostUnified() override;
 
  private:
@@ -43,8 +47,6 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
   AshWindowTreeHostMirroringDelegate* delegate_;  // Not owned.
 
   std::vector<AshWindowTreeHost*> mirroring_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshWindowTreeHostUnified);
 };
 
 }  // namespace ash

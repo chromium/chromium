@@ -34,6 +34,10 @@ class ASH_PUBLIC_EXPORT PaginationController {
                        ScrollAxis scroll_axis,
                        const RecordMetrics& record_metrics,
                        bool is_tablet_mode);
+
+  PaginationController(const PaginationController&) = delete;
+  PaginationController& operator=(const PaginationController&) = delete;
+
   ~PaginationController();
 
   ScrollAxis scroll_axis() const { return scroll_axis_; }
@@ -72,8 +76,6 @@ class ASH_PUBLIC_EXPORT PaginationController {
 
   // Whether tablet mode is enabled.
   bool is_tablet_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaginationController);
 };
 
 }  // namespace ash

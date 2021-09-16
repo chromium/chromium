@@ -105,6 +105,10 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
         account_id_(account_id),
         drive_notification_manager_(&invalidation_service_) {}
 
+  TestingDriveFsHostDelegate(const TestingDriveFsHostDelegate&) = delete;
+  TestingDriveFsHostDelegate& operator=(const TestingDriveFsHostDelegate&) =
+      delete;
+
   ~TestingDriveFsHostDelegate() override {
     drive_notification_manager_.Shutdown();
   }
@@ -179,8 +183,6 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
   invalidation::FakeInvalidationService invalidation_service_;
   drive::DriveNotificationManager drive_notification_manager_;
   drivefs::mojom::ExtensionConnectionParamsPtr extension_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingDriveFsHostDelegate);
 };
 
 class MockDriveFsHostObserver : public DriveFsHostObserver {

@@ -30,6 +30,10 @@ class ShelfView;
 class ShelfViewTestAPI {
  public:
   explicit ShelfViewTestAPI(ShelfView* shelf_view);
+
+  ShelfViewTestAPI(const ShelfViewTestAPI&) = delete;
+  ShelfViewTestAPI& operator=(const ShelfViewTestAPI&) = delete;
+
   ~ShelfViewTestAPI();
 
   // Number of icons displayed.
@@ -122,8 +126,6 @@ class ShelfViewTestAPI {
  private:
   ShelfView* shelf_view_;
   int id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfViewTestAPI);
 };
 
 }  // namespace ash

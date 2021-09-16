@@ -43,6 +43,10 @@ const char kAsh_NotificationBadgeShownPref[] = "Ash.AppNotificationBadgingPref";
 class UserMetricsRecorderTest : public NoSessionAshTestBase {
  public:
   UserMetricsRecorderTest() = default;
+
+  UserMetricsRecorderTest(const UserMetricsRecorderTest&) = delete;
+  UserMetricsRecorderTest& operator=(const UserMetricsRecorderTest&) = delete;
+
   ~UserMetricsRecorderTest() override = default;
 
   UserMetricsRecorderTestAPI& test_api() { return test_api_; }
@@ -55,8 +59,6 @@ class UserMetricsRecorderTest : public NoSessionAshTestBase {
 
   // Histogram value verifier.
   base::HistogramTester histograms_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMetricsRecorderTest);
 };
 
 // Verifies the return value of IsUserInActiveDesktopEnvironment() for the

@@ -32,6 +32,10 @@ class ASH_EXPORT AppListMainView : public views::View,
                                    public SearchBoxViewDelegate {
  public:
   AppListMainView(AppListViewDelegate* delegate, AppListView* app_list_view);
+
+  AppListMainView(const AppListMainView&) = delete;
+  AppListMainView& operator=(const AppListMainView&) = delete;
+
   ~AppListMainView() override;
 
   void Init(int initial_apps_page, SearchBoxView* search_box_view);
@@ -93,8 +97,6 @@ class ASH_EXPORT AppListMainView : public views::View,
 
   ContentsView* contents_view_ = nullptr;  // Owned by views hierarchy.
   AppListView* const app_list_view_;       // Owned by views hierarchy.
-
-  DISALLOW_COPY_AND_ASSIGN(AppListMainView);
 };
 
 }  // namespace ash

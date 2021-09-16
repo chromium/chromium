@@ -17,6 +17,10 @@ class DisplaySpeakerController : public display::DisplayObserver,
                                  public chromeos::PowerManagerClient::Observer {
  public:
   DisplaySpeakerController();
+
+  DisplaySpeakerController(const DisplaySpeakerController&) = delete;
+  DisplaySpeakerController& operator=(const DisplaySpeakerController&) = delete;
+
   ~DisplaySpeakerController() override;
 
   // display::DisplayObserver.
@@ -33,8 +37,6 @@ class DisplaySpeakerController : public display::DisplayObserver,
   void UpdateInternalSpeakerForDisplayRotation();
 
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplaySpeakerController);
 };
 
 }  // namespace ash

@@ -20,6 +20,10 @@ class ClockModel : public chromeos::SystemClockClient::Observer,
                    public chromeos::system::TimezoneSettings::Observer {
  public:
   ClockModel();
+
+  ClockModel(const ClockModel&) = delete;
+  ClockModel& operator=(const ClockModel&) = delete;
+
   ~ClockModel() override;
 
   void AddObserver(ClockObserver* observer);
@@ -63,8 +67,6 @@ class ClockModel : public chromeos::SystemClockClient::Observer,
   bool can_set_time_ = false;
 
   base::ObserverList<ClockObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClockModel);
 };
 
 }  // namespace ash

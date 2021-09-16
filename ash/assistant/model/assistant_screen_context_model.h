@@ -48,6 +48,11 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantStructureFuture {
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantScreenContextModel {
  public:
   AssistantScreenContextModel();
+
+  AssistantScreenContextModel(const AssistantScreenContextModel&) = delete;
+  AssistantScreenContextModel& operator=(const AssistantScreenContextModel&) =
+      delete;
+
   ~AssistantScreenContextModel();
 
   void Clear();
@@ -58,8 +63,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantScreenContextModel {
 
  private:
   AssistantStructureFuture assistant_structure_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantScreenContextModel);
 };
 
 }  // namespace ash

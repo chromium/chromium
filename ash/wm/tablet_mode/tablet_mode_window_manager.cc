@@ -118,6 +118,11 @@ class ScopedObserveWindowAnimation {
           window_);
     }
   }
+
+  ScopedObserveWindowAnimation(const ScopedObserveWindowAnimation&) = delete;
+  ScopedObserveWindowAnimation& operator=(const ScopedObserveWindowAnimation&) =
+      delete;
+
   ~ScopedObserveWindowAnimation() {
     // May be null on shutdown.
     if (!Shell::Get()->tablet_mode_controller())
@@ -146,7 +151,6 @@ class ScopedObserveWindowAnimation {
   aura::Window* window_;
   TabletModeWindowManager* manager_;
   bool exiting_tablet_mode_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedObserveWindowAnimation);
 };
 
 TabletModeWindowManager::TabletModeWindowManager() = default;

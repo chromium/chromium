@@ -26,6 +26,10 @@ namespace ash {
 class TestSessionStateAnimator : public SessionStateAnimator {
  public:
   TestSessionStateAnimator();
+
+  TestSessionStateAnimator(const TestSessionStateAnimator&) = delete;
+  TestSessionStateAnimator& operator=(const TestSessionStateAnimator&) = delete;
+
   ~TestSessionStateAnimator() override;
 
   int last_animation_epoch() { return last_animation_epoch_; }
@@ -156,8 +160,6 @@ class TestSessionStateAnimator : public SessionStateAnimator {
 
   // Tracks whether the wallpaper is hidden or not.
   bool is_wallpaper_hidden_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionStateAnimator);
 };
 
 }  // namespace ash

@@ -84,6 +84,10 @@ class MaximizeDelegateView : public views::WidgetDelegateView {
  public:
   explicit MaximizeDelegateView(const gfx::Rect& initial_bounds)
       : initial_bounds_(initial_bounds) {}
+
+  MaximizeDelegateView(const MaximizeDelegateView&) = delete;
+  MaximizeDelegateView& operator=(const MaximizeDelegateView&) = delete;
+
   ~MaximizeDelegateView() override = default;
 
   bool GetSavedWindowPlacement(const views::Widget* widget,
@@ -96,8 +100,6 @@ class MaximizeDelegateView : public views::WidgetDelegateView {
 
  private:
   const gfx::Rect initial_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(MaximizeDelegateView);
 };
 
 class TestShellObserver : public ShellObserver {
@@ -105,6 +107,9 @@ class TestShellObserver : public ShellObserver {
   TestShellObserver() : call_count_(0), is_fullscreen_(false) {
     Shell::Get()->AddShellObserver(this);
   }
+
+  TestShellObserver(const TestShellObserver&) = delete;
+  TestShellObserver& operator=(const TestShellObserver&) = delete;
 
   ~TestShellObserver() override { Shell::Get()->RemoveShellObserver(this); }
 
@@ -121,8 +126,6 @@ class TestShellObserver : public ShellObserver {
  private:
   int call_count_;
   bool is_fullscreen_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestShellObserver);
 };
 
 display::Display GetDisplayNearestWindow(aura::Window* window) {
@@ -137,6 +140,10 @@ class ScopedStickyKeyboardEnabler {
     accessibility_controller_->virtual_keyboard().SetEnabled(true);
   }
 
+  ScopedStickyKeyboardEnabler(const ScopedStickyKeyboardEnabler&) = delete;
+  ScopedStickyKeyboardEnabler& operator=(const ScopedStickyKeyboardEnabler&) =
+      delete;
+
   ~ScopedStickyKeyboardEnabler() {
     accessibility_controller_->virtual_keyboard().SetEnabled(enabled_);
   }
@@ -144,8 +151,6 @@ class ScopedStickyKeyboardEnabler {
  private:
   AccessibilityControllerImpl* accessibility_controller_;
   const bool enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedStickyKeyboardEnabler);
 };
 
 }  // namespace
@@ -723,6 +728,12 @@ class FocusDuringUnminimizeWindowObserver : public aura::WindowObserver {
  public:
   FocusDuringUnminimizeWindowObserver()
       : window_(nullptr), show_state_(ui::SHOW_STATE_END) {}
+
+  FocusDuringUnminimizeWindowObserver(
+      const FocusDuringUnminimizeWindowObserver&) = delete;
+  FocusDuringUnminimizeWindowObserver& operator=(
+      const FocusDuringUnminimizeWindowObserver&) = delete;
+
   ~FocusDuringUnminimizeWindowObserver() override { SetWindow(nullptr); }
 
   void SetWindow(aura::Window* window) {
@@ -751,8 +762,6 @@ class FocusDuringUnminimizeWindowObserver : public aura::WindowObserver {
  private:
   aura::Window* window_;
   ui::WindowShowState show_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusDuringUnminimizeWindowObserver);
 };
 
 // Make sure that the window's show state is correct in
@@ -1120,6 +1129,12 @@ WorkspaceLayoutManager* GetWorkspaceLayoutManager(aura::Window* container) {
 class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
  public:
   WorkspaceLayoutManagerBackdropTest() : default_container_(nullptr) {}
+
+  WorkspaceLayoutManagerBackdropTest(
+      const WorkspaceLayoutManagerBackdropTest&) = delete;
+  WorkspaceLayoutManagerBackdropTest& operator=(
+      const WorkspaceLayoutManagerBackdropTest&) = delete;
+
   ~WorkspaceLayoutManagerBackdropTest() override = default;
 
   void SetUp() override {
@@ -1181,8 +1196,6 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
  private:
   // The default container.
   aura::Window* default_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceLayoutManagerBackdropTest);
 };
 
 constexpr absl::optional<Sound> kNoSoundKey = absl::nullopt;
@@ -1613,6 +1626,12 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackForArc) {
 class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
  public:
   WorkspaceLayoutManagerKeyboardTest() : layout_manager_(nullptr) {}
+
+  WorkspaceLayoutManagerKeyboardTest(
+      const WorkspaceLayoutManagerKeyboardTest&) = delete;
+  WorkspaceLayoutManagerKeyboardTest& operator=(
+      const WorkspaceLayoutManagerKeyboardTest&) = delete;
+
   ~WorkspaceLayoutManagerKeyboardTest() override = default;
 
   void SetUp() override {
@@ -1652,8 +1671,6 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
   gfx::Insets restore_work_area_insets_;
   gfx::Rect keyboard_bounds_;
   WorkspaceLayoutManager* layout_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceLayoutManagerKeyboardTest);
 };
 
 // Tests that when a child window gains focus the top level window containing it
@@ -1885,6 +1902,10 @@ namespace {
 class TestState : public WindowState::State {
  public:
   TestState() = default;
+
+  TestState(const TestState&) = delete;
+  TestState& operator=(const TestState&) = delete;
+
   ~TestState() override = default;
 
   // WindowState::State overrides:
@@ -1903,8 +1924,6 @@ class TestState : public WindowState::State {
 
  private:
   int num_system_ui_area_changes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestState);
 };
 
 }  // namespace
@@ -1912,6 +1931,12 @@ class TestState : public WindowState::State {
 class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
  public:
   WorkspaceLayoutManagerSystemUiAreaTest() = default;
+
+  WorkspaceLayoutManagerSystemUiAreaTest(
+      const WorkspaceLayoutManagerSystemUiAreaTest&) = delete;
+  WorkspaceLayoutManagerSystemUiAreaTest& operator=(
+      const WorkspaceLayoutManagerSystemUiAreaTest&) = delete;
+
   ~WorkspaceLayoutManagerSystemUiAreaTest() override = default;
 
   // AshTestBase:
@@ -1938,8 +1963,6 @@ class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
  private:
   aura::Window* window_ = nullptr;
   TestState* test_state_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceLayoutManagerSystemUiAreaTest);
 };
 
 // Expect that showing and hiding the unified system tray triggers a system ui

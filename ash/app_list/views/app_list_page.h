@@ -18,6 +18,10 @@ class ContentsView;
 class ASH_EXPORT AppListPage : public views::View {
  public:
   AppListPage();
+
+  AppListPage(const AppListPage&) = delete;
+  AppListPage& operator=(const AppListPage&) = delete;
+
   ~AppListPage() override;
 
   // Triggered when the page is about to be shown.
@@ -151,8 +155,6 @@ class ASH_EXPORT AppListPage : public views::View {
 
  private:
   ContentsView* contents_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListPage);
 };
 
 }  // namespace ash

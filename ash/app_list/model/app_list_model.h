@@ -34,6 +34,10 @@ class AppListModelObserver;
 class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
  public:
   AppListModel();
+
+  AppListModel(const AppListModel&) = delete;
+  AppListModel& operator=(const AppListModel&) = delete;
+
   ~AppListModel() override;
 
   void AddObserver(AppListModelObserver* observer);
@@ -169,7 +173,6 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   base::ObserverList<AppListModelObserver, true> observers_;
   base::ScopedMultiSourceObservation<AppListItemList, AppListItemListObserver>
       item_list_scoped_observations_{this};
-  DISALLOW_COPY_AND_ASSIGN(AppListModel);
 };
 
 }  // namespace ash

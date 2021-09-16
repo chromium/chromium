@@ -28,6 +28,10 @@ namespace {
 class TrayEventFilterTest : public AshTestBase {
  public:
   TrayEventFilterTest() = default;
+
+  TrayEventFilterTest(const TrayEventFilterTest&) = delete;
+  TrayEventFilterTest& operator=(const TrayEventFilterTest&) = delete;
+
   ~TrayEventFilterTest() override = default;
 
   // AshTestBase:
@@ -99,7 +103,6 @@ class TrayEventFilterTest : public AshTestBase {
 
  private:
   int notification_id_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(TrayEventFilterTest);
 };
 
 TEST_F(TrayEventFilterTest, ClickingOutsideCloseBubble) {

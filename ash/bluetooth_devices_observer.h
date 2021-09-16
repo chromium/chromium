@@ -27,6 +27,10 @@ class BluetoothDevicesObserver : public device::BluetoothAdapter::Observer {
 
   explicit BluetoothDevicesObserver(
       const AdapterOrDeviceChangedCallback& device_changed_callback);
+
+  BluetoothDevicesObserver(const BluetoothDevicesObserver&) = delete;
+  BluetoothDevicesObserver& operator=(const BluetoothDevicesObserver&) = delete;
+
   ~BluetoothDevicesObserver() override;
 
   // device::BluetoothAdapter::Observer:
@@ -61,8 +65,6 @@ class BluetoothDevicesObserver : public device::BluetoothAdapter::Observer {
   AdapterOrDeviceChangedCallback adapter_or_device_changed_callback_;
 
   base::WeakPtrFactory<BluetoothDevicesObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDevicesObserver);
 };
 
 }  // namespace ash

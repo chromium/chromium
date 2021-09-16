@@ -13,14 +13,16 @@ namespace ash {
 class AssistantWebViewDelegateImpl : public AssistantWebViewDelegate {
  public:
   AssistantWebViewDelegateImpl();
+
+  AssistantWebViewDelegateImpl(const AssistantWebViewDelegateImpl&) = delete;
+  AssistantWebViewDelegateImpl& operator=(const AssistantWebViewDelegateImpl&) =
+      delete;
+
   ~AssistantWebViewDelegateImpl() override;
 
   // AssistantWebViewDelegate:
   void UpdateBackButtonVisibility(views::Widget* widget,
                                   bool visibility) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantWebViewDelegateImpl);
 };
 
 }  // namespace ash

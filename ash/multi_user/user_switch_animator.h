@@ -40,6 +40,10 @@ class ASH_EXPORT UserSwitchAnimator {
   UserSwitchAnimator(MultiUserWindowManagerImpl* owner,
                      const AccountId& new_account_id,
                      base::TimeDelta animation_speed);
+
+  UserSwitchAnimator(const UserSwitchAnimator&) = delete;
+  UserSwitchAnimator& operator=(const UserSwitchAnimator&) = delete;
+
   ~UserSwitchAnimator();
 
   // Check if a window is covering the entire work area of the screen it is on.
@@ -122,8 +126,6 @@ class ASH_EXPORT UserSwitchAnimator {
 
   // For unit tests: Check which wallpaper was set.
   std::string wallpaper_user_id_for_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserSwitchAnimator);
 };
 
 }  // namespace ash

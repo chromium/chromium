@@ -127,6 +127,9 @@ class TestShelfObserver : public ShelfObserver {
     shelf_->AddObserver(this);
   }
 
+  TestShelfObserver(const TestShelfObserver&) = delete;
+  TestShelfObserver& operator=(const TestShelfObserver&) = delete;
+
   ~TestShelfObserver() override { shelf_->RemoveObserver(this); }
 
   // ShelfObserver implementation.
@@ -151,8 +154,6 @@ class TestShelfObserver : public ShelfObserver {
   Shelf* shelf_;
   bool icon_positions_changed_ = false;
   base::TimeDelta icon_positions_animation_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestShelfObserver);
 };
 
 // A ShelfItemDelegate that tracks the last context menu request, and exposes a
@@ -194,6 +195,10 @@ class AsyncContextMenuShelfItemDelegate : public ShelfItemDelegate {
 class ShelfObserverIconTest : public AshTestBase {
  public:
   ShelfObserverIconTest() = default;
+
+  ShelfObserverIconTest(const ShelfObserverIconTest&) = delete;
+  ShelfObserverIconTest& operator=(const ShelfObserverIconTest&) = delete;
+
   ~ShelfObserverIconTest() override = default;
 
   void SetUp() override {
@@ -217,14 +222,17 @@ class ShelfObserverIconTest : public AshTestBase {
  private:
   std::unique_ptr<TestShelfObserver> observer_;
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfObserverIconTest);
 };
 
 // A ShelfItemDelegate that tracks selections and reports a custom action.
 class ShelfItemSelectionTracker : public ShelfItemDelegate {
  public:
   ShelfItemSelectionTracker() : ShelfItemDelegate(ShelfID()) {}
+
+  ShelfItemSelectionTracker(const ShelfItemSelectionTracker&) = delete;
+  ShelfItemSelectionTracker& operator=(const ShelfItemSelectionTracker&) =
+      delete;
+
   ~ShelfItemSelectionTracker() override = default;
 
   size_t item_selected_count() const { return item_selected_count_; }
@@ -247,8 +255,6 @@ class ShelfItemSelectionTracker : public ShelfItemDelegate {
  private:
   size_t item_selected_count_ = 0;
   ShelfAction item_selected_action_ = SHELF_ACTION_NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfItemSelectionTracker);
 };
 
 // A ShelfItemDelegate to generate empty shelf context menu.
@@ -2267,9 +2273,11 @@ class ShelfViewMenuTest : public ShelfViewTest,
                           public testing::WithParamInterface<bool> {
  public:
   ShelfViewMenuTest() = default;
-  ~ShelfViewMenuTest() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(ShelfViewMenuTest);
+  ShelfViewMenuTest(const ShelfViewMenuTest&) = delete;
+  ShelfViewMenuTest& operator=(const ShelfViewMenuTest&) = delete;
+
+  ~ShelfViewMenuTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, ShelfViewMenuTest, testing::Bool());
@@ -2310,12 +2318,15 @@ class NotificationIndicatorTest : public ShelfViewTest {
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kNotificationIndicator);
   }
+
+  NotificationIndicatorTest(const NotificationIndicatorTest&) = delete;
+  NotificationIndicatorTest& operator=(const NotificationIndicatorTest&) =
+      delete;
+
   ~NotificationIndicatorTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationIndicatorTest);
 };
 
 // Tests that an item has a notification badge indicator when the notification
@@ -2384,6 +2395,10 @@ class InkDropSpy : public views::InkDrop {
  public:
   explicit InkDropSpy(std::unique_ptr<views::InkDrop> ink_drop)
       : ink_drop_(std::move(ink_drop)) {}
+
+  InkDropSpy(const InkDropSpy&) = delete;
+  InkDropSpy& operator=(const InkDropSpy&) = delete;
+
   ~InkDropSpy() override = default;
 
   std::vector<views::InkDropState> GetAndResetRequestedStates() {
@@ -2438,15 +2453,17 @@ class InkDropSpy : public views::InkDrop {
 
   std::unique_ptr<views::InkDrop> ink_drop_;
   std::vector<views::InkDropState> requested_states_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropSpy);
 };
 
 // A ShelfItemDelegate that returns a menu for the shelf item.
 class ListMenuShelfItemDelegate : public ShelfItemDelegate {
  public:
   ListMenuShelfItemDelegate() : ShelfItemDelegate(ShelfID()) {}
+
+  ListMenuShelfItemDelegate(const ListMenuShelfItemDelegate&) = delete;
+  ListMenuShelfItemDelegate& operator=(const ListMenuShelfItemDelegate&) =
+      delete;
+
   ~ListMenuShelfItemDelegate() override = default;
 
  private:
@@ -2461,8 +2478,6 @@ class ListMenuShelfItemDelegate : public ShelfItemDelegate {
   }
   void ExecuteCommand(bool, int64_t, int32_t, int64_t) override {}
   void Close() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(ListMenuShelfItemDelegate);
 };
 
 }  // namespace
@@ -2961,6 +2976,10 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonTransformed) {
 class ShelfViewFocusTest : public ShelfViewTest {
  public:
   ShelfViewFocusTest() = default;
+
+  ShelfViewFocusTest(const ShelfViewFocusTest&) = delete;
+  ShelfViewFocusTest& operator=(const ShelfViewFocusTest&) = delete;
+
   ~ShelfViewFocusTest() override = default;
 
   // AshTestBase:
@@ -2991,9 +3010,6 @@ class ShelfViewFocusTest : public ShelfViewTest {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
     generator.PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EventFlags::EF_NONE);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfViewFocusTest);
 };
 
 // Tests that the number of buttons is as expected and the shelf's widget

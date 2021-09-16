@@ -64,6 +64,11 @@ using PowerButtonPosition = PowerButtonController::PowerButtonPosition;
 class PowerButtonControllerTest : public PowerButtonTestBase {
  public:
   PowerButtonControllerTest() = default;
+
+  PowerButtonControllerTest(const PowerButtonControllerTest&) = delete;
+  PowerButtonControllerTest& operator=(const PowerButtonControllerTest&) =
+      delete;
+
   ~PowerButtonControllerTest() override = default;
 
   void SetUp() override {
@@ -145,9 +150,6 @@ class PowerButtonControllerTest : public PowerButtonTestBase {
   void ReleaseLockButton() {
     power_button_controller_->OnLockButtonEvent(false, base::TimeTicks::Now());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonControllerTest);
 };
 
 TEST_F(PowerButtonControllerTest, LockScreenIfRequired) {

@@ -29,6 +29,11 @@ class ASH_EXPORT VirtualKeyboardController
       public SessionObserver {
  public:
   VirtualKeyboardController();
+
+  VirtualKeyboardController(const VirtualKeyboardController&) = delete;
+  VirtualKeyboardController& operator=(const VirtualKeyboardController&) =
+      delete;
+
   ~VirtualKeyboardController() override;
 
   // Force enable the keyboard and show it with the given keyset: none, emoji,
@@ -77,8 +82,6 @@ class ASH_EXPORT VirtualKeyboardController
 
   // Observer to observe the bluetooth devices.
   std::unique_ptr<BluetoothDevicesObserver> bluetooth_devices_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardController);
 };
 
 }  // namespace ash

@@ -47,6 +47,10 @@ class ASH_EXPORT MediaControllerImpl
       public media_session::mojom::MediaControllerObserver {
  public:
   MediaControllerImpl();
+
+  MediaControllerImpl(const MediaControllerImpl&) = delete;
+  MediaControllerImpl& operator=(const MediaControllerImpl&) = delete;
+
   ~MediaControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -157,8 +161,6 @@ class ASH_EXPORT MediaControllerImpl
   MediaClient* client_ = nullptr;
 
   base::ObserverList<MediaCaptureObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControllerImpl);
 };
 
 }  // namespace ash

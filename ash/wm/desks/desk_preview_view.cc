@@ -252,6 +252,9 @@ class DeskPreviewView::ShadowRenderer : public ui::LayerDelegate {
       : shadow_values_(gfx::ShadowValue::MakeMdShadowValues(kShadowElevation)) {
   }
 
+  ShadowRenderer(const ShadowRenderer&) = delete;
+  ShadowRenderer& operator=(const ShadowRenderer&) = delete;
+
   ~ShadowRenderer() override = default;
 
   gfx::Rect GetPaintedBounds() const {
@@ -285,8 +288,6 @@ class DeskPreviewView::ShadowRenderer : public ui::LayerDelegate {
 
   gfx::Rect bounds_;
   const gfx::ShadowValues shadow_values_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShadowRenderer);
 };
 
 // -----------------------------------------------------------------------------

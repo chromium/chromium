@@ -149,6 +149,10 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
   };
 
   LoginDataDispatcher();
+
+  LoginDataDispatcher(const LoginDataDispatcher&) = delete;
+  LoginDataDispatcher& operator=(const LoginDataDispatcher&) = delete;
+
   ~LoginDataDispatcher() override;
 
   void AddObserver(Observer* observer);
@@ -208,8 +212,6 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDataDispatcher);
 };
 
 }  // namespace ash

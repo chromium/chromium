@@ -28,6 +28,10 @@ namespace test {
 class AppsGridViewTestApi {
  public:
   explicit AppsGridViewTestApi(AppsGridView* view);
+
+  AppsGridViewTestApi(const AppsGridViewTestApi&) = delete;
+  AppsGridViewTestApi& operator=(const AppsGridViewTestApi&) = delete;
+
   ~AppsGridViewTestApi();
 
   views::View* GetViewAtModelIndex(int index) const;
@@ -73,8 +77,6 @@ class AppsGridViewTestApi {
 
  private:
   AppsGridView* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppsGridViewTestApi);
 };
 
 }  // namespace test

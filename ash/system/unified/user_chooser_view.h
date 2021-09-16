@@ -32,6 +32,10 @@ class UserItemButton : public views::Button {
                  int user_index,
                  ax::mojom::Role role,
                  bool has_close_button);
+
+  UserItemButton(const UserItemButton&) = delete;
+  UserItemButton& operator=(const UserItemButton&) = delete;
+
   ~UserItemButton() override = default;
 
   void SetCaptureState(MediaCaptureState capture_states);
@@ -45,14 +49,16 @@ class UserItemButton : public views::Button {
   views::ImageView* const capture_icon_;
   views::Label* const name_;
   views::Label* const email_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserItemButton);
 };
 
 // A detailed view of user chooser.
 class UserChooserView : public views::View, public MediaCaptureObserver {
  public:
   explicit UserChooserView(UserChooserDetailedViewController* controller);
+
+  UserChooserView(const UserChooserView&) = delete;
+  UserChooserView& operator=(const UserChooserView&) = delete;
+
   ~UserChooserView() override;
 
   // MediaCaptureObserver:
@@ -64,8 +70,6 @@ class UserChooserView : public views::View, public MediaCaptureObserver {
 
  private:
   std::vector<UserItemButton*> user_item_buttons_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserChooserView);
 };
 
 }  // namespace ash

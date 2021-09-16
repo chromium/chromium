@@ -44,6 +44,10 @@ class ASH_EXPORT DeskMiniView
   static gfx::Rect GetDeskPreviewBounds(aura::Window* root_window);
 
   DeskMiniView(DesksBarView* owner_bar, aura::Window* root_window, Desk* desk);
+
+  DeskMiniView(const DeskMiniView&) = delete;
+  DeskMiniView& operator=(const DeskMiniView&) = delete;
+
   ~DeskMiniView() override;
 
   aura::Window* root_window() { return root_window_; }
@@ -158,8 +162,6 @@ class ASH_EXPORT DeskMiniView
   bool defer_select_all_ = false;
 
   bool is_desk_name_being_modified_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DeskMiniView);
 };
 
 }  // namespace ash

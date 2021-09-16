@@ -25,6 +25,10 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
                                  public HighlighterController::Observer {
  public:
   explicit MetalayerMode(Delegate* delegate);
+
+  MetalayerMode(const MetalayerMode&) = delete;
+  MetalayerMode& operator=(const MetalayerMode&) = delete;
+
   ~MetalayerMode() override;
 
  private:
@@ -101,8 +105,6 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   bool activated_via_button_ = false;
 
   base::WeakPtrFactory<MetalayerMode> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MetalayerMode);
 };
 
 }  // namespace ash

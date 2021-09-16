@@ -56,6 +56,10 @@ class KeyPressCounterView : public ContentsView {
  public:
   explicit KeyPressCounterView(AppListView* app_list_view)
       : ContentsView(app_list_view), count_(0) {}
+
+  KeyPressCounterView(const KeyPressCounterView&) = delete;
+  KeyPressCounterView& operator=(const KeyPressCounterView&) = delete;
+
   ~KeyPressCounterView() override = default;
 
   int GetCountAndReset() {
@@ -74,14 +78,16 @@ class KeyPressCounterView : public ContentsView {
     return false;
   }
   int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyPressCounterView);
 };
 
 class SearchBoxViewTest : public views::test::WidgetTest,
                           public SearchBoxViewDelegate {
  public:
   SearchBoxViewTest() = default;
+
+  SearchBoxViewTest(const SearchBoxViewTest&) = delete;
+  SearchBoxViewTest& operator=(const SearchBoxViewTest&) = delete;
+
   ~SearchBoxViewTest() override = default;
 
   // Overridden from testing::Test:
@@ -218,8 +224,6 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   std::u16string last_query_;
   int query_changed_count_ = 0;
   int last_result_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxViewTest);
 };
 
 TEST_F(SearchBoxViewTest, SearchBoxTextUsesAppListSearchBoxTextColor) {
@@ -818,6 +822,12 @@ TEST_F(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
 class SearchBoxViewAssistantButtonTest : public SearchBoxViewTest {
  public:
   SearchBoxViewAssistantButtonTest() = default;
+
+  SearchBoxViewAssistantButtonTest(const SearchBoxViewAssistantButtonTest&) =
+      delete;
+  SearchBoxViewAssistantButtonTest& operator=(
+      const SearchBoxViewAssistantButtonTest&) = delete;
+
   ~SearchBoxViewAssistantButtonTest() override = default;
 
   // Overridden from testing::Test
@@ -826,9 +836,6 @@ class SearchBoxViewAssistantButtonTest : public SearchBoxViewTest {
     view_delegate()->GetSearchModel()->search_box()->SetShowAssistantButton(
         true);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxViewAssistantButtonTest);
 };
 
 // Tests that the assistant button is visible by default.
@@ -851,6 +858,11 @@ TEST_F(SearchBoxViewAssistantButtonTest,
 class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
  public:
   SearchBoxViewAutocompleteTest() = default;
+
+  SearchBoxViewAutocompleteTest(const SearchBoxViewAutocompleteTest&) = delete;
+  SearchBoxViewAutocompleteTest& operator=(
+      const SearchBoxViewAutocompleteTest&) = delete;
+
   ~SearchBoxViewAutocompleteTest() override = default;
 
   void ProcessAutocomplete() {
@@ -961,9 +973,6 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
     // Reset search box text and SearchResults for next test.
     ResetAutocompleteBehaviorTest();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxViewAutocompleteTest);
 };
 
 // Tests that autocomplete suggestions are consistent with top SearchResult list

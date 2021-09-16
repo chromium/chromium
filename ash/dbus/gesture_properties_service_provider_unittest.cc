@@ -80,6 +80,11 @@ class GesturePropertiesServiceProviderTest : public testing::Test {
     service_provider_->set_service_for_test(mock_service_.get());
   }
 
+  GesturePropertiesServiceProviderTest(
+      const GesturePropertiesServiceProviderTest&) = delete;
+  GesturePropertiesServiceProviderTest& operator=(
+      const GesturePropertiesServiceProviderTest&) = delete;
+
   ~GesturePropertiesServiceProviderTest() override { test_helper_.TearDown(); }
 
   void FakeListDevices(
@@ -168,8 +173,6 @@ class GesturePropertiesServiceProviderTest : public testing::Test {
 
   std::unique_ptr<GesturePropertiesServiceProvider> service_provider_;
   chromeos::ServiceProviderTestHelper test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(GesturePropertiesServiceProviderTest);
 };
 
 TEST_F(GesturePropertiesServiceProviderTest, ListDevicesEmpty) {

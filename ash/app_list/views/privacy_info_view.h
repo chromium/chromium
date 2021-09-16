@@ -22,6 +22,9 @@ namespace ash {
 // View representing privacy info in Launcher.
 class PrivacyInfoView : public SearchResultBaseView {
  public:
+  PrivacyInfoView(const PrivacyInfoView&) = delete;
+  PrivacyInfoView& operator=(const PrivacyInfoView&) = delete;
+
   ~PrivacyInfoView() override;
 
   // views::View:
@@ -70,8 +73,6 @@ class PrivacyInfoView : public SearchResultBaseView {
   // Indicates which of the privacy notice's actions is selected for keyboard
   // navigation.
   Action selected_action_ = Action::kNone;
-
-  DISALLOW_COPY_AND_ASSIGN(PrivacyInfoView);
 };
 
 }  // namespace ash

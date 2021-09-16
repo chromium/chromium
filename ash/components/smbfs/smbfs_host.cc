@@ -28,6 +28,9 @@ class SmbFsDelegateImpl : public mojom::SmbFsDelegate {
     receiver_.set_disconnect_handler(std::move(disconnect_callback));
   }
 
+  SmbFsDelegateImpl(const SmbFsDelegateImpl&) = delete;
+  SmbFsDelegateImpl& operator=(const SmbFsDelegateImpl&) = delete;
+
   ~SmbFsDelegateImpl() override = default;
 
   // mojom::SmbFsDelegate overrides.
@@ -72,8 +75,6 @@ class SmbFsDelegateImpl : public mojom::SmbFsDelegate {
   SmbFsHost::Delegate* const delegate_;
 
   base::WeakPtrFactory<SmbFsDelegateImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SmbFsDelegateImpl);
 };
 
 }  // namespace

@@ -13,13 +13,16 @@ namespace ash {
 class WifiToggleNotificationController : public NetworkObserver {
  public:
   WifiToggleNotificationController();
+
+  WifiToggleNotificationController(const WifiToggleNotificationController&) =
+      delete;
+  WifiToggleNotificationController& operator=(
+      const WifiToggleNotificationController&) = delete;
+
   ~WifiToggleNotificationController() override;
 
   // NetworkObserver:
   void RequestToggleWifi() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiToggleNotificationController);
 };
 
 }  // namespace ash

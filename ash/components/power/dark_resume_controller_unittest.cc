@@ -31,6 +31,9 @@ class DarkResumeControllerTest : public testing::Test {
   DarkResumeControllerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  DarkResumeControllerTest(const DarkResumeControllerTest&) = delete;
+  DarkResumeControllerTest& operator=(const DarkResumeControllerTest&) = delete;
+
   ~DarkResumeControllerTest() override = default;
 
   void SetUp() override {
@@ -81,8 +84,6 @@ class DarkResumeControllerTest : public testing::Test {
 
  private:
   device::TestWakeLockProvider wake_lock_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DarkResumeControllerTest);
 };
 
 TEST_F(DarkResumeControllerTest, CheckSuspendAfterDarkResumeNoWakeLocksHeld) {

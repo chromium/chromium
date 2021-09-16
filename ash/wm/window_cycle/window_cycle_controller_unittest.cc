@@ -83,6 +83,10 @@ constexpr int kNumFingersForTrackpad = 3;
 class EventCounter : public ui::EventHandler {
  public:
   EventCounter() : key_events_(0), mouse_events_(0) {}
+
+  EventCounter(const EventCounter&) = delete;
+  EventCounter& operator=(const EventCounter&) = delete;
+
   ~EventCounter() override = default;
 
   int GetKeyEventCountAndReset() {
@@ -104,8 +108,6 @@ class EventCounter : public ui::EventHandler {
  private:
   int key_events_;
   int mouse_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventCounter);
 };
 
 bool IsWindowMinimized(aura::Window* window) {
@@ -198,6 +200,11 @@ using aura::test::TestWindowDelegate;
 class WindowCycleControllerTest : public AshTestBase {
  public:
   WindowCycleControllerTest() = default;
+
+  WindowCycleControllerTest(const WindowCycleControllerTest&) = delete;
+  WindowCycleControllerTest& operator=(const WindowCycleControllerTest&) =
+      delete;
+
   ~WindowCycleControllerTest() override = default;
 
   void SetUp() override {
@@ -271,8 +278,6 @@ class WindowCycleControllerTest : public AshTestBase {
 
  private:
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowCycleControllerTest);
 };
 
 TEST_F(WindowCycleControllerTest, HandleCycleWindowBaseCases) {

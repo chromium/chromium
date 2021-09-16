@@ -28,6 +28,10 @@ class TouchPointView;
 class ASH_EXPORT TouchHudRenderer : public views::WidgetObserver {
  public:
   explicit TouchHudRenderer(views::Widget* parent_widget);
+
+  TouchHudRenderer(const TouchHudRenderer&) = delete;
+  TouchHudRenderer& operator=(const TouchHudRenderer&) = delete;
+
   ~TouchHudRenderer() override;
 
   // Called to clear touch points and traces from the screen.
@@ -47,8 +51,6 @@ class ASH_EXPORT TouchHudRenderer : public views::WidgetObserver {
 
   // A map of touch ids to TouchPointView.
   std::map<int, TouchPointView*> points_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHudRenderer);
 };
 
 }  // namespace ash

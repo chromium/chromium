@@ -141,6 +141,10 @@ class DisplayColorManagerTest : public testing::Test {
   }
 
   DisplayColorManagerTest() : test_api_(&configurator_) {}
+
+  DisplayColorManagerTest(const DisplayColorManagerTest&) = delete;
+  DisplayColorManagerTest& operator=(const DisplayColorManagerTest&) = delete;
+
   ~DisplayColorManagerTest() override = default;
 
  protected:
@@ -153,9 +157,6 @@ class DisplayColorManagerTest : public testing::Test {
   display::test::TestNativeDisplayDelegate*
       native_display_delegate_;  // not owned
   std::unique_ptr<DisplayColorManagerForTest> color_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayColorManagerTest);
 };
 
 TEST_F(DisplayColorManagerTest, VCGTOnly) {

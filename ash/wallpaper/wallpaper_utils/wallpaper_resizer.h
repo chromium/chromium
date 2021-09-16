@@ -39,6 +39,9 @@ class ASH_EXPORT WallpaperResizer {
                    const WallpaperInfo& info,
                    scoped_refptr<base::TaskRunner> task_runner);
 
+  WallpaperResizer(const WallpaperResizer&) = delete;
+  WallpaperResizer& operator=(const WallpaperResizer&) = delete;
+
   ~WallpaperResizer();
 
   const gfx::ImageSkia& image() const { return image_; }
@@ -79,8 +82,6 @@ class ASH_EXPORT WallpaperResizer {
   scoped_refptr<base::TaskRunner> task_runner_;
 
   base::WeakPtrFactory<WallpaperResizer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperResizer);
 };
 
 }  // namespace ash

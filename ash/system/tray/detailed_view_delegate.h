@@ -35,6 +35,10 @@ class ViewClickListener;
 class ASH_EXPORT DetailedViewDelegate {
  public:
   explicit DetailedViewDelegate(UnifiedSystemTrayController* tray_controller);
+
+  DetailedViewDelegate(const DetailedViewDelegate&) = delete;
+  DetailedViewDelegate& operator=(const DetailedViewDelegate&) = delete;
+
   virtual ~DetailedViewDelegate();
 
   // Transition to the main view from the detailed view. |restore_focus| is true
@@ -109,8 +113,6 @@ class ASH_EXPORT DetailedViewDelegate {
 
   views::Label* title_label_ = nullptr;
   views::Separator* title_separator_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DetailedViewDelegate);
 };
 
 }  // namespace ash

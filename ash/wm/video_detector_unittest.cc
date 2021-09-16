@@ -56,6 +56,10 @@ class TestObserver : public VideoDetector::Observer {
 class VideoDetectorTest : public AshTestBase {
  public:
   VideoDetectorTest() = default;
+
+  VideoDetectorTest(const VideoDetectorTest&) = delete;
+  VideoDetectorTest& operator=(const VideoDetectorTest&) = delete;
+
   ~VideoDetectorTest() override = default;
 
   void SetUp() override {
@@ -82,9 +86,6 @@ class VideoDetectorTest : public AshTestBase {
 
   VideoDetector* detector_;  // not owned
   std::unique_ptr<TestObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoDetectorTest);
 };
 
 // Verify that the video detector can distinguish fullscreen and windowed video

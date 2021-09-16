@@ -20,6 +20,11 @@ namespace ash {
 class MouseCursorEventFilterTest : public AshTestBase {
  public:
   MouseCursorEventFilterTest() = default;
+
+  MouseCursorEventFilterTest(const MouseCursorEventFilterTest&) = delete;
+  MouseCursorEventFilterTest& operator=(const MouseCursorEventFilterTest&) =
+      delete;
+
   ~MouseCursorEventFilterTest() override = default;
 
  protected:
@@ -31,9 +36,6 @@ class MouseCursorEventFilterTest : public AshTestBase {
     return AshTestBase::TestIfMouseWarpsAt(GetEventGenerator(),
                                            point_in_screen);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MouseCursorEventFilterTest);
 };
 
 // Verifies if the mouse pointer correctly moves to another display when there

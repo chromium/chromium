@@ -49,6 +49,10 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
   using AssistantExitPoint = chromeos::assistant::AssistantExitPoint;
 
   AssistantUiModel();
+
+  AssistantUiModel(const AssistantUiModel&) = delete;
+  AssistantUiModel& operator=(const AssistantUiModel&) = delete;
+
   ~AssistantUiModel();
 
   // Adds/removes the specified |observer|.
@@ -99,8 +103,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
   // Usable work area for Assistant. Value is only meaningful when Assistant
   // UI exists.
   gfx::Rect usable_work_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantUiModel);
 };
 
 }  // namespace ash

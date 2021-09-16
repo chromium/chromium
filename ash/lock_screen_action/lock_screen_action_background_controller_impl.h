@@ -30,6 +30,12 @@ class ASH_EXPORT LockScreenActionBackgroundControllerImpl
       public views::WidgetObserver {
  public:
   LockScreenActionBackgroundControllerImpl();
+
+  LockScreenActionBackgroundControllerImpl(
+      const LockScreenActionBackgroundControllerImpl&) = delete;
+  LockScreenActionBackgroundControllerImpl& operator=(
+      const LockScreenActionBackgroundControllerImpl&) = delete;
+
   ~LockScreenActionBackgroundControllerImpl() override;
 
   // LockScreenActionBackgroundController:
@@ -67,8 +73,6 @@ class ASH_EXPORT LockScreenActionBackgroundControllerImpl
 
   base::WeakPtrFactory<LockScreenActionBackgroundControllerImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundControllerImpl);
 };
 
 }  // namespace ash

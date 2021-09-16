@@ -63,6 +63,10 @@ class StickyKeysHandler;
 class ASH_EXPORT StickyKeysController : public ui::EventRewriter {
  public:
   StickyKeysController();
+
+  StickyKeysController(const StickyKeysController&) = delete;
+  StickyKeysController& operator=(const StickyKeysController&) = delete;
+
   ~StickyKeysController() override;
 
   // Activate sticky keys to intercept and modify incoming events.
@@ -121,8 +125,6 @@ class ASH_EXPORT StickyKeysController : public ui::EventRewriter {
   std::unique_ptr<StickyKeysHandler> search_sticky_key_;
 
   std::unique_ptr<StickyKeysOverlay> overlay_;
-
-  DISALLOW_COPY_AND_ASSIGN(StickyKeysController);
 };
 
 // StickyKeysHandler handles key event and controls sticky keysfor specific
@@ -157,6 +159,10 @@ class ASH_EXPORT StickyKeysController : public ui::EventRewriter {
 class ASH_EXPORT StickyKeysHandler {
  public:
   explicit StickyKeysHandler(ui::EventFlags modifier_flag);
+
+  StickyKeysHandler(const StickyKeysHandler&) = delete;
+  StickyKeysHandler& operator=(const StickyKeysHandler&) = delete;
+
   ~StickyKeysHandler();
 
   // Handles keyboard event. Returns true if Sticky key consumes keyboard event.
@@ -237,8 +243,6 @@ class ASH_EXPORT StickyKeysHandler {
 
   // The modifier up key event to be sent on non modifier key on ENABLED state.
   std::unique_ptr<ui::KeyEvent> modifier_up_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(StickyKeysHandler);
 };
 
 }  // namespace ash

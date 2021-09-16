@@ -26,6 +26,9 @@ class TestOverviewDelegate : public OverviewDelegate {
  public:
   TestOverviewDelegate() = default;
 
+  TestOverviewDelegate(const TestOverviewDelegate&) = delete;
+  TestOverviewDelegate& operator=(const TestOverviewDelegate&) = delete;
+
   ~TestOverviewDelegate() override = default;
 
   // OverviewDelegate:
@@ -54,8 +57,6 @@ class TestOverviewDelegate : public OverviewDelegate {
  private:
   std::vector<std::unique_ptr<DelayedAnimationObserver>> exit_observers_;
   std::vector<std::unique_ptr<DelayedAnimationObserver>> enter_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverviewDelegate);
 };
 
 }  // namespace
@@ -64,10 +65,11 @@ class ForceDelayObserverTest : public AshTestBase {
  public:
   ForceDelayObserverTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~ForceDelayObserverTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ForceDelayObserverTest);
+  ForceDelayObserverTest(const ForceDelayObserverTest&) = delete;
+  ForceDelayObserverTest& operator=(const ForceDelayObserverTest&) = delete;
+
+  ~ForceDelayObserverTest() override = default;
 };
 
 TEST_F(ForceDelayObserverTest, Basic) {

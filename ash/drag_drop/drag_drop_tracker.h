@@ -25,6 +25,10 @@ namespace ash {
 class ASH_EXPORT DragDropTracker {
  public:
   DragDropTracker(aura::Window* context_root, aura::WindowDelegate* delegate);
+
+  DragDropTracker(const DragDropTracker&) = delete;
+  DragDropTracker& operator=(const DragDropTracker&) = delete;
+
   ~DragDropTracker();
 
   aura::Window* capture_window() { return capture_window_.get(); }
@@ -47,8 +51,6 @@ class ASH_EXPORT DragDropTracker {
  private:
   // A window for capturing drag events while dragging.
   std::unique_ptr<aura::Window> capture_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragDropTracker);
 };
 
 }  // namespace ash

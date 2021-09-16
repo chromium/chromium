@@ -35,6 +35,9 @@ class TestObserver : public ScreenBacklightObserver {
     scoped_observation_.Observe(backlights_forced_off_setter);
   }
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   const std::vector<bool>& forced_off_states() const {
@@ -57,8 +60,6 @@ class TestObserver : public ScreenBacklightObserver {
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -66,6 +67,11 @@ class TestObserver : public ScreenBacklightObserver {
 class BacklightsForcedOffSetterTest : public AshTestBase {
  public:
   BacklightsForcedOffSetterTest() = default;
+
+  BacklightsForcedOffSetterTest(const BacklightsForcedOffSetterTest&) = delete;
+  BacklightsForcedOffSetterTest& operator=(
+      const BacklightsForcedOffSetterTest&) = delete;
+
   ~BacklightsForcedOffSetterTest() override = default;
 
   void SetUp() override {
@@ -96,9 +102,6 @@ class BacklightsForcedOffSetterTest : public AshTestBase {
       screen_backlight_resetter_;
   std::unique_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;
   std::unique_ptr<TestObserver> backlights_forced_off_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BacklightsForcedOffSetterTest);
 };
 
 TEST_F(BacklightsForcedOffSetterTest, SingleForcedOffRequest) {

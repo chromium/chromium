@@ -29,6 +29,12 @@ class UnifiedIMEDetailedViewController : public DetailedViewController,
  public:
   explicit UnifiedIMEDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedIMEDetailedViewController(const UnifiedIMEDetailedViewController&) =
+      delete;
+  UnifiedIMEDetailedViewController& operator=(
+      const UnifiedIMEDetailedViewController&) = delete;
+
   ~UnifiedIMEDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -55,8 +61,6 @@ class UnifiedIMEDetailedViewController : public DetailedViewController,
   tray::IMEDetailedView* view_ = nullptr;
 
   bool keyboard_suppressed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedIMEDetailedViewController);
 };
 
 }  // namespace ash

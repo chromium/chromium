@@ -17,6 +17,12 @@ class ASH_EXPORT CapsLockNotificationController
     : public ImeControllerImpl::Observer {
  public:
   CapsLockNotificationController();
+
+  CapsLockNotificationController(const CapsLockNotificationController&) =
+      delete;
+  CapsLockNotificationController& operator=(
+      const CapsLockNotificationController&) = delete;
+
   virtual ~CapsLockNotificationController();
 
   static bool IsSearchKeyMappedToCapsLock();
@@ -27,9 +33,6 @@ class ASH_EXPORT CapsLockNotificationController
   // ImeControllerImpl::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CapsLockNotificationController);
 };
 
 }  // namespace ash

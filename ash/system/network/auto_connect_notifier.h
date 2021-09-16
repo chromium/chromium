@@ -29,6 +29,10 @@ class ASH_EXPORT AutoConnectNotifier
       public chromeos::AutoConnectHandler::Observer {
  public:
   AutoConnectNotifier();
+
+  AutoConnectNotifier(const AutoConnectNotifier&) = delete;
+  AutoConnectNotifier& operator=(const AutoConnectNotifier&) = delete;
+
   ~AutoConnectNotifier() override;
 
   // chromeos::NetworkConnectionObserver:
@@ -53,8 +57,6 @@ class ASH_EXPORT AutoConnectNotifier
   bool has_user_explicitly_requested_connection_ = false;
   std::string connected_network_guid_;
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoConnectNotifier);
 };
 
 }  // namespace ash

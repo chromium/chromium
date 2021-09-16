@@ -44,6 +44,10 @@ class ASH_EXPORT UnifiedSystemTrayBubble
       public TabletModeObserver {
  public:
   explicit UnifiedSystemTrayBubble(UnifiedSystemTray* tray);
+
+  UnifiedSystemTrayBubble(const UnifiedSystemTrayBubble&) = delete;
+  UnifiedSystemTrayBubble& operator=(const UnifiedSystemTrayBubble&) = delete;
+
   ~UnifiedSystemTrayBubble() override;
 
   // Return the bounds of the bubble in the screen.
@@ -168,8 +172,6 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   TrayBubbleView* bubble_view_ = nullptr;
   UnifiedSystemTrayView* unified_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayBubble);
 };
 
 }  // namespace ash

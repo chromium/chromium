@@ -31,6 +31,10 @@ class ASH_EXPORT BluetoothPowerController
       public device::BluetoothAdapter::Observer {
  public:
   explicit BluetoothPowerController(PrefService* local_state);
+
+  BluetoothPowerController(const BluetoothPowerController&) = delete;
+  BluetoothPowerController& operator=(const BluetoothPowerController&) = delete;
+
   ~BluetoothPowerController() override;
 
   // Changes the bluetooth power setting to |enabled|.
@@ -153,8 +157,6 @@ class ASH_EXPORT BluetoothPowerController
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
   base::WeakPtrFactory<BluetoothPowerController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothPowerController);
 };
 
 }  // namespace ash

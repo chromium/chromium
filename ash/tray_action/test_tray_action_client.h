@@ -18,6 +18,9 @@ class TestTrayActionClient : public mojom::TrayActionClient {
  public:
   TestTrayActionClient();
 
+  TestTrayActionClient(const TestTrayActionClient&) = delete;
+  TestTrayActionClient& operator=(const TestTrayActionClient&) = delete;
+
   ~TestTrayActionClient() override;
 
   mojo::PendingRemote<mojom::TrayActionClient> CreateRemoteAndBind();
@@ -42,8 +45,6 @@ class TestTrayActionClient : public mojom::TrayActionClient {
 
   std::vector<mojom::LockScreenNoteOrigin> note_origins_;
   std::vector<mojom::CloseLockScreenNoteReason> close_note_reasons_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTrayActionClient);
 };
 
 }  // namespace ash

@@ -33,6 +33,11 @@ namespace ash {
 class SplitViewDragIndicatorsTest : public AshTestBase {
  public:
   SplitViewDragIndicatorsTest() = default;
+
+  SplitViewDragIndicatorsTest(const SplitViewDragIndicatorsTest&) = delete;
+  SplitViewDragIndicatorsTest& operator=(const SplitViewDragIndicatorsTest&) =
+      delete;
+
   ~SplitViewDragIndicatorsTest() override = default;
 
   void SetUp() override {
@@ -101,9 +106,6 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
  protected:
   SplitViewDragIndicators* split_view_drag_indicators_ = nullptr;
   OverviewSession* overview_session_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SplitViewDragIndicatorsTest);
 };
 
 TEST_F(SplitViewDragIndicatorsTest, Dragging) {

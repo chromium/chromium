@@ -186,6 +186,9 @@ class TitleView : public views::View {
         kSystemMenuSettingsIcon, IDS_ASH_PALETTE_SETTINGS));
   }
 
+  TitleView(const TitleView&) = delete;
+  TitleView& operator=(const TitleView&) = delete;
+
   ~TitleView() override = default;
 
   // views::View:
@@ -205,8 +208,6 @@ class TitleView : public views::View {
   views::View* settings_button_;
   views::View* help_button_;
   PaletteTray* palette_tray_;
-
-  DISALLOW_COPY_AND_ASSIGN(TitleView);
 };
 
 // Used as a Shell pre-target handler to notify PaletteTray of stylus events.
@@ -215,6 +216,9 @@ class StylusEventHandler : public ui::EventHandler {
   explicit StylusEventHandler(PaletteTray* tray) : palette_tray_(tray) {
     Shell::Get()->AddPreTargetHandler(this);
   }
+
+  StylusEventHandler(const StylusEventHandler&) = delete;
+  StylusEventHandler& operator=(const StylusEventHandler&) = delete;
 
   ~StylusEventHandler() override { Shell::Get()->RemovePreTargetHandler(this); }
 
@@ -227,7 +231,6 @@ class StylusEventHandler : public ui::EventHandler {
 
  private:
   PaletteTray* palette_tray_;
-  DISALLOW_COPY_AND_ASSIGN(StylusEventHandler);
 };
 
 }  // namespace

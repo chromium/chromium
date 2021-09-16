@@ -28,6 +28,9 @@ class ASH_EXPORT PhantomWindowController {
  public:
   explicit PhantomWindowController(aura::Window* window);
 
+  PhantomWindowController(const PhantomWindowController&) = delete;
+  PhantomWindowController& operator=(const PhantomWindowController&) = delete;
+
   // Hides the phantom window without any animation.
   ~PhantomWindowController();
 
@@ -56,8 +59,6 @@ class ASH_EXPORT PhantomWindowController {
 
   // Phantom representation of the window.
   std::unique_ptr<views::Widget> phantom_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(PhantomWindowController);
 };
 
 }  // namespace ash

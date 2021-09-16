@@ -41,6 +41,10 @@ const char16_t kTestAdapterAddress16[] = u"01:23:45:67:89:AB";
 class TestMessageCenter : public message_center::FakeMessageCenter {
  public:
   TestMessageCenter() = default;
+
+  TestMessageCenter(const TestMessageCenter&) = delete;
+  TestMessageCenter& operator=(const TestMessageCenter&) = delete;
+
   ~TestMessageCenter() override = default;
 
   void ClickOnNotification(const std::string& id) override {
@@ -49,9 +53,6 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     DCHECK(notification);
     notification->delegate()->Click(absl::nullopt, absl::nullopt);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMessageCenter);
 };
 
 }  // namespace

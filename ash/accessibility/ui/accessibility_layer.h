@@ -37,6 +37,10 @@ class AccessibilityLayerDelegate {
 class AccessibilityLayer : public ui::LayerDelegate {
  public:
   explicit AccessibilityLayer(AccessibilityLayerDelegate* delegate);
+
+  AccessibilityLayer(const AccessibilityLayer&) = delete;
+  AccessibilityLayer& operator=(const AccessibilityLayer&) = delete;
+
   ~AccessibilityLayer() override;
 
   // Move the accessibility layer to the given bounds in the coordinates of
@@ -84,8 +88,6 @@ class AccessibilityLayer : public ui::LayerDelegate {
 
   // The object that owns this layer.
   AccessibilityLayerDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityLayer);
 };
 
 }  // namespace ash

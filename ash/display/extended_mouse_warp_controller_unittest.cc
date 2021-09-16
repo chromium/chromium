@@ -28,6 +28,12 @@ namespace ash {
 class ExtendedMouseWarpControllerTest : public AshTestBase {
  public:
   ExtendedMouseWarpControllerTest() = default;
+
+  ExtendedMouseWarpControllerTest(const ExtendedMouseWarpControllerTest&) =
+      delete;
+  ExtendedMouseWarpControllerTest& operator=(
+      const ExtendedMouseWarpControllerTest&) = delete;
+
   ~ExtendedMouseWarpControllerTest() override = default;
 
  protected:
@@ -73,9 +79,6 @@ class ExtendedMouseWarpControllerTest : public AshTestBase {
     // event is handled and last mouse location is updated.
     base::RunLoop().RunUntilIdle();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtendedMouseWarpControllerTest);
 };
 
 // Verifies if MouseCursorEventFilter's bounds calculation works correctly.

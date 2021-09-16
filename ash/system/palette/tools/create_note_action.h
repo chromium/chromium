@@ -18,6 +18,10 @@ class ASH_EXPORT CreateNoteAction : public CommonPaletteTool,
                                     public ui::EventHandler {
  public:
   explicit CreateNoteAction(Delegate* delegate);
+
+  CreateNoteAction(const CreateNoteAction&) = delete;
+  CreateNoteAction& operator=(const CreateNoteAction&) = delete;
+
   ~CreateNoteAction() override;
 
  private:
@@ -34,8 +38,6 @@ class ASH_EXPORT CreateNoteAction : public CommonPaletteTool,
   void OnKeyEvent(ui::KeyEvent* event) override;
 
   bool ShouldShowOnDisplay();
-
-  DISALLOW_COPY_AND_ASSIGN(CreateNoteAction);
 };
 
 }  // namespace ash

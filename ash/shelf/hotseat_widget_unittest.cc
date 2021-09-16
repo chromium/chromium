@@ -225,6 +225,11 @@ class DisplayWorkAreaChangeCounter : public display::DisplayObserver {
   DisplayWorkAreaChangeCounter() {
     Shell::Get()->display_manager()->AddObserver(this);
   }
+
+  DisplayWorkAreaChangeCounter(const DisplayWorkAreaChangeCounter&) = delete;
+  DisplayWorkAreaChangeCounter& operator=(const DisplayWorkAreaChangeCounter&) =
+      delete;
+
   ~DisplayWorkAreaChangeCounter() override {
     Shell::Get()->display_manager()->RemoveObserver(this);
   }
@@ -239,8 +244,6 @@ class DisplayWorkAreaChangeCounter : public display::DisplayObserver {
 
  private:
   int work_area_change_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayWorkAreaChangeCounter);
 };
 
 // Watches the shelf for state changes.

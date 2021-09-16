@@ -101,6 +101,10 @@ class ASH_EXPORT WallpaperControllerImpl
   static const char kNewWallpaperTypeNodeName[];
 
   explicit WallpaperControllerImpl(PrefService* local_state);
+
+  WallpaperControllerImpl(const WallpaperControllerImpl&) = delete;
+  WallpaperControllerImpl& operator=(const WallpaperControllerImpl&) = delete;
+
   ~WallpaperControllerImpl() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -756,8 +760,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // Used for setting different types of wallpaper.
   base::WeakPtrFactory<WallpaperControllerImpl> set_wallpaper_weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerImpl);
 };
 
 }  // namespace ash

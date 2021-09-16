@@ -87,6 +87,10 @@ class ASH_EXPORT NightLightControllerImpl
   };
 
   NightLightControllerImpl();
+
+  NightLightControllerImpl(const NightLightControllerImpl&) = delete;
+  NightLightControllerImpl& operator=(const NightLightControllerImpl&) = delete;
+
   ~NightLightControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -345,8 +349,6 @@ class ASH_EXPORT NightLightControllerImpl
   gfx::Vector3dF ambient_rgb_scaling_factors_ = {1.f, 1.f, 1.f};
 
   base::WeakPtrFactory<NightLightControllerImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(NightLightControllerImpl);
 };
 
 }  // namespace ash

@@ -33,6 +33,10 @@ namespace fast_ink {
 class FastInkPointerController : public ui::EventHandler {
  public:
   FastInkPointerController();
+
+  FastInkPointerController(const FastInkPointerController&) = delete;
+  FastInkPointerController& operator=(const FastInkPointerController&) = delete;
+
   ~FastInkPointerController() override;
 
   bool is_enabled() const { return enabled_; }
@@ -102,8 +106,6 @@ class FastInkPointerController : public ui::EventHandler {
   aura::WindowTracker excluded_windows_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_local_;
-
-  DISALLOW_COPY_AND_ASSIGN(FastInkPointerController);
 };
 
 }  // namespace fast_ink

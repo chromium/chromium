@@ -48,9 +48,11 @@ class TestUnifiedMessageCenterView : public UnifiedMessageCenterView {
                                  model,
                                  nullptr /*bubble*/) {}
 
-  ~TestUnifiedMessageCenterView() override = default;
+  TestUnifiedMessageCenterView(const TestUnifiedMessageCenterView&) = delete;
+  TestUnifiedMessageCenterView& operator=(const TestUnifiedMessageCenterView&) =
+      delete;
 
-  DISALLOW_COPY_AND_ASSIGN(TestUnifiedMessageCenterView);
+  ~TestUnifiedMessageCenterView() override = default;
 };
 
 }  // namespace
@@ -59,6 +61,11 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
                                      public views::ViewObserver {
  public:
   UnifiedMessageCenterViewTest() = default;
+
+  UnifiedMessageCenterViewTest(const UnifiedMessageCenterViewTest&) = delete;
+  UnifiedMessageCenterViewTest& operator=(const UnifiedMessageCenterViewTest&) =
+      delete;
+
   ~UnifiedMessageCenterViewTest() override = default;
 
   // AshTestBase:
@@ -230,8 +237,6 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
 
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<TestUnifiedMessageCenterView> message_center_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedMessageCenterViewTest);
 };
 
 class UnifiedMessageCenterViewInWidgetTest

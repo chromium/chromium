@@ -31,6 +31,10 @@ namespace test {
 class SearchResultPageViewTest : public views::ViewsTestBase {
  public:
   SearchResultPageViewTest() = default;
+
+  SearchResultPageViewTest(const SearchResultPageViewTest&) = delete;
+  SearchResultPageViewTest& operator=(const SearchResultPageViewTest&) = delete;
+
   ~SearchResultPageViewTest() override = default;
 
   // Overridden from testing::Test:
@@ -76,8 +80,6 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
       nullptr;                                 // Owned by views hierarchy.
   SearchResultListView* list_view_ = nullptr;  // Owned by views hierarchy.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultPageViewTest);
 };
 
 TEST_F(SearchResultPageViewTest, ResultsSorted) {

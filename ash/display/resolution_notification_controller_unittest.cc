@@ -32,6 +32,11 @@ class ResolutionNotificationControllerTest
  public:
   ResolutionNotificationControllerTest() : accept_count_(0) {}
 
+  ResolutionNotificationControllerTest(
+      const ResolutionNotificationControllerTest&) = delete;
+  ResolutionNotificationControllerTest& operator=(
+      const ResolutionNotificationControllerTest&) = delete;
+
   ~ResolutionNotificationControllerTest() override = default;
 
   std::u16string ExpectedNotificationMessage(int64_t display_id,
@@ -181,8 +186,6 @@ class ResolutionNotificationControllerTest
   int accept_count_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolutionNotificationControllerTest);
 };
 
 // Basic behaviors and verifies it doesn't cause crashes.

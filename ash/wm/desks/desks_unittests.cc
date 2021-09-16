@@ -297,6 +297,10 @@ void StartDragDeskPreview(const DeskMiniView* desk_mini_view,
 class TestObserver : public DesksController::Observer {
  public:
   TestObserver() = default;
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   const std::vector<const Desk*>& desks() const { return desks_; }
@@ -331,13 +335,15 @@ class TestObserver : public DesksController::Observer {
   std::vector<const Desk*> desks_;
 
   int desk_name_changed_notify_counts_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class TestDeskObserver : public Desk::Observer {
  public:
   TestDeskObserver() = default;
+
+  TestDeskObserver(const TestDeskObserver&) = delete;
+  TestDeskObserver& operator=(const TestDeskObserver&) = delete;
+
   ~TestDeskObserver() override = default;
 
   int notify_counts() const { return notify_counts_; }
@@ -349,8 +355,6 @@ class TestDeskObserver : public Desk::Observer {
 
  private:
   int notify_counts_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDeskObserver);
 };
 
 // Defines a test fixture to test Virtual Desks behavior, parameterized to run
@@ -361,6 +365,10 @@ class DesksTest : public AshTestBase,
   DesksTest() = default;
   explicit DesksTest(base::test::TaskEnvironment::TimeSource time)
       : AshTestBase(time) {}
+
+  DesksTest(const DesksTest&) = delete;
+  DesksTest& operator=(const DesksTest&) = delete;
+
   ~DesksTest() override = default;
 
   void SetUp() override {
@@ -371,9 +379,6 @@ class DesksTest : public AshTestBase,
   void SendKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
     PressAndReleaseKey(key_code, flags);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesksTest);
 };
 
 TEST_F(DesksTest, DesksCreationAndRemoval) {
@@ -2229,6 +2234,10 @@ TEST_F(DesksEditableNamesTest, MaxLength) {
 class TabletModeDesksTest : public DesksTest {
  public:
   TabletModeDesksTest() = default;
+
+  TabletModeDesksTest(const TabletModeDesksTest&) = delete;
+  TabletModeDesksTest& operator=(const TabletModeDesksTest&) = delete;
+
   ~TabletModeDesksTest() override = default;
 
   // DesksTest:
@@ -2244,9 +2253,6 @@ class TabletModeDesksTest : public DesksTest {
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabletModeDesksTest);
 };
 
 TEST_F(TabletModeDesksTest, Backdrops) {
@@ -3150,6 +3156,10 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
                            public MultiUserWindowManagerDelegate {
  public:
   DesksMultiUserTest() = default;
+
+  DesksMultiUserTest(const DesksMultiUserTest&) = delete;
+  DesksMultiUserTest& operator=(const DesksMultiUserTest&) = delete;
+
   ~DesksMultiUserTest() override = default;
 
   MultiUserWindowManager* multi_user_window_manager() {
@@ -3244,8 +3254,6 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
 
   TestingPrefServiceSimple* user_1_prefs_ = nullptr;
   TestingPrefServiceSimple* user_2_prefs_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DesksMultiUserTest);
 };
 
 TEST_F(DesksMultiUserTest, SwitchUsersBackAndForth) {
@@ -3603,6 +3611,10 @@ class DesksAcceleratorsTest : public DesksTest,
                               public ui::EventRewriterChromeOS::Delegate {
  public:
   DesksAcceleratorsTest() = default;
+
+  DesksAcceleratorsTest(const DesksAcceleratorsTest&) = delete;
+  DesksAcceleratorsTest& operator=(const DesksAcceleratorsTest&) = delete;
+
   ~DesksAcceleratorsTest() override = default;
 
   // DesksTest:
@@ -3644,9 +3656,6 @@ class DesksAcceleratorsTest : public DesksTest,
   void MoveOverviewHighlighter(OverviewSession* session) {
     session->Move(/*reverse=*/false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesksAcceleratorsTest);
 
   chromeos::input_method::FakeImeKeyboard fake_ime_keyboard_;
 };

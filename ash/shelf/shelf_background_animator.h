@@ -48,6 +48,10 @@ class ASH_EXPORT ShelfBackgroundAnimator : public ShelfObserver,
 
   ShelfBackgroundAnimator(Shelf* shelf,
                           WallpaperControllerImpl* wallpaper_controller);
+
+  ShelfBackgroundAnimator(const ShelfBackgroundAnimator&) = delete;
+  ShelfBackgroundAnimator& operator=(const ShelfBackgroundAnimator&) = delete;
+
   ~ShelfBackgroundAnimator() override;
 
   // Initializes this with the given |background_type|. This will observe the
@@ -102,6 +106,10 @@ class ASH_EXPORT ShelfBackgroundAnimator : public ShelfObserver,
   class AnimationValues {
    public:
     AnimationValues();
+
+    AnimationValues(const AnimationValues&) = delete;
+    AnimationValues& operator=(const AnimationValues&) = delete;
+
     ~AnimationValues();
 
     SkColor current_color() const { return current_color_; }
@@ -121,8 +129,6 @@ class ASH_EXPORT ShelfBackgroundAnimator : public ShelfObserver,
     SkColor initial_color_ = SK_ColorTRANSPARENT;
     SkColor current_color_ = SK_ColorTRANSPARENT;
     SkColor target_color_ = SK_ColorTRANSPARENT;
-
-    DISALLOW_COPY_AND_ASSIGN(AnimationValues);
   };
 
   // Helper function used by PaintBackground() to animate the background.
@@ -179,8 +185,6 @@ class ASH_EXPORT ShelfBackgroundAnimator : public ShelfObserver,
   AnimationValues item_background_values_;
 
   base::ObserverList<ShelfBackgroundAnimatorObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfBackgroundAnimator);
 };
 
 }  // namespace ash

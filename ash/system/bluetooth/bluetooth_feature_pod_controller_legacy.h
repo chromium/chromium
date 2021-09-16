@@ -24,6 +24,12 @@ class BluetoothFeaturePodControllerLegacy
  public:
   BluetoothFeaturePodControllerLegacy(
       UnifiedSystemTrayController* tray_controller);
+
+  BluetoothFeaturePodControllerLegacy(
+      const BluetoothFeaturePodControllerLegacy&) = delete;
+  BluetoothFeaturePodControllerLegacy& operator=(
+      const BluetoothFeaturePodControllerLegacy&) = delete;
+
   ~BluetoothFeaturePodControllerLegacy() override;
 
   // FeaturePodControllerBase:
@@ -44,8 +50,6 @@ class BluetoothFeaturePodControllerLegacy
   // Unowned.
   UnifiedSystemTrayController* const tray_controller_;
   FeaturePodButton* button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothFeaturePodControllerLegacy);
 };
 
 }  // namespace ash

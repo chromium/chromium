@@ -126,12 +126,13 @@ class AtScopeExitRunner {
     DCHECK(!callback_.is_null());
   }
 
+  AtScopeExitRunner(const AtScopeExitRunner&) = delete;
+  AtScopeExitRunner& operator=(const AtScopeExitRunner&) = delete;
+
   ~AtScopeExitRunner() { std::move(callback_).Run(); }
 
  private:
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AtScopeExitRunner);
 };
 
 // Helps with handling the workflow where you drag an overview item from one

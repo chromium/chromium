@@ -39,6 +39,10 @@ namespace {
 class EventCapturer : public ui::EventHandler {
  public:
   EventCapturer() {}
+
+  EventCapturer(const EventCapturer&) = delete;
+  EventCapturer& operator=(const EventCapturer&) = delete;
+
   ~EventCapturer() override {}
 
   void Reset() { events_.clear(); }
@@ -62,8 +66,6 @@ class EventCapturer : public ui::EventHandler {
 
  private:
   EventList events_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventCapturer);
 };
 
 int Factorial(int n) {
@@ -162,6 +164,10 @@ class TouchExplorationControllerTestApi {
 class TouchExplorationTest : public aura::test::AuraTestBase {
  public:
   TouchExplorationTest() {}
+
+  TouchExplorationTest(const TouchExplorationTest&) = delete;
+  TouchExplorationTest& operator=(const TouchExplorationTest&) = delete;
+
   ~TouchExplorationTest() override {}
 
   void SetUp() override {
@@ -364,8 +370,6 @@ class TouchExplorationTest : public aura::test::AuraTestBase {
   std::unique_ptr<TouchExplorationControllerTestApi>
       touch_exploration_controller_;
   std::unique_ptr<aura::test::TestCursorClient> cursor_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationTest);
 };
 
 // Executes a number of assertions to confirm that |e1| and |e2| are touch

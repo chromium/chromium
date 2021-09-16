@@ -47,6 +47,10 @@ class COMPONENT_EXPORT(SMBFS) SmbFsHost {
             Delegate* delegate,
             mojo::Remote<mojom::SmbFs> smbfs_remote,
             mojo::PendingReceiver<mojom::SmbFsDelegate> delegate_receiver);
+
+  SmbFsHost(const SmbFsHost&) = delete;
+  SmbFsHost& operator=(const SmbFsHost&) = delete;
+
   ~SmbFsHost();
 
   // Returns the path where SmbFS is mounted.
@@ -87,8 +91,6 @@ class COMPONENT_EXPORT(SMBFS) SmbFsHost {
 
   mojo::Remote<mojom::SmbFs> smbfs_;
   std::unique_ptr<mojom::SmbFsDelegate> delegate_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbFsHost);
 };
 
 }  // namespace smbfs

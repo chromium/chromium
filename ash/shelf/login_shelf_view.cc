@@ -250,6 +250,9 @@ class LoginShelfButton : public views::LabelButton {
         1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   }
 
+  LoginShelfButton(const LoginShelfButton&) = delete;
+  LoginShelfButton& operator=(const LoginShelfButton&) = delete;
+
   ~LoginShelfButton() override = default;
 
   int text_resource_id() const { return text_resource_id_; }
@@ -292,8 +295,6 @@ class LoginShelfButton : public views::LabelButton {
  private:
   const int text_resource_id_;
   const gfx::VectorIcon& icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginShelfButton);
 };
 
 bool ShutdownButtonHidden(OobeDialogState state) {

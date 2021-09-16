@@ -18,6 +18,10 @@ namespace keyboard {
 class ShapedWindowTargeter : public aura::WindowTargeter {
  public:
   explicit ShapedWindowTargeter(std::vector<gfx::Rect> hit_test_rects);
+
+  ShapedWindowTargeter(const ShapedWindowTargeter&) = delete;
+  ShapedWindowTargeter& operator=(const ShapedWindowTargeter&) = delete;
+
   ~ShapedWindowTargeter() override;
 
  private:
@@ -26,8 +30,6 @@ class ShapedWindowTargeter : public aura::WindowTargeter {
       aura::Window* target) const override;
 
   std::vector<gfx::Rect> hit_test_rects_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapedWindowTargeter);
 };
 
 }  // namespace keyboard

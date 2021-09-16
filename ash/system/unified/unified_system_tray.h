@@ -56,6 +56,10 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
                                      public ShelfConfig::Observer {
  public:
   explicit UnifiedSystemTray(Shelf* shelf);
+
+  UnifiedSystemTray(const UnifiedSystemTray&) = delete;
+  UnifiedSystemTray& operator=(const UnifiedSystemTray&) = delete;
+
   ~UnifiedSystemTray() override;
 
   // True if the bubble is shown. It does not include slider bubbles, and when
@@ -230,8 +234,6 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   base::OneShotTimer timer_;
 
   bool first_interaction_recorded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTray);
 };
 
 }  // namespace ash

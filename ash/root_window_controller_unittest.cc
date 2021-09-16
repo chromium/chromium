@@ -55,6 +55,10 @@ class DeleteOnBlurDelegate : public aura::test::TestWindowDelegate,
                              public aura::client::FocusChangeObserver {
  public:
   DeleteOnBlurDelegate() : window_(nullptr) {}
+
+  DeleteOnBlurDelegate(const DeleteOnBlurDelegate&) = delete;
+  DeleteOnBlurDelegate& operator=(const DeleteOnBlurDelegate&) = delete;
+
   ~DeleteOnBlurDelegate() override = default;
 
   void SetWindow(aura::Window* window) {
@@ -74,8 +78,6 @@ class DeleteOnBlurDelegate : public aura::test::TestWindowDelegate,
   }
 
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteOnBlurDelegate);
 };
 
 aura::LayoutManager* GetLayoutManager(RootWindowController* controller,
@@ -616,6 +618,10 @@ TEST_F(RootWindowControllerTest, FocusBlockedWindow) {
 class DestroyedWindowObserver : public aura::WindowObserver {
  public:
   DestroyedWindowObserver() : destroyed_(false), window_(nullptr) {}
+
+  DestroyedWindowObserver(const DestroyedWindowObserver&) = delete;
+  DestroyedWindowObserver& operator=(const DestroyedWindowObserver&) = delete;
+
   ~DestroyedWindowObserver() override { Shutdown(); }
 
   void SetWindow(Window* window) {
@@ -641,8 +647,6 @@ class DestroyedWindowObserver : public aura::WindowObserver {
 
   bool destroyed_;
   Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DestroyedWindowObserver);
 };
 
 // Verifies shutdown doesn't delete windows that are not owned by the parent.
@@ -703,6 +707,12 @@ class VirtualKeyboardRootWindowControllerTest
     : public RootWindowControllerTest {
  public:
   VirtualKeyboardRootWindowControllerTest() = default;
+
+  VirtualKeyboardRootWindowControllerTest(
+      const VirtualKeyboardRootWindowControllerTest&) = delete;
+  VirtualKeyboardRootWindowControllerTest& operator=(
+      const VirtualKeyboardRootWindowControllerTest&) = delete;
+
   ~VirtualKeyboardRootWindowControllerTest() override = default;
 
   void SetUp() override {
@@ -719,9 +729,6 @@ class VirtualKeyboardRootWindowControllerTest
     keyboard::KeyboardUIController::Get()->EnsureCaretInWorkAreaForTest(
         occluded_bounds);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardRootWindowControllerTest);
 };
 
 class MockTextInputClient : public ui::DummyTextInputClient {
@@ -1037,6 +1044,10 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, DisplayRotation) {
 class EventObserver : public ui::EventHandler {
  public:
   EventObserver() = default;
+
+  EventObserver(const EventObserver&) = delete;
+  EventObserver& operator=(const EventObserver&) = delete;
+
   ~EventObserver() override = default;
 
   int GetEventCount(ui::EventType type) { return event_counts_[type]; }
@@ -1050,8 +1061,6 @@ class EventObserver : public ui::EventHandler {
   }
 
   std::map<ui::EventType, int> event_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventObserver);
 };
 
 // Tests that tapping/clicking inside the keyboard does not give it focus.

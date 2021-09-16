@@ -41,6 +41,10 @@ const int kScrollToMenuBoundsBuffer = 18;
 class MouseEventCapturer : public ui::EventHandler {
  public:
   MouseEventCapturer() { Reset(); }
+
+  MouseEventCapturer(const MouseEventCapturer&) = delete;
+  MouseEventCapturer& operator=(const MouseEventCapturer&) = delete;
+
   ~MouseEventCapturer() override = default;
 
   void Reset() {
@@ -96,14 +100,16 @@ class MouseEventCapturer : public ui::EventHandler {
  private:
   std::vector<ui::MouseEvent> events_;
   std::vector<ui::MouseWheelEvent> wheel_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseEventCapturer);
 };
 
 class AutoclickTest : public AshTestBase {
  public:
   AutoclickTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  AutoclickTest(const AutoclickTest&) = delete;
+  AutoclickTest& operator=(const AutoclickTest&) = delete;
+
   ~AutoclickTest() override = default;
 
   void SetUp() override {
@@ -204,8 +210,6 @@ class AutoclickTest : public AshTestBase {
 
  private:
   MouseEventCapturer mouse_event_capturer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickTest);
 };
 
 TEST_F(AutoclickTest, ToggleEnabled) {

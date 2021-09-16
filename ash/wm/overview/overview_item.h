@@ -42,6 +42,10 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   OverviewItem(aura::Window* window,
                OverviewSession* overview,
                OverviewGrid* overview_grid);
+
+  OverviewItem(const OverviewItem&) = delete;
+  OverviewItem& operator=(const OverviewItem&) = delete;
+
   ~OverviewItem() override;
 
   aura::Window* GetWindow();
@@ -428,8 +432,6 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   absl::optional<gfx::RectF> scrolling_bounds_ = absl::nullopt;
 
   base::WeakPtrFactory<OverviewItem> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewItem);
 };
 
 }  // namespace ash

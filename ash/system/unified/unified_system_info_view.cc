@@ -65,6 +65,10 @@ std::u16string FormatDayOfWeek(const base::Time& time) {
 class DateView : public views::Button, public ClockObserver {
  public:
   explicit DateView(UnifiedSystemTrayController* controller);
+
+  DateView(const DateView&) = delete;
+  DateView& operator=(const DateView&) = delete;
+
   ~DateView() override;
 
   // views::Button:
@@ -84,8 +88,6 @@ class DateView : public views::Button, public ClockObserver {
   void Refresh() override;
 
   views::Label* label_;
-
-  DISALLOW_COPY_AND_ASSIGN(DateView);
 };
 
 DateView::DateView(UnifiedSystemTrayController* controller)
@@ -147,6 +149,10 @@ void DateView::Refresh() {
 class BatteryView : public views::View, public PowerStatus::Observer {
  public:
   BatteryView();
+
+  BatteryView(const BatteryView&) = delete;
+  BatteryView& operator=(const BatteryView&) = delete;
+
   ~BatteryView() override;
 
   // views::View:
@@ -167,8 +173,6 @@ class BatteryView : public views::View, public PowerStatus::Observer {
   views::Label* percentage_;
   views::Label* separator_;
   views::Label* status_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryView);
 };
 
 BatteryView::BatteryView() {
@@ -240,6 +244,9 @@ void BatteryView::ConfigureLabel(views::Label* label) {
 // A base class of the views showing device management state.
 class ManagedStateView : public views::Button {
  public:
+  ManagedStateView(const ManagedStateView&) = delete;
+  ManagedStateView& operator=(const ManagedStateView&) = delete;
+
   ~ManagedStateView() override = default;
 
   // views::Button:
@@ -255,8 +262,6 @@ class ManagedStateView : public views::Button {
   views::Label* label_ = nullptr;
   views::ImageView* image_ = nullptr;
   const gfx::VectorIcon& icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedStateView);
 };
 
 void ManagedStateView::OnThemeChanged() {
@@ -299,6 +304,10 @@ class EnterpriseManagedView : public ManagedStateView,
                               public SessionObserver {
  public:
   explicit EnterpriseManagedView(UnifiedSystemTrayController* controller);
+
+  EnterpriseManagedView(const EnterpriseManagedView&) = delete;
+  EnterpriseManagedView& operator=(const EnterpriseManagedView&) = delete;
+
   ~EnterpriseManagedView() override;
 
   // EnterpriseDomainObserver:
@@ -313,8 +322,6 @@ class EnterpriseManagedView : public ManagedStateView,
 
  private:
   void Update();
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseManagedView);
 };
 
 EnterpriseManagedView::EnterpriseManagedView(
@@ -408,13 +415,14 @@ void EnterpriseManagedView::Update() {
 class SupervisedUserView : public ManagedStateView {
  public:
   SupervisedUserView();
+
+  SupervisedUserView(const SupervisedUserView&) = delete;
+  SupervisedUserView& operator=(const SupervisedUserView&) = delete;
+
   ~SupervisedUserView() override = default;
 
   // views::Button:
   const char* GetClassName() const override { return "SupervisedUserView"; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserView);
 };
 
 SupervisedUserView::SupervisedUserView()

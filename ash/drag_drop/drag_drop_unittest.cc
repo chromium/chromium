@@ -26,6 +26,10 @@ namespace {
 class DraggableView : public views::View {
  public:
   DraggableView() = default;
+
+  DraggableView(const DraggableView&) = delete;
+  DraggableView& operator=(const DraggableView&) = delete;
+
   ~DraggableView() override = default;
 
   // views::View overrides:
@@ -36,14 +40,15 @@ class DraggableView : public views::View {
                      OSExchangeData* data) override {
     data->SetString(u"test");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DraggableView);
 };
 
 class TargetView : public views::View {
  public:
   TargetView() : dropped_(false) {}
+
+  TargetView(const TargetView&) = delete;
+  TargetView& operator=(const TargetView&) = delete;
+
   ~TargetView() override = default;
 
   // views::View overrides:
@@ -68,8 +73,6 @@ class TargetView : public views::View {
 
  private:
   bool dropped_;
-
-  DISALLOW_COPY_AND_ASSIGN(TargetView);
 };
 
 views::Widget* CreateWidget(std::unique_ptr<views::View> contents_view,

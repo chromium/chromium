@@ -44,6 +44,12 @@ class ASH_EXPORT DisplayConfigurationController
   DisplayConfigurationController(
       display::DisplayManager* display_manager,
       WindowTreeHostManager* window_tree_host_manager);
+
+  DisplayConfigurationController(const DisplayConfigurationController&) =
+      delete;
+  DisplayConfigurationController& operator=(
+      const DisplayConfigurationController&) = delete;
+
   ~DisplayConfigurationController() override;
 
   // Sets the layout for the current displays with a fade in/out
@@ -122,8 +128,6 @@ class ASH_EXPORT DisplayConfigurationController
   std::unique_ptr<DisplayChangeLimiter> limiter_;
 
   base::WeakPtrFactory<DisplayConfigurationController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayConfigurationController);
 };
 
 }  // namespace ash

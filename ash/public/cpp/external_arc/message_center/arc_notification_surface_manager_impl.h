@@ -24,6 +24,12 @@ class ArcNotificationSurfaceManagerImpl
       public exo::NotificationSurfaceManager {
  public:
   ArcNotificationSurfaceManagerImpl();
+
+  ArcNotificationSurfaceManagerImpl(const ArcNotificationSurfaceManagerImpl&) =
+      delete;
+  ArcNotificationSurfaceManagerImpl& operator=(
+      const ArcNotificationSurfaceManagerImpl&) = delete;
+
   ~ArcNotificationSurfaceManagerImpl() override;
 
   // ArcNotificationSurfaceManager:
@@ -45,8 +51,6 @@ class ArcNotificationSurfaceManagerImpl
   NotificationSurfaceMap notification_surface_map_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationSurfaceManagerImpl);
 };
 
 }  // namespace ash

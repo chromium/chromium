@@ -18,6 +18,10 @@ namespace ash {
 class RootWindowLayoutManager : public aura::LayoutManager {
  public:
   explicit RootWindowLayoutManager(aura::Window* owner);
+
+  RootWindowLayoutManager(const RootWindowLayoutManager&) = delete;
+  RootWindowLayoutManager& operator=(const RootWindowLayoutManager&) = delete;
+
   ~RootWindowLayoutManager() override;
 
   // Overridden from aura::LayoutManager:
@@ -35,8 +39,6 @@ class RootWindowLayoutManager : public aura::LayoutManager {
  private:
   aura::Window* owner_;
   std::vector<aura::Window*> containers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowLayoutManager);
 };
 
 }  // namespace ash

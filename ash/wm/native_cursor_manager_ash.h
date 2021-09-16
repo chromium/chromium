@@ -20,6 +20,10 @@ namespace ash {
 class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
  public:
   NativeCursorManagerAsh();
+
+  NativeCursorManagerAsh(const NativeCursorManagerAsh&) = delete;
+  NativeCursorManagerAsh& operator=(const NativeCursorManagerAsh&) = delete;
+
   ~NativeCursorManagerAsh() override;
 
   // Toggle native cursor enabled/disabled.
@@ -53,8 +57,6 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
   bool native_cursor_enabled_;
 
   ui::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeCursorManagerAsh);
 };
 
 }  // namespace ash

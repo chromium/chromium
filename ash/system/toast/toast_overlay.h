@@ -52,6 +52,10 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                absl::optional<std::u16string> dismiss_text,
                bool show_on_lock_screen,
                bool is_managed);
+
+  ToastOverlay(const ToastOverlay&) = delete;
+  ToastOverlay& operator=(const ToastOverlay&) = delete;
+
   ~ToastOverlay() override;
 
   // Shows or hides the overlay.
@@ -87,8 +91,6 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   std::unique_ptr<ToastDisplayObserver> display_observer_;
 
   gfx::Size widget_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ToastOverlay);
 };
 
 }  // namespace ash

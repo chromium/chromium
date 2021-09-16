@@ -33,6 +33,12 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
       public AccessibilityFocusRingController {
  public:
   AccessibilityFocusRingControllerImpl();
+
+  AccessibilityFocusRingControllerImpl(
+      const AccessibilityFocusRingControllerImpl&) = delete;
+  AccessibilityFocusRingControllerImpl& operator=(
+      const AccessibilityFocusRingControllerImpl&) = delete;
+
   ~AccessibilityFocusRingControllerImpl() override;
 
   // AccessibilityFocusRingController overrides:
@@ -110,8 +116,6 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
   float highlight_opacity_ = 0.f;
 
   bool no_fade_for_testing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingControllerImpl);
 };
 
 }  // namespace ash

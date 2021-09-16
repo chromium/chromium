@@ -34,15 +34,17 @@ namespace ash {
 class TestAccessibilityObserver : public AccessibilityObserver {
  public:
   TestAccessibilityObserver() = default;
+
+  TestAccessibilityObserver(const TestAccessibilityObserver&) = delete;
+  TestAccessibilityObserver& operator=(const TestAccessibilityObserver&) =
+      delete;
+
   ~TestAccessibilityObserver() override = default;
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override { ++status_changed_count_; }
 
   int status_changed_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAccessibilityObserver);
 };
 
 using AccessibilityControllerTest = AshTestBase;
@@ -1062,6 +1064,12 @@ class AccessibilityControllerSigninTest
       public testing::WithParamInterface<TestUserLoginType> {
  public:
   AccessibilityControllerSigninTest() = default;
+
+  AccessibilityControllerSigninTest(const AccessibilityControllerSigninTest&) =
+      delete;
+  AccessibilityControllerSigninTest& operator=(
+      const AccessibilityControllerSigninTest&) = delete;
+
   ~AccessibilityControllerSigninTest() = default;
 
   void SimulateLogin() {
@@ -1080,9 +1088,6 @@ class AccessibilityControllerSigninTest
         break;
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerSigninTest);
 };
 
 }  // namespace

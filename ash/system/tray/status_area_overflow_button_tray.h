@@ -30,6 +30,11 @@ namespace ash {
 class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
  public:
   explicit StatusAreaOverflowButtonTray(Shelf* shelf);
+
+  StatusAreaOverflowButtonTray(const StatusAreaOverflowButtonTray&) = delete;
+  StatusAreaOverflowButtonTray& operator=(const StatusAreaOverflowButtonTray&) =
+      delete;
+
   ~StatusAreaOverflowButtonTray() override;
 
   enum State { CLICK_TO_EXPAND = 0, CLICK_TO_COLLAPSE };
@@ -73,8 +78,6 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
   State state_ = CLICK_TO_EXPAND;
 
   IconView* const icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusAreaOverflowButtonTray);
 };
 
 }  // namespace ash

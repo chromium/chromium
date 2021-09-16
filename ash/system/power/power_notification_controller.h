@@ -35,6 +35,11 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
 
   explicit PowerNotificationController(
       message_center::MessageCenter* message_center);
+
+  PowerNotificationController(const PowerNotificationController&) = delete;
+  PowerNotificationController& operator=(const PowerNotificationController&) =
+      delete;
+
   ~PowerNotificationController() override;
 
   void NotifyUsbNotificationClosedByUser();
@@ -91,8 +96,6 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   // Has the user already dismissed a low-power notification? Should be set
   // back to false when all power sources are disconnected.
   bool usb_notification_dismissed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerNotificationController);
 };
 
 }  // namespace ash

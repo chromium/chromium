@@ -91,11 +91,15 @@ class ASH_EXPORT ShelfLayoutManager
    public:
     // |manager| is the ShelfLayoutManager whose visibility update is suspended.
     explicit ScopedSuspendWorkAreaUpdate(ShelfLayoutManager* manager);
+
+    ScopedSuspendWorkAreaUpdate(const ScopedSuspendWorkAreaUpdate&) = delete;
+    ScopedSuspendWorkAreaUpdate& operator=(const ScopedSuspendWorkAreaUpdate&) =
+        delete;
+
     ~ScopedSuspendWorkAreaUpdate();
 
    private:
     ShelfLayoutManager* const manager_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedSuspendWorkAreaUpdate);
   };
 
   // Used to maintain a lock for the shelf visibility state. If locked, then we
