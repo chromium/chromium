@@ -1711,6 +1711,7 @@
         {
             "platforms": [
                 "android",
+                "chromeos",
                 "mac"
             ],
             "experiments": [
