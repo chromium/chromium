@@ -498,18 +498,16 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
         stateDescription = L"Downloading...";
 
         ULONG bytes_downloaded = 0;
-        EXPECT_HRESULT_SUCCEEDED(state->get_bytesDownloaded(&bytes_downloaded));
+        state->get_bytesDownloaded(&bytes_downloaded);
 
         ULONG total_bytes_to_download = 0;
-        EXPECT_HRESULT_SUCCEEDED(
-            state->get_totalBytesToDownload(&total_bytes_to_download));
+        state->get_totalBytesToDownload(&total_bytes_to_download);
 
         LONG download_time_remaining_ms = 0;
-        EXPECT_HRESULT_SUCCEEDED(
-            state->get_downloadTimeRemainingMs(&download_time_remaining_ms));
+        state->get_downloadTimeRemainingMs(&download_time_remaining_ms);
 
         extraData = base::StringPrintf(
-            L"[Bytes downloaded][%d][Bytes total][%d][Time remaining][%d]",
+            L"[Bytes downloaded: %d][Bytes total: %d][Time remaining: %d]",
             bytes_downloaded, total_bytes_to_download,
             download_time_remaining_ms);
         break;
@@ -521,14 +519,13 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
       case STATE_READY_TO_INSTALL: {
         stateDescription = L"Download completed!";
         ULONG bytes_downloaded = 0;
-        EXPECT_HRESULT_SUCCEEDED(state->get_bytesDownloaded(&bytes_downloaded));
+        state->get_bytesDownloaded(&bytes_downloaded);
 
         ULONG total_bytes_to_download = 0;
-        EXPECT_HRESULT_SUCCEEDED(
-            state->get_totalBytesToDownload(&total_bytes_to_download));
+        state->get_totalBytesToDownload(&total_bytes_to_download);
 
         extraData =
-            base::StringPrintf(L"[Bytes downloaded][%d][Bytes total][%d]",
+            base::StringPrintf(L"[Bytes downloaded: %d][Bytes total: %d]",
                                bytes_downloaded, total_bytes_to_download);
 
         EXPECT_HRESULT_SUCCEEDED(bundle->install());
@@ -546,7 +543,7 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
         state->get_installTimeRemainingMs(&install_time_remaining_ms);
 
         extraData =
-            base::StringPrintf(L"[Install Progress][%d][Time remaining][%d]",
+            base::StringPrintf(L"[Install Progress: %d][Time remaining: %d]",
                                install_progress, install_time_remaining_ms);
         break;
       }
@@ -580,7 +577,7 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
             state->get_installerResultCode(&installer_result_code));
 
         extraData = base::StringPrintf(
-            L"[errorCode][%d][completionMessage][%ls][installerResultCode][%d]",
+            L"[errorCode: %d][completionMessage: %ls][installerResultCode: %d]",
             error_code, completion_message.Get(), installer_result_code);
         done = true;
         break;
@@ -593,7 +590,7 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
 
     // TODO(1245992): Remove this logging once we get some confidence that the
     // code is working correctly and no further debugging is needed.
-    LOG(ERROR) << base::StringPrintf(L"[State][%d][%ls][%ls]\n", state_value,
+    LOG(ERROR) << base::StringPrintf(L"[State: %d][%ls][%ls]\n", state_value,
                                      stateDescription.c_str(),
                                      extraData.c_str());
     ::Sleep(100);
