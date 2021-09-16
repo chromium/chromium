@@ -684,7 +684,9 @@ void HistoryClustersService::OnGotClusters(
     const std::vector<history::Cluster>& clusters) const {
   NotifyDebugMessage("HistoryClustersService::OnGotClusters()");
   QueryClustersResult result;
-  result.continuation_end_time = continuation_end_time;
+  if (!continuation_end_time.is_null()) {
+    result.continuation_end_time = continuation_end_time;
+  }
 
   auto filtered_raw_clusters = FilterClustersMatchingQuery(query, clusters);
   result.clusters = CollapseDuplicateVisits(filtered_raw_clusters);

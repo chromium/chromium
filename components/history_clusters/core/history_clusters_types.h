@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "components/history/core/browser/history_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history_clusters {
 
@@ -57,7 +58,12 @@ struct QueryClustersResult {
   QueryClustersResult(const QueryClustersResult&);
 
   std::vector<Cluster> clusters;
-  base::Time continuation_end_time;
+
+  // A nullopt `continuation_end_time` means we have exhausted History.
+  // Note that this differs from History itself, which uses base::Time() as the
+  // value to indicate we've exhausted history. I've found that to be not
+  // explicit enough in practice. This value will never be base::Time().
+  absl::optional<base::Time> continuation_end_time;
 };
 using QueryClustersCallback = base::OnceCallback<void(QueryClustersResult)>;
 

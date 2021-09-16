@@ -170,15 +170,8 @@ void ServiceResultToMojom(
     clusters_mojoms.emplace_back(std::move(cluster_mojom));
   }
 
-  // TODO(tommycli): Resolve the semantics mismatch where the C++ handler uses
-  // `continuation_end_time` == base::Time() to represent exhausted history,
-  // while the mojom uses an explicit absl::optional value.
-  absl::optional<base::Time> continuation_end_time;
-  if (!result.continuation_end_time.is_null()) {
-    continuation_end_time = result.continuation_end_time;
-  }
-
-  std::move(callback).Run(continuation_end_time, std::move(clusters_mojoms));
+  std::move(callback).Run(result.continuation_end_time,
+                          std::move(clusters_mojoms));
 }
 
 // Exists temporarily only for developer usage. Never enabled via variations.
