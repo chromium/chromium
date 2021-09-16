@@ -79,6 +79,14 @@ class BLINK_COMMON_EXPORT StorageKey {
   // SerializeForLocalStorage(), as it can handle both formats.
   static absl::optional<StorageKey> Deserialize(base::StringPiece in);
 
+  // Returns a newly constructed StorageKey from, a previously serialized, `in`
+  // (which was created using SerializeForServiceWorker()). If `in` is invalid
+  // then the return value will be nullopt. If this returns a non-nullopt value,
+  // it will be a valid, non-opaque StorageKey. A deserialized StorageKey will
+  // be equivalent to the StorageKey that was initially serialized.
+  static absl::optional<StorageKey> DeserializeForServiceWorker(
+      base::StringPiece in);
+
   // Transforms a string into a StorageKey if possible (and an opaque StorageKey
   // if not). Currently calls Deserialize, but this may change in future.
   // For use in tests only.
@@ -96,6 +104,10 @@ class BLINK_COMMON_EXPORT StorageKey {
   // trailing slashes). Prefer Serialize() for uses other than localStorage. Do
   // not call if `this` is opaque.
   std::string SerializeForLocalStorage() const;
+
+  // Serializes the `StorageKey` into the format used for ServiceWorkerDatabase.
+  // Do not call if `this` is opaque.
+  std::string SerializeForServiceWorker() const;
 
   const url::Origin& origin() const { return origin_; }
 

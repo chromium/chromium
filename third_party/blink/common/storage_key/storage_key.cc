@@ -20,12 +20,20 @@ namespace blink {
 
 // static
 absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
-  // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
-  // serialization.
-  // TODO(https://crbug.com/1199077): Add top_level_site_ behind a feature.
   StorageKey result(url::Origin::Create(GURL(in)));
   return result.origin_.opaque() ? absl::nullopt
                                  : absl::make_optional(std::move(result));
+}
+
+// static
+// Currently is the same as as Deserialize(), but this will change in an
+// upcoming CL.
+absl::optional<StorageKey> StorageKey::DeserializeForServiceWorker(
+    base::StringPiece in) {
+  // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
+  // serialization.
+  // TODO(https://crbug.com/1199077): Add top_level_site_ behind a feature.
+  return Deserialize(in);
 }
 
 // static
@@ -58,9 +66,6 @@ blink::StorageKey StorageKey::FromNetIsolationInfo(
 }
 
 std::string StorageKey::Serialize() const {
-  // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
-  // serialization.
-  // TODO(https://crbug.com/1199077): Add top_level_site_ behind a feature.
   DCHECK(!origin_.opaque());
   return origin_.GetURL().spec();
 }
@@ -71,6 +76,15 @@ std::string StorageKey::SerializeForLocalStorage() const {
   // TODO(https://crbug.com/1199077): Add top_level_site_ behind a feature.
   DCHECK(!origin_.opaque());
   return origin_.Serialize();
+}
+
+// Currently is the same as as Serialize(), but this will change in an upcoming
+// CL.
+std::string StorageKey::SerializeForServiceWorker() const {
+  // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
+  // serialization.
+  // TODO(https://crbug.com/1199077): Add top_level_site_ behind a feature.
+  return Serialize();
 }
 
 std::string StorageKey::GetDebugString() const {

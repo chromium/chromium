@@ -157,7 +157,7 @@ bool RemovePrefix(const std::string& str,
 
 std::string CreateRegistrationKeyPrefix(const blink::StorageKey& key) {
   return base::StringPrintf("%s%s%c", service_worker_internals::kRegKeyPrefix,
-                            key.Serialize().c_str(),
+                            key.SerializeForServiceWorker().c_str(),
                             service_worker_internals::kKeySeparator);
 }
 
@@ -180,7 +180,7 @@ std::string CreateResourceRecordKey(int64_t version_id, int64_t resource_id) {
 
 std::string CreateUniqueOriginKey(const blink::StorageKey& key) {
   return base::StringPrintf("%s%s", service_worker_internals::kUniqueOriginKey,
-                            key.Serialize().c_str());
+                            key.SerializeForServiceWorker().c_str());
 }
 
 std::string CreateResourceIdKey(const char* key_prefix, int64_t resource_id) {
@@ -379,7 +379,7 @@ ServiceWorkerDatabase::GetStorageKeysWithRegistrations(
         break;
 
       absl::optional<blink::StorageKey> key =
-          blink::StorageKey::Deserialize(key_str);
+          blink::StorageKey::DeserializeForServiceWorker(key_str);
       if (!key) {
         status = Status::kErrorCorrupted;
         keys->clear();
@@ -565,8 +565,9 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetAllRegistrations(
         break;
 
       // Then deserialize only the sub-string before the separator.
-      absl::optional<blink::StorageKey> key = blink::StorageKey::Deserialize(
-          prefix_string.substr(0, separator_pos));
+      absl::optional<blink::StorageKey> key =
+          blink::StorageKey::DeserializeForServiceWorker(
+              prefix_string.substr(0, separator_pos));
       if (!key)
         break;
 
@@ -638,7 +639,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationStorageKey(
   }
 
   absl::optional<blink::StorageKey> parsed =
-      blink::StorageKey::Deserialize(value);
+      blink::StorageKey::DeserializeForServiceWorker(value);
   if (!parsed) {
     status = Status::kErrorCorrupted;
     HandleReadResult(FROM_HERE, status);
@@ -678,7 +679,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteRegistration(
   blink::StorageKey key(url::Origin::Create(registration.scope.GetOrigin()));
 
   batch.Put(CreateRegistrationIdToStorageKey(registration.registration_id),
-            key.Serialize());
+            key.SerializeForServiceWorker());
 
   // Used for avoiding multiple writes for the same resource id or url.
   std::set<int64_t> pushed_resources;
