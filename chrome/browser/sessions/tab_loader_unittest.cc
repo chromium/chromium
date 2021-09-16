@@ -379,6 +379,7 @@ TEST_F(TabLoaderTest, DelegatePolicyIsApplied) {
   // Simulate another tab as having loaded. The last 2 tabs should be deferred
   // (still need reloads) and the tab loader should detach.
   SimulateLoaded(1);
+  SimulateLoaded(2);
   EXPECT_TRUE(restored_tabs_[3].contents()->GetController().NeedsReload());
   EXPECT_TRUE(restored_tabs_[4].contents()->GetController().NeedsReload());
   EXPECT_TRUE(TabLoaderTester::shared_tab_loader() == nullptr);

@@ -84,7 +84,7 @@ class TabLoader : public base::RefCounted<TabLoader>,
     // For use with sorted STL containers.
     bool operator<(const LoadingTab& rhs) const {
       return std::tie(loading_start_time, contents) <
-             std::tie(rhs.loading_start_time, contents);
+             std::tie(rhs.loading_start_time, rhs.contents);
     }
   };
 

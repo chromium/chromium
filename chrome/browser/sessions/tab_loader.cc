@@ -521,7 +521,9 @@ void TabLoader::MarkTabAsLoading(WebContents* contents) {
     auto it = tabs_load_initiated_.find(contents);
     if (it != tabs_load_initiated_.end()) {
       tabs_load_initiated_.erase(it);
-      tabs_loading_.insert(LoadingTab{clock_->NowTicks(), contents});
+      auto result =
+          tabs_loading_.insert(LoadingTab{clock_->NowTicks(), contents});
+      DCHECK(result.second);
       return;
     }
   }
