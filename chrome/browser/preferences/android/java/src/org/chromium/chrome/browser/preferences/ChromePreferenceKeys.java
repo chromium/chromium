@@ -943,11 +943,6 @@ public final class ChromePreferenceKeys {
             "Chrome.TrustedWebActivities.DisclosureAcceptedPackages";
 
     /**
-     * Whether or not darken websites is enabled.
-     * Default value is false.
-     */
-    public static final String UI_THEME_DARKEN_WEBSITES_ENABLED = "darken_websites_enabled";
-    /**
      * The current theme setting in the user settings.
      * Default value is -1. Use NightModeUtils#getThemeSetting() to retrieve current setting or
      * default theme.

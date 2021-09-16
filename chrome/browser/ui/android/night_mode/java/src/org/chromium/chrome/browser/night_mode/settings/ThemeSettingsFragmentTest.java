@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.night_mode.settings;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_DARKEN_WEBSITES_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 
 import android.os.Build;
@@ -18,8 +21,12 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
@@ -28,8 +35,11 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -42,15 +52,41 @@ public class ThemeSettingsFragmentTest extends DummyUiChromeActivityTestCase {
     @Rule
     public SettingsActivityTestRule<ThemeSettingsFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(ThemeSettingsFragment.class);
+    @Rule
+    public JniMocker mMocker = new JniMocker();
+
+    @Mock
+    public WebsitePreferenceBridge.Natives mMockWebsitePreferenceBridgeJni;
 
     private ThemeSettingsFragment mFragment;
     private RadioButtonGroupThemePreference mPreference;
 
+    // Boolean used for web content auto dark mode.
+    private boolean mForceDarkModeEnabled;
+
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
+        // For some reason MockitoRule does not work with JniMocker (seems like an order issue), and
+        // RuleChain cannot be applied to MockitoRule since it is not a TestRule.
+        MockitoAnnotations.initMocks(this);
         SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
-        SharedPreferencesManager.getInstance().removeKey(UI_THEME_DARKEN_WEBSITES_ENABLED);
+
+        mMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mMockWebsitePreferenceBridgeJni);
+
+        // Default value for feature DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING.
+        mForceDarkModeEnabled = true;
+        Mockito.doAnswer(invocation -> mForceDarkModeEnabled)
+                .when(mMockWebsitePreferenceBridgeJni)
+                .isContentSettingEnabled(any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT));
+        Mockito.doAnswer(invocation -> {
+                   mForceDarkModeEnabled = (boolean) invocation.getArguments()[2];
+                   return null;
+               })
+                .when(mMockWebsitePreferenceBridgeJni)
+                .setContentSettingEnabled(
+                        any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), anyBoolean());
+
         mSettingsActivityTestRule.startSettingsActivity();
         mFragment = mSettingsActivityTestRule.getFragment();
         mPreference = (RadioButtonGroupThemePreference) mFragment.findPreference(
@@ -61,9 +97,7 @@ public class ThemeSettingsFragmentTest extends DummyUiChromeActivityTestCase {
     public void tearDownTest() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
-            SharedPreferencesManager.getInstance().removeKey(UI_THEME_DARKEN_WEBSITES_ENABLED);
         });
-
         super.tearDownTest();
     }
 
@@ -153,25 +187,33 @@ public class ThemeSettingsFragmentTest extends DummyUiChromeActivityTestCase {
                             + " when dark theme is checked",
                     3, group.indexOfChild(checkboxContainer));
 
-            // Check darken website button
-            checkboxContainer.performClick();
-            SharedPreferencesManager sharedPreferencesManager =
-                    SharedPreferencesManager.getInstance();
-            Assert.assertTrue("Darken website feature should be enabled when darken website button"
-                            + " is checked",
+            // Checks for Darken website button.
+            Assert.assertTrue("Darken website check box should be checked by default.",
                     mPreference.isDarkenWebsitesEnabled());
-            Assert.assertTrue("Darken website feature should be enabled when darken website button"
-                            + " is checked",
-                    sharedPreferencesManager.readBoolean(UI_THEME_DARKEN_WEBSITES_ENABLED, false));
 
-            // Check system default, darken website button should stay checked
+            // Toggle the check box.
+            checkboxContainer.performClick();
+            Assert.assertFalse("Darken website check box should be unchecked.",
+                    mPreference.isDarkenWebsitesEnabled());
+            Mockito.verify(mMockWebsitePreferenceBridgeJni, Mockito.times(1))
+                    .setContentSettingEnabled(
+                            any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), eq(false));
+
+            checkboxContainer.performClick();
+            Assert.assertTrue("Darken website check box should be checked again.",
+                    mPreference.isDarkenWebsitesEnabled());
+            Mockito.verify(mMockWebsitePreferenceBridgeJni, Mockito.times(1))
+                    .setContentSettingEnabled(
+                            any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), eq(true));
+
+            // Check system default, darken website button should stay checked.
             selectButton(1);
             Assert.assertTrue(
-                    "Darken website button should stay its state when changing theme preference",
+                    "Darken website button should stay its state when changing theme preference.",
                     mPreference.isDarkenWebsitesEnabled());
-            Assert.assertTrue(
-                    "Darken website button should stay its state when changing theme preference",
-                    sharedPreferencesManager.readBoolean(UI_THEME_DARKEN_WEBSITES_ENABLED, false));
+            Mockito.verify(mMockWebsitePreferenceBridgeJni, Mockito.times(1))
+                    .setContentSettingEnabled(
+                            any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), eq(true));
         });
     }
 

@@ -61,6 +61,7 @@ public class DeprecatedChromePreferenceKeys {
                 "click_to_call_open_dialer_directly",
                 "crash_dump_upload",
                 "crash_dump_upload_no_cellular",
+                "darken_websites_enabled",
                 "home_page_button_force_enabled",
                 "homepage_tile_enabled",
                 "inflate_toolbar_on_background_thread",

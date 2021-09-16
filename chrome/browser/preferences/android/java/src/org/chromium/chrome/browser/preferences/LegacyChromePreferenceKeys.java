@@ -166,7 +166,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_CLEAR_DATA,
                 ChromePreferenceKeys.TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_UNINSTALL,
                 ChromePreferenceKeys.TWA_DISCLOSURE_ACCEPTED_PACKAGES,
-                ChromePreferenceKeys.UI_THEME_DARKEN_WEBSITES_ENABLED,
                 ChromePreferenceKeys.UI_THEME_SETTING,
                 ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS,
                 ChromePreferenceKeys.VR_EXIT_TO_2D_COUNT,
