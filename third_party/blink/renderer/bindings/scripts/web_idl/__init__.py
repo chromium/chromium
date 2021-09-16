@@ -66,6 +66,7 @@ from .interface import Setlike
 from .interface import Stringifier
 from .literal_constant import LiteralConstant
 from .namespace import Namespace
+from .observable_array import ObservableArray
 from .operation import Operation
 from .operation import OperationGroup
 from .runtime_enabled_features import RuntimeEnabledFeatures

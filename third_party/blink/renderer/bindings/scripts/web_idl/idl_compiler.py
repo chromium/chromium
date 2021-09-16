@@ -26,6 +26,7 @@ from .interface import LegacyWindowAlias
 from .ir_map import IRMap
 from .make_copy import make_copy
 from .namespace import Namespace
+from .observable_array import ObservableArray
 from .operation import OperationGroup
 from .reference import RefByIdFactory
 from .typedef import Typedef
@@ -120,6 +121,9 @@ class IdlCompiler(object):
 
         # Build union API objects.
         self._create_public_unions()
+
+        # Build observable array API objects.
+        self._create_public_observable_arrays()
 
         return Database(self._db)
 
@@ -795,3 +799,17 @@ class IdlCompiler(object):
 
         for ir in sorted(irs.values()):
             self._db.register(DatabaseBody.Kind.UNION, Union(ir))
+
+    def _create_public_observable_arrays(self):
+        grouped_attrs = {}  # {observable array type: list of attributes}
+        for interface in (self._db.find_by_kind(
+                DatabaseBody.Kind.INTERFACE).values()):
+            for attribute in interface.attributes:
+                idl_type = attribute.idl_type.unwrap()
+                if not idl_type.is_observable_array:
+                    continue
+                grouped_attrs.setdefault(idl_type, []).append(attribute)
+
+        for idl_type, attributes in grouped_attrs.items():
+            self._db.register(DatabaseBody.Kind.OBSERVABLE_ARRAY,
+                              ObservableArray(idl_type, attributes))

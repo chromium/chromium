@@ -25,6 +25,7 @@ from .user_defined_type import UserDefinedType
 # + _ArrayLikeType
 # | + SequenceType
 # | + FrozenArrayType
+# | + ObservableArrayType
 # | + VariadicType
 # + RecordType
 # + PromiseType
@@ -570,6 +571,16 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
         return None
 
     @property
+    def observable_array_definition_object(self):
+        """
+        Returns an object that represents an observable array or None.
+
+        Note that a returned object is not an IdlType.  It's of type
+        ObservableArray.
+        """
+        return None
+
+    @property
     def union_definition_object(self):
         """
         Returns an object that represents an union or None.
@@ -1014,6 +1025,7 @@ class ObservableArrayType(_ArrayLikeType):
                                 extended_attributes=extended_attributes,
                                 debug_info=debug_info,
                                 pass_key=pass_key)
+        self._observable_array_definition_object = None
 
     @property
     def syntactic_form(self):
@@ -1027,6 +1039,19 @@ class ObservableArrayType(_ArrayLikeType):
     @property
     def is_observable_array(self):
         return True
+
+    @property
+    def observable_array_definition_object(self):
+        return self._observable_array_definition_object
+
+    def set_observable_array_definition_object(
+            self, observable_array_definition_object):
+        # In Python2, we need to avoid circular imports.
+        from .observable_array import ObservableArray
+        assert isinstance(observable_array_definition_object, ObservableArray)
+        assert self._observable_array_definition_object is None
+        self._observable_array_definition_object = (
+            observable_array_definition_object)
 
 
 class VariadicType(_ArrayLikeType):
