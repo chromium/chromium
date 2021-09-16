@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 214 tests; 210 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 218 tests; 210 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Return null when getting the blur event handler of a windowless body
 PASS Ignore setting of blur window event handlers on windowless body
 PASS Return null when getting the error event handler of a windowless body
@@ -52,7 +52,9 @@ PASS canplaythrough is unaffected on a windowless body
 PASS change is unaffected on a windowless body
 PASS click is unaffected on a windowless body
 PASS close is unaffected on a windowless body
+FAIL contextlost is unaffected on a windowless body assert_equals: expected (object) null but got (undefined) undefined
 PASS contextmenu is unaffected on a windowless body
+FAIL contextrestored is unaffected on a windowless body assert_equals: expected (object) null but got (undefined) undefined
 PASS cuechange is unaffected on a windowless body
 PASS dblclick is unaffected on a windowless body
 PASS drag is unaffected on a windowless body
@@ -159,7 +161,9 @@ PASS canplaythrough is unaffected on a windowless frameset
 PASS change is unaffected on a windowless frameset
 PASS click is unaffected on a windowless frameset
 PASS close is unaffected on a windowless frameset
+FAIL contextlost is unaffected on a windowless frameset assert_equals: expected (object) null but got (undefined) undefined
 PASS contextmenu is unaffected on a windowless frameset
+FAIL contextrestored is unaffected on a windowless frameset assert_equals: expected (object) null but got (undefined) undefined
 PASS cuechange is unaffected on a windowless frameset
 PASS dblclick is unaffected on a windowless frameset
 PASS drag is unaffected on a windowless frameset

@@ -1,0 +1,13 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: Attribution Reporting (https://wicg.github.io/conversion-measurement-api/)
+
+partial interface HTMLAnchorElement {
+    [CEReactions] attribute USVString attributionDestination;
+    [CEReactions] attribute DOMString attributionSourceEventId;
+    [CEReactions] attribute USVString attributionReportTo;
+    [CEReactions] attribute long long attributionExpiry;
+    [CEReactions] attribute long long attributionSourcePriority;
+    [CEReactions] attribute boolean registerAttributionSource;
+};

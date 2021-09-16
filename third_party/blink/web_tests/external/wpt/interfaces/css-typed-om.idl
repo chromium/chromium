@@ -158,10 +158,10 @@ interface CSSMathMax : CSSMathValue {
 
 [Exposed=(Window, Worker, PaintWorklet, LayoutWorklet)]
 interface CSSMathClamp : CSSMathValue {
-    constructor(CSSNumberish min, CSSNumberish val, CSSNumberish max);
-    readonly attribute CSSNumericValue min;
-    readonly attribute CSSNumericValue val;
-    readonly attribute CSSNumericValue max;
+    constructor(CSSNumberish lower, CSSNumberish value, CSSNumberish upper);
+    readonly attribute CSSNumericValue lower;
+    readonly attribute CSSNumericValue value;
+    readonly attribute CSSNumericValue upper;
 };
 
 [Exposed=(Window, Worker, PaintWorklet, LayoutWorklet)]

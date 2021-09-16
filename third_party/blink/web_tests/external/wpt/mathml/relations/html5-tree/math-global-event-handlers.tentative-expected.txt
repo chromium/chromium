@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 325 tests; 315 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 335 tests; 315 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -45,11 +45,21 @@ PASS onclose: the default value must be null
 PASS onclose: the content attribute must be compiled into a function as the corresponding property
 PASS onclose: dynamic changes on the attribute
 PASS onclose: dispatching an Event at a <math> element must trigger element.onclose
+FAIL oncontextlost: must be on the appropriate locations for GlobalEventHandlers assert_true: MathMLElement has an own property named "oncontextlost" expected true got false
+FAIL oncontextlost: the default value must be null assert_equals: The default value of the property is null for a MathMLElement instance expected (object) null but got (undefined) undefined
+FAIL oncontextlost: the content attribute must be compiled into a function as the corresponding property assert_equals: The oncontextlost property must be a function expected "function" but got "undefined"
+FAIL oncontextlost: dynamic changes on the attribute assert_equals: The oncontextlost property must be null (no attribute) expected (object) null but got (undefined) undefined
+FAIL oncontextlost: dispatching an Event at a <math> element must trigger element.oncontextlost assert_equals: The event must be fired at the <math> element expected (object) Element node <math></math> but got (undefined) undefined
 PASS oncontextmenu: must be on the appropriate locations for GlobalEventHandlers
 PASS oncontextmenu: the default value must be null
 PASS oncontextmenu: the content attribute must be compiled into a function as the corresponding property
 PASS oncontextmenu: dynamic changes on the attribute
 PASS oncontextmenu: dispatching an Event at a <math> element must trigger element.oncontextmenu
+FAIL oncontextrestored: must be on the appropriate locations for GlobalEventHandlers assert_true: MathMLElement has an own property named "oncontextrestored" expected true got false
+FAIL oncontextrestored: the default value must be null assert_equals: The default value of the property is null for a MathMLElement instance expected (object) null but got (undefined) undefined
+FAIL oncontextrestored: the content attribute must be compiled into a function as the corresponding property assert_equals: The oncontextrestored property must be a function expected "function" but got "undefined"
+FAIL oncontextrestored: dynamic changes on the attribute assert_equals: The oncontextrestored property must be null (no attribute) expected (object) null but got (undefined) undefined
+FAIL oncontextrestored: dispatching an Event at a <math> element must trigger element.oncontextrestored assert_equals: The event must be fired at the <math> element expected (object) Element node <math></math> but got (undefined) undefined
 PASS oncuechange: must be on the appropriate locations for GlobalEventHandlers
 PASS oncuechange: the default value must be null
 PASS oncuechange: the content attribute must be compiled into a function as the corresponding property

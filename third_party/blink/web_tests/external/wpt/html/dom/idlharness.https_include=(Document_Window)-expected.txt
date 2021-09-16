@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 964 tests; 956 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 984 tests; 960 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -206,6 +206,7 @@ PASS Window interface: attribute parent
 PASS Window interface: attribute frameElement
 PASS Window interface: operation open(optional USVString, optional DOMString, optional DOMString)
 PASS Window interface: attribute navigator
+FAIL Window interface: attribute clientInformation assert_equals: setter must be undefined for readonly attributes expected (undefined) undefined but got (function) function "function set clientInformation() { [native code] }"
 PASS Window interface: attribute originAgentCluster
 PASS Window interface: operation alert()
 PASS Window interface: operation alert(DOMString)
@@ -226,7 +227,9 @@ PASS Window interface: attribute oncanplaythrough
 PASS Window interface: attribute onchange
 PASS Window interface: attribute onclick
 PASS Window interface: attribute onclose
+FAIL Window interface: attribute oncontextlost assert_own_property: The global object must have a property "oncontextlost" expected property "oncontextlost" missing
 PASS Window interface: attribute oncontextmenu
+FAIL Window interface: attribute oncontextrestored assert_own_property: The global object must have a property "oncontextrestored" expected property "oncontextrestored" missing
 PASS Window interface: attribute oncuechange
 PASS Window interface: attribute ondblclick
 PASS Window interface: attribute ondrag
@@ -302,6 +305,7 @@ PASS Window interface: attribute onunload
 PASS Window interface: attribute origin
 PASS Window interface: attribute isSecureContext
 PASS Window interface: attribute crossOriginIsolated
+PASS Window interface: operation reportError(any)
 PASS Window interface: operation btoa(DOMString)
 PASS Window interface: operation atob(DOMString)
 PASS Window interface: operation setTimeout(TimerHandler, optional long, any...)
@@ -311,6 +315,7 @@ PASS Window interface: operation clearInterval(optional long)
 PASS Window interface: operation queueMicrotask(VoidFunction)
 PASS Window interface: operation createImageBitmap(ImageBitmapSource, optional ImageBitmapOptions)
 PASS Window interface: operation createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions)
+FAIL Window interface: operation structuredClone(any, optional StructuredSerializeOptions) assert_own_property: global object missing non-static operation expected property "structuredClone" missing
 PASS Window interface: operation requestAnimationFrame(FrameRequestCallback)
 PASS Window interface: operation cancelAnimationFrame(unsigned long)
 PASS Window interface: attribute sessionStorage
@@ -351,6 +356,7 @@ PASS Window interface: window must inherit property "frameElement" with the prop
 PASS Window interface: window must inherit property "open(optional USVString, optional DOMString, optional DOMString)" with the proper type
 PASS Window interface: calling open(optional USVString, optional DOMString, optional DOMString) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "navigator" with the proper type
+PASS Window interface: window must inherit property "clientInformation" with the proper type
 PASS Window interface: window must inherit property "originAgentCluster" with the proper type
 PASS Window interface: window must inherit property "alert()" with the proper type
 PASS Window interface: window must inherit property "alert(DOMString)" with the proper type
@@ -376,7 +382,9 @@ PASS Window interface: window must inherit property "oncanplaythrough" with the 
 PASS Window interface: window must inherit property "onchange" with the proper type
 PASS Window interface: window must inherit property "onclick" with the proper type
 PASS Window interface: window must inherit property "onclose" with the proper type
+FAIL Window interface: window must inherit property "oncontextlost" with the proper type assert_own_property: expected property "oncontextlost" missing
 PASS Window interface: window must inherit property "oncontextmenu" with the proper type
+FAIL Window interface: window must inherit property "oncontextrestored" with the proper type assert_own_property: expected property "oncontextrestored" missing
 PASS Window interface: window must inherit property "oncuechange" with the proper type
 PASS Window interface: window must inherit property "ondblclick" with the proper type
 PASS Window interface: window must inherit property "ondrag" with the proper type
@@ -452,6 +460,8 @@ PASS Window interface: window must inherit property "onunload" with the proper t
 PASS Window interface: window must inherit property "origin" with the proper type
 PASS Window interface: window must inherit property "isSecureContext" with the proper type
 PASS Window interface: window must inherit property "crossOriginIsolated" with the proper type
+PASS Window interface: window must inherit property "reportError(any)" with the proper type
+PASS Window interface: calling reportError(any) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "btoa(DOMString)" with the proper type
 PASS Window interface: calling btoa(DOMString) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "atob(DOMString)" with the proper type
@@ -470,6 +480,8 @@ PASS Window interface: window must inherit property "createImageBitmap(ImageBitm
 PASS Window interface: calling createImageBitmap(ImageBitmapSource, optional ImageBitmapOptions) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions)" with the proper type
 PASS Window interface: calling createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions) on window with too few arguments must throw TypeError
+FAIL Window interface: window must inherit property "structuredClone(any, optional StructuredSerializeOptions)" with the proper type assert_own_property: expected property "structuredClone" missing
+FAIL Window interface: calling structuredClone(any, optional StructuredSerializeOptions) on window with too few arguments must throw TypeError assert_own_property: expected property "structuredClone" missing
 PASS Window interface: window must inherit property "requestAnimationFrame(FrameRequestCallback)" with the proper type
 PASS Window interface: calling requestAnimationFrame(FrameRequestCallback) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "cancelAnimationFrame(unsigned long)" with the proper type
@@ -528,7 +540,9 @@ PASS Document interface: attribute oncanplaythrough
 PASS Document interface: attribute onchange
 PASS Document interface: attribute onclick
 PASS Document interface: attribute onclose
+FAIL Document interface: attribute oncontextlost assert_true: The prototype object must have a property "oncontextlost" expected true got false
 PASS Document interface: attribute oncontextmenu
+FAIL Document interface: attribute oncontextrestored assert_true: The prototype object must have a property "oncontextrestored" expected true got false
 PASS Document interface: attribute oncuechange
 PASS Document interface: attribute ondblclick
 PASS Document interface: attribute ondrag
@@ -653,7 +667,9 @@ PASS Document interface: iframe.contentDocument must inherit property "oncanplay
 PASS Document interface: iframe.contentDocument must inherit property "onchange" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onclick" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onclose" with the proper type
+FAIL Document interface: iframe.contentDocument must inherit property "oncontextlost" with the proper type assert_inherits: property "oncontextlost" not found in prototype chain
 PASS Document interface: iframe.contentDocument must inherit property "oncontextmenu" with the proper type
+FAIL Document interface: iframe.contentDocument must inherit property "oncontextrestored" with the proper type assert_inherits: property "oncontextrestored" not found in prototype chain
 PASS Document interface: iframe.contentDocument must inherit property "oncuechange" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "ondblclick" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "ondrag" with the proper type
@@ -778,7 +794,9 @@ PASS Document interface: new Document() must inherit property "oncanplaythrough"
 PASS Document interface: new Document() must inherit property "onchange" with the proper type
 PASS Document interface: new Document() must inherit property "onclick" with the proper type
 PASS Document interface: new Document() must inherit property "onclose" with the proper type
+FAIL Document interface: new Document() must inherit property "oncontextlost" with the proper type assert_inherits: property "oncontextlost" not found in prototype chain
 PASS Document interface: new Document() must inherit property "oncontextmenu" with the proper type
+FAIL Document interface: new Document() must inherit property "oncontextrestored" with the proper type assert_inherits: property "oncontextrestored" not found in prototype chain
 PASS Document interface: new Document() must inherit property "oncuechange" with the proper type
 PASS Document interface: new Document() must inherit property "ondblclick" with the proper type
 PASS Document interface: new Document() must inherit property "ondrag" with the proper type
@@ -903,7 +921,9 @@ PASS Document interface: documentWithHandlers must inherit property "oncanplayth
 PASS Document interface: documentWithHandlers must inherit property "onchange" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onclick" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onclose" with the proper type
+FAIL Document interface: documentWithHandlers must inherit property "oncontextlost" with the proper type assert_inherits: property "oncontextlost" found on object expected in prototype chain
 PASS Document interface: documentWithHandlers must inherit property "oncontextmenu" with the proper type
+FAIL Document interface: documentWithHandlers must inherit property "oncontextrestored" with the proper type assert_inherits: property "oncontextrestored" found on object expected in prototype chain
 PASS Document interface: documentWithHandlers must inherit property "oncuechange" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "ondblclick" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "ondrag" with the proper type

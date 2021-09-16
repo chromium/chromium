@@ -451,7 +451,7 @@ FAIL should_apply: (height >= ${value - 1}px) assert_true: (height >= 75px) expe
 PASS should_not_apply: (height < ${value - 1}px)
 PASS should_not_apply: (height <= ${value - 1}px)
 PASS should_apply: all and (device-width: ${value}px)
-FAIL should_apply: all and (device-width = ${value}px) assert_true: all and (device-width = 1280px) expected true got false
+FAIL should_apply: all and (device-width = ${value}px) assert_true: all and (device-width = 1024px) expected true got false
 PASS should_not_apply: all and (device-width: ${value + 1}px)
 PASS should_not_apply: all and (device-width: ${value - 1}px)
 PASS should_not_apply: all and (device-width = ${value + 1}px)
@@ -466,20 +466,20 @@ PASS should_not_apply: all and (min-device-width: ${Math.ceil(value/em_size) + 1
 PASS should_apply: all and (min-device-width: ${Math.floor(value/em_size) - 1}em)
 PASS should_apply: all and (max-device-width: ${Math.ceil(value/em_size) + 1}em)
 PASS should_not_apply: all and (max-device-width: ${Math.floor(value/em_size) - 1}em)
-FAIL should_apply: (device-width <= ${value}px) assert_true: (device-width <= 1280px) expected true got false
-FAIL should_apply: (device-width >= ${value}px) assert_true: (device-width >= 1280px) expected true got false
+FAIL should_apply: (device-width <= ${value}px) assert_true: (device-width <= 1024px) expected true got false
+FAIL should_apply: (device-width >= ${value}px) assert_true: (device-width >= 1024px) expected true got false
 PASS should_not_apply: (device-width < ${value}px)
 PASS should_not_apply: (device-width > ${value}px)
-FAIL should_apply: (device-width < ${value + 1}px) assert_true: (device-width < 1281px) expected true got false
-FAIL should_apply: (device-width <= ${value + 1}px) assert_true: (device-width <= 1281px) expected true got false
+FAIL should_apply: (device-width < ${value + 1}px) assert_true: (device-width < 1025px) expected true got false
+FAIL should_apply: (device-width <= ${value + 1}px) assert_true: (device-width <= 1025px) expected true got false
 PASS should_not_apply: (device-width > ${value + 1}px)
 PASS should_not_apply: (device-width >= ${value + 1}px)
-FAIL should_apply: (device-width > ${value - 1}px) assert_true: (device-width > 1279px) expected true got false
-FAIL should_apply: (device-width >= ${value - 1}px) assert_true: (device-width >= 1279px) expected true got false
+FAIL should_apply: (device-width > ${value - 1}px) assert_true: (device-width > 1023px) expected true got false
+FAIL should_apply: (device-width >= ${value - 1}px) assert_true: (device-width >= 1023px) expected true got false
 PASS should_not_apply: (device-width < ${value - 1}px)
 PASS should_not_apply: (device-width <= ${value - 1}px)
 PASS should_apply: all and (device-height: ${value}px)
-FAIL should_apply: all and (device-height = ${value}px) assert_true: all and (device-height = 1024px) expected true got false
+FAIL should_apply: all and (device-height = ${value}px) assert_true: all and (device-height = 768px) expected true got false
 PASS should_not_apply: all and (device-height: ${value + 1}px)
 PASS should_not_apply: all and (device-height: ${value - 1}px)
 PASS should_not_apply: all and (device-height = ${value + 1}px)
@@ -494,16 +494,16 @@ PASS should_not_apply: all and (min-device-height: ${Math.ceil(value/em_size) + 
 PASS should_apply: all and (min-device-height: ${Math.floor(value/em_size) - 1}em)
 PASS should_apply: all and (max-device-height: ${Math.ceil(value/em_size) + 1}em)
 PASS should_not_apply: all and (max-device-height: ${Math.floor(value/em_size) - 1}em)
-FAIL should_apply: (device-height <= ${value}px) assert_true: (device-height <= 1024px) expected true got false
-FAIL should_apply: (device-height >= ${value}px) assert_true: (device-height >= 1024px) expected true got false
+FAIL should_apply: (device-height <= ${value}px) assert_true: (device-height <= 768px) expected true got false
+FAIL should_apply: (device-height >= ${value}px) assert_true: (device-height >= 768px) expected true got false
 PASS should_not_apply: (device-height < ${value}px)
 PASS should_not_apply: (device-height > ${value}px)
-FAIL should_apply: (device-height < ${value + 1}px) assert_true: (device-height < 1025px) expected true got false
-FAIL should_apply: (device-height <= ${value + 1}px) assert_true: (device-height <= 1025px) expected true got false
+FAIL should_apply: (device-height < ${value + 1}px) assert_true: (device-height < 769px) expected true got false
+FAIL should_apply: (device-height <= ${value + 1}px) assert_true: (device-height <= 769px) expected true got false
 PASS should_not_apply: (device-height > ${value + 1}px)
 PASS should_not_apply: (device-height >= ${value + 1}px)
-FAIL should_apply: (device-height > ${value - 1}px) assert_true: (device-height > 1023px) expected true got false
-FAIL should_apply: (device-height >= ${value - 1}px) assert_true: (device-height >= 1023px) expected true got false
+FAIL should_apply: (device-height > ${value - 1}px) assert_true: (device-height > 767px) expected true got false
+FAIL should_apply: (device-height >= ${value - 1}px) assert_true: (device-height >= 767px) expected true got false
 PASS should_not_apply: (device-height < ${value - 1}px)
 PASS should_not_apply: (device-height <= ${value - 1}px)
 PASS width = 0, height != 0: should_apply: all and (height)

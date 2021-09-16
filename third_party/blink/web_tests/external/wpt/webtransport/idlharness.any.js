@@ -6,7 +6,7 @@
 
 idl_test(
   ['webtransport'],
-  ['streams'],
+  ['WebIDL', 'streams'],
   idl_array => {
     idl_array.add_objects({
       WebTransport: ['webTransport'],

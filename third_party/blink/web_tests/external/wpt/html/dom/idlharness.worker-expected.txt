@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 805 tests; 795 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 816 tests; 801 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -310,6 +310,7 @@ PASS Path2D interface: operation quadraticCurveTo(unrestricted double, unrestric
 PASS Path2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS Path2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS Path2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
+PASS Path2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, sequence<(unrestricted double or DOMPointInit)>)
 PASS Path2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS Path2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS ImageBitmapRenderingContext interface: existence and properties of interface object
@@ -331,6 +332,8 @@ PASS OffscreenCanvas interface: attribute height
 PASS OffscreenCanvas interface: operation getContext(OffscreenRenderingContextId, optional any)
 PASS OffscreenCanvas interface: operation transferToImageBitmap()
 PASS OffscreenCanvas interface: operation convertToBlob(optional ImageEncodeOptions)
+FAIL OffscreenCanvas interface: attribute oncontextlost assert_true: The prototype object must have a property "oncontextlost" expected true got false
+FAIL OffscreenCanvas interface: attribute oncontextrestored assert_true: The prototype object must have a property "oncontextrestored" expected true got false
 PASS OffscreenCanvasRenderingContext2D interface: existence and properties of interface object
 PASS OffscreenCanvasRenderingContext2D interface object length
 PASS OffscreenCanvasRenderingContext2D interface object name
@@ -342,6 +345,7 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute canvas
 PASS OffscreenCanvasRenderingContext2D interface: operation save()
 PASS OffscreenCanvasRenderingContext2D interface: operation restore()
 PASS OffscreenCanvasRenderingContext2D interface: operation reset()
+PASS OffscreenCanvasRenderingContext2D interface: operation isContextLost()
 PASS OffscreenCanvasRenderingContext2D interface: operation scale(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rotate(unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation translate(unrestricted double, unrestricted double)
@@ -414,6 +418,7 @@ PASS OffscreenCanvasRenderingContext2D interface: operation quadraticCurveTo(unr
 PASS OffscreenCanvasRenderingContext2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
+PASS OffscreenCanvasRenderingContext2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, sequence<(unrestricted double or DOMPointInit)>)
 PASS OffscreenCanvasRenderingContext2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS OffscreenCanvasRenderingContext2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS CustomElementRegistry interface: existence and properties of interface object
@@ -451,6 +456,10 @@ PASS PromiseRejectionEvent interface: attribute promise
 PASS PromiseRejectionEvent interface: attribute reason
 PASS DOMParser interface: existence and properties of interface object
 PASS Navigator interface: existence and properties of interface object
+PASS PluginArray interface: existence and properties of interface object
+PASS MimeTypeArray interface: existence and properties of interface object
+PASS Plugin interface: existence and properties of interface object
+PASS MimeType interface: existence and properties of interface object
 PASS ImageBitmap interface: existence and properties of interface object
 PASS ImageBitmap interface object length
 PASS ImageBitmap interface object name
@@ -596,7 +605,7 @@ PASS MessagePort interface: existence and properties of interface prototype obje
 PASS MessagePort interface: existence and properties of interface prototype object's "constructor" property
 PASS MessagePort interface: existence and properties of interface prototype object's @@unscopables property
 PASS MessagePort interface: operation postMessage(any, sequence<object>)
-PASS MessagePort interface: operation postMessage(any, optional PostMessageOptions)
+PASS MessagePort interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS MessagePort interface: operation start()
 PASS MessagePort interface: operation close()
 PASS MessagePort interface: attribute onmessage
@@ -631,6 +640,7 @@ PASS WorkerGlobalScope interface: attribute onunhandledrejection
 PASS WorkerGlobalScope interface: attribute origin
 PASS WorkerGlobalScope interface: attribute isSecureContext
 PASS WorkerGlobalScope interface: attribute crossOriginIsolated
+PASS WorkerGlobalScope interface: operation reportError(any)
 PASS WorkerGlobalScope interface: operation btoa(DOMString)
 PASS WorkerGlobalScope interface: operation atob(DOMString)
 PASS WorkerGlobalScope interface: operation setTimeout(TimerHandler, optional long, any...)
@@ -640,6 +650,7 @@ PASS WorkerGlobalScope interface: operation clearInterval(optional long)
 PASS WorkerGlobalScope interface: operation queueMicrotask(VoidFunction)
 PASS WorkerGlobalScope interface: operation createImageBitmap(ImageBitmapSource, optional ImageBitmapOptions)
 PASS WorkerGlobalScope interface: operation createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions)
+FAIL WorkerGlobalScope interface: operation structuredClone(any, optional StructuredSerializeOptions) assert_own_property: interface prototype object missing non-static operation expected property "structuredClone" missing
 PASS DedicatedWorkerGlobalScope interface: existence and properties of interface object
 PASS DedicatedWorkerGlobalScope interface object length
 PASS DedicatedWorkerGlobalScope interface object name
@@ -654,7 +665,7 @@ PASS DedicatedWorkerGlobalScope interface: existence and properties of interface
 PASS DedicatedWorkerGlobalScope interface: existence and properties of interface prototype object's @@unscopables property
 PASS DedicatedWorkerGlobalScope interface: attribute name
 PASS DedicatedWorkerGlobalScope interface: operation postMessage(any, sequence<object>)
-PASS DedicatedWorkerGlobalScope interface: operation postMessage(any, optional PostMessageOptions)
+PASS DedicatedWorkerGlobalScope interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS DedicatedWorkerGlobalScope interface: operation close()
 PASS DedicatedWorkerGlobalScope interface: attribute onmessage
 PASS DedicatedWorkerGlobalScope interface: attribute onmessageerror
@@ -671,8 +682,8 @@ PASS Stringification of self
 PASS DedicatedWorkerGlobalScope interface: self must inherit property "name" with the proper type
 PASS DedicatedWorkerGlobalScope interface: self must inherit property "postMessage(any, sequence<object>)" with the proper type
 PASS DedicatedWorkerGlobalScope interface: calling postMessage(any, sequence<object>) on self with too few arguments must throw TypeError
-PASS DedicatedWorkerGlobalScope interface: self must inherit property "postMessage(any, optional PostMessageOptions)" with the proper type
-PASS DedicatedWorkerGlobalScope interface: calling postMessage(any, optional PostMessageOptions) on self with too few arguments must throw TypeError
+PASS DedicatedWorkerGlobalScope interface: self must inherit property "postMessage(any, optional StructuredSerializeOptions)" with the proper type
+PASS DedicatedWorkerGlobalScope interface: calling postMessage(any, optional StructuredSerializeOptions) on self with too few arguments must throw TypeError
 PASS DedicatedWorkerGlobalScope interface: self must inherit property "close()" with the proper type
 PASS DedicatedWorkerGlobalScope interface: self must inherit property "onmessage" with the proper type
 PASS DedicatedWorkerGlobalScope interface: self must inherit property "onmessageerror" with the proper type
@@ -694,6 +705,8 @@ PASS WorkerGlobalScope interface: self must inherit property "onunhandledrejecti
 PASS WorkerGlobalScope interface: self must inherit property "origin" with the proper type
 PASS WorkerGlobalScope interface: self must inherit property "isSecureContext" with the proper type
 PASS WorkerGlobalScope interface: self must inherit property "crossOriginIsolated" with the proper type
+PASS WorkerGlobalScope interface: self must inherit property "reportError(any)" with the proper type
+PASS WorkerGlobalScope interface: calling reportError(any) on self with too few arguments must throw TypeError
 PASS WorkerGlobalScope interface: self must inherit property "btoa(DOMString)" with the proper type
 PASS WorkerGlobalScope interface: calling btoa(DOMString) on self with too few arguments must throw TypeError
 PASS WorkerGlobalScope interface: self must inherit property "atob(DOMString)" with the proper type
@@ -712,6 +725,8 @@ PASS WorkerGlobalScope interface: self must inherit property "createImageBitmap(
 PASS WorkerGlobalScope interface: calling createImageBitmap(ImageBitmapSource, optional ImageBitmapOptions) on self with too few arguments must throw TypeError
 PASS WorkerGlobalScope interface: self must inherit property "createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions)" with the proper type
 PASS WorkerGlobalScope interface: calling createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions) on self with too few arguments must throw TypeError
+FAIL WorkerGlobalScope interface: self must inherit property "structuredClone(any, optional StructuredSerializeOptions)" with the proper type assert_inherits: property "structuredClone" not found in prototype chain
+FAIL WorkerGlobalScope interface: calling structuredClone(any, optional StructuredSerializeOptions) on self with too few arguments must throw TypeError assert_inherits: property "structuredClone" not found in prototype chain
 PASS SharedWorkerGlobalScope interface: existence and properties of interface object
 PASS Worker interface: existence and properties of interface object
 PASS Worker interface object length
@@ -721,7 +736,7 @@ PASS Worker interface: existence and properties of interface prototype object's 
 PASS Worker interface: existence and properties of interface prototype object's @@unscopables property
 PASS Worker interface: operation terminate()
 PASS Worker interface: operation postMessage(any, sequence<object>)
-PASS Worker interface: operation postMessage(any, optional PostMessageOptions)
+PASS Worker interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS Worker interface: attribute onmessage
 FAIL Worker interface: attribute onmessageerror assert_true: The prototype object must have a property "onmessageerror" expected true got false
 PASS Worker interface: attribute onerror
@@ -801,9 +816,5 @@ PASS HTMLFrameElement interface: existence and properties of interface object
 PASS HTMLDirectoryElement interface: existence and properties of interface object
 PASS HTMLFontElement interface: existence and properties of interface object
 PASS External interface: existence and properties of interface object
-PASS PluginArray interface: existence and properties of interface object
-PASS MimeTypeArray interface: existence and properties of interface object
-PASS Plugin interface: existence and properties of interface object
-PASS MimeType interface: existence and properties of interface object
 Harness: the test ran to completion.
 

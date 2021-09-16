@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 321 tests; 309 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 327 tests; 309 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS shadowed blur (document.body)
 PASS shadowed error (document.body)
 PASS shadowed focus (document.body)
@@ -30,7 +30,9 @@ PASS not shadowed canplaythrough (document.body)
 PASS not shadowed change (document.body)
 PASS not shadowed click (document.body)
 PASS not shadowed close (document.body)
+FAIL not shadowed contextlost (document.body) assert_equals: alternative body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed contextmenu (document.body)
+FAIL not shadowed contextrestored (document.body) assert_equals: alternative body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed cuechange (document.body)
 PASS not shadowed dblclick (document.body)
 PASS not shadowed drag (document.body)
@@ -137,7 +139,9 @@ PASS not shadowed canplaythrough (document.createElement("body"))
 PASS not shadowed change (document.createElement("body"))
 PASS not shadowed click (document.createElement("body"))
 PASS not shadowed close (document.createElement("body"))
+FAIL not shadowed contextlost (document.createElement("body")) assert_equals: body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed contextmenu (document.createElement("body"))
+FAIL not shadowed contextrestored (document.createElement("body")) assert_equals: body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed cuechange (document.createElement("body"))
 PASS not shadowed dblclick (document.createElement("body"))
 PASS not shadowed drag (document.createElement("body"))
@@ -244,7 +248,9 @@ PASS not shadowed canplaythrough (window)
 PASS not shadowed change (window)
 PASS not shadowed click (window)
 PASS not shadowed close (window)
+FAIL not shadowed contextlost (window) assert_equals: body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed contextmenu (window)
+FAIL not shadowed contextrestored (window) assert_equals: body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed cuechange (window)
 PASS not shadowed dblclick (window)
 PASS not shadowed drag (window)

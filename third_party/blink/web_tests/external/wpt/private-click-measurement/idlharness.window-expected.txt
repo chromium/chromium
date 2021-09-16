@@ -14,8 +14,6 @@ PASS Element includes NonDocumentTypeChildNode: member names are unique
 PASS Element includes ChildNode: member names are unique
 PASS Element includes Slottable: member names are unique
 FAIL HTMLAnchorElement interface: attribute attributionSourceId assert_true: The prototype object must have a property "attributionSourceId" expected true got false
-PASS HTMLAnchorElement interface: attribute attributionDestination
 FAIL HTMLAnchorElement interface: document.createElement("a") must inherit property "attributionSourceId" with the proper type assert_inherits: property "attributionSourceId" not found in prototype chain
-PASS HTMLAnchorElement interface: document.createElement("a") must inherit property "attributionDestination" with the proper type
 Harness: the test ran to completion.
 

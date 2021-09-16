@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1445 tests; 1408 PASS, 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1459 tests; 1418 PASS, 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -432,6 +432,7 @@ PASS CanvasRenderingContext2D interface: operation getContextAttributes()
 PASS CanvasRenderingContext2D interface: operation save()
 PASS CanvasRenderingContext2D interface: operation restore()
 PASS CanvasRenderingContext2D interface: operation reset()
+PASS CanvasRenderingContext2D interface: operation isContextLost()
 PASS CanvasRenderingContext2D interface: operation scale(unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation rotate(unrestricted double)
 PASS CanvasRenderingContext2D interface: operation translate(unrestricted double, unrestricted double)
@@ -508,6 +509,7 @@ PASS CanvasRenderingContext2D interface: operation quadraticCurveTo(unrestricted
 PASS CanvasRenderingContext2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
+PASS CanvasRenderingContext2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, sequence<(unrestricted double or DOMPointInit)>)
 PASS CanvasRenderingContext2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS CanvasRenderingContext2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS CanvasRenderingContext2D must be primary interface of document.createElement("canvas").getContext("2d")
@@ -517,6 +519,7 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "save()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "restore()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "reset()" with the proper type
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "isContextLost()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "scale(unrestricted double, unrestricted double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling scale(unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "rotate(unrestricted double)" with the proper type
@@ -636,6 +639,8 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: calling arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, sequence<(unrestricted double or DOMPointInit)>)" with the proper type
+PASS CanvasRenderingContext2D interface: calling roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, sequence<(unrestricted double or DOMPointInit)>) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)" with the proper type
 PASS CanvasRenderingContext2D interface: calling arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)" with the proper type
@@ -702,6 +707,7 @@ PASS Path2D interface: operation quadraticCurveTo(unrestricted double, unrestric
 PASS Path2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS Path2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS Path2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
+PASS Path2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, sequence<(unrestricted double or DOMPointInit)>)
 PASS Path2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS Path2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS ImageBitmapRenderingContext interface: existence and properties of interface object
@@ -723,6 +729,8 @@ PASS OffscreenCanvas interface: attribute height
 PASS OffscreenCanvas interface: operation getContext(OffscreenRenderingContextId, optional any)
 PASS OffscreenCanvas interface: operation transferToImageBitmap()
 PASS OffscreenCanvas interface: operation convertToBlob(optional ImageEncodeOptions)
+FAIL OffscreenCanvas interface: attribute oncontextlost assert_true: The prototype object must have a property "oncontextlost" expected true got false
+FAIL OffscreenCanvas interface: attribute oncontextrestored assert_true: The prototype object must have a property "oncontextrestored" expected true got false
 PASS OffscreenCanvasRenderingContext2D interface: existence and properties of interface object
 PASS OffscreenCanvasRenderingContext2D interface object length
 PASS OffscreenCanvasRenderingContext2D interface object name
@@ -734,6 +742,7 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute canvas
 PASS OffscreenCanvasRenderingContext2D interface: operation save()
 PASS OffscreenCanvasRenderingContext2D interface: operation restore()
 PASS OffscreenCanvasRenderingContext2D interface: operation reset()
+PASS OffscreenCanvasRenderingContext2D interface: operation isContextLost()
 PASS OffscreenCanvasRenderingContext2D interface: operation scale(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rotate(unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation translate(unrestricted double, unrestricted double)
@@ -806,6 +815,7 @@ PASS OffscreenCanvasRenderingContext2D interface: operation quadraticCurveTo(unr
 PASS OffscreenCanvasRenderingContext2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
+PASS OffscreenCanvasRenderingContext2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, sequence<(unrestricted double or DOMPointInit)>)
 PASS OffscreenCanvasRenderingContext2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS OffscreenCanvasRenderingContext2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS CustomElementRegistry interface: existence and properties of interface object
@@ -1023,6 +1033,7 @@ PASS Navigator interface: attribute cookieEnabled
 PASS Navigator interface: attribute plugins
 PASS Navigator interface: attribute mimeTypes
 PASS Navigator interface: operation javaEnabled()
+PASS Navigator interface: attribute pdfViewerEnabled
 PASS Navigator interface: attribute hardwareConcurrency
 PASS Navigator must be primary interface of window.navigator
 PASS Stringification of window.navigator
@@ -1048,7 +1059,49 @@ PASS Navigator interface: window.navigator must inherit property "cookieEnabled"
 PASS Navigator interface: window.navigator must inherit property "plugins" with the proper type
 PASS Navigator interface: window.navigator must inherit property "mimeTypes" with the proper type
 PASS Navigator interface: window.navigator must inherit property "javaEnabled()" with the proper type
+PASS Navigator interface: window.navigator must inherit property "pdfViewerEnabled" with the proper type
 PASS Navigator interface: window.navigator must inherit property "hardwareConcurrency" with the proper type
+PASS PluginArray interface: existence and properties of interface object
+PASS PluginArray interface object length
+PASS PluginArray interface object name
+PASS PluginArray interface: existence and properties of interface prototype object
+PASS PluginArray interface: existence and properties of interface prototype object's "constructor" property
+PASS PluginArray interface: existence and properties of interface prototype object's @@unscopables property
+PASS PluginArray interface: operation refresh()
+PASS PluginArray interface: attribute length
+PASS PluginArray interface: operation item(unsigned long)
+PASS PluginArray interface: operation namedItem(DOMString)
+PASS MimeTypeArray interface: existence and properties of interface object
+PASS MimeTypeArray interface object length
+PASS MimeTypeArray interface object name
+PASS MimeTypeArray interface: existence and properties of interface prototype object
+PASS MimeTypeArray interface: existence and properties of interface prototype object's "constructor" property
+PASS MimeTypeArray interface: existence and properties of interface prototype object's @@unscopables property
+PASS MimeTypeArray interface: attribute length
+PASS MimeTypeArray interface: operation item(unsigned long)
+PASS MimeTypeArray interface: operation namedItem(DOMString)
+PASS Plugin interface: existence and properties of interface object
+PASS Plugin interface object length
+PASS Plugin interface object name
+PASS Plugin interface: existence and properties of interface prototype object
+PASS Plugin interface: existence and properties of interface prototype object's "constructor" property
+PASS Plugin interface: existence and properties of interface prototype object's @@unscopables property
+PASS Plugin interface: attribute name
+PASS Plugin interface: attribute description
+PASS Plugin interface: attribute filename
+PASS Plugin interface: attribute length
+PASS Plugin interface: operation item(unsigned long)
+PASS Plugin interface: operation namedItem(DOMString)
+PASS MimeType interface: existence and properties of interface object
+PASS MimeType interface object length
+PASS MimeType interface object name
+PASS MimeType interface: existence and properties of interface prototype object
+PASS MimeType interface: existence and properties of interface prototype object's "constructor" property
+PASS MimeType interface: existence and properties of interface prototype object's @@unscopables property
+PASS MimeType interface: attribute type
+PASS MimeType interface: attribute description
+PASS MimeType interface: attribute suffixes
+PASS MimeType interface: attribute enabledPlugin
 PASS ImageBitmap interface: existence and properties of interface object
 PASS ImageBitmap interface object length
 PASS ImageBitmap interface object name
@@ -1194,7 +1247,7 @@ PASS MessagePort interface: existence and properties of interface prototype obje
 PASS MessagePort interface: existence and properties of interface prototype object's "constructor" property
 PASS MessagePort interface: existence and properties of interface prototype object's @@unscopables property
 PASS MessagePort interface: operation postMessage(any, sequence<object>)
-PASS MessagePort interface: operation postMessage(any, optional PostMessageOptions)
+PASS MessagePort interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS MessagePort interface: operation start()
 PASS MessagePort interface: operation close()
 PASS MessagePort interface: attribute onmessage
@@ -1221,7 +1274,7 @@ PASS Worker interface: existence and properties of interface prototype object's 
 PASS Worker interface: existence and properties of interface prototype object's @@unscopables property
 PASS Worker interface: operation terminate()
 PASS Worker interface: operation postMessage(any, sequence<object>)
-PASS Worker interface: operation postMessage(any, optional PostMessageOptions)
+PASS Worker interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS Worker interface: attribute onmessage
 FAIL Worker interface: attribute onmessageerror assert_true: The prototype object must have a property "onmessageerror" expected true got false
 PASS Worker interface: attribute onerror
@@ -1312,47 +1365,6 @@ PASS External must be primary interface of window.external
 PASS Stringification of window.external
 PASS External interface: window.external must inherit property "AddSearchProvider()" with the proper type
 PASS External interface: window.external must inherit property "IsSearchProviderInstalled()" with the proper type
-PASS PluginArray interface: existence and properties of interface object
-PASS PluginArray interface object length
-PASS PluginArray interface object name
-PASS PluginArray interface: existence and properties of interface prototype object
-PASS PluginArray interface: existence and properties of interface prototype object's "constructor" property
-PASS PluginArray interface: existence and properties of interface prototype object's @@unscopables property
-PASS PluginArray interface: operation refresh()
-PASS PluginArray interface: attribute length
-PASS PluginArray interface: operation item(unsigned long)
-PASS PluginArray interface: operation namedItem(DOMString)
-PASS MimeTypeArray interface: existence and properties of interface object
-PASS MimeTypeArray interface object length
-PASS MimeTypeArray interface object name
-PASS MimeTypeArray interface: existence and properties of interface prototype object
-PASS MimeTypeArray interface: existence and properties of interface prototype object's "constructor" property
-PASS MimeTypeArray interface: existence and properties of interface prototype object's @@unscopables property
-PASS MimeTypeArray interface: attribute length
-PASS MimeTypeArray interface: operation item(unsigned long)
-PASS MimeTypeArray interface: operation namedItem(DOMString)
-PASS Plugin interface: existence and properties of interface object
-PASS Plugin interface object length
-PASS Plugin interface object name
-PASS Plugin interface: existence and properties of interface prototype object
-PASS Plugin interface: existence and properties of interface prototype object's "constructor" property
-PASS Plugin interface: existence and properties of interface prototype object's @@unscopables property
-PASS Plugin interface: attribute name
-PASS Plugin interface: attribute description
-PASS Plugin interface: attribute filename
-PASS Plugin interface: attribute length
-PASS Plugin interface: operation item(unsigned long)
-PASS Plugin interface: operation namedItem(DOMString)
-PASS MimeType interface: existence and properties of interface object
-PASS MimeType interface object length
-PASS MimeType interface object name
-PASS MimeType interface: existence and properties of interface prototype object
-PASS MimeType interface: existence and properties of interface prototype object's "constructor" property
-PASS MimeType interface: existence and properties of interface prototype object's @@unscopables property
-PASS MimeType interface: attribute type
-PASS MimeType interface: attribute description
-PASS MimeType interface: attribute suffixes
-PASS MimeType interface: attribute enabledPlugin
 PASS SVGElement interface: attribute onabort
 PASS SVGElement interface: attribute onauxclick
 PASS SVGElement interface: attribute onblur
@@ -1362,7 +1374,9 @@ PASS SVGElement interface: attribute oncanplaythrough
 PASS SVGElement interface: attribute onchange
 PASS SVGElement interface: attribute onclick
 PASS SVGElement interface: attribute onclose
+FAIL SVGElement interface: attribute oncontextlost assert_true: The prototype object must have a property "oncontextlost" expected true got false
 PASS SVGElement interface: attribute oncontextmenu
+FAIL SVGElement interface: attribute oncontextrestored assert_true: The prototype object must have a property "oncontextrestored" expected true got false
 PASS SVGElement interface: attribute oncuechange
 PASS SVGElement interface: attribute ondblclick
 PASS SVGElement interface: attribute ondrag

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 283 tests; 270 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 293 tests; 272 PASS, 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -10,7 +10,7 @@ PASS Partial interface mixin WebGLRenderingContextBase: original interface mixin
 PASS Partial interface mixin WebGLRenderingContextBase: member names are unique
 PASS Partial interface Navigator[2]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
-FAIL WebGLRenderingContext includes WebGLRenderingContextBase: member names are unique assert_true: member canvas is unique expected true got false
+PASS WebGLRenderingContext includes WebGLRenderingContextBase: member names are unique
 FAIL WebGLRenderingContext includes WebGLRenderingContextOverloads: member names are unique assert_true: member bufferData is unique expected true got false
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique
@@ -35,9 +35,12 @@ PASS XRSession interface: existence and properties of interface prototype object
 PASS XRSession interface: existence and properties of interface prototype object's "constructor" property
 PASS XRSession interface: existence and properties of interface prototype object's @@unscopables property
 PASS XRSession interface: attribute visibilityState
+FAIL XRSession interface: attribute frameRate assert_true: The prototype object must have a property "frameRate" expected true got false
+FAIL XRSession interface: attribute supportedFrameRates assert_true: The prototype object must have a property "supportedFrameRates" expected true got false
 PASS XRSession interface: attribute renderState
 PASS XRSession interface: attribute inputSources
 PASS XRSession interface: operation updateRenderState(optional XRRenderStateInit)
+FAIL XRSession interface: operation updateTargetFrameRate(float) assert_own_property: interface prototype object missing non-static operation expected property "updateTargetFrameRate" missing
 PASS XRSession interface: operation requestReferenceSpace(XRReferenceSpaceType)
 PASS XRSession interface: operation requestAnimationFrame(XRFrameRequestCallback)
 PASS XRSession interface: operation cancelAnimationFrame(unsigned long)
@@ -51,13 +54,18 @@ PASS XRSession interface: attribute onsqueeze
 PASS XRSession interface: attribute onsqueezestart
 PASS XRSession interface: attribute onsqueezeend
 PASS XRSession interface: attribute onvisibilitychange
+FAIL XRSession interface: attribute onframeratechange assert_true: The prototype object must have a property "onframeratechange" expected true got false
 PASS XRSession must be primary interface of xrSession
 PASS Stringification of xrSession
 PASS XRSession interface: xrSession must inherit property "visibilityState" with the proper type
+FAIL XRSession interface: xrSession must inherit property "frameRate" with the proper type assert_inherits: property "frameRate" not found in prototype chain
+FAIL XRSession interface: xrSession must inherit property "supportedFrameRates" with the proper type assert_inherits: property "supportedFrameRates" not found in prototype chain
 PASS XRSession interface: xrSession must inherit property "renderState" with the proper type
 PASS XRSession interface: xrSession must inherit property "inputSources" with the proper type
 PASS XRSession interface: xrSession must inherit property "updateRenderState(optional XRRenderStateInit)" with the proper type
 PASS XRSession interface: calling updateRenderState(optional XRRenderStateInit) on xrSession with too few arguments must throw TypeError
+FAIL XRSession interface: xrSession must inherit property "updateTargetFrameRate(float)" with the proper type assert_inherits: property "updateTargetFrameRate" not found in prototype chain
+FAIL XRSession interface: calling updateTargetFrameRate(float) on xrSession with too few arguments must throw TypeError assert_inherits: property "updateTargetFrameRate" not found in prototype chain
 PASS XRSession interface: xrSession must inherit property "requestReferenceSpace(XRReferenceSpaceType)" with the proper type
 PASS XRSession interface: calling requestReferenceSpace(XRReferenceSpaceType) on xrSession with too few arguments must throw TypeError
 PASS XRSession interface: xrSession must inherit property "requestAnimationFrame(XRFrameRequestCallback)" with the proper type
@@ -74,6 +82,7 @@ PASS XRSession interface: xrSession must inherit property "onsqueeze" with the p
 PASS XRSession interface: xrSession must inherit property "onsqueezestart" with the proper type
 PASS XRSession interface: xrSession must inherit property "onsqueezeend" with the proper type
 PASS XRSession interface: xrSession must inherit property "onvisibilitychange" with the proper type
+FAIL XRSession interface: xrSession must inherit property "onframeratechange" with the proper type assert_inherits: property "onframeratechange" not found in prototype chain
 PASS XRRenderState interface: existence and properties of interface object
 PASS XRRenderState interface object length
 PASS XRRenderState interface object name
@@ -281,6 +290,7 @@ FAIL XRPermissionStatus interface: existence and properties of interface prototy
 FAIL XRPermissionStatus interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
 FAIL XRPermissionStatus interface: attribute granted assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
 PASS WebGLRenderingContextBase interface: webGLRenderingContextBase must inherit property "makeXRCompatible()" with the proper type
+PASS WebGLRenderingContext interface: operation makeXRCompatible()
 PASS Navigator interface: attribute xr
 PASS Navigator interface: navigator must inherit property "xr" with the proper type
 Harness: the test ran to completion.

@@ -1,0 +1,228 @@
+This is a testharness.js-based test.
+Found 224 tests; 212 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS ReadableStreamDefaultReader includes ReadableStreamGenericReader: member names are unique
+PASS ReadableStreamBYOBReader includes ReadableStreamGenericReader: member names are unique
+PASS ReadableStream interface: existence and properties of interface object
+PASS ReadableStream interface object length
+PASS ReadableStream interface object name
+PASS ReadableStream interface: existence and properties of interface prototype object
+PASS ReadableStream interface: existence and properties of interface prototype object's "constructor" property
+PASS ReadableStream interface: existence and properties of interface prototype object's @@unscopables property
+PASS ReadableStream interface: attribute locked
+PASS ReadableStream interface: operation cancel(optional any)
+PASS ReadableStream interface: operation getReader(optional ReadableStreamGetReaderOptions)
+PASS ReadableStream interface: operation pipeThrough(ReadableWritablePair, optional StreamPipeOptions)
+PASS ReadableStream interface: operation pipeTo(WritableStream, optional StreamPipeOptions)
+PASS ReadableStream interface: operation tee()
+FAIL ReadableStream interface: async iterable<any> Cannot read properties of undefined (reading 'writable')
+PASS ReadableStream must be primary interface of new ReadableStream()
+PASS Stringification of new ReadableStream()
+PASS ReadableStream interface: new ReadableStream() must inherit property "locked" with the proper type
+PASS ReadableStream interface: new ReadableStream() must inherit property "cancel(optional any)" with the proper type
+PASS ReadableStream interface: calling cancel(optional any) on new ReadableStream() with too few arguments must throw TypeError
+PASS ReadableStream interface: new ReadableStream() must inherit property "getReader(optional ReadableStreamGetReaderOptions)" with the proper type
+PASS ReadableStream interface: calling getReader(optional ReadableStreamGetReaderOptions) on new ReadableStream() with too few arguments must throw TypeError
+PASS ReadableStream interface: new ReadableStream() must inherit property "pipeThrough(ReadableWritablePair, optional StreamPipeOptions)" with the proper type
+PASS ReadableStream interface: calling pipeThrough(ReadableWritablePair, optional StreamPipeOptions) on new ReadableStream() with too few arguments must throw TypeError
+PASS ReadableStream interface: new ReadableStream() must inherit property "pipeTo(WritableStream, optional StreamPipeOptions)" with the proper type
+PASS ReadableStream interface: calling pipeTo(WritableStream, optional StreamPipeOptions) on new ReadableStream() with too few arguments must throw TypeError
+PASS ReadableStream interface: new ReadableStream() must inherit property "tee()" with the proper type
+PASS ReadableStreamDefaultReader interface: existence and properties of interface object
+PASS ReadableStreamDefaultReader interface object length
+PASS ReadableStreamDefaultReader interface object name
+PASS ReadableStreamDefaultReader interface: existence and properties of interface prototype object
+PASS ReadableStreamDefaultReader interface: existence and properties of interface prototype object's "constructor" property
+PASS ReadableStreamDefaultReader interface: existence and properties of interface prototype object's @@unscopables property
+PASS ReadableStreamDefaultReader interface: operation read()
+PASS ReadableStreamDefaultReader interface: operation releaseLock()
+PASS ReadableStreamDefaultReader interface: attribute closed
+PASS ReadableStreamDefaultReader interface: operation cancel(optional any)
+PASS ReadableStreamDefaultReader must be primary interface of (new ReadableStream()).getReader()
+PASS Stringification of (new ReadableStream()).getReader()
+PASS ReadableStreamDefaultReader interface: (new ReadableStream()).getReader() must inherit property "read()" with the proper type
+PASS ReadableStreamDefaultReader interface: (new ReadableStream()).getReader() must inherit property "releaseLock()" with the proper type
+PASS ReadableStreamDefaultReader interface: (new ReadableStream()).getReader() must inherit property "closed" with the proper type
+PASS ReadableStreamDefaultReader interface: (new ReadableStream()).getReader() must inherit property "cancel(optional any)" with the proper type
+PASS ReadableStreamDefaultReader interface: calling cancel(optional any) on (new ReadableStream()).getReader() with too few arguments must throw TypeError
+PASS ReadableStreamBYOBReader interface: existence and properties of interface object
+PASS ReadableStreamBYOBReader interface object length
+PASS ReadableStreamBYOBReader interface object name
+PASS ReadableStreamBYOBReader interface: existence and properties of interface prototype object
+PASS ReadableStreamBYOBReader interface: existence and properties of interface prototype object's "constructor" property
+PASS ReadableStreamBYOBReader interface: existence and properties of interface prototype object's @@unscopables property
+PASS ReadableStreamBYOBReader interface: operation read(ArrayBufferView)
+PASS ReadableStreamBYOBReader interface: operation releaseLock()
+PASS ReadableStreamBYOBReader interface: attribute closed
+PASS ReadableStreamBYOBReader interface: operation cancel(optional any)
+PASS ReadableStreamBYOBReader must be primary interface of (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' })
+PASS Stringification of (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' })
+PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "read(ArrayBufferView)" with the proper type
+PASS ReadableStreamBYOBReader interface: calling read(ArrayBufferView) on (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) with too few arguments must throw TypeError
+PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "releaseLock()" with the proper type
+PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "closed" with the proper type
+PASS ReadableStreamBYOBReader interface: (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) must inherit property "cancel(optional any)" with the proper type
+PASS ReadableStreamBYOBReader interface: calling cancel(optional any) on (new ReadableStream({ type: 'bytes' })).getReader({ mode: 'byob' }) with too few arguments must throw TypeError
+PASS ReadableStreamDefaultController interface: existence and properties of interface object
+PASS ReadableStreamDefaultController interface object length
+PASS ReadableStreamDefaultController interface object name
+PASS ReadableStreamDefaultController interface: existence and properties of interface prototype object
+PASS ReadableStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property
+PASS ReadableStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property
+PASS ReadableStreamDefaultController interface: attribute desiredSize
+PASS ReadableStreamDefaultController interface: operation close()
+PASS ReadableStreamDefaultController interface: operation enqueue(optional any)
+PASS ReadableStreamDefaultController interface: operation error(optional any)
+PASS ReadableStreamDefaultController must be primary interface of self.readableStreamDefaultController
+PASS Stringification of self.readableStreamDefaultController
+PASS ReadableStreamDefaultController interface: self.readableStreamDefaultController must inherit property "desiredSize" with the proper type
+PASS ReadableStreamDefaultController interface: self.readableStreamDefaultController must inherit property "close()" with the proper type
+PASS ReadableStreamDefaultController interface: self.readableStreamDefaultController must inherit property "enqueue(optional any)" with the proper type
+PASS ReadableStreamDefaultController interface: calling enqueue(optional any) on self.readableStreamDefaultController with too few arguments must throw TypeError
+PASS ReadableStreamDefaultController interface: self.readableStreamDefaultController must inherit property "error(optional any)" with the proper type
+PASS ReadableStreamDefaultController interface: calling error(optional any) on self.readableStreamDefaultController with too few arguments must throw TypeError
+PASS ReadableByteStreamController interface: existence and properties of interface object
+PASS ReadableByteStreamController interface object length
+PASS ReadableByteStreamController interface object name
+PASS ReadableByteStreamController interface: existence and properties of interface prototype object
+PASS ReadableByteStreamController interface: existence and properties of interface prototype object's "constructor" property
+PASS ReadableByteStreamController interface: existence and properties of interface prototype object's @@unscopables property
+PASS ReadableByteStreamController interface: attribute byobRequest
+PASS ReadableByteStreamController interface: attribute desiredSize
+PASS ReadableByteStreamController interface: operation close()
+PASS ReadableByteStreamController interface: operation enqueue(ArrayBufferView)
+PASS ReadableByteStreamController interface: operation error(optional any)
+PASS ReadableByteStreamController must be primary interface of self.readableByteStreamController
+PASS Stringification of self.readableByteStreamController
+PASS ReadableByteStreamController interface: self.readableByteStreamController must inherit property "byobRequest" with the proper type
+PASS ReadableByteStreamController interface: self.readableByteStreamController must inherit property "desiredSize" with the proper type
+PASS ReadableByteStreamController interface: self.readableByteStreamController must inherit property "close()" with the proper type
+PASS ReadableByteStreamController interface: self.readableByteStreamController must inherit property "enqueue(ArrayBufferView)" with the proper type
+PASS ReadableByteStreamController interface: calling enqueue(ArrayBufferView) on self.readableByteStreamController with too few arguments must throw TypeError
+PASS ReadableByteStreamController interface: self.readableByteStreamController must inherit property "error(optional any)" with the proper type
+PASS ReadableByteStreamController interface: calling error(optional any) on self.readableByteStreamController with too few arguments must throw TypeError
+PASS ReadableStreamBYOBRequest interface: existence and properties of interface object
+PASS ReadableStreamBYOBRequest interface object length
+PASS ReadableStreamBYOBRequest interface object name
+PASS ReadableStreamBYOBRequest interface: existence and properties of interface prototype object
+PASS ReadableStreamBYOBRequest interface: existence and properties of interface prototype object's "constructor" property
+PASS ReadableStreamBYOBRequest interface: existence and properties of interface prototype object's @@unscopables property
+PASS ReadableStreamBYOBRequest interface: attribute view
+PASS ReadableStreamBYOBRequest interface: operation respond(unsigned long long)
+PASS ReadableStreamBYOBRequest interface: operation respondWithNewView(ArrayBufferView)
+PASS ReadableStreamBYOBRequest must be primary interface of self.readableStreamByobRequest
+PASS Stringification of self.readableStreamByobRequest
+PASS ReadableStreamBYOBRequest interface: self.readableStreamByobRequest must inherit property "view" with the proper type
+PASS ReadableStreamBYOBRequest interface: self.readableStreamByobRequest must inherit property "respond(unsigned long long)" with the proper type
+PASS ReadableStreamBYOBRequest interface: calling respond(unsigned long long) on self.readableStreamByobRequest with too few arguments must throw TypeError
+PASS ReadableStreamBYOBRequest interface: self.readableStreamByobRequest must inherit property "respondWithNewView(ArrayBufferView)" with the proper type
+PASS ReadableStreamBYOBRequest interface: calling respondWithNewView(ArrayBufferView) on self.readableStreamByobRequest with too few arguments must throw TypeError
+PASS WritableStream interface: existence and properties of interface object
+PASS WritableStream interface object length
+PASS WritableStream interface object name
+PASS WritableStream interface: existence and properties of interface prototype object
+PASS WritableStream interface: existence and properties of interface prototype object's "constructor" property
+PASS WritableStream interface: existence and properties of interface prototype object's @@unscopables property
+PASS WritableStream interface: attribute locked
+PASS WritableStream interface: operation abort(optional any)
+PASS WritableStream interface: operation close()
+PASS WritableStream interface: operation getWriter()
+PASS WritableStream must be primary interface of new WritableStream()
+PASS Stringification of new WritableStream()
+PASS WritableStream interface: new WritableStream() must inherit property "locked" with the proper type
+PASS WritableStream interface: new WritableStream() must inherit property "abort(optional any)" with the proper type
+PASS WritableStream interface: calling abort(optional any) on new WritableStream() with too few arguments must throw TypeError
+PASS WritableStream interface: new WritableStream() must inherit property "close()" with the proper type
+PASS WritableStream interface: new WritableStream() must inherit property "getWriter()" with the proper type
+PASS WritableStreamDefaultWriter interface: existence and properties of interface object
+PASS WritableStreamDefaultWriter interface object length
+PASS WritableStreamDefaultWriter interface object name
+PASS WritableStreamDefaultWriter interface: existence and properties of interface prototype object
+PASS WritableStreamDefaultWriter interface: existence and properties of interface prototype object's "constructor" property
+PASS WritableStreamDefaultWriter interface: existence and properties of interface prototype object's @@unscopables property
+PASS WritableStreamDefaultWriter interface: attribute closed
+PASS WritableStreamDefaultWriter interface: attribute desiredSize
+PASS WritableStreamDefaultWriter interface: attribute ready
+PASS WritableStreamDefaultWriter interface: operation abort(optional any)
+PASS WritableStreamDefaultWriter interface: operation close()
+PASS WritableStreamDefaultWriter interface: operation releaseLock()
+PASS WritableStreamDefaultWriter interface: operation write(optional any)
+PASS WritableStreamDefaultWriter must be primary interface of (new WritableStream()).getWriter()
+PASS Stringification of (new WritableStream()).getWriter()
+PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "closed" with the proper type
+PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "desiredSize" with the proper type
+PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "ready" with the proper type
+PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "abort(optional any)" with the proper type
+PASS WritableStreamDefaultWriter interface: calling abort(optional any) on (new WritableStream()).getWriter() with too few arguments must throw TypeError
+PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "close()" with the proper type
+PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "releaseLock()" with the proper type
+PASS WritableStreamDefaultWriter interface: (new WritableStream()).getWriter() must inherit property "write(optional any)" with the proper type
+PASS WritableStreamDefaultWriter interface: calling write(optional any) on (new WritableStream()).getWriter() with too few arguments must throw TypeError
+PASS WritableStreamDefaultController interface: existence and properties of interface object
+PASS WritableStreamDefaultController interface object length
+PASS WritableStreamDefaultController interface object name
+PASS WritableStreamDefaultController interface: existence and properties of interface prototype object
+PASS WritableStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property
+PASS WritableStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property
+PASS WritableStreamDefaultController interface: operation error(optional any)
+PASS WritableStreamDefaultController must be primary interface of self.writableStreamDefaultController
+PASS Stringification of self.writableStreamDefaultController
+PASS WritableStreamDefaultController interface: self.writableStreamDefaultController must inherit property "error(optional any)" with the proper type
+PASS WritableStreamDefaultController interface: calling error(optional any) on self.writableStreamDefaultController with too few arguments must throw TypeError
+PASS TransformStream interface: existence and properties of interface object
+PASS TransformStream interface object length
+PASS TransformStream interface object name
+PASS TransformStream interface: existence and properties of interface prototype object
+PASS TransformStream interface: existence and properties of interface prototype object's "constructor" property
+PASS TransformStream interface: existence and properties of interface prototype object's @@unscopables property
+PASS TransformStream interface: attribute readable
+PASS TransformStream interface: attribute writable
+PASS TransformStream must be primary interface of new TransformStream()
+PASS Stringification of new TransformStream()
+PASS TransformStream interface: new TransformStream() must inherit property "readable" with the proper type
+PASS TransformStream interface: new TransformStream() must inherit property "writable" with the proper type
+FAIL TransformStreamDefaultController interface: existence and properties of interface object assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+FAIL TransformStreamDefaultController interface object length assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+FAIL TransformStreamDefaultController interface object name assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+FAIL TransformStreamDefaultController interface: existence and properties of interface prototype object assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+FAIL TransformStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+FAIL TransformStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+FAIL TransformStreamDefaultController interface: attribute desiredSize assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+FAIL TransformStreamDefaultController interface: operation enqueue(optional any) assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+FAIL TransformStreamDefaultController interface: operation error(optional any) assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+FAIL TransformStreamDefaultController interface: operation terminate() assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+FAIL TransformStreamDefaultController must be primary interface of self.transformStreamDefaultController assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+PASS Stringification of self.transformStreamDefaultController
+PASS TransformStreamDefaultController interface: self.transformStreamDefaultController must inherit property "desiredSize" with the proper type
+PASS TransformStreamDefaultController interface: self.transformStreamDefaultController must inherit property "enqueue(optional any)" with the proper type
+PASS TransformStreamDefaultController interface: calling enqueue(optional any) on self.transformStreamDefaultController with too few arguments must throw TypeError
+PASS TransformStreamDefaultController interface: self.transformStreamDefaultController must inherit property "error(optional any)" with the proper type
+PASS TransformStreamDefaultController interface: calling error(optional any) on self.transformStreamDefaultController with too few arguments must throw TypeError
+PASS TransformStreamDefaultController interface: self.transformStreamDefaultController must inherit property "terminate()" with the proper type
+PASS ByteLengthQueuingStrategy interface: existence and properties of interface object
+PASS ByteLengthQueuingStrategy interface object length
+PASS ByteLengthQueuingStrategy interface object name
+PASS ByteLengthQueuingStrategy interface: existence and properties of interface prototype object
+PASS ByteLengthQueuingStrategy interface: existence and properties of interface prototype object's "constructor" property
+PASS ByteLengthQueuingStrategy interface: existence and properties of interface prototype object's @@unscopables property
+PASS ByteLengthQueuingStrategy interface: attribute highWaterMark
+PASS ByteLengthQueuingStrategy interface: attribute size
+PASS ByteLengthQueuingStrategy must be primary interface of new ByteLengthQueuingStrategy({ highWaterMark: 5 })
+PASS Stringification of new ByteLengthQueuingStrategy({ highWaterMark: 5 })
+PASS ByteLengthQueuingStrategy interface: new ByteLengthQueuingStrategy({ highWaterMark: 5 }) must inherit property "highWaterMark" with the proper type
+PASS ByteLengthQueuingStrategy interface: new ByteLengthQueuingStrategy({ highWaterMark: 5 }) must inherit property "size" with the proper type
+PASS CountQueuingStrategy interface: existence and properties of interface object
+PASS CountQueuingStrategy interface object length
+PASS CountQueuingStrategy interface object name
+PASS CountQueuingStrategy interface: existence and properties of interface prototype object
+PASS CountQueuingStrategy interface: existence and properties of interface prototype object's "constructor" property
+PASS CountQueuingStrategy interface: existence and properties of interface prototype object's @@unscopables property
+PASS CountQueuingStrategy interface: attribute highWaterMark
+PASS CountQueuingStrategy interface: attribute size
+PASS CountQueuingStrategy must be primary interface of new CountQueuingStrategy({ highWaterMark: 5 })
+PASS Stringification of new CountQueuingStrategy({ highWaterMark: 5 })
+PASS CountQueuingStrategy interface: new CountQueuingStrategy({ highWaterMark: 5 }) must inherit property "highWaterMark" with the proper type
+PASS CountQueuingStrategy interface: new CountQueuingStrategy({ highWaterMark: 5 }) must inherit property "size" with the proper type
+Harness: the test ran to completion.
+

@@ -5,6 +5,7 @@
 
 [Exposed=Window]
 partial interface AnimationTimeline {
+    readonly attribute CSSNumberish? duration;
     Animation play (optional AnimationEffect? effect = null);
 };
 
@@ -30,7 +31,11 @@ partial dictionary OptionalEffectTiming {
 };
 
 partial dictionary ComputedEffectTiming {
-    double startTime;
+    CSSNumberish         startTime;
+    CSSNumberish         endTime;
+    CSSNumberish         activeDuration;
+    CSSNumberish?        localTime;
+    CSSNumberish?        progress;
 };
 
 [Exposed=Window]

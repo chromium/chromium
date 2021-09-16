@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: valid exposure set
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface WorkerNavigator: original interface defined
+PASS Partial interface WorkerNavigator: valid exposure set
+PASS Partial interface WorkerNavigator: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS WorkerNavigator includes NavigatorID: member names are unique
+PASS WorkerNavigator includes NavigatorLanguage: member names are unique
+PASS WorkerNavigator includes NavigatorOnLine: member names are unique
+PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS Permissions interface: existence and properties of interface object
+PASS Permissions interface object length
+PASS Permissions interface object name
+PASS Permissions interface: existence and properties of interface prototype object
+PASS Permissions interface: existence and properties of interface prototype object's "constructor" property
+PASS Permissions interface: existence and properties of interface prototype object's @@unscopables property
+PASS Permissions interface: operation query(object)
+PASS Permissions must be primary interface of navigator.permissions
+PASS Stringification of navigator.permissions
+PASS Permissions interface: navigator.permissions must inherit property "query(object)" with the proper type
+PASS Permissions interface: calling query(object) on navigator.permissions with too few arguments must throw TypeError
+PASS PermissionStatus interface: existence and properties of interface object
+PASS PermissionStatus interface object length
+PASS PermissionStatus interface object name
+PASS PermissionStatus interface: existence and properties of interface prototype object
+PASS PermissionStatus interface: existence and properties of interface prototype object's "constructor" property
+PASS PermissionStatus interface: existence and properties of interface prototype object's @@unscopables property
+PASS PermissionStatus interface: attribute state
+FAIL PermissionStatus interface: attribute name assert_true: The prototype object must have a property "name" expected true got false
+PASS PermissionStatus interface: attribute onchange
+PASS PermissionStatus must be primary interface of permissionStatus
+PASS Stringification of permissionStatus
+PASS PermissionStatus interface: permissionStatus must inherit property "state" with the proper type
+FAIL PermissionStatus interface: permissionStatus must inherit property "name" with the proper type assert_inherits: property "name" not found in prototype chain
+PASS PermissionStatus interface: permissionStatus must inherit property "onchange" with the proper type
+PASS WorkerNavigator interface: attribute permissions
+PASS WorkerNavigator interface: navigator must inherit property "permissions" with the proper type
+Harness: the test ran to completion.
+

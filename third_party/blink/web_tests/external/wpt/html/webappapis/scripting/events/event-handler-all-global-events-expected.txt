@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 325 tests; 317 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 335 tests; 319 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -45,11 +45,21 @@ PASS onclose: the default value must be null
 PASS onclose: the content attribute must be compiled into a function as the corresponding property
 PASS onclose: the content attribute must execute when an event is dispatched
 PASS onclose: dispatching an Event at a <meta> element must trigger element.onclose
+FAIL oncontextlost: must be on the appropriate locations for GlobalEventHandlers assert_true: Window has an own property named "oncontextlost" expected true got false
+FAIL oncontextlost: the default value must be null assert_equals: The default value of the property is null for a Window instance expected (object) null but got (undefined) undefined
+FAIL oncontextlost: the content attribute must be compiled into a function as the corresponding property assert_equals: The oncontextlost property must be a function expected "function" but got "undefined"
+FAIL oncontextlost: the content attribute must execute when an event is dispatched assert_true: Dispatching an event must run the code expected true got undefined
+PASS oncontextlost: dispatching an Event at a <meta> element must trigger element.oncontextlost
 PASS oncontextmenu: must be on the appropriate locations for GlobalEventHandlers
 PASS oncontextmenu: the default value must be null
 PASS oncontextmenu: the content attribute must be compiled into a function as the corresponding property
 PASS oncontextmenu: the content attribute must execute when an event is dispatched
 PASS oncontextmenu: dispatching an Event at a <meta> element must trigger element.oncontextmenu
+FAIL oncontextrestored: must be on the appropriate locations for GlobalEventHandlers assert_true: Window has an own property named "oncontextrestored" expected true got false
+FAIL oncontextrestored: the default value must be null assert_equals: The default value of the property is null for a Window instance expected (object) null but got (undefined) undefined
+FAIL oncontextrestored: the content attribute must be compiled into a function as the corresponding property assert_equals: The oncontextrestored property must be a function expected "function" but got "undefined"
+FAIL oncontextrestored: the content attribute must execute when an event is dispatched assert_true: Dispatching an event must run the code expected true got undefined
+PASS oncontextrestored: dispatching an Event at a <meta> element must trigger element.oncontextrestored
 PASS oncuechange: must be on the appropriate locations for GlobalEventHandlers
 PASS oncuechange: the default value must be null
 PASS oncuechange: the content attribute must be compiled into a function as the corresponding property

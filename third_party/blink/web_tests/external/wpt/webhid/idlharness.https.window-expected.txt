@@ -29,22 +29,6 @@ PASS HID interface: navigator.hid must inherit property "ondisconnect" with the 
 PASS HID interface: navigator.hid must inherit property "getDevices()" with the proper type
 PASS HID interface: navigator.hid must inherit property "requestDevice(HIDDeviceRequestOptions)" with the proper type
 PASS HID interface: calling requestDevice(HIDDeviceRequestOptions) on navigator.hid with too few arguments must throw TypeError
-PASS HIDConnectionEvent interface: existence and properties of interface object
-PASS HIDConnectionEvent interface object length
-PASS HIDConnectionEvent interface object name
-PASS HIDConnectionEvent interface: existence and properties of interface prototype object
-PASS HIDConnectionEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS HIDConnectionEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS HIDConnectionEvent interface: attribute device
-PASS HIDInputReportEvent interface: existence and properties of interface object
-FAIL HIDInputReportEvent interface object length assert_equals: wrong value for HIDInputReportEvent.length expected 2 but got 0
-PASS HIDInputReportEvent interface object name
-PASS HIDInputReportEvent interface: existence and properties of interface prototype object
-PASS HIDInputReportEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS HIDInputReportEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS HIDInputReportEvent interface: attribute device
-PASS HIDInputReportEvent interface: attribute reportId
-PASS HIDInputReportEvent interface: attribute data
 PASS HIDDevice interface: existence and properties of interface object
 PASS HIDDevice interface object length
 PASS HIDDevice interface object name
@@ -62,6 +46,22 @@ PASS HIDDevice interface: operation close()
 PASS HIDDevice interface: operation sendReport(octet, BufferSource)
 PASS HIDDevice interface: operation sendFeatureReport(octet, BufferSource)
 PASS HIDDevice interface: operation receiveFeatureReport(octet)
+PASS HIDConnectionEvent interface: existence and properties of interface object
+PASS HIDConnectionEvent interface object length
+PASS HIDConnectionEvent interface object name
+PASS HIDConnectionEvent interface: existence and properties of interface prototype object
+PASS HIDConnectionEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS HIDConnectionEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS HIDConnectionEvent interface: attribute device
+PASS HIDInputReportEvent interface: existence and properties of interface object
+FAIL HIDInputReportEvent interface object length assert_equals: wrong value for HIDInputReportEvent.length expected 2 but got 0
+PASS HIDInputReportEvent interface object name
+PASS HIDInputReportEvent interface: existence and properties of interface prototype object
+PASS HIDInputReportEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS HIDInputReportEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS HIDInputReportEvent interface: attribute device
+PASS HIDInputReportEvent interface: attribute reportId
+PASS HIDInputReportEvent interface: attribute data
 PASS Navigator interface: attribute hid
 PASS Navigator interface: navigator must inherit property "hid" with the proper type
 Harness: the test ran to completion.

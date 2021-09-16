@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 99 tests; 66 PASS, 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 97 tests; 65 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface ServiceWorkerRegistration: original interface defined
@@ -74,7 +74,6 @@ PASS PaymentRequestEvent interface: attribute paymentRequestId
 PASS PaymentRequestEvent interface: attribute methodData
 PASS PaymentRequestEvent interface: attribute total
 PASS PaymentRequestEvent interface: attribute modifiers
-PASS PaymentRequestEvent interface: attribute instrumentKey
 PASS PaymentRequestEvent interface: operation openWindow(USVString)
 PASS PaymentRequestEvent interface: operation changePaymentMethod(DOMString, optional object?)
 PASS PaymentRequestEvent interface: operation respondWith(Promise<PaymentHandlerResponse>)
@@ -86,7 +85,6 @@ FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit
 FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "methodData" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
 FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "total" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
 FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "modifiers" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
-FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "instrumentKey" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
 FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "openWindow(USVString)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
 FAIL PaymentRequestEvent interface: calling openWindow(USVString) on new PaymentRequestEvent("type") with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."
 FAIL PaymentRequestEvent interface: new PaymentRequestEvent("type") must inherit property "changePaymentMethod(DOMString, optional object?)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'PaymentRequestEvent': 2 arguments required, but only 1 present."

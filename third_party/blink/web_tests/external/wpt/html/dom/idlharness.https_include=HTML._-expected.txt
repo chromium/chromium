@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 3763 tests; 3741 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3772 tests; 3746 PASS, 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -245,7 +245,9 @@ PASS HTMLElement interface: attribute oncanplaythrough
 PASS HTMLElement interface: attribute onchange
 PASS HTMLElement interface: attribute onclick
 PASS HTMLElement interface: attribute onclose
+FAIL HTMLElement interface: attribute oncontextlost assert_true: The prototype object must have a property "oncontextlost" expected true got false
 PASS HTMLElement interface: attribute oncontextmenu
+FAIL HTMLElement interface: attribute oncontextrestored assert_true: The prototype object must have a property "oncontextrestored" expected true got false
 PASS HTMLElement interface: attribute oncuechange
 PASS HTMLElement interface: attribute ondblclick
 PASS HTMLElement interface: attribute ondrag
@@ -340,7 +342,9 @@ PASS HTMLElement interface: document.createElement("noscript") must inherit prop
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onchange" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onclick" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onclose" with the proper type
+FAIL HTMLElement interface: document.createElement("noscript") must inherit property "oncontextlost" with the proper type assert_inherits: property "oncontextlost" not found in prototype chain
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "oncontextmenu" with the proper type
+FAIL HTMLElement interface: document.createElement("noscript") must inherit property "oncontextrestored" with the proper type assert_inherits: property "oncontextrestored" not found in prototype chain
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "oncuechange" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "ondblclick" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "ondrag" with the proper type
@@ -510,12 +514,14 @@ PASS HTMLMetaElement interface: existence and properties of interface prototype 
 PASS HTMLMetaElement interface: attribute name
 PASS HTMLMetaElement interface: attribute httpEquiv
 PASS HTMLMetaElement interface: attribute content
+PASS HTMLMetaElement interface: attribute media
 PASS HTMLMetaElement interface: attribute scheme
 PASS HTMLMetaElement must be primary interface of document.createElement("meta")
 PASS Stringification of document.createElement("meta")
 PASS HTMLMetaElement interface: document.createElement("meta") must inherit property "name" with the proper type
 PASS HTMLMetaElement interface: document.createElement("meta") must inherit property "httpEquiv" with the proper type
 PASS HTMLMetaElement interface: document.createElement("meta") must inherit property "content" with the proper type
+PASS HTMLMetaElement interface: document.createElement("meta") must inherit property "media" with the proper type
 PASS HTMLMetaElement interface: document.createElement("meta") must inherit property "scheme" with the proper type
 PASS HTMLStyleElement interface: existence and properties of interface object
 PASS HTMLStyleElement interface object length
@@ -3564,6 +3570,7 @@ PASS HTMLScriptElement interface: attribute crossOrigin
 PASS HTMLScriptElement interface: attribute text
 PASS HTMLScriptElement interface: attribute integrity
 PASS HTMLScriptElement interface: attribute referrerPolicy
+PASS HTMLScriptElement interface: operation supports(DOMString)
 PASS HTMLScriptElement interface: attribute charset
 PASS HTMLScriptElement interface: attribute event
 PASS HTMLScriptElement interface: attribute htmlFor
@@ -3578,6 +3585,8 @@ PASS HTMLScriptElement interface: document.createElement("script") must inherit 
 PASS HTMLScriptElement interface: document.createElement("script") must inherit property "text" with the proper type
 PASS HTMLScriptElement interface: document.createElement("script") must inherit property "integrity" with the proper type
 FAIL HTMLScriptElement interface: document.createElement("script") must inherit property "referrerPolicy" with the proper type assert_equals: expected "string" but got "object"
+PASS HTMLScriptElement interface: document.createElement("script") must inherit property "supports(DOMString)" with the proper type
+PASS HTMLScriptElement interface: calling supports(DOMString) on document.createElement("script") with too few arguments must throw TypeError
 PASS HTMLScriptElement interface: document.createElement("script") must inherit property "charset" with the proper type
 PASS HTMLScriptElement interface: document.createElement("script") must inherit property "event" with the proper type
 PASS HTMLScriptElement interface: document.createElement("script") must inherit property "htmlFor" with the proper type

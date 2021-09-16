@@ -159,6 +159,8 @@ interface WritableStreamDefaultWriter {
 
 [Exposed=(Window,Worker,Worklet)]
 interface WritableStreamDefaultController {
+  readonly attribute any abortReason;
+  readonly attribute AbortSignal signal;
   undefined error(optional any e);
 };
 
@@ -198,7 +200,7 @@ dictionary QueuingStrategy {
   QueuingStrategySize size;
 };
 
-callback QueuingStrategySize = unrestricted double (optional any chunk);
+callback QueuingStrategySize = unrestricted double (any chunk);
 
 dictionary QueuingStrategyInit {
   required unrestricted double highWaterMark;
