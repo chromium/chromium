@@ -34,6 +34,11 @@ def get_parts(config):
             'ksadmin',
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
             verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+        CodeSignedProduct(  # Keystone's ksinstall
+            ks_bundle + '/Contents/Helpers/ksinstall',
+            'ksinstall',
+            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
         CodeSignedProduct(  # Keystone bundle
             ks_bundle,
             config.keystone_app_name,
