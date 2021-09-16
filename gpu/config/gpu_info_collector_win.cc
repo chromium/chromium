@@ -316,24 +316,16 @@ bool CanCreateD3D12Device(IDXGIAdapter* dxgi_adapter) {
 
   // On certain Intel drivers, the driver will crash if you call
   // D3D12CreateDevice and the command line of the process is greater than 1024
-  // bytes. Affected driver versions are the following:
-  // - 27.20.100.9565
-  // - 27.20.100.9566
-  // - 27.20.100.9616
-  if ((HIWORD(umd_version.HighPart) == 27) &&
-      (LOWORD(umd_version.HighPart) == 20) &&
-      (HIWORD(umd_version.LowPart) == 100)) {
-    switch (LOWORD(umd_version.LowPart)) {
-      case 9565:
-      case 9566:
-      case 9616: {
-        const char* command_line = GetCommandLineA();
-        const size_t command_line_length = strlen(command_line);
-        // Check for 1023 since strlen doesn't include the null terminator.
-        if (command_line_length > 1023) {
-          return false;
-        }
-      }
+  // bytes. 100.9416 is the first driver to introduce the bug, while 100.9664 is
+  // the first driver to fix it.
+  if (HIWORD(umd_version.LowPart) == 100 &&
+      LOWORD(umd_version.LowPart) >= 9416 &&
+      LOWORD(umd_version.LowPart) < 9664) {
+    const char* command_line = GetCommandLineA();
+    const size_t command_line_length = strlen(command_line);
+    // Check for 1023 since strlen doesn't include the null terminator.
+    if (command_line_length > 1023) {
+      return false;
     }
   }
 
