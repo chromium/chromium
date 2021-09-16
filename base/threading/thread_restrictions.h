@@ -362,7 +362,7 @@ class StackSamplingProfiler;
 class Thread;
 class WaitableEvent;
 
-struct BooleanWithStack;
+class BooleanWithStack;
 
 bool PathProviderWin(int, FilePath*);
 

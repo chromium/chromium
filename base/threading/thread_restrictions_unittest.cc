@@ -150,21 +150,23 @@ TEST_F(ThreadRestrictionsTest, DisallowUnresponsiveTasks) {
   EXPECT_DCHECK_DEATH(AssertLongCPUWorkAllowed());
 }
 
-// thread_restriction_checks_enabled_and_has_death_tests
-#if !defined(OS_NACL) && !defined(OS_ANDROID) && \
-    defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+// thread_restriction_checks_and_has_death_tests
+#if !defined(OS_NACL) && !defined(OS_ANDROID) && DCHECK_IS_ON() && \
+    defined(GTEST_HAS_DEATH_TEST)
 
 TEST_F(ThreadRestrictionsTest, BlockingCheckEmitsStack) {
   ScopedDisallowBlocking scoped_disallow_blocking;
   // The above ScopedDisallowBlocking should be on the blame list for who set
   // the ban.
   EXPECT_DEATH({ internal::AssertBlockingAllowed(); },
-               debug::StackTrace::WillSymbolizeToStreamForTesting()
+               EXPENSIVE_DCHECKS_ARE_ON() &&
+                       debug::StackTrace::WillSymbolizeToStreamForTesting()
                    ? "ScopedDisallowBlocking"
                    : "");
   // And the stack should mention this test body as source.
   EXPECT_DEATH({ internal::AssertBlockingAllowed(); },
-               debug::StackTrace::WillSymbolizeToStreamForTesting()
+               EXPENSIVE_DCHECKS_ARE_ON() &&
+                       debug::StackTrace::WillSymbolizeToStreamForTesting()
                    ? "BlockingCheckEmitsStack"
                    : "");
 }
@@ -189,16 +191,18 @@ TEST_F(ThreadRestrictionsTest, NestedAllowRestoresPreviousStack) {
   // ~ScopedAllowBlocking which is the last one to have changed the state but is
   // no longer relevant).
   EXPECT_DEATH({ internal::AssertBlockingAllowed(); },
-               debug::StackTrace::WillSymbolizeToStreamForTesting()
+               EXPENSIVE_DCHECKS_ARE_ON() &&
+                       debug::StackTrace::WillSymbolizeToStreamForTesting()
                    ? "CustomDisallow"
                    : "");
   // And the stack should mention this test body as source.
   EXPECT_DEATH({ internal::AssertBlockingAllowed(); },
-               debug::StackTrace::WillSymbolizeToStreamForTesting()
+               EXPENSIVE_DCHECKS_ARE_ON() &&
+                       debug::StackTrace::WillSymbolizeToStreamForTesting()
                    ? "NestedAllowRestoresPreviousStack"
                    : "");
 }
 
-#endif  // thread_restriction_checks_enabled_and_has_death_tests
+#endif  // thread_restriction_checks_and_has_death_tests
 
 }  // namespace base

@@ -19,44 +19,49 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+// NaCL doesn't support stack sampling and Android is slow at stack sampling and
+// this causes timeouts (crbug.com/959139).
+#if defined(OS_NACL) || defined(OS_ANDROID)
+constexpr bool kCaptureStackTraces = false;
+#else
+// Always disabled when !EXPENSIVE_DCHECKS_ARE_ON() because user-facing builds
+// typically drop log strings anyways.
+constexpr bool kCaptureStackTraces = EXPENSIVE_DCHECKS_ARE_ON();
+#endif
+
 namespace base {
 
-struct BooleanWithStack {
+class BooleanWithStack {
+ public:
   // Default value.
   BooleanWithStack() = default;
 
   // Value when explicitly set.
-  explicit BooleanWithStack(bool value)
-      : value_(value)
-#if !defined(OS_NACL) && !defined(OS_ANDROID)
-        ,
-        stack_(absl::in_place)
-#endif
-  {
+  explicit BooleanWithStack(bool value) : value_(value) {
+    if (kCaptureStackTraces)
+      stack_.emplace();
   }
+
+  BooleanWithStack(const BooleanWithStack&) = delete;
+  BooleanWithStack& operator=(const BooleanWithStack&) = delete;
 
   explicit operator bool() const { return value_; }
 
   friend std::ostream& operator<<(std::ostream& out,
                                   const BooleanWithStack& bws) {
     out << bws.value_;
-#if !defined(OS_NACL) && !defined(OS_ANDROID)
-    if (bws.stack_.has_value()) {
-      out << " set by\n" << bws.stack_.value();
-    } else {
-      out << " (value by default)";
+    if (kCaptureStackTraces) {
+      if (bws.stack_.has_value())
+        out << " set by\n" << bws.stack_.value();
+      else
+        out << " (value by default)";
     }
-#endif
     return out;
   }
 
+ private:
   const bool value_ = false;
-
-// NaCL doesn't support stack sampling and Android is slow at stack
-// sampling and this causes timeouts (crbug.com/959139).
-#if !defined(OS_NACL) && !defined(OS_ANDROID)
-  const absl::optional<debug::StackTrace> stack_;
-#endif
+  absl::optional<debug::StackTrace> stack_;
 };
 
 namespace {
