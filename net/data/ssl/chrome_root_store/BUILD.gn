@@ -136,7 +136,7 @@ compiled_action("gen_root_store_inc") {
   ]
   outputs = [ "${target_gen_dir}/chrome-root-store-inc.cc" ]
   args = [
-    "--root-store-dir=" + rebase_path("//net/data/ssl/chrome_root_store/store"),
+    "--root-store-dir=" + rebase_path("store", root_build_dir),
     "--write-cpp=" + rebase_path("${target_gen_dir}/chrome-root-store-inc.cc",
                                  root_build_dir),
   ]
@@ -155,8 +155,7 @@ compiled_action("gen_root_store_test_inc") {
   ]
   outputs = [ "${target_gen_dir}/chrome-root-store-test-data-inc.cc" ]
   args = [
-    "--root-store-dir=" +
-        rebase_path("//net/data/ssl/chrome_root_store/testdata"),
+    "--root-store-dir=" + rebase_path("testdata", root_build_dir),
     "--write-cpp=" +
         rebase_path("${target_gen_dir}/chrome-root-store-test-data-inc.cc",
                     root_build_dir),

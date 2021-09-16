@@ -130,10 +130,6 @@ int main(int argc, char** argv) {
   //  - Any certificate files referenced in
   //    $(ROOT_STORE_DIR)/root_store.textproto exist in the
   //    $(ROOT_STORE_DIR)/certs/ subdirectory.
-  //
-  // We'd like to assume that Root store directory is relative to
-  // base::DIR_SOURCE_ROOT, but in cross-compile cases this gives the wrong
-  // result leading to broken builds. See https://crbug.com/1244436.
   base::FilePath root_store_dir =
       command_line.GetSwitchValuePath("root-store-dir");
 
@@ -146,6 +142,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+  root_store_dir = base::MakeAbsoluteFilePath(root_store_dir);
   absl::optional<RootStore> root_store = ReadTextRootStore(root_store_dir);
   if (!root_store) {
     return 1;
