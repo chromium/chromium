@@ -4467,11 +4467,6 @@ const char kEnableQuickAnswersTextAnnotatorName[] =
 const char kEnableQuickAnswersTextAnnotatorDescription[] =
     "Enable Quick Answers text annotator.";
 
-const char kEnableQuickAnswersTranslationName[] =
-    "Enable Quick Answers translation";
-const char kEnableQuickAnswersTranslationDescription[] =
-    "Enable Quick Answers translation.";
-
 const char kEnableQuickAnswersTranslationCloudAPIName[] =
     "Enable Quick Answers translation using the Cloud API";
 const char kEnableQuickAnswersTranslationCloudAPIDescription[] =

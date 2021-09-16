@@ -72,9 +72,8 @@ class FakeTextClassifier
 class LanguageDetectorTest : public testing::Test {
  public:
   LanguageDetectorTest() : language_detector_(&text_classifier_) {
-    scoped_feature_list_.InitWithFeatures({features::kQuickAnswersTextAnnotator,
-                                           features::kQuickAnswersTranslation},
-                                          {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kQuickAnswersTextAnnotator);
   }
 
   LanguageDetectorTest(const LanguageDetectorTest&) = delete;

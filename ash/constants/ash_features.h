@@ -555,7 +555,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersDogfood();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersOnEditableTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationCloudAPIEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersTranslationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2TranslationDisabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickAnswersV2SettingsSubToggleEnabled();

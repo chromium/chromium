@@ -13,13 +13,9 @@ namespace ash {
 namespace quick_answers {
 namespace {
 
-constexpr base::FeatureParam<double> kSelectedTextConfidenceThreshold{
-    &features::kQuickAnswersTranslation, "selected_text_confidence_threshold",
-    /*default_value=*/0.8};
+constexpr double kSelectedTextConfidenceThreshold = 0.8;
 
-constexpr base::FeatureParam<double> kSurroundingTextConfidenceThreshold{
-    &features::kQuickAnswersTranslation,
-    "surrounding_text_confidence_threshold", /*default_value=*/0.9};
+constexpr double kSurroundingTextConfidenceThreshold = 0.9;
 
 absl::optional<std::string> GetLanguageWithConfidence(
     const std::vector<chromeos::machine_learning::mojom::TextLanguagePtr>&
@@ -56,8 +52,8 @@ void LanguageDetector::FindLanguagesForSelectedTextCallback(
     const std::string& surrounding_text,
     DetectLanguageCallback callback,
     std::vector<chromeos::machine_learning::mojom::TextLanguagePtr> languages) {
-  auto locale = GetLanguageWithConfidence(
-      std::move(languages), kSelectedTextConfidenceThreshold.Get());
+  auto locale = GetLanguageWithConfidence(std::move(languages),
+                                          kSelectedTextConfidenceThreshold);
   if (locale.has_value()) {
     std::move(callback).Run(std::move(locale));
     return;
@@ -74,8 +70,8 @@ void LanguageDetector::FindLanguagesForSelectedTextCallback(
 void LanguageDetector::FindLanguagesForSurroundingTextCallback(
     DetectLanguageCallback callback,
     std::vector<chromeos::machine_learning::mojom::TextLanguagePtr> languages) {
-  auto locale = GetLanguageWithConfidence(
-      languages, kSurroundingTextConfidenceThreshold.Get());
+  auto locale =
+      GetLanguageWithConfidence(languages, kSurroundingTextConfidenceThreshold);
 
   std::move(callback).Run(std::move(locale));
 }

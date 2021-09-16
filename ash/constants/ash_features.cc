@@ -886,10 +886,6 @@ const base::Feature kQuickAnswersOnEditableText{
 const base::Feature kQuickAnswersTextAnnotator{
     "QuickAnswersTextAnnotator", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to enable quick answers translation.
-const base::Feature kQuickAnswersTranslation{"QuickAnswersTranslation",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable quick answers translation using Cloud API.
 const base::Feature kQuickAnswersTranslationCloudAPI{
     "QuickAnswersTranslationCloudAPI", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1585,10 +1581,6 @@ bool IsQuickAnswersOnEditableTextEnabled() {
 
 bool IsQuickAnswersTranslationCloudAPIEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersTranslationCloudAPI);
-}
-
-bool IsQuickAnswersTranslationEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersTranslation);
 }
 
 bool IsQuickAnswersV2Enabled() {

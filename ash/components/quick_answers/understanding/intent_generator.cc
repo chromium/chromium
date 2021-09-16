@@ -237,12 +237,6 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
     return;
   }
 
-  if (!features::IsQuickAnswersTranslationEnabled()) {
-    std::move(complete_callback_)
-        .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
-    return;
-  }
-
   // Don't generate translation intent if no device language is provided or the
   // length of selected text is above the threshold. Returns unknown intent
   // type.

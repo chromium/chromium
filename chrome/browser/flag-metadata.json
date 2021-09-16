@@ -2494,11 +2494,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enable-quick-answers-translation",
-    "owners": [ "croissant-eng" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-quick-answers-translation-cloud-api",
     "owners": [ "croissant-eng" ],
     "expiry_milestone": 95
