@@ -21,3 +21,16 @@
   HIGHLIGHTER: 'highlighter',
   ERASER: 'eraser',
 };
+
+
+
+/**
+ * Enum for projector error types supported.
+ * @enum {string}
+ */
+/* #export */ const ProjectorError = {
+  NONE: 'NONE',
+  TOKEN_FETCH_FAILURE: 'TOKEN_FETCH_FAILURE',
+  TOKEN_FETCH_ALREADY_IN_PROGRESS: 'TOKEN_FETCH_ALREADY_IN_PROGRESS',
+  OTHER: 'OTHER',
+};

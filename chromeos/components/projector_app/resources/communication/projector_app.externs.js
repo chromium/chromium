@@ -72,3 +72,83 @@ projectorApp.AnnotatorApi.prototype.clear = function() {};
  *     arguments: canUndo and canRedo.
  */
 projectorApp.AnnotatorApi.prototype.addUndoRedoListener = function(listener) {};
+
+/**
+ * Structure for Account information..
+ * @record
+ * @struct
+ */
+ projectorApp.Account = function() {}
+
+/**
+ * The name of user.
+ * @type {string}
+ */
+projectorApp.Account.prototype.name;
+
+/**
+ * The email of the user.
+ * @type {string}
+ */
+projectorApp.Account.prototype.email;
+
+/**
+ * The picture url of the user.
+ * @type {string}
+ */
+projectorApp.Account.prototype.pictureURL;
+
+/**
+ * Whether this user is a primary user or not.
+ * @type {boolean}
+ */
+projectorApp.Account.prototype.isPrimaryUser;
+
+
+/**
+ * Structure for OAuthToken information passed.
+ * @record
+ * @struct
+ */
+projectorApp.OAuthTokenInfo = function() {}
+
+/**
+ * The OAuth token.
+ * @type {string}
+ */
+projectorApp.OAuthTokenInfo.prototype.token;
+
+/**
+ * The expiration time of the OAuth token.
+ * @type {string}
+ */
+projectorApp.OAuthTokenInfo.prototype.expirationTime;
+
+/**
+ * Structure for OAuthToken information passed.
+ * @record
+ * @struct
+ */
+projectorApp.OAuthToken = function() {}
+
+/**
+ * The email of user associated with the oauth token request.
+ * @type {string}
+ */
+projectorApp.OAuthToken.prototype.email;
+
+/**
+ * The OAuthToken information..
+ * @type {!projectorApp.OAuthTokenInfo}
+ */
+projectorApp.OAuthToken.prototype.oauthTokenInfo;
+
+/**
+ * The error message associated with the token fetch request.
+ *
+ * See ProjectorError in
+ * chrome/apps/projector/client/api/projector_app_message_types.js.
+ *
+ * @type {string}
+ */
+projectorApp.OAuthTokenInfo.prototype.error;
