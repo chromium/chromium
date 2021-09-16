@@ -116,20 +116,6 @@ class UseAddressActionTest : public testing::Test {
                                         autofill::test::kEmptyOrigin};
 };
 
-#if !defined(OS_ANDROID)
-#define MAYBE_FillManually FillManually
-#else
-#define MAYBE_FillManually DISABLED_FillManually
-#endif
-TEST_F(UseAddressActionTest, MAYBE_FillManually) {
-  InSequence seq;
-
-  ActionProto action_proto = CreateUseAddressAction();
-
-  EXPECT_EQ(ProcessedActionStatusProto::MANUAL_FALLBACK,
-            ProcessAction(action_proto));
-}
-
 TEST_F(UseAddressActionTest, InvalidActionNoSelectorSet) {
   ActionProto action;
   action.mutable_use_address();
