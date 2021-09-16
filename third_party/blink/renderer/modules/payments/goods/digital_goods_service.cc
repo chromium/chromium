@@ -35,15 +35,6 @@ void OnGetDetailsResponse(
   resolver->Resolve(std::move(blink_item_details_list));
 }
 
-void OnAcknowledgeResponse(ScriptPromiseResolver* resolver,
-                           BillingResponseCode code) {
-  if (code != BillingResponseCode::kOk) {
-    resolver->Reject(mojo::ConvertTo<String>(code));
-    return;
-  }
-  resolver->Resolve();
-}
-
 void OnListPurchasesResponse(
     ScriptPromiseResolver* resolver,
     BillingResponseCode code,
@@ -83,37 +74,6 @@ ScriptPromise DigitalGoodsService::getDetails(ScriptState* script_state,
 
   mojo_service_->GetDetails(
       item_ids, WTF::Bind(&OnGetDetailsResponse, WrapPersistent(resolver)));
-  return promise;
-}
-
-ScriptPromise DigitalGoodsService::acknowledge(ScriptState* script_state,
-                                               const String& purchase_token,
-                                               const String& purchase_type) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  if (purchase_token.IsEmpty()) {
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "Must specify purchase token."));
-    return promise;
-  }
-
-  bool make_available_again = false;
-  if (purchase_type == "repeatable") {
-    make_available_again = true;
-  } else if (purchase_type == "onetime") {
-    make_available_again = false;
-  } else {
-    // Note: don't expect this error to be thrown in practice. IDL code should
-    // enforce that purchase type is valid.
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "Invalid purchase type."));
-    return promise;
-  }
-
-  mojo_service_->Acknowledge(
-      purchase_token, make_available_again,
-      WTF::Bind(&OnAcknowledgeResponse, WrapPersistent(resolver)));
   return promise;
 }
 

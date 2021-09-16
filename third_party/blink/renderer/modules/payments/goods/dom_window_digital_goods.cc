@@ -29,9 +29,7 @@ void OnCreateDigitalGoodsResponse(
     mojo::PendingRemote<payments::mojom::blink::DigitalGoods> pending_remote) {
   if (code != CreateDigitalGoodsResponseCode::kOk) {
     DCHECK(!pending_remote);
-    LogConsoleError(resolver->GetScriptState(),
-                    "GetDigitalGoodsService: " + mojo::ConvertTo<String>(code));
-    resolver->Resolve(v8::Null(resolver->GetScriptState()->GetIsolate()));
+    resolver->Reject(mojo::ConvertTo<String>(code));
     return;
   }
   DCHECK(pending_remote);

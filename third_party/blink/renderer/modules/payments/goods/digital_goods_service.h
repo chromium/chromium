@@ -24,9 +24,6 @@ class DigitalGoodsService final : public ScriptWrappable {
 
   // IDL Interface:
   ScriptPromise getDetails(ScriptState*, const Vector<String>& item_ids);
-  ScriptPromise acknowledge(ScriptState*,
-                            const String& purchase_token,
-                            const String& purchase_type);
   ScriptPromise listPurchases(ScriptState*);
 
   void Trace(Visitor* visitor) const override;

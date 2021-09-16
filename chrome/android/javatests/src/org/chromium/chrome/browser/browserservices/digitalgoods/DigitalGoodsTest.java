@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.COMMAND_SET_RESPONSE;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_BUNDLE;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_NAME;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.RESPONSE_ACKNOWLEDGE;
 
 import android.net.Uri;
 import android.os.Build;
@@ -165,38 +164,6 @@ public class DigitalGoodsTest {
         waitForNonNull("itemDetails");
 
         assertEquals("\"Item 1\"", exec("itemDetails[0].title"));
-    }
-
-    /**
-     * Tests that acknowledge works correctly.
-     */
-    @Test
-    @MediumTest
-    public void acknowledge() throws TimeoutException {
-        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
-
-        setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, AcknowledgeConverter.createResponseBundle(0));
-
-        exec("populateDigitalGoodsService()");
-        waitForNonNull("digitalGoodsService");
-        exec("callAcknowledge('sku', 'onetime')");
-        waitForNonNull("acknowledgeFlag");
-    }
-
-    /**
-     * Tests that acknowledge throws when given a non-zero response code.
-     */
-    @Test
-    @MediumTest
-    public void acknowledge_failsOnNonZeroResponse() throws TimeoutException {
-        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
-
-        setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, AcknowledgeConverter.createResponseBundle(1));
-
-        exec("populateDigitalGoodsService()");
-        waitForNonNull("digitalGoodsService");
-        exec("callAcknowledge('sku', 'onetime')");
-        waitForNonNull("acknowledgeError");
     }
 
     private DigitalGoodsImpl createFixedDigitalGoods() {

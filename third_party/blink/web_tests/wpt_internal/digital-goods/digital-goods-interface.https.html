@@ -17,12 +17,14 @@ digital_goods_test(async service => {
   assert_not_equals(service, null);
 }, {title: 'Digital goods service is available.'});
 
-digital_goods_test(async service => {
-  assert_equals(service, null);
-}, {
-  paymentMethod: 'https://not.known/payment/method',
-  title: 'Digital goods service null for unknown payment method.'
-});
+promise_test(async () => {
+  try {
+    await window.getDigitalGoodsService('https://not.known/payment/method');
+    assert_unreached();
+  } catch (error) {
+    assert_equals(error, 'unsupported payment method');
+  }
+}, 'Digital goods service rejects for unknown payment method.');
 
 digital_goods_test(async service => {
   const response = await service.getDetails(['id2']);
@@ -89,62 +91,14 @@ digital_goods_test(async service => {
 }, {title: 'GetDetails internal error.'});
 
 digital_goods_test(async service => {
-  const response = await service.acknowledge('token1', 'repeatable');
-  assert_equals(response, undefined);
-}, {
-  expectedAction: 'acknowledge:token1 true',
-  title: 'Acknowledge repeatable purchase.'
-});
-
-digital_goods_test(async service => {
-  const response = await service.acknowledge('token1', 'onetime');
-  assert_equals(response, undefined);
-}, {
-  expectedAction: 'acknowledge:token1 false',
-  title: 'Acknowledge one-time purchase.'
-});
-
-digital_goods_test(async service => {
-  try {
-    await service.acknowledge('fail', 'repeatable');
-    assert_unreached();
-  } catch (error) {
-    assert_equals(error, 'error');
-  }
-}, {title: 'Acknowledge bad ID should error.'});
-
-digital_goods_test(async service => {
-  try {
-    await service.acknowledge('token1', 'badPurchaseType');
-    assert_unreached();
-  } catch (error) {
-    assert_regexp_match(error.message, /not a valid enum value of type PurchaseType/);
-  }
-}, {title: 'Acknowledge bad purchase type should error.'});
-
-
-digital_goods_test(async service => {
   const response = await service.listPurchases();
   assert_equals(response.length, 10);
 
   assert_equals(response[0].itemId, 'id:0');
   assert_equals(response[0].purchaseToken, 'purchaseToken:0');
-  assert_equals(response[0].acknowledged, false);
-  assert_equals(response[0].purchaseState, undefined);
-  // 0 time value passed through as 0.
-  assert_equals(response[0].purchaseTime, 0);
-  assert_equals(response[0].willAutoRenew, false);
 
-  assert_equals(response[1].acknowledged, true);
-  assert_equals(response[1].purchaseState, 'purchased');
-  // Expecting 1 second in ms after Unix epoch.
-  assert_equals(response[1].purchaseTime, 1000);
-  assert_equals(response[1].willAutoRenew, true);
-
-  assert_equals(response[2].purchaseState, 'pending');
-  // Expecting 2 seconds in ms after Unix epoch.
-  assert_equals(response[2].purchaseTime, 2000);
-
+  assert_equals(response[1].itemId, 'id:1');
+  assert_equals(response[1].purchaseToken, 'purchaseToken:1');
 }, {title: 'ListPurchases round trip.'});
 
 digital_goods_test(async service => {
