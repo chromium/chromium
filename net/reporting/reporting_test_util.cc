@@ -245,7 +245,13 @@ bool ReportingTestBase::EndpointExistsInCache(
 ReportingEndpoint::Statistics ReportingTestBase::GetEndpointStatistics(
     const ReportingEndpointGroupKey& group_key,
     const GURL& url) {
-  ReportingEndpoint endpoint = cache()->GetEndpointForTesting(group_key, url);
+  ReportingEndpoint endpoint;
+  if (group_key.IsDocumentEndpoint()) {
+    endpoint = cache()->GetV1EndpointForTesting(
+        group_key.reporting_source.value(), group_key.group_name);
+  } else {
+    endpoint = cache()->GetEndpointForTesting(group_key, url);
+  }
   if (endpoint)
     return endpoint.stats;
   return ReportingEndpoint::Statistics();

@@ -58103,6 +58103,11 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Delivered"/>
 </enum>
 
+<enum name="NetReportingUploadHeaderType">
+  <int value="0" label="ReportTo"/>
+  <int value="1" label="ReportingEndpoints"/>
+</enum>
+
 <enum name="NetReportingUploadOutcome">
   <obsolete>
     Removed from code June 2020.

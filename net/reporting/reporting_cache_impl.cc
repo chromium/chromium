@@ -183,23 +183,51 @@ void ReportingCacheImpl::IncrementReportsAttempts(
   context_->NotifyCachedReportsUpdated();
 }
 
+ReportingEndpoint::Statistics* ReportingCacheImpl::GetEndpointStats(
+    const ReportingEndpointGroupKey& group_key,
+    const GURL& url) {
+  if (group_key.IsDocumentEndpoint()) {
+    const auto document_endpoints_source_it =
+        document_endpoints_.find(group_key.reporting_source.value());
+    // The reporting source may have been removed while the upload was in
+    // progress. In that case, we no longer care about the stats for the
+    // endpoint associated with the destroyed reporting source.
+    if (document_endpoints_source_it == document_endpoints_.end())
+      return nullptr;
+    const auto document_endpoint_it =
+        base::ranges::find_if(document_endpoints_source_it->second,
+                              [&group_key](ReportingEndpoint endpoint) {
+                                return endpoint.group_key == group_key;
+                              });
+    // The endpoint may have been removed while the upload was in progress. In
+    // that case, we no longer care about the stats for the removed endpoint.
+    if (document_endpoint_it == document_endpoints_source_it->second.end())
+      return nullptr;
+    return &document_endpoint_it->stats;
+  } else {
+    EndpointMap::iterator endpoint_it = FindEndpointIt(group_key, url);
+    // The endpoint may have been removed while the upload was in progress. In
+    // that case, we no longer care about the stats for the removed endpoint.
+    if (endpoint_it == endpoints_.end())
+      return nullptr;
+    return &endpoint_it->second.stats;
+  }
+}
+
 void ReportingCacheImpl::IncrementEndpointDeliveries(
     const ReportingEndpointGroupKey& group_key,
     const GURL& url,
     int reports_delivered,
     bool successful) {
-  EndpointMap::iterator endpoint_it = FindEndpointIt(group_key, url);
-  // The endpoint may have been removed while the upload was in progress. In
-  // that case, we no longer care about the stats for the removed endpoint.
-  if (endpoint_it == endpoints_.end())
+  ReportingEndpoint::Statistics* stats = GetEndpointStats(group_key, url);
+  if (!stats)
     return;
 
-  ReportingEndpoint::Statistics& stats = endpoint_it->second.stats;
-  ++stats.attempted_uploads;
-  stats.attempted_reports += reports_delivered;
+  ++stats->attempted_uploads;
+  stats->attempted_reports += reports_delivered;
   if (successful) {
-    ++stats.successful_uploads;
-    stats.successful_reports += reports_delivered;
+    ++stats->successful_uploads;
+    stats->successful_reports += reports_delivered;
   }
 }
 

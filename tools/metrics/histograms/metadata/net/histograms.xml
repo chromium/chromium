@@ -4882,7 +4882,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.Reporting.HeaderType" enum="NetReportingHeaderType"
-    expires_after="2021-11-18">
+    expires_after="2022-02-18">
   <owner>rodneyding@google.com</owner>
   <owner>src/net/reporting/OWNERS</owner>
   <summary>
@@ -4901,6 +4901,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The outcome of Reporting trying to deliver a report, recorded when the
     report is finally erased from memory.
+  </summary>
+</histogram>
+
+<histogram name="Net.Reporting.UploadHeaderType"
+    enum="NetReportingUploadHeaderType" expires_after="2022-02-18">
+  <owner>rodneyding@google.com</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    The type of header that produced the endpoint used for uploading reports for
+    the Reporting API, recorded when reports have been succesfully uploaded,
+    counted once for each report.
   </summary>
 </histogram>
 

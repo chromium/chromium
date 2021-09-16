@@ -318,6 +318,11 @@ class ReportingCacheImpl : public ReportingCache {
   void AddEndpointItToIndex(EndpointMap::iterator endpoint_it);
   void RemoveEndpointItFromIndex(EndpointMap::iterator endpoint_it);
 
+  // Helper method for IncrementEndpointDeliveries
+  ReportingEndpoint::Statistics* GetEndpointStats(
+      const ReportingEndpointGroupKey& group_key,
+      const GURL& url);
+
   // Helper methods for GetClientsAsValue().
   base::Value GetClientAsValue(const Client& client) const;
   base::Value GetEndpointGroupAsValue(
@@ -365,7 +370,7 @@ class ReportingCacheImpl : public ReportingCache {
 
   // Map of endpoints for each reporting source, keyed on the reporting source
   // token. This contains only V1 document endpoints.
-  std::map<base::UnguessableToken, const std::vector<ReportingEndpoint>>
+  std::map<base::UnguessableToken, std::vector<ReportingEndpoint>>
       document_endpoints_;
 
   // Reporting source tokens representing sources which have been destroyed.

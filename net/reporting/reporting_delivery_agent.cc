@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -35,6 +36,12 @@ namespace net {
 namespace {
 
 using ReportList = std::vector<const ReportingReport*>;
+using ReportingUploadHeaderType =
+    ReportingDeliveryAgent::ReportingUploadHeaderType;
+
+void RecordReportingUploadHeaderType(ReportingUploadHeaderType header_type) {
+  base::UmaHistogramEnumeration("Net.Reporting.UploadHeaderType", header_type);
+}
 
 std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
   base::ListValue reports_value;
@@ -71,28 +78,32 @@ class Delivery {
   // Note that |origin| here (which matches the report's |origin|) is not
   // necessarily the same as the |origin| of the ReportingEndpoint's group key
   // (if the endpoint is configured to include subdomains). Reports with
-  // different group keys can be in the same delivery, as long as the NIK and
-  // report origin are the same, and they all get assigned to the same endpoint
-  // URL.
+  // different group keys can be in the same delivery, as long as the NIK,
+  // report origin and reporting source are the same, and they all get assigned
+  // to the same endpoint URL.
   struct Target {
     Target(const NetworkIsolationKey& network_isolation_key,
            const url::Origin& origin,
-           const GURL& endpoint_url)
+           const GURL& endpoint_url,
+           const absl::optional<base::UnguessableToken> reporting_source)
         : network_isolation_key(network_isolation_key),
           origin(origin),
-          endpoint_url(endpoint_url) {}
+          endpoint_url(endpoint_url),
+          reporting_source(reporting_source) {}
 
     ~Target() = default;
 
     bool operator<(const Target& other) const {
-      return std::tie(network_isolation_key, origin, endpoint_url) <
+      return std::tie(network_isolation_key, origin, endpoint_url,
+                      reporting_source) <
              std::tie(other.network_isolation_key, other.origin,
-                      other.endpoint_url);
+                      other.endpoint_url, other.reporting_source);
     }
 
     NetworkIsolationKey network_isolation_key;
     url::Origin origin;
     GURL endpoint_url;
+    absl::optional<base::UnguessableToken> reporting_source;
   };
 
   explicit Delivery(const Target& target) : target_(target) {}
@@ -136,6 +147,13 @@ class Delivery {
                                          group_name_and_count.second, success);
     }
     if (success) {
+      ReportingUploadHeaderType upload_type =
+          target_.reporting_source.has_value()
+              ? ReportingUploadHeaderType::kReportingEndpoints
+              : ReportingUploadHeaderType::kReportTo;
+      for (size_t i = 0; i < reports_.size(); ++i) {
+        RecordReportingUploadHeaderType(upload_type);
+      }
       cache->RemoveReports(reports_, /* delivery_success */ true);
     } else {
       cache->IncrementReportsAttempts(reports_);
@@ -279,7 +297,8 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
 
       // Add the reports to the appropriate delivery.
       Delivery::Target target(report_group_key.network_isolation_key,
-                              report_group_key.origin, endpoint.info.url);
+                              report_group_key.origin, endpoint.info.url,
+                              report_group_key.reporting_source);
       auto delivery_it = deliveries.find(target);
       if (delivery_it == deliveries.end()) {
         bool inserted;
@@ -334,6 +353,7 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
     // configured for both NIK1 and NIK2, and it responds with a 410 on a NIK1
     // connection, then the change in configuration will be detectable on a NIK2
     // connection.
+    // TODO(rodneyding): Handle Remove endpoint for Reporting-Endpoints header.
     if (outcome == ReportingUploader::Outcome::REMOVE_ENDPOINT)
       cache()->RemoveEndpointsForUrl(delivery->endpoint_url());
 
