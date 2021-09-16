@@ -29,13 +29,15 @@
   <div slot="contents">
     <dom-repeat items="[[devices]]" as="device">
       <template>
-        <div class="device">
+        <div class="device" data-evdev-id$="[[device.id]]">
           <iron-icon icon="[[deviceIcon_]]"></iron-icon>
           <div class="device-body">
             <div class="device-name">[[device.name]]</div>
             <div class="device-description">[[getDeviceDescription_(device)]]</div>
           </div>
-          <cr-button>[[i18n('inputDeviceTest')]]</cr-button>
+          <cr-button on-click="handleTestButtonClick_">
+            [[i18n('inputDeviceTest')]]
+          </cr-button>
         </div>
       </template>
     </dom-repeat>

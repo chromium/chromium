@@ -88,4 +88,15 @@ Polymer({
     return loadTimeData.getStringF(
         descriptionStringId, loadTimeData.getString(connectionTypeStringId));
   },
+
+  /**
+   * @param {!PointerEvent} e
+   * @private
+   */
+  handleTestButtonClick_(e) {
+    const evdevId =
+        parseInt(e.target.closest('.device').getAttribute('data-evdev-id'), 10);
+    this.dispatchEvent(new CustomEvent(
+        'test-button-click', {composed: true, detail: {evdevId: evdevId}}));
+  },
 });

@@ -7,6 +7,28 @@ import {InputCardType} from 'chrome://diagnostics/input_card.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
+/** @type {!Array<!KeyboardInfo>} */
+const keyboards = [
+  {
+    id: 3,
+    connectionType: ConnectionType.kInternal,
+    name: 'AT Translated Set 2 keyboard',
+    physicalLayout: PhysicalLayout.kChromeOS,
+    mechanicalLayout: MechanicalLayout.kAnsi,
+    hasAssistantKey: true,
+    numberPadPresent: NumberPadPresence.kPresent,
+  },
+  {
+    id: 10,
+    connectionType: ConnectionType.kBluetooth,
+    name: 'ACME SuperBoard 3000',
+    physicalLayout: PhysicalLayout.kUnknown,
+    mechanicalLayout: MechanicalLayout.kUnknown,
+    hasAssistantKey: false,
+    numberPadPresent: NumberPadPresence.kUnknown,
+  },
+];
+
 export function inputCardTestSuite() {
   /** @type {?InputCardElement} */
   let inputCardElement = null;
@@ -37,27 +59,6 @@ export function inputCardTestSuite() {
   }
 
   test('KeyboardsListedCorrectly', () => {
-    /** @type {!Array<!KeyboardInfo>} */
-    const keyboards = [
-      {
-        id: 3,
-        connectionType: ConnectionType.kInternal,
-        name: 'AT Translated Set 2 keyboard',
-        physicalLayout: PhysicalLayout.kChromeOS,
-        mechanicalLayout: MechanicalLayout.kAnsi,
-        hasAssistantKey: true,
-        numberPadPresent: NumberPadPresence.kPresent,
-      },
-      {
-        id: 10,
-        connectionType: ConnectionType.kBluetooth,
-        name: 'ACME SuperBoard 3000',
-        physicalLayout: PhysicalLayout.kUnknown,
-        mechanicalLayout: MechanicalLayout.kUnknown,
-        hasAssistantKey: false,
-        numberPadPresent: NumberPadPresence.kUnknown,
-      },
-    ];
     return initializeInputCard(InputCardType.kKeyboard, keyboards).then(() => {
       assertEquals(2, inputCardElement.$$('dom-repeat').items.length);
       const elements = inputCardElement.root.querySelectorAll('.device');
@@ -74,5 +75,21 @@ export function inputCardTestSuite() {
           'Bluetooth keyboard',
           elements[1].querySelector('.device-description').innerText);
     });
+  });
+
+  test('TestButtonClickEvent', () => {
+    let listenerCalled = false;
+    return initializeInputCard(InputCardType.kKeyboard, keyboards)
+        .then(() => {
+          inputCardElement.addEventListener('test-button-click', (e) => {
+            listenerCalled = true;
+            assertEquals(10, e.detail.evdevId);
+          });
+          inputCardElement.$$('.device[data-evdev-id="10"] cr-button').click();
+          return flushTasks();
+        })
+        .then(() => {
+          assertTrue(listenerCalled);
+        });
   });
 }
