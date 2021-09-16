@@ -38,8 +38,6 @@ class OmniboxPopupContentsView : public views::View,
   OmniboxPopupContentsView& operator=(const OmniboxPopupContentsView&) = delete;
   ~OmniboxPopupContentsView() override;
 
-  OmniboxPopupModel* model() const;
-
   // Opens a match from the list specified by |index| with the type of tab or
   // window specified by |disposition|.
   void OpenMatch(WindowOpenDisposition disposition,
@@ -58,7 +56,12 @@ class OmniboxPopupContentsView : public views::View,
   virtual void SetSelectedIndex(size_t index);
 
   // Returns the selected line.
+  // Note: This and `SetSelectedIndex` above are used by property
+  // metadata and must follow the metadata conventions.
   virtual size_t GetSelectedIndex() const;
+
+  // Returns current popup selection (includes line index).
+  OmniboxPopupSelection GetSelection() const;
 
   // Called by the active result view to inform model (due to mouse event).
   void UnselectButton();
@@ -106,7 +109,7 @@ class OmniboxPopupContentsView : public views::View,
   // Returns true if the model has a match at the specified index.
   bool HasMatchAt(size_t index) const;
 
-  // Returns the match at the specified index within the popup model.
+  // Returns the match at the specified index within the model.
   const AutocompleteMatch& GetMatchAtIndex(size_t index) const;
 
   // Find the index of the match under the given |point|, specified in window

@@ -203,14 +203,10 @@ void OmniboxPopupContentsView::OpenMatch(
                            match_selection_timestamp);
 }
 
-OmniboxPopupModel* OmniboxPopupContentsView::model() const {
-  return edit_model_->popup_model();
-}
-
 void OmniboxPopupContentsView::OpenMatch(
     WindowOpenDisposition disposition,
     base::TimeTicks match_selection_timestamp) {
-  OpenMatch(model()->selected_line(), disposition, match_selection_timestamp);
+  OpenMatch(GetSelection().line, disposition, match_selection_timestamp);
 }
 
 gfx::Image OmniboxPopupContentsView::GetMatchIcon(
@@ -223,16 +219,27 @@ void OmniboxPopupContentsView::SetSelectedIndex(size_t index) {
   DCHECK(HasMatchAt(index));
 
   OmniboxPopupSelection::LineState line_state = OmniboxPopupSelection::NORMAL;
-  model()->SetSelection(OmniboxPopupSelection(index, line_state));
-  OnPropertyChanged(model(), views::kPropertyEffectsNone);
+  edit_model_->popup_model()->SetSelection(
+      OmniboxPopupSelection(index, line_state));
+  OnPropertyChanged(edit_model_->popup_model(), views::kPropertyEffectsNone);
 }
 
 size_t OmniboxPopupContentsView::GetSelectedIndex() const {
-  return model()->selected_line();
+  return edit_model_->popup_model()->selected_line();
+}
+
+OmniboxPopupSelection OmniboxPopupContentsView::GetSelection() const {
+  // TODO(orinj): This should get full selection straight from popup model
+  // and should be the only selection method; eliminate others and
+  // reconcile with test code overrides of `GetSelectedIndex` and
+  // `SetSelectedIndex`.
+  return OmniboxPopupSelection(
+      GetSelectedIndex(), edit_model_->popup_model()->selected_line_state());
 }
 
 void OmniboxPopupContentsView::UnselectButton() {
-  model()->SetSelectedLineState(OmniboxPopupSelection::NORMAL);
+  edit_model_->popup_model()->SetSelectedLineState(
+      OmniboxPopupSelection::NORMAL);
 }
 
 OmniboxResultView* OmniboxPopupContentsView::result_view_at(size_t i) {
@@ -258,7 +265,7 @@ OmniboxResultView* OmniboxPopupContentsView::GetSelectedResultView() {
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup))
     return nullptr;
 
-  size_t selected_line = model()->selected_line();
+  size_t selected_line = GetSelection().line;
   if (selected_line == OmniboxPopupSelection::kNoMatch)
     return nullptr;
   return result_view_at(selected_line);
@@ -352,7 +359,7 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
   }
 
   // Fix-up any matches due to tail suggestions, before display below.
-  model()->autocomplete_controller()->InlineTailPrefixes();
+  edit_model_->autocomplete_controller()->InlineTailPrefixes();
 
   // Update the match cached by each row, in the process of doing so make sure
   // we have enough row views.
@@ -371,7 +378,8 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
       // memory during browser startup. https://crbug.com/1021323
       if (children().size() == i) {
         AddChildView(std::make_unique<OmniboxRowView>(
-            i, model(), std::make_unique<OmniboxResultView>(this, i),
+            i, edit_model_,
+            std::make_unique<OmniboxResultView>(this, edit_model_, i),
             pref_service));
       }
 
@@ -401,7 +409,8 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
                               pref_service, match.suggestion_group_id.value());
       result_view->SetVisible(!match_hidden);
 
-      const SkBitmap* bitmap = model()->RichSuggestionBitmapAt(i);
+      const SkBitmap* bitmap =
+          edit_model_->popup_model()->RichSuggestionBitmapAt(i);
       if (bitmap) {
         result_view->SetRichSuggestionImage(
             gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
@@ -429,7 +438,7 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
 }
 
 void OmniboxPopupContentsView::ProvideButtonFocusHint(size_t line) {
-  DCHECK(model()->selection().IsButtonFocused());
+  DCHECK(GetSelection().IsButtonFocused());
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup))
     return;  // TODO(tommycli): Not implemented yet for WebUI.
 

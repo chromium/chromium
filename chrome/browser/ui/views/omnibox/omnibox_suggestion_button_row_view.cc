@@ -67,7 +67,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
 
     views::FocusRing::Get(this)->SetHasFocusPredicate([=](View* view) {
       return view->GetVisible() &&
-             popup_contents_view_->model()->selection() == selection_;
+             popup_contents_view_->GetSelection() == selection_;
     });
   }
 
@@ -139,8 +139,11 @@ END_METADATA
 
 OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
     OmniboxPopupContentsView* popup_contents_view,
+    OmniboxEditModel* model,
     int model_index)
-    : popup_contents_view_(popup_contents_view), model_index_(model_index) {
+    : popup_contents_view_(popup_contents_view),
+      model_(model),
+      model_index_(model_index) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)
@@ -192,14 +195,13 @@ OmniboxSuggestionButtonRowView::~OmniboxSuggestionButtonRowView() = default;
 void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   SetPillButtonVisibility(keyword_button_, OmniboxPopupSelection::KEYWORD_MODE);
   if (keyword_button_->GetVisible()) {
-    const OmniboxEditModel* edit_model = model()->edit_model();
     std::u16string keyword;
     bool is_keyword_hint = false;
-    match().GetKeywordUIState(edit_model->client()->GetTemplateURLService(),
+    match().GetKeywordUIState(model_->client()->GetTemplateURLService(),
                               &keyword, &is_keyword_hint);
 
     const auto names = SelectedKeywordView::GetKeywordLabelNames(
-        keyword, edit_model->client()->GetTemplateURLService());
+        keyword, model_->client()->GetTemplateURLService());
     keyword_button_->SetText(names.full_name);
     keyword_button_->SetAccessibleName(
         l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE, names.short_name));
@@ -238,17 +240,13 @@ views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {
   // Find the button that matches model selection.
   auto selected_button = std::find_if(
       buttons.begin(), buttons.end(), [=](OmniboxSuggestionRowButton* button) {
-        return model()->selection() == button->selection();
+        return popup_contents_view_->GetSelection() == button->selection();
       });
   return selected_button == buttons.end() ? nullptr : *selected_button;
 }
 
-const OmniboxPopupModel* OmniboxSuggestionButtonRowView::model() const {
-  return popup_contents_view_->model();
-}
-
 const AutocompleteMatch& OmniboxSuggestionButtonRowView::match() const {
-  return model()->result().match_at(model_index_);
+  return model_->result().match_at(model_index_);
 }
 
 void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
@@ -260,7 +258,7 @@ void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
       !OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
     button->SetVisible(false);
   } else {
-    button->SetVisible(model()->IsControlPresentOnMatch(
+    button->SetVisible(model_->popup_model()->IsControlPresentOnMatch(
         OmniboxPopupSelection(model_index_, state)));
   }
 }
@@ -277,16 +275,16 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
     // a second click of the button violates assumptions in |AcceptKeyword|.
     // Note: Since keyword mode logic depends on state of the edit model, the
     // selection must first be set to prepare for keyword mode before accepting.
-    popup_contents_view_->model()->SetSelection(selection);
-    if (model()->edit_model()->is_keyword_hint()) {
+    model_->popup_model()->SetSelection(selection);
+    if (model_->is_keyword_hint()) {
       const auto entry_method =
           event.IsMouseEvent() ? metrics::OmniboxEventProto::CLICK_HINT_VIEW
                                : metrics::OmniboxEventProto::TAP_HINT_VIEW;
-      model()->edit_model()->AcceptKeyword(entry_method);
+      model_->AcceptKeyword(entry_method);
     }
   } else {
-    popup_contents_view_->model()->TriggerSelectionAction(selection,
-                                                          event.time_stamp());
+    model_->popup_model()->TriggerSelectionAction(selection,
+                                                  event.time_stamp());
   }
 }
 

@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+class OmniboxEditModel;
 class OmniboxPopupContentsView;
 class OmniboxSuggestionRowButton;
 
@@ -22,6 +23,7 @@ class OmniboxSuggestionButtonRowView : public views::View {
  public:
   METADATA_HEADER(OmniboxSuggestionButtonRowView);
   explicit OmniboxSuggestionButtonRowView(OmniboxPopupContentsView* view,
+                                          OmniboxEditModel* model,
                                           int model_index);
   OmniboxSuggestionButtonRowView(const OmniboxSuggestionButtonRowView&) =
       delete;
@@ -38,9 +40,6 @@ class OmniboxSuggestionButtonRowView : public views::View {
   views::Button* GetActiveButton() const;
 
  private:
-  // Get the popup model from the view.
-  const OmniboxPopupModel* model() const;
-
   // Digs into the model with index to get the match for owning result view.
   const AutocompleteMatch& match() const;
 
@@ -51,6 +50,7 @@ class OmniboxSuggestionButtonRowView : public views::View {
                      const ui::Event& event);
 
   OmniboxPopupContentsView* const popup_contents_view_;
+  OmniboxEditModel* model_;
   size_t const model_index_;
 
   OmniboxSuggestionRowButton* keyword_button_ = nullptr;

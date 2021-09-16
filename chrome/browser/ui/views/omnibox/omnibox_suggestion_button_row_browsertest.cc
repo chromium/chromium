@@ -121,28 +121,29 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
   bool VerifyUi() override {
     OmniboxPopupContentsView* popup_view =
         GetOmniboxViewViews()->GetPopupContentsViewForTesting();
+    OmniboxPopupModel* model = GetOmniboxViewViews()->model()->popup_model();
 
-    popup_view->model()->SetSelection(
+    model->SetSelection(
         OmniboxPopupSelection(0, OmniboxPopupSelection::KEYWORD_MODE));
     if (!VerifyActiveButtonText(popup_view->result_view_at(0), "Search"))
       return false;
 
-    popup_view->model()->SetSelection(OmniboxPopupSelection(
+    model->SetSelection(OmniboxPopupSelection(
         1, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH));
     if (!VerifyActiveButtonText(popup_view->result_view_at(1), "Switch"))
       return false;
 
-    popup_view->model()->SetSelection(
+    model->SetSelection(
         OmniboxPopupSelection(2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
     if (!VerifyActiveButtonText(popup_view->result_view_at(2), "Clear"))
       return false;
 
-    popup_view->model()->SetSelection(
+    model->SetSelection(
         OmniboxPopupSelection(3, OmniboxPopupSelection::KEYWORD_MODE));
     if (!VerifyActiveButtonText(popup_view->result_view_at(3), "Search"))
       return false;
 
-    popup_view->model()->SetSelection(OmniboxPopupSelection(
+    model->SetSelection(OmniboxPopupSelection(
         3, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH));
     if (!VerifyActiveButtonText(popup_view->result_view_at(3), "Switch"))
       return false;

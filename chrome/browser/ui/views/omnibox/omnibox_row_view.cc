@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_mouse_enter_exit_handler.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -71,7 +72,8 @@ class OmniboxRowView::HeaderView : public views::View {
     views::FocusRing::Get(header_toggle_button_)
         ->SetHasFocusPredicate([&](View* view) {
           return view->GetVisible() &&
-                 row_view_->popup_model_->selection() == GetHeaderSelection();
+                 row_view_->model_->popup_model()->selection() ==
+                     GetHeaderSelection();
         });
 
     if (row_view_->pref_service_) {
@@ -94,7 +96,7 @@ class OmniboxRowView::HeaderView : public views::View {
 
     if (row_view_->pref_service_) {
       suggestion_group_hidden_ =
-          row_view_->popup_model_->result().IsSuggestionGroupIdHidden(
+          row_view_->model_->result().IsSuggestionGroupIdHidden(
               row_view_->pref_service_, suggestion_group_id_);
 
       header_toggle_button_->SetToggled(suggestion_group_hidden_);
@@ -123,7 +125,8 @@ class OmniboxRowView::HeaderView : public views::View {
     return true;
   }
   void OnMouseReleased(const ui::MouseEvent& event) override {
-    row_view_->popup_model_->TriggerSelectionAction(GetHeaderSelection());
+    row_view_->model_->popup_model()->TriggerSelectionAction(
+        GetHeaderSelection());
   }
   void OnMouseEntered(const ui::MouseEvent& event) override { UpdateUI(); }
   void OnMouseExited(const ui::MouseEvent& event) override { UpdateUI(); }
@@ -147,7 +150,7 @@ class OmniboxRowView::HeaderView : public views::View {
   // Updates the UI state for the new hover or selection state.
   void UpdateUI() {
     OmniboxPartState part_state = OmniboxPartState::NORMAL;
-    if (row_view_->popup_model_->selection() == GetHeaderSelection()) {
+    if (row_view_->model_->popup_model()->selection() == GetHeaderSelection()) {
       part_state = OmniboxPartState::SELECTED;
     } else if (IsMouseHovered()) {
       part_state = OmniboxPartState::HOVERED;
@@ -197,7 +200,8 @@ class OmniboxRowView::HeaderView : public views::View {
 
  private:
   void HeaderToggleButtonPressed() {
-    row_view_->popup_model_->TriggerSelectionAction(GetHeaderSelection());
+    row_view_->model_->popup_model()->TriggerSelectionAction(
+        GetHeaderSelection());
     // The PrefChangeRegistrar will update the actual button toggle state.
   }
 
@@ -206,7 +210,7 @@ class OmniboxRowView::HeaderView : public views::View {
     DCHECK(row_view_->pref_service_);
     bool was_hidden = suggestion_group_hidden_;
     suggestion_group_hidden_ =
-        row_view_->popup_model_->result().IsSuggestionGroupIdHidden(
+        row_view_->model_->result().IsSuggestionGroupIdHidden(
             row_view_->pref_service_, suggestion_group_id_);
 
     if (was_hidden != suggestion_group_hidden_) {
@@ -312,10 +316,10 @@ ADD_READONLY_PROPERTY_METADATA(OmniboxPopupSelection, HeaderSelection)
 END_METADATA
 
 OmniboxRowView::OmniboxRowView(size_t line,
-                               OmniboxPopupModel* popup_model,
+                               OmniboxEditModel* model,
                                std::unique_ptr<OmniboxResultView> result_view,
                                PrefService* pref_service)
-    : line_(line), popup_model_(popup_model), pref_service_(pref_service) {
+    : line_(line), model_(model), pref_service_(pref_service) {
   DCHECK(result_view);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -346,8 +350,8 @@ void OmniboxRowView::OnSelectionStateChanged() {
 }
 
 views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
-  DCHECK(popup_model_->selection().IsButtonFocused());
-  if (popup_model_->selected_line_state() ==
+  DCHECK(model_->popup_model()->selection().IsButtonFocused());
+  if (model_->popup_model()->selected_line_state() ==
       OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
     return header_view_->header_toggle_button();
   }

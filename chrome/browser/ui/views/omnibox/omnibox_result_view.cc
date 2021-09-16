@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
@@ -144,9 +145,11 @@ END_METADATA
 
 OmniboxResultView::OmniboxResultView(
     OmniboxPopupContentsView* popup_contents_view,
+    OmniboxEditModel* model,
     size_t model_index)
     : AnimationDelegateViews(this),
       popup_contents_view_(popup_contents_view),
+      model_(model),
       model_index_(model_index),
       keyword_slide_animation_(new gfx::SlideAnimation(this)),
       // Using base::Unretained is correct here. 'this' outlives the callback.
@@ -204,12 +207,12 @@ OmniboxResultView::OmniboxResultView(
   views::FocusRing::Get(remove_suggestion_button_)
       ->SetHasFocusPredicate([&](View* view) {
         return view->GetVisible() && GetMatchSelected() &&
-               (popup_contents_view_->model()->selected_line_state() ==
+               (popup_contents_view_->GetSelection().state ==
                 OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
       });
 
   button_row_ = AddChildView(std::make_unique<OmniboxSuggestionButtonRowView>(
-      popup_contents_view_, model_index));
+      popup_contents_view_, model_, model_index));
 
   // Quickly mouse-exiting through the suggestion button row sometimes leaves
   // the whole row highlighted. This fixes that. It doesn't seem necessary to
@@ -355,10 +358,9 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
 
   // The selection indicator indicates when the suggestion is focused. Do not
   // show the selection indicator if an auxiliary button is selected.
-  selection_indicator_->SetVisible(
-      GetMatchSelected() &&
-      popup_contents_view_->model()->selected_line_state() ==
-          OmniboxPopupSelection::NORMAL);
+  selection_indicator_->SetVisible(GetMatchSelected() &&
+                                   popup_contents_view_->GetSelection().state ==
+                                       OmniboxPopupSelection::NORMAL);
 }
 
 void OmniboxResultView::OnSelectionStateChanged() {
@@ -369,7 +371,7 @@ void OmniboxResultView::OnSelectionStateChanged() {
     // any cached values get updated prior to the selection change.
     EmitTextChangedAccessiblityEvent();
 
-    auto selection_state = popup_contents_view_->model()->selection().state;
+    auto selection_state = popup_contents_view_->GetSelection().state;
 
     // The text is also accessible via text/value change events in the omnibox
     // but this selection event allows the screen reader to get more details
@@ -395,13 +397,13 @@ void OmniboxResultView::OnSelectionStateChanged() {
 
 bool OmniboxResultView::GetMatchSelected() const {
   // The header button being focused means the match itself is NOT focused.
-  return popup_contents_view_->GetSelectedIndex() == model_index_ &&
-         popup_contents_view_->model()->selected_line_state() !=
-             OmniboxPopupSelection::FOCUSED_BUTTON_HEADER;
+  OmniboxPopupSelection selection = popup_contents_view_->GetSelection();
+  return selection.line == model_index_ &&
+         selection.state != OmniboxPopupSelection::FOCUSED_BUTTON_HEADER;
 }
 
 views::Button* OmniboxResultView::GetActiveAuxiliaryButtonForAccessibility() {
-  if (popup_contents_view_->model()->selected_line_state() ==
+  if (popup_contents_view_->GetSelection().state ==
       OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     return remove_suggestion_button_;
   }
@@ -430,7 +432,7 @@ void OmniboxResultView::SetRichSuggestionImage(const gfx::ImageSkia& image) {
 
 void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,
                                       const ui::Event& event) {
-  popup_contents_view_->model()->TriggerSelectionAction(
+  model_->popup_model()->TriggerSelectionAction(
       OmniboxPopupSelection(model_index_, state), event.time_stamp());
 }
 
@@ -493,16 +495,16 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // because |match_| already has its contents and description swapped by this
   // class, and we don't want that for the bubble. We should improve this.
   bool is_selected = GetMatchSelected();
-  OmniboxPopupModel* model = popup_contents_view_->model();
-  if (model_index_ < model->result().size()) {
-    AutocompleteMatch raw_match = model->result().match_at(model_index_);
+  if (model_index_ < model_->result().size()) {
+    AutocompleteMatch raw_match = model_->result().match_at(model_index_);
     // The selected match can have a special name, e.g. when is one or more
     // buttons that can be tabbed to.
     std::u16string label =
-        is_selected ? model->GetAccessibilityLabelForCurrentSelection(
-                          raw_match.contents, false)
-                    : AutocompleteMatchType::ToAccessibilityLabel(
-                          raw_match, raw_match.contents);
+        is_selected
+            ? model_->popup_model()->GetAccessibilityLabelForCurrentSelection(
+                  raw_match.contents, false)
+            : AutocompleteMatchType::ToAccessibilityLabel(raw_match,
+                                                          raw_match.contents);
     node_data->SetName(label);
   }
 
@@ -510,7 +512,7 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
                              model_index_ + 1);
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
-                             model->result().size());
+                             model_->result().size());
 
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
   if (IsMouseHovered())
@@ -560,10 +562,9 @@ void OmniboxResultView::UpdateHoverState() {
 void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
   bool old_visibility = remove_suggestion_button_->GetVisible();
   bool new_visibility =
-      popup_contents_view_->model()->IsControlPresentOnMatch(
-          OmniboxPopupSelection(
-              model_index_,
-              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)) &&
+      model_->popup_model()->IsControlPresentOnMatch(OmniboxPopupSelection(
+          model_index_,
+          OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)) &&
       (GetMatchSelected() || IsMouseHovered());
 
   remove_suggestion_button_->SetVisible(new_visibility);

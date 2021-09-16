@@ -71,8 +71,8 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
         nullptr, nullptr, std::make_unique<TestOmniboxClient>());
     popup_view_ =
         std::make_unique<TestOmniboxPopupContentsView>(edit_model_.get());
-    result_view_ =
-        new OmniboxResultView(popup_view_.get(), kTestResultViewIndex);
+    result_view_ = new OmniboxResultView(popup_view_.get(), edit_model_.get(),
+                                         kTestResultViewIndex);
 
     views::View* root_view = widget_->GetRootView();
     root_view->SetBoundsRect(gfx::Rect(0, 0, 500, 500));
