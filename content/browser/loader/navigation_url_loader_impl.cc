@@ -638,6 +638,13 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
     if (known_schemes_.find(resource_request_->url.scheme()) ==
         known_schemes_.end()) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
+      absl::optional<url::Origin> initiating_origin;
+      if (url_chain_.size() > 1) {
+        initiating_origin =
+            url::Origin::Create(url_chain_[url_chain_.size() - 2]);
+      } else {
+        initiating_origin = resource_request_->request_initiator;
+      }
       bool handled = GetContentClient()->browser()->HandleExternalProtocol(
           resource_request_->url, web_contents_getter_,
           ChildProcessHost::kInvalidUniqueID, frame_tree_node_id_,
@@ -645,8 +652,8 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
           resource_request_->resource_type ==
               static_cast<int>(blink::mojom::ResourceType::kMainFrame),
           static_cast<ui::PageTransition>(resource_request_->transition_type),
-          resource_request_->has_user_gesture,
-          resource_request_->request_initiator, &loader_factory);
+          resource_request_->has_user_gesture, initiating_origin,
+          &loader_factory);
 
       if (loader_factory) {
         factory = base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
