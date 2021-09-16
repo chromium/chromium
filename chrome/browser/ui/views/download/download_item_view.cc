@@ -680,6 +680,7 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
 
   // Overlay the warning icon if appropriate.
   if (mode_ != download::DownloadItemMode::kNormal) {
+    VLOG(2) << "Overlaying warning icon in mode " << static_cast<int>(mode_);
     const gfx::ImageSkia icon = ui::ThemedVectorIcon(GetIcon().GetVectorIcon())
                                     .GetImageSkia(GetNativeTheme());
     gfx::RectF bounds = GetIconBounds();
@@ -1149,7 +1150,8 @@ ui::ImageModel DownloadItemView::GetIcon() const {
       break;
   }
 
-  NOTREACHED();
+  CHECK(false) << "Unexpected danger type " << danger_type
+      << " or mixed content status " << model_->GetMixedContentStatus();
   return ui::ImageModel();
 }
 
