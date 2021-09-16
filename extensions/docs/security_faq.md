@@ -359,6 +359,19 @@ If an extension is able to access incognito contexts without this setting
 enabled, this may be a security bug; please report any such bugs
 [here][new-security-bug].
 
+### What privileges does the Debugger permission grant an extension? What privileges should it lack?
+
+The debugger permission should grant an extension the power to automate any
+website. This may extend to driving interactions with that site which are not
+possible using JavaScript on the site itself, but instead normally require
+user interaction with Chrome features.
+
+The debugger permission does not allow automating parts of the Chromium
+browser unrelated to websites. Automating WebUI or settings, installing
+extensions, downloading and executing a native binary, or executing custom
+code outside the sandbox should not be possible for an extension with the
+debugger permission.
+
 ### I've found a security bug in an extension. Is this a security bug in Chromium?
 
 This depends on the extension.
