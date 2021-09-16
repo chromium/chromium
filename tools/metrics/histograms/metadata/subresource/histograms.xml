@@ -382,7 +382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.NumUnsupportedRules"
-    units="rules" expires_after="M90">
+    units="rules" expires_after="2022-09-15">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -391,6 +391,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     ruleset indexing process and it reaches the point where rules are getting
     indexed. This is logged when a new ruleset is indexed for the first time on
     Chrome start.
+
+    Warning: This metric expired after M90 (around 05/2021) and was unexpired
+    09/2021. Data may be missing.
   </summary>
 </histogram>
 
