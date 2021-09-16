@@ -6,12 +6,11 @@
 
 #include <memory>
 #include "base/bind.h"
+#include "base/message_loop/message_pump.h"
 #include "base/run_loop.h"
 #include "base/task/sequence_manager/sequence_manager.h"
-#include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/task/sequence_manager/test/test_task_queue.h"
 #include "base/task/sequence_manager/test/test_task_time_observer.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
@@ -27,13 +26,12 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
   ~AutoAdvancingVirtualTimeDomainTest() override = default;
 
   void SetUp() override {
-    test_task_runner_ = base::WrapRefCounted(new base::TestMockTimeTaskRunner(
-        base::TestMockTimeTaskRunner::Type::kBoundToThread));
-    // A null clock triggers some assertions.
-    test_task_runner_->AdvanceMockTickClock(
-        base::TimeDelta::FromMilliseconds(5));
-    sequence_manager_ = base::sequence_manager::SequenceManagerForTest::Create(
-        nullptr, test_task_runner_, test_task_runner_->GetMockTickClock());
+    sequence_manager_ =
+        base::sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
+            base::MessagePump::Create(base::MessagePumpType::DEFAULT),
+            base::sequence_manager::SequenceManager::Settings::Builder()
+                .SetMessagePumpType(base::MessagePumpType::DEFAULT)
+                .Build());
     scheduler_helper_ = std::make_unique<NonMainThreadSchedulerHelper>(
         sequence_manager_.get(), nullptr, TaskType::kInternalTest);
     scheduler_helper_->AttachToCurrentThread();
@@ -41,7 +39,8 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
     scheduler_helper_->AddTaskTimeObserver(&test_task_time_observer_);
     task_queue_ = scheduler_helper_->DefaultNonMainThreadTaskQueue();
     initial_time_ = base::Time::FromJsTime(100000.0);
-    initial_time_ticks_ = test_task_runner_->NowTicks();
+    initial_time_ticks_ =
+        base::TimeTicks() + base::TimeDelta::FromMilliseconds(5);
     auto_advancing_time_domain_ =
         std::make_unique<AutoAdvancingVirtualTimeDomain>(
             initial_time_, initial_time_ticks_, scheduler_helper_.get());
@@ -54,11 +53,9 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
     scheduler_helper_->UnregisterTimeDomain(auto_advancing_time_domain_.get());
   }
 
-  scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   base::Time initial_time_;
   base::TimeTicks initial_time_ticks_;
-  std::unique_ptr<base::sequence_manager::SequenceManagerForTest>
-      sequence_manager_;
+  std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
   std::unique_ptr<NonMainThreadSchedulerHelper> scheduler_helper_;
   scoped_refptr<base::sequence_manager::TaskQueue> task_queue_;
   std::unique_ptr<AutoAdvancingVirtualTimeDomain> auto_advancing_time_domain_;
@@ -169,8 +166,7 @@ TEST_F(AutoAdvancingVirtualTimeDomainTest, BaseTimeOverriden) {
 }
 
 TEST_F(AutoAdvancingVirtualTimeDomainTest, BaseTimeTicksOverriden) {
-  base::TimeTicks initial_time = test_task_runner_->NowTicks();
-  EXPECT_EQ(base::TimeTicks::Now(), initial_time);
+  EXPECT_EQ(base::TimeTicks::Now(), initial_time_ticks_);
 
   // Make time advance.
   base::TimeDelta delay = base::TimeDelta::FromMilliseconds(20);
@@ -179,13 +175,11 @@ TEST_F(AutoAdvancingVirtualTimeDomainTest, BaseTimeTicksOverriden) {
       FROM_HERE, base::BindOnce(NopTask, &task_run), delay);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(base::TimeTicks::Now(), initial_time + delay);
+  EXPECT_EQ(base::TimeTicks::Now(), initial_time_ticks_ + delay);
 }
 
 TEST_F(AutoAdvancingVirtualTimeDomainTest,
        DelayTillNextTaskHandlesPastRunTime) {
-  base::TimeTicks initial_time = test_task_runner_->NowTicks();
-
   // Post a task for t+10ms.
   bool task_run = false;
   task_queue_->task_runner()->PostDelayedTask(
@@ -194,7 +188,7 @@ TEST_F(AutoAdvancingVirtualTimeDomainTest,
 
   // Advance virtual time past task time to t+100ms.
   auto_advancing_time_domain_->MaybeAdvanceVirtualTime(
-      initial_time + base::TimeDelta::FromMilliseconds(100));
+      initial_time_ticks_ + base::TimeDelta::FromMilliseconds(100));
 
   // Task at t+10ms should be run immediately.
   EXPECT_TRUE(
