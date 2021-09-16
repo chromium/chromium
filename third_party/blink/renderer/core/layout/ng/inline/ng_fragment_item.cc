@@ -331,6 +331,14 @@ bool NGFragmentItem::IsListMarker() const {
   return layout_object_ && layout_object_->IsLayoutNGOutsideListMarker();
 }
 
+LayoutBlock& NGFragmentItem::BlockInInline() const {
+  DCHECK(IsBlockInInline());
+  auto* const block =
+      To<LayoutBlock>(To<LayoutNGBlockFlow>(GetLayoutObject())->FirstChild());
+  DCHECK(block) << this;
+  return *block;
+}
+
 void NGFragmentItem::ConvertToSvgText(std::unique_ptr<NGSvgFragmentData> data,
                                       const PhysicalRect& unscaled_rect,
                                       bool is_hidden) {

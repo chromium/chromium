@@ -863,7 +863,10 @@ PositionWithAffinity NGInlineCursor::PositionForStartOfLine() const {
     first_leaf.MoveToLastNonPseudoLeaf();
   if (!first_leaf)
     return PositionWithAffinity();
-  Node* const node = first_leaf.Current().GetLayoutObject()->NonPseudoNode();
+  const auto& layout_object = first_leaf.Current()->IsBlockInInline()
+                                  ? first_leaf.Current()->BlockInInline()
+                                  : *first_leaf.Current().GetLayoutObject();
+  Node* const node = layout_object.NonPseudoNode();
   if (!node) {
     NOTREACHED() << "MoveToFirstLeaf returns invalid node: " << first_leaf;
     return PositionWithAffinity();
@@ -886,7 +889,10 @@ PositionWithAffinity NGInlineCursor::PositionForEndOfLine() const {
     last_leaf.MoveToFirstNonPseudoLeaf();
   if (!last_leaf)
     return PositionWithAffinity();
-  Node* const node = last_leaf.Current().GetLayoutObject()->NonPseudoNode();
+  const auto& layout_object = last_leaf.Current()->IsBlockInInline()
+                                  ? last_leaf.Current()->BlockInInline()
+                                  : *last_leaf.Current().GetLayoutObject();
+  Node* const node = layout_object.NonPseudoNode();
   if (!node) {
     NOTREACHED() << "MoveToLastLeaf returns invalid node: " << last_leaf;
     return PositionWithAffinity();
@@ -1017,6 +1023,13 @@ void NGInlineCursor::MoveToFirstLogicalLeaf() {
 
 void NGInlineCursor::MoveToFirstNonPseudoLeaf() {
   for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
+    if (cursor.Current()->IsBlockInInline()) {
+      if (cursor.Current()->BlockInInline().NonPseudoNode()) {
+        *this = cursor;
+        return;
+      }
+      continue;
+    }
     if (!cursor.Current().GetLayoutObject()->NonPseudoNode())
       continue;
     if (cursor.Current().IsText()) {
@@ -1087,6 +1100,11 @@ void NGInlineCursor::MoveToLastNonPseudoLeaf() {
   NGInlineCursor last_leaf;
   bool in_hidden_for_paint = false;
   for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
+    if (cursor.Current()->IsBlockInInline()) {
+      if (cursor.Current()->BlockInInline().NonPseudoNode())
+        *this = cursor;
+      continue;
+    }
     if (!cursor.Current().GetLayoutObject()->NonPseudoNode())
       continue;
     if (cursor.Current().IsLineBreak() && last_leaf)

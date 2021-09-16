@@ -249,6 +249,9 @@ class CORE_EXPORT NGFragmentItem {
     return nullptr;
   }
 
+  // Returns block of block-in-inline.
+  LayoutBlock& BlockInInline() const;
+
   bool HasNonVisibleOverflow() const;
   bool IsScrollContainer() const;
   bool HasSelfPaintingLayer() const;
