@@ -166,7 +166,7 @@ public class SearchActivity extends AsyncInitializationActivity
     @Override
     protected void triggerLayoutInflation() {
         mSnackbarManager = new SnackbarManager(this, findViewById(android.R.id.content), null);
-        mSearchBoxDataProvider = new SearchBoxDataProvider(this, isFromQuickActionSearchWidget());
+        mSearchBoxDataProvider = new SearchBoxDataProvider(this);
 
         mContentView = createContentView();
         setContentView(mContentView);
@@ -339,7 +339,16 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        mSearchBoxDataProvider.setIsFromQuickActionSearchWidget(isFromQuickActionSearchWidget());
         beginQuery();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Make sure that re-entering the SearchActivity from different widgets shows appropriate
+        // suggestion types.
+        mLocationBarCoordinator.clearOmniboxFocus();
     }
 
     @Override
@@ -349,7 +358,9 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static @SearchType int getSearchType(String action) {
-        if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_VOICE_SEARCH)) {
+        if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_VOICE_SEARCH)
+                || TextUtils.equals(
+                        action, SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH)) {
             return SearchType.VOICE;
         } else if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_LENS_SEARCH)) {
             return SearchType.LENS;

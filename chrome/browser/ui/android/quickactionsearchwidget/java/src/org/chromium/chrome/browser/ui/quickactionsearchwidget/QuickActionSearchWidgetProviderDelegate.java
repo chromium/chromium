@@ -72,13 +72,13 @@ public class QuickActionSearchWidgetProviderDelegate {
 
         // Search Bar Intent
         PendingIntent textSearchPendingIntent = createPendingIntentForAction(
-                context, SearchActivityConstants.ACTION_START_TEXT_SEARCH);
+                context, SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH);
         remoteViews.setOnClickPendingIntent(
                 R.id.quick_action_search_widget_search_bar_container, textSearchPendingIntent);
 
         // Voice Search Intent
         PendingIntent voiceSearchPendingIntent = createPendingIntentForAction(
-                context, SearchActivityConstants.ACTION_START_VOICE_SEARCH);
+                context, SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
         remoteViews.setOnClickPendingIntent(
                 R.id.voice_search_quick_action_button, voiceSearchPendingIntent);
         remoteViews.setViewVisibility(R.id.voice_search_quick_action_button,

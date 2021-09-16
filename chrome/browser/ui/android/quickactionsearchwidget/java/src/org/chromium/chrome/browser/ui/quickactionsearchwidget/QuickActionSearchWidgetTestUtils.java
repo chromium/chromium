@@ -86,7 +86,7 @@ class QuickActionSearchWidgetTestUtils {
             final Activity activity, final boolean shouldActivityLaunchVoiceMode) {
         Intent intent = activity.getIntent();
         boolean isVoiceMode = TextUtils.equals(
-                intent.getAction(), SearchActivityConstants.ACTION_START_VOICE_SEARCH);
+                intent.getAction(), SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
         Assert.assertEquals(shouldActivityLaunchVoiceMode, isVoiceMode);
     }
 
