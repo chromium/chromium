@@ -83,15 +83,15 @@
     assert_equals(selectMenu1.open, true);
     await clickOn(selectMenu1Child3);
     assert_equals(selectMenu1.value, "three", "Clicking a <div part='option'> should change the value");
-      assert_equals(selectMenu1.open, false);
+    assert_equals(selectMenu1.open, false);
   }, "With custom button and popup: opening the popup and clicking an option should change the selectmenu's value");
 
   promise_test(async () => {
     const selectMenu2 = document.getElementById("selectMenu2");
     await clickOn(selectMenu2);
     assert_equals(selectMenu2.value, "");
+    // TODO(crbug.com/1234899) Fails because listbox pointer isn't cleared when default listbox is swapped out due to initial <slot> replacement
     assert_equals(selectMenu2.open, false);
-
   }, "Clicking a popup with no listbox part does nothing");
 
   promise_test(async () => {

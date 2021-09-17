@@ -9,7 +9,26 @@
 
 <selectmenu id="selectmenu"></selectmenu>
 
+<selectmenu id="selectmenu1">
+  <template shadowroot=open>
+    <button part="button">Custom button</button>
+    <popup part="listbox">
+      <slot></slot>
+    </popup>
+  </template>
+  <option>one</option>
+  <option id="selectmenu1-child2">two</option>
+</selectmenu>
+
 <script>
+  // See https://w3c.github.io/webdriver/#keyboard-actions
+  const KEY_CODE_MAP = {
+    'Enter':      '\uE007',
+    'Space':      '\uE00D',
+    'ArrowUp':    '\uE013',
+    'ArrowDown':  '\uE015'
+  };
+
   function clickOn(element) {
     const actions = new test_driver.Actions();
     return actions.pointerMove(0, 0, {origin: element})
@@ -26,24 +45,45 @@
     assert_equals(selectMenu.shadowRoot, selectMenuShadow);
     assert_equals(selectMenuShadow.mode, "open");
     assert_equals(selectMenuShadow.delegatesFocus, true);
+
     selectMenuShadow.innerHTML = `
       <style>
         :focus {
           outline: 2px solid blue;
         }
+        #value::before {
+          content: "Value selected: "
+        }
+
       </style>
-      <button part="button">My custom button</button>
+      <button part="button">Open select!</button>
+      <div id="value" part="selected-value"></div>
       <popup part="listbox">
         <input type="text" placeholder="Filter options">
         <option>Thing 1</option>
         <option>Thing 2</option>
+        <div part="option" id="option3">Thing 3</div>
     </popup>`;
     assert_equals(selectMenu.shadowRoot.querySelectorAll("option").length, 2);
     assert_equals(selectMenu.open, false);
     await clickOn(selectMenu);
-    // TODO(crbug.com/1247879) Fails because controller code is not provided to the shadow DOM replacement.
     assert_equals(selectMenu.open, true, "Ensure that controller code has been provided");
+    assert_equals(selectMenu.value, "Thing 1", "value should start with the text of the first option part");
+    await test_driver.send_keys(selectMenu, KEY_CODE_MAP.ArrowDown);
+    assert_equals(selectMenu.value, "Thing 2", "Down arrow should go to next option");
   }, "Test that the UA provided shadow root can be replaced");
+
+  promise_test(async () => {
+    const selectMenu1 = document.getElementById("selectmenu1");
+    assert_equals(selectMenu1.open, false);
+    await clickOn(selectMenu1);
+    assert_equals(selectMenu1.open, true, "Ensure that controller code has been provided");
+    assert_equals(selectMenu1.value, "one", "value should start with the text of the first option part");
+    const selectMenu1Child2 = document.getElementById("selectmenu1-child2");
+    await clickOn(selectMenu1Child2);
+    assert_equals(selectMenu1.value, "two", "Clicking an <option> should change the value");
+    assert_equals(selectMenu1.open, false);
+  }, "Test that the UA provided shadow root can be replaced using declarative shadow DOM");
 
   test(() => {
     let customSelectMenu = document.createElement('selectmenu');

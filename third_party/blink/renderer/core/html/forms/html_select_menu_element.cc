@@ -56,6 +56,7 @@ HTMLSelectMenuElement::SelectMutationCallback::SelectMutationCallback(
   init->setChildList(true);
   init->setSubtree(true);
   observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
+  observer_->observe(select_->GetShadowRoot(), init, ASSERT_NO_EXCEPTION);
 }
 
 ExecutionContext*
@@ -166,11 +167,6 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   button_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   button_slot_->setAttribute(html_names::kNameAttr, kButtonPartName);
-  slotchange_listener_ =
-      MakeGarbageCollected<HTMLSelectMenuElement::SlotChangeEventListener>(
-          this);
-  button_slot_->addEventListener(event_type_names::kSlotchange,
-                                 slotchange_listener_, /*use_capture=*/false);
 
   button_part_ = MakeGarbageCollected<HTMLButtonElement>(document);
   button_part_->setAttribute(html_names::kPartAttr, kButtonPartName);
@@ -220,8 +216,6 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   listbox_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   listbox_slot_->setAttribute(html_names::kNameAttr, kListboxPartName);
-  listbox_slot_->addEventListener(event_type_names::kSlotchange,
-                                  slotchange_listener_, /*use_capture=*/false);
 
   SetListboxPart(MakeGarbageCollected<HTMLPopupElement>(document));
   listbox_part_->setAttribute(html_names::kPartAttr, kListboxPartName);
@@ -470,14 +464,6 @@ Element* HTMLSelectMenuElement::FirstValidSelectedValuePart() const {
     }
   }
   return nullptr;
-}
-
-HTMLSlotElement* HTMLSelectMenuElement::ButtonSlot() const {
-  return button_slot_;
-}
-
-HTMLSlotElement* HTMLSelectMenuElement::ListboxSlot() const {
-  return listbox_slot_;
 }
 
 void HTMLSelectMenuElement::SelectedValuePartInserted(
@@ -759,21 +745,9 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
   }
 }
 
-void HTMLSelectMenuElement::SlotChangeEventListener::Invoke(ExecutionContext*,
-                                                            Event* event) {
-  DCHECK_EQ(event->type(), event_type_names::kSlotchange);
-  if (event->target() == select_menu_element_->ListboxSlot()) {
-    select_menu_element_->UpdateListboxPart();
-  } else if (event->target() == select_menu_element_->ButtonSlot()) {
-    select_menu_element_->UpdateButtonPart();
-    select_menu_element_->UpdateSelectedValuePart();
-  }
-}
-
 void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
   visitor->Trace(button_part_listener_);
   visitor->Trace(option_part_listener_);
-  visitor->Trace(slotchange_listener_);
   visitor->Trace(select_mutation_callback_);
   visitor->Trace(button_part_);
   visitor->Trace(selected_value_part_);

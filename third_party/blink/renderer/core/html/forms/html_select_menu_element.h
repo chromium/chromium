@@ -44,8 +44,6 @@ class HTMLSelectMenuElement final : public HTMLElement {
   Element* FirstValidButtonPart() const;
   Element* FirstValidListboxPart() const;
   Element* FirstValidSelectedValuePart() const;
-  HTMLSlotElement* ButtonSlot() const;
-  HTMLSlotElement* ListboxSlot() const;
   void EnsureSelectedOptionIsValid();
   Element* SelectedOption();
   void SetSelectedOption(Element* selected_option);
@@ -103,21 +101,6 @@ class HTMLSelectMenuElement final : public HTMLElement {
     Member<HTMLSelectMenuElement> select_menu_element_;
   };
 
-  class SlotChangeEventListener : public NativeEventListener {
-   public:
-    explicit SlotChangeEventListener(HTMLSelectMenuElement* select_menu_element)
-        : select_menu_element_(select_menu_element) {}
-    void Invoke(ExecutionContext*, Event*) override;
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(select_menu_element_);
-      NativeEventListener::Trace(visitor);
-    }
-
-   private:
-    Member<HTMLSelectMenuElement> select_menu_element_;
-  };
-
   static constexpr char kButtonPartName[] = "button";
   static constexpr char kSelectedValuePartName[] = "selected-value";
   static constexpr char kListboxPartName[] = "listbox";
@@ -125,7 +108,6 @@ class HTMLSelectMenuElement final : public HTMLElement {
 
   Member<ButtonPartEventListener> button_part_listener_;
   Member<OptionPartEventListener> option_part_listener_;
-  Member<SlotChangeEventListener> slotchange_listener_;
 
   Member<SelectMutationCallback> select_mutation_callback_;
 
