@@ -6959,3 +6959,9 @@ crbug.com/1250457 [ Mac ] virtual/scroll-unification/fast/events/space-scroll-te
 crbug.com/1250457 [ Mac ] virtual/shared_array_buffer_on_desktop/fast/css/text-overflow-ellipsis-bidi.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/shared_array_buffer_on_desktop/storage/indexeddb/keypath-arrays.html [ Timeout ]
 crbug.com/1250457 [ Mac ] external/wpt/html/syntax/speculative-parsing/generated/document-write/meta-viewport-link-stylesheet-media.tentative.sub.html [ Failure ]
+
+# FileSystemHandle::move() is temporarily disabled outside of the Origin Private File System
+crbug.com/1247850 external/wpt/file-system-access/local_FileSystemBaseHandle-move-manual.https.html [ Failure ]
+crbug.com/1247850 external/wpt/file-system-access/local_FileSystemBaseHandle-rename-manual.https.html [ Failure ]
+crbug.com/1247850 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/local_FileSystemBaseHandle-move-manual.https.html [ Failure ]
+crbug.com/1247850 virtual/file-system-access-access-handle-incognito/external/wpt/file-system-access/local_FileSystemBaseHandle-rename-manual.https.html [ Failure ]

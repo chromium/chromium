@@ -196,6 +196,13 @@ void FileSystemAccessHandleBase::DoMove(
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
+  // TODO(crbug.com/1247850): Allow moves of files outside of the OPFS.
+  if (url().type() != storage::FileSystemType::kFileSystemTypeTemporary) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kOperationAborted));
+    return;
+  }
+
   if (!FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
           new_entry_name)) {
     std::move(callback).Run(file_system_access_error::FromStatus(
@@ -215,6 +222,13 @@ void FileSystemAccessHandleBase::DoRename(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
+
+  // TODO(crbug.com/1247850): Allow moves of files outside of the OPFS.
+  if (url().type() != storage::FileSystemType::kFileSystemTypeTemporary) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kOperationAborted));
+    return;
+  }
 
   if (!FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
           new_entry_name)) {
@@ -277,8 +291,12 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     return;
   }
 
-  // TODO(crbug.com/1247850): Run safe-browsing checks if moving the
-  // file or directory out of the Origin Private File System.
+  // TODO(crbug.com/1247850): Allow moves of files outside of the OPFS.
+  if (dest_url.type() != storage::FileSystemType::kFileSystemTypeTemporary) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kOperationAborted));
+    return;
+  }
 
   DoFileSystemOperation(
       FROM_HERE, &storage::FileSystemOperationRunner::Move,
