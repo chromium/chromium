@@ -39,6 +39,7 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/setup/setup_util.h"
+#include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -220,7 +221,10 @@ void Clean(UpdaterScope scope) {
     }
   }
 
-  // TODO(crbug.com/1062288): Delete the Wake task.
+  std::unique_ptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance();
+  task_scheduler->DeleteTask(GetTaskName(scope).c_str());
+
   absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
   if (path)
@@ -261,7 +265,9 @@ void ExpectClean(UpdaterScope scope) {
     }
   }
 
-  // TODO(crbug.com/1062288): Assert there are no Wake tasks.
+  std::unique_ptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance();
+  EXPECT_FALSE(task_scheduler->IsTaskRegistered(GetTaskName(scope).c_str()));
 
   // Files must not exist on the file system.
   absl::optional<base::FilePath> path = GetProductVersionPath(scope);
