@@ -7,6 +7,7 @@ import {DebuggerUI} from './debug/debug.m.js';
 import {Oobe} from './cr_ui.m.js';
 
 import 'chrome://oobe/screens/common/marketing_opt_in.m.js';
+import 'chrome://oobe/screens/login/active_directory_password_change.m.js';
 import 'chrome://oobe/screens/oobe/hid_detection.m.js';
 
 function initializeDebugger() {

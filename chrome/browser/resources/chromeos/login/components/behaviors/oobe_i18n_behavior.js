@@ -59,10 +59,11 @@ OobeI18nBehaviorImpl.Proto;
 
 /** @interface */
 /* #export */ class OobeI18nBehaviorInterface {
-    /**
+  /**
    * @param {string} id The ID of the string to translate.
    * @param {...string|number} var_args
    * @return {string}
    */
   i18n(id, var_args) {}
+  i18nUpdateLocale() {}
 }

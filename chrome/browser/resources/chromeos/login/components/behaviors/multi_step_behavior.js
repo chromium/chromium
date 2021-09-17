@@ -193,3 +193,8 @@
  * }}
  */
 MultiStepBehavior.Proto;
+
+/** @interface */
+/* #export */ class MultiStepBehaviorInterface {
+  setUIStep(step) {}
+}
