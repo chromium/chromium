@@ -179,9 +179,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, FullscreenWithKeyboard) {
 }
 
 // Checks that the signin web view is able to process keyboard events.
-// TODO(https://crbug.com/1227800): Flaky on linux.
-#if defined(OS_LINUX)
-#define MAYBE_CloseSigninWithKeyboard DISABLED_CloseSigninWithKeyboardd
+// TODO(https://crbug.com/1227800): Flaky on linux and Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_CloseSigninWithKeyboard DISABLED_CloseSigninWithKeyboard
 #else
 #define MAYBE_CloseSigninWithKeyboard CloseSigninWithKeyboard
 #endif
