@@ -115,6 +115,12 @@ class ReadLaterSidePanelWebView : public views::WebView,
     if (context_menu_runner_)
       context_menu_runner_->Cancel();
   }
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override {
+    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+        event, GetFocusManager());
+  }
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -149,6 +155,9 @@ class ReadLaterSidePanelWebView : public views::WebView,
   std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<ui::MenuModel> context_menu_model_;
+  // A handler to handle unhandled keyboard messages coming back from the
+  // renderer process.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   base::WeakPtrFactory<ReadLaterSidePanelWebView> weak_factory_{this};
 };
 
