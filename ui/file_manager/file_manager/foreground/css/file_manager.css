@@ -2986,10 +2986,16 @@ files-tooltip:not(:defined) {
   border-radius: 8px;
   box-shadow: 0 1px 1px var(--cros-separator-color);
   height: auto;
-  margin: 16px 16px 4px 0;
+  margin-bottom: 4px;
+  margin-inline-end: 16px;
+  margin-inline-start: 0;
+  margin-top: 16px;
   max-height: 300px;
   min-height: 46px;
   opacity: 1;
-  padding: 12px 8px 12px 0;
+  padding-bottom: 12px;
+  padding-inline-end: 8px;
+  padding-inline-start: 0;
+  padding-top: 12px;
   visibility: visible;
 }
