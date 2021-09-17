@@ -44,6 +44,12 @@
     },
     'identifier': 'iPhone 6S 12.3.1'
   },
+  'LACROS_TOT': {
+    'args': [
+      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter',
+    ],
+    'identifier': 'Lacros plus ToT ash',
+  },
   'LACROS_VERSION_SKEW_CANARY': {
     'args': [
       '--ash-chrome-path-override=../../lacros_version_skew_tests_v96.0.4641.0/test_ash_chrome',

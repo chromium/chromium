@@ -209,7 +209,10 @@ source_set("interactive_ui_tests_filters") {
 }
 
 source_set("lacros_chrome_browsertests_filters") {
-  data = [ "//testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter" ]
+  data = [
+    "//testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
+    "//testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter",
+  ]
 }
 
 source_set("linux_ozone_views_unittests_filters") {

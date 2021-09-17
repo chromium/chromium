@@ -4357,8 +4357,6 @@
     },
 
     'linux_lacros_specific_gtests': {
-      'lacros_chrome_browsertests': {},
-      'lacros_chrome_browsertests_run_in_series': {},
       'lacros_chrome_unittests': {},
     },
 
@@ -7505,6 +7503,7 @@
       },
       'linux_lacros_chrome_browsertests_version_skew': {
         'variants': [
+          'LACROS_TOT',
           # TODO(crbug.com/1236127) Adds stable.
           'LACROS_VERSION_SKEW_CANARY',
           'LACROS_VERSION_SKEW_DEV',
