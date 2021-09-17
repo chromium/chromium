@@ -58,18 +58,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.Android.OnDemand.EventsDropped" units="count"
     expires_after="M99">
-  <owner>dmazzoni@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
+  <owner>abigailbklein@google.com</owner>
   <summary>
     Tracks the number of AccessibilityEvents dropped when the OnDemand
     accessibility services feature is enabled. Recorded at the end of a session.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.OnDemand.OneHundredPercentEventsDropped"
+    units="count" expires_after="M99">
+  <owner>mschillaci@google.com</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    Tracks the number of AccessibilityEvents dropped when the OnDemand
+    accessibility services feature is enabled, and when the total percentage of
+    dropped events is 100%. Recorded at the end of a session.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.OnDemand.PercentageDropped" units="%"
     expires_after="M99">
-  <owner>dmazzoni@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
+  <owner>abigailbklein@google.com</owner>
   <summary>
     Tracks the percentage of AccessibilityEvents dropped when the OnDemand
     accessibility services feature is enabled. Recorded at the end of a session.
