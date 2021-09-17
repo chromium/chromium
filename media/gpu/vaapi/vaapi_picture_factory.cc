@@ -10,13 +10,13 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gl/gl_bindings.h"
 
-#if defined(USE_X11)
-#include "media/gpu/vaapi/vaapi_picture_native_pixmap_angle.h"
-#include "media/gpu/vaapi/vaapi_picture_tfp.h"
-#endif
 #if defined(USE_OZONE)
 #include "media/gpu/vaapi/vaapi_picture_native_pixmap_ozone.h"
-#endif
+#endif  // defined(USE_OZONE)
+#if BUILDFLAG(USE_VAAPI_X11)
+#include "media/gpu/vaapi/vaapi_picture_native_pixmap_angle.h"
+#include "media/gpu/vaapi/vaapi_picture_tfp.h"
+#endif  // BUILDFLAG(USE_VAAPI_X11)
 #if defined(USE_EGL)
 #include "media/gpu/vaapi/vaapi_picture_native_pixmap_egl.h"
 #endif
@@ -46,15 +46,13 @@ VaapiPictureFactory::VaapiPictureFactory() {
   vaapi_impl_pairs_.insert(
       std::make_pair(gl::kGLImplementationEGLGLES2,
                      VaapiPictureFactory::kVaapiImplementationDrm));
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
   vaapi_impl_pairs_.insert(
       std::make_pair(gl::kGLImplementationEGLANGLE,
                      VaapiPictureFactory::kVaapiImplementationAngle));
-  if (!features::IsUsingOzonePlatform()) {
-    vaapi_impl_pairs_.insert(
-        std::make_pair(gl::kGLImplementationDesktopGL,
-                       VaapiPictureFactory::kVaapiImplementationX11));
-  }
+  vaapi_impl_pairs_.insert(
+      std::make_pair(gl::kGLImplementationDesktopGL,
+                     VaapiPictureFactory::kVaapiImplementationX11));
 #endif
 
   DeterminePictureCreationAndDownloadingMechanism();
@@ -96,19 +94,19 @@ VaapiPictureFactory::GetVaapiImplementation(gl::GLImplementation gl_impl) {
 }
 
 uint32_t VaapiPictureFactory::GetGLTextureTarget() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    return GL_TEXTURE_EXTERNAL_OES;
-#endif
+#if BUILDFLAG(USE_VAAPI_X11)
   return GL_TEXTURE_2D;
+#else
+  return GL_TEXTURE_EXTERNAL_OES;
+#endif
 }
 
 gfx::BufferFormat VaapiPictureFactory::GetBufferFormat() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    return gfx::BufferFormat::YUV_420_BIPLANAR;
-#endif
+#if BUILDFLAG(USE_VAAPI_X11)
   return gfx::BufferFormat::RGBX_8888;
+#else
+  return gfx::BufferFormat::YUV_420_BIPLANAR;
+#endif
 }
 
 void VaapiPictureFactory::DeterminePictureCreationAndDownloadingMechanism() {
@@ -116,51 +114,43 @@ void VaapiPictureFactory::DeterminePictureCreationAndDownloadingMechanism() {
 #if defined(USE_OZONE)
     // We can be called without GL initialized, which is valid if we use Ozone.
     case kVaapiImplementationNone:
-      if (features::IsUsingOzonePlatform()) {
-        create_picture_cb_ = base::BindRepeating(
-            &CreateVaapiPictureNativeImpl<VaapiPictureNativePixmapOzone>);
-        needs_vpp_for_downloading_ = true;
-      }
-
-      // This is reached by unit tests which don't require create_picture_cb_
-      // to be initialized or called.
+      create_picture_cb_ = base::BindRepeating(
+          &CreateVaapiPictureNativeImpl<VaapiPictureNativePixmapOzone>);
+      needs_vpp_for_downloading_ = true;
       break;
 #endif  // defined(USE_OZONE)
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
     case kVaapiImplementationX11:
-      DCHECK(!features::IsUsingOzonePlatform());
       create_picture_cb_ =
           base::BindRepeating(&CreateVaapiPictureNativeImpl<VaapiTFPPicture>);
       // Neither VaapiTFPPicture or VaapiPictureNativePixmapAngle needs the VPP.
       needs_vpp_for_downloading_ = false;
       break;
     case kVaapiImplementationAngle:
-      DCHECK(!features::IsUsingOzonePlatform());
       create_picture_cb_ = base::BindRepeating(
           &CreateVaapiPictureNativeImpl<VaapiPictureNativePixmapAngle>);
       // Neither VaapiTFPPicture or VaapiPictureNativePixmapAngle needs the VPP.
       needs_vpp_for_downloading_ = false;
       break;
-#endif  // defined(USE_X11)
+#endif  // BUILDFLAG(USE_VAAPI_X11)
     case kVaapiImplementationDrm:
 #if defined(USE_OZONE)
-      if (features::IsUsingOzonePlatform()) {
-        create_picture_cb_ = base::BindRepeating(
-            &CreateVaapiPictureNativeImpl<VaapiPictureNativePixmapOzone>);
-        needs_vpp_for_downloading_ = true;
-        break;
-      }
-#endif  // defined(USE_OZONE)
-#if defined(USE_EGL)
+      create_picture_cb_ = base::BindRepeating(
+          &CreateVaapiPictureNativeImpl<VaapiPictureNativePixmapOzone>);
+      needs_vpp_for_downloading_ = true;
+      break;
+#elif defined(USE_EGL)
       create_picture_cb_ = base::BindRepeating(
           &CreateVaapiPictureNativeImpl<VaapiPictureNativePixmapEgl>);
       needs_vpp_for_downloading_ = true;
       break;
-#endif  // defined(USE_EGL)
+#else
       // ozone or egl must be used to use the DRM implementation.
-      NOTREACHED();
+      FALLTHROUGH;
+#endif
     default:
       NOTREACHED();
+      break;
   }
 }
 

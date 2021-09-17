@@ -130,9 +130,6 @@ component("media") {
     public_deps += [ "//media/base/mac" ]
   }
 
-  if (use_x11) {
-    deps += [ "//ui/base/x" ]
-  }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }

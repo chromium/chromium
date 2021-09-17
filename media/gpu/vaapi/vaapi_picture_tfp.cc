@@ -6,7 +6,6 @@
 
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gl/gl_bindings.h"
@@ -37,7 +36,6 @@ VaapiTFPPicture::VaapiTFPPicture(
       connection_(x11::Connection::Get()),
       x_pixmap_(x11::Pixmap::None) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!features::IsUsingOzonePlatform());
   DCHECK(texture_id);
   DCHECK(client_texture_id);
 }

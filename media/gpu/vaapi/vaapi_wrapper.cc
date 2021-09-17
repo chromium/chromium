@@ -65,7 +65,7 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
 
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
 typedef XID Drawable;
 
 extern "C" {
@@ -73,7 +73,7 @@ extern "C" {
 }
 
 #include "ui/gfx/x/connection.h"  // nogncheck
-#endif
+#endif                            // BUILDFLAG(USE_VAAPI_X11)
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -87,14 +87,14 @@ using media_gpu_vaapi::kModuleVa_prot;
 
 using media_gpu_vaapi::kModuleVa;
 using media_gpu_vaapi::kModuleVa_drm;
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
 using media_gpu_vaapi::kModuleVa_x11;
-#endif
+#endif  // BUILDFLAG(USE_VAAPI_X11)
 using media_gpu_vaapi::InitializeStubs;
 using media_gpu_vaapi::IsVaInitialized;
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
 using media_gpu_vaapi::IsVa_x11Initialized;
-#endif
+#endif  // BUILDFLAG(USE_VAAPI_X11)
 using media_gpu_vaapi::IsVa_drmInitialized;
 using media_gpu_vaapi::StubPathMap;
 
@@ -559,10 +559,20 @@ VADisplayState::VADisplayState()
 bool VADisplayState::Initialize() {
   base::AutoLock auto_lock(va_lock_);
 
+#if defined(USE_OZONE) && defined(OS_LINUX)
+  // TODO(crbug.com/1116701): add vaapi support for other Ozone platforms on
+  // Linux. See comment in OzonePlatform::PlatformProperties::supports_vaapi
+  // for more details. This will also require revisiting everything that's
+  // guarded by USE_VAAPI_X11. For example, if USE_VAAPI_X11 is true, but the
+  // user chooses the Wayland backend for Ozone at runtime, then many things (if
+  // not all) that we do for X11 won't apply.
+  if (!ui::OzonePlatform::GetInstance()->GetPlatformProperties().supports_vaapi)
+    return false;
+#endif
+
   bool libraries_initialized = IsVaInitialized() && IsVa_drmInitialized();
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    libraries_initialized = libraries_initialized && IsVa_x11Initialized();
+#if BUILDFLAG(USE_VAAPI_X11)
+  libraries_initialized = libraries_initialized && IsVa_x11Initialized();
 #endif
   if (!libraries_initialized)
     return false;
@@ -577,34 +587,25 @@ bool VADisplayState::Initialize() {
   return success;
 }
 
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
 
 absl::optional<VADisplay> GetVADisplayStateX11(const base::ScopedFD& drm_fd) {
-  bool use_drm_as_fallback = false;
   switch (gl::GetGLImplementation()) {
     case gl::kGLImplementationEGLGLES2:
       return vaGetDisplayDRM(drm_fd.get());
 
     case gl::kGLImplementationNone:
-      use_drm_as_fallback = true;
-      FALLTHROUGH;
 
     case gl::kGLImplementationDesktopGL: {
-      if (!features::IsUsingOzonePlatform()) {
-        VADisplay display =
-            vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
-        if (vaDisplayIsValid(display))
-          return display;
-        return vaGetDisplayDRM(drm_fd.get());
-      }
-      break;
+      VADisplay display =
+          vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
+      if (vaDisplayIsValid(display))
+        return display;
+      return vaGetDisplayDRM(drm_fd.get());
     }
 
-    case gl::kGLImplementationEGLANGLE: {
-      if (!features::IsUsingOzonePlatform())
-        return vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
-      break;
-    }
+    case gl::kGLImplementationEGLANGLE:
+      return vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
 
     default:
       LOG(WARNING) << "VAAPI video acceleration not available for "
@@ -612,10 +613,6 @@ absl::optional<VADisplay> GetVADisplayStateX11(const base::ScopedFD& drm_fd) {
                           gl::GetGLImplementationParts());
       return absl::nullopt;
   }
-
-  if (use_drm_as_fallback)
-    return vaGetDisplayDRM(drm_fd.get());
-  return absl::nullopt;
 }
 
 #else
@@ -633,11 +630,11 @@ absl::optional<VADisplay> GetVADisplayState(const base::ScopedFD& drm_fd) {
   }
 }
 
-#endif  // defined(USE_X11)
+#endif  // BUILDFLAG(USE_VAAPI_X11)
 
 bool VADisplayState::InitializeVaDisplay_Locked() {
   absl::optional<VADisplay> display =
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
       GetVADisplayStateX11(drm_fd_);
 #else
       GetVADisplayState(drm_fd_);
@@ -702,10 +699,9 @@ bool VADisplayState::InitializeOnce() {
   if (!InitializeVaDisplay_Locked() || !InitializeVaDriver_Locked())
     return false;
 
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       implementation_type_ == VAImplementation::kIntelIHD) {
-    DCHECK(!features::IsUsingOzonePlatform());
     constexpr char libva_driver_impl_env[] = "LIBVA_DRIVER_NAME";
     // TODO(crbug/1116703) The libva intel-media driver has a known segfault in
     // vaPutSurface, so until this is fixed, fall back to the i965 driver. There
@@ -722,7 +718,7 @@ bool VADisplayState::InitializeOnce() {
     if (!InitializeVaDisplay_Locked() || !InitializeVaDriver_Locked())
       return false;
   }
-#endif  // USE_X11
+#endif  // BUILDFLAG(USE_VAAPI_X11)
 
   return true;
 }
@@ -2452,11 +2448,10 @@ bool VaapiWrapper::MapAndCopyAndExecute(
   return Execute_Locked(va_surface_id, va_buffer_ids);
 }
 
-#if defined(USE_X11)
+#if BUILDFLAG(USE_VAAPI_X11)
 bool VaapiWrapper::PutSurfaceIntoPixmap(VASurfaceID va_surface_id,
                                         x11::Pixmap x_pixmap,
                                         gfx::Size dest_size) {
-  DCHECK(!features::IsUsingOzonePlatform());
   base::AutoLock auto_lock(*va_lock_);
 
   VAStatus va_res = vaSyncSurface(va_display_, va_surface_id);
@@ -2470,7 +2465,7 @@ bool VaapiWrapper::PutSurfaceIntoPixmap(VASurfaceID va_surface_id,
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAPutSurface, false);
   return true;
 }
-#endif  // USE_X11
+#endif  // BUILDFLAG(USE_VAAPI_X11)
 
 std::unique_ptr<ScopedVAImage> VaapiWrapper::CreateVaImage(
     VASurfaceID va_surface_id,
@@ -2844,9 +2839,8 @@ void VaapiWrapper::PreSandboxInitialization() {
 
   paths[kModuleVa].push_back(std::string("libva.so.") + va_suffix);
   paths[kModuleVa_drm].push_back(std::string("libva-drm.so.") + va_suffix);
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    paths[kModuleVa_x11].push_back(std::string("libva-x11.so.") + va_suffix);
+#if BUILDFLAG(USE_VAAPI_X11)
+  paths[kModuleVa_x11].push_back(std::string("libva-x11.so.") + va_suffix);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   paths[kModuleVa_prot].push_back(std::string("libva.so.") + va_suffix);

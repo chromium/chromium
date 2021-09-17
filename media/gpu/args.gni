@@ -3,7 +3,15 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/ui.gni")
+import("//build/config/ozone.gni")
+
+declare_args() {
+  # Indicates if X11 VA-API-based hardware acceleration is to be used.
+  # See also the comment near the |use_vaapi| arg.
+  use_vaapi_x11 =
+      is_linux && ozone_platform_x11 && !is_chromecast && !is_chromeos_lacros &&
+      (target_cpu == "x86" || target_cpu == "x64")
+}
 
 declare_args() {
   # Indicates if V4L plugin is used.
@@ -21,8 +29,7 @@ declare_args() {
   # is typically the case on x86-based ChromeOS devices.
   # VA-API should also be compiled by default on x11-using linux devices
   # using x86/x64.
-  use_vaapi =
-      is_linux && use_x11 && (target_cpu == "x86" || target_cpu == "x64")
+  use_vaapi = use_vaapi_x11
 
   # Indicates if ChromeOS protected media support exists. This is used
   # to enable the CDM daemon in Chrome OS as well as support for

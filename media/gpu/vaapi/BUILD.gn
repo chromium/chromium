@@ -17,7 +17,7 @@ assert(use_vaapi)
 generate_stubs("libva_stubs") {
   extra_header = "va_stub_header.fragment"
   sigs = [ "va.sigs" ]
-  if (use_x11) {
+  if (use_vaapi_x11) {
     sigs += [ "va_x11.sigs" ]
   }
   if (is_chromeos_ash) {
@@ -131,14 +131,14 @@ source_set("vaapi") {
     ]
   }
 
-  if (use_x11 || use_ozone || use_egl) {
+  if (use_ozone || use_egl) {
     sources += [
       "vaapi_picture_native_pixmap.cc",
       "vaapi_picture_native_pixmap.h",
     ]
   }
 
-  if (use_x11) {
+  if (use_vaapi_x11) {
     deps += [ "//ui/gfx/x" ]
     sources += [
       "vaapi_picture_native_pixmap_angle.cc",
@@ -197,7 +197,7 @@ source_set("common") {
     deps += [ "//ui/ozone" ]
   }
 
-  if (use_x11) {
+  if (use_vaapi_x11) {
     deps += [ "//ui/gfx/x" ]
   }
 

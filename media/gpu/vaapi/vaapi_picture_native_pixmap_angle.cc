@@ -6,7 +6,6 @@
 
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
@@ -92,7 +91,6 @@ Status VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {
   if (!make_context_current_cb_ || !make_context_current_cb_.Run())
     return StatusCode::kVaapiBadContext;
 
-  DCHECK(!features::IsUsingOzonePlatform());
   auto image =
       base::MakeRefCounted<gl::GLImageEGLPixmap>(visible_size_, format);
   if (!image)

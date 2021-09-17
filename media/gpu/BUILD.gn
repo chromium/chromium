@@ -20,6 +20,7 @@ buildflag_header("buildflags") {
     "USE_VAAPI_IMAGE_CODECS=$use_vaapi_image_codecs",
     "USE_V4L2_CODEC=$use_v4l2_codec",
     "USE_LIBV4L2=$use_v4lplugin",
+    "USE_VAAPI_X11=$use_vaapi_x11",
   ]
 }
 
@@ -215,9 +216,7 @@ component("gpu") {
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
     ]
-    configs += [
-      "//third_party/khronos:khronos_headers",
-    ]
+    configs += [ "//third_party/khronos:khronos_headers" ]
     public_deps += [ "//media/base/win:media_foundation_util" ]
     deps += [
       "//gpu/ipc/common:common",
