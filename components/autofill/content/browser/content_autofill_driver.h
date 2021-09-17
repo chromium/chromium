@@ -127,6 +127,7 @@ class ContentAutofillDriver : public AutofillDriver,
                               public mojom::AutofillDriver {
  public:
   // Gets the driver for |render_frame_host|.
+  // If |render_frame_host| is currently being deleted, this may be nullptr.
   static ContentAutofillDriver* GetForRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 
@@ -331,6 +332,7 @@ class ContentAutofillDriver : public AutofillDriver,
     return browser_autofill_manager_;
   }
   AutofillManager* autofill_manager() { return autofill_manager_.get(); }
+
   content::RenderFrameHost* render_frame_host() { return render_frame_host_; }
 
   const mojo::AssociatedRemote<mojom::AutofillAgent>& GetAutofillAgent();

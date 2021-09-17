@@ -70,6 +70,7 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
       content::RenderFrameHost* render_frame_host);
 
   // Gets the |ContentAutofillDriver| associated with |render_frame_host|.
+  // If |render_frame_host| is currently being deleted, this may be nullptr.
   // |render_frame_host| must be owned by |web_contents()|.
   ContentAutofillDriver* DriverForFrame(
       content::RenderFrameHost* render_frame_host);
