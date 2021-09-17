@@ -23,6 +23,7 @@ component("lacros") {
     "//chromeos/crosapi/mojom",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/init",
+    "//chromeos/dbus/missive",
     "//chromeos/dbus/permission_broker",
     "//chromeos/process_proxy",
     "//chromeos/startup",
