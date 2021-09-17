@@ -4142,6 +4142,8 @@ crbug.com/1179585 [ Mac10.12 ] virtual/layout_ng_svg_text/* [ Skip ]
 crbug.com/1179585 [ Mac10.13 ] virtual/layout_ng_svg_text/* [ Skip ]
 crbug.com/1179585 [ Mac10.14 ] virtual/layout_ng_svg_text/* [ Skip ]
 crbug.com/1179585 [ Win7 ] virtual/layout_ng_svg_text/* [ Skip ]
+crbug.com/1249499 virtual/layout_ng_svg_text/svg/hittest/text-small-font-size.html [ Failure ]
+crbug.com/1249499 virtual/layout_ng_svg_text/svg/hittest/text-small-font-size-and-viewbox.html [ Failure ]
 
 crbug.com/1236992 svg/dom/SVGListPropertyTearOff-gccrash.html [ Failure Pass ]
 
