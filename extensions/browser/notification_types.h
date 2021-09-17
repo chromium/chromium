@@ -60,11 +60,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174736): Remove.
   NOTIFICATION_EXTENSION_REMOVED,
 
-  // Sent after a new ExtensionHost* is created. The details are
-  // an ExtensionHost* and the source is a BrowserContext*.
-  // TODO(https://crbug.com/1174737): Remove.
-  NOTIFICATION_EXTENSION_HOST_CREATED,
-
   // Sent before an ExtensionHost* is destroyed. The details are
   // an ExtensionHost* and the source is a BrowserContext*.
   //

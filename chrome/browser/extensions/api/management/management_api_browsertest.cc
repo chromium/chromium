@@ -27,6 +27,7 @@
 #include "extensions/browser/api/management/management_api_constants.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/notification_types.h"
@@ -379,17 +380,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiEscalationTest,
   }
 
   {
-    // This should succeed when user accepts dialog. We must wait for the
-    // process to connect *and* for the channel to finish initializing before
-    // trying to crash it. (NOTIFICATION_RENDERER_PROCESS_CREATED does not wait
-    // for the latter and can cause KillProcess to fail on Windows.)
-    content::WindowedNotificationObserver observer(
-        extensions::NOTIFICATION_EXTENSION_HOST_CREATED,
-        content::NotificationService::AllSources());
+    // The extension should load when the user accepts the dialog, triggering
+    // a new ExtensionHost creation.
+    ExtensionHostTestHelper host_helper(profile(), kId);
     ScopedTestDialogAutoConfirm auto_confirm(
         ScopedTestDialogAutoConfirm::ACCEPT);
     SetEnabled(true, true, std::string(), source_extension);
-    observer.Wait();
+    host_helper.WaitForExtensionHostCreated();
   }
 
   {

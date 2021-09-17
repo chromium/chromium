@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_HOST_TEST_HELPER_H_
 #define EXTENSIONS_BROWSER_EXTENSION_HOST_TEST_HELPER_H_
 
-#include <set>
+#include <map>
 
 #include "base/callback.h"
 #include "base/scoped_observation.h"
@@ -43,23 +43,38 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   // background, popup, etc.
 
   // Waits until an extension host matching the restrictions (if any) is
+  // created; returning the new ExtensionHost.
+  // Note: This can return null if the host has already been destroyed (which
+  // can happen if the host was closed before this method was called or if
+  // the host is destroyed synchronously from creation), before the run loop
+  // is quit.
+  ExtensionHost* WaitForExtensionHostCreated() {
+    return WaitFor(HostEvent::kCreated);
+  }
+
+  // Waits until an extension host matching the restrictions (if any) is
   // destroyed.
   void WaitForExtensionHostDestroyed() { WaitFor(HostEvent::kDestroyed); }
 
  private:
   // The different types of events this class can wait for.
   enum class HostEvent {
-    // TODO(devlin): Add events here for created, load stopped, etc.
+    // TODO(devlin): Add events here for load stopped, etc.
+    kCreated,
     kDestroyed,
   };
 
   // ExtensionHostRegistry::Observer:
+  void OnExtensionHostCreated(content::BrowserContext* browser_context,
+                              ExtensionHost* host) override;
   void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
                                 ExtensionHost* host) override;
 
   // Waits for the given `event` to happen. This may return immediately if the
-  // event was already observed.
-  void WaitFor(HostEvent event);
+  // event was already observed. Returns the ExtensionHost corresponding to the
+  // event if the host is still valid (it may not be, if it has already been
+  // destroyed).
+  ExtensionHost* WaitFor(HostEvent event);
 
   // Called when an `event` has been seen, and quits an active run loop if
   // we're currently waiting on the event.
@@ -75,8 +90,10 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   // restricted to a given ID.
   const ExtensionId extension_id_;
 
-  // The set of all events this helper has seen.
-  std::set<HostEvent> observed_events_;
+  // The set of all events this helper has seen and their corresponding
+  // ExtensionHosts. ExtensionHosts are nulled out when they are destroyed, but
+  // the events stay in the map.
+  std::map<HostEvent, ExtensionHost*> observed_events_;
 
   base::ScopedObservation<ExtensionHostRegistry,
                           ExtensionHostRegistry::Observer>

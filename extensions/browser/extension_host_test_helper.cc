@@ -24,17 +24,26 @@ ExtensionHostTestHelper::ExtensionHostTestHelper(
 
 ExtensionHostTestHelper::~ExtensionHostTestHelper() = default;
 
+void ExtensionHostTestHelper::OnExtensionHostCreated(
+    content::BrowserContext* browser_context,
+    ExtensionHost* host) {
+  EventSeen(host, HostEvent::kCreated);
+}
+
 void ExtensionHostTestHelper::OnExtensionHostDestroyed(
     content::BrowserContext* browser_context,
     ExtensionHost* host) {
   EventSeen(host, HostEvent::kDestroyed);
 }
 
-void ExtensionHostTestHelper::WaitFor(HostEvent event) {
+ExtensionHost* ExtensionHostTestHelper::WaitFor(HostEvent event) {
   DCHECK(!waiting_for_);
 
-  if (base::Contains(observed_events_, event))
-    return;
+  auto iter = observed_events_.find(event);
+  if (iter != observed_events_.end()) {
+    // Note: This can be null if the host has been destroyed.
+    return iter->second;
+  }
 
   base::RunLoop run_loop;
   // Note: We use QuitWhenIdle (instead of Quit) so that any other listeners of
@@ -42,6 +51,13 @@ void ExtensionHostTestHelper::WaitFor(HostEvent event) {
   quit_loop_ = run_loop.QuitWhenIdleClosure();
   waiting_for_ = event;
   run_loop.Run();
+
+  DCHECK(base::Contains(observed_events_, event));
+  // Note: This can still be null here if the corresponding ExtensionHost was
+  // destroyed.  This is always true when waiting for
+  // OnExtensionHostDestroyed(), but can also happen if the ExtensionHost is
+  // destroyed while waiting for the run loop to idle.
+  return observed_events_[event];
 }
 
 void ExtensionHostTestHelper::EventSeen(ExtensionHost* host, HostEvent event) {
@@ -49,7 +65,19 @@ void ExtensionHostTestHelper::EventSeen(ExtensionHost* host, HostEvent event) {
   if (!extension_id_.empty() && host->extension_id() != extension_id_)
     return;
 
-  observed_events_.insert(event);
+  if (event == HostEvent::kDestroyed) {
+    // Clean up all old pointers to the ExtensionHost on its destruction.
+    for (auto& kv : observed_events_) {
+      if (kv.second == host)
+        kv.second = nullptr;
+    }
+
+    // Ensure we don't put a new pointer for the host into the map.
+    host = nullptr;
+  }
+
+  observed_events_[event] = host;
+
   if (waiting_for_ == event) {
     DCHECK(quit_loop_);
     waiting_for_.reset();

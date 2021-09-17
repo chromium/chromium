@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -34,9 +35,9 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -60,16 +61,15 @@ namespace {
 
 // Helper to ensure all extension hosts are destroyed during the test. If a host
 // is still alive, the Profile can not be destroyed in
-// BrowserProcessImpl::StartTearDown(). TODO(tapted): The existence of this
-// helper is probably a bug. Extension hosts do not currently block shutdown the
-// way a browser tab does. Maybe they should. See http://crbug.com/729476.
-class PopupHostWatcher : public content::NotificationObserver {
+// BrowserProcessImpl::StartTearDown().
+// TODO(tapted): The existence of this helper is probably a bug. Extension
+// hosts do not currently block shutdown the way a browser tab does. Maybe they
+// should. See http://crbug.com/729476.
+class PopupHostWatcher : public ExtensionHostRegistry::Observer {
  public:
-  PopupHostWatcher() {
-    registrar_.Add(this, NOTIFICATION_EXTENSION_HOST_CREATED,
-                   content::NotificationService::AllSources());
-    registrar_.Add(this, NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                   content::NotificationService::AllSources());
+  explicit PopupHostWatcher(content::BrowserContext* browser_context) {
+    host_registry_observation_.Observe(
+        ExtensionHostRegistry::Get(browser_context));
   }
 
   void Wait() {
@@ -86,27 +86,39 @@ class PopupHostWatcher : public content::NotificationObserver {
   int created() const { return created_; }
   int destroyed() const { return destroyed_; }
 
-  // NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostCreated(content::BrowserContext* browser_context,
+                              ExtensionHost* host) override {
     // Only track lifetimes for popup window ExtensionHost instances.
-    const ExtensionHost* host =
-        content::Details<const ExtensionHost>(details).ptr();
-    DCHECK(host);
     if (host->extension_host_type() != mojom::ViewType::kExtensionPopup)
       return;
 
-    ++(type == NOTIFICATION_EXTENSION_HOST_CREATED ? created_ : destroyed_);
+    ++created_;
+    QuitIfSatisfied();
+  }
+
+  void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
+                                ExtensionHost* host) override {
+    // Only track lifetimes for popup window ExtensionHost instances.
+    if (host->extension_host_type() != mojom::ViewType::kExtensionPopup)
+      return;
+
+    ++destroyed_;
+    QuitIfSatisfied();
+  }
+
+ private:
+  void QuitIfSatisfied() {
     if (!quit_closure_.is_null() && created_ == destroyed_)
       quit_closure_.Run();
   }
 
- private:
-  content::NotificationRegistrar registrar_;
   base::RepeatingClosure quit_closure_;
   int created_ = 0;
   int destroyed_ = 0;
+  base::ScopedObservation<ExtensionHostRegistry,
+                          ExtensionHostRegistry::Observer>
+      host_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PopupHostWatcher);
 };
@@ -126,8 +138,8 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
   // BrowserTestBase:
   void SetUpOnMainThread() override {
-    host_watcher_ = std::make_unique<PopupHostWatcher>();
     ExtensionApiTest::SetUpOnMainThread();
+    host_watcher_ = std::make_unique<PopupHostWatcher>(profile());
     host_resolver()->AddRule("*", "127.0.0.1");
     EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   }
@@ -137,9 +149,11 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     // called after this. But relying on the window close to close the
     // extension host can cause flakes. See http://crbug.com/729476.
     // Waiting here requires individual tests to ensure their popup has closed.
-    ExtensionApiTest::TearDownOnMainThread();
     host_watcher_->Wait();
     EXPECT_EQ(host_watcher_->created(), host_watcher_->destroyed());
+    // Destroy the PopupHostWatcher to ensure it stops watching the profile.
+    host_watcher_.reset();
+    ExtensionApiTest::TearDownOnMainThread();
   }
 
  protected:
@@ -449,13 +463,10 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   zoom_change_watcher.Wait();
 
   // Open the extension's popup.
-  content::WindowedNotificationObserver popup_observer(
-      NOTIFICATION_EXTENSION_HOST_CREATED,
-      content::NotificationService::AllSources());
+  ExtensionHostTestHelper host_helper(profile(), extension->id());
   OpenPopupViaToolbar(extension->id());
-  popup_observer.Wait();
-  ExtensionHost* extension_host =
-      content::Details<ExtensionHost>(popup_observer.details()).ptr();
+  ExtensionHost* extension_host = host_helper.WaitForExtensionHostCreated();
+  ASSERT_TRUE(extension_host);
   content::WebContents* popup_contents = extension_host->host_contents();
 
   // The popup should not use the per-origin zoom level that was set by zooming

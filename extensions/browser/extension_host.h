@@ -196,8 +196,8 @@ class ExtensionHost : public DeferredStartRenderHost,
   // Whether CreateRendererNow was called before the extension was ready.
   bool is_renderer_creation_pending_ = false;
 
-  // Whether NOTIFICATION_EXTENSION_HOST_CREATED has been already delivered,
-  // since RenderFrameCreated is triggered by every main frame that is created,
+  // Whether ExtensionHostCreated() event has been fired, since
+  // RenderFrameCreated is triggered by every main frame that is created,
   // including during a cross-site navigation which uses a new main frame.
   bool has_creation_notification_already_fired_ = false;
 

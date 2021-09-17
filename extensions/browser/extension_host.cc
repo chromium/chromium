@@ -421,10 +421,6 @@ void ExtensionHost::RenderFrameCreated(content::RenderFrameHost* frame_host) {
 }
 
 void ExtensionHost::NotifyRenderProcessReady() {
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_HOST_CREATED,
-      content::Source<BrowserContext>(browser_context_),
-      content::Details<ExtensionHost>(this));
   ExtensionHostRegistry::Get(browser_context_)->ExtensionHostCreated(this);
 }
 
