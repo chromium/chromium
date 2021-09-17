@@ -769,7 +769,7 @@ TEST_F(PipelineImplTest, EndedCallback) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(PipelineImplTest, ErrorDuringSeek) {
+TEST_F(PipelineImplTest, DemuxerErrorDuringSeek) {
   CreateAudioStream();
   SetDemuxerExpectations();
   StartPipelineAndExpect(PIPELINE_OK);
@@ -792,6 +792,48 @@ TEST_F(PipelineImplTest, ErrorDuringSeek) {
                                             base::Unretained(&callbacks_)));
   EXPECT_CALL(callbacks_, OnSeek(PIPELINE_ERROR_READ))
       .WillOnce(Stop(pipeline_.get()));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PipelineImplTest, PipelineErrorDuringSeek) {
+  CreateAudioStream();
+  SetDemuxerExpectations();
+  StartPipelineAndExpect(PIPELINE_OK);
+
+  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(5);
+
+  // Set expectations for seek.
+  EXPECT_CALL(*renderer_, OnFlush(_)).WillOnce(RunOnceClosure<0>());
+  EXPECT_CALL(*renderer_, SetPlaybackRate(_));
+  EXPECT_CALL(*renderer_, StartPlayingFrom(seek_time));
+  EXPECT_CALL(*demuxer_, AbortPendingReads());
+  EXPECT_CALL(*demuxer_, OnSeek(seek_time, _))
+      .WillOnce(RunOnceCallback<1>(PIPELINE_OK));
+  EXPECT_CALL(callbacks_, OnSeek(PIPELINE_ERROR_DECODE));
+
+  // Triggers pipeline error during pending seek.
+  pipeline_->Seek(seek_time, base::BindOnce(&CallbackHelper::OnSeek,
+                                            base::Unretained(&callbacks_)));
+  renderer_client_->OnError(PIPELINE_ERROR_DECODE);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PipelineImplTest, PipelineErrorDuringSuspend) {
+  CreateAudioAndVideoStream();
+  SetDemuxerExpectations(base::TimeDelta::FromSeconds(3000));
+  StartPipelineAndExpect(PIPELINE_OK);
+
+  // Set expectations for suspend.
+  EXPECT_CALL(*demuxer_, AbortPendingReads());
+  EXPECT_CALL(*renderer_, SetPlaybackRate(0));
+  EXPECT_CALL(callbacks_, OnSuspend(PIPELINE_ERROR_DECODE));
+
+  // Triggers pipeline error during pending suspend. The order matters for
+  // reproducing crbug.com/1250636. Otherwise OnError() is ignored if already in
+  // kSuspending state.
+  renderer_client_->OnError(PIPELINE_ERROR_DECODE);
+  pipeline_->Suspend(base::BindOnce(&CallbackHelper::OnSuspend,
+                                    base::Unretained(&callbacks_)));
   base::RunLoop().RunUntilIdle();
 }
 
