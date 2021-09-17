@@ -29,6 +29,10 @@ struct Visit {
 
   // A list of visits that have been de-duplicated into this visit.
   std::vector<Visit> duplicate_visits;
+
+  // The normalized URL for the visit (i.e. a SRP URL normalized based on the
+  // user's default search provider).
+  GURL normalized_url;
 };
 
 // Differs from history::Cluster in that the visits are de-duplicated and

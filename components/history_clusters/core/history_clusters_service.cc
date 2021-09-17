@@ -556,6 +556,7 @@ std::vector<Cluster> HistoryClustersService::CollapseDuplicateVisits(
     for (const auto& raw_visit : raw_cluster.visits) {
       Visit visit;
       visit.annotated_visit = raw_visit.annotated_visit;
+      visit.normalized_url = raw_visit.normalized_url;
       visit.score = raw_visit.score;
 
       visits_map[visit.annotated_visit.visit_row.visit_id] = std::move(visit);

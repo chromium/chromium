@@ -34,9 +34,10 @@ namespace {
 // Convert a `history_clusters::Visit` to `mojom::VisitPtr`.
 mojom::URLVisitPtr VisitToMojom(const Visit& visit) {
   auto visit_mojom = mojom::URLVisit::New();
-  auto& annotated_visit = visit.annotated_visit;
-  visit_mojom->normalized_url = annotated_visit.url_row.url();
+  visit_mojom->normalized_url = visit.normalized_url;
+  visit_mojom->score = visit.score;
 
+  auto& annotated_visit = visit.annotated_visit;
   visit_mojom->raw_urls.push_back(annotated_visit.url_row.url());
   visit_mojom->last_visit_time = annotated_visit.visit_row.visit_time;
   visit_mojom->first_visit_time = annotated_visit.visit_row.visit_time;
@@ -64,12 +65,11 @@ mojom::URLVisitPtr VisitToMojom(const Visit& visit) {
       annotated_visit.context_annotations.is_new_bookmark) {
     visit_mojom->annotations.push_back(mojom::Annotation::kBookmarked);
   }
-  visit_mojom->score = visit.score;
 
   if (base::FeatureList::IsEnabled(kDebug)) {
     visit_mojom->debug_info["score"] = base::NumberToString(visit_mojom->score);
     visit_mojom->debug_info["visit_duration"] = base::NumberToString(
-        visit.annotated_visit.visit_row.visit_duration.InSecondsF());
+        annotated_visit.visit_row.visit_duration.InSecondsF());
   }
 
   return visit_mojom;

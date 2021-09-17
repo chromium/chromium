@@ -61,6 +61,7 @@ class TestClusteringBackend : public ClusteringBackend {
       if (visit.visit_row.visit_id == visit_id) {
         history::ClusterVisit cluster_visit;
         cluster_visit.annotated_visit = visit;
+        cluster_visit.normalized_url = visit.url_row.url();
         cluster_visit.score = score;
         return cluster_visit;
       }
@@ -293,10 +294,13 @@ TEST_F(HistoryClustersServiceTest, UnflattenDuplicatesIntegrationTest) {
         ASSERT_EQ(visits.size(), 1u);
         EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
                   "https://google.com/");
+        EXPECT_EQ(visits[0].normalized_url.spec(), "https://google.com/");
         EXPECT_FLOAT_EQ(visits[0].score, 0.9);
 
         ASSERT_EQ(visits[0].duplicate_visits.size(), 1u);
         EXPECT_EQ(visits[0].duplicate_visits[0].annotated_visit.url_row.url(),
+                  "https://github.com/");
+        EXPECT_EQ(visits[0].duplicate_visits[0].normalized_url.spec(),
                   "https://github.com/");
         EXPECT_FLOAT_EQ(visits[0].duplicate_visits[0].score, 0.5);
 
