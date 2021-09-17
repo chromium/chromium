@@ -10,7 +10,9 @@
 #include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "ash/quick_pair/repository/fast_pair/footprints_fetcher.h"
+#include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 #include "ash/services/quick_pair/public/cpp/account_key_filter.h"
+#include "base/strings/stringprintf.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "device/bluetooth/bluetooth_device.h"
 
@@ -23,6 +25,7 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
       footprints_fetcher_(std::make_unique<FootprintsFetcher>()),
       image_decoder_(std::make_unique<FastPairImageDecoder>(
           std::unique_ptr<image_fetcher::ImageFetcher>())),
+      saved_device_registry_(std::make_unique<SavedDeviceRegistry>()),
       footprints_last_updated_(base::Time::UnixEpoch()) {
   footprints_fetcher_->GetUserDevices(
       base::BindOnce(&FastPairRepositoryImpl::UpdateUserDevicesCache,

@@ -12,6 +12,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PrefService;
+
 namespace signin {
 class IdentityManager;
 }
@@ -32,6 +34,7 @@ class MockQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
               (),
               (override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
+  MOCK_METHOD(PrefService*, GetActivePrefService, (), (override));
   MOCK_METHOD(void,
               RequestService,
               (mojo::PendingReceiver<mojom::QuickPairService>),

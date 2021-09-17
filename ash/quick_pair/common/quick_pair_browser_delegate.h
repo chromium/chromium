@@ -10,6 +10,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
+class PrefService;
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -39,6 +41,9 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) QuickPairBrowserDelegate {
 
   // Returns a pointer to the IdentityManager for the active user.
   virtual signin::IdentityManager* GetIdentityManager() = 0;
+
+  // For accessing prefs of the active user.
+  virtual PrefService* GetActivePrefService() = 0;
 
   // Starts the utility process which houses QuickPairService and returns a
   // PendingReceiver for it.

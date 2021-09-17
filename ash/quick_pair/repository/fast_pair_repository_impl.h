@@ -29,6 +29,7 @@ namespace quick_pair {
 class DeviceMetadataFetcher;
 class FastPairImageDecoder;
 class FootprintsFetcher;
+class SavedDeviceRegistry;
 
 // The entry point for the Repository component in the Quick Pair system,
 // responsible for connecting to back-end services.
@@ -72,6 +73,7 @@ class FastPairRepositoryImpl : public FastPairRepository {
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   std::unique_ptr<FootprintsFetcher> footprints_fetcher_;
   std::unique_ptr<FastPairImageDecoder> image_decoder_;
+  std::unique_ptr<SavedDeviceRegistry> saved_device_registry_;
 
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> metadata_cache_;
   nearby::fastpair::UserReadDevicesResponse user_devices_cache_;

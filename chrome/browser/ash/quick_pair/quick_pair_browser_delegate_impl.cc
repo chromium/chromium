@@ -42,6 +42,15 @@ signin::IdentityManager* QuickPairBrowserDelegateImpl::GetIdentityManager() {
   return IdentityManagerFactory::GetForProfile(profile);
 }
 
+PrefService* QuickPairBrowserDelegateImpl::GetActivePrefService() {
+  Profile* profile = GetActiveProfile();
+  if (!profile) {
+    return nullptr;
+  }
+
+  return profile->GetPrefs();
+}
+
 void QuickPairBrowserDelegateImpl::RequestService(
     mojo::PendingReceiver<mojom::QuickPairService> receiver) {
   content::ServiceProcessHost::Launch<mojom::QuickPairService>(

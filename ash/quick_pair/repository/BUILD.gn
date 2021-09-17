@@ -17,6 +17,8 @@ source_set("repository") {
     "fast_pair/fast_pair_image_decoder.h",
     "fast_pair/footprints_fetcher.cc",
     "fast_pair/footprints_fetcher.h",
+    "fast_pair/saved_device_registry.cc",
+    "fast_pair/saved_device_registry.h",
     "fast_pair_repository.cc",
     "fast_pair_repository.h",
     "fast_pair_repository_impl.cc",
@@ -35,6 +37,7 @@ source_set("repository") {
     "//ash/services/quick_pair/public/cpp",
     "//base",
     "//components/image_fetcher/core",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//device/bluetooth",
     "//google_apis",
@@ -71,15 +74,20 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "fast_pair/device_metadata_fetcher_unittest.cc" ]
+  sources = [
+    "fast_pair/device_metadata_fetcher_unittest.cc",
+    "fast_pair/saved_device_registry_unittest.cc",
+  ]
 
   deps = [
     ":repository",
     ":test_support",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
   ]

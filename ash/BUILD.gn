@@ -1925,6 +1925,7 @@ component("ash") {
     "//ash/public/cpp/ambient/proto",
     "//ash/quick_pair",
     "//ash/quick_pair/keyed_service",
+    "//ash/quick_pair/repository",
     "//ash/quick_pair/ui",
     "//ash/services/quick_pair",
     "//ash/services/quick_pair/public/cpp",
