@@ -1098,13 +1098,13 @@ void SurfaceAggregator::CopyQuadsToPass(
   // present the quad as an overlay instead of an underlay.
   const bool ignore_undamaged =
       aggregate_only_damaged_ && !has_copy_requests_ &&
-      !has_cached_render_passes_ && !has_pixel_moving_backdrop_filter_ &&
+      !has_pixel_moving_backdrop_filter_ &&
+      !resolved_pass.aggregation().in_cached_render_pass &&
       !resolved_pass.aggregation().in_pixel_moving_filter_pass;
-  // TODO(kylechar): For copy requests and cached render passes we only need to
-  // draw all quads if those attributes are set on the current render pass'
-  // aggregation data. The complication is if a SurfaceDrawQuad is dropped and
-  // that surface has a copy request on it then we still need to draw the
-  // surface.
+  // TODO(kylechar): For copy render passes we only need to draw all quads if
+  // those attributes are set on the current render pass' aggregation data. The
+  // complication is if a SurfaceDrawQuad is dropped and that surface has a copy
+  // request on it then we still need to draw the surface.
 
   // Damage rect in the quad space of the current shared quad state.
   // TODO(jbauman): This rect may contain unnecessary area if
@@ -1728,8 +1728,6 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
       has_copy_requests_ = true;
       MarkAndPropagateCopyRequestPasses(resolved_pass);
     }
-    if (render_pass.cache_render_pass)
-      has_cached_render_passes_ = true;
   }
 
   referenced_surfaces_.erase(surface->surface_id());
@@ -1980,7 +1978,6 @@ void SurfaceAggregator::ResetAfterAggregate() {
   current_zero_damage_rect_is_not_recorded_ = false;
   expected_display_time_ = base::TimeTicks();
   display_trace_id_ = -1;
-  has_cached_render_passes_ = false;
   has_pixel_moving_backdrop_filter_ = false;
   has_copy_requests_ = false;
   new_surfaces_.clear();

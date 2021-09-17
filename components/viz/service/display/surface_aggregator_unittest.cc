@@ -7212,128 +7212,125 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RenderPassHasPerQuadDamage) {
 // pass.
 TEST_F(SurfaceAggregatorPartialSwapTest, NotIgnoreOutsideForCachedRenderPass) {
   TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
-  // The child surface has two quads, one with a visible rect of 15,15 6x6 and
-  // the other other with a visible rect of 10,10 2x2 (relative to root target
-  // space).
-  constexpr float device_scale_factor = 1.0f;
+  constexpr gfx::Rect child_surface_rect(50, 50);
+
+  // Submit a 50x50 child surface which contains a solid color draw quad. This
+  // is translated to be (40, 40) by the surface quad that embeds it.
   {
-    CompositorRenderPassId pass_id[] = {CompositorRenderPassId{1},
-                                        CompositorRenderPassId{2}};
-    std::vector<Quad> child_quads[2] = {
-        {Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))},
-        {Quad::RenderPassQuad(pass_id[0], gfx::Transform(), true)},
-    };
-    std::vector<Pass> child_passes = {
-        Pass(child_quads[0], pass_id[0], kSurfaceSize),
-        Pass(child_quads[1], pass_id[1], kSurfaceSize)};
-
-    CompositorRenderPassList child_pass_list;
-    std::vector<SurfaceRange> referenced_surfaces;
-    AddPasses(&child_pass_list, child_passes, &referenced_surfaces);
-
-    child_pass_list[0]->quad_list.ElementAt(0)->visible_rect =
-        gfx::Rect(1, 1, 3, 3);
-    auto* child_sqs = child_pass_list[0]->shared_quad_state_list.ElementAt(0u);
-    child_sqs->quad_to_target_transform.Translate(3, 3);
-    child_sqs->quad_to_target_transform.Scale(2, 2);
-
-    child_pass_list[0]->cache_render_pass = true;
-
-    child_pass_list[1]->quad_list.ElementAt(0)->visible_rect =
-        gfx::Rect(0, 0, 2, 2);
-
-    SubmitPassListAsFrame(child_sink_.get(),
-                          child_surface_id.local_surface_id(), &child_pass_list,
-                          std::move(referenced_surfaces), device_scale_factor);
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, child_surface_rect)
+                    .AddSolidColorQuad(child_surface_rect, SK_ColorGREEN)
+                    .Build())
+            .Build();
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(frame));
   }
 
-  {
-    CompositorRenderPassId pass_id[] = {CompositorRenderPassId{1},
-                                        CompositorRenderPassId{2}};
-    std::vector<Quad> root_quads[2] = {
-        {Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
-                           SK_ColorWHITE, gfx::Rect(5, 5),
-                           /*stretch_content_to_fill_bounds=*/false)},
-        {Quad::RenderPassQuad(pass_id[0], gfx::Transform(), true)},
-    };
-    std::vector<Pass> root_passes = {
-        Pass(root_quads[0], pass_id[0], kSurfaceSize),
-        Pass(root_quads[1], pass_id[1], kSurfaceSize)};
+  // Submit a 100x100 root surface. The root render pass embeds a 100x100 child
+  // render pass. The child render pass contains a solid color quad at 0,0 30x30
+  // and surface quad to embed the child surface at 40,40 50x50.
+  auto child_pass =
+      RenderPassBuilder(CompositorRenderPassId{2}, gfx::Rect(kSurfaceSize))
+          .SetCacheRenderPass(true)
+          .AddSurfaceQuad(child_surface_rect,
+                          SurfaceRange(absl::nullopt, child_surface_id),
+                          {.allow_merge = false})
+          .SetQuadToTargetTranslation(40, 40)
+          .AddSolidColorQuad(gfx::Rect(30, 30), SK_ColorBLUE)
+          .Build();
 
-    CompositorRenderPassList root_pass_list;
-    std::vector<SurfaceRange> referenced_surfaces;
-    AddPasses(&root_pass_list, root_passes, &referenced_surfaces);
-
-    auto* root_pass = root_pass_list[1].get();
-    root_pass->shared_quad_state_list.front()
-        ->quad_to_target_transform.Translate(10, 10);
-    root_pass->damage_rect = gfx::Rect(0, 0, 1, 1);
-
-    SubmitPassListAsFrame(root_sink_.get(), root_surface_id_.local_surface_id(),
-                          &root_pass_list, std::move(referenced_surfaces),
-                          device_scale_factor);
-  }
+  auto root_pass =
+      RenderPassBuilder(CompositorRenderPassId{3}, gfx::Rect(kSurfaceSize))
+          .AddRenderPassQuad(child_pass->output_rect, child_pass->id)
+          .Build();
 
   {
+    CompositorFrame frame = CompositorFrameBuilder()
+                                .AddRenderPass(child_pass->DeepCopy())
+                                .AddRenderPass(root_pass->DeepCopy())
+                                .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+
     auto aggregated_frame = AggregateFrame(root_surface_id_);
 
     const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
 
     ASSERT_EQ(3u, aggregated_pass_list.size());
 
-    // Damage rect for first aggregation should contain entire root surface.
+    // Damage rect for first aggregation should contain the entire root surface.
+    // There should be three render passes. RP0 contains two solid color draw
+    // quads. RP1 contains a solid color draw quad and render pass quad to embed
+    // RP0. RP2 contains a render pass quad to embed RP1. All the quads should
+    // be present with full damage.
     EXPECT_EQ(gfx::Rect(kSurfaceSize), aggregated_pass_list[2]->damage_rect);
     EXPECT_EQ(1u, aggregated_pass_list[0]->quad_list.size());
-    EXPECT_EQ(1u, aggregated_pass_list[1]->quad_list.size());
+    EXPECT_EQ(2u, aggregated_pass_list[1]->quad_list.size());
     EXPECT_EQ(1u, aggregated_pass_list[2]->quad_list.size());
   }
 
-  // Test should not ignore outside for cached render pass.
-  // Create a root surface with a smaller damage rect.
+  constexpr gfx::Rect expected_damage_rect(20, 20, 10, 10);
+
+  // |expected_damage_rect| does not intersect with the surface draw quad in
+  // |child_pass|. However, the surface draw quad should still be included since
+  // |cached_render_pass| is true for |child_pass|.
   {
-    CompositorRenderPassId pass_id[] = {CompositorRenderPassId{1},
-                                        CompositorRenderPassId{2}};
-    std::vector<Quad> root_quads[2] = {
-        {Quad::SurfaceQuad(SurfaceRange(absl::nullopt, child_surface_id),
-                           SK_ColorWHITE, gfx::Rect(5, 5),
-                           /*stretch_content_to_fill_bounds=*/false)},
-        {Quad::RenderPassQuad(pass_id[0], gfx::Transform(), true)},
-    };
-    std::vector<Pass> root_passes = {
-        Pass(root_quads[0], pass_id[0], kSurfaceSize),
-        Pass(root_quads[1], pass_id[1], kSurfaceSize)};
+    root_pass->damage_rect = expected_damage_rect;
 
-    CompositorRenderPassList root_pass_list;
-    std::vector<SurfaceRange> referenced_surfaces;
-    AddPasses(&root_pass_list, root_passes, &referenced_surfaces);
+    CompositorFrame frame = CompositorFrameBuilder()
+                                .AddRenderPass(child_pass->DeepCopy())
+                                .AddRenderPass(root_pass->DeepCopy())
+                                .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
 
-    auto* root_pass = root_pass_list[1].get();
-    root_pass->shared_quad_state_list.front()
-        ->quad_to_target_transform.Translate(10, 10);
-    root_pass->damage_rect = gfx::Rect(10, 10, 2, 2);
-    SubmitPassListAsFrame(root_sink_.get(), root_surface_id_.local_surface_id(),
-                          &root_pass_list, std::move(referenced_surfaces),
-                          device_scale_factor);
-  }
-
-  {
     auto aggregated_frame = AggregateFrame(root_surface_id_);
     const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
 
     ASSERT_EQ(3u, aggregated_pass_list.size());
 
-    // The first quad is a cached render pass, should be included and fully
-    // damaged.
-    EXPECT_EQ(gfx::Rect(1, 1, 3, 3),
-              aggregated_pass_list[0]->quad_list.back()->visible_rect);
-    EXPECT_EQ(gfx::Rect(0, 0, 2, 2),
-              aggregated_pass_list[1]->quad_list.back()->visible_rect);
-    EXPECT_EQ(gfx::Rect(kSurfaceSize), aggregated_pass_list[0]->damage_rect);
-    EXPECT_EQ(gfx::Rect(10, 10, 2, 2), aggregated_pass_list[1]->damage_rect);
-    EXPECT_EQ(gfx::Rect(10, 10, 2, 2), aggregated_pass_list[2]->damage_rect);
+    // The root render pass damage_rect should match |expected_damage_rect| but
+    // and both child render passes should be included with full damage.
+    EXPECT_EQ(aggregated_pass_list[0]->output_rect,
+              aggregated_pass_list[0]->damage_rect);
+    EXPECT_EQ(aggregated_pass_list[1]->output_rect,
+              aggregated_pass_list[1]->damage_rect);
+    EXPECT_EQ(expected_damage_rect, aggregated_pass_list[2]->damage_rect);
     EXPECT_EQ(1u, aggregated_pass_list[0]->quad_list.size());
-    EXPECT_EQ(1u, aggregated_pass_list[1]->quad_list.size());
+    EXPECT_EQ(2u, aggregated_pass_list[1]->quad_list.size());
     EXPECT_EQ(1u, aggregated_pass_list[2]->quad_list.size());
+  }
+
+  // The child render pass no longer has |cache_render_pass| set to true so the
+  // surface draw quad is ignored.
+  {
+    child_pass->cache_render_pass = false;
+
+    CompositorFrame frame = CompositorFrameBuilder()
+                                .AddRenderPass(std::move(child_pass))
+                                .AddRenderPass(std::move(root_pass))
+                                .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame), absl::nullopt);
+
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
+
+    ASSERT_EQ(2u, aggregated_pass_list.size());
+
+    // Both the root and one child render pass damage_rect should match
+    // |expected_damage_rect|. The second child render pass is no included
+    // because the surface quad that embedded it is dropped.
+    EXPECT_EQ(expected_damage_rect, aggregated_pass_list[0]->damage_rect);
+    EXPECT_EQ(expected_damage_rect, aggregated_pass_list[1]->damage_rect);
+    EXPECT_EQ(1u, aggregated_pass_list[0]->quad_list.size());
+    EXPECT_EQ(aggregated_pass_list[0]->quad_list.back()->material,
+              DrawQuad::Material::kSolidColor);
+    EXPECT_EQ(1u, aggregated_pass_list[1]->quad_list.size());
+    EXPECT_EQ(aggregated_pass_list[1]->quad_list.back()->material,
+              DrawQuad::Material::kAggregatedRenderPass);
   }
 }
 
