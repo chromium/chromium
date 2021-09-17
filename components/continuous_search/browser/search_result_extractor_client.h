@@ -23,7 +23,9 @@ namespace continuous_search {
 // A client of the `mojom::SearchResultExtractor` interface.
 class SearchResultExtractorClient {
  public:
-  SearchResultExtractorClient();
+  // Whether to start in test mode which skips some validation checks for
+  // testing with non-SRP urls. DO NOT SET OUTSIDE TESTS.
+  explicit SearchResultExtractorClient(bool test_mode = false);
   ~SearchResultExtractorClient();
 
   SearchResultExtractorClient(const SearchResultExtractorClient&) = delete;
@@ -53,6 +55,7 @@ class SearchResultExtractorClient {
       mojom::SearchResultExtractor::Status,
       mojom::CategoryResultsPtr results);
 
+  bool test_mode_{false};
   base::WeakPtrFactory<SearchResultExtractorClient> weak_ptr_factory_{this};
 };
 

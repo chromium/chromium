@@ -26,7 +26,8 @@ SearchResultExtractorClientStatus ToSearchResultExtractorClientStatus(
 
 }  // namespace
 
-SearchResultExtractorClient::SearchResultExtractorClient() = default;
+SearchResultExtractorClient::SearchResultExtractorClient(bool test_mode)
+    : test_mode_(test_mode) {}
 SearchResultExtractorClient::~SearchResultExtractorClient() = default;
 
 void SearchResultExtractorClient::RequestData(
@@ -41,7 +42,7 @@ void SearchResultExtractorClient::RequestData(
   }
 
   const GURL& url = web_contents->GetLastCommittedURL();
-  if (!google_util::IsGoogleSearchUrl(url)) {
+  if (!google_util::IsGoogleSearchUrl(url) && !test_mode_) {
     std::move(callback).Run(
         SearchResultExtractorClientStatus::kWebContentsHasNonSrpUrl,
         mojom::CategoryResults::New());
@@ -88,7 +89,7 @@ void SearchResultExtractorClient::RequestDataCallbackAdapter(
 
   // `url` and transitively `document_url` should always be a search URL. If
   // this is not the case an invariant has been violated.
-  CHECK(google_util::IsGoogleSearchUrl(results->document_url));
+  CHECK(google_util::IsGoogleSearchUrl(results->document_url) || test_mode_);
   std::move(callback).Run(SearchResultExtractorClientStatus::kSuccess,
                           std::move(results));
 }
