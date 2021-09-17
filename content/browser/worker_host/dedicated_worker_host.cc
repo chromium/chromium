@@ -399,12 +399,8 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   // made on it until its receiver is sent. Now that the receiver was sent, it
   // can be used, so add it to ServiceWorkerObjectHost.
   if (service_worker_remote_object) {
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(
-            &ServiceWorkerObjectHost::AddRemoteObjectPtrAndUpdateState,
-            controller_service_worker_object_host,
-            std::move(service_worker_remote_object), service_worker_state));
+    controller_service_worker_object_host->AddRemoteObjectPtrAndUpdateState(
+        std::move(service_worker_remote_object), service_worker_state);
   }
 }
 
