@@ -4,6 +4,7 @@
 
 #include "chrome/credential_provider/extension/os_service_manager.h"
 
+#include "base/command_line.h"
 #include "chrome/credential_provider/extension/extension_strings.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 
@@ -37,19 +38,22 @@ DWORD OSServiceManager::InstallService(
   if (!scm_handle.IsValid())
     return ::GetLastError();
 
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.SetProgram(service_binary_path);
+
   *sc_handle = ScopedScHandle(::CreateService(
-      scm_handle.Get(),                     // SCM database
-      kGCPWExtensionServiceName,            // name of service
-      kGCPWExtensionServiceDisplayName,     // service name to display
-      SERVICE_ALL_ACCESS,                   // desired access
-      SERVICE_WIN32_OWN_PROCESS,            // service type
-      SERVICE_AUTO_START,                   // start type
-      SERVICE_ERROR_NORMAL,                 // error control type
-      service_binary_path.value().c_str(),  // path to service's binary
-      nullptr,                              // no load ordering group
-      nullptr,                              // no tag identifier
-      nullptr,                              // no dependencies
-      nullptr,                              // LocalSystem account
+      scm_handle.Get(),                             // SCM database
+      kGCPWExtensionServiceName,                    // name of service
+      kGCPWExtensionServiceDisplayName,             // service name to display
+      SERVICE_ALL_ACCESS,                           // desired access
+      SERVICE_WIN32_OWN_PROCESS,                    // service type
+      SERVICE_AUTO_START,                           // start type
+      SERVICE_ERROR_NORMAL,                         // error control type
+      command_line.GetCommandLineString().c_str(),  // path to service's binary
+      nullptr,                                      // no load ordering group
+      nullptr,                                      // no tag identifier
+      nullptr,                                      // no dependencies
+      nullptr,                                      // LocalSystem account
       nullptr));
 
   if (!sc_handle->IsValid())
