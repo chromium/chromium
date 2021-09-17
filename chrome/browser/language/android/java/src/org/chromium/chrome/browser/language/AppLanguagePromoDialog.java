@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.language.settings.LanguagesManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
 import org.chromium.components.language.GeoLanguageProviderBridge;
+import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -493,14 +494,21 @@ public class AppLanguagePromoDialog {
      * @return Whether the app language prompt should be shown or not.
      */
     private static boolean shouldShowPrompt() {
+        boolean isOnline = NetworkChangeNotifier.isOnline();
         // This switch is only used for testing so it is ok to override all other checks.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) return true;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) {
+            // Even if feature is set don't show prompt if offline for testing.
+            recordOnlineStatus(isOnline);
+            return isOnline;
+        }
 
         // Don't show the prompt if not enabled or already shown.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT)) return false;
         if (TranslateBridge.getAppLanguagePromptShown()) return false;
 
-        return true;
+        // Don't show the prompt if offline since a language pack download will fail.
+        recordOnlineStatus(isOnline);
+        return isOnline;
     }
 
     /**
@@ -527,6 +535,11 @@ public class AppLanguagePromoDialog {
             default:
                 // Do not record a time for other action types.
         }
+    }
+
+    private static void recordOnlineStatus(boolean isOnline) {
+        RecordHistogram.recordBooleanHistogram(
+                "LanguageSettings.AppLanguagePrompt.IsOnline", isOnline);
     }
 
     private static void recordOpenDuration(String type, long displayTime) {
