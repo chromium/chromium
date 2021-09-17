@@ -82,7 +82,7 @@ enum class SandboxType {
   kMirroring,
 #endif  // defined(OS_MAC)
 
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   // The print backend service process which interfaces with operating system
   // print drivers.
   kPrintBackend,

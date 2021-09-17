@@ -50,7 +50,7 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::policy::SandboxType::kUtility ||
       sandbox_type_ == sandbox::policy::SandboxType::kNetwork ||
       sandbox_type_ == sandbox::policy::SandboxType::kCdm ||
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend ||
 #endif
       sandbox_type_ == sandbox::policy::SandboxType::kPrintCompositor ||
@@ -108,7 +108,7 @@ ZygoteHandle UtilitySandboxedProcessLauncherDelegate::GetZygote() {
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kAudio ||
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend ||
 #endif
       sandbox_type_ == sandbox::policy::SandboxType::kSpeechRecognition) {

@@ -107,7 +107,7 @@ TEST(SandboxTypeTest, Utility) {
             SandboxTypeFromCommandLine(command_line12));
 #endif
 
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   base::CommandLine command_line13(command_line);
   SetCommandLineFlagsForSandboxType(&command_line13,
                                     SandboxType::kPrintBackend);

@@ -184,7 +184,7 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<CdmProcessPolicy>();
     case SandboxType::kPrintCompositor:
       return std::make_unique<PrintCompositorProcessPolicy>();
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     case SandboxType::kPrintBackend:
       return std::make_unique<PrintBackendProcessPolicy>();
 #endif
@@ -263,7 +263,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case SandboxType::kService:
     case SandboxType::kSpeechRecognition:
     case SandboxType::kNetwork:
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     case SandboxType::kPrintBackend:
 #endif
     case SandboxType::kUtility:

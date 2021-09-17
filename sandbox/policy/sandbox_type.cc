@@ -47,7 +47,7 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
     case SandboxType::kPpapi:
 #endif
     case SandboxType::kCdm:
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     case SandboxType::kPrintBackend:
 #endif
     case SandboxType::kPrintCompositor:
@@ -115,7 +115,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case SandboxType::kUtility:
     case SandboxType::kNetwork:
     case SandboxType::kCdm:
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     case SandboxType::kPrintBackend:
 #endif
     case SandboxType::kPrintCompositor:
@@ -238,7 +238,7 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
 #endif
     case SandboxType::kCdm:
       return switches::kCdmSandbox;
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     case SandboxType::kPrintBackend:
       return switches::kPrintBackendSandbox;
 #endif
@@ -326,7 +326,7 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
 #endif
   if (sandbox_string == switches::kCdmSandbox)
     return SandboxType::kCdm;
-#if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (sandbox_string == switches::kPrintBackendSandbox)
     return SandboxType::kPrintBackend;
 #endif

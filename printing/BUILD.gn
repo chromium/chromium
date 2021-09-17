@@ -222,7 +222,7 @@ component("printing") {
     }
   }
 
-  if (is_linux || is_chromeos) {
+  if (enable_oop_printing && (is_linux || is_chromeos)) {
     deps += [ ":printing_sandbox_hook" ]
   }
 }

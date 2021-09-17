@@ -108,7 +108,7 @@ source_set("utility") {
       "//content/utility/speech:speech_recognition_sandbox_hook",
       "//services/network:network_sandbox_hook",
     ]
-    if (enable_basic_printing) {
+    if (enable_oop_printing) {
       deps += [ "//printing:printing_sandbox_hook" ]
     }
   }
