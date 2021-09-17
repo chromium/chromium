@@ -933,8 +933,7 @@
     },
     {
       name: "EditContext",
-      settable_from_internals: true,
-      status: "test",
+      status: "experimental",
     },
     {
       // http://crbug.com/707656 content editable in LayoutNG.
