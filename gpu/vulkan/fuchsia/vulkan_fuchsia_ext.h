@@ -107,7 +107,7 @@ vkDestroyBufferCollectionFUCHSIAX(VkDevice device,
                                   VkBufferCollectionFUCHSIAX collection,
                                   const VkAllocationCallbacks* pAllocator);
 
-VKAPI_ATTR VkResult VKAPI_CALL vkGetBufferCollectionPropertiesFUCHSIA(
+VKAPI_ATTR VkResult VKAPI_CALL vkGetBufferCollectionPropertiesFUCHSIAX(
     VkDevice device,
     VkBufferCollectionFUCHSIAX collection,
     VkBufferCollectionPropertiesFUCHSIAX* pProperties);
