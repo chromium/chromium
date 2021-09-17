@@ -2140,6 +2140,14 @@ bool NGBoxFragmentPainter::HitTestLineBoxFragment(
       return false;
   }
 
+  // |physical_offset| is inside line, but
+  //  * Outside of children
+  //  * In child without no foreground descendant, e.g. block with size.
+  if (cursor.Current()->LineBoxFragment()->IsBlockInInline()) {
+    // "fast/events/ondragenter.html" reaches here.
+    return false;
+  }
+
   return hit_test.AddNodeToResultWithContentOffset(
       fragment.NodeForHitTest(), box_fragment_, bounds_rect,
       physical_offset - cursor.Current().OffsetInContainerFragment());
