@@ -7,6 +7,7 @@
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
+import io
 import logging
 import os
 import re
@@ -65,7 +66,7 @@ def ReadHistogramValues(filename, start_marker, end_marker, strip_k_prefix):
       DuplicatedValue: An error when two enum labels share the same value.
   """
   # Read the file as a list of lines
-  with open(path_util.GetInputFile(filename)) as f:
+  with io.open(path_util.GetInputFile(filename)) as f:
     content = f.readlines()
 
   START_REGEX = re.compile(start_marker)
@@ -216,7 +217,7 @@ def _GetOldAndUpdatedXml(histogram_enum_name, source_enum_values,
   and returns both in XML format.
   """
   Log('Reading existing histograms from "{0}".'.format(ENUMS_PATH))
-  with open(ENUMS_PATH, 'r', encoding='utf-8') as f:
+  with io.open(ENUMS_PATH, 'r', encoding='utf-8') as f:
     histograms_doc = minidom.parse(f)
     f.seek(0)
     xml = f.read()
@@ -300,7 +301,7 @@ def UpdateHistogramFromDict(histogram_enum_name, source_enum_values,
     Log('Cancelled.')
     return
 
-  with open(ENUMS_PATH, 'w', encoding='utf-8') as f:
+  with io.open(ENUMS_PATH, 'w', encoding='utf-8') as f:
     f.write(new_xml)
 
   Log('Done.')
