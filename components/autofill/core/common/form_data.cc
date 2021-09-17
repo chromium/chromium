@@ -174,6 +174,27 @@ bool FormData::IdentityComparator::operator()(const FormData& a,
       a.fields, b.fields, FormFieldData::IdentityComparator());
 }
 
+// static
+bool FormData::DeepEqual(const FormData& a, const FormData& b) {
+  // We compare all unique identifiers first, including the field renderer IDs,
+  // because we expect most inequalities to be due to them.
+  if (a.unique_renderer_id != b.unique_renderer_id ||
+      a.child_frames != b.child_frames ||
+      !base::ranges::equal(a.fields, b.fields, {},
+                           &FormFieldData::unique_renderer_id,
+                           &FormFieldData::unique_renderer_id)) {
+    return false;
+  }
+
+  if (a.name != b.name || a.id_attribute != b.id_attribute ||
+      a.name_attribute != b.name_attribute || a.url != b.url ||
+      a.action != b.action || a.is_form_tag != b.is_form_tag ||
+      !base::ranges::equal(a.fields, b.fields, &FormFieldData::DeepEqual)) {
+    return false;
+  }
+  return true;
+}
+
 bool FormHasNonEmptyPasswordField(const FormData& form) {
   for (const auto& field : form.fields) {
     if (field.IsPasswordInputElement()) {

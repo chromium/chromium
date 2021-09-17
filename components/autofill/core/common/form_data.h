@@ -60,6 +60,9 @@ struct FormData {
     bool operator()(const FormData& a, const FormData& b) const;
   };
 
+  // Returns true if all members of forms |a| and |b| are identical.
+  static bool DeepEqual(const FormData& a, const FormData& b);
+
   FormData();
   FormData(const FormData&);
   FormData& operator=(const FormData&);
@@ -71,17 +74,22 @@ struct FormData {
   // Must not be leaked to renderer process. See FieldGlobalId for details.
   FormGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
 
-  // Returns true if two forms are the same, not counting the values of the
-  // form elements.
+  // TODO(crbug/1211834): This function is deprecated. Use FormData::DeepEqual()
+  // instead.
+  // Returns true if two forms are the same, not counting the values of the form
+  // elements.
   bool SameFormAs(const FormData& other) const;
 
+  // TODO(crbug/1211834): This function is deprecated.
   // Same as SameFormAs() except calling FormFieldData.SimilarFieldAs() to
   // compare fields.
   bool SimilarFormAs(const FormData& other) const;
 
+  // TODO(crbug/1211834): This function is deprecated.
   // If |form| is the same as this from the POV of dynamic refills.
   bool DynamicallySameFormAs(const FormData& form) const;
 
+  // TODO(crbug/1211834): This function is deprecated.
   // Allow FormData to be a key in STL containers.
   bool operator<(const FormData& form) const;
 

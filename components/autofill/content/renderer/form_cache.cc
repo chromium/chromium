@@ -120,27 +120,13 @@ bool IsFormInteresting(const FormData& form, size_t num_editable_elements) {
 FormCache::FormCache(WebLocalFrame* frame) : frame_(frame) {}
 FormCache::~FormCache() = default;
 
-struct FormCache::CachedFormData {
-  explicit CachedFormData(const FormData& form)
-      : child_frames(form.child_frames) {
-    for (const auto& field : form.fields)
-      field_renderer_ids.push_back(field.unique_renderer_id);
-  }
-  CachedFormData(CachedFormData&& cached_form) = default;
-  CachedFormData& operator=(CachedFormData&& cached_form) = default;
-  ~CachedFormData() = default;
-
-  std::vector<FieldRendererId> field_renderer_ids;
-  std::vector<FrameTokenWithPredecessor> child_frames;
-};
-
 void FormCache::MaybeUpdateParsedFormsPeak() {
-  peak_size_of_parsed_forms_ =
-      std::max(peak_size_of_parsed_forms_,
-               std::max(parsed_forms_rendererid_.size(), parsed_forms_.size()));
+  peak_size_of_parsed_forms_ = std::max(
+      peak_size_of_parsed_forms_,
+      std::max(parsed_forms_by_renderer_id_.size(), parsed_forms_.size()));
 }
 
-std::vector<FormData> FormCache::ModifiedExtractNewForms(
+std::vector<FormData> FormCache::UpdateFormCache(
     const FieldDataManager* field_data_manager) {
   std::vector<FormData> forms;
   WebDocument document = frame_->GetDocument();
@@ -156,11 +142,11 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
 
   // Log an error message for deprecated attributes, but only the first time
   // the form is parsed.
-  bool log_deprecation_messages = parsed_forms_rendererid_.empty();
+  bool log_deprecation_messages = parsed_forms_by_renderer_id_.empty();
 
-  std::map<FormRendererId, CachedFormData> old_parsed_forms =
-      std::move(parsed_forms_rendererid_);
-  parsed_forms_rendererid_.clear();
+  std::map<FormRendererId, FormData> old_parsed_forms =
+      std::move(parsed_forms_by_renderer_id_);
+  parsed_forms_by_renderer_id_.clear();
 
   size_t frame_depth = form_util::GetFrameDepth(frame_);
   size_t num_fields_seen = 0;
@@ -179,8 +165,8 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
     num_frames_seen += form.child_frames.size();
 
     if (num_fields_seen > kMaxParseableFields) {
-      // Restore |parsed_forms_rendererid_|.
-      parsed_forms_rendererid_.insert(
+      // Restore |parsed_forms_by_renderer_id_|.
+      parsed_forms_by_renderer_id_.insert(
           std::make_move_iterator(old_parsed_forms.begin()),
           std::make_move_iterator(old_parsed_forms.end()));
       PruneInitialValueCaches(observed_unique_renderer_ids);
@@ -196,20 +182,16 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
 
     // Store only "interesting" forms.
     if (IsFormInteresting(form, num_editable_elements)) {
-      DCHECK(parsed_forms_rendererid_.find(form.unique_renderer_id) ==
-             parsed_forms_rendererid_.end());
-      parsed_forms_rendererid_.insert(
-          {form.unique_renderer_id, CachedFormData(form)});
-      // If it is a new form or an input field of the form changed,
-      // re-extract the form.
+      DCHECK(parsed_forms_by_renderer_id_.find(form.unique_renderer_id) ==
+             parsed_forms_by_renderer_id_.end());
+      // Re-extract the form if it is a new form or the form has changed.
       auto it = old_parsed_forms.find(form.unique_renderer_id);
       if (it == old_parsed_forms.end() ||
-          form.child_frames != it->second.child_frames ||
-          !base::ranges::equal(form.fields, it->second.field_renderer_ids, {},
-                               &FormFieldData::unique_renderer_id)) {
+          !FormData::DeepEqual(std::move(it->second), form)) {
         SaveInitialValues(control_elements);
-        forms.push_back(std::move(form));
+        forms.push_back(form);
       }
+      parsed_forms_by_renderer_id_[form.unique_renderer_id] = std::move(form);
     }
     MaybeUpdateParsedFormsPeak();
     return true;
@@ -264,7 +246,7 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
 std::vector<FormData> FormCache::ExtractNewForms(
     const FieldDataManager* field_data_manager) {
   if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
-    return ModifiedExtractNewForms(field_data_manager);
+    return UpdateFormCache(field_data_manager);
   }
   std::vector<FormData> forms;
   WebDocument document = frame_->GetDocument();
@@ -392,8 +374,8 @@ std::vector<FormData> FormCache::ExtractNewForms(
 }
 
 void FormCache::Reset() {
-  // Record the size of |parsed_forms_| every time it reaches its peak size. The
-  // peak size is reached right before the cache is cleared.
+  // Record the size of the cached parsed forms every time it reaches its peak
+  // size. The peak size is reached right before the cache is cleared.
   UMA_HISTOGRAM_COUNTS_1000("Autofill.FormCacheSize",
                             peak_size_of_parsed_forms_);
 
@@ -401,7 +383,7 @@ void FormCache::Reset() {
   parsed_forms_.clear();
   // TODO(crbug/1215333): Remove after the `AutofillUseNewFormExtraction`
   // feature is deleted.
-  parsed_forms_rendererid_.clear();
+  parsed_forms_by_renderer_id_.clear();
   initial_select_values_.clear();
   initial_checked_state_.clear();
   fields_eligible_for_manual_filling_.clear();

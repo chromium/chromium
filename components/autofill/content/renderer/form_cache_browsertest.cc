@@ -118,6 +118,26 @@ TEST_P(ParameterizedFormCacheBrowserTest, ExtractForms) {
   EXPECT_TRUE(unowned_form->child_frames.empty());
 }
 
+// Test if the form gets re-extracted after a label change.
+TEST_P(ParameterizedFormCacheBrowserTest, ExtractFormAfterDynamicFieldChange) {
+  LoadHTML(R"(
+    <form id="f"><input></form>
+    <form id="g"> <label id="label">Name</label><input></form>
+  )");
+
+  FormCache form_cache(GetMainFrame());
+  std::vector<FormData> forms =
+      form_cache.ExtractNewForms(/*field_data_manager=*/nullptr);
+  EXPECT_EQ(2u, forms.size());
+
+  ExecuteJavaScriptForTests(R"(
+    document.getElementById("label").innerHTML = "Last Name";
+  )");
+
+  forms = form_cache.ExtractNewForms(/*field_data_manager=*/nullptr);
+  EXPECT_EQ(1u, forms.size());
+}
+
 class FormCacheIframeBrowserTest : public ParameterizedFormCacheBrowserTest {
  public:
   FormCacheIframeBrowserTest() {
@@ -562,7 +582,8 @@ TEST_P(ParameterizedFormCacheBrowserTest,
 
   // Check if the modified form with the same rendererId was not added again.
   if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
-    EXPECT_EQ(1u, FormCacheTestApi(&form_cache).parsed_forms_rendererid_size());
+    EXPECT_EQ(1u,
+              FormCacheTestApi(&form_cache).parsed_forms_by_renderer_id_size());
   } else {
     EXPECT_EQ(1u, FormCacheTestApi(&form_cache).parsed_forms_size());
   }
@@ -600,7 +621,8 @@ TEST_P(ParameterizedFormCacheBrowserTest,
   // Check if the modified form with the same rendererId was not added again.
   // (We expect that all the unowned fields have the same rendererId.)
   if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
-    EXPECT_EQ(1u, FormCacheTestApi(&form_cache).parsed_forms_rendererid_size());
+    EXPECT_EQ(1u,
+              FormCacheTestApi(&form_cache).parsed_forms_by_renderer_id_size());
   } else {
     EXPECT_EQ(1u, FormCacheTestApi(&form_cache).parsed_forms_size());
   }
@@ -618,7 +640,8 @@ TEST_F(FormCacheBrowserTest, DoNotStoreEmptyForms) {
   form_cache.ExtractNewForms(nullptr);
 
   EXPECT_EQ(1u, GetMainFrame()->GetDocument().Forms().size());
-  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).parsed_forms_rendererid_size());
+  EXPECT_EQ(0u,
+            FormCacheTestApi(&form_cache).parsed_forms_by_renderer_id_size());
 }
 
 // Test that the FormCache never contains more than |kMaxParseableFields|
@@ -642,7 +665,7 @@ TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
   EXPECT_EQ(kMaxParseableFields + 1,
             GetMainFrame()->GetDocument().Forms().size());
   EXPECT_EQ(kMaxParseableFields,
-            FormCacheTestApi(&form_cache).parsed_forms_rendererid_size());
+            FormCacheTestApi(&form_cache).parsed_forms_by_renderer_id_size());
 }
 
 // Test that FormCache::ExtractNewForms() limits the number of total fields by
