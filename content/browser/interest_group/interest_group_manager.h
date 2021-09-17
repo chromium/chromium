@@ -5,12 +5,12 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
 
+#include <list>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -93,6 +93,14 @@ class CONTENT_EXPORT InterestGroupManager {
   void GetInterestGroupsForOwner(
       const url::Origin& owner,
       base::OnceCallback<void(std::vector<BiddingInterestGroup>)> callback);
+  // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
+  // that are currently rate-limited for updates. Additionally, this will update
+  // the `next_update_after` field such that a subsequent
+  // ClaimInterestGroupsForUpdate() call with the same `owner` won't return
+  // anything until after the success rate limit period passes.
+  void ClaimInterestGroupsForUpdate(
+      const url::Origin& owner,
+      base::OnceCallback<void(std::vector<BiddingInterestGroup>)> callback);
   // Clear out storage for the matching owning origin. If the callback is empty
   // then apply to all origins.
   void DeleteInterestGroupData(
@@ -114,11 +122,13 @@ class CONTENT_EXPORT InterestGroupManager {
   }
 
  private:
+  using UrlLoadersList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
+
   void DidUpdateInterestGroupsOfOwnerDbLoad(
       url::Origin owner,
       std::vector<BiddingInterestGroup> interest_groups);
   void DidUpdateInterestGroupsOfOwnerNetFetch(
-      network::SimpleURLLoader* simple_url_loader,
+      UrlLoadersList::iterator simple_url_loader,
       url::Origin owner,
       std::string name,
       std::unique_ptr<std::string> fetch_body);
@@ -126,6 +136,9 @@ class CONTENT_EXPORT InterestGroupManager {
       url::Origin owner,
       std::string name,
       data_decoder::DataDecoder::ValueOrError result);
+  void ReportUpdateFetchFailed(const url::Origin& owner,
+                               const std::string& name,
+                               bool net_disconnected);
 
   // Owns and manages access to the InterestGroupStorage living on a different
   // thread.
@@ -139,9 +152,7 @@ class CONTENT_EXPORT InterestGroupManager {
 
   // All active network requests -- active requests will be cancelled when
   // destroyed.
-  base::flat_set<std::unique_ptr<network::SimpleURLLoader>,
-                 base::UniquePtrComparator>
-      url_loaders_;
+  UrlLoadersList url_loaders_;
 
   // TODO(crbug.com/1186444): Do we need to test InterestGroupManager
   // destruction during update? If so, how?

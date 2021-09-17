@@ -93,7 +93,7 @@ class UpdateResponder {
   void RegisterUpdateResponse(const std::string& url_path,
                               const std::string& response) {
     base::AutoLock auto_lock(json_update_map_lock_);
-    json_update_map_.insert({url_path, response});
+    json_update_map_[url_path] = response;
   }
 
  private:

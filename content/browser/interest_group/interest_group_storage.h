@@ -38,6 +38,14 @@ class CONTENT_EXPORT InterestGroupStorage {
       base::TimeDelta::FromHours(1);
   static constexpr base::TimeDelta kIdlePeriod =
       base::TimeDelta::FromSeconds(30);
+  // After a successful interest group update, delay the next update until
+  // kUpdateSucceededBackoffPeriod time has passed.
+  static constexpr base::TimeDelta kUpdateSucceededBackoffPeriod =
+      base::TimeDelta::FromDays(1);
+  // After a failed interest group update, delay the next update until
+  // kUpdateFailedBackoffPeriod time has passed.
+  static constexpr base::TimeDelta kUpdateFailedBackoffPeriod =
+      base::TimeDelta::FromHours(1);
 
   // Constructs an interest group storage based on a SQLite database in the
   // `path`/InterestGroups file. If the path passed in is empty, then the
@@ -60,6 +68,15 @@ class CONTENT_EXPORT InterestGroupStorage {
   // time or user bidding signals. Silently fails if the interest group does
   // not exist.
   void UpdateInterestGroup(blink::InterestGroup group);
+  // Report that updating of the interest group with owner `owner` and name
+  // `name` failed. The rate limit duration for failed updates is shorter than
+  // for those that succeed -- for successes, UpdateInterestGroup()
+  // automatically updates the rate limit duration. If `net_disconnected` is
+  // true, the rate limit duration is set to 0, since updates can retry
+  // immediately if the network is disconnected.
+  void ReportUpdateFetchFailed(const url::Origin& owner,
+                               const std::string& name,
+                               bool net_disconnected);
   // Adds an entry to the bidding history for this interest group.
   void RecordInterestGroupBid(const url::Origin& owner,
                               const std::string& name);
@@ -74,6 +91,13 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Gets a list of all interest groups with their bidding information
   // associated with the provided owner.
   std::vector<BiddingInterestGroup> GetInterestGroupsForOwner(
+      const url::Origin& owner);
+  // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
+  // that are currently rate-limited for updates. Additionally, this will update
+  // the `next_update_after` field such that a subsequent
+  // ClaimInterestGroupsForUpdate() call with the same `owner` won't return
+  // anything until after the success rate limit period passes.
+  std::vector<BiddingInterestGroup> ClaimInterestGroupsForUpdate(
       const url::Origin& owner);
 
   // Clear out storage for the matching owning origin. If the callback is empty

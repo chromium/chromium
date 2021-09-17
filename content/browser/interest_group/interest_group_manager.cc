@@ -21,6 +21,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -96,7 +97,7 @@ void InterestGroupManager::UpdateInterestGroup(blink::InterestGroup group) {
 
 void InterestGroupManager::UpdateInterestGroupsOfOwner(
     const url::Origin& owner) {
-  GetInterestGroupsForOwner(
+  ClaimInterestGroupsForUpdate(
       owner, base::BindOnce(
                  &InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad,
                  weak_factory_.GetWeakPtr(), owner));
@@ -125,6 +126,14 @@ void InterestGroupManager::GetInterestGroupsForOwner(
     const url::Origin& owner,
     base::OnceCallback<void(std::vector<BiddingInterestGroup>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
+      .WithArgs(owner)
+      .Then(std::move(callback));
+}
+
+void InterestGroupManager::ClaimInterestGroupsForUpdate(
+    const url::Origin& owner,
+    base::OnceCallback<void(std::vector<BiddingInterestGroup>)> callback) {
+  impl_.AsyncCall(&InterestGroupStorage::ClaimInterestGroupsForUpdate)
       .WithArgs(owner)
       .Then(std::move(callback));
 }
@@ -161,29 +170,35 @@ void InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad(
         per_update_isolation_info;
     auto simple_url_loader = network::SimpleURLLoader::Create(
         std::move(resource_request), kTrafficAnnotation);
-    network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
-    url_loaders_.insert(std::move(simple_url_loader));
+    auto simple_url_loader_it =
+        url_loaders_.insert(url_loaders_.end(), std::move(simple_url_loader));
     // TODO(crbug.com/1186444): Time out these requests if they take too long.
-    simple_url_loader_ptr->DownloadToString(
-        url_loader_factory_.get(),
-        base::BindOnce(
-            &InterestGroupManager::DidUpdateInterestGroupsOfOwnerNetFetch,
-            weak_factory_.GetWeakPtr(), simple_url_loader_ptr, owner,
-            interest_group.group->group.name),
-        kMaxUpdateSize);
+    (*simple_url_loader_it)
+        ->DownloadToString(
+            url_loader_factory_.get(),
+            base::BindOnce(
+                &InterestGroupManager::DidUpdateInterestGroupsOfOwnerNetFetch,
+                weak_factory_.GetWeakPtr(), simple_url_loader_it, owner,
+                interest_group.group->group.name),
+            kMaxUpdateSize);
   }
 }
 
 void InterestGroupManager::DidUpdateInterestGroupsOfOwnerNetFetch(
-    network::SimpleURLLoader* simple_url_loader,
+    UrlLoadersList::iterator simple_url_loader_it,
     url::Origin owner,
     std::string name,
     std::unique_ptr<std::string> fetch_body) {
-  const auto erase_result = url_loaders_.erase(simple_url_loader);
-  DCHECK_EQ(erase_result, 1u);
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
+      std::move(*simple_url_loader_it);
+  url_loaders_.erase(simple_url_loader_it);
   // TODO(crbug.com/1186444): Report HTTP error info to devtools.
-  if (!fetch_body)
+  if (!fetch_body) {
+    ReportUpdateFetchFailed(
+        owner, name, /*net_disconnected=*/simple_url_loader->NetError() ==
+                         net::ERR_INTERNET_DISCONNECTED);
     return;
+  }
   data_decoder::DataDecoder::ParseJsonIsolated(
       *fetch_body,
       base::BindOnce(
@@ -269,20 +284,21 @@ WARN_UNUSED_RESULT bool TryToCopyAds(
   return true;
 }
 
-}  // namespace
-
-void InterestGroupManager::DidUpdateInterestGroupsOfOwnerJsonParse(
-    url::Origin owner,
-    std::string name,
-    data_decoder::DataDecoder::ValueOrError result) {
+absl::optional<blink::InterestGroup> ParseUpdateJson(
+    const url::Origin& owner,
+    const std::string& name,
+    const data_decoder::DataDecoder::ValueOrError& result) {
   // TODO(crbug.com/1186444): Report to devtools.
-  if (result.error)
-    return;
+  if (result.error) {
+    return absl::nullopt;
+  }
   const base::Value& value = *result.value;
-  if (!value.is_dict())
-    return;
-  if (!ValidateNameAndOwnerIfPresent(owner, name, value))
-    return;
+  if (!value.is_dict()) {
+    return absl::nullopt;
+  }
+  if (!ValidateNameAndOwnerIfPresent(owner, name, value)) {
+    return absl::nullopt;
+  }
   blink::InterestGroup interest_group_update;
   interest_group_update.owner = owner;
   interest_group_update.name = name;
@@ -295,13 +311,36 @@ void InterestGroupManager::DidUpdateInterestGroupsOfOwnerJsonParse(
     interest_group_update.trusted_bidding_signals_url =
         GURL(*maybe_update_trusted_bidding_signals_url);
   }
-  if (!TryToCopyTrustedBiddingSignalsKeys(interest_group_update, value))
+  if (!TryToCopyTrustedBiddingSignalsKeys(interest_group_update, value)) {
+    return absl::nullopt;
+  }
+  if (!TryToCopyAds(interest_group_update, value)) {
+    return absl::nullopt;
+  }
+  if (!interest_group_update.IsValid()) {
+    return absl::nullopt;
+  }
+  return interest_group_update;
+}
+
+}  // namespace
+
+void InterestGroupManager::DidUpdateInterestGroupsOfOwnerJsonParse(
+    url::Origin owner,
+    std::string name,
+    data_decoder::DataDecoder::ValueOrError result) {
+  absl::optional<blink::InterestGroup> interest_group_update =
+      ParseUpdateJson(owner, name, result);
+  if (!interest_group_update)
     return;
-  if (!TryToCopyAds(interest_group_update, value))
-    return;
-  if (!interest_group_update.IsValid())
-    return;
-  UpdateInterestGroup(std::move(interest_group_update));
+  UpdateInterestGroup(std::move(*interest_group_update));
+}
+
+void InterestGroupManager::ReportUpdateFetchFailed(const url::Origin& owner,
+                                                   const std::string& name,
+                                                   bool net_disconnected) {
+  impl_.AsyncCall(&InterestGroupStorage::ReportUpdateFetchFailed)
+      .WithArgs(owner, name, net_disconnected);
 }
 
 }  // namespace content

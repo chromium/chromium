@@ -85,7 +85,7 @@ class UpdateResponder {
   void RegisterUpdateResponse(const std::string& url_path,
                               const std::string& response) {
     base::AutoLock auto_lock(json_update_lock_);
-    json_update_map_.insert({url_path, response});
+    json_update_map_[url_path] = response;
   }
 
   // Registers a URL to use a "deferred" response. For a deferred response, the
@@ -110,12 +110,31 @@ class UpdateResponder {
     deferred_response_url_path_ = "";
   }
 
+  // Make the next request fail with `error` -- subsequent requests will succeed
+  // again unless another FailNextRequestWithError() call is made.
+  void FailNextRequestWithError(net::Error error) {
+    base::AutoLock auto_lock(json_update_lock_);
+    next_error_ = error;
+  }
+
+  size_t UpdateCount() const {
+    base::AutoLock auto_lock(json_update_lock_);
+    return update_count_;
+  }
+
  private:
   bool RequestHandlerForUpdates(URLLoaderInterceptor::RequestParams* params) {
     base::AutoLock auto_lock(json_update_lock_);
+    update_count_++;
     EXPECT_TRUE(params->url_request.trusted_params->isolation_info
                     .network_isolation_key()
                     .IsTransient());
+    if (next_error_ != net::OK) {
+      params->client->OnComplete(
+          network::URLLoaderCompletionStatus(next_error_));
+      next_error_ = net::OK;
+      return true;
+    }
     if (params->url_request.url.path() == deferred_response_url_path_) {
       CHECK(!deferred_response_url_loader_client_);
       deferred_response_url_loader_client_ = std::move(params->client);
@@ -134,7 +153,7 @@ class UpdateResponder {
       base::BindRepeating(&UpdateResponder::RequestHandlerForUpdates,
                           base::Unretained(this))};
 
-  base::Lock json_update_lock_;
+  mutable base::Lock json_update_lock_;
 
   // For each HTTPS request, we see if any path in the map matches the request
   // path. If so, the server returns the mapped value string as the response.
@@ -151,6 +170,10 @@ class UpdateResponder {
   // remote has been "stolen" yet, or if the last deferred response completed.
   mojo::Remote<network::mojom::URLLoaderClient>
       deferred_response_url_loader_client_ GUARDED_BY(json_update_lock_);
+
+  net::Error next_error_ GUARDED_BY(json_update_lock_) = net::OK;
+
+  size_t update_count_ GUARDED_BY(json_update_lock_) = 0;
 };
 
 }  // namespace
@@ -1342,7 +1365,11 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   EXPECT_EQ(0u, GetInterestGroupsForOwner(kOriginA).size());
 
   // Updating again when the interest group has been deleted shouldn't somehow
-  // bring it back.
+  // bring it back -- also, advance past the rate limit window to ensure the
+  // update actually happens.
+  task_environment()->FastForwardBy(
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod +
+      base::TimeDelta::FromSeconds(1));
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
                                             kServerResponse);
   UpdateInterestGroupNoFlush();
@@ -1425,7 +1452,11 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   EXPECT_EQ(0u, GetInterestGroupsForOwner(kOriginA).size());
 
   // Updating again when the interest group has been deleted shouldn't somehow
-  // bring it back.
+  // bring it back -- also, advance past the rate limit window to ensure the
+  // update actually happens.
+  task_environment()->FastForwardBy(
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod +
+      base::TimeDelta::FromSeconds(1));
   update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
                                             kServerResponse);
   UpdateInterestGroupNoFlush();
@@ -1536,6 +1567,433 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateDoesntChangeBrowserSignals) {
   EXPECT_EQ(signals->prev_wins.size(), 1u);
 
   EXPECT_EQ(group.name, kInterestGroupName);
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+}
+
+// Join an interest group.
+// Update interest group successfully.
+// Change update response to different value.
+// Update attempt does nothing (rate limited).
+// Advance to just before time limit drops, update does nothing (rate limited).
+// Advance after time limit. Update should work.
+TEST_F(RestrictedInterestGroupStoreImplTest,
+       UpdateRateLimitedAfterSuccessfulUpdate) {
+  constexpr char kDailyUpdateUrlPath[] =
+      "/interest_group/daily_update_partial.json";
+  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                            base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                                               kOriginStringA));
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The first update completes successfully.
+  std::vector<BiddingInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].group->group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  // Change the update response and try updating again.
+  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                            base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/newer_ad_render_url",
+         "metadata": {"newer_a": "b"}
+        }]
+})",
+                                                               kOriginStringA));
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update does nothing due to rate limiting, nothing changes.
+  std::vector<BiddingInterestGroup> groups2 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups2.size(), 1u);
+  const auto& group2 = groups2[0].group->group;
+  ASSERT_TRUE(group2.ads.has_value());
+  ASSERT_EQ(group2.ads->size(), 1u);
+  EXPECT_EQ(group2.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(group2.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  // Advance time to just before end of rate limit period. Update should still
+  // do nothing due to rate limiting.
+  task_environment()->FastForwardBy(
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod -
+      base::TimeDelta::FromSeconds(1));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update does nothing due to rate limiting, nothing changes.
+  std::vector<BiddingInterestGroup> groups3 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups3.size(), 1u);
+  const auto& group3 = groups3[0].group->group;
+  ASSERT_TRUE(group3.ads.has_value());
+  ASSERT_EQ(group3.ads->size(), 1u);
+  EXPECT_EQ(group3.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(group3.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  // Advance time to just after end of rate limit period. Update should now
+  // succeed.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update changes the database contents.
+  std::vector<BiddingInterestGroup> groups4 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups4.size(), 1u);
+  const auto& group4 = groups4[0].group->group;
+  ASSERT_TRUE(group4.ads.has_value());
+  ASSERT_EQ(group4.ads->size(), 1u);
+  EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/newer_ad_render_url", kOriginStringA));
+  EXPECT_EQ(group4.ads.value()[0].metadata, "{\"newer_a\":\"b\"}");
+}
+
+// Join an interest group.
+// Set up update to fail (return invalid server response).
+// Update interest group fails.
+// Change update response to different value that will succeed.
+// Update does nothing (rate limited).
+// Advance to just before rate limit drops (which for bad response is the longer
+// "successful" duration), update does nothing (rate limited).
+// Advance after time limit. Update should work.
+TEST_F(RestrictedInterestGroupStoreImplTest,
+       UpdateRateLimitedAfterBadUpdateResponse) {
+  constexpr char kDailyUpdateUrlPath[] =
+      "/interest_group/daily_update_partial.json";
+  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                            "This isn't JSON.");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The first update fails, nothing changes.
+  std::vector<BiddingInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].group->group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Change the update response and try updating again.
+  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                            base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                                               kOriginStringA));
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update does nothing due to rate limiting, nothing changes.
+  std::vector<BiddingInterestGroup> groups2 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups2.size(), 1u);
+  const auto& group2 = groups2[0].group->group;
+  ASSERT_TRUE(group2.ads.has_value());
+  ASSERT_EQ(group2.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Advance time to just before end of rate limit period. Update should still
+  // do nothing due to rate limiting. Invalid responses use the longer
+  // "successful" backoff period.
+  task_environment()->FastForwardBy(
+      InterestGroupStorage::kUpdateSucceededBackoffPeriod -
+      base::TimeDelta::FromSeconds(1));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update does nothing due to rate limiting, nothing changes.
+  std::vector<BiddingInterestGroup> groups3 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups3.size(), 1u);
+  const auto& group3 = groups3[0].group->group;
+  ASSERT_TRUE(group3.ads.has_value());
+  ASSERT_EQ(group3.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Advance time to just after end of rate limit period. Update should now
+  // succeed.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update changes the database contents.
+  std::vector<BiddingInterestGroup> groups4 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups4.size(), 1u);
+  const auto& group4 = groups4[0].group->group;
+  ASSERT_TRUE(group4.ads.has_value());
+  ASSERT_EQ(group4.ads->size(), 1u);
+  EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(group4.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+}
+
+// Join an interest group.
+// Make interest group update fail with net::ERR_CONNECTION_RESET.
+// Update interest group fails.
+// Change update response to succeed.
+// Update does nothing (rate limited).
+// Advance to just before rate limit drops, update does nothing (rate limited).
+// Advance after time limit. Update should work.
+TEST_F(RestrictedInterestGroupStoreImplTest,
+       UpdateRateLimitedAfterFailedUpdate) {
+  constexpr char kDailyUpdateUrlPath[] =
+      "/interest_group/daily_update_partial.json";
+  update_responder_->FailNextRequestWithError(net::ERR_CONNECTION_RESET);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The first update fails, nothing changes.
+  std::vector<BiddingInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].group->group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Change the update response and try updating again.
+  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                            base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                                               kOriginStringA));
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update does nothing due to rate limiting, nothing changes.
+  std::vector<BiddingInterestGroup> groups2 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups2.size(), 1u);
+  const auto& group2 = groups2[0].group->group;
+  ASSERT_TRUE(group2.ads.has_value());
+  ASSERT_EQ(group2.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Advance time to just before end of rate limit period. Update should still
+  // do nothing due to rate limiting.
+  task_environment()->FastForwardBy(
+      InterestGroupStorage::kUpdateFailedBackoffPeriod -
+      base::TimeDelta::FromSeconds(1));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update does nothing due to rate limiting, nothing changes.
+  std::vector<BiddingInterestGroup> groups3 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups3.size(), 1u);
+  const auto& group3 = groups3[0].group->group;
+  ASSERT_TRUE(group3.ads.has_value());
+  ASSERT_EQ(group3.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Advance time to just after end of rate limit period. Update should now
+  // succeed.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update changes the database contents.
+  std::vector<BiddingInterestGroup> groups4 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups4.size(), 1u);
+  const auto& group4 = groups4[0].group->group;
+  ASSERT_TRUE(group4.ads.has_value());
+  ASSERT_EQ(group4.ads->size(), 1u);
+  EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(group4.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+}
+
+// net::ERR_INTERNET_DISCONNECTED skips rate limiting, unlike other errors.
+//
+// Join an interest group.
+// Make interest group update fail with net::ERR_INTERNET_DISCONNECTED.
+// Update interest group fails.
+// Change update response to different value that will succeed.
+// Update succeeds (not rate limited).
+TEST_F(RestrictedInterestGroupStoreImplTest,
+       UpdateNotRateLimitedIfDisconnected) {
+  constexpr char kDailyUpdateUrlPath[] =
+      "/interest_group/daily_update_partial.json";
+  update_responder_->FailNextRequestWithError(net::ERR_INTERNET_DISCONNECTED);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The first update fails (internet disconnected), nothing changes.
+  std::vector<BiddingInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].group->group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Change the update response and try updating again.
+  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                            base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                                               kOriginStringA));
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+
+  // The update changes the database contents -- no rate limiting occurs.
+  std::vector<BiddingInterestGroup> groups2 =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups2.size(), 1u);
+  const auto& group2 = groups2[0].group->group;
+  ASSERT_TRUE(group2.ads.has_value());
+  ASSERT_EQ(group2.ads->size(), 1u);
+  EXPECT_EQ(group2.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(group2.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+}
+
+// Fire off many updates rapidly in a loop. Only one update should happen.
+TEST_F(RestrictedInterestGroupStoreImplTest, UpdateRateLimitedTightLoop) {
+  constexpr char kDailyUpdateUrlPath[] =
+      "/interest_group/daily_update_partial.json";
+  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                            base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                                               kOriginStringA));
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  // Set a long expiration delta so that we can advance to the next rate limit
+  // period without the interest group expiring.
+  interest_group.expiry = base::Time::Now() + base::TimeDelta::FromDays(30);
+  interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  EXPECT_EQ(update_responder_->UpdateCount(), 0u);
+
+  for (size_t i = 0; i < 1000u; i++) {
+    UpdateInterestGroupNoFlush();
+  }
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(update_responder_->UpdateCount(), 1u);
+
+  // One of the updates completes successfully.
+  std::vector<BiddingInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].group->group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
