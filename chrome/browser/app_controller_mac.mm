@@ -425,13 +425,18 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
         app_controller_(app_controller) {
     DCHECK(profile_manager_);
     DCHECK(app_controller_);
-    // Listen to ProfileObserver and ProfileManagerObserver, either one of
+    // Listen to ProfileObserver and ProfileManagerObserver, if either one of
     // kDestroyProfileOnBrowserClose or kUpdateHistoryEntryPointsInIncognito
     // are enabled.
     if (ObserveRegularProfiles() || ObserveOTRProfiles()) {
       profile_manager_->AddObserver(this);
-      for (Profile* profile : profile_manager_->GetLoadedProfiles())
+      for (Profile* profile : profile_manager_->GetLoadedProfiles()) {
         profile->AddObserver(this);
+        Profile* otr_profile =
+            profile->GetPrimaryOTRProfile(/*create_if_needed=*/false);
+        if (otr_profile && ObserveOTRProfiles())
+          otr_profile->AddObserver(this);
+      }
     }
     profile_manager_->GetProfileAttributesStorage().AddObserver(this);
   }
