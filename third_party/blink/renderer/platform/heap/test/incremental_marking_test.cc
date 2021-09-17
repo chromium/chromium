@@ -1369,5 +1369,27 @@ TEST_F(IncrementalMarkingTest, ConservativeGCOfWeakContainer) {
   EXPECT_EQ(0u, DestructedAndTraced::n_destructed);
 }
 
+TEST_F(IncrementalMarkingTest,
+       WriteBarrierOfWeakContainersStrongifiesBackingStore) {
+  // Regression test: https://crbug.com/1244057
+  //
+  // Test ensures that weak backing stores are strongified as part of their
+  // write barrier.
+  using WeakMap = HeapHashMap<WeakMember<DestructedAndTraced>, size_t>;
+  Persistent<WeakMap> map = MakeGarbageCollected<WeakMap>();
+  map->insert(MakeGarbageCollected<DestructedAndTraced>(), 0);
+  DestructedAndTraced::n_destructed = 0;
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
+  {
+    WeakMap tmp_map;
+    map->swap(tmp_map);
+  }
+  driver.FinishGC();
+  // All buckets were kept alive.
+  EXPECT_EQ(0u, DestructedAndTraced::n_destructed);
+}
+
 }  // namespace incremental_marking_test
 }  // namespace blink
