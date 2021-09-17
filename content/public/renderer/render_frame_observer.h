@@ -30,7 +30,7 @@
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 class GURL;
 

@@ -27,7 +27,7 @@
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "ui/base/page_transition_types.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 #if !defined(OS_ANDROID)
 #include "media/base/speech_recognition_client.h"
