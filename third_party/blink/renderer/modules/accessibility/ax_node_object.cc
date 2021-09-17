@@ -645,7 +645,7 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   // Use AXLayoutObject::ComputeAccessibilityIsIgnored().
   DCHECK(!GetLayoutObject());
 
-  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode())) {
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*GetNode())) {
     if (IsAriaHidden() ||
         DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
             *GetNode(), DisplayLockActivationReason::kAccessibility)) {
@@ -1395,7 +1395,7 @@ bool AXNodeObject::IsOffScreen() const {
   if (IsDetached())
     return false;
   DCHECK(GetNode());
-  return DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode());
+  return DisplayLockUtilities::LockedAncestorPreventingPaint(*GetNode());
 }
 
 bool AXNodeObject::IsProgressIndicator() const {

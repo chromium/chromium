@@ -1531,7 +1531,7 @@ InspectorHighlightBase::InspectorHighlightBase(float scale)
 
 InspectorHighlightBase::InspectorHighlightBase(Node* node)
     : highlight_paths_(protocol::ListValue::create()), scale_(1.f) {
-  DCHECK(!DisplayLockUtilities::NearestLockedExclusiveAncestor(*node));
+  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPaint(*node));
   LocalFrameView* frame_view = node->GetDocument().View();
   if (frame_view)
     scale_ = DeviceScaleFromFrameView(frame_view);
@@ -2097,7 +2097,7 @@ bool InspectorHighlight::GetContentQuads(
 std::unique_ptr<protocol::DictionaryValue> InspectorGridHighlight(
     Node* node,
     const InspectorGridHighlightConfig& config) {
-  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*node)) {
     // Skip if node is part of display locked tree.
     return nullptr;
   }
@@ -2119,7 +2119,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorGridHighlight(
 std::unique_ptr<protocol::DictionaryValue> InspectorFlexContainerHighlight(
     Node* node,
     const InspectorFlexContainerHighlightConfig& config) {
-  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*node)) {
     // Skip if node is part of display locked tree.
     return nullptr;
   }

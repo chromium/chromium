@@ -101,11 +101,6 @@ class CORE_EXPORT DisplayLockUtilities {
   static bool ActivateFindInPageMatchRangeIfNeeded(
       const EphemeralRangeInFlatTree& range);
 
-  // Activates all locked nodes in |range| that are activatable and doesn't
-  // have user-select:none. Returns true if we activated at least one node.
-  static bool ActivateSelectionRangeIfNeeded(
-      const EphemeralRangeInFlatTree& range);
-
   // Returns activatable-locked inclusive ancestors of |node|.
   // Note that this function will return an empty list if |node| is inside a
   // non-activatable locked subtree (e.g. at least one ancestor is not
@@ -114,17 +109,16 @@ class CORE_EXPORT DisplayLockUtilities {
       const Node& node,
       DisplayLockActivationReason reason);
 
+  // Returns the nearest inclusive ancestor of |element| that has
+  // content-visibility: hidden-matchable.
+  // TODO(crbug.com/1249939): Remove this.
+  static Element* NearestHiddenMatchableInclusiveAncestor(Element& element);
+
+  // Ancestor navigation functions.
+
   // Returns the nearest inclusive ancestor of |node| that is display locked.
   static const Element* NearestLockedInclusiveAncestor(const Node& node);
   static Element* NearestLockedInclusiveAncestor(Node& node);
-
-  // Returns the nearest inclusive ancestor of |element| that has
-  // content-visibility: hidden-matchable.
-  static Element* NearestHiddenMatchableInclusiveAncestor(Element& element);
-
-  // Returns the nearest non-inclusive ancestor of |node| that is display
-  // locked.
-  static Element* NearestLockedExclusiveAncestor(const Node& node);
 
   // Returns the highest exclusive ancestor of |node| that is display locked.
   // Note that this function crosses local frames.
@@ -133,13 +127,16 @@ class CORE_EXPORT DisplayLockUtilities {
 
   // LayoutObject versions of the NearestLocked* ancestor functions.
   static Element* NearestLockedInclusiveAncestor(const LayoutObject& object);
-  static Element* NearestLockedExclusiveAncestor(const LayoutObject& object);
 
   // Returns the nearest inclusive ancestor of |node| that is display locked
   // within the same TreeScope as |node|, meaning that no flat tree traversals
   // are made.
   static Element* NearestLockedInclusiveAncestorWithinTreeScope(
       const Node& node);
+
+  // Returns the nearest ancestor which blocks paint.
+  static Element* LockedAncestorPreventingPaint(const LayoutObject& object);
+  static Element* LockedAncestorPreventingPaint(const Node& node);
 
   // Returns the nearest ancestor element which has a lock that prevents
   // prepaint. Note that this is different from a nearest locked ancestor since
@@ -150,6 +147,7 @@ class CORE_EXPORT DisplayLockUtilities {
   // layout. Note that this is different from a nearest locked ancestor since
   // the layout update can be forced.
   static Element* LockedAncestorPreventingLayout(const LayoutObject& object);
+  static Element* LockedAncestorPreventingLayout(const Node& node);
 
   // Returns the nearest ancestor element which has a lock that prevents
   // style. Note that this is different from a nearest locked ancestor since
@@ -191,11 +189,6 @@ class CORE_EXPORT DisplayLockUtilities {
   static bool PrePaintBlockedInParentFrame(LayoutView* layout_view);
 
   static bool IsAutoWithoutLayout(const LayoutObject& object);
-
- private:
-  static bool UpdateStyleAndLayoutForRangeIfNeeded(
-      const EphemeralRangeInFlatTree& range,
-      DisplayLockActivationReason reason);
 };
 
 }  // namespace blink

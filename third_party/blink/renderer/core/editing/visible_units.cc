@@ -687,7 +687,7 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
         layout_object->Style()->Visibility() != EVisibility::kVisible)
       continue;
 
-    if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
+    if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
       continue;
 
     if (!writing_mode.has_value()) {
@@ -774,7 +774,7 @@ bool HasInvisibleFirstLetter(const Node* node) {
   if (!first_letter || first_letter == remaining_text)
     return false;
   return first_letter->StyleRef().Visibility() != EVisibility::kVisible ||
-         DisplayLockUtilities::NearestLockedExclusiveAncestor(*first_letter);
+         DisplayLockUtilities::LockedAncestorPreventingPaint(*first_letter);
 }
 }  // namespace
 
@@ -846,7 +846,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
         layout_object->Style()->Visibility() != EVisibility::kVisible)
       continue;
 
-    if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
+    if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
       continue;
 
     if (!writing_mode.has_value()) {
@@ -950,7 +950,7 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
   if (layout_object->Style()->Visibility() != EVisibility::kVisible)
     return false;
 
-  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
     return false;
 
   if (layout_object->IsBR()) {

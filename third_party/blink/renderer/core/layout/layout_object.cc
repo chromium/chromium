@@ -4923,7 +4923,7 @@ const LayoutObject* AssociatedLayoutObjectOf(const Node& node,
 bool LayoutObject::CanBeSelectionLeaf() const {
   NOT_DESTROYED();
   if (SlowFirstChild() || StyleRef().Visibility() != EVisibility::kVisible ||
-      DisplayLockUtilities::NearestLockedExclusiveAncestor(*this)) {
+      DisplayLockUtilities::LockedAncestorPreventingPaint(*this)) {
     return false;
   }
   return CanBeSelectionLeafInternal();

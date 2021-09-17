@@ -1952,8 +1952,7 @@ bool CompositedLayerMapping::IsScrollableAreaLayerWhichNeedsRepaint(
 bool CompositedLayerMapping::ShouldSkipPaintingSubtree() const {
   return GetLayoutObject().GetFrame()->ShouldThrottleRendering() ||
          owning_layer_->IsUnderSVGHiddenContainer() ||
-         DisplayLockUtilities::NearestLockedExclusiveAncestor(
-             GetLayoutObject());
+         DisplayLockUtilities::LockedAncestorPreventingPaint(GetLayoutObject());
 }
 
 bool CompositedLayerMapping::IsTrackingRasterInvalidations() const {

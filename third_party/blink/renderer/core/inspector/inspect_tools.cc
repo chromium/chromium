@@ -399,7 +399,7 @@ void NodeHighlightTool::DrawMatchingSelector() {
   for (unsigned i = 0; i < elements->length(); ++i) {
     Element* element = elements->item(i);
     // Skip elements in locked subtrees.
-    if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*element))
+    if (DisplayLockUtilities::LockedAncestorPreventingPaint(*element))
       continue;
     NodeContentVisibilityState content_visibility_state =
         DetermineSelfContentVisibilityState(element);

@@ -2804,7 +2804,7 @@ bool Animation::IsInDisplayLockedSubtree() {
 
   if (last_display_lock_update_time_ < display_lock_update_timestamp) {
     const Element* element =
-        DisplayLockUtilities::NearestLockedExclusiveAncestor(*owning_element);
+        DisplayLockUtilities::LockedAncestorPreventingPaint(*owning_element);
     is_in_display_locked_subtree_ = !!element;
     last_display_lock_update_time_ = display_lock_update_timestamp;
   }

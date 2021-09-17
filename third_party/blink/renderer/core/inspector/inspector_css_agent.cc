@@ -1110,7 +1110,7 @@ void InspectorCSSAgent::CollectPlatformFontsForLayoutObject(
   }
 
   // Don't gather text on a display-locked tree.
-  if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*layout_object))
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
     return;
 
   FontCachePurgePreventer preventer;

@@ -485,8 +485,11 @@ void DisplayLockContext::NotifyIsNotIntersectingViewport() {
   //    So, we simply delay this check to the next frame (via LocalFrameView),
   //    which will call this function again and so we can perform the check
   //    again.
+  // Note that we use a signal that we're not painting to defer intersection,
+  // since even if we're updating the locked ancestor for style or layout, we
+  // should defer intersection notifications.
   auto* locked_ancestor =
-      DisplayLockUtilities::NearestLockedExclusiveAncestor(*element_);
+      DisplayLockUtilities::LockedAncestorPreventingPaint(*element_);
   if (locked_ancestor) {
     needs_deferred_not_intersecting_signal_ = true;
   } else {
