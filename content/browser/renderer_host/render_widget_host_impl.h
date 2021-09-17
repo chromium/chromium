@@ -214,8 +214,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   RenderWidgetHostOwnerDelegate* owner_delegate() { return owner_delegate_; }
 
-  void set_clock_for_testing(const base::TickClock* clock) { clock_ = clock; }
-
   AgentSchedulingGroupHost& agent_scheduling_group() {
     return agent_scheduling_group_;
   }
@@ -1167,12 +1165,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // The ID of the corresponding object in the Renderer Instance.
   const int routing_id_;
 
-  // The clock used; overridable for tests.
-  const base::TickClock* clock_;
-
-  // Indicates whether a page is loading or not.
-  bool is_loading_ = false;
-
   // Indicates whether a page is hidden or not. Need to call
   // process_->UpdateClientPriority when this value changes.
   bool is_hidden_;
@@ -1271,13 +1263,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // This value denotes the number of input events yet to be acknowledged
   // by the renderer.
   int in_flight_event_count_ = 0;
-
-  // Flag to detect recursive calls to GetBackingStore().
-  bool in_get_backing_store_ = false;
-
-  // Used for UMA histogram logging to measure the time for a repaint view
-  // operation to finish.
-  base::TimeTicks repaint_start_time_;
 
   // Set when we update the text direction of the selected input element.
   bool text_direction_updated_ = false;

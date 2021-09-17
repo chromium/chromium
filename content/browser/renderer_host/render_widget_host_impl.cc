@@ -426,7 +426,6 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       delegate_(delegate),
       agent_scheduling_group_(agent_scheduling_group),
       routing_id_(routing_id),
-      clock_(base::DefaultTickClock::GetInstance()),
       is_hidden_(hidden),
       latency_tracker_(delegate_),
       hung_renderer_delay_(kHungRendererDelay),
@@ -766,8 +765,7 @@ void RenderWidgetHostImpl::ShutdownAndDestroyWidget(bool also_delete) {
 }
 
 void RenderWidgetHostImpl::SetIsLoading(bool is_loading) {
-  is_loading_ = is_loading;
-  power_mode_loading_voter_->VoteFor(is_loading_
+  power_mode_loading_voter_->VoteFor(is_loading
                                          ? power_scheduler::PowerMode::kLoading
                                          : power_scheduler::PowerMode::kIdle);
   if (view_)
