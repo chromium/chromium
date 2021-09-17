@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -14,16 +14,17 @@ It can use https if you specify the flag --https=CERT where CERT is the path
 to a pem file containing the certificate and private key that should be used.
 """
 
+from __future__ import print_function
+
 import base64
-import BaseHTTPServer
 import logging
 import os
 import select
+from six.moves import BaseHTTPServer, socketserver
+import six.moves.urllib.parse as urlparse
 import socket
-import SocketServer
 import ssl
 import sys
-import urlparse
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))
@@ -73,7 +74,7 @@ class WebSocketOptions:
     self.tls_client_ca = None
     self.use_basic_auth = False
     self.basic_auth_credential = 'Basic ' + base64.b64encode(
-        'test:test').decode()
+        b'test:test').decode()
 
 
 class HTTPServer(testserver_base.ClientRestrictingServerMixIn,
@@ -84,8 +85,8 @@ class HTTPServer(testserver_base.ClientRestrictingServerMixIn,
 
   pass
 
-class ThreadingHTTPServer(SocketServer.ThreadingMixIn,
-                          HTTPServer):
+
+class ThreadingHTTPServer(socketserver.ThreadingMixIn, HTTPServer):
   """This variant of HTTPServer creates a new thread for every connection. It
   should only be used with handlers that are known to be threadsafe."""
 
@@ -188,8 +189,8 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
     except tlslite.api.TLSAbruptCloseError:
       # Ignore abrupt close.
       return True
-    except tlslite.api.TLSError, error:
-      print "Handshake failure:", str(error)
+    except tlslite.api.TLSError as error:
+      print("Handshake failure:", str(error))
       return False
 
 
@@ -217,7 +218,7 @@ class TestPageHandler(testserver_base.BasePageHandler):
     self.send_header('Content-Length', len(contents))
     self.end_headers()
     if (self.command != 'HEAD'):
-      self.wfile.write(contents)
+      self.wfile.write(contents.encode('utf8'))
     return True
 
   def DefaultConnectResponseHandler(self):
@@ -230,7 +231,7 @@ class TestPageHandler(testserver_base.BasePageHandler):
     self.send_header('Content-Type', 'text/html')
     self.send_header('Content-Length', len(contents))
     self.end_headers()
-    self.wfile.write(contents)
+    self.wfile.write(contents.encode('utf8'))
     return True
 
 
@@ -288,15 +289,16 @@ class ProxyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     sock = None
     try:
       sock = socket.create_connection((url.hostname, port))
-      sock.send('%s %s %s\r\n' % (
-          self.command, path, self.protocol_version))
-      for header in self.headers.headers:
-        header = header.strip()
-        if (header.lower().startswith('connection') or
-            header.lower().startswith('proxy')):
+      sock.send(('%s %s %s\r\n' %
+                 (self.command, path, self.protocol_version)).encode('utf-8'))
+      for name, value in self.headers.items():
+        if (name.lower().startswith('connection')
+            or name.lower().startswith('proxy')):
           continue
-        sock.send('%s\r\n' % header)
-      sock.send('\r\n')
+        # HTTP headers are encoded in Latin-1.
+        sock.send(b'%s: %s\r\n' %
+                  (name.encode('latin-1'), value.encode('latin-1')))
+      sock.send(b'\r\n')
       # This is wrong: it will pass through connection-level headers and
       # misbehave on connection reuse. The only reason it works at all is that
       # our test servers have never supported connection reuse.
@@ -355,7 +357,7 @@ class BasicAuthProxyRequestHandler(ProxyRequestHandler):
     if not ProxyRequestHandler.parse_request(self):
       return False
 
-    auth = self.headers.getheader('Proxy-Authorization')
+    auth = self.headers.get('Proxy-Authorization', None)
     if auth != self._AUTH_CREDENTIAL:
       self.send_response(407)
       self.send_header('Proxy-Authenticate', 'Basic realm="MyRealm1"')
@@ -420,7 +422,7 @@ class ServerRunner(testserver_base.TestServerRunner):
           raise testserver_base.OptionError(
               'specified server cert file not found: ' +
               self.options.cert_and_key_file + ' exiting...')
-        pem_cert_and_key = file(self.options.cert_and_key_file, 'r').read()
+        pem_cert_and_key = open(self.options.cert_and_key_file, 'r').read()
 
         for ca_cert in self.options.ssl_client_ca:
           if not os.path.isfile(ca_cert):
@@ -429,32 +431,25 @@ class ServerRunner(testserver_base.TestServerRunner):
                 ' exiting...')
 
         stapled_ocsp_response = None
-        server = HTTPSServer((host, port), TestPageHandler, pem_cert_and_key,
-                             self.options.ssl_client_auth,
-                             self.options.ssl_client_ca,
-                             self.options.ssl_client_cert_type,
-                             self.options.ssl_bulk_cipher,
-                             self.options.ssl_key_exchange,
-                             self.options.alpn_protocols,
-                             self.options.npn_protocols,
-                             self.options.tls_intolerant,
-                             self.options.tls_intolerance_type,
-                             self.options.signed_cert_timestamps_tls_ext.decode(
-                                 "base64"),
-                             self.options.fallback_scsv,
-                             stapled_ocsp_response,
-                             self.options.alert_after_handshake,
-                             self.options.disable_channel_id,
-                             self.options.disable_extended_master_secret,
-                             self.options.simulate_tls13_downgrade,
-                             self.options.simulate_tls12_downgrade,
-                             self.options.tls_max_version)
-        print 'HTTPS server started on https://%s:%d...' % \
-            (host, server.server_port)
+        server = HTTPSServer(
+            (host, port), TestPageHandler, pem_cert_and_key,
+            self.options.ssl_client_auth, self.options.ssl_client_ca,
+            self.options.ssl_client_cert_type, self.options.ssl_bulk_cipher,
+            self.options.ssl_key_exchange, self.options.alpn_protocols,
+            self.options.npn_protocols, self.options.tls_intolerant,
+            self.options.tls_intolerance_type,
+            base64.b64decode(self.options.signed_cert_timestamps_tls_ext),
+            self.options.fallback_scsv, stapled_ocsp_response,
+            self.options.alert_after_handshake, self.options.disable_channel_id,
+            self.options.disable_extended_master_secret,
+            self.options.simulate_tls13_downgrade,
+            self.options.simulate_tls12_downgrade, self.options.tls_max_version)
+        print('HTTPS server started on https://%s:%d...' %
+              (host, server.server_port))
       else:
         server = HTTPServer((host, port), TestPageHandler)
-        print 'HTTP server started on http://%s:%d...' % \
-            (host, server.server_port)
+        print('HTTP server started on http://%s:%d...' %
+              (host, server.server_port))
 
       server.data_dir = self.__make_data_dir()
       server.file_root_url = self.options.file_root_url
@@ -487,24 +482,24 @@ class ServerRunner(testserver_base.TestServerRunner):
               'specified trusted client CA file not found: ' +
               self.options.ssl_client_ca[0] + ' exiting...')
         websocket_options.tls_client_ca = self.options.ssl_client_ca[0]
-      print 'Trying to start websocket server on %s://%s:%d...' % \
-          (scheme, websocket_options.server_host, websocket_options.port)
+      print('Trying to start websocket server on %s://%s:%d...' %
+            (scheme, websocket_options.server_host, websocket_options.port))
       server = WebSocketServer(websocket_options)
-      print 'WebSocket server started on %s://%s:%d...' % \
-          (scheme, host, server.server_port)
+      print('WebSocket server started on %s://%s:%d...' %
+            (scheme, host, server.server_port))
       server_data['port'] = server.server_port
       websocket_options.use_basic_auth = self.options.ws_basic_auth
     elif self.options.server_type == SERVER_PROXY:
       ProxyRequestHandler.redirect_connect_to_localhost = \
           self.options.redirect_connect_to_localhost
       server = ThreadingHTTPServer((host, port), ProxyRequestHandler)
-      print 'Proxy server started on port %d...' % server.server_port
+      print('Proxy server started on port %d...' % server.server_port)
       server_data['port'] = server.server_port
     elif self.options.server_type == SERVER_BASIC_AUTH_PROXY:
       ProxyRequestHandler.redirect_connect_to_localhost = \
           self.options.redirect_connect_to_localhost
       server = ThreadingHTTPServer((host, port), BasicAuthProxyRequestHandler)
-      print 'BasicAuthProxy server started on port %d...' % server.server_port
+      print('BasicAuthProxy server started on port %d...' % server.server_port)
       server_data['port'] = server.server_port
     else:
       raise testserver_base.OptionError('unknown server type' +

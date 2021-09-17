@@ -224,9 +224,14 @@ class TestServerThread(threading.Thread):
     _logger.info('Start running the thread!')
     self.wait_event.clear()
     self._GenerateCommandLineArguments()
-    command = [sys.executable,
-               os.path.join(_DIR_SOURCE_ROOT, 'net', 'tools', 'testserver',
-                            'testserver.py')] + self.command_line
+    # TODO(crbug.com/941669): When this script is ported to Python 3, replace
+    # 'vpython3' below with sys.executable. The call to
+    # vpython3 -vpython-tool install below can also be removed.
+    command = [
+        'vpython3',
+        os.path.join(_DIR_SOURCE_ROOT, 'net', 'tools', 'testserver',
+                     'testserver.py')
+    ] + self.command_line
     _logger.info('Running: %s', command)
 
     # Disable PYTHONUNBUFFERED because it has a bad interaction with the
@@ -236,7 +241,22 @@ class TestServerThread(threading.Thread):
     # Pass _DIR_SOURCE_ROOT as the child's working directory so that relative
     # paths in the arguments are resolved correctly. devnull can be replaced
     # with subprocess.DEVNULL in Python 3.
-    with open(os.devnull, "r+b") as devnull:
+    with open(os.devnull, 'r+b') as devnull:
+      # _WaitToStartAndGetPortFromTestServer has a short timeout. If the
+      # vpython3 cache is not initialized, launching the test server can take
+      # some time. Prewarm the cache before running the server.
+      subprocess.check_call(
+          [
+              'vpython3', '-vpython-spec',
+              os.path.join(_DIR_SOURCE_ROOT, '.vpython3'), '-vpython-tool',
+              'install'
+          ],
+          preexec_fn=self._CloseUnnecessaryFDsForTestServerProcess,
+          stdin=devnull,
+          stdout=None,
+          stderr=None,
+          cwd=_DIR_SOURCE_ROOT)
+
       self.process = subprocess.Popen(
           command,
           preexec_fn=self._CloseUnnecessaryFDsForTestServerProcess,

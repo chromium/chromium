@@ -192,7 +192,7 @@ class AsyncStateMachine:
         @type handshaker: generator
         @param handshaker: A generator created by using one of the
         asynchronous handshake functions (i.e. handshakeServerAsync, or
-        handshakeClientxxx(..., async=True).
+        handshakeClientxxx(..., is_async=True).
         """
         try:
             self._checkAssert(0)

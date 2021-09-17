@@ -65,8 +65,6 @@ Example:
 
 import base64
 from six.moves import BaseHTTPServer
-import cgi
-import codecs
 import glob
 import google.protobuf.text_format
 import hashlib
@@ -123,8 +121,8 @@ PKCS1_RSA_OID = b'\x2a\x86\x48\x86\xf7\x0d\x01\x01\x01'
 KIOSK_MACHINE_IDS = [ 'KIOSK' ]
 
 # List of all IDs that will be used to construct PSM ID, and have membership.
-PSM_MEMBERSHIP_SERIAL_NUMBER_IDS = ["111111"]
-PSM_MEMBERSHIP_BRAND_CODES = ["TEST"]
+PSM_MEMBERSHIP_SERIAL_NUMBER_IDS = [b"111111"]
+PSM_MEMBERSHIP_BRAND_CODES = [b"TEST"]
 
 # Dictionary containing base64-encoded policy signing keys plus per-domain
 # signatures. Format is:
@@ -281,7 +279,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       unique.
     """
     if not hasattr(self, '_params'):
-      self._params = cgi.parse_qs(self.path[self.path.find('?') + 1:])
+      self._params = urlparse.parse_qs(self.path[self.path.find('?') + 1:])
 
     param_list = self._params.get(name, [])
     if len(param_list) == 1:
@@ -302,16 +300,16 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       # when the test is complete.
       self.server.stop = True
       http_response = 200
-      raw_reply = 'OK'
+      raw_reply = b'OK'
     elif path == '/test/ping':
       # This path and reply are used by the test setup of host-driven tests for
       # Android to determine if the server is up, and are not part of the
       # DM protocol.
       http_response = 200
-      raw_reply = 'Policy server is up.'
+      raw_reply = b'Policy server is up.'
     else:
       http_response = 404
-      raw_reply = 'Invalid path'
+      raw_reply = b'Invalid path'
     self.send_response(http_response)
     self.end_headers()
     if six.PY3 and isinstance(raw_reply, str):
@@ -332,10 +330,10 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """Handles a request to download policy data for a component."""
     policy_key = self.GetUniqueParam('key')
     if not policy_key:
-      return (400, 'Missing key parameter')
+      return (400, b'Missing key parameter')
     data = self.server.ReadPolicyDataFromDataDir(policy_key)
     if data is None:
-      return (404, 'Policy not found for ' + policy_key)
+      return (404, b'Policy not found for ' + policy_key.encode('utf-8'))
     return (200, data)
 
   def HandleRequest(self):
@@ -742,7 +740,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """
     for serial_number in PSM_MEMBERSHIP_SERIAL_NUMBER_IDS:
       for brand_code in PSM_MEMBERSHIP_BRAND_CODES:
-        psm_id = '{}/{}'.format(brand_code.encode('hex'), serial_number)
+        psm_id = b'%s/%s' % (brand_code.hex().encode('ascii'), serial_number)
         if psm_id == encrypted_id:
           return True
     return False
@@ -1068,7 +1066,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         assert isinstance(field_value, str)
       else:
         assert type(field_value) in [str, unicode]
-      field_value = field_value.decode('hex')
+      field_value = bytes.fromhex(field_value)
     elif (field.type == field.TYPE_INT64 or
           field.type == field.TYPE_INT32 or
           field.type == field.TYPE_ENUM):
@@ -1559,12 +1557,15 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
       # Load specified keys from the filesystem.
       for key_path in private_key_paths:
         try:
-          key_str = open(key_path).read()
+          key_str = open(key_path, 'rb').read()
         except IOError:
           print('Failed to load private key from %s' % key_path)
           continue
         try:
-          key = tlslite.api.parsePEMKey(key_str, private=True)
+          # Decode with replacement characters to avoid decode errors if was
+          # actually DER.
+          key = tlslite.api.parsePEMKey(key_str.decode('utf-8', 'replace'),
+                                        private=True)
         except SyntaxError:
           key = tlslite.utils.python_rsakey.Python_RSAKey._parsePKCS8(
               bytearray(key_str))
@@ -1574,7 +1575,7 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
 
         # Now try to read in a signature, if one exists.
         try:
-          key_sig = open(key_path + '.sig').read()
+          key_sig = open(key_path + '.sig', 'rb').read()
           # Create a dictionary with the wildcard domain + signature
           key_info['signatures'] = {'*': key_sig}
         except IOError:
@@ -1760,7 +1761,8 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     """
     if dmtoken in self._registered_tokens:
       self._registered_tokens[dmtoken]['state_keys'] = [
-        str(codecs.getencoder('hex')(key)[0]) for key in state_keys]
+          key.hex() for key in state_keys
+      ]
       self.WriteClientState()
 
   def LookupToken(self, dmtoken):
@@ -1788,7 +1790,7 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     """
     self.ReadClientStateFile()
     for client in list(self._registered_tokens.values()):
-      if state_key.encode('hex') in client.get('state_keys', []):
+      if state_key.hex() in client.get('state_keys', []):
         return client
 
     return None
@@ -1802,10 +1804,13 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     self.ReadClientStateFile()
     state_keys = sum([ c.get('state_keys', [])
                        for c in list(self._registered_tokens.values()) ], [])
-    hashed_keys = [hashlib.sha256(key.decode('hex')).digest() for key in
-               set(state_keys)]
-    return [hash for hash in hashed_keys if int(hash.encode('hex'), 16)
-        % modulus == remainder]
+    hashed_keys = [
+        hashlib.sha256(bytes.fromhex(key)).digest() for key in set(state_keys)
+    ]
+    return [
+        hash for hash in hashed_keys
+        if int.from_bytes(hash, 'big') % modulus == remainder
+    ]
 
   def GetMatchingSerialHashes(self, modulus, remainder):
     """Returns all serial hashes from configuration.
@@ -1817,8 +1822,10 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
         list(self.GetPolicies().get('initial_enrollment_state', {}).keys())
     hashed_keys = [hashlib.sha256(key).digest()[0:8] for key in
                brand_serial_keys]
-    return [hash for hash in hashed_keys if int(hash.encode('hex'), 16)
-        % modulus == remainder]
+    return [
+        hash for hash in hashed_keys
+        if int.from_bytes(hash, 'big') % modulus == remainder
+    ]
 
 
   def UnregisterDevice(self, dmtoken):
@@ -1902,7 +1909,7 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
 
     # Try the binary payload file first.
     try:
-      return open(base_filename + '.bin').read()
+      return open(base_filename + '.bin', 'rb').read()
     except IOError:
       pass
 
@@ -1930,7 +1937,7 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     """
     base_filename = self.GetBaseFilename(policy_selector)
     try:
-      return open(base_filename + '.data').read()
+      return open(base_filename + '.data', 'rb').read()
     except IOError:
       return None
 

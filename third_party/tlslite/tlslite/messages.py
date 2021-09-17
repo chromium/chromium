@@ -9,6 +9,8 @@
 
 """Classes representing TLS messages."""
 
+from __future__ import division
+
 from .utils.compat import *
 from .utils.cryptomath import *
 from .errors import *
@@ -262,7 +264,7 @@ class ClientHello(HandshakeMsg):
                         numBytes = p.get(2)
                         if numBytes + 2 != extLength or numBytes % 2 != 0:
                             raise SyntaxError()
-                        for _ in range(numBytes / 2):
+                        for _ in range(numBytes // 2):
                             hashAlg = p.get(1)
                             sigAlg = p.get(1)
                             self.signature_algorithms.append((hashAlg, sigAlg))

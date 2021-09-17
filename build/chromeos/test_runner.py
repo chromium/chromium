@@ -603,21 +603,21 @@ class GTestTest(RemoteTest):
 
     if self._vpython_dir:
       vpython_path = os.path.join(self._path_to_outdir, self._vpython_dir,
-                                  'vpython')
+                                  'vpython3')
       cpython_path = os.path.join(self._path_to_outdir, self._vpython_dir,
-                                  'bin', 'python')
+                                  'bin', 'python3')
       if not os.path.exists(vpython_path) or not os.path.exists(cpython_path):
         raise TestFormatError(
-            '--vpython-dir must point to a dir with both infra/python/cpython '
-            'and infra/tools/luci/vpython installed.')
+            '--vpython-dir must point to a dir with both '
+            'infra/3pp/tools/cpython3 and infra/tools/luci/vpython installed.')
       vpython_spec_path = os.path.relpath(
-          os.path.join(CHROMIUM_SRC_PATH, '.vpython'), self._path_to_outdir)
+          os.path.join(CHROMIUM_SRC_PATH, '.vpython3'), self._path_to_outdir)
       # Initialize the vpython cache. This can take 10-20s, and some tests
       # can't afford to wait that long on the first invocation.
       device_test_script_contents.extend([
           'export PATH=$PWD/%s:$PWD/%s/bin/:$PATH' %
           (self._vpython_dir, self._vpython_dir),
-          'vpython -vpython-spec %s -vpython-tool install' %
+          'vpython3 -vpython-spec %s -vpython-tool install' %
           (vpython_spec_path),
       ])
 

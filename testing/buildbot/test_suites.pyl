@@ -811,13 +811,19 @@
       'net_unittests': {
         'args': [
           '--vpython-dir=../../vpython_dir_linux_amd64',
+          # PythonUtils.PythonRunTime (as opposed to Python3RunTime) requires a
+          # copy of Python 2, but it's testing test helpers that are only used
+          # outside of net_unittests. This bot runs out of space if trying to
+          # ship two vpythons, so we exclude Python 2 and the one test which
+          # uses it.
+          '--gtest_filter=-PythonUtils.PythonRunTime',
         ],
         'swarming': {
           'cipd_packages': [
             {
-              "cipd_package": 'infra/python/cpython/linux-amd64',
+              "cipd_package": 'infra/3pp/tools/cpython3/linux-amd64',
               'location': 'vpython_dir_linux_amd64',
-              'revision': 'version:2.7.15.chromium14',
+              'revision': 'version:2@3.8.10.chromium.21',
             },
             {
               "cipd_package": 'infra/tools/luci/vpython/linux-amd64',

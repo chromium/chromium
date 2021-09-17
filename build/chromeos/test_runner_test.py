@@ -281,10 +281,10 @@ class GTestTest(TestRunnerTest):
       gtest.build_test_command()
 
     # Create the two expected tools, and the test should be ready to run.
-    with open(os.path.join(args.vpython_dir, 'vpython'), 'w'):
+    with open(os.path.join(args.vpython_dir, 'vpython3'), 'w'):
       pass  # Just touch the file.
     os.mkdir(os.path.join(args.vpython_dir, 'bin'))
-    with open(os.path.join(args.vpython_dir, 'bin', 'python'), 'w'):
+    with open(os.path.join(args.vpython_dir, 'bin', 'python3'), 'w'):
       pass
     gtest = test_runner.GTestTest(args, None)
     gtest.build_test_command()

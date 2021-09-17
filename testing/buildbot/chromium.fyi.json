@@ -19343,7 +19343,8 @@
       },
       {
         "args": [
-          "--vpython-dir=../../vpython_dir_linux_amd64"
+          "--vpython-dir=../../vpython_dir_linux_amd64",
+          "--gtest_filter=-PythonUtils.PythonRunTime"
         ],
         "merge": {
           "args": [],
@@ -19357,9 +19358,9 @@
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
             {
-              "cipd_package": "infra/python/cpython/linux-amd64",
+              "cipd_package": "infra/3pp/tools/cpython3/linux-amd64",
               "location": "vpython_dir_linux_amd64",
-              "revision": "version:2.7.15.chromium14"
+              "revision": "version:2@3.8.10.chromium.21"
             },
             {
               "cipd_package": "infra/tools/luci/vpython/linux-amd64",
@@ -20617,7 +20618,8 @@
       },
       {
         "args": [
-          "--vpython-dir=../../vpython_dir_linux_amd64"
+          "--vpython-dir=../../vpython_dir_linux_amd64",
+          "--gtest_filter=-PythonUtils.PythonRunTime"
         ],
         "merge": {
           "args": [],
@@ -20631,9 +20633,9 @@
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
             {
-              "cipd_package": "infra/python/cpython/linux-amd64",
+              "cipd_package": "infra/3pp/tools/cpython3/linux-amd64",
               "location": "vpython_dir_linux_amd64",
-              "revision": "version:2.7.15.chromium14"
+              "revision": "version:2@3.8.10.chromium.21"
             },
             {
               "cipd_package": "infra/tools/luci/vpython/linux-amd64",
@@ -21886,7 +21888,8 @@
       },
       {
         "args": [
-          "--vpython-dir=../../vpython_dir_linux_amd64"
+          "--vpython-dir=../../vpython_dir_linux_amd64",
+          "--gtest_filter=-PythonUtils.PythonRunTime"
         ],
         "merge": {
           "args": [],
@@ -21900,9 +21903,9 @@
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
             {
-              "cipd_package": "infra/python/cpython/linux-amd64",
+              "cipd_package": "infra/3pp/tools/cpython3/linux-amd64",
               "location": "vpython_dir_linux_amd64",
-              "revision": "version:2.7.15.chromium14"
+              "revision": "version:2@3.8.10.chromium.21"
             },
             {
               "cipd_package": "infra/tools/luci/vpython/linux-amd64",
