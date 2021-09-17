@@ -150,7 +150,6 @@ source_set("content_unittests_filters") {
 
   data = [
     "//testing/buildbot/filters/fuchsia.content_unittests.filter",
-    "//testing/buildbot/filters/fuchsia.debug.content_unittests.filter",
     "//testing/buildbot/filters/webrtc.content_unittests.filter",
   ]
 }

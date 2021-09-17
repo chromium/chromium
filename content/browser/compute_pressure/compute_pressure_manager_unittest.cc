@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/compute_pressure/compute_pressure_test_support.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/test/test_render_frame_host.h"
@@ -78,7 +79,13 @@ class ComputePressureManagerTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<ComputePressureHostSync> main_host_sync_;
 };
 
-TEST_F(ComputePressureManagerTest, OneObserver) {
+// Disabled on Fuchsia arm64 debug builds: https://crbug.com/1250654
+#if defined(OS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)
+#define MAYBE_OneObserver DISABLED_OneObserver
+#else
+#define MAYBE_OneObserver OneObserver
+#endif
+TEST_F(ComputePressureManagerTest, MAYBE_OneObserver) {
   FakeComputePressureObserver observer;
   ASSERT_EQ(main_host_sync_->AddObserver(kQuantization,
                                          observer.BindNewPipeAndPassRemote()),
@@ -91,7 +98,13 @@ TEST_F(ComputePressureManagerTest, OneObserver) {
       testing::Contains(blink::mojom::ComputePressureState(0.35, 0.75)));
 }
 
-TEST_F(ComputePressureManagerTest, ThreeObservers) {
+// Disabled on Fuchsia arm64 debug builds: https://crbug.com/1250654
+#if defined(OS_FUCHSIA) && defined(_DEBUG)
+#define MAYBE_ThreeObservers DISABLED_ThreeObservers
+#else
+#define MAYBE_ThreeObservers ThreeObservers
+#endif
+TEST_F(ComputePressureManagerTest, MAYBE_ThreeObservers) {
   FakeComputePressureObserver observer1;
   ASSERT_EQ(main_host_sync_->AddObserver(kQuantization,
                                          observer1.BindNewPipeAndPassRemote()),
