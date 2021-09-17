@@ -97,6 +97,7 @@ source_set("common_sources") {
     "scheduling_priority.h",
     "shared_image_trace_utils.cc",
     "shared_image_trace_utils.h",
+    "shared_image_usage.cc",
     "shared_image_usage.h",
     "swap_buffers_complete_params.cc",
     "swap_buffers_complete_params.h",
@@ -145,9 +146,7 @@ source_set("gles2_sources") {
     "gles2_cmd_ids_autogen.h",
   ]
 
-  configs += [
-    "//gpu:gpu_gles2_implementation",
-  ]
+  configs += [ "//gpu:gpu_gles2_implementation" ]
 
   deps = [
     ":gles2_utils",

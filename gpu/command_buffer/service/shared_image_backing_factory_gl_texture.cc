@@ -226,6 +226,14 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageInternal(
                         format_info.adjusted_format, format_info.gl_type,
                         pixel_data.data());
   }
+
+  if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
+    const std::string label =
+        "SharedImage_GLTexture" + CreateLabelForSharedImageUsage(usage);
+    api->glObjectLabelFn(GL_TEXTURE, result->GetGLServiceId(), -1,
+                         label.c_str());
+  }
+
   result->SetCompatibilitySwizzle(format_info.swizzle);
   return std::move(result);
 }

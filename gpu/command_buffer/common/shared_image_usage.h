@@ -6,9 +6,14 @@
 #define GPU_COMMAND_BUFFER_COMMON_SHARED_IMAGE_USAGE_H_
 
 #include <stdint.h>
+#include <string>
+
+#include "gpu/gpu_export.h"
 
 namespace gpu {
 
+// Please update the function, CreateLabelForSharedImageUsage, when adding a new
+// enum value.
 enum SharedImageUsage : uint32_t {
   // Image will be used in GLES2Interface
   SHARED_IMAGE_USAGE_GLES2 = 1 << 0,
@@ -48,6 +53,9 @@ enum SharedImageUsage : uint32_t {
   // Image will be used for CPU Writes by client
   SHARED_IMAGE_USAGE_CPU_WRITE = 1 << 14,
 };
+
+// Create a string to label SharedImageUsage.
+GPU_EXPORT std::string CreateLabelForSharedImageUsage(uint32_t usage);
 
 }  // namespace gpu
 
