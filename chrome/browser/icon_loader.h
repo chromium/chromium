@@ -80,9 +80,10 @@ class IconLoader {
   // The traits of the tasks posted to base::ThreadPool by this class. These
   // operations may block, because they are fetching icons from the disk, yet
   // the result will be seen by the user so they should be prioritized
-  // accordingly.
+  // accordingly. They should not however block shutdown if long running.
   static constexpr base::TaskTraits traits() {
-    return {base::MayBlock(), base::TaskPriority::USER_VISIBLE};
+    return {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
   }
 
   // The task runner object of the thread in which we notify the delegate.
