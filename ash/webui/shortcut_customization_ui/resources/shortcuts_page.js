@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './accelerator_subsection.js';
+import './shortcut_customization_shared_css.js';
 import './shortcut_input.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
