@@ -66,7 +66,6 @@ TEST_F(ExtensionUserScriptLoaderTest, NoScriptsWithCallbackAfterLoad) {
   TestingProfile profile;
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   ExtensionUserScriptLoader loader(&profile, *extension,
-                                   /*state_store=*/nullptr,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   base::RunLoop run_loop;
@@ -87,7 +86,6 @@ TEST_F(ExtensionUserScriptLoaderTest, NoScriptsAddedWithCallback) {
   TestingProfile profile;
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   ExtensionUserScriptLoader loader(&profile, *extension,
-                                   /*state_store=*/nullptr,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
 
@@ -113,7 +111,6 @@ TEST_F(ExtensionUserScriptLoaderTest, QueuedLoadWithCallback) {
   TestingProfile profile;
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   ExtensionUserScriptLoader loader(&profile, *extension,
-                                   /*state_store=*/nullptr,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   base::RunLoop run_loop;
@@ -286,7 +283,6 @@ TEST_F(ExtensionUserScriptLoaderTest, SkipBOMAtTheBeginning) {
   TestingProfile profile;
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   ExtensionUserScriptLoader loader(&profile, *extension,
-                                   /*state_store=*/nullptr,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));
@@ -311,7 +307,6 @@ TEST_F(ExtensionUserScriptLoaderTest, LeaveBOMNotAtTheBeginning) {
   TestingProfile profile;
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   ExtensionUserScriptLoader loader(&profile, *extension,
-                                   /*state_store=*/nullptr,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));
@@ -337,7 +332,6 @@ TEST_F(ExtensionUserScriptLoaderTest, ComponentExtensionContentScriptIsLoaded) {
   TestingProfile profile;
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   ExtensionUserScriptLoader loader(&profile, *extension,
-                                   /*state_store=*/nullptr,
                                    /*listen_for_extension_system_loaded=*/true,
                                    /*content_verifier=*/nullptr);
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));

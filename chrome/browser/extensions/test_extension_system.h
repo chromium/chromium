@@ -66,7 +66,6 @@ class TestExtensionSystem : public ExtensionSystem {
   UserScriptManager* user_script_manager() override;
   StateStore* state_store() override;
   StateStore* rules_store() override;
-  StateStore* dynamic_user_scripts_store() override;
   scoped_refptr<value_store::ValueStoreFactory> store_factory() override;
   value_store::TestingValueStore* value_store();
   InfoMap* info_map() override;

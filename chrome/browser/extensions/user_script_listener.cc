@@ -193,9 +193,6 @@ void UserScriptListener::ReplaceURLPatterns(content::BrowserContext* context,
 
 void UserScriptListener::CollectURLPatterns(const Extension* extension,
                                             URLPatterns* patterns) {
-  // TODO(crbug.com/1239040): Retrieve the appropriate URL patterns to withhold
-  // requests which match an extension's set of persistent dynamic scripts on
-  // startup.
   for (const std::unique_ptr<UserScript>& script :
        ContentScriptsInfo::GetContentScripts(extension)) {
     patterns->insert(patterns->end(), script->url_patterns().begin(),

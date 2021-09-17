@@ -111,10 +111,6 @@ StateStore* ShellExtensionSystem::rules_store() {
   return nullptr;
 }
 
-StateStore* ShellExtensionSystem::dynamic_user_scripts_store() {
-  return nullptr;
-}
-
 scoped_refptr<value_store::ValueStoreFactory>
 ShellExtensionSystem::store_factory() {
   return store_factory_;

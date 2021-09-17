@@ -18,7 +18,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/extension_types_utils.h"
-#include "extensions/browser/api/scripting/constants.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
@@ -53,6 +52,16 @@ constexpr char kExactlyOneOfCssAndFilesError[] =
 // *actually* inject before page load, but it will at least inject "soon".
 constexpr mojom::RunLocation kCSSRunLocation =
     mojom::RunLocation::kDocumentStart;
+
+// TODO(crbug.com/1168627): The can_execute_script_everywhere flag is currently
+// only used by the legacy version Chromevox extension. We can assume it will
+// always be false here, but it may be added back if needed.
+constexpr bool kScriptsCanExecuteEverywhere = false;
+
+// The all_urls_includes_chrome_urls flag is only true for the legacy ChromeVox
+// extension, which does not call this API. Therefore we can assume it to be
+// always false.
+constexpr bool kAllUrlsIncludesChromeUrls = false;
 
 // Converts the given `style_origin` to a CSSOrigin.
 mojom::CSSOrigin ConvertStyleOriginToCSSOrigin(
@@ -351,8 +360,8 @@ std::unique_ptr<UserScript> ParseUserScript(
   if (!script_parsing::ParseMatchPatterns(
           *content_script.matches, content_script.exclude_matches.get(),
           definition_index, extension.creation_flags(),
-          scripting::kScriptsCanExecuteEverywhere, valid_schemes,
-          scripting::kAllUrlsIncludesChromeUrls, result.get(), error,
+          kScriptsCanExecuteEverywhere, valid_schemes,
+          kAllUrlsIncludesChromeUrls, result.get(), error,
           /*wants_file_access=*/nullptr)) {
     return nullptr;
   }
@@ -813,9 +822,8 @@ ScriptingRegisterContentScriptsFunction::Run() {
 
   std::u16string parse_error;
   auto parsed_scripts = std::make_unique<UserScriptList>();
-  std::set<std::string> persistent_script_ids;
-  const int valid_schemes = UserScript::ValidUserScriptSchemes(
-      scripting::kScriptsCanExecuteEverywhere);
+  const int valid_schemes =
+      UserScript::ValidUserScriptSchemes(kScriptsCanExecuteEverywhere);
 
   parsed_scripts->reserve(scripts.size());
   for (size_t i = 0; i < scripts.size(); ++i) {
@@ -831,11 +839,6 @@ ScriptingRegisterContentScriptsFunction::Run() {
     if (!user_script)
       return RespondNow(Error(base::UTF16ToASCII(parse_error)));
 
-    // Scripts will persist across sessions by default.
-    if (!scripts[i].persist_across_sessions ||
-        *scripts[i].persist_across_sessions) {
-      persistent_script_ids.insert(user_script->id());
-    }
     parsed_scripts->push_back(std::move(user_script));
   }
 
@@ -850,7 +853,7 @@ ScriptingRegisterContentScriptsFunction::Run() {
                      std::move(parsed_scripts)),
       base::BindOnce(&ScriptingRegisterContentScriptsFunction::
                          OnContentScriptFilesValidated,
-                     this, std::move(persistent_script_ids)));
+                     this));
 
   // Balanced in `OnContentScriptFilesValidated()` or
   // `OnContentScriptsRegistered()`.
@@ -859,7 +862,6 @@ ScriptingRegisterContentScriptsFunction::Run() {
 }
 
 void ScriptingRegisterContentScriptsFunction::OnContentScriptFilesValidated(
-    std::set<std::string> persistent_script_ids,
     ValidateContentScriptsResult result) {
   auto error = std::move(result.second);
   auto scripts = std::move(result.first);
@@ -880,7 +882,7 @@ void ScriptingRegisterContentScriptsFunction::OnContentScriptFilesValidated(
   }
 
   loader->AddDynamicScripts(
-      std::move(scripts), std::move(persistent_script_ids),
+      std::move(scripts),
       base::BindOnce(
           &ScriptingRegisterContentScriptsFunction::OnContentScriptsRegistered,
           this));
@@ -920,15 +922,9 @@ ScriptingGetRegisteredContentScriptsFunction::Run() {
   const UserScriptList& dynamic_scripts = loader->GetLoadedDynamicScripts();
 
   std::vector<api::scripting::RegisteredContentScript> script_infos;
-  std::set<std::string> persistent_script_ids =
-      loader->GetPersistentDynamicScriptIDs();
   for (const std::unique_ptr<UserScript>& script : dynamic_scripts) {
-    if (id_filter.empty() || base::Contains(id_filter, script->id())) {
-      auto registered_script = CreateRegisteredContentScriptInfo(*script);
-      registered_script.persist_across_sessions = std::make_unique<bool>(
-          base::Contains(persistent_script_ids, script->id()));
-      script_infos.push_back(std::move(registered_script));
-    }
+    if (id_filter.empty() || base::Contains(id_filter, script->id()))
+      script_infos.push_back(CreateRegisteredContentScriptInfo(*script));
   }
 
   return RespondNow(
@@ -1044,12 +1040,8 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
 
   std::u16string parse_error;
   auto parsed_scripts = std::make_unique<UserScriptList>();
-  const int valid_schemes = UserScript::ValidUserScriptSchemes(
-      scripting::kScriptsCanExecuteEverywhere);
-
-  std::set<std::string> updated_script_ids_to_persist;
-  std::set<std::string> persistent_script_ids =
-      loader->GetPersistentDynamicScriptIDs();
+  const int valid_schemes =
+      UserScript::ValidUserScriptSchemes(kScriptsCanExecuteEverywhere);
 
   parsed_scripts->reserve(scripts.size());
   for (size_t i = 0; i < scripts.size(); ++i) {
@@ -1088,15 +1080,6 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
     if (!user_script)
       return RespondNow(Error(base::UTF16ToASCII(parse_error)));
 
-    // Persist the updated script if the flag is specified as true, or if the
-    // original script is persisted and the flag is not specified.
-    if ((update_delta.persist_across_sessions &&
-         *update_delta.persist_across_sessions) ||
-        (!update_delta.persist_across_sessions &&
-         base::Contains(persistent_script_ids, update_delta.id))) {
-      updated_script_ids_to_persist.insert(update_delta.id);
-    }
-
     parsed_scripts->push_back(std::move(user_script));
   }
 
@@ -1111,7 +1094,7 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
                      std::move(parsed_scripts)),
       base::BindOnce(
           &ScriptingUpdateContentScriptsFunction::OnContentScriptFilesValidated,
-          this, std::move(updated_script_ids_to_persist)));
+          this));
 
   // Balanced in `OnContentScriptFilesValidated()` or
   // `OnContentScriptsRegistered()`.
@@ -1120,7 +1103,6 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
 }
 
 void ScriptingUpdateContentScriptsFunction::OnContentScriptFilesValidated(
-    std::set<std::string> persistent_script_ids,
     ValidateContentScriptsResult result) {
   auto error = std::move(result.second);
   auto scripts = std::move(result.first);
@@ -1151,7 +1133,7 @@ void ScriptingUpdateContentScriptsFunction::OnContentScriptFilesValidated(
   loader->AddPendingDynamicScriptIDs(std::move(script_ids));
 
   loader->AddDynamicScripts(
-      std::move(scripts), std::move(persistent_script_ids),
+      std::move(scripts),
       base::BindOnce(
           &ScriptingUpdateContentScriptsFunction::OnContentScriptsUpdated,
           this));

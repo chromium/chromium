@@ -67,14 +67,11 @@ const base::FilePath::CharType kStateStoreName[] =
     FILE_PATH_LITERAL("Extension State");
 const base::FilePath::CharType kRulesStoreName[] =
     FILE_PATH_LITERAL("Extension Rules");
-const base::FilePath::CharType kScriptsStoreName[] =
-    FILE_PATH_LITERAL("Extension Scripts");
 const char kWebStoreAppId[] = "ahfgeienlihckogmohjhadlkjgocpleb";
 
 const char kSettingsDatabaseUMAClientName[] = "Settings";
 const char kRulesDatabaseUMAClientName[] = "Rules";
 const char kStateDatabaseUMAClientName[] = "State";
-const char kScriptsDatabaseUMAClientName[] = "Scripts";
 
 const uint8_t kWebstoreSignaturesPublicKey[] = {
     0x30, 0x82, 0x01, 0x22, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,

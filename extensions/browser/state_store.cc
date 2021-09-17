@@ -83,11 +83,6 @@ StateStore::StateStore(
           store_factory, base::FilePath(kStateStoreName),
           kStateDatabaseUMAClientName, GetExtensionFileTaskRunner());
       break;
-    case BackendType::SCRIPTS:
-      store_ = std::make_unique<value_store::ValueStoreFrontend>(
-          store_factory, base::FilePath(kScriptsStoreName),
-          kScriptsDatabaseUMAClientName, GetExtensionFileTaskRunner());
-      break;
   }
 
   extension_registry_observation_.Observe(ExtensionRegistry::Get(context));

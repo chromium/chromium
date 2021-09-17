@@ -49,10 +49,6 @@ StateStore* MockExtensionSystem::rules_store() {
   return nullptr;
 }
 
-StateStore* MockExtensionSystem::dynamic_user_scripts_store() {
-  return nullptr;
-}
-
 scoped_refptr<value_store::ValueStoreFactory>
 MockExtensionSystem::store_factory() {
   return nullptr;

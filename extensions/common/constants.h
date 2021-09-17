@@ -102,10 +102,6 @@ extern const base::FilePath::CharType kStateStoreName[];
 // rules are stored.
 extern const base::FilePath::CharType kRulesStoreName[];
 
-// The name of the database inside the profile where persistent dynamic user
-// script metadata is stored.
-extern const base::FilePath::CharType kScriptsStoreName[];
-
 // Statistics are logged to UMA with these strings as part of histogram name.
 // They can all be found under Extensions.Database.Open.<client>. Changing this
 // needs to synchronize with histograms.xml, AND will also become incompatible
@@ -113,7 +109,6 @@ extern const base::FilePath::CharType kScriptsStoreName[];
 extern const char kSettingsDatabaseUMAClientName[];
 extern const char kRulesDatabaseUMAClientName[];
 extern const char kStateDatabaseUMAClientName[];
-extern const char kScriptsDatabaseUMAClientName[];
 
 // The URL query parameter key corresponding to multi-login user index.
 extern const char kAuthUserQueryKey[];

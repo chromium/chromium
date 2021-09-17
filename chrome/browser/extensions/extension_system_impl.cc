@@ -109,17 +109,14 @@ void ExtensionSystemImpl::Shared::InitPrefs() {
   store_factory_ = base::MakeRefCounted<value_store::ValueStoreFactoryImpl>(
       profile_->GetPath());
 
-  // Three state stores. Two stores, which contain declarative rules and dynamic
-  // user scripts respectively, must be loaded immediately so that the
-  // rules/scripts are ready before we issue network requests.
+  // Two state stores. The latter, which contains declarative rules, must be
+  // loaded immediately so that the rules are ready before we issue network
+  // requests.
   state_store_ = std::make_unique<StateStore>(
       profile_, store_factory_, StateStore::BackendType::STATE, true);
 
   rules_store_ = std::make_unique<StateStore>(
       profile_, store_factory_, StateStore::BackendType::RULES, false);
-
-  dynamic_user_scripts_store_ = std::make_unique<StateStore>(
-      profile_, store_factory_, StateStore::BackendType::SCRIPTS, false);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // We can not perform check for Signin Profile here, as it would result in
@@ -318,10 +315,6 @@ StateStore* ExtensionSystemImpl::Shared::rules_store() {
   return rules_store_.get();
 }
 
-StateStore* ExtensionSystemImpl::Shared::dynamic_user_scripts_store() {
-  return dynamic_user_scripts_store_.get();
-}
-
 scoped_refptr<value_store::ValueStoreFactory>
 ExtensionSystemImpl::Shared::store_factory() const {
   return store_factory_;
@@ -417,10 +410,6 @@ StateStore* ExtensionSystemImpl::state_store() {
 
 StateStore* ExtensionSystemImpl::rules_store() {
   return shared_->rules_store();
-}
-
-StateStore* ExtensionSystemImpl::dynamic_user_scripts_store() {
-  return shared_->dynamic_user_scripts_store();
 }
 
 scoped_refptr<value_store::ValueStoreFactory>

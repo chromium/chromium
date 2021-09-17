@@ -30,8 +30,7 @@ chrome.test.runTests([
         id: 'GRS_2',
         matches: ['*://asdfasdf.com/*'],
         js: ['/dynamic_1.js'],
-        runAt: 'document_end',
-        persistAcrossSessions: false
+        runAt: 'document_end'
       }
     ];
 
@@ -45,8 +44,7 @@ chrome.test.runTests([
         css: ['nothing.css'],
         allFrames: true,
         runAt: 'document_idle',
-        matchOriginAsFallback: false,
-        persistAcrossSessions: true
+        matchOriginAsFallback: false
       },
       {
         id: 'GRS_2',
@@ -54,8 +52,7 @@ chrome.test.runTests([
         js: ['dynamic_1.js'],
         allFrames: false,
         runAt: 'document_end',
-        matchOriginAsFallback: false,
-        persistAcrossSessions: false
+        matchOriginAsFallback: false
       }
     ];
 
@@ -446,8 +443,7 @@ chrome.test.runTests([
       matches: ['*://hostperms.com/*'],
       excludeMatches: ['*://def.com/*'],
       js: ['inject_element_2.js'],
-      allFrames: false,
-      persistAcrossSessions: false
+      allFrames: false
     }];
 
     await chrome.scripting.registerContentScripts(scripts);
@@ -481,8 +477,7 @@ chrome.test.runTests([
       css: ['nothing.css'],
       runAt: 'document_end',
       allFrames: false,
-      matchOriginAsFallback: false,
-      persistAcrossSessions: false
+      matchOriginAsFallback: false
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
@@ -524,8 +519,7 @@ chrome.test.runTests([
       js: ['inject_element.js'],
       runAt: 'document_end',
       allFrames: false,
-      matchOriginAsFallback: false,
-      persistAcrossSessions: true
+      matchOriginAsFallback: false
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
@@ -574,8 +568,7 @@ chrome.test.runTests([
       js: ['inject_element.js'],
       runAt: 'document_end',
       allFrames: false,
-      matchOriginAsFallback: false,
-      persistAcrossSessions: true
+      matchOriginAsFallback: false
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
@@ -614,8 +607,7 @@ chrome.test.runTests([
       js: ['inject_element.js'],
       runAt: 'document_end',
       allFrames: false,
-      matchOriginAsFallback: false,
-      persistAcrossSessions: true
+      matchOriginAsFallback: false
     }];
 
     scripts = await chrome.scripting.getRegisteredContentScripts();

@@ -11,7 +11,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/values.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_user_script_loader.h"
@@ -56,8 +55,8 @@ class UserScriptManager : public ExtensionRegistryObserver {
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  // Called when `loader` has finished loading its initial set of scripts. This
-  // is only fired for extension script loaders.
+  // Called when the |loader| has finished loading its initial set of scripts.
+  // This is only fired for extension script loaders.
   void OnInitialExtensionLoadComplete(UserScriptLoader* loader,
                                       const absl::optional<std::string>& error);
 

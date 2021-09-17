@@ -129,9 +129,7 @@ class ScriptingRegisterContentScriptsFunction : public ExtensionFunction {
   ~ScriptingRegisterContentScriptsFunction() override;
 
   // Called when script files have been checked.
-  void OnContentScriptFilesValidated(
-      std::set<std::string> persistent_script_ids,
-      ValidateContentScriptsResult result);
+  void OnContentScriptFilesValidated(ValidateContentScriptsResult result);
 
   // Called when content scripts have been registered.
   void OnContentScriptsRegistered(const absl::optional<std::string>& error);
@@ -194,9 +192,7 @@ class ScriptingUpdateContentScriptsFunction : public ExtensionFunction {
   ~ScriptingUpdateContentScriptsFunction() override;
 
   // Called when script files have been checked.
-  void OnContentScriptFilesValidated(
-      std::set<std::string> persistent_script_ids,
-      ValidateContentScriptsResult result);
+  void OnContentScriptFilesValidated(ValidateContentScriptsResult result);
 
   // Called when content scripts have been updated.
   void OnContentScriptsUpdated(const absl::optional<std::string>& error);
