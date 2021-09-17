@@ -239,6 +239,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)setMode:(TabGridMode)mode {
+  if (_mode == mode) {
+    return;
+  }
+
   _mode = mode;
 
   // Reloading specific sections in a |performBatchUpdates| fades the changes in
