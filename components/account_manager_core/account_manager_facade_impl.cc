@@ -266,14 +266,14 @@ void AccountManagerFacadeImpl::GetPersistentErrorForAccount(
 }
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
-    const AccountAdditionSource& source) {
+    AccountAdditionSource source) {
   ShowAddAccountDialog(
       source,
       base::DoNothing::Once<const account_manager::AccountAdditionResult&>());
 }
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
-    const AccountAdditionSource& source,
+    AccountAdditionSource source,
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback) {
   if (!account_manager_remote_ ||
@@ -296,7 +296,7 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
 }
 
 void AccountManagerFacadeImpl::ShowReauthAccountDialog(
-    const AccountAdditionSource& source,
+    AccountAdditionSource source,
     const std::string& email) {
   if (!account_manager_remote_ ||
       remote_version_ < RemoteMinVersions::kShowReauthAccountDialogMinVersion) {

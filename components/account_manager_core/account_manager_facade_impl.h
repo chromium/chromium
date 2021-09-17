@@ -53,12 +53,12 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       const AccountKey& account,
       base::OnceCallback<void(const GoogleServiceAuthError&)> callback)
       override;
-  void ShowAddAccountDialog(const AccountAdditionSource& source) override;
+  void ShowAddAccountDialog(AccountAdditionSource source) override;
   void ShowAddAccountDialog(
-      const AccountAdditionSource& source,
+      AccountAdditionSource source,
       base::OnceCallback<void(const account_manager::AccountAdditionResult&
                                   result)> callback) override;
-  void ShowReauthAccountDialog(const AccountAdditionSource& source,
+  void ShowReauthAccountDialog(AccountAdditionSource source,
                                const std::string& email) override;
   void ShowManageAccountsSettings() override;
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(

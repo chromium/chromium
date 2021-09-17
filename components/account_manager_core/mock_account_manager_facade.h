@@ -42,18 +42,15 @@ class MockAccountManagerFacade : public account_manager::AccountManagerFacade {
               (const AccountKey&,
                base::OnceCallback<void(const GoogleServiceAuthError&)>),
               (override));
+  MOCK_METHOD(void, ShowAddAccountDialog, (AccountAdditionSource), (override));
   MOCK_METHOD(void,
               ShowAddAccountDialog,
-              (const AccountAdditionSource&),
-              (override));
-  MOCK_METHOD(void,
-              ShowAddAccountDialog,
-              (const AccountAdditionSource&,
+              (AccountAdditionSource,
                base::OnceCallback<void(const AccountAdditionResult& result)>),
               (override));
   MOCK_METHOD(void,
               ShowReauthAccountDialog,
-              (const AccountAdditionSource&, const std::string&),
+              (AccountAdditionSource, const std::string&),
               (override));
   MOCK_METHOD(void, ShowManageAccountsSettings, (), (override));
   MOCK_METHOD(std::unique_ptr<OAuth2AccessTokenFetcher>,

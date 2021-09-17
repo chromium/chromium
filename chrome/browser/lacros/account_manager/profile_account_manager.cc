@@ -68,20 +68,19 @@ void ProfileAccountManager::GetPersistentErrorForAccount(
                                                std::move(callback));
 }
 
-void ProfileAccountManager::ShowAddAccountDialog(
-    const AccountAdditionSource& source) {
+void ProfileAccountManager::ShowAddAccountDialog(AccountAdditionSource source) {
   NOTREACHED();
 }
 
 void ProfileAccountManager::ShowAddAccountDialog(
-    const AccountAdditionSource& source,
+    AccountAdditionSource source,
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback) {
   NOTREACHED();
 }
 
 void ProfileAccountManager::ShowReauthAccountDialog(
-    const AccountAdditionSource& source,
+    AccountAdditionSource source,
     const std::string& email) {
   NOTREACHED();
 }

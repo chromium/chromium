@@ -94,18 +94,18 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
       base::OnceCallback<void(const GoogleServiceAuthError&)> callback) = 0;
 
   // Launches account addition dialog.
-  virtual void ShowAddAccountDialog(const AccountAdditionSource& source) = 0;
+  virtual void ShowAddAccountDialog(AccountAdditionSource source) = 0;
 
   // Launches account addition dialog and calls the `callback` with the result.
   // If `result` is `kSuccess`, the added account will be passed to the
   // callback. Otherwise `account` will be set to `absl::nullopt`.
   virtual void ShowAddAccountDialog(
-      const AccountAdditionSource& source,
+      AccountAdditionSource source,
       base::OnceCallback<void(const AccountAdditionResult& result)>
           callback) = 0;
 
   // Launches account reauthentication dialog for provided `email`.
-  virtual void ShowReauthAccountDialog(const AccountAdditionSource& source,
+  virtual void ShowReauthAccountDialog(AccountAdditionSource source,
                                        const std::string& email) = 0;
 
   // Launches OS Settings > Accounts.
