@@ -46,7 +46,7 @@ message ContentIdEmbeddingTokenPairProto {
 }
 
 // A paint preview of a single frame.
-// NEXT_TAG = 10
+// NEXT_TAG = 11
 message PaintPreviewFrameProto {
   // The embedding token for this frame to its parent. Every frame other than
   // the main frame should have a non-zero value here.
@@ -73,6 +73,10 @@ message PaintPreviewFrameProto {
   // Position information for this frame.
   optional uint32 scroll_offset_x = 7;
   optional uint32 scroll_offset_y = 8;
+
+  // Position information for this frame if it is clipped.
+  optional uint32 frame_offset_x = 9;
+  optional uint32 frame_offset_y = 10;
 }
 
 // Stores Chrome version.

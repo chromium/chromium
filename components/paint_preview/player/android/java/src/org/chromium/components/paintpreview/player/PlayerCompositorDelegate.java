@@ -5,6 +5,7 @@
 package org.chromium.components.paintpreview.player;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 
 import androidx.annotation.NonNull;
@@ -127,6 +128,14 @@ public interface PlayerCompositorDelegate {
      * @return The URL that was clicked on. Null if there are no URLs.
      */
     GURL onClick(UnguessableToken frameGuid, int x, int y);
+
+    /**
+     * Gets the Root Frame Offsets for scroll matching.
+     * @return The coordinates of the root frame offset.
+     */
+    default Point getRootFrameOffsets() {
+        return new Point();
+    }
 
     /**
      * Sets whether to compress the directory when closing the player.

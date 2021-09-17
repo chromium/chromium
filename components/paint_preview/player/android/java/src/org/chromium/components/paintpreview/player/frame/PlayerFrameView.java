@@ -202,6 +202,7 @@ public class PlayerFrameView extends FrameLayout {
                 @Nullable Runnable firstPaintListener) {
             super(context, canDetectZoom, playerFrameViewDelegate, gestureDetectorDelegate,
                     firstPaintListener);
+            setWillNotDraw(false);
         }
 
         @Override

@@ -34,6 +34,10 @@ namespace paint_preview {
 
 namespace {
 
+// The maximum X and Y dimension in pixels.
+// TODO(crbug/1239291): Tune this value.
+constexpr int kMaxCaptureSizePixels = 100000;
+
 constexpr size_t kMaxPerCaptureSizeBytes = 8 * 1000L * 1000L;       // 8 MB.
 constexpr uint64_t kMaxDecodedImageSizeBytes = 10 * 1000L * 1000L;  // 10 MB.
 
@@ -301,7 +305,8 @@ void PaintPreviewTabService::CaptureTabInternal(
   capture_params.render_frame_host = rfh;
   capture_params.root_dir = &file_path.value();
   capture_params.persistence = RecordingPersistence::kFileSystem;
-  capture_params.clip_rect = gfx::Rect();
+  capture_params.clip_rect =
+      gfx::Rect(-1, -1, kMaxCaptureSizePixels, kMaxCaptureSizePixels);
   capture_params.capture_links = true;
   capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
   capture_params.max_decoded_image_size_bytes = kMaxDecodedImageSizeBytes;

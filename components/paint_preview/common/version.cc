@@ -6,6 +6,6 @@
 
 namespace paint_preview {
 
-const uint32_t kPaintPreviewVersion = 1;
+const uint32_t kPaintPreviewVersion = 2;
 
 }  // namespace paint_preview
