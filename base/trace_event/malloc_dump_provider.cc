@@ -312,6 +312,12 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
                             memory_stats->total_decommittable_bytes);
   allocator_dump->AddScalar("discardable_size", "bytes",
                             memory_stats->total_discardable_bytes);
+
+  allocator_dump->AddScalar("syscall_count", "count",
+                            memory_stats->syscall_count);
+  allocator_dump->AddScalar("syscall_total_time_ms", "ms",
+                            memory_stats->syscall_total_time_ns / 1e6);
+
   if (memory_stats->has_thread_cache) {
     const auto& thread_cache_stats = memory_stats->current_thread_cache_stats;
     auto* thread_cache_dump = memory_dump_->CreateAllocatorDump(

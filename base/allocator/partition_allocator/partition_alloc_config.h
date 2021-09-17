@@ -123,4 +123,17 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_EXTRAS_REQUIRED
 #endif
 
+// Count and total wall clock time spent in memory related system calls. This
+// doesn't cover all system calls, in particular the ones related to locking.
+//
+// This is disabled for official builds, since there is a runtime cost: atomic
+// operations, as well as getting timings. We however need it for normal release
+// builds, as DCHECK() ones have a lot of extra allocations (and hence,
+// syscalls).
+//
+// Disabled on Windows as TimeTicks::Now() allocates in its first call.
+#if !defined(OFFICIAL_BUILD) && !defined(OS_WIN)
+#define PA_COUNT_SYSCALL_TIME
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_

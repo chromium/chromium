@@ -57,6 +57,11 @@ struct PartitionMemoryStats {
   bool has_thread_cache;
   ThreadCacheStats current_thread_cache_stats;
   ThreadCacheStats all_thread_caches_stats;
+
+  // Count and total duration of system calls made since process start. May not
+  // be reported on all platforms.
+  uint64_t syscall_count;
+  uint64_t syscall_total_time_ns;
 };
 
 // Struct used to retrieve memory statistics about a partition bucket. Used by

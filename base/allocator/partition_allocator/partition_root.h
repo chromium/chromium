@@ -57,6 +57,7 @@
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max
@@ -155,6 +156,36 @@ struct PartitionOptions {
   BackupRefPtr backup_ref_ptr;
   UseConfigurablePool use_configurable_pool;
 };
+
+namespace internal {
+
+template <bool thread_safe>
+class ScopedSyscallTimer {
+ public:
+#if defined(PA_COUNT_SYSCALL_TIME)
+  explicit ScopedSyscallTimer(PartitionRoot<thread_safe>* root)
+      : root_(root), tick_(base::TimeTicks::Now()) {}
+
+  ~ScopedSyscallTimer() {
+    root_->syscall_count.fetch_add(1, std::memory_order_relaxed);
+
+    uint64_t elapsed_nanos = (base::TimeTicks::Now() - tick_).InNanoseconds();
+    root_->syscall_total_time_ns.fetch_add(elapsed_nanos,
+                                           std::memory_order_relaxed);
+  }
+
+ private:
+  PartitionRoot<thread_safe>* root_;
+  const base::TimeTicks tick_;
+#else
+  explicit ScopedSyscallTimer(PartitionRoot<thread_safe>* root) {
+    static_assert(true, "");  // To defeat compiler warnings with empty bodies.
+  }
+  ~ScopedSyscallTimer() { static_assert(true, ""); }
+#endif
+};
+
+}  // namespace internal
 
 // Never instantiate a PartitionRoot directly, instead use
 // PartitionAllocator.
@@ -273,6 +304,9 @@ struct BASE_EXPORT PartitionRoot {
   std::atomic<size_t> total_size_of_direct_mapped_pages{0};
   size_t total_size_of_allocated_bytes GUARDED_BY(lock_) = 0;
   size_t max_size_of_allocated_bytes GUARDED_BY(lock_) = 0;
+  // Atomic, because system calls can be made without the lock held.
+  std::atomic<uint64_t> syscall_count{};
+  std::atomic<uint64_t> syscall_total_time_ns{};
 
   char* next_super_page = nullptr;
   char* next_partition_page = nullptr;
@@ -1261,6 +1295,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::DecommitSystemPagesForData(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
+  internal::ScopedSyscallTimer<thread_safe> timer{this};
   DecommitSystemPages(address, length, accessibility_disposition);
   DecreaseCommittedPages(length);
 }
@@ -1270,6 +1305,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
+  internal::ScopedSyscallTimer<thread_safe> timer{this};
   RecommitSystemPages(address, length, PageReadWrite,
                       accessibility_disposition);
   IncreaseCommittedPages(length);
@@ -1280,6 +1316,7 @@ ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
     void* address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
+  internal::ScopedSyscallTimer<thread_safe> timer{this};
   bool ok = TryRecommitSystemPages(address, length, PageReadWrite,
                                    accessibility_disposition);
   if (ok)

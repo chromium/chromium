@@ -237,8 +237,16 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // Allocate from GigaCage. Route to the appropriate GigaCage pool based on
     // BackupRefPtr support.
     pool_handle pool = root->ChoosePool();
-    char* reservation_start =
-        ReserveMemoryFromGigaCage(pool, nullptr, reservation_size);
+    char* reservation_start;
+    {
+      // Reserving memory from the GigaCage is actually not a syscall on 64 bit
+      // platforms.
+#if !defined(PA_HAS_64_BITS_POINTERS)
+      ScopedSyscallTimer<thread_safe> timer{root};
+#endif
+      reservation_start =
+          ReserveMemoryFromGigaCage(pool, nullptr, reservation_size);
+    }
     if (UNLIKELY(!reservation_start)) {
       if (return_null)
         return nullptr;
@@ -252,17 +260,22 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // Shift by 1 partition page (metadata + guard pages) and alignment padding.
     char* const slot_start =
         reservation_start + PartitionPageSize() + padding_for_alignment;
-    RecommitSystemPages(
-        reservation_start + SystemPageSize(),
+
+    {
+      ScopedSyscallTimer<thread_safe> timer{root};
+      RecommitSystemPages(
+          reservation_start + SystemPageSize(),
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
-        // allocate 2 SystemPages, one for SuperPage metadata and the other for
-        // RefCount "bitmap" (only one of its elements will be used).
-        (pool == GetBRPPool()) ? SystemPageSize() * 2 : SystemPageSize(),
+          // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is
+          // used, allocate 2 SystemPages, one for SuperPage metadata and the
+          // other for RefCount "bitmap" (only one of its elements will be
+          // used).
+          (pool == GetBRPPool()) ? SystemPageSize() * 2 : SystemPageSize(),
 #else
-        SystemPageSize(),
+          SystemPageSize(),
 #endif
-        PageReadWrite, PageUpdatePermissions);
+          PageReadWrite, PageUpdatePermissions);
+    }
 
     // No need to hold root->lock_. Now that memory is reserved, no other
     // overlapping region can be allocated (because of how GigaCage works),
@@ -352,12 +365,15 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         PartitionOutOfMemoryCommitFailure(root, slot_size);
       }
 
+      {
+        ScopedSyscallTimer<thread_safe> timer{root};
 #if !defined(PA_HAS_64_BITS_POINTERS)
-      AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
-                                                    reservation_size);
+        AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
+                                                      reservation_size);
 #endif
-      AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-          pool, reservation_start, reservation_size);
+        AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+            pool, reservation_start, reservation_size);
+      }
 
       root->total_size_of_direct_mapped_pages.fetch_sub(
           reservation_size, std::memory_order_relaxed);
@@ -583,21 +599,25 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   // Keep the first partition page in the super page inaccessible to serve as a
   // guard page, except an "island" in the middle where we put page metadata and
   // also a tiny amount of extent metadata.
-  RecommitSystemPages(
-      super_page + SystemPageSize(),
+  {
+    ScopedSyscallTimer<thread_safe> timer{root};
+    RecommitSystemPages(
+        super_page + SystemPageSize(),
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-      // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
-      // allocate 2 SystemPages, one for SuperPage metadata and the other for
-      // RefCount bitmap.
-      (pool == GetBRPPool()) ? SystemPageSize() * 2 : SystemPageSize(),
+        // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
+        // allocate 2 SystemPages, one for SuperPage metadata and the other for
+        // RefCount bitmap.
+        (pool == GetBRPPool()) ? SystemPageSize() * 2 : SystemPageSize(),
 #else
-      SystemPageSize(),
+        SystemPageSize(),
 #endif
-      PageReadWrite, PageUpdatePermissions);
+        PageReadWrite, PageUpdatePermissions);
+  }
 
   // If PCScan is used, commit the quarantine bitmap. Otherwise, leave it
   // uncommitted and let PartitionRoot::EnablePCScan commit it when needed.
   if (root->IsQuarantineEnabled()) {
+    ScopedSyscallTimer<thread_safe> timer{root};
     RecommitSystemPages(state_bitmap, state_bitmap_size_to_commit,
                         PageReadWrite, PageUpdatePermissions);
     PCScan::RegisterNewSuperPage(root, reinterpret_cast<uintptr_t>(super_page));

@@ -157,6 +157,7 @@ template <bool thread_safe>
 static size_t PartitionPurgeSlotSpan(
     internal::SlotSpanMetadata<thread_safe>* slot_span,
     bool discard) {
+  auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
   const internal::PartitionBucket<thread_safe>* bucket = slot_span->bucket;
   size_t slot_size = bucket->slot_size;
   if (slot_size < SystemPageSize() || !slot_span->num_allocated_slots)
@@ -174,6 +175,7 @@ static size_t PartitionPurgeSlotSpan(
           internal::SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
               slot_span));
       ptr += utilized_slot_size;
+      ScopedSyscallTimer<thread_safe> timer{root};
       DiscardSystemPages(ptr, discardable_bytes);
     }
     return discardable_bytes;
@@ -282,6 +284,7 @@ static size_t PartitionPurgeSlotSpan(
 
       PA_DCHECK(num_new_entries == num_slots - slot_span->num_allocated_slots);
       // Discard the memory.
+      ScopedSyscallTimer<thread_safe> timer{root};
       DiscardSystemPages(begin_ptr, unprovisioned_bytes);
     }
   }
@@ -310,8 +313,10 @@ static size_t PartitionPurgeSlotSpan(
     if (begin_ptr < end_ptr) {
       size_t partial_slot_bytes = end_ptr - begin_ptr;
       discardable_bytes += partial_slot_bytes;
-      if (discard)
+      if (discard) {
+        ScopedSyscallTimer<thread_safe> timer{root};
         DiscardSystemPages(begin_ptr, partial_slot_bytes);
+      }
     }
   }
   return discardable_bytes;
@@ -942,11 +947,14 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
   size_t num_direct_mapped_allocations = 0;
   PartitionMemoryStats stats = {0};
 
+  stats.syscall_count = syscall_count.load(std::memory_order_relaxed);
+  stats.syscall_total_time_ns =
+      syscall_total_time_ns.load(std::memory_order_relaxed);
+
   // Collect data with the lock held, cannot allocate or call third-party code
   // below.
   {
     ScopedGuard guard{lock_};
-
     PA_DCHECK(total_size_of_allocated_bytes <= max_size_of_allocated_bytes);
 
     stats.total_mmapped_bytes =
