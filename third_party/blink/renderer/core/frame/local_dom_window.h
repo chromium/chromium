@@ -451,6 +451,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void SchedulePostMessage(PostedMessage*) override;
 
  private:
+  class NetworkStateObserver;
+
   // Intentionally private to prevent redundant checks when the type is
   // already LocalDOMWindow.
   bool IsLocalDOMWindow() const override { return true; }
@@ -552,6 +554,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // The storage key for this LocalDomWindow.
   BlinkStorageKey storage_key_;
+
+  // Fire "online" and "offline" events.
+  Member<NetworkStateObserver> network_state_observer_;
 };
 
 template <>

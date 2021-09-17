@@ -1752,7 +1752,6 @@ class CORE_EXPORT Document : public ContainerNode,
                            BeforeMatchExpandedHiddenMatchableUkm);
   FRIEND_TEST_ALL_PREFIXES(TextFinderSimTest,
                            BeforeMatchExpandedHiddenMatchableUkmNoHandler);
-  class NetworkStateObserver;
 
   // Listed elements that are not associated to a <form> element.
   class UnassociatedListedElementsList {
@@ -2195,8 +2194,6 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<SnapCoordinator> snap_coordinator_;
 
   Member<PropertyRegistry> property_registry_;
-
-  Member<NetworkStateObserver> network_state_observer_;
 
   UnassociatedListedElementsList unassociated_listed_elements_;
 
