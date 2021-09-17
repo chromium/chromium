@@ -180,7 +180,7 @@ class AutoEnrollmentClientImpl
 
   // Calls `NextStep` in case of successful execution of PSM protocol.
   // Otherwise, reports the failure reason of PSM protocol execution.
-  void HandlePsmCompletion(DeviceManagementStatus status);
+  void HandlePsmCompletion(PsmResult psm_result);
 
   // Cleans up and invokes |progress_callback_|.
   void ReportProgress(AutoEnrollmentState state);

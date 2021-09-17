@@ -215,12 +215,8 @@ class PsmHelper {
  public:
   // Callback will be triggered after completing the protocol, in case of a
   // successful determination or stopping due to an error.
-  // The `psm_execution_status` represents the final status of PSM protocol
-  // execution.
-  // TODO(crbug.com/1240130): Use a PsmStatus instead of DeviceManagementStatus
-  // type for the PSM CompletionCallback.
-  using CompletionCallback =
-      base::OnceCallback<void(DeviceManagementStatus psm_execution_status)>;
+  // The `psm_result` represents the final result of PSM protocol.
+  using CompletionCallback = base::OnceCallback<void(PsmResult psm_result)>;
 
   // The PsmHelper doesn't take ownership of |device_management_service| and
   // |local_state|. Also, both must not be nullptr. The
@@ -249,7 +245,7 @@ class PsmHelper {
       LOG(ERROR)
           << "PSM error: unexpected internal logic error during creating "
              "PSM RLWE client";
-      has_psm_error_ = true;
+      last_psm_execution_result_ = PsmResult::kCreateRlweClientLibraryError;
       base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_,
                                     PsmResult::kCreateRlweClientLibraryError);
       return;
@@ -269,19 +265,23 @@ class PsmHelper {
   // Determines the PSM for the |psm_rlwe_id_|. Then, will call |callback| upon
   // completing the protocol, whether it finished with a successful
   // determination or stopped in case of errors. Also, the |callback| has to be
-  // non-null. In case a request is already in progress, the callback is called
-  // immediately.
+  // non-null.
+  // Note: This method should be called only when there is no PSM requests in
+  // progress (i.e. `IsCheckMembershipInProgress` is false).
   void CheckMembership(CompletionCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(callback);
 
-    // Ignore new calls and execute their completion |callback|, if any error
-    // occurred while running PSM previously, or in case the
-    // requests from previous call didn't finish yet.
-    if (has_psm_error_ || psm_request_job_) {
-      std::move(callback).Run(kPsmServerErrorStatus);
+    // Ignore new calls and execute `callback` with
+    // |last_psm_execution_result_|, in case any error occurred while running
+    // PSM previously.
+    if (HasPsmError()) {
+      std::move(callback).Run(last_psm_execution_result_.value());
       return;
     }
+
+    // There should not be any pending PSM requests.
+    CHECK(!psm_request_job_);
 
     time_start_ = base::TimeTicks::Now();
 
@@ -298,7 +298,7 @@ class PsmHelper {
     psm_timeout_.Start(
         FROM_HERE, kPsmTimeout,
         base::BindOnce(&PsmHelper::StoreErrorAndStop, base::Unretained(this),
-                       PsmResult::kTimeout, kPsmServerErrorStatus));
+                       PsmResult::kTimeout));
     SendPsmRlweOprfRequest();
   }
 
@@ -326,7 +326,9 @@ class PsmHelper {
   // Indicate whether an error occurred while executing the PSM protocol.
   bool HasPsmError() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return has_psm_error_;
+    return last_psm_execution_result_ &&
+           last_psm_execution_result_.value() !=
+               PsmResult::kSuccessfulDetermination;
   }
 
   // Returns true if the PSM protocol is still running,
@@ -337,7 +339,7 @@ class PsmHelper {
   }
 
  private:
-  void StoreErrorAndStop(PsmResult psm_result, DeviceManagementStatus status) {
+  void StoreErrorAndStop(PsmResult psm_result) {
     // Note that kUMAPsmResult histogram is only using initial enrollment as a
     // suffix until PSM support FRE.
     base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_, psm_result);
@@ -354,8 +356,8 @@ class PsmHelper {
     // Stop the current |psm_request_job_|.
     psm_request_job_.reset();
 
-    has_psm_error_ = true;
-    std::move(on_completion_callback_).Run(status);
+    last_psm_execution_result_ = psm_result;
+    std::move(on_completion_callback_).Run(psm_result);
   }
 
   // Constructs and sends the PSM RLWE OPRF request.
@@ -370,8 +372,7 @@ class PsmHelper {
       LOG(ERROR)
           << "PSM error: unexpected internal logic error during creating "
              "RLWE OPRF request";
-      StoreErrorAndStop(PsmResult::kCreateOprfRequestLibraryError,
-                        kPsmServerErrorStatus);
+      StoreErrorAndStop(PsmResult::kCreateOprfRequestLibraryError);
       return;
     }
 
@@ -413,7 +414,7 @@ class PsmHelper {
                  .rlwe_response()
                  .has_oprf_response()) {
           LOG(ERROR) << "PSM error: empty OPRF RLWE response";
-          StoreErrorAndStop(PsmResult::kEmptyOprfResponseError, status);
+          StoreErrorAndStop(PsmResult::kEmptyOprfResponseError);
           return;
         }
 
@@ -426,12 +427,12 @@ class PsmHelper {
             << "PSM error: RLWE OPRF request failed due to connection error";
         base::UmaHistogramSparse(kUMAPsmNetworkErrorCode + uma_suffix_,
                                  -net_error);
-        StoreErrorAndStop(PsmResult::kConnectionError, status);
+        StoreErrorAndStop(PsmResult::kConnectionError);
         return;
       }
       default: {
         LOG(ERROR) << "PSM error: RLWE OPRF request failed due to server error";
-        StoreErrorAndStop(PsmResult::kServerError, status);
+        StoreErrorAndStop(PsmResult::kServerError);
         return;
       }
     }
@@ -454,8 +455,7 @@ class PsmHelper {
       LOG(ERROR)
           << "PSM error: unexpected internal logic error during creating "
              "RLWE query request";
-      StoreErrorAndStop(PsmResult::kCreateQueryRequestLibraryError,
-                        kPsmServerErrorStatus);
+      StoreErrorAndStop(PsmResult::kCreateQueryRequestLibraryError);
       return;
     }
 
@@ -498,7 +498,7 @@ class PsmHelper {
                  .rlwe_response()
                  .has_query_response()) {
           LOG(ERROR) << "PSM error: empty query RLWE response";
-          StoreErrorAndStop(PsmResult::kEmptyQueryResponseError, status);
+          StoreErrorAndStop(PsmResult::kEmptyQueryResponseError);
           return;
         }
 
@@ -516,13 +516,13 @@ class PsmHelper {
           LOG(ERROR) << "PSM error: unexpected internal logic error during "
                         "processing the "
                         "RLWE query response";
-          StoreErrorAndStop(PsmResult::kProcessingQueryResponseLibraryError,
-                            status);
+          StoreErrorAndStop(PsmResult::kProcessingQueryResponseLibraryError);
           return;
         }
 
         LOG(WARNING) << "PSM query request completed successfully";
 
+        last_psm_execution_result_ = PsmResult::kSuccessfulDetermination;
         base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_,
                                       PsmResult::kSuccessfulDetermination);
         RecordPsmSuccessTimeHistogram();
@@ -564,7 +564,8 @@ class PsmHelper {
                       PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
         local_state_->CommitPendingWrite();
 
-        std::move(on_completion_callback_).Run(status);
+        std::move(on_completion_callback_)
+            .Run(PsmResult::kSuccessfulDetermination);
         return;
       }
       case DM_STATUS_REQUEST_FAILED: {
@@ -572,13 +573,13 @@ class PsmHelper {
             << "PSM error: RLWE query request failed due to connection error";
         base::UmaHistogramSparse(kUMAPsmNetworkErrorCode + uma_suffix_,
                                  -net_error);
-        StoreErrorAndStop(PsmResult::kConnectionError, status);
+        StoreErrorAndStop(PsmResult::kConnectionError);
         return;
       }
       default: {
         LOG(ERROR)
             << "PSM error: RLWE query request failed due to server error";
-        StoreErrorAndStop(PsmResult::kServerError, status);
+        StoreErrorAndStop(PsmResult::kServerError);
         return;
       }
     }
@@ -640,10 +641,6 @@ class PsmHelper {
   // PSM identifier, which is going to be used while preparing the PSM requests.
   psm_rlwe::RlwePlaintextId psm_rlwe_id_;
 
-  // Indicates whether there was previously any error occurred while running
-  // PSM protocol.
-  bool has_psm_error_ = false;
-
   // A timer that puts a hard limit on the maximum time to wait for PSM
   // protocol.
   base::OneShotTimer psm_timeout_;
@@ -651,14 +648,12 @@ class PsmHelper {
   // The time when the PSM request started.
   base::TimeTicks time_start_;
 
+  // Represents the last PSM protocol execution result.
+  absl::optional<PsmResult> last_psm_execution_result_;
+
   // The UMA histogram suffix. It's set only to ".InitialEnrollment" for an
   // |AutoEnrollmentClient| until PSM will support FRE.
   const std::string uma_suffix_ = kUMASuffixInitialEnrollment;
-
-  // A device management server error status that will be used for all PSM
-  // internal library errors and timeout.
-  const DeviceManagementStatus kPsmServerErrorStatus =
-      DM_STATUS_RESPONSE_DECODING_ERROR;
 
   // A sequence checker to prevent the race condition of having the possibility
   // of the destructor being called and any of the callbacks.
@@ -1063,15 +1058,31 @@ bool AutoEnrollmentClientImpl::PsmRetryStep() {
   }
 }
 
-void AutoEnrollmentClientImpl::HandlePsmCompletion(
-    DeviceManagementStatus status) {
-  if (status != DM_STATUS_SUCCESS) {
-    // Reports the failure reason of the PSM protocol execution.
-    ReportProgress(status == DM_STATUS_REQUEST_FAILED
-                       ? AUTO_ENROLLMENT_STATE_CONNECTION_ERROR
-                       : AUTO_ENROLLMENT_STATE_SERVER_ERROR);
-  } else {
-    NextStep();
+void AutoEnrollmentClientImpl::HandlePsmCompletion(PsmResult psm_result) {
+  switch (psm_result) {
+    case PsmResult::kConnectionError:
+      ReportProgress(AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+      break;
+    case PsmResult::kServerError:
+      ReportProgress(AUTO_ENROLLMENT_STATE_SERVER_ERROR);
+      break;
+
+    // At the moment, AutoEnrollmentClientImpl will not distinguish between
+    // any of the PSM errors and will perform `NextStep`, except for
+    // connection error, and server error. These are the ones that will be
+    // reported directly as an error.
+    // TODO(crbug.com/1249792): Call `NextStep` only when PSM executed
+    // successfully (i.e. PsmResult has value kSuccessfulDetermination).
+    case PsmResult::kSuccessfulDetermination:
+    case PsmResult::kCreateRlweClientLibraryError:
+    case PsmResult::kCreateOprfRequestLibraryError:
+    case PsmResult::kCreateQueryRequestLibraryError:
+    case PsmResult::kProcessingQueryResponseLibraryError:
+    case PsmResult::kEmptyOprfResponseError:
+    case PsmResult::kEmptyQueryResponseError:
+    case PsmResult::kTimeout:
+      NextStep();
+      break;
   }
 }
 
