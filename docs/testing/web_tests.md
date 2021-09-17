@@ -47,7 +47,7 @@ examined by the OS crash reporter. This may cause other failures like timeouts
 where they normally don't occur.
 
 ```bash
-strip ./out/Default/content_shell.app/Contents/MacOS/content_shell
+strip ./out/Default/Content\ Shell.app/Contents/MacOS/Content\ Shell
 ```
 
 ### Running the Tests
