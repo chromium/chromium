@@ -110,9 +110,9 @@
     t.add_cleanup(() => pc2.close());
 
     return generateDataChannelOffer(pc)
-    .then(offer =>
-      promise_rejects_dom(t, 'InvalidModificationError',
-        pc2.setLocalDescription(offer)));
+    .then(offer => pc2.setLocalDescription(offer))
+    .then(() => t.unreached_func("setLocalDescription should have rejected"),
+          (error) => assert_equals(error.name, 'InvalidModificationError'));
   }, 'setLocalDescription() with offer not created by own createOffer() should reject with InvalidModificationError');
 
   promise_test(t => {

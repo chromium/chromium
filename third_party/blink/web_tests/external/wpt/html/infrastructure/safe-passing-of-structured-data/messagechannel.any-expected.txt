@@ -1,0 +1,134 @@
+This is a testharness.js-based test.
+Found 130 tests; 129 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS primitive undefined
+PASS primitive null
+PASS primitive true
+PASS primitive false
+PASS primitive string, empty string
+PASS primitive string, lone high surrogate
+PASS primitive string, lone low surrogate
+PASS primitive string, NUL
+PASS primitive string, astral character
+PASS primitive number, 0.2
+PASS primitive number, 0
+PASS primitive number, -0
+PASS primitive number, NaN
+PASS primitive number, Infinity
+PASS primitive number, -Infinity
+PASS primitive number, 9007199254740992
+PASS primitive number, -9007199254740992
+PASS primitive number, 9007199254740994
+PASS primitive number, -9007199254740994
+PASS primitive BigInt, 0n
+PASS primitive BigInt, -0n
+PASS primitive BigInt, -9007199254740994000n
+PASS primitive BigInt, -9007199254740994000900719925474099400090071992547409940009007199254740994000n
+PASS Array primitives
+PASS Object primitives
+PASS Boolean true
+PASS Boolean false
+PASS Array Boolean objects
+PASS Object Boolean objects
+PASS String empty string
+PASS String lone high surrogate
+PASS String lone low surrogate
+PASS String NUL
+PASS String astral character
+PASS Array String objects
+PASS Object String objects
+PASS Number 0.2
+PASS Number 0
+PASS Number -0
+PASS Number NaN
+PASS Number Infinity
+PASS Number -Infinity
+PASS Number 9007199254740992
+PASS Number -9007199254740992
+PASS Number 9007199254740994
+PASS Number -9007199254740994
+PASS BigInt -9007199254740994n
+PASS Array Number objects
+PASS Object Number objects
+PASS Date 0
+PASS Date -0
+PASS Date -8.64e15
+PASS Date 8.64e15
+PASS Array Date objects
+PASS Object Date objects
+PASS RegExp flags and lastIndex
+PASS RegExp sticky flag
+PASS RegExp unicode flag
+PASS RegExp empty
+PASS RegExp slash
+PASS RegExp new line
+PASS Array RegExp object, RegExp flags and lastIndex
+PASS Array RegExp object, RegExp sticky flag
+PASS Array RegExp object, RegExp unicode flag
+PASS Array RegExp object, RegExp empty
+PASS Array RegExp object, RegExp slash
+PASS Array RegExp object, RegExp new line
+PASS Object RegExp object, RegExp flags and lastIndex
+PASS Object RegExp object, RegExp sticky flag
+PASS Object RegExp object, RegExp unicode flag
+PASS Object RegExp object, RegExp empty
+PASS Object RegExp object, RegExp slash
+PASS Object RegExp object, RegExp new line
+PASS Blob basic
+PASS Blob unpaired high surrogate (invalid utf-8)
+PASS Blob unpaired low surrogate (invalid utf-8)
+PASS Blob paired surrogates (invalid utf-8)
+PASS Blob empty
+PASS Blob NUL
+PASS Array Blob object, Blob basic
+PASS Array Blob object, Blob unpaired high surrogate (invalid utf-8)
+PASS Array Blob object, Blob unpaired low surrogate (invalid utf-8)
+PASS Array Blob object, Blob paired surrogates (invalid utf-8)
+PASS Array Blob object, Blob empty
+PASS Array Blob object, Blob NUL
+PASS Array Blob object, two Blobs
+PASS Object Blob object, Blob basic
+PASS Object Blob object, Blob unpaired high surrogate (invalid utf-8)
+PASS Object Blob object, Blob unpaired low surrogate (invalid utf-8)
+PASS Object Blob object, Blob paired surrogates (invalid utf-8)
+PASS Object Blob object, Blob empty
+PASS Object Blob object, Blob NUL
+PASS File basic
+PASS FileList empty
+PASS Array FileList object, FileList empty
+PASS Object FileList object, FileList empty
+PASS ImageData 1x1 transparent black
+PASS ImageData 1x1 non-transparent non-black
+PASS Array ImageData object, ImageData 1x1 transparent black
+PASS Array ImageData object, ImageData 1x1 non-transparent non-black
+PASS Object ImageData object, ImageData 1x1 transparent black
+PASS Object ImageData object, ImageData 1x1 non-transparent non-black
+PASS Array sparse
+PASS Array with non-index property
+PASS Object with index property and length
+PASS Array with circular reference
+PASS Object with circular reference
+PASS Array with identical property values
+PASS Object with identical property values
+PASS Object with property on prototype
+PASS Object with non-enumerable property
+PASS Object with non-writable property
+PASS Object with non-configurable property
+PASS ImageBitmap 1x1 transparent black
+PASS ImageBitmap 1x1 non-transparent non-black
+PASS Array ImageBitmap object, ImageBitmap 1x1 transparent black
+PASS Array ImageBitmap object, ImageBitmap 1x1 transparent non-black
+PASS Object ImageBitmap object, ImageBitmap 1x1 transparent black
+PASS Object ImageBitmap object, ImageBitmap 1x1 transparent non-black
+PASS ObjectPrototype must lose its exotic-ness when cloned
+PASS Serializing a non-serializable platform object fails
+PASS An object whose interface is deleted from the global must still deserialize
+PASS A subclass instance will deserialize as its closest serializable superclass
+PASS ArrayBuffer
+PASS MessagePort
+PASS A detached ArrayBuffer cannot be transferred
+PASS A detached platform object cannot be transferred
+FAIL Transferring a non-transferable platform object fails promise_rejects_dom: function "function() { throw e }" threw object "TypeError: Failed to execute 'postMessage' on 'MessagePort': Value at index 0 does not have a transferable type." that is not a DOMException DataCloneError: property "code" is equal to undefined, expected 25
+PASS An object whose interface is deleted from the global object must still be received
+PASS A subclass instance will be received as its closest transferable superclass
+Harness: the test ran to completion.
+

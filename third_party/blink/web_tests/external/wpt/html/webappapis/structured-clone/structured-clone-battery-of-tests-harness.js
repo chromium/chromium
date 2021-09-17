@@ -30,11 +30,11 @@ function runStructuredCloneBatteryOfTests(runner) {
     }
 
     return new Promise(resolve => {
-      promise_test(async _ => {
+      promise_test(async t => {
         test = await test;
         await setupPromise;
         await runner.preTest(test);
-        await test.f(runner)
+        await test.f(runner, t)
         await runner.postTest(test);
         resolve();
       }, test.description);

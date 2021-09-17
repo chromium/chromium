@@ -131,9 +131,9 @@
     .then(offer =>
       pc.setRemoteDescription(offer)
       .then(() => generateAnswer(offer))
-      .then(answer =>
-        promise_rejects_dom(t, 'InvalidModificationError',
-          pc.setLocalDescription(answer))));
+      .then(answer => pc.setLocalDescription(answer))
+      .then(() => t.unreached_func("setLocalDescription should have rejected"),
+            (error) => assert_equals(error.name, 'InvalidModificationError')));
   }, 'setLocalDescription() with answer not created by own createAnswer() should reject with InvalidModificationError');
 
   /*

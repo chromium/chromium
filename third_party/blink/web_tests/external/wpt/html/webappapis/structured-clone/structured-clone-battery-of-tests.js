@@ -616,3 +616,41 @@ check('ObjectPrototype must lose its exotic-ness when cloned',
     assert_equals(Object.getPrototypeOf(copy), newProto);
   }
 );
+
+structuredCloneBatteryOfTests.push({
+  description: 'Serializing a non-serializable platform object fails',
+  async f(runner, t) {
+    const request = new Response();
+    await promise_rejects_dom(
+      t,
+      "DataCloneError",
+      runner.structuredClone(request)
+    );
+  }
+});
+
+structuredCloneBatteryOfTests.push({
+  description: 'An object whose interface is deleted from the global must still deserialize',
+  async f(runner) {
+    const blob = new Blob();
+    const blobInterface = globalThis.Blob;
+    delete globalThis.Blob;
+    try {
+      const copy = await runner.structuredClone(blob);
+      assert_true(copy instanceof blobInterface);
+    } finally {
+      globalThis.Blob = blobInterface;
+    }
+  }
+});
+
+check(
+  'A subclass instance will deserialize as its closest serializable superclass',
+  () => {
+    class FileSubclass extends File {}
+    return new FileSubclass([], "");
+  },
+  (copy) => {
+    assert_equals(Object.getPrototypeOf(copy), File.prototype);
+  }
+);
