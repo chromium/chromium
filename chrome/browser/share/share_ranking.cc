@@ -4,24 +4,27 @@
 
 #include "chrome/browser/share/share_ranking.h"
 
-#include "base/android/callback_android.h"
-#include "base/android/jni_array.h"
-#include "base/android/jni_string.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/share/default_ranking.h"
 #include "chrome/browser/share/share_history.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/callback_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "chrome/browser/profiles/profile_android.h"
+
 #include "chrome/browser/share/jni_headers/ShareRankingBridge_jni.h"
 
 using base::android::JavaParamRef;
+#endif
 
 namespace sharing {
 
@@ -41,7 +44,7 @@ std::unique_ptr<ShareRanking::BackingDb> MakeDefaultDbForProfile(
       ->GetProtoDatabaseProvider()
       ->GetDB<proto::ShareRanking>(
           leveldb_proto::ProtoDbType::SHARE_RANKING_DATABASE,
-          profile->GetPath().Append(kShareRankingFolder),
+          profile->GetPath().AppendASCII(kShareRankingFolder),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
 }
@@ -174,12 +177,14 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
   return new_ranking;
 }
 
+#if defined(OS_ANDROID)
 void RunJniRankCallback(base::android::ScopedJavaGlobalRef<jobject> callback,
                         JNIEnv* env,
                         absl::optional<ShareRanking::Ranking> ranking) {
   auto result = base::android::ToJavaArrayOfStrings(env, ranking.value());
   base::android::RunObjectCallbackAndroid(callback, result);
 }
+#endif
 
 #if DCHECK_IS_ON()
 bool EveryElementInList(const std::vector<std::string>& ranking,
@@ -490,6 +495,8 @@ ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
 
 }  // namespace sharing
 
+#if defined(OS_ANDROID)
+
 void JNI_ShareRankingBridge_Rank(JNIEnv* env,
                                  const JavaParamRef<jobject>& jprofile,
                                  const JavaParamRef<jstring>& jtype,
@@ -527,3 +534,5 @@ void JNI_ShareRankingBridge_Rank(JNIEnv* env,
                      // TODO(ellyjones): Is it safe to unretained env here?
                      base::Unretained(env)));
 }
+
+#endif  // OS_ANDROID

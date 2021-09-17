@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "build/build_config.h"
 #include "chrome/browser/share/proto/share_history_message.pb.h"
 #include "components/leveldb_proto/public/proto_database.h"
 

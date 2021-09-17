@@ -4,20 +4,23 @@
 
 #include "chrome/browser/share/share_history.h"
 
-#include "base/android/jni_string.h"
 #include "base/containers/flat_map.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/share/proto/share_history_message.pb.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/storage_partition.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/jni_string.h"
+#include "chrome/browser/profiles/profile_android.h"
+
 #include "chrome/browser/share/jni_headers/ShareHistoryBridge_jni.h"
 
 using base::android::JavaParamRef;
+#endif
 
 namespace sharing {
 
@@ -40,7 +43,7 @@ std::unique_ptr<ShareHistory::BackingDb> MakeDefaultDbForProfile(
       ->GetProtoDatabaseProvider()
       ->GetDB<mojom::ShareHistory>(
           leveldb_proto::ProtoDbType::SHARE_HISTORY_DATABASE,
-          profile->GetPath().Append(kShareHistoryFolder),
+          profile->GetPath().AppendASCII(kShareHistoryFolder),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
 }
@@ -236,6 +239,7 @@ mojom::TargetShareHistory* ShareHistory::TargetShareHistoryByName(
 
 }  // namespace sharing
 
+#if defined(OS_ANDROID)
 void JNI_ShareHistoryBridge_AddShareEntry(JNIEnv* env,
                                           const JavaParamRef<jobject>& jprofile,
                                           const JavaParamRef<jstring>& name) {
@@ -244,3 +248,4 @@ void JNI_ShareHistoryBridge_AddShareEntry(JNIEnv* env,
   if (instance)
     instance->AddShareEntry(base::android::ConvertJavaStringToUTF8(env, name));
 }
+#endif
