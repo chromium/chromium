@@ -45,6 +45,7 @@ per-file utility_sandbox_delegate_win.*=file://sandbox/win/OWNERS
 # BackForwardCache
 per-file back_forward_cache_browsertest.cc=arthursonzogni@chromium.org
 per-file back_forward_cache_browsertest.cc=altimin@chromium.org
+per-file back_forward_cache_browsertest.cc=rakina@chromium.org
 
 # Storage API dependencies.
 per-file storage_partition*=file://storage/OWNERS

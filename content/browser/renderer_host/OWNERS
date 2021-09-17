@@ -33,6 +33,10 @@ per-file embedded_frame_sink*.*=kylechar@chromium.org
 # DirectWrite font code.
 per-file dwrite_*=drott@chromium.org
 
+# BackForwardCache.
+per-file back_forward_cache*=altimin@chromium.org
+per-file back_forward_cache*=rakina@chromium.org
+
 # Clipboard
 per-file *clipboard_host_impl*=mek@chromium.org
 per-file *clipboard_host_impl*=pwnall@chromium.org
