@@ -34,54 +34,33 @@ const char kOauthScopes[] = "https://www.googleapis.com/auth/chromememex";
 const char kEmptyToken[] = "";
 }  // namespace
 
-CartLoader::CartLoader(Profile* profile)
-    : cart_service_(CartServiceFactory::GetForProfile(profile)) {}
+CartServiceDelegate::CartServiceDelegate(CartService* cart_service)
+    : cart_service_(cart_service) {}
 
-CartLoader::~CartLoader() = default;
+CartServiceDelegate::~CartServiceDelegate() = default;
 
-void CartLoader::LoadAllCarts(CartDB::LoadCallback callback) {
+void CartServiceDelegate::LoadAllCarts(CartDB::LoadCallback callback) {
   cart_service_->LoadAllActiveCarts(std::move(callback));
 }
 
-CartDiscountUpdater::CartDiscountUpdater(Profile* profile)
-    : cart_service_(CartServiceFactory::GetForProfile(profile)) {}
-
-CartDiscountUpdater::~CartDiscountUpdater() = default;
-
-void CartDiscountUpdater::update(
+void CartServiceDelegate::UpdateCart(
     const std::string& cart_url,
     const cart_db::ChromeCartContentProto new_proto,
     const bool is_tester) {
-  GURL url(cart_url);
-  cart_service_->UpdateDiscounts(url, std::move(new_proto), is_tester);
-}
-
-CartLoaderAndUpdaterFactory::CartLoaderAndUpdaterFactory(Profile* profile)
-    : profile_(profile) {}
-
-CartLoaderAndUpdaterFactory::~CartLoaderAndUpdaterFactory() = default;
-
-std::unique_ptr<CartLoader> CartLoaderAndUpdaterFactory::createCartLoader() {
-  return std::make_unique<CartLoader>(profile_);
-}
-
-std::unique_ptr<CartDiscountUpdater>
-CartLoaderAndUpdaterFactory::createCartDiscountUpdater() {
-  return std::make_unique<CartDiscountUpdater>(profile_);
+  cart_service_->UpdateDiscounts(GURL(cart_url), std::move(new_proto),
+                                 is_tester);
 }
 
 FetchDiscountWorker::FetchDiscountWorker(
     scoped_refptr<network::SharedURLLoaderFactory>
         browserProcessURLLoaderFactory,
     std::unique_ptr<CartDiscountFetcherFactory> fetcher_factory,
-    std::unique_ptr<CartLoaderAndUpdaterFactory>
-        cart_loader_and_updater_factory,
+    std::unique_ptr<CartServiceDelegate> cart_service_delegate,
     signin::IdentityManager* const identity_manager,
     variations::VariationsClient* const chrome_variations_client)
     : browserProcessURLLoaderFactory_(browserProcessURLLoaderFactory),
       fetcher_factory_(std::move(fetcher_factory)),
-      cart_loader_and_updater_factory_(
-          std::move(cart_loader_and_updater_factory)),
+      cart_service_delegate_(std::move(cart_service_delegate)),
       identity_manager_(identity_manager),
       chrome_variations_client_(chrome_variations_client) {
   backend_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -91,8 +70,6 @@ FetchDiscountWorker::FetchDiscountWorker(
 FetchDiscountWorker::~FetchDiscountWorker() = default;
 
 void FetchDiscountWorker::Start(base::TimeDelta delay) {
-  // Post a delay task to avoid an infinite loop for creating the CartService.
-  // Since CartLoader and CartDiscountUpdater both depend on CartService.
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(FROM_HERE,
                         base::BindOnce(&FetchDiscountWorker::PrepareToFetch,
@@ -146,8 +123,7 @@ void FetchDiscountWorker::LoadAllActiveCarts(
   auto cart_loaded_callback = base::BindOnce(
       &FetchDiscountWorker::ReadyToFetch, weak_ptr_factory_.GetWeakPtr(),
       is_oauth_fetch, std::move(access_token_str));
-  auto loader = cart_loader_and_updater_factory_->createCartLoader();
-  loader->LoadAllCarts(std::move(cart_loaded_callback));
+  cart_service_delegate_->LoadAllCarts(std::move(cart_loaded_callback));
 }
 
 void FetchDiscountWorker::ReadyToFetch(
@@ -233,8 +209,7 @@ void FetchDiscountWorker::AfterDiscountFetched(
   auto update_discount_callback = base::BindOnce(
       &FetchDiscountWorker::OnUpdatingDiscounts, weak_ptr_factory_.GetWeakPtr(),
       std::move(discounts), is_tester);
-  auto loader = cart_loader_and_updater_factory_->createCartLoader();
-  loader->LoadAllCarts(std::move(update_discount_callback));
+  cart_service_delegate_->LoadAllCarts(std::move(update_discount_callback));
 }
 
 void FetchDiscountWorker::OnUpdatingDiscounts(
@@ -246,8 +221,6 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
   if (!success || !proto_pairs.size()) {
     return;
   }
-
-  auto updater = cart_loader_and_updater_factory_->createCartDiscountUpdater();
 
   double current_timestamp = base::Time::Now().ToDoubleT();
 
@@ -263,7 +236,8 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
     if (!discounts.count(cart_url)) {
       cart_discount_proto->clear_discount_text();
       cart_discount_proto->clear_rule_discount_info();
-      updater->update(cart_url, std::move(cart_proto), is_tester);
+      cart_service_delegate_->UpdateCart(cart_url, std::move(cart_proto),
+                                         is_tester);
       continue;
     }
 
@@ -278,7 +252,8 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
     *cart_discount_proto->mutable_rule_discount_info() = {
         discount_infos.begin(), discount_infos.end()};
 
-    updater->update(cart_url, std::move(cart_proto), is_tester);
+    cart_service_delegate_->UpdateCart(cart_url, std::move(cart_proto),
+                                       is_tester);
   }
 
   // TODO(crbug.com/1240341): Update the coupon proto.

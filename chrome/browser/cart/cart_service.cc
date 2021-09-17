@@ -856,7 +856,7 @@ void CartService::StartGettingDiscount() {
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       std::make_unique<CartDiscountFetcherFactory>(),
-      std::make_unique<CartLoaderAndUpdaterFactory>(profile_),
+      std::make_unique<CartServiceDelegate>(this),
       IdentityManagerFactory::GetForProfile(profile_),
       profile_->GetVariationsClient());
 
