@@ -573,6 +573,8 @@ enum BootMode {
   kCrosEfi,
   // Boot with Legacy BIOS.
   kCrosLegacy,
+  // Boot with EFI security boot.
+  kCrosEfiSecure,
 };
 
 // The list of VPD fields are available in the ChromeOS Partner Site document
