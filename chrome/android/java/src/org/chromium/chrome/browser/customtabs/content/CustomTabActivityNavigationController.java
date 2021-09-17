@@ -205,7 +205,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         final WebContents webContents = mTabProvider.getTab().getWebContents();
         if (webContents != null) {
             RenderFrameHost focusedFrame = webContents.getFocusedFrame();
-            if (focusedFrame != null && focusedFrame.signalModalCloseWatcherIfActive()) return true;
+            if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) return true;
         }
 
         if (mToolbarManager != null && mToolbarManager.back()) return true;

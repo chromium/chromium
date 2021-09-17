@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/modal_close_listener_host.h"
+#include "content/browser/renderer_host/close_listener_host.h"
 
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
@@ -16,7 +16,7 @@
 
 namespace content {
 
-class ModalCloseListenerHostBrowserTest : public ContentBrowserTest {
+class CloseListenerHostBrowserTest : public ContentBrowserTest {
  public:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -32,18 +32,18 @@ class ModalCloseListenerHostBrowserTest : public ContentBrowserTest {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
-  void InstallModalCloseWatcherAndSignal() {
-    // Install a ModalCloseWatcher.
+  void InstallCloseWatcherAndSignal() {
+    // Install a CloseWatcher.
     std::string script =
-        "let watcher = new ModalCloseWatcher(); "
+        "let watcher = new CloseWatcher(); "
         "watcher.onclose = () => window.document.title = 'SUCCESS';";
     EXPECT_TRUE(ExecJs(web_contents(), script));
 
     RenderFrameHostImpl* render_frame_host_impl =
         web_contents()->GetFrameTree()->root()->current_frame_host();
-    EXPECT_TRUE(ModalCloseListenerHost::GetOrCreateForCurrentDocument(
-                    render_frame_host_impl)
-                    ->SignalIfActive());
+    EXPECT_TRUE(
+        CloseListenerHost::GetOrCreateForCurrentDocument(render_frame_host_impl)
+            ->SignalIfActive());
 
     const std::u16string signaled_title = u"SUCCESS";
     TitleWatcher watcher(web_contents(), signaled_title);
@@ -52,26 +52,26 @@ class ModalCloseListenerHostBrowserTest : public ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ModalCloseListenerHostBrowserTest,
-                       SignalModalCloseWatcherIfActive) {
+IN_PROC_BROWSER_TEST_F(CloseListenerHostBrowserTest,
+                       SignalCloseWatcherIfActive) {
   NavigationController& controller = web_contents()->GetController();
   GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_EQ(1, controller.GetEntryCount());
 
-  InstallModalCloseWatcherAndSignal();
+  InstallCloseWatcherAndSignal();
 }
 
-IN_PROC_BROWSER_TEST_F(ModalCloseListenerHostBrowserTest,
-                       SignalModalCloseWatcherIfActiveAfterReload) {
+IN_PROC_BROWSER_TEST_F(CloseListenerHostBrowserTest,
+                       SignalCloseWatcherIfActiveAfterReload) {
   NavigationController& controller = web_contents()->GetController();
   GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_EQ(1, controller.GetEntryCount());
 
-  InstallModalCloseWatcherAndSignal();
+  InstallCloseWatcherAndSignal();
   ReloadBlockUntilNavigationsComplete(shell(), 1);
-  InstallModalCloseWatcherAndSignal();
+  InstallCloseWatcherAndSignal();
 }
 
 }  // namespace content

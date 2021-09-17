@@ -216,8 +216,8 @@ void FakeLocalFrameHost::CapturePaintPreviewOfSubframe(
     const gfx::Rect& clip_rect,
     const base::UnguessableToken& guid) {}
 
-void FakeLocalFrameHost::SetModalCloseListener(
-    mojo::PendingRemote<mojom::blink::ModalCloseListener>) {}
+void FakeLocalFrameHost::SetCloseListener(
+    mojo::PendingRemote<mojom::blink::CloseListener>) {}
 
 void FakeLocalFrameHost::Detach() {}
 

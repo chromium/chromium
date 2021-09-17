@@ -4,10 +4,10 @@
 
 module blink.mojom;
 
-// Per-window interface for signalling ModalCloseWatchers. The renderer
+// Per-window interface for signalling CloseWatchers. The renderer
 // will close the message pipe when it is no longer interested in this
 // signal.
-interface ModalCloseListener {
-  // Notify ModalCloseWatcher of a close signal.
+interface CloseListener {
+  // Notify CloseWatcher of a close signal.
   Signal();
 };

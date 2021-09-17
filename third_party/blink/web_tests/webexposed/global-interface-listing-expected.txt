@@ -1242,6 +1242,15 @@ interface CloseEvent : Event
     getter reason
     getter wasClean
     method constructor
+interface CloseWatcher : EventTarget
+    attribute @@toStringTag
+    getter onbeforeclose
+    getter onclose
+    method constructor
+    method destroy
+    method signalClosed
+    setter onbeforeclose
+    setter onclose
 interface Comment : CharacterData
     attribute @@toStringTag
     method constructor
@@ -5513,15 +5522,6 @@ interface MimeTypeArray
     method constructor
     method item
     method namedItem
-interface ModalCloseWatcher : EventTarget
-    attribute @@toStringTag
-    getter onbeforeclose
-    getter onclose
-    method constructor
-    method destroy
-    method signalClosed
-    setter onbeforeclose
-    setter onclose
 interface Mojo
     static method bindInterface
     static method createDataPipe

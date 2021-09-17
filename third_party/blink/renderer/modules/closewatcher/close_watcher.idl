@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://github.com/WICG/close-watcher
 [
   Exposed=Window,
-  RuntimeEnabled=ModalCloseWatcher
-] interface ModalCloseWatcher : EventTarget {
+  RuntimeEnabled=CloseWatcher
+] interface CloseWatcher : EventTarget {
   [CallWith=ScriptState, RaisesException] constructor();
 
   void signalClosed();

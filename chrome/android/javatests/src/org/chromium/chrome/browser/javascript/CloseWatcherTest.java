@@ -22,19 +22,19 @@ import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Unit tests for ModalCloseWatcher's ability to receive signals from the
+ * Unit tests for CloseWatcher's ability to receive signals from the
  * system back button.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-experimental-web-platform-features"})
-public class ModalCloseWatcherTest {
+public class CloseWatcherTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private static final String TAG = "ModalCloseWatcherTest";
+    private static final String TAG = "CloseWatcherTest";
     private static final String TEST_URL =
-            UrlUtils.encodeHtmlDataUri("<body><script>let watcher = new ModalCloseWatcher(); "
+            UrlUtils.encodeHtmlDataUri("<body><script>let watcher = new CloseWatcher(); "
                     + "watcher.onclose = () => window.document.title = 'SUCCESS';</script></body>");
 
     private Tab mTab;
@@ -48,7 +48,7 @@ public class ModalCloseWatcherTest {
 
     @Test
     @MediumTest
-    public void testBackButtonTriggersModalCloseWatcher() throws Throwable {
+    public void testBackButtonTriggersCloseWatcher() throws Throwable {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
         TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());

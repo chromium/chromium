@@ -10,7 +10,7 @@
 const ESC = '\u001B';
 
 test(() => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   let onbeforeclose_called = false;
   let onclose_called = false;
   watcher.onbeforeclose = e => {
@@ -33,7 +33,7 @@ test(() => {
 }, "signalClose");
 
 test(() => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   let onbeforeclose_called = false;
   let onclose_called = false;
   watcher.onbeforeclose = () => onbeforeclose_called = true;
@@ -47,7 +47,7 @@ test(() => {
 }, "destroy then signalClose");
 
 test(() => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   let onbeforeclose_call_count_ = 0;
   let onclose_call_count_ = 0;
   watcher.onbeforeclose = () => onbeforeclose_call_count_++;
@@ -60,7 +60,7 @@ test(() => {
 }, "signalClose then destroy");
 
 promise_test(async t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   let onbeforeclose_called = false;
   let onclose_called = false;
   watcher.onbeforeclose = () => onbeforeclose_called = true;
@@ -73,7 +73,7 @@ promise_test(async t => {
 }, "close via escape key");
 
 promise_test(async t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   let onbeforeclose_called = false;
   let onclose_called = false;
   watcher.onbeforeclose = () => onbeforeclose_called = true;
@@ -87,7 +87,7 @@ promise_test(async t => {
 }, "destroy then close via escape key");
 
 promise_test(async t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   let onbeforeclose_call_count_ = 0;
   let onclose_call_count_ = 0;
   watcher.onbeforeclose = () => onbeforeclose_call_count_++;
@@ -101,7 +101,7 @@ promise_test(async t => {
 }, "close via escape key then destroy");
 
 test(t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   let onbeforeclose_called = false;
   let onclose_called = false;
   watcher.onbeforeclose = () => onbeforeclose_called = true;
@@ -126,20 +126,20 @@ test(t => {
 }, "close via synthesized escape key should not work");
 
 test(t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   t.add_cleanup(() => watcher.destroy());
-  assert_throws_dom("NotAllowedError", () => new ModalCloseWatcher());
-}, "Multiple ModalCloseWatchers require a user activation.");
+  assert_throws_dom("NotAllowedError", () => new CloseWatcher());
+}, "Multiple CloseWatchers require a user activation.");
 
 promise_test(async t => {
-  let watcher1 = new ModalCloseWatcher();
+  let watcher1 = new CloseWatcher();
   let watcher1_closed = false;
   watcher1.onclose = () => watcher1_closed = true;
   let watcher2 = null;
   let watcher2_closed = false;
 
-  await test_driver.bless("create second ModalCloseWater", () => {
-    watcher2 = new ModalCloseWatcher();
+  await test_driver.bless("create second CloseWater", () => {
+    watcher2 = new CloseWatcher();
     watcher2.onclose = () => watcher2_closed = true;
   });
 
@@ -151,56 +151,56 @@ promise_test(async t => {
   await test_driver.send_keys(document.getElementById('d'), ESC);
 
   assert_true(watcher1_closed);
-}, "Multiple ModalCloseWatchers work as a stack if secondary watchers are created with a user activation.");
+}, "Multiple CloseWatchers work as a stack if secondary watchers are created with a user activation.");
 
 test(t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   watcher.destroy();
-  let watcher2 = new ModalCloseWatcher();
+  let watcher2 = new CloseWatcher();
   t.add_cleanup(() => watcher2.destroy());
-}, "destroying a free ModalCloseWatcher allows a new one to be created without a user activation.");
+}, "destroying a free CloseWatcher allows a new one to be created without a user activation.");
 
 test(t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   watcher.signalClosed();
-  let watcher2 = new ModalCloseWatcher();
+  let watcher2 = new CloseWatcher();
   t.add_cleanup(() => watcher2.destroy());
-}, "signalClose()ing a free ModalCloseWatcher allows a new one to be created without a user activation.");
+}, "signalClose()ing a free CloseWatcher allows a new one to be created without a user activation.");
 
 promise_test(async t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   await test_driver.send_keys(document.getElementById('d'), ESC);
-  let watcher2 = new ModalCloseWatcher();
+  let watcher2 = new CloseWatcher();
   t.add_cleanup(() => watcher2.destroy());
-}, "Closing a free ModalCloseWatcher via the escape key allows a new one to be created without a user activation.");
+}, "Closing a free CloseWatcher via the escape key allows a new one to be created without a user activation.");
 
 test(t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   watcher.onbeforeclose = () => { watcher.destroy(); }
   watcher.onclose = t.unreached_func("onclose");
   watcher.signalClosed();
 }, "destroy inside onbeforeclose");
 
 test(t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   watcher.onclose = () => { watcher.destroy(); }
   watcher.signalClosed();
 }, "destroy inside onclose is benign");
 
 test(t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   watcher.onbeforeclose = () => { watcher.signalClosed(); }
   watcher.signalClosed();
 }, "signalClose inside onbeforeclose should not trigger an infinite loop");
 
 test(t => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   watcher.onclose = () => { watcher.signalClosed(); }
   watcher.signalClosed();
 }, "signalClose inside onclose should not trigger an infinite loop");
 
 test(() => {
-  let watcher = new ModalCloseWatcher();
+  let watcher = new CloseWatcher();
   let onbeforeclose_called = false;
   let onclose_called = false;
   watcher.addEventListener("beforeclose", () => onbeforeclose_called = true);

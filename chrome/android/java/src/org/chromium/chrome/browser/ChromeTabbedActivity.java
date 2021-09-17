@@ -2119,7 +2119,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         final WebContents webContents = currentTab.getWebContents();
         if (webContents != null) {
             RenderFrameHost focusedFrame = webContents.getFocusedFrame();
-            if (focusedFrame != null && focusedFrame.signalModalCloseWatcherIfActive()) return true;
+            if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) return true;
         }
 
         if (getToolbarManager().back()) return true;

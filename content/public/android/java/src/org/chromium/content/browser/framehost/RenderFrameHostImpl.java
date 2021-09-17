@@ -128,8 +128,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public boolean signalModalCloseWatcherIfActive() {
-        return RenderFrameHostImplJni.get().signalModalCloseWatcherIfActive(
+    public boolean signalCloseWatcherIfActive() {
+        return RenderFrameHostImplJni.get().signalCloseWatcherIfActive(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
     }
 
@@ -228,7 +228,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         UnguessableToken getAndroidOverlayRoutingToken(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void notifyUserActivation(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
-        boolean signalModalCloseWatcherIfActive(
+        boolean signalCloseWatcherIfActive(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean isRenderFrameCreated(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void getInterfaceToRendererFrame(long nativeRenderFrameHostAndroid,

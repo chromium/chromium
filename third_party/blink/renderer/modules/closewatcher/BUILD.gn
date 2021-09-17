@@ -4,9 +4,9 @@
 
 import("//third_party/blink/renderer/modules/modules.gni")
 
-blink_modules_sources("modalclosewatcher") {
+blink_modules_sources("closewatcher") {
   sources = [
-    "modal_close_watcher.cc",
-    "modal_close_watcher.h",
+    "close_watcher.cc",
+    "close_watcher.h",
   ]
 }

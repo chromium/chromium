@@ -393,6 +393,10 @@
       status: "experimental",
     },
     {
+      name: "CloseWatcher",
+      status: "experimental",
+    },
+    {
       name: "CLSScrollAnchoring",
       status: "experimental",
     },
@@ -1455,10 +1459,6 @@
     {
 
       name: "MobileLayoutTheme",
-    },
-    {
-      name: "ModalCloseWatcher",
-      status: "experimental",
     },
     {
       name: "ModuleServiceWorker",

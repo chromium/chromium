@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MODALCLOSEWATCHER_MODAL_CLOSE_WATCHER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_MODALCLOSEWATCHER_MODAL_CLOSE_WATCHER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CLOSEWATCHER_CLOSE_WATCHER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_CLOSEWATCHER_CLOSE_WATCHER_H_
 
-#include "third_party/blink/public/mojom/modal_close_watcher/modal_close_listener.mojom-blink.h"
+#include "third_party/blink/public/mojom/close_watcher/close_listener.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -15,13 +15,13 @@
 
 namespace blink {
 
-class ModalCloseWatcher final : public EventTargetWithInlineData,
-                                public ExecutionContextClient {
+class CloseWatcher final : public EventTargetWithInlineData,
+                           public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ModalCloseWatcher* Create(ScriptState*, ExceptionState&);
-  explicit ModalCloseWatcher(LocalDOMWindow*);
+  static CloseWatcher* Create(ScriptState*, ExceptionState&);
+  explicit CloseWatcher(LocalDOMWindow*);
   void Trace(Visitor*) const override;
 
   bool IsClosed() const { return state_ == State::kClosed; }
@@ -41,21 +41,21 @@ class ModalCloseWatcher final : public EventTargetWithInlineData,
  private:
   void Close();
 
-  // If multiple ModalCloseWatchers are active in a given window, they form a
+  // If multiple CloseWatchers are active in a given window, they form a
   // stack, and a close signal will pop the top watcher. If the stack is empty,
-  // the first ModalCloseWatcher is "free", but creating a new
-  // ModalCloseWatcher when the stack is non-empty requires a user activation.
+  // the first CloseWatcher is "free", but creating a new
+  // CloseWatcher when the stack is non-empty requires a user activation.
   class WatcherStack final : public NativeEventListener,
                              public Supplement<LocalDOMWindow>,
-                             public mojom::blink::ModalCloseListener {
+                             public mojom::blink::CloseListener {
    public:
     static const char kSupplementName[];
 
     static WatcherStack& From(LocalDOMWindow&);
     explicit WatcherStack(LocalDOMWindow&);
 
-    void Add(ModalCloseWatcher*);
-    void Remove(ModalCloseWatcher*);
+    void Add(CloseWatcher*);
+    void Remove(CloseWatcher*);
     bool HasActiveWatcher() { return !watchers_.IsEmpty(); }
 
     void Trace(Visitor*) const final;
@@ -64,14 +64,14 @@ class ModalCloseWatcher final : public EventTargetWithInlineData,
     // NativeEventListener override:
     void Invoke(ExecutionContext*, Event*) final;
 
-    // mojom::blink::ModalCloseListener override:
+    // mojom::blink::CloseListener override:
     void Signal() final { watchers_.back()->signalClosed(); }
 
-    HeapLinkedHashSet<Member<ModalCloseWatcher>> watchers_;
+    HeapLinkedHashSet<Member<CloseWatcher>> watchers_;
 
     // Holds a pipe which the service uses to notify this object
     // when the idle state has changed.
-    HeapMojoReceiver<mojom::blink::ModalCloseListener, WatcherStack> receiver_;
+    HeapMojoReceiver<mojom::blink::CloseListener, WatcherStack> receiver_;
   };
 
   enum class State { kActive, kModal, kClosed };
@@ -81,4 +81,4 @@ class ModalCloseWatcher final : public EventTargetWithInlineData,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MODALCLOSEWATCHER_MODAL_CLOSE_WATCHER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CLOSEWATCHER_CLOSE_WATCHER_H_

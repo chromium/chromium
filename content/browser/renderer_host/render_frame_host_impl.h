@@ -2072,8 +2072,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CapturePaintPreviewOfSubframe(
       const gfx::Rect& clip_rect,
       const base::UnguessableToken& guid) override;
-  void SetModalCloseListener(
-      mojo::PendingRemote<blink::mojom::ModalCloseListener> listener) override;
+  void SetCloseListener(
+      mojo::PendingRemote<blink::mojom::CloseListener> listener) override;
   void Detach() override;
   void DidAddMessageToConsole(
       blink::mojom::ConsoleMessageLevel log_level,
