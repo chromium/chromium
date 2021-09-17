@@ -377,6 +377,24 @@ void WontCompile() {
   BindOnce([] (std::unique_ptr<int>) {}, Passed(&x));
 }
 
+#elif defined(NCTEST_BIND_ONCE_WITH_ADDRESS_OF_OVERLOADED_FUNCTION)  // [r"fatal error: reference to overloaded function could not be resolved; did you mean to call it\?"]
+
+void F(int);
+void F(float);
+
+void WontCompile() {
+  BindOnce(&F, 1, 2, 3);
+}
+
+#elif defined(NCTEST_BIND_REPEATING_WITH_ADDRESS_OF_OVERLOADED_FUNCTION)  // [r"fatal error: reference to overloaded function could not be resolved; did you mean to call it\?"]
+
+void F(int);
+void F(float);
+
+void WontCompile() {
+  BindRepeating(&F, 1, 2, 3);
+}
+
 #endif
 
 }  // namespace base

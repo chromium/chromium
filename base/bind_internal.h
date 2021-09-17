@@ -1230,6 +1230,40 @@ decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
       std::forward<Functor>(functor), std::forward<Args>(args)...));
 }
 
+// Special cases for binding to a base::{Once, Repeating}Callback without extra
+// bound arguments. We CHECK() the validity of callback to guard against null
+// pointers accidentally ending up in posted tasks, causing hard-to-debug
+// crashes.
+template <template <typename> class CallbackT,
+          typename Signature,
+          std::enable_if_t<std::is_same<CallbackT<Signature>,
+                                        OnceCallback<Signature>>::value>* =
+              nullptr>
+OnceCallback<Signature> BindImpl(OnceCallback<Signature> callback) {
+  CHECK(callback);
+  return callback;
+}
+
+template <template <typename> class CallbackT,
+          typename Signature,
+          std::enable_if_t<std::is_same<CallbackT<Signature>,
+                                        OnceCallback<Signature>>::value>* =
+              nullptr>
+OnceCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
+  CHECK(callback);
+  return callback;
+}
+
+template <template <typename> class CallbackT,
+          typename Signature,
+          std::enable_if_t<std::is_same<CallbackT<Signature>,
+                                        RepeatingCallback<Signature>>::value>* =
+              nullptr>
+RepeatingCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
+  CHECK(callback);
+  return callback;
+}
+
 }  // namespace internal
 
 // An injection point to control |this| pointer behavior on a method invocation.
