@@ -189,6 +189,7 @@ ResourceRequest::WebBundleTokenParams::CloneHandle() const {
 }
 
 ResourceRequest::NetLogParams::NetLogParams() = default;
+ResourceRequest::NetLogParams::NetLogParams(uint32_t id) : source_id(id) {}
 ResourceRequest::NetLogParams::~NetLogParams() = default;
 
 ResourceRequest::ResourceRequest() = default;

@@ -104,6 +104,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // details of each field.
   struct COMPONENT_EXPORT(NETWORK_CPP_BASE) NetLogParams {
     NetLogParams();
+    explicit NetLogParams(uint32_t id);
     ~NetLogParams();
 
     uint32_t source_id;

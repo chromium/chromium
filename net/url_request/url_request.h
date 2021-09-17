@@ -820,7 +820,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
              Delegate* delegate,
              const URLRequestContext* context,
              NetworkTrafficAnnotationTag traffic_annotation,
-             bool is_for_websockets);
+             bool is_for_websockets,
+             absl::optional<uint32_t> net_log_source_id);
 
   // Resumes or blocks a request paused by the NetworkDelegate::OnBeforeRequest
   // handler. If |blocked| is true, the request is blocked and an error page is

@@ -245,15 +245,18 @@ CorsURLLoader::CorsURLLoader(
       allow_any_cors_exempt_header_(allow_any_cors_exempt_header),
       isolation_info_(isolation_info),
       devtools_observer_(std::move(devtools_observer)),
-      // TODO(https://crbug.com/1244451): NetLogSourceType may be changed.
+      // CORS preflight related events are logged in a series of URL_REQUEST
+      // logs.
       net_log_(
           net::NetLogWithSource::Make(net::NetLog::Get(),
-                                      net::NetLogSourceType::CORS_URL_LOADER)) {
+                                      net::NetLogSourceType::URL_REQUEST)) {
   if (ignore_isolated_world_origin)
     request_.isolated_world_origin = absl::nullopt;
 
   receiver_.set_disconnect_handler(
       base::BindOnce(&CorsURLLoader::OnMojoDisconnect, base::Unretained(this)));
+  request_.net_log_params =
+      network::ResourceRequest::NetLogParams(net_log_.source().id);
   DCHECK(network_loader_factory_);
   DCHECK(origin_access_list_);
   DCHECK(preflight_controller_);

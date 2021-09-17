@@ -533,7 +533,12 @@ URLLoader::URLLoader(
   receiver_.set_disconnect_handler(
       base::BindOnce(&URLLoader::OnMojoDisconnect, base::Unretained(this)));
   url_request_ = url_request_context_->CreateRequest(
-      GURL(request.url), request.priority, this, traffic_annotation);
+      GURL(request.url), request.priority, this, traffic_annotation,
+      /*is_for_websockets=*/false,
+      request.net_log_params
+          ? absl::make_optional(request.net_log_params->source_id)
+          : absl::nullopt);
+
   url_request_->set_method(request.method);
   url_request_->set_site_for_cookies(request.site_for_cookies);
   if (ShouldForceIgnoreSiteForCookies(request))

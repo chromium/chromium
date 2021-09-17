@@ -131,6 +131,17 @@ void ConvertRealLoadTimesToBlockingTimes(LoadTimingInfo* load_timing_info) {
   }
 }
 
+NetLogWithSource CreateNetLogWithSource(
+    NetLog* net_log,
+    absl::optional<uint32_t> net_log_source_id) {
+  if (net_log_source_id) {
+    return NetLogWithSource::Make(
+        net_log,
+        NetLogSource(NetLogSourceType::URL_REQUEST, net_log_source_id.value()));
+  }
+  return NetLogWithSource::Make(net_log, NetLogSourceType::URL_REQUEST);
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -547,10 +558,10 @@ URLRequest::URLRequest(const GURL& url,
                        Delegate* delegate,
                        const URLRequestContext* context,
                        NetworkTrafficAnnotationTag traffic_annotation,
-                       bool is_for_websockets)
+                       bool is_for_websockets,
+                       absl::optional<uint32_t> net_log_source_id)
     : context_(context),
-      net_log_(NetLogWithSource::Make(context->net_log(),
-                                      NetLogSourceType::URL_REQUEST)),
+      net_log_(CreateNetLogWithSource(context->net_log(), net_log_source_id)),
       url_chain_(1, url),
       force_ignore_site_for_cookies_(false),
       force_ignore_top_frame_party_for_cookies_(false),

@@ -8,6 +8,7 @@
 #ifndef NET_URL_REQUEST_URL_REQUEST_CONTEXT_H_
 #define NET_URL_REQUEST_URL_REQUEST_CONTEXT_H_
 
+#include <stdint.h>
 #include <memory>
 #include <set>
 #include <string>
@@ -23,6 +24,7 @@
 #include "net/net_buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class CertVerifier;
@@ -99,12 +101,17 @@ class NET_EXPORT URLRequestContext {
   // `is_for_websockets` should be true iff this was created for use by a
   // websocket. HTTP/HTTPS requests fail if it's true, and WS/WSS requests fail
   // if it's false. This is to protect against broken consumers.
+  //
+  // `net_log_source_id` is used to construct NetLogWithSource using the
+  // specified Source ID. This method is expected to be used when URLRequest
+  // wants to take over existing NetLogSource.
   std::unique_ptr<URLRequest> CreateRequest(
       const GURL& url,
       RequestPriority priority,
       URLRequest::Delegate* delegate,
       NetworkTrafficAnnotationTag traffic_annotation,
-      bool is_for_websockets = false) const;
+      bool is_for_websockets = false,
+      const absl::optional<uint32_t> net_log_source_id = absl::nullopt) const;
 
   NetLog* net_log() const { return net_log_; }
 

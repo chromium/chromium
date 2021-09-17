@@ -5,6 +5,7 @@
 #include "net/url_request/url_request_context.h"
 
 #include <inttypes.h>
+#include <stdint.h>
 
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
@@ -100,9 +101,11 @@ std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(
     RequestPriority priority,
     URLRequest::Delegate* delegate,
     NetworkTrafficAnnotationTag traffic_annotation,
-    bool is_for_websockets) const {
-  return base::WrapUnique(new URLRequest(
-      url, priority, delegate, this, traffic_annotation, is_for_websockets));
+    bool is_for_websockets,
+    const absl::optional<uint32_t> net_log_source_id) const {
+  return base::WrapUnique(new URLRequest(url, priority, delegate, this,
+                                         traffic_annotation, is_for_websockets,
+                                         net_log_source_id));
 }
 
 void URLRequestContext::set_cookie_store(CookieStore* cookie_store) {
