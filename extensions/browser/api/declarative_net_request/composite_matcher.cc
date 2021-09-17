@@ -128,7 +128,6 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
     PageAccess page_access) const {
   ScopedGetBeforeRequestActionTimer timer;
 
-  bool notify_request_withheld = false;
   absl::optional<RequestAction> final_action;
 
   // The priority of the highest priority matching allow or allowAllRequests
@@ -146,26 +145,26 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
               : action->index_priority;
     }
 
-    if (action && action->type == RequestAction::Type::REDIRECT) {
-      // Redirecting requires host permissions.
-      // TODO(crbug.com/1033780): returning absl::nullopt here results in
-      // counterintuitive behavior.
-      if (page_access == PageAccess::kDenied) {
-        action = absl::nullopt;
-      } else if (page_access == PageAccess::kWithheld) {
-        action = absl::nullopt;
-        notify_request_withheld = true;
-      }
-    }
-
     final_action =
         GetMaxPriorityAction(std::move(final_action), std::move(action));
   }
 
   params.allow_rule_max_priority[this] = max_allow_rule_priority;
 
-  if (final_action)
-    return ActionInfo(std::move(final_action), false);
+  if (!final_action)
+    return ActionInfo(absl::nullopt, false /* notify_request_withheld */);
+
+  // The redirect action needs host permissions.
+  if (final_action->type != RequestAction::Type::REDIRECT ||
+      page_access == PageAccess::kAllowed) {
+    return ActionInfo(std::move(final_action),
+                      false /* notify_request_withheld */);
+  }
+
+  DCHECK_EQ(RequestAction::Type::REDIRECT, final_action->type);
+  DCHECK(page_access == PageAccess::kDenied ||
+         page_access == PageAccess::kWithheld);
+  bool notify_request_withheld = page_access == PageAccess::kWithheld;
   return ActionInfo(absl::nullopt, notify_request_withheld);
 }
 

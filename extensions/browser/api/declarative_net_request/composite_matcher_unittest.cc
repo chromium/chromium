@@ -562,6 +562,75 @@ TEST_F(CompositeMatcherTest, GetRedirectUrlFromPriority) {
   }
 }
 
+// Ensure rule placement doesn't have side effects on matching priority.
+TEST_F(CompositeMatcherTest, RulePlacement) {
+  TestRule block_rule = CreateGenericRule(kMinValidID);
+  block_rule.priority = 2;
+  block_rule.condition->url_filter = "example.com";
+
+  TestRule redirect_rule = CreateGenericRule(kMinValidID + 1);
+  redirect_rule.priority = 3;
+  redirect_rule.condition->url_filter = "example.com";
+  redirect_rule.action->type = "redirect";
+  redirect_rule.action->redirect.emplace();
+  redirect_rule.action->redirect->url = "http://newurl.com";
+
+  auto test_matchers = [](CompositeMatcher::MatcherList matchers) {
+    auto composite_matcher =
+        std::make_unique<CompositeMatcher>(std::move(matchers));
+
+    GURL url("http://example.com");
+    RequestParams params;
+    params.url = &url;
+
+    ActionInfo info =
+        composite_matcher->GetBeforeRequestAction(params, PageAccess::kAllowed);
+    ASSERT_TRUE(info.action);
+    EXPECT_EQ(kMinValidID + 1u, info.action->rule_id);
+    EXPECT_FALSE(info.notify_request_withheld);
+
+    // The highest priority matching rule (`redirect_rule`) needs host
+    // permissions to match.
+    info = composite_matcher->GetBeforeRequestAction(params,
+                                                     PageAccess::kWithheld);
+    EXPECT_FALSE(info.action);
+    EXPECT_TRUE(info.notify_request_withheld);
+
+    info =
+        composite_matcher->GetBeforeRequestAction(params, PageAccess::kDenied);
+    EXPECT_FALSE(info.action);
+    EXPECT_FALSE(info.notify_request_withheld);
+  };
+
+  // Case 1: Both rules are part of the same ruleset.
+  {
+    SCOPED_TRACE("Same ruleset");
+    std::unique_ptr<RulesetMatcher> matcher;
+    ASSERT_TRUE(CreateVerifiedMatcher({block_rule, redirect_rule},
+                                      CreateTemporarySource(), &matcher));
+    std::vector<std::unique_ptr<RulesetMatcher>> matchers;
+    matchers.push_back(std::move(matcher));
+    test_matchers(std::move(matchers));
+  }
+
+  // Case 2: Both rules are part of different rulesets.
+  {
+    SCOPED_TRACE("Different ruleset");
+    std::unique_ptr<RulesetMatcher> block_matcher;
+    ASSERT_TRUE(CreateVerifiedMatcher(
+        {block_rule}, CreateTemporarySource(RulesetID(1)), &block_matcher));
+    std::unique_ptr<RulesetMatcher> redirect_matcher;
+    ASSERT_TRUE(CreateVerifiedMatcher({redirect_rule},
+                                      CreateTemporarySource(RulesetID(2)),
+                                      &redirect_matcher));
+
+    std::vector<std::unique_ptr<RulesetMatcher>> matchers;
+    matchers.push_back(std::move(block_matcher));
+    matchers.push_back(std::move(redirect_matcher));
+    test_matchers(std::move(matchers));
+  }
+}
+
 }  // namespace
 }  // namespace declarative_net_request
 }  // namespace extensions
