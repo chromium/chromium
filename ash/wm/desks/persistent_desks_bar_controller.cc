@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
@@ -289,8 +290,17 @@ void PersistentDesksBarController::UpdateBarOnWindowDestroying(
 }
 
 bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
-  if (!desks_restore_util::HasPrimaryUserUsedDesksRecently())
+  // `kBentoBar` feature is running as an experiment now. And we will only
+  // enable it for a specific group of existing desks users, see
+  // `kUserHasUsedDesksRecently` for more details. But we also want to enable it
+  // if the user has explicitly enabled `kBentoBar` from chrome://flags or from
+  // the command line. Even though the user is not in the group of existing
+  // desks users.
+  if (!base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+          features::kBentoBar.name) &&
+      !desks_restore_util::HasPrimaryUserUsedDesksRecently()) {
     return false;
+  }
 
   if (!IsEnabled())
     return false;
