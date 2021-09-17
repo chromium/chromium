@@ -10,8 +10,8 @@
 
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/ranges.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -291,14 +291,13 @@ void TabScrubber::UpdateSwipeX(float x_offset) {
   // Make the swipe speed inversely proportional with the number or tabs:
   // Each added tab introduces a reduction of 2% in |x_offset|, with a value of
   // one fourth of |x_offset| as the minimum (i.e. we need 38 tabs to reach
-  // that minimum reduction).
-  // This is a broken clamp function that successfully returns a bogus value
-  // when invalid inputs are provided, rather than crashing.
-  // TODO(https://crbug.com/1232262): Migrate this call to use base::clamp()
-  // from base/cxx17_backports.h, and fix all the broken tests that result.
-  swipe_x_ += base::BrokenClampThatShouldNotBeUsed(
-      x_offset - (tab_strip_->GetTabCount() * 0.02f * x_offset),
-      0.25f * x_offset, x_offset);
+  // that minimum reduction). Please note, x_offset might be negative.
+  float min = 0.25 * x_offset;
+  float max = x_offset;
+  if (x_offset < 0)
+    std::swap(min, max);
+  swipe_x_ += base::clamp(
+      x_offset - (tab_strip_->GetTabCount() * 0.02f * x_offset), min, max);
 
   // In an RTL layout, everything is mirrored, i.e. the index of the first tab
   // (with the smallest X mirrored co-ordinates) is actually the index of the
