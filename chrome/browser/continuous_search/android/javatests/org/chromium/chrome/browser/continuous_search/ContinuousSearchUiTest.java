@@ -35,7 +35,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.VisibilitySettings;
@@ -135,7 +134,6 @@ public class ContinuousSearchUiTest {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1242436")
     public void testScrollToSelected() throws TimeoutException {
         GURL srpUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
         GURL result1Url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
