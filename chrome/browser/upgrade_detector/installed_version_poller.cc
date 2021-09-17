@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -50,8 +51,8 @@ uint32_t GetTestingOptions() {
 // A GetInstalledVersionCallback implementation used when a regular or a
 // critical update is simulated via --simulate-upgrade or
 // --simulate-critical-update.
-InstalledAndCriticalVersion SimulateGetInstalledVersion(
-    uint32_t testing_options) {
+void SimulateGetInstalledVersion(uint32_t testing_options,
+                                 InstalledVersionCallback callback) {
   DCHECK_NE(0U, testing_options);
 
   std::vector<uint32_t> components = version_info::GetVersion().components();
@@ -64,7 +65,7 @@ InstalledAndCriticalVersion SimulateGetInstalledVersion(
     result.critical_version.emplace(std::move(components));
   }
 
-  return result;
+  std::move(callback).Run(std::move(result));
 }
 
 // Returns the callback to get the installed version. Use of any testing option
@@ -170,14 +171,10 @@ void InstalledVersionPoller::OnMonitorResult(bool error) {
 
 void InstalledVersionPoller::Poll(PollType poll_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Run the version getter in the background. Get the result back via a weak
-  // pointer so that the result is dropped on the floor should this instance be
-  // destroyed while polling.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
-      base::BindOnce(get_installed_version_),
+
+  // Get the result back via a weak pointer so that the result is dropped on the
+  // floor should this instance be destroyed while polling.
+  get_installed_version_.Run(
       base::BindOnce(&InstalledVersionPoller::OnInstalledVersion,
                      weak_ptr_factory_.GetWeakPtr(), poll_type));
 }

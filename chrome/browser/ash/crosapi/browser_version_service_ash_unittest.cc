@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/component_updater/mock_component_updater_service.h"
@@ -50,9 +51,8 @@ class BrowserVersionServiceAshTest : public testing::Test {
 
 TEST_F(BrowserVersionServiceAshTest,
        NotifiesObserverOnInstalledBrowserVersionUpdates) {
-  std::unique_ptr<MockComponentUpdateService> mock_component_update_service(
-      new ::testing::NiceMock<MockComponentUpdateService>());
-  EXPECT_CALL(*mock_component_update_service, AddObserver(_)).Times(1);
+  ::testing::NiceMock<MockComponentUpdateService> mock_component_update_service;
+  EXPECT_CALL(mock_component_update_service, AddObserver(_)).Times(1);
 
   std::string sample_browser_component_id =
       browser_util::kLacrosDogfoodDevInfo.crx_id;
@@ -62,27 +62,48 @@ TEST_F(BrowserVersionServiceAshTest,
       ComponentInfo(sample_browser_component_id, "",
                     base::UTF8ToUTF16(browser_util::kLacrosDogfoodDevInfo.name),
                     base::Version(sample_browser_version_str)));
-  ON_CALL(*mock_component_update_service, GetComponents())
+  ON_CALL(mock_component_update_service, GetComponents())
       .WillByDefault(Return(sample_components));
 
   EXPECT_CALL(browser_version_observer_,
               OnBrowserVersionInstalled(sample_browser_version_str))
       .Times(2);
 
-  std::unique_ptr<BrowserVersionServiceAsh> browser_version_service =
-      std::make_unique<BrowserVersionServiceAsh>(
-          mock_component_update_service.get());
-
   base::RunLoop run_loop;
-  browser_version_service->AddBrowserVersionObserver(
+  BrowserVersionServiceAsh browser_version_service(
+      &mock_component_update_service);
+  browser_version_service.AddBrowserVersionObserver(
       browser_version_observer_.BindAndGetRemote());
 
   static_cast<component_updater::ComponentUpdateService::Observer*>(
-      browser_version_service.get())
+      &browser_version_service)
       ->OnEvent(
           update_client::UpdateClient::Observer::Events::COMPONENT_UPDATED,
           sample_browser_component_id);
   run_loop.RunUntilIdle();
+}
+
+TEST_F(BrowserVersionServiceAshTest, GetInstalledBrowserVersion) {
+  ::testing::NiceMock<MockComponentUpdateService> mock_component_update_service;
+  std::string sample_browser_component_id =
+      browser_util::kLacrosDogfoodDevInfo.crx_id;
+  std::string sample_browser_version_str = "95.0.0.0";
+  std::vector<ComponentInfo> sample_components;
+  sample_components.push_back(
+      ComponentInfo(sample_browser_component_id, "",
+                    base::UTF8ToUTF16(browser_util::kLacrosDogfoodDevInfo.name),
+                    base::Version(sample_browser_version_str)));
+  ON_CALL(mock_component_update_service, GetComponents())
+      .WillByDefault(Return(sample_components));
+
+  BrowserVersionServiceAsh browser_version_service(
+      &mock_component_update_service);
+
+  base::MockCallback<
+      mojom::BrowserVersionService::GetInstalledBrowserVersionCallback>
+      callback;
+  EXPECT_CALL(callback, Run(sample_browser_version_str));
+  browser_version_service.GetInstalledBrowserVersion(callback.Get());
 }
 
 }  // namespace crosapi

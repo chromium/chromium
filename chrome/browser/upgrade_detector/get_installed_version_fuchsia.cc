@@ -4,10 +4,13 @@
 
 #include "chrome/browser/upgrade_detector/get_installed_version.h"
 
+#include <utility>
+
+#include "base/callback.h"
 #include "base/notreached.h"
 
-InstalledAndCriticalVersion GetInstalledVersion() {
+void GetInstalledVersion(InstalledVersionCallback callback) {
   // TODO(crbug.com/1235293)
   NOTIMPLEMENTED_LOG_ONCE();
-  return InstalledAndCriticalVersion(base::Version());
+  std::move(callback).Run(InstalledAndCriticalVersion(base::Version()));
 }

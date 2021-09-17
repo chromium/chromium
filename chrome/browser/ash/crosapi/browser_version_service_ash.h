@@ -30,6 +30,8 @@ class BrowserVersionServiceAsh
   // crosapi::mojom::BrowserVersionService:
   void AddBrowserVersionObserver(
       mojo::PendingRemote<mojom::BrowserVersionObserver> observer) override;
+  void GetInstalledBrowserVersion(
+      GetInstalledBrowserVersionCallback callback) override;
 
  private:
   // component_updater::ComponentUpdateService::Observer:

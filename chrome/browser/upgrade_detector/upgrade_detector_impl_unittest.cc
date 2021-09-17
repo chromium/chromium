@@ -30,6 +30,10 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
+
 #if defined(OS_WIN)
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -196,6 +200,10 @@ class UpgradeDetectorImplTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_;
   InstalledVersionPoller::ScopedDisableForTesting scoped_poller_disabler_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::ScopedLacrosServiceTestHelper lacros_service_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage dm_token_storage_;

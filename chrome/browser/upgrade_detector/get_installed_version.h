@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UPGRADE_DETECTOR_GET_INSTALLED_VERSION_H_
 #define CHROME_BROWSER_UPGRADE_DETECTOR_GET_INSTALLED_VERSION_H_
 
+#include "base/callback_forward.h"
 #include "base/version.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,9 +28,14 @@ struct InstalledAndCriticalVersion {
   absl::optional<base::Version> critical_version;
 };
 
-// A platform-specific function that returns the currently installed version and
-// an optional critical version (Windows only as of this writing). This function
-// may block the thread on which it runs.
-InstalledAndCriticalVersion GetInstalledVersion();
+// A platform-specific function that invokes a callback with the currently
+// installed version and an optional critical version.
+using InstalledVersionCallback =
+    base::OnceCallback<void(InstalledAndCriticalVersion)>;
+
+// Triggers the callback with the currently installed version and an optional
+// critical version (Windows only as of this writing). This function may block
+// the thread on which it runs.
+void GetInstalledVersion(InstalledVersionCallback callback);
 
 #endif  // CHROME_BROWSER_UPGRADE_DETECTOR_GET_INSTALLED_VERSION_H_

@@ -62,6 +62,17 @@ void BrowserVersionServiceAsh::AddBrowserVersionObserver(
   observers_.Add(std::move(remote));
 }
 
+void BrowserVersionServiceAsh::GetInstalledBrowserVersion(
+    GetInstalledBrowserVersionCallback callback) {
+  std::string version_str;
+
+  auto browser_version = GetBrowserVersion();
+  if (browser_version.has_value())
+    version_str = browser_version.value().GetString();
+
+  std::move(callback).Run(version_str);
+}
+
 void BrowserVersionServiceAsh::OnEvent(Events event, const std::string& id) {
   absl::optional<component_updater::ComponentInfo> component_info =
       GetComponent(component_update_service_->GetComponents(), id);
