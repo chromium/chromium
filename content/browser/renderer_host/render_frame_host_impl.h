@@ -691,19 +691,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // TODO(https://crbug.com/1223398): Remove this once we no longer use
     // loadDataWithBaseURL's history URL in the renderer.
     bool document_has_unreachable_url_from_load_data_with_base_url = false;
-
-    // Whether the currently committed document went through the special path
-    // for loadDataWithBaseURL navigations that sets the "loading URL" to the
-    // data: URL used to commit, instead of defaulting the "loading URL" to the
-    // document URL (which in most cases will be the base URL). This is used to
-    // simulate calculations for DidCommitProvisionalLoadParams' `url`, which
-    // uses the "loading URL"'s value.
-    // See handling of loadDataWithBaseURL navigations in RenderFrameImpl's
-    // GetLoadingUrl() and BuildDocumentStateFromParams() for more details.
-    // TODO(https://crbug.com/1223408): Remove this once the loading URL
-    // value for loadDataWithBaseURL navigations is always the same as the URL
-    // that the browser asked to commit.
-    bool loading_url_for_document_is_data_url = false;
   };
 
   // Returns the storage key for the last committed document in this
@@ -2697,9 +2684,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void GrantFileAccessFromResourceRequestBody(
       const network::ResourceRequestBody& body);
 
-  void UpdatePermissionsForNavigation(
-      const blink::mojom::CommonNavigationParams& common_params,
-      const blink::mojom::CommitNavigationParams& commit_params);
+  void UpdatePermissionsForNavigation(NavigationRequest* request);
 
   // Returns true if there is an active transient fullscreen allowance for the
   // Window Placement feature (i.e. on screen configuration changes).

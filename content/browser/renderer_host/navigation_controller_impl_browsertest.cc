@@ -372,19 +372,6 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
     GURL renderer_history_url;
   };
 
-  // A simplified version of NavigationRequest's
-  // IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer(). Some checks
-  // removed as all tests that call this are done on the main frame, uses data:
-  // URL, and won't commit an error page.
-  bool IsTreatedAsALoadDataWithBaseURLNavigation(
-      const GURL& base_url,
-      bool use_load_data_as_string_with_base_url) {
-    // To be treated as a loadDataWithBaseURL navigation, the base URL must be
-    // non-empty, or the data_url_as_string must be non-empty (which is always
-    // the case when `use_load_data_as_string_with_base_url` is true).
-    return !base_url.is_empty() || use_load_data_as_string_with_base_url;
-  }
-
   void CheckURLsMatchExpectationsForLoadDataWithBaseURL(
       NavigationEntryImpl* entry,
       RenderFrameHostImpl* rfh,
@@ -417,8 +404,7 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
   URLsForLoadDataWithBaseURL GetURLsForLoadDataWithBaseURL(
       const GURL& commit_url,
       const GURL& supplied_base_url,
-      const GURL& supplied_history_url,
-      bool is_treated_as_load_data_with_base_url) {
+      const GURL& supplied_history_url) {
     URLsForLoadDataWithBaseURL result;
     result.supplied_base_url = supplied_base_url;
     // The "commit URL" will always be set to the URL used for commit (the data
@@ -440,14 +426,11 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
     // not treated as a loadDataWithBaseURL navigation or the base URL is empty,
     // in which case it will use the commit URL.
     result.document_url =
-        (is_treated_as_load_data_with_base_url && !supplied_base_url.is_empty())
-            ? supplied_base_url
-            : result.commit_url;
+        !supplied_base_url.is_empty() ? supplied_base_url : result.commit_url;
     // The "renderer history URL" will be set to the supplied history URL,
     // except in some cases (see how `history_url_for_data_url` is set in
     // NavigationRequest::CreateNavigationRequestFromLoadParams()).
-    if (is_treated_as_load_data_with_base_url &&
-        !supplied_base_url.is_empty()) {
+    if (!supplied_base_url.is_empty()) {
       // If the navigation is treated as a loadDataWithBaseURL navigation, the
       // renderer will try to use the supplied history URL, unless it's empty.
       result.renderer_history_url = supplied_history_url.is_empty()
@@ -524,9 +507,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
   // Verify the pending NavigationEntry.
   NavigationEntryImpl* pending_entry = controller.GetPendingEntry();
   URLsForLoadDataWithBaseURL urls = GetURLsForLoadDataWithBaseURL(
-      commit_url, supplied_base_url, supplied_history_url,
-      IsTreatedAsALoadDataWithBaseURLNavigation(
-          supplied_base_url, use_load_data_as_string_with_base_url()));
+      commit_url, supplied_base_url, supplied_history_url);
 
   // The URL of the entry will always be set to the URL used for commit.
   EXPECT_EQ(urls.commit_url, pending_entry->GetURL());
@@ -648,9 +629,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
                       use_load_data_as_string_with_base_url());
 
   URLsForLoadDataWithBaseURL urls = GetURLsForLoadDataWithBaseURL(
-      commit_url, supplied_base_url, supplied_history_url,
-      IsTreatedAsALoadDataWithBaseURLNavigation(
-          supplied_base_url, use_load_data_as_string_with_base_url()));
+      commit_url, supplied_base_url, supplied_history_url);
 
   CheckURLsMatchExpectationsForLoadDataWithBaseURL(
       controller.GetLastCommittedEntry(),
@@ -740,9 +719,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
                       use_load_data_as_string_with_base_url());
 
   URLsForLoadDataWithBaseURL urls = GetURLsForLoadDataWithBaseURL(
-      commit_url, supplied_base_url, supplied_history_url,
-      IsTreatedAsALoadDataWithBaseURLNavigation(
-          supplied_base_url, use_load_data_as_string_with_base_url()));
+      commit_url, supplied_base_url, supplied_history_url);
   CheckURLsMatchExpectationsForLoadDataWithBaseURL(
       controller.GetLastCommittedEntry(),
       static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls);
@@ -788,10 +765,8 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
   // Do another LoadDataWithBaseURL navigation.
   LoadDataWithBaseURL(supplied_base_url, data, supplied_history_url, title,
                       use_load_data_as_string_with_base_url());
-  urls = GetURLsForLoadDataWithBaseURL(
-      commit_url, supplied_base_url, supplied_history_url,
-      IsTreatedAsALoadDataWithBaseURLNavigation(
-          supplied_base_url, use_load_data_as_string_with_base_url()));
+  urls = GetURLsForLoadDataWithBaseURL(commit_url, supplied_base_url,
+                                       supplied_history_url);
   CheckURLsMatchExpectationsForLoadDataWithBaseURL(
       controller.GetLastCommittedEntry(),
       static_cast<RenderFrameHostImpl*>(contents()->GetMainFrame()), urls);
@@ -1059,8 +1034,8 @@ class BlockAllCommitContentBrowserClient : public TestContentBrowserClient {
   DISALLOW_COPY_AND_ASSIGN(BlockAllCommitContentBrowserClient);
 };
 
-// Tests that navigating with LoadDataWithBaseURL succeeds even when the data
-// URL is typically blocked by an embedder.
+// Tests that navigating with LoadDataWithBaseURL succeeds when the data URL is
+// typically blocked by an embedder, because it bypasses the renderer check.
 IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
                        LoadDataWithBlockedDataURL) {
 #if !defined(OS_ANDROID)
@@ -1156,8 +1131,10 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   SetBrowserClientForTesting(old_client);
 }
 
-// Tests that same-document navigations after a LoadDataWithBaseURL to a blocked
-// URL and an invalid base_url succeeds.
+// Tests that a LoadDataWithBaseURL to a blocked data URL and an invalid
+// base URL results in a renderer kill, different from the
+// LoadDataWithBlockedDataURL test above, because the navigation won't bypass
+// the checks since the base URL is invalid.
 IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
                        LoadDataWithBlockedDataURLAndInvalidBaseURL) {
 #if !defined(OS_ANDROID)
@@ -1184,38 +1161,26 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
   const std::string data = base::StringPrintf(
       "<html><head><title>%s</title></head><body>foo</body></html>",
       title.c_str());
-  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
 
   BlockAllCommitContentBrowserClient content_browser_client;
   ContentBrowserClient* old_client =
       SetBrowserClientForTesting(&content_browser_client);
-  LoadDataWithBaseURL(base_url, data, history_url, title,
-                      use_load_data_as_string_with_base_url());
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(
+      shell()->web_contents()->GetMainFrame()->GetProcess());
 
-  // The navigation succeeds even though the base URL is invalid.
-  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
-      shell()->web_contents()->GetController());
-  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
-  EXPECT_EQ(1, controller.GetEntryCount());
-  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(use_load_data_as_string_with_base_url() ? history_url : data_url,
-            contents()->GetMainFrame()->GetLastCommittedURL());
-
-  {
-    // Make a same-document navigation via history.pushState.
-    TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-    EXPECT_TRUE(ExecJs(shell(), "history.pushState('', 'test', '#foo')"));
-    same_tab_observer.Wait();
+  if (use_load_data_as_string_with_base_url()) {
+#if defined(OS_ANDROID)
+    shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
+#else
+    NOTREACHED();
+#endif
+  } else {
+    shell()->LoadDataWithBaseURL(history_url, data, base_url);
   }
 
-  // Verify that the same-document navigation succeeds.
-  EXPECT_EQ(2, controller.GetEntryCount());
-  entry = controller.GetLastCommittedEntry();
-  EXPECT_EQ(base_url, entry->GetBaseURLForDataURL());
-  EXPECT_EQ(use_load_data_as_string_with_base_url()
-                ? history_url.spec()
-                : (data_url.spec() + "#foo"),
-            contents()->GetMainFrame()->GetLastCommittedURL().spec());
+  // The renderer got killed because the ContentBrowserClient blocks the
+  // navigation.
+  EXPECT_EQ(bad_message::RFH_CAN_COMMIT_URL_BLOCKED, kill_waiter.Wait());
 
   SetBrowserClientForTesting(old_client);
 }

@@ -981,17 +981,13 @@ GURL GetLastDocumentURL(
     // kUnreachableWebDataURL here.
     return GURL(kUnreachableWebDataURL);
   }
-  if (request->IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer() &&
-      !request->common_params().base_url_for_data_url.is_empty()) {
+  if (request->IsLoadDataWithBaseURL()) {
     // loadDataWithBaseURL() navigation can set its own "base URL", which is
     // also used by the renderer as the document URL unless the navigation
-    // failed (which is already accountted for in the
-    // IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer() function above),
-    // or the base URL is empty.
+    // failed (which is already accounted for in the error page case above).
     return request->common_params().base_url_for_data_url;
   }
   if (renderer_url_info.is_loaded_from_load_data_with_base_url &&
-      renderer_url_info.loading_url_for_document_is_data_url &&
       request->IsSameDocument()) {
     // If this is a same-document navigation on a document loaded from
     // loadDataWithBaseURL(), it is not currently possible to figure out the
@@ -1050,22 +1046,6 @@ GURL GetLastHistoryURL(
   // that is used to commit. This includes error page navigations, where the
   // URL that failed to commit is returned.
   return params.url;
-}
-
-// Whether the navigation went through the special path for loadDataWithBaseURL
-// navigations that sets the "loading URL" to the data: URL used to commit,
-// instead of defaulting the "loading URL" to the document URL (which in most
-// cases will be the "base URL").
-// See RenderFrameImpl::GetLoadingUrl() and BuildDocumentStateFromParams() for
-// more details. Note that the checks are a bit different: it checks for
-// validity instead of whether the URL is empty or not, as the URL received
-// by the renderer would have gone through reparsing, so invalid URLs will also
-// end up as empty in the renderer.
-bool LoadingURLForDocumentIsDataURL(
-    const blink::mojom::CommonNavigationParams& common_params) {
-  return common_params.base_url_for_data_url.is_valid() &&
-         common_params.history_url_for_data_url.is_valid() &&
-         common_params.url.SchemeIs(url::kDataScheme);
 }
 
 }  // namespace
@@ -2131,13 +2111,13 @@ const GURL& RenderFrameHostImpl::GetLastLoadingURLInRenderer() const {
   // Handle some special cases:
   // - The "loading URL" for an error page commit is the URL that it failed to
   // load. This will be retained as long as the document stays the same.
-  // - For some loadDataWithBaseURL() navigations where the renderer decides to
-  // return CommitNavigationParams's URL (the data: URL) instead of the document
-  // URL (which might be set to the base URL), the "loading URL" will be the
-  // last committed URL. This will also be retained as long as the document
-  // stays the same.
-  if (is_error_page_ || renderer_url_info_.loading_url_for_document_is_data_url)
+  // - For loadDataWithBaseURL() navigations the "loading URL" will be the
+  // last committed URL (the data: URL). This will also be retained as long as
+  // the document stays the same.
+  if (is_error_page_ ||
+      renderer_url_info_.is_loaded_from_load_data_with_base_url) {
     return last_committed_url_;
+  }
   // Otherwise, return the last history URL (which will fall back to the
   // document URL if it's the same).
   return renderer_url_info_.last_history_url;
@@ -7724,7 +7704,7 @@ void RenderFrameHostImpl::CommitNavigation(
         navigation_request->GetSubresourceWebBundleNavigationInfo();
   }
 
-  UpdatePermissionsForNavigation(*common_params, *commit_params);
+  UpdatePermissionsForNavigation(navigation_request);
 
   // Get back to a clean state, in case we start a new navigation without
   // completing an unload handler.
@@ -8132,7 +8112,7 @@ void RenderFrameHostImpl::FailedNavigation(
 
   // Update renderer permissions even for failed commits, so that for example
   // the URL bar correctly displays privileged URLs instead of filtering them.
-  UpdatePermissionsForNavigation(common_params, commit_params);
+  UpdatePermissionsForNavigation(navigation_request);
 
   // Get back to a clean state, in case a new navigation started without
   // completing an unload handler.
@@ -8729,20 +8709,20 @@ void RenderFrameHostImpl::GrantFileAccessFromResourceRequestBody(
 }
 
 void RenderFrameHostImpl::UpdatePermissionsForNavigation(
-    const blink::mojom::CommonNavigationParams& common_params,
-    const blink::mojom::CommitNavigationParams& commit_params) {
+    NavigationRequest* request) {
   // Browser plugin guests are not allowed to navigate outside web-safe schemes,
   // so do not grant them the ability to commit additional URLs.
   if (!GetProcess()->IsForGuestsOnly()) {
     ChildProcessSecurityPolicyImpl::GetInstance()->GrantCommitURL(
-        GetProcess()->GetID(), common_params.url);
-    if (NavigationRequest::IsLoadDataWithBaseURL(common_params)) {
+        GetProcess()->GetID(), request->common_params().url);
+    if (request->IsLoadDataWithBaseURL()) {
       // When there's a base URL specified for the data URL, we also need to
       // grant access to the base URL. This allows file: and other unexpected
       // schemes to be accepted at commit time and during CORS checks (e.g., for
       // font requests).
       ChildProcessSecurityPolicyImpl::GetInstance()->GrantCommitURL(
-          GetProcess()->GetID(), common_params.base_url_for_data_url);
+          GetProcess()->GetID(),
+          request->common_params().base_url_for_data_url);
     }
   }
 
@@ -8751,8 +8731,8 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
   // access again.  Abuse is prevented, because the files listed in the page
   // state are validated earlier, when they are received from the renderer (in
   // RenderFrameHostImpl::CanAccessFilesOfPageState).
-  blink::PageState page_state =
-      blink::PageState::CreateFromEncodedData(commit_params.page_state);
+  blink::PageState page_state = blink::PageState::CreateFromEncodedData(
+      request->commit_params().page_state);
   if (page_state.IsValid())
     GrantFileAccessFromPageState(page_state);
 
@@ -8761,8 +8741,8 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
   // ability to access files that the old renderer could access.  Abuse is
   // prevented, because the files listed in ResourceRequestBody are validated
   // earlier, when they are received from the renderer.
-  if (common_params.post_data)
-    GrantFileAccessFromResourceRequestBody(*common_params.post_data);
+  if (request->common_params().post_data)
+    GrantFileAccessFromResourceRequestBody(*request->common_params().post_data);
 }
 
 bool RenderFrameHostImpl::WindowPlacementAllowsFullscreen() {
@@ -9980,8 +9960,7 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   DCHECK(navigation_request || is_same_document_navigation ||
          !frame_tree_node_->has_committed_real_load());
   bool bypass_checks_for_webview = false;
-  if ((navigation_request && NavigationRequest::IsLoadDataWithBaseURL(
-                                 navigation_request->common_params())) ||
+  if ((navigation_request && navigation_request->IsLoadDataWithBaseURL()) ||
       (is_same_document_navigation &&
        renderer_url_info_.is_loaded_from_load_data_with_base_url)) {
     // Allow bypass if the process isn't locked. Otherwise run normal checks.
@@ -10528,21 +10507,14 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // Mark whether then navigation was intended as a loadDataWithBaseURL or not.
   // If |renderer_url_info_.is_loaded_from_load_data_with_base_url| is true, we
   // will bypass checks in VerifyDidCommitParams for same-document navigations
-  // in the loaded document. Note that the renderer might not have actually gone
-  // through the special "loadDataWithBaseURL" path that tries to set the base
-  // URL and history URL with user-supplied URLs even if this is true.
+  // in the loaded document.
   renderer_url_info_.is_loaded_from_load_data_with_base_url =
-      NavigationRequest::IsLoadDataWithBaseURL(
-          navigation_request->common_params());
+      navigation_request->IsLoadDataWithBaseURL();
 
   // Mark whether the document is loaded with loadDataWithBaseURL and has a
   // non-empty "unreachable URL" (set to the supplied history URL).
   renderer_url_info_.document_has_unreachable_url_from_load_data_with_base_url =
       navigation_request->IsLoadDataWithBaseURLAndHasUnreachableURL();
-
-  // See comment in LoadingURLForDocumentIsDataURL().
-  renderer_url_info_.loading_url_for_document_is_data_url =
-      LoadingURLForDocumentIsDataURL(navigation_request->common_params());
 
   // If we still have a PeakGpuMemoryTracker, then the loading it was observing
   // never completed. Cancel it's callback so that we don't report partial
@@ -11438,10 +11410,10 @@ GURL CalculateLoadingURL(
   }
 
   if (request->IsSameDocument()) {
-    // Documents that have an "override" URL (some loadDataWithBaseURL
-    // navigations, error pages) will continue using that URL even after
-    // same-document navigations.
-    if (last_renderer_url_info.loading_url_for_document_is_data_url ||
+    // Documents that have an "override" URL (loadDataWithBaseURL navigations,
+    // error pages) will continue using that URL even after same-document
+    // navigations.
+    if (last_renderer_url_info.is_loaded_from_load_data_with_base_url ||
         last_document_is_error_page)
       return last_committed_url;
 
@@ -11450,23 +11422,10 @@ GURL CalculateLoadingURL(
     return request->common_params().url;
   }
 
-  if (request->IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer()) {
-    // Handle loadDataWithBaseURL navigations. See MaybeGetOverriddenURL() in
-    // render_frame_impl.cc.
-    // If the navigation qualifies, the URL returned will be the URL in
-    // CommonNavigationParams (the data: URL).
-    if (LoadingURLForDocumentIsDataURL(request->common_params()))
-      return request->common_params().url;
-
-    // Otherwise, the "unreachable URL" (history URL) will be used if it's set.
-    if (request->common_params().history_url_for_data_url.is_valid())
-      return request->common_params().history_url_for_data_url;
-
-    // Finally, the "document URL" will be used for all other cases. If the
-    // base URL is set, the document URL will be the base URL. If not, it will
-    // use the CommonNavigationParams' URL, which is handled further below.
-    if (request->common_params().base_url_for_data_url.is_valid())
-      return request->common_params().base_url_for_data_url;
+  if (request->IsLoadDataWithBaseURLAndHasUnreachableURL() &&
+      !request->common_params().base_url_for_data_url.is_valid()) {
+    // See RenderFrameImpl::CommitNavigation().
+    return request->common_params().history_url_for_data_url;
   }
 
   // For all other navigations, the returned URL should be the same as the URL

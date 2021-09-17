@@ -722,7 +722,7 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
   // Check if this is loadDataWithBaseUrl (which needs special treatment).
   const blink::mojom::CommonNavigationParams& common_params =
       navigation_request->common_params();
-  if (NavigationRequest::IsLoadDataWithBaseURL(common_params)) {
+  if (navigation_request->IsLoadDataWithBaseURL()) {
     // A (potentially attacker-controlled) renderer process should not be able
     // to use loadDataWithBaseUrl code path to initiate fetches on behalf of a
     // victim origin (fetches controlled by attacker-provided
@@ -2578,7 +2578,7 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult(
   // WebView allows embedders to use loadDataWithBaseURL() to commit a data: URL
   // with an arbitrary base URL.
   const url::Origin origin =
-      NavigationRequest::IsLoadDataWithBaseURL(*common_params_)
+      IsLoadDataWithBaseURL()
           ? url::Origin::Create(common_params_->base_url_for_data_url)
           : url::Origin::Create(common_params_->url);
   const IsolationContext& isolation_context =
@@ -2770,8 +2770,7 @@ const GURL& NavigationRequest::GetOriginalRequestURL() {
   // commit an error page or a loadDataWithBaseURL/loadDataAsStringWithBaseUrl
   // navigation, the redirect chain in the renderer only contains the commit
   // URL.
-  if (net_error_ != net::OK ||
-      NavigationRequest::IsLoadDataWithBaseURL(*common_params_)) {
+  if (net_error_ != net::OK || IsLoadDataWithBaseURL()) {
     return GetURL();
   }
 
@@ -3202,7 +3201,7 @@ void NavigationRequest::OnResponseStarted(
     // before commit time (https://crbug.com/888079), which may make it
     // possible to compute the right origin here.
     const url::Origin origin =
-        NavigationRequest::IsLoadDataWithBaseURL(*common_params_)
+        IsLoadDataWithBaseURL()
             ? url::Origin::Create(common_params_->base_url_for_data_url)
             : url::Origin::Create(common_params_->url);
     ChildProcessSecurityPolicyImpl::GetInstance()->AddNonIsolatedOriginIfNeeded(
@@ -5682,46 +5681,31 @@ bool NavigationRequest::WasEarlyHintsPreloadLinkHeaderReceived() {
   return was_early_hints_preload_link_header_received_;
 }
 
-// static
-bool NavigationRequest::IsLoadDataWithBaseURL(
-    const blink::mojom::CommonNavigationParams& common_params) {
-  // TODO(https://crbug.com/1223394): This should probably check if the
-  // navigation is happening on a main frame too, since subframe history
-  // navigations can have a non-empty `base_url_for_data_url` (since it will use
-  // the base URL saved in the NavigationEntry).
-  // TODO(https://crbug.com/1223403): Make this consistent with the other
-  // LoadDataWithBaseURL checks.
-  return common_params.url.SchemeIs(url::kDataScheme) &&
-         !common_params.base_url_for_data_url.is_empty();
+bool NavigationRequest::IsLoadDataWithBaseURL() {
+  // A navigation is a loadDataWithBaseURL navigation if it's a successful main
+  // frame navigation, and its base URL is valid. This function should be kept
+  // in sync with the ShouldLoadDataWithBaseURL() function in
+  // render_frame_impl.cc.
+  return IsInMainFrame() && !DidEncounterError() &&
+         common_params_->url.SchemeIs(url::kDataScheme) &&
+         common_params_->base_url_for_data_url.is_valid();
 }
 
 bool NavigationRequest::IsLoadDataWithBaseURLAndHasUnreachableURL() {
-  // On loadDataURLWithBaseURL navigations, `history_url_for_data_url`
-  // is saved in WebNavigationParams' and DocumentLoader's `unreachable_url` in
-  // the renderer, unless the navigation is not treated as a loadDataWithBaseURL
-  // navigation (and instead treated like a normal data: URL navigation).
-  return IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer() &&
-         common_params_->history_url_for_data_url.is_valid();
-}
-
-bool NavigationRequest::
-    IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer() {
-  // A navigation is treated as a loadDataWithBaseURL if it's a successful main
-  // frame navigation, and either the supplied base URL is not empty/invalid, or
-  // `data_url_as_string` is set. See the ShouldLoadDataWithBaseURL() function
-  // in render_frame_impl.cc for more details.
-  if (!IsInMainFrame() || DidEncounterError()) {
-    return false;
-  }
-
-  absl::optional<std::string> data_url_as_string;
+  // On loadDataURLWithBaseURL navigations, `history_url_for_data_url` is saved
+  // in WebNavigationParams' and DocumentLoader's `unreachable_url` in the
+  // renderer.
+  bool can_set_unreachable_url = IsLoadDataWithBaseURL();
 #if defined(OS_ANDROID)
-  data_url_as_string = commit_params_->data_url_as_string;
+  // Even when IsLoadDataWithBaseURL() returns false (e.g. when the base URL
+  // is empty/invalid), the `history_url_for_data_url` might still be used as
+  // the unreachable URL, if `data_url_as_string` is not empty. See
+  // RenderFrameImpl::CommitNavigation() for more details.
+  can_set_unreachable_url |= IsInMainFrame() && !DidEncounterError() &&
+                             !commit_params_->data_url_as_string.empty();
 #endif
-
-  return common_params_->base_url_for_data_url.is_valid() ||
-         (data_url_as_string.has_value() &&
-          !data_url_as_string.value().empty());
+  return can_set_unreachable_url &&
+         common_params_->history_url_for_data_url.is_valid();
 }
 
 url::Origin NavigationRequest::GetOriginToCommit() {
