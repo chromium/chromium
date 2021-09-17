@@ -456,15 +456,6 @@ void ExtensionSyncService::ApplySyncData(
 
   // Set app-specific data.
   if (extension_sync_data.is_app()) {
-    if (extension_sync_data.app_launch_ordinal().IsValid() &&
-        extension_sync_data.page_ordinal().IsValid()) {
-      AppSorting* app_sorting = system_->app_sorting();
-      app_sorting->SetAppLaunchOrdinal(
-          id,
-          extension_sync_data.app_launch_ordinal());
-      app_sorting->SetPageOrdinal(id, extension_sync_data.page_ordinal());
-    }
-
     // The corresponding validation of this value during ExtensionSyncData
     // population is in ExtensionSyncData::ToAppSpecifics.
     if (extension_sync_data.launch_type() >= extensions::LAUNCH_TYPE_FIRST &&
@@ -477,6 +468,14 @@ void ExtensionSyncService::ApplySyncData(
       // Handles creating and updating the bookmark app.
       ApplyBookmarkAppSyncData(extension_sync_data);
       return;
+    }
+
+    if (extension_sync_data.app_launch_ordinal().IsValid() &&
+        extension_sync_data.page_ordinal().IsValid()) {
+      AppSorting* app_sorting = system_->app_sorting();
+      app_sorting->SetAppLaunchOrdinal(
+          id, extension_sync_data.app_launch_ordinal());
+      app_sorting->SetPageOrdinal(id, extension_sync_data.page_ordinal());
     }
   }
 
