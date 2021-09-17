@@ -34,9 +34,11 @@
 
 namespace blink {
 
-DOMPluginArray::DOMPluginArray(LocalDOMWindow* window)
+DOMPluginArray::DOMPluginArray(LocalDOMWindow* window,
+                               bool should_return_fixed_plugin_data)
     : ExecutionContextLifecycleObserver(window),
-      PluginsChangedObserver(window ? window->GetFrame()->GetPage() : nullptr) {
+      PluginsChangedObserver(window ? window->GetFrame()->GetPage() : nullptr),
+      should_return_fixed_plugin_data_(should_return_fixed_plugin_data) {
   UpdatePluginData();
 }
 
@@ -56,6 +58,8 @@ DOMPlugin* DOMPluginArray::item(unsigned index) {
     return nullptr;
 
   if (!dom_plugins_[index]) {
+    if (should_return_fixed_plugin_data_)
+      return nullptr;
     dom_plugins_[index] = MakeGarbageCollected<DOMPlugin>(
         DomWindow(), *GetPluginData()->Plugins()[index]);
   }
@@ -63,13 +67,8 @@ DOMPlugin* DOMPluginArray::item(unsigned index) {
   return dom_plugins_[index];
 }
 
-bool DOMPluginArray::ShouldReturnFixedPluginData() const {
-  return DOMMimeTypeArray::ShouldReturnFixedPluginData(
-      DomWindow() ? DomWindow()->GetFrame() : nullptr);
-}
-
 DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
-  if (ShouldReturnFixedPluginData()) {
+  if (should_return_fixed_plugin_data_) {
     // I don't know why namedItem() and NamedPropertyEnumerator go directly to
     // the plugin data, rather than using dom_plugins_.
     for (const auto& plugin : dom_plugins_) {
@@ -94,7 +93,7 @@ DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
 
 void DOMPluginArray::NamedPropertyEnumerator(Vector<String>& property_names,
                                              ExceptionState&) const {
-  if (ShouldReturnFixedPluginData()) {
+  if (should_return_fixed_plugin_data_) {
     property_names.ReserveInitialCapacity(dom_plugins_.size());
     for (const auto& plugin : dom_plugins_)
       property_names.UncheckedAppend(plugin->name());
@@ -160,7 +159,7 @@ DOMPlugin* MakeFakePlugin(String plugin_name, LocalDOMWindow* window) {
 }  // namespace
 
 HeapVector<Member<DOMMimeType>> DOMPluginArray::GetFixedMimeTypeArray() {
-  DCHECK(ShouldReturnFixedPluginData());
+  DCHECK(should_return_fixed_plugin_data_);
   HeapVector<Member<DOMMimeType>> mimetypes;
   if (dom_plugins_.IsEmpty())
     return mimetypes;
@@ -171,7 +170,7 @@ HeapVector<Member<DOMMimeType>> DOMPluginArray::GetFixedMimeTypeArray() {
 }
 
 bool DOMPluginArray::IsPdfViewerAvailable() {
-  DCHECK(ShouldReturnFixedPluginData());
+  DCHECK(should_return_fixed_plugin_data_);
   auto* data = GetPluginData();
   if (!data)
     return false;
@@ -183,7 +182,7 @@ bool DOMPluginArray::IsPdfViewerAvailable() {
 }
 
 void DOMPluginArray::UpdatePluginData() {
-  if (ShouldReturnFixedPluginData()) {
+  if (should_return_fixed_plugin_data_) {
     dom_plugins_.clear();
     if (IsPdfViewerAvailable()) {
       // See crbug.com/1164635 and https://github.com/whatwg/html/pull/6738.

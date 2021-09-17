@@ -38,6 +38,8 @@ class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
   DOMMimeTypeArray* mimeTypes(LocalDOMWindow*) const;
   bool pdfViewerEnabled(LocalDOMWindow* window) const;
 
+  const bool should_return_fixed_plugin_data_;
+
   mutable Member<DOMPluginArray> plugins_;
   mutable Member<DOMMimeTypeArray> mime_types_;
 };
