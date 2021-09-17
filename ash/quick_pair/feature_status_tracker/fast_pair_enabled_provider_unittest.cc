@@ -13,6 +13,9 @@
 #include "ash/quick_pair/feature_status_tracker/mock_bluetooth_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/mock_google_api_key_availability_provider.h"
 #include "ash/quick_pair/feature_status_tracker/mock_logged_in_user_enabled_provider.h"
+#include "ash/quick_pair/feature_status_tracker/mock_screen_state_enabled_provider.h"
+#include "ash/quick_pair/feature_status_tracker/screen_state_enabled_provider.h"
+#include "ash/test/ash_test_base.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,14 +25,15 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace quick_pair {
 
-class FastPairEnabledProviderTest : public testing::Test {
+class FastPairEnabledProviderTest : public AshTestBase {
  public:
   void SetUp() override {
+    AshTestBase::SetUp();
+
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -51,6 +55,10 @@ TEST_F(FastPairEnabledProviderTest, ProviderCallbackIsInvokedOnBTChanges) {
   ON_CALL(*logged_in_user_enabled_provider, is_enabled)
       .WillByDefault(testing::Return(true));
 
+  auto* screen_state_enabled_provider = new MockScreenStateEnabledProvider();
+  ON_CALL(*screen_state_enabled_provider, is_enabled)
+      .WillByDefault(testing::Return(true));
+
   auto* google_api_key_availability_provider =
       new MockGoogleApiKeyAvailabilityProvider();
   ON_CALL(*google_api_key_availability_provider, is_enabled)
@@ -59,6 +67,7 @@ TEST_F(FastPairEnabledProviderTest, ProviderCallbackIsInvokedOnBTChanges) {
   auto provider = std::make_unique<FastPairEnabledProvider>(
       std::make_unique<BluetoothEnabledProvider>(),
       base::WrapUnique(logged_in_user_enabled_provider),
+      base::WrapUnique(screen_state_enabled_provider),
       base::WrapUnique(google_api_key_availability_provider));
 
   provider->SetCallback(callback.Get());
@@ -67,8 +76,8 @@ TEST_F(FastPairEnabledProviderTest, ProviderCallbackIsInvokedOnBTChanges) {
 }
 
 // Represents: <is_flag_enabled, is_bt_enabled, is_user_logged_in,
-//              is_google_api_keys_available>
-using TestParam = std::tuple<bool, bool, bool, bool>;
+//              is_screen_state_on, is_google_api_keys_available>
+using TestParam = std::tuple<bool, bool, bool, bool, bool>;
 
 class FastPairEnabledProviderTestWithParams
     : public FastPairEnabledProviderTest,
@@ -78,7 +87,8 @@ TEST_P(FastPairEnabledProviderTestWithParams, IsEnabledWhenExpected) {
   bool is_flag_enabled = std::get<0>(GetParam());
   bool is_bt_enabled = std::get<1>(GetParam());
   bool is_user_logged_in = std::get<2>(GetParam());
-  bool is_google_api_keys_available = std::get<3>(GetParam());
+  bool is_screen_state_on = std::get<3>(GetParam());
+  bool is_google_api_keys_available = std::get<4>(GetParam());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatureState(features::kFastPair, is_flag_enabled);
@@ -91,6 +101,10 @@ TEST_P(FastPairEnabledProviderTestWithParams, IsEnabledWhenExpected) {
   ON_CALL(*logged_in_user_enabled_provider, is_enabled)
       .WillByDefault(testing::Return(is_user_logged_in));
 
+  auto* screen_state_enabled_provider = new MockScreenStateEnabledProvider();
+  ON_CALL(*screen_state_enabled_provider, is_enabled)
+      .WillByDefault(testing::Return(is_screen_state_on));
+
   auto* google_api_key_availability_provider =
       new MockGoogleApiKeyAvailabilityProvider();
   ON_CALL(*google_api_key_availability_provider, is_enabled)
@@ -100,10 +114,13 @@ TEST_P(FastPairEnabledProviderTestWithParams, IsEnabledWhenExpected) {
       std::unique_ptr<BluetoothEnabledProvider>(bluetooth_enabled_provider),
       std::unique_ptr<LoggedInUserEnabledProvider>(
           logged_in_user_enabled_provider),
+      std::unique_ptr<ScreenStateEnabledProvider>(
+          screen_state_enabled_provider),
       base::WrapUnique(google_api_key_availability_provider));
 
   bool all_are_enabled = is_flag_enabled && is_bt_enabled &&
-                         is_user_logged_in && is_google_api_keys_available;
+                         is_user_logged_in && is_screen_state_on &&
+                         is_google_api_keys_available;
 
   EXPECT_EQ(provider->is_enabled(), all_are_enabled);
 }
@@ -111,6 +128,7 @@ TEST_P(FastPairEnabledProviderTestWithParams, IsEnabledWhenExpected) {
 INSTANTIATE_TEST_SUITE_P(FastPairEnabledProviderTestWithParams,
                          FastPairEnabledProviderTestWithParams,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));

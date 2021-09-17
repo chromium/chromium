@@ -584,10 +584,6 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
     tray_bluetooth_helper_ = std::make_unique<TrayBluetoothHelperLegacy>();
   }
 
-  if (base::FeatureList::IsEnabled(features::kFastPair)) {
-    quick_pair_mediator_ = quick_pair::Mediator::Factory::Create();
-  }
-
   PowerStatus::Initialize();
 
   session_controller_->AddObserver(this);
@@ -1020,6 +1016,12 @@ void Shell::Init(
   // Privacy Screen depends on the display manager, so initialize it after
   // display manager was properly initialized.
   privacy_screen_controller_ = std::make_unique<PrivacyScreenController>();
+
+  // Fast Pair depends on the display manager, so initialize it after
+  // display manager was properly initialized.
+  if (base::FeatureList::IsEnabled(features::kFastPair)) {
+    quick_pair_mediator_ = quick_pair::Mediator::Factory::Create();
+  }
 
   // The WindowModalityController needs to be at the front of the input event
   // pretarget handler list to ensure that it processes input events when modal
