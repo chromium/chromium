@@ -2,17 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
 import("//build/config/python.gni")
 
 python_library("monochrome_public_apk_checker") {
   testonly = true
   pydeps_file =
       "//chrome/android/monochrome/scripts/monochrome_python_tests.pydeps"
-  data = [
-    "${android_sdk_build_tools}/aapt2",
-    "${android_sdk_build_tools}/dexdump",
-  ]
   data_deps = [
     "//android_webview:system_webview_apk",
     "//build/android:devil_chromium_py",
