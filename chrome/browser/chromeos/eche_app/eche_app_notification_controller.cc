@@ -89,17 +89,10 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
             chromeos::eche_app::mojom::WebNotificationType::CONNECTION_FAILED ||
         web_type ==
             chromeos::eche_app::mojom::WebNotificationType::CONNECTION_LOST) {
-      // Need to try again based if users clicked button.
-      message_center::RichNotificationData rich_notification_data;
-      rich_notification_data.buttons.push_back(
-          message_center::ButtonInfo(l10n_util::GetStringUTF16(
-              IDS_ECHE_APP_NOTIFICATION_TRY_AGAIN_BUTTON)));
-      rich_notification_data.buttons.push_back(message_center::ButtonInfo(
-          l10n_util::GetStringUTF16(IDS_ECHE_APP_NOTIFICATION_HELP_BUTTON)));
-
+      // TODO(guanrulee): Show the buttons once they're completed.
       ShowNotification(CreateNotification(
           kEcheAppRetryConnectionNotifierId, title.value(), message.value(),
-          gfx::Image(), rich_notification_data,
+          gfx::Image(), message_center::RichNotificationData(),
           new NotificationDelegate(kEcheAppRetryConnectionNotifierId,
                                    weak_ptr_factory_.GetWeakPtr())));
     } else {

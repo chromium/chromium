@@ -90,23 +90,5 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
   notification->delegate()->Click(1, absl::nullopt);
 }
 
-TEST_F(EcheAppNotificationControllerTest,
-       ShowConnectionFailedNotificationHasAction) {
-  Initialize(chromeos::eche_app::mojom::WebNotificationType::CONNECTION_FAILED);
-  absl::optional<message_center::Notification> notification =
-      display_service_->GetNotification(kEcheAppRetryConnectionNotifierId);
-
-  VerifyNotificationHasAction(notification);
-}
-
-TEST_F(EcheAppNotificationControllerTest,
-       ShowConnectionLostNotificationHasAction) {
-  Initialize(chromeos::eche_app::mojom::WebNotificationType::CONNECTION_LOST);
-  absl::optional<message_center::Notification> notification =
-      display_service_->GetNotification(kEcheAppRetryConnectionNotifierId);
-
-  VerifyNotificationHasAction(notification);
-}
-
 }  // namespace eche_app
 }  // namespace chromeos
