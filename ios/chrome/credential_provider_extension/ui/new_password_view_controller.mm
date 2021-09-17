@@ -52,10 +52,16 @@ const CGFloat kTableViewTopSpace = 14;
 
   UINavigationBarAppearance* appearance =
       [[UINavigationBarAppearance alloc] init];
-  [appearance configureWithOpaqueBackground];
+  [appearance configureWithDefaultBackground];
   appearance.backgroundColor = backgroundColor;
-  appearance.shadowColor = UIColor.clearColor;
-  self.navigationItem.standardAppearance = appearance;
+  if (@available(iOS 15, *)) {
+    self.navigationItem.scrollEdgeAppearance = appearance;
+  } else {
+    // On iOS 14, scrollEdgeAppearance only affects navigation bars with large
+    // titles, so it can't be used. Instead, the navigation bar will always be
+    // the same style.
+    self.navigationItem.standardAppearance = appearance;
+  }
 
   self.title =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_TITLE",

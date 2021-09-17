@@ -113,10 +113,26 @@ UIColor* BackgroundColor() {
   self.navigationItem.searchController = self.searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
 
-  self.navigationController.navigationBar.barTintColor = BackgroundColor();
+  if (IsPasswordCreationEnabled()) {
+    UINavigationBarAppearance* appearance =
+        [[UINavigationBarAppearance alloc] init];
+    [appearance configureWithDefaultBackground];
+    appearance.backgroundColor = BackgroundColor();
+    if (@available(iOS 15, *)) {
+      self.navigationItem.scrollEdgeAppearance = appearance;
+    } else {
+      // On iOS 14, scrollEdgeAppearance only affects navigation bars with large
+      // titles, so it can't be used. Instead, the navigation bar will always be
+      // the same style.
+      self.navigationItem.standardAppearance = appearance;
+    }
+  } else {
+    self.navigationController.navigationBar.barTintColor = BackgroundColor();
+    self.navigationController.navigationBar.shadowImage =
+        [[UIImage alloc] init];
+  }
   self.navigationController.navigationBar.tintColor =
       [UIColor colorNamed:kBlueColor];
-  self.navigationController.navigationBar.shadowImage = [[UIImage alloc] init];
 
   // Presentation of searchController will walk up the view controller hierarchy
   // until it finds the root view controller or one that defines a presentation
