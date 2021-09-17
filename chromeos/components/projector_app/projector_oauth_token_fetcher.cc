@@ -99,7 +99,6 @@ void ProjectorOAuthTokenFetcher::InitiateAccessTokenFetchFor(
   // Let's start creating the oauth2 access token request.
   OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(GaiaConstants::kDriveOAuth2Scope);
-  scopes.insert(GaiaConstants::kDriveReadOnlyOAuth2Scope);
   scopes.insert(GaiaConstants::kCloudTranslationOAuth2Scope);
 
   // kImmediate makes a one-shot immediate request.
