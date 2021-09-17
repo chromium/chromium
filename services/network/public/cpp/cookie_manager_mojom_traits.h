@@ -179,8 +179,8 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
 template <>
 struct StructTraits<network::mojom::CookiePartitionKeyDataView,
                     net::CookiePartitionKey> {
-  static const net::SchemefulSite& site(const net::CookiePartitionKey& pk) {
-    return pk.site_;
+  static const net::SchemefulSite& site(const net::CookiePartitionKey& cpk) {
+    return cpk.site();
   }
   static bool Read(network::mojom::CookiePartitionKeyDataView partition_key,
                    net::CookiePartitionKey* out);

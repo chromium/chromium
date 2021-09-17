@@ -13,23 +13,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace network {
-namespace mojom {
-class CookiePartitionKeyDataView;
-}  // namespace mojom
-}  // namespace network
-
-namespace mojo {
-template <typename DataViewType, typename T>
-struct StructTraits;
-}  // namespace mojo
-
 namespace net {
 
 class NET_EXPORT CookiePartitionKey {
  public:
   CookiePartitionKey();
-  explicit CookiePartitionKey(const SchemefulSite& site);
   CookiePartitionKey(const CookiePartitionKey& other);
   CookiePartitionKey(CookiePartitionKey&& other);
   CookiePartitionKey& operator=(const CookiePartitionKey& other);
@@ -70,16 +58,22 @@ class NET_EXPORT CookiePartitionKey {
   static absl::optional<CookiePartitionKey> FromNetworkIsolationKey(
       const NetworkIsolationKey& network_isolation_key);
 
+  // Create a new CookiePartitionKey from the site of an existing
+  // CookiePartitionKey. This should only be used for sites of partition keys
+  // which were already created using Deserialize or FromNetworkIsolationKey.
+  static CookiePartitionKey FromWire(const SchemefulSite& site) {
+    return CookiePartitionKey(site);
+  }
+
   // Temporary method, used to mark the places where we need to supply the
   // cookie partition key to CanonicalCookie::Create.
   static absl::optional<CookiePartitionKey> Todo() { return absl::nullopt; }
 
- private:
-  explicit CookiePartitionKey(const GURL& url);
+  const SchemefulSite& site() const { return site_; }
 
-  // IPC needs access to internal site.
-  friend struct mojo::StructTraits<network::mojom::CookiePartitionKeyDataView,
-                                   CookiePartitionKey>;
+ private:
+  explicit CookiePartitionKey(const SchemefulSite& site);
+  explicit CookiePartitionKey(const GURL& url);
 
   SchemefulSite site_;
 };

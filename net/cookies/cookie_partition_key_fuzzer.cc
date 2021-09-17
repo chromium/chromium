@@ -8,6 +8,7 @@
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include "net/cookies/cookie_partition_key.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -19,22 +20,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (!url.is_valid())
     return 0;
 
-  SchemefulSite site(url::Origin::Create(url));
   absl::optional<CookiePartitionKey> partition_key =
-      absl::make_optional(CookiePartitionKey(site));
+      absl::make_optional(CookiePartitionKey::FromURLForTesting(url));
 
-  bool result = CookiePartitionKey::Deserialize(url_str, partition_key);
-  if (site.opaque())
-    CHECK(!result);
-  else
-    CHECK(result);
-
+  bool is_opaque = url::Origin::Create(url).opaque();
   std::string tmp;
-  result = CookiePartitionKey::Serialize(partition_key, tmp);
-  if (site.opaque())
-    CHECK(!result);
-  else
-    CHECK(result);
+  CHECK_NE(is_opaque, CookiePartitionKey::Serialize(partition_key, tmp));
+
+  CHECK_NE(is_opaque, CookiePartitionKey::Deserialize(url_str, partition_key));
+
+  if (!is_opaque) {
+    CHECK(absl::make_optional(CookiePartitionKey::FromURLForTesting(url)) ==
+          partition_key);
+  }
 
   return 0;
 }

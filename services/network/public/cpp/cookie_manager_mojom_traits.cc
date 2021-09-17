@@ -470,7 +470,7 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
   net::SchemefulSite site;
   if (!partition_key.ReadSite(&site))
     return false;
-  *out = net::CookiePartitionKey(site);
+  *out = net::CookiePartitionKey::FromWire(site);
   return true;
 }
 
