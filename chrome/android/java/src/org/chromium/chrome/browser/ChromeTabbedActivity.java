@@ -164,11 +164,13 @@ import org.chromium.chrome.browser.tasks.EngagementTimeUtil;
 import org.chromium.chrome.browser.tasks.JourneyManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.TasksUma;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
@@ -1672,8 +1674,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 assert mStartSurfaceSupplier.get() != null;
                 assert getToolbarManager().getTabGroupUi() != null;
                 // Return true if dialog from either tab switcher or tab strip is visible.
+                ToolbarManager toolbarManager = getToolbarManager();
+                TabGroupUi tabGroupUi = toolbarManager.getTabGroupUi();
                 Supplier<Boolean> tabGroupUiDialogVisibilitySupplier =
-                        getToolbarManager().getTabGroupUi().getTabGridDialogVisibilitySupplier();
+                        tabGroupUi.getTabGridDialogVisibilitySupplier();
                 Supplier<Boolean> tabSwitcherDialogVisibilitySupplier =
                         mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
                 boolean isDialogVisible = false;
