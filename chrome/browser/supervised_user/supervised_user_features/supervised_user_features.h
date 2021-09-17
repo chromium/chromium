@@ -11,8 +11,11 @@ namespace supervised_users {
 
 extern const base::Feature kEduCoexistenceFlowV2;
 
+extern const base::Feature kLocalWebApprovals;
+
 bool IsEduCoexistenceFlowV2Enabled();
 
+bool IsLocalWebApprovalsEnabled();
 }  // namespace supervised_users
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_FEATURES_SUPERVISED_USER_FEATURES_H_

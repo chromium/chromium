@@ -123,6 +123,9 @@ std::string BuildHtml(bool allow_access_requests,
   strings.SetString("secondCustodianEmail", second_custodian_email);
   strings.SetBoolean("alreadySentRequest", already_sent_request);
   strings.SetBoolean("isMainFrame", is_main_frame);
+  bool local_web_approvals_enabled =
+      supervised_users::IsLocalWebApprovalsEnabled();
+  strings.SetBoolean("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
 
   std::u16string custodian16 = base::UTF8ToUTF16(custodian);
   std::u16string block_header;
@@ -165,9 +168,19 @@ std::string BuildHtml(bool allow_access_requests,
   strings.SetString("feedbackLink", l10n_util::GetStringUTF16(
                                         IDS_BLOCK_INTERSTITIAL_SEND_FEEDBACK));
   strings.SetString("backButton", l10n_util::GetStringUTF16(IDS_BACK_BUTTON));
+
+  if (local_web_approvals_enabled) {
+    strings.SetString(
+        "remoteApprovalsButton",
+        l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON));
+  } else {
+    strings.SetString("remoteApprovalsButton",
+                      l10n_util::GetStringUTF16(
+                          IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON));
+  }
   strings.SetString(
-      "requestAccessButton",
-      l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON));
+      "localApprovalsButton",
+      l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON));
   strings.SetString(
       "showDetailsLink",
       l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));

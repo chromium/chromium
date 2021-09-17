@@ -38,6 +38,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser:resources_grit",
+    "//chrome/browser/supervised_user/supervised_user_features",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",

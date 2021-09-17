@@ -5,6 +5,8 @@
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -65,6 +67,7 @@ struct BuildHtmlTestParameter {
   bool is_deprecated;
   FilteringBehaviorReason reason;
   bool has_two_parents;
+  bool is_local_web_approvals_enabled;
 };
 
 class SupervisedUserErrorPageTest_BuildHtml
@@ -72,6 +75,11 @@ class SupervisedUserErrorPageTest_BuildHtml
 
 TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   BuildHtmlTestParameter param = GetParam();
+  base::test::ScopedFeatureList scoped_feature_list_;
+  if (param.is_local_web_approvals_enabled) {
+    scoped_feature_list_.InitWithFeatures(
+        {supervised_users::kLocalWebApprovals}, {});
+  }
   std::string result = BuildHtml(
       param.allow_access_requests, param.profile_image_url,
       param.profile_image_url2, param.custodian, param.custodian_email,
@@ -107,6 +115,17 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
           result,
           testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
               IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED))));
+      // This string is used for a button that is always present in the DOM, but
+      // only visible when local web approvals is enabled.
+      EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                              IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON)));
+      if (param.is_local_web_approvals_enabled) {
+        EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                                IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON)));
+      } else {
+        EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                                IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON)));
+      }
     } else {
       EXPECT_THAT(result,
                   testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
@@ -188,17 +207,31 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
 
 BuildHtmlTestParameter build_html_test_parameter[] = {
     {true, "url1", "url2", "custodian", "custodian_email", "", "", true, false,
-     DEFAULT, false},
+     DEFAULT, false, false},
     {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", true, false, DEFAULT, true},
+     "custodian2_email", true, false, DEFAULT, true, false},
     {false, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", true, false, DEFAULT, true},
+     "custodian2_email", true, false, DEFAULT, true, false},
     {false, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", false, true, DEFAULT, true},
+     "custodian2_email", false, true, DEFAULT, true, false},
     {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", false, false, DEFAULT, true},
+     "custodian2_email", false, false, DEFAULT, true, false},
     {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
-     "custodian2_email", true, false, ASYNC_CHECKER, true},
+     "custodian2_email", true, false, ASYNC_CHECKER, true, false},
+
+    // Test cases with local web approvals feature enabled
+    {true, "url1", "url2", "custodian", "custodian_email", "", "", true, false,
+     DEFAULT, false, true},
+    {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
+     "custodian2_email", true, false, DEFAULT, true, true},
+    {false, "url1", "url2", "custodian", "custodian_email", "custodian2",
+     "custodian2_email", true, false, DEFAULT, true, true},
+    {false, "url1", "url2", "custodian", "custodian_email", "custodian2",
+     "custodian2_email", false, true, DEFAULT, true, true},
+    {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
+     "custodian2_email", false, false, DEFAULT, true, true},
+    {true, "url1", "url2", "custodian", "custodian_email", "custodian2",
+     "custodian2_email", true, false, ASYNC_CHECKER, true, true},
 };
 
 INSTANTIATE_TEST_SUITE_P(GetBlockMessageIDParameterized,

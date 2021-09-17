@@ -7,8 +7,8 @@ body {
   --custodian-name-color: #333333;
   --custodian-email-color: #5f6368;
   --focused-details-button-border: rgba(26, 115, 232, 0.4);
-  --header-color:  #202124;
-  --paragraph-color: #5f6368;
+  --header-color: var(--google-gray-900);
+  --paragraph-color: var(--google-gray-700);
   font-family: "Roboto", sans-serif;
   padding: 24px 24px 20px 24px;
 }
@@ -29,18 +29,18 @@ button {
 }
 
 button:active {
-  background: var(--primary-button-fill-color-active)
+  background: var(--primary-button-fill-color-active);
+}
+
+.local-web-approvals-enabled button {
+  font-size: 13px;
+  font-weight: 500;
+  height: 32px;
+  line-height: normal;
+  padding: 6px 16px;
 }
 
 [dir='rtl'] button {
-  float: left;
-}
-
-.ask-permission-button {
-  float: right;
-}
-
-.go-back-button {
   float: left;
 }
 
@@ -88,6 +88,10 @@ h1 {
   margin-bottom: 16px;
 }
 
+.local-web-approvals-enabled h1 {
+  font-family: "Google Sans", sans-serif;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   font-size: 125%;
@@ -96,6 +100,11 @@ html {
 p {
   color: var(--paragraph-color);
   font-size: 15px;
+}
+
+.local-web-approvals-enabled p {
+  color: var(--paragraph-color);
+  font-size: 14px;
 }
 
 .icon {
@@ -118,6 +127,10 @@ p {
   width: 100%;
 }
 
+.local-web-approvals-enabled .frame-blocked {
+  max-width: 432px;
+}
+
 #main-message {
   margin-top: 36px;
 }
@@ -126,8 +139,27 @@ p {
   margin-top: 40px;
 }
 
-.ask-permission-button {
+.remote-approvals-button {
   float: right;
+}
+
+.local-web-approvals-enabled .remote-approvals-button {
+  background: var(--background-color);
+  border: 1px solid var(--google-gray-300);
+  color: var(--google-blue-600);
+}
+
+.local-web-approvals-enabled .remote-approvals-button:active {
+  background: var(--secondary-button-hover-fill-color);
+}
+
+.local-approvals-button {
+  float: right;
+  margin-left: 24px;
+}
+
+.local-approvals-button:active {
+  background: var(--primary-button-fill-color-active);
 }
 
 .go-back-button {
@@ -143,6 +175,10 @@ p {
   margin-top: 8px;
 }
 
+.local-web-approvals-enabled .custodian-information {
+  margin-top: 24px;
+}
+
 .avatar-img {
   border: 1px solid var(--avatar-stroke-color);
   border-radius: 50%;
@@ -156,8 +192,14 @@ p {
   width: 40px;
 }
 
+.local-web-approvals-enabled .avatar-img {
+  border: none;
+}
+
 .custodian-contact {
-  display: inline-block
+  display: flex;
+  flex-direction: column;
+  height: 40px;
   overflow: visible;
 }
 
@@ -165,12 +207,24 @@ p {
   color: var(--custodian-name-color);
   font-size: 15px;
   font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.local-web-approvals-enabled .custodian-name {
+  display: none;
 }
 
 .custodian-email {
   color: var(--custodian-email-color);
+  display: flex;
+  flex-direction: column;
   font-size: 15px;
-  margin-top: 4px;
+  height: 100%;
+  justify-content: center;
+}
+
+.local-web-approvals-enabled .custodian-email {
+  font-size: 13px;
 }
 
 #details {
@@ -207,5 +261,15 @@ margin to 0. This will be useful for subframes. */
     --avatar-stroke-color: var(--google-blue-100);
     --custodian-email-color: var(--google-gray-500);
     --custodian-name-color: var(--google-gray-500);
+  }
+
+  body.supervised-user-block.local-web-approvals-enabled {
+    --header-color: #e9eaed;
+    --paragraph-color: var(--google-gray-500);
+  }
+
+  .local-web-approvals-enabled .remote-approvals-button {
+    color: var(--google-blue-300);
+    border-color: var(--secondary-button-border-color);
   }
 }

@@ -417,7 +417,7 @@ bool SupervisedUserIframeFilterTest::IsAskPermissionButtonBeingShown(
     int frame_id) {
   std::string command =
       "domAutomationController.send("
-      "(document.getElementById('request-access-button').hidden"
+      "(document.getElementById('remote-approvals-button').hidden"
       "? (false) : (true)));";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }

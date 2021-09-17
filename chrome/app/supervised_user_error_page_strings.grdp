@@ -25,6 +25,12 @@
       <message name="IDS_BACK_BUTTON" desc="A button for going back to the last safe url after being blocked.">
         Go back
       </message>
+      <message name="IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON" desc="A button to show a dialog to request access to blocked sites.">
+        Ask in person
+      </message>
+      <message name="IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON" desc="A button to send a message to request access to blocked sites.">
+        Send a message
+      </message>
       <message name="IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON" desc="A button for requesting access to blocked sites.">
         Ask permission
       </message>

@@ -11,8 +11,15 @@ namespace supervised_users {
 const base::Feature kEduCoexistenceFlowV2{"EduCoexistenceV2",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kLocalWebApprovals{"LocalWebApprovals",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsEduCoexistenceFlowV2Enabled() {
   return base::FeatureList::IsEnabled(kEduCoexistenceFlowV2);
+}
+
+bool IsLocalWebApprovalsEnabled() {
+  return base::FeatureList::IsEnabled(kLocalWebApprovals);
 }
 
 }  // namespace supervised_users
