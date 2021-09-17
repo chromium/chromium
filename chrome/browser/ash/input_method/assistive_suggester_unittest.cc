@@ -260,22 +260,15 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 0);
 }
 
-// TODO(crbug.com/1250246): This test is failing consistently on builder
-// "Linux ChromiumOS MSan Tests" since it was added.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_MatchMetricRecordedWhenOneOrMoreSuggestions \
-  DISABLED_MatchMetricRecordedWhenOneOrMoreSuggestions
-#else
-#define MAYBE_MatchMetricRecordedWhenOneOrMoreSuggestions \
-  MatchMetricRecordedWhenOneOrMoreSuggestions
-#endif
 TEST_F(AssistiveSuggesterMultiWordTest,
-       MAYBE_MatchMetricRecordedWhenOneOrMoreSuggestions) {
+       MatchMetricRecordedWhenOneOrMoreSuggestions) {
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "hello there"}};
 
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 1);
@@ -294,6 +287,8 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "hello there"}};
 
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Match", 0);
@@ -304,6 +299,8 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
       engine_.get(), profile_.get(), std::make_unique<FakeBlocklist>(false));
 
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated({});
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Disabled.MultiWord",
@@ -319,6 +316,8 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "hello there"}};
 
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Disabled.MultiWord",
@@ -330,6 +329,8 @@ TEST_F(AssistiveSuggesterMultiWordTest,
 
 TEST_F(AssistiveSuggesterMultiWordTest,
        CoverageMetricNotRecordedWhenNoSuggestionGiven) {
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated({});
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 0);
