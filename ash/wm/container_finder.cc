@@ -12,7 +12,7 @@
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
@@ -98,7 +98,7 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
   // can be retrieved. An example would be ARC windows, which can be created
   // before their associated tasks are, which are required to retrieve full
   // restore data.
-  if (window->GetProperty(full_restore::kParentToHiddenContainerKey))
+  if (window->GetProperty(app_restore::kParentToHiddenContainerKey))
     return target_root->GetChildById(kShellWindowId_UnparentedContainer);
 
   switch (window->GetType()) {

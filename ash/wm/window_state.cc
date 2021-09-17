@@ -37,7 +37,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/features.h"
-#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window.h"
@@ -82,12 +82,12 @@ bool IsToplevelContainer(aura::Window* window) {
 // with a task. We still want a WindowState created for these windows and their
 // transient children as they will be moved to a top level container soon.
 bool IsTemporarilyHiddenForFullrestore(aura::Window* window) {
-  if (window->GetProperty(full_restore::kParentToHiddenContainerKey))
+  if (window->GetProperty(app_restore::kParentToHiddenContainerKey))
     return true;
 
-  auto* transient_parent = ::wm::GetTransientParent(window);
+  auto* transient_parent = wm::GetTransientParent(window);
   return transient_parent && transient_parent->GetProperty(
-                                 full_restore::kParentToHiddenContainerKey);
+                                 app_restore::kParentToHiddenContainerKey);
 }
 
 // A tentative class to set the bounds on the window.

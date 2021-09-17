@@ -31,6 +31,8 @@ component("app_restore") {
     "restore_data.h",
     "window_info.cc",
     "window_info.h",
+    "window_properties.cc",
+    "window_properties.h",
   ]
 
   defines = [ "IS_APP_RESTORE_IMPL" ]

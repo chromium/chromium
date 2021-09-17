@@ -32,6 +32,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/common/constants.h"
@@ -141,11 +142,11 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   const int32_t restore_window_id =
       full_restore::FetchRestoreWindowId(app_window()->extension_id());
   init_params->init_properties_container.SetProperty(
-      full_restore::kWindowIdKey, app_window()->session_id().id());
+      app_restore::kWindowIdKey, app_window()->session_id().id());
   init_params->init_properties_container.SetProperty(
-      full_restore::kRestoreWindowIdKey, restore_window_id);
+      app_restore::kRestoreWindowIdKey, restore_window_id);
   init_params->init_properties_container.SetProperty(
-      full_restore::kAppIdKey, app_window()->extension_id());
+      app_restore::kAppIdKey, app_window()->extension_id());
   init_params->init_properties_container.SetProperty(
       aura::client::kAppType, static_cast<int>(ash::AppType::CHROME_APP));
 

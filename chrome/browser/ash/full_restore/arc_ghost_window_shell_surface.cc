@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/full_restore/arc_window_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "ui/aura/env.h"
@@ -155,9 +156,9 @@ void ArcGhostWindowShellSurface::SetShellAppId(
     ui::PropertyHandler* property_handler,
     const absl::optional<std::string>& id) {
   if (id)
-    property_handler->SetProperty(::full_restore::kAppIdKey, *id);
+    property_handler->SetProperty(app_restore::kAppIdKey, *id);
   else
-    property_handler->ClearProperty(::full_restore::kAppIdKey);
+    property_handler->ClearProperty(app_restore::kAppIdKey);
 }
 
 }  // namespace full_restore

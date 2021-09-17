@@ -48,7 +48,7 @@ class ASH_EXPORT FullRestoreController
   static FullRestoreController* Get();
 
   // Returns whether a Full Restore'd window can be activated. Only ghost
-  // windows, windows without the `full_restore::kLaunchedFromFullRestoreKey`,
+  // windows, windows without the `app_restore::kLaunchedFromFullRestoreKey`,
   // and topmost Full Restore'd windows return true.
   static bool CanActivateFullRestoredWindow(const aura::Window* window);
 
@@ -122,11 +122,11 @@ class ASH_EXPORT FullRestoreController
 
   // Retrieves the saved `WindowInfo` of `window` and restores its
   // `WindowStateType`. Also creates a post task to clear `window`s
-  // `full_restore::kLaunchedFromFullRestoreKey`.
+  // `app_restore::kLaunchedFromFullRestoreKey`.
   void RestoreStateTypeAndClearLaunchedKey(aura::Window* window);
 
   // Calls `CancelAndRemoveRestorePropertyClearCallback()`. Also sets the
-  // `window`'s `full_restore::kLaunchedFromFullRestoreKey` to false if the
+  // `window`'s `app_restore::kLaunchedFromFullRestoreKey` to false if the
   // window is not destroying.
   void ClearLaunchedKey(aura::Window* window);
 
@@ -147,7 +147,7 @@ class ASH_EXPORT FullRestoreController
   base::flat_set<aura::Window*> to_be_shown_windows_;
 
   // When a window is restored, we post a task to clear its
-  // `full_restore::kLaunchedFromFullRestoreKey` property. However, a window can
+  // `app_restore::kLaunchedFromFullRestoreKey` property. However, a window can
   // be closed before this task occurs, deleting the window. This map keeps
   // track of these posted tasks so we can cancel them upon window deletion.
   std::map<aura::Window*, base::CancelableOnceClosure>

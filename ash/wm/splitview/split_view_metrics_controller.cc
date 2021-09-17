@@ -22,8 +22,8 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/env.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -403,12 +403,12 @@ void SplitViewMetricsController::OnDeskNameChanged(
 
 void SplitViewMetricsController::OnWindowInitialized(aura::Window* window) {
   int32_t* activation_index =
-      window->GetProperty(full_restore::kActivationIndexKey);
+      window->GetProperty(app_restore::kActivationIndexKey);
   if (!activation_index)
     return;
 
-  std::unique_ptr<app_restore::WindowInfo> window_info =
-      full_restore::GetWindowInfo(window);
+  app_restore::WindowInfo* window_info =
+      window->GetProperty(app_restore::kWindowInfoKey);
   if (!window_info)
     return;
 

@@ -10,6 +10,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/window.h"
 
 namespace full_restore {
@@ -49,8 +50,8 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
       auto window_it = std::find_if(
           arc_window_candidates_.begin(), arc_window_candidates_.end(),
           [session_id](aura::Window* window) {
-            return window->GetProperty(
-                       ::full_restore::kGhostWindowSessionIdKey) == session_id;
+            return window->GetProperty(app_restore::kGhostWindowSessionIdKey) ==
+                   session_id;
           });
       if (window_it != arc_window_candidates_.end()) {
         FullRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
@@ -70,7 +71,7 @@ void ArcSaveHandler::ModifyWindowInfo(
     const app_restore::WindowInfo& window_info) {
   aura::Window* window = window_info.window;
 
-  int32_t task_id = window->GetProperty(::full_restore::kWindowIdKey);
+  int32_t task_id = window->GetProperty(app_restore::kWindowIdKey);
   auto task_it = task_id_to_app_id_.find(task_id);
   if (task_it != task_id_to_app_id_.end()) {
     FullRestoreSaveHandler::GetInstance()->ModifyWindowInfo(
@@ -81,7 +82,7 @@ void ArcSaveHandler::ModifyWindowInfo(
   // For the ghost window, modify the window info with `session_id` as the
   // window id.
   int32_t session_id =
-      window->GetProperty(::full_restore::kGhostWindowSessionIdKey);
+      window->GetProperty(app_restore::kGhostWindowSessionIdKey);
   auto it = ghost_window_session_id_to_app_id_.find(session_id);
   if (it != ghost_window_session_id_to_app_id_.end()) {
     FullRestoreSaveHandler::GetInstance()->ModifyWindowInfo(
@@ -90,11 +91,11 @@ void ArcSaveHandler::ModifyWindowInfo(
 }
 
 void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
-  int32_t task_id = window->GetProperty(::full_restore::kWindowIdKey);
+  int32_t task_id = window->GetProperty(app_restore::kWindowIdKey);
   if (!base::Contains(task_id_to_app_id_, task_id)) {
     // Check `session_id` to see whether this is a ghost window.
     int32_t session_id =
-        window->GetProperty(::full_restore::kGhostWindowSessionIdKey);
+        window->GetProperty(app_restore::kGhostWindowSessionIdKey);
     if (session_id < kArcSessionIdOffsetForRestoredLaunching) {
       // If the task hasn't been created, and this is not a ghost window, add
       // `window` to `arc_window_candidates_` to wait for the task to be
@@ -105,7 +106,7 @@ void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
 
     // Save `session_id` for the ghost window, to wait for the task created to
     // replace the window id with the task id in the restore data.
-    const std::string* app_id = window->GetProperty(::full_restore::kAppIdKey);
+    const std::string* app_id = window->GetProperty(app_restore::kAppIdKey);
     DCHECK(app_id);
     ghost_window_session_id_to_app_id_[session_id] = *app_id;
 
@@ -136,7 +137,7 @@ void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
 void ArcSaveHandler::OnWindowDestroyed(aura::Window* window) {
   arc_window_candidates_.erase(window);
 
-  int32_t task_id = window->GetProperty(::full_restore::kWindowIdKey);
+  int32_t task_id = window->GetProperty(app_restore::kWindowIdKey);
 
   auto task_it = task_id_to_app_id_.find(task_id);
   if (task_it != task_id_to_app_id_.end()) {
@@ -148,7 +149,7 @@ void ArcSaveHandler::OnWindowDestroyed(aura::Window* window) {
   // If the ghost window has been created for `session_id`, remove
   // `app_launch_info` from the restore data with `session_id` as the window id.
   int32_t session_id =
-      window->GetProperty(::full_restore::kGhostWindowSessionIdKey);
+      window->GetProperty(app_restore::kGhostWindowSessionIdKey);
   auto it = ghost_window_session_id_to_app_id_.find(session_id);
   if (it != ghost_window_session_id_to_app_id_.end()) {
     FullRestoreSaveHandler::GetInstance()->RemoveWindowInfo(
@@ -191,7 +192,7 @@ void ArcSaveHandler::OnTaskCreated(const std::string& app_id,
   auto window_it = std::find_if(
       arc_window_candidates_.begin(), arc_window_candidates_.end(),
       [task_id](aura::Window* window) {
-        return window->GetProperty(::full_restore::kWindowIdKey) == task_id;
+        return window->GetProperty(app_restore::kWindowIdKey) == task_id;
       });
   if (window_it != arc_window_candidates_.end()) {
     FullRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
@@ -232,14 +233,14 @@ int32_t ArcSaveHandler::GetArcSessionId() {
 
 std::string ArcSaveHandler::GetAppId(aura::Window* window) {
   // First check |task_id_to_app_id_| to see if we can find app id there.
-  const int32_t task_id = window->GetProperty(kWindowIdKey);
+  const int32_t task_id = window->GetProperty(app_restore::kWindowIdKey);
   auto task_iter = task_id_to_app_id_.find(task_id);
   if (task_iter != task_id_to_app_id_.end())
     return task_iter->second;
 
   // If not, try to search in |ghost_window_session_id_to_app_id_|.
   const int32_t session_id =
-      window->GetProperty(::full_restore::kGhostWindowSessionIdKey);
+      window->GetProperty(app_restore::kGhostWindowSessionIdKey);
   auto ghost_iter = ghost_window_session_id_to_app_id_.find(session_id);
   return ghost_iter != ghost_window_session_id_to_app_id_.end()
              ? ghost_iter->second

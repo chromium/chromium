@@ -23,6 +23,7 @@
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -173,16 +174,16 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
 
   Browser* browser = browser_view_->browser();
   const int32_t restore_id = browser->create_params().restore_id;
-  params.init_properties_container.SetProperty(full_restore::kWindowIdKey,
+  params.init_properties_container.SetProperty(app_restore::kWindowIdKey,
                                                browser->session_id().id());
-  params.init_properties_container.SetProperty(
-      full_restore::kRestoreWindowIdKey, restore_id);
+  params.init_properties_container.SetProperty(app_restore::kRestoreWindowIdKey,
+                                               restore_id);
 
   params.init_properties_container.SetProperty(
-      full_restore::kAppTypeBrowser,
-      (browser->is_type_app() || browser->is_type_app_popup()) ? true : false);
+      app_restore::kAppTypeBrowser,
+      (browser->is_type_app() || browser->is_type_app_popup()));
 
-  params.init_properties_container.SetProperty(full_restore::kBrowserAppNameKey,
+  params.init_properties_container.SetProperty(app_restore::kBrowserAppNameKey,
                                                browser->app_name());
 
   // This is only needed for ash. For lacros, Exo tags the associated

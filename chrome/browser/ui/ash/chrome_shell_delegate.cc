@@ -53,6 +53,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
+#include "components/app_restore/window_properties.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
@@ -357,7 +358,7 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
   const std::string app_id = full_restore::GetAppId(window);
   DCHECK(!app_id.empty());
 
-  const int32_t window_id = window->GetProperty(full_restore::kWindowIdKey);
+  const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
   std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
       std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
   auto* tab_strip_model = GetTabstripModelForWindowIfAny(window);
@@ -366,7 +367,7 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
     app_launch_info->active_tab_index = tab_strip_model->active_index();
   }
   const std::string* app_name =
-      window->GetProperty(full_restore::kBrowserAppNameKey);
+      window->GetProperty(app_restore::kBrowserAppNameKey);
   if (app_name)
     app_launch_info->app_name = *app_name;
 

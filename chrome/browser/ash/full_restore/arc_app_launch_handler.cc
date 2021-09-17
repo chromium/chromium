@@ -38,6 +38,7 @@
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
+#include "components/app_restore/window_properties.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/exo/wm_helper.h"
@@ -289,7 +290,7 @@ void ArcAppLaunchHandler::OnWindowActivated(
     return;
 
   const std::string* arc_app_id =
-      new_active->GetProperty(::full_restore::kAppIdKey);
+      new_active->GetProperty(app_restore::kAppIdKey);
   if (!arc_app_id || arc_app_id->empty() || !IsAppReady(*arc_app_id))
     return;
 
@@ -332,8 +333,7 @@ void ArcAppLaunchHandler::OnWindowDestroying(aura::Window* window) {
   auto window_id = it->second;
   session_id_to_window_id_.erase(session_id.value());
 
-  const std::string* arc_app_id =
-      window->GetProperty(::full_restore::kAppIdKey);
+  const std::string* arc_app_id = window->GetProperty(app_restore::kAppIdKey);
   if (!arc_app_id || arc_app_id->empty())
     return;
 

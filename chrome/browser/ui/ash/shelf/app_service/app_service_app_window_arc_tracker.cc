@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_window_info.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/image/image_skia.h"
@@ -643,7 +644,7 @@ ArcAppWindowInfo* AppServiceAppWindowArcTracker::GetArcAppWindowInfo(
   if (!session_id.has_value())
     return nullptr;
 
-  const std::string* arc_app_id = window->GetProperty(full_restore::kAppIdKey);
+  const std::string* arc_app_id = window->GetProperty(app_restore::kAppIdKey);
   if (!arc_app_id || arc_app_id->empty())
     return nullptr;
 

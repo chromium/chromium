@@ -10,6 +10,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -34,7 +35,7 @@ void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
       it->second->RemoveOverlay();
     views::Widget* widget = it->second->GetWidget();
     if (widget && widget->GetNativeWindow()) {
-      widget->GetNativeWindow()->SetProperty(::full_restore::kRealArcTaskWindow,
+      widget->GetNativeWindow()->SetProperty(app_restore::kRealArcTaskWindow,
                                              true);
     }
     SetShellClientControlledShellSurface(&out_properties_container,
@@ -43,7 +44,7 @@ void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
     handler_->ghost_window_pop_count_++;
   } else {
     // ARC ghost window instance.
-    out_properties_container.SetProperty(::full_restore::kRealArcTaskWindow,
+    out_properties_container.SetProperty(app_restore::kRealArcTaskWindow,
                                          false);
   }
 }

@@ -10,6 +10,7 @@
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/window.h"
 
 namespace full_restore {
@@ -26,10 +27,10 @@ void ArcReadHandler::AddRestoreData(const std::string& app_id,
 
 void ArcReadHandler::AddArcWindowCandidate(aura::Window* window) {
   if (!base::Contains(task_id_to_window_id_,
-                      window->GetProperty(::full_restore::kWindowIdKey))) {
+                      window->GetProperty(app_restore::kWindowIdKey))) {
     // Check `session_id` to see whether this is a ghost window.
     int32_t session_id =
-        window->GetProperty(::full_restore::kGhostWindowSessionIdKey);
+        window->GetProperty(app_restore::kGhostWindowSessionIdKey);
     if (session_id >= kArcSessionIdOffsetForRestoredLaunching)
       return;
 
@@ -52,7 +53,7 @@ void ArcReadHandler::OnWindowDestroyed(aura::Window* window) {
   }
 
   int32_t restore_window_id =
-      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+      window->GetProperty(app_restore::kRestoreWindowIdKey);
   RemoveAppRestoreData(restore_window_id);
 }
 
@@ -192,7 +193,7 @@ void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
   auto window_it = std::find_if(
       arc_window_candidates_.begin(), arc_window_candidates_.end(),
       [task_id](aura::Window* window) {
-        return window->GetProperty(full_restore::kWindowIdKey) == task_id;
+        return window->GetProperty(app_restore::kWindowIdKey) == task_id;
       });
   if (window_it == arc_window_candidates_.end())
     return;
@@ -201,7 +202,7 @@ void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
   // `kRestoreWindowIdKey` and `kWindowInfoKey`.
   if (restore_window_id > 0) {
     (*window_it)
-        ->SetProperty(full_restore::kRestoreWindowIdKey, restore_window_id);
+        ->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
 
     // When the window was created, there was not any window info due to there
     // being no task. Apply properties to the window now that there is window
@@ -215,7 +216,7 @@ void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
   }
 
   // Remove the window from the hidden container.
-  if ((*window_it)->GetProperty(full_restore::kParentToHiddenContainerKey)) {
+  if ((*window_it)->GetProperty(app_restore::kParentToHiddenContainerKey)) {
     FullRestoreInfo::GetInstance()->OnARCTaskReadyForUnparentedWindow(
         *window_it);
   }

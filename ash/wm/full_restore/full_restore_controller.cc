@@ -30,6 +30,7 @@
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
@@ -75,7 +76,7 @@ constexpr base::TimeDelta kAllowActivationDelay =
     base::TimeDelta::FromSeconds(2);
 
 app_restore::WindowInfo* GetWindowInfo(aura::Window* window) {
-  return window->GetProperty(full_restore::kWindowInfoKey);
+  return window->GetProperty(app_restore::kWindowInfoKey);
 }
 
 // If `window`'s saved window info makes the `window` out-of-bounds for the
@@ -162,7 +163,7 @@ FullRestoreController* FullRestoreController::Get() {
 // static
 bool FullRestoreController::CanActivateFullRestoredWindow(
     const aura::Window* window) {
-  if (!window->GetProperty(full_restore::kLaunchedFromFullRestoreKey))
+  if (!window->GetProperty(app_restore::kLaunchedFromFullRestoreKey))
     return true;
 
   // Only windows on the active desk should be activatable.
@@ -173,7 +174,7 @@ bool FullRestoreController::CanActivateFullRestoredWindow(
   const AppType app_type =
       static_cast<AppType>(window->GetProperty(aura::client::kAppType));
   const bool is_real_arc_window =
-      window->GetProperty(full_restore::kRealArcTaskWindow);
+      window->GetProperty(app_restore::kRealArcTaskWindow);
   if (app_type == AppType::ARC_APP && !is_real_arc_window)
     return true;
 
@@ -217,7 +218,7 @@ bool FullRestoreController::CanActivateAppList(const aura::Window* window) {
 
     if (topmost_visible_iter != active_desk_children.rend() &&
         (*topmost_visible_iter)
-            ->GetProperty(full_restore::kLaunchedFromFullRestoreKey)) {
+            ->GetProperty(app_restore::kLaunchedFromFullRestoreKey)) {
       DCHECK(full_restore::features::IsFullRestoreEnabled());
       return false;
     }
@@ -232,13 +233,13 @@ FullRestoreController::GetWindowToInsertBefore(
     aura::Window* window,
     const std::vector<aura::Window*>& windows) {
   int32_t* activation_index =
-      window->GetProperty(full_restore::kActivationIndexKey);
+      window->GetProperty(app_restore::kActivationIndexKey);
   DCHECK(activation_index);
 
   auto it = windows.begin();
   while (it != windows.end()) {
     int32_t* next_activation_index =
-        (*it)->GetProperty(full_restore::kActivationIndexKey);
+        (*it)->GetProperty(app_restore::kActivationIndexKey);
 
     if (!next_activation_index || *activation_index > *next_activation_index) {
       // Activation index is saved to match MRU order so lower means more
@@ -312,7 +313,7 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
   DCHECK(widget);
 
   aura::Window* window = widget->GetNativeWindow();
-  if (window->GetProperty(full_restore::kParentToHiddenContainerKey))
+  if (window->GetProperty(app_restore::kParentToHiddenContainerKey))
     return;
 
   UpdateAndObserveWindow(window);
@@ -329,7 +330,7 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
 void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
     aura::Window* window) {
   DCHECK(window);
-  DCHECK(window->GetProperty(full_restore::kParentToHiddenContainerKey));
+  DCHECK(window->GetProperty(app_restore::kParentToHiddenContainerKey));
 
   app_restore::WindowInfo* window_info = GetWindowInfo(window);
   if (window_info) {
@@ -344,7 +345,7 @@ void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
   // Now that the hidden container key is cleared,
   // `aura::client::ParentWindowWithContext` should parent `window` to a valid
   // desk container.
-  window->SetProperty(full_restore::kParentToHiddenContainerKey, false);
+  window->SetProperty(app_restore::kParentToHiddenContainerKey, false);
   aura::client::ParentWindowWithContext(window,
                                         /*context=*/window->GetRootWindow(),
                                         window->GetBoundsInScreen());
@@ -357,9 +358,9 @@ void FullRestoreController::OnWindowPropertyChanged(aura::Window* window,
                                                     intptr_t old) {
   // If the ARC ghost window becomes ARC app's window, it should be applied
   // the activation delay.
-  if (key == full_restore::kRealArcTaskWindow &&
-      window->GetProperty(full_restore::kRealArcTaskWindow)) {
-    window->SetProperty(full_restore::kLaunchedFromFullRestoreKey, true);
+  if (key == app_restore::kRealArcTaskWindow &&
+      window->GetProperty(app_restore::kRealArcTaskWindow)) {
+    window->SetProperty(app_restore::kLaunchedFromFullRestoreKey, true);
     restore_property_clear_callbacks_.emplace(
         window, base::BindOnce(&FullRestoreController::ClearLaunchedKey,
                                weak_ptr_factory_.GetWeakPtr(), window));
@@ -368,8 +369,8 @@ void FullRestoreController::OnWindowPropertyChanged(aura::Window* window,
         kAllowActivationDelay);
   }
 
-  if (key != full_restore::kLaunchedFromFullRestoreKey ||
-      window->GetProperty(full_restore::kLaunchedFromFullRestoreKey)) {
+  if (key != app_restore::kLaunchedFromFullRestoreKey ||
+      window->GetProperty(app_restore::kLaunchedFromFullRestoreKey)) {
     return;
   }
 
@@ -443,7 +444,7 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
   }
 
   int32_t* activation_index =
-      window->GetProperty(full_restore::kActivationIndexKey);
+      window->GetProperty(app_restore::kActivationIndexKey);
   if (!activation_index)
     return;
 
@@ -546,7 +547,7 @@ void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
   // Prevent apply activation delay on ARC ghost window. It should be only apply
   // on real ARC window. Only ARC ghost window use this property.
   const bool is_real_arc_window =
-      window->GetProperty(full_restore::kRealArcTaskWindow);
+      window->GetProperty(app_restore::kRealArcTaskWindow);
   const base::TimeDelta delay =
       app_type == AppType::CHROME_APP ||
               (app_type == AppType::ARC_APP && is_real_arc_window)
@@ -562,7 +563,7 @@ void FullRestoreController::ClearLaunchedKey(aura::Window* window) {
   // If the window is destroying then prevent extra work by not clearing the
   // property.
   if (!window->is_destroying())
-    window->SetProperty(full_restore::kLaunchedFromFullRestoreKey, false);
+    window->SetProperty(app_restore::kLaunchedFromFullRestoreKey, false);
 }
 
 void FullRestoreController::CancelAndRemoveRestorePropertyClearCallback(

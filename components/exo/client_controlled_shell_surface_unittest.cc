@@ -43,6 +43,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/pointer.h"
@@ -2848,11 +2849,11 @@ TEST_F(ClientControlledShellSurfaceFullRestoreTest,
   auto* wide_frame = shell_surface->wide_frame_for_test();
   ASSERT_FALSE(wide_frame);
 
-  // Set the |full_restore::kParentToHiddenContainerKey| for the surface and
+  // Set the |app_restore::kParentToHiddenContainerKey| for the surface and
   // reparent it, simulating the Full Restore process for an unparented ARC
   // task.
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-  window->SetProperty(full_restore::kParentToHiddenContainerKey, true);
+  window->SetProperty(app_restore::kParentToHiddenContainerKey, true);
   aura::client::ParentWindowWithContext(window,
                                         /*context=*/window->GetRootWindow(),
                                         window->GetBoundsInScreen());

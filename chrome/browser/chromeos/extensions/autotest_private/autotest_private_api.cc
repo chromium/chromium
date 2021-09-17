@@ -134,6 +134,7 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/policy/core/browser/policy_conversions.h"
@@ -3887,7 +3888,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
                    << ") isn't available even though it is an ARC window.";
       }
 
-      std::string* app_id = window->GetProperty(full_restore::kAppIdKey);
+      std::string* app_id = window->GetProperty(app_restore::kAppIdKey);
       if (app_id) {
         window_info.full_restore_window_app_id =
             std::make_unique<std::string>(*app_id);

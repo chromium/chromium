@@ -53,6 +53,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -163,7 +164,7 @@ void CreateAndSaveWindowInfo(int desk_id,
   // SaveWindowInfo to work.
   auto window = std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
-  window->SetProperty(::full_restore::kWindowIdKey, window_id);
+  window->SetProperty(app_restore::kWindowIdKey, window_id);
 
   app_restore::WindowInfo window_info;
   window_info.window = window.get();
@@ -242,7 +243,7 @@ std::vector<arc::mojom::AppInfoPtr> GetTestAppsList(
 }
 
 // Creates an exo app window, and sets `window_app_id` for its shell application
-// id, `app_id` for the window property `::full_restore::kAppIdKey`.
+// id, `app_id` for the window property `app_restore::kAppIdKey`.
 views::Widget* CreateExoWindow(const std::string& window_app_id,
                                const std::string& app_id) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
@@ -256,7 +257,7 @@ views::Widget* CreateExoWindow(const std::string& window_app_id,
                                           params.init_properties_container);
 
   if (!app_id.empty())
-    params.init_properties_container.SetProperty(::full_restore::kAppIdKey,
+    params.init_properties_container.SetProperty(app_restore::kAppIdKey,
                                                  app_id);
 
   views::Widget* widget = new views::Widget();
@@ -284,7 +285,7 @@ views::Widget* CreateExoWindow(const std::string& window_app_id) {
 Browser* GetBrowserForWindowId(int32_t window_id) {
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->window()->GetNativeWindow()->GetProperty(
-            ::full_restore::kRestoreWindowIdKey) == window_id) {
+            app_restore::kRestoreWindowIdKey) == window_id) {
       return browser;
     }
   }
@@ -332,8 +333,7 @@ class FullRestoreAppLaunchHandlerBrowserTest
   aura::Window* FindWebAppWindow() {
     for (auto* browser : *BrowserList::GetInstance()) {
       aura::Window* window = browser->window()->GetNativeWindow();
-      if (window->GetProperty(::full_restore::kRestoreWindowIdKey) ==
-          kWindowId2) {
+      if (window->GetProperty(app_restore::kRestoreWindowIdKey) == kWindowId2) {
         return window;
       }
     }
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   aura::Window* web_app_window = FindWebAppWindow();
   ASSERT_TRUE(web_app_window);
-  EXPECT_TRUE(web_app_window->GetProperty(::full_restore::kWindowInfoKey));
+  EXPECT_TRUE(web_app_window->GetProperty(app_restore::kWindowInfoKey));
 }
 
 // Tests that restoring windows that are minimized will restore their
@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // TODO(sammiequon): Check the values from the actual browser window.
   auto window = std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_NOT_DRAWN);
-  window->SetProperty(::full_restore::kRestoreWindowIdKey, kWindowId1);
+  window->SetProperty(app_restore::kRestoreWindowIdKey, kWindowId1);
   auto stored_window_info = ::full_restore::GetWindowInfo(window.get());
   EXPECT_EQ(kDeskId, *stored_window_info->desk_id);
   EXPECT_EQ(kCurrentBounds, *stored_window_info->current_bounds);
@@ -989,14 +989,13 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
 
   window = app_window->GetNativeWindow();
   ASSERT_TRUE(window);
-  int restore_window_id =
-      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+  int restore_window_id = window->GetProperty(app_restore::kRestoreWindowIdKey);
   EXPECT_NE(0, restore_window_id);
 
-  auto* window_info = window->GetProperty(::full_restore::kWindowInfoKey);
+  auto* window_info = window->GetProperty(app_restore::kWindowInfoKey);
   ASSERT_TRUE(window_info);
   EXPECT_TRUE(window_info->activation_index.has_value());
-  int32_t* index = window->GetProperty(::full_restore::kActivationIndexKey);
+  int32_t* index = window->GetProperty(app_restore::kActivationIndexKey);
   ASSERT_TRUE(index);
   EXPECT_EQ(kActivationIndex, *index);
   EXPECT_EQ(kDeskId, window->GetProperty(aura::client::kWindowWorkspaceKey));
@@ -1093,7 +1092,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   ASSERT_TRUE(app_window1);
   window1 = app_window1->GetNativeWindow();
   ASSERT_TRUE(window1);
-  EXPECT_NE(0, window1->GetProperty(::full_restore::kRestoreWindowIdKey));
+  EXPECT_NE(0, window1->GetProperty(app_restore::kRestoreWindowIdKey));
 
   auto window_info = ::full_restore::GetWindowInfo(window1);
   ASSERT_TRUE(window_info);
@@ -1104,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   ASSERT_TRUE(app_window2);
   window2 = app_window2->GetNativeWindow();
   ASSERT_TRUE(window2);
-  EXPECT_NE(0, window2->GetProperty(::full_restore::kRestoreWindowIdKey));
+  EXPECT_NE(0, window2->GetProperty(app_restore::kRestoreWindowIdKey));
 
   window_info = ::full_restore::GetWindowInfo(window2);
   ASSERT_TRUE(window_info);
@@ -1116,7 +1115,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   ASSERT_TRUE(app_window);
   auto* window = app_window->GetNativeWindow();
   ASSERT_TRUE(window);
-  EXPECT_EQ(0, window->GetProperty(::full_restore::kRestoreWindowIdKey));
+  EXPECT_EQ(0, window->GetProperty(app_restore::kRestoreWindowIdKey));
 
   // Close the window.
   CloseAppWindow(app_window1);
@@ -1295,11 +1294,11 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
                             int32_t restore_window_id,
                             bool hidden) {
     ASSERT_TRUE(window);
-    EXPECT_EQ(window_id, window->GetProperty(::full_restore::kWindowIdKey));
+    EXPECT_EQ(window_id, window->GetProperty(app_restore::kWindowIdKey));
     EXPECT_EQ(restore_window_id,
-              window->GetProperty(::full_restore::kRestoreWindowIdKey));
+              window->GetProperty(app_restore::kRestoreWindowIdKey));
     EXPECT_EQ(hidden,
-              window->GetProperty(::full_restore::kParentToHiddenContainerKey));
+              window->GetProperty(app_restore::kParentToHiddenContainerKey));
   }
 
   void VerifyWindowInfo(aura::Window* window,
@@ -1671,7 +1670,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   // Simulate creating the task for the restored window.
   int32_t kTaskId2 = 200;
-  window->SetProperty(::full_restore::kWindowIdKey, kTaskId2);
+  window->SetProperty(app_restore::kWindowIdKey, kTaskId2);
   CreateTask(app_id, kTaskId2, session_id2);
 
   VerifyWindowProperty(window, kTaskId2, kTaskId1, /*hidden=*/false);
@@ -1778,7 +1777,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   // Simulate creating the task for the restored window.
   int32_t kTaskId2 = 200;
   CreateTask(app_id, kTaskId2, session_id3);
-  window->SetProperty(::full_restore::kWindowIdKey, kTaskId2);
+  window->SetProperty(app_restore::kWindowIdKey, kTaskId2);
 
   VerifyWindowProperty(window, kTaskId2, session_id2, /*hidden=*/false);
   VerifyWindowInfo(window, kActivationIndex);
@@ -2499,7 +2498,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Get the window id.
   aura::Window* window = app_browser->window()->GetNativeWindow();
-  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+  int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
 
   WaitForAppLaunchInfoSaved();
 
@@ -2524,7 +2523,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   // Get the restore window id.
   window = restore_app_browser->window()->GetNativeWindow();
   int32_t restore_window_id =
-      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+      window->GetProperty(app_restore::kRestoreWindowIdKey);
 
   EXPECT_EQ(window_id, restore_window_id);
 }
@@ -2539,7 +2538,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Get the window id.
   aura::Window* window = app_browser->window()->GetNativeWindow();
-  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+  int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
 
   SaveWindowInfo(window);
   WaitForAppLaunchInfoSaved();
@@ -2575,7 +2574,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Get the window id.
   aura::Window* window = app_browser->window()->GetNativeWindow();
-  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+  int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
 
   WaitForAppLaunchInfoSaved();
 
@@ -2611,7 +2610,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   // Get the restore window id.
   window = restore_app_browser->window()->GetNativeWindow();
   int32_t restore_window_id =
-      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+      window->GetProperty(app_restore::kRestoreWindowIdKey);
 
   EXPECT_EQ(window_id, restore_window_id);
 }
@@ -2626,7 +2625,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Get the window id.
   aura::Window* window1 = app_browser1->window()->GetNativeWindow();
-  int32_t window_id1 = window1->GetProperty(::full_restore::kWindowIdKey);
+  int32_t window_id1 = window1->GetProperty(app_restore::kWindowIdKey);
 
   WaitForAppLaunchInfoSaved();
   ::full_restore::FullRestoreSaveHandler::GetInstance()->ClearForTesting();
@@ -2652,7 +2651,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   Browser* app_browser2 = LaunchMediaSystemWebApp();
   ASSERT_TRUE(app_browser2);
   aura::Window* window2 = app_browser2->window()->GetNativeWindow();
-  int32_t window_id2 = window2->GetProperty(::full_restore::kWindowIdKey);
+  int32_t window_id2 = window2->GetProperty(app_restore::kWindowIdKey);
 
   WaitForAppLaunchInfoSaved(/*allow_save=*/false);
   ::full_restore::FullRestoreSaveHandler::GetInstance()->ClearForTesting();
@@ -2682,7 +2681,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   // Get the restore window id.
   window1 = restore_app_browser->window()->GetNativeWindow();
   int32_t restore_window_id =
-      window1->GetProperty(::full_restore::kRestoreWindowIdKey);
+      window1->GetProperty(app_restore::kRestoreWindowIdKey);
 
   EXPECT_EQ(window_id1, restore_window_id);
 }
@@ -2697,7 +2696,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Get the window id.
   aura::Window* window1 = app_browser1->window()->GetNativeWindow();
-  int32_t window_id1 = window1->GetProperty(::full_restore::kWindowIdKey);
+  int32_t window_id1 = window1->GetProperty(app_restore::kWindowIdKey);
 
   WaitForAppLaunchInfoSaved();
   ::full_restore::FullRestoreSaveHandler::GetInstance()->ClearForTesting();
@@ -2723,7 +2722,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
       LaunchMediaSystemWebApp(apps::mojom::LaunchSource::kFromShelf);
   ASSERT_TRUE(app_browser2);
   aura::Window* window2 = app_browser2->window()->GetNativeWindow();
-  int32_t window_id2 = window2->GetProperty(::full_restore::kWindowIdKey);
+  int32_t window_id2 = window2->GetProperty(app_restore::kWindowIdKey);
 
   WaitForAppLaunchInfoSaved(/*allow_save=*/false);
   ::full_restore::FullRestoreSaveHandler::GetInstance()->ClearForTesting();
@@ -2756,7 +2755,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   // Get the restore window id.
   window2 = restore_app_browser->window()->GetNativeWindow();
   int32_t restore_window_id =
-      window2->GetProperty(::full_restore::kRestoreWindowIdKey);
+      window2->GetProperty(app_restore::kRestoreWindowIdKey);
 
   EXPECT_EQ(window_id2, restore_window_id);
 }
@@ -2769,7 +2768,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Get the window id.
   aura::Window* window = app_browser->window()->GetNativeWindow();
-  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+  int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
 
   // Snap |window| to the left and store its window properties.
   // TODO(sammiequon): Store and check desk id and restore bounds.
@@ -2800,8 +2799,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Get the restored browser's window.
   window = restore_app_browser->window()->GetNativeWindow();
-  ASSERT_EQ(window_id,
-            window->GetProperty(::full_restore::kRestoreWindowIdKey));
+  ASSERT_EQ(window_id, window->GetProperty(app_restore::kRestoreWindowIdKey));
 
   // Check that |window|'s properties match the one's we stored.
   EXPECT_EQ(pre_save_bounds, window->GetBoundsInScreen());
@@ -2834,10 +2832,8 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   ASSERT_EQ(app1_window, split_view_test_api.GetLeftWindow());
   ASSERT_EQ(app2_window, split_view_test_api.GetRightWindow());
 
-  const int32_t app1_id =
-      app1_window->GetProperty(::full_restore::kWindowIdKey);
-  const int32_t app2_id =
-      app2_window->GetProperty(::full_restore::kWindowIdKey);
+  const int32_t app1_id = app1_window->GetProperty(app_restore::kWindowIdKey);
+  const int32_t app2_id = app2_window->GetProperty(app_restore::kWindowIdKey);
 
   SaveWindowInfo(app1_window);
   SaveWindowInfo(app2_window);
@@ -2859,11 +2855,11 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   // Find the restored app windows in the browser list.
   for (Browser* browser : *BrowserList::GetInstance()) {
     aura::Window* native_window = browser->window()->GetNativeWindow();
-    if (native_window->GetProperty(::full_restore::kRestoreWindowIdKey) ==
+    if (native_window->GetProperty(app_restore::kRestoreWindowIdKey) ==
         app1_id) {
       restore_app1_window = native_window;
     }
-    if (native_window->GetProperty(::full_restore::kRestoreWindowIdKey) ==
+    if (native_window->GetProperty(app_restore::kRestoreWindowIdKey) ==
         app2_id) {
       restore_app2_window = native_window;
     }

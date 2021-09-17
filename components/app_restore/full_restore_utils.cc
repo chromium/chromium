@@ -14,25 +14,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/window_info.h"
 
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(APP_RESTORE), int32_t*)
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(APP_RESTORE),
-                                       app_restore::WindowInfo*)
-
 namespace full_restore {
-
-DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowIdKey, 0)
-DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kRestoreWindowIdKey, 0)
-DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kGhostWindowSessionIdKey, 0)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kAppIdKey, nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kBrowserAppNameKey, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppTypeBrowser, false)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(int32_t, kActivationIndexKey, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kParentToHiddenContainerKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kLaunchedFromFullRestoreKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRealArcTaskWindow, true)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(app_restore::WindowInfo,
-                                   kWindowInfoKey,
-                                   nullptr)
 
 void SaveAppLaunchInfo(
     const base::FilePath& profile_path,

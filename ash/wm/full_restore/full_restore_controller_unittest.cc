@@ -29,6 +29,7 @@
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -71,7 +72,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   // ResetSaveWindowsCount call.
   int GetSaveWindowsCount(aura::Window* window) const {
     const int32_t restore_window_id =
-        window->GetProperty(full_restore::kRestoreWindowIdKey);
+        window->GetProperty(app_restore::kRestoreWindowIdKey);
     if (!base::Contains(fake_full_restore_file_, restore_window_id))
       return 0;
     return fake_full_restore_file_.at(restore_window_id).call_count;
@@ -96,7 +97,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   // Returns window info for `window`.
   app_restore::WindowInfo* GetWindowInfo(aura::Window* window) const {
     const int32_t restore_window_id =
-        window->GetProperty(full_restore::kRestoreWindowIdKey);
+        window->GetProperty(app_restore::kRestoreWindowIdKey);
     if (!base::Contains(fake_full_restore_file_, restore_window_id))
       return nullptr;
     return fake_full_restore_file_.at(restore_window_id).info.get();
@@ -171,13 +172,13 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
         .SetShow(false)
         .SetContext(context)
         .SetShowState(chromeos::ToWindowShowState(*info->window_state_type))
-        .SetWindowProperty(full_restore::kWindowInfoKey, info_clone)
-        .SetWindowProperty(full_restore::kActivationIndexKey,
+        .SetWindowProperty(app_restore::kWindowInfoKey, info_clone)
+        .SetWindowProperty(app_restore::kActivationIndexKey,
                            new int32_t(*info->activation_index))
-        .SetWindowProperty(full_restore::kLaunchedFromFullRestoreKey, true)
-        .SetWindowProperty(full_restore::kRestoreWindowIdKey, restore_window_id)
+        .SetWindowProperty(app_restore::kLaunchedFromFullRestoreKey, true)
+        .SetWindowProperty(app_restore::kRestoreWindowIdKey, restore_window_id)
         .SetWindowProperty(aura::client::kAppType, static_cast<int>(app_type))
-        .SetWindowProperty(full_restore::kParentToHiddenContainerKey,
+        .SetWindowProperty(app_restore::kParentToHiddenContainerKey,
                            is_taskless_arc_app);
 
     views::Widget* widget = widget_builder.BuildOwnedByNativeWidget();
@@ -285,11 +286,11 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     }
 
     // If this is a new window, finds and sets a new restore window id.
-    if (window->GetProperty(full_restore::kRestoreWindowIdKey) == 0) {
+    if (window->GetProperty(app_restore::kRestoreWindowIdKey) == 0) {
       int32_t restore_window_id = 1;
       while (fake_full_restore_file_.contains(restore_window_id))
         ++restore_window_id;
-      window->SetProperty(full_restore::kRestoreWindowIdKey, restore_window_id);
+      window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
     }
 
     // FullRestoreController relies on getting OnWindowInitialized events from
@@ -307,7 +308,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     DCHECK(window);
 
     const int32_t restore_window_id =
-        window->GetProperty(full_restore::kRestoreWindowIdKey);
+        window->GetProperty(app_restore::kRestoreWindowIdKey);
     if (fake_full_restore_file_.contains(restore_window_id)) {
       fake_full_restore_file_[restore_window_id].call_count++;
     } else {
@@ -326,7 +327,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
       aura::Window* window) {
     DCHECK(window);
     const int32_t restore_window_id =
-        window->GetProperty(full_restore::kRestoreWindowIdKey);
+        window->GetProperty(app_restore::kRestoreWindowIdKey);
     if (!fake_full_restore_file_.contains(restore_window_id))
       return nullptr;
 
@@ -568,7 +569,7 @@ TEST_F(FullRestoreControllerTest, TestFullRestoredWidget) {
   const int32_t kActivationIndex = 2;
   views::Widget* widget = CreateTestFullRestoredWidget(kActivationIndex);
   int32_t* activation_index =
-      widget->GetNativeWindow()->GetProperty(full_restore::kActivationIndexKey);
+      widget->GetNativeWindow()->GetProperty(app_restore::kActivationIndexKey);
   ASSERT_TRUE(activation_index);
   EXPECT_EQ(kActivationIndex, *activation_index);
 
@@ -954,7 +955,7 @@ TEST_F(FullRestoreControllerTest, TabletToClamshell) {
   EXPECT_EQ(chromeos::WindowStateType::kDefault,
             *window_info->window_state_type);
 
-  const int restore_id = window->GetProperty(full_restore::kRestoreWindowIdKey);
+  const int restore_id = window->GetProperty(app_restore::kRestoreWindowIdKey);
 
   // Leave tablet mode, and then mock creating the window from full restore
   // file. Test that the state and bounds are as expected in clamshell mode.
@@ -1031,7 +1032,7 @@ TEST_F(FullRestoreControllerTest,
 }
 
 // Tests that the posted task for clearing a window's
-// `full_restore::kLaunchedFromFullRestoreKey` is cancelled when that window is
+// `app_restore::kLaunchedFromFullRestoreKey` is cancelled when that window is
 // destroyed.
 TEST_F(FullRestoreControllerTest, RestorePropertyClearCallback) {
   // Restore a window.
@@ -1040,7 +1041,7 @@ TEST_F(FullRestoreControllerTest, RestorePropertyClearCallback) {
   views::Widget* restored_widget =
       CreateTestFullRestoredWidgetFromRestoreId(/*restore_window_id=*/1);
   ASSERT_TRUE(restored_widget->GetNativeWindow()->GetProperty(
-      full_restore::kLaunchedFromFullRestoreKey));
+      app_restore::kLaunchedFromFullRestoreKey));
 
   // Destroy the window immediately. There should be no restore property clear
   // callbacks left.
@@ -1225,8 +1226,8 @@ TEST_F(FullRestoreControllerTest, TopmostWindowIsActivatable) {
 
   // Check the Full Restore'd windows' properties.
   EXPECT_TRUE(
-      restored_window1->GetProperty(full_restore::kLaunchedFromFullRestoreKey));
-  EXPECT_TRUE(window_4->GetProperty(full_restore::kLaunchedFromFullRestoreKey));
+      restored_window1->GetProperty(app_restore::kLaunchedFromFullRestoreKey));
+  EXPECT_TRUE(window_4->GetProperty(app_restore::kLaunchedFromFullRestoreKey));
 
   // Both the Full Restore'd windows shouldn't be activatable.
   EXPECT_FALSE(wm::CanActivateWindow(restored_window1));
@@ -1237,7 +1238,7 @@ TEST_F(FullRestoreControllerTest, TopmostWindowIsActivatable) {
   window.reset();
   VerifyStackingOrder(desk_container, {window_4, restored_window1});
   EXPECT_TRUE(
-      restored_window1->GetProperty(full_restore::kLaunchedFromFullRestoreKey));
+      restored_window1->GetProperty(app_restore::kLaunchedFromFullRestoreKey));
   EXPECT_TRUE(wm::CanActivateWindow(restored_window1));
   EXPECT_FALSE(wm::CanActivateWindow(window_4));
 }

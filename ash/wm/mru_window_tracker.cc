@@ -21,7 +21,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "components/app_restore/features.h"
-#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -202,7 +202,7 @@ MruWindowTracker::WindowList BuildWindowListInternal(
 bool CanIncludeWindowInMruList(aura::Window* window) {
   // If `window` was launched from Full Restore it won't be activatable
   // temporarily, but it should still be included in the MRU list.
-  if (window->GetProperty(full_restore::kLaunchedFromFullRestoreKey))
+  if (window->GetProperty(app_restore::kLaunchedFromFullRestoreKey))
     return true;
 
   return wm::CanActivateWindow(window) &&
@@ -318,7 +318,7 @@ void MruWindowTracker::OnWindowInitialized(aura::Window* window) {
   DCHECK(full_restore::features::IsFullRestoreEnabled());
 
   int32_t* activation_index =
-      window->GetProperty(full_restore::kActivationIndexKey);
+      window->GetProperty(app_restore::kActivationIndexKey);
   if (!activation_index)
     return;
 

@@ -20,6 +20,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
@@ -40,7 +41,7 @@ FullRestoreReadHandler::FullRestoreReadHandler() {
 FullRestoreReadHandler::~FullRestoreReadHandler() = default;
 
 void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
-  int32_t window_id = window->GetProperty(::full_restore::kRestoreWindowIdKey);
+  int32_t window_id = window->GetProperty(app_restore::kRestoreWindowIdKey);
 
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::ARC_APP)) {
@@ -78,7 +79,7 @@ void FullRestoreReadHandler::OnWindowDestroyed(aura::Window* window) {
   }
 
   int32_t restore_window_id =
-      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+      window->GetProperty(app_restore::kRestoreWindowIdKey);
   DCHECK(SessionID::IsValidValue(restore_window_id));
 
   RemoveAppRestoreData(restore_window_id);
@@ -201,7 +202,7 @@ std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
     return nullptr;
 
   const int32_t restore_window_id =
-      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+      window->GetProperty(app_restore::kRestoreWindowIdKey);
 
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::ARC_APP)) {
@@ -321,19 +322,20 @@ void FullRestoreReadHandler::ApplyProperties(
   // Create a clone so `property_handler` can have complete ownership of a copy
   // of WindowInfo.
   app_restore::WindowInfo* window_info_clone = window_info->Clone();
-  property_handler->SetProperty(kWindowInfoKey, window_info_clone);
+  property_handler->SetProperty(app_restore::kWindowInfoKey, window_info_clone);
 
   if (window_info->activation_index) {
     const int32_t index = *window_info->activation_index;
     // kActivationIndexKey is owned, which allows for passing in this raw
     // pointer.
-    property_handler->SetProperty(kActivationIndexKey,
+    property_handler->SetProperty(app_restore::kActivationIndexKey,
                                   std::make_unique<int32_t>(index));
     // Windows opened from full restore should not be activated. Widgets that
     // are shown are activated by default. Force the widget to not be
     // activatable; the activation will be restored in ash once the window is
     // launched.
-    property_handler->SetProperty(kLaunchedFromFullRestoreKey, true);
+    property_handler->SetProperty(app_restore::kLaunchedFromFullRestoreKey,
+                                  true);
   }
   if (window_info->pre_minimized_show_state_type) {
     property_handler->SetProperty(aura::client::kPreMinimizedShowStateKey,

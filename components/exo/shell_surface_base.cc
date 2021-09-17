@@ -39,6 +39,7 @@
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -1161,7 +1162,7 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   full_restore::ModifyWidgetParams(params.init_properties_container.GetProperty(
-                                       full_restore::kRestoreWindowIdKey),
+                                       app_restore::kRestoreWindowIdKey),
                                    &params);
 #endif
 

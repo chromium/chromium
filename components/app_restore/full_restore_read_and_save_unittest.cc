@@ -21,6 +21,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -253,7 +254,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     app_restore::WindowInfo window_info;
     window_info.window = window.get();
     window->SetProperty(aura::client::kAppType, static_cast<int>(app_type));
-    window->SetProperty(full_restore::kWindowIdKey, id);
+    window->SetProperty(app_restore::kWindowIdKey, id);
     window_info.activation_index = index;
     full_restore::SaveWindowInfo(window_info);
     return window;
@@ -265,7 +266,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
         aura::test::CreateTestWindowWithId(restore_window_id, nullptr));
     window->SetProperty(aura::client::kAppType,
                         static_cast<int>(ash::AppType::ARC_APP));
-    window->SetProperty(full_restore::kRestoreWindowIdKey, restore_window_id);
+    window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
     return full_restore::GetWindowInfo(window.get());
   }
 
@@ -474,7 +475,7 @@ TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
   task_environment().RunUntilIdle();
 
   // Verify now GetAppId() can still get correct id for |window1| whose
-  // full_restore::kWindowIdKey has changed.
+  // app_restore::kWindowIdKey has changed.
   EXPECT_EQ(save_handler->GetAppId(window1.get()), kAppId);
 
   ReadFromFile(GetPath());

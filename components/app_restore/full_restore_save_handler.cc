@@ -18,6 +18,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/common/constants.h"
@@ -109,14 +110,14 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     return;
   }
 
-  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+  int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
   if (!SessionID::IsValidValue(window_id))
     return;
 
   ++window_count_;
   observed_windows_.AddObservation(window);
 
-  std::string* app_id_str = window->GetProperty(::full_restore::kAppIdKey);
+  std::string* app_id_str = window->GetProperty(app_restore::kAppIdKey);
   AppLaunchInfoPtr app_launch_info;
 
   if (app_id_str) {
@@ -145,11 +146,11 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     // If the window is an app type browser window, set `app_type_browser` as
     // true, to call the browser session restore to restore apps for the next
     // system startup.
-    if (window->GetProperty(full_restore::kAppTypeBrowser)) {
+    if (window->GetProperty(app_restore::kAppTypeBrowser)) {
       app_launch_info->app_type_browser = true;
 
       std::string* browser_app_name =
-          window->GetProperty(full_restore::kBrowserAppNameKey);
+          window->GetProperty(app_restore::kBrowserAppNameKey);
       if (browser_app_name) {
         std::string app_id = GetAppIdFromAppName(*browser_app_name);
         auto it =
@@ -174,7 +175,7 @@ void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
   DCHECK(observed_windows_.IsObservingSource(window));
   observed_windows_.RemoveObservation(window);
 
-  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+  int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
 
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::ARC_APP)) {
@@ -251,7 +252,7 @@ void FullRestoreSaveHandler::SaveWindowInfo(
   }
 
   int32_t window_id =
-      window_info.window->GetProperty(::full_restore::kWindowIdKey);
+      window_info.window->GetProperty(app_restore::kWindowIdKey);
 
   if (!SessionID::IsValidValue(window_id))
     return;
@@ -458,7 +459,7 @@ std::string FullRestoreSaveHandler::GetAppId(aura::Window* window) {
   } else {
     // For other window types (browser, PWAs, SWAs, Chrome apps), get its
     // corresponding app id from |window_id_to_app_restore_info_|.
-    const int32_t window_id = window->GetProperty(kWindowIdKey);
+    const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
     auto iter = window_id_to_app_restore_info_.find(window_id);
     return iter != window_id_to_app_restore_info_.end() ? iter->second.second
                                                         : std::string();

@@ -49,9 +49,9 @@
 #include "base/notreached.h"
 #include "base/timer/timer.h"
 #include "components/app_restore/app_launch_info.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -865,7 +865,7 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
     // We need to copy |app_launch_info->app_id| to |app_id| as the below
     // function AddAppLaunchInfo() will destroy |app_launch_info|.
     const std::string app_id = app_launch_info->app_id;
-    const int32_t window_id = window->GetProperty(full_restore::kWindowIdKey);
+    const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
     restore_data->AddAppLaunchInfo(std::move(app_launch_info));
 
     std::unique_ptr<app_restore::WindowInfo> window_info = BuildWindowInfo(
