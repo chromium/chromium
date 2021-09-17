@@ -47,7 +47,7 @@
 <translation id="1048286738600630630">디스플레이</translation>
 <translation id="1048986595386481879">동적으로 할당됨</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 중}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 중}}</translation>
-<translation id="1049743911850919806">시크릿</translation>
+<translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="1049795001945932310">언어 설정(&amp;L)</translation>
 <translation id="1050693411695664090">나쁨</translation>
 <translation id="1054048317165655285">휴대전화에서 설정 완료</translation>
