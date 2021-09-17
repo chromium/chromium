@@ -125,7 +125,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="Restore" summary="Restore is clicked"/>
 </variants>
 
-<histogram name="Apps.ActivatedCount.{AppType}" units="ms"
+<histogram name="Apps.ActivatedCount.{AppType}" units="units"
     expires_after="2022-07-01">
   <owner>dominickn@chromium.org</owner>
   <owner>nancylingwang@chromium.org</owner>
