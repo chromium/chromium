@@ -10,6 +10,7 @@ import re
 import sys
 import time
 
+from telemetry.internal.results import artifact_compatibility_wrapper as acw
 from telemetry.testing import serially_executed_browser_test_case
 from telemetry.util import screenshot
 from typ import json_results
@@ -62,6 +63,20 @@ class GpuIntegrationTest(
   # TODO(crbug.com/1248602): Remove this in favor of a method that doesn't rely
   # on assumptions about retries, etc. if possible.
   _flaky_test_tries = collections.Counter()
+
+  def __init__(self, *args, **kwargs):
+    super(GpuIntegrationTest, self).__init__(*args, **kwargs)
+    if self.artifacts is None:
+      self.set_artifacts(None)
+
+  def set_artifacts(self, artifacts):
+    # Instead of using the default logging artifact implementation, use the
+    # full logging one. This ensures we get debugging information if something
+    # goes wrong before typ can set the actual artifact implementation, such
+    # as during initial browser startup.
+    if artifacts is None:
+      artifacts = acw.FullLoggingArtifactImpl()
+    super(GpuIntegrationTest, self).set_artifacts(artifacts)
 
   @classmethod
   def SetUpProcess(cls):

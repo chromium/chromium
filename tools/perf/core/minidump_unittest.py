@@ -10,6 +10,8 @@ import sys
 import time
 
 from telemetry.core import exceptions
+from telemetry.internal.results import artifact_compatibility_wrapper as acw
+from telemetry.internal.results import artifact_logger
 from telemetry.testing import tab_test_case
 from telemetry import decorators
 
@@ -40,6 +42,18 @@ def ContainsAtLeastOne(expected_values, checked_value):
 
 
 class BrowserMinidumpTest(tab_test_case.TabTestCase):
+  def setUp(self):
+    # If something is wrong with minidump symbolization, we want to get all the
+    # debugging information we can from the bots since it may be difficult to
+    # reproduce the issue locally. So, use the full logger implementation.
+    artifact_logger.RegisterArtifactImplementation(
+        acw.FullLoggingArtifactImpl())
+    super(BrowserMinidumpTest, self).setUp()
+
+  def tearDown(self):
+    super(BrowserMinidumpTest, self).tearDown()
+    artifact_logger.RegisterArtifactImplementation(None)
+
   def assertContainsAtLeastOne(self, expected_values, checked_value):
     self.assertTrue(ContainsAtLeastOne(expected_values, checked_value),
                     'None of %s found in %s' % (expected_values, checked_value))
