@@ -25,7 +25,7 @@ class EntityMetadataProvider {
 
  protected:
   EntityMetadataProvider() = default;
-  ~EntityMetadataProvider() = default;
+  virtual ~EntityMetadataProvider() = default;
 };
 
 }  // namespace optimization_guide

@@ -20,10 +20,14 @@ static_library("bloomfilter") {
 
 static_library("core") {
   sources = [
+    "batch_entity_metadata_task.cc",
+    "batch_entity_metadata_task.h",
     "command_line_top_host_provider.cc",
     "command_line_top_host_provider.h",
     "decision_tree_prediction_model.cc",
     "decision_tree_prediction_model.h",
+    "entity_metadata.h",
+    "entity_metadata_provider.h",
     "hint_cache.cc",
     "hint_cache.h",
     "hints_component_info.h",
@@ -89,8 +93,6 @@ static_library("core") {
       "base_model_executor_helpers.h",
       "bert_model_executor.cc",
       "bert_model_executor.h",
-      "entity_metadata.h",
-      "entity_metadata_provider.h",
       "model_executor.h",
       "model_validator.cc",
       "model_validator.h",
@@ -171,6 +173,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "batch_entity_metadata_task_unittest.cc",
     "bloom_filter_unittest.cc",
     "command_line_top_host_provider_unittest.cc",
     "decision_tree_prediction_model_unittest.cc",
