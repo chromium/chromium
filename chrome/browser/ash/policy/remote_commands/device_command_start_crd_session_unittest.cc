@@ -447,6 +447,10 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 }
 
 TEST_F(DeviceCommandStartCRDSessionJobTest, ShouldFailForManagedGuestUser) {
+  base::test::ScopedFeatureList disable_crd_for_user_sessions_;
+  disable_crd_for_user_sessions_.InitAndDisableFeature(
+      features::kCRDForManagedUserSessions);
+
   LogInAsManagedGuestSessionUser();
 
   Result result = RunJobAndWaitForResult();
@@ -465,6 +469,10 @@ TEST_F(DeviceCommandStartCRDSessionJobTest, ShouldFailForGuestUser) {
 }
 
 TEST_F(DeviceCommandStartCRDSessionJobTest, ShouldFailForAffiliatedUser) {
+  base::test::ScopedFeatureList disable_crd_for_user_sessions_;
+  disable_crd_for_user_sessions_.InitAndDisableFeature(
+      features::kCRDForManagedUserSessions);
+
   LogInAsAffiliatedUser();
 
   Result result = RunJobAndWaitForResult();

@@ -28,7 +28,7 @@ const base::Feature kUploadBrowserDeviceIdentifier{
     "UploadBrowserDeviceIdentifier", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCRDForManagedUserSessions{
-    "CRDForManagedUserSessions", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CRDForManagedUserSessions", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kLoginEventReporting{"LoginEventReporting",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
