@@ -29,8 +29,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -77,6 +79,8 @@ class MockTestClient : public TestClient {
                int32_t result,
                base::TimeDelta delay),
               (override));
+  MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
+  MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
 };
 
 }  // namespace
@@ -597,6 +601,35 @@ TEST_F(PDFiumEngineTest, RequestThumbnailLinearized) {
   initialize_result.FinishLoading();
 }
 
+TEST_F(PDFiumEngineTest, HandleInputEventKeyDown) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_CALL(client, DocumentFocusChanged(true));
+
+  blink::WebKeyboardEvent key_down_event(
+      blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  key_down_event.windows_key_code = ui::VKEY_TAB;
+  EXPECT_TRUE(engine->HandleInputEvent(key_down_event));
+}
+
+TEST_F(PDFiumEngineTest, HandleInputEventRawKeyDown) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  EXPECT_CALL(client, DocumentFocusChanged(true));
+
+  blink::WebKeyboardEvent raw_key_down_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  raw_key_down_event.windows_key_code = ui::VKEY_TAB;
+  EXPECT_TRUE(engine->HandleInputEvent(raw_key_down_event));
+}
+
 using PDFiumEngineDeathTest = PDFiumEngineTest;
 
 TEST_F(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
@@ -621,18 +654,6 @@ TEST_F(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
   EXPECT_DCHECK_DEATH(engine.RequestThumbnail(
       /*page_index=*/1, /*device_pixel_ratio=*/1, mock_callback.Get()));
 }
-
-class TabbingTestClient : public TestClient {
- public:
-  TabbingTestClient() = default;
-  ~TabbingTestClient() override = default;
-  TabbingTestClient(const TabbingTestClient&) = delete;
-  TabbingTestClient& operator=(const TabbingTestClient&) = delete;
-
-  // Mock PDFEngine::Client methods.
-  MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
-  MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
-};
 
 class PDFiumEngineTabbingTest : public PDFiumTestBase {
  public:
@@ -690,7 +711,7 @@ TEST_F(PDFiumEngineTabbingTest, LinkUnderCursorTest) {
   scoped_feature_list.InitAndEnableFeature(
       chrome_pdf::features::kTabAcrossPDFAnnotations);
 
-  TabbingTestClient client;
+  NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -786,7 +807,7 @@ TEST_F(PDFiumEngineTabbingTest, TabbingForwardTest) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<TabbingTestClient> client;
+  NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -838,7 +859,7 @@ TEST_F(PDFiumEngineTabbingTest, TabbingBackwardTest) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<TabbingTestClient> client;
+  NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -945,7 +966,7 @@ TEST_F(PDFiumEngineTabbingTest, NoFocusableItemTabbingTest) {
    * ++ Page 1
    * ++ Page 2
    */
-  NiceMock<TabbingTestClient> client;
+  NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -994,7 +1015,7 @@ TEST_F(PDFiumEngineTabbingTest, RestoringDocumentFocusTest) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<TabbingTestClient> client;
+  NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1039,7 +1060,7 @@ TEST_F(PDFiumEngineTabbingTest, RestoringAnnotFocusTest) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<TabbingTestClient> client;
+  NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);

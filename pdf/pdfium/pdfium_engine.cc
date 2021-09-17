@@ -946,6 +946,10 @@ bool PDFiumEngine::HandleInputEvent(const blink::WebInputEvent& event) {
     case blink::WebInputEvent::Type::kMouseEnter:
       OnMouseEnter(static_cast<const blink::WebMouseEvent&>(event));
       break;
+    case blink::WebInputEvent::Type::kKeyDown:
+      // Blink mostly sends `kRawKeyDown`, but sometimes generates `kKeyDown`,
+      // such as when tabbing between frames. Pepper treats them equivalently
+      // (see content/renderer/pepper/event_conversion.cc), so we will, too.
     case blink::WebInputEvent::Type::kRawKeyDown:
       rv = OnKeyDown(static_cast<const blink::WebKeyboardEvent&>(event));
       break;
