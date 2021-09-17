@@ -5,6 +5,6 @@
 // https://w3c.github.io/webtransport/#dictdef-webtransporterrorinit
 
 dictionary WebTransportErrorInit {
-  [Clamp] octet applicationProtocolCode;
+  [Clamp] octet streamErrorCode;
   DOMString message;
 };

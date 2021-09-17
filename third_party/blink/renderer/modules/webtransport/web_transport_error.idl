@@ -18,6 +18,6 @@ enum WebTransportErrorSource {
 ] interface WebTransportError : DOMException {
   constructor(optional WebTransportErrorInit init = {});
 
-  readonly attribute octet? applicationProtocolCode;
+  readonly attribute octet? streamErrorCode;
   readonly attribute WebTransportErrorSource source;
 };

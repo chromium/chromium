@@ -17,18 +17,18 @@ TEST(WebTransportErrorTest, DefaultConstruct) {
   auto* error = WebTransportError::Create(WebTransportErrorInit::Create());
 
   EXPECT_EQ(error->code(), 0);
-  EXPECT_EQ(error->applicationProtocolCode(), absl::nullopt);
+  EXPECT_EQ(error->streamErrorCode(), absl::nullopt);
   EXPECT_EQ(error->message(), "");
   EXPECT_EQ(error->source(), "stream");
 }
 
-TEST(WebTransportErrorTest, ConstructWithApplicationProtocolCode) {
+TEST(WebTransportErrorTest, ConstructWithStreamErrorCode) {
   auto* init = WebTransportErrorInit::Create();
-  init->setApplicationProtocolCode(11);
+  init->setStreamErrorCode(11);
   auto* error = WebTransportError::Create(init);
 
-  ASSERT_TRUE(error->applicationProtocolCode().has_value());
-  EXPECT_EQ(error->applicationProtocolCode().value(), 11);
+  ASSERT_TRUE(error->streamErrorCode().has_value());
+  EXPECT_EQ(error->streamErrorCode().value(), 11);
 }
 
 TEST(WebTransportErrorTest, ConstructWithMessage) {
@@ -61,8 +61,8 @@ TEST(WebTransportErrorTest, InternalCreate) {
   WebTransportError* error = V8WebTransportError::ToWrappable(isolate, v8value);
   ASSERT_TRUE(error);
   EXPECT_EQ(error->code(), 0);
-  ASSERT_TRUE(error->applicationProtocolCode().has_value());
-  EXPECT_EQ(error->applicationProtocolCode().value(), 27);
+  ASSERT_TRUE(error->streamErrorCode().has_value());
+  EXPECT_EQ(error->streamErrorCode().value(), 27);
   EXPECT_EQ(error->message(), "badness");
   EXPECT_EQ(error->source(), "session");
 }

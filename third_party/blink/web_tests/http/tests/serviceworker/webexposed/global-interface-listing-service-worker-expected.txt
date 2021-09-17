@@ -2971,8 +2971,8 @@ interface WebTransport
     method setDatagramWritableQueueExpirationDuration
 interface WebTransportError : DOMException
     attribute @@toStringTag
-    getter applicationProtocolCode
     getter source
+    getter streamErrorCode
     method constructor
 interface WindowClient : Client
     attribute @@toStringTag

@@ -3209,8 +3209,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method setDatagramWritableQueueExpirationDuration
 [Worker] interface WebTransportError : DOMException
 [Worker]     attribute @@toStringTag
-[Worker]     getter applicationProtocolCode
 [Worker]     getter source
+[Worker]     getter streamErrorCode
 [Worker]     method constructor
 [Worker] interface Worker : EventTarget
 [Worker]     attribute @@toStringTag

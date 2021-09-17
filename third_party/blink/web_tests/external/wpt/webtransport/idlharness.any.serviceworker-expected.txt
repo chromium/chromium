@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 58 tests; 34 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 58 tests; 35 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 FAIL WebTransportDatagramDuplexStream interface: existence and properties of interface object assert_own_property: self does not have own property "WebTransportDatagramDuplexStream" expected property "WebTransportDatagramDuplexStream" missing
@@ -57,6 +57,6 @@ PASS WebTransportError interface: existence and properties of interface prototyp
 PASS WebTransportError interface: existence and properties of interface prototype object's "constructor" property
 PASS WebTransportError interface: existence and properties of interface prototype object's @@unscopables property
 PASS WebTransportError interface: attribute source
-FAIL WebTransportError interface: attribute streamErrorCode assert_true: The prototype object must have a property "streamErrorCode" expected true got false
+PASS WebTransportError interface: attribute streamErrorCode
 Harness: the test ran to completion.
 

@@ -785,7 +785,7 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
   closed_resolver_->Resolve(close_info);
 
   v8::Local<v8::Value> reason = WebTransportError::Create(
-      script_state_->GetIsolate(), /*application_protocol_code=*/absl::nullopt,
+      script_state_->GetIsolate(), /*stream_error_code=*/absl::nullopt,
       "Connection closed.", WebTransportError::Source::kSession);
   ready_resolver_->Reject(reason);
   RejectPendingStreamResolvers();
@@ -845,7 +845,7 @@ void WebTransport::OnHandshakeFailed(
   {
     v8::Local<v8::Value> reason = WebTransportError::Create(
         script_state_->GetIsolate(),
-        /*application_protocol_code=*/absl::nullopt, "Connection lost.",
+        /*stream_error_code=*/absl::nullopt, "Connection lost.",
         WebTransportError::Source::kSession);
     ready_resolver_->Reject(reason);
     closed_resolver_->Reject(reason);
@@ -1085,7 +1085,7 @@ void WebTransport::OnConnectionError() {
   if (!cleanly_closed_) {
     v8::Local<v8::Value> reason = WebTransportError::Create(
         script_state_->GetIsolate(),
-        /*application_protocol_code=*/absl::nullopt, "Connection lost.",
+        /*stream_error_code=*/absl::nullopt, "Connection lost.",
         WebTransportError::Source::kSession);
     datagram_underlying_source_->Error(reason);
     received_streams_underlying_source_->Error(reason);
@@ -1102,7 +1102,7 @@ void WebTransport::OnConnectionError() {
 
 void WebTransport::RejectPendingStreamResolvers() {
   v8::Local<v8::Value> reason = WebTransportError::Create(
-      script_state_->GetIsolate(), /*application_protocol_code=*/absl::nullopt,
+      script_state_->GetIsolate(), /*stream_error_code=*/absl::nullopt,
       "Connection lost.", WebTransportError::Source::kSession);
   for (ScriptPromiseResolver* resolver : create_stream_resolvers_) {
     resolver->Reject(reason);

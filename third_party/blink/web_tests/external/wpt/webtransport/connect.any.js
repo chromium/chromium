@@ -22,7 +22,7 @@ promise_test(async t => {
   await promise_rejects_exactly(t, e, wt.ready, 'ready promise shoud be rejected');
   assert_true(e instanceof WebTransportError);
   assert_equals(e.source, 'session', 'source');
-  assert_equals(e.applicationProtocolCode, null, 'applicationProtocolCode');
+  assert_equals(e.streamErrorCode, null, 'streamErrorCode');
 }, 'WebTransport session establishment fails with status code 301');
 
 promise_test(async t => {
@@ -32,7 +32,7 @@ promise_test(async t => {
   await promise_rejects_exactly(t, e, wt.ready, 'ready promise shoud be rejected');
   assert_true(e instanceof WebTransportError);
   assert_equals(e.source, 'session', 'source');
-  assert_equals(e.applicationProtocolCode, null, 'applicationProtocolCode');
+  assert_equals(e.streamErrorCode, null, 'streamErrorCode');
 }, 'WebTransport session establishment with status code 401');
 
 promise_test(async t => {
@@ -42,7 +42,7 @@ promise_test(async t => {
   await promise_rejects_exactly(t, e, wt.ready, 'ready promise shoud be rejected');
   assert_true(e instanceof WebTransportError);
   assert_equals(e.source, 'session', 'source');
-  assert_equals(e.applicationProtocolCode, null, 'applicationProtocolCode');
+  assert_equals(e.streamErrorCode, null, 'streamErrorCode');
 }, 'WebTransport session establishment fails with status code 404');
 
 promise_test(async t => {
