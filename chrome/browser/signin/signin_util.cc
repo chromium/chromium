@@ -7,18 +7,20 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
@@ -269,5 +271,26 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
+#if !defined(OS_ANDROID)
+bool ProfileSeparationEnforcedByPolicy(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync))
+    return false;
+  std::string account_restriction =
+      profile->GetPrefs()->GetString(prefs::kManagedAccountsSigninRestriction);
+
+  // TODO(crbug/1163117) Look for the policy value for the intercepted account.
+  return !account_restriction.empty() && account_restriction != "none";
+}
+
+void RecordEnterpriseProfileCreationUserChoice(Profile* profile, bool created) {
+  base::UmaHistogramBoolean(
+      signin_util::ProfileSeparationEnforcedByPolicy(profile)
+          ? "Signin.Enterprise.WorkProfile.ProfileCreatedWithPolicySet"
+          : "Signin.Enterprise.WorkProfile.ProfileCreatedwithPolicyUnset",
+      created);
+}
+
+#endif
 
 }  // namespace signin_util

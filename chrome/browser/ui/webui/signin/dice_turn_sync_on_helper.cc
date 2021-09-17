@@ -313,6 +313,9 @@ void DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation(
     SigninChoice choice) {
   enterprise_account_confirmed_ =
       choice == SIGNIN_CHOICE_CONTINUE || choice == SIGNIN_CHOICE_NEW_PROFILE;
+  signin_util::RecordEnterpriseProfileCreationUserChoice(
+      profile_, enterprise_account_confirmed_);
+
   switch (choice) {
     case SIGNIN_CHOICE_CANCEL:
       base::RecordAction(

@@ -473,6 +473,31 @@ prefs when the profile is loaded.  -->
   <summary>Outcome of the token fetch in Dice signin.</summary>
 </histogram>
 
+<histogram name="Signin.Enterprise.WorkProfile.ProfileCreatedWithPolicySet"
+    enum="BooleanCreated" expires_after="2022-09-14">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
+  <summary>
+    Whether the user chose to create a new work profile after a signin while
+    profile separation is enforced by policy. This is recorded after the user
+    accepts or refuses to create a new profile when shown the enterprise profile
+    confirmation dialog and enterprise profile separation is enforced by policy.
+  </summary>
+</histogram>
+
+<histogram name="Signin.Enterprise.WorkProfile.ProfileCreatedwithPolicyUnset"
+    enum="BooleanCreated" expires_after="2022-09-14">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
+  <summary>
+    Whether the user chose to create a new work profile after a signin while
+    profile separation is not enforced by policy. This is recorded after the
+    user accepts or refuses to create a new profile when shown the enterprise
+    profile confirmation dialog and enterprise profile separation is not
+    enforced by policy.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Extensions.GaiaRemoteConsentFlowResult"
     enum="GaiaRemoteConsentFlowResult" expires_after="2021-12-12">
   <owner>alexilin@chromium.org</owner>
