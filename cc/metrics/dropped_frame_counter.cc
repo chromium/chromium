@@ -211,8 +211,10 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
   if (!args.interval.is_zero())
     total_frames_in_window_ = kSlidingWindowInterval / args.interval;
 
-  // Don't measure smoothness for frames that start before FCP is received.
-  if (is_dropped && fcp_received_ && args.frame_time >= time_fcp_received_) {
+  // Don't measure smoothness for frames that start before FCP is received, or
+  // that have already been reported as dropped.
+  if (is_dropped && fcp_received_ && args.frame_time >= time_fcp_received_ &&
+      !frame_sorter_.IsFrameDropped(args.frame_id)) {
     ++total_smoothness_dropped_;
     ReportFrames();
   }
