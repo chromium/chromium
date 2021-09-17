@@ -85,7 +85,14 @@ ChromeAppSorting::ChromeAppSorting(content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       default_ordinals_created_(false) {
   ExtensionIdList extensions;
-  ExtensionPrefs::Get(browser_context_)->GetExtensions(&extensions);
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+  std::unique_ptr<extensions::ExtensionPrefs::ExtensionsInfo> extensions_info =
+      prefs->GetInstalledExtensionsInfo();
+  for (size_t i = 0; i < extensions_info->size(); ++i) {
+    ExtensionInfo* info = extensions_info->at(i).get();
+    if (!prefs->IsFromBookmark(info->extension_id))
+      extensions.push_back(info->extension_id);
+  }
   InitializePageOrdinalMap(extensions);
   MigrateAppIndex(extensions);
 }
@@ -205,6 +212,16 @@ void ChromeAppSorting::InitializePageOrdinalMapFromWebApps() {
       web_app_provider->registry_controller().AsWebAppSyncBridge();
   app_registrar_observer_.Add(&web_app_provider->registrar());
   InitializePageOrdinalMap(web_app_registrar_->GetAppIds());
+}
+
+void ChromeAppSorting::SetWebAppRegistrarForTesting(
+    const web_app::WebAppRegistrar* web_app_registrar) {
+  web_app_registrar_ = web_app_registrar;
+}
+
+void ChromeAppSorting::SetWebAppSyncBridgeForTesting(
+    web_app::WebAppSyncBridge* sync_bridge) {
+  web_app_sync_bridge_ = sync_bridge;
 }
 
 void ChromeAppSorting::FixNTPOrdinalCollisions() {

@@ -96,6 +96,7 @@ class ChromeAppSorting : public AppSorting,
   friend class ChromeAppSortingInitializeWithNoApps;
   friend class ChromeAppSortingPageOrdinalMapping;
   friend class ChromeAppSortingSetExtensionVisible;
+  friend class ChromeAppSortingMigratedBookmarkApp;
 
   // An enum used by GetMinOrMaxAppLaunchOrdinalsOnPage to specify which
   // value should be returned.
@@ -164,6 +165,13 @@ class ChromeAppSorting : public AppSorting,
 
   // Returns the number of items in |m| visible on the new tab page.
   size_t CountItemsVisibleOnNtp(const AppLaunchOrdinalMap& m) const;
+
+  // Sets |web_app_registrar_|. Only for use by tests.
+  void SetWebAppRegistrarForTesting(
+      const web_app::WebAppRegistrar* web_app_registrar);
+
+  // Sets |web_app_sync_bridge_|. Only for use by tests.
+  void SetWebAppSyncBridgeForTesting(web_app::WebAppSyncBridge* sync_bridge);
 
   content::BrowserContext* const browser_context_ = nullptr;
   const web_app::WebAppRegistrar* web_app_registrar_ = nullptr;
