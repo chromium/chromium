@@ -87873,6 +87873,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="WebOTPServiceDestroyedReason">
+  <obsolete>
+    Deprecated 09/2021. We have learned about the pattern of the destruction.
+  </obsolete>
   <int value="0" label="Navigated to new page"/>
   <int value="1" label="Navigated to existing page"/>
   <int value="2" label="(Deprecated) Nagivated to same page"/>

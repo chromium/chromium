@@ -26,7 +26,6 @@ namespace content {
 
 class RenderFrameHost;
 class SmsFetcher;
-struct LoadCommittedDetails;
 
 // WebOTPService handles mojo connections from the renderer, observing the
 // incoming SMS messages from an SmsFetcher. In practice, it is owned and
@@ -74,11 +73,6 @@ class CONTENT_EXPORT WebOTPService
   void OnTimeout();
 
   void OnUserConsentComplete(UserConsentResult);
-
- protected:
-  // content::WebContentsObserver:
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
 
  private:
   void CleanUp();

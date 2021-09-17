@@ -18,8 +18,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/sms/sms_metrics.h"
 #include "content/browser/sms/user_consent_handler.h"
-#include "content/public/browser/navigation_details.h"
-#include "content/public/browser/navigation_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/web_contents.h"
@@ -31,7 +29,6 @@
 #include "third_party/blink/public/common/sms/webotp_constants.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-shared.h"
 
-using blink::WebOTPServiceDestroyedReason;
 using blink::mojom::SmsStatus;
 using Outcome = blink::WebOTPServiceOutcome;
 
@@ -278,22 +275,6 @@ void WebOTPService::OnFailure(FailureType failure_type) {
 void WebOTPService::Abort() {
   DCHECK(callback_);
   CompleteRequest(SmsStatus::kAborted);
-}
-
-void WebOTPService::NavigationEntryCommitted(
-    const content::LoadCommittedDetails& load_details) {
-  switch (load_details.type) {
-    case NavigationType::NAVIGATION_TYPE_NEW_ENTRY:
-      RecordDestroyedReason(WebOTPServiceDestroyedReason::kNavigateNewPage);
-      break;
-    case NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY:
-      RecordDestroyedReason(
-          WebOTPServiceDestroyedReason::kNavigateExistingPage);
-      break;
-    default:
-      // Ignore cases we don't care about.
-      break;
-  }
 }
 
 void WebOTPService::CompleteRequest(blink::mojom::SmsStatus status) {
