@@ -149,8 +149,8 @@ class PaymentsClient {
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
     std::string card_authorization_token;
-    // Available ID&V challenge options.
-    absl::optional<base::Value> idv_challenge_options;
+    // Available card unmask challenge options.
+    std::vector<CardUnmaskChallengeOption> card_unmask_challenge_options;
     // An opaque token used to chain consecutive payments requests together.
     // Client should not update or modify this token.
     std::string context_token;

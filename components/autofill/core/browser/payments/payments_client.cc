@@ -245,6 +245,34 @@ void SetActiveExperiments(const std::vector<const char*>& active_experiments,
                       std::move(active_chrome_experiments));
 }
 
+CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
+    const base::Value& challenge_option) {
+  CardUnmaskChallengeOption card_unmask_challenge_option;
+
+  // Check if it's SMS OTP challenge option.
+  const base::Value* sms_challenge_option = challenge_option.FindKeyOfType(
+      "sms_otp_challenge_option", base::Value::Type::DICTIONARY);
+  if (sms_challenge_option) {
+    card_unmask_challenge_option.type = CardUnmaskChallengeOptionType::kSmsOtp;
+    const auto* challenge_id =
+        sms_challenge_option->FindStringKey("challenge_id");
+    DCHECK(challenge_id);
+    card_unmask_challenge_option.id = *challenge_id;
+    // For SMS OTP challenge, masked phone number is the challenge_info for
+    // display.
+    const auto* masked_phone_number =
+        sms_challenge_option->FindStringKey("masked_phone_number");
+    DCHECK(masked_phone_number);
+    card_unmask_challenge_option.challenge_info =
+        base::UTF8ToUTF16(*masked_phone_number);
+  }
+
+  // So far, the challenge option type should not be the default value.
+  DCHECK_NE(card_unmask_challenge_option.type,
+            CardUnmaskChallengeOptionType::kUnknownType);
+  return card_unmask_challenge_option;
+}
+
 class GetUnmaskDetailsRequest : public PaymentsRequest {
  public:
   GetUnmaskDetailsRequest(
@@ -494,10 +522,18 @@ class UnmaskCardRequest : public PaymentsRequest {
     if (request_options)
       response_details_.fido_request_options = request_options->Clone();
 
-    const base::Value* idv_challenge_options = response.FindKeyOfType(
+    const base::Value* challenge_option_list = response.FindKeyOfType(
         "idv_challenge_options", base::Value::Type::LIST);
-    if (idv_challenge_options)
-      response_details_.idv_challenge_options = idv_challenge_options->Clone();
+    if (challenge_option_list) {
+      std::vector<CardUnmaskChallengeOption> card_unmask_challenge_options;
+      for (const base::Value& challenge_option :
+           challenge_option_list->GetList()) {
+        card_unmask_challenge_options.push_back(
+            ParseCardUnmaskChallengeOption(challenge_option));
+      }
+      response_details_.card_unmask_challenge_options =
+          card_unmask_challenge_options;
+    }
 
     const std::string* card_authorization_token =
         response.FindStringKey("card_authorization_token");
@@ -1144,11 +1180,7 @@ operator=(const PaymentsClient::UnmaskResponseDetails& other) {
   } else {
     fido_request_options.reset();
   }
-  if (other.idv_challenge_options.has_value()) {
-    idv_challenge_options = other.idv_challenge_options->Clone();
-  } else {
-    idv_challenge_options.reset();
-  }
+  card_unmask_challenge_options = other.card_unmask_challenge_options;
   card_authorization_token = other.card_authorization_token;
   flow_status = other.flow_status;
   context_token = other.context_token;

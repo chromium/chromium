@@ -648,6 +648,7 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedGreenPathResponse) {
   EXPECT_EQ("999", unmask_response_details_->dcvv);
   EXPECT_EQ("12", unmask_response_details_->expiration_month);
   EXPECT_EQ("2099", unmask_response_details_->expiration_year);
+  EXPECT_TRUE(unmask_response_details_->card_unmask_challenge_options.empty());
 }
 
 TEST_F(PaymentsClientTest, VirtualCardRiskBasedRedPathResponse) {
@@ -681,26 +682,17 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
                 "challenge"));
   // Verify the two idv challenge options are both sms challenge and fields can
   // be correctly parsed.
-  EXPECT_EQ(2u,
-            unmask_response_details_->idv_challenge_options->GetList().size());
-  const base::Value& challenge_option_1 =
-      unmask_response_details_->idv_challenge_options->GetList()[0];
-  const base::Value* sms_challenge_option_1 = challenge_option_1.FindKeyOfType(
-      "sms_otp_challenge_option", base::Value::Type::DICTIONARY);
-  EXPECT_TRUE(sms_challenge_option_1);
-  EXPECT_EQ("fake_challenge_id_1",
-            *sms_challenge_option_1->FindStringKey("challenge_id"));
-  EXPECT_EQ("(***)-***-1234",
-            *sms_challenge_option_1->FindStringKey("masked_phone_number"));
-  const base::Value& challenge_option_2 =
-      unmask_response_details_->idv_challenge_options->GetList()[1];
-  const base::Value* sms_challenge_option_2 = challenge_option_2.FindKeyOfType(
-      "sms_otp_challenge_option", base::Value::Type::DICTIONARY);
-  EXPECT_TRUE(sms_challenge_option_2);
-  EXPECT_EQ("fake_challenge_id_2",
-            *sms_challenge_option_2->FindStringKey("challenge_id"));
-  EXPECT_EQ("(***)-***-5678",
-            *sms_challenge_option_2->FindStringKey("masked_phone_number"));
+  EXPECT_EQ(2u, unmask_response_details_->card_unmask_challenge_options.size());
+  const CardUnmaskChallengeOption& challenge_option_1 =
+      unmask_response_details_->card_unmask_challenge_options[0];
+  EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_1.type);
+  EXPECT_EQ("fake_challenge_id_1", challenge_option_1.id);
+  EXPECT_EQ(u"(***)-***-1234", challenge_option_1.challenge_info);
+  const CardUnmaskChallengeOption& challenge_option_2 =
+      unmask_response_details_->card_unmask_challenge_options[1];
+  EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, challenge_option_2.type);
+  EXPECT_EQ("fake_challenge_id_2", challenge_option_2.id);
+  EXPECT_EQ(u"(***)-***-5678", challenge_option_2.challenge_info);
 }
 
 TEST_F(PaymentsClientTest, VirtualCardRiskBasedThenFido) {
