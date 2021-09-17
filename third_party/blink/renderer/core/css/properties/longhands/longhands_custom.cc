@@ -1573,7 +1573,7 @@ void Color::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
     ApplyInherit(state);
     return;
   }
-  if (auto* initial_color_value = DynamicTo<CSSInitialColorValue>(value)) {
+  if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     state.Style()->SetColor(state.Style()->InitialColorForColorScheme());
     return;
@@ -3187,7 +3187,7 @@ void InternalVisitedColor::ApplyValue(StyleResolverState& state,
     ApplyInherit(state);
     return;
   }
-  if (auto* initial_color_value = DynamicTo<CSSInitialColorValue>(value)) {
+  if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     state.Style()->SetInternalVisitedColor(
         state.Style()->InitialColorForColorScheme());
@@ -4032,7 +4032,7 @@ void InternalForcedColor::ApplyValue(StyleResolverState& state,
     ApplyInherit(state);
     return;
   }
-  if (auto* initial_color_value = DynamicTo<CSSInitialColorValue>(value)) {
+  if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     state.Style()->SetInternalForcedColor(
         ComputedStyleInitialValues::InitialInternalForcedColor());
@@ -4113,7 +4113,7 @@ void InternalForcedVisitedColor::ApplyValue(StyleResolverState& state,
     ApplyInherit(state);
     return;
   }
-  if (auto* initial_color_value = DynamicTo<CSSInitialColorValue>(value)) {
+  if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     state.Style()->SetInternalForcedVisitedColor(
         ComputedStyleInitialValues::InitialInternalForcedVisitedColor());
