@@ -589,13 +589,13 @@ struct CreateGMBSharedImageParams {
   // A handle to the existing GPU memory buffer.
   gfx.mojom.GpuMemoryBufferHandle buffer_handle;
 
-  // Size in pixels.
+  // Size in pixels of the GPU memory buffer.
   gfx.mojom.Size size;
 
-  // Format of pixels in the buffer.
+  // Format of pixels in the GPU memory buffer.
   gfx.mojom.BufferFormat format;
 
-  // Image plane represented by the buffer.
+  // Plane for which to create the shared image.
   gfx.mojom.BufferPlane plane;
 
   // Color space.

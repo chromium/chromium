@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/image_factory.h"
@@ -191,9 +192,12 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
   if (usage & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)
     image->DisableInUseByWindowServer();
 
-  gfx::BufferFormat plane_buffer_format =
-      GetPlaneBufferFormat(plane, buffer_format);
-  viz::ResourceFormat format = viz::GetResourceFormat(plane_buffer_format);
+  const viz::ResourceFormat plane_format =
+      viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
+
+  const gfx::Size plane_size = gpu::GetPlaneSize(plane, size);
+  DCHECK_EQ(image->GetSize(), plane_size);
+
   const bool for_framebuffer_attachment =
       (usage & (SHARED_IMAGE_USAGE_RASTER |
                 SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
@@ -210,8 +214,8 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
   params.framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
   return std::make_unique<SharedImageBackingGLImage>(
-      image, mailbox, format, size, color_space, surface_origin, alpha_type,
-      usage, params, attribs_, use_passthrough_);
+      image, mailbox, plane_format, plane_size, color_space, surface_origin,
+      alpha_type, usage, params, attribs_, use_passthrough_);
 }
 
 scoped_refptr<gl::GLImage> SharedImageBackingFactoryGLImage::MakeGLImage(

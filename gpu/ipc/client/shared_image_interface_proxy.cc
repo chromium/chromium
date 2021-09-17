@@ -177,7 +177,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   auto params = mojom::CreateGMBSharedImageParams::New();
   params->mailbox = mailbox;
   params->buffer_handle = gpu_memory_buffer->CloneHandle();
-  params->size = gpu_memory_buffer->GetSizeOfPlane(plane);
+  params->size = gpu_memory_buffer->GetSize();
   params->format = gpu_memory_buffer->GetFormat();
   params->plane = plane;
   params->color_space = color_space;
