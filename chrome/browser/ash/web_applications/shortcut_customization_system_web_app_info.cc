@@ -50,3 +50,7 @@ ShortcutCustomizationSystemAppDelegate::GetWebAppInfo() const {
 bool ShortcutCustomizationSystemAppDelegate::IsAppEnabled() const {
   return features::IsShortcutCustomizationAppEnabled();
 }
+
+gfx::Size ShortcutCustomizationSystemAppDelegate::GetMinimumWindowSize() const {
+  return {600, 600};
+}
