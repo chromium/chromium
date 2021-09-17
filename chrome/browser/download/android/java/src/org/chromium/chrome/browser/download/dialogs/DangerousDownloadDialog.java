@@ -124,7 +124,7 @@ public class DangerousDownloadDialog {
                                                   .PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .build();
 
-        modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.APP);
+        modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);
         recordDangerousDownloadDialogEvent(
                 DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_SHOW);
     }
