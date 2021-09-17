@@ -1318,7 +1318,7 @@ struct HashTableBucketInitializer<true> {
       memset(&bucket, 0, sizeof(bucket));
       return;
     }
-    AtomicMemzero(&bucket, sizeof(bucket));
+    AtomicMemzero<sizeof(bucket)>(&bucket);
   }
 };
 
@@ -1832,7 +1832,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
   Allocator::template BackingWriteBarrier(&table_);
 
   if (Traits::kEmptyValueIsZero) {
-    memset(original_table, 0, new_table_size * sizeof(ValueType));
+    AtomicMemzero(original_table, new_table_size * sizeof(ValueType));
   } else {
     for (unsigned i = 0; i < new_table_size; i++)
       InitializeBucket(original_table[i]);
