@@ -11391,16 +11391,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   shell->Close();
 }
 
-// Fails under address-sanitizer.  http://crbug.com/1243159
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_DoNotCacheIfMediaSessionPlaybackStateChanged \
-  DISABLED_DoNotCacheIfMediaSessionPlaybackStateChanged
-#else
-#define MAYBE_DoNotCacheIfMediaSessionPlaybackStateChanged \
-  DoNotCacheIfMediaSessionPlaybackStateChanged
-#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_DoNotCacheIfMediaSessionPlaybackStateChanged) {
+                       DoNotCacheIfMediaSessionPlaybackStateChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page using MediaSession.
