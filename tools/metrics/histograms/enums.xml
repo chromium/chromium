@@ -59722,24 +59722,39 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="NetworkServiceSandboxGrantResult">
-  <int value="0" label="kSuccess">The operation was successful</int>
+  <int value="0" label="kSuccess">A data migration was successful.</int>
   <int value="1" label="kFailedToCreateCacheDirectory">
-    Failed to create cache directory
+    Failed to create cache directory.
   </int>
   <int value="2" label="kFailedToCreateDataDirectory">
-    Failed to create data directory
+    Failed to create data directory.
   </int>
-  <int value="3" label="kFailedToCopyData">Failed to copy data</int>
-  <int value="4" label="kFailedToDeleteOldData">Failed to delete old data</int>
+  <int value="3" label="kFailedToCopyData">Failed to copy data.</int>
+  <int value="4" label="kFailedToDeleteOldData">Failed to delete old data.</int>
   <int value="5" label="kFailedToGrantSandboxAccessToCache">
-    Failed to grant sandbox access to cache directory
+    Failed to grant sandbox access to cache directory.
   </int>
   <int value="6" label="kFailedToGrantSandboxAccessToData">
-    Failed to grant sandbox access to data directory
+    Failed to grant sandbox access to data directory.
   </int>
   <int value="7" label="kDidNotAttemptToGrantSandboxAccess">
     The operation was not attempted because granting sandbox access was not
-    supported on the current platform configuration
+    supported on the current platform configuration, no data paths were
+    specified (e.g. in-memory) or no unsandboxed_data_path was specified to
+    migrate from.
+  </int>
+  <int value="8" label="kFailedToCreateCheckpointFile">
+    Failed to create checkpoint file.
+  </int>
+  <int value="9" label="kNoMigrationRequested">
+    A valid unsandboxed_data_path was specified but no migration was requested.
+  </int>
+  <int value="10" label="kMigrationAlreadySucceeded">
+    Migration has already succeeded previously.
+  </int>
+  <int value="11" label="kMigrationAlreadySucceededWithNoAccess">
+    Migration has already succeeded but it was not possible to grant the sandbox
+    access to the data directory.
   </int>
 </enum>
 

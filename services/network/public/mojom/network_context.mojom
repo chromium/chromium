@@ -201,17 +201,17 @@ struct NetworkContextFilePaths {
   mojo_base.mojom.FilePath data_path;
 
   // Points to a path that might contain existing network service data files and
-  // databases from network contexts created with the same `data_path`. If this
-  // parameter is specified, then the network context will be considered capable
-  // of being sandboxed, and the data files and databases contained in
-  // `unsandboxed_data_path` will be migrated to `data_path`. It is not valid to
-  // attempt to create a network context that cannot be sandboxed (i.e. do not
-  // specify an `unsandboxed_data_path`) inside a sandboxed network service.
-  // This file migration happens at the first creation of the network service in
-  // the browser process. In a future version of this interface, sandboxing will
-  // be enabled by default and this parameter will be removed and it will be
-  // assumed that all previous persistent data of any network contexts now
-  // contains data that has previously been migrated.
+  // databases from network contexts created with the same `data_path`.
+  // This parameter must be specified if `perform_migration` is set to true.
+  // Once migration has been successful (see below), data is no longer read from
+  // this path. Data could continue to be read from this path if migration
+  // fails, or if `trigger_migration` has never been set to true.
+  // If this parameter is specified then the sandbox will be granted access to
+  // the `data_path` specified above.
+  // This parameter, along with `trigger_migration` parameter below will be
+  // removed in the future, once migration of network context data to the new
+  // `data_path` has been completed. At this point the sandbox will be granted
+  // access to `data_path` unconditionally.
   mojo_base.mojom.FilePath? unsandboxed_data_path;
 
   // Points to the cookie database file name inside `data_path`. An in-memory
@@ -245,6 +245,24 @@ struct NetworkContextFilePaths {
   // regardless. This field should not be used if the ENABLE_REPORTING build
   // flag is false.
   mojo_base.mojom.FilePath? reporting_and_nel_store_database_name;
+
+  // Specifies whether or not a migration of existing data should occur from
+  // `unsandboxed_data_path` to `data_path`. It is not valid to set this to true
+  // if an `unsandboxed_data_path` is not specified.
+  // If the migration is successful then network context data will operate from
+  // `data_path`, and the old data will be removed from `unsandboxed_data_path`.
+  // If migration is unsuccessful then data will continue to operate from
+  // `unsandboxed_data_path` and migration will be re-attempted the next time
+  // `trigger_migration` is set to true.
+  // Since migration is a one-way operation, setting `trigger_migration` to
+  // false does not move the data back to `unsandboxed_data_path`. The network
+  // context data will be read from `data_path` or `unsandboxed_data_path`
+  // depending on whether a migration has successfully occurred previously.
+  // This parameter, along with `unsandboxed_data_path` parameter above will be
+  // removed in the future, once migration of network context data to the new
+  // `data_path` has been completed. At this point the sandbox will be granted
+  // access to `data_path` unconditionally.
+  bool trigger_migration = false;
 };
 
 // Parameters for constructing a network context.

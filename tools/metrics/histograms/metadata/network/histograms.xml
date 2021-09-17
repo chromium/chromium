@@ -2968,8 +2968,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>mmenke@chromium.org</owner>
   <summary>
     The result of the attempt to grant the sandbox access to a network context
-    data and cache files. This is reported each time a network context instance
-    is created on the network service, even when the sandbox is not enabled.
+    data files, and migrate the data if a migration is requested. This is
+    reported each time a network context instance is created on the network
+    service, even when the sandbox is not enabled or no migration is requested.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.GrantSandboxToCacheResult"
+    enum="NetworkServiceSandboxGrantResult" expires_after="M97">
+  <owner>wfh@chromium.org</owner>
+  <owner>mmenke@chromium.org</owner>
+  <summary>
+    The result of the attempt to grant the sandbox access to a network context
+    HTTP cache files. This is reported each time a network context instance is
+    created on the network service and it has a valid HTTP cache path and HTTP
+    cache is enabled.
   </summary>
 </histogram>
 
@@ -3070,17 +3083,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
-    The time taken to move the network context data files from the the
-    unsandboxed data path to the new sandbox data path. This is recorded the
-    each time a network context is created with a valid set of data file paths
-    and an unsandboxed_data_path specified indicating it should be migrated,
-    except for the case of a completely fresh data path where no migration
-    occurs. Note that this histogram is reported every time the network context
-    is created even if it has already been migrated, so while initial times
-    reported from a client for a particular network context might include the
-    time to move the files, subsequent logs from the same client for the same
-    network context will report the time to merely check that the files have
-    already been successfully moved.
+    The time taken to copy the network context data files from the unsandboxed
+    data path to the new sandbox data path. This is recorded each time an
+    unmigrated network context is created with a valid set of data file paths,
+    an unsandboxed_data_path to migrate from, and trigger_migration specified.
+    This could include several logs from the same client for the same network
+    context if the migration fails, since this is reported each time the
+    migration is attempted.
   </summary>
 </histogram>
 
