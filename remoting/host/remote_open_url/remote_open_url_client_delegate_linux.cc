@@ -7,10 +7,9 @@
 #include <gtk/gtk.h>
 
 #include "base/command_line.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/environment.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -47,8 +46,8 @@ void ShowMessageDialog(const std::string& message) {
 }
 
 bool IsBrowserValid(const std::string& browser) {
-  static const base::NoDestructor<base::flat_set<std::string>> invalid_browsers(
-      {
+  static constexpr auto invalid_browsers =
+      base::MakeFixedFlatSet<base::StringPiece>({
           // This is the chromoting forwarder itself.
           "crd-url-forwarder.desktop",
 
@@ -59,7 +58,7 @@ bool IsBrowserValid(const std::string& browser) {
   if (browser.empty()) {
     return false;
   }
-  return !invalid_browsers->contains(browser);
+  return !invalid_browsers.contains(browser);
 }
 
 // Shows a window for the user to choose the fallback browser then sets it on
