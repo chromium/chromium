@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_RIPPLE_OBSERVER_H_
 #define UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_RIPPLE_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/animation/ink_drop_ripple_observer.h"
 #include "ui/views/animation/ink_drop_state.h"
@@ -61,7 +62,7 @@ class TestInkDropRippleObserver
   InkDropState target_state_at_last_animation_ended_ = InkDropState::HIDDEN;
 
   // An InkDropRipple to spy info from when notifications are handled.
-  InkDropRipple* ink_drop_ripple_;
+  raw_ptr<InkDropRipple> ink_drop_ripple_;
 };
 
 }  // namespace test

@@ -1670,7 +1670,7 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
       // gauranteeed to outlive us.
       have_enough_after_lazy_load_cb_.Reset(
           base::BindOnce(&MultiBufferDataSource::OnBufferingHaveEnough,
-                         base::Unretained(mb_data_source_), true));
+                         base::Unretained(mb_data_source_.get()), true));
       main_task_runner_->PostDelayedTask(
           FROM_HERE, have_enough_after_lazy_load_cb_.callback(),
           base::TimeDelta::FromMilliseconds(250));
@@ -1758,7 +1758,7 @@ void WebMediaPlayerImpl::OnMemoryPressure(
   // this task.
   media_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&media::ChunkDemuxer::OnMemoryPressure,
-                                base::Unretained(chunk_demuxer_),
+                                base::Unretained(chunk_demuxer_.get()),
                                 base::TimeDelta::FromSecondsD(CurrentTime()),
                                 memory_pressure_level, force_instant_gc));
 }
@@ -3324,7 +3324,8 @@ void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
 
   // Idle timeout chosen arbitrarily.
   background_pause_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(5),
-                                client_, &WebMediaPlayerClient::PausePlayback);
+                                client_.get(),
+                                &WebMediaPlayerClient::PausePlayback);
 }
 
 void WebMediaPlayerImpl::CreateWatchTimeReporter() {

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -58,7 +59,7 @@ class BASE_EXPORT VlogInfo {
   struct VmodulePattern;
   base::Lock vmodule_levels_lock_;
   std::vector<VmodulePattern> vmodule_levels_ GUARDED_BY(vmodule_levels_lock_);
-  int* min_log_level_;
+  raw_ptr<int> min_log_level_;
 };
 
 // Returns true if the string passed in matches the vlog pattern.  The

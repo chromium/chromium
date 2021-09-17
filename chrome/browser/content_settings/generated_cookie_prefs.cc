@@ -84,7 +84,7 @@ GeneratedCookiePrefBase::GeneratedCookiePrefBase(Profile* profile,
     : profile_(profile), pref_name_(pref_name) {
   host_content_settings_map_ =
       HostContentSettingsMapFactory::GetForProfile(profile_);
-  content_settings_observation_.Observe(host_content_settings_map_);
+  content_settings_observation_.Observe(host_content_settings_map_.get());
 
   user_prefs_registrar_.Init(profile->GetPrefs());
   user_prefs_registrar_.Add(

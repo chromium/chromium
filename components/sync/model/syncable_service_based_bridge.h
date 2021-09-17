@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/model/model_error.h"
@@ -98,7 +99,7 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   void ReportErrorIfSet(const absl::optional<ModelError>& error);
 
   const ModelType type_;
-  SyncableService* const syncable_service_;
+  const raw_ptr<SyncableService> syncable_service_;
 
   std::unique_ptr<ModelTypeStore> store_;
   bool syncable_service_started_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_REGISTRATION_WAITER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_REGISTRATION_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,7 +26,7 @@ class WebAppRegistrationWaiter {
   void AwaitRegistrationsComplete();
 
  private:
-  ExternallyManagedAppManager* const manager_;
+  const raw_ptr<ExternallyManagedAppManager> manager_;
   base::RunLoop run_loop_;
   GURL install_url_;
   // If unset then check for any non failure result.

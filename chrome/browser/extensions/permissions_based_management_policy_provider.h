@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/management_policy.h"
 
 namespace extensions {
@@ -31,7 +32,7 @@ class PermissionsBasedManagementPolicyProvider
                    std::u16string* error) const override;
 
  private:
-  ExtensionManagement* settings_;
+  raw_ptr<ExtensionManagement> settings_;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionsBasedManagementPolicyProvider);
 };

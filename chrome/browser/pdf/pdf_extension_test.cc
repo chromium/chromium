@@ -20,6 +20,7 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -1925,7 +1926,7 @@ class PDFExtensionLinkClickTest : public PDFExtensionTest {
   WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
 
  private:
-  WebContents* guest_contents_;
+  raw_ptr<WebContents> guest_contents_;
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlLeft) {
@@ -2155,7 +2156,7 @@ class PDFExtensionInternalLinkClickTest : public PDFExtensionTest {
   WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
 
  private:
-  WebContents* guest_contents_;
+  raw_ptr<WebContents> guest_contents_;
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, CtrlLeft) {
@@ -2389,7 +2390,7 @@ class PDFExtensionClipboardTest : public PDFExtensionTest,
   }
 
   base::RepeatingClosure clipboard_quit_closure_;
-  WebContents* guest_contents_ = nullptr;
+  raw_ptr<WebContents> guest_contents_ = nullptr;
   bool clipboard_changed_ = false;
 };
 

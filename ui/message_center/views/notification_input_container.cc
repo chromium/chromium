@@ -59,14 +59,14 @@ void NotificationInputContainer::Init() {
   textfield_->set_controller(this);
   textfield_->SetBorder(views::CreateEmptyBorder(GetTextfieldPadding()));
   SetTextfieldBackground();
-  AddChildView(textfield_);
+  AddChildView(textfield_.get());
   box_layout->SetFlexForView(textfield_, 1);
 
   button_->SetBorder(views::CreateEmptyBorder(kInputReplyButtonPadding));
   button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   OnAfterUserAction(textfield_);
-  AddChildView(button_);
+  AddChildView(button_.get());
 
   views::InstallRectHighlightPathGenerator(this);
 }

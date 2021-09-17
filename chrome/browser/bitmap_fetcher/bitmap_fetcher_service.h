@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -130,7 +131,7 @@ class BitmapFetcherService : public KeyedService, public BitmapFetcherDelegate {
   int current_request_id_;
 
   // Browser context this service is active for.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   DISALLOW_COPY_AND_ASSIGN(BitmapFetcherService);
 };

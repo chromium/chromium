@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_functions.h"
@@ -85,7 +86,7 @@ class IndependentFlattener : public base::HistogramFlattener {
   }
 
  private:
-  MetricsLog* const log_;
+  const raw_ptr<MetricsLog> log_;
 
   DISALLOW_COPY_AND_ASSIGN(IndependentFlattener);
 };

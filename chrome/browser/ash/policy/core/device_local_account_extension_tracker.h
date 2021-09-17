@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 namespace policy {
@@ -36,8 +37,8 @@ class DeviceLocalAccountExtensionTracker : public CloudPolicyStore::Observer {
  private:
   void UpdateFromStore();
 
-  CloudPolicyStore* store_;
-  SchemaRegistry* schema_registry_;
+  raw_ptr<CloudPolicyStore> store_;
+  raw_ptr<SchemaRegistry> schema_registry_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountExtensionTracker);
 };

@@ -11,6 +11,7 @@
 #include <queue>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/core/atomic_flag.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/port_ref.h"
@@ -89,7 +90,7 @@ class MessagePipeDispatcher : public Dispatcher {
   void OnPortStatusChanged();
 
   // These are safe to access from any thread without locking.
-  NodeController* const node_controller_;
+  const raw_ptr<NodeController> node_controller_;
   const ports::PortRef port_;
   const uint64_t pipe_id_;
   const int endpoint_;

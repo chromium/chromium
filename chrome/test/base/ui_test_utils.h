@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -315,7 +316,7 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
   base::RunLoop run_loop_;
 
   // The last tab that was added.
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 // Enumerates all history contents on the backend thread. Returns them in
@@ -355,7 +356,7 @@ class BrowserChangeObserver : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   ChangeType type_;
   base::RunLoop run_loop_;
 };

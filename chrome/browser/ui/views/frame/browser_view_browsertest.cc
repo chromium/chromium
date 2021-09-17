@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -70,7 +71,7 @@ class BrowserViewTest : public InProcessBrowserTest {
     DevToolsWindowTesting::Get(devtools_)->SetInspectedPageBounds(bounds);
   }
 
-  DevToolsWindow* devtools_;
+  raw_ptr<DevToolsWindow> devtools_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -96,7 +97,7 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   }
 
  private:
-  content::WebContents* other_;
+  raw_ptr<content::WebContents> other_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);
 };

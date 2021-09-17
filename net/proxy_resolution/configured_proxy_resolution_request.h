@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_isolation_key.h"
@@ -80,9 +81,9 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   // ConfiguredProxyResolutionService. Outstanding requests are cancelled during
   // ~ConfiguredProxyResolutionService, so this is guaranteed to be valid
   // throughout our lifetime.
-  ConfiguredProxyResolutionService* service_;
+  raw_ptr<ConfiguredProxyResolutionService> service_;
   CompletionOnceCallback user_callback_;
-  ProxyInfo* results_;
+  raw_ptr<ProxyInfo> results_;
   const GURL url_;
   const std::string method_;
   const NetworkIsolationKey network_isolation_key_;

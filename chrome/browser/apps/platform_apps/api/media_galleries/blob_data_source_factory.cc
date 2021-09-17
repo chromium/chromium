@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/blob_reader.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -58,7 +59,7 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
 
   mojo::Receiver<chrome::mojom::MediaDataSource> receiver_;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   std::string blob_uuid_;
 
   BlobDataSourceFactory::MediaDataCallback callback_;

@@ -34,6 +34,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
@@ -363,7 +364,7 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                                   // async onsuccess; ignore vs. assert.
   // Maintain the isolate so that all externally allocated memory can be
   // registered against it.
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   AsyncTraceState metrics_;
 
@@ -418,13 +419,13 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
 
   // Pointer back to the WebIDBCallbacks that holds a persistent reference to
   // this object.
-  WebIDBCallbacks* web_callbacks_ = nullptr;
+  raw_ptr<WebIDBCallbacks> web_callbacks_ = nullptr;
 
   // Non-null while this request is queued behind other requests that are still
   // getting post-processed.
   //
   // The IDBRequestQueueItem is owned by the result queue in IDBTransaction.
-  IDBRequestQueueItem* queue_item_ = nullptr;
+  raw_ptr<IDBRequestQueueItem> queue_item_ = nullptr;
 };
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_BACK_FORWARD_CACHE_TASK_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_BACK_FORWARD_CACHE_TASK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
 
 namespace content {
@@ -39,7 +40,7 @@ class BackForwardCacheTask : public RendererTask {
   // is created per site. Therefore a 1:1 mapping of main frame task to subframe
   // task is not guaranteed.
   // For cached main frame tasks |parent_task_| is nullptr.
-  RendererTask* parent_task_;
+  raw_ptr<RendererTask> parent_task_;
 };
 
 }  // namespace task_manager

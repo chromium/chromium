@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,7 +46,7 @@ class TestService : public BrowserContextKeyedServiceFactory {
 
  private:
   const std::string name_;
-  std::vector<std::string>* fill_on_shutdown_;
+  raw_ptr<std::vector<std::string>> fill_on_shutdown_;
 };
 
 // Tests that we can deal with a single component.

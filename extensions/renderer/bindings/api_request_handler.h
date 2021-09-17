@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"
@@ -112,7 +113,7 @@ class APIRequestHandler {
     PendingRequest(PendingRequest&&);
     PendingRequest& operator=(PendingRequest&&);
 
-    v8::Isolate* isolate;
+    raw_ptr<v8::Isolate> isolate;
     v8::Global<v8::Context> context;
     std::string method_name;
 
@@ -147,14 +148,14 @@ class APIRequestHandler {
 
   // The exception handler for the bindings system; guaranteed to be valid
   // during this object's lifetime.
-  ExceptionHandler* const exception_handler_;
+  const raw_ptr<ExceptionHandler> exception_handler_;
 
   // The response validator used to check the responses for resolved requests.
   // Null if response validation is disabled.
   std::unique_ptr<APIResponseValidator> response_validator_;
 
   // Outlives |this|.
-  const InteractionProvider* const interaction_provider_;
+  const raw_ptr<const InteractionProvider> interaction_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(APIRequestHandler);
 };

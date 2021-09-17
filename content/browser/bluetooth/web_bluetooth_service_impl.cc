@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -55,7 +56,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
-
 
 namespace content {
 
@@ -254,8 +254,8 @@ class WebBluetoothServiceImpl::AdvertisementClient {
   virtual ~AdvertisementClient() = default;
 
   mojo::AssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient> client_;
-  WebContentsImpl* web_contents_;
-  WebBluetoothServiceImpl* service_;
+  raw_ptr<WebContentsImpl> web_contents_;
+  raw_ptr<WebBluetoothServiceImpl> service_;
 };
 
 class WebBluetoothServiceImpl::WatchAdvertisementsClient
@@ -437,7 +437,7 @@ class WebBluetoothServiceImpl::ScanningClient
   bool allow_send_event_ = false;
   blink::mojom::WebBluetoothRequestLEScanOptionsPtr options_;
   RequestScanningStartCallback callback_;
-  BluetoothDeviceScanningPromptController* prompt_controller_ = nullptr;
+  raw_ptr<BluetoothDeviceScanningPromptController> prompt_controller_ = nullptr;
 };
 
 bool HasValidFilter(

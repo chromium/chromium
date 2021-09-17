@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/credential_manager_password_form_manager.h"
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
@@ -79,7 +80,7 @@ class CredentialManagerImpl
   // CredentialManagerPasswordFormManagerDelegate:
   void OnProvisionalSaveComplete() override;
 
-  PasswordManagerClient* client_;
+  raw_ptr<PasswordManagerClient> client_;
 
   // Set to false to disable automatic signing in.
   BooleanPrefMember auto_signin_enabled_;

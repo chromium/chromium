@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -281,7 +282,7 @@ class VIZ_SERVICE_EXPORT FragmentShader {
   UVTextureMode uv_texture_mode_ = UV_TEXTURE_MODE_UV;
 
   ColorConversionMode color_conversion_mode_ = COLOR_CONVERSION_MODE_NONE;
-  const gfx::ColorTransform* color_transform_ = nullptr;
+  raw_ptr<const gfx::ColorTransform> color_transform_ = nullptr;
 
   bool has_output_color_matrix_ = false;
   int output_color_matrix_location_ = -1;

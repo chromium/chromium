@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace message_center {
@@ -51,7 +52,7 @@ class ExtensionRequestNotification
 
   std::unique_ptr<message_center::Notification> notification_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   const NotifyType notify_type_ = kApproved;
   const ExtensionIds extension_ids_;
   NotificationCloseCallback callback_;

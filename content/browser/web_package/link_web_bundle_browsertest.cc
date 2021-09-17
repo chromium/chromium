@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -205,7 +206,7 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
 
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   TestBrowserClient browser_client_;
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_{

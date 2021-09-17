@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -255,10 +256,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   bool needs_initial_ax_tree_root_ = true;
 
   // The RenderAccessibilityManager that owns us.
-  RenderAccessibilityManager* render_accessibility_manager_;
+  raw_ptr<RenderAccessibilityManager> render_accessibility_manager_;
 
   // The associated RenderFrameImpl by means of the RenderAccessibilityManager.
-  RenderFrameImpl* render_frame_;
+  raw_ptr<RenderFrameImpl> render_frame_;
 
   // This keeps accessibility enabled as long as it lives.
   std::unique_ptr<blink::WebAXContext> ax_context_;
@@ -283,7 +284,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   using PluginAXTreeSerializer = ui::AXTreeSerializer<const ui::AXNode*>;
   std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
-  PluginAXTreeSource* plugin_tree_source_;
+  raw_ptr<PluginAXTreeSource> plugin_tree_source_;
   blink::WebAXObject plugin_host_node_;
 
   // Current event scheduling status

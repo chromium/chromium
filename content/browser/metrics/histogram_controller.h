@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "content/common/histogram_fetcher.mojom.h"
@@ -77,7 +78,7 @@ class HistogramController {
   // PPAPI and NACL.
   void GetHistogramDataFromChildProcesses(int sequence_number);
 
-  HistogramSubscriber* subscriber_;
+  raw_ptr<HistogramSubscriber> subscriber_;
 
   template <class T>
   using ChildHistogramFetcherMap =

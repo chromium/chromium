@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -113,9 +114,9 @@ class PLATFORM_EXPORT NetworkStateNotifier {
     ~NetworkStateObserverHandle();
 
    private:
-    NetworkStateNotifier* notifier_;
+    raw_ptr<NetworkStateNotifier> notifier_;
     ObserverType type_;
-    NetworkStateObserver* observer_;
+    raw_ptr<NetworkStateObserver> observer_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   };
 

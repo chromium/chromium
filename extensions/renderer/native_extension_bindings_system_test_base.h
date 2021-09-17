@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
@@ -149,7 +150,7 @@ class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
   std::vector<ScriptContext*> raw_script_contexts_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
   // The TestIPCMessageSender; owned by the bindings system.
-  TestIPCMessageSender* ipc_message_sender_ = nullptr;
+  raw_ptr<TestIPCMessageSender> ipc_message_sender_ = nullptr;
 
   StringSourceMap source_map_;
   TestExtensionsRendererClient renderer_client_;

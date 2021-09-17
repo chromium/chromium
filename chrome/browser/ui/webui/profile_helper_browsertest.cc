@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -72,7 +73,7 @@ class ExpectBrowserActivationForProfile : public BrowserListObserver {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::RunLoop loop_;
 };
 
@@ -97,7 +98,7 @@ class BrowserAddedObserver : public BrowserListObserver {
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   base::RunLoop run_loop_;
 };
 

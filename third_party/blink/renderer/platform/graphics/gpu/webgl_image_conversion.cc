@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/cpu/arm/webgl_image_conversion_neon.h"
@@ -3255,8 +3256,8 @@ class FormatConverter {
   const IntRect& src_sub_rectangle_;
   const int depth_;
   const int unpack_image_height_;
-  const void* const src_start_;
-  void* const dst_start_;
+  const raw_ptr<const void> src_start_;
+  const raw_ptr<void> dst_start_;
   const int src_stride_, src_row_offset_, dst_stride_;
   bool success_;
   std::unique_ptr<uint8_t[]> unpacked_intermediate_src_data_;

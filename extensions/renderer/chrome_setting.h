@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8.h"
@@ -67,13 +68,13 @@ class ChromeSetting final : public gin::Wrappable<ChromeSetting> {
   void HandleFunction(const std::string& function_name,
                       gin::Arguments* arguments);
 
-  APIRequestHandler* request_handler_;
+  raw_ptr<APIRequestHandler> request_handler_;
 
-  APIEventHandler* event_handler_;
+  raw_ptr<APIEventHandler> event_handler_;
 
-  const APITypeReferenceMap* type_refs_;
+  raw_ptr<const APITypeReferenceMap> type_refs_;
 
-  const BindingAccessChecker* const access_checker_;
+  const raw_ptr<const BindingAccessChecker> access_checker_;
 
   // The name of the preference this ChromeSetting is managing.
   std::string pref_name_;

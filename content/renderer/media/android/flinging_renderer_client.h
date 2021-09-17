@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "content/common/content_export.h"
@@ -52,7 +53,7 @@ class CONTENT_EXPORT FlingingRendererClient
  private:
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
-  media::RendererClient* client_;
+  raw_ptr<media::RendererClient> client_;
 
   media::RemotePlayStateChangeCB remote_play_state_change_cb_;
 

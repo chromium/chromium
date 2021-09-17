@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/recent_site_settings_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -44,7 +45,7 @@ class RecentSiteSettingsHelperTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
   TestingProfile profile_;
-  TestingProfile* incognito_profile_;
+  raw_ptr<TestingProfile> incognito_profile_;
 };
 
 TEST_F(RecentSiteSettingsHelperTest, IncognitoPermissionTimestamps) {

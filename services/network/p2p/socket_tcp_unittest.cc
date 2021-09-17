@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
@@ -85,7 +86,7 @@ class P2PSocketTcpTestBase : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::string sent_data_;
-  FakeSocket* socket_;  // Owned by |socket_impl_|.
+  raw_ptr<FakeSocket> socket_;  // Owned by |socket_impl_|.
   std::unique_ptr<P2PSocketTcpBase> socket_impl_;
   FakeP2PSocketDelegate socket_delegate_;
   std::unique_ptr<FakeSocketClient> fake_client_;

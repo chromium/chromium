@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
@@ -94,7 +95,7 @@ class StreamPacketSocket final : public rtc::AsyncPacketSocket {
   void CloseWithNetError(int net_error);
 
   std::unique_ptr<net::StreamSocket> socket_;
-  StreamPacketProcessor* packet_processor_;
+  raw_ptr<StreamPacketProcessor> packet_processor_;
 
   // Note that a packet can be partially sent, where the number of bytes sent
   // is reflected in DrainableIOBuffer::BytesConsumed.

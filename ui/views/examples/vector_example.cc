@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -143,12 +144,12 @@ class VectorIconGallery : public View, public TextfieldController {
   int size_ = 36;
   SkColor color_ = SK_ColorRED;
 
-  ImageView* image_view_;
-  View* image_view_container_;
-  Textfield* size_input_;
-  Textfield* color_input_;
-  Textfield* file_chooser_;
-  Button* file_go_button_;
+  raw_ptr<ImageView> image_view_;
+  raw_ptr<View> image_view_container_;
+  raw_ptr<Textfield> size_input_;
+  raw_ptr<Textfield> color_input_;
+  raw_ptr<Textfield> file_chooser_;
+  raw_ptr<Button> file_go_button_;
   std::string contents_;
 };
 

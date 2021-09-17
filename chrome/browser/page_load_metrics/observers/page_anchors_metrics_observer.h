@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PAGE_ANCHORS_METRICS_OBSERVER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -54,7 +55,7 @@ class PageAnchorsMetricsObserver
  private:
   void RecordUkm();
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PAGE_ANCHORS_METRICS_OBSERVER_H_

@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process.h"
@@ -232,7 +233,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   std::string client_jid_;
 
   // Clipboard stub that receives clipboard events from the desktop process.
-  protocol::ClipboardStub* clipboard_stub_;
+  raw_ptr<protocol::ClipboardStub> clipboard_stub_;
 
   // The daemons's end of the daemon-to-desktop channel.
   std::unique_ptr<IPC::ChannelProxy> desktop_channel_;
@@ -258,7 +259,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   std::unique_ptr<DesktopProcess> desktop_process_;
 
   // Input injector owned by |desktop_process_|.
-  MockInputInjector* remote_input_injector_;
+  raw_ptr<MockInputInjector> remote_input_injector_;
 
   // Will be transferred to the caller of
   // MockDesktopEnvironment::CreateUrlForwarderConfigurator().
@@ -267,7 +268,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   // used.
   std::unique_ptr<MockUrlForwarderConfigurator>
       owned_remote_url_forwarder_configurator_;
-  MockUrlForwarderConfigurator* remote_url_forwarder_configurator_;
+  raw_ptr<MockUrlForwarderConfigurator> remote_url_forwarder_configurator_;
   std::unique_ptr<UrlForwarderConfigurator> url_forwarder_configurator_;
 
   // The last |terminal_id| passed to ConnectTermina();

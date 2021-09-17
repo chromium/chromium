@@ -6,6 +6,7 @@
 #include "chrome/browser/media/history/media_history_store.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1190,7 +1191,7 @@ class MediaHistoryForPrerenderBrowserTest : public MediaHistoryBrowserTest {
   content::WebContents* web_contents() { return web_contents_; }
 
  protected:
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList feature_list_;
 };

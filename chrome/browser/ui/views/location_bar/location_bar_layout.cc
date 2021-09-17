@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
@@ -37,7 +38,7 @@ struct DecorationInfo {
   // Padding to use if the decoration is the first element next to the edge.
   int edge_item_padding;
 
-  views::View* view;
+  raw_ptr<views::View> view;
 
   // The width computed by the layout process.
   double computed_width;

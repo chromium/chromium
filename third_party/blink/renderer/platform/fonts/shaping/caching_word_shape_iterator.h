@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CACHING_WORD_SHAPE_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CACHING_WORD_SHAPE_ITERATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
@@ -199,9 +200,9 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     return true;
   }
 
-  ShapeCache* shape_cache_;
+  raw_ptr<ShapeCache> shape_cache_;
   const TextRun& text_run_;
-  const Font* font_;
+  raw_ptr<const Font> font_;
   ShapeResultSpacing<TextRun> spacing_;
   float width_so_far_;  // Used only when allowTabs()
   unsigned start_index_ : 31;

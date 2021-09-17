@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/js_communication/web_message_host_factory_wrapper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_reply_proxy.h"
@@ -51,7 +52,7 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
   }
 
  private:
-  js_injection::WebMessageReplyProxy* proxy_;
+  raw_ptr<js_injection::WebMessageReplyProxy> proxy_;
   std::unique_ptr<weblayer::WebMessageHost> connection_;
 };
 

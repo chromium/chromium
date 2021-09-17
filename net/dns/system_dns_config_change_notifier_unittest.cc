@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -105,7 +106,7 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
     notifier_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&TestDnsConfigService::OnConfigRead,
-                       base::Unretained(test_config_service_), config));
+                       base::Unretained(test_config_service_.get()), config));
     observer.WaitForNotification();
 
     notifier_->RemoveObserver(&observer);
@@ -114,7 +115,7 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
   scoped_refptr<base::SequencedTaskRunner> notifier_task_runner_;
   std::unique_ptr<SystemDnsConfigChangeNotifier> notifier_;
   // Owned by |notifier_|.
-  TestDnsConfigService* test_config_service_;
+  raw_ptr<TestDnsConfigService> test_config_service_;
 };
 
 TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveNotification) {
@@ -124,7 +125,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveNotification) {
   notifier_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&TestDnsConfigService::OnConfigRead,
-                     base::Unretained(test_config_service_), kConfig));
+                     base::Unretained(test_config_service_.get()), kConfig));
   observer.WaitForNotification();
 
   EXPECT_THAT(observer.configs_received(),
@@ -141,11 +142,11 @@ TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveNotification_Multiple) {
   notifier_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&TestDnsConfigService::OnConfigRead,
-                     base::Unretained(test_config_service_), kConfig));
+                     base::Unretained(test_config_service_.get()), kConfig));
   notifier_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&TestDnsConfigService::OnConfigRead,
-                     base::Unretained(test_config_service_), kConfig2));
+                     base::Unretained(test_config_service_.get()), kConfig2));
   observer.WaitForNotifications(2);
 
   EXPECT_THAT(observer.configs_received(),
@@ -212,18 +213,18 @@ TEST_F(SystemDnsConfigChangeNotifierTest, UnchangedConfigs) {
   notifier_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&TestDnsConfigService::OnConfigRead,
-                     base::Unretained(test_config_service_), kConfig));
+                     base::Unretained(test_config_service_.get()), kConfig));
   notifier_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&TestDnsConfigService::OnConfigRead,
-                     base::Unretained(test_config_service_), kConfig));
+                     base::Unretained(test_config_service_.get()), kConfig));
   observer.ExpectNoMoreNotifications();
 
   // Notification on new config.
   notifier_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&TestDnsConfigService::OnConfigRead,
-                     base::Unretained(test_config_service_), kConfig2));
+                     base::Unretained(test_config_service_.get()), kConfig2));
   observer.WaitForNotification();
   EXPECT_THAT(observer.configs_received(),
               testing::ElementsAre(testing::Optional(kConfig2)));
@@ -242,7 +243,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, UnloadedConfig) {
 
   notifier_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TestDnsConfigService::InvalidateConfig,
-                                base::Unretained(test_config_service_)));
+                                base::Unretained(test_config_service_.get())));
   observer.WaitForNotification();
 
   EXPECT_THAT(observer.configs_received(),
@@ -264,10 +265,10 @@ TEST_F(SystemDnsConfigChangeNotifierTest, UnloadedConfig_Multiple) {
 
   notifier_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TestDnsConfigService::InvalidateConfig,
-                                base::Unretained(test_config_service_)));
+                                base::Unretained(test_config_service_.get())));
   notifier_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TestDnsConfigService::InvalidateConfig,
-                                base::Unretained(test_config_service_)));
+                                base::Unretained(test_config_service_.get())));
   observer.WaitForNotification();  // Only 1 notification expected.
 
   EXPECT_THAT(observer.configs_received(),
@@ -286,7 +287,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, InitialConfigInvalid) {
   setup_observer.WaitForNotification();
   notifier_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TestDnsConfigService::InvalidateConfig,
-                                base::Unretained(test_config_service_)));
+                                base::Unretained(test_config_service_.get())));
   setup_observer.WaitForNotification();
   notifier_->RemoveObserver(&setup_observer);
 
@@ -300,7 +301,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, InitialConfigInvalid) {
   notifier_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&TestDnsConfigService::OnConfigRead,
-                     base::Unretained(test_config_service_), kConfig));
+                     base::Unretained(test_config_service_.get()), kConfig));
   observer.WaitForNotification();
   EXPECT_THAT(observer.configs_received(),
               testing::ElementsAre(testing::Optional(kConfig)));

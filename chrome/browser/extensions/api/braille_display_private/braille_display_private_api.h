@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_BRAILLE_DISPLAY_PRIVATE_BRAILLE_DISPLAY_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_BRAILLE_DISPLAY_PRIVATE_BRAILLE_DISPLAY_PRIVATE_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/common/extensions/api/braille_display_private.h"
@@ -65,7 +66,7 @@ class BrailleDisplayPrivateAPI : public BrowserContextKeyedAPI,
 
   void SetEventDelegateForTest(std::unique_ptr<EventDelegate> delegate);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::ScopedObservation<api::braille_display_private::BrailleController,
                           BrailleObserver>
       scoped_observation_{this};

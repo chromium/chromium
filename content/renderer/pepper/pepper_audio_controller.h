@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace content {
 
@@ -59,7 +60,7 @@ class PepperAudioController {
 
   // The Pepper instance which this controller is for. Will be null after
   // OnPepperInstanceDeleted() is called.
-  PepperPluginInstanceImpl* instance_;
+  raw_ptr<PepperPluginInstanceImpl> instance_;
 
   DISALLOW_COPY_AND_ASSIGN(PepperAudioController);
 };

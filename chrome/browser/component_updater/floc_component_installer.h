@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/component_updater/component_installer.h"
 
 namespace base {
@@ -57,7 +58,7 @@ class FlocComponentInstallerPolicy : public ComponentInstallerPolicy {
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
-  federated_learning::FlocSortingLshClustersService*
+  raw_ptr<federated_learning::FlocSortingLshClustersService>
       floc_sorting_lsh_clusters_service_;
 };
 

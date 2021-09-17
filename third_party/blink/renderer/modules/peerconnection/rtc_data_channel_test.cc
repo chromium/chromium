@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
@@ -205,7 +206,7 @@ class MockDataChannel : public webrtc::DataChannelInterface {
 
   // Accessed on signaling thread.
   uint64_t buffered_amount_;
-  webrtc::DataChannelObserver* observer_;
+  raw_ptr<webrtc::DataChannelObserver> observer_;
   webrtc::DataChannelInterface::DataState state_;
 
   DISALLOW_COPY_AND_ASSIGN(MockDataChannel);

@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -133,7 +134,7 @@ class ProfilePickerWidget : public views::Widget {
   }
 
  private:
-  ProfilePickerView* const profile_picker_view_;
+  const raw_ptr<ProfilePickerView> profile_picker_view_;
 };
 
 class SimpleBackButton : public ToolbarButton {

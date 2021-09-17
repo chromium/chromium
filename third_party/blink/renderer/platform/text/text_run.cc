@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
@@ -33,7 +34,7 @@ namespace blink {
 
 struct SameSizeAsTextRun {
   DISALLOW_NEW();
-  const void* pointer;
+  raw_ptr<const void> pointer;
   int integers[2];
   float floats[2];
   uint32_t bitfields : 10;

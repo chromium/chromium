@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
@@ -32,7 +33,7 @@ class CartLoader {
   virtual void LoadAllCarts(CartDB::LoadCallback callback);
 
  private:
-  CartService* cart_service_;
+  raw_ptr<CartService> cart_service_;
 };
 
 class CartDiscountUpdater {
@@ -44,7 +45,7 @@ class CartDiscountUpdater {
                       const bool is_tester);
 
  private:
-  CartService* cart_service_;
+  raw_ptr<CartService> cart_service_;
 };
 
 class CartLoaderAndUpdaterFactory {
@@ -56,7 +57,7 @@ class CartLoaderAndUpdaterFactory {
   virtual std::unique_ptr<CartDiscountUpdater> createCartDiscountUpdater();
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 // This is used to fetch discounts for active Carts in cart_db. It starts
@@ -104,12 +105,12 @@ class FetchDiscountWorker {
   // CartDiscountUpdater to update the given cart discount.
   std::unique_ptr<CartLoaderAndUpdaterFactory> cart_loader_and_updater_factory_;
   // This is used to identify whether user is a sync user.
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   // This is used to fetch the oauth token.
   std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
-  variations::VariationsClient* const chrome_variations_client_;
+  const raw_ptr<variations::VariationsClient> chrome_variations_client_;
 
   // This is run in the UI thread, it creates a `CartLoader` and loads all
   // active carts.

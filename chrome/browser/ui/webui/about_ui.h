@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_controller.h"
 
@@ -41,7 +42,7 @@ class AboutUIHTMLSource : public content::URLDataSource {
 
  private:
   std::string source_name_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(AboutUIHTMLSource);
 };

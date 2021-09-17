@@ -7,6 +7,7 @@
 #include <hb.h>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
@@ -267,7 +268,7 @@ class GlyphCallbackContext {
   GlyphCallbackContext(const GlyphCallbackContext&) = delete;
   GlyphCallbackContext& operator=(const GlyphCallbackContext&) = delete;
 
-  ShapeResultBloberizer* bloberizer;
+  raw_ptr<ShapeResultBloberizer> bloberizer;
   const StringView& text;
 };
 }  // namespace
@@ -331,7 +332,7 @@ class ClusterCallbackContext {
   ClusterCallbackContext(const ClusterCallbackContext&) = delete;
   ClusterCallbackContext& operator=(const ClusterCallbackContext&) = delete;
 
-  ShapeResultBloberizer* bloberizer;
+  raw_ptr<ShapeResultBloberizer> bloberizer;
   const StringView& text;
   const GlyphData& emphasis_data;
   FloatPoint glyph_center;

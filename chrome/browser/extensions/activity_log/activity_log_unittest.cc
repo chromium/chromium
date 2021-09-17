@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
@@ -283,7 +284,7 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
-  ExtensionService* extension_service_;
+  raw_ptr<ExtensionService> extension_service_;
 };
 
 TEST_F(ActivityLogTest, Construct) {

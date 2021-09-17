@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_MESSAGING_CHANNEL_ENDPOINT_H_
 #define EXTENSIONS_BROWSER_API_MESSAGING_CHANNEL_ENDPOINT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/service_worker/worker_id.h"
 
 #include "extensions/common/api/messaging/port_context.h"
@@ -50,7 +51,7 @@ class ChannelEndpoint {
   bool IsValid() const;
 
  private:
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   const int render_process_id_;
   const PortContext port_context_;
 };

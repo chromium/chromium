@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/favicon_size.h"
@@ -41,8 +42,8 @@ class TabListModel : public ui::TableModel,
   TabListModel(const TabListModel&) = delete;
   TabListModel operator=(const TabListModel&) = delete;
 
-  DesktopMediaListController* controller_;
-  ui::TableModelObserver* observer_ = nullptr;
+  raw_ptr<DesktopMediaListController> controller_;
+  raw_ptr<ui::TableModelObserver> observer_ = nullptr;
 };
 
 TabListModel::TabListModel(DesktopMediaListController* controller)
@@ -97,7 +98,7 @@ class TabListViewObserver : public views::TableViewObserver {
   TabListViewObserver(const TabListViewObserver&) = delete;
   TabListViewObserver operator=(const TabListViewObserver&) = delete;
 
-  DesktopMediaListController* controller_;
+  raw_ptr<DesktopMediaListController> controller_;
 };
 
 TabListViewObserver::TabListViewObserver(DesktopMediaListController* controller)

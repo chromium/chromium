@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -412,8 +413,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   // needs to outlive the latter.
   std::unique_ptr<FakeFormFetcher> fetcher_;
   std::unique_ptr<PasswordSaveManagerImpl> password_save_manager_impl_;
-  NiceMock<MockFormSaver>* mock_account_form_saver_ = nullptr;
-  NiceMock<MockFormSaver>* mock_profile_form_saver_ = nullptr;
+  raw_ptr<NiceMock<MockFormSaver>> mock_account_form_saver_ = nullptr;
+  raw_ptr<NiceMock<MockFormSaver>> mock_profile_form_saver_ = nullptr;
   NiceMock<MockAutofillDownloadManager> mock_autofill_download_manager_;
 };
 

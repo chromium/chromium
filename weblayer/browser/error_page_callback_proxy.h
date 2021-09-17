@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "weblayer/public/error_page_delegate.h"
 
 namespace weblayer {
@@ -28,7 +29,7 @@ class ErrorPageCallbackProxy : public ErrorPageDelegate {
       Navigation* navigation) override;
 
  private:
-  Tab* tab_;
+  raw_ptr<Tab> tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
 
   DISALLOW_COPY_AND_ASSIGN(ErrorPageCallbackProxy);

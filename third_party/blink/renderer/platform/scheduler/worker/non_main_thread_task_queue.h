@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_TASK_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_TASK_QUEUE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -70,7 +71,7 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   absl::optional<TaskQueueThrottler> throttler_;
 
   // Not owned.
-  NonMainThreadSchedulerImpl* non_main_thread_scheduler_;
+  raw_ptr<NonMainThreadSchedulerImpl> non_main_thread_scheduler_;
 
   // |web_scheduling_priority_| is the priority of the task queue within the web
   // scheduling API. This priority is used to determine the task queue priority.

@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -65,7 +66,7 @@ class NetworkLocationProvider : public LocationProvider,
 
   // The wifi data provider, acquired via global factories. Valid between
   // StartProvider() and StopProvider(), and checked via IsStarted().
-  WifiDataProviderManager* wifi_data_provider_manager_;
+  raw_ptr<WifiDataProviderManager> wifi_data_provider_manager_;
 
   WifiDataProviderManager::WifiDataUpdateCallback wifi_data_update_callback_;
 
@@ -86,7 +87,7 @@ class NetworkLocationProvider : public LocationProvider,
   // The timestamp for the latest wifi data update.
   base::Time wifi_timestamp_;
 
-  PositionCache* const position_cache_;
+  const raw_ptr<PositionCache> position_cache_;
 
   LocationProvider::LocationProviderUpdateCallback
       location_provider_update_callback_;

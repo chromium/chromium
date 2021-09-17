@@ -5,8 +5,8 @@
 #ifndef UI_VIEWS_CONTROLS_RESIZE_AREA_H_
 #define UI_VIEWS_CONTROLS_RESIZE_AREA_H_
 
-
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -44,7 +44,7 @@ class VIEWS_EXPORT ResizeArea : public View {
   void SetInitialPosition(int event_x);
 
   // The delegate to notify when we have updates.
-  ResizeAreaDelegate* delegate_;
+  raw_ptr<ResizeAreaDelegate> delegate_;
 
   // The event's x-position at the start of the resize operation. The resize
   // area will move while being dragged, so |initial_position_| is represented

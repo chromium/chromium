@@ -11,6 +11,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -35,7 +36,7 @@ class ScopedFreezeBlinkAXTreeSource {
   ~ScopedFreezeBlinkAXTreeSource();
 
  private:
-  BlinkAXTreeSource* tree_source_;
+  raw_ptr<BlinkAXTreeSource> tree_source_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedFreezeBlinkAXTreeSource);
 };
@@ -172,7 +173,7 @@ class CONTENT_EXPORT BlinkAXTreeSource
 
   void AddImageAnnotations(blink::WebAXObject& src, ui::AXNodeData* dst) const;
 
-  RenderFrameImpl* render_frame_;
+  raw_ptr<RenderFrameImpl> render_frame_;
 
   ui::AXMode accessibility_mode_;
 
@@ -193,7 +194,7 @@ class CONTENT_EXPORT BlinkAXTreeSource
   gfx::Size max_image_data_size_;
 
   // The class instance that retrieves and manages automatic labels for images.
-  AXImageAnnotator* image_annotator_ = nullptr;
+  raw_ptr<AXImageAnnotator> image_annotator_ = nullptr;
 
   // Whether we should highlight annotation results visually on the page
   // for debugging.

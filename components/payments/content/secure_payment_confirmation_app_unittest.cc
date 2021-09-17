@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -76,7 +77,8 @@ class MockAuthenticator : public webauthn::InternalAuthenticator {
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;  // Owned by `web_contents_factory_`.
+  raw_ptr<content::WebContents>
+      web_contents_;  // Owned by `web_contents_factory_`.
   bool should_succeed_;
 };
 

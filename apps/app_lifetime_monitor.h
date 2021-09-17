@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -85,7 +86,7 @@ class AppLifetimeMonitor : public KeyedService,
   void NotifyAppStop(const std::string& app_id);
 
   content::NotificationRegistrar registrar_;
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
   base::ObserverList<Observer>::Unchecked observers_;
   base::ScopedObservation<extensions::ExtensionHostRegistry,
                           extensions::ExtensionHostRegistry::Observer>

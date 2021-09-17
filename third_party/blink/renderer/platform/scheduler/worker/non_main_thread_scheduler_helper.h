@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_SCHEDULER_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_NON_MAIN_THREAD_SCHEDULER_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 
 #include "third_party/blink/public/platform/task_type.h"
@@ -48,7 +49,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerHelper : public SchedulerHelper {
   void ShutdownAllQueues() override;
 
  private:
-  NonMainThreadSchedulerImpl* non_main_thread_scheduler_;  // NOT OWNED
+  raw_ptr<NonMainThreadSchedulerImpl> non_main_thread_scheduler_;  // NOT OWNED
   const scoped_refptr<NonMainThreadTaskQueue> default_task_queue_;
   const scoped_refptr<NonMainThreadTaskQueue> input_task_queue_;
   const scoped_refptr<NonMainThreadTaskQueue> control_task_queue_;

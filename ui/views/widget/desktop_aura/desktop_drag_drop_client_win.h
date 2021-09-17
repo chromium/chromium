@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -67,7 +68,7 @@ class VIEWS_EXPORT DesktopDragDropClientWin
   // |this| will get deleted DesktopNativeWidgetAura is notified that the
   // DesktopWindowTreeHost is being destroyed. So desktop_host_ should outlive
   // |this|.
-  DesktopWindowTreeHostWin* desktop_host_ = nullptr;
+  raw_ptr<DesktopWindowTreeHostWin> desktop_host_ = nullptr;
 
   base::WeakPtrFactory<DesktopDragDropClientWin> weak_factory_{this};
 };

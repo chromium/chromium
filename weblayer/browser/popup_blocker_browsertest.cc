@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
@@ -125,8 +126,8 @@ class PopupBlockerBrowserTest : public WebLayerBrowserTest,
   std::unique_ptr<base::RunLoop> new_tab_run_loop_;
   std::unique_ptr<base::RunLoop> close_tab_run_loop_;
 
-  Tab* original_tab_ = nullptr;
-  Tab* new_tab_ = nullptr;
+  raw_ptr<Tab> original_tab_ = nullptr;
+  raw_ptr<Tab> new_tab_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlocksPopup) {

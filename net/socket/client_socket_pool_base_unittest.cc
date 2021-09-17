@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "net/socket/transport_client_socket_pool.h"
 
 #include <stdint.h>
@@ -531,7 +532,7 @@ class TestConnectJob : public ConnectJob {
 
   bool waiting_success_;
   const JobType job_type_;
-  MockClientSocketFactory* const client_socket_factory_;
+  const raw_ptr<MockClientSocketFactory> client_socket_factory_;
   LoadState load_state_;
   bool has_established_connection_;
   bool store_additional_error_state_;
@@ -589,9 +590,9 @@ class TestConnectJobFactory : public ConnectJobFactory {
 
  private:
   TestConnectJob::JobType job_type_ = TestConnectJob::kMockJob;
-  std::list<TestConnectJob::JobType>* job_types_ = nullptr;
+  raw_ptr<std::list<TestConnectJob::JobType>> job_types_ = nullptr;
   base::TimeDelta timeout_duration_;
-  MockClientSocketFactory* const client_socket_factory_;
+  const raw_ptr<MockClientSocketFactory> client_socket_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(TestConnectJobFactory);
 };
@@ -735,7 +736,7 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       nullptr /* websocket_endpoint_lock_manager */};
   bool connect_backup_jobs_enabled_;
   MockClientSocketFactory client_socket_factory_;
-  TestConnectJobFactory* connect_job_factory_;
+  raw_ptr<TestConnectJobFactory> connect_job_factory_;
   // These parameters are never actually used to create a TransportConnectJob.
   scoped_refptr<ClientSocketPool::SocketParams> params_;
   std::unique_ptr<TransportClientSocketPool> pool_;
@@ -2916,7 +2917,7 @@ class TestReleasingSocketRequest : public TestCompletionCallbackBase {
             ClientSocketPool::ProxyAuthCallback(), pool_, NetLogWithSource()));
   }
 
-  TransportClientSocketPool* const pool_;
+  const raw_ptr<TransportClientSocketPool> pool_;
   int expected_result_;
   bool reset_releasing_handle_;
   ClientSocketHandle handle_;
@@ -3047,7 +3048,7 @@ class ConnectWithinCallback : public TestCompletionCallbackBase {
 
   const ClientSocketPool::GroupId group_id_;
   const scoped_refptr<ClientSocketPool::SocketParams> params_;
-  TransportClientSocketPool* const pool_;
+  const raw_ptr<TransportClientSocketPool> pool_;
   ClientSocketHandle handle_;
   TestCompletionCallback nested_callback_;
 
@@ -4817,7 +4818,7 @@ class MockLayeredPool : public HigherLayeredPool {
   MOCK_METHOD0(CloseOneIdleConnection, bool());
 
  private:
-  TransportClientSocketPool* const pool_;
+  const raw_ptr<TransportClientSocketPool> pool_;
   ClientSocketHandle handle_;
   TestCompletionCallback callback_;
   const ClientSocketPool::GroupId group_id_;

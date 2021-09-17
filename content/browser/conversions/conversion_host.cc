@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -64,7 +65,7 @@ class ScopedMapDeleter {
   explicit operator bool() const { return it_ != map_->end(); }
 
  private:
-  Map* map_;
+  raw_ptr<Map> map_;
   typename Map::iterator it_;
 };
 

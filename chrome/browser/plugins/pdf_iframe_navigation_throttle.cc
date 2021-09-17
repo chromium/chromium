@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -46,7 +47,7 @@ class PdfWebContentsLifetimeHelper
  private:
   friend class content::WebContentsUserData<PdfWebContentsLifetimeHelper>;
 
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   base::WeakPtrFactory<PdfWebContentsLifetimeHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

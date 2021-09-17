@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_H_
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -81,8 +82,8 @@ class WebURLLoaderMock : public WebURLLoader {
  private:
   void Cancel();
 
-  WebURLLoaderMockFactoryImpl* factory_ = nullptr;
-  WebURLLoaderClient* client_ = nullptr;
+  raw_ptr<WebURLLoaderMockFactoryImpl> factory_ = nullptr;
+  raw_ptr<WebURLLoaderClient> client_ = nullptr;
   bool is_deferred_ = false;
 
   base::WeakPtrFactory<WebURLLoaderMock> weak_factory_{this};

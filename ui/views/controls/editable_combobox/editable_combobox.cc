@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -142,7 +143,7 @@ class EditableCombobox::EditableComboboxMenuModel
         filter_on_edit_(filter_on_edit),
         show_on_empty_(show_on_empty) {
     UpdateItemsShown();
-    observation_.Observe(combobox_model_);
+    observation_.Observe(combobox_model_.get());
   }
 
   EditableComboboxMenuModel(const EditableComboboxMenuModel&) = delete;
@@ -259,8 +260,8 @@ class EditableCombobox::EditableComboboxMenuModel
 
   MenuModel* GetSubmenuModelAt(int index) const override { return nullptr; }
 
-  EditableCombobox* owner_;            // Weak. Owns |this|.
-  ui::ComboboxModel* combobox_model_;  // Weak.
+  raw_ptr<EditableCombobox> owner_;            // Weak. Owns |this|.
+  raw_ptr<ui::ComboboxModel> combobox_model_;  // Weak.
 
   // Whether to adapt the items shown to the textfield content.
   const bool filter_on_edit_;
@@ -324,8 +325,8 @@ class EditableCombobox::EditableComboboxPreTargetHandler
     root_view_ = nullptr;
   }
 
-  EditableCombobox* owner_;
-  View* root_view_;
+  raw_ptr<EditableCombobox> owner_;
+  raw_ptr<View> root_view_;
 };
 
 EditableCombobox::EditableCombobox()
@@ -347,13 +348,13 @@ EditableCombobox::EditableCombobox(
       show_on_empty_(show_on_empty),
       showing_password_text_(type != Type::kPassword) {
   SetModel(std::move(combobox_model));
-  observation_.Observe(textfield_);
+  observation_.Observe(textfield_.get());
   textfield_->set_controller(this);
   textfield_->SetFontList(GetFontList());
   textfield_->SetTextInputType((type == Type::kPassword)
                                    ? ui::TEXT_INPUT_TYPE_PASSWORD
                                    : ui::TEXT_INPUT_TYPE_TEXT);
-  AddChildView(textfield_);
+  AddChildView(textfield_.get());
   if (display_arrow) {
     textfield_->SetExtraInsets(gfx::Insets(
         /*top=*/0, /*left=*/0, /*bottom=*/0,

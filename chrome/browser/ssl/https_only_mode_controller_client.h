@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_CONTROLLER_CLIENT_H_
 #define CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_CONTROLLER_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 
@@ -30,7 +31,7 @@ class HttpsOnlyModeControllerClient
   void Proceed() override;
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   const GURL request_url_;
 };
 

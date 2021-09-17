@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -33,7 +34,7 @@ class PLATFORM_EXPORT MainThread : public Thread {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  MainThreadSchedulerImpl* scheduler_;  // Not owned.
+  raw_ptr<MainThreadSchedulerImpl> scheduler_;  // Not owned.
 };
 
 }  // namespace scheduler

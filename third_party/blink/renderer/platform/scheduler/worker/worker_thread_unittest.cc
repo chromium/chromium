@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_executor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,7 +50,7 @@ class TestObserver : public Thread::TaskObserver {
   }
 
  private:
-  StringBuilder* calls_;  // NOT OWNED
+  raw_ptr<StringBuilder> calls_;  // NOT OWNED
 };
 
 void RunTestTask(StringBuilder* calls) {

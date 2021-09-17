@@ -19,6 +19,7 @@
 #include "base/containers/queue.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -206,7 +207,7 @@ class TestDownloadItemObserver : public DownloadItem::Observer {
     item_ = nullptr;
   }
 
-  DownloadItem* item_;
+  raw_ptr<DownloadItem> item_;
   DownloadItem::DownloadState last_state_;
   bool removed_;
   bool destroyed_;
@@ -2475,7 +2476,7 @@ class DownloadItemDestinationUpdateRaceTest
           FROM_HERE, base::BindOnce(action, observer));
   }
 
-  DownloadItemImpl* item_;
+  raw_ptr<DownloadItemImpl> item_;
   std::unique_ptr<MockDownloadFile> file_;
 };
 

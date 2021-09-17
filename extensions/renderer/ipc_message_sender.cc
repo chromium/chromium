@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/renderer/render_frame.h"
@@ -235,7 +236,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     return event_router_remote_.get();
   }
 
-  content::RenderThread* const render_thread_;
+  const raw_ptr<content::RenderThread> render_thread_;
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
 
   base::WeakPtrFactory<MainThreadIPCMessageSender> weak_ptr_factory_{this};
@@ -447,7 +448,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
                                   service_worker_version_id_, GetExtensionId());
   }
 
-  WorkerThreadDispatcher* const dispatcher_;
+  const raw_ptr<WorkerThreadDispatcher> dispatcher_;
   const int64_t service_worker_version_id_;
   absl::optional<ExtensionId> extension_id_;
 

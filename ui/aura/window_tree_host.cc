@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -63,7 +64,7 @@ class ScopedLocalSurfaceIdValidator {
   }
 
  private:
-  Window* const window_;
+  const raw_ptr<Window> window_;
   const viz::LocalSurfaceId local_surface_id_;
   DISALLOW_COPY_AND_ASSIGN(ScopedLocalSurfaceIdValidator);
 };

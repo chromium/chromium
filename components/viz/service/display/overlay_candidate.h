@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -161,7 +162,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // If |rpdq| is present, then the renderer must draw the filter effects and
   // copy the result into the buffer backing of a render pass.
-  const AggregatedRenderPassDrawQuad* rpdq = nullptr;
+  raw_ptr<const AggregatedRenderPassDrawQuad> rpdq = nullptr;
   // The DDL for generating render pass overlay buffer with SkiaRenderer. This
   // is the recorded output of rendering the |rpdq|.
   sk_sp<SkDeferredDisplayList> ddl;

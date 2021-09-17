@@ -1605,7 +1605,7 @@ std::tuple<size_t, float, unsigned> AudioParamTimeline::ProcessSetTarget(
   auto sample_rate = current_state.sample_rate;
   auto control_rate = current_state.control_rate;
   auto fill_to_end_frame = current_state.fill_to_end_frame;
-  auto* event = current_state.event;
+  auto* event = current_state.event.get();
 
   // Exponential approach to target value with given time constant.
   //
@@ -1714,7 +1714,7 @@ std::tuple<size_t, float, unsigned> AudioParamTimeline::ProcessSetValueCurve(
   auto start_frame = current_state.start_frame;
   auto end_frame = current_state.end_frame;
   auto fill_to_end_frame = current_state.fill_to_end_frame;
-  auto* event = current_state.event;
+  auto* event = current_state.event.get();
 
   const Vector<float> curve = event->Curve();
   const float* curve_data = curve.data();
@@ -1901,7 +1901,7 @@ std::tuple<size_t, float, unsigned> AudioParamTimeline::ProcessCancelValues(
   auto sample_rate = current_state.sample_rate;
   auto control_rate = current_state.control_rate;
   auto fill_to_end_frame = current_state.fill_to_end_frame;
-  auto* event = current_state.event;
+  auto* event = current_state.event.get();
   auto event_index = current_state.event_index;
 
   // If the previous event was a SetTarget or ExponentialRamp

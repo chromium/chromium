@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 
 namespace base {
@@ -68,7 +69,7 @@ class ExternalLoader : public base::RefCountedThreadSafe<ExternalLoader> {
  private:
   friend class base::RefCountedThreadSafe<ExternalLoader>;
 
-  ExternalProviderImpl* owner_ = nullptr;  // weak
+  raw_ptr<ExternalProviderImpl> owner_ = nullptr;  // weak
 };
 
 }  // namespace extensions

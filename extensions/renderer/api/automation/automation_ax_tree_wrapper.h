@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_
 #define EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/api/automation.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
@@ -127,7 +128,7 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
 
   ui::AXTreeID tree_id_;
   ui::AXTree tree_;
-  AutomationInternalCustomBindings* owner_;
+  raw_ptr<AutomationInternalCustomBindings> owner_;
   std::vector<int> deleted_node_ids_;
   std::vector<int> text_changed_node_ids_;
   ui::AXEventGenerator event_generator_;

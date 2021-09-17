@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -73,7 +74,7 @@ class VIEWS_EXPORT AnimationBuilder {
 
     bool attached_to_sequence_ = false;
 
-    AnimationAbortHandle* abort_handle_ = nullptr;
+    raw_ptr<AnimationAbortHandle> abort_handle_ = nullptr;
   };
 
   AnimationBuilder();
@@ -154,7 +155,7 @@ class VIEWS_EXPORT AnimationBuilder {
   // Each vector is kept in sorted order.
   std::map<AnimationKey, std::vector<Value>> values_;
 
-  AnimationAbortHandle* abort_handle_ = nullptr;
+  raw_ptr<AnimationAbortHandle> abort_handle_ = nullptr;
 };
 
 }  // namespace views

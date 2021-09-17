@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
@@ -104,12 +105,13 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
 
   template <typename T>
   T GetSharedMemoryAs() {
-    return reinterpret_cast<T>(shared_memory_address_);
+    return reinterpret_cast<T>(shared_memory_address_.get());
   }
 
   template <typename T>
   T GetSharedMemoryAsWithOffset(uint32_t offset) {
-    void* ptr = reinterpret_cast<int8_t*>(shared_memory_address_) + offset;
+    void* ptr =
+        reinterpret_cast<int8_t*>(shared_memory_address_.get()) + offset;
     return reinterpret_cast<T>(ptr);
   }
 
@@ -221,8 +223,8 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
 
   int32_t shared_memory_id_;
   uint32_t shared_memory_offset_;
-  void* shared_memory_address_;
-  void* shared_memory_base_;
+  raw_ptr<void> shared_memory_address_;
+  raw_ptr<void> shared_memory_base_;
 
   uint32_t immediate_buffer_[64];
 
@@ -236,7 +238,8 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
   std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
       shared_images_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  gles2::MockCopyTextureResourceManager* copy_texture_manager_;  // not owned
+  raw_ptr<gles2::MockCopyTextureResourceManager>
+      copy_texture_manager_;  // not owned
 };
 
 class RasterDecoderManualInitTest : public RasterDecoderTestBase {

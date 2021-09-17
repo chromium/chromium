@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "extensions/renderer/module_system.h"
@@ -68,14 +69,14 @@ class ModuleSystemTestEnvironment {
   AssertNatives* assert_natives() { return assert_natives_; }
 
  private:
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
   std::unique_ptr<gin::ContextHolder> context_holder_;
   v8::HandleScope handle_scope_;
 
   scoped_refptr<const Extension> extension_;
-  ScriptContextSet* context_set_;
-  ScriptContext* context_;
-  AssertNatives* assert_natives_;
+  raw_ptr<ScriptContextSet> context_set_;
+  raw_ptr<ScriptContext> context_;
+  raw_ptr<AssertNatives> assert_natives_;
   std::unique_ptr<StringSourceMap> source_map_;
 
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
@@ -123,7 +124,7 @@ class ModuleSystemTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   std::set<std::string> extension_ids_;
   ScriptContextSet context_set_;

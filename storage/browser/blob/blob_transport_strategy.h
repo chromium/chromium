@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/blob/blob_memory_controller.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
@@ -50,7 +51,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobTransportStrategy {
   BlobTransportStrategy(BlobDataBuilder* builder,
                         ResultCallback result_callback);
 
-  BlobDataBuilder* builder_;
+  raw_ptr<BlobDataBuilder> builder_;
   ResultCallback result_callback_;
 };
 

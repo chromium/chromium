@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -33,7 +34,7 @@ class SharedClipboardContextMenuObserver
     void ExecuteCommand(int command_id, int event_flags) override;
 
    private:
-    SharedClipboardContextMenuObserver* const parent_;
+    const raw_ptr<SharedClipboardContextMenuObserver> parent_;
 
     DISALLOW_COPY_AND_ASSIGN(SubMenuDelegate);
   };
@@ -60,9 +61,9 @@ class SharedClipboardContextMenuObserver
 
   void SendSharedClipboardMessage(int chosen_device_index);
 
-  RenderViewContextMenuProxy* proxy_ = nullptr;
+  raw_ptr<RenderViewContextMenuProxy> proxy_ = nullptr;
 
-  SharedClipboardUiController* controller_ = nullptr;
+  raw_ptr<SharedClipboardUiController> controller_ = nullptr;
 
   std::vector<std::unique_ptr<syncer::DeviceInfo>> devices_;
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_BLOCKED_CONTENT_ANDROID_POPUP_BLOCKED_INFOBAR_DELEGATE_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
@@ -51,7 +52,7 @@ class PopupBlockedInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   const int num_popups_;
   const GURL url_;
-  HostContentSettingsMap* map_;
+  raw_ptr<HostContentSettingsMap> map_;
   bool can_show_popups_;
   base::OnceClosure on_accept_callback_;
 };

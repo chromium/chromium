@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -57,9 +58,9 @@ class PrefetchProxyOriginDecider {
   bool ClearPastEntries();
 
   // Not owned.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Maps origins to their last known retry_after time.
   std::map<url::Origin, base::Time> origin_retry_afters_;

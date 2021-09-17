@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/event_monitor.h"
 
 namespace ui {
@@ -36,8 +37,8 @@ class EventMonitorAura : public EventMonitor {
   void TearDown();
 
  private:
-  ui::EventObserver* event_observer_;  // Weak. Owned by our owner.
-  ui::EventTarget* event_target_;      // Weak.
+  raw_ptr<ui::EventObserver> event_observer_;  // Weak. Owned by our owner.
+  raw_ptr<ui::EventTarget> event_target_;      // Weak.
 };
 
 }  // namespace views

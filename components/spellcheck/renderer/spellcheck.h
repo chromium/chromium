@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -226,7 +227,7 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
   // Custom dictionary spelling engine.
   CustomDictionaryEngine custom_dictionary_;
 
-  service_manager::LocalInterfaceProvider* embedder_provider_;
+  raw_ptr<service_manager::LocalInterfaceProvider> embedder_provider_;
 
   // Remember state for spellchecking.
   bool spellcheck_enabled_;

@@ -6,6 +6,7 @@
 #define COMPONENTS_DOWNLOAD_NETWORK_NETWORK_STATUS_LISTENER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 
 namespace download {
@@ -49,7 +50,7 @@ class NetworkStatusListener {
 
   // The only observer that listens to connection type change. Must outlive this
   // class.
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   // The current network status.
   network::mojom::ConnectionType connection_type_ =

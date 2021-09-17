@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -106,7 +107,7 @@ class V8DetailedMemoryDecorator
 
   void UpdateProcessMeasurementSchedules() const;
 
-  Graph* graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   std::unique_ptr<V8DetailedMemoryRequestQueue> measurement_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);

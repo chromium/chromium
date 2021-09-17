@@ -160,7 +160,7 @@ ConfigurationPolicyProvider*
 ChromeBrowserPolicyConnector::GetPlatformProvider() {
   ConfigurationPolicyProvider* provider =
       BrowserPolicyConnectorBase::GetPolicyProviderForTesting();
-  return provider ? provider : platform_provider_;
+  return provider ? provider : platform_provider_.get();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

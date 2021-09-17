@@ -11,6 +11,7 @@
 #include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/single_thread_task_runner.h"
@@ -173,7 +174,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // This class owns this member, and is responsible for calling
   // WebView::Close().
-  blink::WebView* webview_ = nullptr;
+  raw_ptr<blink::WebView> webview_ = nullptr;
 
   // Helper objects ------------------------------------------------------------
 

@@ -28,7 +28,7 @@ bool ExpiredHistogramsChecker::ShouldRecord(uint32_t histogram_hash) const {
   // If histogram is explicitly allowed then it should always be recorded.
   if (base::Contains(allowlist_, histogram_hash))
     return true;
-  return !std::binary_search(expired_histogram_hashes_,
+  return !std::binary_search(expired_histogram_hashes_.get(),
                              expired_histogram_hashes_ + size_, histogram_hash);
 }
 

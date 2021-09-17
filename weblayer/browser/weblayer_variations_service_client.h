@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/variations/service/variations_service_client.h"
 
@@ -33,7 +34,7 @@ class WebLayerVariationsServiceClient
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
 
-  SystemNetworkContextManager* network_context_manager_;
+  raw_ptr<SystemNetworkContextManager> network_context_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(WebLayerVariationsServiceClient);
 };

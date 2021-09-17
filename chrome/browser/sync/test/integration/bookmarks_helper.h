@@ -14,6 +14,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
@@ -426,7 +427,7 @@ class SingleBookmarkModelStatusChangeChecker
 
  private:
   const int profile_index_;
-  bookmarks::BookmarkModel* bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 // Generic status change checker that waits until a predicate as defined by
@@ -476,7 +477,7 @@ class BookmarkFaviconLoadedChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const bookmarks::BookmarkNode* const bookmark_node_;
+  const raw_ptr<const bookmarks::BookmarkNode> bookmark_node_;
 };
 
 // Checker used to block until the bookmarks on the server match a given set of
@@ -504,8 +505,8 @@ class ServerBookmarksEqualityChecker : public SingleClientStatusChangeChecker {
   ~ServerBookmarksEqualityChecker() override;
 
  private:
-  fake_server::FakeServer* fake_server_;
-  syncer::Cryptographer* cryptographer_;
+  raw_ptr<fake_server::FakeServer> fake_server_;
+  raw_ptr<syncer::Cryptographer> cryptographer_;
   const std::vector<ExpectedBookmark> expected_bookmarks_;
 
   DISALLOW_COPY_AND_ASSIGN(ServerBookmarksEqualityChecker);
@@ -577,7 +578,7 @@ class BookmarkModelMatchesFakeServerChecker
       const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid)
       const;
 
-  fake_server::FakeServer* const fake_server_;
+  const raw_ptr<fake_server::FakeServer> fake_server_;
   const int profile_index_;
 };
 

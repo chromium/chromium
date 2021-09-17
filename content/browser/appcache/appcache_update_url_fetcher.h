@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/appcache/appcache_update_job.h"
 #include "net/base/io_buffer.h"
 #include "url/gurl.h"
@@ -93,7 +94,7 @@ class AppCacheUpdateJob::URLFetcher {
   friend class UpdateURLLoaderRequest;
 
   const GURL url_;
-  AppCacheUpdateJob* const job_;
+  const raw_ptr<AppCacheUpdateJob> job_;
   const FetchType fetch_type_;
   const int buffer_size_;
 

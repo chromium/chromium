@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_VIRTUAL_KEYBOARD_CONTROLLER_WIN_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "ui/base/ime/virtual_keyboard_controller_observer.h"
 
@@ -56,8 +57,8 @@ class VirtualKeyboardControllerWin
   void HideVirtualKeyboard();
   bool IsPointerTypeValidForVirtualKeyboard() const;
 
-  RenderWidgetHostViewAura* host_view_;
-  ui::InputMethod* input_method_;
+  raw_ptr<RenderWidgetHostViewAura> host_view_;
+  raw_ptr<ui::InputMethod> input_method_;
   bool observers_registered_ = false;
   bool virtual_keyboard_shown_ = false;
   bool is_manual_policy_ = false;

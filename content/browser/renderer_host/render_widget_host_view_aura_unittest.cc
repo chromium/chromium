@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
@@ -196,7 +197,7 @@ class TestWindowObserver : public aura::WindowObserver {
 
  private:
   // Window that we're observing, or nullptr if it's been destroyed.
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 
   // Was |window_| destroyed?
   bool destroyed_;
@@ -276,7 +277,7 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
   }
 
   gfx::Size last_frame_size_;
-  FakeWindowEventDispatcher* dispatcher_;
+  raw_ptr<FakeWindowEventDispatcher> dispatcher_;
 
  private:
 
@@ -309,7 +310,7 @@ class FullscreenLayoutManager : public aura::LayoutManager {
   }
 
  private:
-  aura::Window* owner_;
+  raw_ptr<aura::Window> owner_;
   DISALLOW_COPY_AND_ASSIGN(FullscreenLayoutManager);
 };
 
@@ -701,15 +702,15 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
-  RenderWidgetHostImpl* parent_host_;
-  RenderWidgetHostViewAura* parent_view_;
+  raw_ptr<RenderWidgetHostImpl> parent_host_;
+  raw_ptr<RenderWidgetHostViewAura> parent_view_;
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
-  MockRenderWidgetHostImpl* widget_host_;
-  FakeRenderWidgetHostViewAura* view_;
+  raw_ptr<MockRenderWidgetHostImpl> widget_host_;
+  raw_ptr<FakeRenderWidgetHostViewAura> view_;
 
-  IPC::TestSink* sink_ = nullptr;
+  raw_ptr<IPC::TestSink> sink_ = nullptr;
   base::test::ScopedFeatureList mojo_feature_list_;
   base::test::ScopedFeatureList feature_list_;
 
@@ -5768,7 +5769,7 @@ class RenderWidgetHostViewAuraWithViewHarnessTest
   }
 
  private:
-  RenderWidgetHostViewAura* view_;
+  raw_ptr<RenderWidgetHostViewAura> view_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraWithViewHarnessTest);
 };
@@ -5997,16 +5998,16 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     view_->Show();
   }
 
-  MockRenderWidgetHostImpl* widget_host_for_first_process_;
-  TestRenderWidgetHostView* view_for_first_process_;
+  raw_ptr<MockRenderWidgetHostImpl> widget_host_for_first_process_;
+  raw_ptr<TestRenderWidgetHostView> view_for_first_process_;
   std::unique_ptr<MockRenderProcessHost> second_process_host_;
   std::unique_ptr<AgentSchedulingGroupHost> second_agent_scheduling_group_host_;
-  MockRenderWidgetHostImpl* widget_host_for_second_process_;
-  TestRenderWidgetHostView* view_for_second_process_;
+  raw_ptr<MockRenderWidgetHostImpl> widget_host_for_second_process_;
+  raw_ptr<TestRenderWidgetHostView> view_for_second_process_;
   std::unique_ptr<MockRenderProcessHost> third_process_host_;
   std::unique_ptr<AgentSchedulingGroupHost> third_agent_scheduling_group_host_;
-  MockRenderWidgetHostImpl* widget_host_for_third_process_;
-  TestRenderWidgetHostView* view_for_third_process_;
+  raw_ptr<MockRenderWidgetHostImpl> widget_host_for_third_process_;
+  raw_ptr<TestRenderWidgetHostView> view_for_third_process_;
 
   DISALLOW_COPY_AND_ASSIGN(InputMethodAuraTestBase);
 };
@@ -6558,8 +6559,8 @@ class RenderWidgetHostViewAuraInputMethodTest
 
  protected:
   // Not owned.
-  ui::MockInputMethod* input_method_ = nullptr;
-  const ui::TextInputClient* text_input_client_;
+  raw_ptr<ui::MockInputMethod> input_method_ = nullptr;
+  raw_ptr<const ui::TextInputClient> text_input_client_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraInputMethodTest);
 };
@@ -6699,7 +6700,8 @@ class RenderWidgetHostViewAuraKeyboardTest
 
  private:
   // Not owned.
-  RenderWidgetHostViewAuraKeyboardMockInputMethod* input_method_ = nullptr;
+  raw_ptr<RenderWidgetHostViewAuraKeyboardMockInputMethod> input_method_ =
+      nullptr;
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraKeyboardTest);
 };
 #endif

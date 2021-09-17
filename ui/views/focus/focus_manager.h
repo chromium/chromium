@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/views/view_observer.h"
@@ -337,14 +338,14 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   static bool arrow_key_traversal_enabled_;
 
   // The top-level Widget this FocusManager is associated with.
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 
   // The object which handles an accelerator when |accelerator_manager_| doesn't
   // handle it.
   std::unique_ptr<FocusManagerDelegate> delegate_;
 
   // The view that currently is focused.
-  View* focused_view_ = nullptr;
+  raw_ptr<View> focused_view_ = nullptr;
 
   // The AcceleratorManager this FocusManager is associated with.
   ui::AcceleratorManager accelerator_manager_;

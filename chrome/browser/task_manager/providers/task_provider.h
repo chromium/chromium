@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 
@@ -73,7 +74,7 @@ class TaskProvider {
   virtual void StopUpdating() = 0;
 
   // We support only one single obsever which will be the sampler in this case.
-  TaskProviderObserver* observer_;
+  raw_ptr<TaskProviderObserver> observer_;
 };
 
 }  // namespace task_manager

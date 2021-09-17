@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -138,7 +139,7 @@ class PromptActionTest : public testing::Test {
   base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
       fake_wait_for_dom_done_;
   ActionProto proto_;
-  PromptProto* prompt_proto_;
+  raw_ptr<PromptProto> prompt_proto_;
   std::unique_ptr<std::vector<UserAction>> user_actions_;
   std::unique_ptr<BatchElementChecker> checker_;
   bool has_check_elements_result_ = false;

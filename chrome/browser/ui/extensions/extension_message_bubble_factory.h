@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 class Browser;
 
@@ -37,7 +38,7 @@ class ExtensionMessageBubbleFactory {
   static void set_override_for_tests(OverrideForTesting override);
 
  private:
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleFactory);
 };

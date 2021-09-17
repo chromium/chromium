@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_TEST_FOCUS_MANAGER_TEST_H_
 #define UI_VIEWS_TEST_FOCUS_MANAGER_TEST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/focus/focus_manager.h"
 
 #include <utility>
@@ -55,9 +56,9 @@ class FocusManagerTest : public ViewsTestBase, public WidgetDelegate {
   void SetAccessiblePanes(const std::vector<View*>& panes);
 
  private:
-  View* contents_view_;
-  FocusChangeListener* focus_change_listener_ = nullptr;
-  WidgetFocusChangeListener* widget_focus_change_listener_ = nullptr;
+  raw_ptr<View> contents_view_;
+  raw_ptr<FocusChangeListener> focus_change_listener_ = nullptr;
+  raw_ptr<WidgetFocusChangeListener> widget_focus_change_listener_ = nullptr;
   std::vector<View*> accessible_panes_;
 };
 

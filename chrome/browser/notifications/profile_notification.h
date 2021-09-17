@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -52,7 +53,7 @@ class ProfileNotification {
   NotificationHandler::Type type() const { return type_; }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Used for equality comparision in notification maps.
   ProfileID profile_id_;

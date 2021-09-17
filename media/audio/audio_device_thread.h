@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sync_socket.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
@@ -82,7 +83,7 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
   base::TimeDelta GetRealtimePeriod() final;
   void ThreadMain() final;
 
-  Callback* const callback_;
+  const raw_ptr<Callback> callback_;
   const char* thread_name_;
   base::CancelableSyncSocket socket_;
   base::PlatformThreadHandle thread_handle_;

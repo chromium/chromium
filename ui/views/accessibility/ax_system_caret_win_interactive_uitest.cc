@@ -7,6 +7,7 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_variant.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +44,7 @@ class AXSystemCaretWinTest : public test::DesktopWidgetTest {
     textfield_ = new Textfield();
     textfield_->SetBounds(0, 0, 200, 20);
     textfield_->SetText(u"Some text.");
-    widget_->GetRootView()->AddChildView(textfield_);
+    widget_->GetRootView()->AddChildView(textfield_.get());
     test::WidgetActivationWaiter waiter(widget_, true);
     widget_->Show();
     waiter.Wait();
@@ -61,8 +62,8 @@ class AXSystemCaretWinTest : public test::DesktopWidgetTest {
   }
 
  protected:
-  Widget* widget_;
-  Textfield* textfield_;
+  raw_ptr<Widget> widget_;
+  raw_ptr<Textfield> textfield_;
   base::win::ScopedVariant self_;
 };
 

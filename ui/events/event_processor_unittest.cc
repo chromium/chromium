@@ -7,6 +7,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target_iterator.h"
@@ -144,8 +145,8 @@ class ReDispatchEventHandler : public TestEventHandler {
   }
 
  private:
-  EventProcessor* processor_;
-  EventTarget* expected_target_;
+  raw_ptr<EventProcessor> processor_;
+  raw_ptr<EventTarget> expected_target_;
 
   DISALLOW_COPY_AND_ASSIGN(ReDispatchEventHandler);
 };

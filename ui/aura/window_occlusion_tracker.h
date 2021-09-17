@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
@@ -88,7 +89,7 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
 
     void Shutdown();
 
-    Window* window_;
+    raw_ptr<Window> window_;
     DISALLOW_COPY_AND_ASSIGN(ScopedExclude);
   };
 
@@ -112,7 +113,7 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
 
     void Shutdown();
 
-    Window* window_;
+    raw_ptr<Window> window_;
     DISALLOW_COPY_AND_ASSIGN(ScopedForceVisible);
   };
 

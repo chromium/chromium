@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/version.h"
@@ -70,7 +71,7 @@ class ExtensionActivityDataService final
  private:
   // This member is not owned by this class, it's owned by a profile keyed
   // service.
-  ExtensionPrefs* extension_prefs_;
+  raw_ptr<ExtensionPrefs> extension_prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionActivityDataService);
 };

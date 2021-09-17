@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_VIEW_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -28,7 +29,7 @@ class TopContainerView : public views::View {
 
  private:
   // The parent of this view. Not owned.
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_VIEW_H_

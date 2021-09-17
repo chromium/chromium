@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "extensions/common/extension.h"
 
@@ -78,7 +79,7 @@ class ExtensionsToolbarBrowserTest : public DialogBrowserTest {
   std::vector<ToolbarActionView*> GetVisibleToolbarActionViews() const;
 
  private:
-  Browser* incognito_browser_ = nullptr;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
   std::vector<scoped_refptr<const extensions::Extension>> extensions_;
 };
 

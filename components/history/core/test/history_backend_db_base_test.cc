@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -55,7 +56,7 @@ class BackendDelegate : public HistoryBackend::Delegate {
   void DBLoaded() override {}
 
  private:
-  HistoryBackendDBBaseTest* history_test_;
+  raw_ptr<HistoryBackendDBBaseTest> history_test_;
 };
 
 HistoryBackendDBBaseTest::HistoryBackendDBBaseTest()

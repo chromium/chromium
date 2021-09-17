@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "v8/include/v8.h"
 
@@ -55,7 +56,7 @@ class ExtensionHooksDelegate : public APIBindingHooksDelegate {
 
   // The messaging service to handle messaging calls.
   // Guaranteed to outlive this object.
-  NativeRendererMessagingService* const messaging_service_;
+  const raw_ptr<NativeRendererMessagingService> messaging_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionHooksDelegate);
 };

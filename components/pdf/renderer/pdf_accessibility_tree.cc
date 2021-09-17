@@ -9,6 +9,7 @@
 
 #include "base/i18n/break_iterator.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
@@ -1116,12 +1117,12 @@ class PdfAccessibilityTreeBuilder {
   uint32_t current_choice_field_index_ = 0;
   const gfx::RectF& page_bounds_;
   uint32_t page_index_;
-  ui::AXNodeData* page_node_;
-  content::RenderAccessibility* render_accessibility_;
-  std::vector<std::unique_ptr<ui::AXNodeData>>* nodes_;
-  std::map<int32_t, chrome_pdf::PageCharacterIndex>*
+  raw_ptr<ui::AXNodeData> page_node_;
+  raw_ptr<content::RenderAccessibility> render_accessibility_;
+  raw_ptr<std::vector<std::unique_ptr<ui::AXNodeData>>> nodes_;
+  raw_ptr<std::map<int32_t, chrome_pdf::PageCharacterIndex>>
       node_id_to_page_char_index_;
-  std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>*
+  raw_ptr<std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>>
       node_id_to_annotation_info_;
   float heading_font_size_threshold_ = 0;
   float paragraph_spacing_threshold_ = 0;

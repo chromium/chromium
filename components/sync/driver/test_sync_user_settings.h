@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/driver/sync_user_settings.h"
 
@@ -73,7 +74,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetIsUsingExplicitPassphrase(bool enabled);
 
  private:
-  TestSyncService* service_;
+  raw_ptr<TestSyncService> service_;
 
   bool first_setup_complete_ = true;
   bool sync_everything_enabled_ = true;

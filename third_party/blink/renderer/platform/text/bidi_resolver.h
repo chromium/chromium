@@ -23,6 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_RESOLVER_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/text/bidi_character_run.h"
 #include "third_party/blink/renderer/platform/text/bidi_context.h"
 #include "third_party/blink/renderer/platform/text/bidi_run_list.h"
@@ -356,7 +357,7 @@ class BidiResolver final {
 
   unsigned nested_isolate_count_ = 0;
   Vector<IsolatedRun> isolated_runs_;
-  Run* trailing_space_run_;
+  raw_ptr<Run> trailing_space_run_;
   bool needs_trailing_space_;
   TextDirection paragraph_directionality_;
 

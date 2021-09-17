@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_TRANSFORM_CACHE_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
@@ -107,8 +108,9 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     }
   }
   const TransformPaintPropertyNode* plane_root() const {
-    return UNLIKELY(plane_root_transform_) ? plane_root_transform_->plane_root
-                                           : root_of_2d_translation();
+    return UNLIKELY(plane_root_transform_)
+               ? plane_root_transform_->plane_root.get()
+               : root_of_2d_translation();
   }
   bool has_animation_to_plane_root() const {
     return UNLIKELY(plane_root_transform_) &&
@@ -134,7 +136,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   // The parent of the root of consecutive identity or 2d translations from the
   // transform node, or the root of the tree if the whole path from the
   // transform node to the root contains identity or 2d translations only.
-  const TransformPaintPropertyNode* root_of_2d_translation_;
+  raw_ptr<const TransformPaintPropertyNode> root_of_2d_translation_;
 
   // The cached values here can be categorized in two logical groups:
   //
@@ -195,7 +197,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   struct PlaneRootTransform {
     TransformationMatrix to_plane_root;
     TransformationMatrix from_plane_root;
-    const TransformPaintPropertyNode* plane_root;
+    raw_ptr<const TransformPaintPropertyNode> plane_root;
     bool has_animation;
   };
   std::unique_ptr<PlaneRootTransform> plane_root_transform_;

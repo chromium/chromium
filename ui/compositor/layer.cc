@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/mirror_layer.h"
 #include "cc/layers/nine_patch_layer.h"
@@ -102,8 +103,8 @@ class Layer::LayerMirror : public LayerDelegate, LayerObserver {
   }
 
  private:
-  Layer* const source_;
-  Layer* const dest_;
+  const raw_ptr<Layer> source_;
+  const raw_ptr<Layer> dest_;
 };
 
 // Manages the subpixel offset data for a given set of parameters (device
@@ -318,7 +319,7 @@ void Layer::SetShowReflectedLayerSubtree(Layer* subtree_reflected_layer) {
     return;
 
   scoped_refptr<cc::MirrorLayer> new_layer =
-      cc::MirrorLayer::Create(subtree_reflected_layer->cc_layer_);
+      cc::MirrorLayer::Create(subtree_reflected_layer->cc_layer_.get());
   if (!SwitchToLayer(new_layer))
     return;
 
@@ -354,7 +355,7 @@ void Layer::SetCompositor(Compositor* compositor,
   compositor_ = compositor;
   OnDeviceScaleFactorChanged(compositor->device_scale_factor());
 
-  root_layer->AddChild(cc_layer_);
+  root_layer->AddChild(cc_layer_.get());
   SetCompositorForAnimatorsInTree(compositor);
 }
 
@@ -380,7 +381,7 @@ void Layer::Add(Layer* child) {
     child->parent_->Remove(child);
   child->parent_ = this;
   children_.push_back(child);
-  cc_layer_->AddChild(child->cc_layer_);
+  cc_layer_->AddChild(child->cc_layer_.get());
   child->OnDeviceScaleFactorChanged(device_scale_factor_);
   Compositor* compositor = GetCompositor();
   if (compositor)
@@ -814,7 +815,7 @@ bool Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
 
   for (auto* child : children_) {
     DCHECK(child->cc_layer_);
-    cc_layer_->AddChild(child->cc_layer_);
+    cc_layer_->AddChild(child->cc_layer_.get());
   }
   cc_layer_->SetTransformOrigin(gfx::Point3F());
   cc_layer_->SetContentsOpaque(fills_bounds_opaquely_);
@@ -1191,7 +1192,7 @@ void Layer::StackChildrenAtBottom(
     DCHECK_EQ(leading_child->parent(), this);
     new_children_order.emplace_back(leading_child);
     new_cc_children_order.emplace_back(
-        scoped_refptr<cc::Layer>(leading_child->cc_layer_));
+        scoped_refptr<cc::Layer>(leading_child->cc_layer_.get()));
   }
 
   base::flat_set<Layer*> reordered_children(new_children_order);
@@ -1377,7 +1378,7 @@ void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
   children_.insert(children_.begin() + dest_i, child);
 
   child->cc_layer_->RemoveFromParent();
-  cc_layer_->InsertChild(child->cc_layer_, dest_i);
+  cc_layer_->InsertChild(child->cc_layer_.get(), dest_i);
 }
 
 bool Layer::ConvertPointForAncestor(const Layer* ancestor,

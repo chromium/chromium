@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -534,7 +535,7 @@ class IconLoadingPipeline : public base::RefCounted<IconLoadingPipeline> {
   // first fallback method attempted in MaybeLoadFallbackOrCompleteEmpty().
   // These members are only populated from LoadWebAppIcon or LoadExtensionIcon.
   GURL fallback_favicon_url_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // If |fallback_icon_resource_| is not |kInvalidIconResource|, then it is the
   // second fallback method attempted in MaybeLoadFallbackOrCompleteEmpty()

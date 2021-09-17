@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -134,9 +135,9 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<test::FakeFidoDiscoveryFactory> fake_discovery_factory_ =
       std::make_unique<test::FakeFidoDiscoveryFactory>();
-  test::FakeFidoDiscovery* discovery_;
-  test::FakeFidoDiscovery* nfc_discovery_;
-  test::FakeFidoDiscovery* platform_discovery_;
+  raw_ptr<test::FakeFidoDiscovery> discovery_;
+  raw_ptr<test::FakeFidoDiscovery> nfc_discovery_;
+  raw_ptr<test::FakeFidoDiscovery> platform_discovery_;
   scoped_refptr<::testing::NiceMock<MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<MockFidoDevice> pending_mock_platform_device_;
   TestMakeCredentialRequestCallback cb_;

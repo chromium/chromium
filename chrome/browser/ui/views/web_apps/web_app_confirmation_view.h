@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -57,15 +58,15 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   chrome::AppInstallationAcceptanceCallback callback_;
 
   // Checkbox to launch as a window.
-  views::Checkbox* open_as_window_checkbox_ = nullptr;
+  raw_ptr<views::Checkbox> open_as_window_checkbox_ = nullptr;
 
   // Radio buttons to launch as a tab, window or tabbed window.
-  views::RadioButton* open_as_tab_radio_ = nullptr;
-  views::RadioButton* open_as_window_radio_ = nullptr;
-  views::RadioButton* open_as_tabbed_window_radio_ = nullptr;
+  raw_ptr<views::RadioButton> open_as_tab_radio_ = nullptr;
+  raw_ptr<views::RadioButton> open_as_window_radio_ = nullptr;
+  raw_ptr<views::RadioButton> open_as_tabbed_window_radio_ = nullptr;
 
   // Textfield showing the title of the app.
-  views::Textfield* title_tf_ = nullptr;
+  raw_ptr<views::Textfield> title_tf_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_

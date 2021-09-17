@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PWA_INSTALL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PWA_INSTALL_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -44,7 +45,7 @@ class PwaInstallView : public PageActionIconView, public TabStripModelObserver {
   std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   // Called when IPH is closed.
   void OnIphClosed();

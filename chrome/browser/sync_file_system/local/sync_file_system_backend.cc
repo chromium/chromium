@@ -97,7 +97,7 @@ void SyncFileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
   // It is safe to pass Unretained(this) since |context_| owns it.
   SyncStatusCallback initialize_callback = base::BindOnce(
       &SyncFileSystemBackend::DidInitializeSyncFileSystemService,
-      base::Unretained(this), base::RetainedRef(context_),
+      base::Unretained(this), base::RetainedRef(context_.get()),
       url.origin().GetURL(), url.type(), mode, std::move(callback));
   InitializeSyncFileSystemService(url.origin().GetURL(),
                                   std::move(initialize_callback));

@@ -10,6 +10,7 @@
 #define SANDBOX_WIN_SRC_INTERCEPTION_AGENT_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_types.h"
 
@@ -72,7 +73,7 @@ class InterceptionAgent {
   ResolverThunk* GetResolver(InterceptionType type);
 
   // Shared memory containing the list of functions to intercept.
-  SharedMemory* interceptions_;
+  raw_ptr<SharedMemory> interceptions_;
 
   // Array of thunk data buffers for the intercepted dlls. This object singleton
   // is allocated with a placement new with enough space to hold the complete

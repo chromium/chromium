@@ -126,7 +126,7 @@ ConnectionTracker::ConnectionListener::AcceptedSocket(
   uint16_t port = GetPort(*connection);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ConnectionTracker::AcceptedSocketWithPort,
-                                base::Unretained(tracker_), port));
+                                base::Unretained(tracker_.get()), port));
   return connection;
 }
 
@@ -142,7 +142,7 @@ void ConnectionTracker::ConnectionListener::ReadFromSocket(
   uint16_t port = GetPort(connection);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ConnectionTracker::ReadFromSocketWithPort,
-                                base::Unretained(tracker_), port));
+                                base::Unretained(tracker_.get()), port));
 }
 
 }  // namespace test_server

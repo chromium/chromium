@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
 
@@ -55,7 +56,7 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
   SharesheetBubbleView* GetBubbleViewForTesting();
 
   // Owned by views.
-  SharesheetBubbleView* sharesheet_bubble_view_;
+  raw_ptr<SharesheetBubbleView> sharesheet_bubble_view_;
 };
 
 }  // namespace sharesheet

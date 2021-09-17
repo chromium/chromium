@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
@@ -212,13 +213,13 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   void FlipCanvasOnPaintForRTLUIChanged();
 
   // The image and label shown in the button.
-  ImageView* image_;
-  internal::LabelButtonLabel* label_;
+  raw_ptr<ImageView> image_;
+  raw_ptr<internal::LabelButtonLabel> label_;
 
   // A separate view is necessary to hold the ink drop layer so that it can
   // be stacked below |image_| and on top of |label_|, without resorting to
   // drawing |label_| on a layer (which can mess with subpixel anti-aliasing).
-  InkDropContainerView* ink_drop_container_;
+  raw_ptr<InkDropContainerView> ink_drop_container_;
 
   // The cached font lists in the normal and default button style. The latter
   // may be bold.

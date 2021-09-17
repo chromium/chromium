@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
@@ -192,7 +193,7 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   void FinalizeIntervalData(base::TimeTicks now);
 
   // The clock used by this class.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // The current tab count.
   uint16_t current_tab_count_ = 0;
