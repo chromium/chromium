@@ -134,20 +134,25 @@ void ServiceResultToMojom(
         top_visit->related_visits.push_back(std::move(visit_mojom));
       }
 
+      // Coalesce the related searches of this visit into the top visit, but
+      // only if the top visit's related searches count is still under the cap.
+      // Note we coalesce a whole visit's worth of searches at a time, so we
+      // can exceed the cap, but we ignore further visits' searches after that.
+      constexpr size_t kMaxRelatedSearches = 8;
       auto& top_visit = cluster_mojom->visits.front();
-      // The top visit's related searches are the set of related searches across
-      // all the visits in the order they are encountered.
-      for (const auto& search_query :
-           visit.annotated_visit.content_annotations.related_searches) {
-        if (!related_searches.insert(search_query).second) {
-          continue;
-        }
+      if (top_visit->related_searches.size() < kMaxRelatedSearches) {
+        for (const auto& search_query :
+             visit.annotated_visit.content_annotations.related_searches) {
+          if (!related_searches.insert(search_query).second) {
+            continue;
+          }
 
-        auto search_query_mojom =
-            SearchQueryToMojom(search_query, template_url_service);
-        if (search_query_mojom) {
-          top_visit->related_searches.emplace_back(
-              std::move(*search_query_mojom));
+          auto search_query_mojom =
+              SearchQueryToMojom(search_query, template_url_service);
+          if (search_query_mojom) {
+            top_visit->related_searches.emplace_back(
+                std::move(*search_query_mojom));
+          }
         }
       }
     }
