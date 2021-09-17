@@ -88,7 +88,9 @@ libsecret"
 
 xenial_specific_packages="
 gnome-common
-libgraphite2-dev"
+libgraphite2-dev
+librtmp-dev
+libmicrohttpd-dev"
 
 ubuntu_release=$(lsb_release -cs)
 

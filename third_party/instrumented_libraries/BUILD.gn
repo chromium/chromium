@@ -84,9 +84,11 @@ if (use_locally_built_instrumented_libraries) {
   if (instrumented_libraries_platform == "trusty") {
     libgcrypt_package_ = "libgcrypt11"
     librtmp_package_ = "librtmp0"
+    libgnutls_package_ = "libgnutls26"
   } else {
     libgcrypt_package_ = "libgcrypt20"
     librtmp_package_ = "librtmp1"
+    libgnutls_package_ = "libgnutls30"
   }
 
   group("locally_built") {
@@ -105,7 +107,6 @@ if (use_locally_built_instrumented_libraries) {
       ":libcairo2",
       ":libcap2",
       ":libcredentialkit_pkcs11",
-      ":libcurl3-gnutls",
       ":libdbus-1-3",
       ":libdbus-glib-1-2",
       ":libdbusmenu",
@@ -163,9 +164,9 @@ if (use_locally_built_instrumented_libraries) {
       deps += [
         ":libcgmanager0",
         ":libcups2",
-        ":libgnutls26",
         ":libnih-dbus1",
         ":libnih1",
+        ":" + libgnutls_package_,
       ]
     }
     if (!is_tsan) {
@@ -446,14 +447,6 @@ if (use_locally_built_instrumented_libraries) {
     pre_build = "scripts/pre-build/libcups2.sh"
   }
 
-  instrumented_library("libcurl3-gnutls") {
-    build_method = "custom_libcurl"
-    if (instrumented_libraries_platform == "trusty") {
-      # This patch is in upstream Xenial and later.
-      patches = [ "patches/libcurl3-gnutls.trusty.diff" ]
-    }
-  }
-
   instrumented_library("libdbus-1-3") {
     extra_configure_flags = [
       "--disable-static",
@@ -551,7 +544,19 @@ if (use_locally_built_instrumented_libraries) {
   }
 
   instrumented_library("libgdk-pixbuf2.0-0") {
-    build_method = "debian"
+    extra_configure_flags = [
+      "--disable-static",
+      "--without-libjasper",
+      "--disable-introspection",
+
+      # From debian/rules.
+      "--with-x11",
+
+      # Do not use loadable modules. Same as with Pango, there's no easy way
+      # to make gdk-pixbuf pick instrumented versions over system-installed
+      # ones.
+      "--disable-modules",
+    ]
     pre_build = "scripts/pre-build/libgdk-pixbuf2.0-0.sh"
   }
 
@@ -562,6 +567,11 @@ if (use_locally_built_instrumented_libraries) {
       "--disable-gtk-doc-pdf",
       "--disable-static",
     ]
+    if (instrumented_libraries_platform == "xenial") {
+      # --with-pcre=system (the default) fails because the system-supplied
+      # PCRE does not support Unicode properties or UTF-8.
+      extra_configure_flags += [ "--with-pcre=internal" ]
+    }
     asan_blacklist = "blacklists/asan/libglib2.0-0.txt"
     msan_blacklist = "blacklists/msan/libglib2.0-0.txt"
     pre_build = "scripts/pre-build/autogen.sh"
@@ -578,7 +588,7 @@ if (use_locally_built_instrumented_libraries) {
     package_ldflags = [ "-Wl,--as-needed" ]
   }
 
-  instrumented_library("libgnutls26") {
+  target("instrumented_library", libgnutls_package_) {
     extra_configure_flags = [
       # from debian/rules.
       "--enable-ld-version-script",
@@ -828,9 +838,17 @@ if (use_locally_built_instrumented_libraries) {
   instrumented_library("libwayland-client0") {
     extra_configure_flags = [
       "--disable-static",
-      "--disable-scanner",
       "--disable-documentation",
     ]
+
+    # Do not use the just-built wayland_scanner because it is not runnable due
+    # to uninstrumented dependencies.
+    if (instrumented_libraries_platform == "trusty") {
+      extra_configure_flags += [ "--disable-scanner" ]
+    } else {
+      # The --disable-scanner flag is removed in Xenial.
+      extra_configure_flags += [ "--with-host-scanner" ]
+    }
   }
 
   instrumented_library("libx11-6") {
