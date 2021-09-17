@@ -2034,6 +2034,21 @@
             ]
         }
     ],
+    "ChromeShareLongScreenshot": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeShareLongScreenshot"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeSharingHubClankV2": [
         {
             "platforms": [
