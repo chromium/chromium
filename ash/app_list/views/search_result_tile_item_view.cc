@@ -35,6 +35,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/themed_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
@@ -85,6 +86,10 @@ SearchResultTileItemView::SearchResultTileItemView(
   SetCallback(base::BindRepeating(&SearchResultTileItemView::OnButtonPressed,
                                   base::Unretained(this)));
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks, but this focusable View needs to
+  // add a name so that the screen reader knows what to announce.
+  SetProperty(views::kSkipAccessibilityPaintChecks, true);
 
   // When |result_| is null, the tile is invisible. Calling SetSearchResult with
   // a non-null item makes the tile visible.
