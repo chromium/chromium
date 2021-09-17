@@ -74,7 +74,7 @@ extern const ui::ClassProperty<int32_t>* const kWindowSessionId;
 class Surface final : public ui::PropertyHandler {
  public:
   using PropertyDeallocator = void (*)(int64_t value);
-  using LeaveEnterCallback = base::RepeatingCallback<void(int64_t, int64_t)>;
+  using LeaveEnterCallback = base::RepeatingCallback<bool(int64_t, int64_t)>;
 
   Surface();
   ~Surface() override;
@@ -89,7 +89,8 @@ class Surface final : public ui::PropertyHandler {
   }
 
   // Called when the display the surface is on has changed.
-  void UpdateDisplay(int64_t old_id, int64_t new_id);
+  // Returns true if successful, and false if it fails.
+  bool UpdateDisplay(int64_t old_id, int64_t new_id);
 
   // Called when the output is added for new display.
   void OnNewOutputAdded();

@@ -67,7 +67,7 @@ class ServerTest : public TestBase {
 TEST_F(ServerTest, AddSocket) {
   std::unique_ptr<Display> display(new Display);
   std::unique_ptr<Server> server(new Server(display.get()));
-
+  server->Initialize();
   // Check that calling AddSocket() with a unique socket name succeeds.
   bool rv = server->AddSocket(GetUniqueSocketName());
   EXPECT_TRUE(rv);
@@ -76,7 +76,7 @@ TEST_F(ServerTest, AddSocket) {
 TEST_F(ServerTest, GetFileDescriptor) {
   std::unique_ptr<Display> display(new Display);
   std::unique_ptr<Server> server(new Server(display.get()));
-
+  server->Initialize();
   bool rv = server->AddSocket(GetUniqueSocketName());
   EXPECT_TRUE(rv);
 
@@ -97,6 +97,7 @@ void ConnectToServer(const std::string socket_name,
 TEST_F(ServerTest, Dispatch) {
   std::unique_ptr<Display> display(new Display);
   std::unique_ptr<Server> server(new Server(display.get()));
+  server->Initialize();
 
   std::string socket_name = GetUniqueSocketName();
   bool rv = server->AddSocket(socket_name);
@@ -124,6 +125,7 @@ TEST_F(ServerTest, Dispatch) {
 TEST_F(ServerTest, Flush) {
   std::unique_ptr<Display> display(new Display);
   std::unique_ptr<Server> server(new Server(display.get()));
+  server->Initialize();
 
   bool rv = server->AddSocket(GetUniqueSocketName());
   EXPECT_TRUE(rv);

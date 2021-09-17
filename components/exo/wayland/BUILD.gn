@@ -236,6 +236,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "wayland_display_unittest.cc",
       "wayland_keyboard_delegate_unittest.cc",
       "wayland_positioner_unittest.cc",
       "zaura_shell_unittest.cc",
