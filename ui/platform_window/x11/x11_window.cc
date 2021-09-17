@@ -1874,9 +1874,7 @@ void X11Window::AfterActivationStateChanged() {
   if (had_pointer_capture && !has_pointer_capture)
     OnXWindowLostCapture();
 
-  // A window can be both minimized and active from x11's perspective.
-  // But we treat a minimized window as inactive for platform consistency.
-  bool is_active = IsActive() && !IsMinimized();
+  bool is_active = IsActive();
   if (!was_active_ && is_active)
     SetFlashFrameHint(false);
 
