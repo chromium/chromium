@@ -424,9 +424,9 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
           quic_args->FindBoolKey(kQuicAllowServerMigration)
               .value_or(quic_params->allow_server_migration);
 
-      std::string quic_user_agent_id;
-      if (quic_args->GetString(kQuicUserAgentId, &quic_user_agent_id)) {
-        quic_params->user_agent_id = quic_user_agent_id;
+      std::string user_agent_id;
+      if (quic_args->GetString(kQuicUserAgentId, &user_agent_id)) {
+        quic_params->user_agent_id = user_agent_id;
       }
 
       quic_params->enable_socket_recv_optimization =

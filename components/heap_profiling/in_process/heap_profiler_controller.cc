@@ -99,7 +99,6 @@ void HeapProfilerController::TakeSnapshot(
 
 // static
 void HeapProfilerController::RetrieveAndSendSnapshot() {
-  using Sample = base::SamplingHeapProfiler::Sample;
   std::vector<Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
   if (samples.empty())

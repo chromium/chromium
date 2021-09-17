@@ -91,68 +91,68 @@ class PaymentsClient;
 // with" (e.g. for the tab the BrowserAutofillManager is attached to).
 class AutofillClient : public RiskDataLoader {
  public:
-  enum PaymentsRpcResult {
+  enum class PaymentsRpcResult {
     // Empty result. Used for initializing variables and should generally
     // not be returned nor passed as arguments unless explicitly allowed by
     // the API.
-    NONE,
+    kNone,
 
     // Request succeeded.
-    SUCCESS,
+    kSuccess,
 
     // Request failed; try again.
-    TRY_AGAIN_FAILURE,
+    kTryAgainFailure,
 
     // Request failed; don't try again.
-    PERMANENT_FAILURE,
+    kPermanentFailure,
 
     // Unable to connect to Payments servers. Prompt user to check internet
     // connection.
-    NETWORK_ERROR,
+    kNetworkError,
 
     // Request failed in retrieving virtual card information; try again.
-    VCN_RETRIEVAL_TRY_AGAIN_FAILURE,
+    kVcnRetrievalTryAgainFailure,
 
     // Request failed in retrieving virtual card information; don't try again.
-    VCN_RETRIEVAL_PERMANENT_FAILURE,
+    kVcnRetrievalPermanentFailure,
   };
 
   // The type of the credit card the Payments RPC fetches.
-  enum PaymentsRpcCardType {
+  enum class PaymentsRpcCardType {
     // Unknown type.
-    UNKNOWN_TYPE = 0,
+    kUnknown = 0,
     // Server card.
-    SERVER_CARD = 1,
+    kServerCard = 1,
     // Virtual card.
-    VIRTUAL_CARD = 2,
+    kVirtualCard = 2,
   };
 
-  enum SaveCardOfferUserDecision {
+  enum class SaveCardOfferUserDecision {
     // The user accepted credit card save.
-    ACCEPTED,
+    kAccepted,
 
     // The user explicitly declined credit card save.
-    DECLINED,
+    kDeclined,
 
     // The user ignored the credit card save prompt.
-    IGNORED,
+    kIgnored,
   };
 
-  enum UnmaskCardReason {
+  enum class UnmaskCardReason {
     // The card is being unmasked for PaymentRequest.
-    UNMASK_FOR_PAYMENT_REQUEST,
+    kPaymentRequest,
 
     // The card is being unmasked for Autofill.
-    UNMASK_FOR_AUTOFILL,
+    kAutofill,
   };
 
   // Authentication methods for card unmasking.
-  enum UnmaskAuthMethod {
-    UNKNOWN = 0,
+  enum class UnmaskAuthMethod {
+    kUnknown = 0,
     // Require user to unmask via CVC.
-    CVC = 1,
+    kCvc = 1,
     // Suggest use of FIDO authenticator for card unmasking.
-    FIDO = 2,
+    kFido = 2,
   };
 
   enum class SaveAddressProfileOfferUserDecision {

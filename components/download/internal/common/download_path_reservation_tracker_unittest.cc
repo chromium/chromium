@@ -530,16 +530,16 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
     EXPECT_EQ(PathValidationResult::SUCCESS, result);
   }
   // The next reservation for |path| will fail to be unique.
-  std::unique_ptr<MockDownloadItem> item =
+  std::unique_ptr<MockDownloadItem> download_item =
       CreateDownloadItem(DownloadPathReservationTracker::kMaxUniqueFiles + 2);
   base::FilePath reserved_path;
   PathValidationResult result = PathValidationResult::NAME_TOO_LONG;
-  CallGetReservedPath(item.get(), path, create_directory, conflict_action,
-                      &reserved_path, &result);
+  CallGetReservedPath(download_item.get(), path, create_directory,
+                      conflict_action, &reserved_path, &result);
   EXPECT_EQ(PathValidationResult::CONFLICT, result);
   EXPECT_EQ(path.value(), reserved_path.value());
 
-  SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
+  SetDownloadItemState(download_item.get(), DownloadItem::COMPLETE);
   for (auto& item : items)
     SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
 }

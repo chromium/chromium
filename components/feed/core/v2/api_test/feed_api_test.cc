@@ -247,10 +247,10 @@ std::string TestSurfaceBase::CurrentState() {
 }
 
 bool TestSurfaceBase::IsInitialLoadSpinnerUpdate(
-    const feedui::StreamUpdate& update) {
-  return update.updated_slices().size() == 1 &&
-         update.updated_slices()[0].has_slice() &&
-         update.updated_slices()[0].slice().has_loading_spinner_slice();
+    const feedui::StreamUpdate& stream_update) {
+  return stream_update.updated_slices().size() == 1 &&
+         stream_update.updated_slices()[0].has_slice() &&
+         stream_update.updated_slices()[0].slice().has_loading_spinner_slice();
 }
 
 TestForYouSurface::TestForYouSurface(FeedStream* stream)
@@ -729,9 +729,9 @@ TestMetricsReporter::StreamMetrics& TestMetricsReporter::Stream(
   return for_you;
 }
 
-void TestMetricsReporter::OnClearAll(base::TimeDelta time_since_last_clear) {
-  this->time_since_last_clear = time_since_last_clear;
-  MetricsReporter::OnClearAll(time_since_last_clear);
+void TestMetricsReporter::OnClearAll(base::TimeDelta since_last_clear) {
+  time_since_last_clear = since_last_clear;
+  MetricsReporter::OnClearAll(time_since_last_clear.value());
 }
 void TestMetricsReporter::OnUploadActions(UploadActionsStatus status) {
   upload_action_status = status;

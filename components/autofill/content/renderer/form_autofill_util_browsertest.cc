@@ -379,9 +379,9 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
       GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
 
   int total_length = 0;
-  for (auto title : actual) {
-    EXPECT_GE(30u, title.first.length());
-    total_length += title.first.length();
+  for (auto button_title : actual) {
+    EXPECT_GE(30u, button_title.first.length());
+    total_length += button_title.first.length();
   }
   EXPECT_EQ(200, total_length);
 }

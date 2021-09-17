@@ -276,11 +276,11 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
     if ((i > 0 && line == kProfileSeparator) || i == lines.size() - 1) {
       // Reached the end of a profile.  Try to import it.
       FormStructure form_structure(form);
-      for (size_t i = 0; i < form_structure.field_count(); ++i) {
+      for (size_t j = 0; j < form_structure.field_count(); ++j) {
         // Set the heuristic type for each field, which is currently serialized
         // into the field's name.
         AutofillField* field =
-            const_cast<AutofillField*>(form_structure.field(i));
+            const_cast<AutofillField*>(form_structure.field(j));
         ServerFieldType type =
             StringToFieldType(base::UTF16ToUTF8(field->name));
         field->set_heuristic_type(type);

@@ -357,10 +357,11 @@ GURL AppendToAsyncQueryParam(const GURL& url,
   url::Component key_range, value_range;
   while (url::ExtractQueryKeyValue(input.data(), &cursor, &key_range,
                                    &value_range)) {
-    const base::StringPiece key(input.data() + key_range.begin, key_range.len);
+    const base::StringPiece input_key(input.data() + key_range.begin,
+                                      key_range.len);
     std::string key_value_pair(input, key_range.begin,
                                value_range.end() - key_range.begin);
-    if (!replaced && key == param_name) {
+    if (!replaced && input_key == param_name) {
       // Check |replaced| as only the first match should be replaced.
       replaced = true;
       key_value_pair += "," + key_value;

@@ -209,8 +209,9 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
                   bool is_virtual_card = false) {
     DCHECK(fido_authenticator_->full_card_request_);
     payments::PaymentsClient::UnmaskResponseDetails response;
-    response.card_type = is_virtual_card ? AutofillClient::VIRTUAL_CARD
-                                         : AutofillClient::SERVER_CARD;
+    response.card_type = is_virtual_card
+                             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
+                             : AutofillClient::PaymentsRpcCardType::kServerCard;
     fido_authenticator_->full_card_request_->OnDidGetRealPan(
         result, response.with_real_pan(real_pan));
   }
@@ -323,7 +324,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, GetUserOptInIntention_IntentToOptOut) {
   // If payments is requesting a FIDO auth, then that means user is opted in
   // from payments.
   payments::PaymentsClient::UnmaskDetails unmask_details;
-  unmask_details.unmask_auth_method = AutofillClient::UnmaskAuthMethod::FIDO;
+  unmask_details.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kFido;
   // Set the local preference to be disabled, which denotes user manually opted
   // out from settings page, and Payments did not update the status in time.
   SetUserOptInPreference(false);
@@ -439,7 +440,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
   // Mock user verification.
   TestCreditCardFIDOAuthenticator::GetAssertion(fido_authenticator_.get(),
                                                 /*did_succeed=*/true);
-  GetRealPan(AutofillClient::PaymentsRpcResult::NETWORK_ERROR, "");
+  GetRealPan(AutofillClient::PaymentsRpcResult::kNetworkError, "");
 
   EXPECT_FALSE(requester_->did_succeed());
 }
@@ -458,7 +459,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
   // Mock user verification.
   TestCreditCardFIDOAuthenticator::GetAssertion(fido_authenticator_.get(),
                                                 /*did_succeed=*/true);
-  GetRealPan(AutofillClient::PaymentsRpcResult::VCN_RETRIEVAL_PERMANENT_FAILURE,
+  GetRealPan(AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
              "", /*is_virtual_card=*/true);
 
   EXPECT_FALSE(requester_->did_succeed());
@@ -480,7 +481,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, AuthenticateCard_Success) {
   // Mock user verification and payments response.
   TestCreditCardFIDOAuthenticator::GetAssertion(fido_authenticator_.get(),
                                                 /*did_succeed=*/true);
-  GetRealPan(AutofillClient::PaymentsRpcResult::SUCCESS, kTestNumber);
+  GetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
 
   EXPECT_TRUE(requester_->did_succeed());
   EXPECT_EQ(kTestNumber16, requester_->number());
@@ -500,7 +501,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, OptIn_PaymentsResponseError) {
             fido_authenticator_->current_flow());
 
   // Mock payments response.
-  OptChange(AutofillClient::PaymentsRpcResult::NETWORK_ERROR,
+  OptChange(AutofillClient::PaymentsRpcResult::kNetworkError,
             /*user_is_opted_in=*/false);
   EXPECT_FALSE(fido_authenticator_->IsUserOptedIn());
   histogram_tester.ExpectUniqueSample(
@@ -522,7 +523,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, OptIn_Success) {
             fido_authenticator_->current_flow());
 
   // Mock payments response.
-  OptChange(AutofillClient::PaymentsRpcResult::SUCCESS,
+  OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/true);
   EXPECT_TRUE(fido_authenticator_->IsUserOptedIn());
   histogram_tester.ExpectUniqueSample(
@@ -577,7 +578,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, Register_Success) {
   // Mock user response and payments response.
   TestCreditCardFIDOAuthenticator::MakeCredential(fido_authenticator_.get(),
                                                   /*did_succeed=*/true);
-  OptChange(AutofillClient::PaymentsRpcResult::SUCCESS,
+  OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/true);
   EXPECT_TRUE(fido_authenticator_->IsUserOptedIn());
 
@@ -601,7 +602,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
             fido_authenticator_->current_flow());
 
   // Mock payments response with challenge to invoke enrollment flow.
-  OptChange(AutofillClient::PaymentsRpcResult::SUCCESS,
+  OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/false, /*include_creation_options=*/true);
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
             fido_authenticator_->current_flow());
@@ -610,7 +611,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
   // Mock user response and second payments response.
   TestCreditCardFIDOAuthenticator::MakeCredential(fido_authenticator_.get(),
                                                   /*did_succeed=*/true);
-  OptChange(AutofillClient::PaymentsRpcResult::SUCCESS,
+  OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/true);
   EXPECT_TRUE(fido_authenticator_->IsUserOptedIn());
 
@@ -636,7 +637,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
             fido_authenticator_->current_flow());
 
   // Mock payments response with challenge to invoke opt-in flow.
-  OptChange(AutofillClient::PaymentsRpcResult::SUCCESS,
+  OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/false, /*include_creation_options=*/false,
             /*include_request_options=*/true);
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
@@ -646,7 +647,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
   // Mock user response and second payments response.
   TestCreditCardFIDOAuthenticator::GetAssertion(fido_authenticator_.get(),
                                                 /*did_succeed=*/true);
-  OptChange(AutofillClient::PaymentsRpcResult::SUCCESS,
+  OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/true);
   EXPECT_TRUE(fido_authenticator_->IsUserOptedIn());
 }
@@ -668,7 +669,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, Register_NewCardAuthorization) {
   // Mock user response and second payments response.
   TestCreditCardFIDOAuthenticator::GetAssertion(fido_authenticator_.get(),
                                                 /*did_succeed=*/true);
-  OptChange(AutofillClient::PaymentsRpcResult::SUCCESS,
+  OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/true);
   EXPECT_TRUE(fido_authenticator_->IsUserOptedIn());
 }
@@ -686,7 +687,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, OptOut_Success) {
             fido_authenticator_->current_flow());
 
   // Mock payments response.
-  OptChange(AutofillClient::PaymentsRpcResult::SUCCESS,
+  OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/false);
   EXPECT_FALSE(fido_authenticator_->IsUserOptedIn());
   histogram_tester.ExpectTotalCount(

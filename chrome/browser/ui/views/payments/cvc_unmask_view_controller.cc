@@ -97,8 +97,7 @@ CvcUnmaskViewController::CvcUnmaskViewController(
                          &payments_client_,
                          state->GetPersonalDataManager()) {
   full_card_request_.GetFullCard(
-      credit_card,
-      autofill::AutofillClient::UnmaskCardReason::UNMASK_FOR_PAYMENT_REQUEST,
+      credit_card, autofill::AutofillClient::UnmaskCardReason::kPaymentRequest,
       result_delegate, weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -127,31 +126,33 @@ void CvcUnmaskViewController::ShowUnmaskPrompt(
 void CvcUnmaskViewController::OnUnmaskVerificationResult(
     autofill::AutofillClient::PaymentsRpcResult result) {
   switch (result) {
-    case autofill::AutofillClient::NONE:
+    case autofill::AutofillClient::PaymentsRpcResult::kNone:
       NOTREACHED();
       FALLTHROUGH;
-    case autofill::AutofillClient::SUCCESS:
+    case autofill::AutofillClient::PaymentsRpcResult::kSuccess:
       // In the success case, don't show any error and don't hide the spinner
       // because the dialog is about to close when the merchant completes the
       // transaction.
       return;
 
-    case autofill::AutofillClient::TRY_AGAIN_FAILURE:
+    case autofill::AutofillClient::PaymentsRpcResult::kTryAgainFailure:
       DisplayError(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC));
       break;
 
-    case autofill::AutofillClient::PERMANENT_FAILURE:
+    case autofill::AutofillClient::PaymentsRpcResult::kPermanentFailure:
       DisplayError(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_PERMANENT));
       break;
 
-    case autofill::AutofillClient::NETWORK_ERROR:
+    case autofill::AutofillClient::PaymentsRpcResult::kNetworkError:
       DisplayError(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_NETWORK));
       break;
-    case autofill::AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
-    case autofill::AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
+    case autofill::AutofillClient::PaymentsRpcResult::
+        kVcnRetrievalTryAgainFailure:
+    case autofill::AutofillClient::PaymentsRpcResult::
+        kVcnRetrievalPermanentFailure:
       NOTREACHED();
       break;
   }

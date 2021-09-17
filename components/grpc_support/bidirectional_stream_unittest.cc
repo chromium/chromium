@@ -138,8 +138,9 @@ class TestBidirectionalStreamCallback {
         stream->annotation);
   }
 
-  virtual bool MaybeCancel(bidirectional_stream* stream, ResponseStep step) {
-    DCHECK_EQ(stream, this->stream);
+  virtual bool MaybeCancel(bidirectional_stream* bidir_stream,
+                           ResponseStep step) {
+    DCHECK_EQ(bidir_stream, stream);
     response_step = step;
     DVLOG(3) << "Step: " << step;
 
@@ -161,8 +162,8 @@ class TestBidirectionalStreamCallback {
     write_data.push_back(std::make_unique<WriteData>(data, flush));
   }
 
-  virtual void MaybeWriteNextData(bidirectional_stream* stream) {
-    DCHECK_EQ(stream, this->stream);
+  virtual void MaybeWriteNextData(bidirectional_stream* bidir_stream) {
+    DCHECK_EQ(bidir_stream, stream);
     if (write_data.empty())
       return;
     for (const auto& data : write_data) {

@@ -91,7 +91,7 @@ void FullCardRequest::GetFullCardImpl(
     NOTREACHED();
     if (ui_delegate_)
       ui_delegate_->OnUnmaskVerificationResult(
-          AutofillClient::PERMANENT_FAILURE);
+          AutofillClient::PaymentsRpcResult::kPermanentFailure);
 
     if (result_delegate_)
       result_delegate_->OnFullCardRequestFailed(FailureType::GENERIC_FAILURE);
@@ -153,7 +153,8 @@ void FullCardRequest::OnUnmaskPromptAccepted(
       result_delegate_->OnFullCardRequestSucceeded(*this, request_->card,
                                                    user_response.cvc);
     if (ui_delegate_)
-      ui_delegate_->OnUnmaskVerificationResult(AutofillClient::SUCCESS);
+      ui_delegate_->OnUnmaskVerificationResult(
+          AutofillClient::PaymentsRpcResult::kSuccess);
     Reset();
 
     return;
@@ -231,12 +232,12 @@ void FullCardRequest::OnDidGetRealPan(
 
   switch (result) {
     // Wait for user retry.
-    case AutofillClient::TRY_AGAIN_FAILURE:
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
       break;
 
     // Neither PERMANENT_FAILURE, NETWORK_ERROR nor VCN retrieval errors allow
     // retry.
-    case AutofillClient::PERMANENT_FAILURE: {
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure: {
       if (result_delegate_) {
         result_delegate_->OnFullCardRequestFailed(
             FailureType::VERIFICATION_DECLINED);
@@ -244,13 +245,13 @@ void FullCardRequest::OnDidGetRealPan(
       Reset();
       break;
     }
-    case AutofillClient::NETWORK_ERROR: {
+    case AutofillClient::PaymentsRpcResult::kNetworkError: {
       if (result_delegate_)
         result_delegate_->OnFullCardRequestFailed(FailureType::GENERIC_FAILURE);
       Reset();
       break;
     }
-    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE: {
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure: {
       if (result_delegate_) {
         result_delegate_->OnFullCardRequestFailed(
             FailureType::VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE);
@@ -258,7 +259,7 @@ void FullCardRequest::OnDidGetRealPan(
       Reset();
       break;
     }
-    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE: {
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure: {
       if (result_delegate_) {
         result_delegate_->OnFullCardRequestFailed(
             FailureType::VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE);
@@ -267,18 +268,20 @@ void FullCardRequest::OnDidGetRealPan(
       break;
     }
 
-    case AutofillClient::SUCCESS: {
+    case AutofillClient::PaymentsRpcResult::kSuccess: {
       DCHECK(!response_details.real_pan.empty());
       request_->card.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
 
-      if (response_details.card_type == AutofillClient::VIRTUAL_CARD) {
+      if (response_details.card_type ==
+          AutofillClient::PaymentsRpcCardType::kVirtualCard) {
         request_->card.set_record_type(CreditCard::VIRTUAL_CARD);
         request_->card.SetExpirationMonthFromString(
             base::UTF8ToUTF16(response_details.expiration_month),
             /*app_locale=*/std::string());
         request_->card.SetExpirationYearFromString(
             base::UTF8ToUTF16(response_details.expiration_year));
-      } else if (response_details.card_type == AutofillClient::SERVER_CARD) {
+      } else if (response_details.card_type ==
+                 AutofillClient::PaymentsRpcCardType::kServerCard) {
         request_->card.set_record_type(CreditCard::FULL_SERVER_CARD);
         request_->card.SetServerStatus(CreditCard::OK);
       } else {
@@ -308,7 +311,7 @@ void FullCardRequest::OnDidGetRealPan(
       break;
     }
 
-    case AutofillClient::NONE:
+    case AutofillClient::PaymentsRpcResult::kNone:
       NOTREACHED();
       break;
   }

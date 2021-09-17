@@ -163,7 +163,7 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismiss) {
       isMemberOfClass:[CardUnmaskPromptViewController class]]);
 
   full_card_requester.OnUnmaskVerificationResult(
-      autofill::AutofillClient::SUCCESS);
+      autofill::AutofillClient::PaymentsRpcResult::kSuccess);
 
   // Wait until the view controller is ordered to be dismissed and the animation
   // completes.

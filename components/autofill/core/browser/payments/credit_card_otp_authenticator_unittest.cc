@@ -69,7 +69,7 @@ class CreditCardOtpAuthenticatorTest : public testing::Test {
     response.dcvv = "123";
     response.expiration_month = test::NextMonth();
     response.expiration_year = test::NextYear();
-    response.card_type = AutofillClient::PaymentsRpcCardType::VIRTUAL_CARD;
+    response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
     authenticator_->OnDidGetRealPan(result, response);
   }
 
@@ -87,7 +87,7 @@ TEST_F(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
   authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
                                /*context_token=*/"",
                                /*billing_customer_number=*/0);
-  OnDidGetRealPan(AutofillClient::SUCCESS, kTestNumber);
+  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
   EXPECT_TRUE(requester_->did_succeed());
   EXPECT_EQ(kTestNumber16, requester_->number());
 }

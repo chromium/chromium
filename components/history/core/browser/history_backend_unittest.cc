@@ -2226,8 +2226,6 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationIconMappingChanged) {
 
   // Setup
   {
-    std::vector<SkBitmap> bitmaps;
-    bitmaps.push_back(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
     backend_->SetFavicons({page_url1}, IconType::kFavicon, icon_url1, bitmaps);
     backend_->SetFavicons({page_url2}, IconType::kFavicon, icon_url2, bitmaps);
 
@@ -2278,15 +2276,13 @@ TEST_F(HistoryBackendTest,
   GURL icon_url("http://www.google.com/favicon.ico");
 
   SkBitmap bitmap(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
-  std::vector<SkBitmap> bitmaps;
-  bitmaps.push_back(bitmap);
   std::vector<unsigned char> png_bytes;
   ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes));
 
   // Setup
   {
     std::vector<SkBitmap> bitmaps;
-    bitmaps.push_back(CreateBitmap(SK_ColorBLUE, kSmallEdgeSize));
+    bitmaps.push_back(bitmap);
     backend_->SetFavicons({page_url4}, IconType::kFavicon, icon_url, bitmaps);
     ClearBroadcastedNotifications();
   }

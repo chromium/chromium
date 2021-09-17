@@ -84,7 +84,8 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   base::WeakPtr<CardUnmaskDelegate> delegate_;
   CardUnmaskPromptView* card_unmask_view_ = nullptr;
 
-  AutofillClient::PaymentsRpcResult unmasking_result_ = AutofillClient::NONE;
+  AutofillClient::PaymentsRpcResult unmasking_result_ =
+      AutofillClient::PaymentsRpcResult::kNone;
   int unmasking_number_of_attempts_ = 0;
   base::Time shown_timestamp_;
   // Timestamp of the last time the user clicked the Verify button.

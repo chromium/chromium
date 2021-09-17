@@ -111,11 +111,11 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
   AutofillClient::PaymentsRpcResult GetVerificationResult() const override {
     if (expected_failure_temporary_)
-      return AutofillClient::TRY_AGAIN_FAILURE;
+      return AutofillClient::PaymentsRpcResult::kTryAgainFailure;
     if (expected_failure_permanent_)
-      return AutofillClient::PERMANENT_FAILURE;
+      return AutofillClient::PaymentsRpcResult::kPermanentFailure;
 
-    return AutofillClient::SUCCESS;
+    return AutofillClient::PaymentsRpcResult::kSuccess;
   }
 
   void set_expected_verification_failure(bool allow_retry) {
@@ -171,7 +171,7 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
     controller()->ShowPrompt(base::BindOnce(&CreateCardUnmaskPromptView,
                                             base::Unretained(controller()),
                                             base::Unretained(contents())),
-                             card, AutofillClient::UNMASK_FOR_AUTOFILL,
+                             card, AutofillClient::UnmaskCardReason::kAutofill,
                              delegate()->GetWeakPtr());
     // Setting error expectations and confirming the dialogs for some test
     // cases.
@@ -233,7 +233,8 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
                                        base::ASCIIToUTF16(test::NextYear()),
                                        /*enable_fido_auth=*/false);
   EXPECT_EQ(u"123", delegate()->details().cvc);
-  controller()->OnVerificationResult(AutofillClient::SUCCESS);
+  controller()->OnVerificationResult(
+      AutofillClient::PaymentsRpcResult::kSuccess);
 
   // Simulate the user clicking [x] before the "Success!" message disappears.
   CardUnmaskPromptViewTester::For(controller()->view())->Close();

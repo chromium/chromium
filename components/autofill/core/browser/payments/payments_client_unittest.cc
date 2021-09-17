@@ -116,7 +116,8 @@ struct CardUnmaskOptions {
   // If true, set context_token in the request.
   bool set_context_token = true;
   // The reason for unmasking this card.
-  AutofillClient::UnmaskCardReason reason = AutofillClient::UNMASK_FOR_AUTOFILL;
+  AutofillClient::UnmaskCardReason reason =
+      AutofillClient::UnmaskCardReason::kAutofill;
 };
 
 }  // namespace
@@ -131,7 +132,7 @@ class PaymentsClientTest : public testing::Test {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kWalletServiceUseSandbox, "0");
 
-    result_ = AutofillClient::NONE;
+    result_ = AutofillClient::PaymentsRpcResult::kNone;
     server_id_.clear();
     unmask_response_details_ = nullptr;
     legal_message_.reset();
@@ -434,7 +435,8 @@ class PaymentsClientTest : public testing::Test {
     EXPECT_TRUE(GetUploadData().find(field_name_or_value) == std::string::npos);
   }
 
-  AutofillClient::PaymentsRpcResult result_ = AutofillClient::NONE;
+  AutofillClient::PaymentsRpcResult result_ =
+      AutofillClient::PaymentsRpcResult::kNone;
   payments::PaymentsClient::UnmaskDetails* unmask_details_;
 
   // Server ID of a saved card via credit card upload save.
@@ -518,9 +520,9 @@ TEST_F(PaymentsClientTest, GetUnmaskDetailsSuccess) {
   ReturnResponse(net::HTTP_OK,
                  "{ \"offer_fido_opt_in\": \"false\", "
                  "\"authentication_method\": \"CVC\" }");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ(false, unmask_details_->offer_fido_opt_in);
-  EXPECT_EQ(AutofillClient::UnmaskAuthMethod::CVC,
+  EXPECT_EQ(AutofillClient::UnmaskAuthMethod::kCvc,
             unmask_details_->unmask_auth_method);
 }
 
@@ -541,7 +543,7 @@ TEST_F(PaymentsClientTest, OAuthError) {
   StartUnmasking(CardUnmaskOptions());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_TRUE(unmask_response_details_->real_pan.empty());
 }
 
@@ -562,7 +564,7 @@ TEST_F(PaymentsClientTest, UnmaskSuccessViaCVC) {
   ReturnResponse(net::HTTP_OK, "{ \"pan\": \"1234\" }");
 
   assertCvcIncludedInRequest("111");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details_->real_pan);
 }
 
@@ -572,7 +574,7 @@ TEST_F(PaymentsClientTest, UnmaskSuccessViaFIDO) {
   ReturnResponse(net::HTTP_OK, "{ \"pan\": \"1234\" }");
 
   assertCvcNotIncludedInRequest();
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details_->real_pan);
 }
 
@@ -583,7 +585,7 @@ TEST_F(PaymentsClientTest, UnmaskSuccessViaCVCWithCreationOptions) {
       net::HTTP_OK,
       "{ \"pan\": \"1234\", \"dcvv\": \"321\", \"fido_creation_options\": "
       "{\"relying_party_id\": \"google.com\"}}");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details_->real_pan);
   EXPECT_EQ("321", unmask_response_details_->dcvv);
   EXPECT_EQ("google.com",
@@ -595,7 +597,7 @@ TEST_F(PaymentsClientTest, UnmaskSuccessAccountFromSyncTest) {
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"pan\": \"1234\" }");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details_->real_pan);
 }
 
@@ -607,7 +609,7 @@ TEST_F(PaymentsClientTest, UnmaskSuccessWithVirtualCardCvcAuth) {
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
   assertCvcIncludedInRequest("222");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
   EXPECT_EQ("999", unmask_response_details_->dcvv);
   EXPECT_EQ("12", unmask_response_details_->expiration_month);
@@ -622,7 +624,7 @@ TEST_F(PaymentsClientTest, UnmaskSuccessWithVirtualCardFidoAuth) {
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
 
   assertCvcNotIncludedInRequest();
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
   EXPECT_EQ("999", unmask_response_details_->dcvv);
   EXPECT_EQ("12", unmask_response_details_->expiration_month);
@@ -643,7 +645,7 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedGreenPathResponse) {
   // Only merchant_domain is included.
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
   EXPECT_EQ("999", unmask_response_details_->dcvv);
   EXPECT_EQ("12", unmask_response_details_->expiration_month);
@@ -657,7 +659,8 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedRedPathResponse) {
   ReturnResponse(net::HTTP_OK,
                  "{ \"error\": { \"code\": \"NON-INTERNAL\", "
                  "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
-  EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
+            result_);
 }
 
 TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
@@ -674,7 +677,7 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
       "}] }");
 
   // Ensure that it's not treated as failure when no pan is returned.
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("fake_context_token", unmask_response_details_->context_token);
   // Verify the FIDO request challenge is correctly parsed.
   EXPECT_EQ("fake_fido_challenge",
@@ -710,7 +713,7 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedThenFido) {
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
   EXPECT_EQ("999", unmask_response_details_->dcvv);
   EXPECT_EQ("12", unmask_response_details_->expiration_month);
@@ -734,7 +737,7 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedThenOtpSuccess) {
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
   EXPECT_EQ("999", unmask_response_details_->dcvv);
   EXPECT_EQ("12", unmask_response_details_->expiration_month);
@@ -755,7 +758,7 @@ TEST_F(PaymentsClientTest, ExpiredOtp) {
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("FLOW_STATUS_EXPIRED_OTP", unmask_response_details_->flow_status);
 }
 
@@ -773,7 +776,7 @@ TEST_F(PaymentsClientTest, IncorrectOtp) {
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("FLOW_STATUS_INCORRECT_OTP", unmask_response_details_->flow_status);
 }
 
@@ -816,7 +819,7 @@ TEST_F(PaymentsClientTest, UnmaskIncludesMerchantDomain) {
 TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForAutofill) {
   base::HistogramTester histogram_tester;
   StartUnmasking(CardUnmaskOptions()
-                     .with_reason(AutofillClient::UNMASK_FOR_AUTOFILL)
+                     .with_reason(AutofillClient::UnmaskCardReason::kAutofill)
                      .with_cvc("1234"));
   IssueOAuthToken();
 
@@ -827,7 +830,7 @@ TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForAutofill) {
 TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForAutofillOnlyWhenCvcAuth) {
   base::HistogramTester histogram_tester;
   StartUnmasking(CardUnmaskOptions()
-                     .with_reason(AutofillClient::UNMASK_FOR_AUTOFILL)
+                     .with_reason(AutofillClient::UnmaskCardReason::kAutofill)
                      .with_fido());
   IssueOAuthToken();
 
@@ -838,9 +841,10 @@ TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForAutofillOnlyWhenCvcAuth) {
 
 TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForPaymentRequest) {
   base::HistogramTester histogram_tester;
-  StartUnmasking(CardUnmaskOptions()
-                     .with_reason(AutofillClient::UNMASK_FOR_PAYMENT_REQUEST)
-                     .with_cvc("56789"));
+  StartUnmasking(
+      CardUnmaskOptions()
+          .with_reason(AutofillClient::UnmaskCardReason::kPaymentRequest)
+          .with_cvc("56789"));
   IssueOAuthToken();
 
   histogram_tester.ExpectBucketCount(
@@ -854,7 +858,7 @@ TEST_F(PaymentsClientTest, OptInSuccess) {
   ReturnResponse(net::HTTP_OK,
                  "{ \"fido_authentication_info\": { \"user_status\": "
                  "\"FIDO_AUTH_ENABLED\"}}");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_TRUE(opt_change_response_.user_is_opted_in.value());
 }
 
@@ -863,7 +867,7 @@ TEST_F(PaymentsClientTest, OptInServerUnresponsive) {
       PaymentsClient::OptChangeRequestDetails::ENABLE_FIDO_AUTH);
   IssueOAuthToken();
   ReturnResponse(net::HTTP_REQUEST_TIMEOUT, "");
-  EXPECT_EQ(AutofillClient::NETWORK_ERROR, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNetworkError, result_);
   EXPECT_FALSE(opt_change_response_.user_is_opted_in.has_value());
 }
 
@@ -874,7 +878,7 @@ TEST_F(PaymentsClientTest, OptOutSuccess) {
   ReturnResponse(net::HTTP_OK,
                  "{ \"fido_authentication_info\": { \"user_status\": "
                  "\"FIDO_AUTH_DISABLED\"}}");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_FALSE(opt_change_response_.user_is_opted_in.value());
 }
 
@@ -887,7 +891,7 @@ TEST_F(PaymentsClientTest, EnrollAttemptReturnsCreationOptions) {
                  "\"FIDO_AUTH_DISABLED\","
                  "\"fido_creation_options\": {"
                  "\"relying_party_id\": \"google.com\"}}}");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_FALSE(opt_change_response_.user_is_opted_in.value());
   EXPECT_EQ("google.com",
             *opt_change_response_.fido_creation_options->FindStringKey(
@@ -899,7 +903,7 @@ TEST_F(PaymentsClientTest, GetDetailsSuccess) {
   ReturnResponse(
       net::HTTP_OK,
       "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_NE(nullptr, legal_message_.get());
 }
 
@@ -1041,26 +1045,26 @@ TEST_F(PaymentsClientTest, GetDetailsFollowedByUploadSuccess) {
   ReturnResponse(
       net::HTTP_OK,
       "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
 
-  result_ = AutofillClient::NONE;
+  result_ = AutofillClient::PaymentsRpcResult::kNone;
 
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
 }
 
 TEST_F(PaymentsClientTest, GetDetailsMissingContextToken) {
   StartGettingUploadDetails();
   ReturnResponse(net::HTTP_OK, "{ \"legal_message\": {} }");
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 TEST_F(PaymentsClientTest, GetDetailsMissingLegalMessage) {
   StartGettingUploadDetails();
   ReturnResponse(net::HTTP_OK, "{ \"context_token\": \"some_token\" }");
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ(nullptr, legal_message_.get());
 }
 
@@ -1073,7 +1077,7 @@ TEST_F(PaymentsClientTest, SupportedCardBinRangesParsesCorrectly) {
       "  \"legal_message\" : {},"
       "  \"supported_card_bin_ranges_string\" : \"1234,300000-555555,765\""
       "}");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   // Check that |supported_card_bin_ranges_| has the two entries specified in
   // ReturnResponse(~) above.
   ASSERT_EQ(3U, supported_card_bin_ranges_.size());
@@ -1133,7 +1137,7 @@ TEST_F(PaymentsClientTest, UploadSuccessWithoutServerId) {
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_TRUE(server_id_.empty());
 }
 
@@ -1141,7 +1145,7 @@ TEST_F(PaymentsClientTest, UploadSuccessWithServerId) {
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"credit_card_id\": \"InstrumentData:1\" }");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("InstrumentData:1", server_id_);
 }
 
@@ -1249,14 +1253,14 @@ TEST_F(PaymentsClientTest, UploadDoesNotIncludeCardNicknameEmptyNickname) {
 TEST_F(PaymentsClientTest, UnmaskMissingPan) {
   StartUnmasking(CardUnmaskOptions());
   ReturnResponse(net::HTTP_OK, "{}");
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 TEST_F(PaymentsClientTest, UnmaskRetryFailure) {
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"error\": { \"code\": \"INTERNAL\" } }");
-  EXPECT_EQ(AutofillClient::TRY_AGAIN_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kTryAgainFailure, result_);
   EXPECT_EQ("", unmask_response_details_->real_pan);
 }
 
@@ -1265,7 +1269,7 @@ TEST_F(PaymentsClientTest, UnmaskPermanentFailure) {
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK,
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ("", unmask_response_details_->real_pan);
 }
 
@@ -1273,7 +1277,7 @@ TEST_F(PaymentsClientTest, UnmaskMalformedResponse) {
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"error_code\": \"WRONG_JSON_FORMAT\" }");
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ("", unmask_response_details_->real_pan);
 }
 
@@ -1283,17 +1287,17 @@ TEST_F(PaymentsClientTest, ReauthNeeded) {
     IssueOAuthToken();
     ReturnResponse(net::HTTP_UNAUTHORIZED, "");
     // No response yet.
-    EXPECT_EQ(AutofillClient::NONE, result_);
+    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNone, result_);
     EXPECT_EQ(nullptr, unmask_response_details_);
 
     // Second HTTP_UNAUTHORIZED causes permanent failure.
     IssueOAuthToken();
     ReturnResponse(net::HTTP_UNAUTHORIZED, "");
-    EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
     EXPECT_EQ("", unmask_response_details_->real_pan);
   }
 
-  result_ = AutofillClient::NONE;
+  result_ = AutofillClient::PaymentsRpcResult::kNone;
   unmask_response_details_ = nullptr;
 
   {
@@ -1304,13 +1308,13 @@ TEST_F(PaymentsClientTest, ReauthNeeded) {
     // access token from the previous request.
     ReturnResponse(net::HTTP_UNAUTHORIZED, "");
     // No response yet.
-    EXPECT_EQ(AutofillClient::NONE, result_);
+    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNone, result_);
     EXPECT_EQ(nullptr, unmask_response_details_);
 
     // HTTP_OK after first HTTP_UNAUTHORIZED results in success.
     IssueOAuthToken();
     ReturnResponse(net::HTTP_OK, "{ \"pan\": \"1234\" }");
-    EXPECT_EQ(AutofillClient::SUCCESS, result_);
+    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
     EXPECT_EQ("1234", unmask_response_details_->real_pan);
   }
 }
@@ -1319,7 +1323,7 @@ TEST_F(PaymentsClientTest, NetworkError) {
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_REQUEST_TIMEOUT, std::string());
-  EXPECT_EQ(AutofillClient::NETWORK_ERROR, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNetworkError, result_);
   EXPECT_EQ("", unmask_response_details_->real_pan);
 }
 
@@ -1327,7 +1331,7 @@ TEST_F(PaymentsClientTest, OtherError) {
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_FORBIDDEN, std::string());
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ("", unmask_response_details_->real_pan);
 }
 
@@ -1337,7 +1341,8 @@ TEST_F(PaymentsClientTest, VcnRetrievalTryAgainFailure) {
   ReturnResponse(net::HTTP_OK,
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
                  "\"api_error_reason\": \"virtual_card_temporary_error\" } }");
-  EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+            result_);
 }
 
 TEST_F(PaymentsClientTest, VcnRetrievalPermanentFailure) {
@@ -1346,7 +1351,8 @@ TEST_F(PaymentsClientTest, VcnRetrievalPermanentFailure) {
   ReturnResponse(net::HTTP_OK,
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
                  "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
-  EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
+            result_);
 }
 
 TEST_F(PaymentsClientTest, UnmaskPermanentFailureWhenVcnMissingExpiration) {
@@ -1356,7 +1362,7 @@ TEST_F(PaymentsClientTest, UnmaskPermanentFailureWhenVcnMissingExpiration) {
                  "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\" }");
 
   EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 TEST_F(PaymentsClientTest, UnmaskPermanentFailureWhenVcnMissingCvv) {
@@ -1367,7 +1373,7 @@ TEST_F(PaymentsClientTest, UnmaskPermanentFailureWhenVcnMissingCvv) {
                  "\"month\":12, \"year\":2099 } }");
 
   EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 // Tests for the local card migration flow. Desktop only.
@@ -1377,16 +1383,16 @@ TEST_F(PaymentsClientTest, GetDetailsFollowedByMigrationSuccess) {
   ReturnResponse(
       net::HTTP_OK,
       "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
 
-  result_ = AutofillClient::NONE;
+  result_ = AutofillClient::PaymentsRpcResult::kNone;
 
   StartMigrating(/*has_cardholder_name=*/true);
   IssueOAuthToken();
   ReturnResponse(
       net::HTTP_OK,
       "{\"save_result\":[],\"value_prop_display_text\":\"display text\"}");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
 }
 
 TEST_F(PaymentsClientTest, MigrateCardsVariationsTest) {
@@ -1497,7 +1503,7 @@ TEST_F(PaymentsClientTest, MigrationSuccessWithSaveResult) {
                  "\"SUCCESS\"},{\"unique_id\":\"1\",\"status\":\"TEMPORARY_"
                  "FAILURE\"}],\"value_prop_display_text\":\"display text\"}");
 
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_TRUE(migration_save_results_.get());
   EXPECT_TRUE(migration_save_results_->find("0") !=
               migration_save_results_->end());
@@ -1512,7 +1518,7 @@ TEST_F(PaymentsClientTest, MigrationMissingSaveResult) {
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK,
                  "{\"value_prop_display_text\":\"display text\"}");
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ(nullptr, migration_save_results_.get());
 }
 
@@ -1522,7 +1528,7 @@ TEST_F(PaymentsClientTest, MigrationSuccessWithDisplayText) {
   ReturnResponse(net::HTTP_OK,
                  "{\"save_result\":[{\"unique_id\":\"0\",\"status\":"
                  "\"SUCCESS\"}],\"value_prop_display_text\":\"display text\"}");
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("display text", display_text_);
 }
 #endif
@@ -1533,7 +1539,7 @@ TEST_F(PaymentsClientTest, SelectChallengeOptionWithSmsOtpMethod) {
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"context_token\": \"new context token\" }");
 
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   assertIncludedInRequest("context_token");
   assertIncludedInRequest("selected_idv_challenge_option");
   assertIncludedInRequest("sms_otp_challenge_option");
@@ -1549,7 +1555,7 @@ TEST_F(PaymentsClientTest, SelectChallengeOptionSuccess) {
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"context_token\": \"new context token\" }");
 
-  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("new context token", context_token_);
 }
 
@@ -1560,7 +1566,8 @@ TEST_F(PaymentsClientTest, SelectChallengeOptionTemporaryFailure) {
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
                  "\"api_error_reason\": \"virtual_card_temporary_error\"} }");
 
-  EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+            result_);
 }
 
 TEST_F(PaymentsClientTest, SelectChallengeOptionVcnFlowPermanentFailure) {
@@ -1570,7 +1577,8 @@ TEST_F(PaymentsClientTest, SelectChallengeOptionVcnFlowPermanentFailure) {
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
                  "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
 
-  EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
+            result_);
 }
 
 TEST_F(PaymentsClientTest, SelectChallengeOptionResponseMissingContextToken) {
@@ -1578,7 +1586,7 @@ TEST_F(PaymentsClientTest, SelectChallengeOptionResponseMissingContextToken) {
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
 
-  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 }  // namespace payments

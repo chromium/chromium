@@ -70,8 +70,9 @@ AutofillSaveCardInfoBarDelegateMobile::AutofillSaveCardInfoBarDelegateMobile(
 AutofillSaveCardInfoBarDelegateMobile::
     ~AutofillSaveCardInfoBarDelegateMobile() {
   if (!had_user_interaction_) {
-    RunSaveCardPromptCallback(AutofillClient::IGNORED,
-                              /*user_provided_details=*/{});
+    RunSaveCardPromptCallback(
+        AutofillClient::SaveCardOfferUserDecision::kIgnored,
+        /*user_provided_details=*/{});
     LogUserAction(AutofillMetrics::INFOBAR_IGNORED);
   }
 }
@@ -147,14 +148,16 @@ bool AutofillSaveCardInfoBarDelegateMobile::ShouldExpire(
 }
 
 void AutofillSaveCardInfoBarDelegateMobile::InfoBarDismissed() {
-  RunSaveCardPromptCallback(AutofillClient::DECLINED,
-                            /*user_provided_details=*/{});
+  RunSaveCardPromptCallback(
+      AutofillClient::SaveCardOfferUserDecision::kDeclined,
+      /*user_provided_details=*/{});
   LogUserAction(AutofillMetrics::INFOBAR_DENIED);
 }
 
 bool AutofillSaveCardInfoBarDelegateMobile::Cancel() {
-  RunSaveCardPromptCallback(AutofillClient::DECLINED,
-                            /*user_provided_details=*/{});
+  RunSaveCardPromptCallback(
+      AutofillClient::SaveCardOfferUserDecision::kDeclined,
+      /*user_provided_details=*/{});
   LogUserAction(AutofillMetrics::INFOBAR_DENIED);
   return true;
 }
@@ -186,8 +189,9 @@ std::u16string AutofillSaveCardInfoBarDelegateMobile::GetButtonLabel(
 }
 
 bool AutofillSaveCardInfoBarDelegateMobile::Accept() {
-  RunSaveCardPromptCallback(AutofillClient::ACCEPTED,
-                            /*user_provided_details=*/{});
+  RunSaveCardPromptCallback(
+      AutofillClient::SaveCardOfferUserDecision::kAccepted,
+      /*user_provided_details=*/{});
   LogUserAction(AutofillMetrics::INFOBAR_ACCEPTED);
   return true;
 }
@@ -201,7 +205,9 @@ bool AutofillSaveCardInfoBarDelegateMobile::UpdateAndAccept(
   user_provided_details.cardholder_name = cardholder_name;
   user_provided_details.expiration_date_month = expiration_date_month;
   user_provided_details.expiration_date_year = expiration_date_year;
-  RunSaveCardPromptCallback(AutofillClient::ACCEPTED, user_provided_details);
+  RunSaveCardPromptCallback(
+      AutofillClient::SaveCardOfferUserDecision::kAccepted,
+      user_provided_details);
   LogUserAction(AutofillMetrics::INFOBAR_ACCEPTED);
   return true;
 }

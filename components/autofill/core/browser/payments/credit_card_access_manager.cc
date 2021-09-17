@@ -386,9 +386,9 @@ void CreditCardAccessManager::CacheUnmaskedCardInfo(const CreditCard& card,
 
 UnmaskAuthFlowType CreditCardAccessManager::GetAuthenticationType(
     bool get_unmask_details_returned) {
-  bool fido_auth_enabled =
-      get_unmask_details_returned && unmask_details_.unmask_auth_method ==
-                                         AutofillClient::UnmaskAuthMethod::FIDO;
+  bool fido_auth_enabled = get_unmask_details_returned &&
+                           unmask_details_.unmask_auth_method ==
+                               AutofillClient::UnmaskAuthMethod::kFido;
 #if !defined(OS_IOS)
   // Even if payments return FIDO enabled, we have to double check local pref,
   // because if user locally opted out, we need to fall back to CVC flow.
@@ -692,7 +692,7 @@ bool CreditCardAccessManager::IsFidoAuthenticationEnabled() {
 
 bool CreditCardAccessManager::IsSelectedCardFidoAuthorized() {
   DCHECK_NE(unmask_details_.unmask_auth_method,
-            AutofillClient::UnmaskAuthMethod::UNKNOWN);
+            AutofillClient::UnmaskAuthMethod::kUnknown);
   return IsFidoAuthenticationEnabled() &&
          unmask_details_.fido_eligible_card_ids.find(card_->server_id()) !=
              unmask_details_.fido_eligible_card_ids.end();

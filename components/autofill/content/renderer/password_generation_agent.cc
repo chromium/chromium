@@ -569,8 +569,9 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
 
     // Notify `password_agent_` of text changes to the other confirmation
     // password fields.
-    for (const auto& element : current_generation_item_->password_elements_)
-      password_agent_->UpdateStateForTextChange(element);
+    for (const auto& password_element :
+         current_generation_item_->password_elements_)
+      password_agent_->UpdateStateForTextChange(password_element);
   }
   return true;
 }

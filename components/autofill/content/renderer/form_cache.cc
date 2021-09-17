@@ -404,16 +404,16 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
 
   control_element.SetAutofillState(WebAutofillState::kNotFilled);
 
-  WebInputElement* input_element = ToWebInputElement(&control_element);
-  if (form_util::IsTextInput(input_element) ||
-      form_util::IsMonthInput(input_element)) {
-    input_element->SetAutofillValue(blink::WebString());
+  WebInputElement* web_input_element = ToWebInputElement(&control_element);
+  if (form_util::IsTextInput(web_input_element) ||
+      form_util::IsMonthInput(web_input_element)) {
+    web_input_element->SetAutofillValue(blink::WebString());
 
     // Clearing the value in the focused node (above) can cause the selection
     // to be lost. We force the selection range to restore the text cursor.
-    if (element == *input_element) {
-      size_t length = input_element->Value().length();
-      input_element->SetSelectionRange(length, length);
+    if (element == *web_input_element) {
+      size_t length = web_input_element->Value().length();
+      web_input_element->SetSelectionRange(length, length);
     }
   } else if (form_util::IsTextAreaElement(control_element)) {
     control_element.SetAutofillValue(blink::WebString());
@@ -536,7 +536,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
 
       std::string form_id =
           base::NumberToString(form.data.unique_renderer_id.value());
-      std::string field_id =
+      std::string field_id_str =
           base::NumberToString(field_data.unique_renderer_id.value());
 
       blink::LocalFrameToken frame_token;
@@ -566,7 +566,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
                                         "\nform renderer id: ",
                                         form_id,
                                         "\nfield renderer id: ",
-                                        field_id});
+                                        field_id_str});
 
       // Set this debug string to the title so that a developer can easily debug
       // by hovering the mouse over the input field.

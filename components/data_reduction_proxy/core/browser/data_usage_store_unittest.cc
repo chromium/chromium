@@ -70,12 +70,6 @@ class DataUsageStoreTest : public testing::Test {
     base::Time current_time;
     EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &current_time));
 
-    DataUsageBucket current_bucket;
-    current_bucket.set_last_updated_timestamp(current_time.ToInternalValue());
-    current_bucket.set_had_read_error(false);
-    std::string bucket_value;
-    ASSERT_TRUE(current_bucket.SerializeToString(&bucket_value));
-
     std::map<std::string, std::string> map;
     map.insert(
         std::pair<std::string, std::string>("current_bucket_index", "2880"));

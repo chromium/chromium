@@ -82,7 +82,7 @@ class PaymentsClient {
 
     // The type of authentication method suggested for card unmask.
     AutofillClient::UnmaskAuthMethod unmask_auth_method =
-        AutofillClient::UnmaskAuthMethod::UNKNOWN;
+        AutofillClient::UnmaskAuthMethod::kUnknown;
     // Set to true if the user should be offered opt-in for FIDO Authentication.
     bool offer_fido_opt_in = false;
     // Public Key Credential Request Options required for authentication.
@@ -159,7 +159,7 @@ class PaymentsClient {
 
     // The type of the returned credit card.
     AutofillClient::PaymentsRpcCardType card_type =
-        AutofillClient::PaymentsRpcCardType::UNKNOWN_TYPE;
+        AutofillClient::PaymentsRpcCardType::kUnknown;
   };
 
   // Information required to either opt-in or opt-out a user for FIDO

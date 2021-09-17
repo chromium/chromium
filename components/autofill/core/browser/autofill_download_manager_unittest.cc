@@ -2074,16 +2074,16 @@ TEST_P(AutofillUploadTest, ThrottlingDisabled) {
 
     // The last middle two uploads were marked as throttle-able.
     ASSERT_EQ(4u, payloads_.size());
-    for (size_t i = 0; i < payloads_.size(); ++i) {
+    for (size_t j = 0; j < payloads_.size(); ++j) {
       AutofillUploadRequest request;
-      ASSERT_TRUE(request.ParseFromString(payloads_[i]));
+      ASSERT_TRUE(request.ParseFromString(payloads_[j]));
       ASSERT_TRUE(request.has_upload());
       const AutofillUploadContents& upload_contents = request.upload();
-      EXPECT_EQ(upload_contents.was_throttleable(), (i == 1 || i == 2))
-          << "Wrong was_throttleable value for upload " << i;
+      EXPECT_EQ(upload_contents.was_throttleable(), (j == 1 || j == 2))
+          << "Wrong was_throttleable value for upload " << j;
       EXPECT_FALSE(upload_contents.has_randomized_form_metadata());
-      for (const auto& field : upload_contents.field()) {
-        EXPECT_FALSE(field.has_randomized_field_metadata());
+      for (const auto& upload_contents_field : upload_contents.field()) {
+        EXPECT_FALSE(upload_contents_field.has_randomized_field_metadata());
       }
     }
   }

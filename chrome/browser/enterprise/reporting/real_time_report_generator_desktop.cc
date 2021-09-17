@@ -17,7 +17,7 @@ RealTimeReportGeneratorDesktop::Generate(
     RealTimeReportGenerator::ReportType type) {
   std::vector<std::unique_ptr<google::protobuf::MessageLite>> reports;
   switch (type) {
-    case RealTimeReportGenerator::kExtensionRequest:
+    case RealTimeReportGenerator::ReportType::kExtensionRequest:
       for (auto& report : extension_request_report_generator_.Generate())
         reports.push_back(std::move(report));
   }

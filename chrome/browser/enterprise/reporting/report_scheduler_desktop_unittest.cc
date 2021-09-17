@@ -785,7 +785,7 @@ TEST_F(ReportSchedulerTest, ExtensionRequestWithRealTimePipeline) {
   reports.push_back(std::make_unique<ExtensionsWorkflowEvent>());
   reports.push_back(std::make_unique<ExtensionsWorkflowEvent>());
   EXPECT_CALL(*real_time_generator_,
-              Generate(RealTimeReportGenerator::kExtensionRequest))
+              Generate(RealTimeReportGenerator::ReportType::kExtensionRequest))
       .WillOnce(DoAll(InvokeWithoutArgs([]() {
                         ExtensionRequestReportThrottler::Get()->ResetProfiles();
                       }),

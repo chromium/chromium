@@ -56,12 +56,12 @@ class FakeCardUnmaskDelegate : public autofill::CardUnmaskDelegate {
       const UserProvidedUnmaskDetails& unmask_details) override {
     unmask_details_ = unmask_details;
     // Fake the actual verification and just respond with success.
-    base::PostTask(
-        FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-          autofill::AutofillClient::PaymentsRpcResult result =
-              autofill::AutofillClient::SUCCESS;
-          [credit_card_verifier_ didReceiveUnmaskVerificationResult:result];
-        }));
+    base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+                     autofill::AutofillClient::PaymentsRpcResult result =
+                         autofill::AutofillClient::PaymentsRpcResult::kSuccess;
+                     [credit_card_verifier_
+                         didReceiveUnmaskVerificationResult:result];
+                   }));
   }
   void OnUnmaskPromptClosed() override {}
   bool ShouldOfferFidoAuth() const override { return false; }
@@ -124,7 +124,7 @@ class CWVCreditCardVerifierTest : public PlatformTest {
          initWithPrefs:pref_service_.get()
         isOffTheRecord:NO
             creditCard:credit_card
-                reason:autofill::AutofillClient::UNMASK_FOR_AUTOFILL
+                reason:autofill::AutofillClient::UnmaskCardReason::kAutofill
               delegate:card_unmask_delegate_.GetWeakPtr()];
     card_unmask_delegate_.SetCreditCardVerifier(credit_card_verifier_);
   }
@@ -198,7 +198,8 @@ TEST_F(CWVCreditCardVerifierTest, VerifyCardSucceeded) {
   EXPECT_NSEQ(cvc, base::SysUTF16ToNSString(unmask_details_.cvc));
 
   [credit_card_verifier_
-      didReceiveUnmaskVerificationResult:autofill::AutofillClient::SUCCESS];
+      didReceiveUnmaskVerificationResult:autofill::AutofillClient::
+                                             PaymentsRpcResult::kSuccess];
   EXPECT_TRUE(completionCalled);
   EXPECT_TRUE(completionError == nil);
 }
@@ -221,8 +222,9 @@ TEST_F(CWVCreditCardVerifierTest, VerifyCardFailed) {
       card_unmask_delegate_.GetUserProvidedUnmaskDetails();
   EXPECT_NSEQ(cvc, base::SysUTF16ToNSString(unmask_details_.cvc));
 
-  [credit_card_verifier_ didReceiveUnmaskVerificationResult:
-                             autofill::AutofillClient::TRY_AGAIN_FAILURE];
+  [credit_card_verifier_
+      didReceiveUnmaskVerificationResult:
+          autofill::AutofillClient::PaymentsRpcResult::kTryAgainFailure];
   ASSERT_TRUE(completionError != nil);
   EXPECT_EQ(CWVCreditCardVerifierErrorDomain, completionError.domain);
   EXPECT_EQ(CWVCreditCardVerificationErrorTryAgainFailure,

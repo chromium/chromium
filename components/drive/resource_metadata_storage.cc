@@ -1206,8 +1206,9 @@ bool ResourceMetadataStorage::CheckValidity() {
     // If the parent is referenced, then confirm that it exists and check the
     // parent-child relationships.
     if (!entry.parent_local_id().empty()) {
-      const auto mapping_it = resource_entries.find(entry.parent_local_id());
-      if (mapping_it == resource_entries.end()) {
+      const auto parent_mapping_it =
+          resource_entries.find(entry.parent_local_id());
+      if (parent_mapping_it == resource_entries.end()) {
         DLOG(ERROR) << "Parent entry not found.";
         RecordCheckValidityFailure(CHECK_VALIDITY_FAILURE_INVALID_PARENT_ID);
         return false;

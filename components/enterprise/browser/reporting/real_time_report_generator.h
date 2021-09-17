@@ -19,7 +19,7 @@ class ReportingDelegateFactory;
 // uploaded much more frequently than the CBCM status report.
 class RealTimeReportGenerator {
  public:
-  enum ReportType { kExtensionRequest = 0 };
+  enum class ReportType { kExtensionRequest = 0 };
 
   // Delegate class that is used to collect information and generate reports
   // outside the //components. For example, RealTimeReportGeneratorDesktop

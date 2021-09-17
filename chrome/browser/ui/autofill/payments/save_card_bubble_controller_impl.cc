@@ -281,7 +281,8 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
                              base::TRIM_ALL, &name_provided_by_user);
       }
       std::move(upload_save_card_prompt_callback_)
-          .Run(AutofillClient::ACCEPTED, user_provided_card_details);
+          .Run(AutofillClient::SaveCardOfferUserDecision::kAccepted,
+               user_provided_card_details);
       break;
     }
     case BubbleType::LOCAL_SAVE:
@@ -293,7 +294,8 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       // Show an animated card saved confirmation message next time
       // UpdatePageActionIcon() is called.
       should_show_card_saved_label_animation_ = true;
-      std::move(local_save_card_prompt_callback_).Run(AutofillClient::ACCEPTED);
+      std::move(local_save_card_prompt_callback_)
+          .Run(AutofillClient::SaveCardOfferUserDecision::kAccepted);
       break;
     case BubbleType::MANAGE_CARDS:
       AutofillMetrics::LogManageCardsPromptMetric(
@@ -308,10 +310,11 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
 
 void SaveCardBubbleControllerImpl::OnCancelButton() {
   if (current_bubble_type_ == BubbleType::LOCAL_SAVE) {
-    std::move(local_save_card_prompt_callback_).Run(AutofillClient::DECLINED);
+    std::move(local_save_card_prompt_callback_)
+        .Run(AutofillClient::SaveCardOfferUserDecision::kDeclined);
   } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
     std::move(upload_save_card_prompt_callback_)
-        .Run(AutofillClient::DECLINED, {});
+        .Run(AutofillClient::SaveCardOfferUserDecision::kDeclined, {});
   }
 }
 

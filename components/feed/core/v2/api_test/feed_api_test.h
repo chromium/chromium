@@ -151,7 +151,7 @@ class TestSurfaceBase : public FeedStreamSurface {
  private:
   std::string CurrentState();
 
-  bool IsInitialLoadSpinnerUpdate(const feedui::StreamUpdate& update);
+  bool IsInitialLoadSpinnerUpdate(const feedui::StreamUpdate& stream_update);
 
   // The stream if it was attached using the constructor.
   base::WeakPtr<FeedStream> stream_;
@@ -395,7 +395,7 @@ class TestMetricsReporter : public MetricsReporter {
                   const ContentStats& content_stats) override;
   void OnBackgroundRefresh(const StreamType& stream_type,
                            LoadStreamStatus final_status) override;
-  void OnClearAll(base::TimeDelta time_since_last_clear) override;
+  void OnClearAll(base::TimeDelta since_last_clear) override;
   void OnUploadActions(UploadActionsStatus status) override;
 
   struct StreamMetrics {

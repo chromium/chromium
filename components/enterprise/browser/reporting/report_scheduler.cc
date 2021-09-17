@@ -346,7 +346,7 @@ void ReportScheduler::UploadExtensionRequests() {
                                  reporting::Priority::FAST_BATCH);
   }
   auto reports = real_time_report_generator_->Generate(
-      RealTimeReportGenerator::kExtensionRequest);
+      RealTimeReportGenerator::ReportType::kExtensionRequest);
 
   for (auto& report : reports) {
     extension_request_uploader_->Upload(

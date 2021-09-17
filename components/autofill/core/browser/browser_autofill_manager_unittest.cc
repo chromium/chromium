@@ -618,8 +618,9 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     // Mock payments response.
     payments::PaymentsClient::UnmaskResponseDetails response;
-    response.card_type = is_virtual_card ? AutofillClient::VIRTUAL_CARD
-                                         : AutofillClient::SERVER_CARD;
+    response.card_type = is_virtual_card
+                             ? AutofillClient::PaymentsRpcCardType::kVirtualCard
+                             : AutofillClient::PaymentsRpcCardType::kServerCard;
     full_card_request->OnDidGetRealPan(result,
                                        response.with_real_pan(real_pan));
   }
@@ -7659,7 +7660,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(AutofillClient::SUCCESS, "4012888888881881");
+  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
+                  "4012888888881881");
   browser_autofill_manager_->OnFormSubmitted(form, false,
                                              SubmissionSource::FORM_SUBMISSION);
 }
@@ -7675,7 +7677,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   details.exp_month = u"02";
   details.exp_year = u"2018";
   full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(AutofillClient::SUCCESS, "4012888888881881");
+  OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess,
+                  "4012888888881881");
 }
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
@@ -8311,8 +8314,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormsSeen(mixed_forms);
 
   // Suggestions should always be displayed.
-  for (const FormFieldData& field : mixed_form.fields) {
-    GetAutofillSuggestions(mixed_form, field);
+  for (const FormFieldData& mixed_form_field : mixed_form.fields) {
+    GetAutofillSuggestions(mixed_form, mixed_form_field);
     EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
   }
 }
@@ -8352,8 +8355,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
 
   // Make sure the form can be autofilled.
-  for (const FormFieldData& field : form.fields) {
-    GetAutofillSuggestions(form, field);
+  for (const FormFieldData& form_field : form.fields) {
+    GetAutofillSuggestions(form, form_field);
     ASSERT_TRUE(external_delegate_->on_suggestions_returned_seen());
   }
 
@@ -8361,8 +8364,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields[0].css_classes += u"a";
 
   // Expect the form still can be autofilled.
-  for (const FormFieldData& field : form.fields) {
-    GetAutofillSuggestions(form, field);
+  for (const FormFieldData& form_field : form.fields) {
+    GetAutofillSuggestions(form, form_field);
     EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
   }
 
@@ -8371,8 +8374,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.action = net::AppendQueryParameter(form.action, "arg", "value");
 
   // Expect the form still can be autofilled.
-  for (const FormFieldData& field : form.fields) {
-    GetAutofillSuggestions(form, field);
+  for (const FormFieldData& form_field : form.fields) {
+    GetAutofillSuggestions(form, form_field);
     EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
   }
 }
@@ -8405,8 +8408,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormsSeen({form});
 
   // Suggestions should be displayed.
-  for (const FormFieldData& field : form.fields) {
-    GetAutofillSuggestions(form, field);
+  for (const FormFieldData& form_field : form.fields) {
+    GetAutofillSuggestions(form, form_field);
     EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
   }
 }

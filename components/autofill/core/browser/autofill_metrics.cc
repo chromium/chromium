@@ -1226,33 +1226,33 @@ void AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
   std::string card_type_suffix;
 
   switch (result) {
-    case AutofillClient::SUCCESS:
+    case AutofillClient::PaymentsRpcResult::kSuccess:
       result_suffix = "Success";
       break;
-    case AutofillClient::TRY_AGAIN_FAILURE:
-    case AutofillClient::PERMANENT_FAILURE:
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
       result_suffix = "Failure";
       break;
-    case AutofillClient::NETWORK_ERROR:
+    case AutofillClient::PaymentsRpcResult::kNetworkError:
       result_suffix = "NetworkError";
       break;
-    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
-    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
       result_suffix = "VcnRetrievalFailure";
       break;
-    case AutofillClient::NONE:
+    case AutofillClient::PaymentsRpcResult::kNone:
       NOTREACHED();
       return;
   }
 
   switch (card_type) {
-    case AutofillClient::SERVER_CARD:
+    case AutofillClient::PaymentsRpcCardType::kServerCard:
       card_type_suffix = "ServerCard";
       break;
-    case AutofillClient::VIRTUAL_CARD:
+    case AutofillClient::PaymentsRpcCardType::kVirtualCard:
       card_type_suffix = "VirtualCard";
       break;
-    case AutofillClient::UNKNOWN_TYPE:
+    case AutofillClient::PaymentsRpcCardType::kUnknown:
       NOTREACHED();
       return;
   }
@@ -1459,40 +1459,40 @@ void AutofillMetrics::LogRealPanResult(
     AutofillClient::PaymentsRpcCardType card_type) {
   PaymentsRpcResult metric_result;
   switch (result) {
-    case AutofillClient::SUCCESS:
+    case AutofillClient::PaymentsRpcResult::kSuccess:
       metric_result = PAYMENTS_RESULT_SUCCESS;
       break;
-    case AutofillClient::TRY_AGAIN_FAILURE:
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
       metric_result = PAYMENTS_RESULT_TRY_AGAIN_FAILURE;
       break;
-    case AutofillClient::PERMANENT_FAILURE:
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
       metric_result = PAYMENTS_RESULT_PERMANENT_FAILURE;
       break;
-    case AutofillClient::NETWORK_ERROR:
+    case AutofillClient::PaymentsRpcResult::kNetworkError:
       metric_result = PAYMENTS_RESULT_NETWORK_ERROR;
       break;
-    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
-      DCHECK_EQ(card_type, AutofillClient::VIRTUAL_CARD);
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+      DCHECK_EQ(card_type, AutofillClient::PaymentsRpcCardType::kVirtualCard);
       metric_result = PAYMENTS_RESULT_VCN_RETRIEVAL_TRY_AGAIN_FAILURE;
       break;
-    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
-      DCHECK_EQ(card_type, AutofillClient::VIRTUAL_CARD);
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+      DCHECK_EQ(card_type, AutofillClient::PaymentsRpcCardType::kVirtualCard);
       metric_result = PAYMENTS_RESULT_VCN_RETRIEVAL_PERMANENT_FAILURE;
       break;
-    case AutofillClient::NONE:
+    case AutofillClient::PaymentsRpcResult::kNone:
       NOTREACHED();
       return;
   }
 
   std::string card_type_suffix;
   switch (card_type) {
-    case AutofillClient::SERVER_CARD:
+    case AutofillClient::PaymentsRpcCardType::kServerCard:
       card_type_suffix = "ServerCard";
       break;
-    case AutofillClient::VIRTUAL_CARD:
+    case AutofillClient::PaymentsRpcCardType::kVirtualCard:
       card_type_suffix = "VirtualCard";
       break;
-    case AutofillClient::UNKNOWN_TYPE:
+    case AutofillClient::PaymentsRpcCardType::kUnknown:
       NOTREACHED();
       return;
   }
@@ -1514,34 +1514,34 @@ void AutofillMetrics::LogRealPanDuration(
   std::string card_type_suffix;
 
   switch (card_type) {
-    case AutofillClient::SERVER_CARD:
+    case AutofillClient::PaymentsRpcCardType::kServerCard:
       card_type_suffix = "ServerCard";
       break;
-    case AutofillClient::VIRTUAL_CARD:
+    case AutofillClient::PaymentsRpcCardType::kVirtualCard:
       card_type_suffix = "VirtualCard";
       break;
-    case AutofillClient::UNKNOWN_TYPE:
+    case AutofillClient::PaymentsRpcCardType::kUnknown:
       NOTREACHED();
       return;
   }
 
   switch (result) {
-    case AutofillClient::SUCCESS:
+    case AutofillClient::PaymentsRpcResult::kSuccess:
       result_suffix = "Success";
       break;
-    case AutofillClient::TRY_AGAIN_FAILURE:
-    case AutofillClient::PERMANENT_FAILURE:
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
       result_suffix = "Failure";
       break;
-    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
-    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
-      DCHECK_EQ(card_type, AutofillClient::VIRTUAL_CARD);
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+      DCHECK_EQ(card_type, AutofillClient::PaymentsRpcCardType::kVirtualCard);
       result_suffix = "VcnRetrievalFailure";
       break;
-    case AutofillClient::NETWORK_ERROR:
+    case AutofillClient::PaymentsRpcResult::kNetworkError:
       result_suffix = "NetworkError";
       break;
-    case AutofillClient::NONE:
+    case AutofillClient::PaymentsRpcResult::kNone:
       NOTREACHED();
       return;
   }
@@ -1562,34 +1562,34 @@ void AutofillMetrics::LogUnmaskingDuration(
   std::string card_type_suffix;
 
   switch (card_type) {
-    case AutofillClient::SERVER_CARD:
+    case AutofillClient::PaymentsRpcCardType::kServerCard:
       card_type_suffix = "ServerCard";
       break;
-    case AutofillClient::VIRTUAL_CARD:
+    case AutofillClient::PaymentsRpcCardType::kVirtualCard:
       card_type_suffix = "VirtualCard";
       break;
-    case AutofillClient::UNKNOWN_TYPE:
+    case AutofillClient::PaymentsRpcCardType::kUnknown:
       NOTREACHED();
       return;
   }
 
   switch (result) {
-    case AutofillClient::SUCCESS:
+    case AutofillClient::PaymentsRpcResult::kSuccess:
       result_suffix = "Success";
       break;
-    case AutofillClient::TRY_AGAIN_FAILURE:
-    case AutofillClient::PERMANENT_FAILURE:
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
       result_suffix = "Failure";
       break;
-    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
-    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
-      DCHECK_EQ(card_type, AutofillClient::VIRTUAL_CARD);
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+      DCHECK_EQ(card_type, AutofillClient::PaymentsRpcCardType::kVirtualCard);
       result_suffix = "VcnRetrievalFailure";
       break;
-    case AutofillClient::NETWORK_ERROR:
+    case AutofillClient::PaymentsRpcResult::kNetworkError:
       result_suffix = "NetworkError";
       break;
-    case AutofillClient::NONE:
+    case AutofillClient::PaymentsRpcResult::kNone:
       NOTREACHED();
       return;
   }

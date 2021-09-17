@@ -140,7 +140,7 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
 
     driver->browser_autofill_manager()
         ->GetOrCreateFullCardRequest()
-        ->GetFullCard(*card_, AutofillClient::UNMASK_FOR_PAYMENT_REQUEST,
+        ->GetFullCard(*card_, AutofillClient::UnmaskCardReason::kPaymentRequest,
                       AsWeakPtr(),
                       driver->browser_autofill_manager()
                           ->GetAsFullCardRequestUIDelegate());

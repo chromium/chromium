@@ -182,7 +182,8 @@ class CreditCardSaveManagerTest : public testing::Test {
   void UserHasAcceptedUpload(
       AutofillClient::UserProvidedCardDetails user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnUploadSave(
-        AutofillClient::ACCEPTED, user_provided_card_details);
+        AutofillClient::SaveCardOfferUserDecision::kAccepted,
+        user_provided_card_details);
   }
 
   // Populates |form| with data corresponding to a simple credit card form.
@@ -5043,8 +5044,8 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->set_show_save_prompt(true);
   credit_card_save_manager_->set_upload_request_card_number(
       u"4111111111111111");
-  credit_card_save_manager_->OnDidUploadCard(AutofillClient::TRY_AGAIN_FAILURE,
-                                             server_id);
+  credit_card_save_manager_->OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult::kTryAgainFailure, server_id);
   EXPECT_EQ(1, credit_card_save_strike_database.GetStrikes("1111"));
 }
 

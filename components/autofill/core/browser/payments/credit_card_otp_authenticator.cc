@@ -39,7 +39,7 @@ void CreditCardOtpAuthenticator::Authenticate(
 
   request_ = std::make_unique<payments::PaymentsClient::UnmaskRequestDetails>();
   request_->card = *card;
-  request_->reason = AutofillClient::UNMASK_FOR_AUTOFILL;
+  request_->reason = AutofillClient::UnmaskCardReason::kAutofill;
   request_->last_committed_url_origin = last_committed_url_origin;
   request_->billing_customer_number = billing_customer_number;
   request_->context_token = context_token_;
@@ -58,9 +58,9 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     AutofillClient::PaymentsRpcResult result,
     payments::PaymentsClient::UnmaskResponseDetails& response_details) {
   // TODO(crbug.com/1243475): Add latency logging.
-  if (result == AutofillClient::SUCCESS) {
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     if (response_details.card_type !=
-        AutofillClient::PaymentsRpcCardType::VIRTUAL_CARD) {
+        AutofillClient::PaymentsRpcCardType::kVirtualCard) {
       // Currently we offer OTP authentication only for virtual cards.
       NOTREACHED();
       requester_->OnOtpAuthenticationComplete(

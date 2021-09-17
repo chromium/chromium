@@ -207,10 +207,10 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
   // performing extra work in scenarios we already allow.
   if (block &&
       base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
-    ContentSetting setting = host_content_settings_map_->GetContentSetting(
+    ContentSetting host_setting = host_content_settings_map_->GetContentSetting(
         url, first_party_url, ContentSettingsType::STORAGE_ACCESS);
 
-    if (setting == CONTENT_SETTING_ALLOW) {
+    if (host_setting == CONTENT_SETTING_ALLOW) {
       block = false;
       FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
                                      ACCESS_ALLOWED_STORAGE_ACCESS_GRANT);

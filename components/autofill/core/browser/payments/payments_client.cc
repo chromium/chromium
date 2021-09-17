@@ -315,10 +315,10 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
     if (method) {
       if (*method == "CVC") {
         unmask_details_.unmask_auth_method =
-            AutofillClient::UnmaskAuthMethod::CVC;
+            AutofillClient::UnmaskAuthMethod::kCvc;
       } else if (*method == "FIDO") {
         unmask_details_.unmask_auth_method =
-            AutofillClient::UnmaskAuthMethod::FIDO;
+            AutofillClient::UnmaskAuthMethod::kFido;
       }
     }
 
@@ -343,7 +343,7 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
 
   bool IsResponseComplete() override {
     return unmask_details_.unmask_auth_method !=
-           AutofillClient::UnmaskAuthMethod::UNKNOWN;
+           AutofillClient::UnmaskAuthMethod::kUnknown;
   }
 
   void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override {
@@ -477,12 +477,13 @@ class UnmaskCardRequest : public PaymentsRequest {
 
     // Payments is reporting receiving blank or non-standard-length CVCs.
     // Log CVC length being sent to gauge how often this is happening.
-    if (request_details_.reason == AutofillClient::UNMASK_FOR_AUTOFILL &&
+    if (request_details_.reason ==
+            AutofillClient::UnmaskCardReason::kAutofill &&
         is_cvc_auth) {
       base::UmaHistogramCounts1000("Autofill.CardUnmask.CvcLength.ForAutofill",
                                    request_details_.user_response.cvc.length());
     } else if (request_details_.reason ==
-               AutofillClient::UNMASK_FOR_PAYMENT_REQUEST) {
+               AutofillClient::UnmaskCardReason::kPaymentRequest) {
       base::UmaHistogramCounts1000(
           "Autofill.CardUnmask.CvcLength.ForPaymentRequest",
           request_details_.user_response.cvc.length());
@@ -549,11 +550,11 @@ class UnmaskCardRequest : public PaymentsRequest {
 
     if (request_details_.card.record_type() == CreditCard::VIRTUAL_CARD) {
       response_details_.card_type =
-          AutofillClient::PaymentsRpcCardType::VIRTUAL_CARD;
+          AutofillClient::PaymentsRpcCardType::kVirtualCard;
     } else if (request_details_.card.record_type() ==
                CreditCard::MASKED_SERVER_CARD) {
       response_details_.card_type =
-          AutofillClient::PaymentsRpcCardType::SERVER_CARD;
+          AutofillClient::PaymentsRpcCardType::kServerCard;
     } else {
       NOTREACHED();
     }
@@ -561,11 +562,11 @@ class UnmaskCardRequest : public PaymentsRequest {
 
   bool IsResponseComplete() override {
     switch (response_details_.card_type) {
-      case AutofillClient::PaymentsRpcCardType::UNKNOWN_TYPE:
+      case AutofillClient::PaymentsRpcCardType::kUnknown:
         return false;
-      case AutofillClient::PaymentsRpcCardType::SERVER_CARD:
+      case AutofillClient::PaymentsRpcCardType::kServerCard:
         return !response_details_.real_pan.empty();
-      case AutofillClient::PaymentsRpcCardType::VIRTUAL_CARD:
+      case AutofillClient::PaymentsRpcCardType::kVirtualCard:
         // When pan is returned, it has to contain pan + expiry + cvv.
         // When pan is not returned, it has to contain context token to indicate
         // success.
@@ -1402,7 +1403,8 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
                                                     const std::string& data) {
   VLOG(2) << "Got data: " << data;
 
-  AutofillClient::PaymentsRpcResult result = AutofillClient::SUCCESS;
+  AutofillClient::PaymentsRpcResult result =
+      AutofillClient::PaymentsRpcResult::kSuccess;
 
   if (!request_)
     return;
@@ -1429,14 +1431,16 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
 
       if (base::LowerCaseEqualsASCII(error_api_error_reason,
                                      "virtual_card_temporary_error")) {
-        result = AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE;
+        result =
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
       } else if (base::LowerCaseEqualsASCII(error_api_error_reason,
                                             "virtual_card_permanent_error")) {
-        result = AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE;
+        result =
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure;
       } else if (base::LowerCaseEqualsASCII(error_code, "internal")) {
-        result = AutofillClient::TRY_AGAIN_FAILURE;
+        result = AutofillClient::PaymentsRpcResult::kTryAgainFailure;
       } else if (!error_code.empty() || !request_->IsResponseComplete()) {
-        result = AutofillClient::PERMANENT_FAILURE;
+        result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
       }
 
       break;
@@ -1444,7 +1448,7 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
 
     case net::HTTP_UNAUTHORIZED: {
       if (has_retried_authorization_) {
-        result = AutofillClient::PERMANENT_FAILURE;
+        result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
         break;
       }
       has_retried_authorization_ = true;
@@ -1457,18 +1461,18 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
     // TODO(estade): is this actually how network connectivity issues are
     // reported?
     case net::HTTP_REQUEST_TIMEOUT: {
-      result = AutofillClient::NETWORK_ERROR;
+      result = AutofillClient::PaymentsRpcResult::kNetworkError;
       break;
     }
 
     // Handle anything else as a generic (permanent) failure.
     default: {
-      result = AutofillClient::PERMANENT_FAILURE;
+      result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
       break;
     }
   }
 
-  if (result != AutofillClient::SUCCESS) {
+  if (result != AutofillClient::PaymentsRpcResult::kSuccess) {
     VLOG(1) << "Payments returned error: " << response_code
             << " with data: " << data;
   }
@@ -1497,7 +1501,8 @@ void PaymentsClient::AccessTokenError(const GoogleServiceAuthError& error) {
   if (simple_url_loader_)
     simple_url_loader_.reset();
   if (request_)
-    request_->RespondToDelegate(AutofillClient::PERMANENT_FAILURE);
+    request_->RespondToDelegate(
+        AutofillClient::PaymentsRpcResult::kPermanentFailure);
 }
 
 void PaymentsClient::StartTokenFetch(bool invalidate_old) {

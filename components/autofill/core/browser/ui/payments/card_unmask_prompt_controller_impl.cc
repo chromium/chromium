@@ -51,7 +51,7 @@ void CardUnmaskPromptControllerImpl::ShowPrompt(
   delegate_ = delegate;
   card_unmask_view_ = std::move(card_unmask_view_factory).Run();
   card_unmask_view_->Show();
-  unmasking_result_ = AutofillClient::NONE;
+  unmasking_result_ = AutofillClient::PaymentsRpcResult::kNone;
   unmasking_number_of_attempts_ = 0;
   AutofillMetrics::LogUnmaskPromptEvent(AutofillMetrics::UNMASK_PROMPT_SHOWN,
                                         card_.HasNonEmptyValidNickname());
@@ -64,40 +64,40 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
 
   std::u16string error_message;
   switch (result) {
-    case AutofillClient::SUCCESS:
+    case AutofillClient::PaymentsRpcResult::kSuccess:
       break;
 
-    case AutofillClient::TRY_AGAIN_FAILURE: {
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure: {
       error_message = l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_TRY_AGAIN_CVC);
       break;
     }
 
-    case AutofillClient::PERMANENT_FAILURE: {
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure: {
       error_message = l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_PERMANENT);
       break;
     }
 
-    case AutofillClient::NETWORK_ERROR: {
+    case AutofillClient::PaymentsRpcResult::kNetworkError: {
       error_message = l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_NETWORK);
       break;
     }
 
-    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE: {
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure: {
       error_message = l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION);
       break;
     }
 
-    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE: {
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure: {
       error_message = l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_DESCRIPTION);
       break;
     }
 
-    case AutofillClient::NONE:
+    case AutofillClient::PaymentsRpcResult::kNone:
       NOTREACHED();
       return;
   }
@@ -105,8 +105,8 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
   unmasking_result_ = result;
   AutofillClient::PaymentsRpcCardType card_type =
       card_.record_type() == CreditCard::VIRTUAL_CARD
-          ? AutofillClient::VIRTUAL_CARD
-          : AutofillClient::SERVER_CARD;
+          ? AutofillClient::PaymentsRpcCardType::kVirtualCard
+          : AutofillClient::PaymentsRpcCardType::kServerCard;
 
   AutofillMetrics::LogRealPanResult(result, card_type);
   AutofillMetrics::LogUnmaskingDuration(
@@ -122,7 +122,7 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
 void CardUnmaskPromptControllerImpl::OnUnmaskDialogClosed() {
   card_unmask_view_ = nullptr;
   LogOnCloseEvents();
-  unmasking_result_ = AutofillClient::NONE;
+  unmasking_result_ = AutofillClient::PaymentsRpcResult::kNone;
   if (delegate_)
     delegate_->OnUnmaskPromptClosed();
 }
@@ -134,7 +134,7 @@ void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
     bool enable_fido_auth) {
   verify_timestamp_ = AutofillClock::Now();
   unmasking_number_of_attempts_++;
-  unmasking_result_ = AutofillClient::NONE;
+  unmasking_result_ = AutofillClient::PaymentsRpcResult::kNone;
   card_unmask_view_->DisableAndWaitForVerification();
 
   DCHECK(InputCvcIsValid(cvc));
@@ -169,11 +169,12 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE);
 #else
   // Set title for VCN retrieval errors first.
-  if (unmasking_result_ == AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE) {
+  if (unmasking_result_ ==
+      AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_TITLE);
   } else if (unmasking_result_ ==
-             AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE) {
+             AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE);
   }
@@ -191,7 +192,7 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
 // prompt for local cards should not.
 #if defined(OS_IOS)
   int ids;
-  if (reason_ == AutofillClient::UNMASK_FOR_AUTOFILL &&
+  if (reason_ == AutofillClient::UnmaskCardReason::kAutofill &&
       ShouldRequestExpirationDate()) {
     ids = card_.record_type() == autofill::CreditCard::LOCAL_CARD
               ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_LOCAL_CARD
@@ -298,7 +299,7 @@ base::TimeDelta CardUnmaskPromptControllerImpl::GetSuccessMessageDuration()
     const {
   return base::TimeDelta::FromMilliseconds(
       card_.record_type() == CreditCard::LOCAL_CARD ||
-              reason_ == AutofillClient::UNMASK_FOR_PAYMENT_REQUEST
+              reason_ == AutofillClient::UnmaskCardReason::kPaymentRequest
           ? 0
           : 500);
 }
@@ -310,10 +311,12 @@ CardUnmaskPromptControllerImpl::GetVerificationResult() const {
 
 bool CardUnmaskPromptControllerImpl::AllowsRetry(
     AutofillClient::PaymentsRpcResult result) {
-  if (result == AutofillClient::NETWORK_ERROR ||
-      result == AutofillClient::PERMANENT_FAILURE ||
-      result == AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE ||
-      result == AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE) {
+  if (result == AutofillClient::PaymentsRpcResult::kNetworkError ||
+      result == AutofillClient::PaymentsRpcResult::kPermanentFailure ||
+      result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+      result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
     return false;
   }
   return true;
@@ -324,8 +327,10 @@ bool CardUnmaskPromptControllerImpl::ShouldDismissUnmaskPromptUponResult(
 #if defined(OS_ANDROID)
   // For virtual card errors on Android, we'd dismiss the unmask prompt and
   // instead show a different error dialog.
-  return result == AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE ||
-         result == AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE;
+  return result ==
+             AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+         result ==
+             AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
 #else
   return false;
 #endif  // OS_ANDROID
@@ -357,10 +362,10 @@ CardUnmaskPromptControllerImpl::GetCloseReasonEvent() {
 
   // If NONE and we have a pending request, we have a pending GetRealPan
   // request.
-  if (unmasking_result_ == AutofillClient::NONE)
+  if (unmasking_result_ == AutofillClient::PaymentsRpcResult::kNone)
     return AutofillMetrics::UNMASK_PROMPT_CLOSED_ABANDON_UNMASKING;
 
-  if (unmasking_result_ == AutofillClient::SUCCESS) {
+  if (unmasking_result_ == AutofillClient::PaymentsRpcResult::kSuccess) {
     return unmasking_number_of_attempts_ == 1
                ? AutofillMetrics::UNMASK_PROMPT_UNMASKED_CARD_FIRST_ATTEMPT
                : AutofillMetrics::

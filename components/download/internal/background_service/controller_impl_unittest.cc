@@ -1994,9 +1994,9 @@ TEST_F(DownloadServiceControllerImplTest, DownloadTaskQueuesAfterFinish) {
 
     // Simulate a download success event, which will trigger the controller to
     // start a new download.
-    absl::optional<DriverEntry> dentry1 = driver_->Find(entry1.guid);
-    EXPECT_TRUE(dentry1.has_value());
-    driver_->NotifyDownloadSucceeded(dentry1.value());
+    absl::optional<DriverEntry> driver_entry = driver_->Find(entry1.guid);
+    EXPECT_TRUE(driver_entry.has_value());
+    driver_->NotifyDownloadSucceeded(driver_entry.value());
     task_runner_->RunUntilIdle();
   }
 

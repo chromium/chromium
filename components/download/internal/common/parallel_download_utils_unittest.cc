@@ -136,8 +136,6 @@ TEST_F(ParallelDownloadUtilsTest, AddOrMergeReceivedSliceIntoSortedArray) {
 TEST_P(ParallelDownloadUtilsRecoverErrorTest,
        RecoverErrorForHalfOpenErrorStream) {
   // Create a stream that will work on byte range "100-".
-  const int kErrorStreamOffset = 100;
-
   auto error_stream = CreateSourceStream(kErrorStreamOffset);
   error_stream->set_finished(true);
 

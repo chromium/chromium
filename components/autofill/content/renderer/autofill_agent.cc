@@ -1187,14 +1187,15 @@ void AutofillAgent::OnProvisionallySaveForm(
     if (source == ElementChangeSource::TEXTFIELD_CHANGED) {
       OnTextFieldDidChange(*ToWebInputElement(&element));
     } else {
-      FormData form;
+      FormData form_data;
       FormFieldData field;
       if (FindFormAndFieldForFormControlElement(
               element, field_data_manager_.get(),
               static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
                                        GetExtractDatalistMask()),
-              &form, &field)) {
-        GetAutofillDriver().SelectControlDidChange(form, field, field.bounds);
+              &form_data, &field)) {
+        GetAutofillDriver().SelectControlDidChange(form_data, field,
+                                                   field.bounds);
       }
     }
   }

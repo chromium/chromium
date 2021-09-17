@@ -198,7 +198,7 @@ void TestAutofillClient::ConfirmSaveCreditCardLocally(
   confirm_save_credit_card_locally_called_ = true;
   offer_to_save_credit_card_bubble_was_shown_ = options.show_prompt;
   save_credit_card_options_ = options;
-  std::move(callback).Run(AutofillClient::ACCEPTED);
+  std::move(callback).Run(AutofillClient::SaveCardOfferUserDecision::kAccepted);
 }
 
 void TestAutofillClient::ConfirmSaveCreditCardToCloud(
@@ -208,7 +208,8 @@ void TestAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
   offer_to_save_credit_card_bubble_was_shown_ = options.show_prompt;
   save_credit_card_options_ = options;
-  std::move(callback).Run(AutofillClient::ACCEPTED, {});
+  std::move(callback).Run(AutofillClient::SaveCardOfferUserDecision::kAccepted,
+                          {});
 }
 
 void TestAutofillClient::CreditCardUploadCompleted(bool card_saved) {}

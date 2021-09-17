@@ -134,9 +134,10 @@ void SaveCardMessageControllerAndroid::HandleMessageDismiss(
       !HadUserInteraction()) {
     // Gesture: users explicitly swipe the UI to dismiss the message
     bool gesture_dismiss = dismiss_reason == messages::DismissReason::GESTURE;
-    OnPromptCompleted(
-        gesture_dismiss ? AutofillClient::DECLINED : AutofillClient::IGNORED,
-        /*user_provided_details=*/{});
+    OnPromptCompleted(gesture_dismiss
+                          ? AutofillClient::SaveCardOfferUserDecision::kDeclined
+                          : AutofillClient::SaveCardOfferUserDecision::kIgnored,
+                      /*user_provided_details=*/{});
   }
   // Reset all if we won't show dialogs in the next steps
   if (HadUserInteraction()) {
@@ -167,7 +168,7 @@ void SaveCardMessageControllerAndroid::MaybeShowDialog() {
   } else if (options_.should_request_expiration_date_from_user) {
     ConfirmDate();
   } else {
-    OnPromptCompleted(AutofillClient::ACCEPTED, {});
+    OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kAccepted, {});
   }
 }
 
@@ -198,7 +199,7 @@ void SaveCardMessageControllerAndroid::ConfirmName(
 void SaveCardMessageControllerAndroid::OnNameConfirmed(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& name) {
-  OnPromptCompleted(AutofillClient::ACCEPTED,
+  OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kAccepted,
                     {base::android::ConvertJavaStringToUTF16(name),
                      std::u16string(), std::u16string()});
 }
@@ -208,7 +209,7 @@ void SaveCardMessageControllerAndroid::OnDateConfirmed(
     const base::android::JavaParamRef<jstring>& month,
     const base::android::JavaParamRef<jstring>& year) {
   OnPromptCompleted(
-      AutofillClient::ACCEPTED,
+      AutofillClient::SaveCardOfferUserDecision::kAccepted,
       {std::u16string(), base::android::ConvertJavaStringToUTF16(month),
        base::android::ConvertJavaStringToUTF16(year)});
 }
@@ -220,7 +221,7 @@ void SaveCardMessageControllerAndroid::DialogDismissed(JNIEnv* env) {
     return;
   }
   if (!HadUserInteraction()) {
-    OnPromptCompleted(AutofillClient::DECLINED,
+    OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kDeclined,
                       /*user_provided_details=*/{});
   }
   ResetInternal();
@@ -239,13 +240,13 @@ void SaveCardMessageControllerAndroid::OnPromptCompleted(
     AutofillClient::UserProvidedCardDetails user_provided_details) {
   MessageMetrics message_state;
   switch (user_decision) {
-    case AutofillClient::ACCEPTED:
+    case AutofillClient::SaveCardOfferUserDecision::kAccepted:
       message_state = MessageMetrics::kAccepted;
       break;
-    case AutofillClient::DECLINED:
+    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
       message_state = MessageMetrics::kDenied;
       break;
-    case AutofillClient::IGNORED:
+    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
       message_state = MessageMetrics::kIgnored;
       break;
   }

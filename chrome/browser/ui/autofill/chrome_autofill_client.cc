@@ -308,19 +308,19 @@ void ChromeAutofillClient::OnUnmaskVerificationResult(
   // For VCN related errors, on Android we show a new error dialog instead of
   // updating the CVC unmask prompt with the error message.
   switch (result) {
-    case AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE:
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
       ShowVirtualCardErrorDialog(/*is_permanent_error=*/true);
       break;
-    case AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE:
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
       ShowVirtualCardErrorDialog(/*is_permanent_error=*/false);
       break;
-    case AutofillClient::SUCCESS:
-    case AutofillClient::TRY_AGAIN_FAILURE:
-    case AutofillClient::PERMANENT_FAILURE:
-    case AutofillClient::NETWORK_ERROR:
+    case AutofillClient::PaymentsRpcResult::kSuccess:
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
+    case AutofillClient::PaymentsRpcResult::kNetworkError:
       // Do nothing
       break;
-    case AutofillClient::NONE:
+    case AutofillClient::PaymentsRpcResult::kNone:
       NOTREACHED();
       return;
   }

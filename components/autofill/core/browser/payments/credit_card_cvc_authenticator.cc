@@ -42,10 +42,10 @@ void CreditCardCVCAuthenticator::Authenticate(
     last_committed_url_origin = client_->GetLastCommittedURL().GetOrigin();
   }
 
-  full_card_request_->GetFullCard(*card, AutofillClient::UNMASK_FOR_AUTOFILL,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  last_committed_url_origin);
+  full_card_request_->GetFullCard(
+      *card, AutofillClient::UnmaskCardReason::kAutofill,
+      weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
+      last_committed_url_origin);
 }
 
 void CreditCardCVCAuthenticator::OnFullCardRequestSucceeded(

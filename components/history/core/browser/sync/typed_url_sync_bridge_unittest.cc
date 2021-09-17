@@ -1303,8 +1303,8 @@ TEST_F(TypedURLSyncBridgeTest, MaxVisitLocalTypedUrl) {
   int num_typed_visits_synced = 0;
   int num_other_visits_synced = 0;
   int r = url_specifics.visits_size() - 1;
-  for (int i = 0; i < url_specifics.visits_size(); ++i, --r) {
-    if (url_specifics.visit_transitions(i) ==
+  for (int j = 0; j < url_specifics.visits_size(); ++j, --r) {
+    if (url_specifics.visit_transitions(j) ==
         static_cast<int32_t>(ui::PAGE_TRANSITION_TYPED)) {
       ++num_typed_visits_synced;
     } else {

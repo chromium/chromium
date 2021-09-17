@@ -449,15 +449,15 @@ TEST_F(ChromeCTPolicyEnforcerTest,
         base::as_bytes(base::make_span(cert_data))));
     ASSERT_TRUE(cert);
 
-    for (size_t i = 0; i < required_scts - 1; ++i) {
+    for (size_t j = 0; j < required_scts - 1; ++j) {
       SCTList scts;
-      FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, i,
+      FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, j,
                                std::vector<std::string>(), false, &scts);
       EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
                 policy_enforcer_->CheckCompliance(cert.get(), scts,
                                                   NetLogWithSource()))
           << " for: " << (end - start).InDays() << " and " << required_scts
-          << " scts=" << scts.size() << " i=" << i;
+          << " scts=" << scts.size() << " j=" << j;
     }
     SCTList scts;
     FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,

@@ -2308,14 +2308,13 @@ TEST_P(ParameterizedFormStructureTest, EncodeQueryRequest) {
     query_form->add_fields()->set_signature(747221617U);
     query_form->add_fields()->set_signature(4108155786U);
     if (autofill_across_iframes) {
-      AutofillPageQueryRequest::Form* query_form = query.add_forms();
+      query_form = query.add_forms();
       query_form->set_signature(12345UL);
       query_form->add_fields()->set_signature(1917667676U);
       query_form->add_fields()->set_signature(747221617U);
       query_form->add_fields()->set_signature(4108155786U);
-    }
-    if (autofill_across_iframes) {
-      AutofillPageQueryRequest::Form* query_form = query.add_forms();
+
+      query_form = query.add_forms();
       query_form->set_signature(67890UL);
       query_form->add_fields()->set_signature(2226358947U);
     }
