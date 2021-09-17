@@ -428,16 +428,18 @@ void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
     journey_logger_.RecordTransactionAmount(
         spec_->details().total->amount->currency,
         spec_->details().total->amount->value, false /*completed*/);
-    if (SatisfiesSkipUIConstraints()) {
-      Pay();
-    } else {
-      // If not skipping UI, then make sure that the browser payment sheet is
-      // being displayed.
-      if (!display_handle_->was_shown())
-        display_handle_->Show(weak_ptr_factory_.GetWeakPtr());
+    if (is_requested_methods_supported_invoked_) {
+      if (SatisfiesSkipUIConstraints()) {
+        Pay();
+      } else {
+        // If not skipping UI, then make sure that the browser payment sheet is
+        // being displayed.
+        if (!display_handle_->was_shown())
+          display_handle_->Show(weak_ptr_factory_.GetWeakPtr());
 
-      if (spec_->request_shipping())
-        state_->SelectDefaultShippingAddressAndNotifyObservers();
+        if (spec_->request_shipping())
+          state_->SelectDefaultShippingAddressAndNotifyObservers();
+      }
     }
   }
 }
@@ -633,6 +635,7 @@ bool PaymentRequest::ChangeShippingAddress(
 void PaymentRequest::AreRequestedMethodsSupportedCallback(
     bool methods_supported,
     const std::string& error_message) {
+  is_requested_methods_supported_invoked_ = true;
   if (is_show_called_ && spec_ && spec_->IsInitialized() &&
       observer_for_testing_) {
     observer_for_testing_->OnAppListReady(weak_ptr_factory_.GetWeakPtr());

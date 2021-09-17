@@ -266,7 +266,13 @@ class PaymentRequest : public mojom::PaymentRequest,
   // Whether PaymentRequest.show() has been called.
   bool is_show_called_ = false;
 
-  // If not empty, use this error message for rejecting PaymentRequest.show().
+  // Whether PaymentRequestState::AreRequestedMethodsSupported callback has been
+  // invoked. This is distinct from state_->IsInitialized(), because the
+  // callback is asynchronous.
+  bool is_requested_methods_supported_invoked_ = false;
+
+  // If not empty, use this error message for rejecting
+  // PaymentRequest.show().
   std::string reject_show_error_message_;
 
   base::WeakPtrFactory<PaymentRequest> weak_ptr_factory_{this};
