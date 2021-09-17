@@ -30,6 +30,7 @@ class Canvas;
 
 namespace ash {
 
+class CaptureModeAdvancedSettingsView;
 class CaptureModeBarView;
 class CaptureModeController;
 class CaptureModeSettingsView;
@@ -380,6 +381,12 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Accessibility features will focus on the capture bar widget while this
   // object is alive.
   std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
+
+  // This is guarded by the |ImprovedScreenCaptureSettings| feature flag.
+  // TODO(conniekxu): remove it when the work of capture mode new settings
+  // is done.
+  CaptureModeAdvancedSettingsView* capture_mode_advanced_settings_view_ =
+      nullptr;
 };
 
 }  // namespace ash

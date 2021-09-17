@@ -3648,6 +3648,15 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_MICROPHONE" desc="The capture label message for toggling microphone recording, found in the settings menu.">
         Record microphone
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO" desc="The label of the save to menu group header in capture mode settings.">
+        Save to
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO_DOWNLOADS" desc="The label of the menu option button to select the downloads folder.">
+        Downloads
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_SAVE_TO_SELECT_FOLDER" desc="The label of the menu item button for selecting a folder to store the captured images and videos.">
+        Select folder...
+      </message>
 
       <!-- Switch Between TABLET/LAPTOP MODE-->
       <message name="IDS_ASH_SWITCH_TO_TABLET_MODE" desc="Alert of switching to tablet mode.">

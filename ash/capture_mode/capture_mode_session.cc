@@ -7,6 +7,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/capture_mode/capture_label_view.h"
+#include "ash/capture_mode/capture_mode_advanced_settings_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -15,6 +16,7 @@
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -676,6 +678,7 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
 
   if (!shown) {
     capture_mode_settings_widget_.reset();
+    capture_mode_advanced_settings_view_ = nullptr;
     capture_mode_settings_view_ = nullptr;
     return;
   }
@@ -683,12 +686,22 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
   if (!capture_mode_settings_widget_) {
     auto* parent = GetParentContainer(current_root_);
     capture_mode_settings_widget_ = std::make_unique<views::Widget>();
-    capture_mode_settings_widget_->Init(CreateWidgetParams(
-        parent, CaptureModeSettingsView::GetBounds(capture_mode_bar_view_),
-        "CaptureModeSettingsWidget"));
-    capture_mode_settings_view_ =
-        capture_mode_settings_widget_->SetContentsView(
-            std::make_unique<CaptureModeSettingsView>(is_in_projector_mode_));
+    if (features::AreImprovedScreenCaptureSettingsEnabled()) {
+      capture_mode_settings_widget_->Init(CreateWidgetParams(
+          parent,
+          CaptureModeAdvancedSettingsView::GetBounds(capture_mode_bar_view_),
+          "CaptureModeSettingsWidget"));
+      capture_mode_advanced_settings_view_ =
+          capture_mode_settings_widget_->SetContentsView(
+              std::make_unique<CaptureModeAdvancedSettingsView>());
+    } else {
+      capture_mode_settings_widget_->Init(CreateWidgetParams(
+          parent, CaptureModeSettingsView::GetBounds(capture_mode_bar_view_),
+          "CaptureModeSettingsWidget"));
+      capture_mode_settings_view_ =
+          capture_mode_settings_widget_->SetContentsView(
+              std::make_unique<CaptureModeSettingsView>(is_in_projector_mode_));
+    }
     parent->layer()->StackAtTop(capture_mode_settings_widget_->GetLayer());
     focus_cycler_->OnSettingsMenuWidgetCreated();
     capture_mode_settings_widget_->Show();
