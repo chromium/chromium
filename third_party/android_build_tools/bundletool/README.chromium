@@ -1,6 +1,6 @@
 Name: Android SDK bundletool
 Short Name:  bundletool
-Version: 1.8.0
+Version: unknown
 License: Apache Version 2.0
 License File: NOT_SHIPPED
 Security Critical: No
@@ -12,8 +12,19 @@ Bundletool is a tool to manipulate Android App Bundles.
 Local Modifications:
 None
 
-Update Instructions:
-* New versions are automatically copied from github release to CIPD via 3pp:
+What version is this:
+  * bundletool is now autorolled.
+  * To lookup the latest version being used currently:
+    * Look up the cipd instance id from //DEPS, or run
+      `gclient getdep -r src/third_party/android_build_tools/bundletool:chromium/third_party/android_build_tools/bundletool`.
+    * Find the version tag at this url
+      https://chrome-infra-packages.appspot.com/p/chromium/third_party/android_build_tools/bundletool/+/<instance id>
+    * Or, run `cipd describe chromium/third_party/android_build_tools/bundletool -version <instance id>` and look at the version tag.
+    * The version string appears after the @ symbol in the tag.
+  * New instances are uploaded by the packager bot:
+    https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+  * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
+    trigger it if you need it sooner:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
-* Find the CIPD hash of the latest versoin and update the entry within //DEPS.
-* Look at previous roll commit to see what other files need updating.
+  * The autoroller runs automatically when a new cipd instance is uploaded, see
+    its status here: https://autoroll.skia.org/r/bundletool-chromium
