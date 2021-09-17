@@ -1780,6 +1780,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-desktop-pwas-additional-windowing-controls",
+    "owners": [ "laurila@google.com", "isandrk@chromium.org", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "enable-desktop-pwas-app-icon-shortcuts-menu-ui",
     "owners": [ "ericwilligers@google.com", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 98

@@ -48753,6 +48753,8 @@ from previous Chrome versions.
   <int value="-987191098" label="FontAccessPersistent:disabled"/>
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
   <int value="-983342281" label="TabSwitcherLongpressMenu:disabled"/>
+  <int value="-981993135"
+      label="DesktopPWAsAdditionalWindowingControls:enabled"/>
   <int value="-981237342" label="SyncUSSAutofillWalletMetadata:disabled"/>
   <int value="-980889204" label="SharingRenameDevices:enabled"/>
   <int value="-980317085" label="EnablePasswordsAccountStorage:disabled"/>
@@ -51068,6 +51070,8 @@ from previous Chrome versions.
   <int value="851238417" label="VirtualKeyboardFloatingResizable:enabled"/>
   <int value="851616920" label="EnableTLS13EarlyData:disabled"/>
   <int value="852313529" label="RTCUnifiedPlanByDefault:disabled"/>
+  <int value="853279705"
+      label="DesktopPWAsAdditionalWindowingControls:disabled"/>
   <int value="854294457" label="EnableOmniboxRichEntities:disabled"/>
   <int value="854391022" label="SmartLockUIRevamp:enabled"/>
   <int value="854730848" label="disable-app-info-dialog-mac"/>

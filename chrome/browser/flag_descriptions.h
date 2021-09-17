@@ -438,6 +438,9 @@ extern const char kEnableBrowsingDataLifetimeManagerDescription[];
 extern const char kColorProviderRedirectionName[];
 extern const char kColorProviderRedirectionDescription[];
 
+extern const char kDesktopPWAsAdditionalWindowingControlsName[];
+extern const char kDesktopPWAsAdditionalWindowingControlsDescription[];
+
 extern const char kDesktopPWAsAppIconShortcutsMenuUIName[];
 extern const char kDesktopPWAsAppIconShortcutsMenuUIDescription[];
 

@@ -731,6 +731,12 @@ const char kColorProviderRedirectionName[] = "Color Provider Redirection";
 const char kColorProviderRedirectionDescription[] =
     "Redirects color requests to the color provider where possible.";
 
+const char kDesktopPWAsAdditionalWindowingControlsName[] =
+    "Desktop PWA Window Minimize/maximize/restore";
+const char kDesktopPWAsAdditionalWindowingControlsDescription[] =
+    "Enable PWAs to manually recreate the minimize, maximize and restore "
+    "window functionalities with respective APIs.";
+
 const char kDesktopPWAsPrefixAppNameInWindowTitleName[] =
     "Desktop PWAs prefix window title with app name.";
 const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[] =

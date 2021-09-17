@@ -167,6 +167,9 @@ extern const base::FeatureParam<std::string>
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kDesktopPWAsAdditionalWindowingControls;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDesktopPWAsCacheDuringDefaultInstall;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

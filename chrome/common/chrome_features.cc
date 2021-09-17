@@ -242,6 +242,11 @@ constexpr base::FeatureParam<std::string> kDesktopPWAsAttentionBadgingCrOSParam{
     switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications};
 #endif
 
+// API that allows PWAs manually minimizing, maximizing and restoring windows.
+const base::Feature kDesktopPWAsAdditionalWindowingControls{
+    "DesktopPWAsAdditionalWindowingControls",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When installing default installed PWAs, we wait for service workers
 // to cache resources.
 const base::Feature kDesktopPWAsCacheDuringDefaultInstall{
