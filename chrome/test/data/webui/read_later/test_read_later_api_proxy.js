@@ -17,6 +17,7 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
       'addCurrentTab',
       'removeEntry',
       'showContextMenuForURL',
+      'updateCurrentPageActionButtonState',
       'showUI',
       'closeUI',
     ]);
@@ -57,6 +58,11 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
   /** @override */
   showContextMenuForURL(url, locationX, locationY) {
     this.methodCalled('showContextMenuForURL', [url, locationX, locationY]);
+  }
+
+  /** @override */
+  updateCurrentPageActionButtonState() {
+    this.methodCalled('updateCurrentPageActionButtonState');
   }
 
   /** @override */

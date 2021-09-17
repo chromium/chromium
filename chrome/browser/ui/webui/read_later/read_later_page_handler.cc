@@ -258,12 +258,14 @@ void ReadLaterPageHandler::ShowContextMenuForURL(const GURL& url,
                                   browser, reading_list_model_, url));
 }
 
+void ReadLaterPageHandler::UpdateCurrentPageActionButtonState() {
+  page_->CurrentPageActionButtonStateChanged(current_page_action_button_state_);
+}
+
 void ReadLaterPageHandler::ShowUI() {
   auto embedder = read_later_ui_->embedder();
-  if (embedder) {
+  if (embedder)
     embedder->ShowUI();
-    UpdateCurrentPageActionButton();
-  }
 }
 
 void ReadLaterPageHandler::CloseUI() {

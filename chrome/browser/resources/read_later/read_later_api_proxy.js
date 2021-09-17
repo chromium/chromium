@@ -43,6 +43,8 @@ export class ReadLaterApiProxy {
    */
   showContextMenuForURL(url, locationX, locationY) {}
 
+  updateCurrentPageActionButtonState() {}
+
   showUI() {}
 
   closeUI() {}
@@ -94,6 +96,11 @@ export class ReadLaterApiProxyImpl {
   /** @override */
   showContextMenuForURL(url, locationX, locationY) {
     this.handler.showContextMenuForURL(url, locationX, locationY);
+  }
+
+  /** @override */
+  updateCurrentPageActionButtonState() {
+    this.handler.updateCurrentPageActionButtonState();
   }
 
   /** @override */

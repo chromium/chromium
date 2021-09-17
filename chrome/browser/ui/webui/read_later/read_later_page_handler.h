@@ -50,6 +50,7 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler,
   void AddCurrentTab() override;
   void RemoveEntry(const GURL& url) override;
   void ShowContextMenuForURL(const GURL& url, int32_t x, int32_t y) override;
+  void UpdateCurrentPageActionButtonState() override;
   void ShowUI() override;
   void CloseUI() override;
 

@@ -95,6 +95,7 @@ export class ReadLaterAppElement extends PolymerElement {
     // If added in a visible state update current read later items.
     if (document.visibilityState === 'visible') {
       this.updateReadLaterEntries_();
+      this.apiProxy_.updateCurrentPageActionButtonState();
     }
   }
 
