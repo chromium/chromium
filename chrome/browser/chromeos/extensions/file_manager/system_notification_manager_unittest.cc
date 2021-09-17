@@ -810,4 +810,38 @@ TEST_F(SystemNotificationManagerTest, TestCopyEvents) {
   notification_manager.HandleCopyEvent(0, status);
 }
 
+std::u16string kGoogleDrive = u"Google Drive";
+
+// Tests the generation of the DriveFS enable offline notification.
+// This is triggered when users make files available offline and the
+// Google Drive offline setting at https://drive.google.com isn't enabled.
+TEST_F(SystemNotificationManagerTest, EnableDocsOffline) {
+  file_manager_private::DriveConfirmDialogEvent drive_event;
+  drive_event.type =
+      file_manager_private::DRIVE_CONFIRM_DIALOG_TYPE_ENABLE_DOCS_OFFLINE;
+  drive_event.file_url = "drivefs://fake";
+  std::unique_ptr<extensions::Event> event =
+      std::make_unique<extensions::Event>(
+          extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG,
+          file_manager_private::OnDriveConfirmDialog::kEventName,
+          file_manager_private::OnDriveConfirmDialog::Create(drive_event));
+  GetSystemNotificationManager()->HandleEvent(*event.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-drive-confirm-dialog");
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kGoogleDrive);
+  EXPECT_EQ(notification_strings.message,
+            u"Enable Google Docs Offline to make Docs, Sheets and Slides "
+            u"available offline.");
+}
+
 }  // namespace file_manager
