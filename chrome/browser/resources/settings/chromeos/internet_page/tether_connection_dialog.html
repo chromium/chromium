@@ -4,7 +4,7 @@
   }
 
   [slot=body] {
-    border-top: solid 2px rgba(0, 0, 0, .14);
+    border-top: solid 2px var(--cros-separator-color);
   }
 
   [slot=body] > * {
@@ -12,7 +12,7 @@
   }
 
   iron-icon {
-    --iron-icon-fill-color: #4285F4;
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
   }
 
   #host-device-text-container {
@@ -22,9 +22,8 @@
   }
 
   #availability-title {
-    color: black;
+    color: var(--cros-text-color-secondary);
     margin-top: 5px;
-    opacity: 0.54;
   }
 
   #host-device-container {
@@ -49,8 +48,12 @@
   }
 
   #host-device-lost-container {
-    color: var(--google-red-500);
+    color: var(--cros-text-color-alert);
     font-weight: 500;
+  }
+
+  #host-device-lost-container iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
   }
 </style>
 <cr-dialog id="dialog" close-text="$i18n{close}">
