@@ -46,7 +46,7 @@ class Installer final : public update_client::CrxInstaller {
   Installer(const Installer&) = delete;
   Installer& operator=(const Installer&) = delete;
 
-  const std::string app_id() const { return app_id_; }
+  std::string app_id() const { return app_id_; }
 
   // Returns a CrxComponent instance that describes the current install
   // state of the app. Updates the values of |pv_| and the |fingerprint_| with
