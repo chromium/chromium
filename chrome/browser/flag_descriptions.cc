@@ -1091,9 +1091,9 @@ const char kMemlogSamplingRateName[] =
     "Heap profiling sampling interval (in bytes).";
 const char kMemlogSamplingRateDescription[] =
     "Heap profiling service uses Poisson process to sample allocations. "
-    "Default value for the interval between samples is 100000 (100KB). "
+    "Default value for the interval between samples is 1000000 (1MB). "
     "This results in low noise for large and/or frequent allocations "
-    "[size * frequency >> 100KB]. This means that aggregate numbers [e.g. "
+    "[size * frequency >> 1MB]. This means that aggregate numbers [e.g. "
     "total size of malloc-ed objects] and large and/or frequent allocations "
     "can be trusted with high fidelity. "
     "Lower intervals produce higher samples resolution, but come at a cost of "
