@@ -45,6 +45,7 @@ constexpr char kMissingTemplateDataError[] =
     "The desk template has invalid or missing data.";
 constexpr char kStorageError[] = "The operation failed due to a storage error.";
 constexpr char kNoCurrentUserError[] = "There is no active profile.";
+constexpr char kNoSavedTemplatesError[] = "You can create up to 6 templates.";
 
 // Returns true if |profile| is a supported profile in desk template feature.
 bool IsSupportedProfile(Profile* profile) {
@@ -276,8 +277,9 @@ void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
       std::move(desk_template),
       std::string(status !=
                           desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk
-                      ? kStorageError
+                      ? kNoSavedTemplatesError
                       : ""));
+
   RecordTemplateCountHistogram();
 }
 
