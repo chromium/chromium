@@ -67257,6 +67257,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="28" label="kBlockedByClient"/>
   <int value="29" label="kAudioOutputDeviceRequested"/>
   <int value="30" label="kMixedContent"/>
+  <int value="31" label="kTriggerBackgrounded"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

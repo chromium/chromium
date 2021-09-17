@@ -5,6 +5,7 @@
 #include "content/browser/prerender/prerender_host.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/test/mock_web_contents_observer.h"
@@ -110,6 +111,7 @@ class TestWebContentsDelegate : public WebContentsDelegate {
  public:
   TestWebContentsDelegate() = default;
   ~TestWebContentsDelegate() override = default;
+  bool IsPrerender2Supported() override { return true; }
 };
 
 class PrerenderHostTest : public RenderViewHostImplTestHarness {
@@ -374,6 +376,71 @@ TEST_F(PrerenderHostTest, LoadProgressChangedInvokedOnActivation) {
   ActivatePrerenderedPage(kPrerenderingUrl, *web_contents);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 }
+
+TEST_F(PrerenderHostTest, CancelPrerenderWhenTriggerGetsHidden) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  auto attributes = blink::mojom::PrerenderAttributes::New();
+  attributes->url = kPrerenderingUrl;
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // Changing the visibility state to HIDDEN will cause prerendering cancelled.
+  web_contents->WasHidden();
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kTriggerBackgrounded);
+}
+
+TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsVisible) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  auto attributes = blink::mojom::PrerenderAttributes::New();
+  attributes->url = kPrerenderingUrl;
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // Changing the visibility state to VISIBLE will not affect prerendering.
+  web_contents->WasShown();
+  ActivatePrerenderedPage(kPrerenderingUrl, *web_contents);
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+}
+
+// Skip this test on Android as it doesn't support the OCCLUDED state.
+#if !defined(OS_ANDROID)
+TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsOcculded) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  auto attributes = blink::mojom::PrerenderAttributes::New();
+  attributes->url = kPrerenderingUrl;
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(std::move(attributes), *initiator_rfh);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // Changing the visibility state to OCCLUDED will not affect prerendering.
+  web_contents->WasOccluded();
+  ActivatePrerenderedPage(kPrerenderingUrl, *web_contents);
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+}
+#endif
 
 }  // namespace
 }  // namespace content

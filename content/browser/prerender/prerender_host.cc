@@ -438,6 +438,13 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   }
 }
 
+void PrerenderHost::OnVisibilityChanged(Visibility visibility) {
+  TRACE_EVENT("navigation", "PrerenderHost::OnVisibilityChanged");
+  if (visibility == Visibility::HIDDEN) {
+    Cancel(FinalStatus::kTriggerBackgrounded);
+  }
+}
+
 void PrerenderHost::ResourceLoadComplete(
     RenderFrameHost* render_frame_host,
     const GlobalRequestID& request_id,

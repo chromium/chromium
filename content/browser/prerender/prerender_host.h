@@ -82,7 +82,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kBlockedByClient = 28,
     kAudioOutputDeviceRequested = 29,
     kMixedContent = 30,
-    kMaxValue = kMixedContent,
+    kTriggerBackgrounded = 31,
+    kMaxValue = kTriggerBackgrounded,
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
@@ -99,6 +100,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   // WebContentsObserver implementation:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(Visibility visibility) override;
   void ResourceLoadComplete(
       RenderFrameHost* render_frame_host,
       const GlobalRequestID& request_id,
