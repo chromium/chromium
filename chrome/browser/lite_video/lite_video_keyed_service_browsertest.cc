@@ -940,3 +940,24 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServicePrerenderBrowserTest,
   // the lite video observer after activating.
   EXPECT_EQ(1u, entries.size());
 }
+
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServicePrerenderBrowserTest,
+                       PrerenderingShouldNotUpdateBlocklists) {
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a test page in the prerender.
+  const int host_id = prerender_test_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerendered_render_frame_host =
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(prerendered_render_frame_host);
+  histogram_tester()->ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame", 1);
+
+  // Activate the prerendered page.
+  prerender_test_helper().NavigatePrimaryPage(prerender_url);
+  histogram_tester()->ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame", 2);
+}

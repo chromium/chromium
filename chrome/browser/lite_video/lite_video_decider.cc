@@ -275,14 +275,13 @@ void LiteVideoDecider::UpdateBlocklists(
   if (blocklist_reason != LiteVideoBlocklistReason::kAllowed)
     return;
 
+  DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
+
   // The navigation was not blocklisted and may
   // have the LiteVideo optimization triggered so update the blocklist.
   user_blocklist_->AddNavigationToBlocklist(navigation_handle, false);
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  navigation_handle->IsInPrimaryMainFrame()
+  navigation_handle->IsInMainFrame()
       ? DidMediaRebuffer(navigation_handle->GetURL(), absl::nullopt, false)
       : DidMediaRebuffer(
             navigation_handle->GetWebContents()->GetLastCommittedURL(),
