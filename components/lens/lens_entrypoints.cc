@@ -12,6 +12,7 @@ namespace {
 constexpr char kEntryPointQueryParameter[] = "ep";
 constexpr char kChromeRegionSearchMenuItem[] = "crs";
 constexpr char kChromeSearchWithGoogleLensContextMenuItem[] = "ccm";
+constexpr char kChromeOpenNewTabSidePanel[] = "cnts";
 
 constexpr char kSurfaceQueryParameter[] = "s";
 constexpr char kSidePanel[] = "csp";
@@ -33,6 +34,10 @@ std::string GetQueryParametersForLensRequest(EntryPoint ep,
                                              bool is_side_panel_request) {
   std::string query_string;
   switch (ep) {
+    case CHROME_OPEN_NEW_TAB_SIDE_PANEL:
+      AppendQueryParam(&query_string, kEntryPointQueryParameter,
+                       kChromeOpenNewTabSidePanel);
+      break;
     case CHROME_REGION_SEARCH_MENU_ITEM:
       AppendQueryParam(&query_string, kEntryPointQueryParameter,
                        kChromeRegionSearchMenuItem);
