@@ -86,7 +86,12 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
                                 R.string.cancel)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, filledConfirmButton);
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                filledConfirmButton ? ModalDialogProperties.ButtonStyles
+                                                              .PRIMARY_FILLED_NEGATIVE_OUTLINE
+                                                    : ModalDialogProperties.ButtonStyles
+                                                              .PRIMARY_OUTLINE_NEGATIVE_OUTLINE);
+
         if (titleIcon != 0) {
             builder.with(ModalDialogProperties.TITLE_ICON, context, titleIcon);
         }

@@ -66,7 +66,7 @@ public class ModalDialogViewBinder
                     model.get(ModalDialogProperties.TOUCH_FILTERED_CALLBACK));
         } else if (ModalDialogProperties.CONTENT_DESCRIPTION == propertyKey) {
             // Intentionally left empty since this is a property used for the dialog container.
-        } else if (ModalDialogProperties.PRIMARY_BUTTON_FILLED == propertyKey) {
+        } else if (ModalDialogProperties.BUTTON_STYLES == propertyKey) {
             assert checkFilledButtonConsistency(model);
             // Intentionally left empty since this is only read once before the dialog is inflated.
         } else {
@@ -87,14 +87,21 @@ public class ModalDialogViewBinder
     }
 
     /**
-     * Checks if the PRIMARY_BUTTON_FILLED property is consistent with the set of enabled buttons.
-     * The primary button (== positive button for dialog view) cannot be the only 'filled' button
-     * enabled in the dialog. It should be disabled, or the secondary one should be enabled.
-     * @return false if the property is set to true but the secondary button is disabled.
+     * Checks if the BUTTON_STYLES property is consistent with the set of enabled buttons.
+     * If the primary button (== positive button for dialog view) is in filled state,  it could be
+     * disabled while the negative button is enabled. On the contrary, if the negative button is
+     * filled, it could also be disabled while the primary button is enabled.
+     * @return false if one button is in filled state while the other button doesn't present. True
+     *         otherwise.
      */
     private static boolean checkFilledButtonConsistency(PropertyModel model) {
-        return !(model.get(ModalDialogProperties.PRIMARY_BUTTON_FILLED)
-                && !TextUtils.isEmpty(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT))
-                && TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT)));
+        int styles = model.get(ModalDialogProperties.BUTTON_STYLES);
+        if (styles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {
+            return !TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        } else if (styles == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
+            return !TextUtils.isEmpty(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        }
+
+        return true;
     }
 }

@@ -10,6 +10,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.not;
+
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkCurrentPresenter;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkDialogDismissalCause;
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.checkPendingSize;
@@ -17,10 +19,16 @@ import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtil
 import static org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils.showDialog;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -37,6 +45,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.DummyUiActivity;
@@ -136,5 +145,42 @@ public class AppModalPresenterTest {
         mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
 
         mExpectedDismissalCause = null;
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    public void testButton_negativeButtonFilled() throws Exception {
+        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", mTestObserver,
+                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED);
+        showDialog(sManager, dialog1, ModalDialogType.APP);
+        onView(withText(R.string.cancel)).check(matches(hasCurrentTextColor(Color.WHITE)));
+        onView(withText(R.string.ok)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    public void testButton_primaryButtonFilled() throws Exception {
+        PropertyModel dialog1 = createDialog(sActivity, sManager, "1", mTestObserver,
+                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
+        showDialog(sManager, dialog1, ModalDialogType.APP);
+        onView(withText(R.string.cancel)).check(matches(not(hasCurrentTextColor(Color.WHITE))));
+        onView(withText(R.string.ok)).check(matches(hasCurrentTextColor(Color.WHITE)));
+    }
+
+    private static Matcher<View> hasCurrentTextColor(int expected) {
+        return new BoundedMatcher<View, Button>(Button.class) {
+            private int mColor;
+            @Override
+            public boolean matchesSafely(Button button) {
+                mColor = button.getCurrentTextColor();
+                return expected == mColor;
+            }
+            @Override
+            public void describeTo(final Description description) {
+                description.appendText("Color did not match " + mColor);
+            }
+        };
     }
 }

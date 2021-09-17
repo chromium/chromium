@@ -123,7 +123,8 @@ public class TargetSelectorCoordinator {
                 .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
                 .with(ModalDialogProperties.TITLE, title)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
-                .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                .with(ModalDialogProperties.BUTTON_STYLES,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                         R.string.target_selector_move)
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)

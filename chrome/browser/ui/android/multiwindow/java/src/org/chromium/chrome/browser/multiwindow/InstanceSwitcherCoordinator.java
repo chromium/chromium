@@ -170,7 +170,8 @@ public class InstanceSwitcherCoordinator {
                 .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                 .with(ModalDialogProperties.CUSTOM_VIEW, dialogView)
                 .with(ModalDialogProperties.TITLE, title)
-                .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                .with(ModalDialogProperties.BUTTON_STYLES,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, null)
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
                 .build();

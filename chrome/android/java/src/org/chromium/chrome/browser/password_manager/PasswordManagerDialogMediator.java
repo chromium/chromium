@@ -85,8 +85,12 @@ class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
                                 contents.getPrimaryButtonText())
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 contents.getSecondaryButtonText())
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED,
-                                contents.isPrimaryButtonFilled())
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                contents.isPrimaryButtonFilled()
+                                        ? ModalDialogProperties.ButtonStyles
+                                                  .PRIMARY_FILLED_NEGATIVE_OUTLINE
+                                        : ModalDialogProperties.ButtonStyles
+                                                  .PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .build();
         mDialogType = contents.getDialogType();
     }

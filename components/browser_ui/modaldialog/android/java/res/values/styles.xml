@@ -23,4 +23,11 @@
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
     </style>
+
+    <style name="Theme.Chromium.ModalDialog.FilledNegativeButton" parent="Theme.Chromium.ModalDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/TextButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/FilledButton</item>
+        <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
+        <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
+    </style>
 </resources>

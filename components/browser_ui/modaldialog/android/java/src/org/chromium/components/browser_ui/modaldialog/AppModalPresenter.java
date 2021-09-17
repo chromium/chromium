@@ -54,9 +54,14 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     @Override
     protected void addDialogView(PropertyModel model) {
-        int style = model.get(ModalDialogProperties.PRIMARY_BUTTON_FILLED)
-                ? R.style.Theme_Chromium_ModalDialog_FilledPrimaryButton
-                : R.style.Theme_Chromium_ModalDialog_TextPrimaryButton;
+        int style = R.style.Theme_Chromium_ModalDialog_TextPrimaryButton;
+        int buttonStyles = model.get(ModalDialogProperties.BUTTON_STYLES);
+        if (buttonStyles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {
+            style = R.style.Theme_Chromium_ModalDialog_FilledPrimaryButton;
+        } else if (buttonStyles
+                == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
+            style = R.style.Theme_Chromium_ModalDialog_FilledNegativeButton;
+        }
         mDialog = new Dialog(mContext, style);
         mDialog.setOnCancelListener(dialogInterface
                 -> dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));

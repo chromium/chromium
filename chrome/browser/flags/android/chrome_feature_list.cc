@@ -216,6 +216,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDownloadRename,
     &kDuetTabStripIntegrationAndroid,
     &kDynamicColorAndroid,
+    &kEnableDangerousDownloadDialog,
     &kEnhancedProtectionPromoCard,
     &kExperimentsForAgsa,
     &kExploreSites,

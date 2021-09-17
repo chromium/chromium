@@ -75,8 +75,12 @@ class WebFeedDialogMediator {
                                 dialogContents.mPrimaryButtonText)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 dialogContents.mSecondaryButtonText)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED,
-                                dialogContents.mSecondaryButtonText != null)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                dialogContents.mSecondaryButtonText != null
+                                        ? ModalDialogProperties.ButtonStyles
+                                                  .PRIMARY_FILLED_NEGATIVE_OUTLINE
+                                        : ModalDialogProperties.ButtonStyles
+                                                  .PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .build();
     }
 

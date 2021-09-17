@@ -108,7 +108,8 @@ public class AppLanguagePromoDialog {
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.cancel)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .build();
 
         mConfirmModal = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

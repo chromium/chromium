@@ -111,9 +111,14 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
     protected void addDialogView(PropertyModel model) {
         if (mDialogContainer == null) mDialogContainer = createDialogContainer();
 
-        int style = model.get(ModalDialogProperties.PRIMARY_BUTTON_FILLED)
-                ? R.style.Theme_Chromium_ModalDialog_FilledPrimaryButton
-                : R.style.Theme_Chromium_ModalDialog_TextPrimaryButton;
+        int style = R.style.Theme_Chromium_ModalDialog_TextPrimaryButton;
+        int buttonStyles = model.get(ModalDialogProperties.BUTTON_STYLES);
+        if (buttonStyles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {
+            style = R.style.Theme_Chromium_ModalDialog_FilledPrimaryButton;
+        } else if (buttonStyles
+                == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
+            style = R.style.Theme_Chromium_ModalDialog_FilledNegativeButton;
+        }
         mDialogView = loadDialogView(style);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(model, mDialogView, new ViewBinder());

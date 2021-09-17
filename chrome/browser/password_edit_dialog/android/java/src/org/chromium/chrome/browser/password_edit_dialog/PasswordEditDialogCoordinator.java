@@ -133,7 +133,8 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
                                 R.string.password_manager_update_button)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.password_generation_dialog_cancel_button)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
                         .build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);

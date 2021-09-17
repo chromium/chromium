@@ -155,15 +155,17 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                         DownloadLocationDialogViewBinder::bind, true /*performInitialBind*/);
 
         Resources resources = mContext.getResources();
-        mDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                               .with(ModalDialogProperties.CONTROLLER, this)
-                               .with(ModalDialogProperties.CUSTOM_VIEW, mCustomView)
-                               .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
-                                       R.string.duplicate_download_infobar_download_button)
-                               .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
-                               .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
-                                       R.string.cancel)
-                               .build();
+        mDialogModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mCustomView)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                                R.string.duplicate_download_infobar_download_button)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                                R.string.cancel)
+                        .build();
 
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
     }

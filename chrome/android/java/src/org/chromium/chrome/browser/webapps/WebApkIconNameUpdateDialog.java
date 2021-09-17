@@ -120,7 +120,8 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
                         .with(ModalDialogProperties.MESSAGE,
                                 resources.getString(R.string.webapp_update_explanation))
                         .with(ModalDialogProperties.CUSTOM_VIEW, dialogCustomView)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.webapp_update_negative_button)
