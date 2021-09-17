@@ -570,10 +570,8 @@ TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
   WebDocument doc = GetMainFrame()->GetDocument();
   WebVector<WebFormElement> forms = doc.Forms();
 
-  for (const auto& form : forms) {
-    EXPECT_EQ(form, FindFormByUniqueRendererId(
-                        doc, FormRendererId(form.UniqueRendererFormId())));
-  }
+  for (const auto& form : forms)
+    EXPECT_EQ(form, FindFormByUniqueRendererId(doc, GetFormRendererId(form)));
 
   // Expect null form element for non-existing form id.
   FormRendererId non_existing_id(forms[0].UniqueRendererFormId() + 1000);
@@ -588,12 +586,10 @@ TEST_F(FormAutofillUtilsTest, FindFormControlByUniqueId) {
   auto input2 = doc.GetElementById("i2").To<WebInputElement>();
   FieldRendererId non_existing_id(input2.UniqueRendererFormControlId() + 1000);
 
-  EXPECT_EQ(input1,
-            FindFormControlElementByUniqueRendererId(
-                doc, FieldRendererId(input1.UniqueRendererFormControlId())));
-  EXPECT_EQ(input2,
-            FindFormControlElementByUniqueRendererId(
-                doc, FieldRendererId(input2.UniqueRendererFormControlId())));
+  EXPECT_EQ(input1, FindFormControlElementByUniqueRendererId(
+                        doc, GetFieldRendererId(input1)));
+  EXPECT_EQ(input2, FindFormControlElementByUniqueRendererId(
+                        doc, GetFieldRendererId(input2)));
   EXPECT_TRUE(
       FindFormControlElementByUniqueRendererId(doc, non_existing_id).IsNull());
 }
@@ -628,8 +624,7 @@ TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdNoForm) {
   FieldRendererId non_existing_id(input3.UniqueRendererFormControlId() + 1000);
 
   std::vector<FieldRendererId> renderer_ids = {
-      FieldRendererId(input3.UniqueRendererFormControlId()), non_existing_id,
-      FieldRendererId(input1.UniqueRendererFormControlId())};
+      GetFieldRendererId(input3), non_existing_id, GetFieldRendererId(input1)};
 
   auto elements = FindFormControlElementsByUniqueRendererId(doc, renderer_ids);
 
@@ -650,11 +645,10 @@ TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdWithForm) {
   FieldRendererId non_existing_id(input3.UniqueRendererFormControlId() + 1000);
 
   std::vector<FieldRendererId> renderer_ids = {
-      FieldRendererId(input3.UniqueRendererFormControlId()), non_existing_id,
-      FieldRendererId(input1.UniqueRendererFormControlId())};
+      GetFieldRendererId(input3), non_existing_id, GetFieldRendererId(input1)};
 
   auto elements = FindFormControlElementsByUniqueRendererId(
-      doc, FormRendererId(form.UniqueRendererFormId()), renderer_ids);
+      doc, GetFormRendererId(form), renderer_ids);
 
   // |input3| is not in the form, so it shouldn't be returned.
   ASSERT_EQ(3u, elements.size());
@@ -1273,7 +1267,7 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
     ASSERT_TRUE(WebFormElementToFormData(form_element, WebFormControlElement(),
                                          nullptr, EXTRACT_NONE, &form_data,
                                          nullptr));
-    host_form = FormRendererId(form_element.UniqueRendererFormId());
+    host_form = GetFormRendererId(form_element);
   }
 
   // Check that all fields and iframes were extracted.

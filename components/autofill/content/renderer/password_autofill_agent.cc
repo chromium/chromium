@@ -82,6 +82,8 @@ using form_util::FindFormByUniqueRendererId;
 using form_util::FindFormControlElementByUniqueRendererId;
 using form_util::FindFormControlElementsByUniqueRendererId;
 using form_util::FindUnownedFormControlElementByUniqueRendererId;
+using form_util::GetFieldRendererId;
+using form_util::GetFormRendererId;
 using form_util::IsWebElementVisible;
 
 using mojom::FocusedFieldType;
@@ -685,8 +687,7 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
 void PasswordAutofillAgent::DidEndTextFieldEditing() {
   FieldRendererId field_id;
   if (!focused_input_element_.IsNull()) {
-    field_id =
-        FieldRendererId(focused_input_element_.UniqueRendererFormControlId());
+    field_id = GetFieldRendererId(focused_input_element_);
   }
   focus_state_notifier_.FocusedInputChanged(field_id,
                                             FocusedFieldType::kUnknown);
@@ -717,8 +718,8 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
     GetPasswordManagerDriver().UserModifiedPasswordField();
   } else {
     GetPasswordManagerDriver().UserModifiedNonPasswordField(
-        FieldRendererId(element.UniqueRendererFormControlId()),
-        element.NameForAutofill().Utf16(), element_value);
+        GetFieldRendererId(element), element.NameForAutofill().Utf16(),
+        element_value);
   }
 }
 
@@ -2064,12 +2065,9 @@ void PasswordAutofillAgent::AutofillField(const std::u16string& value,
 void PasswordAutofillAgent::SetLastUpdatedFormAndField(
     const WebFormElement& form,
     const WebFormControlElement& input) {
-  last_updated_form_renderer_id_ =
-      form.IsNull() ? FormRendererId()
-                    : FormRendererId(form.UniqueRendererFormId());
+  last_updated_form_renderer_id_ = GetFormRendererId(form);
   last_updated_field_renderer_id_ =
-      input.IsNull() ? FieldRendererId()
-                     : FieldRendererId(input.UniqueRendererFormControlId());
+      input.IsNull() ? FieldRendererId() : GetFieldRendererId(input);
 }
 
 bool PasswordAutofillAgent::CanShowPopupWithoutPasswords(
