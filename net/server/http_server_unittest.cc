@@ -324,26 +324,21 @@ constexpr uint8_t kFinalBit = 0x80;
 constexpr uint8_t kMaskBit = 0x80;
 constexpr size_t kMaskingKeyWidthInBytes = 4;
 
-std::string EncodePingFrameClient(std::string message) {
-  int mask = 654321;
-  const std::string kPingFrameHeader = {
-      static_cast<char>(kFinalBit |
-                        WebSocketFrameHeader::OpCodeEnum::kOpCodePing),
-      static_cast<char>(kMaskBit | message.length())};
-  const std::string kMaskBytes(reinterpret_cast<char*>(&mask), 4);
-  for (size_t i = 0; i < message.length(); ++i)  // Mask the payload.
-    message[i] = message[i] ^ kMaskBytes[i % kMaskingKeyWidthInBytes];
-  const std::string kPingFrame = kPingFrameHeader + kMaskBytes + message;
-  return kPingFrame;
-}
-
-std::string EncodePongFrameServer(std::string message) {
-  const std::string kPongFrameHeader = {
-      static_cast<char>(kFinalBit |
-                        WebSocketFrameHeader::OpCodeEnum::kOpCodePong),
-      static_cast<char>(message.length())};
-  const std::string kPongFrame = kPongFrameHeader + message;
-  return kPongFrame;
+std::string EncodeControlFrame(std::string message,
+                               WebSocketFrameHeader::OpCodeEnum op_code,
+                               int mask) {
+  const char mask_key_bit = mask ? kMaskBit : 0;
+  std::string encoded_frame = {
+      static_cast<char>(kFinalBit | op_code),
+      static_cast<char>(mask_key_bit | message.length())};
+  if (mask != 0) {
+    const std::string kMaskBytes(reinterpret_cast<char*>(&mask), 4);
+    encoded_frame += kMaskBytes;
+    for (size_t i = 0; i < message.length(); ++i)  // Mask the payload.
+      message[i] = message[i] ^ kMaskBytes[i % kMaskingKeyWidthInBytes];
+  }
+  encoded_frame += message;
+  return encoded_frame;
 }
 
 TEST_F(HttpServerTest, Request) {
@@ -533,8 +528,11 @@ TEST_F(WebSocketAcceptingTest, SendPingFrameWithNoMessage) {
   RunUntilRequestsReceived(1);
   ASSERT_TRUE(client.ReadResponse(&response));
   const std::string kMessage = "";
-  const std::string kPingFrame = EncodePingFrameClient(kMessage);
-  const std::string kPongFrame = EncodePongFrameServer(kMessage);
+  constexpr int kMask = 654321;
+  const std::string kPingFrame = EncodeControlFrame(
+      kMessage, WebSocketFrameHeader::OpCodeEnum::kOpCodePing, kMask);
+  const std::string kPongFrame = EncodeControlFrame(
+      kMessage, WebSocketFrameHeader::OpCodeEnum::kOpCodePong, 0);
   client.Send(kPingFrame);
   ASSERT_TRUE(client.Read(&response, kPongFrame.length()));
   EXPECT_EQ(response, kPongFrame);
@@ -553,11 +551,39 @@ TEST_F(WebSocketAcceptingTest, SendPingFrameWithMessage) {
   RunUntilRequestsReceived(1);
   ASSERT_TRUE(client.ReadResponse(&response));
   const std::string kMessage = "hello";
-  const std::string kPingFrame = EncodePingFrameClient(kMessage);
-  const std::string kPongFrame = EncodePongFrameServer(kMessage);
+  constexpr int kMask = 654321;
+  const std::string kPingFrame = EncodeControlFrame(
+      kMessage, WebSocketFrameHeader::OpCodeEnum::kOpCodePing, kMask);
+  const std::string kPongFrame = EncodeControlFrame(
+      kMessage, WebSocketFrameHeader::OpCodeEnum::kOpCodePong, 0);
   client.Send(kPingFrame);
   ASSERT_TRUE(client.Read(&response, kPongFrame.length()));
   EXPECT_EQ(response, kPongFrame);
+}
+
+TEST_F(WebSocketAcceptingTest, SendPongFrame) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  RunUntilRequestsReceived(1);
+  ASSERT_TRUE(client.ReadResponse(&response));
+  constexpr int kMask = 654321;
+  const std::string kPingFrame = EncodeControlFrame(
+      "", WebSocketFrameHeader::OpCodeEnum::kOpCodePing, kMask);
+  const std::string kPongFrameSend = EncodeControlFrame(
+      "", WebSocketFrameHeader::OpCodeEnum::kOpCodePong, kMask);
+  const std::string kPongFrameReceive =
+      EncodeControlFrame("", WebSocketFrameHeader::OpCodeEnum::kOpCodePong, 0);
+  client.Send(kPongFrameSend);
+  client.Send(kPingFrame);
+  ASSERT_TRUE(client.Read(&response, kPongFrameReceive.length()));
+  EXPECT_EQ(response, kPongFrameReceive);
 }
 
 TEST_F(HttpServerTest, RequestWithTooLargeBody) {

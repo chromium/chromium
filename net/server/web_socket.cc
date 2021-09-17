@@ -122,7 +122,7 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
     int bytes_consumed = 0;
     result = encoder_->DecodeFrame(frame, &bytes_consumed, message);
     if (result == FRAME_OK_FINAL || result == FRAME_OK_MIDDLE ||
-        result == FRAME_PING)
+        result == FRAME_PING || result == FRAME_PONG)
       read_buf->DidConsume(bytes_consumed);
   }
   if (result == FRAME_CLOSE)

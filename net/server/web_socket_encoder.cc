@@ -74,18 +74,13 @@ WebSocket::ParseResult DecodeFrameHybi17(const base::StringPiece& frame,
       break;
 
     case WebSocketFrameHeader::OpCodeEnum::kOpCodeText:
-      break;
-
     case WebSocketFrameHeader::OpCodeEnum::
         kOpCodeContinuation:  // Treated in the same as kOpCodeText.
-      break;
-
     case WebSocketFrameHeader::OpCodeEnum::kOpCodePing:
+    case WebSocketFrameHeader::OpCodeEnum::kOpCodePong:
       break;
 
     case WebSocketFrameHeader::OpCodeEnum::kOpCodeBinary:  // We don't support
-                                                           // binary frames yet.
-    case WebSocketFrameHeader::OpCodeEnum::kOpCodePong:    // We don't support
                                                            // binary frames yet.
     default:
       return WebSocket::FRAME_ERROR;
@@ -141,8 +136,13 @@ WebSocket::ParseResult DecodeFrameHybi17(const base::StringPiece& frame,
 
   if (op_code == WebSocketFrameHeader::OpCodeEnum::kOpCodePing)
     return WebSocket::FRAME_PING;
+
+  if (op_code == WebSocketFrameHeader::OpCodeEnum::kOpCodePong)
+    return WebSocket::FRAME_PONG;
+
   if (closed)
     return WebSocket::FRAME_CLOSE;
+
   return final ? WebSocket::FRAME_OK_FINAL : WebSocket::FRAME_OK_MIDDLE;
 }
 
