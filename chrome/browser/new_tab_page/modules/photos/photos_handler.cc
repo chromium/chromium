@@ -18,3 +18,11 @@ void PhotosHandler::GetMemories(GetMemoriesCallback callback) {
   PhotosServiceFactory::GetForProfile(profile_)->GetMemories(
       std::move(callback));
 }
+
+void PhotosHandler::DismissModule() {
+  PhotosServiceFactory::GetForProfile(profile_)->DismissModule();
+}
+
+void PhotosHandler::RestoreModule() {
+  PhotosServiceFactory::GetForProfile(profile_)->RestoreModule();
+}

@@ -7,6 +7,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -27,9 +28,10 @@ class PhotosServiceTest : public testing::Test {
     service_ = std::make_unique<PhotosService>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        identity_test_env.identity_manager());
+        identity_test_env.identity_manager(), &prefs_);
     identity_test_env.MakePrimaryAccountAvailable("example@google.com",
                                                   signin::ConsentLevel::kSync);
+    service_->RegisterProfilePrefs(prefs_.registry());
   }
 
   void TearDown() override {
@@ -43,6 +45,7 @@ class PhotosServiceTest : public testing::Test {
   std::unique_ptr<PhotosService> service_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   signin::IdentityTestEnvironment identity_test_env;
+  TestingPrefServiceSimple prefs_;
 };
 
 TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
@@ -56,6 +59,9 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
             actual_memories = std::move(memories);
           }));
 
+  // Make sure we are not in the dismissed time window by default.
+  prefs_.SetTime(PhotosService::kLastDismissedTimePrefName, base::Time::Now());
+  task_environment_.AdvanceClock(PhotosService::kDismissDuration);
   service_->GetMemories(callback.Get());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -293,4 +299,33 @@ TEST_F(PhotosServiceTest, PassesNoDataOnMissingItemKey) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_TRUE(actual_memories.empty());
+}
+
+TEST_F(PhotosServiceTest, PassesNoDataIfDismissed) {
+  bool empty_response = false;
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback;
+
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&empty_response](std::vector<photos::mojom::MemoryPtr> memories) {
+            empty_response = memories.empty();
+          }));
+
+  prefs_.SetTime(PhotosService::kLastDismissedTimePrefName, base::Time::Now());
+  service_->GetMemories(callback.Get());
+
+  EXPECT_TRUE(empty_response);
+}
+
+TEST_F(PhotosServiceTest, DismissModule) {
+  service_->DismissModule();
+  EXPECT_EQ(base::Time::Now(),
+            prefs_.GetTime(PhotosService::kLastDismissedTimePrefName));
+}
+
+TEST_F(PhotosServiceTest, RestoreModule) {
+  service_->RestoreModule();
+  EXPECT_EQ(base::Time(),
+            prefs_.GetTime(PhotosService::kLastDismissedTimePrefName));
 }

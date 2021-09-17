@@ -12,6 +12,7 @@ js_library("module_test") {
     "//chrome/test/data/webui:test_browser_proxy",
     "//chrome/test/data/webui:test_util",
     "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

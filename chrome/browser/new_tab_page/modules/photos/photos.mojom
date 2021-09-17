@@ -22,4 +22,8 @@ struct Memory {
 interface PhotosHandler {
   // Fetches memories from Google Photos API.
   GetMemories() => (array<Memory> memories);
+  // Dismissed module for fixed amount of time.
+  DismissModule();
+  // Restores the module immediately.
+  RestoreModule();
 };

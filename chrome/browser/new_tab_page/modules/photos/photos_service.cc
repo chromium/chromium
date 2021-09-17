@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -62,18 +64,44 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       })");
 }  // namespace
 
+// static
+const char PhotosService::kLastDismissedTimePrefName[] =
+    "NewTabPage.Photos.LastDimissedTime";
+
+// static
+const base::TimeDelta PhotosService::kDismissDuration =
+    base::TimeDelta::FromDays(1);
+
 PhotosService::~PhotosService() = default;
 
 PhotosService::PhotosService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    PrefService* pref_service)
     : url_loader_factory_(std::move(url_loader_factory)),
-      identity_manager_(identity_manager) {}
+      identity_manager_(identity_manager),
+      pref_service_(pref_service) {}
+
+// static
+void PhotosService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(kLastDismissedTimePrefName, base::Time());
+}
 
 void PhotosService::GetMemories(GetMemoriesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callbacks_.push_back(std::move(callback));
   if (callbacks_.size() > 1) {
+    return;
+  }
+
+  // Bail if module is still dismissed.
+  if (!pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
+      base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
+          kDismissDuration) {
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+    }
+    callbacks_.clear();
     return;
   }
 
@@ -86,6 +114,14 @@ void PhotosService::GetMemories(GetMemoriesCallback callback) {
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       signin::ConsentLevel::kSync);
+}
+
+void PhotosService::DismissModule() {
+  pref_service_->SetTime(kLastDismissedTimePrefName, base::Time::Now());
+}
+
+void PhotosService::RestoreModule() {
+  pref_service_->SetTime(kLastDismissedTimePrefName, base::Time());
 }
 
 void PhotosService::OnTokenReceived(GoogleServiceAuthError error,

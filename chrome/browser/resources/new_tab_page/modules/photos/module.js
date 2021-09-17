@@ -40,6 +40,30 @@ class PhotosModuleElement extends mixinBehaviors
     /** @type {InfoDialogElement} */ (this.$.infoDialogRender.get())
         .showModal();
   }
+
+  /** @private */
+  onDismissButtonClick_() {
+    PhotosProxy.getHandler().dismissModule();
+    this.dispatchEvent(new CustomEvent('dismiss-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getString('modulesPhotosMemoriesHiddenToday'),
+        restoreCallback: () => PhotosProxy.getHandler().restoreModule(),
+      },
+    }));
+  }
+
+  /** @private */
+  onDisableButtonClick_() {
+    this.dispatchEvent(new CustomEvent('disable-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getString('modulesPhotosMemoriesDisabled'),
+      },
+    }));
+  }
 }
 
 customElements.define(PhotosModuleElement.is, PhotosModuleElement);

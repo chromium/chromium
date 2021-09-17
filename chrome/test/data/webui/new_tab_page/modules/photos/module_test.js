@@ -4,6 +4,7 @@
 
 import {$$, photosDescriptor, PhotosProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
@@ -54,13 +55,63 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
       memories: [{title: 'Title 1', id: 'key1'}, {title: 'Title 2', id: 'key2'}]
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
-
     const module = assert(await photosDescriptor.initialize(0));
     document.body.append(module);
+
     // Act.
     $$(module, 'ntp-module-header')
         .dispatchEvent(new Event('info-button-click'));
+
     // Assert.
     assertTrue(!!$$(module, 'ntp-info-dialog'));
+  });
+
+  test('backend is notified when module is dismissed or restored', async () => {
+    // Arrange.
+    const data = {
+      memories: [{title: 'Title 1', id: 'key1'}, {title: 'Title 2', id: 'key2'}]
+    };
+    handler.setResultFor('getMemories', Promise.resolve(data));
+    const moduleElement = assert(await photosDescriptor.initialize(0));
+    document.body.append(moduleElement);
+
+    // Act.
+    const dismiss = {event: null};
+    moduleElement.addEventListener('dismiss-module', (e) => dismiss.event = e);
+    $$(moduleElement, 'ntp-module-header')
+        .dispatchEvent(new Event('dismiss-button-click'));
+
+    // Assert.
+    assertEquals(
+        loadTimeData.getString('modulesPhotosMemoriesHiddenToday'),
+        dismiss.event.detail.message);
+    assertEquals(1, handler.getCallCount('dismissModule'));
+
+    // Act.
+    dismiss.event.detail.restoreCallback();
+
+    // Assert.
+    assertEquals(1, handler.getCallCount('restoreModule'));
+  });
+
+  test('backend is notified when module is disabled', async () => {
+    // Arrange.
+    const data = {
+      memories: [{title: 'Title 1', id: 'key1'}, {title: 'Title 2', id: 'key2'}]
+    };
+    handler.setResultFor('getMemories', Promise.resolve(data));
+    const moduleElement = assert(await photosDescriptor.initialize(0));
+    document.body.append(moduleElement);
+
+    // Act.
+    const disable = {event: null};
+    moduleElement.addEventListener('disable-module', (e) => disable.event = e);
+    $$(moduleElement, 'ntp-module-header')
+        .dispatchEvent(new Event('disable-button-click'));
+
+    // Assert.
+    assertEquals(
+        loadTimeData.getString('modulesPhotosMemoriesDisabled'),
+        disable.event.detail.message);
   });
 });

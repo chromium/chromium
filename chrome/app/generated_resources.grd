@@ -5960,6 +5960,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_PHOTOS_TITLE" desc="Title shown in the header of the photos module and various other UIs.">
         Google Photos
       </message>
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_HIDE_TODAY" desc="Label used to hide Google Photos Memories from the new tab page for today.">
+        Hide memories for today
+      </message>
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_HIDDEN_TODAY" desc="Confirmation text shown when Google Photos Memories were hidden from the new tab page for today.">
+        Memories hidden for today
+      </message>
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_DISABLE" desc="Label used to disable Google Photos Memories from the new tab page.">
+        Never show memories
+      </message>
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_DISABLED" desc="Confirmation text shown when the Google Photos Memories module is disabled from the new tab page.">
+        All memories hidden
+      </message>
       <message name="IDS_NTP_MODULES_PHOTOS_INFO" desc="Text shown in the body of the info dialog of the Photos module.">
         Your Memories from Google Photos are shown here. They are visible only when you’re signed in.
         <ph name="BREAK">&lt;br&gt;</ph>

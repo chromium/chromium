@@ -17,6 +17,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace signin {
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
@@ -25,15 +28,25 @@ class PrimaryAccountAccessTokenFetcher;
 // Handles requests for user Google Photos data.
 class PhotosService : public KeyedService {
  public:
+  static const char kLastDismissedTimePrefName[];
+  static const base::TimeDelta kDismissDuration;
+
   PhotosService(const PhotosService&) = delete;
   PhotosService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      PrefService* pref_service);
   ~PhotosService() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   using GetMemoriesCallback = photos::mojom::PhotosHandler::GetMemoriesCallback;
   // Retrieves Google Photos memories from API.
   void GetMemories(GetMemoriesCallback callback);
+  // Makes the service not return data for a specified amount of time.
+  void DismissModule();
+  // Makes the service return data again even if dimiss time is not yet over.
+  void RestoreModule();
 
  private:
   void OnTokenReceived(GoogleServiceAuthError error,
@@ -50,6 +63,7 @@ class PhotosService : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::vector<GetMemoriesCallback> callbacks_;
   signin::IdentityManager* identity_manager_;
+  PrefService* pref_service_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PhotosService> weak_factory_{this};
 };

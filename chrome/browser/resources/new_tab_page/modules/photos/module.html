@@ -81,7 +81,11 @@
   }
 </style>
 <ntp-module-header
-    show-info-button on-info-button-click="onInfoButtonClick_">
+    show-info-button on-info-button-click="onInfoButtonClick_"
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    dismiss-text="[[i18n('modulesPhotosMemoriesHideToday')]]"
+    on-disable-button-click="onDisableButtonClick_"
+    disable-text="[[i18n('modulesPhotosMemoriesDisable')]]">
   [[i18n('modulesPhotosTitle')]]
 </ntp-module-header>
 <div id="memories">
