@@ -412,8 +412,16 @@ void PreinstalledWebAppManager::LoadAndSynchronize(
 }
 
 void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
-  if (!base::FeatureList::IsEnabled(
-          features::kPreinstalledWebAppInstallation)) {
+  bool preinstalling_enabled =
+      base::FeatureList::IsEnabled(features::kPreinstalledWebAppInstallation);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // With Lacros, web apps are not installed using the Ash browser.
+  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
+    preinstalling_enabled = false;
+#endif
+
+  if (!preinstalling_enabled) {
     std::move(callback).Run({});
     return;
   }
