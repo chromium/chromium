@@ -10,19 +10,23 @@
 
 namespace policy {
 
-// PrintWarnDialog is a system dialog that is shown when printing restriction
-// level is set to WARN.
-class PrintWarnDialog : public views::DialogDelegateView {
+// DlpWarnDialog is a base class that represents a system dialog shown when Data
+// Leak Protection restriction level is set to WARN.
+class DlpWarnDialog : public views::DialogDelegateView {
  public:
-  METADATA_HEADER(PrintWarnDialog);
-  PrintWarnDialog(base::OnceClosure accept_callback,
-                  base::OnceClosure cancel_callback);
-  PrintWarnDialog(const PrintWarnDialog&) = delete;
-  PrintWarnDialog& operator=(const PrintWarnDialog&) = delete;
-  ~PrintWarnDialog() override;
+  METADATA_HEADER(DlpWarnDialog);
+
+  enum Restriction { kScreenCapture, kPrinting };
+
+  DlpWarnDialog(base::OnceClosure accept_callback,
+                base::OnceClosure cancel_callback,
+                Restriction restriction);
+  DlpWarnDialog(const DlpWarnDialog&) = delete;
+  DlpWarnDialog& operator=(const DlpWarnDialog&) = delete;
+  ~DlpWarnDialog() override = default;
 
  private:
-  void InitializeView();
+  virtual void InitializeView(Restriction restriction);
 };
 
 }  // namespace policy

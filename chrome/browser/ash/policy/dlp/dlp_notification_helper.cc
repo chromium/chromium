@@ -52,6 +52,16 @@ void ShowDlpNotification(const std::string& id,
                 /*metadata=*/nullptr);
 }
 
+void ShowDlpWarnDialog(base::OnceClosure continue_cb,
+                       base::OnceClosure cancel_cb,
+                       DlpWarnDialog::Restriction restriction) {
+  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+      new DlpWarnDialog(std::move(continue_cb), std::move(cancel_cb),
+                        restriction),
+      /*context=*/nullptr, /*parent=*/nullptr);
+  widget->Show();
+}
+
 std::string GetCapturePausedNotificationId(const std::string& capture_id) {
   return kScreenCapturePausedNotificationPrefix + capture_id;
 }
@@ -71,10 +81,8 @@ void ShowDlpPrintDisabledNotification() {
 
 void ShowDlpPrintWarningDialog(base::OnceClosure continue_cb,
                                base::OnceClosure cancel_cb) {
-  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      new PrintWarnDialog(std::move(continue_cb), std::move(cancel_cb)),
-      nullptr, nullptr);
-  widget->Show();
+  ShowDlpWarnDialog(std::move(continue_cb), std::move(cancel_cb),
+                    DlpWarnDialog::Restriction::kPrinting);
 }
 
 void HideDlpScreenCapturePausedNotification(const std::string& capture_id) {
@@ -107,6 +115,12 @@ void ShowDlpScreenCaptureResumedNotification(const std::string& capture_id,
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_TITLE),
       l10n_util::GetStringFUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_MESSAGE,
                                  app_title));
+}
+
+void ShowDlpScreenCaptureWarningDialog(base::OnceClosure continue_cb,
+                                       base::OnceClosure cancel_cb) {
+  ShowDlpWarnDialog(std::move(continue_cb), std::move(cancel_cb),
+                    DlpWarnDialog::Restriction::kScreenCapture);
 }
 
 }  // namespace policy

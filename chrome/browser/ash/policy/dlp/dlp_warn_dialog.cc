@@ -62,6 +62,52 @@ constexpr int kTitleBodySpacing = 8;
 // The spacing between body label and the buttons.
 constexpr int kBodyButtonsSpacing = 36;
 
+// Returns the ID of the message or the title for the notification based on
+// |allowance| and |for_title|.
+const std::u16string GetDialogButtonOkLabel(
+    DlpWarnDialog::Restriction restriction) {
+  switch (restriction) {
+    case DlpWarnDialog::Restriction::kScreenCapture:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CONTINUE_BUTTON);
+    case DlpWarnDialog::Restriction::kPrinting:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_PRINTING_WARN_CONTINUE_BUTTON);
+  }
+}
+
+const std::u16string GetDialogButtonCancelLabel(
+    DlpWarnDialog::Restriction restriction) {
+  switch (restriction) {
+    case DlpWarnDialog::Restriction::kScreenCapture:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CANCEL_BUTTON);
+    case DlpWarnDialog::Restriction::kPrinting:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_PRINTING_WARN_CANCEL_BUTTON);
+  }
+}
+
+const std::u16string GetDialogTitle(DlpWarnDialog::Restriction restriction) {
+  switch (restriction) {
+    case DlpWarnDialog::Restriction::kScreenCapture:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_TITLE);
+    case DlpWarnDialog::Restriction::kPrinting:
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_TITLE);
+  }
+}
+
+const std::u16string GetDialogBody(DlpWarnDialog::Restriction restriction) {
+  switch (restriction) {
+    case DlpWarnDialog::Restriction::kScreenCapture:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_MESSAGE);
+    case DlpWarnDialog::Restriction::kPrinting:
+      return l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_MESSAGE);
+  }
+}
+
 std::unique_ptr<views::ImageView> InitializeIcon() {
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
   std::unique_ptr<views::ImageView> managed_icon =
@@ -73,24 +119,27 @@ std::unique_ptr<views::ImageView> InitializeIcon() {
   return managed_icon;
 }
 
-std::unique_ptr<views::Label> InitializeTitle() {
+std::unique_ptr<views::Label> InitializeTitle(
+    DlpWarnDialog::Restriction restriction) {
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
-  std::unique_ptr<views::Label> title = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_TITLE));
-  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title->SetAllowCharacterBreak(true);
-  title->SetEnabledColor(color_provider->GetContentLayerColor(
+  std::unique_ptr<views::Label> title_label =
+      std::make_unique<views::Label>(GetDialogTitle(restriction));
+  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label->SetAllowCharacterBreak(true);
+  title_label->SetEnabledColor(color_provider->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kTextColorPrimary));
-  title->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
-                                   kTitleFontSize, gfx::Font::Weight::MEDIUM));
-  title->SetLineHeight(kTitleLineHeight);
-  return title;
+  title_label->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
+                                         kTitleFontSize,
+                                         gfx::Font::Weight::MEDIUM));
+  title_label->SetLineHeight(kTitleLineHeight);
+  return title_label;
 }
 
-std::unique_ptr<views::Label> InitializeBody() {
+std::unique_ptr<views::Label> InitializeBody(
+    DlpWarnDialog::Restriction restriction) {
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
-  std::unique_ptr<views::Label> body = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_MESSAGE));
+  std::unique_ptr<views::Label> body =
+      std::make_unique<views::Label>(GetDialogBody(restriction));
   body->SetMultiLine(true);
   body->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   body->SetAllowCharacterBreak(true);
@@ -105,26 +154,22 @@ std::unique_ptr<views::Label> InitializeBody() {
 
 }  // namespace
 
-PrintWarnDialog::PrintWarnDialog(base::OnceClosure accept_callback,
-                                 base::OnceClosure cancel_callback) {
+DlpWarnDialog::DlpWarnDialog(base::OnceClosure accept_callback,
+                             base::OnceClosure cancel_callback,
+                             Restriction restriction) {
   SetAcceptCallback(std::move(accept_callback));
   SetCancelCallback(std::move(cancel_callback));
 
-  InitializeView();
+  InitializeView(restriction);
 }
 
-PrintWarnDialog::~PrintWarnDialog() = default;
-
-void PrintWarnDialog::InitializeView() {
+void DlpWarnDialog::InitializeView(Restriction restriction) {
   SetModalType(ui::MODAL_TYPE_SYSTEM);
 
   SetShowCloseButton(false);
-  SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_CONTINUE_BUTTON));
-  SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
-      l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_WARN_CANCEL_BUTTON));
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetDialogButtonOkLabel(restriction));
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 GetDialogButtonCancelLabel(restriction));
 
   set_fixed_width(kDialogWidth);
   set_corner_radius(kDialogCornerRadius);
@@ -144,17 +189,16 @@ void PrintWarnDialog::InitializeView() {
                                 kIconTitleSpacing);
 
   layout_manager->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  layout_manager->AddView(InitializeTitle());
+  layout_manager->AddView(InitializeTitle(restriction));
   layout_manager->AddPaddingRow(views::GridLayout::kFixedSize,
                                 kTitleBodySpacing);
-
   layout_manager->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  layout_manager->AddView(InitializeBody());
+  layout_manager->AddView(InitializeBody(restriction));
   layout_manager->AddPaddingRow(views::GridLayout::kFixedSize,
                                 kBodyButtonsSpacing);
 }
 
-BEGIN_METADATA(PrintWarnDialog, views::DialogDelegateView)
+BEGIN_METADATA(DlpWarnDialog, views::DialogDelegateView)
 END_METADATA
 
 }  // namespace policy

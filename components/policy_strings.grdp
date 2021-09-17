@@ -672,5 +672,17 @@ Additional details:
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_MESSAGE" desc="The message for notification informing the user that screen capture is resumed.">
     Screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> was resumed
   </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_TITLE" desc="The title for notification informing the user that screen capture is not recommended.">
+    Capture confidential content on your screen
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_MESSAGE" desc="The message for notification informing the user that screen capture is not recommended.">
+    Administrator doesn't recommend taking screenshots or recordings due to confidential content on screen
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before screen capture.">
+    Capture anyway
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before screen capture.">
+    Cancel
+  </message>
 
 </grit-part>

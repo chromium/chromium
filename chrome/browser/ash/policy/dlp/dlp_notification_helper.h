@@ -32,6 +32,12 @@ void HideDlpScreenCaptureResumedNotification(const std::string& capture_id);
 void ShowDlpScreenCaptureResumedNotification(const std::string& capture_id,
                                              const std::u16string& app_title);
 
+// Shows a warning dialog that screen capture is not recommended and allows the
+// user to choose whether to continue or not. Based on the response, only one of
+// |continue_cb| and |cancel_cb| will run.
+void ShowDlpScreenCaptureWarningDialog(base::OnceClosure continue_cb,
+                                       base::OnceClosure cancel_cb);
+
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_NOTIFICATION_HELPER_H_
