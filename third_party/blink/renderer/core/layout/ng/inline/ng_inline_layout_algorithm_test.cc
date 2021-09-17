@@ -47,6 +47,79 @@ class NGInlineLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
   }
 };
 
+TEST_F(NGInlineLayoutAlgorithmTest, Types) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="normal">normal</div>
+    <div id="empty"><span></span></div>
+  )HTML");
+  NGInlineCursor normal(
+      *To<LayoutBlockFlow>(GetLayoutObjectByElementId("normal")));
+  normal.MoveToFirstLine();
+  EXPECT_FALSE(normal.Current()->LineBoxFragment()->IsEmptyLineBox());
+
+  NGInlineCursor empty(
+      *To<LayoutBlockFlow>(GetLayoutObjectByElementId("empty")));
+  empty.MoveToFirstLine();
+  EXPECT_TRUE(empty.Current()->LineBoxFragment()->IsEmptyLineBox());
+}
+
+TEST_F(NGInlineLayoutAlgorithmTest, TypesForBlockInInline) {
+  ScopedLayoutNGBlockInInlineForTest block_in_inline_scope(true);
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="block-in-inline">
+      <span><div>normal</div></span>
+    </div>
+    <div id="block-in-inline-empty">
+      <span><div></div></span>
+    </div>
+    <div id="block-in-inline-height">
+      <span><div style="height: 100px"></div></span>
+    </div>
+  )HTML");
+  // Regular block-in-inline.
+  NGInlineCursor block_in_inline(
+      *To<LayoutBlockFlow>(GetLayoutObjectByElementId("block-in-inline")));
+  block_in_inline.MoveToFirstLine();
+  EXPECT_TRUE(block_in_inline.Current()->LineBoxFragment()->IsEmptyLineBox());
+  EXPECT_FALSE(block_in_inline.Current()->LineBoxFragment()->IsBlockInInline());
+  block_in_inline.MoveToNextLine();
+  EXPECT_FALSE(block_in_inline.Current()->LineBoxFragment()->IsEmptyLineBox());
+  EXPECT_TRUE(block_in_inline.Current()->LineBoxFragment()->IsBlockInInline());
+  int block_count = 0;
+  for (NGInlineCursor children = block_in_inline.CursorForDescendants();
+       children; children.MoveToNext()) {
+    if (children.Current()->BoxFragment() &&
+        children.Current()->BoxFragment()->IsBlockInInline())
+      ++block_count;
+  }
+  EXPECT_EQ(block_count, 1);
+  block_in_inline.MoveToNextLine();
+  EXPECT_TRUE(block_in_inline.Current()->LineBoxFragment()->IsEmptyLineBox());
+  EXPECT_FALSE(block_in_inline.Current()->LineBoxFragment()->IsBlockInInline());
+
+  // If the block is empty and self-collapsing, |IsEmptyLineBox| should be set.
+  NGInlineCursor block_in_inline_empty(*To<LayoutBlockFlow>(
+      GetLayoutObjectByElementId("block-in-inline-empty")));
+  block_in_inline_empty.MoveToFirstLine();
+  block_in_inline_empty.MoveToNextLine();
+  EXPECT_TRUE(
+      block_in_inline_empty.Current()->LineBoxFragment()->IsEmptyLineBox());
+  EXPECT_TRUE(
+      block_in_inline_empty.Current()->LineBoxFragment()->IsBlockInInline());
+
+  // Test empty but non-self-collapsing block in an inline box.
+  NGInlineCursor block_in_inline_height(*To<LayoutBlockFlow>(
+      GetLayoutObjectByElementId("block-in-inline-height")));
+  block_in_inline_height.MoveToFirstLine();
+  block_in_inline_height.MoveToNextLine();
+  EXPECT_FALSE(
+      block_in_inline_height.Current()->LineBoxFragment()->IsEmptyLineBox());
+  EXPECT_TRUE(
+      block_in_inline_height.Current()->LineBoxFragment()->IsBlockInInline());
+}
+
 TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
