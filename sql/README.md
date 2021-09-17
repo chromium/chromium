@@ -201,23 +201,23 @@ Format statements like so.
   static constexpr char kOriginInfoSql[] =
       // clang-format off
       "CREATE TABLE origin_infos("
-        "origin TEXT NOT NULL,"
-        "last_modified INTEGER NOT NULL,"
-        "secure INTEGER NOT NULL)";
-      // clang-format on
+          "origin TEXT NOT NULL,"
+          "last_modified INTEGER NOT NULL,"
+          "secure INTEGER NOT NULL)";
+  // clang-format on
 
   static constexpr char kInsertSql[] =
-     // clang-format off
-     "INSERT INTO infos(origin,last_modified,secure) "
-       "VALUES (?,?,?)";
-     // clang-format on
+      // clang-format off
+      "INSERT INTO infos(origin,last_modified,secure) "
+          "VALUES(?,?,?)";
+  // clang-format on
 
   static constexpr char kSelectSql[] =
-     // clang-format off
-     "SELECT origin,last_modified,secure FROM origins "
-       "WHERE last_modified > ? "
-       "ORDER BY last_modified";
-     // clang-format on
+      // clang-format off
+      "SELECT origin,last_modified,secure FROM origins "
+          "WHERE last_modified>? "
+          "ORDER BY last_modified";
+  // clang-format on
 ```
 
 * [SQLite keywords](https://sqlite.org/lang_keywords.html) should use ALL CAPS.
