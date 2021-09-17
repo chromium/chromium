@@ -16,6 +16,7 @@ class Rect;
 namespace ash {
 
 class CaptureModeController;
+class RecordingOverlayController;
 
 // Exposes a very limited API for browser tests, and possible autotest private
 // APIs to interact with the capture mode feature.
@@ -66,6 +67,10 @@ class ASH_EXPORT CaptureModeTestApi {
   // order to test that these events are correctly handled.
   void ResetRecordingServiceRemote();
   void ResetRecordingServiceClientReceiver();
+
+  // Returns the |RecordingOverlayController| which hosts the overlay widget.
+  // Can only be called while recording is in progress for a Projector session.
+  RecordingOverlayController* GetRecordingOverlayController();
 
  private:
   // Sets the capture mode type to a video capture if |for_video| is true, or

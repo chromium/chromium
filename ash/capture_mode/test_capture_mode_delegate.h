@@ -70,6 +70,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       override;
   void OnSessionStateChanged(bool started) override;
   void OnServiceRemoteReset() override;
+  std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView()
+      const override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;

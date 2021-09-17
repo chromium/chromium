@@ -13,6 +13,7 @@
 #include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -429,7 +430,7 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
     return;
   }
 
-  // Starting capture mode from the projector app will put it in a special mode
+  // Starting capture mode from the Projector app will put it in a special mode
   // where only video recording is allowed, with audio recording enabled.
   bool for_projector = false;
 
@@ -569,6 +570,18 @@ void CaptureModeController::RefreshContentProtection() {
     FinalizeRecording(/*success=*/false, gfx::ImageSkia());
     ShowVideoRecordingStoppedNotification(/*for_hdcp=*/true);
   }
+}
+
+void CaptureModeController::ToggleRecordingOverlayEnabled() {
+  DCHECK(is_recording_in_progress());
+  DCHECK(video_recording_watcher_->is_in_projector_mode());
+
+  video_recording_watcher_->ToggleRecordingOverlayEnabled();
+}
+
+std::unique_ptr<RecordingOverlayView>
+CaptureModeController::CreateRecordingOverlayView() {
+  return delegate_->CreateRecordingOverlayView();
 }
 
 void CaptureModeController::OnRecordingEnded(
@@ -1188,7 +1201,7 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
 
   DCHECK(current_video_file_path_.empty());
   recording_start_time_ = base::TimeTicks::Now();
-  // TODO(crbug.com/1240430): Get the correct video file path from projector
+  // TODO(crbug.com/1240430): Get the correct video file path from Projector
   // when in |projector_mode|.
   current_video_file_path_ = BuildVideoPath();
 

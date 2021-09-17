@@ -5,8 +5,9 @@
 #ifndef ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 #define ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/services/recording/public/mojom/recording_service.mojom-forward.h"
 #include "base/callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -28,7 +29,15 @@ class AudioStreamFactory;
 }  // namespace mojom
 }  // namespace media
 
+namespace recording {
+namespace mojom {
+class RecordingService;
+}  // namespace mojom
+}  // namespace recording
+
 namespace ash {
+
+class RecordingOverlayView;
 
 // Defines the interface for the delegate of CaptureModeController, that can be
 // implemented by an ash client (e.g. Chrome). The CaptureModeController owns
@@ -92,6 +101,13 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Called after the controller resets its |mojo::Remote| instance of the
   // service.
   virtual void OnServiceRemoteReset() = 0;
+
+  // Creates and returns the view that will be used as the contents view of the
+  // overlay widget, which is added as a child of the recorded surface to host
+  // contents rendered in a web view that are meant to be part of the recording
+  // such as annotations.
+  virtual std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView()
+      const = 0;
 };
 
 }  // namespace ash

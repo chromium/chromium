@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/shell.h"
@@ -222,8 +223,12 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   window_being_recorded_->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kAccessibility);
 
-  if (is_in_projector_mode_)
+  if (is_in_projector_mode_) {
+    recording_overlay_controller_ =
+        std::make_unique<RecordingOverlayController>(window_being_recorded_,
+                                                     GetOverlayWidgetBounds());
     ProjectorControllerImpl::Get()->OnRecordingStarted();
+  }
 }
 
 VideoRecordingWatcher::~VideoRecordingWatcher() {
@@ -245,6 +250,12 @@ VideoRecordingWatcher::~VideoRecordingWatcher() {
   window_being_recorded_->RemoveObserver(this);
 }
 
+void VideoRecordingWatcher::ToggleRecordingOverlayEnabled() {
+  DCHECK(is_in_projector_mode_);
+
+  recording_overlay_controller_->Toggle();
+}
+
 void VideoRecordingWatcher::OnWindowParentChanged(aura::Window* window,
                                                   aura::Window* parent) {
   DCHECK_EQ(window, window_being_recorded_);
@@ -264,6 +275,8 @@ void VideoRecordingWatcher::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
+  if (is_in_projector_mode_)
+    recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
 
   if (recording_source_ != CaptureModeSource::kWindow)
     return;
@@ -701,6 +714,12 @@ void VideoRecordingWatcher::OnWindowSizeChangeThrottleTimerFiring() {
 
   controller_->OnRecordedWindowSizeChanged(
       window_being_recorded_->bounds().size());
+}
+
+gfx::Rect VideoRecordingWatcher::GetOverlayWidgetBounds() const {
+  return recording_source_ == CaptureModeSource::kRegion
+             ? partial_region_bounds_
+             : gfx::Rect(window_being_recorded_->bounds().size());
 }
 
 }  // namespace ash

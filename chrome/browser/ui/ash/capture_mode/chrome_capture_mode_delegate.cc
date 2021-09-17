@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 
+#include <memory>
+
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/capture_mode/recording_overlay_view_impl.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -174,3 +177,9 @@ void ChromeCaptureModeDelegate::OnSessionStateChanged(bool started) {
 }
 
 void ChromeCaptureModeDelegate::OnServiceRemoteReset() {}
+
+std::unique_ptr<ash::RecordingOverlayView>
+ChromeCaptureModeDelegate::CreateRecordingOverlayView() const {
+  return std::make_unique<RecordingOverlayViewImpl>(
+      ProfileManager::GetPrimaryUserProfile());
+}

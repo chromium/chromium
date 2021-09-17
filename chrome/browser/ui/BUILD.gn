@@ -1991,6 +1991,8 @@ static_library("ui") {
       "ash/calendar/calendar_keyed_service_factory.h",
       "ash/capture_mode/chrome_capture_mode_delegate.cc",
       "ash/capture_mode/chrome_capture_mode_delegate.h",
+      "ash/capture_mode/recording_overlay_view_impl.cc",
+      "ash/capture_mode/recording_overlay_view_impl.h",
       "ash/cast_config_controller_media_router.cc",
       "ash/cast_config_controller_media_router.h",
       "ash/chrome_accessibility_delegate.cc",

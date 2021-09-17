@@ -33,6 +33,7 @@ class CursorManager;
 namespace ash {
 
 class CaptureModeController;
+class RecordingOverlayController;
 class RecordedWindowRootObserver;
 
 // An instance of this class is created while video recording is in progress to
@@ -68,6 +69,10 @@ class ASH_EXPORT VideoRecordingWatcher
   aura::Window* window_being_recorded() const { return window_being_recorded_; }
   bool is_in_projector_mode() const { return is_in_projector_mode_; }
   bool should_paint_layer() const { return should_paint_layer_; }
+
+  // Toggles the Projector mode's overlay widget on or off. Can only be called
+  // if |is_in_projector_mode()| is true.
+  void ToggleRecordingOverlayEnabled();
 
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
@@ -127,6 +132,7 @@ class ASH_EXPORT VideoRecordingWatcher
   void SetLayer(std::unique_ptr<ui::Layer> layer) override;
 
  private:
+  friend class CaptureModeTestApi;
   friend class RecordedWindowRootObserver;
 
   // Called by |RecordedWindowRootObserver| to notify us with a hierarchy change
@@ -179,6 +185,10 @@ class ASH_EXPORT VideoRecordingWatcher
   // push the current size of the window being recorded to the service.
   void OnWindowSizeChangeThrottleTimerFiring();
 
+  // Returns the bounds that should be used for the recording overlay widget
+  // relative to its parent |window_being_recorded_|.
+  gfx::Rect GetOverlayWidgetBounds() const;
+
   CaptureModeController* const controller_;
   wm::CursorManager* const cursor_manager_;
   aura::Window* const window_being_recorded_;
@@ -226,7 +236,7 @@ class ASH_EXPORT VideoRecordingWatcher
   // throttle such events.
   base::OneShotTimer window_size_change_throttle_timer_;
 
-  // True if the current in progress recording is for a projector mode session.
+  // True if the current in progress recording is for a Projector mode session.
   const bool is_in_projector_mode_;
 
   // True if we force hiding the cursor overlay. This happens when we record a
@@ -246,6 +256,10 @@ class ASH_EXPORT VideoRecordingWatcher
   // latter may change during the recording if the user opens capture mode again
   // to take a partial screenshot.
   gfx::Rect partial_region_bounds_;
+
+  // Controls and owns the overlay widget, which is used to host Projector mode
+  // recording overlay contents such as annotations.
+  std::unique_ptr<RecordingOverlayController> recording_overlay_controller_;
 
   // Maintains window dimmers where each is mapped by the window it dims. These
   // are created for the windows that are above the |window_being_recorded_| in

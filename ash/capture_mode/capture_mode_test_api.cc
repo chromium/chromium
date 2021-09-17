@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/video_recording_watcher.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 
@@ -81,6 +82,14 @@ void CaptureModeTestApi::ResetRecordingServiceRemote() {
 void CaptureModeTestApi::ResetRecordingServiceClientReceiver() {
   DCHECK(controller_->is_recording_in_progress());
   controller_->recording_service_client_receiver_.reset();
+}
+
+RecordingOverlayController*
+CaptureModeTestApi::GetRecordingOverlayController() {
+  DCHECK(controller_->is_recording_in_progress());
+  DCHECK(controller_->video_recording_watcher_->is_in_projector_mode());
+  return controller_->video_recording_watcher_->recording_overlay_controller_
+      .get();
 }
 
 void CaptureModeTestApi::SetType(bool for_video) {

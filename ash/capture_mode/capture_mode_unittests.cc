@@ -21,6 +21,7 @@
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/capture_mode/video_recording_watcher.h"
@@ -29,6 +30,7 @@
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/projector/projector_controller.h"
@@ -4360,10 +4362,14 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
 // TODO(afakhry): Add more cursor overlay tests.
 
 // Test fixture to verify capture mode + projector integration.
-class ProjectorCaptureModeIntegrationTests : public CaptureModeTest {
+class ProjectorCaptureModeIntegrationTests
+    : public CaptureModeTest,
+      public ::testing::WithParamInterface<CaptureModeSource> {
  public:
   ProjectorCaptureModeIntegrationTests() = default;
   ~ProjectorCaptureModeIntegrationTests() override = default;
+
+  static constexpr gfx::Rect kUserRegion{20, 50, 60, 70};
 
   // CaptureModeTest:
   void SetUp() override {
@@ -4373,6 +4379,14 @@ class ProjectorCaptureModeIntegrationTests : public CaptureModeTest {
     projector_controller->SetClient(&projector_client_);
     // Simulate the availability of speech recognition.
     projector_controller->OnSpeechRecognitionAvailable(true);
+    window_ = CreateTestWindow(gfx::Rect(20, 30, 200, 200));
+    CaptureModeController::Get()->SetUserCaptureRegion(kUserRegion,
+                                                       /*by_user=*/true);
+  }
+
+  void TearDown() override {
+    window_.reset();
+    CaptureModeTest::TearDown();
   }
 
   void StartProjectorModeSession() {
@@ -4383,10 +4397,66 @@ class ProjectorCaptureModeIntegrationTests : public CaptureModeTest {
     EXPECT_TRUE(projector_session->is_active());
   }
 
+  void StartRecordingForProjectorFromSource(CaptureModeSource source) {
+    auto* controller = CaptureModeController::Get();
+    controller->SetSource(source);
+    StartProjectorModeSession();
+
+    switch (source) {
+      case CaptureModeSource::kFullscreen:
+      case CaptureModeSource::kRegion:
+        break;
+      case CaptureModeSource::kWindow:
+        auto* generator = GetEventGenerator();
+        generator->MoveMouseTo(window_->GetBoundsInScreen().CenterPoint());
+        break;
+    }
+    CaptureModeTestApi().PerformCapture();
+    EXPECT_TRUE(controller->is_recording_in_progress());
+  }
+
+  void VerifyOverlayEnabledState(aura::Window* overlay_window,
+                                 bool overlay_enabled_state) {
+    if (overlay_enabled_state) {
+      EXPECT_TRUE(overlay_window->IsVisible());
+      EXPECT_EQ(overlay_window->event_targeting_policy(),
+                aura::EventTargetingPolicy::kTargetAndDescendants);
+    } else {
+      EXPECT_FALSE(overlay_window->IsVisible());
+      EXPECT_EQ(overlay_window->event_targeting_policy(),
+                aura::EventTargetingPolicy::kNone);
+    }
+  }
+
+  void VerifyOverlayWindow(aura::Window* overlay_window,
+                           CaptureModeSource source) {
+    auto* controller = CaptureModeController::Get();
+    auto* recording_watcher = controller->video_recording_watcher_for_testing();
+    auto* window_being_recorded = recording_watcher->window_being_recorded();
+    // The overlay window should always be the top-most child of the window
+    // being recorded.
+    EXPECT_EQ(window_being_recorded->children().back(), overlay_window);
+
+    switch (source) {
+      case CaptureModeSource::kFullscreen:
+      case CaptureModeSource::kWindow:
+        EXPECT_EQ(overlay_window->bounds(),
+                  gfx::Rect(window_being_recorded->bounds().size()));
+        break;
+      case CaptureModeSource::kRegion:
+        EXPECT_EQ(overlay_window->bounds(), kUserRegion);
+        break;
+    }
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   MockProjectorClient projector_client_;
+  std::unique_ptr<aura::Window> window_;
 };
+
+// static
+constexpr gfx::Rect ProjectorCaptureModeIntegrationTests::kUserRegion;
 
 TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
   // With the most recent source type set to kImage, starting capture mode for
@@ -4443,4 +4513,45 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
 }
 
+TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
+  auto* controller = CaptureModeController::Get();
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  StartProjectorModeSession();
+  EXPECT_TRUE(controller->IsActive());
+
+  SendKey(ui::VKEY_RETURN, GetEventGenerator());
+  WaitForCountDownToFinish();
+  CaptureModeTestApi test_api;
+  RecordingOverlayController* overlay_controller =
+      test_api.GetRecordingOverlayController();
+  EXPECT_FALSE(overlay_controller->is_enabled());
+  auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
+  VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
+
+  auto* projector_controller = ProjectorControllerImpl::Get();
+  projector_controller->OnMarkerPressed();
+  EXPECT_TRUE(overlay_controller->is_enabled());
+  VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/true);
+
+  projector_controller->OnMarkerPressed();
+  EXPECT_FALSE(overlay_controller->is_enabled());
+  VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
+}
+
+TEST_P(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetBounds) {
+  const auto capture_source = GetParam();
+  StartRecordingForProjectorFromSource(capture_source);
+  CaptureModeTestApi test_api;
+  RecordingOverlayController* overlay_controller =
+      test_api.GetRecordingOverlayController();
+  EXPECT_FALSE(overlay_controller->is_enabled());
+  auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
+  VerifyOverlayWindow(overlay_window, capture_source);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ProjectorCaptureModeIntegrationTests,
+                         testing::Values(CaptureModeSource::kFullscreen,
+                                         CaptureModeSource::kRegion,
+                                         CaptureModeSource::kWindow));
 }  // namespace ash

@@ -5,12 +5,25 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "ash/services/recording/recording_service_test_api.h"
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace ash {
+
+namespace {
+
+class TestRecordingOverlayView : public RecordingOverlayView {
+ public:
+  TestRecordingOverlayView() = default;
+  TestRecordingOverlayView(const TestRecordingOverlayView&) = delete;
+  TestRecordingOverlayView& operator=(const TestRecordingOverlayView&) = delete;
+  ~TestRecordingOverlayView() override = default;
+};
+
+}  // namespace
 
 TestCaptureModeDelegate::TestCaptureModeDelegate() {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -101,6 +114,11 @@ void TestCaptureModeDelegate::OnServiceRemoteReset() {
   // reset (on which it shuts down the service process). Here since the service
   // is running in-process with ash_unittests, we just delete the instance.
   recording_service_.reset();
+}
+
+std::unique_ptr<RecordingOverlayView>
+TestCaptureModeDelegate::CreateRecordingOverlayView() const {
+  return std::make_unique<TestRecordingOverlayView>();
 }
 
 }  // namespace ash

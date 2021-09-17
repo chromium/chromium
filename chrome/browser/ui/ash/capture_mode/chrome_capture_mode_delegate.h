@@ -52,6 +52,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       override;
   void OnSessionStateChanged(bool started) override;
   void OnServiceRemoteReset() override;
+  std::unique_ptr<ash::RecordingOverlayView> CreateRecordingOverlayView()
+      const override;
 
  private:
   // Used to temporarily disable capture mode in certain cases for which neither
