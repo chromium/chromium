@@ -154,8 +154,9 @@ export const SiteSettingsMixin = dedupingMixin(superClass => {
       // defined in |SiteSettingSource|.
       let enforcement =
           /** @type {?chrome.settingsPrivate.Enforcement} */ (null);
-      if (exception.source === 'extension' ||
-          exception.source === 'policy') {
+      if (exception.source === SiteSettingSource.EXTENSION ||
+          exception.source === SiteSettingSource.HOSTED_APP ||
+          exception.source === SiteSettingSource.POLICY) {
         enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
       }
 
