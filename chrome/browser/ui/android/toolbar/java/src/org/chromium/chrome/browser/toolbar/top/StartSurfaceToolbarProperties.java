@@ -33,14 +33,14 @@ class StartSurfaceToolbarProperties {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IDENTITY_DISC_IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    // These two property keys are intended for boolean types. We need to skip the equality check
+    // This property key is intended for boolean types. We need to skip the equality check
     // here to make sure the toolbar animations are started.
     public static final PropertyModel.WritableObjectPropertyKey<Boolean> IS_VISIBLE =
             new PropertyModel.WritableObjectPropertyKey<>(true);
-    public static final PropertyModel.WritableObjectPropertyKey<Boolean> IN_START_SURFACE_MODE =
-            new PropertyModel.WritableObjectPropertyKey<>(true);
-    public static final PropertyModel.WritableBooleanPropertyKey SHOW_ANIMATION =
+    public static final PropertyModel.WritableBooleanPropertyKey IN_START_SURFACE_MODE =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<Boolean> SHOW_ANIMATION =
+            new PropertyModel.WritableObjectPropertyKey<>(true);
     public static final PropertyModel.WritableBooleanPropertyKey LOGO_IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =

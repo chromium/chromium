@@ -180,7 +180,7 @@ class StartSurfaceToolbarMediator {
 
     void onStartSurfaceStateChanged(
             @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
-        updateShowAnimation(newState);
+        updateShowAnimation(newState, shouldShowStartSurfaceToolbar);
         mStartSurfaceState = newState;
         updateLogoVisibility(mIsGoogleSearchEngine);
         updateTabSwitcherButtonVisibility();
@@ -312,14 +312,6 @@ class StartSurfaceToolbarMediator {
             if (!incognitoTabModel.getTabAt(i).isClosing()) return true;
         }
         return false;
-    }
-
-    private boolean isOverviewState(@StartSurfaceState int state) {
-        return state == StartSurfaceState.SHOWN_HOMEPAGE
-                || state == StartSurfaceState.SHOWN_TABSWITCHER
-                || state == StartSurfaceState.SHOWING_START
-                || state == StartSurfaceState.SHOWING_HOMEPAGE
-                || state == StartSurfaceState.SHOWING_TABSWITCHER;
     }
 
     void setStartSurfaceMode(boolean inStartSurfaceMode) {
@@ -467,10 +459,30 @@ class StartSurfaceToolbarMediator {
         }
     }
 
-    private void updateShowAnimation(@StartSurfaceState int newState) {
+    private void updateShowAnimation(
+            @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
         mPropertyModel.set(SHOW_ANIMATION,
-                mIsAnimationEnabled && isOverviewState(newState)
-                        && isOverviewState(mStartSurfaceState) && newState != mStartSurfaceState);
+                shouldShowStartSurfaceToolbar && mIsAnimationEnabled
+                        && isSwitchingBetweenOverviews(mStartSurfaceState, newState));
+    }
+
+    private boolean isSwitchingBetweenOverviews(
+            @StartSurfaceState int previousState, @StartSurfaceState int newState) {
+        // The previousState should never be SHOWING states because if it's already on overview
+        // page, SHOWING state should've been updated to SHOWN state. The following transitions are
+        // handled:
+        // * SHOWN_HOMEPAGE -> SHOWING_TABSWITCHER
+        // * SHOWN_HOMEPAGE -> SHOWN_TABSWITCHER
+        // * SHOWN_TABSWITCHER -> SHOWING_HOMEPAGE
+        // * SHOWN_TABSWITCHER -> SHOWN_HOMEPAGE
+        return (previousState == StartSurfaceState.SHOWN_HOMEPAGE
+                       && newState == StartSurfaceState.SHOWING_TABSWITCHER)
+                || (previousState == StartSurfaceState.SHOWN_HOMEPAGE
+                        && newState == StartSurfaceState.SHOWN_TABSWITCHER)
+                || (previousState == StartSurfaceState.SHOWN_TABSWITCHER
+                        && newState == StartSurfaceState.SHOWING_HOMEPAGE)
+                || (previousState == StartSurfaceState.SHOWN_TABSWITCHER
+                        && newState == StartSurfaceState.SHOWN_HOMEPAGE);
     }
 
     @VisibleForTesting

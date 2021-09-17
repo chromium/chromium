@@ -7,15 +7,19 @@ package org.chromium.chrome.browser.toolbar.top;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.animation.BaseInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
@@ -43,17 +47,24 @@ import java.util.List;
 
 /** View of the StartSurfaceToolbar */
 class StartSurfaceToolbarView extends RelativeLayout {
-    private final long mAnimationDuration;
+    private static final boolean ARE_INTERPOLATORS_ENABLED =
+            Build.VERSION.SDK_INT > VERSION_CODES.LOLLIPOP;
+    private static final long SUPER_FAST_DURATION_MS = 50;
+    private static final long FAST_DURATION_MS = 100;
+    private static final long MEDIUM_DURATION_MS = 150;
+    private static final long SLOW_DURATION_MS = 250;
+    private static final long SHORT_DELAY_MS = 50;
+    private static final long MEDIUM_DELAY_MS = 100;
+
+    private final List<Animator> mAnimators = new ArrayList();
+
     private NewTabButton mNewTabButton;
     private HomeButton mHomeButton;
     private View mLogo;
     private View mTabSwitcherButtonView;
-    private float mTabSwitcherButtonX;
-    // Record this for the animation of moving incognito toggle layout.
-    private boolean mShowTabSwitcherButton;
+
     @Nullable
     private IncognitoToggleTabLayout mIncognitoToggleTabLayout;
-    private float mIncognitoToggleX;
     @Nullable
     private ImageButton mIdentityDiscButton;
     private ColorStateList mLightIconTint;
@@ -64,18 +75,27 @@ class StartSurfaceToolbarView extends RelativeLayout {
 
     private boolean mShouldShow;
     private boolean mInStartSurfaceMode;
-    private boolean mShowAnimation;
-    private AnimatorSet mLayoutChangeAnimator;
-    private List<Animator> mAnimators = new ArrayList();
+    private boolean mShowTransitionAnimations;
+    private AnimatorSet mLayoutChangeAnimatorSet;
 
     private ObservableSupplier<Boolean> mHomepageEnabledSupplier;
     private ObservableSupplier<Boolean> mHomepageManagedByPolicySupplier;
     private boolean mIsHomeButtonInitialized;
     private boolean mIsShowing;
 
+    private boolean mIsLogoVisible;
+    private boolean mIsNewTabButtonVisible;
+    private boolean mIsHomeButtonVisible;
+    private boolean mIsIncognitoToggleVisible;
+    private boolean mIsTabSwitcherButtonVisible;
+    private boolean mIsIdentityDiscButtonVisible;
+    private float mTabSwitcherButtonX;
+    private int mToolbarButtonWidthPx;
+    private float mIncognitoToggleX;
+    private Rect mIncognitoToggleIndicatorBounds;
+
     public StartSurfaceToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mAnimationDuration = TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS;
     }
 
     @Override
@@ -133,16 +153,14 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     /**
-     * Sets the Logo visibility. Logo will not show if screen is not wide enough.
+     * If transition animations shouldn't show, visibility is updated; Otherwise animations of logo
+     * are added in startToolbarVisibilityAnimations() and visibility is set when animations end.
+     * Logo will not show if screen is not wide enough.
      * @param isVisible Whether the Logo should be visible.
      */
     void setLogoVisibility(boolean isVisible) {
-        if (mLogo.getVisibility() == getVisibility(isVisible) || !mShowAnimation) {
-            finishFadeAnimation(mLogo, isVisible);
-            return;
-        }
-
-        addFadeAnimator(mLogo, isVisible);
+        mIsLogoVisible = isVisible;
+        if (!mShowTransitionAnimations) mLogo.setVisibility(getVisibility(isVisible));
     }
 
     /**
@@ -160,36 +178,32 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     /**
+     * If transition animations shouldn't show, visibility is updated; Otherwise animations of new
+     * tab button are added in startToolbarVisibilityAnimations() and visibility is set when
+     * animations end.
      * @param isVisible Whether the new tab button is visible.
      */
     void setNewTabButtonVisibility(boolean isVisible) {
+        mIsNewTabButtonVisible = isVisible;
         if (isVisible && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             // This is a workaround for the issue that the UrlBar is given the default focus on
             // Android versions before Pie when showing the start surface toolbar with the new tab
             // button (UrlBar is invisible to users). Check crbug.com/1081538 for more details.
             mNewTabButton.getParent().requestChildFocus(mNewTabButton, mNewTabButton);
         }
-
-        if (mNewTabButton.getVisibility() == getVisibility(isVisible) || !mShowAnimation) {
-            finishScaleAnimations(mNewTabButton, isVisible);
-            return;
-        }
-
-        addScaleAnimators(mNewTabButton, isVisible);
+        if (!mShowTransitionAnimations) mNewTabButton.setVisibility(getVisibility(isVisible));
     }
 
     /**
+     * If transition animations shouldn't show, visibility is updated; Otherwise animations of home
+     * button are added in startToolbarVisibilityAnimations() and visibility is set when animations
+     * end.
      * @param isVisible Whether the home button is visible.
      */
     void setHomeButtonVisibility(boolean isVisible) {
         mayInitializeHomeButton();
-
-        if (mHomeButton.getVisibility() == getVisibility(isVisible) || !mShowAnimation) {
-            finishScaleAnimations(mHomeButton, isVisible);
-            return;
-        }
-
-        addScaleAnimators(mHomeButton, isVisible);
+        mIsHomeButtonVisible = isVisible;
+        if (!mShowTransitionAnimations) mHomeButton.setVisibility(getVisibility(isVisible));
     }
 
     /**
@@ -241,17 +255,16 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     /**
+     * If transition animations shouldn't show, visibility is updated; Otherwise animations of
+     * incognito toggle tab layout are added in startToolbarVisibilityAnimations() and visibility is
+     * set when animations end.
      * @param isVisible Whether the Incognito toggle tab layout is visible.
      */
     void setIncognitoToggleTabVisibility(boolean isVisible) {
-        if (mIncognitoToggleTabLayout.getVisibility() == getVisibility(isVisible)
-                || !mShowAnimation) {
-            mTabSwitcherButtonView.setVisibility(mShowTabSwitcherButton ? View.VISIBLE : View.GONE);
-            mIncognitoToggleTabLayout.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-            return;
+        mIsIncognitoToggleVisible = isVisible;
+        if (!mShowTransitionAnimations) {
+            mIncognitoToggleTabLayout.setVisibility(getVisibility(isVisible));
         }
-
-        addMoveIncognitoToggleAnimator(isVisible);
     }
 
     /**
@@ -297,15 +310,14 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     /**
+     * If transition animations shouldn't show, visibility is updated; Otherwise animations of
+     * identity disc are added in startToolbarVisibilityAnimations() and visibility is set when
+     * animations end.
      * @param isVisible Whether the identity disc is visible.
      */
     void setIdentityDiscVisibility(boolean isVisible) {
-        if (mIdentityDiscButton.getVisibility() == getVisibility(isVisible) || !mShowAnimation) {
-            finishScaleAnimations(mIdentityDiscButton, isVisible);
-            return;
-        }
-
-        addScaleAnimators(mIdentityDiscButton, isVisible);
+        mIsIdentityDiscButtonVisible = isVisible;
+        if (!mShowTransitionAnimations) mIdentityDiscButton.setVisibility(getVisibility(isVisible));
     }
 
     /**
@@ -340,7 +352,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * */
     void setStartSurfaceMode(boolean inStartSurfaceMode) {
         mInStartSurfaceMode = inStartSurfaceMode;
-        updateToolbarVisibility();
+        startToolbarVisibilityAnimations();
     }
 
     /**
@@ -349,25 +361,20 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * */
     void setToolbarVisibility(boolean shouldShowStartSurfaceToolbar) {
         mShouldShow = shouldShowStartSurfaceToolbar;
-        updateToolbarVisibility();
+        startToolbarVisibilityAnimations();
     }
 
     /**
+     * If transition animations shouldn't show, visibility is updated; Otherwise animations of tab
+     * switcher button are added in startToolbarVisibilityAnimations() and visibility is set when
+     * animations end.
      * @param isVisible Whether the tab switcher button is visible.
      */
     void setTabSwitcherButtonVisibility(boolean isVisible) {
-        if (mTabSwitcherButtonView.getVisibility() == getVisibility(isVisible)) {
-            return;
-        }
-
-        if (!mShowAnimation) {
+        mIsTabSwitcherButtonVisible = isVisible;
+        if (!mShowTransitionAnimations) {
             mTabSwitcherButtonView.setVisibility(getVisibility(isVisible));
         }
-
-        // If the animation should be shown, the visibility of the tab switcher button will be
-        // updated in the {@link finishMoveIncognitoToggleAnimation} called when the moving
-        // incognito toggle animation ends.
-        mShowTabSwitcherButton = isVisible;
     }
 
     /**
@@ -391,43 +398,47 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     void setShowAnimation(boolean showAnimation) {
-        mShowAnimation = showAnimation;
+        mShowTransitionAnimations = showAnimation;
     }
 
     /**
-     * Start animation to show or hide toolbar.
+     * If transition animations shouldn't show, start animation to show or hide toolbar; Otherwise
+     * show transition animations.
      */
-    private void updateToolbarVisibility() {
+    private void startToolbarVisibilityAnimations() {
         boolean shouldShowStartSurfaceToolbar = mInStartSurfaceMode && mShouldShow;
 
-        if (!mShowAnimation) {
+        if (mLayoutChangeAnimatorSet != null) mLayoutChangeAnimatorSet.cancel();
+
+        if (!mShowTransitionAnimations) {
             if (shouldShowStartSurfaceToolbar == mIsShowing) return;
             mIsShowing = shouldShowStartSurfaceToolbar;
 
-            if (mLayoutChangeAnimator != null) {
-                mLayoutChangeAnimator.cancel();
-                finishFadeAnimation(this, shouldShowStartSurfaceToolbar);
-                return;
-            }
-
-            addFadeAnimator(this, shouldShowStartSurfaceToolbar);
+            // If transition animations of sub components shouldn't show, the fade animator of
+            // toolbar view should show by default.
+            addFadeAnimator(this, shouldShowStartSurfaceToolbar, MEDIUM_DURATION_MS,
+                    /* delay = */ 0, Interpolators.LINEAR_INTERPOLATOR);
+        } else if (shouldShowStartSurfaceToolbar) {
+            addTransitionAnimators();
         }
 
-        mLayoutChangeAnimator = new AnimatorSet();
-        mLayoutChangeAnimator.playTogether(mAnimators);
-        mLayoutChangeAnimator.addListener(new CancelAwareAnimatorListener() {
+        assert mLayoutChangeAnimatorSet == null;
+        mLayoutChangeAnimatorSet = new AnimatorSet();
+        mLayoutChangeAnimatorSet.playTogether(mAnimators);
+        mLayoutChangeAnimatorSet.addListener(new CancelAwareAnimatorListener() {
             @Override
             public void onCancel(Animator animator) {
                 mAnimators.clear();
-                mLayoutChangeAnimator = null;
+                mLayoutChangeAnimatorSet = null;
             }
             @Override
             public void onEnd(Animator animator) {
                 mAnimators.clear();
-                mLayoutChangeAnimator = null;
+                mLayoutChangeAnimatorSet = null;
+                mShowTransitionAnimations = false;
             }
         });
-        mLayoutChangeAnimator.start();
+        mLayoutChangeAnimatorSet.start();
     }
 
     private void updatePrimaryColorAndTint(boolean isIncognito) {
@@ -442,102 +453,209 @@ class StartSurfaceToolbarView extends RelativeLayout {
         }
     }
 
-    private void addScaleAnimators(View targetView, boolean showTargetView) {
-        // Set shrinking and expanding animations for the targetView and they will be started in
-        // {@link updateToolbarVisibility}.
+    private void addTransitionAnimators() {
+        addFadeAnimator(mLogo, mIsLogoVisible,
+                mIsLogoVisible ? SLOW_DURATION_MS : MEDIUM_DURATION_MS,
+                mIsLogoVisible ? SHORT_DELAY_MS : 0, Interpolators.LINEAR_INTERPOLATOR);
+
+        addScaleAnimators(mNewTabButton, mIsNewTabButtonVisible, MEDIUM_DURATION_MS,
+                mIsNewTabButtonVisible ? MEDIUM_DELAY_MS : 0,
+                mIsNewTabButtonVisible ? Interpolators.DECELERATE_INTERPOLATOR
+                                       : Interpolators.ACCELERATE_INTERPOLATOR);
+        addFadeAnimator(mNewTabButton, mIsNewTabButtonVisible, MEDIUM_DURATION_MS,
+                mIsNewTabButtonVisible ? MEDIUM_DELAY_MS : 0, Interpolators.LINEAR_INTERPOLATOR);
+
+        addScaleAnimators(mHomeButton, mIsHomeButtonVisible, MEDIUM_DURATION_MS,
+                mIsHomeButtonVisible ? MEDIUM_DELAY_MS : 0,
+                mIsHomeButtonVisible ? Interpolators.DECELERATE_INTERPOLATOR
+                                     : Interpolators.ACCELERATE_INTERPOLATOR);
+        addFadeAnimator(mHomeButton, mIsHomeButtonVisible, MEDIUM_DURATION_MS,
+                mIsHomeButtonVisible ? MEDIUM_DELAY_MS : 0, Interpolators.LINEAR_INTERPOLATOR);
+
+        addScaleAnimators(mIdentityDiscButton, mIsIdentityDiscButtonVisible,
+                mIsIdentityDiscButtonVisible ? MEDIUM_DURATION_MS : FAST_DURATION_MS,
+                /* delay = */ 0,
+                mIsIdentityDiscButtonVisible ? Interpolators.DECELERATE_INTERPOLATOR
+                                             : Interpolators.ACCELERATE_INTERPOLATOR);
+        addFadeAnimator(mIdentityDiscButton, mIsIdentityDiscButtonVisible, MEDIUM_DURATION_MS,
+                /* delay = */ 0, Interpolators.LINEAR_INTERPOLATOR);
+
+        if (mIncognitoToggleTabLayout.getVisibility() == getVisibility(mIsIncognitoToggleVisible)) {
+            // If the visibility of incognito toggle layout isn't changed, we need to animate
+            // the tab switcher button view itself.
+            addScaleAnimators(mTabSwitcherButtonView, mIsTabSwitcherButtonVisible,
+                    MEDIUM_DURATION_MS, mIsTabSwitcherButtonVisible ? SHORT_DELAY_MS : 0,
+                    mIsTabSwitcherButtonVisible ? Interpolators.DECELERATE_INTERPOLATOR
+                                                : Interpolators.ACCELERATE_INTERPOLATOR);
+            addFadeAnimator(mTabSwitcherButtonView, mIsTabSwitcherButtonVisible, MEDIUM_DURATION_MS,
+                    mIsTabSwitcherButtonVisible ? MEDIUM_DELAY_MS : 0,
+                    Interpolators.LINEAR_INTERPOLATOR);
+        } else {
+            // If the visibility of incognito toggle layout is changed, we show its fade animations
+            // and moving animations and update the visibility of the tab switcher button in {@link
+            // finishMoveIncognitoToggleAnimation}.
+            addFadeAnimator(mIncognitoToggleTabLayout.getIncognitoButtonIcon(),
+                    mIsIncognitoToggleVisible,
+                    mIsIncognitoToggleVisible ? FAST_DURATION_MS : SUPER_FAST_DURATION_MS,
+                    mIsIncognitoToggleVisible ? SHORT_DELAY_MS : 0,
+                    Interpolators.LINEAR_INTERPOLATOR);
+            addMoveIncognitoToggleAnimator(mIsIncognitoToggleVisible);
+        }
+    }
+
+    private void addScaleAnimators(View targetView, boolean showTargetView, long duration,
+            long delay, BaseInterpolator interpolator) {
+        if (targetView.getVisibility() == getVisibility(showTargetView)) return;
+
+        // Set shrinking and expanding animations for the targetView. Set visibility as VISIBLE here
+        // to show the animation. The visibility will be finally set in finishScaleAnimators().
         targetView.setVisibility(View.VISIBLE);
+        targetView.setScaleX(showTargetView ? 0.0f : 1.0f);
+        targetView.setScaleY(showTargetView ? 0.0f : 1.0f);
+
         Animator scaleAnimator = ObjectAnimator
                                          .ofFloat(targetView, SCALE_X, showTargetView ? 0.0f : 1.0f,
                                                  showTargetView ? 1.0f : 0.0f)
-                                         .setDuration(mAnimationDuration);
-        scaleAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+                                         .setDuration(duration);
+        scaleAnimator.setStartDelay(delay);
+        if (ARE_INTERPOLATORS_ENABLED) scaleAnimator.setInterpolator(interpolator);
         mAnimators.add(scaleAnimator);
 
         scaleAnimator = ObjectAnimator
                                 .ofFloat(targetView, SCALE_Y, showTargetView ? 0.0f : 1.0f,
                                         showTargetView ? 1.0f : 0.0f)
-                                .setDuration(mAnimationDuration);
+                                .setDuration(duration);
+        scaleAnimator.setStartDelay(delay);
+        if (ARE_INTERPOLATORS_ENABLED) scaleAnimator.setInterpolator(interpolator);
         scaleAnimator.addListener(new CancelAwareAnimatorListener() {
             @Override
             public void onCancel(Animator animator) {
-                finishScaleAnimations(targetView, showTargetView);
+                finishScaleAnimators(targetView, showTargetView);
             }
             @Override
             public void onEnd(Animator animator) {
-                finishScaleAnimations(targetView, showTargetView);
+                finishScaleAnimators(targetView, showTargetView);
             }
         });
         mAnimators.add(scaleAnimator);
     }
 
-    private void finishScaleAnimations(View targetView, boolean showTargetView) {
-        targetView.setVisibility(showTargetView ? View.VISIBLE : View.GONE);
+    private void finishScaleAnimators(View targetView, boolean showTargetView) {
+        targetView.setVisibility(getVisibility(showTargetView));
         targetView.setScaleX(1.0f);
         targetView.setScaleY(1.0f);
     }
 
-    private void addFadeAnimator(View targetView, boolean showTargetView) {
+    private void addFadeAnimator(View targetView, boolean showTargetView, long duration, long delay,
+            Interpolator interpolator) {
+        if (targetView.getVisibility() == getVisibility(showTargetView)
+                && targetView != mIncognitoToggleTabLayout.getIncognitoButtonIcon()) {
+            return;
+        }
         // Show the fade-in and fade-out animation. Set visibility as VISIBLE here to show the
-        // animation. The visibility will be finally set in finishFadeAnimation().
+        // animation. The visibility will be finally set in finishFadeAnimator().
         targetView.setVisibility(View.VISIBLE);
         targetView.setAlpha(showTargetView ? 0.0f : 1.0f);
         Animator opacityAnimator =
                 ObjectAnimator.ofFloat(targetView, ALPHA, showTargetView ? 1.0f : 0.0f)
-                        .setDuration(mAnimationDuration);
-        opacityAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+                        .setDuration(duration);
+        opacityAnimator.setStartDelay(delay);
+        opacityAnimator.setInterpolator(interpolator);
         opacityAnimator.addListener(new CancelAwareAnimatorListener() {
             @Override
             public void onCancel(Animator animator) {
-                finishFadeAnimation(targetView, showTargetView);
+                finishFadeAnimator(targetView, showTargetView);
             }
             @Override
             public void onEnd(Animator animator) {
-                finishFadeAnimation(targetView, showTargetView);
+                finishFadeAnimator(targetView, showTargetView);
             }
         });
         mAnimators.add(opacityAnimator);
     }
 
-    private void finishFadeAnimation(View targetView, boolean showTargetView) {
-        targetView.setVisibility(showTargetView ? View.VISIBLE : View.GONE);
+    private void finishFadeAnimator(View targetView, boolean showTargetView) {
+        // If targetView is the incognito button icon in incognito toggle layout, we cannot set it
+        // gone because it will cause the incognito toggle distorted. The alpha will be reset in
+        // finishMoveIncognitoToggleAnimator() after incognito toggle layout visibility is set.
+        if (targetView == mIncognitoToggleTabLayout.getIncognitoButtonIcon()) return;
+        targetView.setVisibility(getVisibility(showTargetView));
         targetView.setAlpha(1.0f);
     }
 
     private void addMoveIncognitoToggleAnimator(boolean showIncognitoToggle) {
+        if (mIncognitoToggleTabLayout.getVisibility() == getVisibility(showIncognitoToggle)) return;
         mIncognitoToggleTabLayout.setVisibility(View.VISIBLE);
+        mTabSwitcherButtonView.setVisibility(View.GONE);
 
+        // Add the animation for toggle indicator width change.
+        ValueAnimator valueAnimator =
+                ValueAnimator.ofInt(showIncognitoToggle ? 0 : mToolbarButtonWidthPx / 2,
+                        showIncognitoToggle ? mToolbarButtonWidthPx / 2 : 0);
+        valueAnimator.addUpdateListener(animator -> {
+            mIncognitoToggleTabLayout.setTabIndicatorFullWidth(false);
+            mIncognitoToggleTabLayout.getTabSelectedIndicator().setBounds(
+                    mToolbarButtonWidthPx / 2 - (int) valueAnimator.getAnimatedValue(),
+                    mIncognitoToggleIndicatorBounds.top,
+                    mToolbarButtonWidthPx / 2 + (int) valueAnimator.getAnimatedValue(),
+                    mIncognitoToggleIndicatorBounds.bottom);
+        });
+        valueAnimator.setDuration(showIncognitoToggle ? SLOW_DURATION_MS : SUPER_FAST_DURATION_MS);
+        if (ARE_INTERPOLATORS_ENABLED) {
+            valueAnimator.setInterpolator(showIncognitoToggle
+                            ? Interpolators.DECELERATE_INTERPOLATOR
+                            : Interpolators.ACCELERATE_INTERPOLATOR);
+        }
+        mAnimators.add(valueAnimator);
+
+        // Add the animation for incognito toggle moving.
         mIncognitoToggleTabLayout.setX(
                 showIncognitoToggle ? mTabSwitcherButtonX : mIncognitoToggleX);
         Animator xAnimator =
                 ObjectAnimator
                         .ofFloat(mIncognitoToggleTabLayout, X,
                                 showIncognitoToggle ? mIncognitoToggleX : mTabSwitcherButtonX)
-                        .setDuration(mAnimationDuration);
-        xAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+                        .setDuration(StartSurfaceToolbarView.SLOW_DURATION_MS);
+        if (ARE_INTERPOLATORS_ENABLED) {
+            xAnimator.setInterpolator(Interpolators.ACCELERATE_DECELERATE_INTERPOLATOR);
+        }
         xAnimator.addListener(new CancelAwareAnimatorListener() {
             @Override
             public void onCancel(Animator animator) {
-                finishMoveIncognitoToggleAnimation(showIncognitoToggle);
+                finishMoveIncognitoToggleAnimator(showIncognitoToggle);
             }
             @Override
             public void onEnd(Animator animator) {
-                finishMoveIncognitoToggleAnimation(showIncognitoToggle);
+                finishMoveIncognitoToggleAnimator(showIncognitoToggle);
             }
         });
         mAnimators.add(xAnimator);
     }
 
-    private void finishMoveIncognitoToggleAnimation(boolean showIncognitoToggle) {
-        mTabSwitcherButtonView.setVisibility(mShowTabSwitcherButton ? View.VISIBLE : View.GONE);
-        mIncognitoToggleTabLayout.setVisibility(showIncognitoToggle ? View.VISIBLE : View.GONE);
+    private void finishMoveIncognitoToggleAnimator(boolean showIncognitoToggle) {
+        mTabSwitcherButtonView.setVisibility(getVisibility(mIsTabSwitcherButtonVisible));
+        mIncognitoToggleTabLayout.setVisibility(getVisibility(showIncognitoToggle));
+        mIncognitoToggleTabLayout.getIncognitoButtonIcon().setAlpha(1.0f);
         mIncognitoToggleTabLayout.setX(mIncognitoToggleX);
+        mIncognitoToggleTabLayout.getTabSelectedIndicator().setBounds(
+                showIncognitoToggle ? 0 : mToolbarButtonWidthPx / 2,
+                mIncognitoToggleIndicatorBounds.top,
+                showIncognitoToggle ? mToolbarButtonWidthPx : mToolbarButtonWidthPx / 2,
+                mIncognitoToggleIndicatorBounds.bottom);
+        mIncognitoToggleTabLayout.setTabIndicatorFullWidth(true);
     }
 
     private void setIncognitoToggleTabSwitcherButtonXs() {
         int screenWidthPx = dpToPx(getResources().getConfiguration().screenWidthDp);
-        int buttonWidthPx = getResources().getDimensionPixelOffset(R.dimen.toolbar_button_width);
-        mIncognitoToggleX = (float) screenWidthPx / 2 - buttonWidthPx;
-        mTabSwitcherButtonX = screenWidthPx - buttonWidthPx * 2;
+        mToolbarButtonWidthPx =
+                getResources().getDimensionPixelOffset(R.dimen.toolbar_button_width);
+        mIncognitoToggleX = (float) screenWidthPx / 2 - mToolbarButtonWidthPx;
+        mTabSwitcherButtonX = screenWidthPx - mToolbarButtonWidthPx * 2;
+        if (mIncognitoToggleIndicatorBounds == null
+                && mIncognitoToggleTabLayout.getTabSelectedIndicator() != null) {
+            mIncognitoToggleIndicatorBounds =
+                    mIncognitoToggleTabLayout.getTabSelectedIndicator().getBounds();
+        }
     }
 
     private int getVisibility(boolean isVisible) {
