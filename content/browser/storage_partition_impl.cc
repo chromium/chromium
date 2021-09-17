@@ -1051,31 +1051,15 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
 
   void OnCookiesAccessed(
       network::mojom::CookieAccessDetailsPtr details) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
         storage_partition_->GetServiceWorkerContext();
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(&OnServiceWorkerCookiesAccessedOnCoreThread,
-                       service_worker_context, std::move(details)));
-  }
-
-  static void OnServiceWorkerCookiesAccessedOnCoreThread(
-      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-      network::mojom::CookieAccessDetailsPtr details) {
     std::vector<GlobalRenderFrameHostId> destinations =
         *service_worker_context->GetWindowClientFrameRoutingIds(
             blink::StorageKey(url::Origin::Create(details->url)));
     if (destinations.empty())
       return;
-    RunOrPostTaskOnThread(
-        FROM_HERE, BrowserThread::UI,
-        base::BindOnce(&ReportCookiesAccessedOnUI, std::move(destinations),
-                       std::move(details)));
-  }
 
-  static void ReportCookiesAccessedOnUI(
-      std::vector<GlobalRenderFrameHostId> destinations,
-      network::mojom::CookieAccessDetailsPtr details) {
     for (GlobalRenderFrameHostId frame_id : destinations) {
       if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
         rfh->OnCookiesAccessed(mojo::Clone(details));
