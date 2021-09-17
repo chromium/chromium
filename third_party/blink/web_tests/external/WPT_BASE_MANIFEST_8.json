@@ -9717,6 +9717,13 @@
       {}
      ]
     ],
+    "local_FileSystemBaseHandle-rename-manual.https.html": [
+     "e3e5305320cf53fc10772d8ba5befead5b94e9ea",
+     [
+      null,
+      {}
+     ]
+    ],
     "local_FileSystemDirectoryHandle-getDirectoryHandle-manual.https.html": [
      "63a88538e8b915e80d334949ca2b2b619d3e9654",
      [
@@ -93739,6 +93746,32 @@
        {}
       ]
      ],
+     "flex-container-max-content-001.html": [
+      "35cf9a9f0421a93c5fe4e93e7590a1ca8f4a7c66",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flex-container-min-content-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flex-container-min-content-001.html": [
+      "c328230362d5c4fe8a6342b37769e37dd2babb46",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flex-container-min-content-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "flex-direction-column-reverse.html": [
       "dc19045be7e4a99d2fb7f30adec490022761ed30",
       [
@@ -113535,6 +113568,19 @@
         [
          [
           "/css/css-highlight-api/painting/custom-highlight-painting-below-grammar-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-painting-below-selection.html": [
+       "cd5ad36a690995607c7aedfba5a0a84e77a81fb3",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-below-selection-ref.html",
           "=="
          ]
         ],
@@ -225854,7 +225900,7 @@
        []
       ],
       "box-shadow-interpolation-expected.txt": [
-       "83a8d423116f5266eafa670261a1d4d564850a08",
+       "8ffcb3b011de256b1d5d4c546ad1b75542fd9b59",
        []
       ],
       "invalidation": {
@@ -230520,6 +230566,14 @@
      ],
      "flex-child-percent-basis-resize-1-ref.html": [
       "2ee6b077d3c6a9375029209a6ce202478db437a4",
+      []
+     ],
+     "flex-container-max-content-001-ref.html": [
+      "d5b9ad0f1fc400882f3d3438a5bc33fc1c861f38",
+      []
+     ],
+     "flex-container-min-content-001-ref.html": [
+      "9d756f9a12365dda4a3c153a64acb84451a2e971",
       []
      ],
      "flex-direction-row-vertical-ref.html": [
@@ -241293,6 +241347,10 @@
       ],
       "custom-highlight-painting-below-grammar-ref.html": [
        "d660daf7c745efeb663e652d83a6e92c9d6e39d0",
+       []
+      ],
+      "custom-highlight-painting-below-selection-ref.html": [
+       "5c7bd9361bfa81a49561549faa1a677e7b9df6a0",
        []
       ],
       "custom-highlight-painting-below-target-text-ref.html": [
@@ -253466,7 +253524,7 @@
      ],
      "animations": {
       "text-shadow-interpolation-expected.txt": [
-       "44988596a6be4a83d932b3e5d2a34a0b3186928b",
+       "613595bf62495063841a65b61d2f71af7596d3b3",
        []
       ]
      },
@@ -266474,6 +266532,10 @@
      ],
      "FileSystemBaseHandle-remove.js": [
       "8e3daba7abc07797c356172bcf7a70c0dd11ed67",
+      []
+     ],
+     "FileSystemBaseHandle-rename.js": [
+      "cb9f766a0dc60133327d81903eb8ffa9ffbf98df",
       []
      ],
      "FileSystemDirectoryHandle-getDirectoryHandle.js": [
@@ -310586,7 +310648,7 @@
      ]
     ],
     "structured-clone.any.js": [
-     "bb469a94eac0a40135af0269c256998d123cb8c8",
+     "d66de1da5ce65a95b79200d2c618f1568cfe1d21",
      [
       "IndexedDB/structured-clone.any.html?1-20",
       {
@@ -336995,7 +337057,7 @@
        ]
       ],
       "box-shadow-interpolation.html": [
-       "d99e08faf137e05c48ad68938a83666fd3473a8f",
+       "d6c438737d1192c542aef194b8bf7bfdf9d07102",
        [
         null,
         {}
@@ -355236,7 +355298,7 @@
        ]
       ],
       "text-shadow-interpolation.html": [
-       "c007816ecb04236421ff0aea8861da19c244338a",
+       "d4a75654a9c8438403e8d4ae73139a5ce63d5b34",
        [
         null,
         {}
@@ -394479,6 +394541,47 @@
         [
          "script",
          "script-tests/FileSystemBaseHandle-remove.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "sandboxed_FileSystemBaseHandle-rename.https.any.js": [
+     "889fedcb5d938537d0b66e5fcf5ff6df9a5992cd",
+     [
+      "file-system-access/sandboxed_FileSystemBaseHandle-rename.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-rename.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "file-system-access/sandboxed_FileSystemBaseHandle-rename.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-rename.js"
         ]
        ]
       }
@@ -435163,6 +435266,13 @@
       ],
       "Element.getElementsByTagName-foreign-02.html": [
        "aabb169b1b5696f37af396bc4cbd65d06f74a0e4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "adoption_agency_check_the_end_tag_name.html": [
+       "f5d49dd45fc4bdaa0e7acaeab4e07c9c0be14093",
        [
         null,
         {}

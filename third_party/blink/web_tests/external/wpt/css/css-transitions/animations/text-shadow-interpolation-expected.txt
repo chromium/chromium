@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 144 tests; 140 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 168 tests; 164 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS CSS Transitions: property <text-shadow> from neutral to [green 20px 20px 20px] at (-0.3) should be [rgb(255, 176, 0) 7px 33px 7px]
 PASS CSS Transitions: property <text-shadow> from neutral to [green 20px 20px 20px] at (0) should be [rgb(255, 165, 0) 10px 30px 10px]
 PASS CSS Transitions: property <text-shadow> from neutral to [green 20px 20px 20px] at (0.3) should be [rgb(179, 154, 0) 13px 27px 13px]
@@ -144,5 +144,29 @@ PASS Web Animations: property <text-shadow> from [black 10px 10px 10px] to [curr
 PASS Web Animations: property <text-shadow> from [black 10px 10px 10px] to [currentColor 10px 10px 10px] at (0.6) should be [rgb(0, 77, 0) 10px 10px 10px]
 PASS Web Animations: property <text-shadow> from [black 10px 10px 10px] to [currentColor 10px 10px 10px] at (1) should be [rgb(0, 128, 0) 10px 10px 10px]
 PASS Web Animations: property <text-shadow> from [black 10px 10px 10px] to [currentColor 10px 10px 10px] at (1.5) should be [rgb(0, 192, 0) 10px 10px 10px]
+PASS CSS Transitions: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (-0.3) should be [rgb(0, 0, 0) -0.3px -0.3px 0px]
+PASS CSS Transitions: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0) should be [rgb(0, 0, 0) 0px 0px 0px]
+PASS CSS Transitions: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0.3) should be [rgb(0, 0, 0) 0.3px 0.3px 0.3px]
+PASS CSS Transitions: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0.6) should be [rgb(0, 0, 0) 0.6px 0.6px 0.6px]
+PASS CSS Transitions: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (1) should be [rgb(0, 0, 0) 1px 1px 1px]
+PASS CSS Transitions: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (1.5) should be [rgb(0, 0, 0) 1.5px 1.5px 1.5px]
+PASS CSS Transitions with transition: all: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (-0.3) should be [rgb(0, 0, 0) -0.3px -0.3px 0px]
+PASS CSS Transitions with transition: all: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0) should be [rgb(0, 0, 0) 0px 0px 0px]
+PASS CSS Transitions with transition: all: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0.3) should be [rgb(0, 0, 0) 0.3px 0.3px 0.3px]
+PASS CSS Transitions with transition: all: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0.6) should be [rgb(0, 0, 0) 0.6px 0.6px 0.6px]
+PASS CSS Transitions with transition: all: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (1) should be [rgb(0, 0, 0) 1px 1px 1px]
+PASS CSS Transitions with transition: all: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (1.5) should be [rgb(0, 0, 0) 1.5px 1.5px 1.5px]
+PASS CSS Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (-0.3) should be [rgb(0, 0, 0) -0.3px -0.3px 0px]
+PASS CSS Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0) should be [rgb(0, 0, 0) 0px 0px 0px]
+PASS CSS Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0.3) should be [rgb(0, 0, 0) 0.3px 0.3px 0.3px]
+PASS CSS Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0.6) should be [rgb(0, 0, 0) 0.6px 0.6px 0.6px]
+PASS CSS Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (1) should be [rgb(0, 0, 0) 1px 1px 1px]
+PASS CSS Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (1.5) should be [rgb(0, 0, 0) 1.5px 1.5px 1.5px]
+PASS Web Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (-0.3) should be [rgb(0, 0, 0) -0.3px -0.3px 0px]
+PASS Web Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0) should be [rgb(0, 0, 0) 0px 0px 0px]
+PASS Web Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0.3) should be [rgb(0, 0, 0) 0.3px 0.3px 0.3px]
+PASS Web Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (0.6) should be [rgb(0, 0, 0) 0.6px 0.6px 0.6px]
+PASS Web Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (1) should be [rgb(0, 0, 0) 1px 1px 1px]
+PASS Web Animations: property <text-shadow> from [black 0px 0px 0px] to [black 1px 1px 1px] at (1.5) should be [rgb(0, 0, 0) 1.5px 1.5px 1.5px]
 Harness: the test ran to completion.
 

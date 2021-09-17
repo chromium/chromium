@@ -2771,6 +2771,8 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-flexbox/flex-container-max-content-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-flexbox/flex-container-min-content-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-flexbox/table-as-item-specified-width-vertical.html [ Failure ]
 crbug.com/626703 [ Linux ] wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Timeout ]
