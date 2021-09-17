@@ -1010,6 +1010,18 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
             withError:(NSError*)error {
   [self didReceiveWKNavigationDelegateCallback];
 
+  // |webView:didFailNavigation:withError:| may be called after the document has
+  // already loaded which should be ignored. This can happen when navigating
+  // back to a page which loads from the back forward cache. See
+  // crbug.com/1249735 for more details. This will also be called when the user
+  // cancels an active page load.
+  if (self.navigationState == web::WKNavigationState::FINISHED &&
+      error.code == NSURLErrorCancelled &&
+      [error.domain isEqualToString:NSURLErrorDomain]) {
+    _certVerificationErrors->Clear();
+    return;
+  }
+
   [self.navigationStates setState:web::WKNavigationState::FAILED
                     forNavigation:navigation];
 
