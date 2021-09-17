@@ -32,7 +32,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace ash {
+namespace chromeos {
+
 namespace {
 
 const char* const kReportingFlags[] = {
@@ -57,7 +58,7 @@ const char kBluetoothDeviceNamePrefix[] = "Bluetooth device name: ";
 // VersionInfoUpdater public:
 
 VersionInfoUpdater::VersionInfoUpdater(Delegate* delegate)
-    : cros_settings_(CrosSettings::Get()), delegate_(delegate) {}
+    : cros_settings_(chromeos::CrosSettings::Get()), delegate_(delegate) {}
 
 VersionInfoUpdater::~VersionInfoUpdater() {
   policy::BrowserPolicyConnectorAsh* connector =
@@ -108,7 +109,8 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
 
   // Get ADB sideloading status if supported on device. Otherwise, default is to
   // not show.
-  if (base::FeatureList::IsEnabled(features::kArcAdbSideloadingFeature)) {
+  if (base::FeatureList::IsEnabled(
+      chromeos::features::kArcAdbSideloadingFeature)) {
     chromeos::SessionManagerClient* client =
         chromeos::SessionManagerClient::Get();
     client->QueryAdbSideload(
@@ -233,4 +235,4 @@ void VersionInfoUpdater::OnQueryAdbSideload(
     delegate_->OnAdbSideloadStatusUpdated(enabled);
 }
 
-}  // namespace ash
+}  // namespace chromeos

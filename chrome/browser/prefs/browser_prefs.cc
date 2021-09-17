@@ -990,7 +990,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::language_prefs::RegisterPrefs(registry);
   chromeos::local_search_service::SearchMetricsReporter::
       RegisterLocalStatePrefs(registry);
-  ash::login::SecurityTokenSessionController::RegisterLocalStatePrefs(registry);
+  chromeos::login::SecurityTokenSessionController::RegisterLocalStatePrefs(
+      registry);
   ash::MultiProfileUserController::RegisterPrefs(registry);
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);
   chromeos::NetworkThrottlingObserver::RegisterPrefs(registry);
@@ -1004,7 +1005,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::SchedulerConfigurationManager::RegisterLocalStatePrefs(registry);
   ash::ServicesCustomizationDocument::RegisterPrefs(registry);
   chromeos::SigninScreenHandler::RegisterPrefs(registry);
-  ash::StartupUtils::RegisterPrefs(registry);
+  chromeos::StartupUtils::RegisterPrefs(registry);
   ash::StatsReportingController::RegisterLocalStatePrefs(registry);
   ash::system::AutomaticRebootManager::RegisterPrefs(registry);
   chromeos::TimeZoneResolver::RegisterPrefs(registry);
@@ -1304,7 +1305,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::file_system_provider::RegisterProfilePrefs(registry);
   ash::full_restore::RegisterProfilePrefs(registry);
   ash::KerberosCredentialsManager::RegisterProfilePrefs(registry);
-  ash::login::SecurityTokenSessionController::RegisterProfilePrefs(registry);
+  chromeos::login::SecurityTokenSessionController::RegisterProfilePrefs(
+      registry);
   chromeos::multidevice_setup::MultiDeviceSetupService::RegisterProfilePrefs(
       registry);
   ash::MultiProfileUserController::RegisterProfilePrefs(registry);
@@ -1326,7 +1328,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::SigninErrorNotifier::RegisterPrefs(registry);
   ash::ServicesCustomizationDocument::RegisterProfilePrefs(registry);
   chromeos::settings::OSSettingsUI::RegisterProfilePrefs(registry);
-  ash::StartupUtils::RegisterOobeProfilePrefs(registry);
+  chromeos::StartupUtils::RegisterOobeProfilePrefs(registry);
   ash::UserImageSyncObserver::RegisterProfilePrefs(registry);
   crostini::prefs::RegisterProfilePrefs(registry);
   ash::attestation::TpmChallengeKey::RegisterProfilePrefs(registry);

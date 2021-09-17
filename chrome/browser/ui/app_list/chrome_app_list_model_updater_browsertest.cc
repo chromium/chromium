@@ -34,7 +34,7 @@ constexpr char kOemAppId[] = "emfkafnhnpcmabnnkckkchdilgeoekbo";
 
 }  // namespace
 
-class OemAppPositionTest : public ash::LoginManagerTest {
+class OemAppPositionTest : public chromeos::LoginManagerTest {
  public:
   OemAppPositionTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(1);

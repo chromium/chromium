@@ -190,8 +190,7 @@ SigninScreenHandler::SigninScreenHandler(
       core_oobe_view_(core_oobe_view),
       proxy_auth_dialog_reload_times_(kMaxGaiaReloadForProxyAuthDialog),
       gaia_screen_handler_(gaia_screen_handler),
-      histogram_helper_(
-          std::make_unique<ErrorScreensHistogramHelper>("Signin")) {
+      histogram_helper_(new ErrorScreensHistogramHelper("Signin")) {
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
   DCHECK(core_oobe_view_);

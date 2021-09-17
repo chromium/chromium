@@ -77,7 +77,8 @@ std::unique_ptr<ArcAppsTracker> ArcDataSnapshotdDelegate::CreateAppsTracker() {
 
 void ArcDataSnapshotdDelegate::RestartChrome(
     const base::CommandLine& command_line) {
-  ash::RestartChrome(command_line, ash::RestartChromeReason::kUserless);
+  chromeos::RestartChrome(command_line,
+                          chromeos::RestartChromeReason::kUserless);
 }
 
 void ArcDataSnapshotdDelegate::OnArcSessionStopped(arc::ArcStopReason reason) {

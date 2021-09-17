@@ -9,7 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
-namespace ash {
+namespace chromeos {
 
 ScreenManager::ScreenManager() = default;
 
@@ -41,4 +41,4 @@ void ScreenManager::DeleteScreenForTesting(OobeScreenId screen) {
   screens_[screen] = nullptr;
 }
 
-}  // namespace ash
+}  // namespace chromeos

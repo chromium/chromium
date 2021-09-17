@@ -7,7 +7,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 
-namespace ash {
+namespace chromeos {
+
 namespace {
 
 const char kOobeErrorScreensCounterPrefix[] = "OOBE.NetworkErrorShown.";
@@ -118,4 +119,4 @@ ErrorScreensHistogramHelper::~ErrorScreensHistogramHelper() {
   }
 }
 
-}  // namespace ash
+}  // namespace chromeos

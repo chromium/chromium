@@ -39,16 +39,16 @@ gfx::ImageSkia GetImage() {
 }
 
 std::u16string GetTitle(
-    ash::login::SecurityTokenSessionController::Behavior behavior) {
+    chromeos::login::SecurityTokenSessionController::Behavior behavior) {
   switch (behavior) {
-    case ash::login::SecurityTokenSessionController::Behavior::kLogout:
+    case chromeos::login::SecurityTokenSessionController::Behavior::kLogout:
       return l10n_util::GetStringUTF16(
           IDS_SECURITY_TOKEN_SESSION_LOGOUT_NOTIFICATION_TITLE);
-    case ash::login::SecurityTokenSessionController::Behavior::kLock:
+    case chromeos::login::SecurityTokenSessionController::Behavior::kLock:
       return l10n_util::GetStringFUTF16(
           IDS_SECURITY_TOKEN_SESSION_LOCK_NOTIFICATION_TITLE,
           ui::GetChromeOSDeviceName());
-    case ash::login::SecurityTokenSessionController::Behavior::kIgnore:
+    case chromeos::login::SecurityTokenSessionController::Behavior::kIgnore:
       // Intentionally falling through to NOTREACHED().
       break;
   }
@@ -57,15 +57,15 @@ std::u16string GetTitle(
 }
 
 std::u16string GetButtonLabel(
-    ash::login::SecurityTokenSessionController::Behavior behavior) {
+    chromeos::login::SecurityTokenSessionController::Behavior behavior) {
   switch (behavior) {
-    case ash::login::SecurityTokenSessionController::Behavior::kLogout:
+    case chromeos::login::SecurityTokenSessionController::Behavior::kLogout:
       return l10n_util::GetStringUTF16(
           IDS_SECURITY_TOKEN_SESSION_LOGOUT_NOTIFICATION_BUTTON_TITLE);
-    case ash::login::SecurityTokenSessionController::Behavior::kLock:
+    case chromeos::login::SecurityTokenSessionController::Behavior::kLock:
       return l10n_util::GetStringUTF16(
           IDS_SECURITY_TOKEN_SESSION_LOCK_NOTIFICATION_BUTTON_TITLE);
-    case ash::login::SecurityTokenSessionController::Behavior::kIgnore:
+    case chromeos::login::SecurityTokenSessionController::Behavior::kIgnore:
       // Intentionally falling through to NOTREACHED().
       break;
   }
@@ -74,13 +74,13 @@ std::u16string GetButtonLabel(
 }
 
 std::u16string GetDialogText(
-    ash::login::SecurityTokenSessionController::Behavior behavior,
+    chromeos::login::SecurityTokenSessionController::Behavior behavior,
     const std::string& domain,
     base::TimeDelta time_remaining) {
   // The text and the arguments required for it depend on both `behavior` and
   // `time_remaining`.
   switch (behavior) {
-    case ash::login::SecurityTokenSessionController::Behavior::kLogout:
+    case chromeos::login::SecurityTokenSessionController::Behavior::kLogout:
       if (time_remaining <= kLastUpdateTime) {
         return base::i18n::MessageFormatter::FormatWithNumberedArgs(
             l10n_util::GetStringUTF16(
@@ -91,7 +91,7 @@ std::u16string GetDialogText(
           l10n_util::GetStringUTF16(
               IDS_SECURITY_TOKEN_SESSION_LOGOUT_NOTIFICATION_BODY),
           time_remaining.InSeconds(), domain);
-    case ash::login::SecurityTokenSessionController::Behavior::kLock:
+    case chromeos::login::SecurityTokenSessionController::Behavior::kLock:
       if (time_remaining <= kLastUpdateTime) {
         return base::i18n::MessageFormatter::FormatWithNumberedArgs(
             l10n_util::GetStringUTF16(
@@ -102,7 +102,7 @@ std::u16string GetDialogText(
           l10n_util::GetStringUTF16(
               IDS_SECURITY_TOKEN_SESSION_LOCK_NOTIFICATION_BODY),
           time_remaining.InSeconds(), ui::GetChromeOSDeviceName(), domain);
-    case ash::login::SecurityTokenSessionController::Behavior::kIgnore:
+    case chromeos::login::SecurityTokenSessionController::Behavior::kIgnore:
       break;
   }
   NOTREACHED();
@@ -114,7 +114,7 @@ std::u16string GetDialogText(
 SecurityTokenSessionRestrictionView::SecurityTokenSessionRestrictionView(
     base::TimeDelta duration,
     base::OnceClosure accept_callback,
-    ash::login::SecurityTokenSessionController::Behavior behavior,
+    chromeos::login::SecurityTokenSessionController::Behavior behavior,
     const std::string& domain)
     : AppDialogView(GetImage()),
       behavior_(behavior),

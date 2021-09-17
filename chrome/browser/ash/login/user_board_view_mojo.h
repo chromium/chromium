@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/ui/views/user_board_view.h"
 
-namespace ash {
+namespace chromeos {
 
 // UserBoardView implementation that forwards calls to ash via mojo.
 class UserBoardViewMojo : public UserBoardView {
@@ -51,6 +51,12 @@ class UserBoardViewMojo : public UserBoardView {
   base::WeakPtrFactory<UserBoardViewMojo> weak_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::UserBoardViewMojo;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USER_BOARD_VIEW_MOJO_H_

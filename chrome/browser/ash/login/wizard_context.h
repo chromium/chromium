@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/values.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/user_context.h"
 
-namespace ash {
+namespace chromeos {
+
+class UserContext;
 
 // Structure that defines data that need to be passed between screens during
 // WizardController flows.
@@ -72,6 +72,12 @@ class WizardContext {
   std::unique_ptr<UserContext> extra_factors_auth_session;
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::WizardContext;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_WIZARD_CONTEXT_H_

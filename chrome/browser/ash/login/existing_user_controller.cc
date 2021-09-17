@@ -127,11 +127,12 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/views/widget/widget.h"
 
-namespace ash {
-namespace {
-
 using RebootOnSignOutPolicy =
-    ::enterprise_management::DeviceRebootOnUserSignoutProto;
+    enterprise_management::DeviceRebootOnUserSignoutProto;
+
+namespace chromeos {
+
+namespace {
 
 const char kAutoLaunchNotificationId[] =
     "chrome://managed_guest_session/auto_launch";
@@ -972,7 +973,7 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
             ->GetBrokerForUser(user_id);
     bool privacy_warnings_enabled =
         g_browser_process->local_state()->GetBoolean(
-            prefs::kManagedGuestSessionPrivacyWarningsEnabled);
+            ash::prefs::kManagedGuestSessionPrivacyWarningsEnabled);
     if (ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker) &&
         privacy_warnings_enabled) {
       ShowAutoLaunchManagedGuestSessionNotification();
@@ -1003,7 +1004,7 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
             SystemTrayClientImpl::Get()->ShowEnterpriseInfo();
           }));
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kAutoLaunchNotificationId,
           title, message, std::u16string(), GURL(),
           message_center::NotifierId(
@@ -1024,7 +1025,7 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
   profile_prepared_ = true;
 
   chromeos::UserContext user_context =
-      UserContext(*ProfileHelper::Get()->GetUserByProfile(profile));
+      UserContext(*chromeos::ProfileHelper::Get()->GetUserByProfile(profile));
   auto* profile_connector = profile->GetProfilePolicyConnector();
   bool is_enterprise_managed =
       profile_connector->IsManaged() &&
@@ -1180,8 +1181,8 @@ bool ExistingUserController::password_changed() const {
 user_manager::UserList ExistingUserController::ExtractLoginUsers(
     const user_manager::UserList& users) {
   bool show_users_on_signin;
-  CrosSettings::Get()->GetBoolean(chromeos::kAccountsPrefShowUserNamesOnSignIn,
-                                  &show_users_on_signin);
+  chromeos::CrosSettings::Get()->GetBoolean(
+      chromeos::kAccountsPrefShowUserNamesOnSignIn, &show_users_on_signin);
   user_manager::UserList filtered_users;
   for (auto* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
@@ -1725,4 +1726,4 @@ AccountId ExistingUserController::GetLastLoginAttemptAccountId() const {
   return last_login_attempt_account_id_;
 }
 
-}  // namespace ash
+}  // namespace chromeos

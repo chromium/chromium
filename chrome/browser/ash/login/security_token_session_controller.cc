@@ -49,8 +49,9 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-namespace ash {
+namespace chromeos {
 namespace login {
+
 namespace {
 
 // Possible values of prefs::kSecurityTokenSessionBehavior. This needs to match
@@ -96,7 +97,7 @@ bool SanitizeDomain(const std::string& domain, std::string& sanitized_domain) {
 void DisplayNotification(const std::u16string& title,
                          const std::u16string& text) {
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title,
           text,
           /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
@@ -418,4 +419,4 @@ void SecurityTokenSessionController::Reset() {
 }
 
 }  // namespace login
-}  // namespace ash
+}  // namespace chromeos

@@ -18,7 +18,8 @@
 #include "net/cert/x509_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
+
 namespace {
 
 CertificateProviderService* GetCertificateProviderService() {
@@ -97,4 +98,4 @@ void LoginClientCertUsageObserver::OnSignCompleted(
   used_extension_id_ = extension_id;
 }
 
-}  // namespace ash
+}  // namespace chromeos

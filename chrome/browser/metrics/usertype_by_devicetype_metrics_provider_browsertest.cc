@@ -320,14 +320,15 @@ class UserTypeByDeviceTypeMetricsProviderTest
     auto* host = ash::LoginDisplayHost::default_host();
     ASSERT_TRUE(host);
     host->StartSignInScreen();
-    auto* controller = ash::ExistingUserController::current_controller();
+    chromeos::ExistingUserController* controller =
+        chromeos::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
 
     chromeos::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
                                        account_id_1_);
     user_context.SetPublicSessionLocale(std::string());
     user_context.SetPublicSessionInputMethod(std::string());
-    controller->Login(user_context, ash::SigninSpecifics());
+    controller->Login(user_context, chromeos::SigninSpecifics());
   }
 
   void PrepareAppLaunch() {

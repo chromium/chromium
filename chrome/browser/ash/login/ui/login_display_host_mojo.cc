@@ -498,7 +498,7 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
     return;
   }
 
-  existing_user_controller_->Login(user_context, SigninSpecifics());
+  existing_user_controller_->Login(user_context, chromeos::SigninSpecifics());
 }
 
 void LoginDisplayHostMojo::HandleAuthenticateUserWithEasyUnlock(
@@ -560,7 +560,7 @@ void LoginDisplayHostMojo::HandleLaunchPublicSession(
   UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT, account_id);
   context.SetPublicSessionLocale(locale);
   context.SetPublicSessionInputMethod(input_method);
-  existing_user_controller_->Login(context, SigninSpecifics());
+  existing_user_controller_->Login(context, chromeos::SigninSpecifics());
 }
 
 void LoginDisplayHostMojo::OnAuthFailure(const AuthFailure& error) {
@@ -676,7 +676,7 @@ void LoginDisplayHostMojo::OnChallengeResponseKeysPrepared(
   *user_context.GetMutableChallengeResponseKeys() =
       std::move(challenge_response_keys);
 
-  existing_user_controller_->Login(user_context, SigninSpecifics());
+  existing_user_controller_->Login(user_context, chromeos::SigninSpecifics());
 }
 
 void LoginDisplayHostMojo::ShowDialog() {

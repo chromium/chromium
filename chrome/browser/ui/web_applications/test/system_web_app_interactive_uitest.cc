@@ -501,9 +501,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
 // it's less complicated to add SWA to LoginManagerTest than adding multi-logins
 // to SWA browsertest.
 class SystemWebAppManagerMultiDesktopLaunchBrowserTest
-    : public ash::LoginManagerTest {
+    : public chromeos::LoginManagerTest {
  public:
-  SystemWebAppManagerMultiDesktopLaunchBrowserTest() : ash::LoginManagerTest() {
+  SystemWebAppManagerMultiDesktopLaunchBrowserTest()
+      : chromeos::LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;

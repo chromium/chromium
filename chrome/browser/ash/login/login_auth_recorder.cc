@@ -8,11 +8,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace ash {
-namespace {
+namespace chromeos {
 
 using AuthMethod = LoginAuthRecorder::AuthMethod;
 using AuthMethodSwitchType = LoginAuthRecorder::AuthMethodSwitchType;
+
+namespace {
 
 absl::optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kPassword, current);
@@ -152,7 +153,7 @@ void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
       is_locked ? "Ash.Login.Lock.AuthMethod." : "Ash.Login.Login.AuthMethod.";
 
   // Record usage of the authentication method in login/lock screen.
-  const bool is_tablet_mode = TabletMode::Get()->InTabletMode();
+  const bool is_tablet_mode = ash::TabletMode::Get()->InTabletMode();
   std::string used_metric_name;
   if (is_tablet_mode) {
     base::UmaHistogramEnumeration(prefix + "Used.TabletMode", method);
@@ -177,4 +178,4 @@ void LoginAuthRecorder::OnSessionStateChanged() {
   last_auth_method_ = AuthMethod::kNothing;
 }
 
-}  // namespace ash
+}  // namespace chromeos

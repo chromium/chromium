@@ -21,7 +21,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
+
 namespace {
 
 // Mock implementation of UserOnlineSigninNotifier::Observer.
@@ -308,4 +309,4 @@ TEST_F(UserOnlineSigninNotifierTest, GaiaOnlineAuthGaiaPolicyNotSet) {
   EXPECT_FALSE(online_login_refresh_timer()->IsRunning());
 }
 
-}  // namespace ash
+}  // namespace chromeos

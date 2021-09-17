@@ -7,7 +7,7 @@
 
 #include "base/values.h"
 
-namespace ash {
+namespace chromeos {
 namespace configuration {
 // Configuration keys that are used to automate OOBE screens go here.
 // Please keep keys grouped by screens and ordered according to OOBE flow.
@@ -57,15 +57,21 @@ void FilterConfiguration(const base::Value& configuration,
                          ConfigurationHandlerSide side,
                          base::Value& filtered_result);
 }  // namespace configuration
-}  // namespace ash
+}  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace chromeos {
+namespace ash {
 namespace configuration {
-using ::ash::configuration::ConfigurationHandlerSide;
-using ::ash::configuration::FilterConfiguration;
+using ::chromeos::configuration::kDeviceRequisition;
+using ::chromeos::configuration::kEnableDemoMode;
+using ::chromeos::configuration::kEnrollmentAssetId;
+using ::chromeos::configuration::kEnrollmentAutoAttributes;
+using ::chromeos::configuration::kEnrollmentLocation;
+using ::chromeos::configuration::kRestoreAfterRollback;
+using ::chromeos::configuration::kUpdateSkipUpdate;
+using ::chromeos::configuration::kWizardAutoEnroll;
 }  // namespace configuration
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_CONFIGURATION_KEYS_H_

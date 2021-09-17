@@ -8,10 +8,11 @@
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 
-namespace ash {
+namespace chromeos {
+
 namespace {
 
-class FakeUserManagerWithLocalState : public FakeChromeUserManager {
+class FakeUserManagerWithLocalState : public chromeos::FakeChromeUserManager {
  public:
   explicit FakeUserManagerWithLocalState(MockUserManager* mock_user_manager)
       : mock_user_manager_(mock_user_manager),
@@ -45,4 +46,4 @@ MockUserManager* ExistingUserControllerBaseTest::mock_user_manager() {
   return mock_user_manager_;
 }
 
-}  // namespace ash
+}  // namespace chromeos

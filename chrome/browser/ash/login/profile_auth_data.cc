@@ -17,10 +17,11 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace {
+using content::BrowserThread;
 
-using ::content::BrowserThread;
+namespace chromeos {
+
+namespace {
 
 // Callback that receives the key for from_partition's saved http auth cache
 // proxy entries.
@@ -202,4 +203,4 @@ void ProfileAuthData::Transfer(
                   transfer_saml_auth_cookies_on_subsequent_login);
 }
 
-}  // namespace ash
+}  // namespace chromeos

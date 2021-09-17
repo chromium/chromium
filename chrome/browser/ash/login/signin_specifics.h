@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace ash {
+namespace chromeos {
 
 // This structure encapsulates some specific parameters of signin flows that are
 // not general enough to be put to UserContext.
@@ -24,12 +24,12 @@ struct SigninSpecifics {
   bool is_auto_login = false;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace chromeos {
-using ::ash::SigninSpecifics;
+namespace ash {
+using ::chromeos::SigninSpecifics;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_SPECIFICS_H_

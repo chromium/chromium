@@ -228,7 +228,7 @@ void WaitForOperationConfirmed() {
 
 // Verify clipboard history's features in the multiprofile environment.
 class ClipboardHistoryWithMultiProfileBrowserTest
-    : public ash::LoginManagerTest {
+    : public chromeos::LoginManagerTest {
  public:
   ClipboardHistoryWithMultiProfileBrowserTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);
@@ -348,9 +348,9 @@ class ClipboardHistoryWithMultiProfileBrowserTest
     EXPECT_TRUE(item_view->IsSelected());
   }
 
-  // ash::LoginManagerTest:
+  // chromeos::LoginManagerTest:
   void SetUpOnMainThread() override {
-    ash::LoginManagerTest::SetUpOnMainThread();
+    chromeos::LoginManagerTest::SetUpOnMainThread();
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         ash::Shell::GetPrimaryRootWindow());
   }

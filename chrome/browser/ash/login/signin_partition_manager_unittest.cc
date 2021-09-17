@@ -38,10 +38,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace ash {
+namespace chromeos {
 namespace login {
-namespace {
 
+namespace {
 constexpr char kEmbedderUrl[] = "http://www.whatever.com/";
 
 void StorePartitionNameAndQuitLoop(base::RunLoop* loop,
@@ -295,4 +295,4 @@ TEST_F(SigninPartitionManagerTest, HttpAuthCacheTransferred) {
 }
 
 }  // namespace login
-}  // namespace ash
+}  // namespace chromeos

@@ -39,7 +39,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void Finalize(base::OnceClosure) override;
   void FinalizeImmediately() override;
   void SetStatusAreaVisible(bool visible) override;
-  void StartWizard(OobeScreenId first_screen) override;
+  void StartWizard(chromeos::OobeScreenId first_screen) override;
   WizardController* GetWizardController() override;
   KioskLaunchController* GetKioskLaunchController() override;
   void StartUserAdding(base::OnceClosure completion_callback) override;

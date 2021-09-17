@@ -28,10 +28,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace {
+using testing::Return;
 
-using ::testing::Return;
+namespace chromeos {
+
+namespace {
 
 const char kSamlToken1[] = "saml-token-1";
 const char kSamlToken2[] = "saml-token-2";
@@ -155,4 +156,4 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   EXPECT_EQ(password_sync_token_checkers_size(), 0);
 }
 
-}  // namespace ash
+}  // namespace chromeos

@@ -47,7 +47,7 @@ class ChromeSessionManager : public session_manager::SessionManager {
                           bool is_child) override;
 
  private:
-  std::unique_ptr<OobeConfiguration> oobe_configuration_;
+  std::unique_ptr<chromeos::OobeConfiguration> oobe_configuration_;
   std::unique_ptr<UserSessionInitializer> user_session_initializer_;
 };
 

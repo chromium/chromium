@@ -14,7 +14,7 @@
 #include "chromeos/login/auth/challenge_response_key.h"
 #include "net/cert/x509_certificate.h"
 
-namespace ash {
+namespace chromeos {
 
 // Observes and remembers the extension-provided client certificates that were
 // used to successfully sign data on the login screen.
@@ -55,12 +55,6 @@ class LoginClientCertUsageObserver final
   std::string used_extension_id_;
 };
 
-}  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::LoginClientCertUsageObserver;
-}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_CLIENT_CERT_USAGE_OBSERVER_H_

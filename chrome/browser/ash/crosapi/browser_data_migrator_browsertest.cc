@@ -20,7 +20,7 @@
 #include "content/public/test/test_launcher.h"
 
 namespace ash {
-class BrowserDataMigratorRestartTest : public ash::LoginManagerTest {
+class BrowserDataMigratorRestartTest : public chromeos::LoginManagerTest {
  public:
   BrowserDataMigratorRestartTest() = default;
   BrowserDataMigratorRestartTest(BrowserDataMigratorRestartTest&) = delete;
@@ -28,7 +28,7 @@ class BrowserDataMigratorRestartTest : public ash::LoginManagerTest {
       delete;
   ~BrowserDataMigratorRestartTest() override = default;
 
-  // ash::LoginManagerTest:
+  // chromeos::LoginManagerTest:
   void SetUp() override {
     if (content::IsPreTest()) {
       feature_list_.InitAndDisableFeature(chromeos::features::kLacrosSupport);
@@ -42,7 +42,7 @@ class BrowserDataMigratorRestartTest : public ash::LoginManagerTest {
     // screen on `MigrateOnRestart`.
     login_manager_.set_session_restore_enabled();
 
-    ash::LoginManagerTest::SetUp();
+    chromeos::LoginManagerTest::SetUp();
   }
 
   void LoginAsRegularUser() {

@@ -763,7 +763,7 @@ class ArcOobeTest : public ChromeArcUtilTest {
  public:
   ArcOobeTest() {
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    oobe_configuration_ = std::make_unique<ash::OobeConfiguration>();
+    oobe_configuration_ = std::make_unique<chromeos::OobeConfiguration>();
   }
 
   ArcOobeTest(const ArcOobeTest&) = delete;
@@ -789,7 +789,7 @@ class ArcOobeTest : public ChromeArcUtilTest {
   void CloseLoginDisplayHost() { fake_login_display_host_.reset(); }
 
  private:
-  std::unique_ptr<ash::OobeConfiguration> oobe_configuration_;
+  std::unique_ptr<chromeos::OobeConfiguration> oobe_configuration_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
 };
 

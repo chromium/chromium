@@ -99,8 +99,8 @@ LoginLaunchManagedGuestSessionFunction::Run() {
     return RespondNow(Error(login_api_errors::kAlreadyActiveSession));
   }
 
-  auto* existing_user_controller =
-      ash::ExistingUserController::current_controller();
+  chromeos::ExistingUserController* existing_user_controller =
+      chromeos::ExistingUserController::current_controller();
   if (existing_user_controller->IsSigninInProgress()) {
     return RespondNow(Error(login_api_errors::kAnotherLoginAttemptInProgress));
   }
@@ -116,7 +116,7 @@ LoginLaunchManagedGuestSessionFunction::Run() {
       context.SetManagedGuestSessionLaunchExtensionId(extension_id());
     }
 
-    existing_user_controller->Login(context, ash::SigninSpecifics());
+    existing_user_controller->Login(context, chromeos::SigninSpecifics());
     return RespondNow(NoArguments());
   }
   return RespondNow(Error(login_api_errors::kNoManagedGuestSessionAccounts));

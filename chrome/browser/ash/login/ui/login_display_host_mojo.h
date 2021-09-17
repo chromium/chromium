@@ -15,10 +15,18 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/existing_user_controller.h"
+// TODO(https://crbug.com/1164001): use forward declaration.
+#include "chrome/browser/ash/login/mojo_system_info_dispatcher.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_impl.h"
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/ui/oobe_ui_dialog_delegate.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/user_board_view_mojo.h"
+// TODO(https://crbug.com/1164001): use forward declaration.
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
@@ -32,12 +40,8 @@ class View;
 }  // namespace views
 
 namespace ash {
-class ExistingUserController;
 class LoginDisplayMojo;
-class MojoSystemInfoDispatcher;
 class OobeUIDialogDelegate;
-class UserBoardViewMojo;
-class WizardController;
 
 // A LoginDisplayHost instance that sends requests to the views-based signin
 // screen.

@@ -12,7 +12,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 
 class ErrorScreensHistogramHelperTest : public testing::Test {
  public:
@@ -116,4 +116,4 @@ TEST_F(ErrorScreensHistogramHelperTest, TestShowShowHideTime) {
                                  2000, 1);
 }
 
-}  // namespace ash
+}  // namespace chromeos

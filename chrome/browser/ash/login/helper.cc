@@ -41,7 +41,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace ash {
+namespace chromeos {
 
 gfx::Rect CalculateScreenBounds(const gfx::Size& size) {
   gfx::Rect bounds = display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
@@ -166,4 +166,5 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
 }
 
 }  // namespace login
-}  // namespace ash
+
+}  // namespace chromeos

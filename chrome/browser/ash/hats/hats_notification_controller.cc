@@ -38,7 +38,6 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/strings/grit/ui_strings.h"
 
-namespace ash {
 namespace {
 
 const char kNotificationOriginUrl[] = "chrome://hats";
@@ -69,13 +68,13 @@ bool DidShowSurveyToProfileRecently(Profile* profile,
 // OOBE. This is an indirect measure of whether the owner has used the device
 // for at least |new_device_threshold| time.
 bool IsNewDevice(base::TimeDelta new_device_threshold) {
-  return StartupUtils::GetTimeSinceOobeFlagFileCreation() <=
+  return chromeos::StartupUtils::GetTimeSinceOobeFlagFileCreation() <=
          new_device_threshold;
 }
 
 // Returns true if the |kForceHappinessTrackingSystem| flag is enabled for the
 // current survey.
-bool IsTestingEnabled(const HatsConfig& hats_config) {
+bool IsTestingEnabled(const ash::HatsConfig& hats_config) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (command_line->HasSwitch(
@@ -89,6 +88,8 @@ bool IsTestingEnabled(const HatsConfig& hats_config) {
 }
 
 }  // namespace
+
+namespace ash {
 
 // static
 const char HatsNotificationController::kNotificationId[] = "hats_notification";
@@ -241,7 +242,7 @@ void HatsNotificationController::OnPortalDetectionCompleted(
   if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
     // Create and display the notification for the user.
     if (!notification_) {
-      notification_ = CreateSystemNotification(
+      notification_ = ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_TITLE),
           l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_BODY),

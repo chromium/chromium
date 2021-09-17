@@ -65,7 +65,7 @@ void TestMirrorRequestForProfile(net::EmbeddedTestServer* test_server,
 
 // This is a Chrome OS-only test ensuring that mirror account consistency is
 // enabled for child accounts, but not enabled for other account types.
-class ChromeOsMirrorAccountConsistencyTest : public ash::LoginManagerTest {
+class ChromeOsMirrorAccountConsistencyTest : public chromeos::LoginManagerTest {
  protected:
   ~ChromeOsMirrorAccountConsistencyTest() override {}
 
@@ -75,7 +75,7 @@ class ChromeOsMirrorAccountConsistencyTest : public ash::LoginManagerTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ash::LoginManagerTest::SetUpCommandLine(command_line);
+    chromeos::LoginManagerTest::SetUpCommandLine(command_line);
 
     // HTTPS server only serves a valid cert for localhost, so this is needed to
     // load pages from "www.google.com" without an interstitial.
@@ -94,7 +94,7 @@ class ChromeOsMirrorAccountConsistencyTest : public ash::LoginManagerTest {
     net::test_server::RegisterDefaultHandlers(test_server_.get());
     ASSERT_TRUE(test_server_->Start());
 
-    ash::LoginManagerTest::SetUpOnMainThread();
+    chromeos::LoginManagerTest::SetUpOnMainThread();
   }
 
   AccountId account_id_;

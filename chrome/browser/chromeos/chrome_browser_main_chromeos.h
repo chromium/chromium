@@ -20,10 +20,6 @@
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/login/demo_mode/demo_mode_resources_remover.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/login/login_screen_extensions_lifetime_manager.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/login/login_screen_extensions_storage_cleaner.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
@@ -95,6 +91,8 @@ namespace chromeos {
 
 class DebugdNotificationHandler;
 class FastTransitionObserver;
+class LoginScreenExtensionsLifetimeManager;
+class LoginScreenExtensionsStorageCleaner;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;

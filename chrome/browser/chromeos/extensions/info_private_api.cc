@@ -327,7 +327,8 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
   }
 
   if (property_name == kPropertyInitialLocale) {
-    return std::make_unique<base::Value>(ash::StartupUtils::GetInitialLocale());
+    return std::make_unique<base::Value>(
+        chromeos::StartupUtils::GetInitialLocale());
   }
 
   if (property_name == kPropertyBoard) {

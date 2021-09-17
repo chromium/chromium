@@ -31,7 +31,6 @@
 #include "components/web_resource/web_resource_pref_names.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace ash {
 namespace {
 
 constexpr char kDisableHIDDetectionScreenForTests[] =
@@ -92,6 +91,8 @@ void CreateOobeCompleteFlagFile() {
 
 }  // namespace
 
+namespace chromeos {
+
 // static
 void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOobeComplete, false);
@@ -118,7 +119,7 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
   // initialized along with `kOobeOnboardingTime`.
   registry->RegisterBooleanPref(
       arc::prefs::kArcPlayStoreLaunchMetricCanBeRecorded, false);
-  OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
+  ash::OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
 }
 
 // static
@@ -241,4 +242,4 @@ bool StartupUtils::IsDeviceOwned() {
          connector->IsDeviceEnterpriseManaged();
 }
 
-}  // namespace ash
+}  // namespace chromeos

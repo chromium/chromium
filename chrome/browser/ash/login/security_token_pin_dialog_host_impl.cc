@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 
-namespace ash {
+namespace chromeos {
 
 SecurityTokenPinDialogHostImpl::SecurityTokenPinDialogHostImpl() = default;
 
@@ -45,7 +45,7 @@ void SecurityTokenPinDialogHostImpl::ShowSecurityTokenPinDialog(
   pin_entered_callback_ = std::move(pin_entered_callback);
   pin_dialog_closed_callback_ = std::move(pin_dialog_closed_callback);
 
-  SecurityTokenPinRequest request;
+  ash::SecurityTokenPinRequest request;
   request.account_id = *authenticating_user_account_id;
   request.code_type = code_type;
   request.enable_user_input = enable_user_input;
@@ -58,14 +58,14 @@ void SecurityTokenPinDialogHostImpl::ShowSecurityTokenPinDialog(
       base::BindOnce(&SecurityTokenPinDialogHostImpl::OnClosedByUser,
                      weak_ptr_factory_.GetWeakPtr());
 
-  LoginScreen::Get()->RequestSecurityTokenPin(std::move(request));
+  ash::LoginScreen::Get()->RequestSecurityTokenPin(std::move(request));
 }
 
 void SecurityTokenPinDialogHostImpl::CloseSecurityTokenPinDialog() {
   DCHECK(is_request_running());
 
   Reset();
-  LoginScreen::Get()->ClearSecurityTokenPinRequest();
+  ash::LoginScreen::Get()->ClearSecurityTokenPinRequest();
 }
 
 void SecurityTokenPinDialogHostImpl::OnUserInputReceived(
@@ -90,4 +90,4 @@ void SecurityTokenPinDialogHostImpl::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-}  // namespace ash
+}  // namespace chromeos

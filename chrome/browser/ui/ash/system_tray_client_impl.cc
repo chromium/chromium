@@ -9,7 +9,6 @@
 #include "ash/public/cpp/update_types.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -430,8 +429,9 @@ void SystemTrayClientImpl::ShowPublicAccountInfo() {
 void SystemTrayClientImpl::ShowEnterpriseInfo() {
   // At the login screen, lock screen, etc. show enterprise help in a window.
   if (SessionManager::Get()->IsUserSessionBlocked()) {
-    base::MakeRefCounted<ash::HelpAppLauncher>(/*parent_window=*/nullptr)
-        ->ShowHelpTopic(ash::HelpAppLauncher::HELP_ENTERPRISE);
+    scoped_refptr<chromeos::HelpAppLauncher> help_app(
+        new chromeos::HelpAppLauncher(nullptr /* parent_window */));
+    help_app->ShowHelpTopic(chromeos::HelpAppLauncher::HELP_ENTERPRISE);
     return;
   }
 

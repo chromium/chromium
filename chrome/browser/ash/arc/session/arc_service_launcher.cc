@@ -131,7 +131,7 @@ ArcServiceLauncher::ArcServiceLauncher(
   DCHECK(g_arc_service_launcher == nullptr);
   g_arc_service_launcher = this;
 
-  if (!ash::StartupUtils::IsOobeCompleted()) {
+  if (!chromeos::StartupUtils::IsOobeCompleted()) {
     arc_demo_mode_preference_handler_ =
         ArcDemoModePreferenceHandler::Create(arc_session_manager_.get());
   }

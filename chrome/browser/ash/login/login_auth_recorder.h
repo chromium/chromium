@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
-namespace ash {
+namespace chromeos {
 
 // A metrics recorder that records login authentication related metrics.
 // This keeps track of the last authentication method we used and records
@@ -83,6 +83,12 @@ class LoginAuthRecorder : public session_manager::SessionManagerObserver {
   AuthMethod last_auth_method_ = AuthMethod::kNothing;
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::LoginAuthRecorder;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_AUTH_RECORDER_H_

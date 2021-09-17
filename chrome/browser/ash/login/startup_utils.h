@@ -15,7 +15,7 @@ namespace base {
 class TimeDelta;
 }
 
-namespace ash {
+namespace chromeos {
 
 // Static utility methods used at startup time to get/change bits of device
 // state.
@@ -75,12 +75,12 @@ class StartupUtils {
   static bool IsDeviceOwned();
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace chromeos {
-using ::ash::StartupUtils;
+namespace ash {
+using ::chromeos::StartupUtils;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_STARTUP_UTILS_H_

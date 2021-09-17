@@ -73,12 +73,12 @@
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_switches.h"
 
-namespace ash {
-namespace {
+using net::test_server::BasicHttpResponse;
+using net::test_server::HttpRequest;
+using net::test_server::HttpResponse;
 
-using ::net::test_server::BasicHttpResponse;
-using ::net::test_server::HttpRequest;
-using ::net::test_server::HttpResponse;
+namespace chromeos {
+namespace {
 
 constexpr char kArcTosID[] = "arc-tos";
 enum class ArcState { kNotAvailable, kAcceptTerms };
@@ -102,9 +102,9 @@ void RunWelcomeScreenChecks() {
 
   test::OobeJS().ExpectFocused({"connect", "welcomeScreen", "getStarted"});
 
-  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
   EXPECT_TRUE(test::IsScanningRequestedOnNetworkScreen());
 }
@@ -112,9 +112,9 @@ void RunWelcomeScreenChecks() {
 void RunNetworkSelectionScreenChecks() {
   test::OobeJS().ExpectEnabledPath({"network-selection", "nextButton"});
 
-  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS().CreateFocusWaiter({"network-selection", "nextButton"})->Wait();
   EXPECT_TRUE(test::IsScanningRequestedOnNetworkScreen());
@@ -128,9 +128,9 @@ void RunEulaScreenChecks() {
   test::OobeJS().ExpectEnabledPath({"oobe-eula-md", "acceptButton"});
   test::OobeJS().CreateFocusWaiter({"oobe-eula-md", "crosEulaFrame"})->Wait();
 
-  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown);
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown);
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_FALSE(test::IsScanningRequestedOnNetworkScreen());
 }
 
@@ -174,24 +174,25 @@ void RunSyncConsentScreenChecks() {
   screen->SetProfileSyncEngineInitializedForTesting(true);
   screen->OnStateChanged(nullptr);
 
-  const std::string button_name = features::IsSyncConsentOptionalEnabled()
-                                      ? "acceptButton"
-                                      : "nonSplitSettingsAcceptButton";
+  const std::string button_name =
+      chromeos::features::IsSyncConsentOptionalEnabled()
+          ? "acceptButton"
+          : "nonSplitSettingsAcceptButton";
   test::OobeJS().ExpectEnabledPath({"sync-consent", button_name});
   test::OobeJS().CreateFocusWaiter({"sync-consent", button_name})->Wait();
 
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 }
 
 void RunFingerprintScreenChecks() {
   test::OobeJS().ExpectVisible("fingerprint-setup");
   test::OobeJS().ExpectVisiblePath({"fingerprint-setup", "setupFingerprint"});
 
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 }
 
 void RunPinSetupScreenChecks() {
@@ -199,9 +200,9 @@ void RunPinSetupScreenChecks() {
   test::OobeJS().ExpectVisiblePath({"pin-setup", "setup"});
   test::OobeJS().CreateFocusWaiter({"pin-setup", "pinKeyboard"})->Wait();
 
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 }
 
 // Waits for the ARC terms of service screen to be shown, it accepts
@@ -210,9 +211,9 @@ void HandleArcTermsOfServiceScreen() {
   OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'arc-tos' screen.";
 
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS()
       .CreateEnabledWaiter(true, {"arc-tos", "arcTosNextButton"})
@@ -241,9 +242,9 @@ void HandleRecommendAppsScreen() {
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'recommend-apps' screen.";
 
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS()
       .CreateVisibilityWaiter(true, {"recommend-apps", "appsDialog"})
@@ -304,9 +305,9 @@ void HandleAppDownloadingScreen() {
   OobeScreenWaiter(AppDownloadingScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'app-downloading' screen.";
 
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
   const std::initializer_list<base::StringPiece> continue_button = {
       "app-downloading", "continue-setup-button"};
@@ -328,9 +329,9 @@ void HandleAssistantOptInScreen() {
   OobeScreenWaiter(AssistantOptInFlowScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'assistant-optin' screen.";
 
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS()
       .CreateVisibilityWaiter(true, {"assistant-optin-flow", "card", "loading"})
@@ -379,7 +380,7 @@ void HandleMarketingOptInScreen() {
   // Enable the tablet mode shelf navigation buttons so that the next button
   // is shown on the marketing opt in screen in tablet mode.
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, true);
+      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, true);
 
   test::OobeJS().CreateVisibilityWaiter(true, {"marketing-opt-in"})->Wait();
   test::OobeJS()
@@ -510,11 +511,11 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
              params_.hide_shelf_controls_in_tablet_mode, params_.arc_state) =
         parameters;
     if (params_.hide_shelf_controls_in_tablet_mode) {
-      feature_list_.InitWithFeatures({features::kHideShelfControlsInTabletMode},
-                                     {});
+      feature_list_.InitWithFeatures(
+          {ash::features::kHideShelfControlsInTabletMode}, {});
     } else {
       feature_list_.InitWithFeatures(
-          {}, {features::kHideShelfControlsInTabletMode});
+          {}, {ash::features::kHideShelfControlsInTabletMode});
     }
   }
 
@@ -533,7 +534,7 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (params_.is_tablet) {
       // Makes the device capable to entering tablet mode.
-      command_line->AppendSwitch(switches::kAshEnableTabletMode);
+      command_line->AppendSwitch(ash::switches::kAshEnableTabletMode);
       // Having an active internal display so that tablet mode does not end
       // on display config change.
       command_line->AppendSwitch(::switches::kUseFirstDisplayAsInternal);
@@ -565,7 +566,7 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
 
   void SetUpOnMainThread() override {
     if (params_.is_tablet)
-      ShellTestApi().SetTabletModeEnabledForTest(true);
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
     if (params_.arc_state != ArcState::kNotAvailable) {
       // Init ArcSessionManager for testing.
@@ -1082,4 +1083,4 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool(),
                      testing::Values(ArcState::kNotAvailable,
                                      ArcState::kAcceptTerms)));
-}  //  namespace ash
+}  //  namespace chromeos

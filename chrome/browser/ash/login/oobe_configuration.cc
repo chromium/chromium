@@ -14,7 +14,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
-namespace ash {
+namespace chromeos {
 
 // static
 OobeConfiguration* OobeConfiguration::instance = nullptr;
@@ -88,7 +88,8 @@ void OobeConfiguration::OnConfigurationCheck(bool has_configuration,
   if (!parsed_json.value) {
     LOG(ERROR) << "Error parsing OOBE configuration: "
                << parsed_json.error_message;
-  } else if (!configuration::ValidateConfiguration(*parsed_json.value)) {
+  } else if (!chromeos::configuration::ValidateConfiguration(
+                 *parsed_json.value)) {
     LOG(ERROR) << "Invalid OOBE configuration";
   } else {
     configuration_ =
@@ -116,4 +117,4 @@ void OobeConfiguration::NotifyObservers() {
     observer.OnOobeConfigurationChanged();
 }
 
-}  // namespace ash
+}  // namespace chromeos

@@ -19,8 +19,9 @@
 #include "components/user_manager/known_user.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 
-namespace ash {
+namespace chromeos {
 namespace lock_screen_utils {
+
 namespace {
 
 bool SetUserInputMethodImpl(
@@ -85,7 +86,8 @@ std::string GetUserLastInputMethod(const AccountId& account_id) {
 
   // Try profile prefs. For the ephemeral case known_user does not persist the
   // data.
-  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   if (profile && profile->GetPrefs()) {
     input_method = profile->GetPrefs()->GetString(prefs::kLastLoginInputMethod);
     if (!input_method.empty())
@@ -113,7 +115,7 @@ std::string GetUserLastInputMethod(const AccountId& account_id) {
 }
 
 void EnforceDevicePolicyInputMethods(std::string user_input_method) {
-  auto* cros_settings = CrosSettings::Get();
+  chromeos::CrosSettings* cros_settings = chromeos::CrosSettings::Get();
   const base::ListValue* login_screen_input_methods = nullptr;
   if (!cros_settings->GetList(chromeos::kDeviceLoginScreenInputMethods,
                               &login_screen_input_methods) ||
@@ -152,9 +154,10 @@ void StopEnforcingPolicyInputMethods() {
 }
 
 void SetKeyboardSettings(const AccountId& account_id) {
-  bool auto_repeat_enabled = kDefaultKeyAutoRepeatEnabled;
+  bool auto_repeat_enabled = ash::kDefaultKeyAutoRepeatEnabled;
   if (user_manager::known_user::GetBooleanPref(
-          account_id, prefs::kXkbAutoRepeatEnabled, &auto_repeat_enabled) &&
+          account_id, ash::prefs::kXkbAutoRepeatEnabled,
+          &auto_repeat_enabled) &&
       !auto_repeat_enabled) {
     input_method::InputMethodManager::Get()
         ->GetImeKeyboard()
@@ -162,12 +165,13 @@ void SetKeyboardSettings(const AccountId& account_id) {
     return;
   }
 
-  int auto_repeat_delay = kDefaultKeyAutoRepeatDelay.InMilliseconds();
-  int auto_repeat_interval = kDefaultKeyAutoRepeatInterval.InMilliseconds();
+  int auto_repeat_delay = ash::kDefaultKeyAutoRepeatDelay.InMilliseconds();
+  int auto_repeat_interval =
+      ash::kDefaultKeyAutoRepeatInterval.InMilliseconds();
   user_manager::known_user::GetIntegerPref(
-      account_id, prefs::kXkbAutoRepeatDelay, &auto_repeat_delay);
+      account_id, ash::prefs::kXkbAutoRepeatDelay, &auto_repeat_delay);
   user_manager::known_user::GetIntegerPref(
-      account_id, prefs::kXkbAutoRepeatInterval, &auto_repeat_interval);
+      account_id, ash::prefs::kXkbAutoRepeatInterval, &auto_repeat_interval);
   input_method::AutoRepeatRate rate;
   rate.initial_delay_in_ms = auto_repeat_delay;
   rate.repeat_interval_in_ms = auto_repeat_interval;
@@ -178,15 +182,15 @@ void SetKeyboardSettings(const AccountId& account_id) {
       rate);
 }
 
-std::vector<LocaleItem> FromListValueToLocaleItem(
+std::vector<ash::LocaleItem> FromListValueToLocaleItem(
     std::unique_ptr<base::ListValue> locales) {
-  std::vector<LocaleItem> result;
+  std::vector<ash::LocaleItem> result;
   for (const auto& locale : locales->GetList()) {
     const base::DictionaryValue* dictionary;
     if (!locale.GetAsDictionary(&dictionary))
       continue;
 
-    LocaleItem locale_item;
+    ash::LocaleItem locale_item;
     dictionary->GetString("value", &locale_item.language_code);
     dictionary->GetString("title", &locale_item.title);
     std::string group_name;
@@ -199,4 +203,4 @@ std::vector<LocaleItem> FromListValueToLocaleItem(
 }
 
 }  // namespace lock_screen_utils
-}  // namespace ash
+}  // namespace chromeos

@@ -11,8 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 
-namespace ash {
-
+namespace chromeos {
 FORWARD_DECLARE_TEST(ErrorScreensHistogramHelperTest, TestShowHideTime);
 FORWARD_DECLARE_TEST(ErrorScreensHistogramHelperTest, TestShowHideShowHideTime);
 FORWARD_DECLARE_TEST(ErrorScreensHistogramHelperTest, TestShowShowHideTime);
@@ -42,12 +41,12 @@ class ErrorScreensHistogramHelper {
   base::TimeDelta time_on_error_screens_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace chromeos {
-using ::ash::ErrorScreensHistogramHelper;
+namespace ash {
+using ::chromeos::ErrorScreensHistogramHelper;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ERROR_SCREENS_HISTOGRAM_HELPER_H_

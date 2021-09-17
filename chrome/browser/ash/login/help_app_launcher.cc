@@ -20,11 +20,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace {
+using content::BrowserThread;
+using extensions::ExtensionRegistry;
 
-using ::content::BrowserThread;
-using ::extensions::ExtensionRegistry;
+namespace {
 
 // Official HelpApp extension id.
 const char kExtensionId[] = "honijodknafkokifofgiaalefdiedpko";
@@ -34,6 +33,8 @@ const char kHelpAppFormat[] = "chrome-extension://%s/oobe.html?id=%d";
 const char* g_extension_id_for_test = nullptr;
 
 }  // namespace
+
+namespace chromeos {
 
 ///////////////////////////////////////////////////////////////////////////////
 // HelpApp, public:
@@ -85,4 +86,4 @@ void HelpAppLauncher::ShowHelpTopicDialog(Profile* profile,
   // The dialog object will be deleted on dialog close.
 }
 
-}  // namespace ash
+}  // namespace chromeos

@@ -12,7 +12,7 @@ namespace ash {
 
 class FakeLoginDisplayHost::FakeBaseScreen : public BaseScreen {
  public:
-  explicit FakeBaseScreen(OobeScreenId screen_id)
+  explicit FakeBaseScreen(chromeos::OobeScreenId screen_id)
       : BaseScreen(screen_id, OobeScreenPriority::DEFAULT) {}
 
   FakeBaseScreen(const FakeBaseScreen&) = delete;

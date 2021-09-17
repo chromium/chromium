@@ -105,7 +105,7 @@ policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
 
 }  //  namespace
 
-class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
+class MinimumVersionPolicyTestBase : public chromeos::LoginManagerTest {
  public:
   MinimumVersionPolicyTestBase();
 
@@ -781,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionBeforeLoginHost, DeadlineReached) {
   EXPECT_EQ(ash::LoginDisplayHost::default_host(), nullptr);
   EXPECT_TRUE(GetMinimumVersionPolicyHandler());
   EXPECT_TRUE(GetMinimumVersionPolicyHandler()->DeadlineReached());
-  ShowLoginWizard(ash::OobeScreen::SCREEN_UNKNOWN);
+  ShowLoginWizard(chromeos::OobeScreen::SCREEN_UNKNOWN);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
   ash::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
@@ -820,9 +820,9 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPublicSessionAutoLoginTest,
             session_manager::SessionState::LOGIN_PRIMARY);
   ash::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_FALSE(
-      ash::ExistingUserController::current_controller()->IsSigninInProgress());
-  EXPECT_FALSE(ash::ExistingUserController::current_controller()
+  EXPECT_FALSE(chromeos::ExistingUserController::current_controller()
+                   ->IsSigninInProgress());
+  EXPECT_FALSE(chromeos::ExistingUserController::current_controller()
                    ->IsAutoLoginTimerRunningForTesting());
 }
 

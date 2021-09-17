@@ -654,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest, DemoModeAppLaunchSourceReported) {
 // Verifies that the duration between login and the first launcher showing by
 // a new account is recorded correctly.
 class DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest
-    : public ash::LoginManagerTest {
+    : public chromeos::LoginManagerTest {
  public:
   DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest() {
     login_mixin_.AppendRegularUsers(2);
@@ -671,9 +671,9 @@ class DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest
     ASSERT_TRUE(client->app_list_visible());
   }
 
-  // ash::LoginManagerTest:
+  // chromeos::LoginManagerTest:
   void SetUpOnMainThread() override {
-    ash::LoginManagerTest::SetUpOnMainThread();
+    chromeos::LoginManagerTest::SetUpOnMainThread();
     // Emulate to sign in to a new account. It is time-consuming for an end to
     // end test, i.e. the test covering the whole process from OOBE flow to
     // showing the launcher. Therefore we set the current user to be new
