@@ -44,7 +44,6 @@
     "backgroundfetchclick",
     "backgroundfetchfail",
     "backgroundfetchsuccess",
-    "beforeclose",
     "beforecopy",
     "beforecreatepolicy",
     "beforecut",

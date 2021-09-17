@@ -1244,12 +1244,12 @@ interface CloseEvent : Event
     method constructor
 interface CloseWatcher : EventTarget
     attribute @@toStringTag
-    getter onbeforeclose
+    getter oncancel
     getter onclose
     method constructor
     method destroy
     method signalClosed
-    setter onbeforeclose
+    setter oncancel
     setter onclose
 interface Comment : CharacterData
     attribute @@toStringTag

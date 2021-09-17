@@ -11,13 +11,13 @@ const ESC = '\u001B';
 
 test(() => {
   let watcher = new CloseWatcher();
-  let onbeforeclose_called = false;
+  let oncancel_called = false;
   let onclose_called = false;
-  watcher.onbeforeclose = e => {
+  watcher.oncancel = e => {
     assert_equals(e.constructor, Event);
     assert_true(e.cancelable);
     assert_false(e.bubbles);
-    onbeforeclose_called = true;
+    oncancel_called = true;
   }
   watcher.onclose = e => {
     assert_equals(e.constructor, Event);
@@ -28,83 +28,83 @@ test(() => {
 
   watcher.signalClosed();
 
-  assert_true(onbeforeclose_called);
+  assert_true(oncancel_called);
   assert_true(onclose_called);
 }, "signalClose");
 
 test(() => {
   let watcher = new CloseWatcher();
-  let onbeforeclose_called = false;
+  let oncancel_called = false;
   let onclose_called = false;
-  watcher.onbeforeclose = () => onbeforeclose_called = true;
+  watcher.oncancel = () => oncancel_called = true;
   watcher.onclose = () => onclose_called = true;
 
   watcher.destroy();
   watcher.signalClosed();
 
-  assert_false(onbeforeclose_called);
+  assert_false(oncancel_called);
   assert_false(onclose_called);
 }, "destroy then signalClose");
 
 test(() => {
   let watcher = new CloseWatcher();
-  let onbeforeclose_call_count_ = 0;
+  let oncancel_call_count_ = 0;
   let onclose_call_count_ = 0;
-  watcher.onbeforeclose = () => onbeforeclose_call_count_++;
+  watcher.oncancel = () => oncancel_call_count_++;
   watcher.onclose = () => onclose_call_count_++;
 
   watcher.signalClosed();
   watcher.destroy();
-  assert_equals(onbeforeclose_call_count_, 1);
+  assert_equals(oncancel_call_count_, 1);
   assert_equals(onclose_call_count_, 1);
 }, "signalClose then destroy");
 
 promise_test(async t => {
   let watcher = new CloseWatcher();
-  let onbeforeclose_called = false;
+  let oncancel_called = false;
   let onclose_called = false;
-  watcher.onbeforeclose = () => onbeforeclose_called = true;
+  watcher.oncancel = () => oncancel_called = true;
   watcher.onclose = () => onclose_called = true;
 
   await test_driver.send_keys(document.getElementById('d'), ESC);
 
-  assert_true(onbeforeclose_called);
+  assert_true(oncancel_called);
   assert_true(onclose_called);
 }, "close via escape key");
 
 promise_test(async t => {
   let watcher = new CloseWatcher();
-  let onbeforeclose_called = false;
+  let oncancel_called = false;
   let onclose_called = false;
-  watcher.onbeforeclose = () => onbeforeclose_called = true;
+  watcher.oncancel = () => oncancel_called = true;
   watcher.onclose = () => onclose_called = true;
 
   watcher.destroy();
   await test_driver.send_keys(document.getElementById('d'), ESC);
 
-  assert_false(onbeforeclose_called);
+  assert_false(oncancel_called);
   assert_false(onclose_called);
 }, "destroy then close via escape key");
 
 promise_test(async t => {
   let watcher = new CloseWatcher();
-  let onbeforeclose_call_count_ = 0;
+  let oncancel_call_count_ = 0;
   let onclose_call_count_ = 0;
-  watcher.onbeforeclose = () => onbeforeclose_call_count_++;
+  watcher.oncancel = () => oncancel_call_count_++;
   watcher.onclose = () => onclose_call_count_++;
 
   await test_driver.send_keys(document.getElementById('d'), ESC);
   watcher.destroy();
 
-  assert_equals(onbeforeclose_call_count_, 1);
+  assert_equals(oncancel_call_count_, 1);
   assert_equals(onclose_call_count_, 1);
 }, "close via escape key then destroy");
 
 test(t => {
   let watcher = new CloseWatcher();
-  let onbeforeclose_called = false;
+  let oncancel_called = false;
   let onclose_called = false;
-  watcher.onbeforeclose = () => onbeforeclose_called = true;
+  watcher.oncancel = () => oncancel_called = true;
   watcher.onclose = () => onclose_called = true;
 
   t.add_cleanup(() => watcher.destroy());
@@ -114,14 +114,14 @@ test(t => {
   let keyup = new KeyboardEvent('keyup', {'key': 'Escape', 'keyCode': 27});
   window.dispatchEvent(keyup);
 
-  assert_false(onbeforeclose_called);
+  assert_false(oncancel_called);
   assert_false(onclose_called);
 
   let keyup2 = document.createEvent("Event");
   keyup2.initEvent("keyup", true);
   window.dispatchEvent(keyup2);
 
-  assert_false(onbeforeclose_called);
+  assert_false(oncancel_called);
   assert_false(onclose_called);
 }, "close via synthesized escape key should not work");
 
@@ -176,10 +176,10 @@ promise_test(async t => {
 
 test(t => {
   let watcher = new CloseWatcher();
-  watcher.onbeforeclose = () => { watcher.destroy(); }
+  watcher.oncancel = () => { watcher.destroy(); }
   watcher.onclose = t.unreached_func("onclose");
   watcher.signalClosed();
-}, "destroy inside onbeforeclose");
+}, "destroy inside oncancel");
 
 test(t => {
   let watcher = new CloseWatcher();
@@ -189,9 +189,9 @@ test(t => {
 
 test(t => {
   let watcher = new CloseWatcher();
-  watcher.onbeforeclose = () => { watcher.signalClosed(); }
+  watcher.oncancel = () => { watcher.signalClosed(); }
   watcher.signalClosed();
-}, "signalClose inside onbeforeclose should not trigger an infinite loop");
+}, "signalClose inside oncancel should not trigger an infinite loop");
 
 test(t => {
   let watcher = new CloseWatcher();
@@ -201,14 +201,14 @@ test(t => {
 
 test(() => {
   let watcher = new CloseWatcher();
-  let onbeforeclose_called = false;
+  let oncancel_called = false;
   let onclose_called = false;
-  watcher.addEventListener("beforeclose", () => onbeforeclose_called = true);
+  watcher.addEventListener("cancel", () => oncancel_called = true);
   watcher.addEventListener("close", () => onclose_called = true);
 
   watcher.signalClosed();
 
-  assert_true(onbeforeclose_called);
+  assert_true(oncancel_called);
   assert_true(onclose_called);
 }, "signalClose with events added via addEventListener");
 </script>

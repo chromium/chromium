@@ -87,17 +87,17 @@ CloseWatcher::CloseWatcher(LocalDOMWindow* window)
     : ExecutionContextClient(window) {}
 
 void CloseWatcher::signalClosed() {
-  if (IsClosed() || dispatching_beforeclose_)
+  if (IsClosed() || dispatching_cancel_)
     return;
-  Event& before_close_event =
-      *Event::CreateCancelable(event_type_names::kBeforeclose);
+
+  // TODO(domenic): only dispatch cancel if there's been user activation.
+  Event& cancel_event = *Event::CreateCancelable(event_type_names::kCancel);
   {
-    base::AutoReset<bool> scoped_committing(&dispatching_beforeclose_, true);
-    DispatchEvent(before_close_event);
+    base::AutoReset<bool> scoped_committing(&dispatching_cancel_, true);
+    DispatchEvent(cancel_event);
   }
-  if (before_close_event.defaultPrevented()) {
+  if (cancel_event.defaultPrevented()) {
     state_ = State::kModal;
-    // TODO(japhet): Make an async dialog here.
   }
   Close();
 }

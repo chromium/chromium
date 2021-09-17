@@ -29,7 +29,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
   void signalClosed();
   void destroy();
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(beforeclose, kBeforeclose)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(close, kClose)
 
   // EventTargetWithInlineData overrides:
@@ -76,7 +76,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
 
   enum class State { kActive, kModal, kClosed };
   State state_ = State::kActive;
-  bool dispatching_beforeclose_ = false;
+  bool dispatching_cancel_ = false;
 };
 
 }  // namespace blink

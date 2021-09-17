@@ -12,6 +12,6 @@
   void signalClosed();
   void destroy();
 
-  attribute EventHandler onbeforeclose;
+  attribute EventHandler oncancel;
   attribute EventHandler onclose;
 };
