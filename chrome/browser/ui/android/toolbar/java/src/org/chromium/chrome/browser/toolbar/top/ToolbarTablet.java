@@ -155,6 +155,8 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
+        final int color = ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_2);
+        mLocationBar.getTabletCoordinator().getBackground().setTint(color);
     }
 
     /**

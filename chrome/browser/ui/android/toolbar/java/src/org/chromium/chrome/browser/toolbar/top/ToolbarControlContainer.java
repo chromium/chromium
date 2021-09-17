@@ -9,11 +9,14 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -21,6 +24,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
@@ -109,7 +113,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             // On tablet, draw a fake tab strip and toolbar until the compositor is
             // ready to draw the real tab strip. (On phone, the toolbar is made entirely
             // of Android views, which are already initialized.)
-            setBackgroundResource(R.drawable.toolbar_background);
+            final Drawable backgroundDrawable =
+                    AppCompatResources.getDrawable(getContext(), R.drawable.toolbar_background)
+                            .mutate();
+            // TODO(https://crbug.com/1250039): Make this work for incognito as well.
+            backgroundDrawable.setTint(ChromeColors.getDefaultThemeColor(getContext(), false));
+            backgroundDrawable.setTintMode(PorterDuff.Mode.MULTIPLY);
+            setBackground(backgroundDrawable);
         }
     }
 
