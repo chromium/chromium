@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_BROWSERTEST_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INTEGRATION_BROWSERTEST_BASE_H_
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 #include <vector>
@@ -100,6 +101,7 @@ struct StateSnapshot {
 
   base::flat_map<Profile*, ProfileState> profiles;
 };
+std::ostream& operator<<(std::ostream& out, const StateSnapshot& snapshot);
 
 class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
  public:
@@ -187,8 +189,7 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void InstallPolicyAppTabbedShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedNoShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedShortcut(const std::string& site_mode);
-  void LaunchInternal(const std::string& site_mode);
-  void ListAppsInternal();
+  void LaunchFromChromeApps(const std::string& site_mode);
   void NavigateTabbedBrowserToSite(const GURL& url);
   void NavigateBrowser(const std::string& site_mode);
   void ManifestUpdateDisplayMinimal(const std::string& site_mode);
@@ -201,8 +202,8 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void UninstallPolicyApp(const std::string& site_mode);
 
   // State Check Actions
-  void CheckAppLocallyInstalledInternal();
   void CheckAppInListNotLocallyInstalled(const std::string& site_mode);
+  void CheckAppListEmpty();
   void CheckAppNotInList(const std::string& site_mode);
   void CheckInstallable();
   void CheckInstallIconShown();
@@ -214,13 +215,8 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void CheckUserDisplayModeInternal(DisplayMode display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
-  void CheckWindowDisplayMode(blink::mojom::DisplayMode display_mode);
-
-  // Helpers
-  std::string BuildLogForTest(const std::vector<std::string>& testing_actions,
-                              bool is_sync_test);
-  std::vector<std::string>& testing_actions() { return testing_actions_; }
-  std::vector<AppId> GetAppIdsForProfile(Profile* profile);
+  void CheckWindowDisplayMinimal();
+  void CheckWindowDisplayStandalone();
 
   // Supported params:
   //  * site_a
@@ -273,6 +269,7 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   }
   Browser* app_browser() { return app_browser_; }
   PageActionIconView* pwa_install_view();
+  PageActionIconView* intent_picker_view();
 
   ScopedOsHooksSuppress os_hooks_suppress_;
 
@@ -296,7 +293,6 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   Browser* active_browser_ = nullptr;
   Profile* active_profile_ = nullptr;
   std::vector<AppId> app_ids_;
-  std::vector<std::string> testing_actions_;
   AppId active_app_id_;
 
   base::ScopedObservation<web_app::WebAppRegistrar,

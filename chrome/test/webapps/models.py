@@ -261,7 +261,7 @@ class CoverageTest:
         fixture = (f"{test_partition.test_fixture}"
                    f"{TestPlatform.get_test_fixture_suffix(self.platforms)}")
         return (f"IN_PROC_BROWSER_TEST_F("
-                f"{fixture}, {CoverageTest.TEST_ID_PREFIX}{self.id}){{\n"
+                f"{fixture}, {CoverageTest.TEST_ID_PREFIX}{self.id}) {{\n"
                 f"{body}\n}}")
 
     def __str__(self):
