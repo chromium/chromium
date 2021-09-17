@@ -40,6 +40,9 @@ class CastSysInfoAndroid : public CastSysInfo {
   std::string GetApInterface() override;
   std::string GetProductSsidSuffix() override;
 
+  static std::string GetAndroidProperty(const std::string& key,
+                               const std::string& default_value);
+
  private:
   const base::android::BuildInfo* const build_info_;
 

@@ -24,18 +24,6 @@ namespace chromecast {
 namespace {
 const char kCastConfigAssetPath[] = "assets/cast_config";
 
-std::string GetAndroidProperty(const std::string& key,
-                               const std::string& default_value) {
-  char value[PROP_VALUE_MAX];
-  int ret = __system_property_get(key.c_str(), value);
-  if (ret <= 0) {
-    DVLOG(1) << "No value set for property: " << key;
-    return default_value;
-  }
-
-  return std::string(value);
-}
-
 bool DoesCastConfigFileExist() {
   base::MemoryMappedFile::Region config_region;
   int config_fd =
@@ -146,6 +134,18 @@ std::string CastSysInfoAndroid::GetApInterface() {
 
 std::string CastSysInfoAndroid::GetProductSsidSuffix() {
   return GetAndroidProperty("ro.odm.cast.ssid_suffix", "");
+}
+
+std::string CastSysInfoAndroid::GetAndroidProperty(const std::string& key,
+                               const std::string& default_value) {
+  char value[PROP_VALUE_MAX];
+  int ret = __system_property_get(key.c_str(), value);
+  if (ret <= 0) {
+    DVLOG(1) << "No value set for property: " << key;
+    return default_value;
+  }
+
+  return std::string(value);
 }
 
 }  // namespace chromecast
