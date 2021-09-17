@@ -151,7 +151,7 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
   base::OnceClosure flush_cb_;
   CdmAttachedCB cdm_attached_cb_;
 
-  bool volume_ = 1.0f;
+  float volume_ = 1.0f;
 
   // Lock used to serialize access for |time_interpolator_|.
   mutable base::Lock lock_;
