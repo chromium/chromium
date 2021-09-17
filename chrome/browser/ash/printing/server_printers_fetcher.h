@@ -15,7 +15,7 @@
 class GURL;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 enum PrintServerQueryResult {
   kNoErrors = 0,
@@ -39,7 +39,7 @@ class ServerPrintersFetcher {
   using OnPrintersFetchedCallback = base::RepeatingCallback<void(
       const ServerPrintersFetcher* sender,
       const GURL& server_url,
-      std::vector<PrinterDetector::DetectedPrinter>&& printers)>;
+      std::vector<chromeos::PrinterDetector::DetectedPrinter>&& printers)>;
 
   ServerPrintersFetcher(Profile* profile,
                         const GURL& server_url,
@@ -62,6 +62,12 @@ class ServerPrintersFetcher {
   DISALLOW_COPY_AND_ASSIGN(ServerPrintersFetcher);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::PrintServerQueryResult;
+using ::ash::ServerPrintersFetcher;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_SERVER_PRINTERS_FETCHER_H_

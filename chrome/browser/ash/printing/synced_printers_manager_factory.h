@@ -12,9 +12,9 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 class SyncedPrintersManager;
 
@@ -42,6 +42,6 @@ class SyncedPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
   DISALLOW_COPY_AND_ASSIGN(SyncedPrintersManagerFactory);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_SYNCED_PRINTERS_MANAGER_FACTORY_H_

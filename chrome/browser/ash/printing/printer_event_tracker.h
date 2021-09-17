@@ -14,8 +14,10 @@
 #include "third_party/metrics_proto/printer_event.pb.h"
 
 namespace chromeos {
-
 class Printer;
+}  // namespace chromeos
+
+namespace ash {
 
 // Aggregates printer events for logging.  This class is thread-safe.
 class PrinterEventTracker : public KeyedService {
@@ -39,21 +41,23 @@ class PrinterEventTracker : public KeyedService {
   // Store a succesful USB printer installation. |mode| indicates if
   // the PPD was selected automatically or chosen by the user.
   void RecordUsbPrinterInstalled(
-      const PrinterDetector::DetectedPrinter& printer,
+      const chromeos::PrinterDetector::DetectedPrinter& printer,
       SetupMode mode);
 
   // Store a succesful network printer installation. |mode| indicates if
   // the PPD was selected automatically or chosen by the user.
-  void RecordIppPrinterInstalled(const Printer& printer, SetupMode mode);
+  void RecordIppPrinterInstalled(const chromeos::Printer& printer,
+                                 SetupMode mode);
 
   // Record an abandoned setup.
-  void RecordSetupAbandoned(const Printer& printer);
+  void RecordSetupAbandoned(const chromeos::Printer& printer);
 
   // Record an abandoned setup for a USB printer.
-  void RecordUsbSetupAbandoned(const PrinterDetector::DetectedPrinter& printer);
+  void RecordUsbSetupAbandoned(
+      const chromeos::PrinterDetector::DetectedPrinter& printer);
 
   // Store a printer removal.
-  void RecordPrinterRemoved(const Printer& printer);
+  void RecordPrinterRemoved(const chromeos::Printer& printer);
 
   // Writes stored events to |events|.
   void FlushPrinterEvents(std::vector<metrics::PrinterEventProto>* events);
@@ -67,6 +71,6 @@ class PrinterEventTracker : public KeyedService {
   DISALLOW_COPY_AND_ASSIGN(PrinterEventTracker);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTER_EVENT_TRACKER_H_

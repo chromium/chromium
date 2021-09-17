@@ -10,11 +10,18 @@
 class Profile;
 
 namespace chromeos {
-
 class PpdProvider;
+}  // namespace chromeos
 
-scoped_refptr<PpdProvider> CreatePpdProvider(Profile* profile);
+namespace ash {
 
+scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile);
+
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::CreatePpdProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PPD_PROVIDER_FACTORY_H_

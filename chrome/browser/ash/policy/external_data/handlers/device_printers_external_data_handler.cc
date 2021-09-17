@@ -14,7 +14,7 @@ namespace policy {
 
 DevicePrintersExternalDataHandler::DevicePrintersExternalDataHandler(
     PolicyService* policy_service,
-    base::WeakPtr<chromeos::BulkPrintersCalculator> calculator)
+    base::WeakPtr<ash::BulkPrintersCalculator> calculator)
     : calculator_(calculator),
       device_printers_observer_(
           std::make_unique<DeviceCloudExternalDataPolicyObserver>(

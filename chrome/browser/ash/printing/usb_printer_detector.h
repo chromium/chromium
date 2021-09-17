@@ -12,11 +12,11 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/usb_manager.mojom-forward.h"
 
-namespace chromeos {
+namespace ash {
 
 // Observes device::UsbService for addition of USB printers, and implements the
 // PrinterDetector interface to export this to print system consumers.
-class UsbPrinterDetector : public PrinterDetector {
+class UsbPrinterDetector : public chromeos::PrinterDetector {
  public:
   // Factory function for the CUPS implementation.
   static std::unique_ptr<UsbPrinterDetector> Create();
@@ -33,6 +33,6 @@ class UsbPrinterDetector : public PrinterDetector {
   DISALLOW_COPY_AND_ASSIGN(UsbPrinterDetector);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_DETECTOR_H_

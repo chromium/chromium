@@ -14,8 +14,10 @@
 #include "base/memory/weak_ptr.h"
 
 namespace chromeos {
-
 class Printer;
+}  // namespace chromeos
+
+namespace ash {
 
 // Calculates a list of available printers from four policies: Data (json with
 // all printers), AccessMode (see below), Allowlist and Blocklist (lists with
@@ -80,10 +82,10 @@ class BulkPrintersCalculator
   // Returns a reference to a resultant list of available printers. Keys are
   // printers ids. If the list of available printers cannot be calculated
   // (because of some error or missing policy), an empty map is returned.
-  virtual const std::unordered_map<std::string, Printer>& GetPrinters()
-      const = 0;
+  virtual const std::unordered_map<std::string, chromeos::Printer>&
+  GetPrinters() const = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_BULK_PRINTERS_CALCULATOR_H_

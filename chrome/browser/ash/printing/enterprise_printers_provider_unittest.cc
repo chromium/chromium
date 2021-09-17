@@ -27,9 +27,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::Printer;
 
 constexpr char kLexJson[] = R"({
         "display_name": "LexaPrint",
@@ -143,4 +145,4 @@ TEST_F(EnterprisePrintersProviderTest, ChangingEnterprisePrinter) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

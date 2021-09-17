@@ -27,7 +27,7 @@
 #include "third_party/libipp/libipp/ipp.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -119,7 +119,7 @@ class ServerPrintersFetcher::PrivateImplementation
       return;
     }
     // The response parsed successfully. Retrieve the list of printers.
-    std::vector<PrinterDetector::DetectedPrinter> printers(
+    std::vector<chromeos::PrinterDetector::DetectedPrinter> printers(
         response.printer_attributes.GetSize());
     for (size_t i = 0; i < printers.size(); ++i) {
       const std::string& name =
@@ -176,14 +176,15 @@ class ServerPrintersFetcher::PrivateImplementation
   }
 
   // Posts a response with a list of printers.
-  void PostResponse(std::vector<PrinterDetector::DetectedPrinter>&& printers) {
+  void PostResponse(
+      std::vector<chromeos::PrinterDetector::DetectedPrinter>&& printers) {
     task_runner_for_callback_->PostNonNestableTask(
         FROM_HERE, base::BindOnce(callback_, owner_, server_url_, printers));
   }
 
   // Set an object |printer| to represent a server printer with a name |name|.
   // The printer is provided by the current print server.
-  void InitializePrinter(Printer* printer, const std::string& name) {
+  void InitializePrinter(chromeos::Printer* printer, const std::string& name) {
     // All server printers are configured with IPP Everywhere.
     printer->mutable_ppd_reference()->autoconf = true;
 
@@ -195,7 +196,7 @@ class ServerPrintersFetcher::PrivateImplementation
     // * http://myprinter:123/abc =>  ipp://myprinter:123/abc
     // * http://myprinter/abc     =>  ipp://myprinter:80/abc
     // * https://myprinter/abc    =>  ipps://myprinter:443/abc
-    Uri url;
+    chromeos::Uri url;
     if (server_url_.SchemeIs("https")) {
       url.SetScheme("ipps");
     } else {
@@ -252,4 +253,4 @@ PrintServerQueryResult ServerPrintersFetcher::GetLastError() const {
   return pim_->last_error();
 }
 
-}  // namespace chromeos
+}  // namespace ash

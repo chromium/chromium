@@ -11,11 +11,11 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 bool IsPrinterIdInList(const std::string& printer_id,
-                       const std::vector<Printer>& printer_list) {
+                       const std::vector<chromeos::Printer>& printer_list) {
   for (const auto& printer : printer_list) {
     if (printer.id() == printer_id) {
       return true;
@@ -27,8 +27,8 @@ bool IsPrinterIdInList(const std::string& printer_id,
 }  // namespace
 
 AutomaticUsbPrinterConfigurer::AutomaticUsbPrinterConfigurer(
-    std::unique_ptr<PrinterConfigurer> printer_configurer,
-    PrinterInstallationManager* installation_manager,
+    std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer,
+    chromeos::PrinterInstallationManager* installation_manager,
     UsbPrinterNotificationController* notification_controller)
     : printer_configurer_(std::move(printer_configurer)),
       installation_manager_(installation_manager),
@@ -39,15 +39,15 @@ AutomaticUsbPrinterConfigurer::AutomaticUsbPrinterConfigurer(
 AutomaticUsbPrinterConfigurer::~AutomaticUsbPrinterConfigurer() = default;
 
 void AutomaticUsbPrinterConfigurer::OnPrintersChanged(
-    PrinterClass printer_class,
-    const std::vector<Printer>& printers) {
+    chromeos::PrinterClass printer_class,
+    const std::vector<chromeos::Printer>& printers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
-  if (printer_class == PrinterClass::kAutomatic) {
+  if (printer_class == chromeos::PrinterClass::kAutomatic) {
     // Remove any notifications for printers that are no longer in the automatic
     // class and setup any USB printers we haven't seen yet.
     PruneRemovedAutomaticPrinters(printers);
-    for (const Printer& printer : printers) {
+    for (const chromeos::Printer& printer : printers) {
       if (!configured_printers_.contains(printer.id()) &&
           printer.IsUsbProtocol()) {
         SetupPrinter(printer);
@@ -56,12 +56,12 @@ void AutomaticUsbPrinterConfigurer::OnPrintersChanged(
     return;
   }
 
-  if (printer_class == PrinterClass::kDiscovered) {
+  if (printer_class == chromeos::PrinterClass::kDiscovered) {
     // Remove any notifications for printers that are no longer in the
     // discovered class and show a configuration notification for printers we
     // haven't seen yet
     PruneRemovedDiscoveredPrinters(printers);
-    for (const Printer& printer : printers) {
+    for (const chromeos::Printer& printer : printers) {
       if (!unconfigured_printers_.contains(printer.id()) &&
           printer.IsUsbProtocol()) {
         notification_controller_->ShowConfigurationNotification(printer);
@@ -73,7 +73,8 @@ void AutomaticUsbPrinterConfigurer::OnPrintersChanged(
   }
 }
 
-void AutomaticUsbPrinterConfigurer::SetupPrinter(const Printer& printer) {
+void AutomaticUsbPrinterConfigurer::SetupPrinter(
+    const chromeos::Printer& printer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
   if (installation_manager_->IsPrinterInstalled(printer)) {
     // Skip setup if the printer is already installed.
@@ -85,25 +86,26 @@ void AutomaticUsbPrinterConfigurer::SetupPrinter(const Printer& printer) {
                               weak_factory_.GetWeakPtr(), printer));
 }
 
-void AutomaticUsbPrinterConfigurer::OnSetupComplete(const Printer& printer,
-                                                    PrinterSetupResult result) {
+void AutomaticUsbPrinterConfigurer::OnSetupComplete(
+    const chromeos::Printer& printer,
+    chromeos::PrinterSetupResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-  if (result == PrinterSetupResult::kPrinterIsNotAutoconfigurable) {
+  if (result == chromeos::PrinterSetupResult::kPrinterIsNotAutoconfigurable) {
     installation_manager_->PrinterIsNotAutoconfigurable(printer);
     return;
   }
-  if (result != PrinterSetupResult::kSuccess) {
+  if (result != chromeos::PrinterSetupResult::kSuccess) {
     LOG(ERROR) << "Unable to autoconfigure usb printer " << printer.id();
     return;
   }
   installation_manager_->PrinterInstalled(printer, /*is_automatic=*/true);
-  PrinterConfigurer::RecordUsbPrinterSetupSource(
-      UsbPrinterSetupSource::kAutoconfigured);
+  chromeos::PrinterConfigurer::RecordUsbPrinterSetupSource(
+      chromeos::UsbPrinterSetupSource::kAutoconfigured);
   CompleteConfiguration(printer);
 }
 
 void AutomaticUsbPrinterConfigurer::CompleteConfiguration(
-    const Printer& printer) {
+    const chromeos::Printer& printer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
   VLOG(1) << "Auto USB Printer setup successful for " << printer.id();
 
@@ -113,17 +115,17 @@ void AutomaticUsbPrinterConfigurer::CompleteConfiguration(
 }
 
 void AutomaticUsbPrinterConfigurer::PruneRemovedAutomaticPrinters(
-    const std::vector<Printer>& automatic_printers) {
+    const std::vector<chromeos::Printer>& automatic_printers) {
   PruneRemovedPrinters(automatic_printers, /*use_configured_printers=*/true);
 }
 
 void AutomaticUsbPrinterConfigurer::PruneRemovedDiscoveredPrinters(
-    const std::vector<Printer>& discovered_printers) {
+    const std::vector<chromeos::Printer>& discovered_printers) {
   PruneRemovedPrinters(discovered_printers, /*use_configured_printers=*/false);
 }
 
 void AutomaticUsbPrinterConfigurer::PruneRemovedPrinters(
-    const std::vector<Printer>& current_printers,
+    const std::vector<chromeos::Printer>& current_printers,
     bool use_configured_printers) {
   auto& printers =
       use_configured_printers ? configured_printers_ : unconfigured_printers_;
@@ -137,4 +139,4 @@ void AutomaticUsbPrinterConfigurer::PruneRemovedPrinters(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

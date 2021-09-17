@@ -40,7 +40,7 @@ CupsPrintJobManagerFactory::CupsPrintJobManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "CupsPrintJobManagerFactory",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(chromeos::SyncedPrintersManagerFactory::GetInstance());
+  DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
   DependsOn(chromeos::CupsPrintersManagerFactory::GetInstance());
 }
 

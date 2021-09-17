@@ -17,7 +17,7 @@
 #include "services/device/public/mojom/usb_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr uint8_t kPrinterInterfaceClass = 7;
@@ -59,7 +59,8 @@ class UsbPrinterDetectorTest : public testing::Test {
     }
 
     void OnPrintersFound(
-        const std::vector<PrinterDetector::DetectedPrinter>& printers) {
+        const std::vector<chromeos::PrinterDetector::DetectedPrinter>&
+            printers) {
       if (done_callback_)
         std::move(done_callback_).Run();
     }
@@ -135,4 +136,4 @@ TEST_F(UsbPrinterDetectorTest, OnPrintersFoundCallback) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

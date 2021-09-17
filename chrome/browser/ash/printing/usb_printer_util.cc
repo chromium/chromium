@@ -29,10 +29,10 @@
 #include "services/device/public/mojom/usb_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using device::mojom::UsbDeviceInfo;
-
-namespace chromeos {
+namespace ash {
 namespace {
+
+using device::mojom::UsbDeviceInfo;
 
 // Base class used for printer USB interfaces
 // (https://www.usb.org/developers/defined_class).
@@ -65,7 +65,7 @@ void OnControlTransfer(mojo::Remote<device::mojom::UsbDevice> device,
   device->ReleaseInterface(kDefaultInterface, base::DoNothing());
   device->Close(base::DoNothing());
 
-  return std::move(cb).Run(UsbPrinterId(data));
+  return std::move(cb).Run(chromeos::UsbPrinterId(data));
 }
 
 // Callback for device.mojom.UsbDevice.ClaimInterface.
@@ -214,7 +214,7 @@ std::string UsbPrinterDeviceDetailsAsString(const UsbDeviceInfo& device_info) {
 
 // Gets the URI CUPS would use to refer to this USB device.  Assumes device
 // is a printer.
-Uri UsbPrinterUri(const UsbDeviceInfo& device_info) {
+chromeos::Uri UsbPrinterUri(const UsbDeviceInfo& device_info) {
   // Note that serial may, for some devices, be empty or bogus (all zeros, non
   // unique, or otherwise not really a serial number), but having a non-unique
   // or empty serial field in the URI still lets us print, it just means we
@@ -224,7 +224,7 @@ Uri UsbPrinterUri(const UsbDeviceInfo& device_info) {
   // don't supply a serial number, we don't have any reliable way to do that
   // differentiation.
   std::string serial = base::UTF16ToUTF8(GetSerialNumber(device_info));
-  Uri uri;
+  chromeos::Uri uri;
   uri.SetScheme("usb");
   uri.SetHost(base::StringPrintf("%04x", device_info.vendor_id));
   uri.SetPath({base::StringPrintf("%04x", device_info.product_id)});
@@ -256,7 +256,7 @@ bool UsbDeviceIsPrinter(const UsbDeviceInfo& device_info) {
 // are printers, not arbitrary USB devices, as we may get weird partial results
 // from arbitrary devices. The results are saved in the second parameter.
 bool UsbDeviceToPrinter(const UsbDeviceInfo& device_info,
-                        PrinterDetector::DetectedPrinter* entry) {
+                        chromeos::PrinterDetector::DetectedPrinter* entry) {
   DCHECK(entry);
 
   // Preflight all required fields and log errors if we find something wrong.
@@ -309,4 +309,4 @@ void GetDeviceId(mojo::Remote<device::mojom::UsbDevice> device,
       base::BindOnce(OnDeviceOpen, std::move(device), std::move(cb)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -683,7 +683,7 @@ int ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
   // This should be in PreProfileInit but it needs to be created before the
   // policy connector is started.
   bulk_printers_calculator_factory_ =
-      std::make_unique<BulkPrintersCalculatorFactory>();
+      std::make_unique<ash::BulkPrintersCalculatorFactory>();
 
   // StatsReportingController is created in
   // ChromeBrowserMainParts::PreCreateThreads, so this must come afterwards.

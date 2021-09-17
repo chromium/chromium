@@ -1312,7 +1312,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::quick_unlock::FingerprintStorage::RegisterProfilePrefs(registry);
   ash::quick_unlock::PinStoragePrefs::RegisterProfilePrefs(registry);
   chromeos::Preferences::RegisterProfilePrefs(registry);
-  chromeos::EnterprisePrintersProvider::RegisterProfilePrefs(registry);
+  ash::EnterprisePrintersProvider::RegisterProfilePrefs(registry);
   ash::parent_access::ParentAccessService::RegisterProfilePrefs(registry);
   ash::quick_answers::prefs::RegisterProfilePrefs(registry);
   ash::quick_unlock::RegisterProfilePrefs(registry);

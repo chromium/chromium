@@ -23,7 +23,7 @@
 #include "base/values.h"
 #include "chromeos/printing/printer_translator.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -32,11 +32,12 @@ constexpr int kMaxRecords = 20000;
 // Represents a task scheduled to process in the Restrictions class.
 struct TaskDataInternal {
   const unsigned task_id;  // unique ID in increasing order
-  std::unordered_map<std::string, Printer> printers;  // resultant list (output)
+  std::unordered_map<std::string, chromeos::Printer>
+      printers;  // resultant list (output)
   explicit TaskDataInternal(unsigned id) : task_id(id) {}
 };
 
-using PrinterCache = std::vector<std::unique_ptr<Printer>>;
+using PrinterCache = std::vector<std::unique_ptr<chromeos::Printer>>;
 using TaskData = std::unique_ptr<TaskDataInternal>;
 
 // Parses |data|, a JSON blob, into a vector of Printers.  If |data| cannot be
@@ -86,7 +87,7 @@ std::unique_ptr<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
       continue;
     }
 
-    auto printer = RecommendedPrinterToPrinter(*printer_dict);
+    auto printer = chromeos::RecommendedPrinterToPrinter(*printer_dict);
     if (!printer) {
       LOG(WARNING) << "Failed to parse printer configuration.  Skipped.";
       continue;
@@ -318,7 +319,8 @@ class BulkPrintersCalculatorImpl : public BulkPrintersCalculator {
     return (last_processed_task_ == last_received_task_);
   }
 
-  const std::unordered_map<std::string, Printer>& GetPrinters() const override {
+  const std::unordered_map<std::string, chromeos::Printer>& GetPrinters()
+      const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return printers_;
   }
@@ -358,7 +360,7 @@ class BulkPrintersCalculatorImpl : public BulkPrintersCalculator {
   // Id of the last completed task.
   unsigned last_processed_task_ = 0;
   // The computed set of printers.
-  std::unordered_map<std::string, Printer> printers_;
+  std::unordered_map<std::string, chromeos::Printer> printers_;
 
   base::ObserverList<BulkPrintersCalculator::Observer>::Unchecked observers_;
 
@@ -373,4 +375,4 @@ std::unique_ptr<BulkPrintersCalculator> BulkPrintersCalculator::Create() {
   return std::make_unique<BulkPrintersCalculatorImpl>();
 }
 
-}  // namespace chromeos
+}  // namespace ash

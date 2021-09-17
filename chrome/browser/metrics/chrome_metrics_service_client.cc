@@ -779,7 +779,7 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   }
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<chromeos::PrinterMetricsProvider>());
+      std::make_unique<ash::PrinterMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::structured::StructuredMetricsProvider>());

@@ -15,7 +15,7 @@ namespace printing {
 struct PrinterStatus;
 }  // namespace printing
 
-namespace chromeos {
+namespace ash {
 
 // Callback for basic printer information. |result| indicates if the request
 // succeeded at all. |status| contains current status. |make_and_model| is
@@ -36,6 +36,12 @@ void QueryIppPrinter(const std::string& host,
                      bool encrypted,
                      PrinterInfoCallback callback);
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::PrinterInfoCallback;
+using ::ash::QueryIppPrinter;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTER_INFO_H_

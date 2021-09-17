@@ -175,16 +175,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // ZeroconfPrinterDetector.
   MapOfListers listers;
   std::vector<CallToDelegate> calls = CreateFuzzCalls(&fuzz_data);
-  CreateLister(chromeos::ZeroconfPrinterDetector::kIppServiceName, calls,
+  CreateLister(ash::ZeroconfPrinterDetector::kIppServiceName, calls, &listers);
+  CreateLister(ash::ZeroconfPrinterDetector::kIppsServiceName, calls, &listers);
+  CreateLister(ash::ZeroconfPrinterDetector::kIppEverywhereServiceName, calls,
                &listers);
-  CreateLister(chromeos::ZeroconfPrinterDetector::kIppsServiceName, calls,
+  CreateLister(ash::ZeroconfPrinterDetector::kIppsEverywhereServiceName, calls,
                &listers);
-  CreateLister(chromeos::ZeroconfPrinterDetector::kIppEverywhereServiceName,
-               calls, &listers);
-  CreateLister(chromeos::ZeroconfPrinterDetector::kIppsEverywhereServiceName,
-               calls, &listers);
   // Creating an object of ZeroconfPrinterDetector to fuzz.
-  auto detector = chromeos::ZeroconfPrinterDetector::CreateForTesting(&listers);
+  auto detector = ash::ZeroconfPrinterDetector::CreateForTesting(&listers);
   for (auto& lf : listers) {
     static_cast<FuzzDeviceLister*>(lf.second.get())
         ->SetDelegate(detector.get());

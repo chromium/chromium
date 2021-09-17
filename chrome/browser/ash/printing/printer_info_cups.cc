@@ -128,7 +128,7 @@ QueryResult QueryPrinterImpl(const std::string& host,
 
 // Handles the request for |info|.  Parses make and model information before
 // calling |callback|.
-void OnPrinterQueried(chromeos::PrinterInfoCallback callback,
+void OnPrinterQueried(ash::PrinterInfoCallback callback,
                       const QueryResult& query_result) {
   const ::printing::PrinterQueryResult& result = query_result.result;
   const ::printing::PrinterInfo& printer_info = query_result.printer_info;
@@ -154,7 +154,7 @@ void OnPrinterQueried(chromeos::PrinterInfoCallback callback,
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 void QueryIppPrinter(const std::string& host,
                      const int port,
@@ -172,4 +172,4 @@ void QueryIppPrinter(const std::string& host,
       base::BindOnce(&OnPrinterQueried, std::move(callback)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

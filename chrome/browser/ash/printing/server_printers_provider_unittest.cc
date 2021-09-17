@@ -23,14 +23,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libipp/libipp/ipp.h"
 
+namespace ash {
+
+namespace {
+
+using ::chromeos::Printer;
+using ::chromeos::Uri;
 using ::testing::AllOf;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::UnorderedElementsAre;
-
-namespace chromeos {
-
-namespace {
 
 class TestingProfileWithURLLoaderFactory : public TestingProfile {
  public:
@@ -81,7 +83,8 @@ Printer Printer2() {
 
 }  // namespace
 
-auto GetPrinter = [](const PrinterDetector::DetectedPrinter& input) -> Printer {
+auto GetPrinter =
+    [](const chromeos::PrinterDetector::DetectedPrinter& input) -> Printer {
   return input.printer;
 };
 
@@ -103,7 +106,9 @@ class ServerPrintersProviderTest : public ::testing::Test {
         ServerPrintersProvider::Create(test_profile_.get());
   }
 
-  void TearDown() override { PrintServersProviderFactory::Get()->Shutdown(); }
+  void TearDown() override {
+    chromeos::PrintServersProviderFactory::Get()->Shutdown();
+  }
 
   std::string CreateResponse(const std::string& name,
                              const std::string& description) {
@@ -151,7 +156,7 @@ TEST_F(ServerPrintersProviderTest, GetPrinters) {
 
   EXPECT_TRUE(server_printers_provider_->GetPrinters().empty());
 
-  std::vector<PrintServer> print_servers;
+  std::vector<chromeos::PrintServer> print_servers;
   print_servers.push_back(PrintServer1());
   print_servers.push_back(PrintServer2());
   OnServersChanged(true, print_servers);
@@ -162,4 +167,4 @@ TEST_F(ServerPrintersProviderTest, GetPrinters) {
                                    PrinterMatcher(Printer2())));
 }
 
-}  // namespace chromeos
+}  // namespace ash

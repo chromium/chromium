@@ -26,7 +26,7 @@
 namespace chromeos {
 namespace {
 
-class FakeServerPrintersProvider : public ServerPrintersProvider {
+class FakeServerPrintersProvider : public ash::ServerPrintersProvider {
  public:
   FakeServerPrintersProvider() = default;
   ~FakeServerPrintersProvider() override = default;

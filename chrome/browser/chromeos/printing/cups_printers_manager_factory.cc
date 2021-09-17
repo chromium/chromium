@@ -32,7 +32,7 @@ CupsPrintersManagerFactory::CupsPrintersManagerFactory()
           "CupsPrintersManagerFactory",
           BrowserContextDependencyManager::GetInstance()),
       proxy_(CupsPrintersManagerProxy::Create()) {
-  DependsOn(chromeos::SyncedPrintersManagerFactory::GetInstance());
+  DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
 }
 
 CupsPrintersManagerFactory::~CupsPrintersManagerFactory() = default;

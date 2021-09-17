@@ -66,24 +66,23 @@ std::string PrinterId(int index) {
   return base::StringPrintf("printer%d", index);
 }
 
-chromeos::SyncedPrintersManager* GetPrinterStore(
-    content::BrowserContext* context) {
-  return chromeos::SyncedPrintersManagerFactory::GetForBrowserContext(context);
+ash::SyncedPrintersManager* GetPrinterStore(content::BrowserContext* context) {
+  return ash::SyncedPrintersManagerFactory::GetForBrowserContext(context);
 }
 
 }  // namespace
 
-void AddPrinter(chromeos::SyncedPrintersManager* manager,
+void AddPrinter(ash::SyncedPrintersManager* manager,
                 const chromeos::Printer& printer) {
   manager->UpdateSavedPrinter(printer);
 }
 
-void RemovePrinter(chromeos::SyncedPrintersManager* manager, int index) {
+void RemovePrinter(ash::SyncedPrintersManager* manager, int index) {
   chromeos::Printer testPrinter(CreateTestPrinter(index));
   manager->RemoveSavedPrinter(testPrinter.id());
 }
 
-bool EditPrinterDescription(chromeos::SyncedPrintersManager* manager,
+bool EditPrinterDescription(ash::SyncedPrintersManager* manager,
                             int index,
                             const std::string& description) {
   PrinterList printers = manager->GetSavedPrinters();
@@ -132,15 +131,15 @@ void WaitForPrinterStoreToLoad(content::BrowserContext* context) {
   content::RunAllTasksUntilIdle();
 }
 
-chromeos::SyncedPrintersManager* GetVerifierPrinterStore() {
-  chromeos::SyncedPrintersManager* manager =
+ash::SyncedPrintersManager* GetVerifierPrinterStore() {
+  ash::SyncedPrintersManager* manager =
       GetPrinterStore(sync_datatype_helper::test()->verifier());
 
   return manager;
 }
 
-chromeos::SyncedPrintersManager* GetPrinterStore(int index) {
-  chromeos::SyncedPrintersManager* manager =
+ash::SyncedPrintersManager* GetPrinterStore(int index) {
+  ash::SyncedPrintersManager* manager =
       GetPrinterStore(sync_datatype_helper::test()->GetProfile(index));
 
   return manager;

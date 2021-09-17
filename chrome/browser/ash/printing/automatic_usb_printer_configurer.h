@@ -18,57 +18,61 @@
 #include "chrome/browser/chromeos/printing/printer_installation_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 
-namespace chromeos {
+namespace ash {
 
 class UsbPrinterNotificationController;
 
-class AutomaticUsbPrinterConfigurer : public CupsPrintersManager::Observer {
+class AutomaticUsbPrinterConfigurer
+    : public chromeos::CupsPrintersManager::Observer {
  public:
   AutomaticUsbPrinterConfigurer(
-      std::unique_ptr<PrinterConfigurer> printer_configurer,
-      PrinterInstallationManager* installation_manager,
+      std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer,
+      chromeos::PrinterInstallationManager* installation_manager,
       UsbPrinterNotificationController* notification_controller);
 
   ~AutomaticUsbPrinterConfigurer() override;
 
   // CupsPrintersManager::Observer override.
-  void OnPrintersChanged(PrinterClass printer_class,
-                         const std::vector<Printer>& printers) override;
+  void OnPrintersChanged(
+      chromeos::PrinterClass printer_class,
+      const std::vector<chromeos::Printer>& printers) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AutomaticUsbPrinterConfigurerTest,
                            UsbPrinterAddedToSet);
 
   // Uses |printer_configurer_| to setup |printer| if it is not yet setup.
-  void SetupPrinter(const Printer& printer);
+  void SetupPrinter(const chromeos::Printer& printer);
 
   // Callback for PrinterConfiguer::SetUpPrinter().
-  void OnSetupComplete(const Printer& printer, PrinterSetupResult result);
+  void OnSetupComplete(const chromeos::Printer& printer,
+                       chromeos::PrinterSetupResult result);
 
   // Completes the configuration for |printer|. Saves printer in
   // |configured_printers_|.
-  void CompleteConfiguration(const Printer& printer);
+  void CompleteConfiguration(const chromeos::Printer& printer);
 
   // Removes any printers from |configured_printers_| that are no longer in
   // |automatic_printers|.
   void PruneRemovedAutomaticPrinters(
-      const std::vector<Printer>& automatic_printers);
+      const std::vector<chromeos::Printer>& automatic_printers);
 
   // Removes any printers from |unconfigured_printers_| that are no longer in
   // |discovered_printers|.
   void PruneRemovedDiscoveredPrinters(
-      const std::vector<Printer>& discovered_printers);
+      const std::vector<chromeos::Printer>& discovered_printers);
 
   // Helper function that removes printers that are no longer in
   // |current_printers|. If |use_configured_printers|, |configured_printers_| is
   // pruned. Otherwise, |unconfigured_printers_| is pruned.
-  void PruneRemovedPrinters(const std::vector<Printer>& current_printers,
-                            bool use_configured_printers);
+  void PruneRemovedPrinters(
+      const std::vector<chromeos::Printer>& current_printers,
+      bool use_configured_printers);
 
   SEQUENCE_CHECKER(sequence_);
 
-  std::unique_ptr<PrinterConfigurer> printer_configurer_;
-  PrinterInstallationManager* installation_manager_;  // Not owned.
+  std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer_;
+  chromeos::PrinterInstallationManager* installation_manager_;  // Not owned.
   UsbPrinterNotificationController* notification_controller_;  // Not owned.
   base::flat_set<std::string> configured_printers_;
   base::flat_set<std::string> unconfigured_printers_;
@@ -78,6 +82,6 @@ class AutomaticUsbPrinterConfigurer : public CupsPrintersManager::Observer {
   DISALLOW_COPY_AND_ASSIGN(AutomaticUsbPrinterConfigurer);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_AUTOMATIC_USB_PRINTER_CONFIGURER_H_

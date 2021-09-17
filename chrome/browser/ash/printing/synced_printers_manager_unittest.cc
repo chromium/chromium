@@ -26,9 +26,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::Printer;
 
 constexpr char kTestPrinterId[] = "UUID-UUID-UUID-PRINTER";
 constexpr char kTestPrinterId2[] = "UUID-UUID-UUID-PRINTR2";
@@ -168,4 +170,4 @@ TEST_F(SyncedPrintersManagerTest, UpdateSavedPrinterSavesPrinter) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

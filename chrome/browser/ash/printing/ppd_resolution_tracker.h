@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "chromeos/printing/printer_configuration.h"
 
-namespace chromeos {
+namespace ash {
 
 class PpdResolutionState;
 
@@ -38,8 +38,9 @@ class PpdResolutionTracker {
 
   // Store |ppd_reference| and update the resolution state of |printer_id| as
   // successful.
-  void MarkResolutionSuccessful(const std::string& printer_id,
-                                const Printer::PpdReference& ppd_reference);
+  void MarkResolutionSuccessful(
+      const std::string& printer_id,
+      const chromeos::Printer::PpdReference& ppd_reference);
 
   // Update |printer_id|'s resolution state as failed.
   void MarkResolutionFailed(const std::string& printer_id);
@@ -52,7 +53,7 @@ class PpdResolutionTracker {
   const std::string& GetManufacturer(const std::string& printer_id) const;
 
   // Returns the PpdReference for the associated |printer_id|.
-  const Printer::PpdReference& GetPpdReference(
+  const chromeos::Printer::PpdReference& GetPpdReference(
       const std::string& printer_id) const;
 
   // Mark the printer as not autconfigurable. It is set when the configuration
@@ -72,6 +73,6 @@ class PpdResolutionTracker {
   DISALLOW_COPY_AND_ASSIGN(PpdResolutionTracker);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PPD_RESOLUTION_TRACKER_H_

@@ -16,9 +16,9 @@ namespace policy {
 
 namespace {
 
-base::WeakPtr<chromeos::BulkPrintersCalculator> GetBulkPrintersCalculator(
+base::WeakPtr<ash::BulkPrintersCalculator> GetBulkPrintersCalculator(
     const std::string& user_id) {
-  auto* factory = chromeos::BulkPrintersCalculatorFactory::Get();
+  auto* factory = ash::BulkPrintersCalculatorFactory::Get();
   if (!factory) {
     return nullptr;
   }
@@ -71,7 +71,7 @@ void PrintersExternalDataHandler::OnExternalDataFetched(
 
 void PrintersExternalDataHandler::RemoveForAccountId(
     const AccountId& account_id) {
-  auto* factory = chromeos::BulkPrintersCalculatorFactory::Get();
+  auto* factory = ash::BulkPrintersCalculatorFactory::Get();
   if (factory) {
     factory->RemoveForUserId(account_id);
   }

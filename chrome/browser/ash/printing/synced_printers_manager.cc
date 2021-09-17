@@ -24,7 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -43,10 +43,10 @@ class SyncedPrintersManagerImpl : public SyncedPrintersManager,
     sync_bridge_->RemoveObserver(this);
   }
 
-  std::vector<Printer> GetSavedPrinters() const override {
+  std::vector<chromeos::Printer> GetSavedPrinters() const override {
     // No need to lock here, since sync_bridge_ is thread safe and we don't
     // touch anything else.
-    std::vector<Printer> printers;
+    std::vector<chromeos::Printer> printers;
     std::vector<sync_pb::PrinterSpecifics> values =
         sync_bridge_->GetAllPrinters();
     for (const auto& value : values) {
@@ -55,13 +55,13 @@ class SyncedPrintersManagerImpl : public SyncedPrintersManager,
     return printers;
   }
 
-  std::unique_ptr<Printer> GetPrinter(
+  std::unique_ptr<chromeos::Printer> GetPrinter(
       const std::string& printer_id) const override {
     base::AutoLock l(lock_);
     return GetPrinterLocked(printer_id);
   }
 
-  void UpdateSavedPrinter(const Printer& printer) override {
+  void UpdateSavedPrinter(const chromeos::Printer& printer) override {
     base::AutoLock l(lock_);
     UpdateSavedPrinterLocked(printer);
   }
@@ -87,7 +87,7 @@ class SyncedPrintersManagerImpl : public SyncedPrintersManager,
   }
 
  private:
-  std::unique_ptr<Printer> GetPrinterLocked(
+  std::unique_ptr<chromeos::Printer> GetPrinterLocked(
       const std::string& printer_id) const {
     lock_.AssertAcquired();
     absl::optional<sync_pb::PrinterSpecifics> printer =
@@ -95,12 +95,12 @@ class SyncedPrintersManagerImpl : public SyncedPrintersManager,
     return printer.has_value() ? SpecificsToPrinter(*printer) : nullptr;
   }
 
-  void UpdateSavedPrinterLocked(const Printer& printer_arg) {
+  void UpdateSavedPrinterLocked(const chromeos::Printer& printer_arg) {
     lock_.AssertAcquired();
-    DCHECK_EQ(Printer::SRC_USER_PREFS, printer_arg.source());
+    DCHECK_EQ(chromeos::Printer::SRC_USER_PREFS, printer_arg.source());
 
     // Need a local copy since we may set the id.
-    Printer printer = printer_arg;
+    chromeos::Printer printer = printer_arg;
     if (printer.id().empty()) {
       printer.set_id(base::GenerateGUID());
     }
@@ -126,4 +126,4 @@ std::unique_ptr<SyncedPrintersManager> SyncedPrintersManager::Create(
   return std::make_unique<SyncedPrintersManagerImpl>(std::move(sync_bridge));
 }
 
-}  // namespace chromeos
+}  // namespace ash

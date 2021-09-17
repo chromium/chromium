@@ -104,7 +104,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ash::PrintJobHistoryServiceFactory::GetInstance();
   secure_channel::NearbyConnectorFactory::GetInstance();
   smb_client::SmbServiceFactory::GetInstance();
-  SyncedPrintersManagerFactory::GetInstance();
+  ash::SyncedPrintersManagerFactory::GetInstance();
   TetherServiceFactory::GetInstance();
 }
 

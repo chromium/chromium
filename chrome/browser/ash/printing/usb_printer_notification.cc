@@ -21,7 +21,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -30,7 +30,7 @@ const char kNotifierId[] = "printing.usb_printer";
 }  // namespace
 
 UsbPrinterNotification::UsbPrinterNotification(
-    const Printer& printer,
+    const chromeos::Printer& printer,
     const std::string& notification_id,
     Type type,
     Profile* profile)
@@ -40,7 +40,7 @@ UsbPrinterNotification::UsbPrinterNotification(
       profile_(profile) {
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.vector_small_image = &kNotificationPrintingIcon;
-  rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
+  rich_notification_data.accent_color = kSystemNotificationColorNormal;
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
@@ -124,4 +124,4 @@ void UsbPrinterNotification::UpdateContents() {
   NOTREACHED();
 }
 
-}  // namespace chromeos
+}  // namespace ash

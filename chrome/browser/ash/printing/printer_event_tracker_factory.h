@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 class PrinterEventTracker;
 
@@ -38,6 +38,11 @@ class PrinterEventTrackerFactory : public BrowserContextKeyedServiceFactory {
   DISALLOW_COPY_AND_ASSIGN(PrinterEventTrackerFactory);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::PrinterEventTrackerFactory;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTER_EVENT_TRACKER_FACTORY_H_

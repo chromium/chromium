@@ -14,36 +14,37 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
-class FakeCupsPrintJobManager : public CupsPrintJobManager {
+class FakeCupsPrintJobManager : public chromeos::CupsPrintJobManager {
  public:
   explicit FakeCupsPrintJobManager(Profile* profile);
   FakeCupsPrintJobManager(const FakeCupsPrintJobManager&) = delete;
   FakeCupsPrintJobManager& operator=(const FakeCupsPrintJobManager&) = delete;
   ~FakeCupsPrintJobManager() override;
 
-  bool CreatePrintJob(const std::string& printer_id,
-                      const std::string& title,
-                      int job_id,
-                      int total_page_number,
-                      ::printing::PrintJob::Source source,
-                      const std::string& source_id,
-                      const printing::proto::PrintSettings& settings) override;
+  bool CreatePrintJob(
+      const std::string& printer_id,
+      const std::string& title,
+      int job_id,
+      int total_page_number,
+      ::printing::PrintJob::Source source,
+      const std::string& source_id,
+      const chromeos::printing::proto::PrintSettings& settings) override;
 
-  void CancelPrintJob(CupsPrintJob* job) override;
-  bool SuspendPrintJob(CupsPrintJob* job) override;
-  bool ResumePrintJob(CupsPrintJob* job) override;
+  void CancelPrintJob(chromeos::CupsPrintJob* job) override;
+  bool SuspendPrintJob(chromeos::CupsPrintJob* job) override;
+  bool ResumePrintJob(chromeos::CupsPrintJob* job) override;
 
  private:
-  void ChangePrintJobState(CupsPrintJob* job);
+  void ChangePrintJobState(chromeos::CupsPrintJob* job);
 
-  using PrintJobs = std::vector<std::unique_ptr<CupsPrintJob>>;
+  using PrintJobs = std::vector<std::unique_ptr<chromeos::CupsPrintJob>>;
 
   PrintJobs print_jobs_;
   base::WeakPtrFactory<FakeCupsPrintJobManager> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_FAKE_CUPS_PRINT_JOB_MANAGER_H_

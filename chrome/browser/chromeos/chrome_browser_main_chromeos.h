@@ -67,6 +67,7 @@ class ArcServiceLauncher;
 
 namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
+class BulkPrintersCalculatorFactory;
 namespace quick_pair {
 class QuickPairBrowserDelegateImpl;
 }  // namespace quick_pair
@@ -92,7 +93,6 @@ class LockToSingleUserManager;
 
 namespace chromeos {
 
-class BulkPrintersCalculatorFactory;
 class DebugdNotificationHandler;
 class FastTransitionObserver;
 class NetworkChangeManagerClient;
@@ -204,7 +204,7 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<chromeos::system::DarkResumeController>
       dark_resume_controller_;
 
-  std::unique_ptr<chromeos::BulkPrintersCalculatorFactory>
+  std::unique_ptr<ash::BulkPrintersCalculatorFactory>
       bulk_printers_calculator_factory_;
 
   std::unique_ptr<SessionTerminationManager> session_termination_manager_;

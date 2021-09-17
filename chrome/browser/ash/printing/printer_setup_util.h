@@ -12,10 +12,11 @@
 #include "printing/backend/print_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace ash {
 namespace printing {
 
 using GetPrinterCapabilitiesCallback = base::OnceCallback<void(
-    const absl::optional<PrinterSemanticCapsAndDefaults>&)>;
+    const absl::optional<::printing::PrinterSemanticCapsAndDefaults>&)>;
 
 // Sets up a printer (if necessary) and runs a callback with the printer
 // capabilities once printer setup is complete. The callback is run
@@ -29,5 +30,6 @@ void SetUpPrinter(chromeos::CupsPrintersManager* printers_manager,
                   GetPrinterCapabilitiesCallback cb);
 
 }  // namespace printing
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTER_SETUP_UTIL_H_

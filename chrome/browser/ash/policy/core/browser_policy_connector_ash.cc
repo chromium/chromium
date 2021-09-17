@@ -290,8 +290,8 @@ void BrowserPolicyConnectorAsh::Init(
           std::make_unique<ScheduledTaskExecutorImpl>(
               update_checker_internal::kUpdateCheckTimerTag));
 
-  chromeos::BulkPrintersCalculatorFactory* calculator_factory =
-      chromeos::BulkPrintersCalculatorFactory::Get();
+  ash::BulkPrintersCalculatorFactory* calculator_factory =
+      ash::BulkPrintersCalculatorFactory::Get();
   DCHECK(calculator_factory)
       << "Policy connector initialized before the bulk printers factory";
   device_cloud_external_data_policy_handlers_.push_back(

@@ -15,13 +15,13 @@
 #include "base/time/time.h"
 #include "chromeos/printing/printer_configuration.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
-Printer::PpdReference SpecificsToPpd(
+chromeos::Printer::PpdReference SpecificsToPpd(
     const sync_pb::PrinterPPDReference& specifics) {
-  Printer::PpdReference ref;
+  chromeos::Printer::PpdReference ref;
   if (specifics.autoconf()) {
     ref.autoconf = specifics.autoconf();
   } else if (specifics.has_user_supplied_ppd_url()) {
@@ -37,7 +37,7 @@ Printer::PpdReference SpecificsToPpd(
 // |ref|.  If |ref| is the default object, nothing will be changed in
 // |specifics|.
 void MergeReferenceToSpecifics(sync_pb::PrinterPPDReference* specifics,
-                               const Printer::PpdReference& ref) {
+                               const chromeos::Printer::PpdReference& ref) {
   if (ref.autoconf) {
     specifics->Clear();
     specifics->set_autoconf(ref.autoconf);
@@ -52,11 +52,11 @@ void MergeReferenceToSpecifics(sync_pb::PrinterPPDReference* specifics,
 
 }  // namespace
 
-std::unique_ptr<Printer> SpecificsToPrinter(
+std::unique_ptr<chromeos::Printer> SpecificsToPrinter(
     const sync_pb::PrinterSpecifics& specifics) {
   DCHECK(!specifics.id().empty());
 
-  auto printer = std::make_unique<Printer>(specifics.id());
+  auto printer = std::make_unique<chromeos::Printer>(specifics.id());
   printer->set_display_name(specifics.display_name());
   printer->set_description(specifics.description());
   if (!specifics.make_and_model().empty()) {
@@ -68,9 +68,10 @@ std::unique_ptr<Printer> SpecificsToPrinter(
 
   bool result = false;
   std::string message;
-  Uri uri(specifics.uri());
-  const Uri::ParserStatus uri_error_code = uri.GetLastParsingError().status;
-  if (uri_error_code == Uri::ParserStatus::kNoErrors) {
+  chromeos::Uri uri(specifics.uri());
+  const chromeos::Uri::ParserStatus uri_error_code =
+      uri.GetLastParsingError().status;
+  if (uri_error_code == chromeos::Uri::ParserStatus::kNoErrors) {
     // Versions of Chrome <= R85 saved incorrectly AppSocket printers with a
     // default IPP path. Here, we have to make sure that URIs of these types of
     // printers do not contain a path component. It would cause an error in the
@@ -94,7 +95,7 @@ std::unique_ptr<Printer> SpecificsToPrinter(
 }
 
 std::unique_ptr<sync_pb::PrinterSpecifics> PrinterToSpecifics(
-    const Printer& printer) {
+    const chromeos::Printer& printer) {
   DCHECK(!printer.id().empty());
 
   auto specifics = std::make_unique<sync_pb::PrinterSpecifics>();
@@ -103,7 +104,7 @@ std::unique_ptr<sync_pb::PrinterSpecifics> PrinterToSpecifics(
   return specifics;
 }
 
-void MergePrinterToSpecifics(const Printer& printer,
+void MergePrinterToSpecifics(const chromeos::Printer& printer,
                              sync_pb::PrinterSpecifics* specifics) {
   // Never update id it needs to be stable.
   DCHECK_EQ(printer.id(), specifics->id());
@@ -135,4 +136,4 @@ std::string MakeAndModel(base::StringPiece make, base::StringPiece model) {
                                        : base::JoinString({make, model}, " ");
 }
 
-}  // namespace chromeos
+}  // namespace ash

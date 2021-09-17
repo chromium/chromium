@@ -651,8 +651,7 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case syncer::PRINTERS:
-      return chromeos::SyncedPrintersManagerFactory::GetForBrowserContext(
-                 profile_)
+      return ash::SyncedPrintersManagerFactory::GetForBrowserContext(profile_)
           ->GetSyncBridge()
           ->change_processor()
           ->GetControllerDelegate();

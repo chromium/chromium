@@ -16,7 +16,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -254,4 +254,4 @@ TEST_F(CalculatorsPoliciesBinderTest, SettingsBeforeBind) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

@@ -284,7 +284,7 @@ void LocalPrinterAsh::GetCapability(const std::string& printer_id,
   std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer =
       CreatePrinterConfigurer(profile);
   chromeos::PrinterConfigurer* ptr = printer_configurer.get();
-  printing::SetUpPrinter(
+  ash::printing::SetUpPrinter(
       printers_manager, ptr, *printer,
       base::BindOnce(OnSetUpPrinter, std::move(printer_configurer),
                      profile->GetPrefs(), *printer)
@@ -537,7 +537,7 @@ void LocalPrinterAsh::AddPrintJobObserver(
 
 scoped_refptr<chromeos::PpdProvider> LocalPrinterAsh::CreatePpdProvider(
     Profile* profile) {
-  return chromeos::CreatePpdProvider(profile);
+  return ash::CreatePpdProvider(profile);
 }
 
 std::unique_ptr<chromeos::PrinterConfigurer>

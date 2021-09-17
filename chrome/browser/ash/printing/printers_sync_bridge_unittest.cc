@@ -13,7 +13,7 @@
 #include "components/sync/test/model/model_type_store_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 using sync_pb::PrinterSpecifics;
@@ -103,4 +103,4 @@ TEST_F(PrintersSyncBridgeTest, UpdatePrinterNewPrinter) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

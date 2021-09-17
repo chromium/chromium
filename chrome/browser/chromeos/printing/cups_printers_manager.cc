@@ -74,9 +74,9 @@ using printing::PrinterQueryResult;
 
 class CupsPrintersManagerImpl
     : public CupsPrintersManager,
-      public EnterprisePrintersProvider::Observer,
+      public ash::EnterprisePrintersProvider::Observer,
       public PrintServersManager::Observer,
-      public SyncedPrintersManager::Observer,
+      public ash::SyncedPrintersManager::Observer,
       public chromeos::network_config::mojom::CrosNetworkConfigObserver {
  public:
   // Identifiers for each of the underlying PrinterDetectors this
@@ -84,16 +84,17 @@ class CupsPrintersManagerImpl
   enum DetectorIds { kUsbDetector, kZeroconfDetector, kPrintServerDetector };
 
   CupsPrintersManagerImpl(
-      SyncedPrintersManager* synced_printers_manager,
+      ash::SyncedPrintersManager* synced_printers_manager,
       std::unique_ptr<PrinterDetector> usb_detector,
       std::unique_ptr<PrinterDetector> zeroconf_detector,
       scoped_refptr<PpdProvider> ppd_provider,
       std::unique_ptr<PrinterConfigurer> printer_configurer,
-      std::unique_ptr<UsbPrinterNotificationController>
+      std::unique_ptr<ash::UsbPrinterNotificationController>
           usb_notification_controller,
       std::unique_ptr<PrintServersManager> print_servers_manager,
-      std::unique_ptr<EnterprisePrintersProvider> enterprise_printers_provider,
-      PrinterEventTracker* event_tracker,
+      std::unique_ptr<ash::EnterprisePrintersProvider>
+          enterprise_printers_provider,
+      ash::PrinterEventTracker* event_tracker,
       PrefService* pref_service)
       : synced_printers_manager_(synced_printers_manager),
         usb_detector_(std::move(usb_detector)),
@@ -379,7 +380,7 @@ class CupsPrintersManagerImpl
       return;
     }
 
-    QueryIppPrinter(
+    ash::QueryIppPrinter(
         printer->uri().GetHostEncoded(), printer->uri().GetPort(),
         printer->uri().GetPathEncodedAsString(),
         printer->uri().GetScheme() == kIppsScheme,
@@ -545,19 +546,19 @@ class CupsPrintersManagerImpl
       // reference generated at detection time is the is the one we actually
       // used -- i.e. the user didn't have to change anything to obtain a ppd
       // that worked.
-      PrinterEventTracker::SetupMode mode;
+      ash::PrinterEventTracker::SetupMode mode;
       if (is_automatic_installation) {
-        mode = PrinterEventTracker::kAutomatic;
+        mode = ash::PrinterEventTracker::kAutomatic;
       } else {
-        mode = PrinterEventTracker::kUser;
+        mode = ash::PrinterEventTracker::kUser;
       }
       event_tracker_->RecordUsbPrinterInstalled(*detected, mode);
     } else {
-      PrinterEventTracker::SetupMode mode;
+      ash::PrinterEventTracker::SetupMode mode;
       if (is_automatic_installation) {
-        mode = PrinterEventTracker::kAutomatic;
+        mode = ash::PrinterEventTracker::kAutomatic;
       } else {
-        mode = PrinterEventTracker::kUser;
+        mode = ash::PrinterEventTracker::kUser;
       }
       event_tracker_->RecordIppPrinterInstalled(printer, mode);
     }
@@ -737,9 +738,9 @@ class CupsPrintersManagerImpl
   std::vector<PrinterDetector::DetectedPrinter> servers_detections_;
 
   // Not owned.
-  SyncedPrintersManager* const synced_printers_manager_;
-  base::ScopedObservation<SyncedPrintersManager,
-                          SyncedPrintersManager::Observer>
+  ash::SyncedPrintersManager* const synced_printers_manager_;
+  base::ScopedObservation<ash::SyncedPrintersManager,
+                          ash::SyncedPrintersManager::Observer>
       synced_printers_manager_observation_{this};
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
@@ -752,20 +753,21 @@ class CupsPrintersManagerImpl
 
   scoped_refptr<PpdProvider> ppd_provider_;
 
-  std::unique_ptr<UsbPrinterNotificationController>
+  std::unique_ptr<ash::UsbPrinterNotificationController>
       usb_notification_controller_;
 
-  AutomaticUsbPrinterConfigurer auto_usb_printer_configurer_;
+  ash::AutomaticUsbPrinterConfigurer auto_usb_printer_configurer_;
 
   std::unique_ptr<PrintServersManager> print_servers_manager_;
 
-  std::unique_ptr<EnterprisePrintersProvider> enterprise_printers_provider_;
-  base::ScopedObservation<EnterprisePrintersProvider,
-                          EnterprisePrintersProvider::Observer>
+  std::unique_ptr<ash::EnterprisePrintersProvider>
+      enterprise_printers_provider_;
+  base::ScopedObservation<ash::EnterprisePrintersProvider,
+                          ash::EnterprisePrintersProvider::Observer>
       enterprise_printers_provider_observation_{this};
 
   // Not owned
-  PrinterEventTracker* const event_tracker_;
+  ash::PrinterEventTracker* const event_tracker_;
 
   // Categorized printers.  This is indexed by PrinterClass.
   PrintersMap printers_;
@@ -779,7 +781,7 @@ class CupsPrintersManagerImpl
 
   // Tracks PpdReference resolution. Also stores USB manufacturer string if
   // available.
-  PpdResolutionTracker ppd_resolution_tracker_;
+  ash::PpdResolutionTracker ppd_resolution_tracker_;
 
   // Map of printer ids to PrinterConfigurer setup fingerprints at the time
   // the printers was last installed with CUPS.
@@ -799,29 +801,31 @@ class CupsPrintersManagerImpl
 std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
     Profile* profile) {
   return std::make_unique<CupsPrintersManagerImpl>(
-      SyncedPrintersManagerFactory::GetInstance()->GetForBrowserContext(
+      ash::SyncedPrintersManagerFactory::GetInstance()->GetForBrowserContext(
           profile),
-      UsbPrinterDetector::Create(), ZeroconfPrinterDetector::Create(),
-      CreatePpdProvider(profile), PrinterConfigurer::Create(profile),
-      UsbPrinterNotificationController::Create(profile),
+      ash::UsbPrinterDetector::Create(), ash::ZeroconfPrinterDetector::Create(),
+      ash::CreatePpdProvider(profile), PrinterConfigurer::Create(profile),
+      ash::UsbPrinterNotificationController::Create(profile),
       PrintServersManager::Create(profile),
-      EnterprisePrintersProvider::Create(CrosSettings::Get(), profile),
-      PrinterEventTrackerFactory::GetInstance()->GetForBrowserContext(profile),
+      ash::EnterprisePrintersProvider::Create(CrosSettings::Get(), profile),
+      ash::PrinterEventTrackerFactory::GetInstance()->GetForBrowserContext(
+          profile),
       profile->GetPrefs());
 }
 
 // static
 std::unique_ptr<CupsPrintersManager> CupsPrintersManager::CreateForTesting(
-    SyncedPrintersManager* synced_printers_manager,
+    ash::SyncedPrintersManager* synced_printers_manager,
     std::unique_ptr<PrinterDetector> usb_detector,
     std::unique_ptr<PrinterDetector> zeroconf_detector,
     scoped_refptr<PpdProvider> ppd_provider,
     std::unique_ptr<PrinterConfigurer> printer_configurer,
-    std::unique_ptr<UsbPrinterNotificationController>
+    std::unique_ptr<ash::UsbPrinterNotificationController>
         usb_notification_controller,
     std::unique_ptr<PrintServersManager> print_servers_manager,
-    std::unique_ptr<EnterprisePrintersProvider> enterprise_printers_provider,
-    PrinterEventTracker* event_tracker,
+    std::unique_ptr<ash::EnterprisePrintersProvider>
+        enterprise_printers_provider,
+    ash::PrinterEventTracker* event_tracker,
     PrefService* pref_service) {
   return std::make_unique<CupsPrintersManagerImpl>(
       synced_printers_manager, std::move(usb_detector),

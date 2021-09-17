@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 
-namespace chromeos {
+namespace ash {
 
 PpdResolutionState::PpdResolutionState()
     : is_inflight_(true),
@@ -18,7 +18,7 @@ PpdResolutionState& PpdResolutionState::operator=(PpdResolutionState&& rhs) =
 PpdResolutionState::~PpdResolutionState() = default;
 
 void PpdResolutionState::MarkResolutionSuccessful(
-    const Printer::PpdReference& ppd_reference) {
+    const chromeos::Printer::PpdReference& ppd_reference) {
   DCHECK(is_inflight_);
 
   ppd_reference_ = ppd_reference;
@@ -41,7 +41,8 @@ void PpdResolutionState::SetUsbManufacturer(
   usb_manufacturer_ = usb_manufacturer;
 }
 
-const Printer::PpdReference& PpdResolutionState::GetPpdReference() const {
+const chromeos::Printer::PpdReference& PpdResolutionState::GetPpdReference()
+    const {
   DCHECK(!is_inflight_);
   DCHECK(is_ppd_resolution_successful_);
   return ppd_reference_;
@@ -68,4 +69,4 @@ bool PpdResolutionState::IsMarkedAsNotAutoconfigurable() const {
   return is_not_autoconfigurable_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

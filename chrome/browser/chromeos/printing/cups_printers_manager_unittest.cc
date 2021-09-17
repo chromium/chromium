@@ -46,7 +46,7 @@ namespace {
 
 // Fake backend for EnterprisePrintersProvider.  This allows us to poke
 // arbitrary changes in the enterprise printer lists.
-class FakeEnterprisePrintersProvider : public EnterprisePrintersProvider {
+class FakeEnterprisePrintersProvider : public ash::EnterprisePrintersProvider {
  public:
   FakeEnterprisePrintersProvider() = default;
   ~FakeEnterprisePrintersProvider() override = default;
@@ -85,7 +85,7 @@ class FakeEnterprisePrintersProvider : public EnterprisePrintersProvider {
 
 // Fake backend for SyncedPrintersManager.  This allows us to poke arbitrary
 // changes in the saved printer lists.
-class FakeSyncedPrintersManager : public SyncedPrintersManager {
+class FakeSyncedPrintersManager : public ash::SyncedPrintersManager {
  public:
   FakeSyncedPrintersManager() = default;
   ~FakeSyncedPrintersManager() override = default;
@@ -140,7 +140,7 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
   // CupsPrintersManager, or just use in a simple pass-through manner that's not
   // worth additional layers of testing on top of the testing in
   // SyncedPrintersManager.
-  PrintersSyncBridge* GetSyncBridge() override { return nullptr; }
+  ash::PrintersSyncBridge* GetSyncBridge() override { return nullptr; }
   // Returns the printer with id |printer_id|, or nullptr if no such printer
   // exists.
   std::unique_ptr<Printer> GetPrinter(
@@ -299,7 +299,7 @@ void ExpectPrinterIdsAre(const std::vector<Printer>& printers,
 }
 
 class FakeUsbPrinterNotificationController
-    : public UsbPrinterNotificationController {
+    : public ash::UsbPrinterNotificationController {
  public:
   FakeUsbPrinterNotificationController() = default;
   ~FakeUsbPrinterNotificationController() override = default;
@@ -447,7 +447,7 @@ class CupsPrintersManagerTest : public testing::Test,
   scoped_refptr<FakePpdProvider> ppd_provider_;
 
   // This is unused, it's just here for memory ownership.
-  PrinterEventTracker event_tracker_;
+  ash::PrinterEventTracker event_tracker_;
 
   // PrefService used to register the |UserPrintersAllowed| pref and
   // change its value for testing.

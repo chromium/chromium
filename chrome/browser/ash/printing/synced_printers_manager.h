@@ -14,7 +14,7 @@
 #include "chromeos/printing/printer_translator.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace chromeos {
+namespace ash {
 
 class PrintersSyncBridge;
 
@@ -38,17 +38,17 @@ class SyncedPrintersManager : public KeyedService {
   ~SyncedPrintersManager() override = default;
 
   // Returns the printers that are saved in preferences.
-  virtual std::vector<Printer> GetSavedPrinters() const = 0;
+  virtual std::vector<chromeos::Printer> GetSavedPrinters() const = 0;
 
   // Returns the printer with id |printer_id|, or nullptr if no such printer
   // exists.  Searches both Saved and Enterprise printers.
-  virtual std::unique_ptr<Printer> GetPrinter(
+  virtual std::unique_ptr<chromeos::Printer> GetPrinter(
       const std::string& printer_id) const = 0;
 
   // Updates a printer in profile preferences.  The |printer| is
   // identified by its id field. If |printer| is *not* a saved printer,
   // |printer| will become a saved printer.
-  virtual void UpdateSavedPrinter(const Printer& printer) = 0;
+  virtual void UpdateSavedPrinter(const chromeos::Printer& printer) = 0;
 
   // Remove printer from preferences with the id |printer_id|.  Returns true if
   // the printer was successfully removed.
@@ -69,6 +69,6 @@ class SyncedPrintersManager : public KeyedService {
 
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_SYNCED_PRINTERS_MANAGER_H_

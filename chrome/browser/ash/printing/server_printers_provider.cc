@@ -25,16 +25,18 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
 // Internal structure representing print server.
 struct PrintServerWithPrinters {
-  explicit PrintServerWithPrinters(const PrintServer& ps) : server(ps) {}
+  explicit PrintServerWithPrinters(const chromeos::PrintServer& ps)
+      : server(ps) {}
 
-  PrintServer server;
-  std::vector<PrinterDetector::DetectedPrinter> printers;  // queried printers
+  chromeos::PrintServer server;
+  std::vector<chromeos::PrinterDetector::DetectedPrinter>
+      printers;  // queried printers
 };
 
 class ServerPrintersProviderImpl
@@ -52,9 +54,10 @@ class ServerPrintersProviderImpl
     callback_ = std::move(cb);
   }
 
-  std::vector<PrinterDetector::DetectedPrinter> GetPrinters() override {
+  std::vector<chromeos::PrinterDetector::DetectedPrinter> GetPrinters()
+      override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    std::vector<PrinterDetector::DetectedPrinter> printers;
+    std::vector<chromeos::PrinterDetector::DetectedPrinter> printers;
     for (auto& server : servers_) {
       printers.insert(printers.end(), server.second.printers.begin(),
                       server.second.printers.end());
@@ -62,8 +65,9 @@ class ServerPrintersProviderImpl
     return printers;
   }
 
-  void OnServersChanged(bool servers_are_complete,
-                        const std::map<GURL, PrintServer>& servers) override {
+  void OnServersChanged(
+      bool servers_are_complete,
+      const std::map<GURL, chromeos::PrintServer>& servers) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Save previous state.
     const bool previous_complete = IsComplete();
@@ -72,7 +76,7 @@ class ServerPrintersProviderImpl
     // Fill new map with new servers and compare with the old map.
     std::map<GURL, PrintServerWithPrinters> new_servers;
     for (const auto& server_pair : servers) {
-      const PrintServer& server = server_pair.second;
+      const chromeos::PrintServer& server = server_pair.second;
       const GURL& url = server.GetUrl();
       const std::string& name = server.GetName();
       auto it_new = new_servers.emplace(url, server).first;
@@ -116,7 +120,7 @@ class ServerPrintersProviderImpl
   void OnPrintersFetched(
       const ServerPrintersFetcher* sender,
       const GURL& server_url,
-      std::vector<PrinterDetector::DetectedPrinter>&& printers) {
+      std::vector<chromeos::PrinterDetector::DetectedPrinter>&& printers) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     const bool previous_complete = IsComplete();
     auto it = fetchers_.find(server_url);
@@ -175,4 +179,4 @@ std::unique_ptr<ServerPrintersProvider> ServerPrintersProvider::Create(
   return std::make_unique<ServerPrintersProviderImpl>(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

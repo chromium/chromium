@@ -68,12 +68,11 @@ class DevicePrintersExternalDataHandlerTest : public testing::Test {
     EXPECT_CALL(policy_service_,
                 RemoveObserver(policy::POLICY_DOMAIN_CHROME, testing::_))
         .Times(1);
-    external_printers_ = chromeos::BulkPrintersCalculator::Create();
+    external_printers_ = ash::BulkPrintersCalculator::Create();
     device_printers_external_data_handler_ =
         std::make_unique<DevicePrintersExternalDataHandler>(
             &policy_service_, external_printers_->AsWeakPtr());
-    external_printers_->SetAccessMode(
-        chromeos::BulkPrintersCalculator::ALL_ACCESS);
+    external_printers_->SetAccessMode(ash::BulkPrintersCalculator::ALL_ACCESS);
   }
 
   void TearDown() override {
@@ -85,7 +84,7 @@ class DevicePrintersExternalDataHandlerTest : public testing::Test {
   MockPolicyService policy_service_;
   std::unique_ptr<DevicePrintersExternalDataHandler>
       device_printers_external_data_handler_;
-  std::unique_ptr<chromeos::BulkPrintersCalculator> external_printers_;
+  std::unique_ptr<ash::BulkPrintersCalculator> external_printers_;
 };
 
 TEST_F(DevicePrintersExternalDataHandlerTest, OnDataFetched) {

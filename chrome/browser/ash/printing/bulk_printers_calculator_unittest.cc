@@ -12,7 +12,7 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // The number of correct printers in BulkPolicyContentsJson.
@@ -325,4 +325,4 @@ TEST_F(BulkPrintersCalculatorTest, ObserverTest) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

@@ -12,9 +12,11 @@
 #include "services/device/public/mojom/usb_device.mojom-forward.h"
 
 namespace chromeos {
-
 class Printer;
 class UsbPrinterId;
+}  // namespace chromeos
+
+namespace ash {
 
 std::u16string GetManufacturerName(
     const device::mojom::UsbDeviceInfo& device_info);
@@ -32,14 +34,14 @@ bool UsbDeviceIsPrinter(const device::mojom::UsbDeviceInfo& device_info);
 //
 // Returns false and logs an error on failure.
 bool UsbDeviceToPrinter(const device::mojom::UsbDeviceInfo& device_info,
-                        PrinterDetector::DetectedPrinter* entry);
+                        chromeos::PrinterDetector::DetectedPrinter* entry);
 
 // Expects |device_ptr| to be linked to a Printer-class USB Device. Queries the
 // printer for its IEEE 1284 Standard Device ID.
-using GetDeviceIdCallback = base::OnceCallback<void(UsbPrinterId)>;
+using GetDeviceIdCallback = base::OnceCallback<void(chromeos::UsbPrinterId)>;
 void GetDeviceId(mojo::Remote<device::mojom::UsbDevice> device,
                  GetDeviceIdCallback cb);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_UTIL_H_

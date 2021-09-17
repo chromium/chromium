@@ -7,7 +7,7 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/printing/ppd_resolution_state.h"
 
-namespace chromeos {
+namespace ash {
 
 PpdResolutionTracker::PpdResolutionTracker() = default;
 PpdResolutionTracker::PpdResolutionTracker(PpdResolutionTracker&& other) =
@@ -49,7 +49,7 @@ void PpdResolutionTracker::MarkResolutionPending(
 
 void PpdResolutionTracker::MarkResolutionSuccessful(
     const std::string& printer_id,
-    const Printer::PpdReference& ppd_reference) {
+    const chromeos::Printer::PpdReference& ppd_reference) {
   DCHECK(PrinterStateExists(printer_id));
   DCHECK(IsResolutionPending(printer_id));
 
@@ -78,7 +78,7 @@ const std::string& PpdResolutionTracker::GetManufacturer(
   return printer_state_.at(printer_id).GetUsbManufacturer();
 }
 
-const Printer::PpdReference& PpdResolutionTracker::GetPpdReference(
+const chromeos::Printer::PpdReference& PpdResolutionTracker::GetPpdReference(
     const std::string& printer_id) const {
   DCHECK(PrinterStateExists(printer_id));
 
@@ -100,4 +100,4 @@ bool PpdResolutionTracker::IsMarkedAsNotAutoconfigurable(
   return printer_state_.at(printer_id).IsMarkedAsNotAutoconfigurable();
 }
 
-}  // namespace chromeos
+}  // namespace ash

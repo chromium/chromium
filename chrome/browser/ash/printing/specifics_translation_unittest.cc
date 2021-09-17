@@ -13,6 +13,8 @@
 
 namespace {
 
+using ::chromeos::Printer;
+
 constexpr char kId[] = "UNIQUE_ID";
 constexpr char kDisplayName[] = "Best Printer Ever";
 constexpr char kDescription[] = "The green one";
@@ -28,7 +30,7 @@ constexpr char kEffectiveMakeAndModel[] = "Manufacturer Model T1000";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 TEST(SpecificsTranslationTest, SpecificsToPrinter) {
   sync_pb::PrinterSpecifics specifics;
@@ -230,4 +232,4 @@ TEST(SpecificsTranslationTest, MakeAndModelPreferred) {
   EXPECT_EQ(kMakeAndModel, printer->make_and_model());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -21,7 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -211,4 +211,4 @@ void CalculatorsPoliciesBinder::UpdateBlocklist() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

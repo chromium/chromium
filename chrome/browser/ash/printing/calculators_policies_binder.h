@@ -18,10 +18,8 @@ class PrefService;
 class PrefRegistrySimple;
 
 namespace ash {
-class CrosSettings;
-}  // namespace ash
 
-namespace chromeos {
+class CrosSettings;
 
 // Observes device settings & user profile modifications and propagates them to
 // BulkPrintersCalculator objects associated with given device context and user
@@ -32,7 +30,7 @@ class CalculatorsPoliciesBinder {
 
   // Binds events from |settings| to the appropriate fields in |calculator|.
   static std::unique_ptr<CalculatorsPoliciesBinder> DeviceBinder(
-      ash::CrosSettings* settings,
+      CrosSettings* settings,
       base::WeakPtr<BulkPrintersCalculator> calculator);
 
   // Binds events from |profile| to the appropriate fields in |calculator|.
@@ -83,6 +81,6 @@ class CalculatorsPoliciesBinder {
   DISALLOW_COPY_AND_ASSIGN(CalculatorsPoliciesBinder);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CALCULATORS_POLICIES_BINDER_H_

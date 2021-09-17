@@ -14,7 +14,7 @@
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 class BulkPrintersCalculator;
 
@@ -58,6 +58,6 @@ class BulkPrintersCalculatorFactory {
   DISALLOW_COPY_AND_ASSIGN(BulkPrintersCalculatorFactory);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_BULK_PRINTERS_CALCULATOR_FACTORY_H_

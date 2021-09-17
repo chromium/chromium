@@ -8,7 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace chromeos {
+namespace ash {
 
 class UsbPrinterNotificationControllerImpl
     : public UsbPrinterNotificationController {
@@ -17,7 +17,7 @@ class UsbPrinterNotificationControllerImpl
       : profile_(profile) {}
   ~UsbPrinterNotificationControllerImpl() override = default;
 
-  void ShowEphemeralNotification(const Printer& printer) override {
+  void ShowEphemeralNotification(const chromeos::Printer& printer) override {
     ShowNotification(printer, UsbPrinterNotification::Type::kEphemeral);
   }
 
@@ -33,17 +33,18 @@ class UsbPrinterNotificationControllerImpl
     return base::Contains(notifications_, printer_id);
   }
 
-  void ShowSavedNotification(const Printer& printer) override {
+  void ShowSavedNotification(const chromeos::Printer& printer) override {
     ShowNotification(printer, UsbPrinterNotification::Type::kSaved);
   }
 
-  void ShowConfigurationNotification(const Printer& printer) override {
+  void ShowConfigurationNotification(
+      const chromeos::Printer& printer) override {
     ShowNotification(printer,
                      UsbPrinterNotification::Type::kConfigurationRequired);
   }
 
  private:
-  void ShowNotification(const Printer& printer,
+  void ShowNotification(const chromeos::Printer& printer,
                         UsbPrinterNotification::Type type) {
     if (base::Contains(notifications_, printer.id())) {
       return;
@@ -73,4 +74,4 @@ UsbPrinterNotificationController::Create(Profile* profile) {
   return std::make_unique<UsbPrinterNotificationControllerImpl>(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

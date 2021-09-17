@@ -108,7 +108,7 @@ PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
 class PrinterConfigurerImpl : public PrinterConfigurer {
  public:
   explicit PrinterConfigurerImpl(Profile* profile)
-      : ppd_provider_(CreatePpdProvider(profile)) {}
+      : ppd_provider_(ash::CreatePpdProvider(profile)) {}
 
   ~PrinterConfigurerImpl() override {}
 

@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 base::LazyInstance<PrinterEventTrackerFactory>::DestructorAtExit
     g_printer_tracker = LAZY_INSTANCE_INITIALIZER;
@@ -62,4 +62,4 @@ content::BrowserContext* PrinterEventTrackerFactory::GetBrowserContextToUse(
   return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
-}  // namespace chromeos
+}  // namespace ash

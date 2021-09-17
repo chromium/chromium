@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "chromeos/printing/printer_configuration.h"
 
-namespace chromeos {
+namespace ash {
 
 class PpdResolutionState {
  public:
@@ -20,7 +20,8 @@ class PpdResolutionState {
   ~PpdResolutionState();
 
   // Marks PPD resolution was successful and stores |ppd_reference|.
-  void MarkResolutionSuccessful(const Printer::PpdReference& ppd_reference);
+  void MarkResolutionSuccessful(
+      const chromeos::Printer::PpdReference& ppd_reference);
 
   // Marks PPD resolution was unsuccessful.
   void MarkResolutionFailed();
@@ -29,7 +30,7 @@ class PpdResolutionState {
   void SetUsbManufacturer(const std::string& usb_manufacturer);
 
   // Getter function for |ppd_reference_|.
-  const Printer::PpdReference& GetPpdReference() const;
+  const chromeos::Printer::PpdReference& GetPpdReference() const;
 
   // Getter function for |usb_manufacturer_|.
   const std::string& GetUsbManufacturer() const;
@@ -51,12 +52,12 @@ class PpdResolutionState {
   bool is_inflight_;
   bool is_ppd_resolution_successful_;
   bool is_not_autoconfigurable_;
-  Printer::PpdReference ppd_reference_;
+  chromeos::Printer::PpdReference ppd_reference_;
   std::string usb_manufacturer_;
 
   DISALLOW_COPY_AND_ASSIGN(PpdResolutionState);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PPD_RESOLUTION_STATE_H_

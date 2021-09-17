@@ -12,7 +12,7 @@
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/printer_event.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 PrinterMetricsProvider::PrinterMetricsProvider() = default;
 PrinterMetricsProvider::~PrinterMetricsProvider() = default;
@@ -42,4 +42,4 @@ void PrinterMetricsProvider::ProvideCurrentSessionData(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

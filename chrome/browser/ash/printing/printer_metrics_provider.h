@@ -12,7 +12,7 @@ namespace metrics {
 class ChromeUserMetricsExtension;
 }  // namespace metrics
 
-namespace chromeos {
+namespace ash {
 
 class PrinterMetricsProvider : public metrics::MetricsProvider {
  public:
@@ -29,6 +29,6 @@ class PrinterMetricsProvider : public metrics::MetricsProvider {
   DISALLOW_COPY_AND_ASSIGN(PrinterMetricsProvider);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTER_METRICS_PROVIDER_H_

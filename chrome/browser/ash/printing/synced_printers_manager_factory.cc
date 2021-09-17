@@ -20,7 +20,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -71,4 +71,4 @@ SyncedPrintersManager* SyncedPrintersManagerFactory::BuildServiceInstanceFor(
   return SyncedPrintersManager::Create(std::move(sync_bridge)).release();
 }
 
-}  // namespace chromeos
+}  // namespace ash

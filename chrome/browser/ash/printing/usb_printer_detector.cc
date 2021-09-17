@@ -39,7 +39,7 @@
 #include "services/device/public/mojom/usb_manager.mojom.h"
 #include "services/device/public/mojom/usb_manager_client.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Given a usb device, guesses the make and model for a driver lookup.
@@ -125,7 +125,7 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
     entry.ppd_search_data.usb_product_id = device_info.product_id;
     entry.ppd_search_data.make_and_model.push_back(std::move(make_and_model));
     entry.ppd_search_data.discovery_type =
-        PrinterSearchData::PrinterDiscoveryType::kUsb;
+        chromeos::PrinterSearchData::PrinterDiscoveryType::kUsb;
 
     // Query printer for an IEEE Device ID.
     mojo::Remote<device::mojom::UsbDevice> device;
@@ -141,7 +141,7 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
 
   void OnGetDeviceId(DetectedPrinter entry,
                      std::string guid,
-                     UsbPrinterId printer_id) {
+                     chromeos::UsbPrinterId printer_id) {
     PRINTER_LOG(EVENT) << "USB printer returned ID: " << printer_id.make()
                        << " " << printer_id.model();
     entry.ppd_search_data.printer_id = std::move(printer_id);
@@ -202,4 +202,4 @@ std::unique_ptr<UsbPrinterDetector> UsbPrinterDetector::CreateForTesting(
   return std::make_unique<UsbPrinterDetectorImpl>(std::move(usb_manager));
 }
 
-}  // namespace chromeos
+}  // namespace ash

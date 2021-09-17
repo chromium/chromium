@@ -17,7 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/google_api_keys.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
@@ -28,24 +28,24 @@ network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
 
 }  // namespace
 
-scoped_refptr<PpdProvider> CreatePpdProvider(Profile* profile) {
+scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
   base::FilePath ppd_cache_path =
       profile->GetPath().Append(FILE_PATH_LITERAL("PPDCache"));
 
-  auto provider_config_cache =
-      PrinterConfigCache::Create(base::DefaultClock::GetInstance(),
-                                 base::BindRepeating(&GetURLLoaderFactory));
+  auto provider_config_cache = chromeos::PrinterConfigCache::Create(
+      base::DefaultClock::GetInstance(),
+      base::BindRepeating(&GetURLLoaderFactory));
 
-  auto manager_config_cache =
-      PrinterConfigCache::Create(base::DefaultClock::GetInstance(),
-                                 base::BindRepeating(&GetURLLoaderFactory));
-  auto metadata_manager = PpdMetadataManager::Create(
+  auto manager_config_cache = chromeos::PrinterConfigCache::Create(
+      base::DefaultClock::GetInstance(),
+      base::BindRepeating(&GetURLLoaderFactory));
+  auto metadata_manager = chromeos::PpdMetadataManager::Create(
       g_browser_process->GetApplicationLocale(),
       base::DefaultClock::GetInstance(), std::move(manager_config_cache));
 
-  return PpdProvider::Create(
-      version_info::GetVersion(), PpdCache::Create(ppd_cache_path),
+  return chromeos::PpdProvider::Create(
+      version_info::GetVersion(), chromeos::PpdCache::Create(ppd_cache_path),
       std::move(metadata_manager), std::move(provider_config_cache));
 }
 
-}  // namespace chromeos
+}  // namespace ash

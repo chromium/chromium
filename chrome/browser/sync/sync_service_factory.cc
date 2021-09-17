@@ -250,7 +250,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DependsOn(chromeos::SyncedPrintersManagerFactory::GetInstance());
+  DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
   DependsOn(DeskSyncServiceFactory::GetInstance());
   DependsOn(WifiConfigurationSyncServiceFactory::GetInstance());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

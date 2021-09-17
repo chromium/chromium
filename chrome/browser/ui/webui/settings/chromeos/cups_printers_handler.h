@@ -13,6 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/printing/server_printers_fetcher.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -38,9 +40,6 @@ class GURL;
 class Profile;
 
 namespace chromeos {
-
-class ServerPrintersFetcher;
-
 namespace settings {
 
 // Chrome OS CUPS printing settings page UI handler.
