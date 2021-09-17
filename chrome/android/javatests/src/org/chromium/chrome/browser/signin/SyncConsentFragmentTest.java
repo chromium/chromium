@@ -421,6 +421,22 @@ public class SyncConsentFragmentTest {
     }
 
     @Test
+    @LargeTest
+    public void testSigninFREFragmentWithoutSelectedAccount() {
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(
+                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
+        fragment.setPageDelegate(mFirstRunPageDelegateMock);
+        launchActivityWithFragment(fragment);
+
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+
+        onView(withText(R.string.signin_account_picker_dialog_title)).check(doesNotExist());
+    }
+
+    @Test
     @MediumTest
     public void testSigninFragmentWithDefaultFlow() {
         HistogramDelta settingsHistogram =

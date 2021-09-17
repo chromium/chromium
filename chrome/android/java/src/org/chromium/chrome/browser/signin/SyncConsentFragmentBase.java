@@ -586,9 +586,12 @@ public abstract class SyncConsentFragmentBase
             return;
         }
 
+        if (mSelectedAccountName != null) {
+            // Show account picker to user to confirm the account selection if
+            // the original selected account is removed.
+            mAccountPickerDialogCoordinator =
+                    new AccountPickerDialogCoordinator(requireContext(), this, mModalDialogManager);
+        }
         selectAccount(defaultAccount);
-        // Show account picker to user to confirm the account selection
-        mAccountPickerDialogCoordinator =
-                new AccountPickerDialogCoordinator(requireContext(), this, mModalDialogManager);
     }
 }
