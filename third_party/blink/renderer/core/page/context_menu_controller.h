@@ -129,6 +129,8 @@ class CORE_EXPORT ContextMenuController final
 
   Node* GetContextMenuNodeWithImageContents();
 
+  void UpdateTextFragmentHandler(LocalFrame*);
+
   HeapMojoAssociatedReceiver<mojom::blink::ContextMenuClient,
                              ContextMenuController>
       context_menu_client_receiver_{this, nullptr};
