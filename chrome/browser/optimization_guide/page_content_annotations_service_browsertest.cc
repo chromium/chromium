@@ -220,6 +220,13 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
+  void Annotate(const HistoryVisit& visit, const std::string& text) {
+    PageContentAnnotationsService* service =
+        PageContentAnnotationsServiceFactory::GetForProfile(
+            browser()->profile());
+    service->Annotate(visit, text);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   bool model_is_lazily_loaded_ = false;
@@ -296,16 +303,13 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        NoVisitsForUrlInHistory) {
-  PageContentAnnotationsService* service =
-      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
-
   HistoryVisit history_visit;
   history_visit.url = GURL("https://probablynotarealurl.com/");
 
   {
     base::HistogramTester histogram_tester;
 
-    service->Annotate(history_visit, "sometext");
+    Annotate(history_visit, "sometext");
 
     RetryForHistogramUntilCountReached(
         &histogram_tester,
@@ -333,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
     base::HistogramTester histogram_tester;
 
     // Make sure a repeat visit is not annotated again.
-    service->Annotate(history_visit, "sometext");
+    Annotate(history_visit, "sometext");
 
     base::RunLoop().RunUntilIdle();
 

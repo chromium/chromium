@@ -105,6 +105,24 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit,
 #endif
 }
 
+void PageContentAnnotationsService::BatchAnnotate(
+    BatchAnnotationCallback callback,
+    const std::vector<std::string>& inputs,
+    AnnotationType annotation_type) {
+  // TODO(crbug/1249632): Implement.
+
+  // Not implemented yet, return a bunch of errors in the proper format.
+  std::vector<BatchAnnotationResult> results;
+  results.reserve(inputs.size());
+
+  for (const std::string& input : inputs) {
+    BatchAnnotationResult result(input);
+    result.status = ExecutionStatus::kErrorInternalError;
+    results.push_back(std::move(result));
+  }
+  std::move(callback).Run(results);
+}
+
 void PageContentAnnotationsService::ExtractRelatedSearches(
     const HistoryVisit& visit,
     content::WebContents* web_contents) {
