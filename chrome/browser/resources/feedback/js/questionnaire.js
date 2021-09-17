@@ -47,14 +47,21 @@ const questionBluetoothOtherDevices =
 /**
  * @type {string}
  */
-const questionWifiSsid =
-    '[WiFi] What is the WiFi SSID you were trying to connect to?';
+const questionWifiTypeOfIssue = '[WiFi] What is the type of the issue? ' +
+    '(failure to connect WiFi, Internet connectivity, ' +
+    'intermittent disconnects, slow WiFi, intermittent lags)';
 
 /**
  * @type {string}
  */
-const questionWifiPortalPage = '[WiFi] Do you expect to see a portal page ' +
-    'before you get network access like a hotel?';
+const questionWifiConnectedButNotInternet =
+    '[WiFi] Did WiFi connect but the Internet is not working?';
+
+/**
+ * @type {string}
+ */
+const questionWifiNetworkWorkingBefore =
+    '[WiFi] Has this device successfully used this network before?';
 
 /**
  * @type {string}
@@ -71,8 +78,9 @@ const questionCellularSim = '[Cellular] Which carrier SIM do you use?';
 /**
  * @type {string}
  */
-const questionCellularCarrier =
-    '[Cellular] Which network/carrier are you trying to connect to?';
+const questionCellularLastSuccess =
+    '[Cellular] When was the last time you connected to the network ' +
+    'successfully with this SIM card?';
 
 /**
  * @type {string}
@@ -84,20 +92,6 @@ const questionCellularRoaming = '[Cellular] Are you roaming internationally?';
  */
 const questionCellularAPN = '[Cellular] Did you configure the APN manually? ' +
     'If yes, which configuration did you use?';
-
-/**
- * @type {string}
- */
-const questionCellularToggle =
-    '[Cellular] Does disabling/enabling mobile make the issue go away?';
-
-/**
- * @type {string}
- */
-const questionCellularOtherDevices =
-    '[Cellular] If using the same SIM card, do other devices ' +
-    '(non-Chrome OS devices, other Chromebooks) ' +
-    'work with the same cellular network? Please specify the type of device.';
 
 
 /**
@@ -112,21 +106,15 @@ const domainQuestions = {
     questionBluetoothOtherDevices,
   ],
   'wifi': [
-    questionGeneralTimestamp,
-    questionGeneralRegression,
-    questionGeneralReproducibility,
-    questionWifiSsid,
-    questionWifiPortalPage,
+    questionWifiTypeOfIssue,
+    questionWifiConnectedButNotInternet,
+    questionWifiNetworkWorkingBefore,
     questionWifiOtherDevices,
   ],
   'cellular': [
-    questionGeneralTimestamp,
-    questionGeneralRegression,
-    questionGeneralReproducibility,
     questionCellularSim,
+    questionCellularLastSuccess,
     questionCellularRoaming,
     questionCellularAPN,
-    questionCellularToggle,
-    questionCellularOtherDevices,
   ],
 };
