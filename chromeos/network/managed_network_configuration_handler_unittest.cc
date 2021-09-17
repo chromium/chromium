@@ -157,7 +157,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     // setup.
     cellular_esim_installer_->Init(
         cellular_connection_handler_.get(), cellular_inhibitor_.get(),
-        network_connection_handler_.get(), network_state_handler_.get());
+        network_connection_handler_.get(), network_profile_handler_.get(),
+        network_state_handler_.get());
     cellular_policy_handler_ = std::make_unique<CellularPolicyHandler>();
 
     // ManagedNetworkConfigurationHandlerImpl's ctor is private.

@@ -107,6 +107,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   bool CanRemoveNetworkConfig(const std::string& guid,
                               const std::string& profile_path) const override;
 
+  // This method should be called when the policy has been fully applied and is
+  // reflected in NetworkStateHandler, so it is safe to notify obserers.
+  // Notifying observers is the last step of policy application to
+  // |service_path|.
+  void NotifyPolicyAppliedToNetwork(
+      const std::string& service_path) const override;
+
   bool AllowOnlyPolicyCellularNetworks() const override;
   bool AllowOnlyPolicyWiFiToConnect() const override;
   bool AllowOnlyPolicyWiFiToConnectIfAvailable() const override;

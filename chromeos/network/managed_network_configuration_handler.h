@@ -176,6 +176,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
       const std::string& guid,
       const std::string& profile_path) const = 0;
 
+  // Notify observers that the policy has been fully applied and is reflected in
+  // NetworkStateHandler.
+  virtual void NotifyPolicyAppliedToNetwork(
+      const std::string& service_path) const = 0;
+
   // Return true if AllowOnlyPolicyCellularNetworks policy is enabled.
   virtual bool AllowOnlyPolicyCellularNetworks() const = 0;
 

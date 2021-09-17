@@ -79,6 +79,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   MOCK_CONST_METHOD2(CanRemoveNetworkConfig,
                      bool(const std::string& guid,
                           const std::string& profile_path));
+  MOCK_CONST_METHOD1(NotifyPolicyAppliedToNetwork,
+                     void(const std::string& service_path));
   MOCK_CONST_METHOD0(AllowOnlyPolicyCellularNetworks, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyWiFiToConnect, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyWiFiToConnectIfAvailable, bool());

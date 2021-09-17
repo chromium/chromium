@@ -22,6 +22,7 @@ namespace chromeos {
 
 class CellularConnectionHandler;
 class NetworkConnectionHandler;
+class NetworkProfileHandler;
 class NetworkStateHandler;
 
 // Handles installation of an eSIM profile and it's corresponding network.
@@ -29,9 +30,10 @@ class NetworkStateHandler;
 // Installing an eSIM profile involves the following operations:
 // 1. Inhibit cellular scans.
 // 2. Install eSIM profile in Hermes with activation code.
-// 3. Prepare newly installed cellular network for connection (ie. profile
+// 3. Create cellular Shill service configuration.
+// 4. Prepare newly installed cellular network for connection (ie. profile
 // enable).
-// 4. Connect to network with the new profile.
+// 5. Connect to network with the new profile.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
  public:
   CellularESimInstaller();
@@ -42,6 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   void Init(CellularConnectionHandler* cellular_connection_handler,
             CellularInhibitor* cellular_inhibitor,
             NetworkConnectionHandler* network_connection_handler,
+            NetworkProfileHandler* network_profile_handler,
             NetworkStateHandler* network_state_handler);
 
   // Return callback for the InstallProfileFromActivationCode method.
@@ -55,12 +58,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
                               absl::optional<std::string> service_path)>;
 
   // Installs an ESim profile and network with given |activation_code|,
-  // |confirmation_code| and |euicc_path|. This method will also attempt
-  // to enable the newly installed profile and connect to its network.
+  // |confirmation_code| and |euicc_path|. This method will attempt to create
+  // the Shill configuration with given |new_shill_properties| and then enable
+  // the newly installed profile and connect to its network afterward.
   void InstallProfileFromActivationCode(
       const std::string& activation_code,
       const std::string& confirmation_code,
       const dbus::ObjectPath& euicc_path,
+      base::Value new_shill_properties,
       InstallProfileFromActivationCodeCallback callback);
 
  private:
@@ -88,35 +93,56 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       const std::string& activation_code,
       const std::string& confirmation_code,
       const dbus::ObjectPath& euicc_path,
+      base::Value new_shill_properties,
       InstallProfileFromActivationCodeCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnProfileInstallResult(
       InstallProfileFromActivationCodeCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
       const dbus::ObjectPath& euicc_path,
+      const base::Value& new_shill_properties,
       HermesResponseStatus status,
       const dbus::ObjectPath* object_path);
+  void OnShillConfigurationCreationSuccess(
+      InstallProfileFromActivationCodeCallback callback,
+      const dbus::ObjectPath& euicc_path,
+      const dbus::ObjectPath& profile_path,
+      const dbus::ObjectPath& service_path);
+  void OnShillConfigurationCreationFailure(
+      InstallProfileFromActivationCodeCallback callback,
+      const dbus::ObjectPath& euicc_path,
+      const dbus::ObjectPath& profile_path,
+      const std::string& error_name,
+      const std::string& error_message);
+  void EnableProfile(InstallProfileFromActivationCodeCallback callback,
+                     const dbus::ObjectPath& euicc_path,
+                     const dbus::ObjectPath& profile_path);
   void OnPrepareCellularNetworkForConnectionSuccess(
       const dbus::ObjectPath& profile_path,
+      InstallProfileFromActivationCodeCallback callback,
       const std::string& service_path);
   void OnPrepareCellularNetworkForConnectionFailure(
       const dbus::ObjectPath& profile_path,
+      InstallProfileFromActivationCodeCallback callback,
       const std::string& service_path,
       const std::string& error_name);
-  void HandleNewProfileEnableFailure(const dbus::ObjectPath& profile_path,
-                                     const std::string& service_path,
-                                     const std::string& error_name);
+  void HandleNewProfileEnableFailure(
+      InstallProfileFromActivationCodeCallback callback,
+      const dbus::ObjectPath& profile_path,
+      const std::string& service_path,
+      const std::string& error_name);
 
   CellularConnectionHandler* cellular_connection_handler_;
   CellularInhibitor* cellular_inhibitor_;
 
   NetworkConnectionHandler* network_connection_handler_;
+  NetworkProfileHandler* network_profile_handler_;
   NetworkStateHandler* network_state_handler_;
 
-  // Maps profile dbus paths to InstallProfileFromActivation method callbacks
-  // that are pending connection to the newly created network.
-  std::map<dbus::ObjectPath, InstallProfileFromActivationCodeCallback>
-      install_calls_pending_connect_;
+  // Maps profile dbus paths to unique pointer of InhibitLocks that are pending
+  // to uninhibit.
+  std::map<dbus::ObjectPath, std::unique_ptr<CellularInhibitor::InhibitLock>>
+      pending_inhibit_locks_;
 
   base::WeakPtrFactory<CellularESimInstaller> weak_ptr_factory_{this};
 };

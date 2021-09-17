@@ -77,14 +77,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler {
       HermesResponseStatus hermes_status,
       absl::optional<dbus::ObjectPath> profile_path,
       absl::optional<std::string> service_path);
-  void UpdateShillConfiguration(const std::string& iccid,
-                                const std::string& service_path);
-  void OnRemoveConfigurationSuccess(const std::string& service_path,
-                                    const std::string& iccid);
-  void OnRemoveConfigurationFailure(
-      const std::string& service_path,
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
   void PopRequestAndProcessNext();
 
   CellularESimInstaller* cellular_esim_installer_ = nullptr;

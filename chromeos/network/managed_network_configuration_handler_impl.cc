@@ -927,14 +927,11 @@ void ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork(
     base::OnceClosure callback,
     const std::string& service_path,
     const std::string& guid) {
-  DCHECK(!service_path.empty());
-
   // When this is called, the policy has been fully applied and is reflected in
   // NetworkStateHandler, so it is safe to notify obserers.
   // Notifying observers is the last step of policy application to
   // |service_path|.
-  for (auto& observer : observers_)
-    observer.PolicyAppliedToNetwork(service_path);
+  NotifyPolicyAppliedToNetwork(service_path);
 
   // Inform the caller that has requested policy application that it has
   // finished.
@@ -1166,6 +1163,14 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
   std::move(callback).Run(service_path,
                           absl::make_optional(std::move(augmented_properties)),
                           absl::nullopt);
+}
+
+void ManagedNetworkConfigurationHandlerImpl::NotifyPolicyAppliedToNetwork(
+    const std::string& service_path) const {
+  DCHECK(!service_path.empty());
+
+  for (auto& observer : observers_)
+    observer.PolicyAppliedToNetwork(service_path);
 }
 
 }  // namespace chromeos

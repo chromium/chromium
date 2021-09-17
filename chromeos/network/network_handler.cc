@@ -98,7 +98,8 @@ void NetworkHandler::Init() {
       cellular_connection_handler_.get());
   cellular_esim_installer_->Init(
       cellular_connection_handler_.get(), cellular_inhibitor_.get(),
-      network_connection_handler_.get(), network_state_handler_.get());
+      network_connection_handler_.get(), network_profile_handler_.get(),
+      network_state_handler_.get());
   cellular_esim_uninstall_handler_->Init(
       cellular_inhibitor_.get(), cellular_esim_profile_handler_.get(),
       network_configuration_handler_.get(), network_connection_handler_.get(),

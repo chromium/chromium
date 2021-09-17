@@ -121,6 +121,7 @@ void Euicc::InstallProfileFromActivationCode(
 
   esim_manager_->cellular_esim_installer()->InstallProfileFromActivationCode(
       activation_code, confirmation_code, path_,
+      /*new_shill_properties=*/base::DictionaryValue(),
       base::BindOnce(&Euicc::OnESimInstallProfileResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

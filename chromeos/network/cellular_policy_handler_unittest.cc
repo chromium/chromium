@@ -38,13 +38,16 @@ const char kTestEuiccPath2[] = "/org/chromium/Hermes/Euicc/1";
 const char kTestEid[] = "12345678901234567890123456789012";
 const char kTestEid2[] = "12345678901234567890123456789000";
 const char kCellularGuid[] = "cellular_guid";
-const char kEntryPath[] = "service_path_for_cellular_guid";
 const char kICCID[] = "1000000000000000002";
 
 void CheckShillConfiguration(bool is_installed) {
+  std::string service_path =
+      ShillServiceClient::Get()->GetTestInterface()->FindServiceMatchingGUID(
+          kCellularGuid);
   const base::Value* properties =
       ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
-          kEntryPath);
+          service_path);
+
   if (!is_installed) {
     EXPECT_EQ(properties, nullptr);
     return;
@@ -100,7 +103,8 @@ class CellularPolicyHandlerTest : public testing::Test {
     cellular_esim_installer_ = std::make_unique<CellularESimInstaller>();
     cellular_esim_installer_->Init(
         cellular_connection_handler_.get(), cellular_inhibitor_.get(),
-        network_connection_handler_.get(), network_state_handler_.get());
+        network_connection_handler_.get(), network_profile_handler_.get(),
+        network_state_handler_.get());
     network_configuration_handler_ =
         base::WrapUnique<NetworkConfigurationHandler>(
             NetworkConfigurationHandler::InitializeForTest(
