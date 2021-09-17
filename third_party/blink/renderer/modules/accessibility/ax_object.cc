@@ -1399,11 +1399,19 @@ const AtomicString& AXObject::GetRoleAttributeStringForObjectAttribute() {
     return role_str;
   }
 
-  // Landmarks are the only native roles exposed in xml-roles, matching Firefox.
-  if (ui::IsLandmark(RoleValue()))
-    return ARIARoleName(RoleValue());
+  ax::mojom::blink::Role landmark_role = RoleValue();
+  if (landmark_role == ax::mojom::blink::Role::kFooter) {
+    // - Treat <footer> as "contentinfo" in xml-roles object attribute.
+    landmark_role = ax::mojom::blink::Role::kContentInfo;
+  } else if (landmark_role == ax::mojom::blink::Role::kHeader) {
+    // - Treat <header> as "banner" in xml-roles object attribute.
+    landmark_role = ax::mojom::blink::Role::kBanner;
+  } else if (!ui::IsLandmark(RoleValue())) {
+    // Landmarks are the only roles exposed in xml-roles, matching Firefox.
+    return g_null_atom;
+  }
 
-  return g_null_atom;
+  return ARIARoleName(landmark_role);
 }
 
 void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
