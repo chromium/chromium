@@ -15,6 +15,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/files/safe_base_name.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -544,6 +545,10 @@ FilePath FilePath::Append(StringPieceType component) const {
 
 FilePath FilePath::Append(const FilePath& component) const {
   return Append(component.value());
+}
+
+FilePath FilePath::Append(const SafeBaseName& component) const {
+  return Append(component.path().value());
 }
 
 FilePath FilePath::AppendASCII(StringPiece component) const {
