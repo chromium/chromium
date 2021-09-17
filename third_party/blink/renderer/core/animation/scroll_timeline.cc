@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
+#include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
+#include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -37,13 +39,6 @@ using ScrollTimelineSet =
 ScrollTimelineSet& GetScrollTimelineSet() {
   DEFINE_STATIC_LOCAL(Persistent<ScrollTimelineSet>, set,
                       (MakeGarbageCollected<ScrollTimelineSet>()));
-  return *set;
-}
-
-using ActiveScrollTimelineSet = HeapHashCountedSet<WeakMember<Node>>;
-ActiveScrollTimelineSet& GetActiveScrollTimelineSet() {
-  DEFINE_STATIC_LOCAL(Persistent<ActiveScrollTimelineSet>, set,
-                      (MakeGarbageCollected<ActiveScrollTimelineSet>()));
   return *set;
 }
 
@@ -570,43 +565,33 @@ void ScrollTimeline::AnimationDetached(Animation* animation) {
     resolved_scroll_source_->UnregisterScrollTimeline(this);
 }
 
-void ScrollTimeline::WorkletAnimationAttached() {
+void ScrollTimeline::WorkletAnimationAttached(WorkletAnimationBase* worklet) {
   if (!resolved_scroll_source_)
     return;
-  GetActiveScrollTimelineSet().insert(resolved_scroll_source_);
-}
-
-void ScrollTimeline::WorkletAnimationDetached() {
-  if (!resolved_scroll_source_)
-    return;
-  GetActiveScrollTimelineSet().erase(resolved_scroll_source_);
+  attached_worklet_animations_.insert(worklet);
 }
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_source_);
   visitor->Trace(resolved_scroll_source_);
   visitor->Trace(scroll_offsets_);
+  visitor->Trace(attached_worklet_animations_);
   AnimationTimeline::Trace(visitor);
 }
 
-bool ScrollTimeline::HasActiveScrollTimeline(Node* node) {
-  ActiveScrollTimelineSet& worklet_animations_set =
-      GetActiveScrollTimelineSet();
-  auto worklet_animations_it = worklet_animations_set.find(node);
-  if (worklet_animations_it != worklet_animations_set.end() &&
-      worklet_animations_it->value > 0)
-    return true;
-
+void ScrollTimeline::InvalidateCompositingState(Node* node) {
   ScrollTimelineSet& set = GetScrollTimelineSet();
   auto it = set.find(node);
   if (it == set.end())
-    return false;
+    return;
 
   for (auto& timeline : *it->value) {
-    if (timeline->HasAnimations())
-      return true;
+    for (const WeakMember<WorkletAnimationBase>& worklet_animation :
+         timeline->attached_worklet_animations_) {
+      node->GetDocument().GetWorkletAnimationController().InvalidateAnimation(
+          *worklet_animation);
+    }
   }
-  return false;
 }
 
 void ScrollTimeline::Invalidate(Node* node) {

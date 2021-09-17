@@ -18,6 +18,7 @@ namespace blink {
 
 class ScrollTimelineOptions;
 class V8UnionDoubleOrScrollTimelineAutoKeyword;
+class WorkletAnimationBase;
 
 // Implements the ScrollTimeline concept from the Scroll-linked Animations spec.
 //
@@ -105,25 +106,29 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   CompositorAnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
 
-  // TODO(crbug.com/896249): These methods are temporary and currently required
+  // TODO(crbug.com/896249): This method is temporary and currently required
   // to support worklet animations. Once worklet animations become animations
   // these methods will not be longer needed. They are used to keep track of
-  // number of worklet animations attached to the scroll timeline for updating
+  // the of worklet animations attached to the scroll timeline for updating
   // compositing state.
-  void WorkletAnimationAttached();
-  void WorkletAnimationDetached();
+  void WorkletAnimationAttached(WorkletAnimationBase*);
 
   void AnimationAttached(Animation*) override;
   void AnimationDetached(Animation*) override;
 
   void Trace(Visitor*) const override;
 
-  static bool HasActiveScrollTimeline(Node* node);
   // Invalidates scroll timelines with a given scroller node.
   // Called when scroller properties, affecting scroll timeline state, change.
   // These properties are scroller offset, content size, viewport size,
   // overflow, adding and removal of scrollable area.
   static void Invalidate(Node* node);
+
+  // A change in the compositing state of a ScrollTimeline's scroll source
+  // can cause the compositor's view of the scroll source to become out of
+  // date. We inform the WorkletAnimationController about any such changes
+  // so that it can schedule a compositing animations update.
+  static void InvalidateCompositingState(Node* node);
 
   // Duration is the maximum value a timeline may generate for current time.
   // Used to convert time values to proportional values.
@@ -191,6 +196,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
+
+  HeapHashSet<WeakMember<WorkletAnimationBase>> attached_worklet_animations_;
 };
 
 template <>

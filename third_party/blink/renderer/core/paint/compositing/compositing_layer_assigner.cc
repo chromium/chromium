@@ -331,16 +331,8 @@ void CompositingLayerAssigner::AssignLayersToBackingsInternal(
     }
 
     if (composited_layer_update != kNoCompositingStateChange) {
-      // A change in the compositing state of a ScrollTimeline's scroll source
-      // can cause the compositor's view of the scroll source to become out of
-      // date. We inform the WorkletAnimationController about any such changes
-      // so that it can schedule a compositing animations update.
-      Node* node = layer->GetLayoutObject().GetNode();
-      if (node && ScrollTimeline::HasActiveScrollTimeline(node)) {
-        node->GetDocument()
-            .GetWorkletAnimationController()
-            .ScrollSourceCompositingStateChanged(node);
-      }
+      if (Node* node = layer->GetLayoutObject().GetNode())
+        ScrollTimeline::InvalidateCompositingState(node);
     }
 
     // Add this layer to a squashing backing if needed.

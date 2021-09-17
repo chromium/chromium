@@ -315,7 +315,7 @@ WorkletAnimation::WorkletAnimation(
       timings, normalized_timings);
 
   if (timeline_->IsScrollTimeline())
-    To<ScrollTimeline>(*timeline_).WorkletAnimationAttached();
+    To<ScrollTimeline>(*timeline_).WorkletAnimationAttached(this);
 }
 
 String WorkletAnimation::playState() {
@@ -889,8 +889,6 @@ void WorkletAnimation::NotifyLocalTimeUpdated(
 
 void WorkletAnimation::Dispose() {
   DCHECK(IsMainThread());
-  if (timeline_->IsScrollTimeline())
-    To<ScrollTimeline>(*timeline_).WorkletAnimationDetached();
   DestroyCompositorAnimation();
 }
 
