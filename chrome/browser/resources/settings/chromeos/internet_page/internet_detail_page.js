@@ -1216,6 +1216,26 @@ Polymer({
 
   /**
    * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+   * @return {boolean}
+   * @private
+   */
+  isWireGuard_(managedProperties) {
+    if (!managedProperties) {
+      return false;
+    }
+    if (managedProperties.type !==
+        chromeos.networkConfig.mojom.NetworkType.kVPN) {
+      return false;
+    }
+    if (!managedProperties.typeProperties.vpn) {
+      return false;
+    }
+    return managedProperties.typeProperties.vpn.type ===
+        chromeos.networkConfig.mojom.VpnType.kWireGuard;
+  },
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
    * @param {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} globalPolicy
    * @param {boolean} managedNetworkAvailable
    * @return {boolean}

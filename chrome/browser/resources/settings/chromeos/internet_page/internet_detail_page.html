@@ -243,6 +243,18 @@
         prefs="{{prefs}}">
       </cellular-roaming-toggle-button>
     </template>
+    <!-- Public Key (WireGuard VPN only). -->
+    <template is="dom-if" if="[[isWireGuard_(managedProperties_)]]">
+      <div id="wgPublicKeyField"
+          class="settings-box two-line single-column stretch settings-box-text">
+        <div aria-hidden="true" id="wgPublicKeyLabel">
+          $i18n{OncVPN-WireGuard-PublicKey}
+        </div>
+        <div class="secondary" aria-labelledby="wgPublicKeyLabel">
+          [[managedProperties_.typeProperties.vpn.wireguard.publicKey.activeValue]]
+        </div>
+      </div>
+    </template>
     <!-- IP Address. -->
     <div
       class="settings-box two-line single-column stretch settings-box-text"
