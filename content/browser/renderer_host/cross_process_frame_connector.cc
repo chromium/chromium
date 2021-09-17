@@ -120,8 +120,11 @@ void CrossProcessFrameConnector::RenderProcessGone() {
 
   RenderFrameHostImpl* current_child_rfh = current_child_frame_host();
   int process_id = current_child_rfh->GetProcess()->GetID();
-  for (auto* rfh = current_child_rfh->GetParent(); rfh;
-       rfh = rfh->GetParent()) {
+
+  // If a parent, outer document or embedder of `current_child_rfh` has crashed
+  // and has the same RPH, we only want to record the crash once.
+  for (auto* rfh = current_child_rfh->GetParentOrOuterDocumentOrEmbedder(); rfh;
+       rfh = rfh->GetParentOrOuterDocumentOrEmbedder()) {
     if (rfh->GetProcess()->GetID() == process_id) {
       // The crash will be already logged by the ancestor - ignore this crash in
       // the current instance of the CrossProcessFrameConnector.
