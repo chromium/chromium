@@ -397,7 +397,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             for (Activity activity : ApplicationStatus.getRunningActivities()) {
                 if (activity instanceof ChromeTabbedActivity) {
                     if (VrModuleProvider.getDelegate().willChangeDensityInVr(
-                                (ChromeActivity) activity)) {
+                                ((ChromeActivity) activity).getWindowAndroid())) {
                         // In the rare case that entering VR will trigger a density change (and
                         // hence an Activity recreation), just return to Daydream home and kill the
                         // process, as there's no good way to recreate without showing 2D UI
