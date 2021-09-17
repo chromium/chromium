@@ -162,7 +162,7 @@ class AuditorTest(unittest.TestCase):
   def test_is_safelisted(self):
     """Tests if Auditor._is_safe_listed() works as expected. Inherently checks
     Auditor.load_safe_list() as well."""
-    auditor = Auditor()  # use the real safe_list.txt
+    auditor = Auditor(get_current_platform())  # use the real safe_list.txt
     for t in ExceptionType:
       # Anything in /tools directory is safelisted for all types.
       self.assertTrue(auditor._is_safe_listed(Path("tools/something.cc"), t))
@@ -638,7 +638,7 @@ class AuditorTest(unittest.TestCase):
   def test_annotations_xml(self):
     """Tests is annotations.xml has proper content."""
     # annotations.xml should parse without errors.
-    exporter = Exporter()
+    exporter = Exporter(get_current_platform())
     exporter.load_annotations_xml()
     errors = exporter.check_archived_annotations()
     self.assertEqual([], errors)
@@ -651,7 +651,7 @@ class AuditorTest(unittest.TestCase):
 
   def test_annotations_xml_differences(self):
     """Tests if annotations.xml changes are correctly reported."""
-    exporter = Exporter()
+    exporter = Exporter(get_current_platform())
 
     with open(os.path.join(CPP_TESTS_DIR, "annotations_sample1.xml")) as f:
       xml1 = f.read()

@@ -57,7 +57,14 @@ NO_ANNOTATION_ID = UniqueId("undefined")
 RESERVED_IDS = TEST_IDS + [MISSING_ID, NO_ANNOTATION_ID]
 
 # Host platforms that support running auditor.py.
-SUPPORTED_PLATFORMS = ["linux", "windows"]
+SUPPORTED_PLATFORMS = ["linux", "windows", "android"]
+
+# These platforms populate the "os_list" field in annotations.xml for
+# newly-added annotations (i.e., assume they're present on these platforms).
+#
+# Android isn't completely supported yet, so exclude it for now.
+# TODO(crbug.com/1231780): Revisit this once Android support is complete.
+DEFAULT_OS_LIST = ["linux", "windows"]
 
 # Earliest valid milestone for added_in_milestone in annotations.xml.
 MIN_MILESTONE = 62
@@ -79,6 +86,31 @@ logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s:%(levelname)s:%(filename)s(%(lineno)d)] %(message)s")
 logger = logging.getLogger(__name__)
+
+
+def get_current_platform(build_path: Optional[Path] = None) -> str:
+  """Return the target platform of |build_path| based on heuristics."""
+  # Use host platform as the source of truth (in most cases).
+  current_platform: str = platform.system().lower()
+
+  if current_platform == "linux" and build_path is not None:
+    # It could be an Android build directory, being compiled from a Linux host.
+    # Look for a target_os="android" line in args.gn.
+    try:
+      gn_args = (build_path / "args.gn").read_text(encoding="utf-8")
+      pattern = re.compile(r"^\s*target_os\s*=\s*\"android\"\s*$", re.MULTILINE)
+      if pattern.search(gn_args):
+        current_platform = "android"
+    except (ValueError, OSError):
+      logger.info(e.value)
+      # Maybe the file's absent, or it can't be decoded as UTF-8, or something.
+      # It's probably not Android in that case.
+      pass
+
+  if current_platform not in SUPPORTED_PLATFORMS:
+    raise ValueError("Unsupported platform {}".format(current_platform))
+
+  return current_platform
 
 
 def twos_complement_8bit(b: int) -> int:
@@ -1223,12 +1255,11 @@ class Exporter:
 
   GROUPING_XML_PATH = SCRIPT_DIR.parent.parent / "summary" / "grouping.xml"
 
-  def __init__(self):
+  def __init__(self, current_platform: str):
     self.archive: Dict[UniqueId, ArchivedAnnotation] = {}
 
-    self._current_platform = platform.system().lower()
-    if self._current_platform not in SUPPORTED_PLATFORMS:
-      raise ValueError("Unsupported platform {}".format(self._current_platform))
+    assert current_platform in SUPPORTED_PLATFORMS
+    self._current_platform = current_platform
 
     with open(SRC_DIR / "chrome" / "VERSION") as f:
       contents = f.read()
@@ -1318,13 +1349,13 @@ class Exporter:
         archived.content_hash_code = annotation.get_content_hash_code()
       else:
         # If annotation is new, add it and assume it is on all platforms. Tests
-        # running on other platforms will request updating this if required.:
+        # running on other platforms will request updating this if required.
         new_item = ArchivedAnnotation(
             type=annotation.type,
             id=annotation.unique_id,
             hash_code=annotation.unique_id_hash_code,
             content_hash_code=annotation.get_content_hash_code(),
-            os_list=SUPPORTED_PLATFORMS,
+            os_list=DEFAULT_OS_LIST,
             added_in_milestone=self._current_milestone,
             file_path=annotation.file)
         if annotation.needs_two_ids():
@@ -1353,7 +1384,7 @@ class Exporter:
             added_in_milestone=self._current_milestone,
             hash_code=compute_hash_value(reserved_id),
             reserved=True,
-            os_list=SUPPORTED_PLATFORMS,
+            os_list=DEFAULT_OS_LIST,
             file_path="")
 
     # If there are annotations that are not used on any OS, set the deprecation
@@ -1525,7 +1556,7 @@ class Auditor:
   SAFE_LIST_PATH = (SRC_DIR / "tools" / "traffic_annotation" / "auditor" /
                     "safe_list.txt")
 
-  def __init__(self):
+  def __init__(self, current_platform: str):
     self.extracted_annotations: List[Annotation] = []
 
     self.partial_annotations: List[Annotation] = []
@@ -1533,7 +1564,7 @@ class Auditor:
 
     self._safe_list: SafeList = {}
 
-    self.exporter = Exporter()
+    self.exporter = Exporter(current_platform)
     self.file_filter = FileFilter()
 
   def _get_safe_list(self) -> SafeList:
@@ -1904,7 +1935,7 @@ class AuditorUI:
 
     # Exposed for testing.
     self.traffic_annotation = self.import_compiled_proto()
-    self.auditor = Auditor()
+    self.auditor = Auditor(get_current_platform(self.build_path))
 
   def import_compiled_proto(self) -> Any:
     """Global import from function. |self.build_path| is needed to perform
