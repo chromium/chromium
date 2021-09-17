@@ -79,6 +79,7 @@ static_library("service") {
     "//mojo/public/cpp/system",
     "//net",
     "//printing",
+    "//printing/backend",
     "//services/network/public/cpp",
     "//skia",
     "//third_party/webrtc_overrides:webrtc_component",

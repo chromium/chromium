@@ -2538,7 +2538,10 @@ test("content_unittests") {
   }
 
   if (enable_basic_printing) {
-    deps += [ "//printing" ]
+    deps += [
+      "//printing",
+      "//printing/backend",
+    ]
   }
 
   if (enable_plugins) {

@@ -3896,6 +3896,7 @@ if (!is_android && !is_fuchsia) {
         "//components/printing/browser",
         "//components/printing/common:mojo_interfaces",
         "//printing:test_support",
+        "//printing/backend",
       ]
     }
     if (enable_print_preview) {
@@ -7236,6 +7237,7 @@ test("unit_tests") {
       "//components/printing/common:mojo_interfaces",
       "//printing",
       "//printing:test_support",
+      "//printing/backend",
       "//printing/mojom",
     ]
 

@@ -992,6 +992,8 @@ static_library("extensions") {
         "api/printing/printing_api_utils.cc",
         "api/printing/printing_api_utils.h",
       ]
+
+      deps += [ "//printing/backend" ]
     }
     deps += [
       "//chromeos/crosapi/cpp",

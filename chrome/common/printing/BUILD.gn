@@ -37,7 +37,10 @@ source_set("printing") {
     "printer_capabilities.h",
   ]
 
-  public_deps = [ ":printing_buildflags" ]
+  public_deps = [
+    ":printing_buildflags",
+    "//printing/backend",
+  ]
 
   deps = [
     "//base",

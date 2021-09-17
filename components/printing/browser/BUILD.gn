@@ -29,7 +29,8 @@ static_library("browser") {
     "//components/site_isolation",
     "//components/strings:components_strings_grit",
     "//printing",
-    "//printing/common:common",
+    "//printing/backend",
+    "//printing/common",
     "//ui/base",
     "//ui/gfx/geometry",
   ]

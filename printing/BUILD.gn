@@ -124,10 +124,7 @@ component("printing") {
   cflags = []
   defines = [ "IS_PRINTING_IMPL" ]
 
-  public_deps = [
-    ":printing_base",
-    "//printing/backend",
-  ]
+  public_deps = [ ":printing_base" ]
   deps = [
     "//base",
     "//base:i18n",
@@ -207,6 +204,8 @@ component("printing") {
       "printing_context_win.cc",
       "printing_context_win.h",
     ]
+
+    deps += [ "//printing/backend" ]
   }
 
   if (use_aura) {
@@ -219,6 +218,8 @@ component("printing") {
         "printing_context_chromeos.cc",
         "printing_context_chromeos.h",
       ]
+
+      deps += [ "//printing/backend" ]
     }
   }
 

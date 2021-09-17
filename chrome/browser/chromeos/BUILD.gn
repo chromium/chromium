@@ -90,6 +90,7 @@ source_set("chromeos") {
     "//ash/components/smbfs",
     "//ash/components/smbfs/mojom",
     "//ash/constants",
+    "//ash/keyboard/ui",
     "//ash/public/cpp",
     "//ash/public/cpp/external_arc",
     "//ash/public/mojom",
@@ -407,6 +408,7 @@ source_set("chromeos") {
     "//components/user_manager",
     "//components/user_prefs:user_prefs",
     "//components/vector_icons",
+    "//components/webapps/browser",
     "//extensions/browser/api:api_implementations",
     "//extensions/browser/updater",
     "//media/capture/video/chromeos/public:public",
@@ -443,9 +445,8 @@ source_set("chromeos") {
     "//net",
 
     # TODO: care about enable_basic_printing and enable_print_preview.
-    "//ash/keyboard/ui",
-    "//components/webapps/browser",
     "//printing",
+    "//printing/backend",
     "//printing/mojom",
     "//remoting/host/chromeos:remoting_service",
     "//remoting/protocol:errors",

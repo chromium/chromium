@@ -5963,6 +5963,7 @@ static_library("browser") {
       "//components/services/print_compositor/public/cpp",
       "//components/services/print_compositor/public/mojom",
       "//printing",
+      "//printing/backend",
     ]
 
     if (is_win) {

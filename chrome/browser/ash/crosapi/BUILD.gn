@@ -165,8 +165,8 @@ source_set("crosapi") {
     "//extensions/browser/api",
     "//extensions/browser/api/automation_internal",
     "//extensions/common",
-    "//printing:printing",
-    "//printing:printing_base",
+    "//printing",
+    "//printing/backend",
     "//remoting/host/chromeos:remoting_service",
     "//services/device/wake_lock/power_save_blocker",
     "//services/video_capture/public/cpp:cpp",
@@ -220,6 +220,7 @@ source_set("unit_tests") {
     "//chromeos/login/login_state",
     "//chromeos/startup:constants",
     "//components/component_updater:test_support",
+    "//printing/backend",
     "//printing/backend:test_support",
     "//testing/gtest:gtest",
   ]

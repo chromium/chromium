@@ -25,7 +25,7 @@ source_set("cpp") {
 
   public_deps = [
     "//chrome/services/ipp_parser/public/cpp",
-    "//printing",
+    "//printing/backend",
   ]
 }
 

@@ -400,7 +400,10 @@ static_library("common") {
           "service_process_util_win.cc",
         ]
 
-        public_deps += [ "//printing/mojom" ]
+        public_deps += [
+          "//printing/backend",
+          "//printing/mojom",
+        ]
       }
     }
   }

@@ -38,9 +38,8 @@ source_set("cups_proxy") {
     "//chromeos/dbus/cups_proxy",
     "//net",
     "//net/traffic_annotation",
+    "//printing/backend",
   ]
-
-  public_deps = [ "//printing" ]
 }
 
 static_library("test_support") {

@@ -221,6 +221,7 @@ static_library("utility") {
         "printing_handler.h",
       ]
       public_deps += [ "//chrome/common:cloud_print_utility_mojom" ]
+      deps += [ "//printing/backend" ]
     }
   }
 

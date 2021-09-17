@@ -35,6 +35,7 @@ source_set("lib") {
       "//components/pwg_encoder",
       "//pdf",
       "//printing",
+      "//printing/backend",
       "//printing/mojom",
       "//ui/gfx",
     ]
