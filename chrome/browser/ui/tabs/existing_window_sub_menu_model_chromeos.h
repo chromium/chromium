@@ -39,11 +39,6 @@ class ExistingWindowSubMenuModelChromeOS : public ExistingWindowSubMenuModel {
   // if browsers were provided in MRU order, then within desk groupings browsers
   // will be in MRU order.
   void BuildMenuGroupedByDesk(const std::vector<Browser*>& existing_browsers);
-
-  // Returns true if there are at least 2 desks.
-  bool ShouldGroupByDesk();
-
-  const DesksHelper* const desks_helper_;
 };
 
 }  // namespace chromeos

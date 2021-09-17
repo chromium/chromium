@@ -20,7 +20,54 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#include "ui/views/widget/widget.h"
+#endif
+
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class TestBrowserWindowViewsWithDesktopNativeWidgetAura
+    : public TestBrowserWindow {
+ public:
+  explicit TestBrowserWindowViewsWithDesktopNativeWidgetAura(
+      bool popup = false);
+  TestBrowserWindowViewsWithDesktopNativeWidgetAura(
+      const TestBrowserWindowViewsWithDesktopNativeWidgetAura&) = delete;
+  TestBrowserWindowViewsWithDesktopNativeWidgetAura& operator=(
+      const TestBrowserWindowViewsWithDesktopNativeWidgetAura&) = delete;
+  ~TestBrowserWindowViewsWithDesktopNativeWidgetAura() override;
+
+ private:
+  std::unique_ptr<views::Widget> CreateDesktopWidget(bool popup);
+
+  std::unique_ptr<views::Widget> widget_;
+};
+
+TestBrowserWindowViewsWithDesktopNativeWidgetAura::
+    TestBrowserWindowViewsWithDesktopNativeWidgetAura(bool popup) {
+  widget_ = CreateDesktopWidget(popup);
+  SetNativeWindow(widget_->GetNativeWindow());
+}
+
+TestBrowserWindowViewsWithDesktopNativeWidgetAura::
+    ~TestBrowserWindowViewsWithDesktopNativeWidgetAura() = default;
+
+std::unique_ptr<views::Widget>
+TestBrowserWindowViewsWithDesktopNativeWidgetAura::CreateDesktopWidget(
+    bool popup) {
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params;
+  params.type = popup ? views::Widget::InitParams::TYPE_POPUP
+                      : views::Widget::InitParams::TYPE_WINDOW;
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.native_widget = new views::DesktopNativeWidgetAura(widget.get());
+  params.bounds = gfx::Rect(0, 0, 20, 20);
+  widget->Init(std::move(params));
+  return widget;
+}
+#endif
 
 class ExistingWindowSubMenuModelTest : public BrowserWithTestWindowTest {
  public:
@@ -41,7 +88,12 @@ class ExistingWindowSubMenuModelTest : public BrowserWithTestWindowTest {
 std::unique_ptr<Browser> ExistingWindowSubMenuModelTest::CreateTestBrowser(
     bool incognito,
     bool popup) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  TestBrowserWindow* window =
+      new TestBrowserWindowViewsWithDesktopNativeWidgetAura(popup);
+#else
   TestBrowserWindow* window = new TestBrowserWindow;
+#endif
   new TestBrowserWindowOwner(window);
   Profile* profile = incognito ? browser()->profile()->GetPrimaryOTRProfile(
                                      /*create_if_needed=*/true)

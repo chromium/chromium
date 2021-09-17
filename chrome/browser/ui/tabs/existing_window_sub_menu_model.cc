@@ -13,7 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/accelerators/accelerator.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model_chromeos.h"
 #endif
 
@@ -30,8 +30,7 @@ std::unique_ptr<ExistingWindowSubMenuModel> ExistingWindowSubMenuModel::Create(
     TabMenuModelDelegate* tab_menu_model_delegate,
     TabStripModel* model,
     int context_index) {
-  // TODO(crbug.com/1236618): Implement this for Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return std::make_unique<chromeos::ExistingWindowSubMenuModelChromeOS>(
       GetPassKey(), parent_delegate, tab_menu_model_delegate, model,
       context_index);

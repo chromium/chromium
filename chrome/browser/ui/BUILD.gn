@@ -2210,8 +2210,6 @@ static_library("ui") {
       "settings_window_manager_chromeos.h",
       "settings_window_manager_observer_chromeos.h",
       "supervised_user/parent_permission_dialog.h",
-      "tabs/existing_window_sub_menu_model_chromeos.cc",
-      "tabs/existing_window_sub_menu_model_chromeos.h",
       "views/apps/app_dialog/app_block_dialog_view.cc",
       "views/apps/app_dialog/app_block_dialog_view.h",
       "views/apps/app_dialog/app_pause_dialog_view.cc",
@@ -2973,6 +2971,8 @@ static_library("ui") {
   if (is_chromeos) {
     sources += [
       "platform_keys_certificate_selector_chromeos.h",
+      "tabs/existing_window_sub_menu_model_chromeos.cc",
+      "tabs/existing_window_sub_menu_model_chromeos.h",
       "views/extensions/print_job_confirmation_dialog_view.cc",
       "views/extensions/print_job_confirmation_dialog_view.h",
       "views/frame/browser_frame_header_chromeos.cc",
@@ -2988,6 +2988,7 @@ static_library("ui") {
       "views/platform_keys_certificate_selector_chromeos.h",
     ]
     deps += [
+      "//chrome/app:generated_resources",
       "//chromeos/strings",
       "//components/account_manager_core:account_manager_core",
     ]
