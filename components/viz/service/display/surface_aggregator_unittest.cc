@@ -675,27 +675,33 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OpacityCopied) {
       nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/true);
   TestSurfaceIdAllocator embedded_surface_id(embedded_support->frame_sink_id());
 
-  std::vector<Quad> embedded_quads = {
-      Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5)),
-      Quad::SolidColorQuad(SK_ColorBLUE, gfx::Rect(5, 5))};
-  std::vector<Pass> embedded_passes = {Pass(embedded_quads, kSurfaceSize)};
-
-  constexpr float device_scale_factor = 1.0f;
-  SubmitCompositorFrame(embedded_support.get(), embedded_passes,
-                        embedded_surface_id.local_surface_id(),
-                        device_scale_factor);
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1},
+                                  gfx::Rect(kSurfaceSize))
+                    .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorGREEN)
+                    .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorBLUE)
+                    .Build())
+            .Build();
+    embedded_support->SubmitCompositorFrame(
+        embedded_surface_id.local_surface_id(), std::move(frame));
+  }
 
   {
-    std::vector<Quad> quads = {Quad::SurfaceQuad(
-        SurfaceRange(absl::nullopt, embedded_surface_id), SK_ColorWHITE,
-        gfx::Rect(5, 5), .5f, gfx::Transform(),
-        /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
-        /*is_fast_rounded_corner=*/false)};
-    std::vector<Pass> passes = {Pass(quads, kSurfaceSize)};
-
-    SubmitCompositorFrame(root_sink_.get(), passes,
-                          root_surface_id_.local_surface_id(),
-                          device_scale_factor);
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1},
+                                  gfx::Rect(kSurfaceSize))
+                    .AddSurfaceQuad(gfx::Rect(5, 5),
+                                    SurfaceRange(embedded_surface_id))
+                    .SetQuadOpacity(0.5f)
+                    .Build())
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
 
     auto aggregated_frame = AggregateFrame(root_surface_id_);
 
@@ -710,16 +716,18 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OpacityCopied) {
   // For the case where opacity is close to 1.f, we treat it as opaque, and not
   // use a render surface.
   {
-    std::vector<Quad> quads = {Quad::SurfaceQuad(
-        SurfaceRange(absl::nullopt, embedded_surface_id), SK_ColorWHITE,
-        gfx::Rect(5, 5), .9999f, gfx::Transform(),
-        /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
-        /*is_fast_rounded_corner=*/false)};
-    std::vector<Pass> passes = {Pass(quads, kSurfaceSize)};
-
-    SubmitCompositorFrame(root_sink_.get(), passes,
-                          root_surface_id_.local_surface_id(),
-                          device_scale_factor);
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{2},
+                                  gfx::Rect(kSurfaceSize))
+                    .AddSurfaceQuad(gfx::Rect(5, 5),
+                                    SurfaceRange(embedded_surface_id))
+                    .SetQuadOpacity(0.9999f)
+                    .Build())
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
 
     auto aggregated_frame = AggregateFrame(root_surface_id_);
 
@@ -1220,34 +1228,37 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, StretchContentToFillBounds) {
       primary_child_support->frame_sink_id());
 
   {
-    auto pass = CompositorRenderPass::Create();
-    pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(0, 0, 20, 20),
-                 gfx::Rect(), gfx::Transform());
-    auto* sqs = pass->CreateAndAppendSharedQuadState();
-    auto* solid_color_quad =
-        pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-
-    solid_color_quad->SetNew(sqs, gfx::Rect(0, 0, 20, 20),
-                             gfx::Rect(0, 0, 20, 20), SK_ColorRED, false);
     CompositorFrame frame =
-        CompositorFrameBuilder().AddRenderPass(std::move(pass)).Build();
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, gfx::Rect(20, 20))
+                    .AddSolidColorQuad(gfx::Rect(20, 20), SK_ColorRED)
+                    .Build())
+            .Build();
 
     primary_child_support->SubmitCompositorFrame(
         primary_child_surface_id.local_surface_id(), std::move(frame));
   }
 
-  constexpr gfx::Rect surface_quad_rect(10, 5);
-  std::vector<Quad> root_quads = {Quad::SurfaceQuad(
-      SurfaceRange(primary_child_surface_id), SK_ColorWHITE, surface_quad_rect,
-      /*stretch_content_to_fill_bounds=*/true)};
-  std::vector<Pass> root_passes = {Pass(root_quads, kSurfaceSize)};
-
   MockAggregatedDamageCallback aggregated_damage_callback;
   root_sink_->SetAggregatedDamageCallbackForTesting(
       aggregated_damage_callback.GetCallback());
 
-  SubmitCompositorFrame(root_sink_.get(), root_passes,
-                        root_surface_id_.local_surface_id(), 1.0f);
+  {
+    constexpr gfx::Rect surface_quad_rect(10, 5);
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1},
+                                  gfx::Rect(kSurfaceSize))
+                    .AddSurfaceQuad(surface_quad_rect,
+                                    SurfaceRange(primary_child_surface_id),
+                                    {.stretch_content_to_fill_bounds = true})
+                    .Build())
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
 
   EXPECT_CALL(
       aggregated_damage_callback,

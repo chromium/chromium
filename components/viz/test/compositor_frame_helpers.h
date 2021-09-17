@@ -19,6 +19,117 @@
 
 namespace viz {
 
+// Note that QuadParam structs should not have a user defined constructor to
+// allow the use designated initializers.
+
+struct SolidColorQuadParms {
+  bool force_anti_aliasing_off = false;
+};
+
+struct SurfaceQuadParams {
+  SkColor default_background_color = SK_ColorWHITE;
+  bool stretch_content_to_fill_bounds = false;
+  bool allow_merge = true;
+};
+
+struct RenderPassQuadParams {
+  bool needs_blending = true;
+  bool force_anti_aliasing_off = false;
+  bool intersects_damage_under = true;
+};
+
+struct TextureQuadParams {
+  bool needs_blending = false;
+  bool premultiplied_alpha = false;
+  SkColor background_color = SK_ColorGREEN;
+  float vertex_opacity[4] = {0.f, 0.f, 1.f, 1.f};
+  bool flipped = false;
+  bool nearest_neighbor = false;
+  bool secure_output_only = false;
+};
+
+// Helper to build a CompositorRenderPass and add quads to it. By default the
+// CompositoRenderPass will have full damage. Functionality is broken down into
+// methods to modify render pass attributes, methods to add new quads and
+// methods to modify SharedQuadState for the last quad added.
+class RenderPassBuilder {
+ public:
+  RenderPassBuilder(CompositorRenderPassId id, const gfx::Rect& output_rect);
+  RenderPassBuilder(const RenderPassBuilder& other) = delete;
+  RenderPassBuilder& operator=(const RenderPassBuilder& other) = delete;
+  ~RenderPassBuilder();
+
+  // Returns the CompositorRenderPass and leaves |this| in an invalid state.
+  std::unique_ptr<CompositorRenderPass> Build();
+
+  // Methods to modify the CompositorRenderPass start here.
+  RenderPassBuilder& SetDamageRect(const gfx::Rect& damage_rect);
+  RenderPassBuilder& SetCacheRenderPass(bool val);
+
+  // Methods to add DrawQuads start here. The methods are structured so that the
+  // most important attributes on the quad are function parameters. Less
+  // important attributes are stored in an optional struct parameter. The
+  // optional params struct is POD so that designated initializers can be used
+  // to construct a new object with specified parameters overridden.
+  RenderPassBuilder& AddSolidColorQuad(const gfx::Rect& rect,
+                                       SkColor color,
+                                       SolidColorQuadParms params = {});
+  RenderPassBuilder& AddSolidColorQuad(const gfx::Rect& rect,
+                                       const gfx::Rect& visible_rect,
+                                       SkColor color,
+                                       SolidColorQuadParms params = {});
+
+  RenderPassBuilder& AddSurfaceQuad(const gfx::Rect& rect,
+                                    const SurfaceRange& surface_range,
+                                    const SurfaceQuadParams& params = {});
+  RenderPassBuilder& AddSurfaceQuad(const gfx::Rect& rect,
+                                    const gfx::Rect& visible_rect,
+                                    const SurfaceRange& surface_range,
+                                    const SurfaceQuadParams& params = {});
+
+  RenderPassBuilder& AddRenderPassQuad(const gfx::Rect& rect,
+                                       CompositorRenderPassId id,
+                                       const RenderPassQuadParams& params = {});
+  RenderPassBuilder& AddRenderPassQuad(const gfx::Rect& rect,
+                                       const gfx::Rect& visible_rect,
+                                       CompositorRenderPassId id,
+                                       const RenderPassQuadParams& params = {});
+
+  RenderPassBuilder& AddTextureQuad(const gfx::Rect& rect,
+                                    ResourceId resource_id,
+                                    const TextureQuadParams& params = {});
+  RenderPassBuilder& AddTextureQuad(const gfx::Rect& rect,
+                                    const gfx::Rect& visible_rect,
+                                    ResourceId resource_id,
+                                    const TextureQuadParams& params = {});
+
+  // Methods to modify the last DrawQuad's SharedQuadState start here. Note that
+  // at least one quad must have been added to the render pass before calling
+  // these.
+
+  // Sets SharedQuadState::quad_to_target_transform for the last quad.
+  RenderPassBuilder& SetQuadToTargetTransform(const gfx::Transform& transform);
+
+  // Sets SharedQuadState::quad_to_target_transform for the last quad with a
+  // transform that has the specified translation components.
+  RenderPassBuilder& SetQuadToTargetTranslation(int translate_x,
+                                                int translate_y);
+
+  // Sets the SharedQuadState::opacity for the last quad.
+  RenderPassBuilder& SetQuadOpacity(float opacity);
+
+  // Sets SharedQuadState::clip_rect for the last quad.
+  RenderPassBuilder& SetQuadClipRect(absl::optional<gfx::Rect> clip_rect);
+
+ private:
+  // Appends and returns a new SharedQuadState for quad.
+  SharedQuadState* AppendDefaultSharedQuadState(const gfx::Rect rect,
+                                                const gfx::Rect visible_rect);
+  SharedQuadState* GetLastQuadSharedQuadState();
+
+  std::unique_ptr<CompositorRenderPass> pass_;
+};
+
 // A builder class for constructing CompositorFrames in tests. The initial
 // CompositorFrame will have a valid BeginFrameAck and device_scale_factor of 1.
 // At least one RenderPass must be added for the CompositorFrame to be valid.
