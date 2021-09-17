@@ -454,6 +454,13 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"noSearchResults", IDS_SEARCH_NO_RESULTS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddString(
+      "languagePacksNotice",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_LANGUAGES_LANGUAGE_PACKS_NOTICE,
+          // TODO(b/200128583): Change this to point to the language packs help
+          // centre article.
+          base::ASCIIToUTF16(chrome::kLanguageSettingsLearnMoreUrl)));
   AddSmartInputsStrings(html_source, IsEmojiSuggestionAllowed());
   AddInputMethodOptionsStrings(html_source);
   AddLanguagesPageStringsV2(html_source);
@@ -469,6 +476,9 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("onDeviceGrammarCheckEnabled",
                           base::FeatureList::IsEnabled(
                               ::chromeos::features::kOnDeviceGrammarCheck));
+  html_source->AddBoolean("languagePacksHandwritingEnabled",
+                          base::FeatureList::IsEnabled(
+                              ::chromeos::features::kLanguagePacksHandwriting));
 }
 
 void LanguagesSection::AddHandlers(content::WebUI* web_ui) {

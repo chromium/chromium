@@ -113,6 +113,7 @@ js_library("input_page.m") {
     "../..:router",
     "../../controls:settings_toggle_button",
     "../keyboard_shortcut_banner:keyboard_shortcut_banner",
+    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",

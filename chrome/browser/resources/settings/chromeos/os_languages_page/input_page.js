@@ -81,6 +81,14 @@ Polymer({
       },
     },
 
+    /** @private */
+    shouldShowLanguagePacksNotice_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('languagePacksHandwritingEnabled');
+      },
+    },
+
     /**
      * Whether the shortcut reminder for the last used IME is currently showing.
      * @private
@@ -561,6 +569,12 @@ Polymer({
    */
   isCollapseOpened_(update2Enabled, spellCheckOn) {
     return !update2Enabled || spellCheckOn;
+  },
+
+  /** @private */
+  onLanguagePackNoticeLinkClick_() {
+    this.languagesMetricsProxy_.recordInteraction(
+        settings.LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE);
   },
 
   /**

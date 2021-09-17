@@ -1,5 +1,6 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/html/assert.html">
@@ -133,6 +134,13 @@
     </style>
 
     <div route-path="default">
+      <template is="dom-if" if="[[shouldShowLanguagePacksNotice_]]">
+        <localized-link id="languagePacksNotice"
+            class="cr-row first bottom-margin cr-secondary-text"
+            localized-string="$i18n{languagePacksNotice}"
+            on-link-clicked="onLanguagePackNoticeLinkClick_">
+        </localized-link>
+      </template>
       <settings-toggle-button
           class="first" id="showImeMenu"
           pref="{{prefs.settings.language.ime_menu_activated}}"

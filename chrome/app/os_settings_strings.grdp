@@ -498,6 +498,9 @@
   <message name="IDS_SETTINGS_LANGUAGES_SHOW_IME_MENU" desc="The label for the toggle button controlling showing the IME menu in the shelf.">
     Show input options in the shelf
   </message>
+  <message name="IDS_SETTINGS_LANGUAGES_LANGUAGE_PACKS_NOTICE" desc="The label for the toggle button controlling showing the IME menu in the shelf.">
+    Choose which languages to install on this device. Language files are shared among users to save disk space. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+  </message>
 
   <!-- Suggestions Section -->
   <message name="IDS_SETTINGS_SUGGESTIONS_TITLE" desc="The label for the suggestions section, which contains features to help users type faster or more expressively such as suggesting personal information or suggesting emoji to use.">

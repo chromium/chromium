@@ -14,7 +14,7 @@
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {fakeDataBind} from '../../test_util.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
+// #import {isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('input page', () => {
@@ -131,6 +131,24 @@ suite('input page', () => {
 
   teardown(function() {
     settings.Router.getInstance().resetRouteForTesting();
+  });
+
+  suite('language pack notice', () => {
+    test('is shown when needed', () => {
+      inputPage.shouldShowLanguagePacksNotice_ = true;
+      loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
+      Polymer.dom.flush();
+
+      assertTrue(isVisible(inputPage.$$('#languagePacksNotice')));
+    });
+
+    test('is hidden when needed', () => {
+      inputPage.shouldShowLanguagePacksNotice_ = false;
+      loadTimeData.overrideValues({languagePacksHandwritingEnabled: false});
+      Polymer.dom.flush();
+
+      assertFalse(isVisible(inputPage.$$('#languagePacksNotice')));
+    });
   });
 
   suite('input method list', () => {
@@ -516,6 +534,23 @@ suite('input page', () => {
       assertEquals(
           InputsShortcutReminderState.LAST_USED_IME_AND_NEXT_IME,
           await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
+    });
+
+    test('when clicking on "learn more" about language packs', async () => {
+      inputPage.shouldShowLanguagePacksNotice_ = true;
+      loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
+      Polymer.dom.flush();
+
+      const anchor = inputPage.$$('#languagePacksNotice').$$('a');
+      // The below would normally create a new window, which would change the
+      // focus from this test to the new window.
+      // Prevent this from happening by adding an event listener on the anchor
+      // element which stops the default behaviour (of opening a new window).
+      anchor.addEventListener('click', (e) => e.preventDefault());
+      anchor.click();
+      assertEquals(
+          await metricsProxy.whenCalled('recordInteraction'),
+          LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE);
     });
   });
 
@@ -1238,7 +1273,7 @@ suite('input page', () => {
       // select, so if the <iron-list> is hidden we should return an empty
       // list instead.
       const list = allLanguages.querySelector('iron-list');
-      if (list.hidden || list.style.display === 'none') {
+      if (!isVisible(list)) {
         return [];
       }
       return [...allLanguages.querySelectorAll(
@@ -1411,19 +1446,10 @@ suite('input page', () => {
       languageHelper.disableLanguage('sw');
       Polymer.dom.flush();
 
-      /**
-       * @param {!HTMLElement|null} el
-       * @return {boolean}
-       */
-      function isHidden(el) {
-        return !el || el.hidden || getComputedStyle(el).display === 'none' ||
-            getComputedStyle(el).visibility === 'hidden';
-      }
-
       // Suggested languages should not show up whatsoever.
-      assertTrue(isHidden(suggestedLanguages));
+      assertFalse(isVisible(suggestedLanguages));
       // The label for all languages should not appear either.
-      assertTrue(isHidden(allLanguages.querySelector('.label')));
+      assertFalse(isVisible(allLanguages.querySelector('.label')));
     });
 
     test('input method languages appear as suggested languages', () => {
