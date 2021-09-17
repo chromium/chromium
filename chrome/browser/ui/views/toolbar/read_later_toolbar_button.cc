@@ -30,10 +30,9 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -180,15 +179,14 @@ void ReadLaterToolbarButton::ButtonPressed() {
   DCHECK(browser_view->right_aligned_side_panel());
 
   if (!side_panel_webview_) {
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     lens::LensSidePanelController* const lens_side_panel_controller =
         browser_view->lens_side_panel_controller();
     if (lens_side_panel_controller) {
       // Hide the Lens side panel if showing.
       lens_side_panel_controller->Close();
     }
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
     // Using base::Unretained(this) is safe here because the side panel (and the
     // web view as its child) will be destroyed before the toolbar which will
