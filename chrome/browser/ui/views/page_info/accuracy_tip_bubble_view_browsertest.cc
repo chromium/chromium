@@ -39,6 +39,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,7 +75,7 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
-    SetUpFeatureList(feature_list_);
+    SetUpFeatureList();
 
     // Disable "close on deactivation" since there seems to be an issue with
     // windows losing focus during tests.
@@ -98,9 +99,10 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
  private:
-  virtual void SetUpFeatureList(base::test::ScopedFeatureList& feature_list) {
+  virtual void SetUpFeatureList() {
     const base::FieldTrialParams accuracy_tips_params = {
         {accuracy_tips::features::kSampleUrl.name,
          GetUrl(kAccuracyTipUrl).spec()},
@@ -108,7 +110,7 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
     const base::FieldTrialParams accuracy_survey_params = {
         {accuracy_tips::features::kMinPromptCountRequiredForSurvey.name, "2"},
         {"probability", "1.000"}};
-    feature_list.InitWithFeaturesAndParameters(
+    feature_list_.InitWithFeaturesAndParameters(
         {{safe_browsing::kAccuracyTipsFeature, accuracy_tips_params},
          {accuracy_tips::features::kAccuracyTipsSurveyFeature,
           accuracy_survey_params}},
@@ -404,16 +406,17 @@ class AccuracyTipBubbleViewHttpBrowserTest
   }
 
  private:
-  void SetUpFeatureList(base::test::ScopedFeatureList& feature_list) override {
+  void SetUpFeatureList() override {
     const base::FieldTrialParams accuraty_tips_params = {
         {accuracy_tips::features::kSampleUrl.name,
          GetHttpUrl(kAccuracyTipUrl).spec()},
         {accuracy_tips::features::kNumIgnorePrompts.name, "1"}};
-    feature_list.InitWithFeaturesAndParameters(
+    feature_list_.InitWithFeaturesAndParameters(
         {{safe_browsing::kAccuracyTipsFeature, accuraty_tips_params}}, {});
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewHttpBrowserTest,
@@ -450,4 +453,56 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewDialogBrowserTest,
                        InvokeUi_ignore_button) {
   ShowAndVerifyUi();
+}
+
+class AccuracyTipBubbleViewPrerenderBrowserTest
+    : public AccuracyTipBubbleViewBrowserTest {
+ public:
+  AccuracyTipBubbleViewPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &AccuracyTipBubbleViewPrerenderBrowserTest::web_contents,
+            base::Unretained(this))) {}
+  ~AccuracyTipBubbleViewPrerenderBrowserTest() override = default;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(https_server());
+    AccuracyTipBubbleViewBrowserTest::SetUp();
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+
+ private:
+  void SetUpFeatureList() override {
+    const base::FieldTrialParams accuraty_tips_params = {
+        {accuracy_tips::features::kSampleUrl.name,
+         GetUrl(kAccuracyTipUrl).spec()}};
+    feature_list_.InitWithFeaturesAndParameters(
+        {{safe_browsing::kAccuracyTipsFeature, accuraty_tips_params}}, {});
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewPrerenderBrowserTest,
+                       StillShowAfterPrerenderNavigation) {
+  // Generate a Accuracy Tip.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
+  EXPECT_TRUE(IsUIShowing());
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.PageStatus", AccuracyTipStatus::kShowAccuracyTip, 1);
+
+  // Start a prerender.
+  prerender_helper_.AddPrerender(
+      https_server()->GetURL(kAccuracyTipUrl, "/title2.html"));
+
+  // Ensure the tip isn't closed by prerender navigation and isn't from the
+  // prerendered page.
+  EXPECT_TRUE(IsUIShowing());
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.PageStatus", AccuracyTipStatus::kShowAccuracyTip, 1);
 }
