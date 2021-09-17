@@ -158,14 +158,12 @@ Notification* MessageCenterImpl::FindNotificationById(const std::string& id) {
 
 Notification* MessageCenterImpl::FindOldestNotificationByNotiferId(
     const NotifierId& notifier_id) {
-  auto notifier_id_match = [&notifier_id](Notification* notification) {
-    return notifier_id == notification->notifier_id();
-  };
-  auto notifications = GetVisibleNotifications();
-  auto notification = std::find_if(notifications.rbegin(), notifications.rend(),
-                                   notifier_id_match);
+  NotificationList::Notifications notifications =
+      notification_list_->GetNotificationsByNotifierId(notifier_id);
 
-  return notification == notifications.rend() ? nullptr : *notification;
+  if (notifications.size())
+    return *std::prev(notifications.end());
+  return nullptr;
 }
 
 Notification* MessageCenterImpl::FindPopupNotificationById(
@@ -211,7 +209,7 @@ MessageCenterImpl::GetVisibleNotifications() {
 }
 
 NotificationList::PopupNotifications
-    MessageCenterImpl::GetPopupNotifications() {
+MessageCenterImpl::GetPopupNotifications() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return notification_list_->GetPopupNotifications(blockers_, nullptr);
 }
