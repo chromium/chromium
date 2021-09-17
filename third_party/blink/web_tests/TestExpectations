@@ -234,6 +234,10 @@ crbug.com/v8/12227 external/wpt/wasm/jsapi/table/grow-reftypes.tentative.any.htm
 crbug.com/v8/12227 external/wpt/wasm/jsapi/table/grow-reftypes.tentative.any.worker.html [ Failure Pass ]
 crbug.com/v8/12227 external/wpt/wasm/jsapi/table/get-set.any.html [ Failure Pass ]
 crbug.com/v8/12227 external/wpt/wasm/jsapi/table/get-set.any.worker.html [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/table/constructor.any.js [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/table/constructor.any.worker.js [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/table/grow.any.js [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/table/grow.any.worker.js [ Failure Pass ]
 
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
