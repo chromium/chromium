@@ -93,13 +93,12 @@ TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnWorker) {
 }
 
 TEST_F(BrowserDataMigratorTest, CopyDirectory) {
-  BrowserDataMigrator browser_data_migrator(from_dir_);
   const base::FilePath from_dir = user_data_dir_.GetPath().Append("user");
   const base::FilePath to_dir = user_data_dir_.GetPath().Append("to_dir");
 
   base::CreateSymbolicLink(user_data_dir_.GetPath().Append(kFirstRun),
                            from_dir.Append(kFirstRun));
-  ASSERT_TRUE(browser_data_migrator.CopyDirectory(from_dir, to_dir));
+  ASSERT_TRUE(BrowserDataMigrator::CopyDirectory(from_dir, to_dir));
 
   // Setup `from_dir` as below.
   // |- user/                   /* from_dir_ */
@@ -128,10 +127,8 @@ TEST_F(BrowserDataMigratorTest, CopyDirectory) {
 }
 
 TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
-  BrowserDataMigrator browser_data_migrator(from_dir_);
-
   BrowserDataMigrator::TargetInfo target_info =
-      browser_data_migrator.GetTargetInfo();
+      BrowserDataMigrator::GetTargetInfo(from_dir_);
 
   EXPECT_EQ(target_info.total_byte_count,
             kFileSize * 3 /* expect three files */);
@@ -189,7 +186,6 @@ TEST_F(BrowserDataMigratorTest, RecordStatus) {
     // If `FInalStatus::kSuccess`, the three UMA `kFinalStatus`,
     // `kCopiedDataSize`, `kTotalTime` should be recorded.
     base::HistogramTester histogram_tester;
-    BrowserDataMigrator browser_data_migrator(from_dir_);
 
     BrowserDataMigrator::TargetInfo target_info;
     target_info.total_byte_count = /* 200 MBs */ 200 * 1024 * 1024;
@@ -214,9 +210,7 @@ TEST_F(BrowserDataMigratorTest, Migrate) {
   base::HistogramTester histogram_tester;
 
   {
-    BrowserDataMigrator browser_data_migrator(from_dir_);
-
-    browser_data_migrator.MigrateInternal();
+    BrowserDataMigrator::MigrateInternal(from_dir_);
 
     // Expected dir structure after migration.
     // ./                         /* user_data_dir_ */

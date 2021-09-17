@@ -73,6 +73,7 @@ void OnRestartRequestResponse(bool result) {
   chrome::AttemptRestart();
 }
 
+// static
 // This will be posted with `IsMigrationRequiredOnWorker()` as the reply on UI
 // thread or called directly from `MaybeRestartToMigrate()`.
 void MaybeRestartToMigrateCallback(const AccountId& account_id,
@@ -152,7 +153,7 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
 }
 
 // static
-// Returns true if "lacros user data dir doesn't exist".
+// Returns true if lacros user data dir doesn't exist.
 bool BrowserDataMigrator::IsMigrationRequiredOnWorker(
     base::FilePath user_data_dir,
     const std::string& user_id_hash) {
@@ -164,6 +165,7 @@ bool BrowserDataMigrator::IsMigrationRequiredOnWorker(
   return !base::DirectoryExists(profile_data_dir.Append(kLacrosDir));
 }
 
+// static
 void BrowserDataMigrator::Migrate(const std::string& user_id_hash,
                                   base::OnceClosure callback) {
   base::FilePath user_data_dir;
@@ -176,24 +178,14 @@ void BrowserDataMigrator::Migrate(const std::string& user_id_hash,
   }
   base::FilePath profile_data_dir =
       user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
-  std::unique_ptr<BrowserDataMigrator> browser_data_migrator =
-      std::make_unique<BrowserDataMigrator>(profile_data_dir);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&BrowserDataMigrator::MigrateInternal,
-                     std::move(browser_data_migrator)),
+      base::BindOnce(&BrowserDataMigrator::MigrateInternal, profile_data_dir),
       base::BindOnce(&BrowserDataMigrator::MigrateInternalFinishedUIThread,
                      std::move(callback), user_id_hash));
 }
-
-BrowserDataMigrator::BrowserDataMigrator(const base::FilePath& from)
-    : from_dir_(from),
-      to_dir_(from.Append(kLacrosDir)),
-      tmp_dir_(from.Append(kTmpDir)) {}
-
-BrowserDataMigrator::~BrowserDataMigrator() = default;
 
 // static
 void BrowserDataMigrator::RecordStatus(const FinalStatus& final_status,
@@ -215,15 +207,20 @@ void BrowserDataMigrator::RecordStatus(const FinalStatus& final_status,
   UMA_HISTOGRAM_MEDIUM_TIMES(kTotalTime, timer->Elapsed());
 }
 
+// static
 // TODO(crbug.com/1178702): Once testing phase is over and lacros becomes the
 // only web browser, update the underlying logic of migration from copy to move.
 // Note that during testing phase we are copying files and leaving files in
 // original location intact. We will allow these two states to diverge.
-BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal() {
+BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
+    const base::FilePath& original_user_dir) {
   ResultValue data_wipe_result = ResultValue::kSkipped;
 
-  if (base::DirectoryExists(to_dir_)) {
-    if (!base::DeletePathRecursively(to_dir_)) {
+  const base::FilePath tmp_dir = original_user_dir.Append(kTmpDir);
+  const base::FilePath new_user_dir = original_user_dir.Append(kLacrosDir);
+
+  if (base::DirectoryExists(new_user_dir)) {
+    if (!base::DeletePathRecursively(new_user_dir)) {
       RecordStatus(FinalStatus::kDataWipeFailed);
       return {ResultValue::kFailed, ResultValue::kFailed};
     }
@@ -231,21 +228,21 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal() {
   }
 
   // Check if tmp directory already exists and delete if it does.
-  if (base::PathExists(tmp_dir_)) {
+  if (base::PathExists(tmp_dir)) {
     LOG(WARNING) << kTmpDir
                  << " already exists indicating migration was aborted on the"
                     "previous attempt.";
-    if (!base::DeletePathRecursively(tmp_dir_)) {
+    if (!base::DeletePathRecursively(tmp_dir)) {
       PLOG(ERROR) << "Failed to delete tmp dir";
       RecordStatus(FinalStatus::kDeleteTmpDirFailed);
       return {data_wipe_result, ResultValue::kFailed};
     }
   }
 
-  TargetInfo target_info = GetTargetInfo();
+  TargetInfo target_info = GetTargetInfo(original_user_dir);
   base::ElapsedTimer timer;
 
-  if (!HasEnoughDiskSpace(target_info)) {
+  if (!HasEnoughDiskSpace(target_info, new_user_dir)) {
     RecordStatus(FinalStatus::kNotEnoughSpace, &target_info);
     return {data_wipe_result, ResultValue::kFailed};
   }
@@ -255,17 +252,20 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal() {
     return {data_wipe_result, ResultValue::kFailed};
   }
 
-  if (!CopyToTmpDir(target_info)) {
-    if (base::PathExists(tmp_dir_)) {
-      base::DeletePathRecursively(tmp_dir_);
+  // Copy files to `tmp_dir`.
+  if (!CopyTargetItems(target_info, tmp_dir)) {
+    if (base::PathExists(tmp_dir)) {
+      base::DeletePathRecursively(tmp_dir);
     }
     RecordStatus(FinalStatus::kCopyFailed, &target_info);
     return {data_wipe_result, ResultValue::kFailed};
   }
 
-  if (!MoveTmpToTargetDir()) {
-    if (base::PathExists(tmp_dir_)) {
-      base::DeletePathRecursively(tmp_dir_);
+  // Move `tmp_dir` to `new_user_dir`.
+  if (!base::Move(tmp_dir, new_user_dir)) {
+    PLOG(ERROR) << "Move failed";
+    if (base::PathExists(tmp_dir)) {
+      base::DeletePathRecursively(tmp_dir);
     }
     RecordStatus(FinalStatus::kMoveFailed, &target_info);
     return {data_wipe_result, ResultValue::kFailed};
@@ -278,6 +278,7 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal() {
   return {data_wipe_result, ResultValue::kSucceeded};
 }
 
+// static
 void BrowserDataMigrator::MigrateInternalFinishedUIThread(
     base::OnceClosure callback,
     const std::string& user_id_hash,
@@ -303,11 +304,12 @@ void BrowserDataMigrator::MigrateInternalFinishedUIThread(
   std::move(callback).Run();
 }
 
+// static
 // Copies `item` to location pointed by `dest`. Returns true on success and
 // false on failure.
 bool BrowserDataMigrator::CopyTargetItem(
     const BrowserDataMigrator::TargetItem& item,
-    const base::FilePath& dest) const {
+    const base::FilePath& dest) {
   if (item.is_directory) {
     if (CopyDirectory(item.path, dest))
       return true;
@@ -320,10 +322,12 @@ bool BrowserDataMigrator::CopyTargetItem(
   return false;
 }
 
-BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo() const {
+// static
+BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo(
+    const base::FilePath& original_user_dir) {
   TargetInfo target_info;
 
-  base::FileEnumerator enumerator(from_dir_, false /* recursive */,
+  base::FileEnumerator enumerator(original_user_dir, false /* recursive */,
                                   base::FileEnumerator::FILES |
                                       base::FileEnumerator::DIRECTORIES |
                                       base::FileEnumerator::SHOW_SYM_LINKS);
@@ -350,7 +354,7 @@ BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo() const {
 
   // Copy files directly under user data directory.
   for (auto* copy_path : kCopyUserDataPaths) {
-    base::FilePath entry = from_dir_.DirName().Append(copy_path);
+    base::FilePath entry = original_user_dir.DirName().Append(copy_path);
     if (base::PathExists(entry)) {
       target_info.user_data_items.emplace_back(
           TargetItem{entry, TargetItem::ItemType::kFile});
@@ -361,10 +365,14 @@ BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo() const {
   return target_info;
 }
 
-bool BrowserDataMigrator::HasEnoughDiskSpace(
-    const TargetInfo& target_info) const {
+// static
+bool BrowserDataMigrator::HasEnoughDiskSpace(const TargetInfo& target_info,
+                                             const base::FilePath& to_dir) {
+  // Check the amount of free disk space for `to_dir`'s parent directory. We
+  // check the parent directly because `to_dir` (i.e. /home/chronos/user/lacros)
+  // does not exist yet.
   const int64_t free_disk_space =
-      base::SysInfo::AmountOfFreeDiskSpace(from_dir_);
+      base::SysInfo::AmountOfFreeDiskSpace(to_dir.DirName());
   if (free_disk_space < target_info.total_byte_count + kBuffer) {
     LOG(ERROR) << "Aborting migration. Need " << target_info.total_byte_count
                << " bytes but only have " << free_disk_space << " bytes left.";
@@ -377,7 +385,7 @@ bool BrowserDataMigrator::HasEnoughDiskSpace(
 // static
 bool BrowserDataMigrator::IsMigrationSmallEnough(
     const TargetInfo& target_info) {
-  const int64_t max_migration_size = (int64_t)4 * 1024 * 1024 * 1024;
+  constexpr int64_t max_migration_size = (int64_t)4 * 1024 * 1024 * 1024;
   if (target_info.total_byte_count > max_migration_size) {
     LOG(ERROR) << "Aborting migration because the data size is too large for "
                   "migration: "
@@ -388,8 +396,9 @@ bool BrowserDataMigrator::IsMigrationSmallEnough(
   return true;
 }
 
+// static
 bool BrowserDataMigrator::CopyDirectory(const base::FilePath& from_path,
-                                        const base::FilePath& to_path) const {
+                                        const base::FilePath& to_path) {
   if (!base::PathExists(to_path) && !base::CreateDirectory(to_path)) {
     PLOG(ERROR) << "CreateDirectory() failed for " << to_path.value();
     return false;
@@ -417,9 +426,11 @@ bool BrowserDataMigrator::CopyDirectory(const base::FilePath& from_path,
   return true;
 }
 
-bool BrowserDataMigrator::CopyToTmpDir(const TargetInfo& target_info) const {
+// static
+bool BrowserDataMigrator::CopyTargetItems(const TargetInfo& target_info,
+                                          const base::FilePath& to_dir) {
   base::File::Error error;
-  if (!base::CreateDirectoryAndGetError(tmp_dir_.Append(kLacrosProfilePath),
+  if (!base::CreateDirectoryAndGetError(to_dir.Append(kLacrosProfilePath),
                                         &error)) {
     PLOG(ERROR) << "CreateDirectoryFailed " << error;
     // Maps to histogram enum `PlatformFileError`.
@@ -430,32 +441,17 @@ bool BrowserDataMigrator::CopyToTmpDir(const TargetInfo& target_info) const {
 
   for (const auto& target_item : target_info.profile_data_items) {
     base::FilePath dest =
-        tmp_dir_.Append(kLacrosProfilePath).Append(target_item.path.BaseName());
+        to_dir.Append(kLacrosProfilePath).Append(target_item.path.BaseName());
 
     if (!CopyTargetItem(target_item, dest))
       return false;
   }
 
   for (const auto& target_item : target_info.user_data_items) {
-    base::FilePath dest = tmp_dir_.Append(target_item.path.BaseName());
+    base::FilePath dest = to_dir.Append(target_item.path.BaseName());
 
     if (!CopyTargetItem(target_item, dest))
       return false;
-  }
-
-  return true;
-}
-
-bool BrowserDataMigrator::MoveTmpToTargetDir() const {
-  base::File::Error error;
-  if (!base::CreateDirectoryAndGetError(to_dir_.DirName(), &error)) {
-    LOG(ERROR) << "CreateDirectoryFailed " << error;
-    return false;
-  }
-
-  if (!base::Move(tmp_dir_, to_dir_)) {
-    PLOG(ERROR) << "Move failed";
-    return false;
   }
 
   return true;

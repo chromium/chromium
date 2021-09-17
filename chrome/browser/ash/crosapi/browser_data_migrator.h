@@ -15,11 +15,9 @@
 #include "chromeos/login/auth/user_context.h"
 
 namespace ash {
-
-// The new profile data directory location is
-// '/home/chronos/u-<hash>/lacros/Default'. User data directory for lacros.
+// User data directory name for lacros.
 constexpr char kLacrosDir[] = "lacros";
-// Profile data directory for lacros.
+// Profile data directory name for lacros.
 constexpr char kLacrosProfilePath[] = "Default";
 // The following are UMA names.
 constexpr char kFinalStatus[] = "Ash.BrowserDataMigrator.FinalStatus";
@@ -29,8 +27,7 @@ constexpr char kCreateDirectoryFail[] =
     "Ash.BrowserDataMigrator.CreateDirectoryFailure";
 
 // BrowserDataMigrator is responsible for one time browser data migration from
-// ash-chrome to lacros-chrome. The static method `Migrate()` instantiates
-// an instance and calls `MigrateInternal()`.
+// ash-chrome to lacros-chrome.
 class BrowserDataMigrator {
  public:
   // Used to describe a file/dir that has to be migrated.
@@ -91,22 +88,14 @@ class BrowserDataMigrator {
     ResultValue data_migration;
   };
 
-  // The class is instantiated on UI thread, bound to `MigrateInternal()` and
-  // then posted to worker thread.
-  explicit BrowserDataMigrator(const base::FilePath& from);
-  BrowserDataMigrator(const BrowserDataMigrator&) = delete;
-  BrowserDataMigrator& operator=(const BrowserDataMigrator&) = delete;
-  ~BrowserDataMigrator();
-
   // Checks if migration is required for the user identified by `user_context`
   // and if it is required, calls a DBus method to session_manager and
   // terminates ash-chrome.
   static void MaybeRestartToMigrate(const UserContext& user_context);
 
-  // The method needs to be called on UI thread. It instantiates
-  // BrowserDataMigrator and posts `MigrateInternal()` on a worker thread. It
-  // calls `callback` on the original thread when migration has completed or
-  // failed.
+  // The method needs to be called on UI thread. It posts `MigrateInternal()` on
+  // a worker thread with `callback` which will be called on the original thread
+  // once migration has completed or failed.
   static void Migrate(const std::string& user_id_hash,
                       base::OnceClosure callback);
 
@@ -124,7 +113,8 @@ class BrowserDataMigrator {
                                           const std::string& user_id_hash);
   // Handles the migration on a worker thread. Returns the end status of data
   // wipe and migration.
-  MigrationResult MigrateInternal();
+  static MigrationResult MigrateInternal(
+      const base::FilePath& original_user_dir);
   // Called on UI thread once migration is finished.
   static void MigrateInternalFinishedUIThread(base::OnceClosure callback,
                                               const std::string& user_id_hash,
@@ -134,34 +124,28 @@ class BrowserDataMigrator {
   static void RecordStatus(const FinalStatus& final_status,
                            const TargetInfo* target_info = nullptr,
                            const base::ElapsedTimer* timer = nullptr);
-  TargetInfo GetTargetInfo() const;
-  // Compares space available under `from_dir_` against total byte size that
+  // Create `TargetInfo` from `original_user_dir`. `TargetInfo` will include
+  // paths of files/dirs that needs to be migrated.
+  static TargetInfo GetTargetInfo(const base::FilePath& original_user_dir);
+  // Compares space available for `to_dir` against total byte size that
   // needs to be copied.
-  bool HasEnoughDiskSpace(const TargetInfo& target_info) const;
+  static bool HasEnoughDiskSpace(const TargetInfo& target_info,
+                                 const base::FilePath& to_dir);
   // TODO(crbug.com/1248318):Remove this arbitrary cap for migration once a long
   // term solution is found. Temporarily limit the migration size to 4GB until
   // the slow migration speed issue is resolved.
   static bool IsMigrationSmallEnough(const TargetInfo& target_info);
+  // Copies items to `to_dir`.
+  static bool CopyTargetItems(const TargetInfo& target_info,
+                              const base::FilePath& to_dir);
   // Copies `item` to location pointed by `dest`. Returns true on success and
   // false on failure.
-  bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
-                      const base::FilePath& dest) const;
+  static bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
+                             const base::FilePath& dest);
   // Copies the contents of `from_path` to `to_path` recursively. Unlike
   // `base::CopyDirectory()` it skips symlinks.
-  bool CopyDirectory(const base::FilePath& from_path,
-                     const base::FilePath& to_path) const;
-  // Copies files from `from_dir_` to `tmp_dir_`.
-  bool CopyToTmpDir(const TargetInfo& target_info) const;
-  // Moves `tmp_dir_` to `to_dir_`.
-  bool MoveTmpToTargetDir() const;
-
-  // Path to the original profile data directory. It is directly under the
-  // user data directory.
-  base::FilePath from_dir_;
-  // Path to the new profile data directory.
-  base::FilePath to_dir_;
-  // Path to temporary directory.
-  base::FilePath tmp_dir_;
+  static bool CopyDirectory(const base::FilePath& from_path,
+                            const base::FilePath& to_path);
 };
 
 }  // namespace ash
