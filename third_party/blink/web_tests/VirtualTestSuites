@@ -484,6 +484,7 @@
               "external/wpt/content-security-policy/gen",
               "external/wpt/fetch/",
               "external/wpt/html/cross-origin-embedder-policy",
+              "external/wpt/html/semantics/scripting-1/the-script-element/module/import-meta",
               "external/wpt/referrer-policy",
               "external/wpt/resource-timing",
               "external/wpt/service-workers",
