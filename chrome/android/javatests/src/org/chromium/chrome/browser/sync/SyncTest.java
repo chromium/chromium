@@ -70,7 +70,7 @@ public class SyncTest {
         mSyncTestRule.clearServerData();
 
         // Clearing server data should turn off sync and sign out of chrome.
-        Assert.assertNull(mSyncTestRule.getCurrentSignedInAccount());
+        Assert.assertNull(mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
         CriteriaHelper.pollUiThread(
                 ()
@@ -88,7 +88,7 @@ public class SyncTest {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
         mSyncTestRule.stopSync();
-        Assert.assertEquals(accountInfo, mSyncTestRule.getCurrentSignedInAccount());
+        Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
 
         mSyncTestRule.startSyncAndWait();

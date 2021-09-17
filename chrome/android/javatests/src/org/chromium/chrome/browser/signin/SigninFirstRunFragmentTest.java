@@ -218,11 +218,7 @@ public class SigninFirstRunFragmentTest {
                     .hasPrimaryAccount(ConsentLevel.SIGNIN);
         });
         final CoreAccountInfo primaryAccount =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-                    return IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-                });
+                mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN);
         Assert.assertEquals(TEST_EMAIL1, primaryAccount.getEmail());
     }
 
@@ -239,13 +235,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(continueAsText)).perform(click());
 
         CriteriaHelper.pollUiThread(() -> { return mFragment.mIsAdvanceToNextPageCalled; });
-        final CoreAccountInfo primaryAccount =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-                    return IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-                });
-        Assert.assertNull(primaryAccount);
+        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
     }
 

@@ -101,7 +101,7 @@ public class SigninCheckerTest {
 
         CriteriaHelper.pollUiThread(() -> {
             return expectedPrimaryAccount.equals(
-                    mAccountManagerTestRule.getCurrentSignedInAccount());
+                    mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         });
     }
 
@@ -124,7 +124,7 @@ public class SigninCheckerTest {
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SYNC);
         });
-        Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
+        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class SigninCheckerTest {
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SYNC);
         });
-        Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
+        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
     }
 
     @Test
@@ -175,7 +175,7 @@ public class SigninCheckerTest {
 
         CriteriaHelper.pollUiThread(() -> {
             return expectedPrimaryAccount.equals(
-                    mAccountManagerTestRule.getCurrentSignedInAccount());
+                    mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         });
         Assert.assertEquals(
                 2, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
@@ -198,7 +198,7 @@ public class SigninCheckerTest {
         CriteriaHelper.pollUiThread(() -> {
             return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 2;
         });
-        Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
+        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
@@ -216,7 +216,7 @@ public class SigninCheckerTest {
         CriteriaHelper.pollUiThread(() -> {
             return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
         });
-        Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
+        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
@@ -234,7 +234,7 @@ public class SigninCheckerTest {
         CriteriaHelper.pollUiThread(() -> {
             return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
         });
-        Assert.assertNull(mAccountManagerTestRule.getCurrentSignedInAccount());
+        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }

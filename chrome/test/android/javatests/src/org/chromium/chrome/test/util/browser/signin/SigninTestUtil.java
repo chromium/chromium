@@ -30,13 +30,13 @@ import java.util.concurrent.TimeoutException;
  */
 public final class SigninTestUtil {
     /**
-     * Returns the currently signed in coreAccountInfo.
+     * @return The primary account of the requested {@link ConsentLevel}.
      */
-    static CoreAccountInfo getCurrentAccount() {
+    static CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return IdentityServicesProvider.get()
                     .getIdentityManager(Profile.getLastUsedRegularProfile())
-                    .getPrimaryAccountInfo(ConsentLevel.SYNC);
+                    .getPrimaryAccountInfo(consentLevel);
         });
     }
 

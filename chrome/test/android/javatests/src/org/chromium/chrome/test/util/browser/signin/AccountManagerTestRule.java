@@ -24,6 +24,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.R;
@@ -93,7 +94,7 @@ public class AccountManagerTestRule implements TestRule {
      * Tears down the AccountManagerFacade mock and signs out if user is signed in.
      */
     public void tearDownRule() {
-        if (mIsSignedIn && getCurrentSignedInAccount() != null) {
+        if (mIsSignedIn && getPrimaryAccount(ConsentLevel.SIGNIN) != null) {
             // For android_browsertests that sign out during the test body, like
             // UkmBrowserTest.SingleSyncSignoutCheck, we should sign out during tear-down test stage
             // only if an account is signed in. Otherwise, tearDownRule() ultimately results a crash
@@ -228,12 +229,11 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Returns the currently signed in account.
-     *
+     * @return The primary account of the requested {@link ConsentLevel}.
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
-    public CoreAccountInfo getCurrentSignedInAccount() {
-        return SigninTestUtil.getCurrentAccount();
+    public CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
+        return SigninTestUtil.getPrimaryAccount(consentLevel);
     }
 
     /**
