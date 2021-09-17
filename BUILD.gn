@@ -31,7 +31,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/gl/features.gni")
-import("//v8/gni/snapshot_toolchain.gni")
 import("//v8/gni/v8.gni")
 
 if (is_android) {
@@ -40,6 +39,10 @@ if (is_android) {
 
 if (is_linux) {
   import("build/config/linux/gtk/gtk.gni")
+}
+
+if (!is_ios) {
+  import("//v8/gni/snapshot_toolchain.gni")
 }
 
 declare_args() {
