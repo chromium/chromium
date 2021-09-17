@@ -355,16 +355,6 @@ class QuotaManagerImplTest : public testing::Test {
                                weak_factory_.GetWeakPtr()));
   }
 
-  void DeleteStorageKeyData(const StorageKey& storage_key,
-                            StorageType type,
-                            QuotaClientTypes quota_client_types) {
-    quota_status_ = QuotaStatusCode::kUnknown;
-    quota_manager_impl_->DeleteStorageKeyData(
-        storage_key, type, std::move(quota_client_types),
-        base::BindOnce(&QuotaManagerImplTest::StatusCallback,
-                       weak_factory_.GetWeakPtr()));
-  }
-
   void DeleteBucketData(const BucketInfo& bucket,
                         QuotaClientTypes quota_client_types) {
     quota_status_ = QuotaStatusCode::kUnknown;
@@ -1336,10 +1326,8 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_NukeManager) {
   RunAdditionalUsageAndQuotaTask(ToStorageKey("http://foo.com/"), kTemp);
   RunAdditionalUsageAndQuotaTask(ToStorageKey("http://bar.com/"), kTemp);
 
-  DeleteStorageKeyData(ToStorageKey("http://foo.com/"), kTemp,
-                       AllQuotaClientTypes());
-  DeleteStorageKeyData(ToStorageKey("http://bar.com/"), kTemp,
-                       AllQuotaClientTypes());
+  DeleteHostData("foo.com", kTemp, AllQuotaClientTypes());
+  DeleteHostData("bar.com", kTemp, AllQuotaClientTypes());
 
   // Nuke before waiting for callbacks.
   set_quota_manager_impl(nullptr);
@@ -2342,208 +2330,6 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
   EXPECT_EQ(predelete_bar_pers - 1000, usage());
 }
 
-TEST_F(QuotaManagerImplTest, DeleteStorageKeyDataNoClients) {
-  DeleteStorageKeyData(ToStorageKey("http://foo.com/"), kTemp,
-                       AllQuotaClientTypes());
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(QuotaStatusCode::kOk, status());
-}
-
-TEST_F(QuotaManagerImplTest, DeleteStorageKeyDataMultiple) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://foo.com:1/", kTemp, 20},
-      {"http://foo.com/", kPerm, 300},
-      {"http://bar.com/", kTemp, 4000},
-  };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 50000}, {"http://foo.com:1/", kTemp, 6000},
-      {"http://foo.com/", kPerm, 700},   {"https://foo.com/", kTemp, 80},
-      {"http://bar.com/", kTemp, 9},
-  };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-
-  GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_global_tmp = usage();
-
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_foo_tmp = usage();
-
-  GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_bar_tmp = usage();
-
-  GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_foo_pers = usage();
-
-  GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_bar_pers = usage();
-
-  for (const MockStorageKeyData& data : kData1) {
-    quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
-                                                data.type, base::Time::Now());
-  }
-  for (const MockStorageKeyData& data : kData2) {
-    quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
-                                                data.type, base::Time::Now());
-  }
-  task_environment_.RunUntilIdle();
-
-  reset_status_callback_count();
-  DeleteStorageKeyData(ToStorageKey("http://foo.com/"), kTemp,
-                       AllQuotaClientTypes());
-  DeleteStorageKeyData(ToStorageKey("http://bar.com/"), kTemp,
-                       AllQuotaClientTypes());
-  DeleteStorageKeyData(ToStorageKey("http://foo.com/"), kTemp,
-                       AllQuotaClientTypes());
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(3, status_callback_count());
-
-  DumpBucketTable();
-  task_environment_.RunUntilIdle();
-
-  for (const auto& entry : bucket_entries()) {
-    if (entry.type != kTemp)
-      continue;
-
-    EXPECT_NE(std::string("http://foo.com/"),
-              entry.storage_key.origin().GetURL().spec());
-    EXPECT_NE(std::string("http://bar.com/"),
-              entry.storage_key.origin().GetURL().spec());
-  }
-
-  GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_global_tmp - (1 + 4000 + 50000 + 9), usage());
-
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_foo_tmp - (1 + 50000), usage());
-
-  GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_bar_tmp - (4000 + 9), usage());
-
-  GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_foo_pers, usage());
-
-  GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_bar_pers, usage());
-}
-
-TEST_F(QuotaManagerImplTest,
-       DeleteStorageKeyDataMultipleClientsDifferentTypes) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kPerm, 1},
-      {"http://foo.com:1/", kPerm, 10},
-      {"http://foo.com/", kTemp, 100},
-      {"http://bar.com/", kPerm, 1000},
-  };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 10000},
-      {"http://foo.com:1/", kTemp, 100000},
-      {"https://foo.com/", kTemp, 1000000},
-      {"http://bar.com/", kTemp, 10000000},
-  };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-
-  GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_global_tmp = usage();
-
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_foo_tmp = usage();
-
-  GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_bar_tmp = usage();
-
-  GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_global_pers = usage();
-
-  GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_foo_pers = usage();
-
-  GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_bar_pers = usage();
-
-  for (const MockStorageKeyData& data : kData1) {
-    quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
-                                                data.type, base::Time::Now());
-  }
-  for (const MockStorageKeyData& data : kData2) {
-    quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
-                                                data.type, base::Time::Now());
-  }
-  task_environment_.RunUntilIdle();
-
-  reset_status_callback_count();
-  DeleteStorageKeyData(ToStorageKey("http://foo.com/"), kPerm,
-                       AllQuotaClientTypes());
-  DeleteStorageKeyData(ToStorageKey("http://bar.com/"), kPerm,
-                       AllQuotaClientTypes());
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(2, status_callback_count());
-
-  DumpBucketTable();
-  task_environment_.RunUntilIdle();
-
-  for (const auto& entry : bucket_entries()) {
-    if (entry.type != kPerm)
-      continue;
-
-    EXPECT_NE(std::string("http://foo.com/"),
-              entry.storage_key.origin().GetURL().spec());
-    EXPECT_NE(std::string("http://bar.com/"),
-              entry.storage_key.origin().GetURL().spec());
-  }
-
-  GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_global_tmp, usage());
-
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_foo_tmp, usage());
-
-  GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_bar_tmp, usage());
-
-  GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_global_pers - (1 + 1000), usage());
-
-  GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_foo_pers - 1, usage());
-
-  GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_bar_pers - 1000, usage());
-}
-
 TEST_F(QuotaManagerImplTest, DeleteBucketNoClients) {
   CreateBucketForTesting(ToStorageKey("http://foo.com"), kDefaultBucketName,
                          kTemp);
@@ -3084,61 +2870,6 @@ TEST_F(QuotaManagerImplTest, QuotaForEmptyHost) {
   EXPECT_EQ(QuotaStatusCode::kErrorNotSupported, status());
 }
 
-TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleStorageKey) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
-  };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 2},
-  };
-  static const MockStorageKeyData kData3[] = {
-      {"http://foo.com/", kTemp, 4},
-  };
-  static const MockStorageKeyData kData4[] = {
-      {"http://foo.com/", kTemp, 8},
-  };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData2, QuotaClientType::kAppcache,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData4, QuotaClientType::kIndexedDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_foo_tmp = usage();
-
-  DeleteStorageKeyData(ToStorageKey("http://foo.com/"), kTemp,
-                       {QuotaClientType::kFileSystem});
-  task_environment_.RunUntilIdle();
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_foo_tmp - 1, usage());
-
-  DeleteStorageKeyData(ToStorageKey("http://foo.com/"), kTemp,
-                       {QuotaClientType::kAppcache});
-  task_environment_.RunUntilIdle();
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_foo_tmp - 2 - 1, usage());
-
-  DeleteStorageKeyData(ToStorageKey("http://foo.com/"), kTemp,
-                       {QuotaClientType::kDatabase});
-  task_environment_.RunUntilIdle();
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_foo_tmp - 4 - 2 - 1, usage());
-
-  DeleteStorageKeyData(ToStorageKey("http://foo.com/"), kTemp,
-                       {QuotaClientType::kIndexedDatabase});
-  task_environment_.RunUntilIdle();
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
-}
-
 TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
   static const MockStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 1},
@@ -3240,49 +2971,6 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleHost) {
   EXPECT_EQ(predelete_foo_tmp - 4 - 2 - 1, usage());
 
   DeleteHostData("foo.com", kTemp, {QuotaClientType::kIndexedDatabase});
-  task_environment_.RunUntilIdle();
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
-}
-
-TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleStorageKey) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
-  };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 2},
-  };
-  static const MockStorageKeyData kData3[] = {
-      {"http://foo.com/", kTemp, 4},
-  };
-  static const MockStorageKeyData kData4[] = {
-      {"http://foo.com/", kTemp, 8},
-  };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData2, QuotaClientType::kAppcache,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData4, QuotaClientType::kIndexedDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  const int64_t predelete_foo_tmp = usage();
-
-  DeleteStorageKeyData(
-      ToStorageKey("http://foo.com/"), kTemp,
-      {QuotaClientType::kFileSystem, QuotaClientType::kDatabase});
-  task_environment_.RunUntilIdle();
-  GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(predelete_foo_tmp - 4 - 1, usage());
-
-  DeleteStorageKeyData(
-      ToStorageKey("http://foo.com/"), kTemp,
-      {QuotaClientType::kAppcache, QuotaClientType::kIndexedDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   task_environment_.RunUntilIdle();

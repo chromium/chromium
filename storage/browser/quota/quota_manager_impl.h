@@ -307,17 +307,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                             blink::mojom::StorageType type,
                             bool enabled);
 
-  // DeleteStorageKeyData and DeleteHostData (surprisingly enough) delete data
-  // of a particular blink::mojom::StorageType associated with either a specific
-  // storage key or set of storage keys. DeleteBucketData will delete only the
-  // specified bucket. Each method additionally requires a |quota_client_types|
-  // which specifies the types of QuotaClients to delete from the storage key.
+  // DeleteHostData (surprisingly enough) deletes data of a particular
+  // blink::mojom::StorageType associated with a set of storage keys.
+  // DeleteBucketData will only delete the specified bucket.
+  // Each method additionally requires a `quota_client_types` which specifies
+  // the types of QuotaClients to delete from the storage key.
   // Pass in QuotaClientType::AllClients() to remove all clients from the
   // storage key, regardless of type.
-  virtual void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                                    blink::mojom::StorageType type,
-                                    QuotaClientTypes quota_client_types,
-                                    StatusCallback callback);
   virtual void DeleteBucketData(const BucketInfo& bucket,
                                 QuotaClientTypes quota_client_types,
                                 StatusCallback callback);
@@ -511,14 +507,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                 QuotaClientTypes quota_client_types,
                                 bool is_eviction,
                                 StatusCallback callback);
-
-  // Runs StorageKeyDataDeleter which calls QuotaClients to clear all data for
-  // the storage key. Once the task is complete, calls the QuotaDatabase to
-  // delete buckets for the storage key & storage type from the bucket table.
-  void DeleteStorageKeyDataInternal(const blink::StorageKey& storage_key,
-                                    blink::mojom::StorageType type,
-                                    QuotaClientTypes quota_client_types,
-                                    StatusCallback callback);
 
   // Methods for eviction logic.
   void StartEviction();

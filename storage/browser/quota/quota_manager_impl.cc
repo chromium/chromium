@@ -629,6 +629,11 @@ class QuotaManagerImpl::GetUsageInfoTask : public QuotaTask {
   base::WeakPtrFactory<GetUsageInfoTask> weak_factory_{this};
 };
 
+// Calls each QuotaClient for `quota_client_types` to delete `storage_key` data.
+// If `storage_key` is delete for all registered client types, and there are no
+// deletion errors, StorageKeyDataDeleter will call to delete `storage_key` from
+// QuotaDatabase. It will return QuotaStatusCode::kOk to the `callback` on
+// success and will finish by making a call to delete itself.
 class QuotaManagerImpl::StorageKeyDataDeleter : public QuotaTask {
  public:
   StorageKeyDataDeleter(QuotaManagerImpl* manager,
@@ -640,9 +645,6 @@ class QuotaManagerImpl::StorageKeyDataDeleter : public QuotaTask {
         storage_key_(storage_key),
         type_(type),
         quota_client_types_(std::move(quota_client_types)),
-        error_count_(0),
-        remaining_clients_(0),
-        skipped_clients_(0),
         callback_(std::move(callback)) {}
 
  protected:
@@ -712,9 +714,9 @@ class QuotaManagerImpl::StorageKeyDataDeleter : public QuotaTask {
   const StorageKey storage_key_;
   const StorageType type_;
   const QuotaClientTypes quota_client_types_;
-  int error_count_;
-  size_t remaining_clients_;
-  int skipped_clients_;
+  int error_count_ = 0;
+  size_t remaining_clients_ = 0;
+  int skipped_clients_ = 0;
   StatusCallback callback_;
 
   base::WeakPtrFactory<StorageKeyDataDeleter> weak_factory_{this};
@@ -1308,15 +1310,6 @@ void QuotaManagerImpl::SetUsageCacheEnabled(QuotaClientType client_id,
   GetUsageTracker(type)->SetUsageCacheEnabled(client_id, storage_key, enabled);
 }
 
-void QuotaManagerImpl::DeleteStorageKeyData(const StorageKey& storage_key,
-                                            StorageType type,
-                                            QuotaClientTypes quota_client_types,
-                                            StatusCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DeleteStorageKeyDataInternal(storage_key, type, std::move(quota_client_types),
-                               std::move(callback));
-}
-
 void QuotaManagerImpl::DeleteBucketData(const BucketInfo& bucket,
                                         QuotaClientTypes quota_client_types,
                                         StatusCallback callback) {
@@ -1806,20 +1799,6 @@ void QuotaManagerImpl::DeleteBucketDataInternal(
   BucketDataDeleter* deleter =
       new BucketDataDeleter(this, bucket, std::move(quota_client_types),
                             is_eviction, std::move(callback));
-  deleter->Start();
-}
-
-void QuotaManagerImpl::DeleteStorageKeyDataInternal(
-    const StorageKey& storage_key,
-    StorageType type,
-    QuotaClientTypes quota_client_types,
-    StatusCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EnsureDatabaseOpened();
-
-  StorageKeyDataDeleter* deleter = new StorageKeyDataDeleter(
-      this, storage_key, type, std::move(quota_client_types),
-      std::move(callback));
   deleter->Start();
 }
 
