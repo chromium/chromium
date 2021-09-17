@@ -1,61 +1,77 @@
 <!DOCTYPE html>
-<script src="../../../resources/js-test.js"></script>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
 <body>
+<style>
+  #container {
+    position: relative;
+  }
+  #host {
+    width: 200px;
+    height: 200px;
+    border:10px solid black;
+  }
+  #shadowContainer {
+    width: 120px;
+    height: 120px;
+    border: 10px solid gray;
+    position: relative;
+  }
+  #lightdom {
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+</style>
 <div id="container" style="position: relative;"></div>
 <script>
-description('offsetParent should not leak nodes in user agent Shadow DOM.');
 
-if (!window.internals)
-    fail('This test requires window.internals to manipulate user agent Shadow DOM.');
+test(_ => {
+  let container = document.querySelector('#container');
+  let host = document.createElement('div');
+  host.setAttribute("id", "host");
+  container.appendChild(host);
+  let child = document.createElement('div');
+  host.appendChild(child);
+  child.setAttribute("id", "lightdom");
+  child.innerText = "author light dom";
+  let shadow = host.attachShadow({mode: 'open'});
+  shadow.innerHTML =
+        '<div id="shadowContainer"><slot></slot></div>';
+  assert_equals(child.offsetParent, document.querySelector("#container"),
+    "offsetParent gets remapped to light DOM");
+  shadow.querySelector("#shadowContainer").style.position = "static";
+  assert_equals(child.offsetParent, document.querySelector("#container"),
+    "offsetParent works through shadow DOM to light dom");
+  host.remove();
+}, "offsetParent works in author ShadowDOM");
 
-function configureShadowRoot(shadow) {
-    shadow.innerHTML =
-        '<div id="x" style="position: relative;"><slot></slot></div>';
-    shadow.positionedElement = shadow.querySelector('#x');
-}
+test(_ => {
+  assert_true(window.internals != null, 'This test requires window.internals to manipulate user agent Shadow DOM.');
+  // Test that when the offsetParent is in user agent Shadow DOM, it is
+  // not exposed to script, but its shadow host or the host's ancestor
+  // which is appropriate as an offsetParent is returned.
+  let container = document.querySelector('#container');
+  let host = document.createElement('details');
+  container.appendChild(host);
+  host.setAttribute('open', 'open');
+  let child = document.createElement('div');
+  host.appendChild(child);
+  child.setAttribute("id", "lightdom");
+  child.innerText = "user agent light dom";
+  let shadow = internals.shadowRoot(host);  // this is a UA shadow root
+  let shadowContainer = document.createElement('div');
+  shadow.appendChild(shadowContainer);
+  shadowContainer.setAttribute("id", "shadowContainer");
+  let slot = shadow.querySelector('slot');
+  shadowContainer.appendChild(slot);
+  assert_equals(child.offsetParent, document.querySelector("#container"),
+    "offsetParent gets remapped to light DOM");
+  shadow.querySelector("#shadowContainer").style.position = "static";
+  assert_equals(child.offsetParent, document.querySelector("#container"),
+    "offsetParent works through shadow DOM to light dom");
+  // If host is not removed, Chrome DHECKs.
+  host.remove();
+}, "offsetParent works in user agent ShadowDOM");
 
-function configureUAShadowRoot(shadow) {
-  const slot = shadow.querySelector('slot');
-  const div = document.createElement('div');
-  div.style = 'position: relative;';
-  div.appendChild(slot);
-  shadow.appendChild(div);
-  shadow.positionedElement = div;
-}
-
-var container = document.querySelector('#container');
-
-// Test that offsetParent works in author Shadow DOM
-var host = document.createElement('div');
-container.appendChild(host);
-var child = document.createElement('div');
-host.appendChild(child);
-var shadow = host.attachShadow({mode: 'open'});
-configureShadowRoot(shadow);
-shouldBe('child.offsetParent', 'container');
-
-// Test that offsetParent works 'through' Shadow DOM when there is no
-// positioned ancestor in user agent Shadow DOM
-shadow.positionedElement.removeAttribute('style');
-shouldBe('child.offsetParent', 'container');
-
-// Test that when the offsetParent is in user agent Shadow DOM, it is
-// not exposed to script, but its shadow host or the host's ancestor
-// which is appropriate as an offsetParent is returned.
-host = document.createElement('details');
-container.appendChild(host);
-host.setAttribute('open', 'open');
-host.appendChild(child);
-var shadow = internals.shadowRoot(host);  // this is a UA shadow root
-configureUAShadowRoot(shadow);
-shouldBe('child.offsetParent', 'container');
-
-// Test that offsetParent works 'through' user agent Shadow DOM when there is no
-// positioned ancestor in user agent Shadow DOM
-shadow.positionedElement.removeAttribute('style');
-shouldBe('child.offsetParent', 'container');
-
-container.remove();
-
-successfullyParsed = true;
 </script>
