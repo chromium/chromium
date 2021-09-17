@@ -358,23 +358,62 @@ TEST_F(ClientSideDetectionServiceTest, IsPrivateIPAddress) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
 
-  EXPECT_TRUE(csd_service_->IsPrivateIPAddress("10.1.2.3"));
-  EXPECT_TRUE(csd_service_->IsPrivateIPAddress("127.0.0.1"));
-  EXPECT_TRUE(csd_service_->IsPrivateIPAddress("172.24.3.4"));
-  EXPECT_TRUE(csd_service_->IsPrivateIPAddress("192.168.1.1"));
-  EXPECT_TRUE(csd_service_->IsPrivateIPAddress("fc00::"));
-  EXPECT_TRUE(csd_service_->IsPrivateIPAddress("fec0::"));
-  EXPECT_TRUE(csd_service_->IsPrivateIPAddress("fec0:1:2::3"));
-  EXPECT_TRUE(csd_service_->IsPrivateIPAddress("::1"));
-  EXPECT_TRUE(csd_service_->IsPrivateIPAddress("::ffff:192.168.1.1"));
+  net::IPAddress address;
+  EXPECT_TRUE(address.AssignFromIPLiteral("10.1.2.3"));
+  EXPECT_TRUE(csd_service_->IsPrivateIPAddress(address));
 
-  EXPECT_FALSE(csd_service_->IsPrivateIPAddress("1.2.3.4"));
-  EXPECT_FALSE(csd_service_->IsPrivateIPAddress("200.1.1.1"));
-  EXPECT_FALSE(csd_service_->IsPrivateIPAddress("2001:0db8:ac10:fe01::"));
-  EXPECT_FALSE(csd_service_->IsPrivateIPAddress("::ffff:23c5:281b"));
+  EXPECT_TRUE(address.AssignFromIPLiteral("127.0.0.1"));
+  EXPECT_TRUE(csd_service_->IsPrivateIPAddress(address));
 
-  // If the address can't be parsed, the default is true.
-  EXPECT_TRUE(csd_service_->IsPrivateIPAddress("blah"));
+  EXPECT_TRUE(address.AssignFromIPLiteral("172.24.3.4"));
+  EXPECT_TRUE(csd_service_->IsPrivateIPAddress(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("192.168.1.1"));
+  EXPECT_TRUE(csd_service_->IsPrivateIPAddress(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("fc00::"));
+  EXPECT_TRUE(csd_service_->IsPrivateIPAddress(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("fec0::"));
+  EXPECT_TRUE(csd_service_->IsPrivateIPAddress(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("fec0:1:2::3"));
+  EXPECT_TRUE(csd_service_->IsPrivateIPAddress(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("::1"));
+  EXPECT_TRUE(csd_service_->IsPrivateIPAddress(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("::ffff:192.168.1.1"));
+  EXPECT_TRUE(csd_service_->IsPrivateIPAddress(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("1.2.3.4"));
+  EXPECT_FALSE(csd_service_->IsPrivateIPAddress(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("200.1.1.1"));
+  EXPECT_FALSE(csd_service_->IsPrivateIPAddress(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("2001:0db8:ac10:fe01::"));
+  EXPECT_FALSE(csd_service_->IsPrivateIPAddress(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("::ffff:23c5:281b"));
+  EXPECT_FALSE(csd_service_->IsPrivateIPAddress(address));
+}
+
+TEST_F(ClientSideDetectionServiceTest, IsLocalResource) {
+  SetModelFetchResponses();
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
+
+  net::IPAddress address;
+  EXPECT_TRUE(csd_service_->IsLocalResource(address));
+
+  // Create an IP address of invalid length
+  uint8_t addr[5] = {0xFE, 0xDC, 0xBA, 0x98};
+  address = net::IPAddress(addr);
+  EXPECT_TRUE(csd_service_->IsLocalResource(address));
+
+  EXPECT_TRUE(address.AssignFromIPLiteral("1.2.3.4"));
+  EXPECT_FALSE(csd_service_->IsLocalResource(address));
 }
 
 TEST_F(ClientSideDetectionServiceTest, TestModelFollowsPrefs) {

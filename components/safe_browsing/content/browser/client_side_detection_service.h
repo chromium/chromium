@@ -35,6 +35,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "net/base/ip_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -102,15 +103,17 @@ class ClientSideDetectionService : public KeyedService {
       ClientReportPhishingRequestCallback callback,
       const std::string& access_token);
 
-  // Returns true if the given IP address string falls within a private
+  // Returns true if the given IP address falls within a private
   // (unroutable) network block.  Pages which are hosted on these IP addresses
   // are exempt from client-side phishing detection.  This is called by the
   // ClientSideDetectionHost prior to sending the renderer a
   // SafeBrowsingMsg_StartPhishingDetection IPC.
-  //
-  // ip_address should be a dotted IPv4 address, or an unbracketed IPv6
-  // address.
-  virtual bool IsPrivateIPAddress(const std::string& ip_address) const;
+  virtual bool IsPrivateIPAddress(const net::IPAddress& address) const;
+
+  // Returns true if the given IP address does not refer to remote content. For
+  // example, local files and chrome:// pages will create navigations that
+  // return true.
+  virtual bool IsLocalResource(const net::IPAddress& address) const;
 
   // Returns true and sets is_phishing if url is in the cache and valid.
   virtual bool GetValidCachedResult(const GURL& url, bool* is_phishing);

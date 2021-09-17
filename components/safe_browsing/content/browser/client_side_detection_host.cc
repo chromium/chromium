@@ -38,6 +38,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -121,13 +122,20 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     // We start by doing some simple checks that can run on the UI thread.
     base::UmaHistogramBoolean("SBClientPhishing.ClassificationStart", true);
 
+    if (url_.SchemeIs(content::kChromeUIScheme)) {
+      DontClassifyForPhishing(NO_CLASSIFY_CHROME_UI_PAGE);
+    }
+
+    if (csd_service_->IsLocalResource(remote_endpoint_.address())) {
+      DontClassifyForPhishing(NO_CLASSIFY_LOCAL_RESOURCE);
+    }
+
     // Only classify [X]HTML documents.
     if (mime_type_ != "text/html" && mime_type_ != "application/xhtml+xml") {
       DontClassifyForPhishing(NO_CLASSIFY_UNSUPPORTED_MIME_TYPE);
     }
 
-    if (csd_service_->IsPrivateIPAddress(
-            remote_endpoint_.ToStringWithoutPort())) {
+    if (csd_service_->IsPrivateIPAddress(remote_endpoint_.address())) {
       DontClassifyForPhishing(NO_CLASSIFY_PRIVATE_IP);
     }
 
@@ -197,6 +205,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     NO_CLASSIFY_ALLOWLISTED_BY_POLICY = 12,
     CLASSIFY = 13,
     NO_CLASSIFY_HAS_DELAYED_WARNING = 14,
+    NO_CLASSIFY_LOCAL_RESOURCE = 15,
+    NO_CLASSIFY_CHROME_UI_PAGE = 16,
 
     NO_CLASSIFY_MAX  // Always add new values before this one.
   };

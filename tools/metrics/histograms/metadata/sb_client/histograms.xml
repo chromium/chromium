@@ -725,6 +725,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records the result of phishing pre-classification checks. This is recorded
     on every classification attempt (roughly every page load).
+
+    Starting in M95, the PRIVATE_IP bucket was split to include LOCAL_RESOURCE
+    and CHROME_UI_PAGE.
   </summary>
 </histogram>
 

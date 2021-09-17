@@ -73359,6 +73359,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="12" label="ALLOWLISTED_BY_POLICY"/>
   <int value="13" label="CLASSIFY"/>
   <int value="14" label="NO_CLASSIFY_HAS_DELAYED_WARNING"/>
+  <int value="15" label="LOCAL_RESOURCE"/>
+  <int value="16" label="CHROME_UI_PAGE"/>
 </enum>
 
 <enum name="SBClientDownloadCheckDownloadStats">

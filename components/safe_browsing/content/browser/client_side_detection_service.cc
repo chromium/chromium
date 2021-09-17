@@ -154,14 +154,13 @@ void ClientSideDetectionService::SendClientReportPhishingRequest(
 }
 
 bool ClientSideDetectionService::IsPrivateIPAddress(
-    const std::string& ip_address) const {
-  net::IPAddress address;
-  if (!address.AssignFromIPLiteral(ip_address)) {
-    // Err on the side of privacy and assume this might be private.
-    return true;
-  }
-
+    const net::IPAddress& address) const {
   return !address.IsPubliclyRoutable();
+}
+
+bool ClientSideDetectionService::IsLocalResource(
+    const net::IPAddress& address) const {
+  return !address.IsValid();
 }
 
 void ClientSideDetectionService::AddClientSideDetectionHost(

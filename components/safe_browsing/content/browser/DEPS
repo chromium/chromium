@@ -11,6 +11,7 @@ include_rules = [
   "+components/sessions/core/session_id.h",
   "+components/version_info",
   "+content/public/browser",
+  "+content/public/common",
   "+content/public/test",
   "+crypto/sha2.h",
   "+ipc/ipc_message.h",
