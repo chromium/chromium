@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class FaviconAttributes;
+
 // View Controller showing the information for a link when a preview of the
 // destination is not displayed.
 @interface LinkNoPreviewViewController : UIViewController
@@ -20,6 +22,9 @@
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
+// Configures the Favicon with |attributes|.
+- (void)configureFaviconWithAttributes:(FaviconAttributes*)attributes;
 
 @end
 

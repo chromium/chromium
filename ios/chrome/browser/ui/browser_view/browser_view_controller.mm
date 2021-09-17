@@ -35,6 +35,8 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
@@ -269,6 +271,9 @@ enum HeaderBehaviour {
 // Snackbar category for browser view controller.
 NSString* const kBrowserViewControllerSnackbarCategory =
     @"BrowserViewControllerSnackbarCategory";
+
+// Desired width and height of favicon.
+const CGFloat kFaviconWidthHeight = 24;
 
 }  // namespace
 
@@ -3912,8 +3917,20 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     if (isLink) {
       NSString* title = GetContextMenuTitle(params);
       NSString* subtitle = GetContextMenuSubtitle(params);
-      return [[LinkNoPreviewViewController alloc] initWithTitle:title
-                                                       subtitle:subtitle];
+      LinkNoPreviewViewController* previewViewController =
+          [[LinkNoPreviewViewController alloc] initWithTitle:title
+                                                    subtitle:subtitle];
+
+      __weak LinkNoPreviewViewController* weakPreview = previewViewController;
+      FaviconLoader* faviconLoader =
+          IOSChromeFaviconLoaderFactory::GetForBrowserState(self.browserState);
+      faviconLoader->FaviconForPageUrl(
+          params.link_url, kFaviconWidthHeight, kFaviconWidthHeight,
+          /*fallback_to_google_server=*/false,
+          ^(FaviconAttributes* attributes) {
+            [weakPreview configureFaviconWithAttributes:attributes];
+          });
+      return previewViewController;
     }
     return nil;
   };

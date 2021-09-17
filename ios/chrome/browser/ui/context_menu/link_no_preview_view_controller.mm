@@ -14,10 +14,13 @@
 
 @property(nonatomic, copy) NSString* contextMenuTitle;
 @property(nonatomic, copy) NSString* subtitle;
+@property(nonatomic, strong) LinkNoPreviewView* view;
 
 @end
 
 @implementation LinkNoPreviewViewController
+
+@dynamic view;
 
 - (instancetype)initWithTitle:(NSString*)title subtitle:(NSString*)subtitle {
   self = [super initWithNibName:nil bundle:nil];
@@ -26,6 +29,10 @@
     _subtitle = subtitle;
   }
   return self;
+}
+
+- (void)configureFaviconWithAttributes:(FaviconAttributes*)attributes {
+  [self.view configureWithAttributes:attributes];
 }
 
 - (void)loadView {
