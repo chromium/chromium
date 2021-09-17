@@ -30,6 +30,9 @@ enum MessageType {
   SHOW_NOTIFICATION_ACCESS_SETUP_RESPONSE = 14;
   FETCH_CAMERA_ROLL_ITEMS_REQUEST = 15;
   FETCH_CAMERA_ROLL_ITEMS_RESPONSE = 16;
+  FETCH_CAMERA_ROLL_ITEM_DATA_REQUEST = 17;
+  FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE = 18;
+  INITIATE_CAMERA_ROLL_ITEM_TRANSFER_REQUEST = 19;
 }
 
 enum NotificationSetting {
@@ -242,9 +245,11 @@ message ShowNotificationAccessSetupRequest {}
 
 message ShowNotificationAccessSetupResponse {}
 
+// Next ID: 6
 message CameraRollItemMetadata {
   // A unique and stable identifier for camera roll items on the Android device.
   string key = 1;
+  string file_name = 5;
   string mime_type = 2;
   int64 last_modified_millis = 3;
   int64 file_size_bytes = 4;
@@ -292,7 +297,9 @@ message FetchCameraRollItemDataRequest {
   CameraRollItemMetadata metadata = 1;
 }
 
+// Next ID: 4
 message FetchCameraRollItemDataResponse {
+  CameraRollItemMetadata metadata = 3;
   enum FileAvailability {
     UNKNOWN = 0;
     AVAILABLE = 1;
