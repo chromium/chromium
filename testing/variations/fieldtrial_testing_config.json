@@ -4395,44 +4395,6 @@
             ]
         }
     ],
-    "IOSDiscoverFeed": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DiscoverFeedInNtp"
-                    ]
-                },
-                {
-                    "name": "EnabledM2FullSet",
-                    "params": {
-                        "DiscoverFeedIsNativeUIEnabled": "true",
-                        "RefactoredNTPLoggingEnabled": "true"
-                    },
-                    "enable_features": [
-                        "DiscoverFeedInNtp",
-                        "InterestFeedNoticeCardAutoDismiss",
-                        "RefactoredNTP"
-                    ]
-                },
-                {
-                    "name": "EnabledM2FullSetNoAutodismiss",
-                    "params": {
-                        "DiscoverFeedIsNativeUIEnabled": "true",
-                        "RefactoredNTPLoggingEnabled": "true"
-                    },
-                    "enable_features": [
-                        "DiscoverFeedInNtp",
-                        "RefactoredNTP"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDiscoverNoticeCardAutoDismiss": [
         {
             "platforms": [
