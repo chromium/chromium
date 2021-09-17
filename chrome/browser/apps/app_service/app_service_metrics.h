@@ -20,7 +20,8 @@ class AppUpdate;
 // If you're adding to this enum with the intention that it will be logged,
 // update the DefaultAppName enum listing in tools/metrics/histograms/enums.xml.
 enum class DefaultAppName {
-  kCalculator = 10,
+  // Legacy calculator chrome app was replaced by a PWA in m96.
+  kCalculatorChromeApp = 10,
   kText = 11,
   kGetHelp = 12,
   // Gallery was replaced by MediaApp in M86 and deleted in M91.
@@ -62,10 +63,10 @@ enum class DefaultAppName {
   kCursive = 47,
   kMediaAppAudio = 48,
   kProjector = 49,
-
+  kCalculator = 50,
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kProjector,
+  kMaxValue = kCalculator,
 };
 
 // The built-in app's histogram name. This is used for logging so do not change

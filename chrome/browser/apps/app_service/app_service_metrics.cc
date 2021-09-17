@@ -162,7 +162,8 @@ void RecordAppLaunch(const std::string& app_id,
   if (app_id == web_app::kCursiveAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kCursive, launch_source);
   } else if (app_id == extension_misc::kCalculatorAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kCalculator, launch_source);
+    // Launches of the legacy calculator chrome app.
+    RecordDefaultAppLaunch(DefaultAppName::kCalculatorChromeApp, launch_source);
   } else if (app_id == extension_misc::kTextEditorAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kText, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -171,6 +172,8 @@ void RecordAppLaunch(const std::string& app_id,
   } else if (app_id == file_manager::kAudioPlayerAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kAudioPlayer, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  } else if (app_id == web_app::kCalculatorAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kCalculator, launch_source);
   } else if (app_id == web_app::kCanvasAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kChromeCanvas, launch_source);
   } else if (app_id == extension_misc::kCameraAppId) {

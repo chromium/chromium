@@ -19243,7 +19243,7 @@ Called by update_debug_scenarios.py.-->
 </enum>
 
 <enum name="DefaultAppName">
-  <int value="10" label="Calculator"/>
+  <int value="10" label="Calculator Chrome App"/>
   <int value="11" label="Text"/>
   <int value="12" label="Get Help"/>
   <int value="13" label="Gallery"/>
@@ -19281,6 +19281,7 @@ Called by update_debug_scenarios.py.-->
   <int value="47" label="Cursive"/>
   <int value="48" label="Media App Audio"/>
   <int value="49" label="Projector"/>
+  <int value="50" label="Calculator"/>
 </enum>
 
 <enum name="DefaultBrowserAsyncAttemptResult">
