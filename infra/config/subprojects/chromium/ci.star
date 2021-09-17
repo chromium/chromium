@@ -4184,6 +4184,7 @@ ci.fyi_windows_builder(
 ci.fyi_mac_builder(
     name = "Mac Builder (reclient)",
     builderless = True,
+    cores = None,  # crbug.com/1245114
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "re",
