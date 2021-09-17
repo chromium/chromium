@@ -46,8 +46,10 @@
 #include "content/browser/renderer_host/media/service_video_capture_provider.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -2730,11 +2732,11 @@ MediaStreamDevices MediaStreamManager::ConvertToMediaStreamDevices(
 
 void MediaStreamManager::ActivateTabOnUIThread(const DesktopMediaID source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHost* rfh =
-      RenderFrameHost::FromID(source.web_contents_id.render_process_id,
-                              source.web_contents_id.main_render_frame_id);
+  RenderFrameHostImpl* rfh =
+      RenderFrameHostImpl::FromID(source.web_contents_id.render_process_id,
+                                  source.web_contents_id.main_render_frame_id);
   if (rfh)
-    rfh->GetRenderViewHost()->GetDelegate()->Activate();
+    rfh->render_view_host()->GetDelegate()->Activate();
 }
 
 void MediaStreamManager::OnStreamStarted(const std::string& label) {

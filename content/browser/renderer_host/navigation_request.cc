@@ -686,10 +686,7 @@ void EnterChildTraceEvent(const char* name,
 network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
     FrameTreeNode* frame_tree_node) {
   if (frame_tree_node->IsMainFrame()) {
-    return frame_tree_node->current_frame_host()
-                   ->GetRenderViewHost()
-                   ->GetDelegate()
-                   ->IsPortal()
+    return frame_tree_node->current_frame_host()->InsidePortal()
                ? network::mojom::RequestDestination::kIframe
                : network::mojom::RequestDestination::kDocument;
   } else {
@@ -4669,12 +4666,7 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   const PolicyContainerPolicies* parent_policies =
       policy_container_navigation_bundle_->ParentPolicies();
   DCHECK(!parent == !parent_policies);
-  if (!parent &&
-      frame_tree_node()
-          ->current_frame_host()
-          ->GetRenderViewHost()
-          ->GetDelegate()
-          ->IsPortal() &&
+  if (!parent && frame_tree_node()->current_frame_host()->InsidePortal() &&
       frame_tree_node()->render_manager()->GetOuterDelegateNode()) {
     parent = frame_tree_node()
                  ->render_manager()

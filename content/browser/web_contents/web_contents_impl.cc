@@ -568,7 +568,8 @@ WebContents* WebContents::FromRenderViewHost(RenderViewHost* rvh) {
                         rvh);
   if (!rvh)
     return nullptr;
-  return static_cast<WebContentsImpl*>(rvh->GetDelegate());
+  return static_cast<WebContentsImpl*>(
+      static_cast<RenderViewHostImpl*>(rvh)->GetDelegate());
 }
 
 WebContents* WebContents::FromRenderFrameHost(RenderFrameHost* rfh) {

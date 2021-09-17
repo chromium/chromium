@@ -22,7 +22,6 @@ namespace content {
 
 class RenderFrameHost;
 class RenderProcessHost;
-class RenderViewHostDelegate;
 class RenderWidgetHost;
 
 // A RenderViewHost is responsible for creating and talking to a RenderView
@@ -78,8 +77,6 @@ class CONTENT_EXPORT RenderViewHost {
   virtual void ExecutePluginActionAtLocation(
       const gfx::Point& location,
       blink::mojom::PluginActionType action) = 0;
-
-  virtual RenderViewHostDelegate* GetDelegate() = 0;
 
   // Returns true if the RenderView is active and has not crashed.
   virtual bool IsRenderViewLive() = 0;

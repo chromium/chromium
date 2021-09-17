@@ -5979,7 +5979,7 @@ bool RenderFrameHostImpl::UnloadHandlerExistsInSameSiteInstanceSubtree() {
 }
 
 bool RenderFrameHostImpl::InsidePortal() {
-  return GetRenderViewHost()->GetDelegate()->IsPortal();
+  return render_view_host()->GetDelegate()->IsPortal();
 }
 
 void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {

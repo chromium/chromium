@@ -818,7 +818,7 @@ void PageHandler::CaptureScreenshot(
   absl::optional<blink::web_pref::WebPreferences> maybe_original_web_prefs;
   if (capture_beyond_viewport.fromMaybe(false)) {
     blink::web_pref::WebPreferences original_web_prefs =
-        host_->GetRenderViewHost()->GetDelegate()->GetOrCreateWebPreferences();
+        host_->render_view_host()->GetDelegate()->GetOrCreateWebPreferences();
     maybe_original_web_prefs = original_web_prefs;
 
     blink::web_pref::WebPreferences modified_web_prefs = original_web_prefs;
@@ -826,7 +826,7 @@ void PageHandler::CaptureScreenshot(
     // screenshot. Details: https://crbug.com/1003629.
     modified_web_prefs.hide_scrollbars = true;
     modified_web_prefs.record_whole_document = true;
-    host_->GetRenderViewHost()->GetDelegate()->SetWebPreferences(
+    host_->render_view_host()->GetDelegate()->SetWebPreferences(
         modified_web_prefs);
 
     {
@@ -1164,7 +1164,7 @@ void PageHandler::ScreenshotCaptured(
   }
 
   if (maybe_original_web_prefs) {
-    host_->GetRenderViewHost()->GetDelegate()->SetWebPreferences(
+    host_->render_view_host()->GetDelegate()->SetWebPreferences(
         maybe_original_web_prefs.value());
   }
 
