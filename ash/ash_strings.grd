@@ -3917,6 +3917,46 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_DEBUG_STOP_PACKET_CAPTURE_BUTTON" desc="The label on notification button for user to stop the ongoing packet capture operation.">
         Stop
       </message>
+
+      <!-- Smart Lock strings shown on the lock screen -->
+      <message name="IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE" desc="Label for the Smart Lock spinner icon on user's lock screen while Chromebook is looking for paired phone.">
+        To unlock your Chromebook, turn on your phone's Bluetooth
+      </message>
+      <message name="IDS_SMART_LOCK_LABEL_PHONE_LOCKED" desc="Label for the Smart Lock icon on user's lock screen when a phone eligible to unlock the Chromebook is detected, but it's locked and thus not allowed to unlock the Chromebook.">
+        To unlock your Chromebook, first unlock your phone
+      </message>
+      <message name="IDS_SMART_LOCK_LABEL_NO_PHONE" desc="Label for the Smart Lock icon on user's lock screen when a phone eligible to unlock the Chromebook cannot be found after 15 seconds.">
+        Can’t find your phone. Make sure your phone’s Bluetooth is on.
+      </message>
+      <message name="IDS_AUTH_FACTOR_LABEL_UNLOCK_METHOD_SELECTION" desc="Label for the Smart Lock and Fingerprint icons on user's lock screen to select unlock method.">
+        To unlock your Chromebook, use your fingerprint or unlock your phone
+      </message>
+      <message name="IDS_AUTH_FACTOR_LABEL_USE_FINGERPRINT" desc="Label on user's lock screen to use their fingerprint to unlock Chromebook.">
+        To unlock your Chromebook, use your fingerprint
+      </message>
+      <message name="IDS_AUTH_FACTOR_LABEL_CANNOT_UNLOCK" desc="Label on user's lock screen when unlock authentication methods fail.">
+        Can't unlock your Chromebook
+      </message>
+      <message name="IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD" desc="Label on user's lock screen prompting user to enter password after other unlock authentication methods fail.">
+        To unlock your Chromebook, enter password
+      </message>
+      <message name="IDS_AUTH_FACTOR_LABEL_CANNOT_SIGN_IN" desc="Label on user's lock screen when sign in authentication methods fail.">
+        Can't sign in to your Chromebook
+      </message>
+      <message name="IDS_AUTH_FACTOR_LABEL_SIGN_IN_PASSWORD" desc="Label on user's lock screen prompting user to enter password after other sign in authentication methods fail.">
+        To sign in to your Chromebook, enter password
+      </message>
+      <message name="IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER" desc="Label on user's lock screen when a user is successfully authenticated and may click to enter Chromebook.">
+        Tap or click to enter
+      </message>
+
+      <!-- Fingerprint strings shown on the lock screen -->
+      <message name="IDS_AUTH_FACTOR_LABEL_UNLOCKED" desc="Label on user's lock screen when a Chromebook is successfully unlocked.">
+        Unlocked
+      </message>
+      <message name="IDS_FINGERPRINT_LABEL_NOT_AUTHENTICATED" desc="Label for the Fingerprint icon on user's lock screen after too many failed attempts to authenticate a fingerprint.">
+        Too many fingerprint attempts
+      </message>
     </messages>
   </release>
 </grit>
