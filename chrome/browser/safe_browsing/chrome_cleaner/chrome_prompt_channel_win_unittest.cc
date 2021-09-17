@@ -315,8 +315,8 @@ TEST_F(ChromePromptChannelTest, VersionIsTooLarge) {
   channel_->ConnectToCleaner(std::move(mock_cleaner_process_));
 
   // Invalid version
-  constexpr uint8_t kVersion = 128;
-  PostWriteByValue(kVersion);
+  constexpr uint8_t kInvalidVersion = 128;
+  PostWriteByValue(kInvalidVersion);
   WaitForDisconnect();
 
   // We expect the the handshake to have failed because of the version.
@@ -331,8 +331,8 @@ TEST_F(ChromePromptChannelTest, VersionIsZero) {
   channel_->ConnectToCleaner(std::move(mock_cleaner_process_));
 
   // Invalid version
-  constexpr uint8_t kVersion = 0;
-  PostWriteByValue(kVersion);
+  constexpr uint8_t kInvalidVersion = 0;
+  PostWriteByValue(kInvalidVersion);
   WaitForDisconnect();
 
   // We expect the the handshake to have failed because of the version.

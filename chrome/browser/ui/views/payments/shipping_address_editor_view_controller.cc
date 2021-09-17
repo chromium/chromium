@@ -535,21 +535,23 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
   }
   for (const auto& field : comboboxes()) {
     // ValidatingCombobox* is the key, EditorField is the value.
-    ValidatingCombobox* combobox = field.first;
+    ValidatingCombobox* validating_combobox = field.first;
     // The country has already been dealt with.
-    if (combobox->GetID() ==
+    if (validating_combobox->GetID() ==
         GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY))
       continue;
-    if (combobox->IsValid()) {
-      success = profile->SetInfo(
-          field.second.type,
-          combobox->GetTextForRow(combobox->GetSelectedIndex()), locale);
+    if (validating_combobox->IsValid()) {
+      success = profile->SetInfo(field.second.type,
+                                 validating_combobox->GetTextForRow(
+                                     validating_combobox->GetSelectedIndex()),
+                                 locale);
     } else {
       success = false;
     }
     LOG_IF(ERROR, !success && !ignore_errors)
         << "Can't setinfo(" << field.second.type << ", "
-        << combobox->GetTextForRow(combobox->GetSelectedIndex());
+        << validating_combobox->GetTextForRow(
+               validating_combobox->GetSelectedIndex());
     if (!success && !ignore_errors)
       return false;
   }

@@ -1730,7 +1730,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     return dockMenu;
 
   if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-      IncognitoModePrefs::DISABLED) {
+      IncognitoModePrefs::Availability::kDisabled) {
     titleStr = l10n_util::GetNSStringWithFixup(IDS_NEW_INCOGNITO_WINDOW_MAC);
     item.reset(
         [[NSMenuItem alloc] initWithTitle:titleStr

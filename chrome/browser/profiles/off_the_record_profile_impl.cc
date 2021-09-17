@@ -180,7 +180,7 @@ void OffTheRecordProfileImpl::Init() {
   // Always crash when incognito is not available.
   CHECK(!IsIncognitoProfile() ||
         IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
-            IncognitoModePrefs::DISABLED);
+            IncognitoModePrefs::Availability::kDisabled);
 
 #if !defined(OS_ANDROID)
   TrackZoomLevelsFromParent();

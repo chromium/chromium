@@ -185,25 +185,25 @@ void QuotaInternalsProxy::RequestPerOriginInfo(StorageType type) {
   std::set<blink::StorageKey> storage_keys =
       quota_manager_->GetCachedStorageKeys(type);
 
-  std::vector<PerOriginStorageInfo> origin_info;
-  origin_info.reserve(storage_keys.size());
+  std::vector<PerOriginStorageInfo> origin_infos;
+  origin_infos.reserve(storage_keys.size());
 
   std::set<std::string> hosts;
-  std::vector<PerHostStorageInfo> host_info;
+  std::vector<PerHostStorageInfo> host_infos;
 
   for (const blink::StorageKey& storage_key : storage_keys) {
-    PerOriginStorageInfo info(storage_key.origin().GetURL(), type);
-    origin_info.push_back(info);
+    PerOriginStorageInfo per_origin_info(storage_key.origin().GetURL(), type);
+    origin_infos.push_back(per_origin_info);
 
     const std::string& host = storage_key.origin().host();
     if (hosts.insert(host).second) {
-      PerHostStorageInfo info(host, type);
-      host_info.push_back(info);
+      PerHostStorageInfo per_host_info(host, type);
+      host_infos.push_back(per_host_info);
       VisitHost(host, type);
     }
   }
-  ReportPerOriginInfo(origin_info);
-  ReportPerHostInfo(host_info);
+  ReportPerOriginInfo(origin_infos);
+  ReportPerHostInfo(host_infos);
 }
 
 void QuotaInternalsProxy::VisitHost(const std::string& host, StorageType type) {

@@ -311,7 +311,7 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
   const PrefService::Preference* pref =
       prefs->FindPreference(prefs::kExtensionsUIDeveloperMode);
   info->is_incognito_available = IncognitoModePrefs::GetAvailability(prefs) !=
-                                 IncognitoModePrefs::DISABLED;
+                                 IncognitoModePrefs::Availability::kDisabled;
   info->is_developer_mode_controlled_by_policy = pref->IsManaged();
   info->in_developer_mode =
       !info->is_supervised &&

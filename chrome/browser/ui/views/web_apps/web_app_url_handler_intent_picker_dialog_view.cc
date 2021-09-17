@@ -282,17 +282,17 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
     const size_t button_index = hover_buttons_.size();
     // TODO(crbug.com/1072058): Make sure the UI is reasonable when
     // |app_title| is long.
-    auto app_button = std::make_unique<WebAppUrlHandlerHoverButton>(
+    auto button = std::make_unique<WebAppUrlHandlerHoverButton>(
         base::BindRepeating(
             &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
             base::Unretained(this), button_index),
         launch_params, provider, app_title,
         registrar.GetAppStartUrl(launch_params.app_id));
-    app_button->set_tag(button_index);
-    app_button->GetViewAccessibility().OverridePosInSet(button_index + 1,
-                                                        total_buttons);
-    hover_buttons_.push_back(app_button.get());
-    scrollable_view->AddChildViewAt(std::move(app_button), button_index);
+    button->set_tag(button_index);
+    button->GetViewAccessibility().OverridePosInSet(button_index + 1,
+                                                    total_buttons);
+    hover_buttons_.push_back(button.get());
+    scrollable_view->AddChildViewAt(std::move(button), button_index);
   }
 
   auto scroll_view = std::make_unique<views::ScrollView>();

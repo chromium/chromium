@@ -1492,10 +1492,10 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
                                      ui::PAGE_TRANSITION_TYPED, false));
     auth_needed_waiter2.Wait();
     ASSERT_EQ(1u, observer.handlers().size());
-    WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
-    LoginHandler* handler = *observer.handlers().begin();
+    WindowedAuthSuppliedObserver auth_supplied_waiter2(controller);
+    handler = *observer.handlers().begin();
     SetAuthFor(handler);
-    auth_supplied_waiter.Wait();
+    auth_supplied_waiter2.Wait();
     navigation_observer.Wait();
     EXPECT_EQ(2, observer.auth_needed_count());
   }

@@ -180,7 +180,7 @@ bool UpdateTaskCategory(JumpListUpdater* jumplist_updater,
   // collection. We use our application icon as the icon for this item.
   // We remove '&' characters from this string so we can share it with our
   // system menu.
-  if (incognito_availability != IncognitoModePrefs::FORCED) {
+  if (incognito_availability != IncognitoModePrefs::Availability::kForced) {
     scoped_refptr<ShellLinkItem> chrome = CreateShellLink(cmd_line_profile_dir);
     std::u16string chrome_title = l10n_util::GetStringUTF16(IDS_NEW_WINDOW);
     base::ReplaceSubstringsAfterOffset(&chrome_title, 0, u"&",
@@ -192,7 +192,7 @@ bool UpdateTaskCategory(JumpListUpdater* jumplist_updater,
 
   // Create an IShellLink object which launches Chrome in incognito mode, and
   // add it to the collection.
-  if (incognito_availability != IncognitoModePrefs::DISABLED) {
+  if (incognito_availability != IncognitoModePrefs::Availability::kDisabled) {
     scoped_refptr<ShellLinkItem> incognito =
         CreateShellLink(cmd_line_profile_dir);
     incognito->GetCommandLine()->AppendSwitch(switches::kIncognito);

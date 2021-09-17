@@ -469,19 +469,19 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
     case IDC_BOOKMARK_BAR_OPEN_INCOGNITO:
       return !profile_->IsOffTheRecord() &&
-             incognito_avail != IncognitoModePrefs::DISABLED;
+             incognito_avail != IncognitoModePrefs::Availability::kDisabled;
 
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
-      return chrome::HasBookmarkURLsAllowedInIncognitoMode(selection_, profile_)
-             &&
+      return chrome::HasBookmarkURLsAllowedInIncognitoMode(selection_,
+                                                           profile_) &&
              !profile_->IsOffTheRecord() &&
-             incognito_avail != IncognitoModePrefs::DISABLED;
+             incognito_avail != IncognitoModePrefs::Availability::kDisabled;
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
       return chrome::HasBookmarkURLs(selection_);
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
       return chrome::HasBookmarkURLs(selection_) &&
-             incognito_avail != IncognitoModePrefs::FORCED;
+             incognito_avail != IncognitoModePrefs::Availability::kForced;
 
     case IDC_BOOKMARK_BAR_RENAME_FOLDER:
     case IDC_BOOKMARK_BAR_EDIT:

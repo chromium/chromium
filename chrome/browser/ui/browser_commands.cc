@@ -453,7 +453,7 @@ void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
   PrefService* prefs = profile->GetPrefs();
   if (off_the_record) {
     if (IncognitoModePrefs::GetAvailability(prefs) ==
-        IncognitoModePrefs::DISABLED) {
+        IncognitoModePrefs::Availability::kDisabled) {
       off_the_record = false;
     }
   } else if (profile->IsGuestSession() ||
@@ -933,14 +933,14 @@ WebContents* DuplicateTabAt(Browser* browser, int index) {
     // If this is a tabbed browser, just create a duplicate tab inside the same
     // window next to the tab being duplicated.
     TabStripModel* tab_strip_model = browser->tab_strip_model();
-    const int index = tab_strip_model->GetIndexOfWebContents(contents);
-    pinned = tab_strip_model->IsTabPinned(index);
+    const int contents_index = tab_strip_model->GetIndexOfWebContents(contents);
+    pinned = tab_strip_model->IsTabPinned(contents_index);
     int add_types = TabStripModel::ADD_ACTIVE |
                     TabStripModel::ADD_INHERIT_OPENER |
                     (pinned ? TabStripModel::ADD_PINNED : 0);
-    const auto old_group = tab_strip_model->GetTabGroupForTab(index);
-    tab_strip_model->InsertWebContentsAt(index + 1, std::move(contents_dupe),
-                                         add_types, old_group);
+    const auto old_group = tab_strip_model->GetTabGroupForTab(contents_index);
+    tab_strip_model->InsertWebContentsAt(
+        contents_index + 1, std::move(contents_dupe), add_types, old_group);
   } else {
     CreateAndShowNewWindowWithContents(std::move(contents_dupe), browser);
   }

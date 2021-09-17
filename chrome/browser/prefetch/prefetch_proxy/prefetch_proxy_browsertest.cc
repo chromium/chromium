@@ -1536,8 +1536,6 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
-  base::HistogramTester histogram_tester;
-
   PrefetchProxyTabHelper* tab_helper =
       PrefetchProxyTabHelper::FromWebContents(GetWebContents());
 

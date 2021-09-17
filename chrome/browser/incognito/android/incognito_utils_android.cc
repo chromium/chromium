@@ -15,10 +15,11 @@ static jboolean JNI_IncognitoUtils_GetIncognitoModeEnabled(JNIEnv* env) {
       ProfileManager::GetActiveUserProfile()->GetOriginalProfile()->GetPrefs();
   IncognitoModePrefs::Availability incognito_pref =
       IncognitoModePrefs::GetAvailability(prefs);
-  DCHECK(incognito_pref == IncognitoModePrefs::ENABLED ||
-         incognito_pref == IncognitoModePrefs::DISABLED)
-      << "Unsupported incognito mode preference: " << incognito_pref;
-  return incognito_pref != IncognitoModePrefs::DISABLED;
+  DCHECK(incognito_pref == IncognitoModePrefs::Availability::kEnabled ||
+         incognito_pref == IncognitoModePrefs::Availability::kDisabled)
+      << "Unsupported incognito mode preference: "
+      << static_cast<int>(incognito_pref);
+  return incognito_pref != IncognitoModePrefs::Availability::kDisabled;
 }
 
 static jboolean JNI_IncognitoUtils_GetIncognitoModeManaged(JNIEnv* env) {

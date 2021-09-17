@@ -136,7 +136,7 @@ bool AdjustNavigateParamsForURL(NavigateParams* params) {
     // If incognito is forced, we punt.
     PrefService* prefs = profile->GetPrefs();
     if (prefs && IncognitoModePrefs::GetAvailability(prefs) ==
-                     IncognitoModePrefs::FORCED) {
+                     IncognitoModePrefs::Availability::kForced) {
       return false;
     }
 

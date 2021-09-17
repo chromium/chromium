@@ -485,7 +485,7 @@ void LocalToRemoteSyncer::DidDeleteRemoteFile(
   // last sync completed.  As our policy for deletion-modification conflict
   // resolution, ignore the local deletion.
   if (status == SYNC_STATUS_OK || error == google_apis::HTTP_NOT_FOUND) {
-    SyncStatusCode status = metadata_database()->UpdateByDeletedRemoteFile(
+    status = metadata_database()->UpdateByDeletedRemoteFile(
         remote_file_tracker_->file_id());
     SyncCompleted(std::move(token), status);
     return;
@@ -571,7 +571,7 @@ void LocalToRemoteSyncer::DidUploadExistingFile(
   if (!details.missing() && details.file_kind() == FILE_KIND_FILE &&
       details.title() == title.AsUTF8Unsafe() &&
       HasFileAsParent(details, remote_parent_folder_tracker_->file_id())) {
-    SyncStatusCode status = metadata_database()->UpdateTracker(
+    status = metadata_database()->UpdateTracker(
         remote_file_tracker_->tracker_id(), file.details());
     SyncCompleted(std::move(token), status);
     return;

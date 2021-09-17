@@ -91,11 +91,11 @@ void TaskManagerInterface::RemoveObserver(TaskManagerObserver* observer) {
   // Recalculate the minimum refresh rate and the enabled resource flags.
   int64_t flags = 0;
   base::TimeDelta min_time = base::TimeDelta::Max();
-  for (auto& observer : observers_) {
-    if (observer.desired_refresh_time() < min_time)
-      min_time = observer.desired_refresh_time();
+  for (auto& obs : observers_) {
+    if (obs.desired_refresh_time() < min_time)
+      min_time = obs.desired_refresh_time();
 
-    flags |= observer.desired_resources_flags();
+    flags |= obs.desired_resources_flags();
   }
 
   if (min_time == base::TimeDelta::Max()) {

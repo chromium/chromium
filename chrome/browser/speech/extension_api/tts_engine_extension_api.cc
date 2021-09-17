@@ -245,9 +245,9 @@ void TtsExtensionEngine::GetVoices(
       result_voice.remote = voice.remote;
       result_voice.engine_id = extension->id();
 
-      for (auto iter = voice.event_types.begin();
-           iter != voice.event_types.end(); ++iter) {
-        result_voice.events.insert(TtsEventTypeFromString(*iter));
+      for (auto it = voice.event_types.begin(); it != voice.event_types.end();
+           ++it) {
+        result_voice.events.insert(TtsEventTypeFromString(*it));
       }
 
       // If the extension sends end events, the controller will handle

@@ -163,10 +163,12 @@ void BudgetDatabase::GetBudgetAfterSync(const url::Origin& origin,
   double total = GetBudget(origin);
 
   // Always add one entry at the front of the list for the total budget now.
-  BudgetState prediction;
-  prediction.budget_at = total;
-  prediction.time = clock_->Now().ToJsTime();
-  predictions.push_back(prediction);
+  {
+    BudgetState prediction;
+    prediction.budget_at = total;
+    prediction.time = clock_->Now().ToJsTime();
+    predictions.push_back(prediction);
+  }
 
   // Starting with the soonest expiring chunks, add entries for the
   // expiration times going forward.

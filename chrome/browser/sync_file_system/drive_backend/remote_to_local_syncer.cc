@@ -378,7 +378,7 @@ void RemoteToLocalSyncer::ContinueAsBackgroundTask(
     }
 
     int64_t change_id = remote_metadata_->details().change_id();
-    int64_t latest_change_id = latest_file_metadata.details().change_id();
+    latest_change_id = latest_file_metadata.details().change_id();
     if (change_id != latest_change_id) {
       SyncCompleted(std::move(token), SYNC_STATUS_RETRY);
       return;

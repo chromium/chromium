@@ -207,11 +207,13 @@ void BrowserNavigatorTest::RunDoNothingIfIncognitoIsForcedTest(
 
   // Set kIncognitoModeAvailability to FORCED.
   PrefService* prefs1 = browser->profile()->GetPrefs();
-  prefs1->SetInteger(prefs::kIncognitoModeAvailability,
-                     IncognitoModePrefs::FORCED);
+  prefs1->SetInteger(
+      prefs::kIncognitoModeAvailability,
+      static_cast<int>(IncognitoModePrefs::Availability::kForced));
   PrefService* prefs2 = browser->profile()->GetOriginalProfile()->GetPrefs();
-  prefs2->SetInteger(prefs::kIncognitoModeAvailability,
-                     IncognitoModePrefs::FORCED);
+  prefs2->SetInteger(
+      prefs::kIncognitoModeAvailability,
+      static_cast<int>(IncognitoModePrefs::Availability::kForced));
 
   // Navigate to the page.
   NavigateParams params(MakeNavigateParams(browser));

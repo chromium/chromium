@@ -620,10 +620,9 @@ Profile* ProfileManager::GetLastUsedProfileAllowedByPolicy() {
 
 // static
 bool ProfileManager::IsOffTheRecordModeForced(Profile* profile) {
-  return profile->IsGuestSession() ||
-         profile->IsSystemProfile() ||
+  return profile->IsGuestSession() || profile->IsSystemProfile() ||
          IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
-             IncognitoModePrefs::FORCED;
+             IncognitoModePrefs::Availability::kForced;
 }
 
 // static

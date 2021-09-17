@@ -863,11 +863,11 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
   auto observer = NavigateToURLAsync(url);
   EXPECT_TRUE(observer->WaitForRequestStart());
   for (auto* const host : kHtmlSubresourcesHosts) {
-    GURL url(base::StringPrintf("http://%s", host));
-    preconnect_manager_observer()->WaitUntilHostLookedUp(url.host(),
+    GURL host_url(base::StringPrintf("http://%s", host));
+    preconnect_manager_observer()->WaitUntilHostLookedUp(host_url.host(),
                                                          network_isolation_key);
     EXPECT_TRUE(preconnect_manager_observer()->HostFound(
-        url.host(), network_isolation_key));
+        host_url.host(), network_isolation_key));
   }
   // 2 connections to the main frame host + 1 connection per host for others.
   const size_t expected_connections = base::size(kHtmlSubresourcesHosts) + 1;
@@ -1441,11 +1441,11 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithProxy,
   auto observer = NavigateToURLAsync(url);
   EXPECT_TRUE(observer->WaitForRequestStart());
   for (auto* const host : kHtmlSubresourcesHosts) {
-    GURL url = embedded_test_server()->GetURL(host, "/");
+    GURL host_url = embedded_test_server()->GetURL(host, "/");
     preconnect_manager_observer()->WaitUntilProxyLookedUp(
-        url, network_isolation_key);
-    EXPECT_TRUE(
-        preconnect_manager_observer()->ProxyFound(url, network_isolation_key));
+        host_url, network_isolation_key);
+    EXPECT_TRUE(preconnect_manager_observer()->ProxyFound(
+        host_url, network_isolation_key));
   }
   // 2 connections to the main frame host + 1 connection per host for others.
   const size_t expected_connections = base::size(kHtmlSubresourcesHosts) + 1;

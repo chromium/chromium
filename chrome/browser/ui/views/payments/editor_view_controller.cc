@@ -439,11 +439,11 @@ views::View* EditorViewController::CreateInputField(views::GridLayout* layout,
       break;
     }
     case EditorField::ControlType::READONLY_LABEL: {
-      std::unique_ptr<views::Label> label =
+      std::unique_ptr<views::Label> readonly_label =
           std::make_unique<views::Label>(GetInitialValueForType(field.type));
-      label->SetID(GetInputFieldViewId(field.type));
-      label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-      layout->AddView(std::move(label), 1, 1, views::GridLayout::FILL,
+      readonly_label->SetID(GetInputFieldViewId(field.type));
+      readonly_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      layout->AddView(std::move(readonly_label), 1, 1, views::GridLayout::FILL,
                       views::GridLayout::FILL, 0, kInputFieldHeight);
       break;
     }

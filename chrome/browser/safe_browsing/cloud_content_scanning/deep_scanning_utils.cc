@@ -152,24 +152,24 @@ void MaybeReportDeepScanningVerdict(
   if (result != BinaryUploadService::Result::SUCCESS)
     return;
 
-  for (const auto& result : response.results()) {
-    if (result.status() !=
+  for (const auto& response_result : response.results()) {
+    if (response_result.status() !=
         enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS) {
-      std::string unscanned_reason = "UNSCANNED_REASON_UNKNOWN";
-      if (result.tag() == "malware")
+      unscanned_reason = "UNSCANNED_REASON_UNKNOWN";
+      if (response_result.tag() == "malware")
         unscanned_reason = "MALWARE_SCAN_FAILED";
-      else if (result.tag() == "dlp")
+      else if (response_result.tag() == "dlp")
         unscanned_reason = "DLP_SCAN_FAILED";
 
       router->OnUnscannedFileEvent(url, file_name, download_digest_sha256,
                                    mime_type, trigger, access_point,
                                    std::move(unscanned_reason), content_size,
                                    event_result);
-    } else if (result.triggered_rules_size() > 0) {
-      router->OnAnalysisConnectorResult(url, file_name, download_digest_sha256,
-                                        mime_type, trigger,
-                                        response.request_token(), access_point,
-                                        result, content_size, event_result);
+    } else if (response_result.triggered_rules_size() > 0) {
+      router->OnAnalysisConnectorResult(
+          url, file_name, download_digest_sha256, mime_type, trigger,
+          response.request_token(), access_point, response_result, content_size,
+          event_result);
     }
   }
 }
@@ -248,14 +248,14 @@ void RecordDeepScanMetrics(
     return;
   bool dlp_verdict_success = true;
   bool malware_verdict_success = true;
-  for (const auto& result : response.results()) {
-    if (result.tag() == "dlp" &&
-        result.status() !=
+  for (const auto& response_result : response.results()) {
+    if (response_result.tag() == "dlp" &&
+        response_result.status() !=
             enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS) {
       dlp_verdict_success = false;
     }
-    if (result.tag() == "malware" &&
-        result.status() !=
+    if (response_result.tag() == "malware" &&
+        response_result.status() !=
             enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS) {
       malware_verdict_success = false;
     }

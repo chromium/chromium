@@ -95,10 +95,10 @@ class StackedTabStripLayoutTest : public testing::Test {
     PrepareChildViews(static_cast<int>(positions.size()));
     for (int i = 0; i < view_model_.view_size(); ++i) {
       int x = 0;
-      gfx::Rect bounds(view_model_.ideal_bounds(i));
+      gfx::Rect bounds_rect(view_model_.ideal_bounds(i));
       ASSERT_TRUE(base::StringToInt(positions[i], &x));
-      bounds.set_x(x);
-      view_model_.set_ideal_bounds(i, bounds);
+      bounds_rect.set_x(x);
+      view_model_.set_ideal_bounds(i, bounds_rect);
     }
   }
 

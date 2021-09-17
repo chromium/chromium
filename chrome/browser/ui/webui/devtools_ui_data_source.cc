@@ -151,11 +151,13 @@ void DevToolsDataSource::StartDataRequest(
   remote_path_prefix += "/";
   if (base::StartsWith(path, remote_path_prefix,
                        base::CompareCase::INSENSITIVE_ASCII)) {
-    GURL url(kRemoteFrontendBase + path.substr(remote_path_prefix.length()));
+    GURL remote_url(kRemoteFrontendBase +
+                    path.substr(remote_path_prefix.length()));
 
-    CHECK_EQ(url.host(), kRemoteFrontendDomain);
-    if (url.is_valid() && DevToolsUIBindings::IsValidRemoteFrontendURL(url)) {
-      StartRemoteDataRequest(url, std::move(callback));
+    CHECK_EQ(remote_url.host(), kRemoteFrontendDomain);
+    if (remote_url.is_valid() &&
+        DevToolsUIBindings::IsValidRemoteFrontendURL(remote_url)) {
+      StartRemoteDataRequest(remote_url, std::move(callback));
     } else {
       DLOG(ERROR) << "Refusing to load invalid remote front-end URL";
       std::move(callback).Run(CreateNotFoundResponse());
@@ -170,10 +172,10 @@ void DevToolsDataSource::StartDataRequest(
                        base::CompareCase::INSENSITIVE_ASCII)) {
     GURL custom_devtools_frontend = GetCustomDevToolsFrontendURL();
     if (!custom_devtools_frontend.is_empty()) {
-      GURL url = GURL(custom_devtools_frontend.spec() +
-                      path.substr(custom_path_prefix.length()));
-      DCHECK(url.is_valid());
-      StartCustomDataRequest(url, std::move(callback));
+      GURL devtools_url(custom_devtools_frontend.spec() +
+                        path.substr(custom_path_prefix.length()));
+      DCHECK(devtools_url.is_valid());
+      StartCustomDataRequest(devtools_url, std::move(callback));
       return;
     }
   }

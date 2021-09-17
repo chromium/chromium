@@ -242,7 +242,7 @@ mojom::MenuItemsPtr CreateBrowserMenuItems(mojom::MenuType menu_type,
 
   // "Normal" windows are not allowed when incognito is enforced.
   if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-      IncognitoModePrefs::FORCED) {
+      IncognitoModePrefs::Availability::kForced) {
     AddCommandItem((menu_type == mojom::MenuType::kAppList)
                        ? ash::APP_CONTEXT_MENU_NEW_WINDOW
                        : ash::MENU_NEW_WINDOW,
@@ -252,7 +252,7 @@ mojom::MenuItemsPtr CreateBrowserMenuItems(mojom::MenuType menu_type,
   // Incognito windows are not allowed when incognito is disabled.
   if (!profile->IsOffTheRecord() &&
       IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-          IncognitoModePrefs::DISABLED) {
+          IncognitoModePrefs::Availability::kDisabled) {
     AddCommandItem((menu_type == mojom::MenuType::kAppList)
                        ? ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW
                        : ash::MENU_NEW_INCOGNITO_WINDOW,

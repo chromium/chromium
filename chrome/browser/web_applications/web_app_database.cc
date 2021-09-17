@@ -716,13 +716,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     }
 
     if (WebAppFileHandlerManager::IconsEnabled()) {
-      absl::optional<std::vector<apps::IconInfo>> parsed_icon_infos =
+      absl::optional<std::vector<apps::IconInfo>> file_handler_icon_infos =
           ParseAppIconInfos("WebApp", file_handler_proto.downloaded_icons());
-      if (!parsed_icon_infos) {
+      if (!file_handler_icon_infos) {
         // ParseAppIconInfos() reports any errors.
         return nullptr;
       }
-      file_handler.downloaded_icons = std::move(parsed_icon_infos.value());
+      file_handler.downloaded_icons =
+          std::move(file_handler_icon_infos.value());
     }
 
     file_handlers.push_back(std::move(file_handler));

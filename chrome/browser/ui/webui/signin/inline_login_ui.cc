@@ -212,7 +212,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
                          chromeos::prefs::kShouldSkipInlineLoginWelcomePage));
   bool is_incognito_enabled =
       (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-       IncognitoModePrefs::DISABLED);
+       IncognitoModePrefs::Availability::kDisabled);
   int message_id =
       is_incognito_enabled
           ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY

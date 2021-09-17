@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, OriginTextVisibility) {
   {
     EXPECT_TRUE(web_app_origin_text->GetVisible());
     base::RunLoop view_hidden_runloop;
-    auto subscription = web_app_origin_text->AddVisibleChangedCallback(
+    auto callback_subscription = web_app_origin_text->AddVisibleChangedCallback(
         view_hidden_runloop.QuitClosure());
     view_hidden_runloop.Run();
     EXPECT_EQ(0, visible_count);
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, OriginTextVisibility) {
           else
             view_hidden_runloop.Quit();
         });
-    auto subscription =
+    auto callback_subscription =
         web_app_origin_text->AddVisibleChangedCallback(quit_runloop);
     // Make sure the navigation has finished before proceeding.
     url_observer.Wait();

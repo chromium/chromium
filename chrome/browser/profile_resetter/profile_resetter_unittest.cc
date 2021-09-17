@@ -792,9 +792,9 @@ TEST_F(ConfigParserTest, ParseConfig) {
   EXPECT_TRUE(startup_list);
   std::vector<std::string> startup_pages;
   for (const auto& entry : startup_list->GetList()) {
-    std::string url;
-    EXPECT_TRUE(entry.GetAsString(&url));
-    startup_pages.push_back(url);
+    std::string url_str;
+    EXPECT_TRUE(entry.GetAsString(&url_str));
+    startup_pages.push_back(url_str);
   }
   ASSERT_EQ(2u, startup_pages.size());
   EXPECT_EQ("http://goo.gl", startup_pages[0]);

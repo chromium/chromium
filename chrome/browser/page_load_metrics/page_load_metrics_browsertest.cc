@@ -664,7 +664,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, CachedPage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   NavigateToUntrackedUrl();
 
-  using PageLoad = ukm::builders::PageLoad;
   auto entries =
       test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
   EXPECT_EQ(1u, entries.size());

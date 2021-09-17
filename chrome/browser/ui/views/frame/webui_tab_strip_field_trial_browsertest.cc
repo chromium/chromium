@@ -57,8 +57,8 @@ bool IsInGroup(base::StringPiece group_name) {
   variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
       ->GetActiveGroupIds(&active_groups);
 
-  for (const auto& id : active_groups) {
-    LOG(ERROR) << id.name << " " << id.group;
+  for (const auto& group_id : active_groups) {
+    LOG(ERROR) << group_id.name << " " << group_id.group;
   }
 
   return std::any_of(active_groups.begin(), active_groups.end(),

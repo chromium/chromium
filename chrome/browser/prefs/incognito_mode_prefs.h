@@ -24,21 +24,21 @@ class IncognitoModePrefs {
  public:
   // Possible values for Incognito mode availability. Please, do not change
   // the order of entries since numeric values are exposed to users.
-  enum Availability {
+  enum class Availability {
     // Incognito mode enabled. Users may open pages in both Incognito mode and
     // normal mode (usually the default behaviour).
-    ENABLED = 0,
+    kEnabled = 0,
     // Incognito mode disabled. Users may not open pages in Incognito mode.
     // Only normal mode is available for browsing.
-    DISABLED,
+    kDisabled,
     // Incognito mode forced. Users may open pages *ONLY* in Incognito mode.
     // Normal mode is not available for browsing.
-    FORCED,
+    kForced,
 
-    AVAILABILITY_NUM_TYPES
+    kNumTypes
   };
 
-  static constexpr Availability kDefaultAvailability = ENABLED;
+  static constexpr Availability kDefaultAvailability = Availability::kEnabled;
 
   // Register incognito related preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

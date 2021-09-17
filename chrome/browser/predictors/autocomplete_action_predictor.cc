@@ -262,18 +262,18 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   std::vector<AutocompleteActionPredictorTable::Row> rows_to_add;
   std::vector<AutocompleteActionPredictorTable::Row> rows_to_update;
 
-  for (const TransitionalMatch& match : transitional_matches_) {
-    if (!base::StartsWith(lower_user_text, match.user_text,
+  for (const TransitionalMatch& transitional_match : transitional_matches_) {
+    if (!base::StartsWith(lower_user_text, transitional_match.user_text,
                           base::CompareCase::SENSITIVE))
       continue;
 
-    DCHECK_GE(match.user_text.length(), kMinimumUserTextLength);
-    DCHECK_LE(match.user_text.length(), kMaximumStringLength);
+    DCHECK_GE(transitional_match.user_text.length(), kMinimumUserTextLength);
+    DCHECK_LE(transitional_match.user_text.length(), kMaximumStringLength);
     // Add entries to the database for those matches.
-    for (const GURL& url : match.urls) {
+    for (const GURL& url : transitional_match.urls) {
       DCHECK_LE(url.spec().length(), kMaximumStringLength);
 
-      const DBCacheKey key = {match.user_text, url};
+      const DBCacheKey key = {transitional_match.user_text, url};
       const bool is_hit = (url == opened_url);
 
       AutocompleteActionPredictorTable::Row row;

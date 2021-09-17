@@ -228,7 +228,7 @@ void TabLifecycleUnitSource::OnTabInserted(TabStripModel* tab_strip_model,
     holder->set_lifecycle_unit(std::make_unique<TabLifecycleUnit>(
         this, &tab_lifecycle_observers_, usage_clock_, contents,
         tab_strip_model));
-    TabLifecycleUnit* lifecycle_unit = holder->lifecycle_unit();
+    lifecycle_unit = holder->lifecycle_unit();
     if (GetFocusedTabStripModel() == tab_strip_model && foreground)
       UpdateFocusedTabTo(lifecycle_unit);
 

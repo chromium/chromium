@@ -560,17 +560,17 @@ void BinaryUploadService::RecordRequestMetrics(
     Result result,
     const enterprise_connectors::ContentAnalysisResponse& response) {
   RecordRequestMetrics(request, result);
-  for (const auto& result : response.results()) {
-    if (result.tag() == "malware") {
+  for (const auto& response_result : response.results()) {
+    if (response_result.tag() == "malware") {
       base::UmaHistogramBoolean(
           "SafeBrowsingBinaryUploadRequest.MalwareResult",
-          result.status() !=
+          response_result.status() !=
               enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
     }
-    if (result.tag() == "dlp") {
+    if (response_result.tag() == "dlp") {
       base::UmaHistogramBoolean(
           "SafeBrowsingBinaryUploadRequest.DlpResult",
-          result.status() !=
+          response_result.status() !=
               enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
     }
   }

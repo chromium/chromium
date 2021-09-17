@@ -68,7 +68,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   void OnSyncShutdown(syncer::SyncService* sync_service) final;
 
  private:
-  enum WebAppMoverResult {
+  enum class WebAppMoverResult {
     kInvalidConfiguration = 0,
     kInstallAppExists = 1,
     kNoAppsToUninstall = 2,

@@ -74,13 +74,13 @@ class AppSessionServiceTest : public BrowserWithTestWindowTest {
     app_helper_.SetService(nullptr);
   }
 
-  void AppUpdateNavigation(const SessionID& window_id,
+  void AppUpdateNavigation(const SessionID& window_session_id,
                            const SessionID& tab_id,
                            const SerializedNavigationEntry& navigation,
                            bool select) {
-    app_service()->UpdateTabNavigation(window_id, tab_id, navigation);
+    app_service()->UpdateTabNavigation(window_session_id, tab_id, navigation);
     if (select) {
-      app_service()->SetSelectedNavigationIndex(window_id, tab_id,
+      app_service()->SetSelectedNavigationIndex(window_session_id, tab_id,
                                                 navigation.index());
     }
   }

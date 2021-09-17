@@ -543,8 +543,8 @@ class DownloadProtectionServiceTestBase
       const base::FilePath& tmp_full_path,
       const base::FilePath& final_full_path) {
     url_chain_.clear();
-    for (std::string item : url_chain_items)
-      url_chain_.push_back(GURL(item));
+    for (std::string url_chain_item : url_chain_items)
+      url_chain_.push_back(GURL(url_chain_item));
     if (url_chain_.empty())
       url_chain_.push_back(GURL());
     referrer_ = GURL(referrer_url);

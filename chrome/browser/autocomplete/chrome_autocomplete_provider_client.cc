@@ -513,7 +513,7 @@ bool ChromeAutocompleteProviderClient::IsIncognitoModeAvailable() const {
     return false;
   }
   return IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
-         IncognitoModePrefs::DISABLED;
+         IncognitoModePrefs::Availability::kDisabled;
 }
 
 bool ChromeAutocompleteProviderClient::IsSharingHubAvailable() const {

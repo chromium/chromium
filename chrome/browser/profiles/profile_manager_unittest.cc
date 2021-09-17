@@ -1095,13 +1095,15 @@ TEST_F(ProfileManagerTest, GetLastUsedProfileAllowedByPolicy) {
 
   ASSERT_TRUE(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  IncognitoModePrefs::SetAvailability(prefs, IncognitoModePrefs::DISABLED);
+  IncognitoModePrefs::SetAvailability(
+      prefs, IncognitoModePrefs::Availability::kDisabled);
   EXPECT_FALSE(
       profile_manager->GetLastUsedProfileAllowedByPolicy()->IsOffTheRecord());
 
   // GetLastUsedProfileAllowedByPolicy() returns the off-the-record Profile when
   // incognito mode is forced.
-  IncognitoModePrefs::SetAvailability(prefs, IncognitoModePrefs::FORCED);
+  IncognitoModePrefs::SetAvailability(
+      prefs, IncognitoModePrefs::Availability::kForced);
   EXPECT_TRUE(
       profile_manager->GetLastUsedProfileAllowedByPolicy()->IsOffTheRecord());
 }

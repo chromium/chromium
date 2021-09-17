@@ -595,7 +595,8 @@ void FixAccountConsistencyRequestHeader(
     return;  // Account consistency is disabled in incognito.
 
   int profile_mode_mask = PROFILE_MODE_DEFAULT;
-  if (incognito_availibility == IncognitoModePrefs::DISABLED ||
+  if (incognito_availibility ==
+          static_cast<int>(IncognitoModePrefs::Availability::kDisabled) ||
       IncognitoModePrefs::ArePlatformParentalControlsEnabled()) {
     profile_mode_mask |= PROFILE_MODE_INCOGNITO_DISABLED;
   }

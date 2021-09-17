@@ -2194,12 +2194,12 @@ views::Button* BookmarkBarView::DetermineViewToThrobFromRemove(
   const BookmarkNode* old_node = parent;
   size_t old_index_on_bb = old_index;
   while (old_node && old_node != bbn) {
-    const BookmarkNode* parent = old_node->parent();
-    if (parent == bbn) {
+    const BookmarkNode* old_parent = old_node->parent();
+    if (old_parent == bbn) {
       old_index_on_bb = static_cast<size_t>(bbn->GetIndexOf(old_node));
       break;
     }
-    old_node = parent;
+    old_node = old_parent;
   }
   if (old_node) {
     if (old_index_on_bb >= GetFirstHiddenNodeIndex()) {

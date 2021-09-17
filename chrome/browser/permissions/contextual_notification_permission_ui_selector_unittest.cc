@@ -37,7 +37,6 @@ namespace {
 using QuietUiReason = ContextualNotificationPermissionUiSelector::QuietUiReason;
 using WarningReason = ContextualNotificationPermissionUiSelector::WarningReason;
 using Decision = ContextualNotificationPermissionUiSelector::Decision;
-using SiteReputation = chrome_browser_crowd_deny::SiteReputation;
 
 constexpr char kTestDomainUnknown[] = "unknown.com";
 constexpr char kTestDomainAcceptable[] = "acceptable.com";

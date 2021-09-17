@@ -187,8 +187,8 @@ TEST_F(BrowserUnitTest, CreateBrowserFailsIfProfileDisallowsBrowserWindows) {
 
 // Tests BrowserCreate() when Incognito mode is disabled.
 TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeDisabled) {
-  IncognitoModePrefs::SetAvailability(profile()->GetPrefs(),
-                                      IncognitoModePrefs::DISABLED);
+  IncognitoModePrefs::SetAvailability(
+      profile()->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
 
   // Creating a browser window in OTR profile should fail if incognito is
   // disabled.
@@ -206,8 +206,8 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeDisabled) {
 
 // Tests BrowserCreate() when Incognito mode is forced.
 TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeForced) {
-  IncognitoModePrefs::SetAvailability(profile()->GetPrefs(),
-                                      IncognitoModePrefs::FORCED);
+  IncognitoModePrefs::SetAvailability(
+      profile()->GetPrefs(), IncognitoModePrefs::Availability::kForced);
 
   // Creating a browser window in the original profile should fail if incognito
   // is forced.
@@ -226,7 +226,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeForced) {
 
 // Tests BrowserCreate() with not restrictions on incognito mode.
 TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
-  ASSERT_EQ(IncognitoModePrefs::ENABLED,
+  ASSERT_EQ(IncognitoModePrefs::Availability::kEnabled,
             IncognitoModePrefs::GetAvailability(profile()->GetPrefs()));
 
   // Creating a browser in the original test profile should succeed.

@@ -87,7 +87,6 @@ void SendTabToSelfIconView::UpdateImpl() {
   }
   if (!GetVisible() && omnibox_view->model()->has_focus() &&
       !omnibox_view->model()->user_input_in_progress()) {
-    SendTabToSelfBubbleController* controller = GetController();
     // Shows the "Send" animation once per profile.
     if (controller && !controller->InitialSendAnimationShown() &&
         initial_animation_state_ == AnimationState::kNotShown) {

@@ -493,15 +493,18 @@ bool WindowsCreateFunction::ShouldOpenIncognitoWindow(
   bool incognito = false;
   if (create_data && create_data->incognito) {
     incognito = *create_data->incognito;
-    if (incognito && incognito_availability == IncognitoModePrefs::DISABLED) {
+    if (incognito &&
+        incognito_availability == IncognitoModePrefs::Availability::kDisabled) {
       *error = tabs_constants::kIncognitoModeIsDisabled;
       return false;
     }
-    if (!incognito && incognito_availability == IncognitoModePrefs::FORCED) {
+    if (!incognito &&
+        incognito_availability == IncognitoModePrefs::Availability::kForced) {
       *error = tabs_constants::kIncognitoModeIsForced;
       return false;
     }
-  } else if (incognito_availability == IncognitoModePrefs::FORCED) {
+  } else if (incognito_availability ==
+             IncognitoModePrefs::Availability::kForced) {
     // If incognito argument is not specified explicitly, we default to
     // incognito when forced so by policy.
     incognito = true;

@@ -566,10 +566,10 @@ void DeepScanningRequest::OnScanComplete(
     if (stored_result) {
       stored_result->file_metadata.push_back(file_metadata);
     } else {
-      auto result =
+      auto scan_result =
           std::make_unique<enterprise_connectors::ScanResult>(file_metadata);
       item_->SetUserData(enterprise_connectors::ScanResult::kKey,
-                         std::move(result));
+                         std::move(scan_result));
     }
   }
 

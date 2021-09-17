@@ -129,8 +129,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
 
   // Incognito is always disabled for child accounts.
   PrefService* prefs = profile->GetPrefs();
-  prefs->SetInteger(prefs::kIncognitoModeAvailability,
-                    IncognitoModePrefs::DISABLED);
+  prefs->SetInteger(
+      prefs::kIncognitoModeAvailability,
+      static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
   ASSERT_EQ(1, signin::PROFILE_MODE_INCOGNITO_DISABLED);
 
   // TODO(http://crbug.com/1134144): This test seems to test supervised profiles

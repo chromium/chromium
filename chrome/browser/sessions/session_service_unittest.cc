@@ -100,25 +100,24 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
     helper_.SetService(nullptr);
   }
 
-  void UpdateNavigation(
-      const SessionID& window_id,
-      const SessionID& tab_id,
-      const SerializedNavigationEntry& navigation,
-      bool select) {
-    service()->UpdateTabNavigation(window_id, tab_id, navigation);
+  void UpdateNavigation(const SessionID& window_session_id,
+                        const SessionID& tab_id,
+                        const SerializedNavigationEntry& navigation,
+                        bool select) {
+    service()->UpdateTabNavigation(window_session_id, tab_id, navigation);
     if (select) {
-      service()->SetSelectedNavigationIndex(
-          window_id, tab_id, navigation.index());
+      service()->SetSelectedNavigationIndex(window_session_id, tab_id,
+                                            navigation.index());
     }
   }
 
-  SessionID CreateTabWithTestNavigationData(SessionID window_id,
+  SessionID CreateTabWithTestNavigationData(SessionID window_session_id,
                                             int visual_index) {
     const SessionID tab_id = SessionID::NewUnique();
     const SerializedNavigationEntry nav =
         SerializedNavigationEntryTestHelper::CreateNavigationForTest();
-    helper_.PrepareTabInWindow(window_id, tab_id, visual_index, true);
-    UpdateNavigation(window_id, tab_id, nav, true);
+    helper_.PrepareTabInWindow(window_session_id, tab_id, visual_index, true);
+    UpdateNavigation(window_session_id, tab_id, nav, true);
     return tab_id;
   }
 

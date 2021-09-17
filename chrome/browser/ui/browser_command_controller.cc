@@ -1175,14 +1175,15 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
   IncognitoModePrefs::Availability incognito_availability =
       IncognitoModePrefs::GetAvailability(profile->GetPrefs());
   command_updater->UpdateCommandEnabled(
-      IDC_NEW_WINDOW, incognito_availability != IncognitoModePrefs::FORCED);
+      IDC_NEW_WINDOW,
+      incognito_availability != IncognitoModePrefs::Availability::kForced);
   command_updater->UpdateCommandEnabled(
       IDC_NEW_INCOGNITO_WINDOW,
-      incognito_availability != IncognitoModePrefs::DISABLED &&
+      incognito_availability != IncognitoModePrefs::Availability::kDisabled &&
           !profile->IsGuestSession());
 
   const bool forced_incognito =
-      incognito_availability == IncognitoModePrefs::FORCED;
+      incognito_availability == IncognitoModePrefs::Availability::kForced;
   const bool is_guest = profile->IsGuestSession();
 
   command_updater->UpdateCommandEnabled(

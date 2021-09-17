@@ -76,7 +76,7 @@ struct HitTestRequest {
 
 // The result of performing a hit test.
 struct HitTestResult {
-  enum Type {
+  enum class Type {
     // The given ray does not pass through the element.
     kNone = 0,
     // The given ray does not pass through the element, but passes through the

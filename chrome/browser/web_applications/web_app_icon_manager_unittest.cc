@@ -82,9 +82,10 @@ class WebAppIconManagerTest : public WebAppTest {
 
         std::map<SquareSizePx, SkBitmap> generated_bitmaps;
 
-        for (size_t i = 0; i < info.sizes_px.size(); ++i)
-          AddGeneratedIcon(&generated_bitmaps, info.sizes_px[i],
-                           info.colors[i]);
+        for (size_t j = 0; j < info.sizes_px.size(); ++j) {
+          AddGeneratedIcon(&generated_bitmaps, info.sizes_px[j],
+                           info.colors[j]);
+        }
 
         menu_item_icon_map.SetBitmapsForPurpose(info.purpose,
                                                 std::move(generated_bitmaps));

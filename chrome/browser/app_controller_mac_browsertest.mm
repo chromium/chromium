@@ -1043,8 +1043,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   ui_test_utils::WaitForBrowserToClose();
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
   // Force incognito mode.
-  IncognitoModePrefs::SetAvailability(profile->GetPrefs(),
-                                      IncognitoModePrefs::FORCED);
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), IncognitoModePrefs::Availability::kForced);
   // Simulate click on "New window".
   ui_test_utils::BrowserChangeObserver browser_added_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);

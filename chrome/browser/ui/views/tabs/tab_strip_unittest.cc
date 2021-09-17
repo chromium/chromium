@@ -710,7 +710,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
 
   EXPECT_GT(tab_strip_->GetTabCount(), 1);
 
-  const int active_index = controller_->GetActiveIndex();
+  int active_index = controller_->GetActiveIndex();
   EXPECT_EQ(tab_strip_->GetTabCount() - 1, active_index);
   EXPECT_LT(tab_strip_->ideal_bounds(0).width(),
             tab_strip_->ideal_bounds(active_index).width());
@@ -719,7 +719,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
   // wide as it's minimum width.
   controller_->SelectTab(0, dummy_event_);
   while (tab_strip_->GetTabCount() > 0) {
-    const int active_index = controller_->GetActiveIndex();
+    active_index = controller_->GetActiveIndex();
     EXPECT_GE(tab_strip_->ideal_bounds(active_index).width(),
               TabStyleViews::GetMinimumActiveWidth());
     tab_strip_->CloseTab(tab_strip_->tab_at(active_index),
@@ -1337,8 +1337,8 @@ TEST_P(TabStripTestWithScrollingDisabled, VisibilityInOverflow) {
   ASSERT_GT(i, 0);
   EXPECT_LT(i, invisible_tab_index);
   invisible_tab_index = i;
-  for (int i = invisible_tab_index + 1; i < tab_strip_->GetTabCount(); ++i)
-    EXPECT_FALSE(tab_strip_->tab_at(i)->GetVisible());
+  for (int j = invisible_tab_index + 1; j < tab_strip_->GetTabCount(); ++j)
+    EXPECT_FALSE(tab_strip_->tab_at(j)->GetVisible());
 
   // When we're already in overflow, adding tabs at the beginning or end of
   // the strip should not change how many tabs are visible.
@@ -1352,8 +1352,8 @@ TEST_P(TabStripTestWithScrollingDisabled, VisibilityInOverflow) {
   EXPECT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
 
   // If we remove enough tabs, all the tabs should be visible.
-  for (int i = tab_strip_->GetTabCount() - 1; i >= invisible_tab_index; --i)
-    controller_->RemoveTab(i);
+  for (int j = tab_strip_->GetTabCount() - 1; j >= invisible_tab_index; --j)
+    controller_->RemoveTab(j);
   CompleteAnimationAndLayout();
   EXPECT_TRUE(tab_strip_->tab_at(tab_strip_->GetTabCount() - 1)->GetVisible());
 }

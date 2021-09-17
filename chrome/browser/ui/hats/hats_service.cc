@@ -511,7 +511,7 @@ void HatsService::LaunchSurveyForBrowser(
     return;
   }
   if (IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) ==
-      IncognitoModePrefs::DISABLED) {
+      IncognitoModePrefs::Availability::kDisabled) {
     // Incognito mode needs to be enabled to create an off-the-record profile
     // for HaTS dialog.
     UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,

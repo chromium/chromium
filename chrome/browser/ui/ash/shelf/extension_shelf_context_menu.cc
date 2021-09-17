@@ -130,12 +130,12 @@ bool ExtensionShelfContextMenu::IsCommandIdEnabled(int command_id) const {
       // "Normal" windows are not allowed when incognito is enforced.
       return IncognitoModePrefs::GetAvailability(
                  controller()->profile()->GetPrefs()) !=
-             IncognitoModePrefs::FORCED;
+             IncognitoModePrefs::Availability::kForced;
     case ash::MENU_NEW_INCOGNITO_WINDOW:
       // Incognito windows are not allowed when incognito is disabled.
       return IncognitoModePrefs::GetAvailability(
                  controller()->profile()->GetPrefs()) !=
-             IncognitoModePrefs::DISABLED;
+             IncognitoModePrefs::Availability::kDisabled;
     default:
       if (command_id < ash::COMMAND_ID_COUNT)
         return ShelfContextMenu::IsCommandIdEnabled(command_id);

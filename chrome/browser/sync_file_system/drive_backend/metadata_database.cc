@@ -1147,11 +1147,12 @@ MetadataDatabase::ActivationStatus MetadataDatabase::TryActivateTracker(
       std::unique_ptr<FileTracker> tracker_to_be_deactivated(new FileTracker);
       if (index_->GetFileTracker(same_title_trackers.active_tracker(),
                                  tracker_to_be_deactivated.get())) {
-        const std::string file_id = tracker_to_be_deactivated->file_id();
+        const std::string tracker_file_id =
+            tracker_to_be_deactivated->file_id();
         tracker_to_be_deactivated->set_active(false);
         index_->StoreFileTracker(std::move(tracker_to_be_deactivated));
 
-        MarkTrackersDirtyByFileID(file_id, index_.get());
+        MarkTrackersDirtyByFileID(tracker_file_id, index_.get());
       } else {
         NOTREACHED();
       }

@@ -132,13 +132,13 @@ bool IdentifiabilityStudyState::DecideSurfaceInclusion(
     blink::IdentifiableSurface surface) {
   int selection_rate = surface_selection_rate_;
 
-  auto rate_it = per_surface_selection_rates_.find(surface);
-  if (rate_it != per_surface_selection_rates_.end()) {
-    selection_rate = rate_it->second;
+  auto surface_rate_it = per_surface_selection_rates_.find(surface);
+  if (surface_rate_it != per_surface_selection_rates_.end()) {
+    selection_rate = surface_rate_it->second;
   } else {
-    auto rate_it = per_type_selection_rates_.find(surface.GetType());
-    if (rate_it != per_type_selection_rates_.end())
-      selection_rate = rate_it->second;
+    auto type_rate_it = per_type_selection_rates_.find(surface.GetType());
+    if (type_rate_it != per_type_selection_rates_.end())
+      selection_rate = type_rate_it->second;
   }
 
   if (selection_rate == 0)

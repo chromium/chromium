@@ -1219,7 +1219,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
 }
 
 TEST_F(SystemWebAppManagerTimerTest, TestTimerWaitsForIdle) {
-  ui::ScopedSetIdleState idle(ui::IDLE_STATE_ACTIVE);
+  ui::ScopedSetIdleState scoped_active(ui::IDLE_STATE_ACTIVE);
   SetupTimer(base::TimeDelta::FromSeconds(300), true);
 
   TestWebAppUrlLoader* loader = nullptr;
@@ -1259,7 +1259,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerWaitsForIdle) {
   EXPECT_EQ(base::Time::Now(), timers[0]->polling_since_time_for_testing());
 
   {
-    ui::ScopedSetIdleState idle(ui::IDLE_STATE_IDLE);
+    ui::ScopedSetIdleState scoped_idle(ui::IDLE_STATE_IDLE);
     task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(30));
     EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
               timers[0]->get_state_for_testing());
@@ -1275,7 +1275,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerWaitsForIdle) {
     EXPECT_EQ(2u, timers[0]->opened_count_for_testing());
   }
   {
-    ui::ScopedSetIdleState idle(ui::IDLE_STATE_LOCKED);
+    ui::ScopedSetIdleState scoped_locked(ui::IDLE_STATE_LOCKED);
     loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
     loader->SetNextLoadUrlResult(AppUrl1(),
                                  WebAppUrlLoader::Result::kUrlLoaded);

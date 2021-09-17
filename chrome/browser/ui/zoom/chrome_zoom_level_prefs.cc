@@ -211,11 +211,11 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
     DictionaryPrefUpdate update(pref_service_,
                                 prefs::kPartitionPerHostZoomLevels);
     base::DictionaryValue* host_zoom_dictionaries = update.Get();
-    base::DictionaryValue* host_zoom_dictionary = nullptr;
+    base::DictionaryValue* partition_dictionary = nullptr;
     host_zoom_dictionaries->GetDictionary(partition_key_,
-                                          &host_zoom_dictionary);
+                                          &partition_dictionary);
     for (const std::string& s : keys_to_remove)
-      host_zoom_dictionary->RemoveKey(s);
+      partition_dictionary->RemoveKey(s);
   }
 }
 

@@ -646,7 +646,7 @@ RecentTabsSubMenuModel::CreateGroupSubMenuModel(
   DCHECK(base::FeatureList::IsEnabled(features::kTabRestoreSubMenus));
   std::unique_ptr<ui::SimpleMenuModel> group_model =
       std::make_unique<ui::SimpleMenuModel>(this);
-  const int command_id = GetAndIncrementNextMenuID();
+  int command_id = GetAndIncrementNextMenuID();
   group_model->AddItemWithStringIdAndIcon(
       command_id, IDS_RESTORE_GROUP,
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon));
@@ -654,7 +654,7 @@ RecentTabsSubMenuModel::CreateGroupSubMenuModel(
   for (auto& tab : group.tabs) {
     const sessions::SerializedNavigationEntry& current_navigation =
         tab->navigations.at(tab->current_navigation_index);
-    const int command_id = GetAndIncrementNextMenuID();
+    command_id = GetAndIncrementNextMenuID();
     // There may be no tab title, in which case, use the url as tab title.
     group_model->AddItem(
         command_id,

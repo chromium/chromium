@@ -74,8 +74,8 @@ void SingleURLEligibilityCheckResult(
   // Once no more callbacks reference the given arguments, they will all be
   // cleaned up and |callback| will be destroyed, never having been run,,
   if (success_count->count() == resources.size()) {
-    for (const GURL& url : resources) {
-      callback.Run(url);
+    for (const GURL& resource_url : resources) {
+      callback.Run(resource_url);
     }
   }
 }
@@ -378,10 +378,10 @@ void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
     // Do not allow insecure resources to be fetched due to risk of privacy
     // leaks in an HSTS setting.
     if (!request.url.SchemeIs(url::kHttpsScheme)) {
-      std::unique_ptr<AbortRequest> request = std::make_unique<AbortRequest>(
+      auto abort_request = std::make_unique<AbortRequest>(
           std::move(loader_receiver), std::move(client));
       // The request will manage its own lifecycle based on the mojo pipes.
-      request.release();
+      abort_request.release();
       return;
     }
 
@@ -389,10 +389,10 @@ void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
     request_count_++;
     if (request_count_ > PrefetchProxyMaxSubresourcesPerPrerender()) {
       metrics_observer_->OnResourceThrottled(request.url);
-      std::unique_ptr<AbortRequest> request = std::make_unique<AbortRequest>(
+      auto abort_request = std::make_unique<AbortRequest>(
           std::move(loader_receiver), std::move(client));
       // The request will manage its own lifecycle based on the mojo pipes.
-      request.release();
+      abort_request.release();
       return;
     }
 
@@ -402,10 +402,10 @@ void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
     if (prefetch_proxy_service && !prefetch_proxy_service->proxy_configurator()
                                        ->IsPrefetchProxyAvailable()) {
       metrics_observer_->OnProxyUnavailableForResource(request.url);
-      std::unique_ptr<AbortRequest> request = std::make_unique<AbortRequest>(
+      auto abort_request = std::make_unique<AbortRequest>(
           std::move(loader_receiver), std::move(client));
       // The request will manage its own lifecycle based on the mojo pipes.
-      request.release();
+      abort_request.release();
       return;
     }
 

@@ -143,15 +143,15 @@ IN_PROC_BROWSER_TEST_F(ChromeNewWindowClientBrowserTest, IncognitoDisabled) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Disabling incognito mode disables creation of new incognito windows.
-  IncognitoModePrefs::SetAvailability(profile->GetPrefs(),
-                                      IncognitoModePrefs::DISABLED);
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/true, /*should_trigger_session_restore=*/true);
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Enabling incognito mode enables creation of new incognito windows.
-  IncognitoModePrefs::SetAvailability(profile->GetPrefs(),
-                                      IncognitoModePrefs::ENABLED);
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), IncognitoModePrefs::Availability::kEnabled);
   ChromeNewWindowClient::Get()->NewWindow(
       /*incognito=*/true, /*should_trigger_session_restore=*/true);
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());

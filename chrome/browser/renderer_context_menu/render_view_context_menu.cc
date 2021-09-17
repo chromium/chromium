@@ -1314,11 +1314,12 @@ void RenderViewContextMenu::AppendLinkItems() {
       std::vector<ProfileAttributesEntry*> target_profiles_entries;
       for (ProfileAttributesEntry* entry : entries) {
         base::FilePath profile_path = entry->GetPath();
-        Profile* profile = profile_manager->GetProfileByPath(profile_path);
-        if (profile != GetProfile() && !entry->IsOmitted() &&
+        Profile* profile_for_path =
+            profile_manager->GetProfileByPath(profile_path);
+        if (profile_for_path != GetProfile() && !entry->IsOmitted() &&
             !entry->IsSigninRequired()) {
           target_profiles_entries.push_back(entry);
-          if (chrome::FindLastActiveWithProfile(profile))
+          if (chrome::FindLastActiveWithProfile(profile_for_path))
             multiple_profiles_open_ = true;
         }
       }
@@ -3137,7 +3138,7 @@ bool RenderViewContextMenu::IsOpenLinkOTREnabled() const {
 
   IncognitoModePrefs::Availability incognito_avail =
       IncognitoModePrefs::GetAvailability(GetPrefs(browser_context_));
-  return incognito_avail != IncognitoModePrefs::DISABLED;
+  return incognito_avail != IncognitoModePrefs::Availability::kDisabled;
 }
 
 void RenderViewContextMenu::ExecOpenWebApp() {

@@ -364,12 +364,12 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
         EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM,
                   num_tracked_prefs_ > 0);
 
-        int num_split_tracked_prefs = GetTrackedPrefHistogramCount(
+        int split_tracked_prefs = GetTrackedPrefHistogramCount(
             user_prefs::tracked::kTrackedPrefHistogramUnchanged,
             user_prefs::tracked::kTrackedPrefRegistryValidationSuffix,
             BEGIN_ALLOW_SINGLE_BUCKET + 5);
         EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM ? 1 : 0,
-                  num_split_tracked_prefs);
+                  split_tracked_prefs);
       }
 
       num_tracked_prefs_ += num_split_tracked_prefs;

@@ -484,7 +484,7 @@ struct SchemeTestCase {
   const char* scheme;
   bool password_manager_works;
 };
-const SchemeTestCase kTestCases[] = {
+const SchemeTestCase kSchemeTestCases[] = {
     {url::kHttpScheme, true},
     {url::kHttpsScheme, true},
     {url::kFtpScheme, true},
@@ -505,7 +505,7 @@ class ChromePasswordManagerClientSchemeTest
  public:
   static std::vector<const char*> GetSchemes() {
     std::vector<const char*> result;
-    for (const SchemeTestCase& test_case : kTestCases) {
+    for (const SchemeTestCase& test_case : kSchemeTestCases) {
       result.push_back(test_case.scheme);
     }
     return result;
@@ -521,9 +521,9 @@ TEST_P(ChromePasswordManagerClientSchemeTest,
             GetClient()->GetLastCommittedOrigin().GetURL());
 
   auto* it = std::find_if(
-      std::begin(kTestCases), std::end(kTestCases),
+      std::begin(kSchemeTestCases), std::end(kSchemeTestCases),
       [](auto test_case) { return strcmp(test_case.scheme, GetParam()) == 0; });
-  ASSERT_FALSE(it == std::end(kTestCases));
+  ASSERT_FALSE(it == std::end(kSchemeTestCases));
   EXPECT_EQ(it->password_manager_works,
             GetClient()->IsSavingAndFillingEnabled(url));
   EXPECT_EQ(it->password_manager_works, GetClient()->IsFillingEnabled(url));

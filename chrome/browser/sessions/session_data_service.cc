@@ -132,8 +132,8 @@ void SessionDataService::OnBrowserRemoved(Browser* browser) {
     return;
 
   // Check for any open windows for the current profile.
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile_)
+  for (auto* open_browser : *BrowserList::GetInstance()) {
+    if (open_browser->profile() == profile_)
       return;
   }
 
