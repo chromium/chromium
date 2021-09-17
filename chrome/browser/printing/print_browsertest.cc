@@ -1170,6 +1170,15 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PDFPluginNotKeyboardFocusable) {
   EXPECT_EQ("\"zoom-out-button\"", reply);
 }
 
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, WindowDotPrint) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false);
+  content::ExecuteScriptAsync(web_contents->GetMainFrame(), "window.print();");
+  print_preview_observer.WaitUntilPreviewIsReady();
+}
+
 class PrintPrerenderBrowserTest : public PrintBrowserTest {
  public:
   PrintPrerenderBrowserTest()
