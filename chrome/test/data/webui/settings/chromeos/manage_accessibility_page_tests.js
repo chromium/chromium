@@ -286,7 +286,8 @@ suite('ManageAccessibilityPageTests', function() {
     initPage();
     const locales = [{
       name: 'English (United States)',
-      offline: true,
+      worksOffline: true,
+      installed: true,
       recommended: true,
       value: 'en-US',
     }];
@@ -334,13 +335,32 @@ suite('ManageAccessibilityPageTests', function() {
     const locales = [
       {
         name: 'English (United States)',
-        offline: true,
+        worksOffline: true,
+        installed: true,
         recommended: true,
         value: 'en-US',
       },
       {
+        name: 'Spanish',
+        worksOffline: true,
+        installed: false,
+        recommended: false,
+        value: 'es',
+      },
+      {
+        name: 'German',
+        // Note: this data should never occur in practice. If a locale isn't
+        // supported offline, then it should never be installed. Test this case
+        // to verify our code still works given unexpected input.
+        worksOffline: false,
+        installed: true,
+        recommended: false,
+        value: 'de',
+      },
+      {
         name: 'French (France)',
-        offline: false,
+        worksOffline: false,
+        installed: false,
         recommended: false,
         value: 'fr-FR'
       }
@@ -354,6 +374,17 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Changing the Dictation locale pref should change the subtitle
     // computation.
+    page.prefs.settings.a11y.dictation_locale.value = 'es';
+    assertEquals(
+        'Couldn’t download Spanish speech files. Download will be attempted ' +
+            'later. Speech is sent to Google for processing for now.',
+        page.computeDictationLocaleSubtitle_());
+
+    page.prefs.settings.a11y.dictation_locale.value = 'de';
+    assertEquals(
+        'German speech is sent to Google for processing.',
+        page.computeDictationLocaleSubtitle_());
+
     page.prefs.settings.a11y.dictation_locale.value = 'fr-FR';
     assertEquals(
         'French (France) speech is sent to Google for processing.',

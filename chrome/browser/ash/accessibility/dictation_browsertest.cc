@@ -224,6 +224,11 @@ class DictationTest
         .composition_text;
   }
 
+  const base::flat_map<std::string, Dictation::LocaleData>
+  GetAllSupportedLocales() {
+    return GetManager()->dictation_->GetAllSupportedLocales();
+  }
+
   std::unique_ptr<ui::MockIMEInputContextHandler> input_context_handler_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   ui::CompositionText empty_composition_text_;
@@ -444,6 +449,55 @@ IN_PROC_BROWSER_TEST_P(DictationTest, MightListenForMultipleResults) {
   ToggleDictation();
   // No change expected after toggle.
   EXPECT_EQ(3, input_context_handler_->commit_text_call_count());
+}
+
+// Tests the behavior of the GetAllSupportedLocales method, specifically how
+// it sets locale data.
+IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
+  if (GetParam() == kOnDeviceRecognition) {
+    // Ensure that SODA is installed.
+    speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  }
+
+  auto locales = GetAllSupportedLocales();
+  for (auto& it : locales) {
+    const std::string locale = it.first;
+    bool works_offline = it.second.works_offline;
+    bool installed = it.second.installed;
+    if (GetParam() == kOnDeviceRecognition &&
+        locale == speech::kUsEnglishLocale) {
+      // Currently, the only locale supported by SODA is en-US. It should work
+      // offline and be installed.
+      EXPECT_TRUE(works_offline);
+      EXPECT_TRUE(installed);
+    } else {
+      EXPECT_FALSE(works_offline);
+      EXPECT_FALSE(installed);
+    }
+  }
+
+  if (GetParam() == kOnDeviceRecognition) {
+    // Uninstall SODA and all language packs.
+    speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
+  } else {
+    return;
+  }
+
+  locales = GetAllSupportedLocales();
+  for (auto& it : locales) {
+    const std::string locale = it.first;
+    bool works_offline = it.second.works_offline;
+    bool installed = it.second.installed;
+    if (locale == speech::kUsEnglishLocale) {
+      // en-US should be marked as "works offline", but it shouldn't be
+      // installed.
+      EXPECT_TRUE(works_offline);
+      EXPECT_FALSE(installed);
+    } else {
+      EXPECT_FALSE(works_offline);
+      EXPECT_FALSE(installed);
+    }
+  }
 }
 
 class TextMatchesWaiter {

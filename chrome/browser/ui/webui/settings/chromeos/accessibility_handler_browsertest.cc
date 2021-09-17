@@ -281,5 +281,28 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, DictationLocalesCalculation) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest,
+                       DictationLocalesOfflineAndInstalled) {
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  MaybeAddDictationLocales();
+  const base::ListValue* argument;
+  ASSERT_TRUE(
+      GetWebUIListenerArgumentListValue("dictation-locales-set", &argument));
+
+  for (auto& it : argument->GetList()) {
+    const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(it);
+    const std::string locale = *(dict->FindStringPath("value"));
+    bool works_offline = dict->FindBoolKey("worksOffline").value();
+    bool installed = dict->FindBoolKey("installed").value();
+    if (locale == speech::kUsEnglishLocale) {
+      ASSERT_TRUE(works_offline);
+      ASSERT_TRUE(installed);
+    } else {
+      ASSERT_FALSE(works_offline);
+      ASSERT_FALSE(installed);
+    }
+  }
+}
+
 }  // namespace settings
 }  // namespace chromeos

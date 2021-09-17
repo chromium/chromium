@@ -695,16 +695,16 @@ Polymer({
     const currentLocale =
         this.get('prefs.settings.a11y.dictation_locale.value');
     this.dictationLocaleOptions_ =
-        this.dictationLocalesList_
-            .map((localeInfo) => {
-              return {
-                name: localeInfo.name,
-                value: localeInfo.value,
-                offline: localeInfo.offline,
-                recommended: localeInfo.recommended ||
-                    localeInfo.value === currentLocale,
-              };
-            });
+        this.dictationLocalesList_.map((localeInfo) => {
+          return {
+            name: localeInfo.name,
+            value: localeInfo.value,
+            worksOffline: localeInfo.worksOffline,
+            installed: localeInfo.installed,
+            recommended:
+                localeInfo.recommended || localeInfo.value === currentLocale,
+          };
+        });
   },
 
   /**
@@ -728,10 +728,21 @@ Polymer({
     if (!locale) {
       return '';
     }
-    return this.i18n(
-        locale.offline ? 'dictationLocaleSubLabelOffline' :
-                         'dictationLocaleSubLabelNetwork',
-        locale.name);
+
+    if (!locale.worksOffline) {
+      // If a locale is not supported offline, then use the network subtitle.
+      return this.i18n('dictationLocaleSubLabelNetwork', locale.name);
+    }
+
+    if (!locale.installed) {
+      // If a locale is supported offline, but isn't installed, then use the
+      // temporary network subtitle.
+      return this.i18n(
+          'dictationLocaleSubLabelNetworkTemporarily', locale.name);
+    }
+
+    // If we get here, we know a locale is both supported offline and installed.
+    return this.i18n('dictationLocaleSubLabelOffline', locale.name);
   },
 
   /** @private */

@@ -180,8 +180,9 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
 }  // namespace
 
 // static
-const base::flat_map<std::string, bool> Dictation::GetAllSupportedLocales() {
-  base::flat_map<std::string, bool> supported_locales;
+const base::flat_map<std::string, Dictation::LocaleData>
+Dictation::GetAllSupportedLocales() {
+  base::flat_map<std::string, LocaleData> supported_locales;
   static const char* kWebSpeechSupportedLocales[] = {
       "af-ZA",       "am-ET",      "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IL",
       "ar-IQ",       "ar-JO",      "ar-KW", "ar-LB", "ar-MA", "ar-OM", "ar-PS",
@@ -206,14 +207,19 @@ const base::flat_map<std::string, bool> Dictation::GetAllSupportedLocales() {
 
   for (const char* locale : kWebSpeechSupportedLocales) {
     // By default these languages are not supported offline.
-    supported_locales[locale] = false;
+    supported_locales[locale] = LocaleData();
   }
   if (features::IsDictationOfflineAvailableAndEnabled()) {
-    std::vector<std::string> offline_languages =
-        speech::SodaInstaller::GetInstance()->GetAvailableLanguages();
-    for (auto language : offline_languages) {
+    speech::SodaInstaller* soda_installer =
+        speech::SodaInstaller::GetInstance();
+    std::vector<std::string> offline_locales =
+        soda_installer->GetAvailableLanguages();
+    for (auto locale : offline_locales) {
       // These are supported offline.
-      supported_locales[language] = true;
+      supported_locales[locale] = LocaleData();
+      supported_locales[locale].works_offline = true;
+      supported_locales[locale].installed =
+          soda_installer->IsSodaInstalled(speech::GetLanguageCode(locale));
     }
   }
   return supported_locales;

@@ -502,6 +502,10 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE},
       {"dictationLocaleSubLabelNetwork",
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_NETWORK},
+      // For temporary network label, we can use the string that's shown when a
+      // SODA download fails.
+      {"dictationLocaleSubLabelNetworkTemporarily",
+       IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR},
       {"dictationChangeLanguageButton",
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_CHANGE_LANGUAGE_BUTTON},
       {"dictationChangeLanguageDialogTitle",
