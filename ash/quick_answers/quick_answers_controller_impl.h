@@ -81,9 +81,6 @@ class ASH_EXPORT QuickAnswersControllerImpl
   // Handle user consent result.
   void OnUserConsentResult(bool consented);
 
-  // Open Quick-Answers dogfood URL.
-  void OpenQuickAnswersDogfoodLink();
-
   // Open Quick-Answers settings.
   void OpenQuickAnswersSettings();
 

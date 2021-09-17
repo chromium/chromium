@@ -62,7 +62,6 @@ class ASH_EXPORT QuickAnswersView : public views::View {
   void InitLayout();
   void InitWidget();
   void AddContentView();
-  void AddDogfoodButton();
   void AddSettingsButton();
   void AddPhoneticsAudioButton(const GURL& phonetics_audio, View* container);
   void AddAssistantIcon();
@@ -90,7 +89,6 @@ class ASH_EXPORT QuickAnswersView : public views::View {
   views::View* report_query_view_ = nullptr;
   views::Label* first_answer_label_ = nullptr;
   views::LabelButton* retry_label_ = nullptr;
-  views::ImageButton* dogfood_button_ = nullptr;
   views::ImageButton* settings_button_ = nullptr;
   views::ImageButton* phonetics_audio_button_ = nullptr;
 

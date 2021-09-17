@@ -74,11 +74,6 @@ constexpr SkColor kSettingsButtonTextColor = gfx::kGoogleBlue600;
 // Accept button.
 constexpr SkColor kAcceptButtonTextColor = gfx::kGoogleGrey200;
 
-// Dogfood button.
-constexpr int kDogfoodButtonMarginDip = 4;
-constexpr int kDogfoodButtonSizeDip = 20;
-constexpr SkColor kDogfoodButtonColor = gfx::kGoogleGrey500;
-
 int GetActualLabelWidth(int anchor_view_width) {
   return anchor_view_width - kMainViewInsets.width() - kContentInsets.width() -
          kAssistantIconSizeDip;
@@ -221,8 +216,6 @@ std::vector<views::View*> UserNoticeView::GetFocusableViews() {
   }
   focusable_views.push_back(settings_button_);
   focusable_views.push_back(accept_button_);
-  if (dogfood_button_)
-    focusable_views.push_back(dogfood_button_);
   return focusable_views;
 }
 
@@ -254,10 +247,6 @@ void UserNoticeView::InitLayout() {
 
   // Content.
   InitContent();
-
-  // Add dogfood icon, if in dogfood.
-  if (chromeos::features::IsQuickAnswersDogfood())
-    AddDogfoodButton();
 }
 
 void UserNoticeView::InitContent() {
@@ -366,25 +355,6 @@ void UserNoticeView::InitWidget() {
   widget->Init(std::move(params));
   widget->SetContentsView(this);
   UpdateWidgetBounds();
-}
-
-void UserNoticeView::AddDogfoodButton() {
-  auto* dogfood_view = AddChildView(std::make_unique<views::View>());
-  auto* layout =
-      dogfood_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical,
-          gfx::Insets(kDogfoodButtonMarginDip)));
-  layout->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kEnd);
-  auto dogfood_button = std::make_unique<views::ImageButton>(
-      base::BindRepeating(&QuickAnswersUiController::OnDogfoodButtonPressed,
-                          base::Unretained(ui_controller_)));
-  dogfood_button->SetImage(
-      views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(kDogfoodIcon, kDogfoodButtonSizeDip,
-                            kDogfoodButtonColor));
-  dogfood_button->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_QUICK_ANSWERS_DOGFOOD_BUTTON_TOOLTIP_TEXT));
-  dogfood_button_ = dogfood_view->AddChildView(std::move(dogfood_button));
 }
 
 void UserNoticeView::UpdateWidgetBounds() {

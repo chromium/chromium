@@ -179,14 +179,6 @@ void QuickAnswersUiController::OnManageSettingsButtonPressed() {
   controller_->OnNoticeSettingsRequestedByUser();
 }
 
-void QuickAnswersUiController::OnDogfoodButtonPressed() {
-  // Route dismissal through |controller_| for logging impressions.
-  // TODO(b/186904386): cleanup obsolete code after V2 launch.
-  controller_->DismissQuickAnswers(QuickAnswersExitPoint::kUnspecified);
-
-  controller_->OpenQuickAnswersDogfoodLink();
-}
-
 void QuickAnswersUiController::OnSettingsButtonPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kSettingsButtonClick);

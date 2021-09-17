@@ -79,11 +79,6 @@ constexpr int kLineHeightDip = 20;
 // Spacing between labels in the horizontal elements view.
 constexpr int kLabelSpacingDip = 2;
 
-// Dogfood button.
-constexpr int kDogfoodButtonMarginDip = 4;
-constexpr int kDogfoodButtonSizeDip = 20;
-constexpr SkColor kDogfoodButtonColor = gfx::kGoogleGrey500;
-
 // Settings button.
 constexpr int kSettingsButtonMarginDip = 4;
 constexpr int kSettingsButtonSizeDip = 14;
@@ -403,8 +398,6 @@ void QuickAnswersView::InitLayout() {
 
   if (chromeos::features::IsQuickAnswersV2Enabled()) {
     AddSettingsButton();
-  } else if (chromeos::features::IsQuickAnswersDogfood()) {
-    AddDogfoodButton();
   }
 }
 
@@ -445,27 +438,6 @@ void QuickAnswersView::AddContentView() {
   AddTextElement({l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_LOADING),
                   gfx::kGoogleGrey700},
                  content_view_);
-}
-
-void QuickAnswersView::AddDogfoodButton() {
-  auto* dogfood_view = AddChildView(std::make_unique<View>());
-  auto* layout =
-      dogfood_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(gfx::Insets(kDogfoodButtonMarginDip))
-      .SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
-  dogfood_button_ =
-      dogfood_view->AddChildView(std::make_unique<views::ImageButton>(
-          base::BindRepeating(&QuickAnswersUiController::OnDogfoodButtonPressed,
-                              base::Unretained(controller_))));
-  dogfood_button_->SetImage(
-      views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(kDogfoodIcon, kDogfoodButtonSizeDip,
-                            kDogfoodButtonColor));
-  dogfood_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_QUICK_ANSWERS_DOGFOOD_BUTTON_TOOLTIP_TEXT));
-  dogfood_button_->button_controller()->set_notify_action(
-      views::ButtonController::NotifyAction::kOnPress);
 }
 
 void QuickAnswersView::AddSettingsButton() {
@@ -668,8 +640,6 @@ std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
     focusable_views.push_back(retry_label_);
   if (report_query_view_ && report_query_view_->GetVisible())
     focusable_views.push_back(report_query_view_);
-  if (dogfood_button_ && dogfood_button_->GetVisible())
-    focusable_views.push_back(dogfood_button_);
   return focusable_views;
 }
 

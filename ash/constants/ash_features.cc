@@ -874,10 +874,6 @@ const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
 const base::Feature kQuickAnswers{"QuickAnswers",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether dogfood version of quick answers.
-const base::Feature kQuickAnswersDogfood{"QuickAnswersDogfood",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether to trigger quick answers on editable text selection.
 const base::Feature kQuickAnswersOnEditableText{
     "QuickAnswersOnEditableText", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1565,10 +1561,6 @@ bool IsProjectorEnabled() {
 bool IsProjectorFeaturePodEnabled() {
   return IsProjectorEnabled() &&
          base::FeatureList::IsEnabled(kProjectorFeaturePod);
-}
-
-bool IsQuickAnswersDogfood() {
-  return base::FeatureList::IsEnabled(kQuickAnswersDogfood);
 }
 
 bool IsQuickAnswersEnabled() {

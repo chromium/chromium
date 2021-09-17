@@ -11,7 +11,6 @@
 #include "ui/views/view.h"
 
 namespace views {
-class ImageButton;
 class LabelButton;
 }  // namespace views
 
@@ -54,7 +53,6 @@ class UserNoticeView : public views::View {
   void InitContent();
   void InitButtonBar();
   void InitWidget();
-  void AddDogfoodButton();
   void UpdateWidgetBounds();
 
   // QuickAnswersFocusSearch::GetFocusableViewsCallback to poll currently
@@ -73,7 +71,6 @@ class UserNoticeView : public views::View {
   // Owned by view hierarchy.
   views::View* main_view_ = nullptr;
   views::View* content_ = nullptr;
-  views::ImageButton* dogfood_button_ = nullptr;
   views::LabelButton* settings_button_ = nullptr;
   views::LabelButton* accept_button_ = nullptr;
 };

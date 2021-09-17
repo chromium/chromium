@@ -32,8 +32,6 @@ constexpr char kAssistantRelatedInfoUrl[] =
     "chrome://os-settings/googleAssistant";
 constexpr char kQuickAnswersSettingsUrl[] =
     "chrome://os-settings/osSearch/search";
-constexpr char kDogfoodUrl[] =
-    "https://goto.google.com/quick-answers-dogfood-bugs";
 
 constexpr char kQuickAnswersExitPoint[] = "QuickAnswers.ExitPoint";
 
@@ -291,11 +289,6 @@ void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
     // been granted.
     MaybeShowQuickAnswers(anchor_bounds_, title_, context_);
   }
-}
-
-void QuickAnswersControllerImpl::OpenQuickAnswersDogfoodLink() {
-  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kDogfoodUrl),
-                                            /*from_user_interaction=*/true);
 }
 
 void QuickAnswersControllerImpl::OpenQuickAnswersSettings() {

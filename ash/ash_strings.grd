@@ -3238,9 +3238,6 @@ Here are some things you can try to get started.
       </message>
 
       <!-- Assistant Quick Answers -->
-      <message name="IDS_ASH_QUICK_ANSWERS_DOGFOOD_BUTTON_TOOLTIP_TEXT" desc="Tooltip text for the dogfood-button within Quick-Answers related views to help users file bugs easily.">
-        File feedback
-      </message>
       <message name="IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the settings-button in Quick-Answers related views.">
         Quick answers settings
       </message>
