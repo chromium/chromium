@@ -91,7 +91,7 @@ def _compute_replacement(dependency_version_map, androidx_repository_url,
             lines.append(f'versionOverrideMap["{dependency}"] = "{version}"')
         return '\n'.join(lines)
 
-    match = re.search(r'"(\S+):{{androidx_dependency_version}}"', line)
+    match = re.search(r'\'(\S+):{{androidx_dependency_version}}\'', line)
     if not match:
         return line
 
