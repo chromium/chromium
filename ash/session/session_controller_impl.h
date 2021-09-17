@@ -47,6 +47,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   base::TimeDelta session_length_limit() const { return session_length_limit_; }
   base::Time session_start_time() const { return session_start_time_; }
+  bool session_state_change_in_progress() const {
+    return session_state_change_in_progress_;
+  }
 
   // Returns the number of signed in users. If 0 is returned, there is either
   // no session in progress or no active user.
@@ -312,6 +315,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   PrefService* last_active_user_prefs_ = nullptr;
 
   std::unique_ptr<FullscreenController> fullscreen_controller_;
+
+  // Indicate if the session state is being changed.
+  bool session_state_change_in_progress_ = false;
 
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };

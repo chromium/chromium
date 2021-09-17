@@ -491,12 +491,14 @@ void WorkspaceLayoutManager::AdjustAllWindowsBoundsForWorkAreaChange(
 
   work_area_in_parent_ = screen_util::GetDisplayWorkAreaBoundsInParent(window_);
 
-  // Don't do any adjustments of the insets while we are in screen locked mode.
-  // This would happen if the launcher was auto hidden before the login screen
-  // was shown and then gets shown when the login screen gets presented.
+  // Do not do any adjustments when session state is being changed. This would
+  // ensure window bounds not being incorrectly set by shelf alignment change to
+  // kBottomLocked.
+  // See bugs: https://crbug.com/173127 & https://crbug.com/1177572.
   if (event->type() == WM_EVENT_WORKAREA_BOUNDS_CHANGED &&
-      Shell::Get()->session_controller()->IsScreenLocked())
+      Shell::Get()->session_controller()->session_state_change_in_progress()) {
     return;
+  }
 
   // The PIP avoids the accessibility bubbles, so here we update the
   // accessibility position before sending the WMEvent, so that if the PIP is

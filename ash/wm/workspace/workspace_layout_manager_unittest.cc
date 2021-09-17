@@ -47,6 +47,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "ash/wm/workspace_controller_test_api.h"
@@ -71,6 +72,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_util.h"
@@ -678,6 +680,25 @@ TEST_F(WorkspaceLayoutManagerTest, EnsureWindowStateInOverlay) {
           kShellWindowId_OverlayContainer);
   overlay_container->AddChild(window.get());
   EXPECT_TRUE(window->GetProperty(kWindowStateKey));
+}
+
+// Make sure window bounds is correct with session state lock/unlock.
+TEST_F(WorkspaceLayoutManagerTest, WindowBoundsWithSessionState) {
+  TestSessionControllerClient* client = GetSessionControllerClient();
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAlignment(ShelfAlignment::kLeft);
+  ASSERT_EQ(ShelfAlignment::kLeft, shelf->alignment());
+
+  const gfx::Rect bounds =
+      WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
+          ->ComputeStableWorkArea();
+  std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
+  EXPECT_EQ(bounds, window->bounds());
+
+  client->SetSessionState(session_manager::SessionState::LOCKED);
+  EXPECT_EQ(bounds, window->bounds());
+  client->SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_EQ(bounds, window->bounds());
 }
 
 // Following "Solo" tests were originally written for BaseLayoutManager.
