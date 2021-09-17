@@ -223,7 +223,7 @@ void EncoderBase<Traits>::ResetInternal() {
       pending_req->input.Release()->close();
   }
   requested_encodes_ = 0;
-  stall_request_processing_ = false;
+  blocking_request_in_progress_ = false;
 }
 
 template <typename Traits>
@@ -264,7 +264,7 @@ void EncoderBase<Traits>::EnqueueRequest(Request* request) {
 
 template <typename Traits>
 void EncoderBase<Traits>::ProcessRequests() {
-  while (!requests_.empty() && !stall_request_processing_) {
+  while (!requests_.empty() && ReadyToProcessNextRequest()) {
     TraceQueueSizes();
 
     Request* request = requests_.TakeFirst();
@@ -288,6 +288,11 @@ void EncoderBase<Traits>::ProcessRequests() {
   }
 
   TraceQueueSizes();
+}
+
+template <typename Traits>
+bool EncoderBase<Traits>::ReadyToProcessNextRequest() {
+  return !blocking_request_in_progress_;
 }
 
 template <typename Traits>
@@ -323,13 +328,13 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
     }
     req->EndTracing();
 
-    self->stall_request_processing_ = false;
+    self->blocking_request_in_progress_ = false;
     self->ProcessRequests();
   };
 
   request->StartTracing();
 
-  stall_request_processing_ = true;
+  blocking_request_in_progress_ = true;
   media_encoder_->Flush(ConvertToBaseOnceCallback(
       CrossThreadBindOnce(done_callback, WrapCrossThreadWeakPersistent(this),
                           WrapCrossThreadPersistent(request))));
@@ -351,7 +356,7 @@ void EncoderBase<Traits>::ContextDestroyed() {
 
 template <typename Traits>
 bool EncoderBase<Traits>::HasPendingActivity() const {
-  return stall_request_processing_ || !requests_.empty();
+  return blocking_request_in_progress_ || !requests_.empty();
 }
 
 template <typename Traits>

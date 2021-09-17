@@ -554,7 +554,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
     }
     req->EndTracing();
 
-    self->stall_request_processing_ = false;
+    self->blocking_request_in_progress_ = false;
     self->ProcessRequests();
   };
 
@@ -575,6 +575,17 @@ bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
          original_config.hw_pref == new_config.hw_pref;
 }
 
+bool VideoEncoder::HasPendingActivity() const {
+  return (active_encodes_ > 0) || Base::HasPendingActivity();
+}
+
+bool VideoEncoder::ReadyToProcessNextRequest() {
+  if (active_encodes_ >= kMaxActiveEncodes)
+    return false;
+
+  return Base::ReadyToProcessNextRequest();
+}
+
 void VideoEncoder::ProcessEncode(Request* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
@@ -585,9 +596,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
   bool keyframe = request->encodeOpts->hasKeyFrameNonNull() &&
                   request->encodeOpts->keyFrameNonNull();
   active_encodes_++;
-  if (active_encodes_ == kMaxActiveEncodes)
-    stall_request_processing_ = true;
-
   request->StartTracingVideoEncode(keyframe);
 
   auto done_callback = [](VideoEncoder* self, Request* req,
@@ -598,11 +606,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
 
-    if (self->active_encodes_ == kMaxActiveEncodes)
-      self->stall_request_processing_ = false;
-
     self->active_encodes_--;
-
     if (!status.is_ok()) {
       self->HandleError(
           self->logger_->MakeException("Encoding error.", status));
@@ -627,19 +631,20 @@ void VideoEncoder::ProcessEncode(Request* request) {
             std::make_unique<WebGraphicsContext3DVideoFramePool>(wrapper);
       }
     }
-
     if (can_use_gmb && accelerated_frame_pool_) {
       // This will execute shortly after CopyRGBATextureToVideoFrame()
-      // completes. |stall_request_processing_| = true will ensure that
+      // completes. |blocking_request_in_progress_| = true will ensure that
       // HasPendingActivity() keeps the VideoEncoder alive long enough.
       auto blit_done_callback = [](VideoEncoder* self, bool keyframe,
                                    uint32_t reset_count,
                                    media::VideoEncoder::StatusCB done_callback,
                                    scoped_refptr<media::VideoFrame> frame) {
-        if (self->reset_count_ != reset_count)
+        if (!self || self->reset_count_ != reset_count)
           return;
+
+        DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
         --self->requested_encodes_;
-        self->stall_request_processing_ = false;
+        self->blocking_request_in_progress_ = false;
         self->media_encoder_->Encode(std::move(frame), keyframe,
                                      std::move(done_callback));
         self->ProcessRequests();
@@ -660,9 +665,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
       // Stall request processing while we wait for the copy to complete. It'd
       // be nice to not have to do this, but currently the request processing
-      // loop must execute synchronously or flush() will miss frames. Also it
-      // ensures the VideoEncoder remains alive while the copy completes.
-      stall_request_processing_ = true;
+      // loop must execute synchronously or flush() will miss frames.
+      blocking_request_in_progress_ = true;
       if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
               format, frame->coded_size(), gfx::ColorSpace::CreateSRGB(),
               origin, frame->mailbox_holder(0),
@@ -676,7 +680,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
       }
 
       // Error occurred, fall through to error handling below.
-      stall_request_processing_ = false;
+      blocking_request_in_progress_ = false;
       frame.reset();
     } else {
       auto wrapper = SharedGpuContext::ContextProviderWrapper();
@@ -733,7 +737,7 @@ void VideoEncoder::ProcessConfigure(Request* request) {
 
   request->StartTracing();
 
-  stall_request_processing_ = true;
+  blocking_request_in_progress_ = true;
 
   if (active_config_->hw_pref == HardwarePreference::kPreferSoftware) {
     ContinueConfigureWithGpuFactories(request, nullptr);
@@ -766,7 +770,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
     req->EndTracing();
 
     if (status.is_ok()) {
-      self->stall_request_processing_ = false;
+      self->blocking_request_in_progress_ = false;
       self->ProcessRequests();
     } else {
       // Reconfiguration failed. Either encoder doesn't support changing options
@@ -788,7 +792,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
     if (!status.is_ok()) {
       self->HandleError(self->logger_->MakeException(
           "Encoder initialization error.", status));
-      self->stall_request_processing_ = false;
+      self->blocking_request_in_progress_ = false;
       req->EndTracing();
       return;
     }
@@ -810,7 +814,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
             WrapCrossThreadPersistent(req))));
   };
 
-  stall_request_processing_ = true;
+  blocking_request_in_progress_ = true;
   media_encoder_->Flush(WTF::Bind(
       flush_done_callback, WrapCrossThreadWeakPersistent(this),
       WrapCrossThreadPersistent(request), std::move(reconf_done_callback)));
