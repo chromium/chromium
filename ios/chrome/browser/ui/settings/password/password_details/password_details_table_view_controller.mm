@@ -276,6 +276,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   item.textFieldEnabled = (self.credentialType == CredentialTypeNew);
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
   item.hideIcon = YES;
+  item.keyboardType = UIKeyboardTypeURL;
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
     // TODO(crbug.com/1226006): Use i18n string for the placeholder.
