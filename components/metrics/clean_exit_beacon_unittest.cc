@@ -53,6 +53,18 @@ class FakeTestingPrefStore : public TestingPrefStore {
   bool was_commit_pending_write_synchronously_called_ = false;
 };
 
+class TestCleanExitBeacon : public CleanExitBeacon {
+ public:
+  explicit TestCleanExitBeacon(
+      PrefService* local_state,
+      const base::FilePath& user_data_dir = base::FilePath())
+      : CleanExitBeacon(kDummyWindowsRegistryKey, user_data_dir, local_state) {
+    Initialize();
+  }
+
+  ~TestCleanExitBeacon() override = default;
+};
+
 class CleanExitBeaconTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -83,8 +95,7 @@ class CleanExitBeaconParameterizedTest
 // Verify that the crash streak metric is 0 when default pref values are used.
 TEST_F(CleanExitBeaconTest, CrashStreakMetricWithDefaultPrefs) {
   CleanExitBeacon::ResetStabilityExitedCleanlyForTesting(&prefs_);
-  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey, base::FilePath(),
-                                    &prefs_);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_);
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 0,
                                        1);
 }
@@ -97,8 +108,7 @@ TEST_F(CleanExitBeaconTest, CrashStreakMetricWithNoCrashes) {
   // kVariationsCrashStreak to 0.
   CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, true);
   prefs_.SetInteger(variations::prefs::kVariationsCrashStreak, 0);
-  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey, base::FilePath(),
-                                    &prefs_);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_);
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 0,
                                        1);
 }
@@ -110,8 +120,7 @@ TEST_F(CleanExitBeaconTest, CrashStreakMetricWithSomeCrashes) {
   // change, so we explicitly set it to true here.
   CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, true);
   prefs_.SetInteger(variations::prefs::kVariationsCrashStreak, 1);
-  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey, base::FilePath(),
-                                    &prefs_);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_);
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 1,
                                        1);
 }
@@ -121,8 +130,7 @@ TEST_F(CleanExitBeaconTest, CrashStreakMetricWithSomeCrashes) {
 TEST_F(CleanExitBeaconTest, CrashIncrementsCrashStreak) {
   CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, false);
   prefs_.SetInteger(variations::prefs::kVariationsCrashStreak, 1);
-  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey, base::FilePath(),
-                                    &prefs_);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_);
   EXPECT_EQ(prefs_.GetInteger(variations::prefs::kVariationsCrashStreak), 2);
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 2,
                                        1);
@@ -134,8 +142,7 @@ TEST_F(CleanExitBeaconTest, CrashIncrementsCrashStreak) {
 TEST_F(CleanExitBeaconTest,
        CrashIncrementsCrashStreakWithDefaultCrashStreakPref) {
   CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, false);
-  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey, base::FilePath(),
-                                    &prefs_);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_);
   EXPECT_EQ(prefs_.GetInteger(variations::prefs::kVariationsCrashStreak), 1);
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 1,
                                        1);
@@ -187,7 +194,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Verify that the inability to get the Variations Safe Mode file's contents for
 // a plethora of reasons (a) doesn't crash and (b) correctly records the
 // GotVariationsFileContents metric.
-TEST_P(CleanExitBeaconParameterizedTest, CtorWithUnusableVariationsFile) {
+TEST_P(CleanExitBeaconParameterizedTest, InitWithUnusableVariationsFile) {
   BeaconTestParams params = GetParam();
 
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
@@ -198,10 +205,9 @@ TEST_P(CleanExitBeaconParameterizedTest, CtorWithUnusableVariationsFile) {
                                  params.beacon_file_contents.data()));
   }
 
-  CleanExitBeacon clean_exit_beacon(
-      kDummyWindowsRegistryKey,
-      params.user_data_dir_exists ? user_data_dir_path : base::FilePath(),
-      &prefs_);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_, params.user_data_dir_exists
+                                                     ? user_data_dir_path
+                                                     : base::FilePath());
   histogram_tester_.ExpectUniqueSample(
       "Variations.ExtendedSafeMode.GotVariationsFileContents", false, 1);
 }
@@ -209,7 +215,7 @@ TEST_P(CleanExitBeaconParameterizedTest, CtorWithUnusableVariationsFile) {
 // Verify that successfully reading the Variations Safe Mode file's contents
 // results in correctly (a) setting the |did_previous_session_exit_cleanly_|
 // field and (b) recording metrics when the last session exited cleanly.
-TEST_F(CleanExitBeaconTest, CtorWithVariationsFile) {
+TEST_F(CleanExitBeaconTest, InitWithVariationsFile) {
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath temp_beacon_file_path =
       user_data_dir_path.Append(variations::kVariationsFilename);
@@ -222,8 +228,7 @@ TEST_F(CleanExitBeaconTest, CtorWithVariationsFile) {
       base::NumberToString(num_crashes).data());
   ASSERT_LT(0, base::WriteFile(temp_beacon_file_path, contents.data()));
 
-  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey,
-                                    user_data_dir_path, &prefs_);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
   histogram_tester_.ExpectUniqueSample(
       "Variations.ExtendedSafeMode.GotVariationsFileContents", true, 1);
   EXPECT_TRUE(clean_exit_beacon.exited_cleanly());
@@ -234,7 +239,7 @@ TEST_F(CleanExitBeaconTest, CtorWithVariationsFile) {
 // Verify that successfully reading the Variations Safe Mode file's contents
 // results in correctly (a) setting the |did_previous_session_exit_cleanly_|
 // field and (b) recording metrics when the last session did not exit cleanly.
-TEST_F(CleanExitBeaconTest, CtorWithCrashAndVariationsFile) {
+TEST_F(CleanExitBeaconTest, InitWithCrashAndVariationsFile) {
   const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
   const base::FilePath temp_beacon_file_path =
       user_data_dir_path.Append(variations::kVariationsFilename);
@@ -248,8 +253,7 @@ TEST_F(CleanExitBeaconTest, CtorWithCrashAndVariationsFile) {
   ASSERT_LT(0, base::WriteFile(temp_beacon_file_path, contents.data()));
 
   const int updated_num_crashes = last_session_num_crashes + 1;
-  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey,
-                                    user_data_dir_path, &prefs_);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
   histogram_tester_.ExpectUniqueSample(
       "Variations.ExtendedSafeMode.GotVariationsFileContents", true, 1);
   EXPECT_FALSE(clean_exit_beacon.exited_cleanly());
@@ -288,8 +292,7 @@ TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnMobile) {
   prefs_.SetInteger(variations::prefs::kVariationsCrashStreak,
                     expected_num_crashes);
 
-  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey,
-                                    user_data_dir_path, &prefs_);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
 
   // Verify that (a) the GotVariationsFileContents metric was not emitted and
   // (b) the PrefService was used (and not the beacon file).
@@ -322,9 +325,7 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValue_NoopSynchronousWrite) {
   scoped_refptr<PrefRegistrySimple> registry(new PrefRegistrySimple);
   std::unique_ptr<PrefService> prefs(factory.Create(registry.get()));
   CleanExitBeacon::RegisterPrefs(registry.get());
-  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey,
-                                    user_data_dir_.GetPath(), prefs.get());
-
+  TestCleanExitBeacon clean_exit_beacon(prefs.get(), user_data_dir_.GetPath());
   clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
                                      /*write_synchronously=*/true);
 
@@ -340,8 +341,8 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValue_NoopSynchronousWrite) {
 // beacon.
 TEST_F(CleanExitBeaconTest, WriteBeaconValue_UpdateBeacon) {
   CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, true);
-  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey, base::FilePath(),
-                                    &prefs_);
+  TestCleanExitBeacon clean_exit_beacon(&prefs_);
+
   bool exited_cleanly = false;
   bool write_synchronously = false;
 

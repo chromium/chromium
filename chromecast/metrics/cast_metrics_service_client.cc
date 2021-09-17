@@ -309,18 +309,29 @@ void CastMetricsServiceClient::InitializeMetricsService() {
                           base::Unretained(this)),
       base::BindRepeating(&CastMetricsServiceClient::LoadClientInfo,
                           base::Unretained(this)));
+
+  // Check that the FieldTrialList already exists. This happens in
+  // CastMainDelegate::PostEarlyInitialization().
+  DCHECK(base::FieldTrialList::GetInstance());
+  // Perform additional setup that should be done after the FieldTrialList, the
+  // MetricsStateManager, and its CleanExitBeacon exist. Since the list already
+  // exists, the entropy provider type is unused.
+  // TODO(crbug/1249485): Make Chromecast consistent with other platforms. I.e.
+  // create the FieldTrialList and the MetricsStateManager around the same time.
+  metrics_state_manager_->InstantiateFieldTrialList(
+      ::metrics::EntropyProviderType::kDefault);
+
   metrics_service_.reset(new ::metrics::MetricsService(
       metrics_state_manager_.get(), this, pref_service_));
 
   // Always create a client id as it may also be used by crash reporting,
-  // (indirectly) included in feedback, and can be queried during setup.
-  // For UMA and crash reporting, associated opt-in settings will control
-  // sending reports as directed by the user.
-  // For Setup (which also communicates the user's opt-in preferences),
-  // report the client-id and expect that setup will handle the current opt-in
-  // value.
+  // (indirectly) included in feedback, and can be queried during setup. For UMA
+  // and crash reporting, associated opt-in settings control sending reports as
+  // directed by the user. For setup (which also communicates the user's opt-in
+  // preferences), report the client id and expect setup to handle the current
+  // opt-in value.
   metrics_state_manager_->ForceClientIdCreation();
-  // Populate |client_id| to other component parts.
+  // Populate |client_id| in other component parts.
   SetMetricsClientId(metrics_state_manager_->client_id());
 }
 

@@ -149,6 +149,7 @@ class MetricsServiceTest : public testing::Test {
           GetLocalState(), enabled_state_provider_.get(), std::wstring(),
           base::FilePath(), base::BindRepeating(&StoreNoClientInfoBackup),
           base::BindRepeating(&ReturnNoBackup), startup_visibility);
+      metrics_state_manager_->InstantiateFieldTrialList();
     }
     return metrics_state_manager_.get();
   }

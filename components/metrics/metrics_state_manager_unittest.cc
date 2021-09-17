@@ -73,13 +73,18 @@ class MetricsStateManagerTest : public testing::Test {
   }
 
   std::unique_ptr<MetricsStateManager> CreateStateManager() {
-    return MetricsStateManager::Create(
-        &prefs_, enabled_state_provider_.get(), std::wstring(),
-        base::FilePath(),
-        base::BindRepeating(&MetricsStateManagerTest::MockStoreClientInfoBackup,
-                            base::Unretained(this)),
-        base::BindRepeating(&MetricsStateManagerTest::LoadFakeClientInfoBackup,
-                            base::Unretained(this)));
+    std::unique_ptr<MetricsStateManager> state_manager =
+        MetricsStateManager::Create(
+            &prefs_, enabled_state_provider_.get(), std::wstring(),
+            base::FilePath(),
+            base::BindRepeating(
+                &MetricsStateManagerTest::MockStoreClientInfoBackup,
+                base::Unretained(this)),
+            base::BindRepeating(
+                &MetricsStateManagerTest::LoadFakeClientInfoBackup,
+                base::Unretained(this)));
+    state_manager->InstantiateFieldTrialList();
+    return state_manager;
   }
 
   // Sets metrics reporting as enabled for testing.

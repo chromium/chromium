@@ -351,6 +351,7 @@ class VariationsServiceTest : public ::testing::Test {
           &prefs_, enabled_state_provider_.get(), std::wstring(),
           base::FilePath(), base::BindRepeating(&StubStoreClientInfo),
           base::BindRepeating(&StubLoadClientInfo));
+      metrics_state_manager_->InstantiateFieldTrialList();
     }
     return metrics_state_manager_.get();
   }

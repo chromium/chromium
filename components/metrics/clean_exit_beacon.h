@@ -35,7 +35,17 @@ class CleanExitBeacon {
                   const base::FilePath& user_data_dir,
                   PrefService* local_state);
 
-  ~CleanExitBeacon();
+  virtual ~CleanExitBeacon() = default;
+
+  // Not copyable or movable.
+  CleanExitBeacon(const CleanExitBeacon&) = delete;
+  CleanExitBeacon& operator=(const CleanExitBeacon&) = delete;
+
+  // Initializes the CleanExitBeacon. This includes the following tasks:
+  // 1. Determining if the last session exited cleanly,
+  // 2. Incrementing the crash streak, if necessary, and
+  // 3. Emitting some metrics.
+  void Initialize();
 
   // Returns the original value of the beacon.
   bool exited_cleanly() const { return did_previous_session_exit_cleanly_; }
@@ -50,11 +60,10 @@ class CleanExitBeacon {
   // the beacon value is written to disk synchronously; otherwise, a write is
   // scheduled.
   //
-  // Note: |write_synchronously| should be true only for the extended variations
-  // safe mode experiment.
+  // Note: |write_synchronously| should be true only for some clients in the
+  // Extended Variations Safe Mode experiment.
   //
-  // TODO(b/184937096): Remove |update_beacon| when the
-  // ExtendedVariationsSafeMode experiment is over.
+  // TODO(b/184937096): Remove |update_beacon| when the experiment is over.
   void WriteBeaconValue(bool exited_cleanly,
                         bool write_synchronously = false,
                         bool update_beacon = true);
@@ -113,20 +122,27 @@ class CleanExitBeacon {
   static void ResetUserDefaultsBeacon();
 #endif  // defined(OS_IOS)
 
-  PrefService* const local_state_;
-  bool did_previous_session_exit_cleanly_ = false;
+  // Indicates whether the CleanExitBeacon has been initialized.
+  bool initialized_ = false;
 
-  // This is the value of the last live timestamp from local state at the
-  // time of construction. It notes a timestamp from the previous browser
-  // session when the browser was known to be alive.
-  const base::Time initial_browser_last_live_timestamp_;
+  // Stores a backup of the beacon. Windows only.
   const std::wstring backup_registry_key_;
+
+  // Path to the client's user data directory. May be empty.
+  const base::FilePath user_data_dir_;
+
+  PrefService* const local_state_;
+
+  // This is the value of the last live timestamp from local state at the time
+  // of construction. It is a timestamp from the previous browser session when
+  // the browser was known to be alive.
+  const base::Time initial_browser_last_live_timestamp_;
+
+  bool did_previous_session_exit_cleanly_ = false;
 
   // Where the clean exit beacon and the variations crash streak may be stored
   // for some clients in the Extended Variations Safe Mode experiment.
   base::FilePath beacon_file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(CleanExitBeacon);
 };
 
 }  // namespace metrics

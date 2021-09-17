@@ -37,13 +37,13 @@ MetricsServicesManager::MetricsServicesManager(
 
 MetricsServicesManager::~MetricsServicesManager() {}
 
-std::unique_ptr<const base::FieldTrial::EntropyProvider>
-MetricsServicesManager::CreateEntropyProvider() {
+void MetricsServicesManager::InstantiateFieldTrialList() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   metrics::structured::NeutrinoDevicesLog(
       metrics::structured::NeutrinoDevicesLocation::kCreateEntropyProvider);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return client_->GetMetricsStateManager()->CreateDefaultEntropyProvider();
+  client_->GetMetricsStateManager()->InstantiateFieldTrialList(
+      metrics::EntropyProviderType::kDefault);
 }
 
 metrics::MetricsService* MetricsServicesManager::GetMetricsService() {
@@ -71,6 +71,11 @@ void MetricsServicesManager::LoadingStateChanged(bool is_loading) {
 void MetricsServicesManager::OnPluginLoadingError(
     const base::FilePath& plugin_path) {
   GetMetricsServiceClient()->OnPluginLoadingError(plugin_path);
+}
+
+std::unique_ptr<const base::FieldTrial::EntropyProvider>
+MetricsServicesManager::CreateEntropyProviderForTesting() {
+  return client_->GetMetricsStateManager()->CreateDefaultEntropyProvider();
 }
 
 metrics::MetricsServiceClient*

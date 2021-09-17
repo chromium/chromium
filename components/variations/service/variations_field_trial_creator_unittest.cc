@@ -297,6 +297,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         local_state, &enabled_state_provider_, std::wstring(), user_data_dir,
         base::BindRepeating(&NoOpStoreClientInfoBackup),
         base::BindRepeating(&NoOpLoadClientInfoBackup), startup_visibility);
+    metrics_state_manager_->InstantiateFieldTrialList();
   }
 
   ~TestVariationsFieldTrialCreator() override = default;

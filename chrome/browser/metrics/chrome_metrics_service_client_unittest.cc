@@ -61,6 +61,7 @@ class ChromeMetricsServiceClientTest : public testing::Test {
         base::BindRepeating(
             &ChromeMetricsServiceClientTest::LoadFakeClientInfoBackup,
             base::Unretained(this)));
+    metrics_state_manager_->InstantiateFieldTrialList();
     ASSERT_TRUE(profile_manager_.SetUp());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitAndEnableFeature(features::kUmaStorageDimensions);

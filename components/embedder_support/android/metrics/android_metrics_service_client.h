@@ -114,8 +114,6 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   void SetHaveMetricsConsent(bool user_consent, bool app_consent);
   void SetFastStartupForTesting(bool fast_startup_for_testing);
   void SetUploadIntervalForTesting(const base::TimeDelta& upload_interval);
-  std::unique_ptr<const base::FieldTrial::EntropyProvider>
-  CreateLowEntropyProvider();
 
   // Updates the state of whether UKM is enabled or not by calling back into
   // IsUkmAllowedForAllProfiles(). If |must_purge| is true then currently

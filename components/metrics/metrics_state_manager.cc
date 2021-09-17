@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/debug/leak_annotations.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -257,6 +258,29 @@ int MetricsStateManager::GetLowEntropySource() {
   return entropy_state_.GetLowEntropySource();
 }
 
+void MetricsStateManager::InstantiateFieldTrialList(
+    EntropyProviderType entropy_provider_type) {
+  // Instantiate the FieldTrialList to support field trials. If an instance
+  // already exists, this is likely a test scenario with a ScopedFeatureList, so
+  // use the existing instance so that any overrides are still applied.
+  if (!base::FieldTrialList::GetInstance()) {
+    std::unique_ptr<const base::FieldTrial::EntropyProvider> entropy_provider =
+        entropy_provider_type == EntropyProviderType::kLow
+            ? CreateLowEntropyProvider()
+            : CreateDefaultEntropyProvider();
+
+    // This is intentionally leaked since it needs to live for the duration of
+    // the browser process and there's no benefit in cleaning it up at exit.
+    base::FieldTrialList* leaked_field_trial_list =
+        new base::FieldTrialList(std::move(entropy_provider));
+    ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
+    ignore_result(leaked_field_trial_list);
+  }
+  // Initializing the CleanExitBeacon is done after FieldTrialList instantiation
+  // to allow experimentation on the CleanExitBeacon.
+  clean_exit_beacon_.Initialize();
+}
+
 void MetricsStateManager::LogHasSessionShutdownCleanly(
     bool has_session_shutdown_cleanly,
     bool write_synchronously,
@@ -384,9 +408,9 @@ bool MetricsStateManager::ShouldResetClientIdsOnClonedInstall() {
 
 std::unique_ptr<const base::FieldTrial::EntropyProvider>
 MetricsStateManager::CreateDefaultEntropyProvider() {
-  // Note: the |initial_client_id_| should not be empty iff we have client's
-  // consent on enabling UMA on startup or we have the |provisional_client_id_|
-  // for the first run.
+  // |initial_client_id_| should be populated iff (a) we have the client's
+  // consent to enable UMA on startup or (b) it's the first run, in which case
+  // |initial_client_id_| corresponds to |provisional_client_id_|.
   if (!initial_client_id_.empty()) {
     UpdateEntropySourceReturnedValue(ENTROPY_SOURCE_HIGH);
     return std::make_unique<variations::SHA1EntropyProvider>(

@@ -48,7 +48,7 @@ bool g_skip_clean_shutdown_steps = false;
 // Increments kVariationsCrashStreak if |did_previous_session_exit_cleanly| is
 // false. Also, emits the crash streak to a histogram.
 //
-// Either |local_state| or |beacon_file_contents| is used to retrieve the crash
+// Either |beacon_file_contents| or |local_state| is used to retrieve the crash
 // streak depending on the client's Extended Variations Safe Mode experiment
 // group in the last session.
 void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
@@ -142,15 +142,19 @@ std::unique_ptr<base::Value> MaybeGetFileContents(
 CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
                                  const base::FilePath& user_data_dir,
                                  PrefService* local_state)
-    : local_state_(local_state),
+    : backup_registry_key_(backup_registry_key),
+      user_data_dir_(user_data_dir),
+      local_state_(local_state),
       initial_browser_last_live_timestamp_(
-          local_state->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp)),
-      backup_registry_key_(backup_registry_key) {
+          local_state->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp)) {
   DCHECK_NE(PrefService::INITIALIZATION_STATUS_WAITING,
             local_state_->GetInitializationStatus());
+}
 
-  if (!user_data_dir.empty())
-    beacon_file_path_ = user_data_dir.Append(variations::kVariationsFilename);
+void CleanExitBeacon::Initialize() {
+  DCHECK(!initialized_);
+  if (!user_data_dir_.empty())
+    beacon_file_path_ = user_data_dir_.Append(variations::kVariationsFilename);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
   // TODO(crbug/1248239): Allow the file to be used once the Extended Variations
@@ -246,13 +250,13 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
 
   MaybeIncrementCrashStreak(did_previous_session_exit_cleanly_,
                             beacon_file_contents.get(), local_state_);
+  initialized_ = true;
 }
-
-CleanExitBeacon::~CleanExitBeacon() = default;
 
 void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
                                        bool write_synchronously,
                                        bool update_beacon) {
+  DCHECK(initialized_);
   if (g_skip_clean_shutdown_steps)
     return;
 

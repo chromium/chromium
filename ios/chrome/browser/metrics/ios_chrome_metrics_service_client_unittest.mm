@@ -52,6 +52,7 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
         base::BindRepeating(
             &IOSChromeMetricsServiceClientTest::LoadFakeClientInfoBackup,
             base::Unretained(this)));
+    metrics_state_manager_->InstantiateFieldTrialList();
   }
 
  protected:
