@@ -30,8 +30,6 @@
 
 namespace ash {
 namespace {
-constexpr int kPreferredWidth = 242;
-constexpr int kPreferredHeight = 52;
 
 constexpr int kIconSize = 36;
 
@@ -47,7 +45,6 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate)
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetCallback(base::BindRepeating(&ContinueTaskView::OnButtonPressed,
                                   base::Unretained(this)));
-  SetPreferredSize(gfx::Size(kPreferredWidth, kPreferredHeight));
   auto ink_drop_highlight_path =
       std::make_unique<views::RoundRectHighlightPathGenerator>(
           gfx::Insets(), kViewCornerRadius);

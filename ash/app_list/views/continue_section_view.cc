@@ -21,6 +21,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/grid_layout.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -34,7 +36,8 @@ constexpr int kSectionHorizontalPadding = 20;
 constexpr int kHeaderVerticalSpacing = 4;
 constexpr int kHeaderHorizontalPadding = 12;
 
-// Suggested tasks layout constants.
+// Suggested tasks layout constants. Should this change, we should update the
+// Layout to leave out empty rows.
 constexpr int kMinFilesForContinueSection = 3;
 
 std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
@@ -55,6 +58,8 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
       gfx::Insets(kSectionVerticalPadding, kSectionHorizontalPadding),
       kHeaderVerticalSpacing));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
 
   // TODO(https://crbug.com/1204551): Localized strings.
   // TODO(https://crbug.com/1204551): Styling.

@@ -12,7 +12,6 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/continue_task_view.h"
-#include "ash/bubble/simple_grid_layout.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "base/check.h"
 #include "base/strings/string_util.h"
@@ -21,16 +20,18 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/grid_layout.h"
+
+using views::GridLayout;
 
 namespace ash {
 namespace {
-
 // Suggested tasks padding in dips
 constexpr int kSuggestedTasksHorizontalPadding = 6;
 
 // Suggested tasks layout constants.
-constexpr int kContinueColumnSpacing = 8;
-constexpr int kContinueRowSpacing = 8;
+constexpr int kColumnSpacing = 8;
+constexpr int kRowSpacing = 8;
 constexpr size_t kMaxFilesForContinueSection = 4;
 
 bool IsFileType(AppListSearchResultType type) {
@@ -76,14 +77,35 @@ ContinueTaskContainerView::ContinueTaskContainerView(
     : view_delegate_(view_delegate), update_callback_(update_callback) {
   DCHECK(!update_callback_.is_null());
 
-  SetLayoutManager(std::make_unique<SimpleGridLayout>(
-      columns, kContinueColumnSpacing, kContinueRowSpacing));
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets(0, kSuggestedTasksHorizontalPadding)));
 
+  GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
+  const int kColumnSetId = 0;
+  views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
+  for (int i = 0; i < columns; i++) {
+    if (i > 0)
+      column_set->AddPaddingColumn(GridLayout::kFixedSize, kColumnSpacing);
+    column_set->AddColumn(
+        GridLayout::FILL, GridLayout::CENTER, /*resize_percent=*/1.0,
+        GridLayout::ColumnSize::kUsePreferred, /*fixed_width=*/0,
+        /*min_width=*/0);
+  }
+
   for (size_t i = 0; i < kMaxFilesForContinueSection; ++i) {
+    if (i % columns == 0) {
+      if (i > 0) {
+        layout->StartRowWithPadding(GridLayout::kFixedSize, kColumnSetId,
+                                    GridLayout::kFixedSize, kRowSpacing);
+      } else {
+        layout->StartRow(GridLayout::kFixedSize, kColumnSetId);
+      }
+    }
     ContinueTaskView* task =
-        AddChildView(std::make_unique<ContinueTaskView>(view_delegate));
+        layout->AddView(std::make_unique<ContinueTaskView>(view_delegate));
+    // This view has a predefined number of placeholder tasks views which toggle
+    // visibility depending on the result being null or not. The container's
+    // visibility is handled on the parent view.
     task->SetVisible(false);
     task->set_index_in_container(i);
     suggestion_tasks_views_.emplace_back(task);
