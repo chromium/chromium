@@ -27,7 +27,9 @@
 #include "device/fido/filter.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "url/origin.h"
 
@@ -290,7 +292,23 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
       blink::mojom::ConsoleMessageLevel::kWarning,
       R"(The U2F Security Key API is deprecated and will be removed soon. If you own this website, please migrate to the Web Authentication API. For more information see https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A/m/yg20tsVFBAAJ)");
 
-  if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt)) {
+  blink::TrialTokenValidator validator;
+  const net::HttpResponseHeaders* response_headers =
+      frame->GetLastResponseHeaders();
+  const bool u2f_api_origin_trial_enabled =
+      (response_headers && validator.RequestEnablesFeature(
+                               frame->GetLastCommittedURL(), response_headers,
+                               extension_misc::kCryptotokenDeprecationTrialName,
+                               base::Time::Now()));
+  DCHECK(
+      base::FeatureList::IsEnabled(extensions_features::kU2FSecurityKeyAPI) ||
+      u2f_api_origin_trial_enabled);
+
+  // Don't show a permission prompt if its feature flag is disabled, or if the
+  // site enrolled in the deprecation trial (since they're obviously aware of
+  // the deprecation).
+  if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt) ||
+      u2f_api_origin_trial_enabled) {
     return RespondNow(OneArgument(base::Value(true)));
   }
 
