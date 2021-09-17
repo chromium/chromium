@@ -49,6 +49,11 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
   using TView = RecommendAppsScreenView;
 
   explicit RecommendAppsScreenHandler(JSCallsContainer* js_calls_container);
+
+  RecommendAppsScreenHandler(const RecommendAppsScreenHandler&) = delete;
+  RecommendAppsScreenHandler& operator=(const RecommendAppsScreenHandler&) =
+      delete;
+
   ~RecommendAppsScreenHandler() override;
 
   // BaseScreenHandler:
@@ -84,8 +89,6 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RecommendAppsScreenHandler);
 };
 
 }  // namespace chromeos

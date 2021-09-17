@@ -23,6 +23,10 @@ class MediaPlayerEventRouter;
 class MediaPlayerAPI : public BrowserContextKeyedAPI {
  public:
   explicit MediaPlayerAPI(content::BrowserContext* context);
+
+  MediaPlayerAPI(const MediaPlayerAPI&) = delete;
+  MediaPlayerAPI& operator=(const MediaPlayerAPI&) = delete;
+
   ~MediaPlayerAPI() override;
 
   // Convenience method to get the MediaPlayerAPI for a profile.
@@ -46,8 +50,6 @@ class MediaPlayerAPI : public BrowserContextKeyedAPI {
   static const bool kServiceIsNULLWhileTesting = true;
 
   std::unique_ptr<MediaPlayerEventRouter> media_player_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerAPI);
 };
 
 }  // namespace extensions

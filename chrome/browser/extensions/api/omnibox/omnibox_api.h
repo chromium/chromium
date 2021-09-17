@@ -88,6 +88,10 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
                    public ExtensionRegistryObserver {
  public:
   explicit OmniboxAPI(content::BrowserContext* context);
+
+  OmniboxAPI(const OmniboxAPI&) = delete;
+  OmniboxAPI& operator=(const OmniboxAPI&) = delete;
+
   ~OmniboxAPI() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -139,8 +143,6 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
   ExtensionIconManager omnibox_icon_manager_;
 
   base::CallbackListSubscription template_url_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxAPI);
 };
 
 template <>

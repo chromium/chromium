@@ -217,6 +217,11 @@ TEST_F(CryptoTokenPrivateApiTest, RecordSignRequest) {
 class CryptoTokenPermissionTest : public ExtensionApiUnittest {
  public:
   CryptoTokenPermissionTest() = default;
+
+  CryptoTokenPermissionTest(const CryptoTokenPermissionTest&) = delete;
+  CryptoTokenPermissionTest& operator=(const CryptoTokenPermissionTest&) =
+      delete;
+
   ~CryptoTokenPermissionTest() override = default;
 
   void SetUp() override {
@@ -313,8 +318,6 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
  private:
   int tab_id_ = -1;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptoTokenPermissionTest);
 };
 
 TEST_F(CryptoTokenPermissionTest, AttestationPrompt) {

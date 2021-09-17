@@ -60,6 +60,10 @@ class TestNetworkQualityObserver
     tracker_->AddEffectiveConnectionTypeObserver(this);
   }
 
+  TestNetworkQualityObserver(const TestNetworkQualityObserver&) = delete;
+  TestNetworkQualityObserver& operator=(const TestNetworkQualityObserver&) =
+      delete;
+
   ~TestNetworkQualityObserver() override {
     tracker_->RemoveEffectiveConnectionTypeObserver(this);
   }
@@ -108,8 +112,6 @@ class TestNetworkQualityObserver
   std::unique_ptr<base::RunLoop> run_loop_;
   NetworkQualityTracker* tracker_;
   net::EffectiveConnectionType effective_connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkQualityObserver);
 };
 
 }  // namespace

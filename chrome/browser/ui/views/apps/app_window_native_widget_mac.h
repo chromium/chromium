@@ -18,6 +18,10 @@ class AppWindowNativeWidgetMac : public views::NativeWidgetMac {
  public:
   AppWindowNativeWidgetMac(views::Widget* widget,
                            extensions::NativeAppWindow* native_app_window);
+
+  AppWindowNativeWidgetMac(const AppWindowNativeWidgetMac&) = delete;
+  AppWindowNativeWidgetMac& operator=(const AppWindowNativeWidgetMac&) = delete;
+
   ~AppWindowNativeWidgetMac() override;
 
  protected:
@@ -32,8 +36,6 @@ class AppWindowNativeWidgetMac : public views::NativeWidgetMac {
   // Weak. Owned by extensions::AppWindow (which manages our Widget via its
   // WebContents).
   extensions::NativeAppWindow* native_app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowNativeWidgetMac);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_NATIVE_WIDGET_MAC_H_

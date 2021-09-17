@@ -78,6 +78,9 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
  public:
   MediaFileValidatorTest() : test_file_size_(0) {}
 
+  MediaFileValidatorTest(const MediaFileValidatorTest&) = delete;
+  MediaFileValidatorTest& operator=(const MediaFileValidatorTest&) = delete;
+
   ~MediaFileValidatorTest() override = default;
 
   // Write |content| into |filename| in a test file system and try to move
@@ -264,8 +267,6 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
 
   base::OnceClosure quit_closure_;
   scoped_refptr<base::SequencedTaskRunner> file_system_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileValidatorTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, UnsupportedExtension) {

@@ -20,6 +20,9 @@ class SelfCleaningTempDir {
 
   SelfCleaningTempDir();
 
+  SelfCleaningTempDir(const SelfCleaningTempDir&) = delete;
+  SelfCleaningTempDir& operator=(const SelfCleaningTempDir&) = delete;
+
   // Performs a Delete().
   ~SelfCleaningTempDir();
 
@@ -48,7 +51,6 @@ class SelfCleaningTempDir {
 
   FRIEND_TEST_ALL_PREFIXES(SelfCleaningTempDirTest, TopLevel);
   FRIEND_TEST_ALL_PREFIXES(SelfCleaningTempDirTest, TopLevelPlusOne);
-  DISALLOW_COPY_AND_ASSIGN(SelfCleaningTempDir);
 };
 
 }  // namespace installer

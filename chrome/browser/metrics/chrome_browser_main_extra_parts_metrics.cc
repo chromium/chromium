@@ -394,13 +394,16 @@ class AsynchronousTouchEventStateRecorder
     : public ui::InputDeviceEventObserver {
  public:
   AsynchronousTouchEventStateRecorder();
+
+  AsynchronousTouchEventStateRecorder(
+      const AsynchronousTouchEventStateRecorder&) = delete;
+  AsynchronousTouchEventStateRecorder& operator=(
+      const AsynchronousTouchEventStateRecorder&) = delete;
+
   ~AsynchronousTouchEventStateRecorder() override;
 
   // ui::InputDeviceEventObserver overrides.
   void OnDeviceListsComplete() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AsynchronousTouchEventStateRecorder);
 };
 
 AsynchronousTouchEventStateRecorder::AsynchronousTouchEventStateRecorder() {

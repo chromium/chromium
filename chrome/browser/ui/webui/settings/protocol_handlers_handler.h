@@ -32,6 +32,10 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
                                 public ProtocolHandlerRegistry::Observer {
  public:
   ProtocolHandlersHandler();
+
+  ProtocolHandlersHandler(const ProtocolHandlersHandler&) = delete;
+  ProtocolHandlersHandler& operator=(const ProtocolHandlersHandler&) = delete;
+
   ~ProtocolHandlersHandler() override;
 
   // SettingsPageUIHandler:
@@ -86,8 +90,6 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
   base::ScopedObservation<ProtocolHandlerRegistry,
                           ProtocolHandlerRegistry::Observer>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolHandlersHandler);
 };
 
 }  // namespace settings

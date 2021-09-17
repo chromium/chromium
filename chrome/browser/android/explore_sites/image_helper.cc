@@ -32,6 +32,10 @@ class ImageHelper::Job {
       BitmapCallback bitmap_callback,
       EncodedImageList images,
       int pixel_size);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
   // Start begins the work that a Job performs (decoding and composition).
@@ -53,8 +57,6 @@ class ImageHelper::Job {
   std::vector<SkBitmap> bitmaps_;
 
   base::WeakPtrFactory<Job> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 ImageHelper::Job::Job(ImageHelper* image_helper,

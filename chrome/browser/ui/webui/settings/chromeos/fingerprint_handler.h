@@ -29,6 +29,10 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
                            public session_manager::SessionManagerObserver {
  public:
   explicit FingerprintHandler(Profile* profile);
+
+  FingerprintHandler(const FingerprintHandler&) = delete;
+  FingerprintHandler& operator=(const FingerprintHandler&) = delete;
+
   ~FingerprintHandler() override;
 
   // SettingsPageUIHandler overrides:
@@ -84,8 +88,6 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
       session_observation_{this};
 
   base::WeakPtrFactory<FingerprintHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintHandler);
 };
 
 }  // namespace settings

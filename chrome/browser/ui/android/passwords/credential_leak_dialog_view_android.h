@@ -23,6 +23,12 @@ class CredentialLeakDialogViewAndroid {
  public:
   explicit CredentialLeakDialogViewAndroid(
       CredentialLeakControllerAndroid* controller);
+
+  CredentialLeakDialogViewAndroid(const CredentialLeakDialogViewAndroid&) =
+      delete;
+  CredentialLeakDialogViewAndroid& operator=(
+      const CredentialLeakDialogViewAndroid&) = delete;
+
   ~CredentialLeakDialogViewAndroid();
 
   // Called to create and show the dialog.
@@ -43,8 +49,6 @@ class CredentialLeakDialogViewAndroid {
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialLeakDialogViewAndroid);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_PASSWORDS_CREDENTIAL_LEAK_DIALOG_VIEW_ANDROID_H_

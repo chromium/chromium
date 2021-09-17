@@ -30,6 +30,11 @@ constexpr int kToolbarHeight = 30 - views::Separator::kThickness;
 class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
  public:
   MockBrowserViewLayoutDelegate() = default;
+
+  MockBrowserViewLayoutDelegate(const MockBrowserViewLayoutDelegate&) = delete;
+  MockBrowserViewLayoutDelegate& operator=(
+      const MockBrowserViewLayoutDelegate&) = delete;
+
   ~MockBrowserViewLayoutDelegate() override = default;
 
   void set_tab_strip_visible(bool visible) {
@@ -95,8 +100,6 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   bool content_separator_enabled_ = true;
   bool top_controls_slide_enabled_ = false;
   float top_controls_shown_ratio_ = 1.f;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBrowserViewLayoutDelegate);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,6 +150,10 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         contents_container_(nullptr),
         contents_web_view_(nullptr),
         devtools_web_view_(nullptr) {}
+
+  BrowserViewLayoutTest(const BrowserViewLayoutTest&) = delete;
+  BrowserViewLayoutTest& operator=(const BrowserViewLayoutTest&) = delete;
+
   ~BrowserViewLayoutTest() override {}
 
   BrowserViewLayout* layout() { return layout_.get(); }
@@ -231,8 +238,6 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   views::View* devtools_web_view_;
 
   std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewLayoutTest);
 };
 
 // Test basic construction and initialization.

@@ -24,6 +24,10 @@ class ContentIndexMetrics {
  public:
   explicit ContentIndexMetrics(
       ukm::UkmBackgroundRecorderService* ukm_background_service);
+
+  ContentIndexMetrics(const ContentIndexMetrics&) = delete;
+  ContentIndexMetrics& operator=(const ContentIndexMetrics&) = delete;
+
   ~ContentIndexMetrics();
 
   // Records the category of the Content Index entry after registration.
@@ -42,8 +46,6 @@ class ContentIndexMetrics {
 
  private:
   ukm::UkmBackgroundRecorderService* ukm_background_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexMetrics);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_METRICS_H_

@@ -27,6 +27,11 @@ class AddressAccessoryControllerImpl
       public PersonalDataManagerObserver,
       public content::WebContentsUserData<AddressAccessoryControllerImpl> {
  public:
+  AddressAccessoryControllerImpl(const AddressAccessoryControllerImpl&) =
+      delete;
+  AddressAccessoryControllerImpl& operator=(
+      const AddressAccessoryControllerImpl&) = delete;
+
   ~AddressAccessoryControllerImpl() override;
 
   // AccessoryController:
@@ -78,8 +83,6 @@ class AddressAccessoryControllerImpl
   PersonalDataManager* personal_data_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AddressAccessoryControllerImpl);
 };
 
 }  // namespace autofill

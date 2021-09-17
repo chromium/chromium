@@ -67,6 +67,10 @@ class MetricsReporter : public PowerManagerClient::Observer {
   // RegisterLocalStatePrefs() must be called before instantiating this class.
   MetricsReporter(PowerManagerClient* power_manager_client,
                   PrefService* local_state_pref_service);
+
+  MetricsReporter(const MetricsReporter&) = delete;
+  MetricsReporter& operator=(const MetricsReporter&) = delete;
+
   ~MetricsReporter() override;
 
   // PowerManagerClient::Observer:
@@ -107,8 +111,6 @@ class MetricsReporter : public PowerManagerClient::Observer {
   // Daily count for each DeviceClass. Ordered by DeviceClass values.
   // Initial values will be loaded from prefs service.
   std::array<int, kNumberDeviceClasses> daily_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsReporter);
 };
 
 }  // namespace auto_screen_brightness

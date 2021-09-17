@@ -64,6 +64,11 @@ class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
       content::BrowserContext* context)
       : KidsChromeManagementClient(static_cast<Profile*>(context)) {}
 
+  KidsChromeManagementClientForTesting(
+      const KidsChromeManagementClientForTesting&) = delete;
+  KidsChromeManagementClientForTesting& operator=(
+      const KidsChromeManagementClientForTesting&) = delete;
+
   ~KidsChromeManagementClientForTesting() override = default;
 
   void ClassifyURL(
@@ -84,8 +89,6 @@ class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
  private:
   std::unique_ptr<ClassifyUrlResponse> response_proto_;
   KidsChromeManagementClient::ErrorCode error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(KidsChromeManagementClientForTesting);
 };
 
 std::unique_ptr<KeyedService> CreateKidsChromeManagementClient(

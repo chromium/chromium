@@ -907,6 +907,10 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::SeneschalClient::InitializeFake();
   }
 
+  DeviceStatusCollectorTest(const DeviceStatusCollectorTest&) = delete;
+  DeviceStatusCollectorTest& operator=(const DeviceStatusCollectorTest&) =
+      delete;
+
   ~DeviceStatusCollectorTest() override {
     chromeos::SeneschalClient::Shutdown();
     // |testing_profile_| must be destroyed while ConciergeClient is alive.
@@ -1186,9 +1190,6 @@ class DeviceStatusCollectorTest : public testing::Test {
   // This property is required to instantiate the session manager, a singleton
   // which is used by the device status collector.
   session_manager::SessionManager session_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceStatusCollectorTest);
 };
 
 TEST_F(DeviceStatusCollectorTest, AllIdle) {

@@ -15,13 +15,16 @@
 class SystemMenuInsertionDelegateWin : public views::MenuInsertionDelegateWin {
  public:
   SystemMenuInsertionDelegateWin() {}
+
+  SystemMenuInsertionDelegateWin(const SystemMenuInsertionDelegateWin&) =
+      delete;
+  SystemMenuInsertionDelegateWin& operator=(
+      const SystemMenuInsertionDelegateWin&) = delete;
+
   ~SystemMenuInsertionDelegateWin() override {}
 
   // Overridden from views::MenuInsertionDelegateWin:
   int GetInsertionIndex(HMENU native_menu) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemMenuInsertionDelegateWin);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_INSERTION_DELEGATE_WIN_H_

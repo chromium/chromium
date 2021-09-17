@@ -25,6 +25,10 @@ class Profile;
 class PredictorsHandler : public content::WebUIMessageHandler {
  public:
   explicit PredictorsHandler(Profile* profile);
+
+  PredictorsHandler(const PredictorsHandler&) = delete;
+  PredictorsHandler& operator=(const PredictorsHandler&) = delete;
+
   ~PredictorsHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -46,8 +50,6 @@ class PredictorsHandler : public content::WebUIMessageHandler {
 
   predictors::AutocompleteActionPredictor* autocomplete_action_predictor_;
   predictors::LoadingPredictor* loading_predictor_;
-
-  DISALLOW_COPY_AND_ASSIGN(PredictorsHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PREDICTORS_PREDICTORS_HANDLER_H_

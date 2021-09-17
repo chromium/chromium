@@ -16,6 +16,10 @@ class MigrationWaiter;
 class MigrationWatcher : public syncer::MigrationObserver {
  public:
   explicit MigrationWatcher(SyncServiceImplHarness* harness);
+
+  MigrationWatcher(const MigrationWatcher&) = delete;
+  MigrationWatcher& operator=(const MigrationWatcher&) = delete;
+
   ~MigrationWatcher() override;
 
   // Returns true if the observed profile has a migration in progress.
@@ -46,8 +50,6 @@ class MigrationWatcher : public syncer::MigrationObserver {
 
   // The MigrationWatier that is waiting for this migration to complete.
   MigrationWaiter* migration_waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MigrationWatcher);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_MIGRATION_WATCHER_H_

@@ -51,6 +51,11 @@ const char kDummyUrl[] = "http://dummy-history.google.com/";
 class TwoClientTypedUrlsSyncTest : public SyncTest {
  public:
   TwoClientTypedUrlsSyncTest() : SyncTest(TWO_CLIENT) {}
+
+  TwoClientTypedUrlsSyncTest(const TwoClientTypedUrlsSyncTest&) = delete;
+  TwoClientTypedUrlsSyncTest& operator=(const TwoClientTypedUrlsSyncTest&) =
+      delete;
+
   ~TwoClientTypedUrlsSyncTest() override {}
 
   ::testing::AssertionResult CheckClientsEqual() {
@@ -87,9 +92,6 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
     else
       return urls[0].visit_count();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientTypedUrlsSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, E2E_ENABLED(Add)) {

@@ -27,6 +27,11 @@ class PasswordAccessoryController
       public AccessoryController {
  public:
   PasswordAccessoryController() = default;
+
+  PasswordAccessoryController(const PasswordAccessoryController&) = delete;
+  PasswordAccessoryController& operator=(const PasswordAccessoryController&) =
+      delete;
+
   ~PasswordAccessoryController() override = default;
 
   // Returns true if the accessory controller may exist for |web_contents|.
@@ -61,9 +66,6 @@ class PasswordAccessoryController
   // the automatically provided button.
   virtual void OnGenerationRequested(
       autofill::password_generation::PasswordGenerationType type) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordAccessoryController);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_H_

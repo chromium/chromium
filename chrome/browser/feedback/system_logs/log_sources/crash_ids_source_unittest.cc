@@ -36,6 +36,10 @@ class StubUploadList : public UploadList {
 class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
  public:
   TestDebugDaemonClient() = default;
+
+  TestDebugDaemonClient(const TestDebugDaemonClient&) = delete;
+  TestDebugDaemonClient& operator=(const TestDebugDaemonClient&) = delete;
+
   ~TestDebugDaemonClient() override = default;
 
   void UploadCrashes(UploadCrashesCallback callback) override {
@@ -47,8 +51,6 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 
  private:
   int upload_crashes_called_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDebugDaemonClient);
 };
 
 TestDebugDaemonClient* fake_debug_client() {

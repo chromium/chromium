@@ -31,6 +31,11 @@ namespace history_report {
 class UsageReportsBufferBackendTest : public testing::Test {
  public:
   UsageReportsBufferBackendTest() {}
+
+  UsageReportsBufferBackendTest(const UsageReportsBufferBackendTest&) = delete;
+  UsageReportsBufferBackendTest& operator=(
+      const UsageReportsBufferBackendTest&) = delete;
+
   ~UsageReportsBufferBackendTest() override {}
 
  protected:
@@ -42,9 +47,6 @@ class UsageReportsBufferBackendTest : public testing::Test {
 
   std::unique_ptr<UsageReportsBufferBackend> buffer_;
   base::ScopedTempDir temp_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsageReportsBufferBackendTest);
 };
 
 TEST_F(UsageReportsBufferBackendTest, AddTypedVisit) {

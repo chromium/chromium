@@ -25,6 +25,11 @@ class UsbPrinterNotificationController {
   static std::unique_ptr<UsbPrinterNotificationController> Create(
       Profile* profile);
 
+  UsbPrinterNotificationController(const UsbPrinterNotificationController&) =
+      delete;
+  UsbPrinterNotificationController& operator=(
+      const UsbPrinterNotificationController&) = delete;
+
   virtual ~UsbPrinterNotificationController() = default;
 
   // Creates a notification for an ephemeral printer. This is a no-op if there
@@ -49,8 +54,6 @@ class UsbPrinterNotificationController {
 
  protected:
   UsbPrinterNotificationController() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbPrinterNotificationController);
 };
 
 }  // namespace ash

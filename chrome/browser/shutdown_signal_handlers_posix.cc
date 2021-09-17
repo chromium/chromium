@@ -78,6 +78,10 @@ class ShutdownDetector : public base::PlatformThread::Delegate {
       int shutdown_fd,
       base::OnceCallback<void(int)> shutdown_callback,
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
+
+  ShutdownDetector(const ShutdownDetector&) = delete;
+  ShutdownDetector& operator=(const ShutdownDetector&) = delete;
+
   ~ShutdownDetector() override;
 
   // base::PlatformThread::Delegate:
@@ -87,8 +91,6 @@ class ShutdownDetector : public base::PlatformThread::Delegate {
   const int shutdown_fd_;
   base::OnceCallback<void(int)> shutdown_callback_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownDetector);
 };
 
 ShutdownDetector::ShutdownDetector(

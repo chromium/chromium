@@ -78,12 +78,14 @@ struct DialPendingRequest {
   DialPendingRequest(std::unique_ptr<DialURLFetcher> fetcher,
                      CallbackType callback)
       : fetcher(std::move(fetcher)), callback(std::move(callback)) {}
+
+  DialPendingRequest(const DialPendingRequest&) = delete;
+  DialPendingRequest& operator=(const DialPendingRequest&) = delete;
+
   ~DialPendingRequest() = default;
 
   std::unique_ptr<DialURLFetcher> fetcher;
   CallbackType callback;
-
-  DISALLOW_COPY_AND_ASSIGN(DialPendingRequest);
 };
 
 // Keeps track of all ongoing custom DIAL launch activities, and is the source
@@ -107,6 +109,10 @@ class DialActivityManager {
   using LaunchAppCallback = base::OnceCallback<void(bool)>;
 
   explicit DialActivityManager(DialAppDiscoveryService* app_discovery_service);
+
+  DialActivityManager(const DialActivityManager&) = delete;
+  DialActivityManager& operator=(const DialActivityManager&) = delete;
+
   virtual ~DialActivityManager();
 
   // Adds |activity| to the manager. This call is valid only if there is no
@@ -207,7 +213,6 @@ class DialActivityManager {
   DialAppDiscoveryService* const app_discovery_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(DialActivityManager);
 };
 
 }  // namespace media_router

@@ -31,6 +31,12 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
   ChromeVoxPanelWebContentsObserver(content::WebContents* web_contents,
                                     ChromeVoxPanel* panel)
       : content::WebContentsObserver(web_contents), panel_(panel) {}
+
+  ChromeVoxPanelWebContentsObserver(const ChromeVoxPanelWebContentsObserver&) =
+      delete;
+  ChromeVoxPanelWebContentsObserver& operator=(
+      const ChromeVoxPanelWebContentsObserver&) = delete;
+
   ~ChromeVoxPanelWebContentsObserver() override {}
 
   void DidFinishNavigation(
@@ -50,8 +56,6 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
 
  private:
   ChromeVoxPanel* panel_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVoxPanelWebContentsObserver);
 };
 
 ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context)

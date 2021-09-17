@@ -31,6 +31,11 @@ class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
                                       public content::NotificationObserver {
  public:
   KeywordExtensionsDelegateImpl(Profile* profile, KeywordProvider* provider);
+
+  KeywordExtensionsDelegateImpl(const KeywordExtensionsDelegateImpl&) = delete;
+  KeywordExtensionsDelegateImpl& operator=(
+      const KeywordExtensionsDelegateImpl&) = delete;
+
   ~KeywordExtensionsDelegateImpl() override;
 
   // KeywordExtensionsDelegate:
@@ -88,8 +93,6 @@ class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
   // We need our input IDs to be unique across all profiles, so we keep a global
   // UID that each provider uses.
   static int global_input_uid_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeywordExtensionsDelegateImpl);
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_KEYWORD_EXTENSIONS_DELEGATE_IMPL_H_

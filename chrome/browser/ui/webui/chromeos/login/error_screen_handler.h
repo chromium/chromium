@@ -72,6 +72,10 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   using TView = ErrorScreenView;
 
   explicit ErrorScreenHandler(JSCallsContainer* js_calls_container);
+
+  ErrorScreenHandler(const ErrorScreenHandler&) = delete;
+  ErrorScreenHandler& operator=(const ErrorScreenHandler&) = delete;
+
   ~ErrorScreenHandler() override;
 
  private:
@@ -109,8 +113,6 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   bool showing_ = false;
 
   base::WeakPtrFactory<ErrorScreenHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorScreenHandler);
 };
 
 }  // namespace chromeos

@@ -292,6 +292,10 @@ MATCHER_P(EqualsCert,
 class WebviewLoginTest : public OobeBaseTest {
  public:
   WebviewLoginTest() = default;
+
+  WebviewLoginTest(const WebviewLoginTest&) = delete;
+  WebviewLoginTest& operator=(const WebviewLoginTest&) = delete;
+
   ~WebviewLoginTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -368,9 +372,6 @@ class WebviewLoginTest : public OobeBaseTest {
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebviewLoginTest);
 };
 
 /* is kGaiaCloseViewMessage enabled */

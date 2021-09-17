@@ -14,6 +14,10 @@
 class DevToolsServer {
  public:
   explicit DevToolsServer(const std::string& socket_name_prefix);
+
+  DevToolsServer(const DevToolsServer&) = delete;
+  DevToolsServer& operator=(const DevToolsServer&) = delete;
+
   ~DevToolsServer();
 
   // Opens linux abstract socket to be ready for remote debugging.
@@ -27,8 +31,6 @@ class DevToolsServer {
  private:
   std::string socket_name_;
   bool is_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsServer);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_DEVTOOLS_SERVER_H_

@@ -31,6 +31,10 @@ class MediaHistoryKeyedService : public KeyedService,
                                  public history::HistoryServiceObserver {
  public:
   explicit MediaHistoryKeyedService(Profile* profile);
+
+  MediaHistoryKeyedService(const MediaHistoryKeyedService&) = delete;
+  MediaHistoryKeyedService& operator=(const MediaHistoryKeyedService&) = delete;
+
   ~MediaHistoryKeyedService() override;
 
   static bool IsEnabled();
@@ -107,8 +111,6 @@ class MediaHistoryKeyedService : public KeyedService,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaHistoryKeyedService);
 };
 
 }  // namespace media_history

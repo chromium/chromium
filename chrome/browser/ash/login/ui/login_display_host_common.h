@@ -36,6 +36,10 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                                public SigninUI {
  public:
   LoginDisplayHostCommon();
+
+  LoginDisplayHostCommon(const LoginDisplayHostCommon&) = delete;
+  LoginDisplayHostCommon& operator=(const LoginDisplayHostCommon&) = delete;
+
   ~LoginDisplayHostCommon() override;
 
   // LoginDisplayHost:
@@ -149,8 +153,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   base::RepeatingClosure on_wizard_controller_created_for_tests_;
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplayHostCommon);
 };
 
 }  // namespace ash

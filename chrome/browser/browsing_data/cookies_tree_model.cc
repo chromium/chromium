@@ -352,6 +352,9 @@ class CookieTreeCookieNode : public CookieTreeNode {
       std::list<net::CanonicalCookie>::iterator cookie)
       : CookieTreeNode(base::UTF8ToUTF16(cookie->Name())), cookie_(cookie) {}
 
+  CookieTreeCookieNode(const CookieTreeCookieNode&) = delete;
+  CookieTreeCookieNode& operator=(const CookieTreeCookieNode&) = delete;
+
   ~CookieTreeCookieNode() override = default;
 
   // CookieTreeNode methods:
@@ -370,8 +373,6 @@ class CookieTreeCookieNode : public CookieTreeNode {
   // |cookie_| is expected to remain valid as long as the CookieTreeCookieNode
   // is valid.
   std::list<net::CanonicalCookie>::iterator cookie_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeCookieNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -387,6 +388,10 @@ class CookieTreeAppCacheNode : public CookieTreeNode {
       std::list<content::StorageUsageInfo>::iterator usage_info)
       : CookieTreeNode(base::UTF8ToUTF16(usage_info->origin.Serialize())),
         usage_info_(usage_info) {}
+
+  CookieTreeAppCacheNode(const CookieTreeAppCacheNode&) = delete;
+  CookieTreeAppCacheNode& operator=(const CookieTreeAppCacheNode&) = delete;
+
   ~CookieTreeAppCacheNode() override = default;
 
   void DeleteStoredObjects() override {
@@ -408,8 +413,6 @@ class CookieTreeAppCacheNode : public CookieTreeNode {
  private:
   // |usage_info_| is expected to remain valid as long as this node is valid.
   std::list<content::StorageUsageInfo>::iterator usage_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeAppCacheNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -425,6 +428,9 @@ class CookieTreeDatabaseNode : public CookieTreeNode {
       std::list<content::StorageUsageInfo>::iterator usage_info)
       : CookieTreeNode(base::UTF8ToUTF16(usage_info->origin.Serialize())),
         usage_info_(usage_info) {}
+
+  CookieTreeDatabaseNode(const CookieTreeDatabaseNode&) = delete;
+  CookieTreeDatabaseNode& operator=(const CookieTreeDatabaseNode&) = delete;
 
   ~CookieTreeDatabaseNode() override = default;
 
@@ -453,8 +459,6 @@ class CookieTreeDatabaseNode : public CookieTreeNode {
   // |database_info_| is expected to remain valid as long as the
   // CookieTreeDatabaseNode is valid.
   std::list<content::StorageUsageInfo>::iterator usage_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeDatabaseNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -469,6 +473,10 @@ class CookieTreeLocalStorageNode : public CookieTreeNode {
       : CookieTreeNode(
             base::UTF8ToUTF16(local_storage_info->origin.Serialize())),
         local_storage_info_(local_storage_info) {}
+
+  CookieTreeLocalStorageNode(const CookieTreeLocalStorageNode&) = delete;
+  CookieTreeLocalStorageNode& operator=(const CookieTreeLocalStorageNode&) =
+      delete;
 
   ~CookieTreeLocalStorageNode() override = default;
 
@@ -500,8 +508,6 @@ class CookieTreeLocalStorageNode : public CookieTreeNode {
   // |local_storage_info_| is expected to remain valid as long as the
   // CookieTreeLocalStorageNode is valid.
   std::list<content::StorageUsageInfo>::iterator local_storage_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeLocalStorageNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -516,6 +522,10 @@ class CookieTreeSessionStorageNode : public CookieTreeNode {
       : CookieTreeNode(
             base::UTF8ToUTF16(session_storage_info->origin.Serialize())),
         session_storage_info_(session_storage_info) {}
+
+  CookieTreeSessionStorageNode(const CookieTreeSessionStorageNode&) = delete;
+  CookieTreeSessionStorageNode& operator=(const CookieTreeSessionStorageNode&) =
+      delete;
 
   ~CookieTreeSessionStorageNode() override = default;
 
@@ -539,8 +549,6 @@ class CookieTreeSessionStorageNode : public CookieTreeNode {
   // |session_storage_info_| is expected to remain valid as long as the
   // CookieTreeSessionStorageNode is valid.
   std::list<content::StorageUsageInfo>::iterator session_storage_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeSessionStorageNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -554,6 +562,9 @@ class CookieTreeIndexedDBNode : public CookieTreeNode {
       std::list<content::StorageUsageInfo>::iterator usage_info)
       : CookieTreeNode(base::UTF8ToUTF16(usage_info->origin.Serialize())),
         usage_info_(usage_info) {}
+
+  CookieTreeIndexedDBNode(const CookieTreeIndexedDBNode&) = delete;
+  CookieTreeIndexedDBNode& operator=(const CookieTreeIndexedDBNode&) = delete;
 
   ~CookieTreeIndexedDBNode() override = default;
 
@@ -586,8 +597,6 @@ class CookieTreeIndexedDBNode : public CookieTreeNode {
   // |usage_info_| is expected to remain valid as long as the
   // CookieTreeIndexedDBNode is valid.
   std::list<content::StorageUsageInfo>::iterator usage_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeIndexedDBNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -604,6 +613,10 @@ class CookieTreeFileSystemNode : public CookieTreeNode {
           file_system_info)
       : CookieTreeNode(base::UTF8ToUTF16(file_system_info->origin.Serialize())),
         file_system_info_(file_system_info) {}
+
+  CookieTreeFileSystemNode(const CookieTreeFileSystemNode&) = delete;
+  CookieTreeFileSystemNode& operator=(const CookieTreeFileSystemNode&) = delete;
+
   ~CookieTreeFileSystemNode() override = default;
 
   void DeleteStoredObjects() override {
@@ -637,8 +650,6 @@ class CookieTreeFileSystemNode : public CookieTreeNode {
   // CookieTreeFileSystemNode is valid.
   std::list<browsing_data::FileSystemHelper::FileSystemInfo>::iterator
       file_system_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeFileSystemNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -652,6 +663,9 @@ class CookieTreeQuotaNode : public CookieTreeNode {
       std::list<BrowsingDataQuotaHelper::QuotaInfo>::iterator quota_info)
       : CookieTreeNode(base::UTF8ToUTF16(quota_info->host)),
         quota_info_(quota_info) {}
+
+  CookieTreeQuotaNode(const CookieTreeQuotaNode&) = delete;
+  CookieTreeQuotaNode& operator=(const CookieTreeQuotaNode&) = delete;
 
   ~CookieTreeQuotaNode() override = default;
 
@@ -674,8 +688,6 @@ class CookieTreeQuotaNode : public CookieTreeNode {
   // |quota_info_| is expected to remain valid as long as the
   // CookieTreeQuotaNode is valid.
   std::list<BrowsingDataQuotaHelper::QuotaInfo>::iterator quota_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeQuotaNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -689,6 +701,10 @@ class CookieTreeServiceWorkerNode : public CookieTreeNode {
       std::list<content::StorageUsageInfo>::iterator usage_info)
       : CookieTreeNode(base::UTF8ToUTF16(usage_info->origin.Serialize())),
         usage_info_(usage_info) {}
+
+  CookieTreeServiceWorkerNode(const CookieTreeServiceWorkerNode&) = delete;
+  CookieTreeServiceWorkerNode& operator=(const CookieTreeServiceWorkerNode&) =
+      delete;
 
   ~CookieTreeServiceWorkerNode() override {}
 
@@ -719,8 +735,6 @@ class CookieTreeServiceWorkerNode : public CookieTreeNode {
   // |usage_info_| is expected to remain valid as long as the
   // CookieTreeServiceWorkerNode is valid.
   std::list<content::StorageUsageInfo>::iterator usage_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeServiceWorkerNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -735,6 +749,10 @@ class CookieTreeSharedWorkerNode : public CookieTreeNode {
           shared_worker_info)
       : CookieTreeNode(base::UTF8ToUTF16(shared_worker_info->worker.spec())),
         shared_worker_info_(shared_worker_info) {}
+
+  CookieTreeSharedWorkerNode(const CookieTreeSharedWorkerNode&) = delete;
+  CookieTreeSharedWorkerNode& operator=(const CookieTreeSharedWorkerNode&) =
+      delete;
 
   ~CookieTreeSharedWorkerNode() override = default;
 
@@ -759,8 +777,6 @@ class CookieTreeSharedWorkerNode : public CookieTreeNode {
   // CookieTreeSharedWorkerNode is valid.
   std::list<browsing_data::SharedWorkerHelper::SharedWorkerInfo>::iterator
       shared_worker_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeSharedWorkerNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -774,6 +790,10 @@ class CookieTreeCacheStorageNode : public CookieTreeNode {
       std::list<content::StorageUsageInfo>::iterator usage_info)
       : CookieTreeNode(base::UTF8ToUTF16(usage_info->origin.Serialize())),
         usage_info_(usage_info) {}
+
+  CookieTreeCacheStorageNode(const CookieTreeCacheStorageNode&) = delete;
+  CookieTreeCacheStorageNode& operator=(const CookieTreeCacheStorageNode&) =
+      delete;
 
   ~CookieTreeCacheStorageNode() override = default;
 
@@ -803,8 +823,6 @@ class CookieTreeCacheStorageNode : public CookieTreeNode {
   // |usage_info_| is expected to remain valid as long as the
   // CookieTreeCacheStorageNode is valid.
   std::list<content::StorageUsageInfo>::iterator usage_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeCacheStorageNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -821,6 +839,10 @@ class CookieTreeMediaLicenseNode : public CookieTreeNode {
           iterator media_license_info)
       : CookieTreeNode(base::UTF8ToUTF16(media_license_info->origin.spec())),
         media_license_info_(media_license_info) {}
+
+  CookieTreeMediaLicenseNode(const CookieTreeMediaLicenseNode&) = delete;
+  CookieTreeMediaLicenseNode& operator=(const CookieTreeMediaLicenseNode&) =
+      delete;
 
   ~CookieTreeMediaLicenseNode() override = default;
 
@@ -845,8 +867,6 @@ class CookieTreeMediaLicenseNode : public CookieTreeNode {
   // CookieTreeMediaLicenseNode is valid.
   std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>::iterator
       media_license_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeMediaLicenseNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -901,6 +921,9 @@ class CookieTreeCookiesNode : public CookieTreeNode {
   CookieTreeCookiesNode()
       : CookieTreeNode(l10n_util::GetStringUTF16(IDS_COOKIES_COOKIES)) {}
 
+  CookieTreeCookiesNode(const CookieTreeCookiesNode&) = delete;
+  CookieTreeCookiesNode& operator=(const CookieTreeCookiesNode&) = delete;
+
   ~CookieTreeCookiesNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -910,9 +933,6 @@ class CookieTreeCookiesNode : public CookieTreeNode {
   void AddCookieNode(std::unique_ptr<CookieTreeCookieNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeCookiesNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -923,6 +943,9 @@ class CookieTreeCollectionNode : public CookieTreeNode {
   explicit CookieTreeCollectionNode(const std::u16string& title)
       : CookieTreeNode(title) {}
 
+  CookieTreeCollectionNode(const CookieTreeCollectionNode&) = delete;
+  CookieTreeCollectionNode& operator=(const CookieTreeCollectionNode&) = delete;
+
   ~CookieTreeCollectionNode() override = default;
 
   int64_t InclusiveSize() const final {
@@ -931,9 +954,6 @@ class CookieTreeCollectionNode : public CookieTreeNode {
                              return total + child->InclusiveSize();
                            });
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeCollectionNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -945,6 +965,9 @@ class CookieTreeAppCachesNode : public CookieTreeCollectionNode {
       : CookieTreeCollectionNode(
             l10n_util::GetStringUTF16(IDS_COOKIES_APPLICATION_CACHES)) {}
 
+  CookieTreeAppCachesNode(const CookieTreeAppCachesNode&) = delete;
+  CookieTreeAppCachesNode& operator=(const CookieTreeAppCachesNode&) = delete;
+
   ~CookieTreeAppCachesNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -954,9 +977,6 @@ class CookieTreeAppCachesNode : public CookieTreeCollectionNode {
   void AddAppCacheNode(std::unique_ptr<CookieTreeAppCacheNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeAppCachesNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -968,6 +988,9 @@ class CookieTreeDatabasesNode : public CookieTreeCollectionNode {
       : CookieTreeCollectionNode(
             l10n_util::GetStringUTF16(IDS_COOKIES_WEB_DATABASES)) {}
 
+  CookieTreeDatabasesNode(const CookieTreeDatabasesNode&) = delete;
+  CookieTreeDatabasesNode& operator=(const CookieTreeDatabasesNode&) = delete;
+
   ~CookieTreeDatabasesNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -977,9 +1000,6 @@ class CookieTreeDatabasesNode : public CookieTreeCollectionNode {
   void AddDatabaseNode(std::unique_ptr<CookieTreeDatabaseNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeDatabasesNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -991,6 +1011,10 @@ class CookieTreeLocalStoragesNode : public CookieTreeCollectionNode {
       : CookieTreeCollectionNode(
             l10n_util::GetStringUTF16(IDS_COOKIES_LOCAL_STORAGE)) {}
 
+  CookieTreeLocalStoragesNode(const CookieTreeLocalStoragesNode&) = delete;
+  CookieTreeLocalStoragesNode& operator=(const CookieTreeLocalStoragesNode&) =
+      delete;
+
   ~CookieTreeLocalStoragesNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -1000,9 +1024,6 @@ class CookieTreeLocalStoragesNode : public CookieTreeCollectionNode {
   void AddLocalStorageNode(std::unique_ptr<CookieTreeLocalStorageNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeLocalStoragesNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1014,6 +1035,10 @@ class CookieTreeSessionStoragesNode : public CookieTreeNode {
       : CookieTreeNode(l10n_util::GetStringUTF16(IDS_COOKIES_SESSION_STORAGE)) {
   }
 
+  CookieTreeSessionStoragesNode(const CookieTreeSessionStoragesNode&) = delete;
+  CookieTreeSessionStoragesNode& operator=(
+      const CookieTreeSessionStoragesNode&) = delete;
+
   ~CookieTreeSessionStoragesNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -1024,9 +1049,6 @@ class CookieTreeSessionStoragesNode : public CookieTreeNode {
       std::unique_ptr<CookieTreeSessionStorageNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeSessionStoragesNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1038,6 +1060,9 @@ class CookieTreeIndexedDBsNode : public CookieTreeCollectionNode {
       : CookieTreeCollectionNode(
             l10n_util::GetStringUTF16(IDS_COOKIES_INDEXED_DBS)) {}
 
+  CookieTreeIndexedDBsNode(const CookieTreeIndexedDBsNode&) = delete;
+  CookieTreeIndexedDBsNode& operator=(const CookieTreeIndexedDBsNode&) = delete;
+
   ~CookieTreeIndexedDBsNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -1047,9 +1072,6 @@ class CookieTreeIndexedDBsNode : public CookieTreeCollectionNode {
   void AddIndexedDBNode(std::unique_ptr<CookieTreeIndexedDBNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeIndexedDBsNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1061,6 +1083,10 @@ class CookieTreeFileSystemsNode : public CookieTreeCollectionNode {
       : CookieTreeCollectionNode(
             l10n_util::GetStringUTF16(IDS_COOKIES_FILE_SYSTEMS)) {}
 
+  CookieTreeFileSystemsNode(const CookieTreeFileSystemsNode&) = delete;
+  CookieTreeFileSystemsNode& operator=(const CookieTreeFileSystemsNode&) =
+      delete;
+
   ~CookieTreeFileSystemsNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -1070,9 +1096,6 @@ class CookieTreeFileSystemsNode : public CookieTreeCollectionNode {
   void AddFileSystemNode(std::unique_ptr<CookieTreeFileSystemNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeFileSystemsNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1084,6 +1107,10 @@ class CookieTreeServiceWorkersNode : public CookieTreeCollectionNode {
       : CookieTreeCollectionNode(
             l10n_util::GetStringUTF16(IDS_COOKIES_SERVICE_WORKERS)) {}
 
+  CookieTreeServiceWorkersNode(const CookieTreeServiceWorkersNode&) = delete;
+  CookieTreeServiceWorkersNode& operator=(const CookieTreeServiceWorkersNode&) =
+      delete;
+
   ~CookieTreeServiceWorkersNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -1094,9 +1121,6 @@ class CookieTreeServiceWorkersNode : public CookieTreeCollectionNode {
       std::unique_ptr<CookieTreeServiceWorkerNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeServiceWorkersNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1107,6 +1131,10 @@ class CookieTreeSharedWorkersNode : public CookieTreeNode {
   CookieTreeSharedWorkersNode()
       : CookieTreeNode(l10n_util::GetStringUTF16(IDS_COOKIES_SHARED_WORKERS)) {}
 
+  CookieTreeSharedWorkersNode(const CookieTreeSharedWorkersNode&) = delete;
+  CookieTreeSharedWorkersNode& operator=(const CookieTreeSharedWorkersNode&) =
+      delete;
+
   ~CookieTreeSharedWorkersNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -1116,9 +1144,6 @@ class CookieTreeSharedWorkersNode : public CookieTreeNode {
   void AddSharedWorkerNode(std::unique_ptr<CookieTreeSharedWorkerNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeSharedWorkersNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1130,6 +1155,10 @@ class CookieTreeCacheStoragesNode : public CookieTreeCollectionNode {
       : CookieTreeCollectionNode(
             l10n_util::GetStringUTF16(IDS_COOKIES_CACHE_STORAGE)) {}
 
+  CookieTreeCacheStoragesNode(const CookieTreeCacheStoragesNode&) = delete;
+  CookieTreeCacheStoragesNode& operator=(const CookieTreeCacheStoragesNode&) =
+      delete;
+
   ~CookieTreeCacheStoragesNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -1139,9 +1168,6 @@ class CookieTreeCacheStoragesNode : public CookieTreeCollectionNode {
   void AddCacheStorageNode(std::unique_ptr<CookieTreeCacheStorageNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeCacheStoragesNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1153,6 +1179,10 @@ class CookieTreeMediaLicensesNode : public CookieTreeCollectionNode {
       : CookieTreeCollectionNode(
             l10n_util::GetStringUTF16(IDS_COOKIES_MEDIA_LICENSES)) {}
 
+  CookieTreeMediaLicensesNode(const CookieTreeMediaLicensesNode&) = delete;
+  CookieTreeMediaLicensesNode& operator=(const CookieTreeMediaLicensesNode&) =
+      delete;
+
   ~CookieTreeMediaLicensesNode() override = default;
 
   DetailedInfo GetDetailedInfo() const override {
@@ -1162,9 +1192,6 @@ class CookieTreeMediaLicensesNode : public CookieTreeCollectionNode {
   void AddMediaLicenseNode(std::unique_ptr<CookieTreeMediaLicenseNode> child) {
     AddChildSortedByTitle(std::move(child));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieTreeMediaLicensesNode);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -197,6 +197,12 @@ class MockProfileSharedRenderProcessHostFactory
     : public content::RenderProcessHostFactory {
  public:
   MockProfileSharedRenderProcessHostFactory() {}
+
+  MockProfileSharedRenderProcessHostFactory(
+      const MockProfileSharedRenderProcessHostFactory&) = delete;
+  MockProfileSharedRenderProcessHostFactory& operator=(
+      const MockProfileSharedRenderProcessHostFactory&) = delete;
+
   ~MockProfileSharedRenderProcessHostFactory() override;
 
   // RPH created with this factory are owned by it.  If the RPH is destroyed
@@ -227,13 +233,15 @@ class MockProfileSharedRenderProcessHostFactory
   mutable std::map<content::BrowserContext*,
                    std::unique_ptr<content::MockRenderProcessHost>>
       rph_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockProfileSharedRenderProcessHostFactory);
 };
 
 class ProfileState {
  public:
   explicit ProfileState(MockProfileSharedRenderProcessHostFactory* rph_factory);
+
+  ProfileState(const ProfileState&) = delete;
+  ProfileState& operator=(const ProfileState&) = delete;
+
   ~ProfileState();
 
   MediaGalleriesPreferences* GetMediaGalleriesPrefs();
@@ -281,8 +289,6 @@ class ProfileState {
 
   std::vector<std::u16string> compare_names_read_;
   std::vector<std::u16string> compare_names_all_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileState);
 };
 
 std::u16string GetExpectedFolderName(const base::FilePath& path) {
@@ -298,6 +304,10 @@ std::u16string GetExpectedFolderName(const base::FilePath& path) {
 class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
  public:
   MediaFileSystemRegistryTest() = default;
+
+  MediaFileSystemRegistryTest(const MediaFileSystemRegistryTest&) = delete;
+  MediaFileSystemRegistryTest& operator=(const MediaFileSystemRegistryTest&) =
+      delete;
 
   ~MediaFileSystemRegistryTest() override = default;
 
@@ -400,8 +410,6 @@ class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
   MockProfileSharedRenderProcessHostFactory rph_factory_;
 
   std::vector<std::unique_ptr<ProfileState>> profile_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileSystemRegistryTest);
 };
 
 namespace {

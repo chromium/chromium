@@ -76,6 +76,12 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
   };
 
   explicit DeviceCommandStartCRDSessionJob(Delegate* crd_host_delegate);
+
+  DeviceCommandStartCRDSessionJob(const DeviceCommandStartCRDSessionJob&) =
+      delete;
+  DeviceCommandStartCRDSessionJob& operator=(
+      const DeviceCommandStartCRDSessionJob&) = delete;
+
   ~DeviceCommandStartCRDSessionJob() override;
 
   // RemoteCommandJob:
@@ -161,8 +167,6 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
   bool terminate_session_attempted_ = false;
 
   base::WeakPtrFactory<DeviceCommandStartCRDSessionJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandStartCRDSessionJob);
 };
 
 }  // namespace policy

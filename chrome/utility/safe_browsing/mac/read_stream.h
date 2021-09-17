@@ -46,6 +46,10 @@ class ReadStream {
 class FileReadStream : public ReadStream {
  public:
   explicit FileReadStream(int fd);
+
+  FileReadStream(const FileReadStream&) = delete;
+  FileReadStream& operator=(const FileReadStream&) = delete;
+
   ~FileReadStream() override;
 
   // ReadStream:
@@ -54,8 +58,6 @@ class FileReadStream : public ReadStream {
 
  private:
   int fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileReadStream);
 };
 
 // An implementation of ReadStream that operates on a byte buffer. This class
@@ -63,6 +65,10 @@ class FileReadStream : public ReadStream {
 class MemoryReadStream : public ReadStream {
  public:
   MemoryReadStream(const uint8_t* data, size_t size);
+
+  MemoryReadStream(const MemoryReadStream&) = delete;
+  MemoryReadStream& operator=(const MemoryReadStream&) = delete;
+
   ~MemoryReadStream() override;
 
   // ReadStream:
@@ -76,9 +82,6 @@ class MemoryReadStream : public ReadStream {
   const uint8_t* data_;
   size_t size_;
   off_t offset_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MemoryReadStream);
 };
 
 // Reads the given |stream| until end-of-stream is reached, storying the read

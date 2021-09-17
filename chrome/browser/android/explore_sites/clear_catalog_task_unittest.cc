@@ -25,6 +25,11 @@ namespace explore_sites {
 class ExploreSitesClearCatalogTest : public TaskTestBase {
  public:
   ExploreSitesClearCatalogTest() = default;
+
+  ExploreSitesClearCatalogTest(const ExploreSitesClearCatalogTest&) = delete;
+  ExploreSitesClearCatalogTest& operator=(const ExploreSitesClearCatalogTest&) =
+      delete;
+
   ~ExploreSitesClearCatalogTest() override = default;
 
   void SetUp() override {
@@ -125,8 +130,6 @@ class ExploreSitesClearCatalogTest : public TaskTestBase {
 
  private:
   std::unique_ptr<ExploreSitesStore> store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesClearCatalogTest);
 };
 
 TEST_F(ExploreSitesClearCatalogTest, StoreFailure) {

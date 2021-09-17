@@ -50,6 +50,10 @@ class ExtensionActionViewController
       Browser* browser,
       ExtensionsContainer* extensions_container);
 
+  ExtensionActionViewController(const ExtensionActionViewController&) = delete;
+  ExtensionActionViewController& operator=(
+      const ExtensionActionViewController&) = delete;
+
   ~ExtensionActionViewController() override;
 
   // ToolbarActionViewController:
@@ -210,8 +214,6 @@ class ExtensionActionViewController
       popup_host_observation_{this};
 
   base::WeakPtrFactory<ExtensionActionViewController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionViewController);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_

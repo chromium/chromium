@@ -25,6 +25,12 @@ namespace arc {
 class ArcDocumentsProviderAsyncFileUtil : public storage::AsyncFileUtil {
  public:
   ArcDocumentsProviderAsyncFileUtil();
+
+  ArcDocumentsProviderAsyncFileUtil(const ArcDocumentsProviderAsyncFileUtil&) =
+      delete;
+  ArcDocumentsProviderAsyncFileUtil& operator=(
+      const ArcDocumentsProviderAsyncFileUtil&) = delete;
+
   ~ArcDocumentsProviderAsyncFileUtil() override;
 
   // storage::AsyncFileUtil overrides.
@@ -93,9 +99,6 @@ class ArcDocumentsProviderAsyncFileUtil : public storage::AsyncFileUtil {
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& url,
       CreateSnapshotFileCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderAsyncFileUtil);
 };
 
 }  // namespace arc

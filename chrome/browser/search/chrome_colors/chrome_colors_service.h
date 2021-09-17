@@ -27,6 +27,10 @@ extern const int kOtherColorId;
 class ChromeColorsService : public KeyedService {
  public:
   explicit ChromeColorsService(Profile* profile);
+
+  ChromeColorsService(const ChromeColorsService&) = delete;
+  ChromeColorsService& operator=(const ChromeColorsService&) = delete;
+
   ~ChromeColorsService() override;
 
   // Returns id for the given |color| if it is in the predefined set, and
@@ -76,8 +80,6 @@ class ChromeColorsService : public KeyedService {
   std::unique_ptr<ThemeService::ThemeReinstaller> prev_theme_reinstaller_;
 
   base::WeakPtrFactory<ChromeColorsService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeColorsService);
 };
 
 }  // namespace chrome_colors

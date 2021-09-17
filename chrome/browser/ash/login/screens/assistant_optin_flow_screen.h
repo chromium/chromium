@@ -29,6 +29,10 @@ class AssistantOptInFlowScreen : public BaseScreen {
 
   AssistantOptInFlowScreen(AssistantOptInFlowScreenView* view,
                            const ScreenExitCallback& exit_callback);
+
+  AssistantOptInFlowScreen(const AssistantOptInFlowScreen&) = delete;
+  AssistantOptInFlowScreen& operator=(const AssistantOptInFlowScreen&) = delete;
+
   ~AssistantOptInFlowScreen() override;
 
   // Called when view is destroyed so there's no dead reference to it.
@@ -55,8 +59,6 @@ class AssistantOptInFlowScreen : public BaseScreen {
  private:
   AssistantOptInFlowScreenView* view_;
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInFlowScreen);
 };
 
 }  // namespace ash

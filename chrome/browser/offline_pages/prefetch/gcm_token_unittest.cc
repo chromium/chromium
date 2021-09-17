@@ -32,6 +32,11 @@ const char kAppIdForTest[] = "com.google.test.PrefetchInstanceIDProxyTest";
 class PrefetchInstanceIDProxyTest : public testing::Test {
  public:
   PrefetchInstanceIDProxyTest() = default;
+
+  PrefetchInstanceIDProxyTest(const PrefetchInstanceIDProxyTest&) = delete;
+  PrefetchInstanceIDProxyTest& operator=(const PrefetchInstanceIDProxyTest&) =
+      delete;
+
   ~PrefetchInstanceIDProxyTest() override = default;
 
   // testing::Test:
@@ -62,8 +67,6 @@ class PrefetchInstanceIDProxyTest : public testing::Test {
   bool async_operation_completed_ = false;
   base::OnceClosure async_operation_completed_callback_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchInstanceIDProxyTest);
 };
 
 void PrefetchInstanceIDProxyTest::SetUp() {

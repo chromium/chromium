@@ -33,6 +33,10 @@ class ExtensionPrefs;
 class PreferenceEventRouter : public ProfileObserver {
  public:
   explicit PreferenceEventRouter(Profile* profile);
+
+  PreferenceEventRouter(const PreferenceEventRouter&) = delete;
+  PreferenceEventRouter& operator=(const PreferenceEventRouter&) = delete;
+
   ~PreferenceEventRouter() override;
 
  private:
@@ -53,8 +57,6 @@ class PreferenceEventRouter : public ProfileObserver {
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PreferenceEventRouter);
 };
 
 // The class containing the implementation for extension-controlled preference
@@ -108,6 +110,10 @@ class PreferenceAPI : public PreferenceAPIBase,
                       public ContentSettingsStore::Observer {
  public:
   explicit PreferenceAPI(content::BrowserContext* context);
+
+  PreferenceAPI(const PreferenceAPI&) = delete;
+  PreferenceAPI& operator=(const PreferenceAPI&) = delete;
+
   ~PreferenceAPI() override;
 
   // KeyedService implementation.
@@ -148,8 +154,6 @@ class PreferenceAPI : public PreferenceAPIBase,
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<PreferenceEventRouter> preference_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreferenceAPI);
 };
 
 class PrefTransformerInterface {

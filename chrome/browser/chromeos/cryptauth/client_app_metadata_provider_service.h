@@ -48,6 +48,12 @@ class ClientAppMetadataProviderService
       PrefService* pref_service,
       NetworkStateHandler* network_state_handler,
       instance_id::InstanceIDProfileService* instance_id_profile_service);
+
+  ClientAppMetadataProviderService(const ClientAppMetadataProviderService&) =
+      delete;
+  ClientAppMetadataProviderService& operator=(
+      const ClientAppMetadataProviderService&) = delete;
+
   ~ClientAppMetadataProviderService() override;
 
   // device_sync::ClientAppMetadataProvider:
@@ -103,8 +109,6 @@ class ClientAppMetadataProviderService
   std::list<GetMetadataCallback> pending_callbacks_;
   base::WeakPtrFactory<ClientAppMetadataProviderService> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientAppMetadataProviderService);
 };
 
 }  // namespace chromeos

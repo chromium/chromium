@@ -80,6 +80,10 @@ class ArcProcessService : public KeyedService,
 
   ArcProcessService(content::BrowserContext* context,
                     ArcBridgeService* bridge_service);
+
+  ArcProcessService(const ArcProcessService&) = delete;
+  ArcProcessService& operator=(const ArcProcessService&) = delete;
+
   ~ArcProcessService() override;
 
   // TODO(afakhry): The value of this delay was chosen to match the refresh time
@@ -202,8 +206,6 @@ class ArcProcessService : public KeyedService,
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
   base::WeakPtrFactory<ArcProcessService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProcessService);
 };
 
 }  // namespace arc

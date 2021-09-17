@@ -196,6 +196,10 @@ ash::ShelfItemDelegate::AppMenuItems GetAppMenuItems(
 class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   ArcAppShelfBrowserTest() = default;
+
+  ArcAppShelfBrowserTest(const ArcAppShelfBrowserTest&) = delete;
+  ArcAppShelfBrowserTest& operator=(const ArcAppShelfBrowserTest&) = delete;
+
   ~ArcAppShelfBrowserTest() override = default;
 
  protected:
@@ -355,17 +359,18 @@ class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
  private:
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShelfBrowserTest);
 };
 
 class ArcAppDeferredShelfBrowserTest : public ArcAppShelfBrowserTest {
  public:
   ArcAppDeferredShelfBrowserTest() = default;
-  ~ArcAppDeferredShelfBrowserTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppDeferredShelfBrowserTest);
+  ArcAppDeferredShelfBrowserTest(const ArcAppDeferredShelfBrowserTest&) =
+      delete;
+  ArcAppDeferredShelfBrowserTest& operator=(
+      const ArcAppDeferredShelfBrowserTest&) = delete;
+
+  ~ArcAppDeferredShelfBrowserTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(ArcAppDeferredShelfBrowserTest,
@@ -420,15 +425,18 @@ class ArcAppDeferredShelfWithParamsBrowserTest
       public testing::WithParamInterface<TestParameter> {
  public:
   ArcAppDeferredShelfWithParamsBrowserTest() = default;
+
+  ArcAppDeferredShelfWithParamsBrowserTest(
+      const ArcAppDeferredShelfWithParamsBrowserTest&) = delete;
+  ArcAppDeferredShelfWithParamsBrowserTest& operator=(
+      const ArcAppDeferredShelfWithParamsBrowserTest&) = delete;
+
   ~ArcAppDeferredShelfWithParamsBrowserTest() override = default;
 
  protected:
   bool is_pinned() const { return std::get<1>(GetParam()); }
 
   TestAction test_action() const { return std::get<0>(GetParam()); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppDeferredShelfWithParamsBrowserTest);
 };
 
 // This tests simulates normal workflow for starting ARC app in deferred mode.

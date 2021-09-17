@@ -41,6 +41,11 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   static const int kCaptionButtonBottomPadding;
 
   OpaqueBrowserFrameViewLayout();
+
+  OpaqueBrowserFrameViewLayout(const OpaqueBrowserFrameViewLayout&) = delete;
+  OpaqueBrowserFrameViewLayout& operator=(const OpaqueBrowserFrameViewLayout&) =
+      delete;
+
   ~OpaqueBrowserFrameViewLayout() override;
 
   void set_delegate(OpaqueBrowserFrameViewLayoutDelegate* delegate) {
@@ -239,8 +244,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
 
   bool is_window_controls_overlay_enabled_ = false;
   CaptionButtonPlaceholderContainer* caption_button_placeholder_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpaqueBrowserFrameViewLayout);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_LAYOUT_H_

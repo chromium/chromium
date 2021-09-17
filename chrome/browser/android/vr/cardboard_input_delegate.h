@@ -17,6 +17,10 @@ namespace vr {
 class CardboardInputDelegate : public InputDelegate {
  public:
   explicit CardboardInputDelegate(gvr::GvrApi* gvr_api);
+
+  CardboardInputDelegate(const CardboardInputDelegate&) = delete;
+  CardboardInputDelegate& operator=(const CardboardInputDelegate&) = delete;
+
   ~CardboardInputDelegate() override;
 
   // InputDelegate implementation.
@@ -35,8 +39,6 @@ class CardboardInputDelegate : public InputDelegate {
   gvr::GvrApi* gvr_api_;
   bool cardboard_trigger_pressed_ = false;
   bool cardboard_trigger_clicked_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CardboardInputDelegate);
 };
 
 }  // namespace vr

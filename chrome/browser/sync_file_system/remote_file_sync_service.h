@@ -83,6 +83,10 @@ class RemoteFileSyncService {
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // This is called when RemoteFileSyncService updates its internal queue
@@ -96,9 +100,6 @@ class RemoteFileSyncService {
     virtual void OnRemoteServiceStateUpdated(
         RemoteServiceState state,
         const std::string& description) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   struct Version {
@@ -132,6 +133,10 @@ class RemoteFileSyncService {
       std::set<BrowserContextKeyedServiceFactory*>* factories);
 
   RemoteFileSyncService() {}
+
+  RemoteFileSyncService(const RemoteFileSyncService&) = delete;
+  RemoteFileSyncService& operator=(const RemoteFileSyncService&) = delete;
+
   virtual ~RemoteFileSyncService() {}
 
   // Adds and removes observers.
@@ -198,9 +203,6 @@ class RemoteFileSyncService {
   virtual void SetSyncEnabled(bool enabled) = 0;
 
   virtual void PromoteDemotedChanges(base::OnceClosure callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteFileSyncService);
 };
 
 }  // namespace sync_file_system

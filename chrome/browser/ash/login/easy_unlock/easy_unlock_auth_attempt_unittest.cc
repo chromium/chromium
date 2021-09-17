@@ -69,6 +69,9 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
         auth_type_(proximity_auth::mojom::AuthType::USER_CLICK),
         account_id_(account_id) {}
 
+  TestLockHandler(const TestLockHandler&) = delete;
+  TestLockHandler& operator=(const TestLockHandler&) = delete;
+
   ~TestLockHandler() override {}
 
   void set_state(AuthState value) { state_ = value; }
@@ -152,13 +155,17 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   proximity_auth::mojom::AuthType auth_type_;
   const AccountId account_id_;
   std::string expected_secret_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLockHandler);
 };
 
 class EasyUnlockAuthAttemptUnlockTest : public testing::Test {
  public:
   EasyUnlockAuthAttemptUnlockTest() {}
+
+  EasyUnlockAuthAttemptUnlockTest(const EasyUnlockAuthAttemptUnlockTest&) =
+      delete;
+  EasyUnlockAuthAttemptUnlockTest& operator=(
+      const EasyUnlockAuthAttemptUnlockTest&) = delete;
+
   ~EasyUnlockAuthAttemptUnlockTest() override {}
 
   void SetUp() override {
@@ -184,9 +191,6 @@ class EasyUnlockAuthAttemptUnlockTest : public testing::Test {
 
   const AccountId test_account_id1_ = AccountId::FromUserEmail(kTestUser1);
   const AccountId test_account_id2_ = AccountId::FromUserEmail(kTestUser2);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockAuthAttemptUnlockTest);
 };
 
 TEST_F(EasyUnlockAuthAttemptUnlockTest, StartWhenNotLocked) {
@@ -291,6 +295,12 @@ TEST_F(EasyUnlockAuthAttemptUnlockTest, FinalizeUnlockCalledForWrongUser) {
 class EasyUnlockAuthAttemptSigninTest : public testing::Test {
  public:
   EasyUnlockAuthAttemptSigninTest() {}
+
+  EasyUnlockAuthAttemptSigninTest(const EasyUnlockAuthAttemptSigninTest&) =
+      delete;
+  EasyUnlockAuthAttemptSigninTest& operator=(
+      const EasyUnlockAuthAttemptSigninTest&) = delete;
+
   ~EasyUnlockAuthAttemptSigninTest() override {}
 
   void SetUp() override {
@@ -316,9 +326,6 @@ class EasyUnlockAuthAttemptSigninTest : public testing::Test {
 
   const AccountId test_account_id1_ = AccountId::FromUserEmail(kTestUser1);
   const AccountId test_account_id2_ = AccountId::FromUserEmail(kTestUser2);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockAuthAttemptSigninTest);
 };
 
 TEST_F(EasyUnlockAuthAttemptSigninTest, StartWhenNotLocked) {

@@ -71,6 +71,9 @@ class WinConsole : public SimpleConsole {
     ::AllocConsole();
   }
 
+  WinConsole(const WinConsole&) = delete;
+  WinConsole& operator=(const WinConsole&) = delete;
+
   ~WinConsole() override { ::FreeConsole(); }
 
   bool Init() override { return SetIOHandles(); }
@@ -123,8 +126,6 @@ class WinConsole : public SimpleConsole {
   // implemented as pipes but they have non-documented protocol.
   HANDLE std_out_;
   HANDLE std_in_;
-
-  DISALLOW_COPY_AND_ASSIGN(WinConsole);
 };
 
 }  // namespace

@@ -35,6 +35,11 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
                             chrome::PwaInProductHelpState iph_state,
                             PrefService* prefs,
                             feature_engagement::Tracker* tracker);
+
+  PWAConfirmationBubbleView(const PWAConfirmationBubbleView&) = delete;
+  PWAConfirmationBubbleView& operator=(const PWAConfirmationBubbleView&) =
+      delete;
+
   ~PWAConfirmationBubbleView() override;
 
   // LocationBarBubbleDelegateView:
@@ -53,8 +58,6 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   chrome::PwaInProductHelpState iph_state_;
   PrefService* prefs_;
   feature_engagement::Tracker* tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PWAConfirmationBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_PWA_CONFIRMATION_BUBBLE_VIEW_H_

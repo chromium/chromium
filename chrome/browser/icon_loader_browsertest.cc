@@ -25,6 +25,9 @@ class TestIconLoader {
   explicit TestIconLoader(base::OnceClosure quit_closure)
       : quit_closure_(std::move(quit_closure)) {}
 
+  TestIconLoader(const TestIconLoader&) = delete;
+  TestIconLoader& operator=(const TestIconLoader&) = delete;
+
   ~TestIconLoader() {
     if (!quit_closure_.is_null()) {
       std::move(quit_closure_).Run();
@@ -59,8 +62,6 @@ class TestIconLoader {
 
   bool load_succeeded_ = false;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestIconLoader);
 };
 
 #if !((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(MEMORY_SANITIZER))

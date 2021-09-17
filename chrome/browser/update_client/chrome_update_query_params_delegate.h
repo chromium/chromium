@@ -14,6 +14,12 @@ class ChromeUpdateQueryParamsDelegate
     : public update_client::UpdateQueryParamsDelegate {
  public:
   ChromeUpdateQueryParamsDelegate();
+
+  ChromeUpdateQueryParamsDelegate(const ChromeUpdateQueryParamsDelegate&) =
+      delete;
+  ChromeUpdateQueryParamsDelegate& operator=(
+      const ChromeUpdateQueryParamsDelegate&) = delete;
+
   ~ChromeUpdateQueryParamsDelegate() override;
 
   // Gets the LazyInstance for ChromeUpdateQueryParamsDelegate.
@@ -25,9 +31,6 @@ class ChromeUpdateQueryParamsDelegate
   // Returns the language for the present locale. Possible return values are
   // standard tags for languages, such as "en", "en-US", "de", "fr", "af", etc.
   static const char* GetLang();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeUpdateQueryParamsDelegate);
 };
 
 #endif  // CHROME_BROWSER_UPDATE_CLIENT_CHROME_UPDATE_QUERY_PARAMS_DELEGATE_H_

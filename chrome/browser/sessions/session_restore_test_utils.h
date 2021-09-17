@@ -25,12 +25,16 @@ class AlwayLoadSessionRestorePolicy
 class ScopedAlwaysLoadSessionRestoreTestPolicy {
  public:
   ScopedAlwaysLoadSessionRestoreTestPolicy();
+
+  ScopedAlwaysLoadSessionRestoreTestPolicy(
+      const ScopedAlwaysLoadSessionRestoreTestPolicy&) = delete;
+  ScopedAlwaysLoadSessionRestoreTestPolicy& operator=(
+      const ScopedAlwaysLoadSessionRestoreTestPolicy&) = delete;
+
   ~ScopedAlwaysLoadSessionRestoreTestPolicy();
 
  private:
   AlwayLoadSessionRestorePolicy policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAlwaysLoadSessionRestoreTestPolicy);
 };
 
 }  // namespace testing

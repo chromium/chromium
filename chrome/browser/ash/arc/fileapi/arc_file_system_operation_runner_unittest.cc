@@ -37,6 +37,12 @@ constexpr char kUrl[] = "content://test";
 class ArcFileSystemOperationRunnerTest : public testing::Test {
  public:
   ArcFileSystemOperationRunnerTest() = default;
+
+  ArcFileSystemOperationRunnerTest(const ArcFileSystemOperationRunnerTest&) =
+      delete;
+  ArcFileSystemOperationRunnerTest& operator=(
+      const ArcFileSystemOperationRunnerTest&) = delete;
+
   ~ArcFileSystemOperationRunnerTest() override = default;
 
   void SetUp() override {
@@ -142,9 +148,6 @@ class ArcFileSystemOperationRunnerTest : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcFileSystemOperationRunner> runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcFileSystemOperationRunnerTest);
 };
 
 TEST_F(ArcFileSystemOperationRunnerTest, RunImmediately) {

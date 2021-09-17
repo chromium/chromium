@@ -20,6 +20,12 @@ class NotificationHelperCrashReporterClient
       const base::FilePath& exe_path);
 
   NotificationHelperCrashReporterClient();
+
+  NotificationHelperCrashReporterClient(
+      const NotificationHelperCrashReporterClient&) = delete;
+  NotificationHelperCrashReporterClient& operator=(
+      const NotificationHelperCrashReporterClient&) = delete;
+
   ~NotificationHelperCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient:
@@ -45,9 +51,6 @@ class NotificationHelperCrashReporterClient
   bool ReportingIsEnforcedByPolicy(bool* enabled) override;
   bool ShouldMonitorCrashHandlerExpensively() override;
   bool EnableBreakpadForProcess(const std::string& process_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationHelperCrashReporterClient);
 };
 
 #endif  // CHROME_NOTIFICATION_HELPER_NOTIFICATION_HELPER_CRASH_REPORTER_CLIENT_H_

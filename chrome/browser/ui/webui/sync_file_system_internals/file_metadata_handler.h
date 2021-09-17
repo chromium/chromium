@@ -25,6 +25,10 @@ namespace syncfs_internals {
 class FileMetadataHandler : public content::WebUIMessageHandler {
  public:
   explicit FileMetadataHandler(Profile* profile);
+
+  FileMetadataHandler(const FileMetadataHandler&) = delete;
+  FileMetadataHandler& operator=(const FileMetadataHandler&) = delete;
+
   ~FileMetadataHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -40,8 +44,6 @@ class FileMetadataHandler : public content::WebUIMessageHandler {
 
   Profile* profile_;
   base::WeakPtrFactory<FileMetadataHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileMetadataHandler);
 };
 }  // namespace syncfs_internals
 

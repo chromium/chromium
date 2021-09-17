@@ -32,6 +32,9 @@ class TestCertificateSelector : public chrome::CertificateSelector {
                           content::WebContents* web_contents)
       : CertificateSelector(std::move(certificates), web_contents) {}
 
+  TestCertificateSelector(const TestCertificateSelector&) = delete;
+  TestCertificateSelector& operator=(const TestCertificateSelector&) = delete;
+
   ~TestCertificateSelector() override {
     if (!on_destroy_.is_null())
       std::move(on_destroy_).Run();
@@ -68,8 +71,6 @@ class TestCertificateSelector : public chrome::CertificateSelector {
   bool* accepted_ = nullptr;
   bool* canceled_ = nullptr;
   base::OnceClosure on_destroy_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCertificateSelector);
 };
 
 class CertificateSelectorTest : public InProcessBrowserTest {

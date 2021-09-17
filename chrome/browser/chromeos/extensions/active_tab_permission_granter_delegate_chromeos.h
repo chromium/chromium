@@ -25,6 +25,12 @@ class ActiveTabPermissionGranterDelegateChromeOS
     : public ActiveTabPermissionGranter::Delegate {
  public:
   ActiveTabPermissionGranterDelegateChromeOS();
+
+  ActiveTabPermissionGranterDelegateChromeOS(
+      const ActiveTabPermissionGranterDelegateChromeOS&) = delete;
+  ActiveTabPermissionGranterDelegateChromeOS& operator=(
+      const ActiveTabPermissionGranterDelegateChromeOS&) = delete;
+
   ~ActiveTabPermissionGranterDelegateChromeOS() override;
 
   static void SetRequestResolvedCallbackForTesting(
@@ -34,9 +40,6 @@ class ActiveTabPermissionGranterDelegateChromeOS
   bool ShouldGrantActiveTabOrPrompt(
       const Extension* extension,
       content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveTabPermissionGranterDelegateChromeOS);
 };
 
 }  // namespace extensions

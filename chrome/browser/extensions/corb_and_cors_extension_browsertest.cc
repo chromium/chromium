@@ -1937,6 +1937,9 @@ class ReadyToCommitWaiter : public content::WebContentsObserver {
   explicit ReadyToCommitWaiter(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
 
+  ReadyToCommitWaiter(const ReadyToCommitWaiter&) = delete;
+  ReadyToCommitWaiter& operator=(const ReadyToCommitWaiter&) = delete;
+
   ~ReadyToCommitWaiter() override {}
 
   void Wait() { run_loop_.Run(); }
@@ -1948,8 +1951,6 @@ class ReadyToCommitWaiter : public content::WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadyToCommitWaiter);
 };
 
 IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,

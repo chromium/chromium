@@ -20,6 +20,10 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
  public:
   explicit DeviceCommandRebootJob(
       chromeos::PowerManagerClient* power_manager_client);
+
+  DeviceCommandRebootJob(const DeviceCommandRebootJob&) = delete;
+  DeviceCommandRebootJob& operator=(const DeviceCommandRebootJob&) = delete;
+
   ~DeviceCommandRebootJob() override;
 
   // RemoteCommandJob:
@@ -31,8 +35,6 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
                CallbackWithResult failed_callback) override;
 
   chromeos::PowerManagerClient* power_manager_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandRebootJob);
 };
 
 }  // namespace policy

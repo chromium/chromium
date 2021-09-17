@@ -34,6 +34,10 @@ namespace {
 class AutofillCounterTest : public InProcessBrowserTest {
  public:
   AutofillCounterTest() {}
+
+  AutofillCounterTest(const AutofillCounterTest&) = delete;
+  AutofillCounterTest& operator=(const AutofillCounterTest&) = delete;
+
   ~AutofillCounterTest() override {}
 
   void SetUpOnMainThread() override {
@@ -191,8 +195,6 @@ class AutofillCounterTest : public InProcessBrowserTest {
   browsing_data::BrowsingDataCounter::ResultInt num_suggestions_;
   browsing_data::BrowsingDataCounter::ResultInt num_credit_cards_;
   browsing_data::BrowsingDataCounter::ResultInt num_addresses_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillCounterTest);
 };
 
 // Tests that we count the correct number of autocomplete suggestions.

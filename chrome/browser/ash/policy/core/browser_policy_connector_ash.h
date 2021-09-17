@@ -68,6 +68,10 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
  public:
   BrowserPolicyConnectorAsh();
 
+  BrowserPolicyConnectorAsh(const BrowserPolicyConnectorAsh&) = delete;
+  BrowserPolicyConnectorAsh& operator=(const BrowserPolicyConnectorAsh&) =
+      delete;
+
   ~BrowserPolicyConnectorAsh() override;
 
   // Helper that returns a new BACKGROUND SequencedTaskRunner. Each
@@ -336,8 +340,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow_;
 
   base::WeakPtrFactory<BrowserPolicyConnectorAsh> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPolicyConnectorAsh);
 };
 
 }  // namespace policy

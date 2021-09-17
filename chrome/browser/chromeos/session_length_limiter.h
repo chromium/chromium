@@ -36,6 +36,10 @@ class SessionLengthLimiter : public ui::UserActivityObserver {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   SessionLengthLimiter(Delegate* delegate, bool browser_restarted);
+
+  SessionLengthLimiter(const SessionLengthLimiter&) = delete;
+  SessionLengthLimiter& operator=(const SessionLengthLimiter&) = delete;
+
   ~SessionLengthLimiter() override;
 
   // Returns the duration between |session_start_time_| and now if there is a
@@ -71,8 +75,6 @@ class SessionLengthLimiter : public ui::UserActivityObserver {
   std::unique_ptr<base::WallClockTimer> timer_;
   base::Time session_start_time_;
   bool user_activity_seen_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionLengthLimiter);
 };
 
 }  // namespace chromeos

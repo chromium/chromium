@@ -487,6 +487,9 @@ class ArcSessionManager::ScopedOptInFlowTracker {
     UpdateOptInFlowResultUMA(OptInFlowResult::STARTED);
   }
 
+  ScopedOptInFlowTracker(const ScopedOptInFlowTracker&) = delete;
+  ScopedOptInFlowTracker& operator=(const ScopedOptInFlowTracker&) = delete;
+
   ~ScopedOptInFlowTracker() {
     if (shutdown_)
       return;
@@ -522,8 +525,6 @@ class ArcSessionManager::ScopedOptInFlowTracker {
   bool error_ = false;
   bool success_ = false;
   bool shutdown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedOptInFlowTracker);
 };
 
 ArcSessionManager::ArcSessionManager(

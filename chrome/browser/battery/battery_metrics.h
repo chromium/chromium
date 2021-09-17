@@ -21,6 +21,10 @@
 class BatteryMetrics {
  public:
   BatteryMetrics();
+
+  BatteryMetrics(const BatteryMetrics&) = delete;
+  BatteryMetrics& operator=(const BatteryMetrics&) = delete;
+
   ~BatteryMetrics();
 
   // Allows tests to override how this class binds a BatteryMonitor receiver.
@@ -53,8 +57,6 @@ class BatteryMetrics {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BatteryMetrics> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryMetrics);
 };
 
 #endif  // CHROME_BROWSER_BATTERY_BATTERY_METRICS_H_

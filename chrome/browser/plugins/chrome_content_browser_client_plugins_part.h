@@ -17,6 +17,12 @@ class ChromeContentBrowserClientPluginsPart
     : public ChromeContentBrowserClientParts {
  public:
   ChromeContentBrowserClientPluginsPart();
+
+  ChromeContentBrowserClientPluginsPart(
+      const ChromeContentBrowserClientPluginsPart&) = delete;
+  ChromeContentBrowserClientPluginsPart& operator=(
+      const ChromeContentBrowserClientPluginsPart&) = delete;
+
   ~ChromeContentBrowserClientPluginsPart() override;
 
   // Corresponding to the ChromeContentBrowserClient function of the same name.
@@ -45,8 +51,6 @@ class ChromeContentBrowserClientPluginsPart
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientPluginsPart);
 };
 
 }  // namespace plugins

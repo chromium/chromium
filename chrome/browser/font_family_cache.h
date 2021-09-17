@@ -30,6 +30,10 @@ FORWARD_DECLARE_TEST(FontFamilyCacheTest, Caching);
 class FontFamilyCache : public base::SupportsUserData::Data {
  public:
   explicit FontFamilyCache(Profile* profile);
+
+  FontFamilyCache(const FontFamilyCache&) = delete;
+  FontFamilyCache& operator=(const FontFamilyCache&) = delete;
+
   ~FontFamilyCache() override;
 
   // Gets or creates the relevant FontFamilyCache, and then fills |map|.
@@ -87,8 +91,6 @@ class FontFamilyCache : public base::SupportsUserData::Data {
   // |this| is destroyed after the Profile destructor completes as part of
   // Profile's super class destructor ~base::SupportsUserData.
   FontPrefChangeNotifier::Registrar font_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontFamilyCache);
 };
 
 #endif  // CHROME_BROWSER_FONT_FAMILY_CACHE_H_

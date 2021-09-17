@@ -32,6 +32,10 @@ class HIDControllerMixin : public InProcessBrowserTestMixin {
   static const char kTouchscreenId[];
 
   explicit HIDControllerMixin(InProcessBrowserTestMixinHost* host);
+
+  HIDControllerMixin(const HIDControllerMixin&) = delete;
+  HIDControllerMixin& operator=(const HIDControllerMixin&) = delete;
+
   ~HIDControllerMixin() override;
 
   void AddMouse(device::mojom::InputDeviceType type);
@@ -56,8 +60,6 @@ class HIDControllerMixin : public InProcessBrowserTestMixin {
   std::unique_ptr<device::FakeInputServiceLinux> fake_input_service_manager_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   base::WeakPtrFactory<HIDControllerMixin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HIDControllerMixin);
 };
 
 }  // namespace test

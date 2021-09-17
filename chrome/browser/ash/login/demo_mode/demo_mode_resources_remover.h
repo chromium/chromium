@@ -133,6 +133,9 @@ class DemoModeResourcesRemover
   // disabled.
   static bool IsLegacyDemoRetailModeDomain(const std::string& domain);
 
+  DemoModeResourcesRemover(const DemoModeResourcesRemover&) = delete;
+  DemoModeResourcesRemover& operator=(const DemoModeResourcesRemover&) = delete;
+
   ~DemoModeResourcesRemover() override;
 
   // UserDataAuthClient::Observer:
@@ -195,8 +198,6 @@ class DemoModeResourcesRemover
       user_activity_observation_{this};
 
   base::WeakPtrFactory<DemoModeResourcesRemover> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoModeResourcesRemover);
 };
 
 }  // namespace ash

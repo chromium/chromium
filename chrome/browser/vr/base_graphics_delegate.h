@@ -20,6 +20,10 @@ namespace vr {
 class VR_EXPORT BaseGraphicsDelegate : public GraphicsDelegate {
  public:
   BaseGraphicsDelegate();
+
+  BaseGraphicsDelegate(const BaseGraphicsDelegate&) = delete;
+  BaseGraphicsDelegate& operator=(const BaseGraphicsDelegate&) = delete;
+
   ~BaseGraphicsDelegate() override;
 
   // GraphicsDelegate implementation.
@@ -38,8 +42,6 @@ class VR_EXPORT BaseGraphicsDelegate : public GraphicsDelegate {
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLContext> contexts_[kNumContexts];
   ContextId curr_context_id_ = kNone;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseGraphicsDelegate);
 };
 
 }  // namespace vr

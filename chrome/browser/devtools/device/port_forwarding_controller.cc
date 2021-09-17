@@ -221,6 +221,9 @@ class SocketTunnel {
       new SocketTunnel(profile, std::move(socket), host, port);
   }
 
+  SocketTunnel(const SocketTunnel&) = delete;
+  SocketTunnel& operator=(const SocketTunnel&) = delete;
+
   ~SocketTunnel() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
 
  private:
@@ -368,8 +371,6 @@ class SocketTunnel {
   scoped_refptr<base::SingleThreadTaskRunner> adb_thread_runner_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SocketTunnel);
 };
 
 }  // namespace
@@ -382,6 +383,10 @@ class PortForwardingController::Connection
              scoped_refptr<AndroidDeviceManager::Device> device,
              scoped_refptr<DevToolsAndroidBridge::RemoteBrowser> browser,
              const ForwardingMap& forwarding_map);
+
+  Connection(const Connection&) = delete;
+  Connection& operator=(const Connection&) = delete;
+
   ~Connection() override;
 
   const PortStatusMap& GetPortStatusMap();
@@ -426,8 +431,6 @@ class PortForwardingController::Connection
   ForwardingMap forwarding_map_;
   CommandCallbackMap pending_responses_;
   PortStatusMap port_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(Connection);
 };
 
 PortForwardingController::Connection::Connection(

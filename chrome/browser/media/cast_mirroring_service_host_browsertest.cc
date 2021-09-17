@@ -135,6 +135,12 @@ class CastMirroringServiceHostBrowserTest
       public mojom::AudioStreamCreatorClient {
  public:
   CastMirroringServiceHostBrowserTest() = default;
+
+  CastMirroringServiceHostBrowserTest(
+      const CastMirroringServiceHostBrowserTest&) = delete;
+  CastMirroringServiceHostBrowserTest& operator=(
+      const CastMirroringServiceHostBrowserTest&) = delete;
+
   ~CastMirroringServiceHostBrowserTest() override = default;
 
  protected:
@@ -242,8 +248,6 @@ class CastMirroringServiceHostBrowserTest
 
   std::unique_ptr<CastMirroringServiceHost> host_;
   std::unique_ptr<MockVideoCaptureObserver> video_frame_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMirroringServiceHostBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, CaptureTabVideo) {

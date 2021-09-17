@@ -22,6 +22,10 @@ class ExtensionGlobalError;
 class ExtensionErrorUIDefault : public ExtensionErrorUI {
  public:
   explicit ExtensionErrorUIDefault(ExtensionErrorUI::Delegate* delegate);
+
+  ExtensionErrorUIDefault(const ExtensionErrorUIDefault&) = delete;
+  ExtensionErrorUIDefault& operator=(const ExtensionErrorUIDefault&) = delete;
+
   ~ExtensionErrorUIDefault() override;
 
   bool ShowErrorInBubbleView() override;
@@ -39,8 +43,6 @@ class ExtensionErrorUIDefault : public ExtensionErrorUI {
   Browser* browser_ = nullptr;
 
   std::unique_ptr<ExtensionGlobalError> global_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionErrorUIDefault);
 };
 
 }  // namespace extensions

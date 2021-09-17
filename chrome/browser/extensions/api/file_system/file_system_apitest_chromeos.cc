@@ -61,13 +61,16 @@ class ScopedSkipRequestFileSystemDialog {
     file_system_api::ConsentProviderDelegate::SetAutoDialogButtonForTest(
         button);
   }
+
+  ScopedSkipRequestFileSystemDialog(const ScopedSkipRequestFileSystemDialog&) =
+      delete;
+  ScopedSkipRequestFileSystemDialog& operator=(
+      const ScopedSkipRequestFileSystemDialog&) = delete;
+
   ~ScopedSkipRequestFileSystemDialog() {
     file_system_api::ConsentProviderDelegate::SetAutoDialogButtonForTest(
         ui::DIALOG_BUTTON_NONE);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedSkipRequestFileSystemDialog);
 };
 
 // Observers adding a listener to the |event_name| event by |extension|, and
@@ -84,6 +87,10 @@ class ScopedAddListenerObserver : public EventRouter::Observer {
     DCHECK(profile);
     event_router_->RegisterObserver(this, event_name);
   }
+
+  ScopedAddListenerObserver(const ScopedAddListenerObserver&) = delete;
+  ScopedAddListenerObserver& operator=(const ScopedAddListenerObserver&) =
+      delete;
 
   ~ScopedAddListenerObserver() override {
     event_router_->UnregisterObserver(this);
@@ -103,8 +110,6 @@ class ScopedAddListenerObserver : public EventRouter::Observer {
   const std::string extension_id_;
   base::OnceClosure callback_;
   EventRouter* const event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAddListenerObserver);
 };
 
 // This class contains chrome.filesystem API test specific to Chrome OS, namely,

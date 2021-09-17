@@ -113,6 +113,10 @@ class SharingMessageSenderTest : public testing::Test {
         SharingMessageSender::DelegateType::kFCM,
         std::move(mock_sharing_fcm_sender));
   }
+
+  SharingMessageSenderTest(const SharingMessageSenderTest&) = delete;
+  SharingMessageSenderTest& operator=(const SharingMessageSenderTest&) = delete;
+
   ~SharingMessageSenderTest() override = default;
 
   std::unique_ptr<syncer::DeviceInfo> SetupDevice() {
@@ -140,8 +144,6 @@ class SharingMessageSenderTest : public testing::Test {
   SharingMessageSender sharing_message_sender_{
       fake_device_info_sync_service_.GetLocalDeviceInfoProvider()};
   MockSharingFCMSender* mock_sharing_fcm_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingMessageSenderTest);
 };
 
 MATCHER_P(ProtoEquals, message, "") {

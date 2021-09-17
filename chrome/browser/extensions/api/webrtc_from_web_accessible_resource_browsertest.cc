@@ -19,6 +19,12 @@ namespace extensions {
 class WebRtcFromWebAccessibleResourceTest : public ExtensionApiTest {
  public:
   WebRtcFromWebAccessibleResourceTest() {}
+
+  WebRtcFromWebAccessibleResourceTest(
+      const WebRtcFromWebAccessibleResourceTest&) = delete;
+  WebRtcFromWebAccessibleResourceTest& operator=(
+      const WebRtcFromWebAccessibleResourceTest&) = delete;
+
   ~WebRtcFromWebAccessibleResourceTest() override {}
 
   // InProcessBrowserTest:
@@ -43,9 +49,6 @@ class WebRtcFromWebAccessibleResourceTest : public ExtensionApiTest {
     ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
         "webrtc_from_web_accessible_resource")));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcFromWebAccessibleResourceTest);
 };
 
 // Verify that a chrome-extension:// web accessible URL can successfully access

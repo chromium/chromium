@@ -18,6 +18,9 @@ namespace installer {
 // Requires that COM be initialized on the calling thread.
 class FirewallManager {
  public:
+  FirewallManager(const FirewallManager&) = delete;
+  FirewallManager& operator=(const FirewallManager&) = delete;
+
   virtual ~FirewallManager();
 
   // Creates instance of |FirewallManager|. Implementation chooses best version
@@ -39,8 +42,6 @@ class FirewallManager {
 
  protected:
   FirewallManager();
-
-  DISALLOW_COPY_AND_ASSIGN(FirewallManager);
 };
 
 }  // namespace installer

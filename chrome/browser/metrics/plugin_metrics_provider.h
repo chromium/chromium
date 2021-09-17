@@ -34,6 +34,10 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
                               public content::BrowserChildProcessObserver {
  public:
   explicit PluginMetricsProvider(PrefService* local_state);
+
+  PluginMetricsProvider(const PluginMetricsProvider&) = delete;
+  PluginMetricsProvider& operator=(const PluginMetricsProvider&) = delete;
+
   ~PluginMetricsProvider() override;
 
   // metrics::MetricsDataProvider:
@@ -107,8 +111,6 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
   std::map<std::u16string, ChildProcessStats> child_process_stats_buffer_;
 
   base::WeakPtrFactory<PluginMetricsProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_PLUGIN_METRICS_PROVIDER_H_

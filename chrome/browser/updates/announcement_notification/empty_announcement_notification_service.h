@@ -13,13 +13,17 @@ class EmptyAnnouncementNotificationService
     : public AnnouncementNotificationService {
  public:
   EmptyAnnouncementNotificationService();
+
+  EmptyAnnouncementNotificationService(
+      const EmptyAnnouncementNotificationService&) = delete;
+  EmptyAnnouncementNotificationService& operator=(
+      const EmptyAnnouncementNotificationService&) = delete;
+
   ~EmptyAnnouncementNotificationService() override;
 
  private:
   // AnnouncementNotificationService overrides.
   void MaybeShowNotification() override;
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyAnnouncementNotificationService);
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_EMPTY_ANNOUNCEMENT_NOTIFICATION_SERVICE_H_

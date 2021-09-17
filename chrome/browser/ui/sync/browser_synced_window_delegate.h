@@ -22,6 +22,11 @@ class SyncedTabDelegate;
 class BrowserSyncedWindowDelegate : public sync_sessions::SyncedWindowDelegate {
  public:
   explicit BrowserSyncedWindowDelegate(Browser* browser);
+
+  BrowserSyncedWindowDelegate(const BrowserSyncedWindowDelegate&) = delete;
+  BrowserSyncedWindowDelegate& operator=(const BrowserSyncedWindowDelegate&) =
+      delete;
+
   ~BrowserSyncedWindowDelegate() override;
 
   // SyncedWindowDelegate:
@@ -39,8 +44,6 @@ class BrowserSyncedWindowDelegate : public sync_sessions::SyncedWindowDelegate {
 
  private:
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSyncedWindowDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_WINDOW_DELEGATE_H_

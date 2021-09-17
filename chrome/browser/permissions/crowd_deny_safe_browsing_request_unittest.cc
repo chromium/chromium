@@ -30,6 +30,12 @@ class CrowdDenySafeBrowsingRequestTest : public testing::Test {
   CrowdDenySafeBrowsingRequestTest()
       : fake_database_manager_(
             base::MakeRefCounted<CrowdDenyFakeSafeBrowsingDatabaseManager>()) {}
+
+  CrowdDenySafeBrowsingRequestTest(const CrowdDenySafeBrowsingRequestTest&) =
+      delete;
+  CrowdDenySafeBrowsingRequestTest& operator=(
+      const CrowdDenySafeBrowsingRequestTest&) = delete;
+
   ~CrowdDenySafeBrowsingRequestTest() override = default;
 
  protected:
@@ -65,8 +71,6 @@ class CrowdDenySafeBrowsingRequestTest : public testing::Test {
 
   scoped_refptr<CrowdDenyFakeSafeBrowsingDatabaseManager>
       fake_database_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrowdDenySafeBrowsingRequestTest);
 };
 
 TEST_F(CrowdDenySafeBrowsingRequestTest, Acceptable_SynchronousCompletion) {

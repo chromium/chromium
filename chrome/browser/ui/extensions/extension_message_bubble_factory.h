@@ -28,6 +28,11 @@ class ExtensionMessageBubbleFactory {
   };
 
   explicit ExtensionMessageBubbleFactory(Browser* browser);
+
+  ExtensionMessageBubbleFactory(const ExtensionMessageBubbleFactory&) = delete;
+  ExtensionMessageBubbleFactory& operator=(
+      const ExtensionMessageBubbleFactory&) = delete;
+
   ~ExtensionMessageBubbleFactory();
 
   // Returns the controller for the bubble that should be shown, if any.
@@ -38,8 +43,6 @@ class ExtensionMessageBubbleFactory {
 
  private:
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleFactory);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_MESSAGE_BUBBLE_FACTORY_H_

@@ -45,6 +45,9 @@ class WilcoDtcSupportdManager final
   // For use in tests.
   explicit WilcoDtcSupportdManager(std::unique_ptr<Delegate> delegate);
 
+  WilcoDtcSupportdManager(const WilcoDtcSupportdManager&) = delete;
+  WilcoDtcSupportdManager& operator=(const WilcoDtcSupportdManager&) = delete;
+
   ~WilcoDtcSupportdManager() override;
 
   // Sets the Wilco DTC configuration data, passed by the device policy.
@@ -87,8 +90,6 @@ class WilcoDtcSupportdManager final
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<WilcoDtcSupportdManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdManager);
 };
 
 }  // namespace ash

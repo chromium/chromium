@@ -55,6 +55,10 @@ class PowerMetricsReporter::DailyEventObserver
  public:
   explicit DailyEventObserver(PowerMetricsReporter* reporter)
       : reporter_(reporter) {}
+
+  DailyEventObserver(const DailyEventObserver&) = delete;
+  DailyEventObserver& operator=(const DailyEventObserver&) = delete;
+
   ~DailyEventObserver() override = default;
 
   // metrics::DailyEvent::Observer:
@@ -64,8 +68,6 @@ class PowerMetricsReporter::DailyEventObserver
 
  private:
   PowerMetricsReporter* reporter_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(DailyEventObserver);
 };
 
 const char PowerMetricsReporter::kDailyEventIntervalName[] =

@@ -27,6 +27,10 @@ class SyncStartupTracker : public syncer::SyncServiceObserver {
   };
 
   SyncStartupTracker(syncer::SyncService* sync_service, Observer* observer);
+
+  SyncStartupTracker(const SyncStartupTracker&) = delete;
+  SyncStartupTracker& operator=(const SyncStartupTracker&) = delete;
+
   ~SyncStartupTracker() override;
 
   enum SyncServiceState {
@@ -58,8 +62,6 @@ class SyncStartupTracker : public syncer::SyncServiceObserver {
 
   // Weak pointer to the observer to notify.
   Observer* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncStartupTracker);
 };
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_

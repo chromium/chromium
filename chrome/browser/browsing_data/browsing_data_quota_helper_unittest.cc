@@ -34,6 +34,10 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
 
   BrowsingDataQuotaHelperTest() = default;
 
+  BrowsingDataQuotaHelperTest(const BrowsingDataQuotaHelperTest&) = delete;
+  BrowsingDataQuotaHelperTest& operator=(const BrowsingDataQuotaHelperTest&) =
+      delete;
+
   ~BrowsingDataQuotaHelperTest() override = default;
 
   void SetUp() override {
@@ -133,8 +137,6 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
   QuotaInfoArray quota_info_;
   int64_t quota_ = -1;
   base::WeakPtrFactory<BrowsingDataQuotaHelperTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataQuotaHelperTest);
 };
 
 TEST_F(BrowsingDataQuotaHelperTest, Empty) {

@@ -53,6 +53,10 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
   enum class UserChoice { kDeclined = 0, kAccepted = 1, kMaxValue = kAccepted };
 
   explicit SyncConsentScreenHandler(JSCallsContainer* js_calls_container);
+
+  SyncConsentScreenHandler(const SyncConsentScreenHandler&) = delete;
+  SyncConsentScreenHandler& operator=(const SyncConsentScreenHandler&) = delete;
+
   ~SyncConsentScreenHandler() override;
 
   // BaseScreenHandler:
@@ -102,8 +106,6 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
   std::unordered_set<int> known_string_ids_;
 
   ash::SyncConsentScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncConsentScreenHandler);
 };
 
 }  // namespace chromeos

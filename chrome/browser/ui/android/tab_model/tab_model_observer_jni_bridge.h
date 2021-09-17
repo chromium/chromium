@@ -21,6 +21,10 @@ class TabModelObserverJniBridge {
   TabModelObserverJniBridge(JNIEnv* env,
                             const base::android::JavaRef<jobject>& tab_model);
 
+  TabModelObserverJniBridge(const TabModelObserverJniBridge&) = delete;
+  TabModelObserverJniBridge& operator=(const TabModelObserverJniBridge&) =
+      delete;
+
   ~TabModelObserverJniBridge();
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -95,8 +99,6 @@ class TabModelObserverJniBridge {
 
   // Observers attached to this bridge.
   base::ObserverList<TabModelObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabModelObserverJniBridge);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_OBSERVER_JNI_BRIDGE_H_

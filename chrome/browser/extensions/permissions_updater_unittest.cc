@@ -131,6 +131,12 @@ void AddPattern(URLPatternSet* extent, const std::string& pattern) {
 class PermissionsUpdaterTestDelegate : public PermissionsUpdater::Delegate {
  public:
   PermissionsUpdaterTestDelegate() {}
+
+  PermissionsUpdaterTestDelegate(const PermissionsUpdaterTestDelegate&) =
+      delete;
+  PermissionsUpdaterTestDelegate& operator=(
+      const PermissionsUpdaterTestDelegate&) = delete;
+
   ~PermissionsUpdaterTestDelegate() override {}
 
   // PermissionsUpdater::Delegate
@@ -145,9 +151,6 @@ class PermissionsUpdaterTestDelegate : public PermissionsUpdater::Delegate {
         std::move(api_permission_set), ManifestPermissionSet(), URLPatternSet(),
         URLPatternSet());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PermissionsUpdaterTestDelegate);
 };
 
 }  // namespace

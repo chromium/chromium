@@ -22,6 +22,10 @@ class CrostiniInstallerUI
       public chromeos::crostini_installer::mojom::PageHandlerFactory {
  public:
   explicit CrostiniInstallerUI(content::WebUI* web_ui);
+
+  CrostiniInstallerUI(const CrostiniInstallerUI&) = delete;
+  CrostiniInstallerUI& operator=(const CrostiniInstallerUI&) = delete;
+
   ~CrostiniInstallerUI() override;
 
   // Send a close request to the web page. Return true if the page is already
@@ -52,8 +56,6 @@ class CrostiniInstallerUI
   bool page_closed_ = false;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniInstallerUI);
 };
 
 }  // namespace chromeos

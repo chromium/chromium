@@ -15,6 +15,10 @@
 class ChromeSendWebUITest : public WebUIBrowserTest {
  public:
   ChromeSendWebUITest();
+
+  ChromeSendWebUITest(const ChromeSendWebUITest&) = delete;
+  ChromeSendWebUITest& operator=(const ChromeSendWebUITest&) = delete;
+
   ~ChromeSendWebUITest() override;
 
   // Mocked message handler class to register expects using gmock framework.
@@ -36,8 +40,6 @@ class ChromeSendWebUITest : public WebUIBrowserTest {
 
  private:
   content::WebUIMessageHandler* GetMockMessageHandler() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSendWebUITest);
 };
 
 // Test fixture for verifying chrome.send messages are passed through. This
@@ -45,12 +47,16 @@ class ChromeSendWebUITest : public WebUIBrowserTest {
 class ChromeSendPassthroughWebUITest : public ChromeSendWebUITest {
  public:
   ChromeSendPassthroughWebUITest();
+
+  ChromeSendPassthroughWebUITest(const ChromeSendPassthroughWebUITest&) =
+      delete;
+  ChromeSendPassthroughWebUITest& operator=(
+      const ChromeSendPassthroughWebUITest&) = delete;
+
   ~ChromeSendPassthroughWebUITest() override;
 
  private:
   void SetUpOnMainThread() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSendPassthroughWebUITest);
 };
 
 #endif  // CHROME_TEST_DATA_WEBUI_CHROME_SEND_BROWSERTEST_H_

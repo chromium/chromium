@@ -25,6 +25,10 @@ namespace image_writer {
 class ImageWriterHandler {
  public:
   ImageWriterHandler();
+
+  ImageWriterHandler(const ImageWriterHandler&) = delete;
+  ImageWriterHandler& operator=(const ImageWriterHandler&) = delete;
+
   ~ImageWriterHandler();
 
   void Write(
@@ -51,8 +55,6 @@ class ImageWriterHandler {
 
   mojo::Remote<chrome::mojom::RemovableStorageWriterClient> client_;
   std::unique_ptr<ImageWriter> image_writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageWriterHandler);
 };
 
 }  // namespace image_writer

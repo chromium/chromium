@@ -49,6 +49,10 @@ class LocalFileChangeTracker : public storage::FileUpdateObserver,
   LocalFileChangeTracker(const base::FilePath& base_path,
                          leveldb::Env* env_override,
                          base::SequencedTaskRunner* file_task_runner);
+
+  LocalFileChangeTracker(const LocalFileChangeTracker&) = delete;
+  LocalFileChangeTracker& operator=(const LocalFileChangeTracker&) = delete;
+
   ~LocalFileChangeTracker() override;
 
   // FileUpdateObserver overrides.
@@ -188,8 +192,6 @@ class LocalFileChangeTracker : public storage::FileUpdateObserver,
   // This can be accessed on any threads (with num_changes_lock_).
   int64_t num_changes_;
   mutable base::Lock num_changes_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileChangeTracker);
 };
 
 }  // namespace sync_file_system

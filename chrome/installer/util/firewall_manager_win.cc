@@ -25,6 +25,11 @@ const uint16_t kDefaultMdnsPort = 5353;
 class FirewallManagerAdvancedImpl : public FirewallManager {
  public:
   FirewallManagerAdvancedImpl() {}
+
+  FirewallManagerAdvancedImpl(const FirewallManagerAdvancedImpl&) = delete;
+  FirewallManagerAdvancedImpl& operator=(const FirewallManagerAdvancedImpl&) =
+      delete;
+
   ~FirewallManagerAdvancedImpl() override {}
 
   bool Init(const std::wstring& app_name, const base::FilePath& app_path) {
@@ -53,8 +58,6 @@ class FirewallManagerAdvancedImpl : public FirewallManager {
   }
 
   AdvancedFirewallManager manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirewallManagerAdvancedImpl);
 };
 
 }  // namespace

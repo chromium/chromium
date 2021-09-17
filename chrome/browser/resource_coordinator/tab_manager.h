@@ -71,6 +71,10 @@ class TabManager : public LifecycleUnitObserver,
   using TabDiscardDoneCB = base::ScopedClosureRunner;
 
   explicit TabManager(TabLoadTracker* tab_load_tracker);
+
+  TabManager(const TabManager&) = delete;
+  TabManager& operator=(const TabManager&) = delete;
+
   ~TabManager() override;
 
   // Start the Tab Manager.
@@ -255,8 +259,6 @@ class TabManager : public LifecycleUnitObserver,
 
   // Weak pointer factory used for posting delayed tasks.
   base::WeakPtrFactory<TabManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabManager);
 };
 
 }  // namespace resource_coordinator

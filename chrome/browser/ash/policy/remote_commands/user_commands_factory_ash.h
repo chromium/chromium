@@ -17,6 +17,10 @@ namespace policy {
 class UserCommandsFactoryAsh : public RemoteCommandsFactory {
  public:
   explicit UserCommandsFactoryAsh(Profile* profile);
+
+  UserCommandsFactoryAsh(const UserCommandsFactoryAsh&) = delete;
+  UserCommandsFactoryAsh& operator=(const UserCommandsFactoryAsh&) = delete;
+
   ~UserCommandsFactoryAsh() override;
 
   // RemoteCommandsFactory:
@@ -26,8 +30,6 @@ class UserCommandsFactoryAsh : public RemoteCommandsFactory {
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCommandsFactoryAsh);
 };
 
 }  // namespace policy

@@ -132,6 +132,10 @@ class SyncTest : public IdentityPlatformBrowserTest {
    public:
     explicit FakeInstanceID(const std::string& app_id,
                             gcm::GCMDriver* gcm_driver);
+
+    FakeInstanceID(const FakeInstanceID&) = delete;
+    FakeInstanceID& operator=(const FakeInstanceID&) = delete;
+
     ~FakeInstanceID() override = default;
 
     void GetID(GetIDCallback callback) override {}
@@ -164,12 +168,15 @@ class SyncTest : public IdentityPlatformBrowserTest {
     static std::string GenerateNextToken();
 
     std::string token_;
-    DISALLOW_COPY_AND_ASSIGN(FakeInstanceID);
   };
 
   class FakeInstanceIDDriver : public instance_id::InstanceIDDriver {
    public:
     explicit FakeInstanceIDDriver(gcm::GCMDriver* gcm_driver);
+
+    FakeInstanceIDDriver(const FakeInstanceIDDriver&) = delete;
+    FakeInstanceIDDriver& operator=(const FakeInstanceIDDriver&) = delete;
+
     ~FakeInstanceIDDriver() override;
     instance_id::InstanceID* GetInstanceID(const std::string& app_id) override;
     void RemoveInstanceID(const std::string& app_id) override {}
@@ -178,7 +185,6 @@ class SyncTest : public IdentityPlatformBrowserTest {
    private:
     gcm::GCMDriver* gcm_driver_;
     std::map<std::string, std::unique_ptr<FakeInstanceID>> fake_instance_ids_;
-    DISALLOW_COPY_AND_ASSIGN(FakeInstanceIDDriver);
   };
 
   // A SyncTest must be associated with a particular test type.

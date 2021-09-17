@@ -186,6 +186,11 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
  public:
   explicit InputMethodEngineObserver(ArcInputMethodManagerService* owner)
       : owner_(owner) {}
+
+  InputMethodEngineObserver(const InputMethodEngineObserver&) = delete;
+  InputMethodEngineObserver& operator=(const InputMethodEngineObserver&) =
+      delete;
+
   ~InputMethodEngineObserver() override = default;
 
   // chromeos::InputMethodEngineBase::Observer overrides:
@@ -248,8 +253,6 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
 
  private:
   ArcInputMethodManagerService* const owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodEngineObserver);
 };
 
 class ArcInputMethodManagerService::InputMethodObserver
@@ -257,6 +260,10 @@ class ArcInputMethodManagerService::InputMethodObserver
  public:
   explicit InputMethodObserver(ArcInputMethodManagerService* owner)
       : owner_(owner) {}
+
+  InputMethodObserver(const InputMethodObserver&) = delete;
+  InputMethodObserver& operator=(const InputMethodObserver&) = delete;
+
   ~InputMethodObserver() override = default;
 
   // ui::InputMethodObserver overrides:
@@ -273,8 +280,6 @@ class ArcInputMethodManagerService::InputMethodObserver
 
  private:
   ArcInputMethodManagerService* const owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodObserver);
 };
 
 class ArcInputMethodManagerService::TabletModeObserver
@@ -282,6 +287,10 @@ class ArcInputMethodManagerService::TabletModeObserver
  public:
   explicit TabletModeObserver(ArcInputMethodManagerService* owner)
       : owner_(owner) {}
+
+  TabletModeObserver(const TabletModeObserver&) = delete;
+  TabletModeObserver& operator=(const TabletModeObserver&) = delete;
+
   ~TabletModeObserver() override = default;
 
   // ash::TabletModeObserver overrides:
@@ -295,8 +304,6 @@ class ArcInputMethodManagerService::TabletModeObserver
   }
 
   ArcInputMethodManagerService* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeObserver);
 };
 
 // static

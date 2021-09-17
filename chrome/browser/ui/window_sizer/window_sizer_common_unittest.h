@@ -48,6 +48,10 @@ static const gfx::Rect taskbar_right_work_area(0, 0, 917, 768);
 class TestStateProvider : public WindowSizer::StateProvider {
  public:
   TestStateProvider();
+
+  TestStateProvider(const TestStateProvider&) = delete;
+  TestStateProvider& operator=(const TestStateProvider&) = delete;
+
   ~TestStateProvider() override {}
 
   void SetPersistentState(const gfx::Rect& bounds,
@@ -72,8 +76,6 @@ class TestStateProvider : public WindowSizer::StateProvider {
   gfx::Rect last_active_bounds_;
   bool has_last_active_data_;
   ui::WindowShowState last_active_show_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStateProvider);
 };
 
 // Several convenience functions which allow to set up a state for

@@ -52,6 +52,11 @@ class CrOSComponentInstallerPolicy : public ComponentInstallerPolicy {
   CrOSComponentInstallerPolicy(
       const ComponentConfig& config,
       CrOSComponentInstaller* cros_component_installer);
+
+  CrOSComponentInstallerPolicy(const CrOSComponentInstallerPolicy&) = delete;
+  CrOSComponentInstallerPolicy& operator=(const CrOSComponentInstallerPolicy&) =
+      delete;
+
   ~CrOSComponentInstallerPolicy() override;
 
   // ComponentInstallerPolicy:
@@ -73,8 +78,6 @@ class CrOSComponentInstallerPolicy : public ComponentInstallerPolicy {
  private:
   const std::string name_;
   std::vector<uint8_t> sha2_hash_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSComponentInstallerPolicy);
 };
 
 // An installer policy that does ABI compatibility checks based on

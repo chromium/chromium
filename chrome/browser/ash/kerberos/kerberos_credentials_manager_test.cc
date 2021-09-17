@@ -180,6 +180,11 @@ class KerberosCredentialsManagerTest : public testing::Test {
     mgr_->AddObserver(&observer_);
   }
 
+  KerberosCredentialsManagerTest(const KerberosCredentialsManagerTest&) =
+      delete;
+  KerberosCredentialsManagerTest& operator=(
+      const KerberosCredentialsManagerTest&) = delete;
+
   ~KerberosCredentialsManagerTest() override {
     mgr_->RemoveObserver(&observer_);
     mgr_.reset();
@@ -376,7 +381,6 @@ class KerberosCredentialsManagerTest : public testing::Test {
 
  private:
   base::WeakPtrFactory<KerberosCredentialsManagerTest> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(KerberosCredentialsManagerTest);
 };
 
 // The default config sets strong crypto and allows forwardable tickets.

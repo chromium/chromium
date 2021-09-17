@@ -95,6 +95,12 @@ class FakePendingSharedURLLoaderFactory
     : public network::PendingSharedURLLoaderFactory {
  public:
   FakePendingSharedURLLoaderFactory() {}
+
+  FakePendingSharedURLLoaderFactory(const FakePendingSharedURLLoaderFactory&) =
+      delete;
+  FakePendingSharedURLLoaderFactory& operator=(
+      const FakePendingSharedURLLoaderFactory&) = delete;
+
   ~FakePendingSharedURLLoaderFactory() override {}
 
  protected:
@@ -104,14 +110,16 @@ class FakePendingSharedURLLoaderFactory
   scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override {
     return base::MakeRefCounted<FakeSharedURLLoaderFactory>();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakePendingSharedURLLoaderFactory);
 };
 
 class FakeSpeechRecognitionManager : public content::SpeechRecognitionManager {
  public:
   FakeSpeechRecognitionManager() {}
+
+  FakeSpeechRecognitionManager(const FakeSpeechRecognitionManager&) = delete;
+  FakeSpeechRecognitionManager& operator=(const FakeSpeechRecognitionManager&) =
+      delete;
+
   ~FakeSpeechRecognitionManager() override {}
 
   // SpeechRecognitionManager methods.
@@ -239,19 +247,18 @@ class FakeSpeechRecognitionManager : public content::SpeechRecognitionManager {
   int session_id_ = 0;
   content::SpeechRecognitionSessionContext session_ctx_;
   content::SpeechRecognitionSessionConfig session_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSpeechRecognitionManager);
 };
 
 class MockVoiceSearchDelegate : public VoiceResultDelegate {
  public:
   MockVoiceSearchDelegate() = default;
+
+  MockVoiceSearchDelegate(const MockVoiceSearchDelegate&) = delete;
+  MockVoiceSearchDelegate& operator=(const MockVoiceSearchDelegate&) = delete;
+
   ~MockVoiceSearchDelegate() override = default;
 
   MOCK_METHOD1(OnVoiceResults, void(const std::u16string& result));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockVoiceSearchDelegate);
 };
 
 class SpeechRecognizerTest : public testing::Test {
@@ -269,6 +276,9 @@ class SpeechRecognizerTest : public testing::Test {
     SpeechRecognizer::SetManagerForTest(fake_speech_recognition_manager_.get());
   }
 
+  SpeechRecognizerTest(const SpeechRecognizerTest&) = delete;
+  SpeechRecognizerTest& operator=(const SpeechRecognizerTest&) = delete;
+
   ~SpeechRecognizerTest() override {
     SpeechRecognizer::SetManagerForTest(nullptr);
   }
@@ -279,9 +289,6 @@ class SpeechRecognizerTest : public testing::Test {
   std::unique_ptr<MockBrowserUiInterface> ui_;
   std::unique_ptr<MockVoiceSearchDelegate> delegate_;
   std::unique_ptr<SpeechRecognizer> speech_recognizer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerTest);
 };
 
 TEST_F(SpeechRecognizerTest, ReceivedCorrectSpeechResult) {

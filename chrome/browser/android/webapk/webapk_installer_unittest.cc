@@ -106,6 +106,9 @@ class WebApkInstallerRunner {
  public:
   WebApkInstallerRunner() {}
 
+  WebApkInstallerRunner(const WebApkInstallerRunner&) = delete;
+  WebApkInstallerRunner& operator=(const WebApkInstallerRunner&) = delete;
+
   ~WebApkInstallerRunner() {}
 
   void RunInstallWebApk(std::unique_ptr<WebApkInstaller> installer,
@@ -151,8 +154,6 @@ class WebApkInstallerRunner {
 
   // The result of the installation process.
   WebApkInstallResult result_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkInstallerRunner);
 };
 
 // Helper class for calling WebApkInstaller::StoreUpdateRequestToFile()
@@ -204,6 +205,10 @@ std::unique_ptr<net::test_server::HttpResponse> BuildValidWebApkResponse(
 class BuildProtoRunner {
  public:
   BuildProtoRunner() {}
+
+  BuildProtoRunner(const BuildProtoRunner&) = delete;
+  BuildProtoRunner& operator=(const BuildProtoRunner&) = delete;
+
   ~BuildProtoRunner() {}
 
   void BuildSync(const GURL& best_primary_icon_url,
@@ -256,13 +261,14 @@ class BuildProtoRunner {
 
   // Called after the |webapk_request_| is built.
   base::OnceClosure on_completed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(BuildProtoRunner);
 };
 
 class ScopedTempFile {
  public:
   ScopedTempFile() { CHECK(base::CreateTemporaryFile(&file_path_)); }
+
+  ScopedTempFile(const ScopedTempFile&) = delete;
+  ScopedTempFile& operator=(const ScopedTempFile&) = delete;
 
   ~ScopedTempFile() { base::DeleteFile(file_path_); }
 
@@ -270,8 +276,6 @@ class ScopedTempFile {
 
  private:
   base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTempFile);
 };
 
 }  // anonymous namespace
@@ -284,6 +288,10 @@ class WebApkInstallerTest : public ::testing::Test {
 
   WebApkInstallerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+
+  WebApkInstallerTest(const WebApkInstallerTest&) = delete;
+  WebApkInstallerTest& operator=(const WebApkInstallerTest&) = delete;
+
   ~WebApkInstallerTest() override {}
 
   void SetUp() override {
@@ -359,8 +367,6 @@ class WebApkInstallerTest : public ::testing::Test {
 
   // Builds response to the WebAPK creation request.
   WebApkResponseBuilder webapk_response_builder_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkInstallerTest);
 };
 
 // Test installation succeeding.

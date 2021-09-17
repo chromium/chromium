@@ -49,6 +49,11 @@ int64_t ReadSingleStatistics(Mode mode) {
 class ArcUiAvailabilityReporterTest : public testing::Test {
  public:
   ArcUiAvailabilityReporterTest() {}
+
+  ArcUiAvailabilityReporterTest(const ArcUiAvailabilityReporterTest&) = delete;
+  ArcUiAvailabilityReporterTest& operator=(
+      const ArcUiAvailabilityReporterTest&) = delete;
+
   ~ArcUiAvailabilityReporterTest() override = default;
 
   void SetUp() override {
@@ -98,8 +103,6 @@ class ArcUiAvailabilityReporterTest : public testing::Test {
   std::unique_ptr<ArcIntentHelperBridge> arc_intent_helper_bridge_;
   std::unique_ptr<FakeAppInstance> app_instance_;
   std::unique_ptr<FakeIntentHelperInstance> intent_helper_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcUiAvailabilityReporterTest);
 };
 
 // Reporting is triggered in case both instances are connected.

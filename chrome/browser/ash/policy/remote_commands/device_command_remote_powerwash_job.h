@@ -15,6 +15,12 @@ class RemoteCommandsService;
 class DeviceCommandRemotePowerwashJob : public RemoteCommandJob {
  public:
   explicit DeviceCommandRemotePowerwashJob(RemoteCommandsService* service);
+
+  DeviceCommandRemotePowerwashJob(const DeviceCommandRemotePowerwashJob&) =
+      delete;
+  DeviceCommandRemotePowerwashJob& operator=(
+      const DeviceCommandRemotePowerwashJob&) = delete;
+
   ~DeviceCommandRemotePowerwashJob() override;
 
   // RemoteCommandJob:
@@ -28,8 +34,6 @@ class DeviceCommandRemotePowerwashJob : public RemoteCommandJob {
 
  private:
   RemoteCommandsService* const service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandRemotePowerwashJob);
 };
 
 }  // namespace policy

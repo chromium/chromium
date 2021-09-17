@@ -28,6 +28,12 @@ class DefaultPermissionMessageFormatter
  public:
   explicit DefaultPermissionMessageFormatter(int message_id)
       : message_id_(message_id) {}
+
+  DefaultPermissionMessageFormatter(const DefaultPermissionMessageFormatter&) =
+      delete;
+  DefaultPermissionMessageFormatter& operator=(
+      const DefaultPermissionMessageFormatter&) = delete;
+
   ~DefaultPermissionMessageFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -38,8 +44,6 @@ class DefaultPermissionMessageFormatter
 
  private:
   int message_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultPermissionMessageFormatter);
 };
 
 // A formatter that substitutes the parameter into the message using string
@@ -48,6 +52,10 @@ class DefaultPermissionMessageFormatter
 class SingleParameterFormatter : public ChromePermissionMessageFormatter {
  public:
   explicit SingleParameterFormatter(int message_id) : message_id_(message_id) {}
+
+  SingleParameterFormatter(const SingleParameterFormatter&) = delete;
+  SingleParameterFormatter& operator=(const SingleParameterFormatter&) = delete;
+
   ~SingleParameterFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -63,8 +71,6 @@ class SingleParameterFormatter : public ChromePermissionMessageFormatter {
 
  private:
   int message_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleParameterFormatter);
 };
 
 // Adds each parameter to a growing list, with the given |root_message_id| as
@@ -73,6 +79,10 @@ class SimpleListFormatter : public ChromePermissionMessageFormatter {
  public:
   explicit SimpleListFormatter(int root_message_id)
       : root_message_id_(root_message_id) {}
+
+  SimpleListFormatter(const SimpleListFormatter&) = delete;
+  SimpleListFormatter& operator=(const SimpleListFormatter&) = delete;
+
   ~SimpleListFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -85,8 +95,6 @@ class SimpleListFormatter : public ChromePermissionMessageFormatter {
 
  private:
   int root_message_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleListFormatter);
 };
 
 // Creates a space-separated list of permissions with the given PermissionID.
@@ -100,6 +108,11 @@ class SpaceSeparatedListFormatter : public ChromePermissionMessageFormatter {
                               int message_id_for_multiple_hosts)
       : message_id_for_one_host_(message_id_for_one_host),
         message_id_for_multiple_hosts_(message_id_for_multiple_hosts) {}
+
+  SpaceSeparatedListFormatter(const SpaceSeparatedListFormatter&) = delete;
+  SpaceSeparatedListFormatter& operator=(const SpaceSeparatedListFormatter&) =
+      delete;
+
   ~SpaceSeparatedListFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -119,8 +132,6 @@ class SpaceSeparatedListFormatter : public ChromePermissionMessageFormatter {
  private:
   int message_id_for_one_host_;
   int message_id_for_multiple_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpaceSeparatedListFormatter);
 };
 
 // Creates a list of host permissions. If there are 1-3 hosts, they are inserted
@@ -136,6 +147,10 @@ class HostListFormatter : public ChromePermissionMessageFormatter {
         message_id_for_two_hosts_(message_id_for_two_hosts),
         message_id_for_three_hosts_(message_id_for_three_hosts),
         message_id_for_many_hosts_(message_id_for_many_hosts) {}
+
+  HostListFormatter(const HostListFormatter&) = delete;
+  HostListFormatter& operator=(const HostListFormatter&) = delete;
+
   ~HostListFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -188,13 +203,15 @@ class HostListFormatter : public ChromePermissionMessageFormatter {
   int message_id_for_two_hosts_;
   int message_id_for_three_hosts_;
   int message_id_for_many_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostListFormatter);
 };
 
 class USBDevicesFormatter : public ChromePermissionMessageFormatter {
  public:
   USBDevicesFormatter() {}
+
+  USBDevicesFormatter(const USBDevicesFormatter&) = delete;
+  USBDevicesFormatter& operator=(const USBDevicesFormatter&) = delete;
+
   ~USBDevicesFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -254,8 +271,6 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_LIST),
         permissions, submessages);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(USBDevicesFormatter);
 };
 
 }  // namespace

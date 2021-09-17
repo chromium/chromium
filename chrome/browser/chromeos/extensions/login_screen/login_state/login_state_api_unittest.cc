@@ -31,6 +31,10 @@ namespace extensions {
 class LoginStateApiUnittest : public ExtensionApiUnittest {
  public:
   LoginStateApiUnittest() {}
+
+  LoginStateApiUnittest(const LoginStateApiUnittest&) = delete;
+  LoginStateApiUnittest& operator=(const LoginStateApiUnittest&) = delete;
+
   ~LoginStateApiUnittest() override = default;
 
   void SetUp() override {
@@ -49,9 +53,6 @@ class LoginStateApiUnittest : public ExtensionApiUnittest {
 
  protected:
   std::unique_ptr<session_manager::SessionManager> session_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginStateApiUnittest);
 };
 
 // Test that calling |loginState.getSessionState()| returns the correctly mapped

@@ -24,6 +24,10 @@ class PrintJobHistoryService : public KeyedService {
   };
 
   PrintJobHistoryService();
+
+  PrintJobHistoryService(const PrintJobHistoryService&) = delete;
+  PrintJobHistoryService& operator=(const PrintJobHistoryService&) = delete;
+
   ~PrintJobHistoryService() override;
 
   // Register the print job history preferences with the |registry|.
@@ -42,8 +46,6 @@ class PrintJobHistoryService : public KeyedService {
 
  protected:
   base::ObserverList<PrintJobHistoryService::Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobHistoryService);
 };
 
 }  // namespace ash

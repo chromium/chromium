@@ -111,6 +111,10 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
                             public BitmapFetcherDelegate {
  public:
   ManagementUIHandler();
+
+  ManagementUIHandler(const ManagementUIHandler&) = delete;
+  ManagementUIHandler& operator=(const ManagementUIHandler&) = delete;
+
   ~ManagementUIHandler() override;
 
   static void Initialize(content::WebUI* web_ui,
@@ -216,8 +220,6 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   GURL logo_url_;
   std::string fetched_image_;
   std::unique_ptr<BitmapFetcher> icon_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementUIHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_HANDLER_H_

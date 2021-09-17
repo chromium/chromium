@@ -15,6 +15,10 @@ class HistoryService;
 class HistoryUIBrowserTest : public WebUIBrowserTest {
  public:
   HistoryUIBrowserTest();
+
+  HistoryUIBrowserTest(const HistoryUIBrowserTest&) = delete;
+  HistoryUIBrowserTest& operator=(const HistoryUIBrowserTest&) = delete;
+
   ~HistoryUIBrowserTest() override;
 
   void SetUpOnMainThread() override;
@@ -26,8 +30,6 @@ class HistoryUIBrowserTest : public WebUIBrowserTest {
  private:
   // The HistoryService is owned by the profile.
   history::HistoryService* history_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryUIBrowserTest);
 };
 
 #endif  // CHROME_TEST_DATA_WEBUI_HISTORY_UI_BROWSERTEST_H_

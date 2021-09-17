@@ -15,6 +15,10 @@ class Profile;
 class ThemeServiceAuraLinux : public ThemeService {
  public:
   using ThemeService::ThemeService;
+
+  ThemeServiceAuraLinux(const ThemeServiceAuraLinux&) = delete;
+  ThemeServiceAuraLinux& operator=(const ThemeServiceAuraLinux&) = delete;
+
   ~ThemeServiceAuraLinux() override;
 
   // Overridden from ThemeService:
@@ -25,9 +29,6 @@ class ThemeServiceAuraLinux : public ThemeService {
   void FixInconsistentPreferencesIfNeeded() override;
 
   static bool ShouldUseSystemThemeForProfile(const Profile* profile);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThemeServiceAuraLinux);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SERVICE_AURA_LINUX_H_

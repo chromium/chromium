@@ -99,18 +99,22 @@ class MockPhishingClassifier : public PhishingClassifier {
   explicit MockPhishingClassifier(content::RenderFrame* render_frame)
       : PhishingClassifier(render_frame) {}
 
+  MockPhishingClassifier(const MockPhishingClassifier&) = delete;
+  MockPhishingClassifier& operator=(const MockPhishingClassifier&) = delete;
+
   ~MockPhishingClassifier() override {}
 
   MOCK_METHOD2(BeginClassification, void(const std::u16string*, DoneCallback));
   MOCK_METHOD0(CancelPendingClassification, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPhishingClassifier);
 };
 
 class MockScorer : public Scorer {
  public:
   MockScorer() : Scorer() {}
+
+  MockScorer(const MockScorer&) = delete;
+  MockScorer& operator=(const MockScorer&) = delete;
+
   ~MockScorer() override {}
 
   MOCK_CONST_METHOD1(ComputeScore, double(const FeatureMap&));
@@ -140,9 +144,6 @@ class MockScorer : public Scorer {
   MOCK_CONST_METHOD0(tflite_thresholds,
                      const google::protobuf::RepeatedPtrField<
                          TfLiteModelMetadata::Threshold>&());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockScorer);
 };
 }  // namespace
 

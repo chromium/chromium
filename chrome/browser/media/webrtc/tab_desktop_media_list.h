@@ -15,6 +15,10 @@ class TabDesktopMediaList : public DesktopMediaListBase {
   TabDesktopMediaList(
       DesktopMediaList::WebContentsFilter includable_web_contents_filter,
       bool include_chrome_app_windows);
+
+  TabDesktopMediaList(const TabDesktopMediaList&) = delete;
+  TabDesktopMediaList& operator=(const TabDesktopMediaList&) = delete;
+
   ~TabDesktopMediaList() override;
 
  private:
@@ -30,8 +34,6 @@ class TabDesktopMediaList : public DesktopMediaListBase {
   scoped_refptr<base::SequencedTaskRunner> thumbnail_task_runner_;
 
   base::WeakPtrFactory<TabDesktopMediaList> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabDesktopMediaList);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_TAB_DESKTOP_MEDIA_LIST_H_

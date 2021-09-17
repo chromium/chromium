@@ -19,6 +19,10 @@ class MacStartupProfiler {
   static MacStartupProfiler* GetInstance();
 
   MacStartupProfiler();
+
+  MacStartupProfiler(const MacStartupProfiler&) = delete;
+  MacStartupProfiler& operator=(const MacStartupProfiler&) = delete;
+
   ~MacStartupProfiler();
 
   // These locations correspond to major phases of Chrome startup.
@@ -56,8 +60,6 @@ class MacStartupProfiler {
 
   // Whether UMA metrics have been recorded. Only record UMA metrics once.
   bool recorded_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(MacStartupProfiler);
 };
 
 #endif  // CHROME_BROWSER_MAC_MAC_STARTUP_PROFILER_H_

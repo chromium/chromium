@@ -21,6 +21,10 @@ class AutofillPopupController;
 class AutofillPopupViewAndroid : public AutofillPopupView {
  public:
   explicit AutofillPopupViewAndroid(AutofillPopupController* controller);
+
+  AutofillPopupViewAndroid(const AutofillPopupViewAndroid&) = delete;
+  AutofillPopupViewAndroid& operator=(const AutofillPopupViewAndroid&) = delete;
+
   ~AutofillPopupViewAndroid() override;
 
   // --------------------------------------------------------------------------
@@ -69,8 +73,6 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
 
   // Popup view
   ui::ViewAndroid::ScopedAnchorView popup_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupViewAndroid);
 };
 
 }  // namespace autofill

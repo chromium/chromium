@@ -1933,6 +1933,12 @@ class WebAppPictureInPictureWindowControllerBrowserTest
     : public web_app::WebAppControllerBrowserTest {
  public:
   WebAppPictureInPictureWindowControllerBrowserTest() = default;
+
+  WebAppPictureInPictureWindowControllerBrowserTest(
+      const WebAppPictureInPictureWindowControllerBrowserTest&) = delete;
+  WebAppPictureInPictureWindowControllerBrowserTest& operator=(
+      const WebAppPictureInPictureWindowControllerBrowserTest&) = delete;
+
   ~WebAppPictureInPictureWindowControllerBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1963,8 +1969,6 @@ class WebAppPictureInPictureWindowControllerBrowserTest
 
  private:
   content::WebContents* web_contents_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppPictureInPictureWindowControllerBrowserTest);
 };
 
 // Hide pwa page and check that Picture-in-Picture is entered automatically.

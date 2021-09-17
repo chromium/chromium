@@ -14,10 +14,11 @@ namespace chromeos {
 class CryptohomeUI : public content::WebUIController {
  public:
   explicit CryptohomeUI(content::WebUI* web_ui);
-  ~CryptohomeUI() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CryptohomeUI);
+  CryptohomeUI(const CryptohomeUI&) = delete;
+  CryptohomeUI& operator=(const CryptohomeUI&) = delete;
+
+  ~CryptohomeUI() override {}
 };
 
 }  // namespace chromeos

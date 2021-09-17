@@ -36,15 +36,18 @@ class EnterpriseUserSessionMetricsTest : public testing::Test {
         install_attributes_(std::make_unique<ScopedStubInstallAttributes>(
             StubInstallAttributes::CreateCloudManaged("test-domain",
                                                       "FAKE_DEVICE_ID"))) {}
+
+  EnterpriseUserSessionMetricsTest(const EnterpriseUserSessionMetricsTest&) =
+      delete;
+  EnterpriseUserSessionMetricsTest& operator=(
+      const EnterpriseUserSessionMetricsTest&) = delete;
+
   ~EnterpriseUserSessionMetricsTest() override = default;
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<ScopedStubInstallAttributes> install_attributes_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseUserSessionMetricsTest);
 };
 
 // Tests recording a sign-in event with a sign-in event type.

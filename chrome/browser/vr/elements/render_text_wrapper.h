@@ -16,6 +16,10 @@ namespace vr {
 class VR_UI_EXPORT RenderTextWrapper {
  public:
   explicit RenderTextWrapper(gfx::RenderText* render_text);
+
+  RenderTextWrapper(const RenderTextWrapper&) = delete;
+  RenderTextWrapper& operator=(const RenderTextWrapper&) = delete;
+
   virtual ~RenderTextWrapper();
 
   virtual void SetColor(SkColor value);
@@ -33,8 +37,6 @@ class VR_UI_EXPORT RenderTextWrapper {
 
  private:
   gfx::RenderText* render_text_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderTextWrapper);
 };
 
 }  // namespace vr

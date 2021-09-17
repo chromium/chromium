@@ -224,6 +224,9 @@ class GuestOsSharePathTest : public testing::Test {
     fake_seneschal_client_ = chromeos::FakeSeneschalClient::Get();
   }
 
+  GuestOsSharePathTest(const GuestOsSharePathTest&) = delete;
+  GuestOsSharePathTest& operator=(const GuestOsSharePathTest&) = delete;
+
   ~GuestOsSharePathTest() override {
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
@@ -341,8 +344,6 @@ class GuestOsSharePathTest : public testing::Test {
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsSharePathTest);
 };
 
 TEST_F(GuestOsSharePathTest, SuccessMyFilesRoot) {

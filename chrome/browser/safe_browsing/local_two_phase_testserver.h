@@ -20,6 +20,9 @@ class LocalTwoPhaseTestServer {
   // Initialize a two phase protocol test server.
   LocalTwoPhaseTestServer();
 
+  LocalTwoPhaseTestServer(const LocalTwoPhaseTestServer&) = delete;
+  LocalTwoPhaseTestServer& operator=(const LocalTwoPhaseTestServer&) = delete;
+
   ~LocalTwoPhaseTestServer();
 
   GURL GetURL(const std::string& relative_path) {
@@ -30,11 +33,8 @@ class LocalTwoPhaseTestServer {
 
  private:
   net::EmbeddedTestServer embedded_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalTwoPhaseTestServer);
 };
 
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_LOCAL_TWO_PHASE_TESTSERVER_H_
-

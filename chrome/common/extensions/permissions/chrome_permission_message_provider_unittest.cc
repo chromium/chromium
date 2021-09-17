@@ -35,6 +35,12 @@ class ChromePermissionMessageProviderUnittest : public ChromeManifestTest {
  public:
   ChromePermissionMessageProviderUnittest()
       : message_provider_(new ChromePermissionMessageProvider()) {}
+
+  ChromePermissionMessageProviderUnittest(
+      const ChromePermissionMessageProviderUnittest&) = delete;
+  ChromePermissionMessageProviderUnittest& operator=(
+      const ChromePermissionMessageProviderUnittest&) = delete;
+
   ~ChromePermissionMessageProviderUnittest() override {}
 
  protected:
@@ -76,8 +82,6 @@ class ChromePermissionMessageProviderUnittest : public ChromeManifestTest {
 
  private:
   std::unique_ptr<ChromePermissionMessageProvider> message_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePermissionMessageProviderUnittest);
 };
 
 // Checks that if an app has a superset and a subset permission, only the

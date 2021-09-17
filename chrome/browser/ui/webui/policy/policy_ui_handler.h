@@ -49,6 +49,10 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
                         public ui::SelectFileDialog::Listener {
  public:
   PolicyUIHandler();
+
+  PolicyUIHandler(const PolicyUIHandler&) = delete;
+  PolicyUIHandler& operator=(const PolicyUIHandler&) = delete;
+
   ~PolicyUIHandler() override;
 
   static void AddCommonLocalizedStringsToSource(
@@ -145,8 +149,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyUIHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_POLICY_POLICY_UI_HANDLER_H_

@@ -89,6 +89,9 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
     scoped_observation_.Observe(service_);
   }
 
+  GlobalErrorWaiter(const GlobalErrorWaiter&) = delete;
+  GlobalErrorWaiter& operator=(const GlobalErrorWaiter&) = delete;
+
   ~GlobalErrorWaiter() override = default;
 
   // GlobalErrorObserver
@@ -104,8 +107,6 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
   GlobalErrorService* service_;
   base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalErrorWaiter);
 };
 
 }  // namespace

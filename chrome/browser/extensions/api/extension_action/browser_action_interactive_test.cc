@@ -117,6 +117,11 @@ class PopupHostWatcher : public content::NotificationObserver {
 class BrowserActionInteractiveTest : public ExtensionApiTest {
  public:
   BrowserActionInteractiveTest() {}
+
+  BrowserActionInteractiveTest(const BrowserActionInteractiveTest&) = delete;
+  BrowserActionInteractiveTest& operator=(const BrowserActionInteractiveTest&) =
+      delete;
+
   ~BrowserActionInteractiveTest() override {}
 
   // BrowserTestBase:
@@ -221,8 +226,6 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
  private:
   std::unique_ptr<PopupHostWatcher> host_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionInteractiveTest);
 };
 
 // Tests opening a popup using the chrome.browserAction.openPopup API. This test
@@ -492,10 +495,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
 class BrowserActionInteractiveViewsTest : public BrowserActionInteractiveTest {
  public:
   BrowserActionInteractiveViewsTest() = default;
-  ~BrowserActionInteractiveViewsTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserActionInteractiveViewsTest);
+  BrowserActionInteractiveViewsTest(const BrowserActionInteractiveViewsTest&) =
+      delete;
+  BrowserActionInteractiveViewsTest& operator=(
+      const BrowserActionInteractiveViewsTest&) = delete;
+
+  ~BrowserActionInteractiveViewsTest() override = default;
 };
 
 // Test closing the browser while inspecting an extension popup with dev tools.

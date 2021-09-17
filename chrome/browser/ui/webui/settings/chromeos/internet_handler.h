@@ -28,6 +28,10 @@ class InternetHandler
       public ::settings::SettingsPageUIHandler {
  public:
   explicit InternetHandler(Profile* profile);
+
+  InternetHandler(const InternetHandler&) = delete;
+  InternetHandler& operator=(const InternetHandler&) = delete;
+
   ~InternetHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -68,8 +72,6 @@ class InternetHandler
 
   chromeos::tether::GmsCoreNotificationsStateTracker*
       gms_core_notifications_state_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternetHandler);
 };
 
 }  // namespace settings

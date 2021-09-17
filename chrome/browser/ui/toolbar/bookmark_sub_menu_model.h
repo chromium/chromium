@@ -18,12 +18,14 @@ class BookmarkSubMenuModel : public ui::SimpleMenuModel {
  public:
   BookmarkSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                        Browser* browser);
+
+  BookmarkSubMenuModel(const BookmarkSubMenuModel&) = delete;
+  BookmarkSubMenuModel& operator=(const BookmarkSubMenuModel&) = delete;
+
   ~BookmarkSubMenuModel() override;
 
  private:
   void Build(Browser* browser);
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkSubMenuModel);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_BOOKMARK_SUB_MENU_MODEL_H_

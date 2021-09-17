@@ -48,6 +48,9 @@ class LastDownloadFinder : public ProfileManagerObserver,
       std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>)>
       LastDownloadCallback;
 
+  LastDownloadFinder(const LastDownloadFinder&) = delete;
+  LastDownloadFinder& operator=(const LastDownloadFinder&) = delete;
+
   ~LastDownloadFinder() override;
 
   // Initiates an asynchronous search for the most recent downloads. |callback|
@@ -140,8 +143,6 @@ class LastDownloadFinder : public ProfileManagerObserver,
 
   // A factory for asynchronous operations on profiles' HistoryService.
   base::WeakPtrFactory<LastDownloadFinder> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LastDownloadFinder);
 };
 
 }  // namespace safe_browsing

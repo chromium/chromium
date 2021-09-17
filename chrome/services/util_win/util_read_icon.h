@@ -14,6 +14,10 @@ class UtilReadIcon : public chrome::mojom::UtilReadIcon {
  public:
   explicit UtilReadIcon(
       mojo::PendingReceiver<chrome::mojom::UtilReadIcon> receiver);
+
+  UtilReadIcon(const UtilReadIcon&) = delete;
+  UtilReadIcon& operator=(const UtilReadIcon&) = delete;
+
   ~UtilReadIcon() override;
 
  private:
@@ -26,7 +30,6 @@ class UtilReadIcon : public chrome::mojom::UtilReadIcon {
   mojo::Receiver<chrome::mojom::UtilReadIcon> receiver_;
 
   base::WeakPtrFactory<UtilReadIcon> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UtilReadIcon);
 };
 
 #endif  // CHROME_SERVICES_UTIL_WIN_UTIL_READ_ICON_H_

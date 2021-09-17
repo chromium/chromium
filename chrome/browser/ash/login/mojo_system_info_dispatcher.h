@@ -13,6 +13,10 @@ namespace ash {
 class MojoSystemInfoDispatcher : public VersionInfoUpdater::Delegate {
  public:
   MojoSystemInfoDispatcher();
+
+  MojoSystemInfoDispatcher(const MojoSystemInfoDispatcher&) = delete;
+  MojoSystemInfoDispatcher& operator=(const MojoSystemInfoDispatcher&) = delete;
+
   ~MojoSystemInfoDispatcher() override;
 
   // Request the system info.
@@ -39,8 +43,6 @@ class MojoSystemInfoDispatcher : public VersionInfoUpdater::Delegate {
   std::string enterprise_info_;
   std::string bluetooth_name_;
   bool adb_sideloading_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoSystemInfoDispatcher);
 };
 
 }  // namespace ash

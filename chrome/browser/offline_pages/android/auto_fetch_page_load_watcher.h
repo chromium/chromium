@@ -159,6 +159,9 @@ class AutoFetchPageLoadWatcher
                            RequestCoordinator* request_coordinator,
                            std::unique_ptr<AndroidTabFinder> tab_finder);
 
+  AutoFetchPageLoadWatcher(const AutoFetchPageLoadWatcher&) = delete;
+  AutoFetchPageLoadWatcher& operator=(const AutoFetchPageLoadWatcher&) = delete;
+
   ~AutoFetchPageLoadWatcher() override;
 
   // Called when navigation completes, even on errors. This is only called
@@ -191,8 +194,6 @@ class AutoFetchPageLoadWatcher
   auto_fetch_internal::InternalImpl impl_;
   std::unique_ptr<TabWatcher> tab_watcher_;
   base::WeakPtrFactory<AutoFetchPageLoadWatcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoFetchPageLoadWatcher);
 };
 
 }  // namespace offline_pages

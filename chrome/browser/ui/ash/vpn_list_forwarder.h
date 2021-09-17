@@ -28,6 +28,10 @@ class VpnListForwarder
       public user_manager::UserManager::UserSessionStateObserver {
  public:
   VpnListForwarder();
+
+  VpnListForwarder(const VpnListForwarder&) = delete;
+  VpnListForwarder& operator=(const VpnListForwarder&) = delete;
+
   ~VpnListForwarder() override;
 
   // app_list::ArcVpnProviderManager::Observer:
@@ -83,8 +87,6 @@ class VpnListForwarder
       vpn_providers_;
 
   base::WeakPtrFactory<VpnListForwarder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VpnListForwarder);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_VPN_LIST_FORWARDER_H_

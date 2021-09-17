@@ -18,6 +18,11 @@ class FakeLockScreenProfileCreator : public LockScreenProfileCreator {
   // |profile_manager| - Testing profile manager that can be used to create
   //      testing profiles.
   explicit FakeLockScreenProfileCreator(TestingProfileManager* profile_manager);
+
+  FakeLockScreenProfileCreator(const FakeLockScreenProfileCreator&) = delete;
+  FakeLockScreenProfileCreator& operator=(const FakeLockScreenProfileCreator&) =
+      delete;
+
   ~FakeLockScreenProfileCreator() override;
 
   // Simulate lock screen profile creation - this will create a TestingProfile
@@ -34,8 +39,6 @@ class FakeLockScreenProfileCreator : public LockScreenProfileCreator {
 
  private:
   TestingProfileManager* const profile_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLockScreenProfileCreator);
 };
 
 }  // namespace lock_screen_apps

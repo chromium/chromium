@@ -48,10 +48,11 @@ class TestSuggestionChipResult : public TestSearchResult {
     set_display_type(SearchResultDisplayType::kChip);
     set_title(title);
   }
-  ~TestSuggestionChipResult() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSuggestionChipResult);
+  TestSuggestionChipResult(const TestSuggestionChipResult&) = delete;
+  TestSuggestionChipResult& operator=(const TestSuggestionChipResult&) = delete;
+
+  ~TestSuggestionChipResult() override = default;
 };
 
 class SpokenFeedbackAppListTest

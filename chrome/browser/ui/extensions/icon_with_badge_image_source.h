@@ -26,17 +26,22 @@ class IconWithBadgeImageSource : public gfx::CanvasImageSource {
     Badge(const std::string& text,
           SkColor text_color,
           SkColor background_color);
+
+    Badge(const Badge&) = delete;
+    Badge& operator=(const Badge&) = delete;
+
     ~Badge();
 
     std::string text;
     SkColor text_color;
     SkColor background_color;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Badge);
   };
 
   explicit IconWithBadgeImageSource(const gfx::Size& size);
+
+  IconWithBadgeImageSource(const IconWithBadgeImageSource&) = delete;
+  IconWithBadgeImageSource& operator=(const IconWithBadgeImageSource&) = delete;
+
   ~IconWithBadgeImageSource() override;
 
   void SetIcon(const gfx::Image& icon);
@@ -91,8 +96,6 @@ class IconWithBadgeImageSource : public gfx::CanvasImageSource {
   // Whether or not to paint a decoration to indicate that the extension has
   // had actions blocked.
   bool paint_blocked_actions_decoration_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(IconWithBadgeImageSource);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_ICON_WITH_BADGE_IMAGE_SOURCE_H_

@@ -16,10 +16,11 @@ class WebUI;
 class PolicyUI : public content::WebUIController {
  public:
   explicit PolicyUI(content::WebUI* web_ui);
-  ~PolicyUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyUI);
+  PolicyUI(const PolicyUI&) = delete;
+  PolicyUI& operator=(const PolicyUI&) = delete;
+
+  ~PolicyUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_POLICY_POLICY_UI_H_

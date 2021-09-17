@@ -46,6 +46,11 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
                        image_writer_utility_client_));
   }
 
+  RemovableStorageWriterClientImpl(const RemovableStorageWriterClientImpl&) =
+      delete;
+  RemovableStorageWriterClientImpl& operator=(
+      const RemovableStorageWriterClientImpl&) = delete;
+
   ~RemovableStorageWriterClientImpl() override = default;
 
  private:
@@ -65,8 +70,6 @@ class ImageWriterUtilityClient::RemovableStorageWriterClientImpl
 
   // |image_writer_utility_client_| owns |this|.
   ImageWriterUtilityClient* const image_writer_utility_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovableStorageWriterClientImpl);
 };
 
 ImageWriterUtilityClient::ImageWriterUtilityClient(

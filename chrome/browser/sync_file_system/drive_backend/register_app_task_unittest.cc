@@ -48,6 +48,10 @@ class RegisterAppTaskTest : public testing::Test {
   RegisterAppTaskTest()
       : next_file_id_(1000),
         next_tracker_id_(10000) {}
+
+  RegisterAppTaskTest(const RegisterAppTaskTest&) = delete;
+  RegisterAppTaskTest& operator=(const RegisterAppTaskTest&) = delete;
+
   ~RegisterAppTaskTest() override {}
 
   void SetUp() override {
@@ -273,8 +277,6 @@ class RegisterAppTaskTest : public testing::Test {
 
   std::unique_ptr<SyncEngineContext> context_;
   std::unique_ptr<FakeDriveServiceHelper> fake_drive_service_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegisterAppTaskTest);
 };
 
 TEST_F(RegisterAppTaskTest, AlreadyRegistered) {

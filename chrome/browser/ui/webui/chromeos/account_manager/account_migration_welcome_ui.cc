@@ -37,6 +37,10 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
  public:
   explicit MigrationMessageHandler(base::RepeatingClosure close_dialog_closure)
       : close_dialog_closure_(close_dialog_closure) {}
+
+  MigrationMessageHandler(const MigrationMessageHandler&) = delete;
+  MigrationMessageHandler& operator=(const MigrationMessageHandler&) = delete;
+
   ~MigrationMessageHandler() override = default;
 
  private:
@@ -75,8 +79,6 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
   }
 
   base::RepeatingClosure close_dialog_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(MigrationMessageHandler);
 };
 
 }  // namespace

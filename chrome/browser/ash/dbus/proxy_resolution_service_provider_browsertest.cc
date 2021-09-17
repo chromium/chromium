@@ -37,6 +37,11 @@ class ProxyResolutionServiceProviderTestWrapper {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
+  ProxyResolutionServiceProviderTestWrapper(
+      const ProxyResolutionServiceProviderTestWrapper&) = delete;
+  ProxyResolutionServiceProviderTestWrapper& operator=(
+      const ProxyResolutionServiceProviderTestWrapper&) = delete;
+
   ~ProxyResolutionServiceProviderTestWrapper() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
@@ -77,8 +82,6 @@ class ProxyResolutionServiceProviderTestWrapper {
   }
 
   ProxyResolutionServiceProvider impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolutionServiceProviderTestWrapper);
 };
 
 // Base test fixture that exposes a way to invoke ProxyResolutionServiceProvider

@@ -38,6 +38,10 @@ class CalculatorsPoliciesBinder {
       PrefService* prefs,
       base::WeakPtr<BulkPrintersCalculator> calculator);
 
+  CalculatorsPoliciesBinder(const CalculatorsPoliciesBinder&) = delete;
+  CalculatorsPoliciesBinder& operator=(const CalculatorsPoliciesBinder&) =
+      delete;
+
   virtual ~CalculatorsPoliciesBinder();
 
  protected:
@@ -77,8 +81,6 @@ class CalculatorsPoliciesBinder {
   const char* allowlist_name_;
   base::WeakPtr<BulkPrintersCalculator> calculator_;
   base::WeakPtrFactory<CalculatorsPoliciesBinder> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CalculatorsPoliciesBinder);
 };
 
 }  // namespace ash

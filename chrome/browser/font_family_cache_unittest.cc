@@ -17,6 +17,10 @@ class TestingFontFamilyCache : public FontFamilyCache {
  public:
   explicit TestingFontFamilyCache(Profile* profile)
       : FontFamilyCache(profile), fetch_font_count_(0) {}
+
+  TestingFontFamilyCache(const TestingFontFamilyCache&) = delete;
+  TestingFontFamilyCache& operator=(const TestingFontFamilyCache&) = delete;
+
   ~TestingFontFamilyCache() override {}
   std::u16string FetchFont(const char* script, const char* map_name) override {
     ++fetch_font_count_;
@@ -24,9 +28,6 @@ class TestingFontFamilyCache : public FontFamilyCache {
   }
 
   int fetch_font_count_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingFontFamilyCache);
 };
 
 }  // namespace

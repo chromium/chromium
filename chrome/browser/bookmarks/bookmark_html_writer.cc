@@ -107,6 +107,10 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
   BookmarkFaviconFetcher(Profile* profile,
                          const base::FilePath& path,
                          BookmarksExportObserver* observer);
+
+  BookmarkFaviconFetcher(const BookmarkFaviconFetcher&) = delete;
+  BookmarkFaviconFetcher& operator=(const BookmarkFaviconFetcher&) = delete;
+
   ~BookmarkFaviconFetcher() override = default;
 
   // Executes bookmark export process.
@@ -146,8 +150,6 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
   base::FilePath path_;
 
   BookmarksExportObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkFaviconFetcher);
 };
 
 // Class responsible for the actual writing. Takes ownership of favicons_map.

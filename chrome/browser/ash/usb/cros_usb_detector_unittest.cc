@@ -146,6 +146,9 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
         mock_disk_mount_manager_);
   }
 
+  CrosUsbDetectorTest(const CrosUsbDetectorTest&) = delete;
+  CrosUsbDetectorTest& operator=(const CrosUsbDetectorTest&) = delete;
+
   ~CrosUsbDetectorTest() override {
     chromeos::disks::DiskMountManager::Shutdown();
     chromeos::SeneschalClient::Shutdown();
@@ -289,9 +292,6 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ash::CrosUsbDetector> cros_usb_detector_;
 
   std::unique_ptr<crostini::CrostiniTestHelper> crostini_test_helper_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrosUsbDetectorTest);
 };
 
 TEST_F(CrosUsbDetectorTest, UsbDeviceAddedAndRemoved) {

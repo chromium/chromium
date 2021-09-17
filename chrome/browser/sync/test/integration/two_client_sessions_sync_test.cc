@@ -46,14 +46,16 @@ using testing::IsEmpty;
 class TwoClientSessionsSyncTest : public SyncTest {
  public:
   TwoClientSessionsSyncTest() : SyncTest(TWO_CLIENT) {}
+
+  TwoClientSessionsSyncTest(const TwoClientSessionsSyncTest&) = delete;
+  TwoClientSessionsSyncTest& operator=(const TwoClientSessionsSyncTest&) =
+      delete;
+
   ~TwoClientSessionsSyncTest() override {}
 
   bool WaitForForeignSessionsToSync(int local_index, int non_local_index) {
     return ForeignSessionsMatchChecker(non_local_index, local_index).Wait();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientSessionsSyncTest);
 };
 
 static const char* kURL1 = "data:text/html,<html><title>Test</title></html>";

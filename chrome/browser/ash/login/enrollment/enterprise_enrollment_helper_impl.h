@@ -28,6 +28,12 @@ namespace ash {
 class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
  public:
   EnterpriseEnrollmentHelperImpl();
+
+  EnterpriseEnrollmentHelperImpl(const EnterpriseEnrollmentHelperImpl&) =
+      delete;
+  EnterpriseEnrollmentHelperImpl& operator=(
+      const EnterpriseEnrollmentHelperImpl&) = delete;
+
   ~EnterpriseEnrollmentHelperImpl() override;
 
   // EnterpriseEnrollmentHelper:
@@ -96,8 +102,6 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   std::unique_ptr<policy::EnrollmentHandler> enrollment_handler_;
 
   base::WeakPtrFactory<EnterpriseEnrollmentHelperImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseEnrollmentHelperImpl);
 };
 
 }  // namespace ash

@@ -13,10 +13,11 @@
 class SyncInternalsUI : public content::WebUIController {
  public:
   explicit SyncInternalsUI(content::WebUI* web_ui);
-  ~SyncInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncInternalsUI);
+  SyncInternalsUI(const SyncInternalsUI&) = delete;
+  SyncInternalsUI& operator=(const SyncInternalsUI&) = delete;
+
+  ~SyncInternalsUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_SYNC_INTERNALS_UI_H_

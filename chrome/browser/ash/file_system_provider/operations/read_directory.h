@@ -34,6 +34,10 @@ class ReadDirectory : public Operation {
                 const ProvidedFileSystemInfo& file_system_info,
                 const base::FilePath& directory_path,
                 storage::AsyncFileUtil::ReadDirectoryCallback callback);
+
+  ReadDirectory(const ReadDirectory&) = delete;
+  ReadDirectory& operator=(const ReadDirectory&) = delete;
+
   ~ReadDirectory() override;
 
   // Operation overrides.
@@ -48,8 +52,6 @@ class ReadDirectory : public Operation {
  private:
   base::FilePath directory_path_;
   const storage::AsyncFileUtil::ReadDirectoryCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadDirectory);
 };
 
 }  // namespace operations

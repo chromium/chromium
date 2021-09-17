@@ -34,6 +34,11 @@ constexpr char kNewUserGaiaId[] = "0123456789";
 class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
  public:
   LoginUIShelfVisibilityTest() = default;
+
+  LoginUIShelfVisibilityTest(const LoginUIShelfVisibilityTest&) = delete;
+  LoginUIShelfVisibilityTest& operator=(const LoginUIShelfVisibilityTest&) =
+      delete;
+
   ~LoginUIShelfVisibilityTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -64,8 +69,6 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
   EmbeddedTestServerSetupMixin test_server_mixin_{&mixin_host_,
                                                   embedded_test_server()};
   FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginUIShelfVisibilityTest);
 };
 
 class OsInstallVisibilityTest : public LoginUIShelfVisibilityTest {

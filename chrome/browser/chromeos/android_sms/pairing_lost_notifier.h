@@ -31,6 +31,10 @@ class PairingLostNotifier
       PrefService* pref_service,
       multidevice_setup::AndroidSmsAppHelperDelegate*
           android_sms_app_helper_delegate);
+
+  PairingLostNotifier(const PairingLostNotifier&) = delete;
+  PairingLostNotifier& operator=(const PairingLostNotifier&) = delete;
+
   ~PairingLostNotifier() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -55,8 +59,6 @@ class PairingLostNotifier
       android_sms_app_helper_delegate_;
 
   base::WeakPtrFactory<PairingLostNotifier> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PairingLostNotifier);
 };
 
 }  // namespace android_sms

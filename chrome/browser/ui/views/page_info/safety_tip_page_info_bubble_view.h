@@ -44,6 +44,11 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase {
       security_state::SafetyTipStatus safety_tip_status,
       const GURL& suggested_url,
       base::OnceCallback<void(SafetyTipInteraction)> close_callback);
+
+  SafetyTipPageInfoBubbleView(const SafetyTipPageInfoBubbleView&) = delete;
+  SafetyTipPageInfoBubbleView& operator=(const SafetyTipPageInfoBubbleView&) =
+      delete;
+
   ~SafetyTipPageInfoBubbleView() override;
 
   // views::WidgetObserver:
@@ -80,8 +85,6 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase {
   views::Button* leave_button_ = nullptr;
   base::OnceCallback<void(SafetyTipInteraction)> close_callback_;
   SafetyTipInteraction action_taken_ = SafetyTipInteraction::kNoAction;
-
-  DISALLOW_COPY_AND_ASSIGN(SafetyTipPageInfoBubbleView);
 };
 
 // Creates and returns a safety tip bubble. Used in unit tests.

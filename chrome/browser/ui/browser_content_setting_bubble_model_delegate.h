@@ -17,6 +17,12 @@ class BrowserContentSettingBubbleModelDelegate
     : public ContentSettingBubbleModelDelegate {
  public:
   explicit BrowserContentSettingBubbleModelDelegate(Browser* browser);
+
+  BrowserContentSettingBubbleModelDelegate(
+      const BrowserContentSettingBubbleModelDelegate&) = delete;
+  BrowserContentSettingBubbleModelDelegate& operator=(
+      const BrowserContentSettingBubbleModelDelegate&) = delete;
+
   ~BrowserContentSettingBubbleModelDelegate() override;
 
   // ContentSettingBubbleModelDelegate implementation:
@@ -27,8 +33,6 @@ class BrowserContentSettingBubbleModelDelegate
 
  private:
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserContentSettingBubbleModelDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_CONTENT_SETTING_BUBBLE_MODEL_DELEGATE_H_

@@ -49,6 +49,9 @@ class MockBackgroundContents : public BackgroundContents {
     service_->OnBackgroundContentsClosed(this);
   }
 
+  MockBackgroundContents(const MockBackgroundContents&) = delete;
+  MockBackgroundContents& operator=(const MockBackgroundContents&) = delete;
+
   ~MockBackgroundContents() override = default;
 
   BackgroundContentsService* service() { return service_; }
@@ -62,13 +65,16 @@ class MockBackgroundContents : public BackgroundContents {
 
   // The ID of our parent application
   std::string appid_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBackgroundContents);
 };
 
 class BackgroundContentsServiceTest : public testing::Test {
  public:
   BackgroundContentsServiceTest() = default;
+
+  BackgroundContentsServiceTest(const BackgroundContentsServiceTest&) = delete;
+  BackgroundContentsServiceTest& operator=(
+      const BackgroundContentsServiceTest&) = delete;
+
   ~BackgroundContentsServiceTest() override = default;
 
   void SetUp() override {
@@ -107,15 +113,18 @@ class BackgroundContentsServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::CommandLine> command_line_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundContentsServiceTest);
 };
 
 class BackgroundContentsServiceNotificationTest
     : public BrowserWithTestWindowTest {
  public:
   BackgroundContentsServiceNotificationTest() {}
+
+  BackgroundContentsServiceNotificationTest(
+      const BackgroundContentsServiceNotificationTest&) = delete;
+  BackgroundContentsServiceNotificationTest& operator=(
+      const BackgroundContentsServiceNotificationTest&) = delete;
+
   ~BackgroundContentsServiceNotificationTest() override {}
 
   // Overridden from testing::Test
@@ -142,9 +151,6 @@ class BackgroundContentsServiceNotificationTest
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundContentsServiceNotificationTest);
 };
 
 TEST_F(BackgroundContentsServiceTest, Create) {

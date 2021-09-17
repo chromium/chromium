@@ -24,6 +24,11 @@ class ExtensionModelTypeController
       base::WeakPtr<syncer::SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack,
       Profile* profile);
+
+  ExtensionModelTypeController(const ExtensionModelTypeController&) = delete;
+  ExtensionModelTypeController& operator=(const ExtensionModelTypeController&) =
+      delete;
+
   ~ExtensionModelTypeController() override;
 
   // DataTypeController overrides.
@@ -32,8 +37,6 @@ class ExtensionModelTypeController
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionModelTypeController);
 };
 
 }  // namespace browser_sync

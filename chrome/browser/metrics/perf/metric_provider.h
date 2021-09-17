@@ -36,6 +36,9 @@ class MetricProvider {
   MetricProvider(std::unique_ptr<internal::MetricCollector> collector,
                  ProfileManager* profile_manager);
 
+  MetricProvider(const MetricProvider&) = delete;
+  MetricProvider& operator=(const MetricProvider&) = delete;
+
   virtual ~MetricProvider();
 
   void Init();
@@ -134,8 +137,6 @@ class MetricProvider {
   base::RepeatingClosure cache_updated_callback_;
 
   base::WeakPtrFactory<MetricProvider> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricProvider);
 };
 
 }  // namespace metrics

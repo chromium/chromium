@@ -62,20 +62,26 @@ constexpr char kHttpUrl[] = "http://www.tunafish.com";
 class TestLoadTerminationListener : public LoadTerminationListener {
  public:
   TestLoadTerminationListener() = default;
+
+  TestLoadTerminationListener(const TestLoadTerminationListener&) = delete;
+  TestLoadTerminationListener& operator=(const TestLoadTerminationListener&) =
+      delete;
+
   ~TestLoadTerminationListener() override = default;
 
   void TerminateLoad() { offliner()->TerminateLoadIfInProgress(); }
 
   Offliner* offliner() { return offliner_; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLoadTerminationListener);
 };
 
 // Mock OfflinePageModel for testing the SavePage calls
 class MockOfflinePageModel : public StubOfflinePageModel {
  public:
   MockOfflinePageModel() : mock_saving_(false), mock_deleting_(false) {}
+
+  MockOfflinePageModel(const MockOfflinePageModel&) = delete;
+  MockOfflinePageModel& operator=(const MockOfflinePageModel&) = delete;
+
   ~MockOfflinePageModel() override {}
 
   void SavePage(const SavePageParams& save_page_params,
@@ -126,8 +132,6 @@ class MockOfflinePageModel : public StubOfflinePageModel {
   bool mock_deleting_;
   SavePageCallback save_page_callback_;
   SavePageParams save_page_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockOfflinePageModel);
 };
 
 }  // namespace
@@ -206,6 +210,11 @@ content::PageType TestBackgroundLoaderOffliner::GetPageType(
 class BackgroundLoaderOfflinerTest : public testing::Test {
  public:
   BackgroundLoaderOfflinerTest();
+
+  BackgroundLoaderOfflinerTest(const BackgroundLoaderOfflinerTest&) = delete;
+  BackgroundLoaderOfflinerTest& operator=(const BackgroundLoaderOfflinerTest&) =
+      delete;
+
   ~BackgroundLoaderOfflinerTest() override;
 
   void SetUp() override;
@@ -294,8 +303,6 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
   int64_t progress_;
   Offliner::RequestStatus request_status_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundLoaderOfflinerTest);
 };
 
 BackgroundLoaderOfflinerTest::BackgroundLoaderOfflinerTest()

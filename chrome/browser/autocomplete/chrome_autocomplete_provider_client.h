@@ -33,6 +33,12 @@ class UrlKeyedDataCollectionConsentHelper;
 class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
  public:
   explicit ChromeAutocompleteProviderClient(Profile* profile);
+
+  ChromeAutocompleteProviderClient(const ChromeAutocompleteProviderClient&) =
+      delete;
+  ChromeAutocompleteProviderClient& operator=(
+      const ChromeAutocompleteProviderClient&) = delete;
+
   ~ChromeAutocompleteProviderClient() override;
 
   // AutocompleteProviderClient:
@@ -142,8 +148,6 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
 
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAutocompleteProviderClient);
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_CHROME_AUTOCOMPLETE_PROVIDER_CLIENT_H_

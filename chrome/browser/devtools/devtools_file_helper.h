@@ -61,6 +61,10 @@ class DevToolsFileHelper {
 
   DevToolsFileHelper(content::WebContents* web_contents, Profile* profile,
                      Delegate* delegate);
+
+  DevToolsFileHelper(const DevToolsFileHelper&) = delete;
+  DevToolsFileHelper& operator=(const DevToolsFileHelper&) = delete;
+
   ~DevToolsFileHelper();
 
   using SaveCallback = base::OnceCallback<void(const std::string&)>;
@@ -153,7 +157,6 @@ class DevToolsFileHelper {
       file_watcher_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   base::WeakPtrFactory<DevToolsFileHelper> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DevToolsFileHelper);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_FILE_HELPER_H_

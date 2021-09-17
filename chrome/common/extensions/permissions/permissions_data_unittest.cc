@@ -1163,6 +1163,10 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PolicyHostRestrictions) {
 class CaptureVisiblePageTest : public testing::Test {
  public:
   CaptureVisiblePageTest() = default;
+
+  CaptureVisiblePageTest(const CaptureVisiblePageTest&) = delete;
+  CaptureVisiblePageTest& operator=(const CaptureVisiblePageTest&) = delete;
+
   ~CaptureVisiblePageTest() override = default;
 
   bool CanCapture(const Extension& extension,
@@ -1223,8 +1227,6 @@ class CaptureVisiblePageTest : public testing::Test {
   scoped_refptr<const Extension> all_urls_;
   scoped_refptr<const Extension> active_tab_;
   scoped_refptr<const Extension> page_capture_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureVisiblePageTest);
 };
 
 TEST_F(CaptureVisiblePageTest, URLsCapturableWithEitherActiveTabOrAllURLs) {

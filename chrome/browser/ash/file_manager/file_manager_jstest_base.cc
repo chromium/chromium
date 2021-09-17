@@ -40,6 +40,10 @@ base::FilePath GetGenRoot() {
 class TestFilesDataSource : public content::URLDataSource {
  public:
   TestFilesDataSource() {}
+
+  TestFilesDataSource(const TestFilesDataSource&) = delete;
+  TestFilesDataSource& operator=(const TestFilesDataSource&) = delete;
+
   ~TestFilesDataSource() override {}
 
  private:
@@ -156,8 +160,6 @@ class TestFilesDataSource : public content::URLDataSource {
   // Root of repository source, where files are served directly from.
   base::FilePath source_root_;
   base::FilePath gen_root_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFilesDataSource);
 };
 
 // WebUIProvider to attach the URLDataSource for the test URL during tests.
@@ -167,6 +169,10 @@ class TestWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:
   TestWebUIProvider() = default;
+
+  TestWebUIProvider(const TestWebUIProvider&) = delete;
+  TestWebUIProvider& operator=(const TestWebUIProvider&) = delete;
+
   ~TestWebUIProvider() override = default;
 
   std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
@@ -179,9 +185,6 @@ class TestWebUIProvider
 
     return std::make_unique<content::WebUIController>(web_ui);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWebUIProvider);
 };
 
 base::LazyInstance<TestWebUIProvider>::DestructorAtExit test_webui_provider_ =

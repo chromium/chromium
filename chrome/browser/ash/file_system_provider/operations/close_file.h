@@ -32,6 +32,10 @@ class CloseFile : public Operation {
             const ProvidedFileSystemInfo& file_system_info,
             int open_request_id,
             storage::AsyncFileUtil::StatusCallback callback);
+
+  CloseFile(const CloseFile&) = delete;
+  CloseFile& operator=(const CloseFile&) = delete;
+
   ~CloseFile() override;
 
   // Operation overrides.
@@ -46,8 +50,6 @@ class CloseFile : public Operation {
  private:
   int open_request_id_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseFile);
 };
 
 }  // namespace operations

@@ -97,6 +97,11 @@ class SafeBrowsingTriggeredPopupBlockerBrowserTest
         {});
   }
 
+  SafeBrowsingTriggeredPopupBlockerBrowserTest(
+      const SafeBrowsingTriggeredPopupBlockerBrowserTest&) = delete;
+  SafeBrowsingTriggeredPopupBlockerBrowserTest& operator=(
+      const SafeBrowsingTriggeredPopupBlockerBrowserTest&) = delete;
+
   ~SafeBrowsingTriggeredPopupBlockerBrowserTest() override {}
 
   void SetUp() override {
@@ -167,8 +172,6 @@ class SafeBrowsingTriggeredPopupBlockerBrowserTest
   std::unique_ptr<blocked_content::SafeBrowsingTriggeredPopupBlocker>
       popup_blocker_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingTriggeredPopupBlockerBrowserTest);
 };
 
 class SafeBrowsingTriggeredPopupBlockerDisabledTest
@@ -189,6 +192,12 @@ class SafeBrowsingTriggeredInterceptingBrowserTest
   SafeBrowsingTriggeredInterceptingBrowserTest()
       : safe_browsing_server_(
             std::make_unique<net::test_server::EmbeddedTestServer>()) {}
+
+  SafeBrowsingTriggeredInterceptingBrowserTest(
+      const SafeBrowsingTriggeredInterceptingBrowserTest&) = delete;
+  SafeBrowsingTriggeredInterceptingBrowserTest& operator=(
+      const SafeBrowsingTriggeredInterceptingBrowserTest&) = delete;
+
   ~SafeBrowsingTriggeredInterceptingBrowserTest() override {}
 
   // SafeBrowsingTriggeredPopupBlockerBrowserTest:
@@ -232,7 +241,6 @@ class SafeBrowsingTriggeredInterceptingBrowserTest
 
  private:
   std::unique_ptr<net::test_server::EmbeddedTestServer> safe_browsing_server_;
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingTriggeredInterceptingBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerDisabledTest,

@@ -25,6 +25,12 @@ class ArcAppPerformanceTracingCustomSession
 
   explicit ArcAppPerformanceTracingCustomSession(
       ArcAppPerformanceTracing* owner);
+
+  ArcAppPerformanceTracingCustomSession(
+      const ArcAppPerformanceTracingCustomSession&) = delete;
+  ArcAppPerformanceTracingCustomSession& operator=(
+      const ArcAppPerformanceTracingCustomSession&) = delete;
+
   ~ArcAppPerformanceTracingCustomSession() override;
 
   // ArcAppPerformanceTracingSession:
@@ -42,8 +48,6 @@ class ArcAppPerformanceTracingCustomSession
 
  private:
   ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracingCustomSession);
 };
 
 }  // namespace arc

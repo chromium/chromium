@@ -30,6 +30,9 @@ class ChromeProcessSingleton {
       const base::FilePath& user_data_dir,
       const ProcessSingleton::NotificationCallback& notification_callback);
 
+  ChromeProcessSingleton(const ChromeProcessSingleton&) = delete;
+  ChromeProcessSingleton& operator=(const ChromeProcessSingleton&) = delete;
+
   ~ChromeProcessSingleton();
 
   // Notify another process, if available. Otherwise sets ourselves as the
@@ -64,8 +67,6 @@ class ChromeProcessSingleton {
 
   // The basic ProcessSingleton
   ProcessSingleton process_singleton_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeProcessSingleton);
 };
 
 #endif  // CHROME_BROWSER_CHROME_PROCESS_SINGLETON_H_

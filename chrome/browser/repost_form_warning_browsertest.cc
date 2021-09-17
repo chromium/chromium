@@ -23,6 +23,10 @@ using web_modal::WebContentsModalDialogManager;
 class RepostFormWarningTest : public DialogBrowserTest {
  public:
   RepostFormWarningTest() {}
+
+  RepostFormWarningTest(const RepostFormWarningTest&) = delete;
+  RepostFormWarningTest& operator=(const RepostFormWarningTest&) = delete;
+
   ~RepostFormWarningTest() override {}
 
   // BrowserTestBase:
@@ -33,9 +37,6 @@ class RepostFormWarningTest : public DialogBrowserTest {
 
  protected:
   content::WebContents* TryReload();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RepostFormWarningTest);
 };
 
 void RepostFormWarningTest::SetUpOnMainThread() {

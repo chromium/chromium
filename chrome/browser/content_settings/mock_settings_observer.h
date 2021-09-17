@@ -17,6 +17,10 @@ class ContentSettingsPattern;
 class MockSettingsObserver : public content_settings::Observer {
  public:
   explicit MockSettingsObserver(HostContentSettingsMap* map);
+
+  MockSettingsObserver(const MockSettingsObserver&) = delete;
+  MockSettingsObserver& operator=(const MockSettingsObserver&) = delete;
+
   ~MockSettingsObserver() override;
 
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
@@ -37,8 +41,6 @@ class MockSettingsObserver : public content_settings::Observer {
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockSettingsObserver);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_MOCK_SETTINGS_OBSERVER_H_

@@ -31,6 +31,11 @@ class SSLClientCertificateSelector : public chrome::CertificateSelector {
       const scoped_refptr<net::SSLCertRequestInfo>& cert_request_info,
       net::ClientCertIdentityList client_certs,
       std::unique_ptr<content::ClientCertificateDelegate> delegate);
+
+  SSLClientCertificateSelector(const SSLClientCertificateSelector&) = delete;
+  SSLClientCertificateSelector& operator=(const SSLClientCertificateSelector&) =
+      delete;
+
   ~SSLClientCertificateSelector() override;
 
   void Init();
@@ -52,8 +57,6 @@ class SSLClientCertificateSelector : public chrome::CertificateSelector {
   std::unique_ptr<SSLClientAuthObserverImpl> auth_observer_impl_;
 
   base::WeakPtrFactory<SSLClientCertificateSelector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SSLClientCertificateSelector);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SSL_CLIENT_CERTIFICATE_SELECTOR_H_

@@ -39,6 +39,9 @@ class LookalikeUrlTabStorage : public base::SupportsUserData::Data {
 
   LookalikeUrlTabStorage();
 
+  LookalikeUrlTabStorage(const LookalikeUrlTabStorage&) = delete;
+  LookalikeUrlTabStorage& operator=(const LookalikeUrlTabStorage&) = delete;
+
   ~LookalikeUrlTabStorage() override;
 
   static LookalikeUrlTabStorage* GetOrCreate(
@@ -59,8 +62,6 @@ class LookalikeUrlTabStorage : public base::SupportsUserData::Data {
   // Parameters associated with the currently displayed interstitial. These are
   // cleared immediately on next navigation.
   InterstitialParams interstitial_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(LookalikeUrlTabStorage);
 };
 
 #endif  // CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_TAB_STORAGE_H_

@@ -36,6 +36,10 @@ namespace extensions {
 class CookiesEventRouter : public BrowserListObserver {
  public:
   explicit CookiesEventRouter(content::BrowserContext* context);
+
+  CookiesEventRouter(const CookiesEventRouter&) = delete;
+  CookiesEventRouter& operator=(const CookiesEventRouter&) = delete;
+
   ~CookiesEventRouter() override;
 
   // BrowserListObserver:
@@ -50,6 +54,10 @@ class CookiesEventRouter : public BrowserListObserver {
   class CookieChangeListener : public network::mojom::CookieChangeListener {
    public:
     CookieChangeListener(CookiesEventRouter* router, bool otr);
+
+    CookieChangeListener(const CookieChangeListener&) = delete;
+    CookieChangeListener& operator=(const CookieChangeListener&) = delete;
+
     ~CookieChangeListener() override;
 
     // network::mojom::CookieChangeListener:
@@ -58,8 +66,6 @@ class CookiesEventRouter : public BrowserListObserver {
    private:
     CookiesEventRouter* router_;
     bool otr_;
-
-    DISALLOW_COPY_AND_ASSIGN(CookieChangeListener);
   };
 
   void MaybeStartListening();
@@ -88,8 +94,6 @@ class CookiesEventRouter : public BrowserListObserver {
   CookieChangeListener otr_listener_{this, true};
   mojo::Receiver<network::mojom::CookieChangeListener> otr_receiver_{
       &otr_listener_};
-
-  DISALLOW_COPY_AND_ASSIGN(CookiesEventRouter);
 };
 
 // Implements the cookies.get() extension function.
@@ -202,6 +206,10 @@ class CookiesGetAllCookieStoresFunction : public ExtensionFunction {
 class CookiesAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
  public:
   explicit CookiesAPI(content::BrowserContext* context);
+
+  CookiesAPI(const CookiesAPI&) = delete;
+  CookiesAPI& operator=(const CookiesAPI&) = delete;
+
   ~CookiesAPI() override;
 
   // KeyedService implementation.
@@ -226,8 +234,6 @@ class CookiesAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<CookiesEventRouter> cookies_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookiesAPI);
 };
 
 }  // namespace extensions

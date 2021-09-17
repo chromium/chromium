@@ -24,6 +24,9 @@ namespace chrome_cleaner {
 // An abstract class which handles synchronization for the scan loop.
 class ScannerController {
  public:
+  ScannerController(const ScannerController&) = delete;
+  ScannerController& operator=(const ScannerController&) = delete;
+
   virtual ~ScannerController();
 
   int ScanOnly();
@@ -70,8 +73,6 @@ class ScannerController {
   ShortcutParserAPI* shortcut_parser_;
   std::vector<ShortcutInformation> shortcuts_found_;
   base::WaitableEvent shortcut_parsing_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScannerController);
 };
 
 }  // namespace chrome_cleaner

@@ -88,6 +88,10 @@ class SyncConsentScreen : public BaseScreen,
 
   SyncConsentScreen(SyncConsentScreenView* view,
                     const ScreenExitCallback& exit_callback);
+
+  SyncConsentScreen(const SyncConsentScreen&) = delete;
+  SyncConsentScreen& operator=(const SyncConsentScreen&) = delete;
+
   ~SyncConsentScreen() override;
 
   // Inits `user_`, its `profile_` and `behavior_` before using the screen.
@@ -193,8 +197,6 @@ class SyncConsentScreen : public BaseScreen,
   SyncConsentScreenTestDelegate* test_delegate_ = nullptr;
 
   base::WeakPtrFactory<SyncConsentScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncConsentScreen);
 };
 
 }  // namespace ash

@@ -28,6 +28,12 @@ class CryptohomeKeyDelegateServiceProvider final
     : public CrosDBusService::ServiceProviderInterface {
  public:
   CryptohomeKeyDelegateServiceProvider();
+
+  CryptohomeKeyDelegateServiceProvider(
+      const CryptohomeKeyDelegateServiceProvider&) = delete;
+  CryptohomeKeyDelegateServiceProvider& operator=(
+      const CryptohomeKeyDelegateServiceProvider&) = delete;
+
   ~CryptohomeKeyDelegateServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -41,8 +47,6 @@ class CryptohomeKeyDelegateServiceProvider final
   // Must be the last member.
   base::WeakPtrFactory<CryptohomeKeyDelegateServiceProvider> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptohomeKeyDelegateServiceProvider);
 };
 
 }  // namespace ash

@@ -107,6 +107,10 @@ class NativeDesktopMediaList::Worker
          base::WeakPtr<NativeDesktopMediaList> media_list,
          DesktopMediaList::Type type,
          std::unique_ptr<webrtc::DesktopCapturer> capturer);
+
+  Worker(const Worker&) = delete;
+  Worker& operator=(const Worker&) = delete;
+
   ~Worker() override;
 
   void Start();
@@ -147,8 +151,6 @@ class NativeDesktopMediaList::Worker
   std::unique_ptr<RefreshThumbnailsState> refresh_thumbnails_state_;
 
   base::WeakPtrFactory<Worker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Worker);
 };
 
 NativeDesktopMediaList::Worker::Worker(

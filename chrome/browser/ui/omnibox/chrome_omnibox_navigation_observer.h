@@ -62,6 +62,12 @@ class ChromeOmniboxNavigationObserver : public OmniboxNavigationObserver,
                                   const std::u16string& text,
                                   const AutocompleteMatch& match,
                                   const AutocompleteMatch& alternate_nav_match);
+
+  ChromeOmniboxNavigationObserver(const ChromeOmniboxNavigationObserver&) =
+      delete;
+  ChromeOmniboxNavigationObserver& operator=(
+      const ChromeOmniboxNavigationObserver&) = delete;
+
   ~ChromeOmniboxNavigationObserver() override;
 
   LoadState load_state() const { return load_state_; }
@@ -143,8 +149,6 @@ class ChromeOmniboxNavigationObserver : public OmniboxNavigationObserver,
   FetchState fetch_state_;
 
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOmniboxNavigationObserver);
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_H_

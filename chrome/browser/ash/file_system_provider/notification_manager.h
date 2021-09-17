@@ -37,6 +37,10 @@ class NotificationManager : public NotificationManagerInterface,
  public:
   NotificationManager(Profile* profile,
                       const ProvidedFileSystemInfo& file_system_info);
+
+  NotificationManager(const NotificationManager&) = delete;
+  NotificationManager& operator=(const NotificationManager&) = delete;
+
   ~NotificationManager() override;
 
   // NotificationManagerInterface overrides:
@@ -73,8 +77,6 @@ class NotificationManager : public NotificationManagerInterface,
   std::unique_ptr<AppIconLoader> icon_loader_;
   gfx::Image extension_icon_;
   base::WeakPtrFactory<NotificationManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationManager);
 };
 
 }  // namespace file_system_provider

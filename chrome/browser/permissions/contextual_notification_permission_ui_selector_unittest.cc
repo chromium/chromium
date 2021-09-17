@@ -79,6 +79,12 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
  public:
   ContextualNotificationPermissionUiSelectorTest()
       : testing_profile_(std::make_unique<TestingProfile>()) {}
+
+  ContextualNotificationPermissionUiSelectorTest(
+      const ContextualNotificationPermissionUiSelectorTest&) = delete;
+  ContextualNotificationPermissionUiSelectorTest& operator=(
+      const ContextualNotificationPermissionUiSelectorTest&) = delete;
+
   ~ContextualNotificationPermissionUiSelectorTest() override = default;
 
  protected:
@@ -222,8 +228,6 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
       safe_browsing_factory_;
 
   ContextualNotificationPermissionUiSelector contextual_selector_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualNotificationPermissionUiSelectorTest);
 };
 
 // With all the field trials enabled, test all combinations of:

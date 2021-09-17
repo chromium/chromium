@@ -62,6 +62,11 @@ class MediaEngagementScoreDetailsProviderImpl
     service_ = MediaEngagementService::Get(profile_);
   }
 
+  MediaEngagementScoreDetailsProviderImpl(
+      const MediaEngagementScoreDetailsProviderImpl&) = delete;
+  MediaEngagementScoreDetailsProviderImpl& operator=(
+      const MediaEngagementScoreDetailsProviderImpl&) = delete;
+
   ~MediaEngagementScoreDetailsProviderImpl() override {}
 
   // media::mojom::MediaEngagementScoreDetailsProvider overrides:
@@ -133,8 +138,6 @@ class MediaEngagementScoreDetailsProviderImpl
   MediaEngagementService* service_;
 
   mojo::Receiver<media::mojom::MediaEngagementScoreDetailsProvider> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementScoreDetailsProviderImpl);
 };
 
 }  // namespace

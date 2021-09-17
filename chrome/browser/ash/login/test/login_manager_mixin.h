@@ -78,6 +78,9 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
                     const UserList& initial_users,
                     FakeGaiaMixin* gaia_mixin);
 
+  LoginManagerMixin(const LoginManagerMixin&) = delete;
+  LoginManagerMixin& operator=(const LoginManagerMixin&) = delete;
+
   ~LoginManagerMixin() override;
 
   // Enables session restore between multi-step test run (not very useful unless
@@ -159,8 +162,6 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   LocalStateMixin local_state_mixin_;
   FakeGaiaMixin* fake_gaia_mixin_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginManagerMixin);
 };
 
 }  // namespace ash

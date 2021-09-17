@@ -31,6 +31,11 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
  public:
   AutofillBubbleHandlerImpl(Browser* browser,
                             ToolbarButtonProvider* toolbar_button_provider);
+
+  AutofillBubbleHandlerImpl(const AutofillBubbleHandlerImpl&) = delete;
+  AutofillBubbleHandlerImpl& operator=(const AutofillBubbleHandlerImpl&) =
+      delete;
+
   ~AutofillBubbleHandlerImpl() override;
 
   // AutofillBubbleHandler:
@@ -89,8 +94,6 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
       personal_data_manager_observation_{this};
   base::ScopedObservation<AvatarToolbarButton, AvatarToolbarButton::Observer>
       avatar_toolbar_button_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillBubbleHandlerImpl);
 };
 
 }  // namespace autofill

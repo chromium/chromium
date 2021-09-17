@@ -98,15 +98,16 @@ class ChromeContentRulesRegistry
                 std::vector<std::unique_ptr<const ContentCondition>> conditions,
                 std::vector<std::unique_ptr<const ContentAction>> actions,
                 int priority);
+
+    ContentRule(const ContentRule&) = delete;
+    ContentRule& operator=(const ContentRule&) = delete;
+
     ~ContentRule();
 
     const Extension* extension;
     std::vector<std::unique_ptr<const ContentCondition>> conditions;
     std::vector<std::unique_ptr<const ContentAction>> actions;
     int priority;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ContentRule);
   };
 
   // Specifies what to do with evaluation requests.

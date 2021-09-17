@@ -24,6 +24,10 @@ class TabModel;
 class AndroidLiveTabContext : public sessions::LiveTabContext {
  public:
   explicit AndroidLiveTabContext(TabModel* tab_model);
+
+  AndroidLiveTabContext(const AndroidLiveTabContext&) = delete;
+  AndroidLiveTabContext& operator=(const AndroidLiveTabContext&) = delete;
+
   ~AndroidLiveTabContext() override {}
 
   // Overridden from LiveTabContext:
@@ -74,7 +78,6 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
 
  private:
   TabModel* tab_model_;
-  DISALLOW_COPY_AND_ASSIGN(AndroidLiveTabContext);
 };
 
 

@@ -19,6 +19,10 @@ namespace lock_screen_apps {
 class LockScreenProfileCreator {
  public:
   LockScreenProfileCreator();
+
+  LockScreenProfileCreator(const LockScreenProfileCreator&) = delete;
+  LockScreenProfileCreator& operator=(const LockScreenProfileCreator&) = delete;
+
   virtual ~LockScreenProfileCreator();
 
   // Initializes the creator - it marks the object as initialized and calls
@@ -77,8 +81,6 @@ class LockScreenProfileCreator {
   Profile* lock_screen_profile_ = nullptr;
 
   std::list<base::OnceClosure> create_profile_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenProfileCreator);
 };
 
 }  // namespace lock_screen_apps

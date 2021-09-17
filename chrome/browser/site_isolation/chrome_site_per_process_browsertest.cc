@@ -343,6 +343,11 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
  public:
   ChromeSitePerProcessPDFTest() : test_guest_view_manager_(nullptr) {}
+
+  ChromeSitePerProcessPDFTest(const ChromeSitePerProcessPDFTest&) = delete;
+  ChromeSitePerProcessPDFTest& operator=(const ChromeSitePerProcessPDFTest&) =
+      delete;
+
   ~ChromeSitePerProcessPDFTest() override {}
 
   void SetUpOnMainThread() override {
@@ -390,8 +395,6 @@ class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
 
   guest_view::TestGuestViewManagerFactory factory_;
   guest_view::TestGuestViewManager* test_guest_view_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSitePerProcessPDFTest);
 };
 
 // This test verifies that when navigating an OOPIF to a page with <embed>-ed

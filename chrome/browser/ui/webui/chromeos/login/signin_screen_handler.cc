@@ -124,6 +124,9 @@ class CallOnReturn {
   explicit CallOnReturn(base::OnceClosure callback)
       : callback_(std::move(callback)), call_scheduled_(false) {}
 
+  CallOnReturn(const CallOnReturn&) = delete;
+  CallOnReturn& operator=(const CallOnReturn&) = delete;
+
   ~CallOnReturn() {
     if (call_scheduled_ && !callback_.is_null())
       std::move(callback_).Run();
@@ -135,8 +138,6 @@ class CallOnReturn {
  private:
   base::OnceClosure callback_;
   bool call_scheduled_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallOnReturn);
 };
 
 }  // namespace

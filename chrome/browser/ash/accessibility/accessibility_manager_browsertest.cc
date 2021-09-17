@@ -78,6 +78,10 @@ class MockAccessibilityObserver {
             base::Unretained(this)));
   }
 
+  MockAccessibilityObserver(const MockAccessibilityObserver&) = delete;
+  MockAccessibilityObserver& operator=(const MockAccessibilityObserver&) =
+      delete;
+
   virtual ~MockAccessibilityObserver() = default;
 
   bool observed() const { return observed_; }
@@ -104,8 +108,6 @@ class MockAccessibilityObserver {
   absl::optional<AccessibilityNotificationType> observed_type_;
 
   base::CallbackListSubscription accessibility_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAccessibilityObserver);
 };
 
 Profile* GetActiveUserProfile() {

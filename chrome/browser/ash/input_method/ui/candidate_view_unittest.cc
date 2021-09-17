@@ -36,6 +36,10 @@ const char* const kDummyCandidates[] = {
 class CandidateViewTest : public views::ViewsTestBase {
  public:
   CandidateViewTest() = default;
+
+  CandidateViewTest(const CandidateViewTest&) = delete;
+  CandidateViewTest& operator=(const CandidateViewTest&) = delete;
+
   ~CandidateViewTest() override = default;
 
   void SetUp() override {
@@ -99,8 +103,6 @@ class CandidateViewTest : public views::ViewsTestBase {
   views::Widget* widget_ = nullptr;
   views::View* container_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CandidateViewTest);
 };
 
 TEST_F(CandidateViewTest, MouseHovers) {

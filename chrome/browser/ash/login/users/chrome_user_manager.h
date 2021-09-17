@@ -24,6 +24,10 @@ class ChromeUserManager : public user_manager::UserManagerBase,
  public:
   explicit ChromeUserManager(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  ChromeUserManager(const ChromeUserManager&) = delete;
+  ChromeUserManager& operator=(const ChromeUserManager&) = delete;
+
   ~ChromeUserManager() override;
 
   // user_manager::UserManagerBase:
@@ -81,8 +85,6 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   LoginState::LoggedInUserType GetLoggedInUserType(
       const user_manager::User& active_user,
       bool is_current_user_owner) const;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUserManager);
 };
 
 }  // namespace ash

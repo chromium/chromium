@@ -24,6 +24,10 @@ class CrostiniStartupStatus;
 class TerminalPrivateAPI : public BrowserContextKeyedAPI {
  public:
   explicit TerminalPrivateAPI(content::BrowserContext* context);
+
+  TerminalPrivateAPI(const TerminalPrivateAPI&) = delete;
+  TerminalPrivateAPI& operator=(const TerminalPrivateAPI&) = delete;
+
   ~TerminalPrivateAPI() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -38,8 +42,6 @@ class TerminalPrivateAPI : public BrowserContextKeyedAPI {
 
   content::BrowserContext* const context_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TerminalPrivateAPI);
 };
 
 // Opens new terminal process. Returns the new terminal id.

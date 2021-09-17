@@ -27,6 +27,10 @@ class PrintJobDatabaseImpl : public PrintJobDatabase {
  public:
   PrintJobDatabaseImpl(leveldb_proto::ProtoDatabaseProvider* database_provider,
                        base::FilePath profile_path);
+
+  PrintJobDatabaseImpl(const PrintJobDatabaseImpl&) = delete;
+  PrintJobDatabaseImpl& operator=(const PrintJobDatabaseImpl&) = delete;
+
   ~PrintJobDatabaseImpl() override;
 
   // PrintJobDatabase:
@@ -99,8 +103,6 @@ class PrintJobDatabaseImpl : public PrintJobDatabase {
   std::queue<base::OnceClosure> deferred_callbacks_;
 
   base::WeakPtrFactory<PrintJobDatabaseImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobDatabaseImpl);
 };
 
 }  // namespace ash

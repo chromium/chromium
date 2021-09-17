@@ -32,6 +32,11 @@ class DeviceScheduledUpdateChecker
       ash::CrosSettings* cros_settings,
       chromeos::NetworkStateHandler* network_state_handler,
       std::unique_ptr<ScheduledTaskExecutor> update_check_executor);
+
+  DeviceScheduledUpdateChecker(const DeviceScheduledUpdateChecker&) = delete;
+  DeviceScheduledUpdateChecker& operator=(const DeviceScheduledUpdateChecker&) =
+      delete;
+
   ~DeviceScheduledUpdateChecker() override;
 
   // chromeos::system::TimezoneSettings::Observer implementation.
@@ -94,8 +99,6 @@ class DeviceScheduledUpdateChecker
 
   // Timer that is scheduled to check for updates.
   std::unique_ptr<ScheduledTaskExecutor> update_check_executor_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceScheduledUpdateChecker);
 };
 
 namespace update_checker_internal {

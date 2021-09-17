@@ -25,6 +25,12 @@ class DevicePrintersExternalDataHandler
   DevicePrintersExternalDataHandler(
       PolicyService* policy_service,
       base::WeakPtr<ash::BulkPrintersCalculator> device_calculator);
+
+  DevicePrintersExternalDataHandler(const DevicePrintersExternalDataHandler&) =
+      delete;
+  DevicePrintersExternalDataHandler& operator=(
+      const DevicePrintersExternalDataHandler&) = delete;
+
   ~DevicePrintersExternalDataHandler() override;
 
   // DeviceCloudExternalDataPolicyHandler:
@@ -40,8 +46,6 @@ class DevicePrintersExternalDataHandler
 
   std::unique_ptr<DeviceCloudExternalDataPolicyObserver>
       device_printers_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePrintersExternalDataHandler);
 };
 
 }  // namespace policy

@@ -55,6 +55,11 @@ class AssistantStructureWaiter {
 class AssistantContextBrowserTest : public InProcessBrowserTest {
  public:
   AssistantContextBrowserTest() = default;
+
+  AssistantContextBrowserTest(const AssistantContextBrowserTest&) = delete;
+  AssistantContextBrowserTest& operator=(const AssistantContextBrowserTest&) =
+      delete;
+
   ~AssistantContextBrowserTest() override = default;
 
  protected:
@@ -72,9 +77,6 @@ class AssistantContextBrowserTest : public InProcessBrowserTest {
     waiter.Wait();
     return waiter.take_structure();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantContextBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AssistantContextBrowserTest,

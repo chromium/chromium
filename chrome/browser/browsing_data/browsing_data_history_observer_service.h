@@ -29,6 +29,12 @@ class BrowsingDataHistoryObserverService
       public history::HistoryServiceObserver {
  public:
   explicit BrowsingDataHistoryObserverService(Profile* profile);
+
+  BrowsingDataHistoryObserverService(
+      const BrowsingDataHistoryObserverService&) = delete;
+  BrowsingDataHistoryObserverService& operator=(
+      const BrowsingDataHistoryObserverService&) = delete;
+
   ~BrowsingDataHistoryObserverService() override;
 
   // history::HistoryServiceObserver:
@@ -61,8 +67,6 @@ class BrowsingDataHistoryObserverService
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataHistoryObserverService);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_HISTORY_OBSERVER_SERVICE_H_

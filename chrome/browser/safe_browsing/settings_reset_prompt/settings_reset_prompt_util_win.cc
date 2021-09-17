@@ -85,12 +85,15 @@ void MaybeShowSettingsResetPrompt(
 class SettingsResetPromptDelegateImpl : public SettingsResetPromptDelegate {
  public:
   SettingsResetPromptDelegateImpl();
+
+  SettingsResetPromptDelegateImpl(const SettingsResetPromptDelegateImpl&) =
+      delete;
+  SettingsResetPromptDelegateImpl& operator=(
+      const SettingsResetPromptDelegateImpl&) = delete;
+
   ~SettingsResetPromptDelegateImpl() override;
 
   void ShowSettingsResetPromptWithDelay() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptDelegateImpl);
 };
 
 SettingsResetPromptDelegateImpl::SettingsResetPromptDelegateImpl() = default;

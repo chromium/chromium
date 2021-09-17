@@ -61,6 +61,9 @@ class OfflinePageTabHelper
           receiver,
       content::RenderFrameHost* rfh);
 
+  OfflinePageTabHelper(const OfflinePageTabHelper&) = delete;
+  OfflinePageTabHelper& operator=(const OfflinePageTabHelper&) = delete;
+
   ~OfflinePageTabHelper() override;
 
   // MhtmlPageNotifier overrides.
@@ -220,8 +223,6 @@ class OfflinePageTabHelper
   base::WeakPtrFactory<OfflinePageTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageTabHelper);
 };
 
 }  // namespace offline_pages

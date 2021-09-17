@@ -28,6 +28,11 @@ class AccountConsistencyModeManager : public KeyedService {
   static AccountConsistencyModeManager* GetForProfile(Profile* profile);
 
   explicit AccountConsistencyModeManager(Profile* profile);
+
+  AccountConsistencyModeManager(const AccountConsistencyModeManager&) = delete;
+  AccountConsistencyModeManager& operator=(
+      const AccountConsistencyModeManager&) = delete;
+
   ~AccountConsistencyModeManager() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -91,8 +96,6 @@ class AccountConsistencyModeManager : public KeyedService {
   Profile* profile_;
   signin::AccountConsistencyMethod account_consistency_;
   bool account_consistency_initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountConsistencyModeManager);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_ACCOUNT_CONSISTENCY_MODE_MANAGER_H_

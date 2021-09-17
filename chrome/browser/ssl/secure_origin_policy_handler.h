@@ -17,15 +17,17 @@ class PolicyMap;
 class SecureOriginPolicyHandler : public SchemaValidatingPolicyHandler {
  public:
   SecureOriginPolicyHandler(const char* policy_name, Schema schema);
+
+  SecureOriginPolicyHandler(const SecureOriginPolicyHandler&) = delete;
+  SecureOriginPolicyHandler& operator=(const SecureOriginPolicyHandler&) =
+      delete;
+
   ~SecureOriginPolicyHandler() override;
 
  protected:
   // ConfigurationPolicyHandler:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureOriginPolicyHandler);
 };
 
 }  // namespace policy

@@ -125,6 +125,9 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
     WallpaperControllerClientImpl::Get()->AddObserver(this);
   }
 
+  TestWallpaperObserver(const TestWallpaperObserver&) = delete;
+  TestWallpaperObserver& operator=(const TestWallpaperObserver&) = delete;
+
   ~TestWallpaperObserver() override {
     WallpaperControllerClientImpl::Get()->RemoveObserver(this);
   }
@@ -145,8 +148,6 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
 
  private:
   bool finished_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperObserver);
 };
 
 }  // namespace
@@ -155,6 +156,12 @@ class CustomizationWallpaperDownloaderBrowserTest
     : public InProcessBrowserTest {
  public:
   CustomizationWallpaperDownloaderBrowserTest() {}
+
+  CustomizationWallpaperDownloaderBrowserTest(
+      const CustomizationWallpaperDownloaderBrowserTest&) = delete;
+  CustomizationWallpaperDownloaderBrowserTest& operator=(
+      const CustomizationWallpaperDownloaderBrowserTest&) = delete;
+
   ~CustomizationWallpaperDownloaderBrowserTest() override {}
 
   // InProcessBrowserTest overrides:
@@ -227,8 +234,6 @@ class CustomizationWallpaperDownloaderBrowserTest
 
   // Number of retries required.
   size_t required_retries_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomizationWallpaperDownloaderBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CustomizationWallpaperDownloaderBrowserTest,

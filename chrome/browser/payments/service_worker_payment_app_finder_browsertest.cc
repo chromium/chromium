@@ -64,6 +64,11 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
         {});
   }
 
+  ServiceWorkerPaymentAppFinderBrowserTest(
+      const ServiceWorkerPaymentAppFinderBrowserTest&) = delete;
+  ServiceWorkerPaymentAppFinderBrowserTest& operator=(
+      const ServiceWorkerPaymentAppFinderBrowserTest&) = delete;
+
   ~ServiceWorkerPaymentAppFinderBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -358,8 +363,6 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   std::string error_message_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPaymentAppFinderBrowserTest);
 };
 
 // A payment app has to be installed first.

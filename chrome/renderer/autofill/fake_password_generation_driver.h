@@ -20,6 +20,10 @@ class FakePasswordGenerationDriver
  public:
   FakePasswordGenerationDriver();
 
+  FakePasswordGenerationDriver(const FakePasswordGenerationDriver&) = delete;
+  FakePasswordGenerationDriver& operator=(const FakePasswordGenerationDriver&) =
+      delete;
+
   ~FakePasswordGenerationDriver() override;
 
   void BindReceiver(
@@ -49,8 +53,6 @@ class FakePasswordGenerationDriver
  private:
   mojo::AssociatedReceiver<autofill::mojom::PasswordGenerationDriver> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakePasswordGenerationDriver);
 };
 
 #endif  // CHROME_RENDERER_AUTOFILL_FAKE_PASSWORD_GENERATION_DRIVER_H_

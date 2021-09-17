@@ -47,6 +47,9 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
     service_->AddObserver(this);
   }
 
+  PrefsChecker(const PrefsChecker&) = delete;
+  PrefsChecker& operator=(const PrefsChecker&) = delete;
+
   ~PrefsChecker() override { service_->RemoveObserver(this); }
 
   // OwnerSettingsService::Observer implementation:
@@ -79,8 +82,6 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
 
   using SetRequest = std::pair<std::string, base::Value>;
   base::queue<SetRequest> set_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefsChecker);
 };
 
 bool FindInListValue(const std::string& needle, const base::Value* haystack) {
@@ -379,6 +380,12 @@ class OwnerSettingsServiceAshNoOwnerTest
     : public OwnerSettingsServiceAshTest {
  public:
   OwnerSettingsServiceAshNoOwnerTest() {}
+
+  OwnerSettingsServiceAshNoOwnerTest(
+      const OwnerSettingsServiceAshNoOwnerTest&) = delete;
+  OwnerSettingsServiceAshNoOwnerTest& operator=(
+      const OwnerSettingsServiceAshNoOwnerTest&) = delete;
+
   ~OwnerSettingsServiceAshNoOwnerTest() override {}
 
   void SetUp() override {
@@ -392,9 +399,6 @@ class OwnerSettingsServiceAshNoOwnerTest
     ASSERT_TRUE(service_);
     ASSERT_FALSE(service_->IsOwner());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceAshNoOwnerTest);
 };
 
 TEST_F(OwnerSettingsServiceAshNoOwnerTest, SingleSetTest) {

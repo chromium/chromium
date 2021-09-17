@@ -22,6 +22,9 @@ class StatusIconLinuxWrapper : public StatusIcon,
                                public views::StatusIconLinux::Delegate,
                                public StatusIconMenuModel::Observer {
  public:
+  StatusIconLinuxWrapper(const StatusIconLinuxWrapper&) = delete;
+  StatusIconLinuxWrapper& operator=(const StatusIconLinuxWrapper&) = delete;
+
   ~StatusIconLinuxWrapper() override;
 
   // StatusIcon overrides:
@@ -93,8 +96,6 @@ class StatusIconLinuxWrapper : public StatusIcon,
   gfx::ImageSkia image_;
   std::u16string tool_tip_;
   StatusIconMenuModel* menu_model_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconLinuxWrapper);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_LINUX_WRAPPER_H_

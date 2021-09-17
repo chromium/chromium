@@ -35,6 +35,12 @@ class TickClock;
 class FullscreenNotificationObserver : public FullscreenObserver {
  public:
   explicit FullscreenNotificationObserver(Browser* browser);
+
+  FullscreenNotificationObserver(const FullscreenNotificationObserver&) =
+      delete;
+  FullscreenNotificationObserver& operator=(
+      const FullscreenNotificationObserver&) = delete;
+
   ~FullscreenNotificationObserver() override;
 
   // Runs a loop until a fullscreen change is seen (unless one has already been
@@ -49,8 +55,6 @@ class FullscreenNotificationObserver : public FullscreenObserver {
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       observation_{this};
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenNotificationObserver);
 };
 
 // Test fixture with convenience functions for fullscreen, keyboard lock, and

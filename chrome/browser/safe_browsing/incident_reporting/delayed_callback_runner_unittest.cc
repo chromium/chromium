@@ -25,12 +25,14 @@ class CallbackArgument {
  public:
   explicit CallbackArgument(base::OnceClosure on_delete)
       : on_delete_(std::move(on_delete)) {}
+
+  CallbackArgument(const CallbackArgument&) = delete;
+  CallbackArgument& operator=(const CallbackArgument&) = delete;
+
   ~CallbackArgument() { std::move(on_delete_).Run(); }
 
  private:
   base::OnceClosure on_delete_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackArgument);
 };
 
 }  // namespace

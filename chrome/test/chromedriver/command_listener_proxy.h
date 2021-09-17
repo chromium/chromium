@@ -13,6 +13,9 @@
 
 class CommandListenerProxy : public CommandListener {
  public:
+  CommandListenerProxy(const CommandListenerProxy&) = delete;
+  CommandListenerProxy& operator=(const CommandListenerProxy&) = delete;
+
   ~CommandListenerProxy() override;
 
   // |command_listener| must not be null.
@@ -23,8 +26,6 @@ class CommandListenerProxy : public CommandListener {
 
  private:
   CommandListener* const command_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandListenerProxy);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_COMMAND_LISTENER_PROXY_H_

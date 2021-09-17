@@ -30,6 +30,12 @@ namespace extensions {
 class ChromePermissionMessageFormatter {
  public:
   ChromePermissionMessageFormatter() {}
+
+  ChromePermissionMessageFormatter(const ChromePermissionMessageFormatter&) =
+      delete;
+  ChromePermissionMessageFormatter& operator=(
+      const ChromePermissionMessageFormatter&) = delete;
+
   virtual ~ChromePermissionMessageFormatter() {}
 
   // Returns the permission message for the given set of |permissions|.
@@ -37,9 +43,6 @@ class ChromePermissionMessageFormatter {
   // required/optional permissions for the rule. The set will never be empty.
   virtual PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromePermissionMessageFormatter);
 };
 
 // A simple rule to generate a coalesced permission message that stores the
@@ -60,6 +63,11 @@ class ChromePermissionMessageRule {
  public:
   ChromePermissionMessageRule(ChromePermissionMessageRule&& other);
   ChromePermissionMessageRule& operator=(ChromePermissionMessageRule&& other);
+
+  ChromePermissionMessageRule(const ChromePermissionMessageRule&) = delete;
+  ChromePermissionMessageRule& operator=(const ChromePermissionMessageRule&) =
+      delete;
+
   virtual ~ChromePermissionMessageRule();
 
   // Returns all the rules used to generate permission messages for Chrome apps
@@ -91,9 +99,6 @@ class ChromePermissionMessageRule {
 
   // Owned by this class.
   std::unique_ptr<ChromePermissionMessageFormatter> formatter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromePermissionMessageRule);
 };
 
 }  // namespace extensions

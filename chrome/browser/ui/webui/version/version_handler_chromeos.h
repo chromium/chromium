@@ -17,6 +17,10 @@
 class VersionHandlerChromeOS : public VersionHandler {
  public:
   VersionHandlerChromeOS();
+
+  VersionHandlerChromeOS(const VersionHandlerChromeOS&) = delete;
+  VersionHandlerChromeOS& operator=(const VersionHandlerChromeOS&) = delete;
+
   ~VersionHandlerChromeOS() override;
 
   // VersionHandler overrides:
@@ -29,8 +33,6 @@ class VersionHandlerChromeOS : public VersionHandler {
 
  private:
   base::WeakPtrFactory<VersionHandlerChromeOS> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VersionHandlerChromeOS);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_CHROMEOS_H_

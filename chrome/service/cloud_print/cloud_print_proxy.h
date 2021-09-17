@@ -38,6 +38,10 @@ class CloudPrintProxy : public CloudPrintProxyFrontend,
     virtual void OnCloudPrintProxyDisabled(bool persist_state) {}
   };
   CloudPrintProxy();
+
+  CloudPrintProxy(const CloudPrintProxy&) = delete;
+  CloudPrintProxy& operator=(const CloudPrintProxy&) = delete;
+
   ~CloudPrintProxy() override;
 
   // Provides a CloudPrintProxy instance, which may be lazily instantiated.
@@ -108,8 +112,6 @@ class CloudPrintProxy : public CloudPrintProxyFrontend,
   std::unique_ptr<CloudPrintWipeout> wipeout_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintProxy);
 };
 
 }  // namespace cloud_print

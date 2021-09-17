@@ -31,6 +31,10 @@ class ArcServiceLauncher {
   // |scheduler_configuration_manager| must outlive |this| object.
   explicit ArcServiceLauncher(chromeos::SchedulerConfigurationManagerBase*
                                   scheduler_configuration_manager);
+
+  ArcServiceLauncher(const ArcServiceLauncher&) = delete;
+  ArcServiceLauncher& operator=(const ArcServiceLauncher&) = delete;
+
   ~ArcServiceLauncher();
 
   // Returns a global instance.
@@ -67,8 +71,6 @@ class ArcServiceLauncher {
   // |scheduler_configuration_manager_| outlives |this|.
   chromeos::SchedulerConfigurationManagerBase* const
       scheduler_configuration_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcServiceLauncher);
 };
 
 }  // namespace arc

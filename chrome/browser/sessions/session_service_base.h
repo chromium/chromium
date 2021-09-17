@@ -56,6 +56,9 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
  public:
   enum class SessionServiceType { kAppRestore, kSessionRestore };
 
+  SessionServiceBase(const SessionServiceBase&) = delete;
+  SessionServiceBase& operator=(const SessionServiceBase&) = delete;
+
   ~SessionServiceBase() override;
 
   static Browser::Type GetBrowserTypeFromWebContents(
@@ -294,8 +297,6 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   WindowsTracking windows_tracking_;
 
   base::WeakPtrFactory<SessionServiceBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionServiceBase);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_SERVICE_BASE_H_

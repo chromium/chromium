@@ -37,6 +37,11 @@ class AssistiveWindowController : public views::WidgetObserver,
       AssistiveWindowControllerDelegate* delegate,
       Profile* profile,
       ui::ime::AssistiveAccessibilityView* accessibility_view = nullptr);
+
+  AssistiveWindowController(const AssistiveWindowController&) = delete;
+  AssistiveWindowController& operator=(const AssistiveWindowController&) =
+      delete;
+
   ~AssistiveWindowController() override;
 
   ui::ime::SuggestionWindowView* GetSuggestionWindowViewForTesting();
@@ -77,8 +82,6 @@ class AssistiveWindowController : public views::WidgetObserver,
   size_t confirmed_length_ = 0;
   Bounds bounds_;
   bool tracking_last_suggestion_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistiveWindowController);
 };
 
 }  // namespace input_method

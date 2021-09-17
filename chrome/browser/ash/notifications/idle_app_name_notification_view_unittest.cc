@@ -25,6 +25,11 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
   IdleAppNameNotificationViewTest()
       : BrowserWithTestWindowTest(Browser::TYPE_NORMAL) {}
 
+  IdleAppNameNotificationViewTest(const IdleAppNameNotificationViewTest&) =
+      delete;
+  IdleAppNameNotificationViewTest& operator=(
+      const IdleAppNameNotificationViewTest&) = delete;
+
   ~IdleAppNameNotificationViewTest() override {}
 
   void SetUp() override {
@@ -72,8 +77,6 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
   // Extensions to test with.
   scoped_refptr<extensions::Extension> correct_extension_;
   scoped_refptr<extensions::Extension> incorrect_extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleAppNameNotificationViewTest);
 };
 
 // Check that creating and immediate destroying does not crash (and closes the

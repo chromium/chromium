@@ -13,6 +13,12 @@
 class TestToolbarActionViewController : public ToolbarActionViewController {
  public:
   explicit TestToolbarActionViewController(const std::string& id);
+
+  TestToolbarActionViewController(const TestToolbarActionViewController&) =
+      delete;
+  TestToolbarActionViewController& operator=(
+      const TestToolbarActionViewController&) = delete;
+
   ~TestToolbarActionViewController() override;
 
   // ToolbarActionViewController:
@@ -70,8 +76,6 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
 
   // True if a popup is (supposedly) currently showing.
   bool popup_showing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestToolbarActionViewController);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTION_VIEW_CONTROLLER_H_

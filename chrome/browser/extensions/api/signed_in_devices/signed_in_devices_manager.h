@@ -42,6 +42,11 @@ class SignedInDevicesChangeObserver
  public:
   SignedInDevicesChangeObserver(const std::string& extension_id,
                                 Profile* profile);
+
+  SignedInDevicesChangeObserver(const SignedInDevicesChangeObserver&) = delete;
+  SignedInDevicesChangeObserver& operator=(
+      const SignedInDevicesChangeObserver&) = delete;
+
   virtual ~SignedInDevicesChangeObserver();
 
   void OnDeviceInfoChange() override;
@@ -54,8 +59,6 @@ class SignedInDevicesChangeObserver
   std::string extension_id_;
   Profile* const profile_;
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedInDevicesChangeObserver);
 };
 
 class SignedInDevicesManager : public BrowserContextKeyedAPI,
@@ -65,6 +68,10 @@ class SignedInDevicesManager : public BrowserContextKeyedAPI,
   // Default constructor used for testing.
   SignedInDevicesManager();
   explicit SignedInDevicesManager(content::BrowserContext* context);
+
+  SignedInDevicesManager(const SignedInDevicesManager&) = delete;
+  SignedInDevicesManager& operator=(const SignedInDevicesManager&) = delete;
+
   ~SignedInDevicesManager() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -100,8 +107,6 @@ class SignedInDevicesManager : public BrowserContextKeyedAPI,
       extension_registry_observation_{this};
 
   FRIEND_TEST_ALL_PREFIXES(SignedInDevicesManager, UpdateListener);
-
-  DISALLOW_COPY_AND_ASSIGN(SignedInDevicesManager);
 };
 
 }  // namespace extensions

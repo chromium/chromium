@@ -106,6 +106,10 @@ class BrowserAddedWaiter : public BrowserListObserver {
   explicit BrowserAddedWaiter(size_t total_count) : total_count_(total_count) {
     BrowserList::AddObserver(this);
   }
+
+  BrowserAddedWaiter(const BrowserAddedWaiter&) = delete;
+  BrowserAddedWaiter& operator=(const BrowserAddedWaiter&) = delete;
+
   ~BrowserAddedWaiter() override { BrowserList::RemoveObserver(this); }
 
   Browser* Wait() {
@@ -128,8 +132,6 @@ class BrowserAddedWaiter : public BrowserListObserver {
   const size_t total_count_;
   Browser* browser_ = nullptr;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAddedWaiter);
 };
 
 // Fake user policy signin service immediately invoking the callbacks.

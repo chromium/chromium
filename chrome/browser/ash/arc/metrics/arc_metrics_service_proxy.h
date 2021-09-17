@@ -32,6 +32,10 @@ class ArcMetricsServiceProxy : public KeyedService,
 
   ArcMetricsServiceProxy(content::BrowserContext* context,
                          ArcBridgeService* arc_bridge_service);
+
+  ArcMetricsServiceProxy(const ArcMetricsServiceProxy&) = delete;
+  ArcMetricsServiceProxy& operator=(const ArcMetricsServiceProxy&) = delete;
+
   ~ArcMetricsServiceProxy() override = default;
 
   // KeyedService overrides.
@@ -56,8 +60,6 @@ class ArcMetricsServiceProxy : public KeyedService,
  private:
   ArcAppListPrefs* const arc_app_list_prefs_;
   ArcMetricsService* const arc_metrics_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcMetricsServiceProxy);
 };
 
 }  // namespace arc

@@ -57,6 +57,9 @@ class EasyUnlockServiceRegular
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
 
+  EasyUnlockServiceRegular(const EasyUnlockServiceRegular&) = delete;
+  EasyUnlockServiceRegular& operator=(const EasyUnlockServiceRegular&) = delete;
+
   ~EasyUnlockServiceRegular() override;
 
  private:
@@ -158,8 +161,6 @@ class EasyUnlockServiceRegular
   PrefChangeRegistrar registrar_;
 
   base::WeakPtrFactory<EasyUnlockServiceRegular> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockServiceRegular);
 };
 
 }  // namespace ash

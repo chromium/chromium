@@ -17,6 +17,10 @@ class FeatureList;
 class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
  public:
   explicit ChromeBrowserFieldTrials(PrefService* local_state);
+
+  ChromeBrowserFieldTrials(const ChromeBrowserFieldTrials&) = delete;
+  ChromeBrowserFieldTrials& operator=(const ChromeBrowserFieldTrials&) = delete;
+
   ~ChromeBrowserFieldTrials() override;
 
   // variations::PlatformFieldTrials:
@@ -34,8 +38,6 @@ class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
 
   // Weak pointer to the local state prefs store.
   PrefService* const local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserFieldTrials);
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_FIELD_TRIALS_H_

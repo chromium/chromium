@@ -54,6 +54,10 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       CupsPrintersManager* printers_manager);
 
   CupsPrintersHandler(Profile* profile, CupsPrintersManager* printers_manager);
+
+  CupsPrintersHandler(const CupsPrintersHandler&) = delete;
+  CupsPrintersHandler& operator=(const CupsPrintersHandler&) = delete;
+
   ~CupsPrintersHandler() override;
 
   // SettingsPageUIHandler overrides:
@@ -262,8 +266,6 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       printers_manager_observation_{this};
 
   base::WeakPtrFactory<CupsPrintersHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintersHandler);
 };
 
 }  // namespace settings

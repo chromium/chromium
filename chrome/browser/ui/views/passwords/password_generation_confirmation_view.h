@@ -17,6 +17,12 @@ class PasswordGenerationConfirmationView : public PasswordBubbleViewBase {
       content::WebContents* web_contents,
       views::View* anchor_view,
       DisplayReason reason);
+
+  PasswordGenerationConfirmationView(
+      const PasswordGenerationConfirmationView&) = delete;
+  PasswordGenerationConfirmationView& operator=(
+      const PasswordGenerationConfirmationView&) = delete;
+
   ~PasswordGenerationConfirmationView() override;
 
  private:
@@ -27,8 +33,6 @@ class PasswordGenerationConfirmationView : public PasswordBubbleViewBase {
   void StyledLabelLinkClicked();
 
   GenerationConfirmationBubbleController controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationConfirmationView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_CONFIRMATION_VIEW_H_

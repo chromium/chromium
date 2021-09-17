@@ -38,6 +38,10 @@ class ReadFile : public Operation {
            int64_t offset,
            int length,
            ProvidedFileSystemInterface::ReadChunkReceivedCallback callback);
+
+  ReadFile(const ReadFile&) = delete;
+  ReadFile& operator=(const ReadFile&) = delete;
+
   ~ReadFile() override;
 
   // Operation overrides.
@@ -56,8 +60,6 @@ class ReadFile : public Operation {
   int length_;
   int64_t current_offset_;
   ProvidedFileSystemInterface::ReadChunkReceivedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadFile);
 };
 
 }  // namespace operations

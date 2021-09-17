@@ -20,6 +20,9 @@ class BadgeManagerDelegate {
   explicit BadgeManagerDelegate(Profile* profile, BadgeManager* badge_manager)
       : profile_(profile), badge_manager_(badge_manager) {}
 
+  BadgeManagerDelegate(const BadgeManagerDelegate&) = delete;
+  BadgeManagerDelegate& operator=(const BadgeManagerDelegate&) = delete;
+
   virtual ~BadgeManagerDelegate() = default;
 
   // Called when the badge for |app_id| has changed.
@@ -34,8 +37,6 @@ class BadgeManagerDelegate {
   Profile* profile_;
   // The badge manager that owns this delegate.
   BadgeManager* badge_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BadgeManagerDelegate);
 };
 
 }  // namespace badging

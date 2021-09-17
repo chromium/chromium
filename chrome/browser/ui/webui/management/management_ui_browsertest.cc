@@ -25,6 +25,10 @@
 class ManagementUITest : public InProcessBrowserTest {
  public:
   ManagementUITest() = default;
+
+  ManagementUITest(const ManagementUITest&) = delete;
+  ManagementUITest& operator=(const ManagementUITest&) = delete;
+
   ~ManagementUITest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -53,8 +57,6 @@ class ManagementUITest : public InProcessBrowserTest {
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementUITest);
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

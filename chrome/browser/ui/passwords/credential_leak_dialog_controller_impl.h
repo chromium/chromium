@@ -20,6 +20,12 @@ class CredentialLeakDialogControllerImpl
   CredentialLeakDialogControllerImpl(
       PasswordsLeakDialogDelegate* delegate,
       password_manager::CredentialLeakType leak_type);
+
+  CredentialLeakDialogControllerImpl(
+      const CredentialLeakDialogControllerImpl&) = delete;
+  CredentialLeakDialogControllerImpl& operator=(
+      const CredentialLeakDialogControllerImpl&) = delete;
+
   ~CredentialLeakDialogControllerImpl() override;
 
   // Pop up the credential leak dialog.
@@ -44,8 +50,6 @@ class CredentialLeakDialogControllerImpl
   CredentialLeakPrompt* credential_leak_dialog_ = nullptr;
   PasswordsLeakDialogDelegate* delegate_;
   const password_manager::CredentialLeakType leak_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialLeakDialogControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_IMPL_H_

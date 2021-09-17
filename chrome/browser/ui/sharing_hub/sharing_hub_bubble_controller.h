@@ -36,6 +36,10 @@ struct SharingHubAction;
 class SharingHubBubbleController
     : public content::WebContentsUserData<SharingHubBubbleController> {
  public:
+  SharingHubBubbleController(const SharingHubBubbleController&) = delete;
+  SharingHubBubbleController& operator=(const SharingHubBubbleController&) =
+      delete;
+
   ~SharingHubBubbleController() override;
 
   static SharingHubBubbleController* CreateOrGetFromWebContents(
@@ -95,8 +99,6 @@ class SharingHubBubbleController
   SharingHubModel* sharing_hub_model_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SharingHubBubbleController);
 };
 
 }  // namespace sharing_hub

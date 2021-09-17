@@ -28,6 +28,11 @@ class FullscreenToolbarAnimationController
   explicit FullscreenToolbarAnimationController(
       FullscreenToolbarController* owner);
 
+  FullscreenToolbarAnimationController(
+      const FullscreenToolbarAnimationController&) = delete;
+  FullscreenToolbarAnimationController& operator=(
+      const FullscreenToolbarAnimationController&) = delete;
+
   ~FullscreenToolbarAnimationController() override;
 
   // Called by |owner_| when the fullscreen toolbar layout is updated.
@@ -81,8 +86,6 @@ class FullscreenToolbarAnimationController
 
   // True when the toolbar is dropped to show tabstrip changes.
   BOOL should_hide_toolbar_after_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenToolbarAnimationController);
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_FULLSCREEN_FULLSCREEN_TOOLBAR_ANIMATION_CONTROLLER_H_

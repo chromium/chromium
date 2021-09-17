@@ -10,14 +10,15 @@
 // Handles link clicks in the OneClickSigninDialogView.
 class OneClickSigninLinksDelegate {
  public:
+  OneClickSigninLinksDelegate(const OneClickSigninLinksDelegate&) = delete;
+  OneClickSigninLinksDelegate& operator=(const OneClickSigninLinksDelegate&) =
+      delete;
+
   virtual ~OneClickSigninLinksDelegate() {}
   virtual void OnLearnMoreLinkClicked(bool is_dialog) = 0;
 
  protected:
   OneClickSigninLinksDelegate() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OneClickSigninLinksDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_SYNC_ONE_CLICK_SIGNIN_LINKS_DELEGATE_H_

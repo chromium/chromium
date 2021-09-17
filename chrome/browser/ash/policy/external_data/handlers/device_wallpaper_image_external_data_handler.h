@@ -26,6 +26,12 @@ class DeviceWallpaperImageExternalDataHandler final
  public:
   DeviceWallpaperImageExternalDataHandler(PrefService* local_state,
                                           PolicyService* policy_service);
+
+  DeviceWallpaperImageExternalDataHandler(
+      const DeviceWallpaperImageExternalDataHandler&) = delete;
+  DeviceWallpaperImageExternalDataHandler& operator=(
+      const DeviceWallpaperImageExternalDataHandler&) = delete;
+
   ~DeviceWallpaperImageExternalDataHandler() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -42,8 +48,6 @@ class DeviceWallpaperImageExternalDataHandler final
 
   std::unique_ptr<DeviceCloudExternalDataPolicyObserver>
       device_wallpaper_image_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceWallpaperImageExternalDataHandler);
 };
 
 }  // namespace policy

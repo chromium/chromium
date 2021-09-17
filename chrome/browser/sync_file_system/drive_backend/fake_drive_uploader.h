@@ -22,6 +22,10 @@ namespace drive_backend {
 class FakeDriveServiceWrapper : public drive::FakeDriveService {
  public:
   FakeDriveServiceWrapper();
+
+  FakeDriveServiceWrapper(const FakeDriveServiceWrapper&) = delete;
+  FakeDriveServiceWrapper& operator=(const FakeDriveServiceWrapper&) = delete;
+
   ~FakeDriveServiceWrapper() override;
 
   // DriveServiceInterface overrides.
@@ -37,8 +41,6 @@ class FakeDriveServiceWrapper : public drive::FakeDriveService {
 
  private:
   bool make_directory_conflict_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveServiceWrapper);
 };
 
 // A fake implementation of DriveUploaderInterface, which provides fake
@@ -46,6 +48,10 @@ class FakeDriveServiceWrapper : public drive::FakeDriveService {
 class FakeDriveUploader : public drive::DriveUploaderInterface {
  public:
   explicit FakeDriveUploader(FakeDriveServiceWrapper* fake_drive_service);
+
+  FakeDriveUploader(const FakeDriveUploader&) = delete;
+  FakeDriveUploader& operator=(const FakeDriveUploader&) = delete;
+
   ~FakeDriveUploader() override;
 
   // DriveUploaderInterface overrides.
@@ -78,8 +84,6 @@ class FakeDriveUploader : public drive::DriveUploaderInterface {
  private:
   FakeDriveServiceWrapper* fake_drive_service_;
   bool make_file_conflict_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveUploader);
 };
 
 }  // namespace drive_backend

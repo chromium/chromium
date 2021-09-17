@@ -19,6 +19,11 @@ class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
  public:
   // Note: |browser| must outlive this object.
   explicit ExtensionBrowserWindowHelper(Browser* browser);
+
+  ExtensionBrowserWindowHelper(const ExtensionBrowserWindowHelper&) = delete;
+  ExtensionBrowserWindowHelper& operator=(const ExtensionBrowserWindowHelper&) =
+      delete;
+
   ~ExtensionBrowserWindowHelper() override;
 
  private:
@@ -37,8 +42,6 @@ class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionBrowserWindowHelper);
 };
 
 }  // namespace extensions

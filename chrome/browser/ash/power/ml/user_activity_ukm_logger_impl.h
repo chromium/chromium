@@ -18,6 +18,11 @@ class UserActivityEvent;
 class UserActivityUkmLoggerImpl : public UserActivityUkmLogger {
  public:
   UserActivityUkmLoggerImpl();
+
+  UserActivityUkmLoggerImpl(const UserActivityUkmLoggerImpl&) = delete;
+  UserActivityUkmLoggerImpl& operator=(const UserActivityUkmLoggerImpl&) =
+      delete;
+
   ~UserActivityUkmLoggerImpl() override;
 
   // ash::power::ml::UserActivityUkmLogger overrides:
@@ -31,8 +36,6 @@ class UserActivityUkmLoggerImpl : public UserActivityUkmLogger {
   // This ID is incremented each time a UserActivity is logged to UKM.
   // Event index starts from 1, and resets when a new session starts.
   int next_sequence_id_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActivityUkmLoggerImpl);
 };
 
 }  // namespace ml

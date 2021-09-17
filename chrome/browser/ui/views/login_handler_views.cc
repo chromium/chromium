@@ -40,6 +40,9 @@ class LoginHandlerViews : public LoginHandler {
     RecordDialogCreation(DialogIdentifier::LOGIN_HANDLER);
   }
 
+  LoginHandlerViews(const LoginHandlerViews&) = delete;
+  LoginHandlerViews& operator=(const LoginHandlerViews&) = delete;
+
   ~LoginHandlerViews() override {
     // LoginHandler cannot call CloseDialog because the subclass will already
     // have been destructed.
@@ -166,8 +169,6 @@ class LoginHandlerViews : public LoginHandler {
 
   Dialog* dialog_ = nullptr;
   std::unique_ptr<PopunderPreventer> popunder_preventer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginHandlerViews);
 };
 
 }  // namespace

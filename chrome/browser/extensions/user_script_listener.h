@@ -40,6 +40,10 @@ class UserScriptListener : public content::NotificationObserver,
                            public ExtensionRegistryObserver {
  public:
   UserScriptListener();
+
+  UserScriptListener(const UserScriptListener&) = delete;
+  UserScriptListener& operator=(const UserScriptListener&) = delete;
+
   ~UserScriptListener() override;
 
   // Constructs a NavigationThrottle if the UserScriptListener needs to delay
@@ -119,8 +123,6 @@ class UserScriptListener : public content::NotificationObserver,
       extension_registry_observations_{this};
 
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserScriptListener);
 };
 
 }  // namespace extensions

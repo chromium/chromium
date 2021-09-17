@@ -590,6 +590,11 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, DetailMenuRemainsOpen) {
 class TrayAccessibilityLoginTest : public TrayAccessibilityTest {
  public:
   TrayAccessibilityLoginTest() = default;
+
+  TrayAccessibilityLoginTest(const TrayAccessibilityLoginTest&) = delete;
+  TrayAccessibilityLoginTest& operator=(const TrayAccessibilityLoginTest&) =
+      delete;
+
   ~TrayAccessibilityLoginTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -597,9 +602,6 @@ class TrayAccessibilityLoginTest : public TrayAccessibilityTest {
     command_line->AppendSwitch(switches::kLoginManager);
     command_line->AppendSwitch(switches::kForceLoginManagerInTests);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TrayAccessibilityLoginTest);
 };
 
 IN_PROC_BROWSER_TEST_P(TrayAccessibilityLoginTest,

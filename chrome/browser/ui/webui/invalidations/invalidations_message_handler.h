@@ -25,6 +25,11 @@ class InvalidationsMessageHandler
       public invalidation::InvalidationLoggerObserver {
  public:
   InvalidationsMessageHandler();
+
+  InvalidationsMessageHandler(const InvalidationsMessageHandler&) = delete;
+  InvalidationsMessageHandler& operator=(const InvalidationsMessageHandler&) =
+      delete;
+
   ~InvalidationsMessageHandler() override;
 
   // Implementation of InvalidationLoggerObserver.
@@ -60,8 +65,6 @@ class InvalidationsMessageHandler
   invalidation::InvalidationLogger* logger_;
 
   base::WeakPtrFactory<InvalidationsMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidationsMessageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INVALIDATIONS_INVALIDATIONS_MESSAGE_HANDLER_H_

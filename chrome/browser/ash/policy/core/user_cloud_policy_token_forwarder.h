@@ -55,6 +55,11 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
   // until that point.
   UserCloudPolicyTokenForwarder(UserCloudPolicyManagerAsh* manager,
                                 signin::IdentityManager* identity_manager);
+
+  UserCloudPolicyTokenForwarder(const UserCloudPolicyTokenForwarder&) = delete;
+  UserCloudPolicyTokenForwarder& operator=(
+      const UserCloudPolicyTokenForwarder&) = delete;
+
   ~UserCloudPolicyTokenForwarder() override;
 
   // KeyedService:
@@ -103,8 +108,6 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
   const base::Clock* clock_;
 
   base::WeakPtrFactory<UserCloudPolicyTokenForwarder> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyTokenForwarder);
 };
 
 }  // namespace policy

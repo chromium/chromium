@@ -38,6 +38,10 @@ class PolicyOAuth2TokenFetcher {
                                                 const GoogleServiceAuthError&)>;
 
   PolicyOAuth2TokenFetcher();
+
+  PolicyOAuth2TokenFetcher(const PolicyOAuth2TokenFetcher&) = delete;
+  PolicyOAuth2TokenFetcher& operator=(const PolicyOAuth2TokenFetcher&) = delete;
+
   virtual ~PolicyOAuth2TokenFetcher();
 
   // Fetches the device management service's oauth2 token. This may be fetched
@@ -56,9 +60,6 @@ class PolicyOAuth2TokenFetcher {
   virtual bool Failed() const = 0;
   virtual const std::string& OAuth2RefreshToken() const = 0;
   virtual const std::string& OAuth2AccessToken() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyOAuth2TokenFetcher);
 };
 
 }  // namespace policy

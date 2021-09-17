@@ -31,6 +31,10 @@ class AssistantOptInFlowScreenView {
  public:
   constexpr static StaticOobeScreenId kScreenId{"assistant-optin-flow"};
 
+  AssistantOptInFlowScreenView(const AssistantOptInFlowScreenView&) = delete;
+  AssistantOptInFlowScreenView& operator=(const AssistantOptInFlowScreenView&) =
+      delete;
+
   virtual ~AssistantOptInFlowScreenView() = default;
 
   virtual void Bind(ash::AssistantOptInFlowScreen* screen) = 0;
@@ -40,9 +44,6 @@ class AssistantOptInFlowScreenView {
 
  protected:
   AssistantOptInFlowScreenView() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInFlowScreenView);
 };
 
 class AssistantOptInFlowScreenHandler
@@ -67,6 +68,12 @@ class AssistantOptInFlowScreenHandler
 
   explicit AssistantOptInFlowScreenHandler(
       JSCallsContainer* js_calls_container);
+
+  AssistantOptInFlowScreenHandler(const AssistantOptInFlowScreenHandler&) =
+      delete;
+  AssistantOptInFlowScreenHandler& operator=(
+      const AssistantOptInFlowScreenHandler&) = delete;
+
   ~AssistantOptInFlowScreenHandler() override;
 
   // Set an optional callback that will run when the screen has been
@@ -187,8 +194,6 @@ class AssistantOptInFlowScreenHandler
   base::circular_deque<ConsentData> pending_consent_data_;
 
   base::WeakPtrFactory<AssistantOptInFlowScreenHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInFlowScreenHandler);
 };
 
 }  // namespace chromeos

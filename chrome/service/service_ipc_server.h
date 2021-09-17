@@ -52,6 +52,10 @@ class ServiceIPCServer : public service_manager::mojom::InterfaceProvider,
       Client* client,
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
       base::WaitableEvent* shutdown_event);
+
+  ServiceIPCServer(const ServiceIPCServer&) = delete;
+  ServiceIPCServer& operator=(const ServiceIPCServer&) = delete;
+
   ~ServiceIPCServer() override;
 
   bool Init();
@@ -94,8 +98,6 @@ class ServiceIPCServer : public service_manager::mojom::InterfaceProvider,
   mojo::ReceiverSet<chrome::mojom::ServiceProcess> service_process_receivers_;
 
   service_manager::BinderRegistry binder_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceIPCServer);
 };
 
 #endif  // CHROME_SERVICE_SERVICE_IPC_SERVER_H_

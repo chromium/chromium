@@ -64,6 +64,9 @@ class PredictionManager : public PredictionModelDownloadObserver {
       PrefService* pref_service,
       Profile* profile);
 
+  PredictionManager(const PredictionManager&) = delete;
+  PredictionManager& operator=(const PredictionManager&) = delete;
+
   ~PredictionManager() override;
 
   // Adds an observer for updates to the model for |optimization_target|.
@@ -386,8 +389,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // Used to get |weak_ptr_| to self on the UI thread.
   base::WeakPtrFactory<PredictionManager> ui_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PredictionManager);
 };
 
 }  // namespace optimization_guide

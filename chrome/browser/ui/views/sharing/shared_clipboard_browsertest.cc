@@ -33,6 +33,11 @@ class SharedClipboardBrowserTestBase : public SharingBrowserTest {
  public:
   SharedClipboardBrowserTestBase() {}
 
+  SharedClipboardBrowserTestBase(const SharedClipboardBrowserTestBase&) =
+      delete;
+  SharedClipboardBrowserTestBase& operator=(
+      const SharedClipboardBrowserTestBase&) = delete;
+
   ~SharedClipboardBrowserTestBase() override = default;
 
   std::string GetTestPageURL() const override {
@@ -48,9 +53,6 @@ class SharedClipboardBrowserTestBase : public SharingBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardBrowserTestBase);
 };
 
 class SharedClipboardBrowserTest : public SharedClipboardBrowserTestBase {

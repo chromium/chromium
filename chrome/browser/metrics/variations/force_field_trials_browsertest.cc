@@ -43,6 +43,11 @@ class ForceFieldTrialsBrowserTest : public InProcessBrowserTest,
                                     public testing::WithParamInterface<bool> {
  public:
   ForceFieldTrialsBrowserTest() : metrics_consent_(GetParam()) {}
+
+  ForceFieldTrialsBrowserTest(const ForceFieldTrialsBrowserTest&) = delete;
+  ForceFieldTrialsBrowserTest& operator=(const ForceFieldTrialsBrowserTest&) =
+      delete;
+
   ~ForceFieldTrialsBrowserTest() override = default;
 
   std::string GetTestTrialName(int trial_number) {
@@ -87,8 +92,6 @@ class ForceFieldTrialsBrowserTest : public InProcessBrowserTest,
 
  private:
   bool metrics_consent_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForceFieldTrialsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(ForceFieldTrialsBrowserTest, PRE_PRE_ForceTrials) {

@@ -27,6 +27,12 @@ class SyncFileSystemInternalsHandler
       public sync_file_system::TaskLogger::Observer {
  public:
   explicit SyncFileSystemInternalsHandler(Profile* profile);
+
+  SyncFileSystemInternalsHandler(const SyncFileSystemInternalsHandler&) =
+      delete;
+  SyncFileSystemInternalsHandler& operator=(
+      const SyncFileSystemInternalsHandler&) = delete;
+
   ~SyncFileSystemInternalsHandler() override;
 
   // content::WebUIMessageHandler implementation.
@@ -55,8 +61,6 @@ class SyncFileSystemInternalsHandler
 
   Profile* profile_;
   bool observing_task_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncFileSystemInternalsHandler);
 };
 
 }  // namespace syncfs_internals

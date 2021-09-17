@@ -54,6 +54,11 @@ class UkmPageLoadMetricsObserver
 
   explicit UkmPageLoadMetricsObserver(
       network::NetworkQualityTracker* network_quality_tracker);
+
+  UkmPageLoadMetricsObserver(const UkmPageLoadMetricsObserver&) = delete;
+  UkmPageLoadMetricsObserver& operator=(const UkmPageLoadMetricsObserver&) =
+      delete;
+
   ~UkmPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
@@ -302,8 +307,6 @@ class UkmPageLoadMetricsObserver
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
 
   base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UkmPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_

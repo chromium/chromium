@@ -62,6 +62,10 @@ class CertificatesHandler : public content::WebUIMessageHandler,
                             public ui::SelectFileDialog::Listener {
  public:
   CertificatesHandler();
+
+  CertificatesHandler(const CertificatesHandler&) = delete;
+  CertificatesHandler& operator=(const CertificatesHandler&) = delete;
+
   ~CertificatesHandler() override;
 
   // content::WebUIMessageHandler.
@@ -244,8 +248,6 @@ class CertificatesHandler : public content::WebUIMessageHandler,
       cert_info_id_map_;
 
   base::WeakPtrFactory<CertificatesHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CertificatesHandler);
   friend class ::CertificateHandlerTest;
 };
 

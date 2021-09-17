@@ -15,6 +15,11 @@ namespace policy {
 class DeviceCommandSetVolumeJob : public RemoteCommandJob {
  public:
   DeviceCommandSetVolumeJob();
+
+  DeviceCommandSetVolumeJob(const DeviceCommandSetVolumeJob&) = delete;
+  DeviceCommandSetVolumeJob& operator=(const DeviceCommandSetVolumeJob&) =
+      delete;
+
   ~DeviceCommandSetVolumeJob() override;
 
   // RemoteCommandJob:
@@ -29,8 +34,6 @@ class DeviceCommandSetVolumeJob : public RemoteCommandJob {
  private:
   // New volume level to be set, value in range [0,100].
   int volume_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandSetVolumeJob);
 };
 
 }  // namespace policy

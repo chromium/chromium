@@ -12,10 +12,11 @@
 class UserActionsUI : public content::WebUIController {
  public:
   explicit UserActionsUI(content::WebUI* contents);
-  ~UserActionsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserActionsUI);
+  UserActionsUI(const UserActionsUI&) = delete;
+  UserActionsUI& operator=(const UserActionsUI&) = delete;
+
+  ~UserActionsUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_USER_ACTIONS_USER_ACTIONS_UI_H_

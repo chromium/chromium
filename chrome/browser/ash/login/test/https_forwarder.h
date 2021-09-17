@@ -27,6 +27,10 @@ class ForwardingServer;
 class HTTPSForwarder {
  public:
   HTTPSForwarder();
+
+  HTTPSForwarder(const HTTPSForwarder&) = delete;
+  HTTPSForwarder& operator=(const HTTPSForwarder&) = delete;
+
   ~HTTPSForwarder();
 
   // Returns a URL that uses `ssl_host_` as the host.
@@ -42,8 +46,6 @@ class HTTPSForwarder {
 
   std::unique_ptr<net::ScopedTestRoot> test_root_;
   std::unique_ptr<ForwardingServer> forwarding_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTTPSForwarder);
 };
 
 }  // namespace ash

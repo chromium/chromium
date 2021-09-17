@@ -114,6 +114,10 @@ class SigninScreenHandler
       ErrorScreen* error_screen,
       CoreOobeView* core_oobe_view,
       GaiaScreenHandler* gaia_screen_handler);
+
+  SigninScreenHandler(const SigninScreenHandler&) = delete;
+  SigninScreenHandler& operator=(const SigninScreenHandler&) = delete;
+
   ~SigninScreenHandler() override;
 
   static std::string GetUserLastInputMethod(const std::string& username);
@@ -293,8 +297,6 @@ class SigninScreenHandler
   std::unique_ptr<AccountId> focused_pod_account_id_;
 
   base::WeakPtrFactory<SigninScreenHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninScreenHandler);
 };
 
 }  // namespace chromeos

@@ -24,6 +24,10 @@ using InputEventList = std::vector<std::unique_ptr<InputEvent>>;
 class VR_EXPORT GestureDetector {
  public:
   GestureDetector();
+
+  GestureDetector(const GestureDetector&) = delete;
+  GestureDetector& operator=(const GestureDetector&) = delete;
+
   virtual ~GestureDetector();
 
   InputEventList DetectGestures(const PlatformController& controller,
@@ -104,8 +108,6 @@ class VR_EXPORT GestureDetector {
 
   base::TimeTicks menu_button_down_timestamp_;
   bool menu_button_long_pressed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureDetector);
 };
 
 }  // namespace vr

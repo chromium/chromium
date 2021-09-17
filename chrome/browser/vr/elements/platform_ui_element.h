@@ -20,6 +20,10 @@ class PlatformUiInputDelegate;
 class PlatformUiElement : public UiElement {
  public:
   PlatformUiElement();
+
+  PlatformUiElement(const PlatformUiElement&) = delete;
+  PlatformUiElement& operator=(const PlatformUiElement&) = delete;
+
   ~PlatformUiElement() override;
 
   void OnHoverEnter(const gfx::PointF& position,
@@ -59,8 +63,6 @@ class PlatformUiElement : public UiElement {
   PlatformUiInputDelegate* delegate_ = nullptr;
   unsigned int texture_id_ = 0;
   GlTextureLocation texture_location_ = kGlTextureLocationExternal;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformUiElement);
 };
 
 }  // namespace vr

@@ -25,10 +25,13 @@ class SodaComponentMockComponentUpdateService
     : public component_updater::MockComponentUpdateService {
  public:
   SodaComponentMockComponentUpdateService() = default;
-  ~SodaComponentMockComponentUpdateService() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SodaComponentMockComponentUpdateService);
+  SodaComponentMockComponentUpdateService(
+      const SodaComponentMockComponentUpdateService&) = delete;
+  SodaComponentMockComponentUpdateService& operator=(
+      const SodaComponentMockComponentUpdateService&) = delete;
+
+  ~SodaComponentMockComponentUpdateService() override = default;
 };
 
 }  // namespace

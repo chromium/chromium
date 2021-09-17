@@ -143,6 +143,12 @@ base::FilePath GetCdmPathFromInstallDir(const base::FilePath& install_dir) {
 class WidevineCdmComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   WidevineCdmComponentInstallerPolicy();
+
+  WidevineCdmComponentInstallerPolicy(
+      const WidevineCdmComponentInstallerPolicy&) = delete;
+  WidevineCdmComponentInstallerPolicy& operator=(
+      const WidevineCdmComponentInstallerPolicy&) = delete;
+
   ~WidevineCdmComponentInstallerPolicy() override = default;
 
  private:
@@ -167,8 +173,6 @@ class WidevineCdmComponentInstallerPolicy : public ComponentInstallerPolicy {
   void UpdateCdmPath(const base::Version& cdm_version,
                      const base::FilePath& cdm_install_dir,
                      base::Value manifest);
-
-  DISALLOW_COPY_AND_ASSIGN(WidevineCdmComponentInstallerPolicy);
 };
 
 WidevineCdmComponentInstallerPolicy::WidevineCdmComponentInstallerPolicy() =

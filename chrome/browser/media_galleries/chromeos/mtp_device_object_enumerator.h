@@ -21,6 +21,10 @@ class MTPDeviceObjectEnumerator {
   explicit MTPDeviceObjectEnumerator(
       std::vector<device::mojom::MtpFileEntryPtr> entries);
 
+  MTPDeviceObjectEnumerator(const MTPDeviceObjectEnumerator&) = delete;
+  MTPDeviceObjectEnumerator& operator=(const MTPDeviceObjectEnumerator&) =
+      delete;
+
   ~MTPDeviceObjectEnumerator();
 
   base::FilePath Next();
@@ -50,8 +54,6 @@ class MTPDeviceObjectEnumerator {
 
   // Initially false. Set to true after Next() has been called.
   bool is_index_ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceObjectEnumerator);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_DEVICE_OBJECT_ENUMERATOR_H_

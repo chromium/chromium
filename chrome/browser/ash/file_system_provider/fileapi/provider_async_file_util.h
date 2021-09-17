@@ -32,6 +32,10 @@ namespace internal {
 class ProviderAsyncFileUtil : public storage::AsyncFileUtil {
  public:
   ProviderAsyncFileUtil();
+
+  ProviderAsyncFileUtil(const ProviderAsyncFileUtil&) = delete;
+  ProviderAsyncFileUtil& operator=(const ProviderAsyncFileUtil&) = delete;
+
   ~ProviderAsyncFileUtil() override;
 
   // storage::AsyncFileUtil overrides.
@@ -100,9 +104,6 @@ class ProviderAsyncFileUtil : public storage::AsyncFileUtil {
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& url,
       CreateSnapshotFileCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProviderAsyncFileUtil);
 };
 
 }  // namespace internal

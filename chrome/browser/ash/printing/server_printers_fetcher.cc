@@ -66,6 +66,9 @@ class ServerPrintersFetcher::PrivateImplementation
                                   profile->GetURLLoaderFactory()->Clone()));
   }
 
+  PrivateImplementation(const PrivateImplementation&) = delete;
+  PrivateImplementation& operator=(const PrivateImplementation&) = delete;
+
   ~PrivateImplementation() override = default;
 
   // Schedule the given object for deletion. May be called from any
@@ -228,7 +231,6 @@ class ServerPrintersFetcher::PrivateImplementation
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(PrivateImplementation);
 };
 
 ServerPrintersFetcher::ServerPrintersFetcher(Profile* profile,

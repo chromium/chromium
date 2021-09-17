@@ -40,6 +40,10 @@ class TermsOfServiceScreen : public BaseScreen {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   TermsOfServiceScreen(TermsOfServiceScreenView* view,
                        const ScreenExitCallback& exit_callback);
+
+  TermsOfServiceScreen(const TermsOfServiceScreen&) = delete;
+  TermsOfServiceScreen& operator=(const TermsOfServiceScreen&) = delete;
+
   ~TermsOfServiceScreen() override;
 
   // Called when the user declines the Terms of Service.
@@ -102,8 +106,6 @@ class TermsOfServiceScreen : public BaseScreen {
   base::OneShotTimer download_timer_;
 
   base::WeakPtrFactory<TermsOfServiceScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TermsOfServiceScreen);
 };
 
 }  // namespace ash

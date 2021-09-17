@@ -53,6 +53,9 @@ class ContentSettingImageModel {
     NUM_IMAGE_TYPES
   };
 
+  ContentSettingImageModel(const ContentSettingImageModel&) = delete;
+  ContentSettingImageModel& operator=(const ContentSettingImageModel&) = delete;
+
   virtual ~ContentSettingImageModel() {}
 
   // Generates a vector of all image models to be used within one window.
@@ -155,7 +158,6 @@ class ContentSettingImageModel {
   const bool image_type_should_notify_accessibility_;
   bool should_auto_open_bubble_ = false;
   bool should_show_promo_ = false;
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingImageModel);
 };
 
 // A subclass for an image model tied to a single content type.

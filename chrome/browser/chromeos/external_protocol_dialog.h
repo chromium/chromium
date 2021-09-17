@@ -26,6 +26,12 @@ class ExternalProtocolNoHandlersDialog : public views::DialogDelegate {
  public:
   ExternalProtocolNoHandlersDialog(content::WebContents* web_contents,
                                    const GURL& url);
+
+  ExternalProtocolNoHandlersDialog(const ExternalProtocolNoHandlersDialog&) =
+      delete;
+  ExternalProtocolNoHandlersDialog& operator=(
+      const ExternalProtocolNoHandlersDialog&) = delete;
+
   ~ExternalProtocolNoHandlersDialog() override;
 
   // views::DialogDelegate:
@@ -43,8 +49,6 @@ class ExternalProtocolNoHandlersDialog : public views::DialogDelegate {
 
   // The scheme of the url.
   std::string scheme_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProtocolNoHandlersDialog);
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTERNAL_PROTOCOL_DIALOG_H_

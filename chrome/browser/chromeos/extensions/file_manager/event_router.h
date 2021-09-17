@@ -65,6 +65,10 @@ class EventRouter
                                    const std::vector<url::Origin>& listeners)>;
 
   explicit EventRouter(Profile* profile);
+
+  EventRouter(const EventRouter&) = delete;
+  EventRouter& operator=(const EventRouter&) = delete;
+
   ~EventRouter() override;
 
   // arc::ArcIntentHelperObserver overrides.
@@ -273,8 +277,6 @@ class EventRouter
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<EventRouter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventRouter);
 };
 
 }  // namespace file_manager

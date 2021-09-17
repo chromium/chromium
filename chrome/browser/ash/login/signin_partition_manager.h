@@ -47,6 +47,10 @@ class SigninPartitionManager : public KeyedService {
       base::OnceCallback<void(const std::string& partition_name)>;
 
   explicit SigninPartitionManager(content::BrowserContext* browser_context);
+
+  SigninPartitionManager(const SigninPartitionManager&) = delete;
+  SigninPartitionManager& operator=(const SigninPartitionManager&) = delete;
+
   ~SigninPartitionManager() override;
 
   // Creates a new StoragePartition for a sign-in attempt. If a previous
@@ -129,8 +133,6 @@ class SigninPartitionManager : public KeyedService {
   // The StoragePartition identified by `storage_partition_domain_` and
   // `current_storage_partition_name_`.
   content::StoragePartition* current_storage_partition_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninPartitionManager);
 };
 
 }  // namespace login

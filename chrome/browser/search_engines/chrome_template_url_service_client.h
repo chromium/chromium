@@ -18,6 +18,12 @@ class ChromeTemplateURLServiceClient : public TemplateURLServiceClient,
  public:
   explicit ChromeTemplateURLServiceClient(
       history::HistoryService* history_service);
+
+  ChromeTemplateURLServiceClient(const ChromeTemplateURLServiceClient&) =
+      delete;
+  ChromeTemplateURLServiceClient& operator=(
+      const ChromeTemplateURLServiceClient&) = delete;
+
   ~ChromeTemplateURLServiceClient() override;
 
   // TemplateURLServiceClient:
@@ -42,8 +48,6 @@ class ChromeTemplateURLServiceClient : public TemplateURLServiceClient,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
   history::HistoryService* history_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTemplateURLServiceClient);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINES_CHROME_TEMPLATE_URL_SERVICE_CLIENT_H_

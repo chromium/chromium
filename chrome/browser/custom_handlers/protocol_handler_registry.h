@@ -68,6 +68,10 @@ class ProtocolHandlerRegistry : public KeyedService {
   // Creates a new instance.
   ProtocolHandlerRegistry(content::BrowserContext* context,
                           std::unique_ptr<Delegate> delegate);
+
+  ProtocolHandlerRegistry(const ProtocolHandlerRegistry&) = delete;
+  ProtocolHandlerRegistry& operator=(const ProtocolHandlerRegistry&) = delete;
+
   ~ProtocolHandlerRegistry() override;
 
   void AddObserver(Observer* observer);
@@ -344,7 +348,5 @@ class ProtocolHandlerRegistry : public KeyedService {
   // Makes it possible to invalidate the callback for the
   // DefaultProtocolClientWorker.
   base::WeakPtrFactory<ProtocolHandlerRegistry> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolHandlerRegistry);
 };
 #endif  // CHROME_BROWSER_CUSTOM_HANDLERS_PROTOCOL_HANDLER_REGISTRY_H_

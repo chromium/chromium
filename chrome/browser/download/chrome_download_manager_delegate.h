@@ -56,6 +56,11 @@ class ChromeDownloadManagerDelegate
       public DownloadTargetDeterminerDelegate {
  public:
   explicit ChromeDownloadManagerDelegate(Profile* profile);
+
+  ChromeDownloadManagerDelegate(const ChromeDownloadManagerDelegate&) = delete;
+  ChromeDownloadManagerDelegate& operator=(
+      const ChromeDownloadManagerDelegate&) = delete;
+
   ~ChromeDownloadManagerDelegate() override;
 
   // Should be called before the first call to ShouldCompleteDownload() to
@@ -146,14 +151,15 @@ class ChromeDownloadManagerDelegate
   class SafeBrowsingState : public DownloadCompletionBlocker {
    public:
     SafeBrowsingState() = default;
+
+    SafeBrowsingState(const SafeBrowsingState&) = delete;
+    SafeBrowsingState& operator=(const SafeBrowsingState&) = delete;
+
     ~SafeBrowsingState() override;
 
     // String pointer used for identifying safebrowing data associated with
     // a download item.
     static const char kSafeBrowsingUserDataKey[];
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SafeBrowsingState);
   };
 #endif  // FULL_SAFE_BROWSING
 
@@ -327,8 +333,6 @@ class ChromeDownloadManagerDelegate
   content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<ChromeDownloadManagerDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeDownloadManagerDelegate);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_CHROME_DOWNLOAD_MANAGER_DELEGATE_H_

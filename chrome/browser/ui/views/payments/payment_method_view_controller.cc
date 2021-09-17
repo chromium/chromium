@@ -63,6 +63,10 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
         dialog_(dialog) {
     Init();
   }
+
+  PaymentMethodListItem(const PaymentMethodListItem&) = delete;
+  PaymentMethodListItem& operator=(const PaymentMethodListItem&) = delete;
+
   ~PaymentMethodListItem() override {}
 
  private:
@@ -165,8 +169,6 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
 
   base::WeakPtr<PaymentApp> app_;
   base::WeakPtr<PaymentRequestDialogView> dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentMethodListItem);
 };
 
 }  // namespace

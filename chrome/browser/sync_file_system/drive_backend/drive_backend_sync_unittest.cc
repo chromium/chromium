@@ -84,6 +84,10 @@ class DriveBackendSyncTest : public testing::Test,
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         pending_remote_changes_(0),
         pending_local_changes_(0) {}
+
+  DriveBackendSyncTest(const DriveBackendSyncTest&) = delete;
+  DriveBackendSyncTest& operator=(const DriveBackendSyncTest&) = delete;
+
   ~DriveBackendSyncTest() override {}
 
   void SetUp() override {
@@ -601,8 +605,6 @@ class DriveBackendSyncTest : public testing::Test,
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveBackendSyncTest);
 };
 
 TEST_F(DriveBackendSyncTest, LocalToRemoteBasicTest) {

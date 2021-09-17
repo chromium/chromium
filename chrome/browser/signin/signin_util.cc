@@ -70,6 +70,10 @@ class DeleteProfileDialogManager : public BrowserListObserver {
         primary_account_email_(primary_account_email),
         delegate_(delegate) {}
 
+  DeleteProfileDialogManager(const DeleteProfileDialogManager&) = delete;
+  DeleteProfileDialogManager& operator=(const DeleteProfileDialogManager&) =
+      delete;
+
   ~DeleteProfileDialogManager() override { BrowserList::RemoveObserver(this); }
 
   void PresentDialogOnAllBrowserWindows() {
@@ -104,8 +108,6 @@ class DeleteProfileDialogManager : public BrowserListObserver {
   Profile* profile_;
   std::string primary_account_email_;
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteProfileDialogManager);
 };
 #endif  // defined(CAN_DELETE_PROFILE)
 

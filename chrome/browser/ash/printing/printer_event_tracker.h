@@ -32,6 +32,10 @@ class PrinterEventTracker : public KeyedService {
   };
 
   PrinterEventTracker();
+
+  PrinterEventTracker(const PrinterEventTracker&) = delete;
+  PrinterEventTracker& operator=(const PrinterEventTracker&) = delete;
+
   ~PrinterEventTracker() override;
 
   // If |logging| is true, logging is enabled. If |logging| is false, logging is
@@ -67,8 +71,6 @@ class PrinterEventTracker : public KeyedService {
   bool logging_ = false;
   std::vector<metrics::PrinterEventProto> events_;
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterEventTracker);
 };
 
 }  // namespace ash

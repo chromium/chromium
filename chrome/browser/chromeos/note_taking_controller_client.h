@@ -22,6 +22,11 @@ class NoteTakingControllerClient
       public ProfileObserver {
  public:
   explicit NoteTakingControllerClient(NoteTakingHelper* helper);
+
+  NoteTakingControllerClient(const NoteTakingControllerClient&) = delete;
+  NoteTakingControllerClient& operator=(const NoteTakingControllerClient&) =
+      delete;
+
   ~NoteTakingControllerClient() override;
 
   // ash::NoteTakingClient:
@@ -47,8 +52,6 @@ class NoteTakingControllerClient
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::WeakPtrFactory<NoteTakingControllerClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NoteTakingControllerClient);
 };
 
 }  // namespace chromeos

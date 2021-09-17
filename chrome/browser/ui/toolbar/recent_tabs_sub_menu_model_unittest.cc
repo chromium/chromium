@@ -90,6 +90,11 @@ class TestRecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
     model_->SetMenuModelDelegate(this);
   }
 
+  TestRecentTabsMenuModelDelegate(const TestRecentTabsMenuModelDelegate&) =
+      delete;
+  TestRecentTabsMenuModelDelegate& operator=(
+      const TestRecentTabsMenuModelDelegate&) = delete;
+
   ~TestRecentTabsMenuModelDelegate() override {
     model_->SetMenuModelDelegate(nullptr);
   }
@@ -105,8 +110,6 @@ class TestRecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
  private:
   ui::MenuModel* model_;
   bool got_changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRecentTabsMenuModelDelegate);
 };
 
 }  // namespace

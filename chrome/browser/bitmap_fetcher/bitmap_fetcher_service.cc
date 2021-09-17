@@ -85,6 +85,10 @@ class BitmapFetcherRequest {
  public:
   BitmapFetcherRequest(BitmapFetcherService::RequestId request_id,
                        BitmapFetcherService::BitmapFetchedCallback callback);
+
+  BitmapFetcherRequest(const BitmapFetcherRequest&) = delete;
+  BitmapFetcherRequest& operator=(const BitmapFetcherRequest&) = delete;
+
   ~BitmapFetcherRequest();
 
   void NotifyImageChanged(const SkBitmap* bitmap);
@@ -98,8 +102,6 @@ class BitmapFetcherRequest {
   const BitmapFetcherService::RequestId request_id_;
   BitmapFetcherService::BitmapFetchedCallback callback_;
   const BitmapFetcher* fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapFetcherRequest);
 };
 
 BitmapFetcherRequest::BitmapFetcherRequest(

@@ -47,6 +47,10 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
                               public system::TimezoneSettings::Observer {
  public:
   SetTimeMessageHandler() : weak_factory_(this) {}
+
+  SetTimeMessageHandler(const SetTimeMessageHandler&) = delete;
+  SetTimeMessageHandler& operator=(const SetTimeMessageHandler&) = delete;
+
   ~SetTimeMessageHandler() override = default;
 
   // WebUIMessageHandler:
@@ -153,8 +157,6 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
                           system::TimezoneSettings::Observer>
       timezone_observation_{this};
   base::WeakPtrFactory<SetTimeMessageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SetTimeMessageHandler);
 };
 
 }  // namespace

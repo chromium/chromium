@@ -57,6 +57,11 @@ class AccessibilityLabelsMenuObserverTest : public InProcessBrowserTest {
     observer_->InitMenu(params);
   }
 
+  AccessibilityLabelsMenuObserverTest(
+      const AccessibilityLabelsMenuObserverTest&) = delete;
+  AccessibilityLabelsMenuObserverTest& operator=(
+      const AccessibilityLabelsMenuObserverTest&) = delete;
+
   ~AccessibilityLabelsMenuObserverTest() override;
   MockRenderViewContextMenu* menu() { return menu_.get(); }
   AccessibilityLabelsMenuObserver* observer() { return observer_.get(); }
@@ -65,7 +70,6 @@ class AccessibilityLabelsMenuObserverTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<AccessibilityLabelsMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityLabelsMenuObserverTest);
 };
 
 AccessibilityLabelsMenuObserverTest::AccessibilityLabelsMenuObserverTest() {}

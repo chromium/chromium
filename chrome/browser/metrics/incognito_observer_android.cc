@@ -19,6 +19,9 @@ class IncognitoObserverAndroid : public IncognitoObserver,
     TabModelList::AddObserver(this);
   }
 
+  IncognitoObserverAndroid(const IncognitoObserverAndroid&) = delete;
+  IncognitoObserverAndroid& operator=(const IncognitoObserverAndroid&) = delete;
+
   ~IncognitoObserverAndroid() override { TabModelList::RemoveObserver(this); }
 
   // TabModelListObserver:
@@ -27,8 +30,6 @@ class IncognitoObserverAndroid : public IncognitoObserver,
 
  private:
   const base::RepeatingClosure update_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncognitoObserverAndroid);
 };
 
 }  // namespace

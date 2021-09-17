@@ -27,6 +27,12 @@ class ComponentExtensionIMEManagerDelegateImpl
     : public ComponentExtensionIMEManagerDelegate {
  public:
   ComponentExtensionIMEManagerDelegateImpl();
+
+  ComponentExtensionIMEManagerDelegateImpl(
+      const ComponentExtensionIMEManagerDelegateImpl&) = delete;
+  ComponentExtensionIMEManagerDelegateImpl& operator=(
+      const ComponentExtensionIMEManagerDelegateImpl&) = delete;
+
   ~ComponentExtensionIMEManagerDelegateImpl() override;
 
   // ComponentExtensionIMEManagerDelegate overrides:
@@ -67,8 +73,6 @@ class ComponentExtensionIMEManagerDelegateImpl
   std::vector<ComponentExtensionIME> component_extension_list_;
 
   std::set<std::string> login_layout_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentExtensionIMEManagerDelegateImpl);
 };
 
 }  // namespace input_method

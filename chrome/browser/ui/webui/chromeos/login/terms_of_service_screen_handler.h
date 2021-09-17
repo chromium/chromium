@@ -54,6 +54,11 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
   using TView = TermsOfServiceScreenView;
 
   explicit TermsOfServiceScreenHandler(JSCallsContainer* js_calls_container);
+
+  TermsOfServiceScreenHandler(const TermsOfServiceScreenHandler&) = delete;
+  TermsOfServiceScreenHandler& operator=(const TermsOfServiceScreenHandler&) =
+      delete;
+
   ~TermsOfServiceScreenHandler() override;
 
   // BaseScreenHandler:
@@ -90,8 +95,6 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
 
   // Set to the Terms of Service when the download is successful.
   std::string terms_of_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TermsOfServiceScreenHandler);
 };
 
 }  // namespace chromeos

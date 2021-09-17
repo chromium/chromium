@@ -82,6 +82,10 @@ class SafeBrowsingEventObserver : public TestEventRouter::EventObserver {
   explicit SafeBrowsingEventObserver(const std::string& event_name)
       : event_name_(event_name) {}
 
+  SafeBrowsingEventObserver(const SafeBrowsingEventObserver&) = delete;
+  SafeBrowsingEventObserver& operator=(const SafeBrowsingEventObserver&) =
+      delete;
+
   ~SafeBrowsingEventObserver() override = default;
 
   // Removes |event_args_| from |*this| and returns them.
@@ -100,8 +104,6 @@ class SafeBrowsingEventObserver : public TestEventRouter::EventObserver {
 
   // The arguments passed for the last observed event.
   base::Value event_args_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingEventObserver);
 };
 
 std::unique_ptr<KeyedService> BuildSafeBrowsingPrivateEventRouter(

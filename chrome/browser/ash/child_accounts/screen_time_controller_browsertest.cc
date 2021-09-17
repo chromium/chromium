@@ -41,6 +41,12 @@ constexpr base::TimeDelta kUsageTimeLimitWarningTime =
 class TestScreenTimeControllerObserver : public ScreenTimeController::Observer {
  public:
   TestScreenTimeControllerObserver() = default;
+
+  TestScreenTimeControllerObserver(const TestScreenTimeControllerObserver&) =
+      delete;
+  TestScreenTimeControllerObserver& operator=(
+      const TestScreenTimeControllerObserver&) = delete;
+
   ~TestScreenTimeControllerObserver() override = default;
 
   int usage_time_limit_warnings() const { return usage_time_limit_warnings_; }
@@ -49,8 +55,6 @@ class TestScreenTimeControllerObserver : public ScreenTimeController::Observer {
   void UsageTimeLimitWarning() override { usage_time_limit_warnings_++; }
 
   int usage_time_limit_warnings_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScreenTimeControllerObserver);
 };
 
 }  // namespace
@@ -60,6 +64,9 @@ namespace utils = time_limit_test_utils;
 class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
  public:
   ScreenTimeControllerTest() = default;
+
+  ScreenTimeControllerTest(const ScreenTimeControllerTest&) = delete;
+  ScreenTimeControllerTest& operator=(const ScreenTimeControllerTest&) = delete;
 
   ~ScreenTimeControllerTest() override = default;
 
@@ -144,8 +151,6 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
                                           true /*should_launch_browser*/,
                                           absl::nullopt /*account_id*/,
                                           false /*include_initial_user*/};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenTimeControllerTest);
 };
 
 // Tests a simple lock override.

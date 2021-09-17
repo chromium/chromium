@@ -50,6 +50,11 @@ const InputMethodDescriptor CreateInputMethodDescriptor(
 class ExtensionInputMethodApiTest : public extensions::ExtensionApiTest {
  public:
   ExtensionInputMethodApiTest() {}
+
+  ExtensionInputMethodApiTest(const ExtensionInputMethodApiTest&) = delete;
+  ExtensionInputMethodApiTest& operator=(const ExtensionInputMethodApiTest&) =
+      delete;
+
   ~ExtensionInputMethodApiTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -61,8 +66,6 @@ class ExtensionInputMethodApiTest : public extensions::ExtensionApiTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInputMethodApiTest);
 };
 
 }  // namespace

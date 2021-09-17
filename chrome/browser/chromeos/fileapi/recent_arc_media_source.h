@@ -27,6 +27,10 @@ class RecentFile;
 class RecentArcMediaSource : public RecentSource {
  public:
   explicit RecentArcMediaSource(Profile* profile);
+
+  RecentArcMediaSource(const RecentArcMediaSource&) = delete;
+  RecentArcMediaSource& operator=(const RecentArcMediaSource&) = delete;
+
   ~RecentArcMediaSource() override;
 
   // RecentSource overrides:
@@ -57,8 +61,6 @@ class RecentArcMediaSource : public RecentSource {
   std::vector<RecentFile> files_;
 
   base::WeakPtrFactory<RecentArcMediaSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecentArcMediaSource);
 };
 
 }  // namespace chromeos

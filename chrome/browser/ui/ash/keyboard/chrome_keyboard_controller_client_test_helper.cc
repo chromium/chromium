@@ -19,6 +19,10 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
     : public ash::KeyboardController {
  public:
   FakeKeyboardController() = default;
+
+  FakeKeyboardController(const FakeKeyboardController&) = delete;
+  FakeKeyboardController& operator=(const FakeKeyboardController&) = delete;
+
   ~FakeKeyboardController() override = default;
 
   // ash::KeyboardController:
@@ -82,8 +86,6 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
   bool enabled_ = false;
   bool visible_ = false;
   base::ObserverList<ash::KeyboardControllerObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeKeyboardController);
 };
 
 // static

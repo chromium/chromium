@@ -103,6 +103,11 @@ class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
  public:
   AutofillWebDataServiceConsumer() {}
 
+  AutofillWebDataServiceConsumer(const AutofillWebDataServiceConsumer&) =
+      delete;
+  AutofillWebDataServiceConsumer& operator=(
+      const AutofillWebDataServiceConsumer&) = delete;
+
   virtual ~AutofillWebDataServiceConsumer() {}
 
   void OnWebDataServiceRequestDone(
@@ -119,7 +124,6 @@ class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
  private:
   base::RunLoop run_loop_;
   T result_;
-  DISALLOW_COPY_AND_ASSIGN(AutofillWebDataServiceConsumer);
 };
 
 std::vector<std::unique_ptr<CreditCard>> GetServerCards(
@@ -191,6 +195,10 @@ class SingleClientWalletSyncTest : public SyncTest {
     test_clock_.SetNow(kArbitraryDefaultTime);
   }
 
+  SingleClientWalletSyncTest(const SingleClientWalletSyncTest&) = delete;
+  SingleClientWalletSyncTest& operator=(const SingleClientWalletSyncTest&) =
+      delete;
+
   ~SingleClientWalletSyncTest() override {}
 
  protected:
@@ -252,9 +260,6 @@ class SingleClientWalletSyncTest : public SyncTest {
   testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer_;
   base::HistogramTester histogram_tester_;
   autofill::TestAutofillClock test_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientWalletSyncTest);
 };
 
 class SingleClientWalletSyncTestWithoutAccountStorage
@@ -1325,6 +1330,12 @@ class SingleClientWalletSecondaryAccountSyncTest
     features_.InitAndEnableFeature(
         autofill::features::kAutofillEnableAccountWalletStorage);
   }
+
+  SingleClientWalletSecondaryAccountSyncTest(
+      const SingleClientWalletSecondaryAccountSyncTest&) = delete;
+  SingleClientWalletSecondaryAccountSyncTest& operator=(
+      const SingleClientWalletSecondaryAccountSyncTest&) = delete;
+
   ~SingleClientWalletSecondaryAccountSyncTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -1345,8 +1356,6 @@ class SingleClientWalletSecondaryAccountSyncTest
   base::test::ScopedFeatureList features_;
 
   base::CallbackListSubscription test_signin_client_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientWalletSecondaryAccountSyncTest);
 };
 
 // ChromeOS doesn't support changes to the primary account after startup, so

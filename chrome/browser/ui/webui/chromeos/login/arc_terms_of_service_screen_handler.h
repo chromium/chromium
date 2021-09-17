@@ -30,6 +30,11 @@ class ArcTermsOfServiceScreenView;
 
 class ArcTermsOfServiceScreenViewObserver {
  public:
+  ArcTermsOfServiceScreenViewObserver(
+      const ArcTermsOfServiceScreenViewObserver&) = delete;
+  ArcTermsOfServiceScreenViewObserver& operator=(
+      const ArcTermsOfServiceScreenViewObserver&) = delete;
+
   virtual ~ArcTermsOfServiceScreenViewObserver() = default;
 
   // Called when the user accepts the PlayStore Terms of Service.
@@ -40,14 +45,15 @@ class ArcTermsOfServiceScreenViewObserver {
 
  protected:
   ArcTermsOfServiceScreenViewObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenViewObserver);
 };
 
 class ArcTermsOfServiceScreenView {
  public:
   constexpr static StaticOobeScreenId kScreenId{"arc-tos"};
+
+  ArcTermsOfServiceScreenView(const ArcTermsOfServiceScreenView&) = delete;
+  ArcTermsOfServiceScreenView& operator=(const ArcTermsOfServiceScreenView&) =
+      delete;
 
   virtual ~ArcTermsOfServiceScreenView() = default;
 
@@ -67,9 +73,6 @@ class ArcTermsOfServiceScreenView {
 
  protected:
   ArcTermsOfServiceScreenView() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenView);
 };
 
 // The sole implementation of the ArcTermsOfServiceScreenView, using WebUI.
@@ -84,6 +87,12 @@ class ArcTermsOfServiceScreenHandler
   using TView = ArcTermsOfServiceScreenView;
 
   explicit ArcTermsOfServiceScreenHandler(JSCallsContainer* js_calls_container);
+
+  ArcTermsOfServiceScreenHandler(const ArcTermsOfServiceScreenHandler&) =
+      delete;
+  ArcTermsOfServiceScreenHandler& operator=(
+      const ArcTermsOfServiceScreenHandler&) = delete;
+
   ~ArcTermsOfServiceScreenHandler() override;
 
   // content::WebUIMessageHandler:
@@ -173,8 +182,6 @@ class ArcTermsOfServiceScreenHandler
   bool is_child_account_;
 
   std::unique_ptr<arc::ArcOptInPreferenceHandler> pref_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenHandler);
 };
 
 }  // namespace chromeos

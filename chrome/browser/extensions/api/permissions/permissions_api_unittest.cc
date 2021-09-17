@@ -99,6 +99,10 @@ bool RunRequestFunction(
 class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
  public:
   PermissionsAPIUnitTest() {}
+
+  PermissionsAPIUnitTest(const PermissionsAPIUnitTest&) = delete;
+  PermissionsAPIUnitTest& operator=(const PermissionsAPIUnitTest&) = delete;
+
   ~PermissionsAPIUnitTest() override {}
   Browser* browser() { return browser_.get(); }
 
@@ -156,8 +160,6 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
 
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsAPIUnitTest);
 };
 
 TEST_F(PermissionsAPIUnitTest, Contains) {

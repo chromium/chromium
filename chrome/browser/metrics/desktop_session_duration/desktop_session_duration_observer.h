@@ -25,6 +25,12 @@ class DesktopSessionDurationObserver
  public:
   DesktopSessionDurationObserver(content::WebContents* web_contents,
                                  DesktopSessionDurationTracker* service);
+
+  DesktopSessionDurationObserver(const DesktopSessionDurationObserver&) =
+      delete;
+  DesktopSessionDurationObserver& operator=(
+      const DesktopSessionDurationObserver&) = delete;
+
   ~DesktopSessionDurationObserver() override;
 
   static DesktopSessionDurationObserver* CreateForWebContents(
@@ -47,8 +53,6 @@ class DesktopSessionDurationObserver
   DesktopSessionDurationTracker* service_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionDurationObserver);
 };
 
 }  // namespace metrics

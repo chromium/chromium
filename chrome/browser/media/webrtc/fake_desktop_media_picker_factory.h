@@ -35,6 +35,11 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
   };
 
   FakeDesktopMediaPickerFactory();
+
+  FakeDesktopMediaPickerFactory(const FakeDesktopMediaPickerFactory&) = delete;
+  FakeDesktopMediaPickerFactory& operator=(
+      const FakeDesktopMediaPickerFactory&) = delete;
+
   ~FakeDesktopMediaPickerFactory() override;
 
   //  |test_flags| are expected to outlive the factory.
@@ -54,14 +59,16 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
   TestFlags* test_flags_;
   int tests_count_;
   int current_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopMediaPickerFactory);
 };
 
 class FakeDesktopMediaPicker : public DesktopMediaPicker {
  public:
   explicit FakeDesktopMediaPicker(
       FakeDesktopMediaPickerFactory::TestFlags* expectation);
+
+  FakeDesktopMediaPicker(const FakeDesktopMediaPicker&) = delete;
+  FakeDesktopMediaPicker& operator=(const FakeDesktopMediaPicker&) = delete;
+
   ~FakeDesktopMediaPicker() override;
 
   // DesktopMediaPicker interface.
@@ -79,8 +86,6 @@ class FakeDesktopMediaPicker : public DesktopMediaPicker {
   DesktopMediaPicker::Params picker_params_;
 
   base::WeakPtrFactory<FakeDesktopMediaPicker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopMediaPicker);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_FAKE_DESKTOP_MEDIA_PICKER_FACTORY_H_

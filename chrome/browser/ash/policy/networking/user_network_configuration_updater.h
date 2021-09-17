@@ -53,6 +53,11 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
                                         public KeyedService,
                                         public content::NotificationObserver {
  public:
+  UserNetworkConfigurationUpdater(const UserNetworkConfigurationUpdater&) =
+      delete;
+  UserNetworkConfigurationUpdater& operator=(
+      const UserNetworkConfigurationUpdater&) = delete;
+
   ~UserNetworkConfigurationUpdater() override;
 
   // Creates an updater that applies the ONC user policy from |policy_service|
@@ -119,8 +124,6 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
   content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<UserNetworkConfigurationUpdater> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserNetworkConfigurationUpdater);
 };
 
 }  // namespace policy

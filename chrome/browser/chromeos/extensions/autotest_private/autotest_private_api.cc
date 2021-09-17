@@ -881,6 +881,11 @@ class WindowStateChangeObserver : public aura::WindowObserver {
               expected_type_);
     scoped_observation_.Observe(window);
   }
+
+  WindowStateChangeObserver(const WindowStateChangeObserver&) = delete;
+  WindowStateChangeObserver& operator=(const WindowStateChangeObserver&) =
+      delete;
+
   ~WindowStateChangeObserver() override {}
 
   // aura::WindowObserver:
@@ -906,8 +911,6 @@ class WindowStateChangeObserver : public aura::WindowObserver {
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       scoped_observation_{this};
   base::OnceCallback<void(bool)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowStateChangeObserver);
 };
 
 class WindowBoundsChangeObserver : public aura::WindowObserver {
@@ -2834,6 +2837,10 @@ class AssistantInteractionHelper
   AssistantInteractionHelper()
       : query_status_(std::make_unique<base::DictionaryValue>()) {}
 
+  AssistantInteractionHelper(const AssistantInteractionHelper&) = delete;
+  AssistantInteractionHelper& operator=(const AssistantInteractionHelper&) =
+      delete;
+
   ~AssistantInteractionHelper() override {
     if (GetAssistant()) {
       GetAssistant()->RemoveAssistantInteractionSubscriber(this);
@@ -2956,8 +2963,6 @@ class AssistantInteractionHelper
 
   // Callback triggered when interaction finished with non-empty response.
   OnInteractionFinishedCallback on_interaction_finished_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantInteractionHelper);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4104,6 +4109,10 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
       std::move(callback_).Run();
     }
   }
+
+  PWABannerObserver(const PWABannerObserver&) = delete;
+  PWABannerObserver& operator=(const PWABannerObserver&) = delete;
+
   ~PWABannerObserver() override {}
 
   void OnInstallableWebAppStatusUpdated() override {
@@ -4136,8 +4145,6 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
       observation_{this};
   base::OnceCallback<void()> callback_;
   webapps::AppBannerManager* app_banner_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PWABannerObserver);
 };
 
 // Used to notify when a WPA is installed.
@@ -4150,6 +4157,10 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWARegistrarObserver
     observation_.Observe(
         &web_app::WebAppProvider::GetForTest(profile)->registrar());
   }
+
+  PWARegistrarObserver(const PWARegistrarObserver&) = delete;
+  PWARegistrarObserver& operator=(const PWARegistrarObserver&) = delete;
+
   ~PWARegistrarObserver() override {}
 
   void OnWebAppInstalled(const web_app::AppId& app_id) override {
@@ -4162,8 +4173,6 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWARegistrarObserver
                           web_app::AppRegistrarObserver>
       observation_{this};
   base::OnceCallback<void(const web_app::AppId&)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PWARegistrarObserver);
 };
 
 AutotestPrivateInstallPWAForCurrentURLFunction::

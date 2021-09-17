@@ -22,14 +22,18 @@ class ThreadProfiler;
 class MainThreadStackSamplingProfiler {
  public:
   MainThreadStackSamplingProfiler();
+
+  MainThreadStackSamplingProfiler(const MainThreadStackSamplingProfiler&) =
+      delete;
+  MainThreadStackSamplingProfiler& operator=(
+      const MainThreadStackSamplingProfiler&) = delete;
+
   ~MainThreadStackSamplingProfiler();
 
  private:
   // A profiler that periodically samples stack traces. Used to understand
   // thread and process startup behavior.
   std::unique_ptr<ThreadProfiler> sampling_profiler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadStackSamplingProfiler);
 };
 
 #endif  //  CHROME_COMMON_PROFILER_MAIN_THREAD_STACK_SAMPLING_PROFILER_H_

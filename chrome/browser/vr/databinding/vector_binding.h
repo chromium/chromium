@@ -32,6 +32,9 @@ class VectorBinding : public BindingBase {
         added_callback_(added_callback),
         removed_callback_(removed_callback) {}
 
+  VectorBinding(const VectorBinding&) = delete;
+  VectorBinding& operator=(const VectorBinding&) = delete;
+
   ~VectorBinding() {}
 
   // The update function for this collection binding is responsible for two
@@ -77,8 +80,6 @@ class VectorBinding : public BindingBase {
   absl::optional<size_t> last_size_;
   ModelAddedCallback added_callback_;
   ModelRemovedCallback removed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorBinding);
 };
 
 }  // namespace vr

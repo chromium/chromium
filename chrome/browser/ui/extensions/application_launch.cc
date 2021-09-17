@@ -81,6 +81,9 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
         extension_id_(extension_id),
         callback_(std::move(callback)) {}
 
+  EnableViaDialogFlow(const EnableViaDialogFlow&) = delete;
+  EnableViaDialogFlow& operator=(const EnableViaDialogFlow&) = delete;
+
   ~EnableViaDialogFlow() override {}
 
   void Run() {
@@ -109,8 +112,6 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
   std::string extension_id_;
   base::OnceClosure callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnableViaDialogFlow);
 };
 
 const Extension* GetExtension(Profile* profile,

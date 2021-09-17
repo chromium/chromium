@@ -51,6 +51,10 @@ class ContextualSearchDelegate
       TemplateURLService* template_url_service,
       SearchTermResolutionCallback search_term_callback,
       SurroundingTextCallback surrounding_callback);
+
+  ContextualSearchDelegate(const ContextualSearchDelegate&) = delete;
+  ContextualSearchDelegate& operator=(const ContextualSearchDelegate&) = delete;
+
   virtual ~ContextualSearchDelegate();
 
   // Gathers surrounding text and saves it locally in the given context.
@@ -202,8 +206,6 @@ class ContextualSearchDelegate
   // Used to hold the context until an upcoming search term request is started.
   // Owned by the Java ContextualSearchContext.
   base::WeakPtr<ContextualSearchContext> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchDelegate);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_DELEGATE_H_

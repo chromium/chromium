@@ -30,6 +30,10 @@ class VR_BASE_EXPORT ContentInputDelegate : public PlatformUiInputDelegate {
 
   ContentInputDelegate();
   explicit ContentInputDelegate(PlatformInputHandler* content);
+
+  ContentInputDelegate(const ContentInputDelegate&) = delete;
+  ContentInputDelegate& operator=(const ContentInputDelegate&) = delete;
+
   ~ContentInputDelegate() override;
 
   // Text Input specific.
@@ -69,8 +73,6 @@ class VR_BASE_EXPORT ContentInputDelegate : public PlatformUiInputDelegate {
   EditedText last_keyboard_edit_;
   TextRequestState pending_text_request_state_ = kNoPendingRequest;
   std::queue<TextInputUpdateCallback> update_state_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentInputDelegate);
 };
 
 }  // namespace vr

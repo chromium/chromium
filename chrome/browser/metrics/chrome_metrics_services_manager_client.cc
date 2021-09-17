@@ -142,6 +142,11 @@ class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
  public:
   explicit ChromeEnabledStateProvider(PrefService* local_state)
       : local_state_(local_state) {}
+
+  ChromeEnabledStateProvider(const ChromeEnabledStateProvider&) = delete;
+  ChromeEnabledStateProvider& operator=(const ChromeEnabledStateProvider&) =
+      delete;
+
   ~ChromeEnabledStateProvider() override {}
 
   bool IsConsentGiven() const override {
@@ -156,8 +161,6 @@ class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
 
  private:
   PrefService* const local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeEnabledStateProvider);
 };
 
 ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(

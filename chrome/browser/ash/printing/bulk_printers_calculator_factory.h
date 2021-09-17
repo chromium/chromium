@@ -26,6 +26,11 @@ class BulkPrintersCalculatorFactory {
   static BulkPrintersCalculatorFactory* Get();
 
   BulkPrintersCalculatorFactory();
+
+  BulkPrintersCalculatorFactory(const BulkPrintersCalculatorFactory&) = delete;
+  BulkPrintersCalculatorFactory& operator=(
+      const BulkPrintersCalculatorFactory&) = delete;
+
   ~BulkPrintersCalculatorFactory();
 
   // Returns a WeakPtr to the BulkPrintersCalculator registered for
@@ -54,8 +59,6 @@ class BulkPrintersCalculatorFactory {
       printers_by_user_;
   std::unique_ptr<BulkPrintersCalculator> device_printers_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BulkPrintersCalculatorFactory);
 };
 
 }  // namespace ash

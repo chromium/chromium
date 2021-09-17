@@ -62,6 +62,11 @@ class SiteEngagementChangeWaiter : public content_settings::Observer {
   explicit SiteEngagementChangeWaiter(Profile* profile) : profile_(profile) {
     HostContentSettingsMapFactory::GetForProfile(profile)->AddObserver(this);
   }
+
+  SiteEngagementChangeWaiter(const SiteEngagementChangeWaiter&) = delete;
+  SiteEngagementChangeWaiter& operator=(const SiteEngagementChangeWaiter&) =
+      delete;
+
   ~SiteEngagementChangeWaiter() override {
     HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(
         this);
@@ -82,8 +87,6 @@ class SiteEngagementChangeWaiter : public content_settings::Observer {
 
   Profile* profile_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementChangeWaiter);
 };
 
 base::Time GetReferenceTime() {

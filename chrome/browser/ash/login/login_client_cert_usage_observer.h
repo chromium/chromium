@@ -22,6 +22,11 @@ class LoginClientCertUsageObserver final
     : public CertificateProviderService::Observer {
  public:
   LoginClientCertUsageObserver();
+
+  LoginClientCertUsageObserver(const LoginClientCertUsageObserver&) = delete;
+  LoginClientCertUsageObserver& operator=(const LoginClientCertUsageObserver&) =
+      delete;
+
   ~LoginClientCertUsageObserver() override;
 
   // Returns whether at least one certificate was used.
@@ -48,8 +53,6 @@ class LoginClientCertUsageObserver final
   scoped_refptr<net::X509Certificate> used_cert_;
   // The extension that signed `used_cert_`.
   std::string used_extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginClientCertUsageObserver);
 };
 
 }  // namespace ash

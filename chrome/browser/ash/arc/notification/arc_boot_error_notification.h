@@ -28,6 +28,10 @@ class ArcBootErrorNotification : public KeyedService,
 
   ArcBootErrorNotification(content::BrowserContext* context,
                            ArcBridgeService* bridge_service);
+
+  ArcBootErrorNotification(const ArcBootErrorNotification&) = delete;
+  ArcBootErrorNotification& operator=(const ArcBootErrorNotification&) = delete;
+
   ~ArcBootErrorNotification() override;
 
   // ArcSessionManagerObserver:
@@ -35,8 +39,6 @@ class ArcBootErrorNotification : public KeyedService,
 
  private:
   content::BrowserContext* const context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBootErrorNotification);
 };
 
 }  // namespace arc

@@ -238,6 +238,12 @@ class TestFailProvisionalLoadObserver : public content::WebContentsObserver {
  public:
   explicit TestFailProvisionalLoadObserver(content::WebContents* contents)
       : content::WebContentsObserver(contents) {}
+
+  TestFailProvisionalLoadObserver(const TestFailProvisionalLoadObserver&) =
+      delete;
+  TestFailProvisionalLoadObserver& operator=(
+      const TestFailProvisionalLoadObserver&) = delete;
+
   ~TestFailProvisionalLoadObserver() override {}
 
   void DidFinishNavigation(
@@ -250,8 +256,6 @@ class TestFailProvisionalLoadObserver : public content::WebContentsObserver {
 
  private:
   GURL fail_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFailProvisionalLoadObserver);
 };
 
 class DNSErrorPageTest : public ErrorPageTest {

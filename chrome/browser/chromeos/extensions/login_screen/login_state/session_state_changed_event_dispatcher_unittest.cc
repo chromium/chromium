@@ -47,6 +47,12 @@ namespace extensions {
 class SessionStateChangedEventDispatcherUnittest : public testing::Test {
  public:
   SessionStateChangedEventDispatcherUnittest() {}
+
+  SessionStateChangedEventDispatcherUnittest(
+      const SessionStateChangedEventDispatcherUnittest&) = delete;
+  SessionStateChangedEventDispatcherUnittest& operator=(
+      const SessionStateChangedEventDispatcherUnittest&) = delete;
+
   ~SessionStateChangedEventDispatcherUnittest() override = default;
 
   void SetUp() override {
@@ -82,9 +88,6 @@ class SessionStateChangedEventDispatcherUnittest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<EventRouter> event_router_;
   std::unique_ptr<TestEventRouterObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionStateChangedEventDispatcherUnittest);
 };
 
 // Test that |OnSessionStateChanged| is dispatched when the session state

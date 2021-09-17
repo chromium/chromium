@@ -30,6 +30,10 @@ class ArcTracingEvent {
   };
 
   explicit ArcTracingEvent(base::Value dictionary);
+
+  ArcTracingEvent(const ArcTracingEvent&) = delete;
+  ArcTracingEvent& operator=(const ArcTracingEvent&) = delete;
+
   ~ArcTracingEvent();
 
   ArcTracingEvent(ArcTracingEvent&&);
@@ -121,8 +125,6 @@ class ArcTracingEvent {
  private:
   std::vector<std::unique_ptr<ArcTracingEvent>> children_;
   base::Value dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingEvent);
 };
 
 }  // namespace arc

@@ -93,6 +93,9 @@ class WebRtcEventLogManager final
   static base::FilePath GetRemoteBoundWebRtcEventLogsDir(
       content::BrowserContext* browser_context);
 
+  WebRtcEventLogManager(const WebRtcEventLogManager&) = delete;
+  WebRtcEventLogManager& operator=(const WebRtcEventLogManager&) = delete;
+
   ~WebRtcEventLogManager() override;
 
   void EnableForBrowserContext(content::BrowserContext* browser_context,
@@ -484,8 +487,6 @@ class WebRtcEventLogManager final
   // |remote_logs_manager_| when (and if) produced.
   std::unique_ptr<LogFileWriter::Factory>
       remote_log_file_writer_factory_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcEventLogManager);
 };
 
 }  // namespace webrtc_event_logging

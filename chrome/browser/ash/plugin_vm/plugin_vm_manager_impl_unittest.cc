@@ -70,6 +70,9 @@ class PluginVmManagerImplTest : public testing::Test {
     chromeos::DlcserviceClient::InitializeFake();
   }
 
+  PluginVmManagerImplTest(const PluginVmManagerImplTest&) = delete;
+  PluginVmManagerImplTest& operator=(const PluginVmManagerImplTest&) = delete;
+
   ~PluginVmManagerImplTest() override {
     chromeos::DlcserviceClient::Shutdown();
     histogram_tester_.reset();
@@ -143,9 +146,6 @@ class PluginVmManagerImplTest : public testing::Test {
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PluginVmManagerImplTest);
 };
 
 TEST_F(PluginVmManagerImplTest, LaunchPluginVmRequiresPluginVmAllowed) {

@@ -116,6 +116,10 @@ class AdTaggingPageLoadMetricsTestWaiter
 class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
  public:
   AdTaggingBrowserTest() : SubresourceFilterBrowserTest() {}
+
+  AdTaggingBrowserTest(const AdTaggingBrowserTest&) = delete;
+  AdTaggingBrowserTest& operator=(const AdTaggingBrowserTest&) = delete;
+
   ~AdTaggingBrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -204,8 +208,6 @@ class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
   content::RenderFrameHost* CreateFrameWithWindowStopAbortedLoadImpl(
       const content::ToRenderFrameHost& adapter,
       bool ad_script);
-
-  DISALLOW_COPY_AND_ASSIGN(AdTaggingBrowserTest);
 };
 
 content::RenderFrameHost* AdTaggingBrowserTest::CreateDocWrittenFrameImpl(

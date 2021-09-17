@@ -57,6 +57,10 @@ ErrorScreen* GetScreen() {
 class NetworkErrorScreenTest : public InProcessBrowserTest {
  public:
   NetworkErrorScreenTest() = default;
+
+  NetworkErrorScreenTest(const NetworkErrorScreenTest&) = delete;
+  NetworkErrorScreenTest& operator=(const NetworkErrorScreenTest&) = delete;
+
   ~NetworkErrorScreenTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -132,8 +136,6 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkErrorScreenTest);
 };
 
 // Test that the network list contains the fake wifi network.
@@ -208,6 +210,10 @@ IN_PROC_BROWSER_TEST_F(NetworkErrorScreenTest, HideCallback) {
 class GuestErrorScreenTest : public MixinBasedInProcessBrowserTest {
  public:
   GuestErrorScreenTest() { login_manager_.set_session_restore_enabled(); }
+
+  GuestErrorScreenTest(const GuestErrorScreenTest&) = delete;
+  GuestErrorScreenTest& operator=(const GuestErrorScreenTest&) = delete;
+
   ~GuestErrorScreenTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -220,9 +226,6 @@ class GuestErrorScreenTest : public MixinBasedInProcessBrowserTest {
  protected:
   std::unique_ptr<WizardContext> wizard_context_;
   LoginManagerMixin login_manager_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GuestErrorScreenTest);
 };
 
 // Test that guest signin option is shown when enabled and that clicking on it
@@ -252,6 +255,10 @@ IN_PROC_BROWSER_TEST_F(GuestErrorScreenTest, GuestLogin) {
 class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
  public:
   KioskErrorScreenTest() = default;
+
+  KioskErrorScreenTest(const KioskErrorScreenTest&) = delete;
+  KioskErrorScreenTest& operator=(const KioskErrorScreenTest&) = delete;
+
   ~KioskErrorScreenTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -307,8 +314,6 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
   KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
 
   LoginManagerMixin login_manager_{&mixin_host_, {}};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskErrorScreenTest);
 };
 
 // Verify that certificate manager dialog opens.

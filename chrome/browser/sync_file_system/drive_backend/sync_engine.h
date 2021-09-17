@@ -74,14 +74,15 @@ class SyncEngine
   class DriveServiceFactory {
    public:
     DriveServiceFactory() {}
+
+    DriveServiceFactory(const DriveServiceFactory&) = delete;
+    DriveServiceFactory& operator=(const DriveServiceFactory&) = delete;
+
     virtual ~DriveServiceFactory() {}
     virtual std::unique_ptr<drive::DriveServiceInterface> CreateDriveService(
         signin::IdentityManager* identity_manager,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         base::SequencedTaskRunner* blocking_task_runner);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DriveServiceFactory);
   };
 
   static std::unique_ptr<SyncEngine> CreateForBrowserContext(
@@ -89,6 +90,9 @@ class SyncEngine
       TaskLogger* task_logger);
   static void AppendDependsOnFactories(
       std::set<BrowserContextKeyedServiceFactory*>* factories);
+
+  SyncEngine(const SyncEngine&) = delete;
+  SyncEngine& operator=(const SyncEngine&) = delete;
 
   ~SyncEngine() override;
   void Reset();
@@ -228,7 +232,6 @@ class SyncEngine
   CallbackTracker callback_tracker_;
 
   base::WeakPtrFactory<SyncEngine> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SyncEngine);
 };
 
 }  // namespace drive_backend

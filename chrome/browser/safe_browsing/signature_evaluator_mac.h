@@ -29,6 +29,9 @@ class MacSignatureEvaluator {
   MacSignatureEvaluator(const base::FilePath& signed_object_path,
                         const std::string& requirement);
 
+  MacSignatureEvaluator(const MacSignatureEvaluator&) = delete;
+  MacSignatureEvaluator& operator=(const MacSignatureEvaluator&) = delete;
+
   ~MacSignatureEvaluator();
 
   // Creates the static code object and requirement string, and returns
@@ -62,8 +65,6 @@ class MacSignatureEvaluator {
 
   // The requirement object constructed from the requirement string.
   base::ScopedCFTypeRef<SecRequirementRef> requirement_;
-
-  DISALLOW_COPY_AND_ASSIGN(MacSignatureEvaluator);
 };
 
 }  // namespace safe_browsing

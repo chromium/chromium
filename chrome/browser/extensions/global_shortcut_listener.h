@@ -27,6 +27,9 @@ class GlobalShortcutListener {
     virtual void OnKeyPressed(const ui::Accelerator& accelerator) = 0;
   };
 
+  GlobalShortcutListener(const GlobalShortcutListener&) = delete;
+  GlobalShortcutListener& operator=(const GlobalShortcutListener&) = delete;
+
   virtual ~GlobalShortcutListener();
 
   static GlobalShortcutListener* GetInstance();
@@ -90,8 +93,6 @@ class GlobalShortcutListener {
 
   // Keeps track of whether shortcut handling is currently suspended.
   bool shortcut_handling_suspended_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalShortcutListener);
 };
 
 }  // namespace extensions

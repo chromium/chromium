@@ -25,6 +25,11 @@ class DesktopNotificationHandler : public NotificationHandler,
                                    public ReceivingUiHandler {
  public:
   explicit DesktopNotificationHandler(Profile* profile);
+
+  DesktopNotificationHandler(const DesktopNotificationHandler&) = delete;
+  DesktopNotificationHandler& operator=(const DesktopNotificationHandler&) =
+      delete;
+
   ~DesktopNotificationHandler() override;
 
   // ReceivingUiHandler implementation.
@@ -58,7 +63,6 @@ class DesktopNotificationHandler : public NotificationHandler,
 
  protected:
   Profile* const profile_;
-  DISALLOW_COPY_AND_ASSIGN(DesktopNotificationHandler);
 };
 
 }  // namespace send_tab_to_self

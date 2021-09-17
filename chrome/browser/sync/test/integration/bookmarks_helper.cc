@@ -129,6 +129,10 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
       : model_(model), node_(node) {
     model->AddObserver(this);
   }
+
+  FaviconChangeObserver(const FaviconChangeObserver&) = delete;
+  FaviconChangeObserver& operator=(const FaviconChangeObserver&) = delete;
+
   ~FaviconChangeObserver() override { model_->RemoveObserver(this); }
   void WaitForSetFavicon() {
     DCHECK(!run_loop_.running());
@@ -172,7 +176,6 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
   BookmarkModel* model_;
   const BookmarkNode* node_;
   base::RunLoop run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(FaviconChangeObserver);
 };
 
 // Returns the number of nodes of node type |node_type| in |model| whose

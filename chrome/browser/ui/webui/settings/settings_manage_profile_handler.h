@@ -23,6 +23,10 @@ class ManageProfileHandler : public settings::SettingsPageUIHandler,
                              public ProfileAttributesStorage::Observer {
  public:
   explicit ManageProfileHandler(Profile* profile);
+
+  ManageProfileHandler(const ManageProfileHandler&) = delete;
+  ManageProfileHandler& operator=(const ManageProfileHandler&) = delete;
+
   ~ManageProfileHandler() override;
 
   // settings::SettingsPageUIHandler:
@@ -98,8 +102,6 @@ class ManageProfileHandler : public settings::SettingsPageUIHandler,
 
   // For generating weak pointers to itself for callbacks.
   base::WeakPtrFactory<ManageProfileHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManageProfileHandler);
 };
 
 }  // namespace settings

@@ -32,6 +32,10 @@ class ManualFillingControllerImpl
       public content::WebContentsUserData<ManualFillingControllerImpl>,
       public base::trace_event::MemoryDumpProvider {
  public:
+  ManualFillingControllerImpl(const ManualFillingControllerImpl&) = delete;
+  ManualFillingControllerImpl& operator=(const ManualFillingControllerImpl&) =
+      delete;
+
   ~ManualFillingControllerImpl() override;
 
   // ManualFillingController:
@@ -166,8 +170,6 @@ class ManualFillingControllerImpl
   base::WeakPtrFactory<ManualFillingControllerImpl> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ManualFillingControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_CONTROLLER_IMPL_H_

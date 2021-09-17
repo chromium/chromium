@@ -48,6 +48,10 @@ class ServiceProcess : public ServiceIPCServer::Client,
                        public cloud_print::CloudPrintProxy::Provider {
  public:
   ServiceProcess();
+
+  ServiceProcess(const ServiceProcess&) = delete;
+  ServiceProcess& operator=(const ServiceProcess&) = delete;
+
   ~ServiceProcess() override;
 
   // Initialize the ServiceProcess. |quit_closure| will be run when the service
@@ -141,8 +145,6 @@ class ServiceProcess : public ServiceIPCServer::Client,
 #elif defined(OS_WIN)
   mojo::NamedPlatformChannel::ServerName server_name_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcess);
 };
 
 extern ServiceProcess* g_service_process;

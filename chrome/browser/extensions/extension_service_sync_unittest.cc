@@ -120,6 +120,9 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
                 expected_type == syncer::ModelType::APPS);
   }
 
+  StatefulChangeProcessor(const StatefulChangeProcessor&) = delete;
+  StatefulChangeProcessor& operator=(const StatefulChangeProcessor&) = delete;
+
   ~StatefulChangeProcessor() override {}
 
   // We let our parent class, FakeSyncChangeProcessor, handle saving the
@@ -173,8 +176,6 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
   // The expected ModelType of changes that this processor will see.
   const syncer::ModelType expected_type_;
   syncer::SyncDataList data_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatefulChangeProcessor);
 };
 
 }  // namespace

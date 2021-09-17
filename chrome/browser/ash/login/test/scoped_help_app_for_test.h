@@ -16,9 +16,11 @@ namespace ash {
 class ScopedHelpAppForTest {
  public:
   ScopedHelpAppForTest();
-  virtual ~ScopedHelpAppForTest();
 
-  DISALLOW_COPY_AND_ASSIGN(ScopedHelpAppForTest);
+  ScopedHelpAppForTest(const ScopedHelpAppForTest&) = delete;
+  ScopedHelpAppForTest& operator=(const ScopedHelpAppForTest&) = delete;
+
+  virtual ~ScopedHelpAppForTest();
 };
 
 }  // namespace ash

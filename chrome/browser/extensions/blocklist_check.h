@@ -20,6 +20,10 @@ class BlocklistCheck : public PreloadCheck {
  public:
   BlocklistCheck(Blocklist* blocklist,
                  scoped_refptr<const Extension> extension);
+
+  BlocklistCheck(const BlocklistCheck&) = delete;
+  BlocklistCheck& operator=(const BlocklistCheck&) = delete;
+
   ~BlocklistCheck() override;
 
   // PreloadCheck:
@@ -31,8 +35,6 @@ class BlocklistCheck : public PreloadCheck {
   Blocklist* blocklist_;
   ResultCallback callback_;
   base::WeakPtrFactory<BlocklistCheck> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlocklistCheck);
 };
 
 }  // namespace extensions

@@ -13,6 +13,9 @@ namespace arc {
 
 class ArcUiAvailabilityReporter::ConnectionNotifierBase {
  public:
+  ConnectionNotifierBase(const ConnectionNotifierBase&) = delete;
+  ConnectionNotifierBase& operator=(const ConnectionNotifierBase&) = delete;
+
   virtual ~ConnectionNotifierBase() = default;
 
   // Returns true if connection is ready.
@@ -26,8 +29,6 @@ class ArcUiAvailabilityReporter::ConnectionNotifierBase {
 
  private:
   ArcUiAvailabilityReporter* const owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionNotifierBase);
 };
 
 namespace {
@@ -50,6 +51,9 @@ class ConnectionNotifier
     holder_->AddObserver(this);
   }
 
+  ConnectionNotifier(const ConnectionNotifier&) = delete;
+  ConnectionNotifier& operator=(const ConnectionNotifier&) = delete;
+
   ~ConnectionNotifier() override { holder_->RemoveObserver(this); }
 
   // ArcUiAvailabilityReporter::ConnectionNotifierBase:
@@ -60,8 +64,6 @@ class ConnectionNotifier
 
  private:
   ConnectionHolder<InstanceType, HostType>* const holder_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionNotifier);
 };
 
 }  // namespace

@@ -36,6 +36,12 @@ class ExtensionKeybindingRegistryViews
                                    views::FocusManager* focus_manager,
                                    ExtensionFilter extension_filter,
                                    Delegate* delegate);
+
+  ExtensionKeybindingRegistryViews(const ExtensionKeybindingRegistryViews&) =
+      delete;
+  ExtensionKeybindingRegistryViews& operator=(
+      const ExtensionKeybindingRegistryViews&) = delete;
+
   ~ExtensionKeybindingRegistryViews() override;
 
   // Overridden from ui::AcceleratorTarget.
@@ -56,8 +62,6 @@ class ExtensionKeybindingRegistryViews
   // Weak pointer back to the focus manager to use to register and unregister
   // accelerators with. Not owned by us.
   views::FocusManager* focus_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionKeybindingRegistryViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_KEYBINDING_REGISTRY_VIEWS_H_

@@ -15,6 +15,10 @@ namespace chrome {
 class WebRtcLoggingAgentImpl : public mojom::WebRtcLoggingAgent {
  public:
   WebRtcLoggingAgentImpl();
+
+  WebRtcLoggingAgentImpl(const WebRtcLoggingAgentImpl&) = delete;
+  WebRtcLoggingAgentImpl& operator=(const WebRtcLoggingAgentImpl&) = delete;
+
   ~WebRtcLoggingAgentImpl() override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::WebRtcLoggingAgent> receiver);
@@ -34,8 +38,6 @@ class WebRtcLoggingAgentImpl : public mojom::WebRtcLoggingAgent {
   base::TimeTicks last_log_buffer_send_;
 
   base::WeakPtrFactory<WebRtcLoggingAgentImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcLoggingAgentImpl);
 };
 
 }  // namespace chrome

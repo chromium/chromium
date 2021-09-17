@@ -24,6 +24,10 @@ class ThemeHandler : public content::WebUIMessageHandler,
                      public ui::NativeThemeObserver {
  public:
   ThemeHandler();
+
+  ThemeHandler(const ThemeHandler&) = delete;
+  ThemeHandler& operator=(const ThemeHandler&) = delete;
+
   ~ThemeHandler() override;
 
  private:
@@ -51,8 +55,6 @@ class ThemeHandler : public content::WebUIMessageHandler,
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_THEME_HANDLER_H_

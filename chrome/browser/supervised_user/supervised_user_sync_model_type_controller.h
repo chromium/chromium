@@ -24,6 +24,12 @@ class SupervisedUserSyncModelTypeController
       const base::RepeatingClosure& dump_stack,
       syncer::OnceModelTypeStoreFactory store_factory,
       base::WeakPtr<syncer::SyncableService> syncable_service);
+
+  SupervisedUserSyncModelTypeController(
+      const SupervisedUserSyncModelTypeController&) = delete;
+  SupervisedUserSyncModelTypeController& operator=(
+      const SupervisedUserSyncModelTypeController&) = delete;
+
   ~SupervisedUserSyncModelTypeController() override;
 
   // DataTypeController override.
@@ -31,8 +37,6 @@ class SupervisedUserSyncModelTypeController
 
  private:
   const Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserSyncModelTypeController);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SYNC_MODEL_TYPE_CONTROLLER_H_

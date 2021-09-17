@@ -19,6 +19,11 @@ namespace arc {
 class TestInputMethodManagerBridge : public ArcInputMethodManagerBridge {
  public:
   TestInputMethodManagerBridge();
+
+  TestInputMethodManagerBridge(const TestInputMethodManagerBridge&) = delete;
+  TestInputMethodManagerBridge& operator=(const TestInputMethodManagerBridge&) =
+      delete;
+
   ~TestInputMethodManagerBridge() override;
 
   // ArcInputMethodManagerBridge overrides:
@@ -39,9 +44,6 @@ class TestInputMethodManagerBridge : public ArcInputMethodManagerBridge {
   int update_text_input_state_calls_count_ = 0;
   mojom::TextInputStatePtr last_text_input_state_ = nullptr;
   int show_virtual_keyboard_calls_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestInputMethodManagerBridge);
 };
 
 }  // namespace arc

@@ -74,6 +74,10 @@ class SyncTaskManager {
   SyncTaskManager(base::WeakPtr<Client> client,
                   size_t maximum_background_task,
                   const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  SyncTaskManager(const SyncTaskManager&) = delete;
+  SyncTaskManager& operator=(const SyncTaskManager&) = delete;
+
   virtual ~SyncTaskManager();
 
   // This needs to be called to start task scheduling.
@@ -207,8 +211,6 @@ class SyncTaskManager {
   base::SequenceChecker sequence_checker_;
 
   base::WeakPtrFactory<SyncTaskManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncTaskManager);
 };
 
 }  // namespace drive_backend

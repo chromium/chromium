@@ -57,6 +57,10 @@ const base::Time kEvenLaterTime = base::Time::FromDoubleT(6000);
 class TwoClientWalletSyncTest : public SyncTest {
  public:
   TwoClientWalletSyncTest() : SyncTest(TWO_CLIENT) {}
+
+  TwoClientWalletSyncTest(const TwoClientWalletSyncTest&) = delete;
+  TwoClientWalletSyncTest& operator=(const TwoClientWalletSyncTest&) = delete;
+
   ~TwoClientWalletSyncTest() override {}
 
   // Needed for AwaitQuiescence().
@@ -76,8 +80,6 @@ class TwoClientWalletSyncTest : public SyncTest {
 
  private:
   autofill::TestAutofillClock test_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TwoClientWalletSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest, UpdateCreditCardMetadata) {

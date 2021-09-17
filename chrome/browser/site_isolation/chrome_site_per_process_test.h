@@ -15,14 +15,15 @@ class CommandLine;
 class ChromeSitePerProcessTest : public InProcessBrowserTest {
  public:
   ChromeSitePerProcessTest();
+
+  ChromeSitePerProcessTest(const ChromeSitePerProcessTest&) = delete;
+  ChromeSitePerProcessTest& operator=(const ChromeSitePerProcessTest&) = delete;
+
   ~ChromeSitePerProcessTest() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   void SetUpOnMainThread() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeSitePerProcessTest);
 };
 
 #endif  // CHROME_BROWSER_SITE_ISOLATION_CHROME_SITE_PER_PROCESS_TEST_H_

@@ -74,6 +74,9 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   // |source_media_id| indicates the mirroring source.
   explicit CastMirroringServiceHost(content::DesktopMediaID source_media_id);
 
+  CastMirroringServiceHost(const CastMirroringServiceHost&) = delete;
+  CastMirroringServiceHost& operator=(const CastMirroringServiceHost&) = delete;
+
   ~CastMirroringServiceHost() override;
 
   // mojom::MirroringServiceHost implementation.
@@ -164,8 +167,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<OffscreenTab> offscreen_tab_;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  DISALLOW_COPY_AND_ASSIGN(CastMirroringServiceHost);
 };
 
 }  // namespace mirroring

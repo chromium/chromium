@@ -26,6 +26,9 @@ class TestWithBrowserView : public BrowserWithTestWindowTest {
     feature_list_.InitAndDisableFeature(media_router::kMediaRouter);
   }
 
+  TestWithBrowserView(const TestWithBrowserView&) = delete;
+  TestWithBrowserView& operator=(const TestWithBrowserView&) = delete;
+
   ~TestWithBrowserView() override;
 
   // BrowserWithTestWindowTest overrides:
@@ -40,8 +43,6 @@ class TestWithBrowserView : public BrowserWithTestWindowTest {
  private:
   BrowserView* browser_view_;  // Not owned.
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWithBrowserView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TEST_WITH_BROWSER_VIEW_H_

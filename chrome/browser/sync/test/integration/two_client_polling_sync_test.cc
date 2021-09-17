@@ -31,10 +31,11 @@ const char kURL1[] = "data:text/html,<html><title>Test</title></html>";
 class TwoClientPollingSyncTest : public SyncTest {
  public:
   TwoClientPollingSyncTest() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientPollingSyncTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientPollingSyncTest);
+  TwoClientPollingSyncTest(const TwoClientPollingSyncTest&) = delete;
+  TwoClientPollingSyncTest& operator=(const TwoClientPollingSyncTest&) = delete;
+
+  ~TwoClientPollingSyncTest() override = default;
 };
 
 class SessionCountMatchChecker : public SingleClientStatusChangeChecker {

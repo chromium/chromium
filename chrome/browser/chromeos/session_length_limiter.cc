@@ -37,13 +37,16 @@ const int kSessionLengthLimitMaxMs = 24 * 60 * 60 * 1000; // 24 hours.
 class SessionLengthLimiterDelegateImpl : public SessionLengthLimiter::Delegate {
  public:
   SessionLengthLimiterDelegateImpl();
+
+  SessionLengthLimiterDelegateImpl(const SessionLengthLimiterDelegateImpl&) =
+      delete;
+  SessionLengthLimiterDelegateImpl& operator=(
+      const SessionLengthLimiterDelegateImpl&) = delete;
+
   ~SessionLengthLimiterDelegateImpl() override;
 
   const base::Clock* GetClock() const override;
   void StopSession() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionLengthLimiterDelegateImpl);
 };
 
 SessionLengthLimiterDelegateImpl::SessionLengthLimiterDelegateImpl() {

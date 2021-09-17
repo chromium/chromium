@@ -52,6 +52,11 @@ using OnComponentReadyCallback = base::RepeatingCallback<void(
 class SwReporterInstallerPolicy : public ComponentInstallerPolicy {
  public:
   explicit SwReporterInstallerPolicy(OnComponentReadyCallback callback);
+
+  SwReporterInstallerPolicy(const SwReporterInstallerPolicy&) = delete;
+  SwReporterInstallerPolicy& operator=(const SwReporterInstallerPolicy&) =
+      delete;
+
   ~SwReporterInstallerPolicy() override;
 
   // ComponentInstallerPolicy implementation.
@@ -75,8 +80,6 @@ class SwReporterInstallerPolicy : public ComponentInstallerPolicy {
   friend class SwReporterInstallerTest;
 
   OnComponentReadyCallback on_component_ready_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwReporterInstallerPolicy);
 };
 
 // Forces an update of the reporter component.
@@ -89,6 +92,11 @@ class SwReporterOnDemandFetcher : public ServiceObserver {
  public:
   SwReporterOnDemandFetcher(ComponentUpdateService* cus,
                             base::OnceClosure on_error_callback);
+
+  SwReporterOnDemandFetcher(const SwReporterOnDemandFetcher&) = delete;
+  SwReporterOnDemandFetcher& operator=(const SwReporterOnDemandFetcher&) =
+      delete;
+
   ~SwReporterOnDemandFetcher() override;
 
   // ServiceObserver implementation.
@@ -98,8 +106,6 @@ class SwReporterOnDemandFetcher : public ServiceObserver {
   // Will outlive this object.
   ComponentUpdateService* cus_;
   base::OnceClosure on_error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwReporterOnDemandFetcher);
 };
 
 // Call once during startup to make the component update service aware of the

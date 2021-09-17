@@ -46,6 +46,12 @@ class SafeDialDeviceDescriptionParser {
   };
 
   SafeDialDeviceDescriptionParser();
+
+  SafeDialDeviceDescriptionParser(const SafeDialDeviceDescriptionParser&) =
+      delete;
+  SafeDialDeviceDescriptionParser& operator=(
+      const SafeDialDeviceDescriptionParser&) = delete;
+
   ~SafeDialDeviceDescriptionParser();
 
   // Callback function invoked when done parsing some device description XML.
@@ -77,8 +83,6 @@ class SafeDialDeviceDescriptionParser {
                         data_decoder::DataDecoder::ValueOrError result);
 
   base::WeakPtrFactory<SafeDialDeviceDescriptionParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SafeDialDeviceDescriptionParser);
 };
 
 }  // namespace media_router

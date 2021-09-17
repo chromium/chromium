@@ -26,6 +26,10 @@
 class ManagedUiTest : public InProcessBrowserTest {
  public:
   ManagedUiTest() = default;
+
+  ManagedUiTest(const ManagedUiTest&) = delete;
+  ManagedUiTest& operator=(const ManagedUiTest&) = delete;
+
   ~ManagedUiTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -39,8 +43,6 @@ class ManagedUiTest : public InProcessBrowserTest {
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedUiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ManagedUiTest, ShouldDisplayManagedUiNoPolicies) {

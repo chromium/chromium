@@ -33,6 +33,9 @@ class UsbPrinterNotification : public message_center::NotificationObserver {
                          Type type,
                          Profile* profile);
 
+  UsbPrinterNotification(const UsbPrinterNotification&) = delete;
+  UsbPrinterNotification& operator=(const UsbPrinterNotification&) = delete;
+
   virtual ~UsbPrinterNotification();
 
   // Closes the notification, removing it from the notification tray.
@@ -56,8 +59,6 @@ class UsbPrinterNotification : public message_center::NotificationObserver {
   bool visible_;
 
   base::WeakPtrFactory<UsbPrinterNotification> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbPrinterNotification);
 };
 
 }  // namespace ash

@@ -20,6 +20,11 @@ class ClipboardExtensionHelper;
 class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
  public:
   ChromeExtensionsAPIClient();
+
+  ChromeExtensionsAPIClient(const ChromeExtensionsAPIClient&) = delete;
+  ChromeExtensionsAPIClient& operator=(const ChromeExtensionsAPIClient&) =
+      delete;
+
   ~ChromeExtensionsAPIClient() override;
 
   // ExtensionsApiClient implementation.
@@ -113,8 +118,6 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
 #endif
   std::unique_ptr<extensions::ChromeAutomationInternalApiDelegate>
       extensions_automation_api_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsAPIClient);
 };
 
 }  // namespace extensions

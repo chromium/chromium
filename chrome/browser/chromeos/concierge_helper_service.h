@@ -21,14 +21,15 @@ class ConciergeHelperService : public KeyedService {
       content::BrowserContext* context);
 
   ConciergeHelperService();
+
+  ConciergeHelperService(const ConciergeHelperService&) = delete;
+  ConciergeHelperService& operator=(const ConciergeHelperService&) = delete;
+
   ~ConciergeHelperService() override = default;
 
   void SetArcVmCpuRestriction(bool do_restrict);
   void SetTerminaVmCpuRestriction(bool do_restrict);
   void SetPluginVmCpuRestriction(bool do_restrict);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConciergeHelperService);
 };
 
 class ConciergeHelperServiceFactory : public BrowserContextKeyedServiceFactory {

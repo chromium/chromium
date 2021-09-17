@@ -63,6 +63,9 @@ class WilcoDtcSupportdBridge final
       std::unique_ptr<WilcoDtcSupportdNotificationController>
           notification_controller);
 
+  WilcoDtcSupportdBridge(const WilcoDtcSupportdBridge&) = delete;
+  WilcoDtcSupportdBridge& operator=(const WilcoDtcSupportdBridge&) = delete;
+
   ~WilcoDtcSupportdBridge() override;
 
   // Sets the Wilco DTC configuration data, passed and owned by the
@@ -159,8 +162,6 @@ class WilcoDtcSupportdBridge final
   base::WeakPtrFactory<WilcoDtcSupportdBridge> dbus_waiting_weak_ptr_factory_{
       this};
   base::WeakPtrFactory<WilcoDtcSupportdBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdBridge);
 };
 
 }  // namespace ash

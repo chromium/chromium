@@ -45,6 +45,10 @@ class UDIFParser {
  public:
   // Constructs an instance from a stream.
   explicit UDIFParser(ReadStream* stream);
+
+  UDIFParser(const UDIFParser&) = delete;
+  UDIFParser& operator=(const UDIFParser&) = delete;
+
   ~UDIFParser();
 
   // Parses the UDIF file. This method must be called before any other method.
@@ -83,8 +87,6 @@ class UDIFParser {
   std::vector<std::unique_ptr<const UDIFBlock>> blocks_;
   uint16_t block_size_;  // The image's block size, in bytes.
   std::vector<uint8_t> signature_blob_;  // DMG signature.
-
-  DISALLOW_COPY_AND_ASSIGN(UDIFParser);
 };
 
 }  // namespace dmg

@@ -124,6 +124,10 @@ class RemovePasswordOperation : public UndoOperation {
  public:
   RemovePasswordOperation(PasswordManagerPresenter* page,
                           const password_manager::PasswordForm& form);
+
+  RemovePasswordOperation(const RemovePasswordOperation&) = delete;
+  RemovePasswordOperation& operator=(const RemovePasswordOperation&) = delete;
+
   ~RemovePasswordOperation() override;
 
   // UndoOperation:
@@ -134,8 +138,6 @@ class RemovePasswordOperation : public UndoOperation {
  private:
   PasswordManagerPresenter* page_;
   password_manager::PasswordForm form_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovePasswordOperation);
 };
 
 RemovePasswordOperation::RemovePasswordOperation(
@@ -161,6 +163,10 @@ class AddPasswordOperation : public UndoOperation {
  public:
   AddPasswordOperation(PasswordManagerPresenter* page,
                        const password_manager::PasswordForm& password_form);
+
+  AddPasswordOperation(const AddPasswordOperation&) = delete;
+  AddPasswordOperation& operator=(const AddPasswordOperation&) = delete;
+
   ~AddPasswordOperation() override;
 
   // UndoOperation:
@@ -171,8 +177,6 @@ class AddPasswordOperation : public UndoOperation {
  private:
   PasswordManagerPresenter* page_;
   password_manager::PasswordForm form_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddPasswordOperation);
 };
 
 AddPasswordOperation::AddPasswordOperation(

@@ -20,6 +20,10 @@ class ReleaseNotesStorage {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   explicit ReleaseNotesStorage(Profile* profile);
+
+  ReleaseNotesStorage(const ReleaseNotesStorage&) = delete;
+  ReleaseNotesStorage& operator=(const ReleaseNotesStorage&) = delete;
+
   ~ReleaseNotesStorage();
 
   // Returns true if system has been updated since last notification, user
@@ -40,8 +44,6 @@ class ReleaseNotesStorage {
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReleaseNotesStorage);
 };
 
 }  // namespace ash

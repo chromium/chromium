@@ -27,6 +27,9 @@ class FramebustBlockTabHelper
   using ClickCallback = base::OnceCallback<
       void(const GURL&, size_t /* index */, size_t /* total_size */)>;
 
+  FramebustBlockTabHelper(const FramebustBlockTabHelper&) = delete;
+  FramebustBlockTabHelper& operator=(const FramebustBlockTabHelper&) = delete;
+
   ~FramebustBlockTabHelper() override;
 
   // Shows the blocked Framebust icon in the Omnibox for the |blocked_url|.
@@ -67,8 +70,6 @@ class FramebustBlockTabHelper
   std::vector<ClickCallback> callbacks_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(FramebustBlockTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_BLOCKED_CONTENT_FRAMEBUST_BLOCK_TAB_HELPER_H_

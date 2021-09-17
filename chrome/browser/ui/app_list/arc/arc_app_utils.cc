@@ -726,6 +726,11 @@ void AddAppLaunchObserver(content::BrowserContext* context,
   class ProfileDestroyedObserver : public ProfileObserver {
    public:
     ProfileDestroyedObserver() = default;
+
+    ProfileDestroyedObserver(const ProfileDestroyedObserver&) = delete;
+    ProfileDestroyedObserver& operator=(const ProfileDestroyedObserver&) =
+        delete;
+
     ~ProfileDestroyedObserver() override = default;
 
     void Observe(Profile* profile) {
@@ -741,8 +746,6 @@ void AddAppLaunchObserver(content::BrowserContext* context,
    private:
     base::ScopedMultiSourceObservation<Profile, ProfileObserver>
         observed_profiles_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(ProfileDestroyedObserver);
   };
   static base::NoDestructor<ProfileDestroyedObserver>
       profile_destroyed_observer;

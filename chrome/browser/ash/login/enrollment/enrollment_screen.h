@@ -52,6 +52,10 @@ class EnrollmentScreen
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   EnrollmentScreen(EnrollmentScreenView* view,
                    const ScreenExitCallback& exit_callback);
+
+  EnrollmentScreen(const EnrollmentScreen&) = delete;
+  EnrollmentScreen& operator=(const EnrollmentScreen&) = delete;
+
   ~EnrollmentScreen() override;
 
   static EnrollmentScreen* Get(ScreenManager* manager);
@@ -220,7 +224,6 @@ class EnrollmentScreen
   std::unique_ptr<AuthPolicyHelper> authpolicy_login_helper_;
 
   base::WeakPtrFactory<EnrollmentScreen> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentScreen);
 };
 
 }  // namespace ash

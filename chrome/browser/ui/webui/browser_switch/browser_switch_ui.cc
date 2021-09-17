@@ -156,6 +156,10 @@ content::WebUIDataSource* CreateBrowserSwitchUIHTMLSource(
 class BrowserSwitchHandler : public content::WebUIMessageHandler {
  public:
   BrowserSwitchHandler();
+
+  BrowserSwitchHandler(const BrowserSwitchHandler&) = delete;
+  BrowserSwitchHandler& operator=(const BrowserSwitchHandler&) = delete;
+
   ~BrowserSwitchHandler() override;
 
   // WebUIMessageHandler
@@ -240,8 +244,6 @@ class BrowserSwitchHandler : public content::WebUIMessageHandler {
   base::CallbackListSubscription service_subscription_;
 
   base::WeakPtrFactory<BrowserSwitchHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSwitchHandler);
 };
 
 BrowserSwitchHandler::BrowserSwitchHandler() {}

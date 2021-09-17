@@ -79,6 +79,9 @@ class AutomationEventWaiter
         this);
   }
 
+  AutomationEventWaiter(const AutomationEventWaiter&) = delete;
+  AutomationEventWaiter& operator=(const AutomationEventWaiter&) = delete;
+
   virtual ~AutomationEventWaiter() {
     // Don't bother to reconnect to AutomationEventRouter because it's not
     // relevant to the tests.
@@ -173,8 +176,6 @@ class AutomationEventWaiter
   std::unique_ptr<ui::AXEvent> matched_wait_for_event_;
   ax::mojom::Event event_type_to_wait_for_ = ax::mojom::Event::kNone;
   ui::AXNodeID event_target_node_id_to_wait_for_ = ui::kInvalidAXNodeID;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationEventWaiter);
 };
 
 ui::TableColumn TestTableColumn(int id, const std::string& title) {

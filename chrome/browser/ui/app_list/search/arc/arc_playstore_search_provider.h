@@ -26,6 +26,11 @@ class ArcPlayStoreSearchProvider : public SearchProvider {
   ArcPlayStoreSearchProvider(int max_results,
                              Profile* profile,
                              AppListControllerDelegate* list_controller);
+
+  ArcPlayStoreSearchProvider(const ArcPlayStoreSearchProvider&) = delete;
+  ArcPlayStoreSearchProvider& operator=(const ArcPlayStoreSearchProvider&) =
+      delete;
+
   ~ArcPlayStoreSearchProvider() override;
 
   // SearchProvider:
@@ -43,8 +48,6 @@ class ArcPlayStoreSearchProvider : public SearchProvider {
   AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
   std::u16string last_query_;  // Most recent query issued.
   base::WeakPtrFactory<ArcPlayStoreSearchProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreSearchProvider);
 };
 
 }  // namespace app_list

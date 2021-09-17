@@ -66,6 +66,11 @@ class WebContentsLoadFinishedWaiter : public content::WebContentsObserver {
  public:
   explicit WebContentsLoadFinishedWaiter(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
+
+  WebContentsLoadFinishedWaiter(const WebContentsLoadFinishedWaiter&) = delete;
+  WebContentsLoadFinishedWaiter& operator=(
+      const WebContentsLoadFinishedWaiter&) = delete;
+
   ~WebContentsLoadFinishedWaiter() override = default;
 
   void Wait() {
@@ -86,8 +91,6 @@ class WebContentsLoadFinishedWaiter : public content::WebContentsObserver {
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsLoadFinishedWaiter);
 };
 
 // Helper invoked by GuestViewManager::ForEachGuest to collect WebContents of
@@ -104,6 +107,10 @@ bool AddNamedWebContentsToSet(std::set<content::WebContents*>* frame_set,
 class EulaTest : public OobeBaseTest {
  public:
   EulaTest() = default;
+
+  EulaTest(const EulaTest&) = delete;
+  EulaTest& operator=(const EulaTest&) = delete;
+
   ~EulaTest() override = default;
 
   void ShowEulaScreen() {
@@ -189,9 +196,6 @@ class EulaTest : public OobeBaseTest {
   }
 
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EulaTest);
 };
 
 // When testing the offline fallback mechanism, the requests reaching the

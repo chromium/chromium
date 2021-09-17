@@ -58,6 +58,10 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
     // pinned app sync. https://crbug.com/1085597
     SkipPinnedAppsFromSyncForTest();
   }
+
+  AutotestPrivateApiTest(const AutotestPrivateApiTest&) = delete;
+  AutotestPrivateApiTest& operator=(const AutotestPrivateApiTest&) = delete;
+
   ~AutotestPrivateApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -80,9 +84,6 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
   }
 
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutotestPrivateApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivate) {
@@ -281,6 +282,12 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateWithPolicyApiTest, PolicyAPITest) {
 class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
  public:
   AutotestPrivateArcPerformanceTracing() = default;
+
+  AutotestPrivateArcPerformanceTracing(
+      const AutotestPrivateArcPerformanceTracing&) = delete;
+  AutotestPrivateArcPerformanceTracing& operator=(
+      const AutotestPrivateArcPerformanceTracing&) = delete;
+
   ~AutotestPrivateArcPerformanceTracing() override = default;
 
  protected:
@@ -311,8 +318,6 @@ class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
 
  private:
   arc::ArcAppPerformanceTracingTestHelper tracing_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutotestPrivateArcPerformanceTracing);
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateArcPerformanceTracing, Basic) {

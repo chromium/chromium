@@ -46,6 +46,10 @@ class ExtensionInfoGenerator {
   using ExtensionInfosCallback = base::OnceCallback<void(ExtensionInfoList)>;
 
   explicit ExtensionInfoGenerator(content::BrowserContext* context);
+
+  ExtensionInfoGenerator(const ExtensionInfoGenerator&) = delete;
+  ExtensionInfoGenerator& operator=(const ExtensionInfoGenerator&) = delete;
+
   ~ExtensionInfoGenerator();
 
   // Creates and asynchronously returns an ExtensionInfo for the given
@@ -100,8 +104,6 @@ class ExtensionInfoGenerator {
   ExtensionInfosCallback callback_;
 
   base::WeakPtrFactory<ExtensionInfoGenerator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInfoGenerator);
 };
 
 }  // namespace extensions

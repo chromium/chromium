@@ -41,6 +41,11 @@ class TestSafeBrowsingDatabaseHelper {
       std::vector<safe_browsing::ListIdentifier> lists_to_insert);
   TestSafeBrowsingDatabaseHelper();
 
+  TestSafeBrowsingDatabaseHelper(const TestSafeBrowsingDatabaseHelper&) =
+      delete;
+  TestSafeBrowsingDatabaseHelper& operator=(
+      const TestSafeBrowsingDatabaseHelper&) = delete;
+
   ~TestSafeBrowsingDatabaseHelper();
 
   // Only compatible with the kMock policy. Marks the hash prefix for the URL as
@@ -66,8 +71,6 @@ class TestSafeBrowsingDatabaseHelper {
   // factory is not being mocked.
   safe_browsing::TestV4GetHashProtocolManagerFactory* v4_get_hash_factory_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSafeBrowsingDatabaseHelper);
 };
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_TEST_SAFE_BROWSING_DATABASE_HELPER_H_

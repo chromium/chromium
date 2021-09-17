@@ -17,6 +17,11 @@ namespace ash {
 class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
  public:
   explicit ChromeProximityAuthClient(Profile* profile);
+
+  ChromeProximityAuthClient(const ChromeProximityAuthClient&) = delete;
+  ChromeProximityAuthClient& operator=(const ChromeProximityAuthClient&) =
+      delete;
+
   ~ChromeProximityAuthClient() override;
 
   // proximity_auth::ProximityAuthClient:
@@ -32,8 +37,6 @@ class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeProximityAuthClient);
 };
 
 }  // namespace ash

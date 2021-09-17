@@ -30,6 +30,10 @@ class BaseScreen {
   constexpr static const char kNotApplicable[] = "NotApplicable";
 
   BaseScreen(OobeScreenId screen_id, OobeScreenPriority screen_priority);
+
+  BaseScreen(const BaseScreen&) = delete;
+  BaseScreen& operator=(const BaseScreen&) = delete;
+
   virtual ~BaseScreen();
 
   // Makes wizard screen visible.
@@ -77,8 +81,6 @@ class BaseScreen {
   const OobeScreenId screen_id_;
 
   const OobeScreenPriority screen_priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseScreen);
 };
 
 }  // namespace ash

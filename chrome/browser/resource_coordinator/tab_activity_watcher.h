@@ -29,6 +29,10 @@ class TabActivityWatcher : public BrowserListObserver,
                            public BrowserTabStripTrackerDelegate {
  public:
   TabActivityWatcher();
+
+  TabActivityWatcher(const TabActivityWatcher&) = delete;
+  TabActivityWatcher& operator=(const TabActivityWatcher&) = delete;
+
   ~TabActivityWatcher() override;
 
   // Uses the Tab Ranker model to predict a score for the tab, where a higher
@@ -83,8 +87,6 @@ class TabActivityWatcher : public BrowserListObserver,
 
   // Loads the Tab Ranker model on first use and calculates tab scores.
   std::unique_ptr<tab_ranker::TabScorePredictor> predictor_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabActivityWatcher);
 };
 
 }  // namespace resource_coordinator

@@ -15,6 +15,10 @@ namespace printing {
 class PdfToEmfConverterFactory : public mojom::PdfToEmfConverterFactory {
  public:
   PdfToEmfConverterFactory();
+
+  PdfToEmfConverterFactory(const PdfToEmfConverterFactory&) = delete;
+  PdfToEmfConverterFactory& operator=(const PdfToEmfConverterFactory&) = delete;
+
   ~PdfToEmfConverterFactory() override;
 
   static void Create(
@@ -27,8 +31,6 @@ class PdfToEmfConverterFactory : public mojom::PdfToEmfConverterFactory {
       const PdfRenderSettings& render_settings,
       mojo::PendingRemote<mojom::PdfToEmfConverterClient> client,
       CreateConverterCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PdfToEmfConverterFactory);
 };
 
 }  // namespace printing

@@ -40,6 +40,10 @@ class CallbackLogger {
    public:
     Event(int file_handle, base::File::Error result)
         : file_handle_(file_handle), result_(result) {}
+
+    Event(const Event&) = delete;
+    Event& operator=(const Event&) = delete;
+
     virtual ~Event() {}
 
     int file_handle() { return file_handle_; }
@@ -48,8 +52,6 @@ class CallbackLogger {
    private:
     int file_handle_;
     base::File::Error result_;
-
-    DISALLOW_COPY_AND_ASSIGN(Event);
   };
 
   CallbackLogger() {}

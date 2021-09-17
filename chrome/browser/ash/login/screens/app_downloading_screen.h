@@ -23,6 +23,10 @@ class AppDownloadingScreen : public BaseScreen {
 
   AppDownloadingScreen(AppDownloadingScreenView* view,
                        const base::RepeatingClosure& exit_callback);
+
+  AppDownloadingScreen(const AppDownloadingScreen&) = delete;
+  AppDownloadingScreen& operator=(const AppDownloadingScreen&) = delete;
+
   ~AppDownloadingScreen() override;
 
   void set_exit_callback_for_testing(base::RepeatingClosure exit_callback) {
@@ -38,8 +42,6 @@ class AppDownloadingScreen : public BaseScreen {
  private:
   AppDownloadingScreenView* const view_;
   base::RepeatingClosure exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppDownloadingScreen);
 };
 
 }  // namespace ash

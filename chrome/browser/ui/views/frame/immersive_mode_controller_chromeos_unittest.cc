@@ -35,6 +35,12 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
  public:
   ImmersiveModeControllerChromeosTest()
       : TestWithBrowserView(Browser::TYPE_NORMAL) {}
+
+  ImmersiveModeControllerChromeosTest(
+      const ImmersiveModeControllerChromeosTest&) = delete;
+  ImmersiveModeControllerChromeosTest& operator=(
+      const ImmersiveModeControllerChromeosTest&) = delete;
+
   ~ImmersiveModeControllerChromeosTest() override {}
 
   // TestWithBrowserView override:
@@ -97,8 +103,6 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
   ImmersiveModeController* controller_;
 
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeosTest);
 };
 
 // Test the layout and visibility of the tabstrip, toolbar and TopContainerView

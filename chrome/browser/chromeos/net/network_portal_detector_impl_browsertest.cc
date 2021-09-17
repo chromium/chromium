@@ -77,6 +77,11 @@ class NetworkPortalDetectorImplBrowserTest
             AccountId::FromUserEmailGaiaId(kTestUser, kTestUserGaiaId)),
         network_portal_detector_(nullptr) {}
 
+  NetworkPortalDetectorImplBrowserTest(
+      const NetworkPortalDetectorImplBrowserTest&) = delete;
+  NetworkPortalDetectorImplBrowserTest& operator=(
+      const NetworkPortalDetectorImplBrowserTest&) = delete;
+
   ~NetworkPortalDetectorImplBrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -145,8 +150,6 @@ class NetworkPortalDetectorImplBrowserTest
   NetworkPortalDetectorImpl* network_portal_detector_;
   std::unique_ptr<NetworkPortalNotificationController>
       network_portal_notification_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalDetectorImplBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,

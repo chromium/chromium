@@ -20,6 +20,11 @@ class DownloadPermissionRequest : public permissions::PermissionRequest {
   DownloadPermissionRequest(
       base::WeakPtr<DownloadRequestLimiter::TabDownloadState> host,
       const url::Origin& requesting_origin);
+
+  DownloadPermissionRequest(const DownloadPermissionRequest&) = delete;
+  DownloadPermissionRequest& operator=(const DownloadPermissionRequest&) =
+      delete;
+
   ~DownloadPermissionRequest() override;
 
  private:
@@ -28,8 +33,6 @@ class DownloadPermissionRequest : public permissions::PermissionRequest {
 
   base::WeakPtr<DownloadRequestLimiter::TabDownloadState> host_;
   url::Origin requesting_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadPermissionRequest);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_PERMISSION_REQUEST_H_

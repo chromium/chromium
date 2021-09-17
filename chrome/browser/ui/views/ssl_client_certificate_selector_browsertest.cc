@@ -170,6 +170,12 @@ class SSLClientCertificateSelectorMultiProfileTest
     : public SSLClientCertificateSelectorTest {
  public:
   SSLClientCertificateSelectorMultiProfileTest() = default;
+
+  SSLClientCertificateSelectorMultiProfileTest(
+      const SSLClientCertificateSelectorMultiProfileTest&) = delete;
+  SSLClientCertificateSelectorMultiProfileTest& operator=(
+      const SSLClientCertificateSelectorMultiProfileTest&) = delete;
+
   ~SSLClientCertificateSelectorMultiProfileTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -218,9 +224,6 @@ class SSLClientCertificateSelectorMultiProfileTest
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_1_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock> > auth_requestor_1_;
   SSLClientCertificateSelector* selector_1_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SSLClientCertificateSelectorMultiProfileTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorTest, SelectNone) {

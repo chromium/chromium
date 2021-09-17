@@ -35,6 +35,9 @@ class FileStreamReader : public storage::FileStreamReader {
                    int64_t initial_offset,
                    const base::Time& expected_modification_time);
 
+  FileStreamReader(const FileStreamReader&) = delete;
+  FileStreamReader& operator=(const FileStreamReader&) = delete;
+
   ~FileStreamReader() override;
 
   // storage::FileStreamReader overrides.
@@ -109,7 +112,6 @@ class FileStreamReader : public storage::FileStreamReader {
   State state_;
 
   base::WeakPtrFactory<FileStreamReader> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileStreamReader);
 };
 
 }  // namespace file_system_provider

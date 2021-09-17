@@ -22,6 +22,10 @@ class Profile;
 class CoreAppLauncherHandler : public content::WebUIMessageHandler {
  public:
   CoreAppLauncherHandler();
+
+  CoreAppLauncherHandler(const CoreAppLauncherHandler&) = delete;
+  CoreAppLauncherHandler& operator=(const CoreAppLauncherHandler&) = delete;
+
   ~CoreAppLauncherHandler() override;
 
   // Register app launcher preferences.
@@ -41,8 +45,6 @@ class CoreAppLauncherHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CoreAppLauncherHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_CORE_APP_LAUNCHER_HANDLER_H_

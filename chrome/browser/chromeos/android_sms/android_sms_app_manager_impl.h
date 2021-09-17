@@ -56,6 +56,10 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
       PrefService* pref_service,
       app_list::AppListSyncableService* app_list_syncable_service,
       std::unique_ptr<PwaDelegate> test_pwa_delegate = nullptr);
+
+  AndroidSmsAppManagerImpl(const AndroidSmsAppManagerImpl&) = delete;
+  AndroidSmsAppManagerImpl& operator=(const AndroidSmsAppManagerImpl&) = delete;
+
   ~AndroidSmsAppManagerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -104,8 +108,6 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
 
   std::unique_ptr<PwaDelegate> pwa_delegate_;
   base::WeakPtrFactory<AndroidSmsAppManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppManagerImpl);
 };
 
 }  // namespace android_sms

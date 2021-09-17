@@ -24,6 +24,11 @@
 class MTPDeviceObjectEnumerator {
  public:
   explicit MTPDeviceObjectEnumerator(const MTPDeviceObjectEntries& entries);
+
+  MTPDeviceObjectEnumerator(const MTPDeviceObjectEnumerator&) = delete;
+  MTPDeviceObjectEnumerator& operator=(const MTPDeviceObjectEnumerator&) =
+      delete;
+
   ~MTPDeviceObjectEnumerator();
 
   base::FilePath Next();
@@ -55,8 +60,6 @@ class MTPDeviceObjectEnumerator {
   bool is_index_ready_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceObjectEnumerator);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_WIN_MTP_DEVICE_OBJECT_ENUMERATOR_H_

@@ -33,6 +33,11 @@ const char kGetAddSupervisionUIElementJS[] =
 class AddSupervisionBrowserTest : public InProcessBrowserTest {
  public:
   AddSupervisionBrowserTest() = default;
+
+  AddSupervisionBrowserTest(const AddSupervisionBrowserTest&) = delete;
+  AddSupervisionBrowserTest& operator=(const AddSupervisionBrowserTest&) =
+      delete;
+
   ~AddSupervisionBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -80,8 +85,6 @@ class AddSupervisionBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddSupervisionBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, URLParameters) {

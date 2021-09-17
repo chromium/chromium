@@ -108,6 +108,10 @@ class CloseObserver : public content::WebContentsObserver {
 class PopupBlockerBrowserTest : public InProcessBrowserTest {
  public:
   PopupBlockerBrowserTest() {}
+
+  PopupBlockerBrowserTest(const PopupBlockerBrowserTest&) = delete;
+  PopupBlockerBrowserTest& operator=(const PopupBlockerBrowserTest&) = delete;
+
   ~PopupBlockerBrowserTest() override {}
 
   // InProcessBrowserTest:
@@ -238,9 +242,6 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
 
     return web_contents;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PopupBlockerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlockWebContentsCreation) {

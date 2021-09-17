@@ -14,13 +14,16 @@ class NetworkingPrivateUIDelegateFactoryImpl
     : public NetworkingPrivateDelegateFactory::UIDelegateFactory {
  public:
   NetworkingPrivateUIDelegateFactoryImpl();
+
+  NetworkingPrivateUIDelegateFactoryImpl(
+      const NetworkingPrivateUIDelegateFactoryImpl&) = delete;
+  NetworkingPrivateUIDelegateFactoryImpl& operator=(
+      const NetworkingPrivateUIDelegateFactoryImpl&) = delete;
+
   ~NetworkingPrivateUIDelegateFactoryImpl() override;
 
   std::unique_ptr<NetworkingPrivateDelegate::UIDelegate> CreateDelegate()
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateUIDelegateFactoryImpl);
 };
 
 }  // namespace extensions

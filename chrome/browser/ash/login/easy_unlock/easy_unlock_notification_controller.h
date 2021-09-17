@@ -21,6 +21,12 @@ namespace ash {
 class EasyUnlockNotificationController {
  public:
   explicit EasyUnlockNotificationController(Profile* profile);
+
+  EasyUnlockNotificationController(const EasyUnlockNotificationController&) =
+      delete;
+  EasyUnlockNotificationController& operator=(
+      const EasyUnlockNotificationController&) = delete;
+
   virtual ~EasyUnlockNotificationController();
 
   // Shows the notification when EasyUnlock is synced to a new Chromebook.
@@ -69,8 +75,6 @@ class EasyUnlockNotificationController {
 
   base::WeakPtrFactory<EasyUnlockNotificationController> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockNotificationController);
 };
 
 }  // namespace ash

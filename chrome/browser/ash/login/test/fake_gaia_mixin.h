@@ -59,6 +59,10 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   static const test::UIPath kPasswordPath;
 
   explicit FakeGaiaMixin(InProcessBrowserTestMixinHost* host);
+
+  FakeGaiaMixin(const FakeGaiaMixin&) = delete;
+  FakeGaiaMixin& operator=(const FakeGaiaMixin&) = delete;
+
   ~FakeGaiaMixin() override;
 
   // Sets up fake gaia for the login code:
@@ -114,8 +118,6 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   std::unique_ptr<FakeGaia> fake_gaia_;
   bool initialize_fake_merge_session_ = true;
   bool initialize_child_id_token_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGaiaMixin);
 };
 
 }  // namespace ash

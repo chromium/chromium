@@ -15,14 +15,17 @@ namespace attestation {
 class MockEnrollmentCertificateUploader : public EnrollmentCertificateUploader {
  public:
   MockEnrollmentCertificateUploader();
+
+  MockEnrollmentCertificateUploader(const MockEnrollmentCertificateUploader&) =
+      delete;
+  MockEnrollmentCertificateUploader& operator=(
+      const MockEnrollmentCertificateUploader&) = delete;
+
   ~MockEnrollmentCertificateUploader();
 
   MOCK_METHOD1(ObtainAndUploadCertificate, void(UploadCallback));
   MOCK_METHOD2(ObtainAndUploadCertificateWithRsuDeviceId,
                void(const std::string&, UploadCallback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEnrollmentCertificateUploader);
 };
 
 }  // namespace attestation

@@ -29,6 +29,11 @@ class PrintJobHistoryServiceImpl
       std::unique_ptr<PrintJobDatabase> print_job_database,
       chromeos::CupsPrintJobManager* print_job_manager,
       PrefService* pref_service);
+
+  PrintJobHistoryServiceImpl(const PrintJobHistoryServiceImpl&) = delete;
+  PrintJobHistoryServiceImpl& operator=(const PrintJobHistoryServiceImpl&) =
+      delete;
+
   ~PrintJobHistoryServiceImpl() override;
 
   // PrintJobHistoryService:
@@ -69,8 +74,6 @@ class PrintJobHistoryServiceImpl
   // Used for avoiding that callbacks are called after the class was
   // destroyed already.
   base::WeakPtrFactory<PrintJobHistoryServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobHistoryServiceImpl);
 };
 
 }  // namespace ash

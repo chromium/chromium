@@ -35,6 +35,11 @@ namespace {
 class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
  public:
   NetErrorDiagnosticsDialog() {}
+
+  NetErrorDiagnosticsDialog(const NetErrorDiagnosticsDialog&) = delete;
+  NetErrorDiagnosticsDialog& operator=(const NetErrorDiagnosticsDialog&) =
+      delete;
+
   ~NetErrorDiagnosticsDialog() override {}
 
   // NetErrorDiagnosticsDialog implementation.
@@ -78,8 +83,6 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
     EndRun(std::move(run_state));
     std::move(callback).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(NetErrorDiagnosticsDialog);
 };
 
 }  // namespace

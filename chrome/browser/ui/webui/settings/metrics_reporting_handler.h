@@ -31,6 +31,10 @@ namespace settings {
 class MetricsReportingHandler : public SettingsPageUIHandler {
  public:
   MetricsReportingHandler();
+
+  MetricsReportingHandler(const MetricsReportingHandler&) = delete;
+  MetricsReportingHandler& operator=(const MetricsReportingHandler&) = delete;
+
   ~MetricsReportingHandler() override;
 
   // SettingsPageUIHandler:
@@ -75,8 +79,6 @@ class MetricsReportingHandler : public SettingsPageUIHandler {
   // The metrics reporting interface in ash-chrome.
   mojo::Remote<crosapi::mojom::MetricsReporting> metrics_reporting_remote_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsReportingHandler);
 };
 
 }  // namespace settings

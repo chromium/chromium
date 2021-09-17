@@ -16,6 +16,10 @@ class UsbInternalsPageHandler;
 class UsbInternalsUI : public ui::MojoWebUIController {
  public:
   explicit UsbInternalsUI(content::WebUI* web_ui);
+
+  UsbInternalsUI(const UsbInternalsUI&) = delete;
+  UsbInternalsUI& operator=(const UsbInternalsUI&) = delete;
+
   ~UsbInternalsUI() override;
 
   // Instantiates the implementor of the mojom::UsbInternalsPageHandler mojo
@@ -27,8 +31,6 @@ class UsbInternalsUI : public ui::MojoWebUIController {
   std::unique_ptr<UsbInternalsPageHandler> page_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(UsbInternalsUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_USB_INTERNALS_USB_INTERNALS_UI_H_

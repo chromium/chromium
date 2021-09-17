@@ -45,6 +45,12 @@ class CreditCardEditorViewController : public EditorViewController {
       base::OnceCallback<void(const autofill::CreditCard&)> on_added,
       autofill::CreditCard* credit_card,
       bool is_incognito);
+
+  CreditCardEditorViewController(const CreditCardEditorViewController&) =
+      delete;
+  CreditCardEditorViewController& operator=(
+      const CreditCardEditorViewController&) = delete;
+
   ~CreditCardEditorViewController() override;
 
   // EditorViewController:
@@ -86,6 +92,11 @@ class CreditCardEditorViewController : public EditorViewController {
     // outlive this delegate.
     CreditCardValidationDelegate(const EditorField& field,
                                  CreditCardEditorViewController* controller);
+
+    CreditCardValidationDelegate(const CreditCardValidationDelegate&) = delete;
+    CreditCardValidationDelegate& operator=(
+        const CreditCardValidationDelegate&) = delete;
+
     ~CreditCardValidationDelegate() override;
 
     // ValidationDelegate:
@@ -110,8 +121,6 @@ class CreditCardEditorViewController : public EditorViewController {
     EditorField field_;
     // Outlives this class.
     CreditCardEditorViewController* controller_;
-
-    DISALLOW_COPY_AND_ASSIGN(CreditCardValidationDelegate);
   };
 
   bool GetSheetId(DialogViewID* sheet_id) override;
@@ -142,8 +151,6 @@ class CreditCardEditorViewController : public EditorViewController {
   std::set<std::string> supported_card_networks_;
 
   base::WeakPtrFactory<CreditCardEditorViewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardEditorViewController);
 };
 
 }  // namespace payments

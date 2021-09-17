@@ -100,6 +100,10 @@ void PrintInstructions(const char* test_file_name);
 class IFrameWaiter : public content::WebContentsObserver {
  public:
   explicit IFrameWaiter(content::WebContents* webcontents);
+
+  IFrameWaiter(const IFrameWaiter&) = delete;
+  IFrameWaiter& operator=(const IFrameWaiter&) = delete;
+
   ~IFrameWaiter() override;
   content::RenderFrameHost* WaitForFrameMatchingName(
       const std::string& name,
@@ -130,8 +134,6 @@ class IFrameWaiter : public content::WebContentsObserver {
   std::string frame_name_;
   GURL origin_;
   GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(IFrameWaiter);
 };
 
 // TestRecipeReplayChromeFeatureActionExecutor
@@ -207,6 +209,10 @@ class TestRecipeReplayer {
   TestRecipeReplayer(
       Browser* browser,
       TestRecipeReplayChromeFeatureActionExecutor* feature_action_executor);
+
+  TestRecipeReplayer(const TestRecipeReplayer&) = delete;
+  TestRecipeReplayer& operator=(const TestRecipeReplayer&) = delete;
+
   ~TestRecipeReplayer();
   void Setup();
   void Cleanup();
@@ -366,8 +372,6 @@ class TestRecipeReplayer {
 
   // Overrides the AutofillClock to use the recorded date.
   autofill::TestAutofillClock test_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRecipeReplayer);
 };
 
 }  // namespace captured_sites_test_utils

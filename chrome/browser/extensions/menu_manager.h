@@ -300,6 +300,10 @@ class MenuManager : public ProfileObserver,
   };
 
   MenuManager(content::BrowserContext* context, StateStore* store_);
+
+  MenuManager(const MenuManager&) = delete;
+  MenuManager& operator=(const MenuManager&) = delete;
+
   ~MenuManager() override;
 
   // Convenience function to get the MenuManager for a browser context.
@@ -430,8 +434,6 @@ class MenuManager : public ProfileObserver,
   StateStore* store_;
 
   base::ObserverList<TestObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuManager);
 };
 
 }  // namespace extensions

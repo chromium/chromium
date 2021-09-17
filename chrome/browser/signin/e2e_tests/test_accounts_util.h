@@ -29,13 +29,16 @@ struct TestAccount {
 class TestAccountsUtil {
  public:
   TestAccountsUtil();
+
+  TestAccountsUtil(const TestAccountsUtil&) = delete;
+  TestAccountsUtil& operator=(const TestAccountsUtil&) = delete;
+
   virtual ~TestAccountsUtil();
   bool Init(const base::FilePath& config_path);
   bool GetAccount(const std::string& name, TestAccount& out_account) const;
 
  private:
   std::map<std::string, TestAccount> all_accounts_;
-  DISALLOW_COPY_AND_ASSIGN(TestAccountsUtil);
 };
 
 }  // namespace test

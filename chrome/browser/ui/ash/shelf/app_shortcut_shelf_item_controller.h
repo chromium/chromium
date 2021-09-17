@@ -35,6 +35,12 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
                                        public BrowserListObserver {
  public:
   explicit AppShortcutShelfItemController(const ash::ShelfID& shelf_id);
+
+  AppShortcutShelfItemController(const AppShortcutShelfItemController&) =
+      delete;
+  AppShortcutShelfItemController& operator=(
+      const AppShortcutShelfItemController&) = delete;
+
   ~AppShortcutShelfItemController() override;
 
   // ash::ShelfItemDelegate overrides:
@@ -106,8 +112,6 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   bool app_menu_cached_by_browsers_ = false;
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppShortcutShelfItemController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_SHORTCUT_SHELF_ITEM_CONTROLLER_H_

@@ -50,6 +50,11 @@ class ScopedKeepAlive;
 class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
  public:
   BrowserProcessPlatformPart();
+
+  BrowserProcessPlatformPart(const BrowserProcessPlatformPart&) = delete;
+  BrowserProcessPlatformPart& operator=(const BrowserProcessPlatformPart&) =
+      delete;
+
   ~BrowserProcessPlatformPart() override;
 
   void InitializeAutomaticRebootManager();
@@ -208,8 +213,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   BrowserRestoreObserver browser_restore_observer;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessPlatformPart);
 };
 
 #endif  // CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_CHROMEOS_H_

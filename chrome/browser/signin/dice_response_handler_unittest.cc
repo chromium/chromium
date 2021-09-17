@@ -48,6 +48,9 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
   explicit DiceTestSigninClient(PrefService* pref_service)
       : TestSigninClient(pref_service), consumer_(nullptr) {}
 
+  DiceTestSigninClient(const DiceTestSigninClient&) = delete;
+  DiceTestSigninClient& operator=(const DiceTestSigninClient&) = delete;
+
   ~DiceTestSigninClient() override {}
 
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
@@ -74,8 +77,6 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
 
  private:
   GaiaAuthConsumer* consumer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiceTestSigninClient);
 };
 
 class DiceResponseHandlerTest : public testing::Test,

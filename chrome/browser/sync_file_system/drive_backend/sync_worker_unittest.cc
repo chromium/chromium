@@ -52,19 +52,24 @@ class MockSyncTask : public ExclusiveTask {
   explicit MockSyncTask(bool used_network) {
     set_used_network(used_network);
   }
+
+  MockSyncTask(const MockSyncTask&) = delete;
+  MockSyncTask& operator=(const MockSyncTask&) = delete;
+
   ~MockSyncTask() override {}
 
   void RunExclusive(SyncStatusCallback callback) override {
     std::move(callback).Run(SYNC_STATUS_OK);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSyncTask);
 };
 
 class MockExtensionService : public TestExtensionService {
  public:
   MockExtensionService() : registry_(nullptr) {}
+
+  MockExtensionService(const MockExtensionService&) = delete;
+  MockExtensionService& operator=(const MockExtensionService&) = delete;
+
   ~MockExtensionService() override {}
 
   void AddExtension(const extensions::Extension* extension) override {
@@ -93,14 +98,16 @@ class MockExtensionService : public TestExtensionService {
 
  private:
   extensions::ExtensionRegistry registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockExtensionService);
 };
 
 class SyncWorkerTest : public testing::Test,
                        public base::SupportsWeakPtr<SyncWorkerTest> {
  public:
   SyncWorkerTest() {}
+
+  SyncWorkerTest(const SyncWorkerTest&) = delete;
+  SyncWorkerTest& operator=(const SyncWorkerTest&) = delete;
+
   ~SyncWorkerTest() override {}
 
   void SetUp() override {
@@ -162,8 +169,6 @@ class SyncWorkerTest : public testing::Test,
 
   std::unique_ptr<MockExtensionService> extension_service_;
   std::unique_ptr<SyncWorker> sync_worker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncWorkerTest);
 };
 
 TEST_F(SyncWorkerTest, EnableOrigin) {

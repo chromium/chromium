@@ -44,6 +44,10 @@ class CallbackLogger {
    public:
     Event(const Actions& actions, base::File::Error result)
         : actions_(actions), result_(result) {}
+
+    Event(const Event&) = delete;
+    Event& operator=(const Event&) = delete;
+
     virtual ~Event() {}
 
     const Actions& actions() const { return actions_; }
@@ -52,8 +56,6 @@ class CallbackLogger {
    private:
     Actions actions_;
     base::File::Error result_;
-
-    DISALLOW_COPY_AND_ASSIGN(Event);
   };
 
   CallbackLogger() {}

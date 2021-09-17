@@ -63,6 +63,10 @@ struct HostPermissionsMetricsTestParams {
 class InstalledLoaderUnitTest : public ExtensionServiceTestBase {
  public:
   InstalledLoaderUnitTest() {}
+
+  InstalledLoaderUnitTest(const InstalledLoaderUnitTest&) = delete;
+  InstalledLoaderUnitTest& operator=(const InstalledLoaderUnitTest&) = delete;
+
   ~InstalledLoaderUnitTest() override = default;
 
   void SetUp() override {
@@ -74,9 +78,6 @@ class InstalledLoaderUnitTest : public ExtensionServiceTestBase {
                                 mojom::ManifestLocation location);
 
   void RunHostPermissionsMetricsTest(HostPermissionsMetricsTestParams params);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstalledLoaderUnitTest);
 };
 
 const Extension* InstalledLoaderUnitTest::AddExtension(

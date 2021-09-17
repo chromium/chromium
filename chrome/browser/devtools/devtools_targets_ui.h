@@ -25,6 +25,10 @@ class DevToolsTargetsUIHandler {
       base::RepeatingCallback<void(const std::string&, const base::Value&)>;
 
   DevToolsTargetsUIHandler(const std::string& source_id, Callback callback);
+
+  DevToolsTargetsUIHandler(const DevToolsTargetsUIHandler&) = delete;
+  DevToolsTargetsUIHandler& operator=(const DevToolsTargetsUIHandler&) = delete;
+
   virtual ~DevToolsTargetsUIHandler();
 
   std::string source_id() const { return source_id_; }
@@ -58,8 +62,6 @@ class DevToolsTargetsUIHandler {
  private:
   const std::string source_id_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsTargetsUIHandler);
 };
 
 class PortForwardingStatusSerializer

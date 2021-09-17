@@ -35,6 +35,9 @@ class PerfCollector : public internal::MetricCollector {
  public:
   PerfCollector();
 
+  PerfCollector(const PerfCollector&) = delete;
+  PerfCollector& operator=(const PerfCollector&) = delete;
+
   // MetricCollector:
   ~PerfCollector() override;
   const char* ToolName() const override;
@@ -140,8 +143,6 @@ class PerfCollector : public internal::MetricCollector {
   std::vector<uint32_t> max_frequencies_mhz_;
 
   base::WeakPtrFactory<PerfCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerfCollector);
 };
 
 // Exposed for unit testing.

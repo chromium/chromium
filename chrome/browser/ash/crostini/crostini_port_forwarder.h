@@ -114,6 +114,10 @@ class CrostiniPortForwarder : public KeyedService {
   static CrostiniPortForwarder* GetForProfile(Profile* profile);
 
   explicit CrostiniPortForwarder(Profile* profile);
+
+  CrostiniPortForwarder(const CrostiniPortForwarder&) = delete;
+  CrostiniPortForwarder& operator=(const CrostiniPortForwarder&) = delete;
+
   ~CrostiniPortForwarder() override;
 
  private:
@@ -156,8 +160,6 @@ class CrostiniPortForwarder : public KeyedService {
   Profile* profile_;
 
   base::WeakPtrFactory<CrostiniPortForwarder> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniPortForwarder);
 
 };  // class
 

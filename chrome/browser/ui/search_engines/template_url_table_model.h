@@ -32,6 +32,9 @@ class TemplateURLTableModel : public ui::TableModel,
  public:
   explicit TemplateURLTableModel(TemplateURLService* template_url_service);
 
+  TemplateURLTableModel(const TemplateURLTableModel&) = delete;
+  TemplateURLTableModel& operator=(const TemplateURLTableModel&) = delete;
+
   ~TemplateURLTableModel() override;
 
   // Reloads the entries from the TemplateURLService. This should ONLY be
@@ -113,8 +116,6 @@ class TemplateURLTableModel : public ui::TableModel,
   // Index of the last other engine in entries_. This is used to determine the
   // group boundaries.
   int last_other_engine_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLTableModel);
 };
 
 

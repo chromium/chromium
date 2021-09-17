@@ -174,6 +174,10 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
 class EnableDebuggingTestBase : public OobeBaseTest {
  public:
   EnableDebuggingTestBase() = default;
+
+  EnableDebuggingTestBase(const EnableDebuggingTestBase&) = delete;
+  EnableDebuggingTestBase& operator=(const EnableDebuggingTestBase&) = delete;
+
   ~EnableDebuggingTestBase() override = default;
 
   // OobeBaseTest:
@@ -231,9 +235,6 @@ class EnableDebuggingTestBase : public OobeBaseTest {
   }
 
   TestDebugDaemonClient* debug_daemon_client_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnableDebuggingTestBase);
 };
 
 class EnableDebuggingDevTest : public EnableDebuggingTestBase {

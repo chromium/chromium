@@ -25,6 +25,11 @@ class HistoryStatisticsReporter : public history::HistoryServiceObserver {
 
   HistoryStatisticsReporter(history::HistoryService* history_service,
                             PrefService* prefs);
+
+  HistoryStatisticsReporter(const HistoryStatisticsReporter&) = delete;
+  HistoryStatisticsReporter& operator=(const HistoryStatisticsReporter&) =
+      delete;
+
   ~HistoryStatisticsReporter() override;
 
   // Schedules delayed task to compute/report history statistics.
@@ -53,8 +58,6 @@ class HistoryStatisticsReporter : public history::HistoryServiceObserver {
       history_service_observation_{this};
   bool attempted_to_report_once_ = false;
   base::WeakPtrFactory<HistoryStatisticsReporter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryStatisticsReporter);
 };
 
 }  // namespace explore_sites

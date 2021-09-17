@@ -19,6 +19,10 @@ class SpinnerTexture;
 class VR_UI_EXPORT Spinner : public TexturedElement {
  public:
   explicit Spinner(int texture_width);
+
+  Spinner(const Spinner&) = delete;
+  Spinner& operator=(const Spinner&) = delete;
+
   ~Spinner() override;
 
   void SetColor(SkColor color);
@@ -35,8 +39,6 @@ class VR_UI_EXPORT Spinner : public TexturedElement {
                        gfx::KeyframeModel* keyframe_model) override;
   std::unique_ptr<SpinnerTexture> texture_;
   int texture_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(Spinner);
 };
 
 }  // namespace vr

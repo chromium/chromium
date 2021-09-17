@@ -27,6 +27,11 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
  public:
   RecentlyUsedFoldersComboModel(bookmarks::BookmarkModel* model,
                                 const bookmarks::BookmarkNode* node);
+
+  RecentlyUsedFoldersComboModel(const RecentlyUsedFoldersComboModel&) = delete;
+  RecentlyUsedFoldersComboModel& operator=(
+      const RecentlyUsedFoldersComboModel&) = delete;
+
   ~RecentlyUsedFoldersComboModel() override;
 
   // Overridden from ui::ComboboxModel:
@@ -88,8 +93,6 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   const bookmarks::BookmarkNode* const parent_node_;
 
   base::ObserverList<ui::ComboboxModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecentlyUsedFoldersComboModel);
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_RECENTLY_USED_FOLDERS_COMBO_MODEL_H_

@@ -143,6 +143,12 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
         std::make_unique<ExtensionInstallPrompt::Prompt>(type),
         ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   }
+
+  ManagementSetEnabledFunctionInstallPromptDelegate(
+      const ManagementSetEnabledFunctionInstallPromptDelegate&) = delete;
+  ManagementSetEnabledFunctionInstallPromptDelegate& operator=(
+      const ManagementSetEnabledFunctionInstallPromptDelegate&) = delete;
+
   ~ManagementSetEnabledFunctionInstallPromptDelegate() override {}
 
  private:
@@ -159,8 +165,6 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
 
   base::WeakPtrFactory<ManagementSetEnabledFunctionInstallPromptDelegate>
       weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementSetEnabledFunctionInstallPromptDelegate);
 };
 
 class ManagementUninstallFunctionUninstallDialogDelegate
@@ -203,6 +207,11 @@ class ManagementUninstallFunctionUninstallDialogDelegate
     }
   }
 
+  ManagementUninstallFunctionUninstallDialogDelegate(
+      const ManagementUninstallFunctionUninstallDialogDelegate&) = delete;
+  ManagementUninstallFunctionUninstallDialogDelegate& operator=(
+      const ManagementUninstallFunctionUninstallDialogDelegate&) = delete;
+
   ~ManagementUninstallFunctionUninstallDialogDelegate() override {}
 
   // ExtensionUninstallDialog::Delegate implementation.
@@ -215,8 +224,6 @@ class ManagementUninstallFunctionUninstallDialogDelegate
   extensions::ManagementUninstallFunctionBase* function_;
   std::unique_ptr<extensions::ExtensionUninstallDialog>
       extension_uninstall_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementUninstallFunctionUninstallDialogDelegate);
 };
 
 void OnGenerateAppForLinkCompleted(
@@ -231,6 +238,10 @@ void OnGenerateAppForLinkCompleted(
 class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
  public:
   ChromeAppForLinkDelegate() {}
+
+  ChromeAppForLinkDelegate(const ChromeAppForLinkDelegate&) = delete;
+  ChromeAppForLinkDelegate& operator=(const ChromeAppForLinkDelegate&) = delete;
+
   ~ChromeAppForLinkDelegate() override {}
 
   void OnFaviconForApp(
@@ -330,9 +341,6 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
 
   // Used for favicon loading tasks.
   base::CancelableTaskTracker cancelable_task_tracker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppForLinkDelegate);
 };
 
 void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {

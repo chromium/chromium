@@ -65,6 +65,10 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
                 "ResettableFlags should be the same size as Resettable");
 
   explicit ProfileResetter(Profile* profile);
+
+  ProfileResetter(const ProfileResetter&) = delete;
+  ProfileResetter& operator=(const ProfileResetter&) = delete;
+
   ~ProfileResetter() override;
 
   // Resets |resettable_flags| and calls |callback| on the UI thread on
@@ -120,8 +124,6 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ProfileResetter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileResetter);
 };
 
 // Path to shortcut and command line arguments.

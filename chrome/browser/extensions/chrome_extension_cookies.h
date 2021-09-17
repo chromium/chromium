@@ -74,6 +74,10 @@ class ChromeExtensionCookies
    public:
     IOData(std::unique_ptr<content::CookieStoreConfig> creation_config,
            network::mojom::CookieManagerParamsPtr initial_mojo_cookie_settings);
+
+    IOData(const IOData&) = delete;
+    IOData& operator=(const IOData&) = delete;
+
     ~IOData();
 
     void CreateRestrictedCookieManager(
@@ -108,8 +112,6 @@ class ChromeExtensionCookies
 
     mojo::UniqueReceiverSet<network::mojom::RestrictedCookieManager>
         restricted_cookie_managers_;
-
-    DISALLOW_COPY_AND_ASSIGN(IOData);
   };
 
   explicit ChromeExtensionCookies(Profile* profile);

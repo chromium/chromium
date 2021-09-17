@@ -26,6 +26,10 @@ class PrintJobHistoryCleaner {
 
   PrintJobHistoryCleaner(PrintJobDatabase* print_job_database,
                          PrefService* pref_service);
+
+  PrintJobHistoryCleaner(const PrintJobHistoryCleaner&) = delete;
+  PrintJobHistoryCleaner& operator=(const PrintJobHistoryCleaner&) = delete;
+
   ~PrintJobHistoryCleaner();
 
   // Removes expired print jobs from the database.
@@ -60,8 +64,6 @@ class PrintJobHistoryCleaner {
   base::Time oldest_print_job_completion_time_;
 
   base::WeakPtrFactory<PrintJobHistoryCleaner> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobHistoryCleaner);
 };
 
 }  // namespace ash

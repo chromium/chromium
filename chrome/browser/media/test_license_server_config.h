@@ -20,6 +20,10 @@ class CommandLine;
 class TestLicenseServerConfig {
  public:
   TestLicenseServerConfig() {}
+
+  TestLicenseServerConfig(const TestLicenseServerConfig&) = delete;
+  TestLicenseServerConfig& operator=(const TestLicenseServerConfig&) = delete;
+
   virtual ~TestLicenseServerConfig() {}
 
   // Returns a string containing the URL and port the server is listening to.
@@ -37,9 +41,6 @@ class TestLicenseServerConfig {
 
   // Returns true if the server is supported on current platform.
   virtual bool IsPlatformSupported() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLicenseServerConfig);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_TEST_LICENSE_SERVER_CONFIG_H_

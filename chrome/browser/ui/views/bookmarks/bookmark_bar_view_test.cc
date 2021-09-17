@@ -92,6 +92,9 @@ class DialogWaiter : public aura::EnvObserver,
  public:
   DialogWaiter() { aura::Env::GetInstance()->AddObserver(this); }
 
+  DialogWaiter(const DialogWaiter&) = delete;
+  DialogWaiter& operator=(const DialogWaiter&) = delete;
+
   ~DialogWaiter() override { aura::Env::GetInstance()->RemoveObserver(this); }
 
   views::Widget* WaitForDialog() {
@@ -129,8 +132,6 @@ class DialogWaiter : public aura::EnvObserver,
   bool dialog_created_ = false;
   views::Widget* dialog_ = nullptr;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogWaiter);
 };
 
 // Waits for a dialog to terminate.
@@ -140,6 +141,9 @@ class DialogCloseWaiter : public views::WidgetObserver {
       : dialog_closed_(false) {
     dialog->AddObserver(this);
   }
+
+  DialogCloseWaiter(const DialogCloseWaiter&) = delete;
+  DialogCloseWaiter& operator=(const DialogCloseWaiter&) = delete;
 
   ~DialogCloseWaiter() override {
     // It is not necessary to remove |this| from the dialog's observer, since
@@ -164,8 +168,6 @@ class DialogCloseWaiter : public views::WidgetObserver {
 
   bool dialog_closed_;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogCloseWaiter);
 };
 
 // Waits for a views::Widget to receive a Tab key.
@@ -176,6 +178,9 @@ class TabKeyWaiter : public ui::EventHandler {
         received_tab_(false) {
     widget_->GetNativeWindow()->AddPreTargetHandler(this);
   }
+
+  TabKeyWaiter(const TabKeyWaiter&) = delete;
+  TabKeyWaiter& operator=(const TabKeyWaiter&) = delete;
 
   ~TabKeyWaiter() override {
     widget_->GetNativeWindow()->RemovePreTargetHandler(this);
@@ -203,8 +208,6 @@ class TabKeyWaiter : public ui::EventHandler {
   views::Widget* widget_;
   bool received_tab_;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabKeyWaiter);
 };
 
 void MoveMouseAndPress(const gfx::Point& screen_pos,
@@ -222,6 +225,10 @@ void MoveMouseAndPress(const gfx::Point& screen_pos,
 class TestingPageNavigator : public PageNavigator {
  public:
   TestingPageNavigator() {}
+
+  TestingPageNavigator(const TestingPageNavigator&) = delete;
+  TestingPageNavigator& operator=(const TestingPageNavigator&) = delete;
+
   ~TestingPageNavigator() override {}
 
   WebContents* OpenURL(const OpenURLParams& params) override {
@@ -241,8 +248,6 @@ class TestingPageNavigator : public PageNavigator {
  private:
   std::vector<GURL> urls_;
   std::vector<ui::PageTransition> transitions_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingPageNavigator);
 };
 
 }  // namespace

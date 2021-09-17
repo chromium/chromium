@@ -345,10 +345,11 @@ class BrowserViewHostedAppTest : public TestWithBrowserView {
   BrowserViewHostedAppTest()
       : TestWithBrowserView(Browser::TYPE_POPUP,
                             BrowserWithTestWindowTest::HostedApp()) {}
-  ~BrowserViewHostedAppTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewHostedAppTest);
+  BrowserViewHostedAppTest(const BrowserViewHostedAppTest&) = delete;
+  BrowserViewHostedAppTest& operator=(const BrowserViewHostedAppTest&) = delete;
+
+  ~BrowserViewHostedAppTest() override {}
 };
 
 // Test basic layout for hosted apps.

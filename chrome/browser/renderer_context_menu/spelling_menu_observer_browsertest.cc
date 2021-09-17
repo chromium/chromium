@@ -155,6 +155,9 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
         menu()->GetBrowserContext(), SpellingServiceClient::SPELLCHECK));
   }
 
+  SpellingMenuObserverTest(const SpellingMenuObserverTest&) = delete;
+  SpellingMenuObserverTest& operator=(const SpellingMenuObserverTest&) = delete;
+
   ~SpellingMenuObserverTest() override;
   MockRenderViewContextMenu* menu() { return menu_.get(); }
   SpellingMenuObserver* observer() { return observer_.get(); }
@@ -171,8 +174,6 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList feature_list_;
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-
-  DISALLOW_COPY_AND_ASSIGN(SpellingMenuObserverTest);
 };
 
 #if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)

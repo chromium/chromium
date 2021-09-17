@@ -38,6 +38,10 @@ class CrostiniThrottleTest : public testing::Test {
   class TestDelegateImpl : public CrostiniThrottle::Delegate {
    public:
     explicit TestDelegateImpl(CrostiniThrottleTest* test) : test_(test) {}
+
+    TestDelegateImpl(const TestDelegateImpl&) = delete;
+    TestDelegateImpl& operator=(const TestDelegateImpl&) = delete;
+
     ~TestDelegateImpl() override = default;
 
     void SetCpuRestriction(bool restrict) override {
@@ -48,7 +52,6 @@ class CrostiniThrottleTest : public testing::Test {
     }
 
     CrostiniThrottleTest* test_;
-    DISALLOW_COPY_AND_ASSIGN(TestDelegateImpl);
   };
 
   content::BrowserTaskEnvironment task_environment_;

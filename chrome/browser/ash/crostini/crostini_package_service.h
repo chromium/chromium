@@ -36,6 +36,10 @@ class CrostiniPackageService : public KeyedService,
   static CrostiniPackageService* GetForProfile(Profile* profile);
 
   explicit CrostiniPackageService(Profile* profile);
+
+  CrostiniPackageService(const CrostiniPackageService&) = delete;
+  CrostiniPackageService& operator=(const CrostiniPackageService&) = delete;
+
   ~CrostiniPackageService() override;
 
   // For testing: Set a callback that will be called each time a notification
@@ -195,8 +199,6 @@ class CrostiniPackageService : public KeyedService,
   int next_notification_id_ = 0;
 
   base::WeakPtrFactory<CrostiniPackageService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniPackageService);
 };
 
 }  // namespace crostini

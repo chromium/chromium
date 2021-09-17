@@ -29,6 +29,10 @@ class DMGIterator {
   // FileReadStream opened from a DMG file. This does not take ownership
   // of the stream.
   explicit DMGIterator(ReadStream* stream);
+
+  DMGIterator(const DMGIterator&) = delete;
+  DMGIterator& operator=(const DMGIterator&) = delete;
+
   ~DMGIterator();
 
   // Opens the DMG file for iteration. This must be called before any other
@@ -58,8 +62,6 @@ class DMGIterator {
   size_t current_partition_;  // The index in |partitions_| of the current one.
   std::unique_ptr<HFSIterator>
       hfs_;  // The HFSIterator for |current_partition_|.
-
-  DISALLOW_COPY_AND_ASSIGN(DMGIterator);
 };
 
 }  // namespace dmg

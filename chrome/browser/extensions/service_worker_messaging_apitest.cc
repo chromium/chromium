@@ -69,6 +69,11 @@ base::FilePath WriteServiceWorkerExtensionToDir(TestExtensionDir* test_dir) {
 class ServiceWorkerMessagingTest : public ExtensionApiTest {
  public:
   ServiceWorkerMessagingTest() = default;
+
+  ServiceWorkerMessagingTest(const ServiceWorkerMessagingTest&) = delete;
+  ServiceWorkerMessagingTest& operator=(const ServiceWorkerMessagingTest&) =
+      delete;
+
   ~ServiceWorkerMessagingTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -92,9 +97,6 @@ class ServiceWorkerMessagingTest : public ExtensionApiTest {
   }
 
   extensions::ScopedTestNativeMessagingHost test_host_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMessagingTest);
 };
 
 class ServiceWorkerMessagingTestWithActivityLog

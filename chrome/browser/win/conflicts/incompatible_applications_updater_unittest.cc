@@ -51,6 +51,11 @@ class MockModuleListFilter : public ModuleListFilter {
 class MockInstalledApplications : public InstalledApplications {
  public:
   MockInstalledApplications() = default;
+
+  MockInstalledApplications(const MockInstalledApplications&) = delete;
+  MockInstalledApplications& operator=(const MockInstalledApplications&) =
+      delete;
+
   ~MockInstalledApplications() override = default;
 
   void AddIncompatibleApplication(const base::FilePath& file_path,
@@ -73,8 +78,6 @@ class MockInstalledApplications : public InstalledApplications {
 
  private:
   std::multimap<base::FilePath, ApplicationInfo> applications_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInstalledApplications);
 };
 
 constexpr wchar_t kCertificatePath[] = L"CertificatePath";

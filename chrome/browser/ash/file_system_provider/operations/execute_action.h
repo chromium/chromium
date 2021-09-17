@@ -40,6 +40,10 @@ class ExecuteAction : public Operation {
                 const std::vector<base::FilePath>& entry_path,
                 const std::string& action_id,
                 storage::AsyncFileUtil::StatusCallback callback);
+
+  ExecuteAction(const ExecuteAction&) = delete;
+  ExecuteAction& operator=(const ExecuteAction&) = delete;
+
   ~ExecuteAction() override;
 
   // Operation overrides.
@@ -55,8 +59,6 @@ class ExecuteAction : public Operation {
   const std::vector<base::FilePath> entry_paths_;
   const std::string action_id_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExecuteAction);
 };
 
 }  // namespace operations

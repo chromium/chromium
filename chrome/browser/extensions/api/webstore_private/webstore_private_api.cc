@@ -97,6 +97,10 @@ namespace {
 class PendingApprovals {
  public:
   PendingApprovals();
+
+  PendingApprovals(const PendingApprovals&) = delete;
+  PendingApprovals& operator=(const PendingApprovals&) = delete;
+
   ~PendingApprovals();
 
   void PushApproval(std::unique_ptr<WebstoreInstaller::Approval> approval);
@@ -110,8 +114,6 @@ class PendingApprovals {
       std::vector<std::unique_ptr<WebstoreInstaller::Approval>>;
 
   ApprovalList approvals_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingApprovals);
 };
 
 PendingApprovals::PendingApprovals() {}

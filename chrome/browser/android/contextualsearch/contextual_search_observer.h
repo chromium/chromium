@@ -31,6 +31,10 @@ class ContextualSearchObserver
       public content::WebContentsUserData<ContextualSearchObserver> {
  public:
   explicit ContextualSearchObserver(content::WebContents* web_contents);
+
+  ContextualSearchObserver(const ContextualSearchObserver&) = delete;
+  ContextualSearchObserver& operator=(const ContextualSearchObserver&) = delete;
+
   ~ContextualSearchObserver() override;
 
   static void SetHandlerForWebContents(content::WebContents* web_contents,
@@ -48,8 +52,6 @@ class ContextualSearchObserver
   ContextualSearchJsApiHandler* api_handler_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchObserver);
 };
 
 }  // namespace contextual_search

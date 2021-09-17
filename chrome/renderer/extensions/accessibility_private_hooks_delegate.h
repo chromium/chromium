@@ -20,6 +20,12 @@ class ScriptContext;
 class AccessibilityPrivateHooksDelegate : public APIBindingHooksDelegate {
  public:
   AccessibilityPrivateHooksDelegate();
+
+  AccessibilityPrivateHooksDelegate(const AccessibilityPrivateHooksDelegate&) =
+      delete;
+  AccessibilityPrivateHooksDelegate& operator=(
+      const AccessibilityPrivateHooksDelegate&) = delete;
+
   ~AccessibilityPrivateHooksDelegate() override;
 
   // APIBindingHooksDelegate:
@@ -35,7 +41,6 @@ class AccessibilityPrivateHooksDelegate : public APIBindingHooksDelegate {
   APIBindingHooks::RequestResult HandleGetDisplayNameForLocale(
       ScriptContext* script_context,
       const std::vector<v8::Local<v8::Value>>& parsed_arguments);
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityPrivateHooksDelegate);
 };
 
 }  // namespace extensions

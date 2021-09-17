@@ -11,14 +11,16 @@
 class ChromePDFPrintClient : public pdf::PepperPDFHost::PrintClient {
  public:
   ChromePDFPrintClient();
+
+  ChromePDFPrintClient(const ChromePDFPrintClient&) = delete;
+  ChromePDFPrintClient& operator=(const ChromePDFPrintClient&) = delete;
+
   ~ChromePDFPrintClient() override;
 
  private:
   // pdf::PepperPDFHost::PrintClient:
   bool IsPrintingEnabled(PP_Instance instance_id) override;
   bool Print(PP_Instance instance_id) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePDFPrintClient);
 };
 
 #endif  // CHROME_RENDERER_PEPPER_CHROME_PDF_PRINT_CLIENT_H_

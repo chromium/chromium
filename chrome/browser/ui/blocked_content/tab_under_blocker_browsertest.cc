@@ -54,6 +54,10 @@ class TabUnderBlockerBrowserTest : public extensions::ExtensionBrowserTest {
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
+  TabUnderBlockerBrowserTest(const TabUnderBlockerBrowserTest&) = delete;
+  TabUnderBlockerBrowserTest& operator=(const TabUnderBlockerBrowserTest&) =
+      delete;
+
   ~TabUnderBlockerBrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -91,8 +95,6 @@ class TabUnderBlockerBrowserTest : public extensions::ExtensionBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabUnderBlockerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TabUnderBlockerBrowserTest, SimpleTabUnder_IsBlocked) {

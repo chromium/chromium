@@ -104,6 +104,9 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
                                                        disabled_features);
   }
 
+  LiteVideoBrowserTest(const LiteVideoBrowserTest&) = delete;
+  LiteVideoBrowserTest& operator=(const LiteVideoBrowserTest&) = delete;
+
   ~LiteVideoBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -173,8 +176,6 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
   GURL media_url_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(LiteVideoBrowserTest);
 };
 // Fails occasionally on ChromeOS, MacOS, Win, Linux. http://crbug.com/1111570
 // Need to make tests more reliable but feature only targeted

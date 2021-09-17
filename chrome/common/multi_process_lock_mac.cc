@@ -15,6 +15,9 @@ class MultiProcessLockMac : public MultiProcessLock {
  public:
   explicit MultiProcessLockMac(const std::string& name) : name_(name) { }
 
+  MultiProcessLockMac(const MultiProcessLockMac&) = delete;
+  MultiProcessLockMac& operator=(const MultiProcessLockMac&) = delete;
+
   ~MultiProcessLockMac() override {
     if (port_ != NULL) {
       Unlock();
@@ -50,7 +53,6 @@ class MultiProcessLockMac : public MultiProcessLock {
  private:
   std::string name_;
   base::ScopedCFTypeRef<CFMessagePortRef> port_;
-  DISALLOW_COPY_AND_ASSIGN(MultiProcessLockMac);
 };
 
 std::unique_ptr<MultiProcessLock> MultiProcessLock::Create(

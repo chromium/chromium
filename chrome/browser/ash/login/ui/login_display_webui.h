@@ -21,6 +21,10 @@ class LoginDisplayWebUI : public LoginDisplay,
                           public ui::UserActivityObserver {
  public:
   LoginDisplayWebUI();
+
+  LoginDisplayWebUI(const LoginDisplayWebUI&) = delete;
+  LoginDisplayWebUI& operator=(const LoginDisplayWebUI&) = delete;
+
   ~LoginDisplayWebUI() override;
 
   // LoginDisplay implementation:
@@ -57,8 +61,6 @@ class LoginDisplayWebUI : public LoginDisplay,
 
   // Reference to the WebUI handling layer for the login screen
   LoginDisplayWebUIHandler* webui_handler_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplayWebUI);
 };
 
 }  // namespace ash

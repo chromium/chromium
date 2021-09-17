@@ -21,6 +21,10 @@ class EnableDebuggingScreen : public BaseScreen {
  public:
   EnableDebuggingScreen(EnableDebuggingScreenView* view,
                         const base::RepeatingClosure& exit_callback);
+
+  EnableDebuggingScreen(const EnableDebuggingScreen&) = delete;
+  EnableDebuggingScreen& operator=(const EnableDebuggingScreen&) = delete;
+
   ~EnableDebuggingScreen() override;
 
   // Called by EnableDebuggingScreenHandler.
@@ -64,8 +68,6 @@ class EnableDebuggingScreen : public BaseScreen {
   base::RepeatingClosure exit_callback_;
 
   base::WeakPtrFactory<EnableDebuggingScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnableDebuggingScreen);
 };
 
 }  // namespace ash

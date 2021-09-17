@@ -26,6 +26,10 @@ class ResetReportUploader : public KeyedService {
  public:
   explicit ResetReportUploader(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  ResetReportUploader(const ResetReportUploader&) = delete;
+  ResetReportUploader& operator=(const ResetReportUploader&) = delete;
+
   ~ResetReportUploader() override;
 
   void DispatchReport(const reset_report::ChromeResetReport& report);
@@ -43,8 +47,6 @@ class ResetReportUploader : public KeyedService {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   SimpleURLLoaderList simple_url_loaders_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResetReportUploader);
 };
 
 #endif  // CHROME_BROWSER_PROFILE_RESETTER_RESET_REPORT_UPLOADER_H_

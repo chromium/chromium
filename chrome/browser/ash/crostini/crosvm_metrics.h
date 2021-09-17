@@ -21,6 +21,10 @@ namespace crostini {
 class CrosvmMetrics {
  public:
   CrosvmMetrics();
+
+  CrosvmMetrics(const CrosvmMetrics&) = delete;
+  CrosvmMetrics& operator=(const CrosvmMetrics&) = delete;
+
   ~CrosvmMetrics();
 
   // Start taking snapshot of crosvm process resource usage.
@@ -63,8 +67,6 @@ class CrosvmMetrics {
   base::FilePath slash_proc_ = base::FilePath("/proc");
 
   base::WeakPtrFactory<CrosvmMetrics> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrosvmMetrics);
 };
 
 }  // namespace crostini

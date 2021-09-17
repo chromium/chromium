@@ -37,6 +37,10 @@ class RecommendAppsScreen : public BaseScreen,
 
   RecommendAppsScreen(RecommendAppsScreenView* view,
                       const ScreenExitCallback& exit_callback);
+
+  RecommendAppsScreen(const RecommendAppsScreen&) = delete;
+  RecommendAppsScreen& operator=(const RecommendAppsScreen&) = delete;
+
   ~RecommendAppsScreen() override;
 
   // Called when the user skips the Recommend Apps screen.
@@ -77,8 +81,6 @@ class RecommendAppsScreen : public BaseScreen,
 
   // Skip the screen for testing if set to true.
   bool skip_for_testing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RecommendAppsScreen);
 };
 
 }  // namespace ash

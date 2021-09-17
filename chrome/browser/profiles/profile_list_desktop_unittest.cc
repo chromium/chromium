@@ -35,6 +35,10 @@ namespace {
 class MockObserver : public AvatarMenuObserver {
  public:
   MockObserver() : count_(0) {}
+
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+
   ~MockObserver() override {}
 
   void OnAvatarMenuChanged(AvatarMenu* avatar_menu) override { ++count_; }
@@ -43,8 +47,6 @@ class MockObserver : public AvatarMenuObserver {
 
  private:
   int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 class ProfileListDesktopTest : public testing::Test {

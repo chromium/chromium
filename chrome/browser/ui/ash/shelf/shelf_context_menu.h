@@ -16,6 +16,9 @@ class ChromeShelfController;
 // A base class for browser, extension, and ARC shelf item context menus.
 class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
  public:
+  ShelfContextMenu(const ShelfContextMenu&) = delete;
+  ShelfContextMenu& operator=(const ShelfContextMenu&) = delete;
+
   ~ShelfContextMenu() override;
 
   // Static function to create a context menu instance.
@@ -66,8 +69,6 @@ class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
   const ash::ShelfItem item_;
 
   const int64_t display_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfContextMenu);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_SHELF_CONTEXT_MENU_H_

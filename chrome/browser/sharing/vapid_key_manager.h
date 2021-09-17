@@ -31,6 +31,10 @@ class VapidKeyManager {
  public:
   explicit VapidKeyManager(SharingSyncPreference* sharing_sync_preference,
                            syncer::SyncService* sync_service);
+
+  VapidKeyManager(const VapidKeyManager&) = delete;
+  VapidKeyManager& operator=(const VapidKeyManager&) = delete;
+
   virtual ~VapidKeyManager();
 
   // Returns the cached key. If absent, first attempts to refresh the cached
@@ -58,8 +62,6 @@ class VapidKeyManager {
   syncer::SyncService* sync_service_;
   std::unique_ptr<crypto::ECPrivateKey> vapid_key_;
   std::vector<uint8_t> vapid_key_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(VapidKeyManager);
 };
 
 #endif  // CHROME_BROWSER_SHARING_VAPID_KEY_MANAGER_H_

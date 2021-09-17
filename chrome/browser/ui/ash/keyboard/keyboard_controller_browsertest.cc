@@ -40,6 +40,10 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
   explicit KeyboardVisibleWaiter(bool visible) : visible_(visible) {
     ChromeKeyboardControllerClient::Get()->AddObserver(this);
   }
+
+  KeyboardVisibleWaiter(const KeyboardVisibleWaiter&) = delete;
+  KeyboardVisibleWaiter& operator=(const KeyboardVisibleWaiter&) = delete;
+
   ~KeyboardVisibleWaiter() override {
     ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   }
@@ -61,8 +65,6 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
  private:
   base::RunLoop run_loop_;
   const bool visible_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardVisibleWaiter);
 };
 
 class KeyboardLoadedWaiter : public ChromeKeyboardControllerClient::Observer {
@@ -70,6 +72,10 @@ class KeyboardLoadedWaiter : public ChromeKeyboardControllerClient::Observer {
   KeyboardLoadedWaiter() {
     ChromeKeyboardControllerClient::Get()->AddObserver(this);
   }
+
+  KeyboardLoadedWaiter(const KeyboardLoadedWaiter&) = delete;
+  KeyboardLoadedWaiter& operator=(const KeyboardLoadedWaiter&) = delete;
+
   ~KeyboardLoadedWaiter() override {
     ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   }
@@ -85,8 +91,6 @@ class KeyboardLoadedWaiter : public ChromeKeyboardControllerClient::Observer {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardLoadedWaiter);
 };
 
 class KeyboardOccludedBoundsChangeWaiter
@@ -95,6 +99,12 @@ class KeyboardOccludedBoundsChangeWaiter
   KeyboardOccludedBoundsChangeWaiter() {
     ChromeKeyboardControllerClient::Get()->AddObserver(this);
   }
+
+  KeyboardOccludedBoundsChangeWaiter(
+      const KeyboardOccludedBoundsChangeWaiter&) = delete;
+  KeyboardOccludedBoundsChangeWaiter& operator=(
+      const KeyboardOccludedBoundsChangeWaiter&) = delete;
+
   ~KeyboardOccludedBoundsChangeWaiter() override {
     ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   }
@@ -108,8 +118,6 @@ class KeyboardOccludedBoundsChangeWaiter
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardOccludedBoundsChangeWaiter);
 };
 
 ui::InputMethod* GetInputMethod() {
@@ -124,6 +132,12 @@ ui::InputMethod* GetInputMethod() {
 class KeyboardControllerWebContentTest : public InProcessBrowserTest {
  public:
   KeyboardControllerWebContentTest() {}
+
+  KeyboardControllerWebContentTest(const KeyboardControllerWebContentTest&) =
+      delete;
+  KeyboardControllerWebContentTest& operator=(
+      const KeyboardControllerWebContentTest&) = delete;
+
   ~KeyboardControllerWebContentTest() override {}
 
   void SetUp() override {
@@ -171,8 +185,6 @@ class KeyboardControllerWebContentTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<ui::DummyTextInputClient> client;
   ui::ScopedTestInputMethodFactory scoped_test_input_method_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerWebContentTest);
 };
 
 // Test for crbug.com/404340. After enabling an IME in a different extension,
@@ -239,6 +251,12 @@ class KeyboardControllerAppWindowTest
     : public extensions::PlatformAppBrowserTest {
  public:
   KeyboardControllerAppWindowTest() {}
+
+  KeyboardControllerAppWindowTest(const KeyboardControllerAppWindowTest&) =
+      delete;
+  KeyboardControllerAppWindowTest& operator=(
+      const KeyboardControllerAppWindowTest&) = delete;
+
   ~KeyboardControllerAppWindowTest() override {}
 
   // Ensure that the virtual keyboard is enabled.
@@ -265,9 +283,6 @@ class KeyboardControllerAppWindowTest
     extension_service()->AddExtension(extension.get());
     return extension;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerAppWindowTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
@@ -395,15 +410,17 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
 class KeyboardControllerStateTest : public InProcessBrowserTest {
  public:
   KeyboardControllerStateTest() {}
+
+  KeyboardControllerStateTest(const KeyboardControllerStateTest&) = delete;
+  KeyboardControllerStateTest& operator=(const KeyboardControllerStateTest&) =
+      delete;
+
   ~KeyboardControllerStateTest() override {}
 
   // Ensure that the virtual keyboard is enabled.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(keyboard::switches::kEnableVirtualKeyboard);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardControllerStateTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KeyboardControllerStateTest, OpenTwice) {

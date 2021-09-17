@@ -26,6 +26,10 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
                                public ProfileBasedBrowsingHistoryDriver {
  public:
   BrowsingHistoryHandler();
+
+  BrowsingHistoryHandler(const BrowsingHistoryHandler&) = delete;
+  BrowsingHistoryHandler& operator=(const BrowsingHistoryHandler&) = delete;
+
   ~BrowsingHistoryHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -93,8 +97,6 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   std::string remove_visits_callback_;
 
   base::WeakPtrFactory<BrowsingHistoryHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingHistoryHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HISTORY_BROWSING_HISTORY_HANDLER_H_

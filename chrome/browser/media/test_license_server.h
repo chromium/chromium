@@ -18,6 +18,10 @@ class TestLicenseServer {
  public:
   explicit TestLicenseServer(
       std::unique_ptr<TestLicenseServerConfig> server_config);
+
+  TestLicenseServer(const TestLicenseServer&) = delete;
+  TestLicenseServer& operator=(const TestLicenseServer&) = delete;
+
   ~TestLicenseServer();
 
   // Returns true if the server started successfully. False otherwise.
@@ -32,8 +36,6 @@ class TestLicenseServer {
   std::unique_ptr<TestLicenseServerConfig> server_config_;
   // Process for the license server.
   base::Process license_server_process_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLicenseServer);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_TEST_LICENSE_SERVER_H_

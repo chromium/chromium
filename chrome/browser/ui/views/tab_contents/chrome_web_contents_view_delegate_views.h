@@ -29,6 +29,12 @@ class ChromeWebContentsViewDelegateViews
  public:
   explicit ChromeWebContentsViewDelegateViews(
       content::WebContents* web_contents);
+
+  ChromeWebContentsViewDelegateViews(
+      const ChromeWebContentsViewDelegateViews&) = delete;
+  ChromeWebContentsViewDelegateViews& operator=(
+      const ChromeWebContentsViewDelegateViews&) = delete;
+
   ~ChromeWebContentsViewDelegateViews() override;
 
   // Overridden from WebContentsViewDelegate:
@@ -61,8 +67,6 @@ class ChromeWebContentsViewDelegateViews
   content::WebContents* web_contents_;
 
   ChromeWebContentsViewFocusHelper* GetFocusHelper() const;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebContentsViewDelegateViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_CONTENTS_CHROME_WEB_CONTENTS_VIEW_DELEGATE_VIEWS_H_

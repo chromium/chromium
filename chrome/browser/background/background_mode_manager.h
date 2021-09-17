@@ -71,6 +71,10 @@ class BackgroundModeManager : public content::NotificationObserver,
  public:
   BackgroundModeManager(const base::CommandLine& command_line,
                         ProfileAttributesStorage* profile_storage);
+
+  BackgroundModeManager(const BackgroundModeManager&) = delete;
+  BackgroundModeManager& operator=(const BackgroundModeManager&) = delete;
+
   ~BackgroundModeManager() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -482,8 +486,6 @@ class BackgroundModeManager : public content::NotificationObserver,
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<BackgroundModeManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundModeManager);
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_BACKGROUND_MODE_MANAGER_H_

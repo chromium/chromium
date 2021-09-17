@@ -123,6 +123,9 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     DCHECK(profile_);
   }
 
+  PrioritySyncReadyWaiter(const PrioritySyncReadyWaiter&) = delete;
+  PrioritySyncReadyWaiter& operator=(const PrioritySyncReadyWaiter&) = delete;
+
   ~PrioritySyncReadyWaiter() override = default;
 
   void Start(base::OnceClosure done_closure) {
@@ -235,8 +238,6 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
       syncable_pref_observation_{this};
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrioritySyncReadyWaiter);
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

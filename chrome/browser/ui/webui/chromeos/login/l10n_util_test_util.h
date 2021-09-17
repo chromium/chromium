@@ -19,6 +19,12 @@ class MockInputMethodManagerWithInputMethods
     : public input_method::MockInputMethodManagerImpl {
  public:
   MockInputMethodManagerWithInputMethods();
+
+  MockInputMethodManagerWithInputMethods(
+      const MockInputMethodManagerWithInputMethods&) = delete;
+  MockInputMethodManagerWithInputMethods& operator=(
+      const MockInputMethodManagerWithInputMethods&) = delete;
+
   ~MockInputMethodManagerWithInputMethods() override;
 
   void AddInputMethod(const std::string& id,
@@ -27,8 +33,6 @@ class MockInputMethodManagerWithInputMethods
 
  private:
   input_method::InputMethodDescriptors descriptors_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodManagerWithInputMethods);
 };
 
 }  // namespace chromeos

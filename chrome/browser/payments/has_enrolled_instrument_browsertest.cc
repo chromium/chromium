@@ -36,6 +36,10 @@ class HasEnrolledInstrumentTest
     }
   }
 
+  HasEnrolledInstrumentTest(const HasEnrolledInstrumentTest&) = delete;
+  HasEnrolledInstrumentTest& operator=(const HasEnrolledInstrumentTest&) =
+      delete;
+
   ~HasEnrolledInstrumentTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -104,8 +108,6 @@ class HasEnrolledInstrumentTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HasEnrolledInstrumentTest);
 };
 
 IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest, NoCard) {

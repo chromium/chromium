@@ -98,6 +98,12 @@ class ActiveTabPermissionGranterTestDelegate
     : public ActiveTabPermissionGranter::Delegate {
  public:
   ActiveTabPermissionGranterTestDelegate() {}
+
+  ActiveTabPermissionGranterTestDelegate(
+      const ActiveTabPermissionGranterTestDelegate&) = delete;
+  ActiveTabPermissionGranterTestDelegate& operator=(
+      const ActiveTabPermissionGranterTestDelegate&) = delete;
+
   ~ActiveTabPermissionGranterTestDelegate() override {}
 
   // ActiveTabPermissionGranterTestDelegate::Delegate
@@ -116,8 +122,6 @@ class ActiveTabPermissionGranterTestDelegate
  private:
   bool should_grant_ = false;
   int should_grant_call_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveTabPermissionGranterTestDelegate);
 };
 
 class ActiveTabTest : public ChromeRenderViewHostTestHarness {

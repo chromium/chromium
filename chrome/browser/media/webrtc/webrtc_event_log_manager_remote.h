@@ -33,6 +33,11 @@ class WebRtcRemoteEventLogManager final
   WebRtcRemoteEventLogManager(
       WebRtcRemoteEventLogsObserver* observer,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  WebRtcRemoteEventLogManager(const WebRtcRemoteEventLogManager&) = delete;
+  WebRtcRemoteEventLogManager& operator=(const WebRtcRemoteEventLogManager&) =
+      delete;
+
   ~WebRtcRemoteEventLogManager() override;
 
   // Sets a network::NetworkConnectionTracker which will be used to track
@@ -484,8 +489,6 @@ class WebRtcRemoteEventLogManager final
   // here. In reality, this is never auto-destroyed; see destructor for details.
   std::unique_ptr<base::WeakPtrFactory<WebRtcRemoteEventLogManager>>
       weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcRemoteEventLogManager);
 };
 
 }  // namespace webrtc_event_logging

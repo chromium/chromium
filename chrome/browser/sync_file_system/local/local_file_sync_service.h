@@ -56,6 +56,10 @@ class LocalFileSyncService
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // This is called when there're one or more local changes available.
@@ -63,9 +67,6 @@ class LocalFileSyncService
     // scheduling but the value may not be accurately reflect the real-time
     // value.
     virtual void OnLocalChangeAvailable(int64_t pending_changes_hint) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   typedef base::OnceCallback<void(SyncStatusCode status,
@@ -76,6 +77,10 @@ class LocalFileSyncService
   static std::unique_ptr<LocalFileSyncService> CreateForTesting(
       Profile* profile,
       leveldb::Env* env_override);
+
+  LocalFileSyncService(const LocalFileSyncService&) = delete;
+  LocalFileSyncService& operator=(const LocalFileSyncService&) = delete;
+
   ~LocalFileSyncService() override;
 
   void Shutdown();
@@ -235,8 +240,6 @@ class LocalFileSyncService
   GetLocalChangeProcessorCallback get_local_change_processor_;
 
   base::ObserverList<Observer>::Unchecked change_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileSyncService);
 };
 
 }  // namespace sync_file_system

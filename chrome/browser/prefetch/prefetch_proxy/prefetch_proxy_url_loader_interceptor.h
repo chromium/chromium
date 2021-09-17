@@ -31,6 +31,12 @@ class PrefetchProxyURLLoaderInterceptor
     : public content::URLLoaderRequestInterceptor {
  public:
   explicit PrefetchProxyURLLoaderInterceptor(int frame_tree_node_id);
+
+  PrefetchProxyURLLoaderInterceptor(const PrefetchProxyURLLoaderInterceptor&) =
+      delete;
+  PrefetchProxyURLLoaderInterceptor& operator=(
+      const PrefetchProxyURLLoaderInterceptor&) = delete;
+
   ~PrefetchProxyURLLoaderInterceptor() override;
 
   // content::URLLaoderRequestInterceptor:
@@ -88,8 +94,6 @@ class PrefetchProxyURLLoaderInterceptor
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PrefetchProxyURLLoaderInterceptor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchProxyURLLoaderInterceptor);
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_URL_LOADER_INTERCEPTOR_H_

@@ -44,6 +44,12 @@ class LanguageSettingsPrivateDelegate
  public:
   static LanguageSettingsPrivateDelegate* Create(
       content::BrowserContext* browser_context);
+
+  LanguageSettingsPrivateDelegate(const LanguageSettingsPrivateDelegate&) =
+      delete;
+  LanguageSettingsPrivateDelegate& operator=(
+      const LanguageSettingsPrivateDelegate&) = delete;
+
   ~LanguageSettingsPrivateDelegate() override;
 
   // Returns the languages and statuses of the enabled spellcheck dictionaries.
@@ -144,8 +150,6 @@ class LanguageSettingsPrivateDelegate
   content::NotificationRegistrar notification_registrar_;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateDelegate);
 };
 
 }  // namespace extensions

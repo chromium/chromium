@@ -27,6 +27,12 @@ class EnterpriseMemoryLimitEvaluator {
  public:
   explicit EnterpriseMemoryLimitEvaluator(
       std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
+
+  EnterpriseMemoryLimitEvaluator(const EnterpriseMemoryLimitEvaluator&) =
+      delete;
+  EnterpriseMemoryLimitEvaluator& operator=(
+      const EnterpriseMemoryLimitEvaluator&) = delete;
+
   ~EnterpriseMemoryLimitEvaluator();
 
   // Starts/stops observing the resident set of Chrome processes and notifying
@@ -61,8 +67,6 @@ class EnterpriseMemoryLimitEvaluator {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<EnterpriseMemoryLimitEvaluator> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseMemoryLimitEvaluator);
 };
 
 // Instances of this class are constructed and destructed on the main thread.

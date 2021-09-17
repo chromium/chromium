@@ -57,6 +57,9 @@ class ScopedSetMetricsConsent {
         &consent_);
   }
 
+  ScopedSetMetricsConsent(const ScopedSetMetricsConsent&) = delete;
+  ScopedSetMetricsConsent& operator=(const ScopedSetMetricsConsent&) = delete;
+
   ~ScopedSetMetricsConsent() {
     ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
         nullptr);
@@ -64,8 +67,6 @@ class ScopedSetMetricsConsent {
 
  private:
   const bool consent_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetMetricsConsent);
 };
 
 class HatsServiceBrowserTestBase : public InProcessBrowserTest {

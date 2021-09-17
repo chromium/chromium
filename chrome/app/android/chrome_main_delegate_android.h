@@ -24,6 +24,11 @@ class ChromeMainDelegateAndroid : public ChromeMainDelegate {
   static void SecureDataDirectory();  // visible for testing
 
   ChromeMainDelegateAndroid();
+
+  ChromeMainDelegateAndroid(const ChromeMainDelegateAndroid&) = delete;
+  ChromeMainDelegateAndroid& operator=(const ChromeMainDelegateAndroid&) =
+      delete;
+
   ~ChromeMainDelegateAndroid() override;
 
   bool BasicStartupComplete(int* exit_code) override;
@@ -41,8 +46,6 @@ class ChromeMainDelegateAndroid : public ChromeMainDelegate {
   std::unique_ptr<safe_browsing::SafeBrowsingApiHandler>
       safe_browsing_api_handler_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMainDelegateAndroid);
 };
 
 #endif  // CHROME_APP_ANDROID_CHROME_MAIN_DELEGATE_ANDROID_H_

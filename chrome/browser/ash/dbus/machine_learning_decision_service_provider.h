@@ -42,6 +42,12 @@ class MachineLearningDecisionServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   MachineLearningDecisionServiceProvider();
+
+  MachineLearningDecisionServiceProvider(
+      const MachineLearningDecisionServiceProvider&) = delete;
+  MachineLearningDecisionServiceProvider& operator=(
+      const MachineLearningDecisionServiceProvider&) = delete;
+
   ~MachineLearningDecisionServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -73,8 +79,6 @@ class MachineLearningDecisionServiceProvider
   // beginning of destruction.
   base::WeakPtrFactory<MachineLearningDecisionServiceProvider>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLearningDecisionServiceProvider);
 };
 
 }  // namespace ash

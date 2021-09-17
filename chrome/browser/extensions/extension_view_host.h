@@ -43,6 +43,10 @@ class ExtensionViewHost
                     const GURL& url,
                     mojom::ViewType host_type,
                     Browser* browser);
+
+  ExtensionViewHost(const ExtensionViewHost&) = delete;
+  ExtensionViewHost& operator=(const ExtensionViewHost&) = delete;
+
   ~ExtensionViewHost() override;
 
   Browser* browser() { return browser_; }
@@ -129,8 +133,6 @@ class ExtensionViewHost
       associated_web_contents_observer_;
 
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionViewHost);
 };
 
 }  // namespace extensions

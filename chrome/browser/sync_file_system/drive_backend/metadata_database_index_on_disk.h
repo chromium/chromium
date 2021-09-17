@@ -34,6 +34,10 @@ class MetadataDatabaseIndexOnDisk : public MetadataDatabaseIndexInterface {
   static std::unique_ptr<MetadataDatabaseIndexOnDisk> Create(
       LevelDBWrapper* db);
 
+  MetadataDatabaseIndexOnDisk(const MetadataDatabaseIndexOnDisk&) = delete;
+  MetadataDatabaseIndexOnDisk& operator=(const MetadataDatabaseIndexOnDisk&) =
+      delete;
+
   ~MetadataDatabaseIndexOnDisk() override;
 
   // MetadataDatabaseIndexInterface overrides.
@@ -170,8 +174,6 @@ class MetadataDatabaseIndexOnDisk : public MetadataDatabaseIndexInterface {
   std::unique_ptr<ServiceMetadata> service_metadata_;
 
   size_t num_dirty_trackers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataDatabaseIndexOnDisk);
 };
 
 }  // namespace drive_backend

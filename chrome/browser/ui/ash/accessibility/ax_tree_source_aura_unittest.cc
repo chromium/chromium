@@ -54,6 +54,10 @@ size_t GetSize(AXAuraObjWrapper* tree) {
 class AXTreeSourceAuraTest : public ChromeViewsTestBase {
  public:
   AXTreeSourceAuraTest() {}
+
+  AXTreeSourceAuraTest(const AXTreeSourceAuraTest&) = delete;
+  AXTreeSourceAuraTest& operator=(const AXTreeSourceAuraTest&) = delete;
+
   ~AXTreeSourceAuraTest() override {}
 
   void SetUp() override {
@@ -85,9 +89,6 @@ class AXTreeSourceAuraTest : public ChromeViewsTestBase {
   AXAuraObjCache cache_;
   // A simulated desktop root with no delegate.
   AXRootObjWrapper root_wrapper_{nullptr, &cache_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceAuraTest);
 };
 
 TEST_F(AXTreeSourceAuraTest, Accessors) {

@@ -121,6 +121,10 @@ class SupervisedUserURLFilter {
   };
 
   SupervisedUserURLFilter();
+
+  SupervisedUserURLFilter(const SupervisedUserURLFilter&) = delete;
+  SupervisedUserURLFilter& operator=(const SupervisedUserURLFilter&) = delete;
+
   ~SupervisedUserURLFilter();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -292,8 +296,6 @@ class SupervisedUserURLFilter {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtrFactory<SupervisedUserURLFilter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserURLFilter);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_URL_FILTER_H_

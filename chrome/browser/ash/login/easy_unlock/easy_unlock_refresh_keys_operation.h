@@ -27,6 +27,12 @@ class EasyUnlockRefreshKeysOperation {
                                  const std::string& tpm_public_key,
                                  const EasyUnlockDeviceKeyDataList& devices,
                                  RefreshKeysCallback callback);
+
+  EasyUnlockRefreshKeysOperation(const EasyUnlockRefreshKeysOperation&) =
+      delete;
+  EasyUnlockRefreshKeysOperation& operator=(
+      const EasyUnlockRefreshKeysOperation&) = delete;
+
   ~EasyUnlockRefreshKeysOperation();
 
   void Start();
@@ -45,8 +51,6 @@ class EasyUnlockRefreshKeysOperation {
   std::unique_ptr<EasyUnlockRemoveKeysOperation> remove_keys_operation_;
 
   base::WeakPtrFactory<EasyUnlockRefreshKeysOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockRefreshKeysOperation);
 };
 
 }  // namespace ash

@@ -29,14 +29,16 @@ class InstallLimiterTest
  public:
   InstallLimiterTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
+
+  InstallLimiterTest(const InstallLimiterTest&) = delete;
+  InstallLimiterTest& operator=(const InstallLimiterTest&) = delete;
+
   ~InstallLimiterTest() override = default;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   chromeos::ScopedStubInstallAttributes test_install_attributes_;
   user_manager::ScopedUserManager scoped_user_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallLimiterTest);
 };
 
 TEST_P(InstallLimiterTest, ShouldDeferInstall) {

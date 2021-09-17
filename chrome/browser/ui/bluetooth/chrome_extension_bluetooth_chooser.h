@@ -27,6 +27,12 @@ class ChromeExtensionBluetoothChooser : public content::BluetoothChooser {
   ChromeExtensionBluetoothChooser(
       content::RenderFrameHost* frame,
       const content::BluetoothChooser::EventHandler& event_handler);
+
+  ChromeExtensionBluetoothChooser(const ChromeExtensionBluetoothChooser&) =
+      delete;
+  ChromeExtensionBluetoothChooser& operator=(
+      const ChromeExtensionBluetoothChooser&) = delete;
+
   ~ChromeExtensionBluetoothChooser() override;
 
   // content::BluetoothChooser:
@@ -43,8 +49,6 @@ class ChromeExtensionBluetoothChooser : public content::BluetoothChooser {
   // Weak. DeviceChooserContentView[Cocoa] owns it.
   permissions::BluetoothChooserController* bluetooth_chooser_controller_;
   std::unique_ptr<ChromeExtensionChooserDialog> chooser_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionBluetoothChooser);
 };
 
 #endif  // CHROME_BROWSER_UI_BLUETOOTH_CHROME_EXTENSION_BLUETOOTH_CHOOSER_H_

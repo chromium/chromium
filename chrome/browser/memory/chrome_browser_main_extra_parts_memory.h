@@ -28,6 +28,12 @@ class EnterpriseMemoryLimitPrefObserver;
 class ChromeBrowserMainExtraPartsMemory : public ChromeBrowserMainExtraParts {
  public:
   ChromeBrowserMainExtraPartsMemory();
+
+  ChromeBrowserMainExtraPartsMemory(const ChromeBrowserMainExtraPartsMemory&) =
+      delete;
+  ChromeBrowserMainExtraPartsMemory& operator=(
+      const ChromeBrowserMainExtraPartsMemory&) = delete;
+
   ~ChromeBrowserMainExtraPartsMemory() override;
 
  private:
@@ -50,8 +56,6 @@ class ChromeBrowserMainExtraPartsMemory : public ChromeBrowserMainExtraParts {
 #endif
 
   std::unique_ptr<memory::MemoryAblationStudy> memory_ablation_study_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsMemory);
 };
 
 #endif  // CHROME_BROWSER_MEMORY_CHROME_BROWSER_MAIN_EXTRA_PARTS_MEMORY_H_

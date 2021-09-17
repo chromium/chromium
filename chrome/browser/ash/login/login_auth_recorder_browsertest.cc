@@ -27,6 +27,10 @@ constexpr char kAuthMethodSwitchHistogramName[] =
 class LoginAuthRecorderTest : public InProcessBrowserTest {
  public:
   LoginAuthRecorderTest() = default;
+
+  LoginAuthRecorderTest(const LoginAuthRecorderTest&) = delete;
+  LoginAuthRecorderTest& operator=(const LoginAuthRecorderTest&) = delete;
+
   ~LoginAuthRecorderTest() override = default;
 
  protected:
@@ -63,9 +67,6 @@ class LoginAuthRecorderTest : public InProcessBrowserTest {
 
   // Used to verify recorded data.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginAuthRecorderTest);
 };
 
 // Verifies that auth method usage is recorded correctly.

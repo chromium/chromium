@@ -16,6 +16,10 @@
 class VersionHandler : public content::WebUIMessageHandler {
  public:
   VersionHandler();
+
+  VersionHandler(const VersionHandler&) = delete;
+  VersionHandler& operator=(const VersionHandler&) = delete;
+
   ~VersionHandler() override;
 
   // content::WebUIMessageHandler implementation.
@@ -44,8 +48,6 @@ class VersionHandler : public content::WebUIMessageHandler {
 
   // Factory for the creating refs in callbacks.
   base::WeakPtrFactory<VersionHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VersionHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_H_

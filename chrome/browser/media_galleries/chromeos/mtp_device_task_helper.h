@@ -64,6 +64,10 @@ class MTPDeviceTaskHelper {
   typedef MTPDeviceAsyncDelegate::ErrorCallback ErrorCallback;
 
   MTPDeviceTaskHelper();
+
+  MTPDeviceTaskHelper(const MTPDeviceTaskHelper&) = delete;
+  MTPDeviceTaskHelper& operator=(const MTPDeviceTaskHelper&) = delete;
+
   ~MTPDeviceTaskHelper();
 
   // Dispatches the request to the MediaTransferProtocolManager to open the MTP
@@ -288,8 +292,6 @@ class MTPDeviceTaskHelper {
 
   // For callbacks that may run after destruction.
   base::WeakPtrFactory<MTPDeviceTaskHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceTaskHelper);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_DEVICE_TASK_HELPER_H_

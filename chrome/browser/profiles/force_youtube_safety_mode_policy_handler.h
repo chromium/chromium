@@ -22,15 +22,18 @@ class PolicyMap;
 class ForceYouTubeSafetyModePolicyHandler : public TypeCheckingPolicyHandler {
  public:
   ForceYouTubeSafetyModePolicyHandler();
+
+  ForceYouTubeSafetyModePolicyHandler(
+      const ForceYouTubeSafetyModePolicyHandler&) = delete;
+  ForceYouTubeSafetyModePolicyHandler& operator=(
+      const ForceYouTubeSafetyModePolicyHandler&) = delete;
+
   ~ForceYouTubeSafetyModePolicyHandler() override;
 
  protected:
   // ConfigurationPolicyHandler:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ForceYouTubeSafetyModePolicyHandler);
 };
 
 }  // namespace policy

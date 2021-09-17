@@ -18,6 +18,12 @@ class ChromeTranslateInternalsHandler
       public content::WebUIMessageHandler {
  public:
   ChromeTranslateInternalsHandler();
+
+  ChromeTranslateInternalsHandler(const ChromeTranslateInternalsHandler&) =
+      delete;
+  ChromeTranslateInternalsHandler& operator=(
+      const ChromeTranslateInternalsHandler&) = delete;
+
   ~ChromeTranslateInternalsHandler() override;
 
   // translate::TranslateInternalsHandler.
@@ -39,8 +45,6 @@ class ChromeTranslateInternalsHandler
 
  private:
   base::CallbackListSubscription detection_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTranslateInternalsHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_CHROME_TRANSLATE_INTERNALS_HANDLER_H_

@@ -37,6 +37,9 @@ enum class IncidentType : int32_t {
 // enable logging and pruning by the incident reporting service.
 class Incident {
  public:
+  Incident(const Incident&) = delete;
+  Incident& operator=(const Incident&) = delete;
+
   virtual ~Incident();
 
   // Returns the type of the incident.
@@ -65,8 +68,6 @@ class Incident {
 
  private:
   std::unique_ptr<ClientIncidentReport_IncidentData> payload_;
-
-  DISALLOW_COPY_AND_ASSIGN(Incident);
 };
 
 }  // namespace safe_browsing

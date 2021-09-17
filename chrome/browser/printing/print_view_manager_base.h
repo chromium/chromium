@@ -42,6 +42,9 @@ class PrinterQuery;
 class PrintViewManagerBase : public content::NotificationObserver,
                              public PrintManager {
  public:
+  PrintViewManagerBase(const PrintViewManagerBase&) = delete;
+  PrintViewManagerBase& operator=(const PrintViewManagerBase&) = delete;
+
   ~PrintViewManagerBase() override;
 
   // Prints the current document immediately. Since the rendering is
@@ -248,8 +251,6 @@ class PrintViewManagerBase : public content::NotificationObserver,
   const scoped_refptr<PrintQueriesQueue> queue_;
 
   base::WeakPtrFactory<PrintViewManagerBase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintViewManagerBase);
 };
 
 }  // namespace printing

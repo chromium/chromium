@@ -19,6 +19,10 @@ class TexturedQuadRenderer : public BaseRenderer {
  public:
   TexturedQuadRenderer(const char* vertex_src, const char* fragment_src);
   TexturedQuadRenderer();
+
+  TexturedQuadRenderer(const TexturedQuadRenderer&) = delete;
+  TexturedQuadRenderer& operator=(const TexturedQuadRenderer&) = delete;
+
   ~TexturedQuadRenderer() override;
 
   // Enqueues a textured quad for rendering. The GL will ultimately be issued
@@ -72,8 +76,6 @@ class TexturedQuadRenderer : public BaseRenderer {
   GLuint uses_overlay_handle_;
 
   base::queue<QuadData> quad_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(TexturedQuadRenderer);
 };
 
 }  // namespace vr

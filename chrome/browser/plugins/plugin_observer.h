@@ -39,6 +39,9 @@ class PluginObserver : public content::WebContentsObserver,
       mojo::PendingAssociatedReceiver<chrome::mojom::PluginHost> receiver,
       content::RenderFrameHost* rfh);
 
+  PluginObserver(const PluginObserver&) = delete;
+  PluginObserver& operator=(const PluginObserver&) = delete;
+
   ~PluginObserver() override;
 
   // content::WebContentsObserver implementation.
@@ -76,8 +79,6 @@ class PluginObserver : public content::WebContentsObserver,
   base::WeakPtrFactory<PluginObserver> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PluginObserver);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_OBSERVER_H_

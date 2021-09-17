@@ -55,6 +55,12 @@ class EventBasedStatusReportingService
       "Supervision.StatusReport.Event";
 
   explicit EventBasedStatusReportingService(content::BrowserContext* context);
+
+  EventBasedStatusReportingService(const EventBasedStatusReportingService&) =
+      delete;
+  EventBasedStatusReportingService& operator=(
+      const EventBasedStatusReportingService&) = delete;
+
   ~EventBasedStatusReportingService() override;
 
   // ArcAppListPrefs::Observer:
@@ -87,8 +93,6 @@ class EventBasedStatusReportingService
 
   content::BrowserContext* const context_;
   bool session_just_started_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(EventBasedStatusReportingService);
 };
 
 }  // namespace ash

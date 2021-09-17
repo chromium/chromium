@@ -21,6 +21,10 @@ class InstalledWebappProvider : public content_settings::ObservableProvider {
   using RuleList = std::vector<std::pair<GURL, ContentSetting>>;
 
   InstalledWebappProvider();
+
+  InstalledWebappProvider(const InstalledWebappProvider&) = delete;
+  InstalledWebappProvider& operator=(const InstalledWebappProvider&) = delete;
+
   ~InstalledWebappProvider() override;
 
   // ProviderInterface implementations.
@@ -40,9 +44,6 @@ class InstalledWebappProvider : public content_settings::ObservableProvider {
   void ShutdownOnUIThread() override;
 
   void Notify(ContentSettingsType content_type);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstalledWebappProvider);
 };
 
 #endif  // CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_PROVIDER_H_

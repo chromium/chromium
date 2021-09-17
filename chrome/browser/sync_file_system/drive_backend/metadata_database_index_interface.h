@@ -36,6 +36,12 @@ bool operator<(const ParentIDAndTitle& left, const ParentIDAndTitle& right);
 class MetadataDatabaseIndexInterface {
  public:
   MetadataDatabaseIndexInterface() {}
+
+  MetadataDatabaseIndexInterface(const MetadataDatabaseIndexInterface&) =
+      delete;
+  MetadataDatabaseIndexInterface& operator=(
+      const MetadataDatabaseIndexInterface&) = delete;
+
   virtual ~MetadataDatabaseIndexInterface() {}
 
   // Removes unreachable items.
@@ -120,9 +126,6 @@ class MetadataDatabaseIndexInterface {
   virtual std::vector<std::string> GetRegisteredAppIDs() const = 0;
   virtual std::vector<int64_t> GetAllTrackerIDs() const = 0;
   virtual std::vector<std::string> GetAllMetadataIDs() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetadataDatabaseIndexInterface);
 };
 
 }  // namespace drive_backend

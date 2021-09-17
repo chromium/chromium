@@ -55,6 +55,11 @@ class ExtensionActivityDataService final
     : public update_client::ActivityDataService {
  public:
   explicit ExtensionActivityDataService(ExtensionPrefs* extension_prefs);
+
+  ExtensionActivityDataService(const ExtensionActivityDataService&) = delete;
+  ExtensionActivityDataService& operator=(const ExtensionActivityDataService&) =
+      delete;
+
   ~ExtensionActivityDataService() override = default;
 
   // update_client::ActivityDataService:
@@ -71,8 +76,6 @@ class ExtensionActivityDataService final
   // This member is not owned by this class, it's owned by a profile keyed
   // service.
   ExtensionPrefs* extension_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActivityDataService);
 };
 
 // Calculates the value to use for the ping days parameter.

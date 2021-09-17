@@ -25,6 +25,11 @@ class Status;
 class GeolocationOverrideManager : public DevToolsEventListener {
  public:
   explicit GeolocationOverrideManager(DevToolsClient* client);
+
+  GeolocationOverrideManager(const GeolocationOverrideManager&) = delete;
+  GeolocationOverrideManager& operator=(const GeolocationOverrideManager&) =
+      delete;
+
   ~GeolocationOverrideManager() override;
 
   Status OverrideGeolocation(const Geoposition& geoposition);
@@ -40,8 +45,6 @@ class GeolocationOverrideManager : public DevToolsEventListener {
 
   DevToolsClient* client_;
   std::unique_ptr<Geoposition> overridden_geoposition_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationOverrideManager);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_GEOLOCATION_OVERRIDE_MANAGER_H_

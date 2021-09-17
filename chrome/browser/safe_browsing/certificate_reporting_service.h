@@ -95,6 +95,10 @@ class CertificateReportingService : public KeyedService {
   class BoundedReportList {
    public:
     explicit BoundedReportList(size_t max_size);
+
+    BoundedReportList(const BoundedReportList&) = delete;
+    BoundedReportList& operator=(const BoundedReportList&) = delete;
+
     ~BoundedReportList();
 
     void Add(const Report& report);
@@ -111,8 +115,6 @@ class CertificateReportingService : public KeyedService {
 
     std::vector<Report> items_;
     base::ThreadChecker thread_checker_;
-
-    DISALLOW_COPY_AND_ASSIGN(BoundedReportList);
   };
 
   // Class that handles report uploads and implements the upload retry logic.
@@ -123,6 +125,10 @@ class CertificateReportingService : public KeyedService {
              base::Clock* const clock,
              base::TimeDelta report_ttl,
              bool retries_enabled);
+
+    Reporter(const Reporter&) = delete;
+    Reporter& operator=(const Reporter&) = delete;
+
     ~Reporter();
 
     // Sends a report. If the send fails, the report will be added to the retry
@@ -166,8 +172,6 @@ class CertificateReportingService : public KeyedService {
     base::OnceClosure no_in_flight_reports_;
 
     base::WeakPtrFactory<Reporter> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(Reporter);
   };
 
   // Public for testing.

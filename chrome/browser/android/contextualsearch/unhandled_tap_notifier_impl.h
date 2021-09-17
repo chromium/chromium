@@ -26,6 +26,9 @@ class UnhandledTapNotifierImpl : public blink::mojom::UnhandledTapNotifier {
   UnhandledTapNotifierImpl(float device_scale_factor,
                            UnhandledTapCallback callback);
 
+  UnhandledTapNotifierImpl(const UnhandledTapNotifierImpl&) = delete;
+  UnhandledTapNotifierImpl& operator=(const UnhandledTapNotifierImpl&) = delete;
+
   ~UnhandledTapNotifierImpl() override;
 
   // Mojo UnhandledTapNotifier implementation.
@@ -38,8 +41,6 @@ class UnhandledTapNotifierImpl : public blink::mojom::UnhandledTapNotifier {
 
   // Callback to call when an unhandled tap notification takes place.
   UnhandledTapCallback unhandled_tap_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnhandledTapNotifierImpl);
 };
 
 // static

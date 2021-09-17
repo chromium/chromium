@@ -283,6 +283,10 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     EXPECT_TRUE(profiles_dir_.CreateUniqueTempDir());
   }
 
+  WebRtcEventLogManagerTestBase(const WebRtcEventLogManagerTestBase&) = delete;
+  WebRtcEventLogManagerTestBase& operator=(
+      const WebRtcEventLogManagerTestBase&) = delete;
+
   ~WebRtcEventLogManagerTestBase() override {
     WaitForPendingTasks();
 
@@ -891,8 +895,6 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   //    callback on the observer).
   NiceMock<MockWebRtcLocalEventLogsObserver> local_observer_;
   NiceMock<MockWebRtcRemoteEventLogsObserver> remote_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcEventLogManagerTestBase);
 };
 
 #if !defined(OS_ANDROID)

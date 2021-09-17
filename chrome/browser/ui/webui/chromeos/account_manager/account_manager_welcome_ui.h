@@ -15,11 +15,14 @@ namespace chromeos {
 class AccountManagerWelcomeUI : public ui::WebDialogUI {
  public:
   explicit AccountManagerWelcomeUI(content::WebUI* web_ui);
+
+  AccountManagerWelcomeUI(const AccountManagerWelcomeUI&) = delete;
+  AccountManagerWelcomeUI& operator=(const AccountManagerWelcomeUI&) = delete;
+
   ~AccountManagerWelcomeUI() override;
 
  private:
   base::WeakPtrFactory<AccountManagerWelcomeUI> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AccountManagerWelcomeUI);
 };
 
 }  // namespace chromeos

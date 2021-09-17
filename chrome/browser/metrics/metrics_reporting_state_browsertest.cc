@@ -60,6 +60,11 @@ class MetricsReportingStateTest : public InProcessBrowserTest,
                                   public testing::WithParamInterface<bool> {
  public:
   MetricsReportingStateTest() = default;
+
+  MetricsReportingStateTest(const MetricsReportingStateTest&) = delete;
+  MetricsReportingStateTest& operator=(const MetricsReportingStateTest&) =
+      delete;
+
   ~MetricsReportingStateTest() override = default;
 
   static bool IsMetricsAndCrashReportingEnabled() {
@@ -105,8 +110,6 @@ class MetricsReportingStateTest : public InProcessBrowserTest,
 
  private:
   base::FilePath local_state_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsReportingStateTest);
 };
 
 void ChromeBrowserMainExtraPartsChecker::PostEarlyInitialization() {

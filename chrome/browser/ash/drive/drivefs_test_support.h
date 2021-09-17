@@ -23,6 +23,10 @@ class FakeDriveFsHelper {
   static const char kPredefinedProfileSalt[];
 
   FakeDriveFsHelper(Profile* profile, const base::FilePath& mount_path);
+
+  FakeDriveFsHelper(const FakeDriveFsHelper&) = delete;
+  FakeDriveFsHelper& operator=(const FakeDriveFsHelper&) = delete;
+
   ~FakeDriveFsHelper();
 
   base::RepeatingCallback<std::unique_ptr<drivefs::DriveFsBootstrapListener>()>
@@ -34,8 +38,6 @@ class FakeDriveFsHelper {
  private:
   const base::FilePath mount_path_;
   drivefs::FakeDriveFs fake_drivefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveFsHelper);
 };
 
 }  // namespace drive

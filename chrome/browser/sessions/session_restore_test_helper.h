@@ -19,6 +19,10 @@ class MessageLoopRunner;
 class SessionRestoreTestHelper {
  public:
   SessionRestoreTestHelper();
+
+  SessionRestoreTestHelper(const SessionRestoreTestHelper&) = delete;
+  SessionRestoreTestHelper& operator=(const SessionRestoreTestHelper&) = delete;
+
   ~SessionRestoreTestHelper();
 
   // Blocks until OnSessionRestore() is called.
@@ -42,8 +46,6 @@ class SessionRestoreTestHelper {
 
   // For safely binding pointers to callbacks.
   base::WeakPtrFactory<SessionRestoreTestHelper> weak_ptr_factory{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestoreTestHelper);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_HELPER_H_

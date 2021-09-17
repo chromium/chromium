@@ -443,6 +443,10 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     storage_observer_.Observe(&profile_manager_->GetProfileAttributesStorage());
   }
 
+  AppControllerProfileObserver(const AppControllerProfileObserver&) = delete;
+  AppControllerProfileObserver& operator=(const AppControllerProfileObserver&) =
+      delete;
+
   ~AppControllerProfileObserver() override = default;
 
  private:
@@ -511,8 +515,6 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
   ProfileManager* const profile_manager_;
   AppController* const app_controller_;  // Weak; owns us.
-
-  DISALLOW_COPY_AND_ASSIGN(AppControllerProfileObserver);
 };
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)

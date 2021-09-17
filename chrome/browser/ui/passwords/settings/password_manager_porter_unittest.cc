@@ -179,6 +179,11 @@ class MockPasswordManagerExporter
             nullptr,
             base::BindRepeating([](password_manager::ExportProgressStatus,
                                    const std::string&) -> void {})) {}
+
+  MockPasswordManagerExporter(const MockPasswordManagerExporter&) = delete;
+  MockPasswordManagerExporter& operator=(const MockPasswordManagerExporter&) =
+      delete;
+
   ~MockPasswordManagerExporter() override = default;
 
   MOCK_METHOD0(PreparePasswordsForExport, void());
@@ -186,9 +191,6 @@ class MockPasswordManagerExporter
   MOCK_METHOD1(SetDestination, void(const base::FilePath&));
   MOCK_METHOD0(GetExportProgressStatus,
                password_manager::ExportProgressStatus());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordManagerExporter);
 };
 
 class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {

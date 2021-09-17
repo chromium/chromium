@@ -58,6 +58,10 @@ class CertificateManagerModel {
              bool web_trust_anchor,
              bool hardware_backed,
              bool device_wide);
+
+    CertInfo(const CertInfo&) = delete;
+    CertInfo& operator=(const CertInfo&) = delete;
+
     ~CertInfo();
 
     CERTCertificate* cert() const { return cert_.get(); }
@@ -105,8 +109,6 @@ class CertificateManagerModel {
     // true if the certificate is device-wide.
     // Note: can be true only on Chrome OS.
     bool device_wide_;
-
-    DISALLOW_COPY_AND_ASSIGN(CertInfo);
 
     FRIEND_TEST_ALL_PREFIXES(CertificateHandlerTest,
                              CanDeleteCertificateCommonTest);

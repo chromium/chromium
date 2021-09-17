@@ -47,6 +47,10 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
  public:
   explicit MockSpellCheckHost(content::RenderProcessHost* process_host)
       : process_host_(process_host) {}
+
+  MockSpellCheckHost(const MockSpellCheckHost&) = delete;
+  MockSpellCheckHost& operator=(const MockSpellCheckHost&) = delete;
+
   ~MockSpellCheckHost() override {}
 
   content::RenderProcessHost* process_host() const { return process_host_; }
@@ -181,8 +185,6 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
   std::u16string text_;
   mojo::Receiver<spellcheck::mojom::SpellCheckHost> receiver_{this};
   base::OnceClosure quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSpellCheckHost);
 };
 
 class SpellCheckBrowserTestHelper {
@@ -192,6 +194,10 @@ class SpellCheckBrowserTestHelper {
         base::BindRepeating(&SpellCheckBrowserTestHelper::BindSpellCheckHost,
                             base::Unretained(this)));
   }
+
+  SpellCheckBrowserTestHelper(const SpellCheckBrowserTestHelper&) = delete;
+  SpellCheckBrowserTestHelper& operator=(const SpellCheckBrowserTestHelper&) =
+      delete;
 
   ~SpellCheckBrowserTestHelper() {
     SpellCheckHostChromeImpl::OverrideBinderForTesting(base::NullCallback());
@@ -255,8 +261,6 @@ class SpellCheckBrowserTestHelper {
 
   base::OnceClosure quit_on_bind_closure_;
   std::vector<std::unique_ptr<MockSpellCheckHost>> spell_check_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckBrowserTestHelper);
 };
 
 class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {

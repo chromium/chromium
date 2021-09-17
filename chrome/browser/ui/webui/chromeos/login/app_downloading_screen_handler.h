@@ -37,6 +37,11 @@ class AppDownloadingScreenHandler : public BaseScreenHandler,
   using TView = AppDownloadingScreenView;
 
   explicit AppDownloadingScreenHandler(JSCallsContainer* js_calls_container);
+
+  AppDownloadingScreenHandler(const AppDownloadingScreenHandler&) = delete;
+  AppDownloadingScreenHandler& operator=(const AppDownloadingScreenHandler&) =
+      delete;
+
   ~AppDownloadingScreenHandler() override;
 
   // BaseScreenHandler:
@@ -54,8 +59,6 @@ class AppDownloadingScreenHandler : public BaseScreenHandler,
   void Initialize() override;
 
   ash::AppDownloadingScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AppDownloadingScreenHandler);
 };
 
 }  // namespace chromeos

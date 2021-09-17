@@ -95,6 +95,10 @@ class ChromePasswordManagerClient
           receiver,
       content::RenderFrameHost* rfh);
 
+  ChromePasswordManagerClient(const ChromePasswordManagerClient&) = delete;
+  ChromePasswordManagerClient& operator=(const ChromePasswordManagerClient&) =
+      delete;
+
   ~ChromePasswordManagerClient() override;
 
   // PasswordManagerClient implementation.
@@ -433,8 +437,6 @@ class ChromePasswordManagerClient
   password_manager::PasswordManagerClientHelper helper_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePasswordManagerClient);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_CHROME_PASSWORD_MANAGER_CLIENT_H_

@@ -1099,6 +1099,12 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, SendRendererContentRules) {
 class ContentSettingsWorkerModulesBrowserTest : public ContentSettingsTest {
  public:
   ContentSettingsWorkerModulesBrowserTest() = default;
+
+  ContentSettingsWorkerModulesBrowserTest(
+      const ContentSettingsWorkerModulesBrowserTest&) = delete;
+  ContentSettingsWorkerModulesBrowserTest& operator=(
+      const ContentSettingsWorkerModulesBrowserTest&) = delete;
+
   ~ContentSettingsWorkerModulesBrowserTest() override = default;
 
  protected:
@@ -1126,8 +1132,6 @@ class ContentSettingsWorkerModulesBrowserTest : public ContentSettingsTest {
     http_response->set_content_type(content_type);
     return std::move(http_response);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsWorkerModulesBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,

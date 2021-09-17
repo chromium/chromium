@@ -68,6 +68,10 @@
 class FirefoxProfileLock {
  public:
   explicit FirefoxProfileLock(const base::FilePath& path);
+
+  FirefoxProfileLock(const FirefoxProfileLock&) = delete;
+  FirefoxProfileLock& operator=(const FirefoxProfileLock&) = delete;
+
   ~FirefoxProfileLock();
 
   // Locks and releases the profile.
@@ -105,8 +109,6 @@ class FirefoxProfileLock {
   // other cases.
   bool LockWithFcntl();
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(FirefoxProfileLock);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_FIREFOX_PROFILE_LOCK_H__

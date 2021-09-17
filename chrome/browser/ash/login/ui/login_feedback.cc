@@ -51,6 +51,10 @@ extensions::ComponentLoader* GetComponentLoader(
 class FeedbackExtensionLoader : public extensions::ExtensionRegistryObserver {
  public:
   explicit FeedbackExtensionLoader(Profile* profile);
+
+  FeedbackExtensionLoader(const FeedbackExtensionLoader&) = delete;
+  FeedbackExtensionLoader& operator=(const FeedbackExtensionLoader&) = delete;
+
   ~FeedbackExtensionLoader() override;
 
   // Loads the feedback extension on the given profile and invokes
@@ -73,8 +77,6 @@ class FeedbackExtensionLoader : public extensions::ExtensionRegistryObserver {
   extensions::ExtensionRegistry* extension_registry_;
 
   base::OnceClosure on_ready_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackExtensionLoader);
 };
 
 FeedbackExtensionLoader::FeedbackExtensionLoader(Profile* profile)
@@ -124,6 +126,10 @@ class LoginFeedback::FeedbackWindowHandler
     : public extensions::AppWindowRegistry::Observer {
  public:
   explicit FeedbackWindowHandler(LoginFeedback* owner);
+
+  FeedbackWindowHandler(const FeedbackWindowHandler&) = delete;
+  FeedbackWindowHandler& operator=(const FeedbackWindowHandler&) = delete;
+
   ~FeedbackWindowHandler() override;
 
   bool HasFeedbackAppWindow() const;
@@ -134,8 +140,6 @@ class LoginFeedback::FeedbackWindowHandler
  private:
   LoginFeedback* const owner_;
   extensions::AppWindowRegistry* const window_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackWindowHandler);
 };
 
 LoginFeedback::FeedbackWindowHandler::FeedbackWindowHandler(

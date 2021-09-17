@@ -18,6 +18,12 @@ class ArcContentFileSystemBackendDelegate
     : public chromeos::FileSystemBackendDelegate {
  public:
   ArcContentFileSystemBackendDelegate();
+
+  ArcContentFileSystemBackendDelegate(
+      const ArcContentFileSystemBackendDelegate&) = delete;
+  ArcContentFileSystemBackendDelegate& operator=(
+      const ArcContentFileSystemBackendDelegate&) = delete;
+
   ~ArcContentFileSystemBackendDelegate() override;
 
   // FileSystemBackend::Delegate overrides.
@@ -40,8 +46,6 @@ class ArcContentFileSystemBackendDelegate
 
  private:
   std::unique_ptr<storage::AsyncFileUtil> async_file_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemBackendDelegate);
 };
 
 }  // namespace arc

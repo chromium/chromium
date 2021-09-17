@@ -59,6 +59,11 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
     scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
 #endif
   }
+
+  TwoClientWebAppsBMOSyncTest(const TwoClientWebAppsBMOSyncTest&) = delete;
+  TwoClientWebAppsBMOSyncTest& operator=(const TwoClientWebAppsBMOSyncTest&) =
+      delete;
+
   ~TwoClientWebAppsBMOSyncTest() override = default;
 
   bool SetupClients() override {
@@ -191,8 +196,6 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
  private:
   FakeWebAppProviderCreator fake_web_app_provider_creator_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TwoClientWebAppsBMOSyncTest);
 };
 
 // Test is flaky (crbug.com/1097050)

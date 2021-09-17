@@ -94,6 +94,9 @@ class DownloadManagerGetter : public DownloadManager::Observer {
     manager_->AddObserver(this);
   }
 
+  DownloadManagerGetter(const DownloadManagerGetter&) = delete;
+  DownloadManagerGetter& operator=(const DownloadManagerGetter&) = delete;
+
   ~DownloadManagerGetter() override {
     if (manager_)
       manager_->RemoveObserver(this);
@@ -107,7 +110,6 @@ class DownloadManagerGetter : public DownloadManager::Observer {
 
  private:
   DownloadManager* manager_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerGetter);
 };
 
 void RemoveDownloadItem(std::unique_ptr<DownloadManagerGetter> getter,

@@ -26,6 +26,11 @@ namespace speech {
 class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
  public:
   ChromeSpeechRecognitionTest() {}
+
+  ChromeSpeechRecognitionTest(const ChromeSpeechRecognitionTest&) = delete;
+  ChromeSpeechRecognitionTest& operator=(const ChromeSpeechRecognitionTest&) =
+      delete;
+
   ~ChromeSpeechRecognitionTest() override {}
 
   void SetUp() override {
@@ -50,9 +55,6 @@ class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
  protected:
   std::unique_ptr<content::FakeSpeechRecognitionManager>
       fake_speech_recognition_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeSpeechRecognitionTest);
 };
 
 class SpeechWebContentsObserver : public content::WebContentsObserver {
@@ -61,6 +63,11 @@ class SpeechWebContentsObserver : public content::WebContentsObserver {
       : WebContentsObserver(web_contents),
         render_view_host_changed_(false),
         web_contents_destroyed_(false) {}
+
+  SpeechWebContentsObserver(const SpeechWebContentsObserver&) = delete;
+  SpeechWebContentsObserver& operator=(const SpeechWebContentsObserver&) =
+      delete;
+
   ~SpeechWebContentsObserver() override {}
 
   // content::WebContentsObserver overrides.
@@ -76,8 +83,6 @@ class SpeechWebContentsObserver : public content::WebContentsObserver {
  private:
   bool render_view_host_changed_;
   bool web_contents_destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechWebContentsObserver);
 };
 
 // Tests that ChromeSpeechRecognitionManagerDelegate works properly

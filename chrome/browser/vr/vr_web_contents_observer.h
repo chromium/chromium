@@ -25,6 +25,10 @@ class VR_EXPORT VrWebContentsObserver : public content::WebContentsObserver {
                         BrowserUiInterface* ui_interface,
                         LocationBarHelper* toolbar,
                         base::OnceClosure on_destroy);
+
+  VrWebContentsObserver(const VrWebContentsObserver&) = delete;
+  VrWebContentsObserver& operator=(const VrWebContentsObserver&) = delete;
+
   ~VrWebContentsObserver() override;
 
  private:
@@ -49,8 +53,6 @@ class VR_EXPORT VrWebContentsObserver : public content::WebContentsObserver {
   LocationBarHelper* toolbar_;
 
   base::OnceClosure on_destroy_;
-
-  DISALLOW_COPY_AND_ASSIGN(VrWebContentsObserver);
 };
 
 }  // namespace vr

@@ -31,6 +31,11 @@ class HandoffActiveURLObserverBridge : public HandoffActiveURLObserverDelegate {
   explicit HandoffActiveURLObserverBridge(
       NSObject<HandoffActiveURLObserverBridgeDelegate>* delegate);
 
+  HandoffActiveURLObserverBridge(const HandoffActiveURLObserverBridge&) =
+      delete;
+  HandoffActiveURLObserverBridge& operator=(
+      const HandoffActiveURLObserverBridge&) = delete;
+
   ~HandoffActiveURLObserverBridge() override;
 
  private:
@@ -41,8 +46,6 @@ class HandoffActiveURLObserverBridge : public HandoffActiveURLObserverDelegate {
 
   // The C++ object that this class acts as a bridge for.
   std::unique_ptr<HandoffActiveURLObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandoffActiveURLObserverBridge);
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_HANDOFF_ACTIVE_URL_OBSERVER_BRIDGE_H_

@@ -24,6 +24,12 @@ class DummyInputMethodEngineObserver
     : public ash::input_method::InputMethodEngineBase::Observer {
  public:
   DummyInputMethodEngineObserver() = default;
+
+  DummyInputMethodEngineObserver(const DummyInputMethodEngineObserver&) =
+      delete;
+  DummyInputMethodEngineObserver& operator=(
+      const DummyInputMethodEngineObserver&) = delete;
+
   ~DummyInputMethodEngineObserver() override = default;
 
   void OnActivate(const std::string& engine_id) override {}
@@ -56,9 +62,6 @@ class DummyInputMethodEngineObserver
   void OnSuggestionsChanged(
       const std::vector<std::string>& suggestions) override {}
   void OnInputMethodOptionsChanged(const std::string& engine_id) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyInputMethodEngineObserver);
 };
 
 class TestInputMethodManager
@@ -67,6 +70,10 @@ class TestInputMethodManager
   TestInputMethodManager()
       : state_(base::MakeRefCounted<
                chromeos::input_method::MockInputMethodManager::State>()) {}
+
+  TestInputMethodManager(const TestInputMethodManager&) = delete;
+  TestInputMethodManager& operator=(const TestInputMethodManager&) = delete;
+
   ~TestInputMethodManager() override = default;
 
   scoped_refptr<InputMethodManager::State> GetActiveIMEState() override {
@@ -75,14 +82,17 @@ class TestInputMethodManager
 
  private:
   scoped_refptr<State> state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputMethodManager);
 };
 
 class TestIMEInputContextHandler : public ui::MockIMEInputContextHandler {
  public:
   explicit TestIMEInputContextHandler(ui::InputMethod* input_method)
       : input_method_(input_method) {}
+
+  TestIMEInputContextHandler(const TestIMEInputContextHandler&) = delete;
+  TestIMEInputContextHandler& operator=(const TestIMEInputContextHandler&) =
+      delete;
+
   ~TestIMEInputContextHandler() override = default;
 
   ui::InputMethod* GetInputMethod() override { return input_method_; }
@@ -118,8 +128,6 @@ class TestIMEInputContextHandler : public ui::MockIMEInputContextHandler {
 
   int send_key_event_call_count_ = 0;
   std::vector<std::tuple<int, int>> composition_range_history_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestIMEInputContextHandler);
 };
 
 class MockTextInputClient : public ui::DummyTextInputClient {
@@ -162,6 +170,10 @@ class MockTextInputClient : public ui::DummyTextInputClient {
 class InputConnectionImplTest : public testing::Test {
  public:
   InputConnectionImplTest() = default;
+
+  InputConnectionImplTest(const InputConnectionImplTest&) = delete;
+  InputConnectionImplTest& operator=(const InputConnectionImplTest&) = delete;
+
   ~InputConnectionImplTest() override = default;
 
   std::unique_ptr<InputConnectionImpl> CreateNewConnection(int context_id) {
@@ -219,8 +231,6 @@ class InputConnectionImplTest : public testing::Test {
   TestIMEInputContextHandler context_handler_{&input_method_};
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputConnectionImplTest);
 };
 
 }  // anonymous namespace

@@ -34,6 +34,10 @@ class ConfigSource {
       AuthenticatorsMap;
 
   ConfigSource();
+
+  ConfigSource(const ConfigSource&) = delete;
+  ConfigSource& operator=(const ConfigSource&) = delete;
+
   ~ConfigSource();
 
   const AuthenticatorsMap& config_map() const { return config_map_; }
@@ -50,8 +54,6 @@ class ConfigSource {
   // Holds the Parent Access Code Authenticators for all children signed in this
   // device.
   AuthenticatorsMap config_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigSource);
 };
 
 }  // namespace parent_access

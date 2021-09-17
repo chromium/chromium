@@ -42,6 +42,10 @@ class ZeroStateFileProvider : public SearchProvider,
                               file_manager::file_tasks::FileTasksObserver {
  public:
   explicit ZeroStateFileProvider(Profile* profile);
+
+  ZeroStateFileProvider(const ZeroStateFileProvider&) = delete;
+  ZeroStateFileProvider& operator=(const ZeroStateFileProvider&) = delete;
+
   ~ZeroStateFileProvider() override;
 
   // SearchProvider:
@@ -76,8 +80,6 @@ class ZeroStateFileProvider : public SearchProvider,
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<ZeroStateFileProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ZeroStateFileProvider);
 };
 
 }  // namespace app_list

@@ -31,6 +31,10 @@ class InspectableViewsFinder {
   using ViewList = std::vector<View>;
 
   explicit InspectableViewsFinder(Profile* profile);
+
+  InspectableViewsFinder(const InspectableViewsFinder&) = delete;
+  InspectableViewsFinder& operator=(const InspectableViewsFinder&) = delete;
+
   ~InspectableViewsFinder();
 
   // Construct a view from the given parameters.
@@ -64,8 +68,6 @@ class InspectableViewsFinder {
                                      ViewList* result);
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectableViewsFinder);
 };
 
 }  // namespace extensions

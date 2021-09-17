@@ -32,6 +32,10 @@ class IconDecodeRequest : public ImageDecoder::ImageRequest {
   using SetIconCallback = base::OnceCallback<void(const gfx::ImageSkia& icon)>;
 
   IconDecodeRequest(SetIconCallback set_icon_callback, int dimension_dip);
+
+  IconDecodeRequest(const IconDecodeRequest&) = delete;
+  IconDecodeRequest& operator=(const IconDecodeRequest&) = delete;
+
   ~IconDecodeRequest() override;
 
   // Disables async safe decoding requests when unit tests are executed.
@@ -56,8 +60,6 @@ class IconDecodeRequest : public ImageDecoder::ImageRequest {
   SetIconCallback set_icon_callback_;
   const int dimension_dip_;
   bool normalized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(IconDecodeRequest);
 };
 
 }  // namespace arc

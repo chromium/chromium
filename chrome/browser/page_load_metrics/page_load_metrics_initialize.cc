@@ -81,6 +81,10 @@ class PageLoadMetricsEmbedder
     : public page_load_metrics::PageLoadMetricsEmbedderBase {
  public:
   explicit PageLoadMetricsEmbedder(content::WebContents* web_contents);
+
+  PageLoadMetricsEmbedder(const PageLoadMetricsEmbedder&) = delete;
+  PageLoadMetricsEmbedder& operator=(const PageLoadMetricsEmbedder&) = delete;
+
   ~PageLoadMetricsEmbedder() override;
 
   // page_load_metrics::PageLoadMetricsEmbedderBase:
@@ -95,9 +99,6 @@ class PageLoadMetricsEmbedder
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   void RegisterEmbedderObservers(
       page_load_metrics::PageLoadTracker* tracker) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsEmbedder);
 };
 
 PageLoadMetricsEmbedder::PageLoadMetricsEmbedder(

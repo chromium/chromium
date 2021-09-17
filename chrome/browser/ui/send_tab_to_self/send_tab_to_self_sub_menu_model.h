@@ -39,6 +39,11 @@ class SendTabToSelfSubMenuModel : public ui::SimpleMenuModel,
   SendTabToSelfSubMenuModel(content::WebContents* tab,
                             SendTabToSelfMenuType menu_type,
                             const GURL& link_url);
+
+  SendTabToSelfSubMenuModel(const SendTabToSelfSubMenuModel&) = delete;
+  SendTabToSelfSubMenuModel& operator=(const SendTabToSelfSubMenuModel&) =
+      delete;
+
   ~SendTabToSelfSubMenuModel() override;
 
   // Overridden from ui::SimpleMenuModel::Delegate:
@@ -60,8 +65,6 @@ class SendTabToSelfSubMenuModel : public ui::SimpleMenuModel,
   const SendTabToSelfMenuType menu_type_;
   const GURL link_url_;
   std::vector<ValidDeviceItem> valid_device_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfSubMenuModel);
 };
 
 }  //  namespace send_tab_to_self

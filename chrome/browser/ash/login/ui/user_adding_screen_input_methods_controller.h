@@ -21,6 +21,12 @@ class UserAddingScreenInputMethodsController
     : public UserAddingScreen::Observer {
  public:
   explicit UserAddingScreenInputMethodsController(UserAddingScreen* screen);
+
+  UserAddingScreenInputMethodsController(
+      const UserAddingScreenInputMethodsController&) = delete;
+  UserAddingScreenInputMethodsController& operator=(
+      const UserAddingScreenInputMethodsController&) = delete;
+
   ~UserAddingScreenInputMethodsController() override;
 
   // UserAddingScreen::Observer implementation:
@@ -32,8 +38,6 @@ class UserAddingScreenInputMethodsController
 
   scoped_refptr<input_method::InputMethodManager::State> saved_ime_state_;
   user_manager::User* active_user_on_show_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserAddingScreenInputMethodsController);
 };
 
 }  // namespace ash

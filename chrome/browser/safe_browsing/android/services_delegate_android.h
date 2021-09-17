@@ -18,6 +18,10 @@ class AndroidTelemetryService;
 class ServicesDelegateAndroid : public ServicesDelegate {
  public:
   explicit ServicesDelegateAndroid(SafeBrowsingService* safe_browsing_service);
+
+  ServicesDelegateAndroid(const ServicesDelegateAndroid&) = delete;
+  ServicesDelegateAndroid& operator=(const ServicesDelegateAndroid&) = delete;
+
   ~ServicesDelegateAndroid() override;
 
  private:
@@ -50,8 +54,6 @@ class ServicesDelegateAndroid : public ServicesDelegate {
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   // Has the database_manager been set for tests?
   bool database_manager_set_for_tests_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ServicesDelegateAndroid);
 };
 
 }  // namespace safe_browsing

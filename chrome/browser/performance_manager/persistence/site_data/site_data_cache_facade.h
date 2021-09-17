@@ -27,6 +27,10 @@ class SiteDataCacheFacade : public KeyedService,
                             public history::HistoryServiceObserver {
  public:
   explicit SiteDataCacheFacade(content::BrowserContext* browser_context);
+
+  SiteDataCacheFacade(const SiteDataCacheFacade&) = delete;
+  SiteDataCacheFacade& operator=(const SiteDataCacheFacade&) = delete;
+
   ~SiteDataCacheFacade() override;
 
   void IsDataCacheRecordingForTesting(base::OnceCallback<void(bool)> cb);
@@ -46,8 +50,6 @@ class SiteDataCacheFacade : public KeyedService,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataCacheFacade);
 };
 
 }  // namespace performance_manager

@@ -19,6 +19,11 @@ namespace android_sms {
 class AndroidSmsAppSetupController {
  public:
   AndroidSmsAppSetupController() = default;
+
+  AndroidSmsAppSetupController(const AndroidSmsAppSetupController&) = delete;
+  AndroidSmsAppSetupController& operator=(const AndroidSmsAppSetupController&) =
+      delete;
+
   virtual ~AndroidSmsAppSetupController() = default;
 
   using SuccessCallback = base::OnceCallback<void(bool)>;
@@ -59,9 +64,6 @@ class AndroidSmsAppSetupController {
                          const GURL& install_url,
                          const GURL& migrated_to_app_url,
                          SuccessCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppSetupController);
 };
 
 }  // namespace android_sms

@@ -53,6 +53,11 @@ class PublicSessionPermissionHelper {
  public:
   PublicSessionPermissionHelper();
   PublicSessionPermissionHelper(PublicSessionPermissionHelper&& other);
+
+  PublicSessionPermissionHelper(const PublicSessionPermissionHelper&) = delete;
+  PublicSessionPermissionHelper& operator=(
+      const PublicSessionPermissionHelper&) = delete;
+
   ~PublicSessionPermissionHelper();
 
   bool HandlePermissionRequestImpl(const Extension& extension,
@@ -89,8 +94,6 @@ class PublicSessionPermissionHelper {
   PermissionIDSet allowed_permission_set_;
   PermissionIDSet denied_permission_set_;
   RequestCallbackList callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicSessionPermissionHelper);
 };
 
 PublicSessionPermissionHelper::PublicSessionPermissionHelper() {}

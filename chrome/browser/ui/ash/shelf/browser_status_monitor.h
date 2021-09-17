@@ -29,6 +29,10 @@ class BrowserStatusMonitor : public BrowserListObserver,
                              public TabStripModelObserver {
  public:
   explicit BrowserStatusMonitor(ChromeShelfController* shelf_controller);
+
+  BrowserStatusMonitor(const BrowserStatusMonitor&) = delete;
+  BrowserStatusMonitor& operator=(const BrowserStatusMonitor&) = delete;
+
   ~BrowserStatusMonitor() override;
 
   // Do the initialization work. Note: the init phase is separate from
@@ -119,8 +123,6 @@ class BrowserStatusMonitor : public BrowserListObserver,
   // another.
   std::set<content::WebContents*> tabs_in_transit_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserStatusMonitor);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_BROWSER_STATUS_MONITOR_H_

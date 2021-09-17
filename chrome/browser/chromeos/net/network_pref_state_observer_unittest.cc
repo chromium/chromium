@@ -39,6 +39,11 @@ class NetworkPrefStateObserverTest : public testing::Test {
       : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  NetworkPrefStateObserverTest(const NetworkPrefStateObserverTest&) = delete;
+  NetworkPrefStateObserverTest& operator=(const NetworkPrefStateObserverTest&) =
+      delete;
+
   ~NetworkPrefStateObserverTest() override {}
 
   void SetUp() override {
@@ -70,9 +75,6 @@ class NetworkPrefStateObserverTest : public testing::Test {
   TestingProfileManager profile_manager_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<NetworkPrefStateObserver> network_pref_state_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkPrefStateObserverTest);
 };
 
 TEST_F(NetworkPrefStateObserverTest, LoginUser) {

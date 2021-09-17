@@ -62,6 +62,10 @@ class InstallServiceWorkItemImpl {
                              const std::vector<GUID>& clsids,
                              const std::vector<GUID>& iids);
 
+  InstallServiceWorkItemImpl(const InstallServiceWorkItemImpl&) = delete;
+  InstallServiceWorkItemImpl& operator=(const InstallServiceWorkItemImpl&) =
+      delete;
+
   ~InstallServiceWorkItemImpl();
 
   bool DoImpl();
@@ -216,8 +220,6 @@ class InstallServiceWorkItemImpl {
   // True if a pre-existing service (named |original_service_name_|) could not
   // be deleted and still exists on rollback.
   bool original_service_still_exists_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallServiceWorkItemImpl);
 };
 
 }  // namespace installer

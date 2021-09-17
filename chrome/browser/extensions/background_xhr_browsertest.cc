@@ -106,6 +106,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrTest, HttpAuth) {
 class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
  public:
   BackgroundXhrWebstoreTest() = default;
+
+  BackgroundXhrWebstoreTest(const BackgroundXhrWebstoreTest&) = delete;
+  BackgroundXhrWebstoreTest& operator=(const BackgroundXhrWebstoreTest&) =
+      delete;
+
   ~BackgroundXhrWebstoreTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -167,9 +172,6 @@ class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     return extension;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundXhrWebstoreTest);
 };
 
 // Extensions should not be able to XHR to the webstore.

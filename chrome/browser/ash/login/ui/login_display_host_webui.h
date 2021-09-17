@@ -59,6 +59,10 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public MultiUserWindowManagerObserver {
  public:
   LoginDisplayHostWebUI();
+
+  LoginDisplayHostWebUI(const LoginDisplayHostWebUI&) = delete;
+  LoginDisplayHostWebUI& operator=(const LoginDisplayHostWebUI&) = delete;
+
   ~LoginDisplayHostWebUI() override;
 
   // LoginDisplayHost:
@@ -285,8 +289,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   base::ObserverList<LoginDisplayHost::Observer> observers_;
 
   base::WeakPtrFactory<LoginDisplayHostWebUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplayHostWebUI);
 };
 
 }  // namespace ash

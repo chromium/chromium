@@ -78,6 +78,11 @@ class DeviceScheduledUpdateCheckerForTest
                                      network_state_handler,
                                      std::move(task_executor)) {}
 
+  DeviceScheduledUpdateCheckerForTest(
+      const DeviceScheduledUpdateCheckerForTest&) = delete;
+  DeviceScheduledUpdateCheckerForTest& operator=(
+      const DeviceScheduledUpdateCheckerForTest&) = delete;
+
   ~DeviceScheduledUpdateCheckerForTest() override {
     TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
   }
@@ -107,8 +112,6 @@ class DeviceScheduledUpdateCheckerForTest
 
   // Number of calls to |OnUpdateCheckCompletion| with |result| = true.
   int update_check_completions_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceScheduledUpdateCheckerForTest);
 };
 
 class DeviceScheduledUpdateCheckerTest : public testing::Test {
@@ -143,6 +146,11 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
             network_state_test_helper_->network_state_handler(),
             std::move(task_executor));
   }
+
+  DeviceScheduledUpdateCheckerTest(const DeviceScheduledUpdateCheckerTest&) =
+      delete;
+  DeviceScheduledUpdateCheckerTest& operator=(
+      const DeviceScheduledUpdateCheckerTest&) = delete;
 
   ~DeviceScheduledUpdateCheckerTest() override {
     device_scheduled_update_checker_.reset();
@@ -358,8 +366,6 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
   chromeos::ScopedStubInstallAttributes test_install_attributes_{
       chromeos::StubInstallAttributes::CreateCloudManaged("fake-domain",
                                                           "fake-id")};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceScheduledUpdateCheckerTest);
 };
 
 TEST_F(DeviceScheduledUpdateCheckerTest, CheckIfDailyUpdateCheckIsScheduled) {

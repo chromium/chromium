@@ -51,6 +51,12 @@ class TestCertificateProviderExtension final {
 
   explicit TestCertificateProviderExtension(
       content::BrowserContext* browser_context);
+
+  TestCertificateProviderExtension(const TestCertificateProviderExtension&) =
+      delete;
+  TestCertificateProviderExtension& operator=(
+      const TestCertificateProviderExtension&) = delete;
+
   ~TestCertificateProviderExtension();
 
   // Causes the extension to call chrome.certificateProvider.setCertificates,
@@ -110,8 +116,6 @@ class TestCertificateProviderExtension final {
   bool should_provide_certificates_ = true;
   bool should_fail_sign_digest_requests_ = false;
   ExtensionTestMessageListener message_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCertificateProviderExtension);
 };
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_TEST_CERTIFICATE_PROVIDER_EXTENSION_H_

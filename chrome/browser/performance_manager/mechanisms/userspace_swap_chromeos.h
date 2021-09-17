@@ -51,6 +51,12 @@ class UserspaceSwapInitializationImpl
   using MemoryRegionPtr = ::userspace_swap::mojom::MemoryRegionPtr;
 
   explicit UserspaceSwapInitializationImpl(int render_process_host_id);
+
+  UserspaceSwapInitializationImpl(const UserspaceSwapInitializationImpl&) =
+      delete;
+  UserspaceSwapInitializationImpl& operator=(
+      const UserspaceSwapInitializationImpl&) = delete;
+
   ~UserspaceSwapInitializationImpl() override;
 
   static bool UserspaceSwapSupportedAndEnabled();
@@ -69,8 +75,6 @@ class UserspaceSwapInitializationImpl
  private:
   int render_process_host_id_ = 0;
   bool received_transfer_cb_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UserspaceSwapInitializationImpl);
 };
 
 }  // namespace userspace_swap

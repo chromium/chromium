@@ -16,13 +16,15 @@ class KeyboardUI;
 class ChromeKeyboardUIFactory : public keyboard::KeyboardUIFactory {
  public:
   ChromeKeyboardUIFactory();
+
+  ChromeKeyboardUIFactory(const ChromeKeyboardUIFactory&) = delete;
+  ChromeKeyboardUIFactory& operator=(const ChromeKeyboardUIFactory&) = delete;
+
   ~ChromeKeyboardUIFactory() override;
 
  private:
   // keyboard::KeyboardUIFactory:
   std::unique_ptr<keyboard::KeyboardUI> CreateKeyboardUI() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardUIFactory);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_KEYBOARD_CHROME_KEYBOARD_UI_FACTORY_H_

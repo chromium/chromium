@@ -41,6 +41,11 @@ class SiteEngagementDetailsProviderImpl
     DCHECK(profile_);
   }
 
+  SiteEngagementDetailsProviderImpl(const SiteEngagementDetailsProviderImpl&) =
+      delete;
+  SiteEngagementDetailsProviderImpl& operator=(
+      const SiteEngagementDetailsProviderImpl&) = delete;
+
   ~SiteEngagementDetailsProviderImpl() override {}
 
   // site_engagement::mojom::SiteEngagementDetailsProvider overrides:
@@ -83,8 +88,6 @@ class SiteEngagementDetailsProviderImpl
 
   mojo::Receiver<site_engagement::mojom::SiteEngagementDetailsProvider>
       receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementDetailsProviderImpl);
 };
 
 }  // namespace

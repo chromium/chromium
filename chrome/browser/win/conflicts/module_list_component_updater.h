@@ -24,6 +24,10 @@ class ModuleListComponentUpdater
   using UniquePtr =
       std::unique_ptr<ModuleListComponentUpdater, base::OnTaskRunnerDeleter>;
 
+  ModuleListComponentUpdater(const ModuleListComponentUpdater&) = delete;
+  ModuleListComponentUpdater& operator=(const ModuleListComponentUpdater&) =
+      delete;
+
   ~ModuleListComponentUpdater() override;
 
   // Creates a new instance that lives on the UI thread.
@@ -51,8 +55,6 @@ class ModuleListComponentUpdater
   base::ScopedObservation<component_updater::ComponentUpdateService,
                           component_updater::ComponentUpdateService::Observer>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleListComponentUpdater);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_LIST_COMPONENT_UPDATER_H_

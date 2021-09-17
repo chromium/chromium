@@ -210,6 +210,11 @@ class CloudPolicyCoreStatusProvider
       public policy::CloudPolicyStore::Observer {
  public:
   explicit CloudPolicyCoreStatusProvider(policy::CloudPolicyCore* core);
+
+  CloudPolicyCoreStatusProvider(const CloudPolicyCoreStatusProvider&) = delete;
+  CloudPolicyCoreStatusProvider& operator=(
+      const CloudPolicyCoreStatusProvider&) = delete;
+
   ~CloudPolicyCoreStatusProvider() override;
 
   // policy::CloudPolicyStore::Observer implementation.
@@ -220,9 +225,6 @@ class CloudPolicyCoreStatusProvider
   // Policy status is read from the CloudPolicyClient, CloudPolicyStore and
   // CloudPolicyRefreshScheduler hosted by this |core_|.
   policy::CloudPolicyCore* core_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyCoreStatusProvider);
 };
 
 // A cloud policy status provider for user policy.
@@ -230,6 +232,11 @@ class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
  public:
   explicit UserCloudPolicyStatusProvider(policy::CloudPolicyCore* core,
                                          Profile* profile);
+
+  UserCloudPolicyStatusProvider(const UserCloudPolicyStatusProvider&) = delete;
+  UserCloudPolicyStatusProvider& operator=(
+      const UserCloudPolicyStatusProvider&) = delete;
+
   ~UserCloudPolicyStatusProvider() override;
 
   // CloudPolicyCoreStatusProvider implementation.
@@ -237,7 +244,6 @@ class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
 
  private:
   Profile* profile_;
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStatusProvider);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -247,6 +253,12 @@ class UserCloudPolicyStatusProviderChromeOS
  public:
   explicit UserCloudPolicyStatusProviderChromeOS(policy::CloudPolicyCore* core,
                                                  Profile* profile);
+
+  UserCloudPolicyStatusProviderChromeOS(
+      const UserCloudPolicyStatusProviderChromeOS&) = delete;
+  UserCloudPolicyStatusProviderChromeOS& operator=(
+      const UserCloudPolicyStatusProviderChromeOS&) = delete;
+
   ~UserCloudPolicyStatusProviderChromeOS() override;
 
   // CloudPolicyCoreStatusProvider implementation.
@@ -254,7 +266,6 @@ class UserCloudPolicyStatusProviderChromeOS
 
  private:
   Profile* profile_;
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStatusProviderChromeOS);
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -265,6 +276,12 @@ class DeviceCloudPolicyStatusProviderChromeOS
  public:
   explicit DeviceCloudPolicyStatusProviderChromeOS(
       policy::BrowserPolicyConnectorAsh* connector);
+
+  DeviceCloudPolicyStatusProviderChromeOS(
+      const DeviceCloudPolicyStatusProviderChromeOS&) = delete;
+  DeviceCloudPolicyStatusProviderChromeOS& operator=(
+      const DeviceCloudPolicyStatusProviderChromeOS&) = delete;
+
   ~DeviceCloudPolicyStatusProviderChromeOS() override;
 
   // CloudPolicyCoreStatusProvider implementation.
@@ -272,8 +289,6 @@ class DeviceCloudPolicyStatusProviderChromeOS
 
  private:
   std::string enterprise_domain_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStatusProviderChromeOS);
 };
 
 // A cloud policy status provider that reads policy status from the policy core
@@ -289,6 +304,12 @@ class DeviceLocalAccountPolicyStatusProvider
   DeviceLocalAccountPolicyStatusProvider(
       const std::string& user_id,
       policy::DeviceLocalAccountPolicyService* service);
+
+  DeviceLocalAccountPolicyStatusProvider(
+      const DeviceLocalAccountPolicyStatusProvider&) = delete;
+  DeviceLocalAccountPolicyStatusProvider& operator=(
+      const DeviceLocalAccountPolicyStatusProvider&) = delete;
+
   ~DeviceLocalAccountPolicyStatusProvider() override;
 
   // PolicyStatusProvider implementation.
@@ -301,8 +322,6 @@ class DeviceLocalAccountPolicyStatusProvider
  private:
   const std::string user_id_;
   policy::DeviceLocalAccountPolicyService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyStatusProvider);
 };
 
 // Provides status for Active Directory user policy.
@@ -313,6 +332,11 @@ class UserActiveDirectoryPolicyStatusProvider
   explicit UserActiveDirectoryPolicyStatusProvider(
       policy::ActiveDirectoryPolicyManager* policy_manager,
       Profile* profile);
+
+  UserActiveDirectoryPolicyStatusProvider(
+      const UserActiveDirectoryPolicyStatusProvider&) = delete;
+  UserActiveDirectoryPolicyStatusProvider& operator=(
+      const UserActiveDirectoryPolicyStatusProvider&) = delete;
 
   ~UserActiveDirectoryPolicyStatusProvider() override;
 
@@ -326,7 +350,6 @@ class UserActiveDirectoryPolicyStatusProvider
  private:
   policy::ActiveDirectoryPolicyManager* const policy_manager_;  // not owned.
   Profile* profile_;
-  DISALLOW_COPY_AND_ASSIGN(UserActiveDirectoryPolicyStatusProvider);
 };
 
 // Provides status for Device Active Directory policy.
@@ -337,6 +360,11 @@ class DeviceActiveDirectoryPolicyStatusProvider
       policy::ActiveDirectoryPolicyManager* policy_manager,
       const std::string& enterprise_domain_manager);
 
+  DeviceActiveDirectoryPolicyStatusProvider(
+      const DeviceActiveDirectoryPolicyStatusProvider&) = delete;
+  DeviceActiveDirectoryPolicyStatusProvider& operator=(
+      const DeviceActiveDirectoryPolicyStatusProvider&) = delete;
+
   ~DeviceActiveDirectoryPolicyStatusProvider() override = default;
 
   // PolicyStatusProvider implementation.
@@ -344,8 +372,6 @@ class DeviceActiveDirectoryPolicyStatusProvider
 
  private:
   std::string enterprise_domain_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceActiveDirectoryPolicyStatusProvider);
 };
 #endif
 

@@ -52,6 +52,11 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
   NetworkConnectTestDelegate(
       std::unique_ptr<NetworkStateNotifier> network_state_notifier)
       : network_state_notifier_(std::move(network_state_notifier)) {}
+
+  NetworkConnectTestDelegate(const NetworkConnectTestDelegate&) = delete;
+  NetworkConnectTestDelegate& operator=(const NetworkConnectTestDelegate&) =
+      delete;
+
   ~NetworkConnectTestDelegate() override = default;
 
   // NetworkConnect::Delegate
@@ -71,8 +76,6 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
 
  private:
   std::unique_ptr<NetworkStateNotifier> network_state_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectTestDelegate);
 };
 
 }  // namespace
@@ -80,6 +83,10 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
 class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
  public:
   NetworkStateNotifierTest() = default;
+
+  NetworkStateNotifierTest(const NetworkStateNotifierTest&) = delete;
+  NetworkStateNotifierTest& operator=(const NetworkStateNotifierTest&) = delete;
+
   ~NetworkStateNotifierTest() override = default;
 
   void SetUp() override {
@@ -220,9 +227,6 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
   TestingPrefServiceSimple user_prefs_;
   TestingPrefServiceSimple local_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateNotifierTest);
 };
 
 TEST_F(NetworkStateNotifierTest, WiFiConnectionFailure) {

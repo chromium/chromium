@@ -20,6 +20,12 @@ class SigninStatusMetricsProviderChromeOS
     : public SigninStatusMetricsProviderBase {
  public:
   SigninStatusMetricsProviderChromeOS();
+
+  SigninStatusMetricsProviderChromeOS(
+      const SigninStatusMetricsProviderChromeOS&) = delete;
+  SigninStatusMetricsProviderChromeOS& operator=(
+      const SigninStatusMetricsProviderChromeOS&) = delete;
+
   ~SigninStatusMetricsProviderChromeOS() override;
 
   // SigninStatusMetricsProviderBase:
@@ -49,8 +55,6 @@ class SigninStatusMetricsProviderChromeOS
   // Used only for testing.
   static void SetGuestForTesting(bool is_guest);
   static absl::optional<bool> guest_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninStatusMetricsProviderChromeOS);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_STATUS_METRICS_PROVIDER_CHROMEOS_H_

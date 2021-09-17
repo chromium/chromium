@@ -33,6 +33,12 @@ class FullscreenControllerStateInteractiveTest
       public FullscreenControllerStateTest {
  public:
   FullscreenControllerStateInteractiveTest() = default;
+
+  FullscreenControllerStateInteractiveTest(
+      const FullscreenControllerStateInteractiveTest&) = delete;
+  FullscreenControllerStateInteractiveTest& operator=(
+      const FullscreenControllerStateInteractiveTest&) = delete;
+
   ~FullscreenControllerStateInteractiveTest() override = default;
 
   // InProcessBrowserTest:
@@ -47,9 +53,6 @@ class FullscreenControllerStateInteractiveTest
 
   // FullscreenControllerStateTest:
   Browser* GetBrowser() override { return InProcessBrowserTest::browser(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControllerStateInteractiveTest);
 };
 
 // Soak tests ------------------------------------------------------------------
@@ -122,4 +125,3 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerStateInteractiveTest,
       = new content::MessageLoopRunner();
   message_loop->Run();
 }
-

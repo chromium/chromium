@@ -44,6 +44,9 @@ class DialURLFetcher {
   // |error_cb|: Invoked when HTTP request to |url| fails.
   DialURLFetcher(SuccessCallback success_cb, ErrorCallback error_cb);
 
+  DialURLFetcher(const DialURLFetcher&) = delete;
+  DialURLFetcher& operator=(const DialURLFetcher&) = delete;
+
   virtual ~DialURLFetcher();
 
   // Starts a HTTP GET request.
@@ -110,7 +113,6 @@ class DialURLFetcher {
   network::ResourceRequest* saved_request_for_test_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(DialURLFetcher);
 };
 
 }  // namespace media_router

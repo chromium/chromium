@@ -26,6 +26,9 @@ class DesktopMediaListView
                        DesktopMediaSourceViewStyle single_style,
                        const std::u16string& accessible_name);
 
+  DesktopMediaListView(const DesktopMediaListView&) = delete;
+  DesktopMediaListView& operator=(const DesktopMediaListView&) = delete;
+
   ~DesktopMediaListView() override;
 
   // Called by DesktopMediaSourceView when selection has changed.
@@ -62,8 +65,6 @@ class DesktopMediaListView
   DesktopMediaSourceViewStyle* active_style_;
 
   const std::u16string accessible_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaListView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_LIST_VIEW_H_

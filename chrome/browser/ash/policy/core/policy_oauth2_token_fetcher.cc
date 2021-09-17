@@ -42,6 +42,11 @@ class PolicyOAuth2TokenFetcherImpl : public PolicyOAuth2TokenFetcher,
                                      public OAuth2AccessTokenConsumer {
  public:
   explicit PolicyOAuth2TokenFetcherImpl(const std::string& consumer_name);
+
+  PolicyOAuth2TokenFetcherImpl(const PolicyOAuth2TokenFetcherImpl&) = delete;
+  PolicyOAuth2TokenFetcherImpl& operator=(const PolicyOAuth2TokenFetcherImpl&) =
+      delete;
+
   ~PolicyOAuth2TokenFetcherImpl() override;
 
  private:
@@ -120,8 +125,6 @@ class PolicyOAuth2TokenFetcherImpl : public PolicyOAuth2TokenFetcher,
   const std::string consumer_name_;
 
   base::WeakPtrFactory<PolicyOAuth2TokenFetcherImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyOAuth2TokenFetcherImpl);
 };
 
 PolicyOAuth2TokenFetcherImpl::PolicyOAuth2TokenFetcherImpl(
@@ -251,6 +254,11 @@ void PolicyOAuth2TokenFetcherImpl::ForwardPolicyToken(
 class PolicyOAuth2TokenFetcherFake : public PolicyOAuth2TokenFetcher {
  public:
   PolicyOAuth2TokenFetcherFake() {}
+
+  PolicyOAuth2TokenFetcherFake(const PolicyOAuth2TokenFetcherFake&) = delete;
+  PolicyOAuth2TokenFetcherFake& operator=(const PolicyOAuth2TokenFetcherFake&) =
+      delete;
+
   ~PolicyOAuth2TokenFetcherFake() override {}
 
  private:
@@ -285,8 +293,6 @@ class PolicyOAuth2TokenFetcherFake : public PolicyOAuth2TokenFetcher {
 
   const std::string refresh_token_ = "fake_refresh_token";
   const std::string access_token_ = "fake_access_token";
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyOAuth2TokenFetcherFake);
 };
 
 }  // namespace

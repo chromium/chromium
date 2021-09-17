@@ -33,6 +33,10 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
 
   CRDHostDelegate();
   explicit CRDHostDelegate(std::unique_ptr<NativeMessageHostFactory> factory);
+
+  CRDHostDelegate(const CRDHostDelegate&) = delete;
+  CRDHostDelegate& operator=(const CRDHostDelegate&) = delete;
+
   ~CRDHostDelegate() override;
 
   // DeviceCommandStartCRDSessionJob::Delegate:
@@ -91,8 +95,6 @@ class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
   bool remote_connected_;
 
   base::WeakPtrFactory<CRDHostDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CRDHostDelegate);
 };
 
 }  // namespace policy

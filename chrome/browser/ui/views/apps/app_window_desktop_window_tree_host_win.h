@@ -23,6 +23,12 @@ class AppWindowDesktopWindowTreeHostWin
   AppWindowDesktopWindowTreeHostWin(
       ChromeNativeAppWindowViewsWin* app_window,
       views::DesktopNativeWidgetAura* desktop_native_widget_aura);
+
+  AppWindowDesktopWindowTreeHostWin(const AppWindowDesktopWindowTreeHostWin&) =
+      delete;
+  AppWindowDesktopWindowTreeHostWin& operator=(
+      const AppWindowDesktopWindowTreeHostWin&) = delete;
+
   ~AppWindowDesktopWindowTreeHostWin() override;
 
  private:
@@ -33,8 +39,6 @@ class AppWindowDesktopWindowTreeHostWin
   void HandleFrameChanged() override;
 
   ChromeNativeAppWindowViewsWin* app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowDesktopWindowTreeHostWin);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_DESKTOP_WINDOW_TREE_HOST_WIN_H_

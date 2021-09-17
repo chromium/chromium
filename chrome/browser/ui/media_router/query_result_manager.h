@@ -73,6 +73,10 @@ class QueryResultManager {
   };
 
   explicit QueryResultManager(MediaRouter* media_router);
+
+  QueryResultManager(const QueryResultManager&) = delete;
+  QueryResultManager& operator=(const QueryResultManager&) = delete;
+
   ~QueryResultManager();
 
   // Adds/removes an observer that is notified with query results.
@@ -184,8 +188,6 @@ class QueryResultManager {
 
   // Not owned by this object.
   MediaRouter* const router_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryResultManager);
 };
 
 }  // namespace media_router

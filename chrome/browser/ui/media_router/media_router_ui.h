@@ -57,6 +57,10 @@ class MediaRouterUI
       public MediaRouterFileDialog::MediaRouterFileDialogDelegate {
  public:
   explicit MediaRouterUI(content::WebContents* initiator);
+
+  MediaRouterUI(const MediaRouterUI&) = delete;
+  MediaRouterUI& operator=(const MediaRouterUI&) = delete;
+
   ~MediaRouterUI() override;
 
   // CastDialogController:
@@ -177,6 +181,10 @@ class MediaRouterUI
   class UiIssuesObserver : public IssuesObserver {
    public:
     UiIssuesObserver(IssueManager* issue_manager, MediaRouterUI* ui);
+
+    UiIssuesObserver(const UiIssuesObserver&) = delete;
+    UiIssuesObserver& operator=(const UiIssuesObserver&) = delete;
+
     ~UiIssuesObserver() override;
 
     // IssuesObserver:
@@ -186,8 +194,6 @@ class MediaRouterUI
    private:
     // Reference back to the owning MediaRouterUI instance.
     MediaRouterUI* const ui_;
-
-    DISALLOW_COPY_AND_ASSIGN(UiIssuesObserver);
   };
 
   class UIMediaRoutesObserver : public MediaRoutesObserver {
@@ -198,6 +204,10 @@ class MediaRouterUI
     UIMediaRoutesObserver(MediaRouter* router,
                           const MediaSource::Id& source_id,
                           const RoutesUpdatedCallback& callback);
+
+    UIMediaRoutesObserver(const UIMediaRoutesObserver&) = delete;
+    UIMediaRoutesObserver& operator=(const UIMediaRoutesObserver&) = delete;
+
     ~UIMediaRoutesObserver() override;
 
     // MediaRoutesObserver:
@@ -208,8 +218,6 @@ class MediaRouterUI
    private:
     // Callback to the owning MediaRouterUI instance.
     RoutesUpdatedCallback callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(UIMediaRoutesObserver);
   };
 
   std::vector<MediaSource> GetSourcesForCastMode(MediaCastMode cast_mode) const;
@@ -423,8 +431,6 @@ class MediaRouterUI
   // NOTE: Weak pointers must be invalidated before all other member variables.
   // Therefore |weak_factory_| must be placed at the end.
   base::WeakPtrFactory<MediaRouterUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterUI);
 };
 
 }  // namespace media_router

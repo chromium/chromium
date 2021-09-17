@@ -122,6 +122,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcSessionManager(std::unique_ptr<ArcSessionRunner> arc_session_runner,
                     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
                         adb_sideloading_availability_delegate);
+
+  ArcSessionManager(const ArcSessionManager&) = delete;
+  ArcSessionManager& operator=(const ArcSessionManager&) = delete;
+
   ~ArcSessionManager() override;
 
   static ArcSessionManager* Get();
@@ -476,8 +480,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // Must be the last member.
   base::WeakPtrFactory<ArcSessionManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManager);
 };
 
 // Outputs the stringified |state| to |os|. This is only for logging purposes.

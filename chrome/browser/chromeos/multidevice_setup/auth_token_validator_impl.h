@@ -22,6 +22,10 @@ class AuthTokenValidatorImpl : public AuthTokenValidator, public KeyedService {
  public:
   AuthTokenValidatorImpl(
       quick_unlock::QuickUnlockStorage* quick_unlock_storage);
+
+  AuthTokenValidatorImpl(const AuthTokenValidatorImpl&) = delete;
+  AuthTokenValidatorImpl& operator=(const AuthTokenValidatorImpl&) = delete;
+
   ~AuthTokenValidatorImpl() override;
 
   bool IsAuthTokenValid(const std::string& auth_token) override;
@@ -31,8 +35,6 @@ class AuthTokenValidatorImpl : public AuthTokenValidator, public KeyedService {
   void Shutdown() override;
 
   quick_unlock::QuickUnlockStorage* quick_unlock_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthTokenValidatorImpl);
 };
 
 }  // namespace multidevice_setup

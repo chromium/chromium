@@ -29,6 +29,9 @@ class UI_CHROMEOS_EXPORT InputMethodMenuManager {
         InputMethodMenuManager* manager) = 0;
   };
 
+  InputMethodMenuManager(const InputMethodMenuManager&) = delete;
+  InputMethodMenuManager& operator=(const InputMethodMenuManager&) = delete;
+
   ~InputMethodMenuManager();
 
   void AddObserver(Observer* observer);
@@ -58,8 +61,6 @@ class UI_CHROMEOS_EXPORT InputMethodMenuManager {
 
   // Observers who will be notified when menu changes.
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodMenuManager);
 };
 
 }  // namespace ime

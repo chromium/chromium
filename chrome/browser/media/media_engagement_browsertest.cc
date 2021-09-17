@@ -68,6 +68,11 @@ class WasRecentlyAudibleWatcher {
   // entire lifetime of |this|.
   explicit WasRecentlyAudibleWatcher(content::WebContents* web_contents)
       : audible_helper_(RecentlyAudibleHelper::FromWebContents(web_contents)) {}
+
+  WasRecentlyAudibleWatcher(const WasRecentlyAudibleWatcher&) = delete;
+  WasRecentlyAudibleWatcher& operator=(const WasRecentlyAudibleWatcher&) =
+      delete;
+
   ~WasRecentlyAudibleWatcher() = default;
 
   // Waits until WasRecentlyAudible is true.
@@ -94,8 +99,6 @@ class WasRecentlyAudibleWatcher {
 
   base::RepeatingTimer timer_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WasRecentlyAudibleWatcher);
 };
 
 }  // namespace

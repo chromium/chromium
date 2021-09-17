@@ -51,6 +51,10 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   ArcAppPerformanceTracing(content::BrowserContext* context,
                            ArcBridgeService* bridge);
+
+  ArcAppPerformanceTracing(const ArcAppPerformanceTracing&) = delete;
+  ArcAppPerformanceTracing& operator=(const ArcAppPerformanceTracing&) = delete;
+
   ~ArcAppPerformanceTracing() override;
 
   // Returns singleton instance for the given BrowserContext,
@@ -179,8 +183,6 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   // Timer for jankiness tracing.
   base::OneShotTimer jankiness_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracing);
 };
 
 }  // namespace arc

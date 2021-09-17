@@ -57,6 +57,10 @@ class ArcAuthService : public KeyedService,
 
   ArcAuthService(content::BrowserContext* profile,
                  ArcBridgeService* bridge_service);
+
+  ArcAuthService(const ArcAuthService&) = delete;
+  ArcAuthService& operator=(const ArcAuthService&) = delete;
+
   ~ArcAuthService() override;
 
   // Gets the list of Google accounts currently stored in ARC. This is used by
@@ -201,8 +205,6 @@ class ArcAuthService : public KeyedService,
   GetGoogleAccountsInArcCallback pending_get_arc_accounts_callback_;
 
   base::WeakPtrFactory<ArcAuthService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAuthService);
 };
 
 }  // namespace arc

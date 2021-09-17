@@ -25,6 +25,9 @@ class LazyDomDistillerService : public DomDistillerServiceInterface,
   // of the returned pointer.
   static LazyDomDistillerService* Create(Profile* profile);
 
+  LazyDomDistillerService(const LazyDomDistillerService&) = delete;
+  LazyDomDistillerService& operator=(const LazyDomDistillerService&) = delete;
+
   ~LazyDomDistillerService() override;
 
   // DomDistillerServiceInterface implementation:
@@ -48,8 +51,6 @@ class LazyDomDistillerService : public DomDistillerServiceInterface,
   // The Profile to use when retrieving the DomDistillerService and also the
   // profile to listen for destruction of.
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(LazyDomDistillerService);
 };
 
 }  // namespace dom_distiller

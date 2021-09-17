@@ -20,6 +20,10 @@ class GvrKeyboardDelegate : public KeyboardDelegate {
   // Constructs a GvrKeyboardDelegate by dynamically loading the GVR keyboard
   // api. A null pointer is returned upon failure.
   static std::unique_ptr<GvrKeyboardDelegate> Create();
+
+  GvrKeyboardDelegate(const GvrKeyboardDelegate&) = delete;
+  GvrKeyboardDelegate& operator=(const GvrKeyboardDelegate&) = delete;
+
   ~GvrKeyboardDelegate() override;
 
   typedef int32_t EventType;
@@ -62,8 +66,6 @@ class GvrKeyboardDelegate : public KeyboardDelegate {
   KeyboardUiInterface* ui_;
   gvr_keyboard_context* gvr_keyboard_ = nullptr;
   OnEventCallback keyboard_event_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(GvrKeyboardDelegate);
 };
 
 }  // namespace vr

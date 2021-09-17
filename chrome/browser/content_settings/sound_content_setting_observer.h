@@ -27,6 +27,10 @@ class SoundContentSettingObserver
                          // block.
   };
 
+  SoundContentSettingObserver(const SoundContentSettingObserver&) = delete;
+  SoundContentSettingObserver& operator=(const SoundContentSettingObserver&) =
+      delete;
+
   ~SoundContentSettingObserver() override;
 
   // content::WebContentsObserver implementation.
@@ -76,8 +80,6 @@ class SoundContentSettingObserver
       observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SoundContentSettingObserver);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_SOUND_CONTENT_SETTING_OBSERVER_H_

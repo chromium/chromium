@@ -14,14 +14,15 @@ namespace printing {
 class PdfFlattener : public printing::mojom::PdfFlattener {
  public:
   PdfFlattener();
+
+  PdfFlattener(const PdfFlattener&) = delete;
+  PdfFlattener& operator=(const PdfFlattener&) = delete;
+
   ~PdfFlattener() override;
 
   // printing::mojom::PdfFlattener:
   void FlattenPdf(base::ReadOnlySharedMemoryRegion src_pdf_region,
                   FlattenPdfCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PdfFlattener);
 };
 
 }  // namespace printing

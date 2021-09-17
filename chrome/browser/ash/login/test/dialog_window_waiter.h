@@ -30,6 +30,9 @@ class DialogWindowWaiter : public aura::EnvObserver,
   // Starts listening for a dialog window to open with title `dialog_title`.
   explicit DialogWindowWaiter(const std::u16string& dialog_title);
 
+  DialogWindowWaiter(const DialogWindowWaiter&) = delete;
+  DialogWindowWaiter& operator=(const DialogWindowWaiter&) = delete;
+
   ~DialogWindowWaiter() override;
 
   // Blocks until a dialog with title `dialog_title` becomes visible. All calls
@@ -53,8 +56,6 @@ class DialogWindowWaiter : public aura::EnvObserver,
   std::set<aura::Window*> dialog_windows_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DialogWindowWaiter);
 };
 
 }  // namespace ash

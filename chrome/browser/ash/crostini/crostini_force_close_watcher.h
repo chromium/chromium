@@ -104,6 +104,11 @@ class ShellSurfaceForceCloseDelegate : public ForceCloseWatcher::Delegate,
   ShellSurfaceForceCloseDelegate(exo::ShellSurfaceBase* shell_surface,
                                  std::string app_name);
 
+  ShellSurfaceForceCloseDelegate(const ShellSurfaceForceCloseDelegate&) =
+      delete;
+  ShellSurfaceForceCloseDelegate& operator=(
+      const ShellSurfaceForceCloseDelegate&) = delete;
+
   ~ShellSurfaceForceCloseDelegate() override;
 
   // Callback for the "Force close" button in the dialog.
@@ -133,8 +138,6 @@ class ShellSurfaceForceCloseDelegate : public ForceCloseWatcher::Delegate,
   views::Widget* current_dialog_ = nullptr;
 
   base::WeakPtrFactory<ShellSurfaceForceCloseDelegate> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellSurfaceForceCloseDelegate);
 };
 
 }  // namespace crostini

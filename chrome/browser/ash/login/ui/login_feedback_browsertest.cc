@@ -31,11 +31,14 @@ class LoginFeedbackTest : public LoginManagerTest {
   LoginFeedbackTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);
   }
+
+  LoginFeedbackTest(const LoginFeedbackTest&) = delete;
+  LoginFeedbackTest& operator=(const LoginFeedbackTest&) = delete;
+
   ~LoginFeedbackTest() override {}
 
  private:
   LoginManagerMixin login_mixin_{&mixin_host_};
-  DISALLOW_COPY_AND_ASSIGN(LoginFeedbackTest);
 };
 
 void TestFeedback() {

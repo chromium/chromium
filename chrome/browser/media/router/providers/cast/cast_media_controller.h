@@ -52,6 +52,10 @@ class CastMediaController : public mojom::MediaController {
   CastMediaController(AppActivity* activity,
                       mojo::PendingReceiver<mojom::MediaController> receiver,
                       mojo::PendingRemote<mojom::MediaStatusObserver> observer);
+
+  CastMediaController(const CastMediaController&) = delete;
+  CastMediaController& operator=(const CastMediaController&) = delete;
+
   ~CastMediaController() override;
 
   // mojom::MediaController overrides:
@@ -84,8 +88,6 @@ class CastMediaController : public mojom::MediaController {
 
   mojo::Receiver<mojom::MediaController> receiver_;
   mojo::Remote<mojom::MediaStatusObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaController);
 };
 
 }  // namespace media_router

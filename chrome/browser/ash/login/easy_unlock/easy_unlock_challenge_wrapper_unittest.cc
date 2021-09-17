@@ -32,6 +32,12 @@ class TestableEasyUnlockChallengeWrapper : public EasyUnlockChallengeWrapper {
                                    kChannelBindingData,
                                    AccountId::FromUserEmail(kUserId),
                                    nullptr) {}
+
+  TestableEasyUnlockChallengeWrapper(
+      const TestableEasyUnlockChallengeWrapper&) = delete;
+  TestableEasyUnlockChallengeWrapper& operator=(
+      const TestableEasyUnlockChallengeWrapper&) = delete;
+
   ~TestableEasyUnlockChallengeWrapper() override {}
 
  private:
@@ -56,8 +62,6 @@ class TestableEasyUnlockChallengeWrapper : public EasyUnlockChallengeWrapper {
 
     std::move(callback).Run(kSignature);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestableEasyUnlockChallengeWrapper);
 };
 
 TEST(EasyUnlockChallengeWrapperTest, TestWrapChallenge) {

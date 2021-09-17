@@ -43,6 +43,10 @@ class ExternalFileResolver {
       int64_t size)>;
 
   explicit ExternalFileResolver(void* profile_id);
+
+  ExternalFileResolver(const ExternalFileResolver&) = delete;
+  ExternalFileResolver& operator=(const ExternalFileResolver&) = delete;
+
   virtual ~ExternalFileResolver();
 
   // Extracts any extra information needed to open the URL from the request's
@@ -81,8 +85,6 @@ class ExternalFileResolver {
   file_manager::util::FileSystemURLAndHandle isolated_file_system_;
   std::string mime_type_;
   base::WeakPtrFactory<ExternalFileResolver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalFileResolver);
 };
 
 }  // namespace chromeos

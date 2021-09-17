@@ -56,6 +56,10 @@ class WindowPlacementPrefUpdate : public DictionaryPrefUpdate {
       : DictionaryPrefUpdate(service, prefs::kAppWindowPlacement),
         window_name_(window_name) {}
 
+  WindowPlacementPrefUpdate(const WindowPlacementPrefUpdate&) = delete;
+  WindowPlacementPrefUpdate& operator=(const WindowPlacementPrefUpdate&) =
+      delete;
+
   ~WindowPlacementPrefUpdate() override {}
 
   base::DictionaryValue* Get() override {
@@ -71,8 +75,6 @@ class WindowPlacementPrefUpdate : public DictionaryPrefUpdate {
 
  private:
   const std::string window_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPlacementPrefUpdate);
 };
 
 }  // namespace

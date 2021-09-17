@@ -35,6 +35,11 @@
 class WinAccessibilityEventMonitor {
  public:
   WinAccessibilityEventMonitor(UINT event_min, UINT event_max);
+
+  WinAccessibilityEventMonitor(const WinAccessibilityEventMonitor&) = delete;
+  WinAccessibilityEventMonitor& operator=(const WinAccessibilityEventMonitor&) =
+      delete;
+
   ~WinAccessibilityEventMonitor();
 
   // Blocks until the next event is received. When it's received, it
@@ -76,8 +81,6 @@ class WinAccessibilityEventMonitor {
   scoped_refptr<content::MessageLoopRunner> loop_runner_;
   HWINEVENTHOOK win_event_hook_handle_;
   static WinAccessibilityEventMonitor* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(WinAccessibilityEventMonitor);
 };
 
 // static

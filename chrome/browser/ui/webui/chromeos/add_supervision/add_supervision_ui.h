@@ -67,6 +67,10 @@ class AddSupervisionUI : public ui::MojoWebUIController,
                          public AddSupervisionHandler::Delegate {
  public:
   explicit AddSupervisionUI(content::WebUI* web_ui);
+
+  AddSupervisionUI(const AddSupervisionUI&) = delete;
+  AddSupervisionUI& operator=(const AddSupervisionUI&) = delete;
+
   ~AddSupervisionUI() override;
 
   // AddSupervisionHandler::Delegate:
@@ -94,8 +98,6 @@ class AddSupervisionUI : public ui::MojoWebUIController,
   bool allow_non_google_url_for_tests_ = false;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AddSupervisionUI);
 };
 
 }  // namespace chromeos

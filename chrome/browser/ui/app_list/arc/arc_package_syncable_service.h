@@ -45,6 +45,10 @@ class ArcPackageSyncableService : public syncer::SyncableService,
     int64_t last_backup_time;
   };
 
+  ArcPackageSyncableService(const ArcPackageSyncableService&) = delete;
+  ArcPackageSyncableService& operator=(const ArcPackageSyncableService&) =
+      delete;
+
   ~ArcPackageSyncableService() override;
 
   static ArcPackageSyncableService* Create(Profile* profile,
@@ -132,8 +136,6 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   syncer::SyncableService::StartSyncFlare flare_;
 
   ArcAppListPrefs* const prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPackageSyncableService);
 };
 
 }  // namespace arc

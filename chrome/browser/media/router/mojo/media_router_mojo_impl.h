@@ -47,6 +47,9 @@ enum class MediaRouteProviderWakeReason;
 // MediaRouter implementation that delegates calls to a MediaRouteProvider.
 class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
  public:
+  MediaRouterMojoImpl(const MediaRouterMojoImpl&) = delete;
+  MediaRouterMojoImpl& operator=(const MediaRouterMojoImpl&) = delete;
+
   ~MediaRouterMojoImpl() override;
 
   // MediaRouter implementation.
@@ -168,6 +171,10 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   class MediaSinksQuery {
    public:
     MediaSinksQuery();
+
+    MediaSinksQuery(const MediaSinksQuery&) = delete;
+    MediaSinksQuery& operator=(const MediaSinksQuery&) = delete;
+
     ~MediaSinksQuery();
 
     static MediaSource GetKey(const MediaSource::Id& source_id);
@@ -203,8 +210,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
     std::vector<url::Origin> origins_;
 
     base::ObserverList<MediaSinksObserver>::Unchecked observers_;
-
-    DISALLOW_COPY_AND_ASSIGN(MediaSinksQuery);
   };
 
   // Represents a query to the MediaRouteProviders for media routes and caches
@@ -212,6 +217,10 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   class MediaRoutesQuery {
    public:
     MediaRoutesQuery();
+
+    MediaRoutesQuery(const MediaRoutesQuery&) = delete;
+    MediaRoutesQuery& operator=(const MediaRoutesQuery&) = delete;
+
     ~MediaRoutesQuery();
 
     // Caches the list of routes and joinable route IDs for the provider
@@ -261,8 +270,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
         providers_to_joinable_routes_;
 
     base::ObserverList<MediaRoutesObserver>::Unchecked observers_;
-
-    DISALLOW_COPY_AND_ASSIGN(MediaRoutesQuery);
   };
 
   class ProviderSinkAvailability {
@@ -439,8 +446,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   LoggerImpl logger_;
 
   base::WeakPtrFactory<MediaRouterMojoImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterMojoImpl);
 };
 
 }  // namespace media_router

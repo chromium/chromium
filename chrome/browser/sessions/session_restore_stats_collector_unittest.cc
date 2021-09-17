@@ -37,6 +37,10 @@ class MockStatsReportingDelegate : public StatsReportingDelegate {
         report_stats_collector_death_call_count_(0u),
         report_tab_time_since_active_call_count_(0u) {}
 
+  MockStatsReportingDelegate(const MockStatsReportingDelegate&) = delete;
+  MockStatsReportingDelegate& operator=(const MockStatsReportingDelegate&) =
+      delete;
+
   ~MockStatsReportingDelegate() override = default;
 
   void ReportTabLoaderStats(const TabLoaderStats& stats) override {
@@ -93,8 +97,6 @@ class MockStatsReportingDelegate : public StatsReportingDelegate {
   size_t report_stats_collector_death_call_count_;
   size_t report_tab_time_since_active_call_count_;
   TabLoaderStats tab_loader_stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockStatsReportingDelegate);
 };
 
 // A pass-through stats reporting delegate. This is used to decouple the
@@ -104,6 +106,12 @@ class MockStatsReportingDelegate : public StatsReportingDelegate {
 class PassthroughStatsReportingDelegate : public StatsReportingDelegate {
  public:
   PassthroughStatsReportingDelegate() : reporting_delegate_(nullptr) {}
+
+  PassthroughStatsReportingDelegate(const PassthroughStatsReportingDelegate&) =
+      delete;
+  PassthroughStatsReportingDelegate& operator=(
+      const PassthroughStatsReportingDelegate&) = delete;
+
   ~PassthroughStatsReportingDelegate() override {
     reporting_delegate_->ReportStatsCollectorDeath();
   }
@@ -122,8 +130,6 @@ class PassthroughStatsReportingDelegate : public StatsReportingDelegate {
 
  private:
   MockStatsReportingDelegate* reporting_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PassthroughStatsReportingDelegate);
 };
 
 }  // namespace

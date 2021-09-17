@@ -137,6 +137,12 @@ class WebstoreInstallListener : public WebstoreInstaller::Delegate {
 class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
  public:
   ExtensionWebstorePrivateApiTest() {}
+
+  ExtensionWebstorePrivateApiTest(const ExtensionWebstorePrivateApiTest&) =
+      delete;
+  ExtensionWebstorePrivateApiTest& operator=(
+      const ExtensionWebstorePrivateApiTest&) = delete;
+
   ~ExtensionWebstorePrivateApiTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -208,8 +214,6 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
   base::FilePath webstore_install_dir_copy_;
 
   std::unique_ptr<ScopedTestDialogAutoConfirm> auto_confirm_install_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionWebstorePrivateApiTest);
 };
 
 // Test cases for webstore origin frame blocking.

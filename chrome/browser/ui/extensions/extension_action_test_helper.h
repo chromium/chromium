@@ -34,6 +34,10 @@ class ExtensionActionTestHelper {
       Browser* browser,
       bool is_real_window = true);
 
+  ExtensionActionTestHelper(const ExtensionActionTestHelper&) = delete;
+  ExtensionActionTestHelper& operator=(const ExtensionActionTestHelper&) =
+      delete;
+
   virtual ~ExtensionActionTestHelper() {}
 
   // Returns the number of browser action buttons in the window toolbar.
@@ -114,9 +118,6 @@ class ExtensionActionTestHelper {
 
  protected:
   ExtensionActionTestHelper() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionTestHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_TEST_HELPER_H_

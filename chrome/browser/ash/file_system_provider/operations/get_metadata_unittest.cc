@@ -63,6 +63,10 @@ class CallbackLogger {
    public:
     Event(std::unique_ptr<EntryMetadata> metadata, base::File::Error result)
         : metadata_(std::move(metadata)), result_(result) {}
+
+    Event(const Event&) = delete;
+    Event& operator=(const Event&) = delete;
+
     virtual ~Event() {}
 
     const EntryMetadata* metadata() const { return metadata_.get(); }
@@ -71,8 +75,6 @@ class CallbackLogger {
    private:
     std::unique_ptr<EntryMetadata> metadata_;
     base::File::Error result_;
-
-    DISALLOW_COPY_AND_ASSIGN(Event);
   };
 
   CallbackLogger() {}

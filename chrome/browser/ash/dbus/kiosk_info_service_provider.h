@@ -24,6 +24,10 @@ namespace ash {
 class KioskInfoService : public CrosDBusService::ServiceProviderInterface {
  public:
   KioskInfoService();
+
+  KioskInfoService(const KioskInfoService&) = delete;
+  KioskInfoService& operator=(const KioskInfoService&) = delete;
+
   ~KioskInfoService() override;
 
   // CrosDBusService::ServiceProviderInterface
@@ -42,8 +46,6 @@ class KioskInfoService : public CrosDBusService::ServiceProviderInterface {
       dbus::ExportedObject::ResponseSender response_sender);
 
   base::WeakPtrFactory<KioskInfoService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskInfoService);
 };
 
 }  // namespace ash

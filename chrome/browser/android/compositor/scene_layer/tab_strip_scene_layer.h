@@ -30,6 +30,10 @@ class TabHandleLayer;
 class TabStripSceneLayer : public SceneLayer {
  public:
   TabStripSceneLayer(JNIEnv* env, const base::android::JavaRef<jobject>& jobj);
+
+  TabStripSceneLayer(const TabStripSceneLayer&) = delete;
+  TabStripSceneLayer& operator=(const TabStripSceneLayer&) = delete;
+
   ~TabStripSceneLayer() override;
 
   void SetContentTree(
@@ -135,8 +139,6 @@ class TabStripSceneLayer : public SceneLayer {
   unsigned write_index_;
   TabHandleLayerList tab_handle_layers_;
   SceneLayer* content_tree_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabStripSceneLayer);
 };
 
 }  // namespace android

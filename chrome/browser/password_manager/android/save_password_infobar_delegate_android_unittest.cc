@@ -74,10 +74,10 @@ class MockPasswordFormManager : public PasswordFormManager {
     CreatePendingCredentials();
   }
 
-  ~MockPasswordFormManager() override = default;
+  MockPasswordFormManager(const MockPasswordFormManager&) = delete;
+  MockPasswordFormManager& operator=(const MockPasswordFormManager&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordFormManager);
+  ~MockPasswordFormManager() override = default;
 };
 
 class TestSavePasswordInfoBarDelegate : public SavePasswordInfoBarDelegate {
@@ -98,6 +98,12 @@ class TestSavePasswordInfoBarDelegate : public SavePasswordInfoBarDelegate {
 class SavePasswordInfoBarDelegateTest : public ChromeRenderViewHostTestHarness {
  public:
   SavePasswordInfoBarDelegateTest();
+
+  SavePasswordInfoBarDelegateTest(const SavePasswordInfoBarDelegateTest&) =
+      delete;
+  SavePasswordInfoBarDelegateTest& operator=(
+      const SavePasswordInfoBarDelegateTest&) = delete;
+
   ~SavePasswordInfoBarDelegateTest() override = default;
 
   void SetUp() override;
@@ -123,8 +129,6 @@ class SavePasswordInfoBarDelegateTest : public ChromeRenderViewHostTestHarness {
 
  private:
   password_manager::FakeFormFetcher fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePasswordInfoBarDelegateTest);
 };
 
 SavePasswordInfoBarDelegateTest::SavePasswordInfoBarDelegateTest() {

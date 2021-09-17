@@ -30,6 +30,10 @@ class Unmount : public Operation {
   Unmount(extensions::EventRouter* event_router,
           const ProvidedFileSystemInfo& file_system_info,
           storage::AsyncFileUtil::StatusCallback callback);
+
+  Unmount(const Unmount&) = delete;
+  Unmount& operator=(const Unmount&) = delete;
+
   ~Unmount() override;
 
   // Operation overrides.
@@ -43,8 +47,6 @@ class Unmount : public Operation {
 
  private:
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Unmount);
 };
 
 }  // namespace operations

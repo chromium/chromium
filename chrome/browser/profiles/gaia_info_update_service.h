@@ -25,6 +25,9 @@ class GAIAInfoUpdateService : public KeyedService,
                         ProfileAttributesStorage* profile_attributes_storage,
                         const base::FilePath& profile_path);
 
+  GAIAInfoUpdateService(const GAIAInfoUpdateService&) = delete;
+  GAIAInfoUpdateService& operator=(const GAIAInfoUpdateService&) = delete;
+
   ~GAIAInfoUpdateService() override;
 
   // Updates the GAIA info for the profile associated with this instance.
@@ -54,8 +57,6 @@ class GAIAInfoUpdateService : public KeyedService,
   // TODO(msalama): remove when |SigninProfileAttributesUpdater| is folded into
   // |GAIAInfoUpdateService|.
   std::string gaia_id_of_profile_attribute_entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(GAIAInfoUpdateService);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_GAIA_INFO_UPDATE_SERVICE_H_

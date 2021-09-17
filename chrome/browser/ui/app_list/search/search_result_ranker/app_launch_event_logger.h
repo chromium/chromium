@@ -49,6 +49,10 @@ namespace app_list {
 class AppLaunchEventLogger {
  public:
   AppLaunchEventLogger();
+
+  AppLaunchEventLogger(const AppLaunchEventLogger&) = delete;
+  AppLaunchEventLogger& operator=(const AppLaunchEventLogger&) = delete;
+
   virtual ~AppLaunchEventLogger();
 
   // Processes a click on an app in the suggestion chip or search box and logs
@@ -155,8 +159,6 @@ class AppLaunchEventLogger {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<AppLaunchEventLogger> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchEventLogger);
 };
 
 }  // namespace app_list

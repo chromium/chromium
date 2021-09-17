@@ -36,6 +36,10 @@ class MobileDataNotifications
       public session_manager::SessionManagerObserver {
  public:
   MobileDataNotifications();
+
+  MobileDataNotifications(const MobileDataNotifications&) = delete;
+  MobileDataNotifications& operator=(const MobileDataNotifications&) = delete;
+
   ~MobileDataNotifications() override;
 
   // NetworkStateHandlerObserver:
@@ -77,8 +81,6 @@ class MobileDataNotifications
   base::OneShotTimer one_shot_notification_check_delay_;
 
   base::WeakPtrFactory<MobileDataNotifications> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MobileDataNotifications);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_NETWORK_MOBILE_DATA_NOTIFICATIONS_H_

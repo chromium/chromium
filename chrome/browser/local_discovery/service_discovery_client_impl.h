@@ -25,6 +25,11 @@ class ServiceDiscoveryClientImpl : public ServiceDiscoveryClient {
  public:
   // |mdns_client| must outlive the Service Discovery Client.
   explicit ServiceDiscoveryClientImpl(net::MDnsClient* mdns_client);
+
+  ServiceDiscoveryClientImpl(const ServiceDiscoveryClientImpl&) = delete;
+  ServiceDiscoveryClientImpl& operator=(const ServiceDiscoveryClientImpl&) =
+      delete;
+
   ~ServiceDiscoveryClientImpl() override;
 
   // ServiceDiscoveryClient implementation:
@@ -43,8 +48,6 @@ class ServiceDiscoveryClientImpl : public ServiceDiscoveryClient {
 
  private:
   net::MDnsClient* mdns_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceDiscoveryClientImpl);
 };
 
 class ServiceWatcherImpl : public ServiceWatcher,
@@ -54,6 +57,10 @@ class ServiceWatcherImpl : public ServiceWatcher,
   ServiceWatcherImpl(const std::string& service_type,
                      ServiceWatcher::UpdatedCallback callback,
                      net::MDnsClient* mdns_client);
+
+  ServiceWatcherImpl(const ServiceWatcherImpl&) = delete;
+  ServiceWatcherImpl& operator=(const ServiceWatcherImpl&) = delete;
+
   // Listening will automatically stop when the destructor is called.
   ~ServiceWatcherImpl() override;
 
@@ -151,8 +158,6 @@ class ServiceWatcherImpl : public ServiceWatcher,
   bool actively_refresh_services_;
 
   net::MDnsClient* const mdns_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWatcherImpl);
 };
 
 class ServiceResolverImpl
@@ -162,6 +167,9 @@ class ServiceResolverImpl
   ServiceResolverImpl(const std::string& service_name,
                       ServiceResolver::ResolveCompleteCallback callback,
                       net::MDnsClient* mdns_client);
+
+  ServiceResolverImpl(const ServiceResolverImpl&) = delete;
+  ServiceResolverImpl& operator=(const ServiceResolverImpl&) = delete;
 
   ~ServiceResolverImpl() override;
 
@@ -218,8 +226,6 @@ class ServiceResolverImpl
   ServiceDescription service_staging_;
 
   net::MDnsClient* const mdns_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceResolverImpl);
 };
 
 class LocalDomainResolverImpl : public LocalDomainResolver {
@@ -228,6 +234,10 @@ class LocalDomainResolverImpl : public LocalDomainResolver {
                           net::AddressFamily address_family,
                           IPAddressCallback callback,
                           net::MDnsClient* mdns_client);
+
+  LocalDomainResolverImpl(const LocalDomainResolverImpl&) = delete;
+  LocalDomainResolverImpl& operator=(const LocalDomainResolverImpl&) = delete;
+
   ~LocalDomainResolverImpl() override;
 
   void Start() override;
@@ -260,8 +270,6 @@ class LocalDomainResolverImpl : public LocalDomainResolver {
   net::IPAddress address_ipv6_;
 
   base::CancelableOnceClosure timeout_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalDomainResolverImpl);
 };
 
 

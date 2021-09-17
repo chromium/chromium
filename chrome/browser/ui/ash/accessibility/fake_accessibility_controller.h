@@ -12,6 +12,11 @@
 class FakeAccessibilityController : ash::AccessibilityController {
  public:
   FakeAccessibilityController();
+
+  FakeAccessibilityController(const FakeAccessibilityController&) = delete;
+  FakeAccessibilityController& operator=(const FakeAccessibilityController&) =
+      delete;
+
   ~FakeAccessibilityController() override;
 
   bool was_client_set() const { return was_client_set_; }
@@ -66,8 +71,6 @@ class FakeAccessibilityController : ash::AccessibilityController {
 
  private:
   bool was_client_set_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAccessibilityController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ACCESSIBILITY_FAKE_ACCESSIBILITY_CONTROLLER_H_

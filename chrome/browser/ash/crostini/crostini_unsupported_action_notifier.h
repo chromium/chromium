@@ -77,6 +77,12 @@ class CrostiniUnsupportedActionNotifier
   CrostiniUnsupportedActionNotifier();
   explicit CrostiniUnsupportedActionNotifier(
       std::unique_ptr<Delegate> delegate);
+
+  CrostiniUnsupportedActionNotifier(const CrostiniUnsupportedActionNotifier&) =
+      delete;
+  CrostiniUnsupportedActionNotifier& operator=(
+      const CrostiniUnsupportedActionNotifier&) = delete;
+
   ~CrostiniUnsupportedActionNotifier() override;
 
   // ash::TabletModeObserver:
@@ -115,8 +121,6 @@ class CrostiniUnsupportedActionNotifier
   std::unique_ptr<Delegate> delegate_;
   bool virtual_keyboard_unsupported_message_shown_ = false;
   bool ime_unsupported_message_shown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUnsupportedActionNotifier);
 };
 
 }  // namespace crostini

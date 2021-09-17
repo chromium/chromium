@@ -54,6 +54,10 @@ class LocalToRemoteSyncerTest : public testing::Test {
  public:
   LocalToRemoteSyncerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+
+  LocalToRemoteSyncerTest(const LocalToRemoteSyncerTest&) = delete;
+  LocalToRemoteSyncerTest& operator=(const LocalToRemoteSyncerTest&) = delete;
+
   ~LocalToRemoteSyncerTest() override {}
 
   void SetUp() override {
@@ -253,8 +257,6 @@ class LocalToRemoteSyncerTest : public testing::Test {
   std::unique_ptr<FakeDriveServiceHelper> fake_drive_helper_;
   std::unique_ptr<FakeRemoteChangeProcessor> remote_change_processor_;
   std::unique_ptr<SyncTaskManager> sync_task_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalToRemoteSyncerTest);
 };
 
 TEST_F(LocalToRemoteSyncerTest, CreateFile) {

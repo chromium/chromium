@@ -61,6 +61,9 @@ class IdleEventNotifierTest : public testing::Test {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
+  IdleEventNotifierTest(const IdleEventNotifierTest&) = delete;
+  IdleEventNotifierTest& operator=(const IdleEventNotifierTest&) = delete;
+
   ~IdleEventNotifierTest() override = default;
 
   void SetUp() override {
@@ -87,9 +90,6 @@ class IdleEventNotifierTest : public testing::Test {
   power_manager::PowerSupplyProperties ac_power_;
   power_manager::PowerSupplyProperties disconnected_power_;
   ui::UserActivityDetector user_activity_detector_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IdleEventNotifierTest);
 };
 
 // After initialization, |external_power_| is not set up.

@@ -152,13 +152,15 @@ MATCHER_P(ValueEquals, expected, "value matches") {
 class MockArcPolicyBridgeObserver : public ArcPolicyBridge::Observer {
  public:
   MockArcPolicyBridgeObserver() = default;
+
+  MockArcPolicyBridgeObserver(const MockArcPolicyBridgeObserver&) = delete;
+  MockArcPolicyBridgeObserver& operator=(const MockArcPolicyBridgeObserver&) =
+      delete;
+
   ~MockArcPolicyBridgeObserver() override = default;
 
   MOCK_METHOD1(OnPolicySent, void(const std::string&));
   MOCK_METHOD1(OnComplianceReportReceived, void(const base::Value*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockArcPolicyBridgeObserver);
 };
 
 // Helper class to define callbacks that verify that they were run.
@@ -167,14 +169,16 @@ class MockArcPolicyBridgeObserver : public ArcPolicyBridge::Observer {
 class CheckedBoolean {
  public:
   CheckedBoolean() {}
+
+  CheckedBoolean(const CheckedBoolean&) = delete;
+  CheckedBoolean& operator=(const CheckedBoolean&) = delete;
+
   ~CheckedBoolean() { EXPECT_TRUE(value_); }
 
   void set_value(bool value) { value_ = value; }
 
  private:
   bool value_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckedBoolean);
 };
 
 void ExpectString(std::unique_ptr<CheckedBoolean> was_run,

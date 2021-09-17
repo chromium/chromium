@@ -22,10 +22,11 @@ namespace chromeos {
 class StorageApitest : public LoginScreenApitestBase {
  public:
   StorageApitest() : LoginScreenApitestBase(version_info::Channel::DEV) {}
-  ~StorageApitest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(StorageApitest);
+  StorageApitest(const StorageApitest&) = delete;
+  StorageApitest& operator=(const StorageApitest&) = delete;
+
+  ~StorageApitest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(StorageApitest, CannotAccessLocalStorage) {

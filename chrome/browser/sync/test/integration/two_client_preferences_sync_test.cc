@@ -37,10 +37,11 @@ class TwoClientPreferencesSyncTest : public SyncTest {
  public:
   TwoClientPreferencesSyncTest() : SyncTest(TWO_CLIENT) {}
 
-  ~TwoClientPreferencesSyncTest() override {}
+  TwoClientPreferencesSyncTest(const TwoClientPreferencesSyncTest&) = delete;
+  TwoClientPreferencesSyncTest& operator=(const TwoClientPreferencesSyncTest&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientPreferencesSyncTest);
+  ~TwoClientPreferencesSyncTest() override {}
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {

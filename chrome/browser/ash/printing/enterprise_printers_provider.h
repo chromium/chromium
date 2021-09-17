@@ -48,6 +48,11 @@ class EnterprisePrintersProvider {
   static std::unique_ptr<EnterprisePrintersProvider> Create(
       CrosSettings* settings,
       Profile* profile);
+
+  EnterprisePrintersProvider(const EnterprisePrintersProvider&) = delete;
+  EnterprisePrintersProvider& operator=(const EnterprisePrintersProvider&) =
+      delete;
+
   virtual ~EnterprisePrintersProvider() = default;
 
   // This method also directly calls OnPrintersChanged(...) from |observer|.
@@ -56,9 +61,6 @@ class EnterprisePrintersProvider {
 
  protected:
   EnterprisePrintersProvider() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnterprisePrintersProvider);
 };
 
 }  // namespace ash

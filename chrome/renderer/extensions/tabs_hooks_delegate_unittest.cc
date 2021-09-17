@@ -44,6 +44,10 @@ void CallAPIAndExpectError(v8::Local<v8::Context> context,
 class TabsHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
  public:
   TabsHooksDelegateTest() {}
+
+  TabsHooksDelegateTest(const TabsHooksDelegateTest&) = delete;
+  TabsHooksDelegateTest& operator=(const TabsHooksDelegateTest&) = delete;
+
   ~TabsHooksDelegateTest() override {}
 
   // NativeExtensionBindingsSystemUnittest:
@@ -90,8 +94,6 @@ class TabsHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
 
   ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabsHooksDelegateTest);
 };
 
 TEST_F(TabsHooksDelegateTest, Connect) {

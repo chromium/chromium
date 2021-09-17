@@ -22,6 +22,10 @@ class ImeControllerClientImpl
  public:
   explicit ImeControllerClientImpl(
       chromeos::input_method::InputMethodManager* manager);
+
+  ImeControllerClientImpl(const ImeControllerClientImpl&) = delete;
+  ImeControllerClientImpl& operator=(const ImeControllerClientImpl&) = delete;
+
   ~ImeControllerClientImpl() override;
 
   // Initializes and connects to ash.
@@ -88,8 +92,6 @@ class ImeControllerClientImpl
 
   // ImeController in ash.
   ash::ImeController* ime_controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeControllerClientImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_IME_CONTROLLER_CLIENT_IMPL_H_

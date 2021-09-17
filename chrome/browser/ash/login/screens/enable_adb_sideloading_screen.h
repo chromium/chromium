@@ -26,6 +26,11 @@ class EnableAdbSideloadingScreen : public BaseScreen {
  public:
   EnableAdbSideloadingScreen(EnableAdbSideloadingScreenView* view,
                              const base::RepeatingClosure& exit_callback);
+
+  EnableAdbSideloadingScreen(const EnableAdbSideloadingScreen&) = delete;
+  EnableAdbSideloadingScreen& operator=(const EnableAdbSideloadingScreen&) =
+      delete;
+
   ~EnableAdbSideloadingScreen() override;
 
   // Called by EnableAdbSideloadingHandler.
@@ -59,8 +64,6 @@ class EnableAdbSideloadingScreen : public BaseScreen {
   EnableAdbSideloadingScreenView* view_;
   base::RepeatingClosure exit_callback_;
   base::WeakPtrFactory<EnableAdbSideloadingScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnableAdbSideloadingScreen);
 };
 
 }  // namespace ash

@@ -161,6 +161,10 @@ void PrintTo(const SampleMatcherP2<P1, P2>& matcher, std::ostream* os) {
 class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   SiteDetailsBrowserTest() {}
+
+  SiteDetailsBrowserTest(const SiteDetailsBrowserTest&) = delete;
+  SiteDetailsBrowserTest& operator=(const SiteDetailsBrowserTest&) = delete;
+
   ~SiteDetailsBrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -278,7 +282,6 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
 
  private:
   std::vector<std::unique_ptr<TestExtensionDir>> temp_dirs_;
-  DISALLOW_COPY_AND_ASSIGN(SiteDetailsBrowserTest);
 };
 
 // Test the accuracy of SiteDetails process estimation, in the presence of

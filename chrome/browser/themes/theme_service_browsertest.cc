@@ -31,15 +31,16 @@ class ThemeServiceBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   ThemeServiceBrowserTest() {
   }
+
+  ThemeServiceBrowserTest(const ThemeServiceBrowserTest&) = delete;
+  ThemeServiceBrowserTest& operator=(const ThemeServiceBrowserTest&) = delete;
+
   ~ThemeServiceBrowserTest() override {}
 
   void SetUp() override {
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
     extensions::ExtensionBrowserTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThemeServiceBrowserTest);
 };
 
 // Test that the theme is recreated from the extension when the data pack is

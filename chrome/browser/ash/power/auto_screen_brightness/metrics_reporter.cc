@@ -65,6 +65,10 @@ class MetricsReporter::DailyEventObserver
  public:
   explicit DailyEventObserver(MetricsReporter* reporter)
       : reporter_(reporter) {}
+
+  DailyEventObserver(const DailyEventObserver&) = delete;
+  DailyEventObserver& operator=(const DailyEventObserver&) = delete;
+
   ~DailyEventObserver() override = default;
 
   // metrics::DailyEvent::Observer:
@@ -74,8 +78,6 @@ class MetricsReporter::DailyEventObserver
 
  private:
   MetricsReporter* reporter_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(DailyEventObserver);
 };
 
 void MetricsReporter::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

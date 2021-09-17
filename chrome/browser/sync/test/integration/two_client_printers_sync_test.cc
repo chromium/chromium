@@ -38,10 +38,12 @@ constexpr char kLatestDescription[] = "YAY!  More recent changes win!";
 class TwoClientPrintersSyncTest : public SyncTest {
  public:
   TwoClientPrintersSyncTest() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientPrintersSyncTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientPrintersSyncTest);
+  TwoClientPrintersSyncTest(const TwoClientPrintersSyncTest&) = delete;
+  TwoClientPrintersSyncTest& operator=(const TwoClientPrintersSyncTest&) =
+      delete;
+
+  ~TwoClientPrintersSyncTest() override {}
 };
 
 }  // namespace

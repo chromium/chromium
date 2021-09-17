@@ -38,6 +38,10 @@ namespace {
 class TestSyncService : public syncer::TestSyncService {
  public:
   TestSyncService() {}
+
+  TestSyncService(const TestSyncService&) = delete;
+  TestSyncService& operator=(const TestSyncService&) = delete;
+
   ~TestSyncService() override {}
 
   // syncer::SyncService:
@@ -56,8 +60,6 @@ class TestSyncService : public syncer::TestSyncService {
 
  private:
   syncer::SyncServiceObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };
 
 std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
@@ -94,6 +96,10 @@ class TestExternalPrefLoader : public ExternalPrefLoader {
 class ExternalPrefLoaderTest : public testing::Test {
  public:
   ExternalPrefLoaderTest() {}
+
+  ExternalPrefLoaderTest(const ExternalPrefLoaderTest&) = delete;
+  ExternalPrefLoaderTest& operator=(const ExternalPrefLoaderTest&) = delete;
+
   ~ExternalPrefLoaderTest() override {}
 
   void SetUp() override {
@@ -114,8 +120,6 @@ class ExternalPrefLoaderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   TestSyncService* sync_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalPrefLoaderTest);
 };
 
 // TODO(lazyboy): Add a test to cover

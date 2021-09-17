@@ -49,6 +49,10 @@ class DownloadManagerService
       download::DownloadItem* item);
 
   DownloadManagerService();
+
+  DownloadManagerService(const DownloadManagerService&) = delete;
+  DownloadManagerService& operator=(const DownloadManagerService&) = delete;
+
   ~DownloadManagerService() override;
 
   // Called to Initialize this object. If |is_profile_added| is false,
@@ -299,8 +303,6 @@ class DownloadManagerService
 
   std::map<ProfileKey*, download::SimpleDownloadManagerCoordinator*>
       coordinators_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerService);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_MANAGER_SERVICE_H_

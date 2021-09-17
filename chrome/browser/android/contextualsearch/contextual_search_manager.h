@@ -23,6 +23,10 @@ class ContextualSearchManager
   // Constructs a native manager associated with the Java manager.
   ContextualSearchManager(JNIEnv* env,
                           const base::android::JavaRef<jobject>& obj);
+
+  ContextualSearchManager(const ContextualSearchManager&) = delete;
+  ContextualSearchManager& operator=(const ContextualSearchManager&) = delete;
+
   ~ContextualSearchManager() override;
 
   // Called by the Java ContextualSearchManager when it is being destroyed.
@@ -107,8 +111,6 @@ class ContextualSearchManager
 
   // The delegate we're using the do the real work.
   std::unique_ptr<ContextualSearchDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchManager);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_MANAGER_H_

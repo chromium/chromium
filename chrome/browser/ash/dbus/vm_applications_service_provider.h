@@ -26,6 +26,11 @@ class VmApplicationsServiceProvider
       public ui::SelectFileDialog::Listener {
  public:
   VmApplicationsServiceProvider();
+
+  VmApplicationsServiceProvider(const VmApplicationsServiceProvider&) = delete;
+  VmApplicationsServiceProvider& operator=(
+      const VmApplicationsServiceProvider&) = delete;
+
   ~VmApplicationsServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -66,8 +71,6 @@ class VmApplicationsServiceProvider
   void FileSelectionCanceled(void* params) override;
 
   base::WeakPtrFactory<VmApplicationsServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VmApplicationsServiceProvider);
 };
 
 }  // namespace ash

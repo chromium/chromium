@@ -56,6 +56,9 @@ class UserSessionManagerTest : public testing::Test {
 
   void SetUp() override { ASSERT_TRUE(profile_manager_->SetUp()); }
 
+  UserSessionManagerTest(const UserSessionManagerTest&) = delete;
+  UserSessionManagerTest& operator=(const UserSessionManagerTest&) = delete;
+
   ~UserSessionManagerTest() override {
     profile_manager_->DeleteAllTestingProfiles();
     user_session_manager_.reset();
@@ -112,9 +115,6 @@ class UserSessionManagerTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   user_manager::User* test_user_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserSessionManagerTest);
 };
 
 // Calling VoteForSavingLoginPassword() with `save_password` set to false for

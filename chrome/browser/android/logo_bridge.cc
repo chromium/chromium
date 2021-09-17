@@ -80,6 +80,9 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
     j_logo_observer_.Reset(env, j_logo_observer);
   }
 
+  LogoObserverAndroid(const LogoObserverAndroid&) = delete;
+  LogoObserverAndroid& operator=(const LogoObserverAndroid&) = delete;
+
   ~LogoObserverAndroid() override {}
 
   // seach_provider_logos::LogoObserver:
@@ -111,8 +114,6 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
   base::WeakPtr<LogoBridge> logo_bridge_;
 
   base::android::ScopedJavaGlobalRef<jobject> j_logo_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoObserverAndroid);
 };
 
 }  // namespace

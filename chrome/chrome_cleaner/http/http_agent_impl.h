@@ -25,6 +25,10 @@ class HttpAgentImpl : public HttpAgent {
   //     header.
   HttpAgentImpl(base::WStringPiece product_name,
                 base::WStringPiece product_version);
+
+  HttpAgentImpl(const HttpAgentImpl&) = delete;
+  HttpAgentImpl& operator=(const HttpAgentImpl&) = delete;
+
   ~HttpAgentImpl() override;
 
   // HttpAgent implementation
@@ -47,8 +51,6 @@ class HttpAgentImpl : public HttpAgent {
 
  private:
   std::wstring user_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpAgentImpl);
 };
 
 }  // namespace chrome_cleaner

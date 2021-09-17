@@ -68,6 +68,11 @@ class TestInstalledApplications : public InstalledApplications {
 class InstalledApplicationsTest : public testing::Test {
  public:
   InstalledApplicationsTest() = default;
+
+  InstalledApplicationsTest(const InstalledApplicationsTest&) = delete;
+  InstalledApplicationsTest& operator=(const InstalledApplicationsTest&) =
+      delete;
+
   ~InstalledApplicationsTest() override = default;
 
   // Overrides HKLM and HKCU to prevent real keys from messing with the tests.
@@ -131,8 +136,6 @@ class InstalledApplicationsTest : public testing::Test {
   std::unique_ptr<TestInstalledApplications> installed_applications_;
 
   std::map<std::wstring, std::vector<std::wstring>> component_paths_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstalledApplicationsTest);
 };
 
 }  // namespace

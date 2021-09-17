@@ -44,6 +44,12 @@ class ShippingAddressEditorViewController : public EditorViewController {
       base::OnceCallback<void(const autofill::AutofillProfile&)> on_added,
       autofill::AutofillProfile* profile,
       bool is_incognito);
+
+  ShippingAddressEditorViewController(
+      const ShippingAddressEditorViewController&) = delete;
+  ShippingAddressEditorViewController& operator=(
+      const ShippingAddressEditorViewController&) = delete;
+
   ~ShippingAddressEditorViewController() override;
 
   // EditorViewController:
@@ -72,6 +78,12 @@ class ShippingAddressEditorViewController : public EditorViewController {
     ShippingAddressValidationDelegate(
         ShippingAddressEditorViewController* parent,
         const EditorField& field);
+
+    ShippingAddressValidationDelegate(
+        const ShippingAddressValidationDelegate&) = delete;
+    ShippingAddressValidationDelegate& operator=(
+        const ShippingAddressValidationDelegate&) = delete;
+
     ~ShippingAddressValidationDelegate() override;
 
     // ValidationDelegate:
@@ -94,8 +106,6 @@ class ShippingAddressEditorViewController : public EditorViewController {
 
     // Raw pointer back to the owner of this class, therefore will not be null.
     ShippingAddressEditorViewController* controller_;
-
-    DISALLOW_COPY_AND_ASSIGN(ShippingAddressValidationDelegate);
   };
 
   std::u16string GetValueForType(const autofill::AutofillProfile& profile,
@@ -165,8 +175,6 @@ class ShippingAddressEditorViewController : public EditorViewController {
 
   base::WeakPtrFactory<ShippingAddressEditorViewController> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShippingAddressEditorViewController);
 };
 
 }  // namespace payments

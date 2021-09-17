@@ -27,6 +27,11 @@ using UkmEntry = ukm::builders::AmpPageLoad;
 class AmpPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   AmpPageLoadMetricsBrowserTest() {}
+
+  AmpPageLoadMetricsBrowserTest(const AmpPageLoadMetricsBrowserTest&) = delete;
+  AmpPageLoadMetricsBrowserTest& operator=(
+      const AmpPageLoadMetricsBrowserTest&) = delete;
+
   ~AmpPageLoadMetricsBrowserTest() override {}
 
   void PreRunTestOnMainThread() override {
@@ -85,8 +90,6 @@ class AmpPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(AmpPageLoadMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AmpPageLoadMetricsBrowserTest, NoAmp) {

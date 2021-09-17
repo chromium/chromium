@@ -62,6 +62,10 @@ class DeviceDescriptionService {
   DeviceDescriptionService(
       const DeviceDescriptionParseSuccessCallback& success_cb,
       const DeviceDescriptionParseErrorCallback& error_cb);
+
+  DeviceDescriptionService(const DeviceDescriptionService&) = delete;
+  DeviceDescriptionService& operator=(const DeviceDescriptionService&) = delete;
+
   virtual ~DeviceDescriptionService();
 
   // For each device in |devices|, if there is a valid cache entry for it, call
@@ -160,8 +164,6 @@ class DeviceDescriptionService {
   SafeDialDeviceDescriptionParser device_description_parser_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDescriptionService);
 };
 
 }  // namespace media_router

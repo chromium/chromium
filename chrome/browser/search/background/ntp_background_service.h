@@ -31,6 +31,10 @@ class NtpBackgroundService : public KeyedService {
  public:
   NtpBackgroundService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  NtpBackgroundService(const NtpBackgroundService&) = delete;
+  NtpBackgroundService& operator=(const NtpBackgroundService&) = delete;
+
   ~NtpBackgroundService() override;
 
   // KeyedService implementation.
@@ -173,8 +177,6 @@ class NtpBackgroundService : public KeyedService {
   ErrorInfo collection_error_info_;
   ErrorInfo collection_images_error_info_;
   ErrorInfo next_image_error_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(NtpBackgroundService);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_SERVICE_H_

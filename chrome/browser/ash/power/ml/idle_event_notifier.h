@@ -95,6 +95,10 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
       PowerManagerClient* power_client,
       ui::UserActivityDetector* detector,
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver);
+
+  IdleEventNotifier(const IdleEventNotifier&) = delete;
+  IdleEventNotifier& operator=(const IdleEventNotifier&) = delete;
+
   ~IdleEventNotifier() override;
 
   // chromeos::PowerManagerClient::Observer overrides:
@@ -170,8 +174,6 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
   std::unique_ptr<RecentEventsCounter> key_counter_;
   std::unique_ptr<RecentEventsCounter> mouse_counter_;
   std::unique_ptr<RecentEventsCounter> touch_counter_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleEventNotifier);
 };
 
 }  // namespace ml

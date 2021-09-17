@@ -32,6 +32,10 @@ class SkiaGoldPixelDiff;
 class BrowserSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
  public:
   BrowserSkiaGoldPixelDiff();
+
+  BrowserSkiaGoldPixelDiff(const BrowserSkiaGoldPixelDiff&) = delete;
+  BrowserSkiaGoldPixelDiff& operator=(const BrowserSkiaGoldPixelDiff&) = delete;
+
   ~BrowserSkiaGoldPixelDiff() override;
   // Call Init method before using this class.
   // Args:
@@ -70,8 +74,6 @@ class BrowserSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
 
  private:
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSkiaGoldPixelDiff);
 };
 
 #endif  // CHROME_TEST_PIXEL_BROWSER_SKIA_GOLD_PIXEL_DIFF_H_

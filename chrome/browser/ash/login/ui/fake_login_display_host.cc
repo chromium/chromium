@@ -15,14 +15,15 @@ class FakeLoginDisplayHost::FakeBaseScreen : public BaseScreen {
   explicit FakeBaseScreen(OobeScreenId screen_id)
       : BaseScreen(screen_id, OobeScreenPriority::DEFAULT) {}
 
+  FakeBaseScreen(const FakeBaseScreen&) = delete;
+  FakeBaseScreen& operator=(const FakeBaseScreen&) = delete;
+
   ~FakeBaseScreen() override = default;
 
  private:
   // BaseScreen:
   void ShowImpl() override {}
   void HideImpl() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBaseScreen);
 };
 
 FakeLoginDisplayHost::FakeLoginDisplayHost()

@@ -44,6 +44,9 @@ class ExploreSitesFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       Callback callback);
 
+  ExploreSitesFetcher(const ExploreSitesFetcher&) = delete;
+  ExploreSitesFetcher& operator=(const ExploreSitesFetcher&) = delete;
+
   ~ExploreSitesFetcher();
 
   // Starts the fetching.
@@ -107,8 +110,6 @@ class ExploreSitesFetcher {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   base::WeakPtrFactory<ExploreSitesFetcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesFetcher);
 };
 
 }  // namespace explore_sites

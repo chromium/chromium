@@ -63,15 +63,18 @@ class MockEasyUnlockNotificationController
  public:
   MockEasyUnlockNotificationController()
       : EasyUnlockNotificationController(nullptr) {}
+
+  MockEasyUnlockNotificationController(
+      const MockEasyUnlockNotificationController&) = delete;
+  MockEasyUnlockNotificationController& operator=(
+      const MockEasyUnlockNotificationController&) = delete;
+
   ~MockEasyUnlockNotificationController() override {}
 
   // EasyUnlockNotificationController:
   MOCK_METHOD0(ShowChromebookAddedNotification, void());
   MOCK_METHOD0(ShowPairingChangeNotification, void());
   MOCK_METHOD1(ShowPairingChangeAppliedNotification, void(const std::string&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEasyUnlockNotificationController);
 };
 
 // Define a stub MultiDeviceSetupDialog because the base class has a protected

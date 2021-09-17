@@ -23,6 +23,10 @@ class ProfileKey : public SimpleFactoryKey {
  public:
   ProfileKey(const base::FilePath& path,
              ProfileKey* original_key = nullptr);
+
+  ProfileKey(const ProfileKey&) = delete;
+  ProfileKey& operator=(const ProfileKey&) = delete;
+
   ~ProfileKey() override;
 
   // Profile-specific APIs needed in reduced mode:
@@ -53,8 +57,6 @@ class ProfileKey : public SimpleFactoryKey {
 #if defined(OS_ANDROID)
   std::unique_ptr<ProfileKeyAndroid> profile_key_android_;
 #endif  // OS_ANDROID
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileKey);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_KEY_H_

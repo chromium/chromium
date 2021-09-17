@@ -43,6 +43,9 @@ class RecentModel : public KeyedService {
       base::OnceCallback<void(const std::vector<RecentFile>& files)>;
   using FileType = RecentSource::FileType;
 
+  RecentModel(const RecentModel&) = delete;
+  RecentModel& operator=(const RecentModel&) = delete;
+
   ~RecentModel() override;
 
   // Returns an instance for the given profile.
@@ -117,8 +120,6 @@ class RecentModel : public KeyedService {
       intermediate_files_;
 
   base::WeakPtrFactory<RecentModel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecentModel);
 };
 
 }  // namespace chromeos

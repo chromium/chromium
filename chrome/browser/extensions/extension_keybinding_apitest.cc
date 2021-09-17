@@ -83,6 +83,10 @@ const char kMediaKeyTestCommand[] = "test_mediakeys_update";
 class DomMessageListener : public content::TestMessageHandler {
  public:
   explicit DomMessageListener(content::WebContents* web_contents);
+
+  DomMessageListener(const DomMessageListener&) = delete;
+  DomMessageListener& operator=(const DomMessageListener&) = delete;
+
   ~DomMessageListener() override;
 
   // Wait until a message is received.
@@ -103,8 +107,6 @@ class DomMessageListener : public content::TestMessageHandler {
   std::string message_;
 
   content::JavascriptTestObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomMessageListener);
 };
 
 DomMessageListener::DomMessageListener(content::WebContents* web_contents)

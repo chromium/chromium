@@ -30,6 +30,10 @@ class UpdatePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
                      std::unique_ptr<password_manager::PasswordFormManagerForUI>
                          form_to_update);
 
+  UpdatePasswordInfoBarDelegate(const UpdatePasswordInfoBarDelegate&) = delete;
+  UpdatePasswordInfoBarDelegate& operator=(
+      const UpdatePasswordInfoBarDelegate&) = delete;
+
   ~UpdatePasswordInfoBarDelegate() override;
 
   std::u16string GetBranding() const;
@@ -82,8 +86,6 @@ class UpdatePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   ManagePasswordsState passwords_state_;
   std::u16string branding_;
   bool is_smartlock_branding_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdatePasswordInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_UPDATE_PASSWORD_INFOBAR_DELEGATE_ANDROID_H_

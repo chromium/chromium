@@ -93,6 +93,10 @@ class EditorViewController : public PaymentRequestSheetController,
                        base::WeakPtr<PaymentRequestDialogView> dialog,
                        BackNavigationType back_navigation_type,
                        bool is_incognito);
+
+  EditorViewController(const EditorViewController&) = delete;
+  EditorViewController& operator=(const EditorViewController&) = delete;
+
   ~EditorViewController() override;
 
   // Will display |error_message| alongside the input field represented by
@@ -219,8 +223,6 @@ class EditorViewController : public PaymentRequestSheetController,
   BackNavigationType back_navigation_type_;
 
   bool is_incognito_;
-
-  DISALLOW_COPY_AND_ASSIGN(EditorViewController);
 };
 
 }  // namespace payments

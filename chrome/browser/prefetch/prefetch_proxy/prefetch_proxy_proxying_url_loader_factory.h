@@ -74,6 +74,12 @@ class PrefetchProxyProxyingURLLoaderFactory
       mojo::PendingRemote<network::mojom::URLLoaderFactory> isolated_factory,
       DisconnectCallback on_disconnect,
       ResourceLoadSuccessfulCallback on_resource_load_successful);
+
+  PrefetchProxyProxyingURLLoaderFactory(
+      const PrefetchProxyProxyingURLLoaderFactory&) = delete;
+  PrefetchProxyProxyingURLLoaderFactory& operator=(
+      const PrefetchProxyProxyingURLLoaderFactory&) = delete;
+
   ~PrefetchProxyProxyingURLLoaderFactory() override;
 
   // Informs |this| that new subresource loads are being done after the user
@@ -110,6 +116,10 @@ class PrefetchProxyProxyingURLLoaderFactory
         const network::ResourceRequest& request,
         mojo::PendingRemote<network::mojom::URLLoaderClient> client,
         const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
+
+    InProgressRequest(const InProgressRequest&) = delete;
+    InProgressRequest& operator=(const InProgressRequest&) = delete;
+
     ~InProgressRequest() override;
 
     // Sets a callback that will be run during |OnComplete| to record metrics.
@@ -187,8 +197,6 @@ class PrefetchProxyProxyingURLLoaderFactory
     // |target_loader_|.
     mojo::Remote<network::mojom::URLLoader> target_loader_;
     mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(InProgressRequest);
   };
 
   // Terminates the request when constructed.
@@ -197,6 +205,10 @@ class PrefetchProxyProxyingURLLoaderFactory
     AbortRequest(
         mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
         mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+
+    AbortRequest(const AbortRequest&) = delete;
+    AbortRequest& operator=(const AbortRequest&) = delete;
+
     ~AbortRequest() override;
 
     // network::mojom::URLLoader:
@@ -219,8 +231,6 @@ class PrefetchProxyProxyingURLLoaderFactory
     mojo::Receiver<network::mojom::URLLoader> loader_receiver_;
 
     base::WeakPtrFactory<AbortRequest> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(AbortRequest);
   };
 
   // Used as a callback for determining the eligibility of a resource to be
@@ -292,8 +302,6 @@ class PrefetchProxyProxyingURLLoaderFactory
 
   base::WeakPtrFactory<PrefetchProxyProxyingURLLoaderFactory> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchProxyProxyingURLLoaderFactory);
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PROXYING_URL_LOADER_FACTORY_H_

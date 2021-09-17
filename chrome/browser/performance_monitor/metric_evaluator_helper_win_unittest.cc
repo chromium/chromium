@@ -15,14 +15,16 @@ namespace performance_monitor {
 class MetricEvaluatorsHelperWinTest : public testing::Test {
  public:
   MetricEvaluatorsHelperWinTest() = default;
+
+  MetricEvaluatorsHelperWinTest(const MetricEvaluatorsHelperWinTest&) = delete;
+  MetricEvaluatorsHelperWinTest& operator=(
+      const MetricEvaluatorsHelperWinTest&) = delete;
+
   ~MetricEvaluatorsHelperWinTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
   MetricEvaluatorsHelperWin metric_evaluator_helper_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricEvaluatorsHelperWinTest);
 };
 
 TEST_F(MetricEvaluatorsHelperWinTest, GetFreeMemory) {

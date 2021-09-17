@@ -30,6 +30,10 @@ class TestScreen : public display::ScreenBase {
   TestScreen() : previous_screen_(display::Screen::GetScreen()) {
     display::Screen::SetScreenInstance(this);
   }
+
+  TestScreen(const TestScreen&) = delete;
+  TestScreen& operator=(const TestScreen&) = delete;
+
   ~TestScreen() override {
     display::Screen::SetScreenInstance(previous_screen_);
   }
@@ -44,8 +48,6 @@ class TestScreen : public display::ScreenBase {
 
  private:
   display::Screen* previous_screen_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScreen);
 };
 
 }  // namespace

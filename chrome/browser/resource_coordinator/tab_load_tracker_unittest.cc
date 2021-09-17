@@ -81,6 +81,10 @@ class TestTabLoadTracker : public TabLoadTracker {
 class LenientMockObserver : public TabLoadTracker::Observer {
  public:
   LenientMockObserver() {}
+
+  LenientMockObserver(const LenientMockObserver&) = delete;
+  LenientMockObserver& operator=(const LenientMockObserver&) = delete;
+
   ~LenientMockObserver() override {}
 
   // TabLoadTracker::Observer implementation:
@@ -88,9 +92,6 @@ class LenientMockObserver : public TabLoadTracker::Observer {
   MOCK_METHOD3(OnLoadingStateChange,
                void(content::WebContents*, LoadingState, LoadingState));
   MOCK_METHOD2(OnStopTracking, void(content::WebContents*, LoadingState));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LenientMockObserver);
 };
 using MockObserver = testing::StrictMock<LenientMockObserver>;
 

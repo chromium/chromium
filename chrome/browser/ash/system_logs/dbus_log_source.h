@@ -14,13 +14,14 @@ namespace system_logs {
 class DBusLogSource : public SystemLogsSource {
  public:
   DBusLogSource();
+
+  DBusLogSource(const DBusLogSource&) = delete;
+  DBusLogSource& operator=(const DBusLogSource&) = delete;
+
   ~DBusLogSource() override;
 
   // SystemLogsSource override.
   void Fetch(SysLogsSourceCallback request) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DBusLogSource);
 };
 
 }  // namespace system_logs

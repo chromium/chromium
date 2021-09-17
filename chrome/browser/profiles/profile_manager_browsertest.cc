@@ -103,6 +103,11 @@ class MultipleProfileDeletionObserver
     }
   }
 
+  MultipleProfileDeletionObserver(const MultipleProfileDeletionObserver&) =
+      delete;
+  MultipleProfileDeletionObserver& operator=(
+      const MultipleProfileDeletionObserver&) = delete;
+
   ~MultipleProfileDeletionObserver() override {
     g_browser_process->profile_manager()->GetProfileAttributesStorage().
         RemoveObserver(this);
@@ -148,8 +153,6 @@ class MultipleProfileDeletionObserver
   size_t expected_count_;
   size_t profiles_removed_count_;
   size_t profiles_data_removed_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultipleProfileDeletionObserver);
 };
 
 void EphemeralProfileCreationComplete(base::OnceClosure completion_callback,
@@ -167,6 +170,9 @@ class ProfileRemovalObserver : public ProfileAttributesStorage::Observer {
         AddObserver(this);
   }
 
+  ProfileRemovalObserver(const ProfileRemovalObserver&) = delete;
+  ProfileRemovalObserver& operator=(const ProfileRemovalObserver&) = delete;
+
   ~ProfileRemovalObserver() override {
     g_browser_process->profile_manager()->GetProfileAttributesStorage().
         RemoveObserver(this);
@@ -182,8 +188,6 @@ class ProfileRemovalObserver : public ProfileAttributesStorage::Observer {
 
  private:
   std::string last_used_profile_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileRemovalObserver);
 };
 
 // The class serves to retrieve passwords from PasswordStore asynchronously. It

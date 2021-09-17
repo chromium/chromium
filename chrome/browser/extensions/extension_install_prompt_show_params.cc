@@ -32,6 +32,11 @@ class ExtensionInstallPromptShowParams::WebContentsDestructionObserver
         params_(params) {
   }
 
+  WebContentsDestructionObserver(const WebContentsDestructionObserver&) =
+      delete;
+  WebContentsDestructionObserver& operator=(
+      const WebContentsDestructionObserver&) = delete;
+
   ~WebContentsDestructionObserver() override {}
 
   void WebContentsDestroyed() override { params_->WebContentsDestroyed(); }
@@ -39,8 +44,6 @@ class ExtensionInstallPromptShowParams::WebContentsDestructionObserver
  private:
   // Not owned.
   ExtensionInstallPromptShowParams* params_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsDestructionObserver);
 };
 
 ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(

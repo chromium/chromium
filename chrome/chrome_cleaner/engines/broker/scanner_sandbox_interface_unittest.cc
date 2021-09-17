@@ -66,14 +66,15 @@ class ScopedCurrentDirectory {
     CHECK(base::SetCurrentDirectory(new_directory));
   }
 
+  ScopedCurrentDirectory(const ScopedCurrentDirectory&) = delete;
+  ScopedCurrentDirectory& operator=(const ScopedCurrentDirectory&) = delete;
+
   ~ScopedCurrentDirectory() {
     CHECK(base::SetCurrentDirectory(original_directory_));
   }
 
  private:
   base::FilePath original_directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCurrentDirectory);
 };
 
 bool operator!=(const chrome_cleaner::TaskScheduler::TaskExecAction& left,

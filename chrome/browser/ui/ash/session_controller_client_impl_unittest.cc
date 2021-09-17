@@ -58,6 +58,10 @@ std::unique_ptr<KeyedService> CreateTestPolicyCertService(
 class TestChromeUserManager : public ash::FakeChromeUserManager {
  public:
   TestChromeUserManager() = default;
+
+  TestChromeUserManager(const TestChromeUserManager&) = delete;
+  TestChromeUserManager& operator=(const TestChromeUserManager&) = delete;
+
   ~TestChromeUserManager() override = default;
 
   // user_manager::UserManager:
@@ -90,9 +94,6 @@ class TestChromeUserManager : public ash::FakeChromeUserManager {
 
     return unlock_users;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestChromeUserManager);
 };
 
 }  // namespace

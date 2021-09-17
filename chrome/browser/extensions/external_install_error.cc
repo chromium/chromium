@@ -82,6 +82,10 @@ MapDefaultButtonStringToSetting(const std::string& button_setting_string) {
 class ExternalInstallMenuAlert : public GlobalError {
  public:
   explicit ExternalInstallMenuAlert(ExternalInstallError* error);
+
+  ExternalInstallMenuAlert(const ExternalInstallMenuAlert&) = delete;
+  ExternalInstallMenuAlert& operator=(const ExternalInstallMenuAlert&) = delete;
+
   ~ExternalInstallMenuAlert() override;
 
  private:
@@ -101,8 +105,6 @@ class ExternalInstallMenuAlert : public GlobalError {
 
   // Provides menu item id for GlobalError.
   ExtensionInstallErrorMenuItemIdProvider id_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallMenuAlert);
 };
 
 // A global error that spawns a bubble when the menu item is clicked.
@@ -110,6 +112,11 @@ class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
  public:
   ExternalInstallBubbleAlert(ExternalInstallError* error,
                              ExtensionInstallPrompt::Prompt* prompt);
+
+  ExternalInstallBubbleAlert(const ExternalInstallBubbleAlert&) = delete;
+  ExternalInstallBubbleAlert& operator=(const ExternalInstallBubbleAlert&) =
+      delete;
+
   ~ExternalInstallBubbleAlert() override;
 
  private:
@@ -137,8 +144,6 @@ class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
   // The Prompt with all information, which we then use to populate the bubble.
   // Owned by |error|.
   ExtensionInstallPrompt::Prompt* prompt_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallBubbleAlert);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

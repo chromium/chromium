@@ -39,6 +39,10 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
                         const net::NetworkIsolationKey& network_isolation_key,
                         ResolveHostCallback callback,
                         network::mojom::NetworkContext* network_context);
+
+  ResolveHostClientImpl(const ResolveHostClientImpl&) = delete;
+  ResolveHostClientImpl& operator=(const ResolveHostClientImpl&) = delete;
+
   // Cancels the request if it hasn't been completed yet.
   ~ResolveHostClientImpl() override;
 
@@ -53,8 +57,6 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
  private:
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   ResolveHostCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolveHostClientImpl);
 };
 
 }  // namespace predictors

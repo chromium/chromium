@@ -158,6 +158,9 @@ class ImeObserverChromeOS : public ui::ImeObserver {
   ImeObserverChromeOS(const std::string& extension_id, Profile* profile)
       : ImeObserver(extension_id, profile) {}
 
+  ImeObserverChromeOS(const ImeObserverChromeOS&) = delete;
+  ImeObserverChromeOS& operator=(const ImeObserverChromeOS&) = delete;
+
   ~ImeObserverChromeOS() override = default;
 
   // chromeos::InputMethodEngineBase::Observer overrides.
@@ -489,8 +492,6 @@ class ImeObserverChromeOS : public ui::ImeObserver {
     }
     return input_mode_type;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ImeObserverChromeOS);
 };
 
 }  // namespace

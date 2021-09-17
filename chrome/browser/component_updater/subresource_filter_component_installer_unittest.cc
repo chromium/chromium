@@ -48,6 +48,9 @@ class TestRulesetService : public subresource_filter::RulesetService {
                                            base_dir,
                                            blocking_task_runner) {}
 
+  TestRulesetService(const TestRulesetService&) = delete;
+  TestRulesetService& operator=(const TestRulesetService&) = delete;
+
   ~TestRulesetService() override = default;
 
   using UnindexedRulesetInfo = subresource_filter::UnindexedRulesetInfo;
@@ -70,18 +73,19 @@ class TestRulesetService : public subresource_filter::RulesetService {
 
  private:
   UnindexedRulesetInfo unindexed_ruleset_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRulesetService);
 };
 
 class SubresourceFilterMockComponentUpdateService
     : public component_updater::MockComponentUpdateService {
  public:
   SubresourceFilterMockComponentUpdateService() = default;
-  ~SubresourceFilterMockComponentUpdateService() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterMockComponentUpdateService);
+  SubresourceFilterMockComponentUpdateService(
+      const SubresourceFilterMockComponentUpdateService&) = delete;
+  SubresourceFilterMockComponentUpdateService& operator=(
+      const SubresourceFilterMockComponentUpdateService&) = delete;
+
+  ~SubresourceFilterMockComponentUpdateService() override = default;
 };
 
 subresource_filter::Configuration CreateConfigUsingRulesetFlavor(

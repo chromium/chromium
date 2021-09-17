@@ -23,6 +23,10 @@ class ProtectedBufferManager;
 class ChromeContentGpuClient : public content::ContentGpuClient {
  public:
   ChromeContentGpuClient();
+
+  ChromeContentGpuClient(const ChromeContentGpuClient&) = delete;
+  ChromeContentGpuClient& operator=(const ChromeContentGpuClient&) = delete;
+
   ~ChromeContentGpuClient() override;
 
   // content::ContentGpuClient:
@@ -47,8 +51,6 @@ class ChromeContentGpuClient : public content::ContentGpuClient {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentGpuClient);
 };
 
 #endif  // CHROME_GPU_CHROME_CONTENT_GPU_CLIENT_H_

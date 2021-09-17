@@ -159,6 +159,9 @@ class ToolkitDelegateMacCocoa : public RenderViewContextMenu::ToolkitDelegate {
   explicit ToolkitDelegateMacCocoa(RenderViewContextMenuMacCocoa* context_menu)
       : context_menu_(context_menu) {}
 
+  ToolkitDelegateMacCocoa(const ToolkitDelegateMacCocoa&) = delete;
+  ToolkitDelegateMacCocoa& operator=(const ToolkitDelegateMacCocoa&) = delete;
+
   ~ToolkitDelegateMacCocoa() override {}
 
  private:
@@ -177,7 +180,6 @@ class ToolkitDelegateMacCocoa : public RenderViewContextMenu::ToolkitDelegate {
   }
 
   RenderViewContextMenuMacCocoa* context_menu_;
-  DISALLOW_COPY_AND_ASSIGN(ToolkitDelegateMacCocoa);
 };
 
 // Obj-C bridge class that is the target of all items in the context menu.

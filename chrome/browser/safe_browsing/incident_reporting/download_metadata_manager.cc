@@ -65,6 +65,9 @@ const base::FilePath::CharType kDownloadMetadataBasename[] =
 // it is in progress.
 class DownloadItemData : public base::SupportsUserData::Data {
  public:
+  DownloadItemData(const DownloadItemData&) = delete;
+  DownloadItemData& operator=(const DownloadItemData&) = delete;
+
   ~DownloadItemData() override {}
 
   // Sets the ClientDownloadRequest for a given DownloadItem.
@@ -84,8 +87,6 @@ class DownloadItemData : public base::SupportsUserData::Data {
       : request_(std::move(request)) {}
 
   std::unique_ptr<ClientDownloadRequest> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemData);
 };
 
 // Make the key's value unique by setting it to its own location.

@@ -22,6 +22,11 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
  public:
   explicit InlineLoginHandlerChromeOS(
       const base::RepeatingClosure& close_dialog_closure);
+
+  InlineLoginHandlerChromeOS(const InlineLoginHandlerChromeOS&) = delete;
+  InlineLoginHandlerChromeOS& operator=(const InlineLoginHandlerChromeOS&) =
+      delete;
+
   ~InlineLoginHandlerChromeOS() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -49,7 +54,6 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
 
   base::RepeatingClosure close_dialog_closure_;
   base::WeakPtrFactory<InlineLoginHandlerChromeOS> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginHandlerChromeOS);
 };
 
 }  // namespace chromeos

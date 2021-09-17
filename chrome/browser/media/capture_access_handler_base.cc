@@ -37,6 +37,10 @@ namespace {
 class WeakPtrToWebContents : private content::WebContentsObserver {
  public:
   WeakPtrToWebContents() = default;
+
+  WeakPtrToWebContents(const WeakPtrToWebContents&) = delete;
+  WeakPtrToWebContents& operator=(const WeakPtrToWebContents&) = delete;
+
   ~WeakPtrToWebContents() override = default;
 
   void Set(int render_process_id, int render_frame_id) {
@@ -52,10 +56,6 @@ class WeakPtrToWebContents : private content::WebContentsObserver {
   content::WebContents* get() const {
     return WebContentsObserver::web_contents();
   }
-
- private:
-  // WebContentsObserver does not allow copy or assign.
-  DISALLOW_COPY_AND_ASSIGN(WeakPtrToWebContents);
 };
 
 }  // namespace

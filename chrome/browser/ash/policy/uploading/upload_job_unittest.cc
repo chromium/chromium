@@ -53,6 +53,12 @@ class RepeatingMimeBoundaryGenerator
  public:
   explicit RepeatingMimeBoundaryGenerator(char character)
       : character_(character) {}
+
+  RepeatingMimeBoundaryGenerator(const RepeatingMimeBoundaryGenerator&) =
+      delete;
+  RepeatingMimeBoundaryGenerator& operator=(
+      const RepeatingMimeBoundaryGenerator&) = delete;
+
   ~RepeatingMimeBoundaryGenerator() override {}
 
   // MimeBoundaryGenerator:
@@ -63,8 +69,6 @@ class RepeatingMimeBoundaryGenerator
 
  private:
   const char character_;
-
-  DISALLOW_COPY_AND_ASSIGN(RepeatingMimeBoundaryGenerator);
 };
 
 class FakeOAuth2AccessTokenManagerWithCaching
@@ -72,6 +76,12 @@ class FakeOAuth2AccessTokenManagerWithCaching
  public:
   explicit FakeOAuth2AccessTokenManagerWithCaching(
       OAuth2AccessTokenManager::Delegate* delegate);
+
+  FakeOAuth2AccessTokenManagerWithCaching(
+      const FakeOAuth2AccessTokenManagerWithCaching&) = delete;
+  FakeOAuth2AccessTokenManagerWithCaching& operator=(
+      const FakeOAuth2AccessTokenManagerWithCaching&) = delete;
+
   ~FakeOAuth2AccessTokenManagerWithCaching() override;
 
   // FakeOAuth2AccessTokenManager:
@@ -97,8 +107,6 @@ class FakeOAuth2AccessTokenManagerWithCaching
  private:
   base::queue<std::string> token_replies_;
   std::set<std::string> valid_tokens_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOAuth2AccessTokenManagerWithCaching);
 };
 
 FakeOAuth2AccessTokenManagerWithCaching::

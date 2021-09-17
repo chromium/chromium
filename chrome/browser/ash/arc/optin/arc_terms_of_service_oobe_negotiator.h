@@ -24,6 +24,12 @@ class ArcTermsOfServiceOobeNegotiator
       public chromeos::ConsolidatedConsentScreen::Observer {
  public:
   ArcTermsOfServiceOobeNegotiator();
+
+  ArcTermsOfServiceOobeNegotiator(const ArcTermsOfServiceOobeNegotiator&) =
+      delete;
+  ArcTermsOfServiceOobeNegotiator& operator=(
+      const ArcTermsOfServiceOobeNegotiator&) = delete;
+
   ~ArcTermsOfServiceOobeNegotiator() override;
 
   // Injects ARC OOBE screen handler in unit tests, where OOBE UI is not
@@ -60,8 +66,6 @@ class ArcTermsOfServiceOobeNegotiator
   base::ScopedObservation<chromeos::ConsolidatedConsentScreen,
                           chromeos::ConsolidatedConsentScreen::Observer>
       consolidated_consent_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceOobeNegotiator);
 };
 
 }  // namespace arc

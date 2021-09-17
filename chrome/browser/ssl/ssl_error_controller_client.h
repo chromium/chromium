@@ -38,6 +38,10 @@ class SSLErrorControllerClient
       std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper,
       std::unique_ptr<security_interstitials::SettingsPageHelper>
           settings_page_helper);
+
+  SSLErrorControllerClient(const SSLErrorControllerClient&) = delete;
+  SSLErrorControllerClient& operator=(const SSLErrorControllerClient&) = delete;
+
   ~SSLErrorControllerClient() override;
 
   // security_interstitials::ControllerClient overrides
@@ -51,8 +55,6 @@ class SSLErrorControllerClient
   const net::SSLInfo ssl_info_;
   const GURL request_url_;
   const int cert_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorControllerClient);
 };
 
 #endif  // CHROME_BROWSER_SSL_SSL_ERROR_CONTROLLER_CLIENT_H_

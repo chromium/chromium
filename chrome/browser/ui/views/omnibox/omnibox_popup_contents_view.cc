@@ -43,6 +43,10 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
   // from NativeTheme.
   explicit AutocompletePopupWidget(views::Widget* role_model)
       : ThemeCopyingWidget(role_model) {}
+
+  AutocompletePopupWidget(const AutocompletePopupWidget&) = delete;
+  AutocompletePopupWidget& operator=(const AutocompletePopupWidget&) = delete;
+
   ~AutocompletePopupWidget() override {}
 
   void InitOmniboxPopup(views::Widget* parent_widget) {
@@ -146,8 +150,6 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
 
   // True if the popup's bounds are currently being set.
   bool is_setting_popup_bounds_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompletePopupWidget);
 };
 
 OmniboxPopupContentsView::OmniboxPopupContentsView(

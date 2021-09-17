@@ -75,6 +75,12 @@ class WilcoDtcSupportdExtensionOwnedMessageHost final
     : public extensions::NativeMessageHost {
  public:
   WilcoDtcSupportdExtensionOwnedMessageHost() = default;
+
+  WilcoDtcSupportdExtensionOwnedMessageHost(
+      const WilcoDtcSupportdExtensionOwnedMessageHost&) = delete;
+  WilcoDtcSupportdExtensionOwnedMessageHost& operator=(
+      const WilcoDtcSupportdExtensionOwnedMessageHost&) = delete;
+
   ~WilcoDtcSupportdExtensionOwnedMessageHost() override = default;
 
   // extensions::NativeMessageHost:
@@ -207,8 +213,6 @@ class WilcoDtcSupportdExtensionOwnedMessageHost final
   // Must be the last member.
   base::WeakPtrFactory<WilcoDtcSupportdExtensionOwnedMessageHost>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdExtensionOwnedMessageHost);
 };
 
 // Extensions native message host implementation that is used when the wilco_dtc
@@ -229,6 +233,11 @@ class WilcoDtcSupportdDaemonOwnedMessageHost final
         send_response_callback_(std::move(send_response_callback)) {
     DCHECK(send_response_callback_);
   }
+
+  WilcoDtcSupportdDaemonOwnedMessageHost(
+      const WilcoDtcSupportdDaemonOwnedMessageHost&) = delete;
+  WilcoDtcSupportdDaemonOwnedMessageHost& operator=(
+      const WilcoDtcSupportdDaemonOwnedMessageHost&) = delete;
 
   ~WilcoDtcSupportdDaemonOwnedMessageHost() override {
     if (send_response_callback_) {
@@ -274,8 +283,6 @@ class WilcoDtcSupportdDaemonOwnedMessageHost final
   base::OnceCallback<void(const std::string& response)> send_response_callback_;
   // Unowned.
   Client* client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdDaemonOwnedMessageHost);
 };
 
 // Helper that wraps the specified OnceCallback and encapsulates logic that
@@ -296,6 +303,11 @@ class FirstNonEmptyMessageCallbackWrapper final {
     if (!pending_callback_count_)
       std::move(original_callback_).Run(std::string() /* response */);
   }
+
+  FirstNonEmptyMessageCallbackWrapper(
+      const FirstNonEmptyMessageCallbackWrapper&) = delete;
+  FirstNonEmptyMessageCallbackWrapper& operator=(
+      const FirstNonEmptyMessageCallbackWrapper&) = delete;
 
   ~FirstNonEmptyMessageCallbackWrapper() {
     if (original_callback_) {
@@ -327,8 +339,6 @@ class FirstNonEmptyMessageCallbackWrapper final {
  private:
   base::OnceCallback<void(const std::string& response)> original_callback_;
   int pending_callback_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstNonEmptyMessageCallbackWrapper);
 };
 
 void DeliverMessageToExtension(

@@ -43,6 +43,12 @@ MediaGalleryPrefInfo MakePrefInfo(MediaGalleryPrefId id) {
 class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
  public:
   MediaGalleriesInteractiveDialogTest() {}
+
+  MediaGalleriesInteractiveDialogTest(
+      const MediaGalleriesInteractiveDialogTest&) = delete;
+  MediaGalleriesInteractiveDialogTest& operator=(
+      const MediaGalleriesInteractiveDialogTest&) = delete;
+
   ~MediaGalleriesInteractiveDialogTest() override {}
 
   void PreRunTestOnMainThread() override {
@@ -75,8 +81,6 @@ class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
  private:
   testing::NiceMock<MediaGalleriesDialogControllerMock> controller_;
   std::unique_ptr<MediaGalleriesDialogViews> dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesInteractiveDialogTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MediaGalleriesInteractiveDialogTest,

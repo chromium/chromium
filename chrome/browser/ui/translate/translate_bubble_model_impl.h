@@ -22,6 +22,10 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
   TranslateBubbleModelImpl(
       translate::TranslateStep step,
       std::unique_ptr<translate::TranslateUIDelegate> ui_delegate);
+
+  TranslateBubbleModelImpl(const TranslateBubbleModelImpl&) = delete;
+  TranslateBubbleModelImpl& operator=(const TranslateBubbleModelImpl&) = delete;
+
   ~TranslateBubbleModelImpl() override;
 
   // Converts a TranslateStep to a ViewState.
@@ -65,8 +69,6 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
 
   bool translation_declined_;
   bool translate_executed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateBubbleModelImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_MODEL_IMPL_H_

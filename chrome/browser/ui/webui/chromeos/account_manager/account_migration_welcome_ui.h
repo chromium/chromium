@@ -16,12 +16,15 @@ namespace chromeos {
 class AccountMigrationWelcomeUI : public ui::WebDialogUI {
  public:
   explicit AccountMigrationWelcomeUI(content::WebUI* web_ui);
+
+  AccountMigrationWelcomeUI(const AccountMigrationWelcomeUI&) = delete;
+  AccountMigrationWelcomeUI& operator=(const AccountMigrationWelcomeUI&) =
+      delete;
+
   ~AccountMigrationWelcomeUI() override;
 
  private:
   base::WeakPtrFactory<AccountMigrationWelcomeUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccountMigrationWelcomeUI);
 };
 
 }  // namespace chromeos

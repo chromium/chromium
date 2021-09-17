@@ -26,6 +26,11 @@ class TaskTabHelper;
 class TabContentsSyncedTabDelegate : public sync_sessions::SyncedTabDelegate {
  public:
   TabContentsSyncedTabDelegate();
+
+  TabContentsSyncedTabDelegate(const TabContentsSyncedTabDelegate&) = delete;
+  TabContentsSyncedTabDelegate& operator=(const TabContentsSyncedTabDelegate&) =
+      delete;
+
   ~TabContentsSyncedTabDelegate() override;
 
   // SyncedTabDelegate:
@@ -58,8 +63,6 @@ class TabContentsSyncedTabDelegate : public sync_sessions::SyncedTabDelegate {
   const tasks::TaskTabHelper* task_tab_helper() const;
 
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabContentsSyncedTabDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_SYNC_TAB_CONTENTS_SYNCED_TAB_DELEGATE_H_

@@ -25,6 +25,10 @@ class ScannerControllerImpl : public ScannerController {
       RegistryLogger* registry_logger,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       ShortcutParserAPI* shortcut_parser);
+
+  ScannerControllerImpl(const ScannerControllerImpl&) = delete;
+  ScannerControllerImpl& operator=(const ScannerControllerImpl&) = delete;
+
   // If |StartScan| has been called, pumps the message loop until
   // |HandleScanDone| is called.
   ~ScannerControllerImpl() override;
@@ -59,8 +63,6 @@ class ScannerControllerImpl : public ScannerController {
   // We should have only one source of truth for the list of UwS found, and
   // this list is also kept by the scanner.
   std::set<UwSId> pup_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScannerControllerImpl);
 };
 
 }  // namespace chrome_cleaner

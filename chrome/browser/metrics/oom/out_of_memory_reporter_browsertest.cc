@@ -54,6 +54,12 @@ class MAYBE_OutOfMemoryReporterBrowserTest
       public OutOfMemoryReporter::Observer {
  public:
   MAYBE_OutOfMemoryReporterBrowserTest() = default;
+
+  MAYBE_OutOfMemoryReporterBrowserTest(
+      const MAYBE_OutOfMemoryReporterBrowserTest&) = delete;
+  MAYBE_OutOfMemoryReporterBrowserTest& operator=(
+      const MAYBE_OutOfMemoryReporterBrowserTest&) = delete;
+
   ~MAYBE_OutOfMemoryReporterBrowserTest() override = default;
 
   // InProcessBrowserTest:
@@ -78,9 +84,6 @@ class MAYBE_OutOfMemoryReporterBrowserTest
 
  protected:
   absl::optional<GURL> last_oom_url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MAYBE_OutOfMemoryReporterBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_OutOfMemoryReporterBrowserTest, MemoryExhaust) {

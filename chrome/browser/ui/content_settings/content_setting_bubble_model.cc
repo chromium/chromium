@@ -339,6 +339,11 @@ class ContentSettingMixedScriptBubbleModel
   ContentSettingMixedScriptBubbleModel(Delegate* delegate,
                                        WebContents* web_contents);
 
+  ContentSettingMixedScriptBubbleModel(
+      const ContentSettingMixedScriptBubbleModel&) = delete;
+  ContentSettingMixedScriptBubbleModel& operator=(
+      const ContentSettingMixedScriptBubbleModel&) = delete;
+
   ~ContentSettingMixedScriptBubbleModel() override {}
 
  private:
@@ -347,8 +352,6 @@ class ContentSettingMixedScriptBubbleModel
   // ContentSettingBubbleModel:
   void OnLearnMoreClicked() override;
   void OnCustomLinkClicked() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingMixedScriptBubbleModel);
 };
 
 ContentSettingMixedScriptBubbleModel::ContentSettingMixedScriptBubbleModel(
@@ -658,6 +661,12 @@ class ContentSettingCookiesBubbleModel : public ContentSettingSingleRadioGroup {
  public:
   ContentSettingCookiesBubbleModel(Delegate* delegate,
                                    WebContents* web_contents);
+
+  ContentSettingCookiesBubbleModel(const ContentSettingCookiesBubbleModel&) =
+      delete;
+  ContentSettingCookiesBubbleModel& operator=(
+      const ContentSettingCookiesBubbleModel&) = delete;
+
   ~ContentSettingCookiesBubbleModel() override;
 
   // ContentSettingBubbleModel:
@@ -665,8 +674,6 @@ class ContentSettingCookiesBubbleModel : public ContentSettingSingleRadioGroup {
 
  private:
   void OnCustomLinkClicked() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingCookiesBubbleModel);
 };
 
 ContentSettingCookiesBubbleModel::ContentSettingCookiesBubbleModel(
@@ -701,6 +708,12 @@ class ContentSettingPopupBubbleModel
       public blocked_content::UrlListManager::Observer {
  public:
   ContentSettingPopupBubbleModel(Delegate* delegate, WebContents* web_contents);
+
+  ContentSettingPopupBubbleModel(const ContentSettingPopupBubbleModel&) =
+      delete;
+  ContentSettingPopupBubbleModel& operator=(
+      const ContentSettingPopupBubbleModel&) = delete;
+
   ~ContentSettingPopupBubbleModel() override;
 
   // ContentSettingBubbleModel:
@@ -719,8 +732,6 @@ class ContentSettingPopupBubbleModel
   base::ScopedObservation<blocked_content::UrlListManager,
                           blocked_content::UrlListManager::Observer>
       url_list_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingPopupBubbleModel);
 };
 
 ContentSettingPopupBubbleModel::ContentSettingPopupBubbleModel(

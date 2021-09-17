@@ -42,6 +42,11 @@ const char kDiscourseContextHeaderName[] = "X-Additional-Discourse-Context";
 class ContextualSearchDelegateTest : public testing::Test {
  public:
   ContextualSearchDelegateTest() {}
+
+  ContextualSearchDelegateTest(const ContextualSearchDelegateTest&) = delete;
+  ContextualSearchDelegateTest& operator=(const ContextualSearchDelegateTest&) =
+      delete;
+
   ~ContextualSearchDelegateTest() override {}
 
  protected:
@@ -308,8 +313,6 @@ class ContextualSearchDelegateTest : public testing::Test {
 
   // Features to enable
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchDelegateTest);
 };
 
 TEST_F(ContextualSearchDelegateTest, NormalFetchWithXssiEscape) {

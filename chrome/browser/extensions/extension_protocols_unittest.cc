@@ -166,6 +166,10 @@ class GetResult {
   GetResult(network::mojom::URLResponseHeadPtr response, int result)
       : response_(std::move(response)), result_(result) {}
   GetResult(GetResult&& other) : result_(other.result_) {}
+
+  GetResult(const GetResult&) = delete;
+  GetResult& operator=(const GetResult&) = delete;
+
   ~GetResult() = default;
 
   std::string GetResponseHeaderByName(const std::string& name) const {
@@ -180,8 +184,6 @@ class GetResult {
  private:
   network::mojom::URLResponseHeadPtr response_;
   int result_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetResult);
 };
 
 }  // namespace

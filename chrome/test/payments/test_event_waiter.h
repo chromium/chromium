@@ -42,6 +42,9 @@ class EventWaiter {
   EventWaiter(std::list<TestEvent> expected_event_sequence,
               bool wait_for_single_event);
 
+  EventWaiter(const EventWaiter&) = delete;
+  EventWaiter& operator=(const EventWaiter&) = delete;
+
   ~EventWaiter();
 
   // Either returns right away if all events were observed between this
@@ -59,8 +62,6 @@ class EventWaiter {
   // When set to true, the event waiter ignores arrival of any other events
   // while waiting for the expected event to arrive.
   bool wait_for_single_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventWaiter);
 };
 
 }  // namespace payments

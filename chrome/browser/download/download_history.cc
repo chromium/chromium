@@ -106,6 +106,9 @@ class DownloadHistoryData : public base::SupportsUserData::Data {
     item->SetUserData(kKey, base::WrapUnique(this));
   }
 
+  DownloadHistoryData(const DownloadHistoryData&) = delete;
+  DownloadHistoryData& operator=(const DownloadHistoryData&) = delete;
+
   ~DownloadHistoryData() override {}
 
   PersistenceState state() const { return state_; }
@@ -129,8 +132,6 @@ class DownloadHistoryData : public base::SupportsUserData::Data {
 
   PersistenceState state_ = NOT_PERSISTED;
   std::unique_ptr<history::DownloadRow> info_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadHistoryData);
 };
 
 const char DownloadHistoryData::kKey[] =

@@ -26,6 +26,10 @@ class ThrottleObserver {
   enum class PriorityLevel { UNKNOWN, LOW, NORMAL, IMPORTANT, CRITICAL };
 
   ThrottleObserver(PriorityLevel level, const std::string& name);
+
+  ThrottleObserver(const ThrottleObserver&) = delete;
+  ThrottleObserver& operator=(const ThrottleObserver&) = delete;
+
   virtual ~ThrottleObserver();
 
   // Starts observing. This is overridden in derived classes to register self as
@@ -58,8 +62,6 @@ class ThrottleObserver {
 
  private:
   content::BrowserContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottleObserver);
 };
 
 std::ostream& operator<<(std::ostream& os,

@@ -53,6 +53,9 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
  public:
   DiagnosticsModelImpl() : tests_run_(0) {}
 
+  DiagnosticsModelImpl(const DiagnosticsModelImpl&) = delete;
+  DiagnosticsModelImpl& operator=(const DiagnosticsModelImpl&) = delete;
+
   ~DiagnosticsModelImpl() override {}
 
   int GetTestRunCount() const override { return tests_run_; }
@@ -141,9 +144,6 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
 
   std::vector<std::unique_ptr<DiagnosticsTest>> tests_;
   int tests_run_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsModelImpl);
 };
 
 // Each platform can have their own tests. For the time being there is only

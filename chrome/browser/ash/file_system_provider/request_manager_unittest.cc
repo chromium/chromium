@@ -35,6 +35,10 @@ namespace {
 class FakeNotificationManager : public NotificationManagerInterface {
  public:
   FakeNotificationManager() {}
+
+  FakeNotificationManager(const FakeNotificationManager&) = delete;
+  FakeNotificationManager& operator=(const FakeNotificationManager&) = delete;
+
   ~FakeNotificationManager() override {}
 
   // NotificationManagerInterface overrides:
@@ -70,8 +74,6 @@ class FakeNotificationManager : public NotificationManagerInterface {
   }
 
   CallbackMap callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNotificationManager);
 };
 
 // Logs calls of the success and error callbacks on requests.
@@ -203,12 +205,14 @@ class FakeHandler : public RequestManager::HandlerInterface {
       logger_->OnError(request_id, std::move(result), error);
   }
 
+  FakeHandler(const FakeHandler&) = delete;
+  FakeHandler& operator=(const FakeHandler&) = delete;
+
   ~FakeHandler() override {}
 
  private:
   base::WeakPtr<EventLogger> logger_;
   bool execute_reply_;
-  DISALLOW_COPY_AND_ASSIGN(FakeHandler);
 };
 
 // Observer the request manager for request events.

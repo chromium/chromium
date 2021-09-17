@@ -48,6 +48,10 @@ class BitmapFetcherService : public KeyedService, public BitmapFetcherDelegate {
   };
 
   explicit BitmapFetcherService(content::BrowserContext* context);
+
+  BitmapFetcherService(const BitmapFetcherService&) = delete;
+  BitmapFetcherService& operator=(const BitmapFetcherService&) = delete;
+
   ~BitmapFetcherService() override;
 
   // Cancels a request, if it is still in-flight.
@@ -131,8 +135,6 @@ class BitmapFetcherService : public KeyedService, public BitmapFetcherDelegate {
 
   // Browser context this service is active for.
   content::BrowserContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapFetcherService);
 };
 
 #endif  // CHROME_BROWSER_BITMAP_FETCHER_BITMAP_FETCHER_SERVICE_H_

@@ -15,6 +15,10 @@
 class DictionaryLoadObserver : public SpellcheckCustomDictionary::Observer {
  public:
   explicit DictionaryLoadObserver(base::OnceClosure quit_task);
+
+  DictionaryLoadObserver(const DictionaryLoadObserver&) = delete;
+  DictionaryLoadObserver& operator=(const DictionaryLoadObserver&) = delete;
+
   virtual ~DictionaryLoadObserver();
 
   // SpellcheckCustomDictionary::Observer implementation.
@@ -24,7 +28,6 @@ class DictionaryLoadObserver : public SpellcheckCustomDictionary::Observer {
 
  private:
   base::OnceClosure quit_task_;
-  DISALLOW_COPY_AND_ASSIGN(DictionaryLoadObserver);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_DICTIONARY_LOAD_OBSERVER_H_

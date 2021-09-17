@@ -36,6 +36,10 @@ using content::BrowserThread;
 class RemoveCookieTester {
  public:
   explicit RemoveCookieTester(Profile* profile);
+
+  RemoveCookieTester(const RemoveCookieTester&) = delete;
+  RemoveCookieTester& operator=(const RemoveCookieTester&) = delete;
+
   ~RemoveCookieTester();
 
   bool GetCookie(const std::string& host, net::CanonicalCookie* cookie);
@@ -57,8 +61,6 @@ class RemoveCookieTester {
   Profile* profile_;
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   scoped_refptr<content::MessageLoopRunner> runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveCookieTester);
 };
 
 RemoveCookieTester::RemoveCookieTester(Profile* profile)

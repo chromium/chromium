@@ -46,6 +46,9 @@ const void* const kBrowserContextUserDataKey = &kBrowserContextUserDataKey;
 // Owns all of the ProxyingURLLoaderFactorys for a given Profile.
 class BrowserContextData : public base::SupportsUserData::Data {
  public:
+  BrowserContextData(const BrowserContextData&) = delete;
+  BrowserContextData& operator=(const BrowserContextData&) = delete;
+
   ~BrowserContextData() override {}
 
   static void StartProxying(
@@ -97,8 +100,6 @@ class BrowserContextData : public base::SupportsUserData::Data {
       proxies_;
 
   base::WeakPtrFactory<BrowserContextData> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserContextData);
 };
 
 }  // namespace
@@ -116,6 +117,9 @@ class ProxyingURLLoaderFactory::InProgressRequest
       const network::ResourceRequest& request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
+
+  InProgressRequest(const InProgressRequest&) = delete;
+  InProgressRequest& operator=(const InProgressRequest&) = delete;
 
   ~InProgressRequest() override {
     if (destruction_callback_)
@@ -206,8 +210,6 @@ class ProxyingURLLoaderFactory::InProgressRequest
   // Messages received by |loader_receiver_| are forwarded to |target_loader_|.
   mojo::Receiver<network::mojom::URLLoader> loader_receiver_;
   mojo::Remote<network::mojom::URLLoader> target_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProgressRequest);
 };
 
 class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
@@ -226,6 +228,9 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
         in_progress_request_(in_progress_request) {
     DCHECK(in_progress_request_);
   }
+
+  ProxyRequestAdapter(const ProxyRequestAdapter&) = delete;
+  ProxyRequestAdapter& operator=(const ProxyRequestAdapter&) = delete;
 
   ~ProxyRequestAdapter() override = default;
 
@@ -252,8 +257,6 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
 
  private:
   InProgressRequest* const in_progress_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyRequestAdapter);
 };
 
 class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
@@ -265,6 +268,9 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
     DCHECK(in_progress_request_);
     DCHECK(headers_);
   }
+
+  ProxyResponseAdapter(const ProxyResponseAdapter&) = delete;
+  ProxyResponseAdapter& operator=(const ProxyResponseAdapter&) = delete;
 
   ~ProxyResponseAdapter() override = default;
 
@@ -302,8 +308,6 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
  private:
   InProgressRequest* const in_progress_request_;
   net::HttpResponseHeaders* const headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResponseAdapter);
 };
 
 ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(

@@ -59,6 +59,9 @@ class TestMediaDataSource : public chrome::mojom::MediaDataSource {
       const base::FilePath& file_path)
       : file_path_(file_path), receiver_(this, std::move(receiver)) {}
 
+  TestMediaDataSource(const TestMediaDataSource&) = delete;
+  TestMediaDataSource& operator=(const TestMediaDataSource&) = delete;
+
   ~TestMediaDataSource() override = default;
 
  private:
@@ -78,13 +81,15 @@ class TestMediaDataSource : public chrome::mojom::MediaDataSource {
 
   base::FilePath file_path_;
   mojo::Receiver<chrome::mojom::MediaDataSource> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaDataSource);
 };
 
 class MediaParserAndroidTest : public testing::Test {
  public:
   MediaParserAndroidTest() = default;
+
+  MediaParserAndroidTest(const MediaParserAndroidTest&) = delete;
+  MediaParserAndroidTest& operator=(const MediaParserAndroidTest&) = delete;
+
   ~MediaParserAndroidTest() override = default;
 
   void SetUp() override {
@@ -130,8 +135,6 @@ class MediaParserAndroidTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MediaParserAndroid> parser_;
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaParserAndroidTest);
 };
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)

@@ -20,6 +20,10 @@ class WebSocketListener;
 class PipeHandler {
  public:
   PipeHandler(WebSocketListener* listener, int write_fd, int read_fd);
+
+  PipeHandler(const PipeHandler&) = delete;
+  PipeHandler& operator=(const PipeHandler&) = delete;
+
   virtual ~PipeHandler();
 
   // Sends the given message and returns true on success.
@@ -38,8 +42,6 @@ class PipeHandler {
   scoped_refptr<net::DrainableIOBuffer> write_buffer_;
   scoped_refptr<net::DrainableIOBuffer> read_buffer_;
   std::string pending_write_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipeHandler);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_PIPE_HANDLER_H_

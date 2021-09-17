@@ -32,6 +32,10 @@ class ClientProxy : public content::DevToolsAgentHostClient {
  public:
   explicit ClientProxy(content::DevToolsExternalAgentProxy* proxy)
       : proxy_(proxy) {}
+
+  ClientProxy(const ClientProxy&) = delete;
+  ClientProxy& operator=(const ClientProxy&) = delete;
+
   ~ClientProxy() override {}
 
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
@@ -45,7 +49,6 @@ class ClientProxy : public content::DevToolsAgentHostClient {
 
  private:
   content::DevToolsExternalAgentProxy* proxy_;
-  DISALLOW_COPY_AND_ASSIGN(ClientProxy);
 };
 
 class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {
@@ -57,6 +60,9 @@ class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {
         agent_host_(tab->web_contents()
                         ? DevToolsAgentHost::GetOrCreateFor(tab->web_contents())
                         : nullptr) {}
+
+  TabProxyDelegate(const TabProxyDelegate&) = delete;
+  TabProxyDelegate& operator=(const TabProxyDelegate&) = delete;
 
   ~TabProxyDelegate() override {}
 
@@ -173,7 +179,6 @@ class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {
   scoped_refptr<DevToolsAgentHost> agent_host_;
   std::map<content::DevToolsExternalAgentProxy*, std::unique_ptr<ClientProxy>>
       proxies_;
-  DISALLOW_COPY_AND_ASSIGN(TabProxyDelegate);
 };
 
 scoped_refptr<DevToolsAgentHost> DevToolsAgentHostForTab(TabAndroid* tab) {

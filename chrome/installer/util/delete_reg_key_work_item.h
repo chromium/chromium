@@ -21,6 +21,9 @@ class RegistryKeyBackup;
 // the key and its subkeys take on their default security descriptors.
 class DeleteRegKeyWorkItem : public WorkItem {
  public:
+  DeleteRegKeyWorkItem(const DeleteRegKeyWorkItem&) = delete;
+  DeleteRegKeyWorkItem& operator=(const DeleteRegKeyWorkItem&) = delete;
+
   ~DeleteRegKeyWorkItem() override;
 
  private:
@@ -49,8 +52,6 @@ class DeleteRegKeyWorkItem : public WorkItem {
 
   // True if |backup_| has been initialized.
   bool backup_initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteRegKeyWorkItem);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_DELETE_REG_KEY_WORK_ITEM_H_

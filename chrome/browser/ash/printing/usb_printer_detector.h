@@ -24,13 +24,13 @@ class UsbPrinterDetector : public chromeos::PrinterDetector {
   static std::unique_ptr<UsbPrinterDetector> CreateForTesting(
       mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager);
 
+  UsbPrinterDetector(const UsbPrinterDetector&) = delete;
+  UsbPrinterDetector& operator=(const UsbPrinterDetector&) = delete;
+
   ~UsbPrinterDetector() override = default;
 
  protected:
   UsbPrinterDetector() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsbPrinterDetector);
 };
 
 }  // namespace ash

@@ -50,12 +50,14 @@ bool IsEnterprise(const std::string& brand);
 class BrandForTesting {
  public:
   explicit BrandForTesting(const std::string& brand);
+
+  BrandForTesting(const BrandForTesting&) = delete;
+  BrandForTesting& operator=(const BrandForTesting&) = delete;
+
   ~BrandForTesting();
 
  private:
   std::string brand_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrandForTesting);
 };
 
 }  // namespace google_brand

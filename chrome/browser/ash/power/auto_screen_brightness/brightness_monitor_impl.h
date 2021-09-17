@@ -33,6 +33,10 @@ class BrightnessMonitorImpl : public BrightnessMonitor,
       base::TimeDelta::FromSeconds(3);
 
   BrightnessMonitorImpl();
+
+  BrightnessMonitorImpl(const BrightnessMonitorImpl&) = delete;
+  BrightnessMonitorImpl& operator=(const BrightnessMonitorImpl&) = delete;
+
   ~BrightnessMonitorImpl() override;
 
   // Must be called before the BrightnessMonitorImpl is used.
@@ -102,8 +106,6 @@ class BrightnessMonitorImpl : public BrightnessMonitor,
   base::ObserverList<BrightnessMonitor::Observer> observers_;
 
   base::WeakPtrFactory<BrightnessMonitorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrightnessMonitorImpl);
 };
 
 }  // namespace auto_screen_brightness

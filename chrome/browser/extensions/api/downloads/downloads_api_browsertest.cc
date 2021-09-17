@@ -120,6 +120,9 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
   explicit DownloadsEventsListener(Profile* profile)
       : waiting_(false), profile_(profile) {}
 
+  DownloadsEventsListener(const DownloadsEventsListener&) = delete;
+  DownloadsEventsListener& operator=(const DownloadsEventsListener&) = delete;
+
   ~DownloadsEventsListener() override = default;
 
   void ClearEvents() { events_.clear(); }
@@ -252,8 +255,6 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
   std::unique_ptr<Event> waiting_for_;
   base::circular_deque<std::unique_ptr<Event>> events_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsEventsListener);
 };
 
 // Object waiting for a download open event.
@@ -262,6 +263,9 @@ class DownloadOpenObserver : public download::DownloadItem::Observer {
   explicit DownloadOpenObserver(download::DownloadItem* item) : item_(item) {
     open_observation_.Observe(item);
   }
+
+  DownloadOpenObserver(const DownloadOpenObserver&) = delete;
+  DownloadOpenObserver& operator=(const DownloadOpenObserver&) = delete;
 
   ~DownloadOpenObserver() override = default;
 
@@ -291,8 +295,6 @@ class DownloadOpenObserver : public download::DownloadItem::Observer {
       open_observation_{this};
   download::DownloadItem* item_;
   base::OnceClosure completion_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadOpenObserver);
 };
 
 }  // namespace
@@ -747,6 +749,10 @@ bool ItemNotInProgress(DownloadItem* item) {
 class ScopedCancellingItem {
  public:
   explicit ScopedCancellingItem(DownloadItem* item) : item_(item) {}
+
+  ScopedCancellingItem(const ScopedCancellingItem&) = delete;
+  ScopedCancellingItem& operator=(const ScopedCancellingItem&) = delete;
+
   ~ScopedCancellingItem() {
     item_->Cancel(true);
     content::DownloadUpdatedObserver observer(
@@ -756,7 +762,6 @@ class ScopedCancellingItem {
   DownloadItem* get() { return item_; }
  private:
   DownloadItem* item_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedCancellingItem);
 };
 
 // Cancels all the underlying DownloadItems when the ScopedItemVectorCanceller
@@ -767,6 +772,11 @@ class ScopedItemVectorCanceller {
   explicit ScopedItemVectorCanceller(DownloadManager::DownloadVector* items)
     : items_(items) {
   }
+
+  ScopedItemVectorCanceller(const ScopedItemVectorCanceller&) = delete;
+  ScopedItemVectorCanceller& operator=(const ScopedItemVectorCanceller&) =
+      delete;
+
   ~ScopedItemVectorCanceller() {
     for (DownloadManager::DownloadVector::const_iterator item = items_->begin();
          item != items_->end(); ++item) {
@@ -780,7 +790,6 @@ class ScopedItemVectorCanceller {
 
  private:
   DownloadManager::DownloadVector* items_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedItemVectorCanceller);
 };
 
 // Writes an HTML5 file so that it can be downloaded.
@@ -844,14 +853,17 @@ class JustInProgressDownloadObserver
       : content::DownloadTestObserverInProgress(download_manager, wait_count) {
   }
 
+  JustInProgressDownloadObserver(const JustInProgressDownloadObserver&) =
+      delete;
+  JustInProgressDownloadObserver& operator=(
+      const JustInProgressDownloadObserver&) = delete;
+
   ~JustInProgressDownloadObserver() override {}
 
  private:
   bool IsDownloadInFinalState(DownloadItem* item) override {
     return item->GetState() == DownloadItem::IN_PROGRESS;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(JustInProgressDownloadObserver);
 };
 
 bool ItemIsInterrupted(DownloadItem* item) {
@@ -1779,6 +1791,10 @@ class CustomResponse : public net::test_server::HttpResponse {
       : callback_(callback),
         task_runner_(task_runner),
         first_request_(first_request) {}
+
+  CustomResponse(const CustomResponse&) = delete;
+  CustomResponse& operator=(const CustomResponse&) = delete;
+
   ~CustomResponse() override {}
 
   void SendResponse(const net::test_server::SendBytesCallback& send,
@@ -1803,8 +1819,6 @@ class CustomResponse : public net::test_server::HttpResponse {
   net::test_server::SendCompleteCallback* callback_;
   base::TaskRunner** task_runner_;
   bool first_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomResponse);
 };
 
 }  // namespace
@@ -4627,10 +4641,11 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 class DownloadsApiTest : public ExtensionApiTest {
  public:
   DownloadsApiTest() {}
-  ~DownloadsApiTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadsApiTest);
+  DownloadsApiTest(const DownloadsApiTest&) = delete;
+  DownloadsApiTest& operator=(const DownloadsApiTest&) = delete;
+
+  ~DownloadsApiTest() override {}
 };
 
 

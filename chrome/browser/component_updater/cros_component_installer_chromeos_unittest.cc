@@ -73,6 +73,10 @@ void WrapInstallerCallback(update_client::Callback callback,
 class TestUpdater : public OnDemandUpdater {
  public:
   TestUpdater() = default;
+
+  TestUpdater(const TestUpdater&) = delete;
+  TestUpdater& operator=(const TestUpdater&) = delete;
+
   ~TestUpdater() override = default;
 
   // Whether has a pending update request (either foreground or background).
@@ -174,8 +178,6 @@ class TestUpdater : public OnDemandUpdater {
       component_installers_;
   // Maps a registered component ID to the component name.
   std::map<std::string, std::string> component_id_to_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUpdater);
 };
 
 }  // namespace

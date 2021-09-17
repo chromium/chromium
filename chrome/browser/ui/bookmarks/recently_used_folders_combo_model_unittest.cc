@@ -23,6 +23,11 @@ using bookmarks::TestBookmarkClient;
 class TestComboboxModelObserver : public ui::ComboboxModelObserver {
  public:
   TestComboboxModelObserver() : changed_(false) {}
+
+  TestComboboxModelObserver(const TestComboboxModelObserver&) = delete;
+  TestComboboxModelObserver& operator=(const TestComboboxModelObserver&) =
+      delete;
+
   ~TestComboboxModelObserver() override {}
 
   // Returns whether the model changed and clears changed state.
@@ -39,8 +44,6 @@ class TestComboboxModelObserver : public ui::ComboboxModelObserver {
 
  private:
   bool changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestComboboxModelObserver);
 };
 
 class RecentlyUsedFoldersComboModelTest : public testing::Test {

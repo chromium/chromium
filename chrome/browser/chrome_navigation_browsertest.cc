@@ -81,6 +81,11 @@ class ChromeNavigationBrowserTest : public InProcessBrowserTest {
   ChromeNavigationBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(ukm::kUkmFeature);
   }
+
+  ChromeNavigationBrowserTest(const ChromeNavigationBrowserTest&) = delete;
+  ChromeNavigationBrowserTest& operator=(const ChromeNavigationBrowserTest&) =
+      delete;
+
   ~ChromeNavigationBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -114,8 +119,6 @@ class ChromeNavigationBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNavigationBrowserTest);
 };
 
 // Tests that viewing frame source on a local file:// page with an iframe
@@ -1012,6 +1015,11 @@ class SignInIsolationBrowserTest : public ChromeNavigationBrowserTest {
  public:
   SignInIsolationBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  SignInIsolationBrowserTest(const SignInIsolationBrowserTest&) = delete;
+  SignInIsolationBrowserTest& operator=(const SignInIsolationBrowserTest&) =
+      delete;
+
   ~SignInIsolationBrowserTest() override {}
 
   void SetUp() override {
@@ -1044,8 +1052,6 @@ class SignInIsolationBrowserTest : public ChromeNavigationBrowserTest {
 
  private:
   net::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignInIsolationBrowserTest);
 };
 
 // This test ensures that the sign-in origin requires a dedicated process.  It
@@ -1076,6 +1082,11 @@ class WebstoreIsolationBrowserTest : public ChromeNavigationBrowserTest {
  public:
   WebstoreIsolationBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  WebstoreIsolationBrowserTest(const WebstoreIsolationBrowserTest&) = delete;
+  WebstoreIsolationBrowserTest& operator=(const WebstoreIsolationBrowserTest&) =
+      delete;
+
   ~WebstoreIsolationBrowserTest() override {}
 
   void SetUp() override {
@@ -1107,8 +1118,6 @@ class WebstoreIsolationBrowserTest : public ChromeNavigationBrowserTest {
 
  private:
   net::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstoreIsolationBrowserTest);
 };
 
 // Make sure that Chrome Web Store origins are isolated from the rest of their

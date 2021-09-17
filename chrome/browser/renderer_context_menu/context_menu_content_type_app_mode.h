@@ -10,6 +10,10 @@
 
 class ContextMenuContentTypeAppMode : public ContextMenuContentType {
  public:
+  ContextMenuContentTypeAppMode(const ContextMenuContentTypeAppMode&) = delete;
+  ContextMenuContentTypeAppMode& operator=(
+      const ContextMenuContentTypeAppMode&) = delete;
+
   ~ContextMenuContentTypeAppMode() override;
 
   // ContextMenuContentType overrides.
@@ -21,8 +25,6 @@ class ContextMenuContentTypeAppMode : public ContextMenuContentType {
 
  private:
   friend class ContextMenuContentTypeFactory;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuContentTypeAppMode);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_APP_MODE_H_

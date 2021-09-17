@@ -71,6 +71,10 @@ class BackdropFetcher {
   using OnFetchComplete = base::OnceCallback<void(const std::string& response)>;
 
   BackdropFetcher() = default;
+
+  BackdropFetcher(const BackdropFetcher&) = delete;
+  BackdropFetcher& operator=(const BackdropFetcher&) = delete;
+
   ~BackdropFetcher() = default;
 
   // Starts downloading the proto. |request_body| is a serialized proto and
@@ -138,8 +142,6 @@ class BackdropFetcher {
 
   // The fetcher request callback.
   OnFetchComplete callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackdropFetcher);
 };
 
 CollectionInfoFetcher::CollectionInfoFetcher() {

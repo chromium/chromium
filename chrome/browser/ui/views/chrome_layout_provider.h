@@ -82,6 +82,10 @@ enum ChromeDistanceMetric {
 class ChromeLayoutProvider : public views::LayoutProvider {
  public:
   ChromeLayoutProvider();
+
+  ChromeLayoutProvider(const ChromeLayoutProvider&) = delete;
+  ChromeLayoutProvider& operator=(const ChromeLayoutProvider&) = delete;
+
   ~ChromeLayoutProvider() override;
 
   static ChromeLayoutProvider* Get();
@@ -107,8 +111,6 @@ class ChromeLayoutProvider : public views::LayoutProvider {
 
  private:
   const ChromeTypographyProvider typography_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeLayoutProvider);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_LAYOUT_PROVIDER_H_

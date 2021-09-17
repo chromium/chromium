@@ -61,6 +61,10 @@ void InitCandidateWindowWithCandidatesFilled(
 class CandidateWindowViewTest : public views::ViewsTestBase {
  public:
   CandidateWindowViewTest() {}
+
+  CandidateWindowViewTest(const CandidateWindowViewTest&) = delete;
+  CandidateWindowViewTest& operator=(const CandidateWindowViewTest&) = delete;
+
   ~CandidateWindowViewTest() override {}
 
  protected:
@@ -111,8 +115,6 @@ class CandidateWindowViewTest : public views::ViewsTestBase {
 
  private:
   CandidateWindowView* candidate_window_view_;  // Owned by its Widget.
-
-  DISALLOW_COPY_AND_ASSIGN(CandidateWindowViewTest);
 };
 
 TEST_F(CandidateWindowViewTest, UpdateCandidatesTest_CursorVisibility) {

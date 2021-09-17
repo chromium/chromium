@@ -43,6 +43,9 @@ class ImeObserver : public ash::input_method::InputMethodEngineBase::Observer {
  public:
   ImeObserver(const std::string& extension_id, Profile* profile);
 
+  ImeObserver(const ImeObserver&) = delete;
+  ImeObserver& operator=(const ImeObserver&) = delete;
+
   ~ImeObserver() override = default;
 
   // InputMethodEngineBase::Observer overrides.
@@ -104,8 +107,6 @@ class ImeObserver : public ash::input_method::InputMethodEngineBase::Observer {
   extensions::api::input_ime::AutoCapitalizeType
   ConvertInputContextAutoCapitalize(
       IMEEngineHandlerInterface::InputContext input_context);
-
-  DISALLOW_COPY_AND_ASSIGN(ImeObserver);
 };
 
 }  // namespace ui

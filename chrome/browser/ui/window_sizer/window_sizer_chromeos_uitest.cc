@@ -80,6 +80,10 @@ void OpenBrowserUsingContextMenuOnRootWindow(aura::Window* root) {
 class WindowSizerTest : public InProcessBrowserTest {
  public:
   WindowSizerTest() {}
+
+  WindowSizerTest(const WindowSizerTest&) = delete;
+  WindowSizerTest& operator=(const WindowSizerTest&) = delete;
+
   ~WindowSizerTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -87,9 +91,6 @@ class WindowSizerTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII("ash-host-window-bounds",
                                     "600x600,601+0-600x600");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowSizerTest);
 };
 
 // TODO(crbug.com/1038342): Test is flaky.

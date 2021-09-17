@@ -52,6 +52,10 @@ class ScreenLocker
   class Delegate {
    public:
     Delegate();
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     // Show the given error message.
@@ -63,9 +67,6 @@ class ScreenLocker
 
     // Called by ScreenLocker to notify that ash lock animation finishes.
     virtual void OnAshLockAnimationFinished() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   using AuthenticateCallback = base::OnceCallback<void(bool auth_success)>;

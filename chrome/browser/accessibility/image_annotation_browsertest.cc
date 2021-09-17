@@ -108,6 +108,10 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
   }
 
   FakeAnnotator() = default;
+
+  FakeAnnotator(const FakeAnnotator&) = delete;
+  FakeAnnotator& operator=(const FakeAnnotator&) = delete;
+
   ~FakeAnnotator() override = default;
 
   void BindReceiver(
@@ -169,8 +173,6 @@ class FakeAnnotator : public image_annotation::mojom::Annotator {
   static std::map<std::string, std::string> custom_label_result_mapping_;
   static absl::optional<image_annotation::mojom::AnnotateImageError>
       return_error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAnnotator);
 };
 
 // static
@@ -189,6 +191,11 @@ class FakeImageAnnotationService
     : public image_annotation::mojom::ImageAnnotationService {
  public:
   FakeImageAnnotationService() = default;
+
+  FakeImageAnnotationService(const FakeImageAnnotationService&) = delete;
+  FakeImageAnnotationService& operator=(const FakeImageAnnotationService&) =
+      delete;
+
   ~FakeImageAnnotationService() override = default;
 
  private:
@@ -199,8 +206,6 @@ class FakeImageAnnotationService
   }
 
   FakeAnnotator annotator_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeImageAnnotationService);
 };
 
 void BindImageAnnotatorService(

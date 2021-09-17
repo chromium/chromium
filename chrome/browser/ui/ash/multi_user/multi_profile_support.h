@@ -39,6 +39,10 @@ class MultiProfileSupport : public ash::MultiUserWindowManagerDelegate,
  public:
   // Create the manager and use |active_account_id| as the active user.
   explicit MultiProfileSupport(const AccountId& active_account_id);
+
+  MultiProfileSupport(const MultiProfileSupport&) = delete;
+  MultiProfileSupport& operator=(const MultiProfileSupport&) = delete;
+
   ~MultiProfileSupport() override;
 
   static MultiProfileSupport* GetInstanceForTest() { return instance_; }
@@ -77,8 +81,6 @@ class MultiProfileSupport : public ash::MultiUserWindowManagerDelegate,
   AccountIdToAppWindowObserver account_id_to_app_observer_;
 
   std::unique_ptr<ash::MultiUserWindowManager> multi_user_window_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiProfileSupport);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MULTI_USER_MULTI_PROFILE_SUPPORT_H_

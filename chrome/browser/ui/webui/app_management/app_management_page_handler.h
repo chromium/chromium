@@ -27,6 +27,10 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
       mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
       mojo::PendingRemote<app_management::mojom::Page> page,
       Profile* profile);
+
+  AppManagementPageHandler(const AppManagementPageHandler&) = delete;
+  AppManagementPageHandler& operator=(const AppManagementPageHandler&) = delete;
+
   ~AppManagementPageHandler() override;
 
   void OnPinnedChanged(const std::string& app_id, bool pinned);
@@ -79,8 +83,6 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   base::ScopedObservation<apps::PreferredAppsList,
                           apps::PreferredAppsList::Observer>
       preferred_apps_list_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppManagementPageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_H_

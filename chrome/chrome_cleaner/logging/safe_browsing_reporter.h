@@ -46,6 +46,9 @@ class SafeBrowsingReporter {
                                        std::unique_ptr<ChromeFoilResponse>)>
       OnResultCallback;
 
+  SafeBrowsingReporter(const SafeBrowsingReporter&) = delete;
+  SafeBrowsingReporter& operator=(const SafeBrowsingReporter&) = delete;
+
   virtual ~SafeBrowsingReporter();
 
   // Replaces the HttpAgent factory with a new factory. Exposed so tests can
@@ -119,8 +122,6 @@ class SafeBrowsingReporter {
 
   // The callback by which results are returned.
   OnResultCallback done_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingReporter);
 };
 
 }  // namespace chrome_cleaner

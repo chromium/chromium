@@ -19,6 +19,9 @@ class ConnectionEstablisher {
  public:
   enum class ConnectionMode { kStartConnection, kResumeExistingConnection };
 
+  ConnectionEstablisher(const ConnectionEstablisher&) = delete;
+  ConnectionEstablisher& operator=(const ConnectionEstablisher&) = delete;
+
   virtual ~ConnectionEstablisher() = default;
 
   virtual void EstablishConnection(
@@ -32,9 +35,6 @@ class ConnectionEstablisher {
 
  protected:
   ConnectionEstablisher() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConnectionEstablisher);
 };
 
 }  // namespace android_sms

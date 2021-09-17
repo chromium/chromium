@@ -97,6 +97,10 @@ class SyncTransportActiveChecker : public SingleClientStatusChangeChecker {
 class SyncAuthTest : public SyncTest {
  public:
   SyncAuthTest() : SyncTest(SINGLE_CLIENT), bookmark_index_(0) {}
+
+  SyncAuthTest(const SyncAuthTest&) = delete;
+  SyncAuthTest& operator=(const SyncAuthTest&) = delete;
+
   ~SyncAuthTest() override {}
 
   // Helper function that adds a bookmark and waits for either an auth error, or
@@ -136,8 +140,6 @@ class SyncAuthTest : public SyncTest {
   }
 
   int bookmark_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncAuthTest);
 };
 
 // Verify that sync works with a valid OAuth2 token.

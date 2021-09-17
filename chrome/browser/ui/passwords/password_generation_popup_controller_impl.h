@@ -77,6 +77,12 @@ class PasswordGenerationPopupControllerImpl
       PasswordGenerationPopupObserver* observer,
       content::WebContents* web_contents,
       content::RenderFrameHost* frame);
+
+  PasswordGenerationPopupControllerImpl(
+      const PasswordGenerationPopupControllerImpl&) = delete;
+  PasswordGenerationPopupControllerImpl& operator=(
+      const PasswordGenerationPopupControllerImpl&) = delete;
+
   ~PasswordGenerationPopupControllerImpl() override;
 
   // Create a PasswordGenerationPopupView if one doesn't already exist.
@@ -192,8 +198,6 @@ class PasswordGenerationPopupControllerImpl
 
   base::WeakPtrFactory<PasswordGenerationPopupControllerImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationPopupControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORD_GENERATION_POPUP_CONTROLLER_IMPL_H_

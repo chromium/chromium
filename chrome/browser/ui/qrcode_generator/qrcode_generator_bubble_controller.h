@@ -23,6 +23,11 @@ class QRCodeGeneratorBubbleView;
 class QRCodeGeneratorBubbleController
     : public content::WebContentsUserData<QRCodeGeneratorBubbleController> {
  public:
+  QRCodeGeneratorBubbleController(const QRCodeGeneratorBubbleController&) =
+      delete;
+  QRCodeGeneratorBubbleController& operator=(
+      const QRCodeGeneratorBubbleController&) = delete;
+
   ~QRCodeGeneratorBubbleController() override;
 
   // Returns whether the generator is available for a given page.
@@ -65,8 +70,6 @@ class QRCodeGeneratorBubbleController
   bool bubble_shown_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(QRCodeGeneratorBubbleController);
 };
 
 }  // namespace qrcode_generator

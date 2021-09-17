@@ -263,6 +263,10 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
         toolbar_showing_(false),
         test_browser_(test_browser) {}
 
+  FullscreenTestBrowserWindow(const FullscreenTestBrowserWindow&) = delete;
+  FullscreenTestBrowserWindow& operator=(const FullscreenTestBrowserWindow&) =
+      delete;
+
   ~FullscreenTestBrowserWindow() override {}
 
   // TestBrowserWindow overrides:
@@ -295,8 +299,6 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   bool fullscreen_;
   bool toolbar_showing_;
   BrowserCommandControllerFullscreenTest* test_browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenTestBrowserWindow);
 };
 
 // Test that uses FullscreenTestBrowserWindow for its window.
@@ -304,6 +306,12 @@ class BrowserCommandControllerFullscreenTest
     : public BrowserWithTestWindowTest {
  public:
   BrowserCommandControllerFullscreenTest() = default;
+
+  BrowserCommandControllerFullscreenTest(
+      const BrowserCommandControllerFullscreenTest&) = delete;
+  BrowserCommandControllerFullscreenTest& operator=(
+      const BrowserCommandControllerFullscreenTest&) = delete;
+
   ~BrowserCommandControllerFullscreenTest() override = default;
 
   Browser* GetBrowser() { return BrowserWithTestWindowTest::browser(); }
@@ -312,9 +320,6 @@ class BrowserCommandControllerFullscreenTest
   std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
     return std::make_unique<FullscreenTestBrowserWindow>(this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserCommandControllerFullscreenTest);
 };
 
 Profile* FullscreenTestBrowserWindow::GetProfile() {

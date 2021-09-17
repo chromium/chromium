@@ -101,6 +101,11 @@ class AppLaunchSplashScreenHandler
       JSCallsContainer* js_calls_container,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
       ErrorScreen* error_screen);
+
+  AppLaunchSplashScreenHandler(const AppLaunchSplashScreenHandler&) = delete;
+  AppLaunchSplashScreenHandler& operator=(const AppLaunchSplashScreenHandler&) =
+      delete;
+
   ~AppLaunchSplashScreenHandler() override;
 
   // BaseScreenHandler implementation:
@@ -149,8 +154,6 @@ class AppLaunchSplashScreenHandler
   // If this has value it will be populated through ToggleNetworkConfig(value)
   // after screen is shown. Cleared after screen was shown.
   absl::optional<bool> toggle_network_config_on_show_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchSplashScreenHandler);
 };
 
 }  // namespace chromeos

@@ -27,6 +27,10 @@ class NTPUserDataLogger {
  public:
   // Creates a NTPUserDataLogger. MUST be called only when the NTP is active.
   NTPUserDataLogger(Profile* profile, const GURL& ntp_url);
+
+  NTPUserDataLogger(const NTPUserDataLogger&) = delete;
+  NTPUserDataLogger& operator=(const NTPUserDataLogger&) = delete;
+
   virtual ~NTPUserDataLogger();
 
   // Called when a One Google Bar fetch has been completed after |duration|.
@@ -100,8 +104,6 @@ class NTPUserDataLogger {
 
   // The profile in which this New Tab Page was loaded.
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(NTPUserDataLogger);
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_NTP_USER_DATA_LOGGER_H_

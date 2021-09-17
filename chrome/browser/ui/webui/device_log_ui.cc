@@ -29,6 +29,10 @@ namespace {
 class DeviceLogMessageHandler : public content::WebUIMessageHandler {
  public:
   DeviceLogMessageHandler() {}
+
+  DeviceLogMessageHandler(const DeviceLogMessageHandler&) = delete;
+  DeviceLogMessageHandler& operator=(const DeviceLogMessageHandler&) = delete;
+
   ~DeviceLogMessageHandler() override {}
 
   // WebUIMessageHandler implementation.
@@ -54,8 +58,6 @@ class DeviceLogMessageHandler : public content::WebUIMessageHandler {
   void ClearLog(const base::ListValue* value) const {
     device_event_log::ClearAll();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLogMessageHandler);
 };
 
 }  // namespace

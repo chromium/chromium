@@ -19,6 +19,10 @@ class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
  public:
   explicit DeviceCommandsFactoryAsh(
       DeviceCloudPolicyManagerAsh* policy_manager);
+
+  DeviceCommandsFactoryAsh(const DeviceCommandsFactoryAsh&) = delete;
+  DeviceCommandsFactoryAsh& operator=(const DeviceCommandsFactoryAsh&) = delete;
+
   ~DeviceCommandsFactoryAsh() override;
 
   // RemoteCommandsFactory:
@@ -31,8 +35,6 @@ class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
   std::unique_ptr<CRDHostDelegate> crd_host_delegate_;
 
   CRDHostDelegate* GetCRDHostDelegate();
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandsFactoryAsh);
 };
 
 }  // namespace policy

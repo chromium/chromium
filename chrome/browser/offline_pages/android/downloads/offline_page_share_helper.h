@@ -30,6 +30,10 @@ class OfflinePageShareHelper {
                               std::unique_ptr<OfflineItemShareInfo>)>;
 
   explicit OfflinePageShareHelper(OfflinePageModel* model);
+
+  OfflinePageShareHelper(const OfflinePageShareHelper&) = delete;
+  OfflinePageShareHelper& operator=(const OfflinePageShareHelper&) = delete;
+
   ~OfflinePageShareHelper();
 
   // Get the share info. Mainly to retrieve the content URI.
@@ -54,8 +58,6 @@ class OfflinePageShareHelper {
   ContentId content_id_;
 
   base::WeakPtrFactory<OfflinePageShareHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageShareHelper);
 };
 
 }  // namespace offline_pages

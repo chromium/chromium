@@ -24,6 +24,10 @@ static const int kDefaultThumbnailSize = 100;
 class DesktopMediaListBase : public DesktopMediaList {
  public:
   explicit DesktopMediaListBase(base::TimeDelta update_period);
+
+  DesktopMediaListBase(const DesktopMediaListBase&) = delete;
+  DesktopMediaListBase& operator=(const DesktopMediaListBase&) = delete;
+
   ~DesktopMediaListBase() override;
 
   // DesktopMediaList interface.
@@ -98,8 +102,6 @@ class DesktopMediaListBase : public DesktopMediaList {
   RefreshCallback refresh_callback_;
 
   base::WeakPtrFactory<DesktopMediaListBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaListBase);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_BASE_H_

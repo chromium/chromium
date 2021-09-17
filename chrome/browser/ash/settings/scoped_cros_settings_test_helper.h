@@ -36,6 +36,11 @@ class ScopedCrosSettingsTestHelper {
   // up by another (instantiated or base) class, creating another one causes
   // crash.
   explicit ScopedCrosSettingsTestHelper(bool create_settings_service = true);
+
+  ScopedCrosSettingsTestHelper(const ScopedCrosSettingsTestHelper&) = delete;
+  ScopedCrosSettingsTestHelper& operator=(const ScopedCrosSettingsTestHelper&) =
+      delete;
+
   ~ScopedCrosSettingsTestHelper();
 
   // This replaces the DeviceSettingsProvider with a simple stub that stores
@@ -95,8 +100,6 @@ class ScopedCrosSettingsTestHelper {
   StubCrosSettingsProvider* stub_settings_provider_ptr_;
 
   void Initialize(bool create_settings_service);
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCrosSettingsTestHelper);
 };
 
 }  // namespace ash

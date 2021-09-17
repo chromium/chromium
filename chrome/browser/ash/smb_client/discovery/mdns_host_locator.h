@@ -26,6 +26,10 @@ Hostname RemoveLocal(const std::string& raw_hostname);
 class MDnsHostLocator : public HostLocator {
  public:
   MDnsHostLocator();
+
+  MDnsHostLocator(const MDnsHostLocator&) = delete;
+  MDnsHostLocator& operator=(const MDnsHostLocator&) = delete;
+
   ~MDnsHostLocator() override;
 
   // HostLocator override.
@@ -55,8 +59,6 @@ class MDnsHostLocator : public HostLocator {
 
   // Must be last member.
   base::WeakPtrFactory<MDnsHostLocator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MDnsHostLocator);
 };
 
 }  // namespace smb_client

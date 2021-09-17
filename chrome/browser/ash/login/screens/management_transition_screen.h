@@ -17,6 +17,11 @@ class ManagementTransitionScreen : public BaseScreen {
  public:
   ManagementTransitionScreen(ManagementTransitionScreenView* view,
                              const base::RepeatingClosure& exit_callback);
+
+  ManagementTransitionScreen(const ManagementTransitionScreen&) = delete;
+  ManagementTransitionScreen& operator=(const ManagementTransitionScreen&) =
+      delete;
+
   ~ManagementTransitionScreen() override;
 
   // Called when view is destroyed so there's no dead reference to it.
@@ -35,8 +40,6 @@ class ManagementTransitionScreen : public BaseScreen {
  private:
   ManagementTransitionScreenView* view_;
   base::RepeatingClosure exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementTransitionScreen);
 };
 
 }  // namespace ash

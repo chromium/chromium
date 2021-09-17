@@ -24,6 +24,11 @@ class WebRtcLocalEventLogManager final {
 
  public:
   explicit WebRtcLocalEventLogManager(WebRtcLocalEventLogsObserver* observer);
+
+  WebRtcLocalEventLogManager(const WebRtcLocalEventLogManager&) = delete;
+  WebRtcLocalEventLogManager& operator=(const WebRtcLocalEventLogManager&) =
+      delete;
+
   ~WebRtcLocalEventLogManager();
 
   bool OnPeerConnectionAdded(const PeerConnectionKey& key);
@@ -89,8 +94,6 @@ class WebRtcLocalEventLogManager final {
   // The maximum size for local logs, in bytes.
   // If !has_value(), the value is unlimited.
   absl::optional<size_t> max_log_file_size_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcLocalEventLogManager);
 };
 
 }  // namespace webrtc_event_logging

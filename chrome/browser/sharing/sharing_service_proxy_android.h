@@ -14,6 +14,11 @@ class SharingService;
 class SharingServiceProxyAndroid {
  public:
   explicit SharingServiceProxyAndroid(SharingService* sharing_service);
+
+  SharingServiceProxyAndroid(const SharingServiceProxyAndroid&) = delete;
+  SharingServiceProxyAndroid& operator=(const SharingServiceProxyAndroid&) =
+      delete;
+
   ~SharingServiceProxyAndroid();
 
   void SendSharedClipboardMessage(
@@ -33,8 +38,6 @@ class SharingServiceProxyAndroid {
 
  private:
   SharingService* sharing_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingServiceProxyAndroid);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_SERVICE_PROXY_ANDROID_H_

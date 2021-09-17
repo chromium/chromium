@@ -26,6 +26,10 @@ class PluginManager : public BrowserContextKeyedAPI,
                       public ExtensionRegistryObserver {
  public:
   explicit PluginManager(content::BrowserContext* context);
+
+  PluginManager(const PluginManager&) = delete;
+  PluginManager& operator=(const PluginManager&) = delete;
+
   ~PluginManager() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -71,8 +75,6 @@ class PluginManager : public BrowserContextKeyedAPI,
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginManager);
 };
 
 }  // namespace extensions

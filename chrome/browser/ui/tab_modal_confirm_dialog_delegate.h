@@ -25,12 +25,15 @@ class Image;
 class TabModalConfirmDialogCloseDelegate {
  public:
   TabModalConfirmDialogCloseDelegate() {}
+
+  TabModalConfirmDialogCloseDelegate(
+      const TabModalConfirmDialogCloseDelegate&) = delete;
+  TabModalConfirmDialogCloseDelegate& operator=(
+      const TabModalConfirmDialogCloseDelegate&) = delete;
+
   virtual ~TabModalConfirmDialogCloseDelegate() {}
 
   virtual void CloseDialog() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabModalConfirmDialogCloseDelegate);
 };
 
 // This class acts as the delegate for a simple tab-modal dialog confirming
@@ -38,6 +41,11 @@ class TabModalConfirmDialogCloseDelegate {
 class TabModalConfirmDialogDelegate : public content::WebContentsObserver {
  public:
   explicit TabModalConfirmDialogDelegate(content::WebContents* web_contents);
+
+  TabModalConfirmDialogDelegate(const TabModalConfirmDialogDelegate&) = delete;
+  TabModalConfirmDialogDelegate& operator=(
+      const TabModalConfirmDialogDelegate&) = delete;
+
   ~TabModalConfirmDialogDelegate() override;
 
   void set_close_delegate(TabModalConfirmDialogCloseDelegate* close_delegate) {
@@ -135,8 +143,6 @@ class TabModalConfirmDialogDelegate : public content::WebContentsObserver {
   // True iff we are in the process of closing, to avoid running callbacks
   // multiple times.
   bool closing_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabModalConfirmDialogDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_MODAL_CONFIRM_DIALOG_DELEGATE_H_

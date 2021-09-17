@@ -23,6 +23,12 @@ class ScopedTestDialogAutoConfirm;
 class ExtensionSettingsUIBrowserTest : public WebUIBrowserTest {
  public:
   ExtensionSettingsUIBrowserTest();
+
+  ExtensionSettingsUIBrowserTest(const ExtensionSettingsUIBrowserTest&) =
+      delete;
+  ExtensionSettingsUIBrowserTest& operator=(
+      const ExtensionSettingsUIBrowserTest&) = delete;
+
   ~ExtensionSettingsUIBrowserTest() override;
 
  protected:
@@ -73,8 +79,6 @@ class ExtensionSettingsUIBrowserTest : public WebUIBrowserTest {
 
   std::unique_ptr<extensions::ScopedTestDialogAutoConfirm>
       uninstall_auto_confirm_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSettingsUIBrowserTest);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_SETTINGS_BROWSERTEST_H_

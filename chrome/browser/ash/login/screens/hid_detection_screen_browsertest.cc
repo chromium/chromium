@@ -46,6 +46,12 @@ const test::UIPath kHidKeyboardTick = {"hid-detection", "keyboard-tick"};
 class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
  public:
   HIDDetectionScreenChromeboxTest() = default;
+
+  HIDDetectionScreenChromeboxTest(const HIDDetectionScreenChromeboxTest&) =
+      delete;
+  HIDDetectionScreenChromeboxTest& operator=(
+      const HIDDetectionScreenChromeboxTest&) = delete;
+
   ~HIDDetectionScreenChromeboxTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -90,8 +96,6 @@ class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
   // Chromeboxes.
   base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBOX",
                                                  base::Time::Now()};
-
-  DISALLOW_COPY_AND_ASSIGN(HIDDetectionScreenChromeboxTest);
 };
 
 IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, NoDevicesConnected) {

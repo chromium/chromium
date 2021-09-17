@@ -48,6 +48,10 @@ class FingerprintSetupScreen : public BaseScreen,
 
   FingerprintSetupScreen(FingerprintSetupScreenView* view,
                          const ScreenExitCallback& exit_callback);
+
+  FingerprintSetupScreen(const FingerprintSetupScreen&) = delete;
+  FingerprintSetupScreen& operator=(const FingerprintSetupScreen&) = delete;
+
   ~FingerprintSetupScreen() override;
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
@@ -91,8 +95,6 @@ class FingerprintSetupScreen : public BaseScreen,
   ScreenExitCallback exit_callback_;
 
   base::WeakPtrFactory<FingerprintSetupScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintSetupScreen);
 };
 
 }  // namespace ash

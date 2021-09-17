@@ -18,6 +18,10 @@ namespace cloud_print {
 class CloudPrintMessageHandler : public cloud_print::mojom::CloudPrint {
  public:
   explicit CloudPrintMessageHandler(CloudPrintProxy::Provider* proxy_provider);
+
+  CloudPrintMessageHandler(const CloudPrintMessageHandler&) = delete;
+  CloudPrintMessageHandler& operator=(const CloudPrintMessageHandler&) = delete;
+
   ~CloudPrintMessageHandler() override;
 
   static void Create(
@@ -35,8 +39,6 @@ class CloudPrintMessageHandler : public cloud_print::mojom::CloudPrint {
   void DisableCloudPrintProxy() override;
 
   CloudPrintProxy::Provider* proxy_provider_;  // Owned by our owner.
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintMessageHandler);
 };
 
 }  // namespace cloud_print

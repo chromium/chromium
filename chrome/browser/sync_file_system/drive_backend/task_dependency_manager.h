@@ -35,6 +35,10 @@ struct TaskBlocker {
 class TaskDependencyManager {
  public:
   TaskDependencyManager();
+
+  TaskDependencyManager(const TaskDependencyManager&) = delete;
+  TaskDependencyManager& operator=(const TaskDependencyManager&) = delete;
+
   ~TaskDependencyManager();
 
   // Inserts |task_blocker| to the collection and returns true if it
@@ -57,8 +61,6 @@ class TaskDependencyManager {
   std::map<std::string, SubtreeSet> paths_by_app_id_;
   std::set<std::string> file_ids_;
   std::set<int64_t> tracker_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskDependencyManager);
 };
 
 }  // namespace drive_backend

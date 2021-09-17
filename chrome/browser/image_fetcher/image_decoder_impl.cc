@@ -17,6 +17,10 @@ class ImageDecoderImpl::DecodeImageRequest
   DecodeImageRequest(ImageDecoderImpl* decoder,
                      image_fetcher::ImageDecodedCallback callback)
       : decoder_(decoder), callback_(std::move(callback)) {}
+
+  DecodeImageRequest(const DecodeImageRequest&) = delete;
+  DecodeImageRequest& operator=(const DecodeImageRequest&) = delete;
+
   ~DecodeImageRequest() override {}
 
  private:
@@ -33,8 +37,6 @@ class ImageDecoderImpl::DecodeImageRequest
 
   // The callback to call after the request completed.
   image_fetcher::ImageDecodedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecodeImageRequest);
 };
 
 void ImageDecoderImpl::DecodeImageRequest::OnImageDecoded(

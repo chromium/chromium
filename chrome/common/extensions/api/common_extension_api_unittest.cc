@@ -58,6 +58,10 @@ struct FeatureSessionTypesTestData {
 class TestExtensionAPI : public ExtensionAPI {
  public:
   TestExtensionAPI() {}
+
+  TestExtensionAPI(const TestExtensionAPI&) = delete;
+  TestExtensionAPI& operator=(const TestExtensionAPI&) = delete;
+
   ~TestExtensionAPI() override {}
 
   void add_fake_schema(const std::string& name) { fake_schemas_.insert(name); }
@@ -68,7 +72,6 @@ class TestExtensionAPI : public ExtensionAPI {
   }
 
   std::set<std::string> fake_schemas_;
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionAPI);
 };
 
 }  // namespace

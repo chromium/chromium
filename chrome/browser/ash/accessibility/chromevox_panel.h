@@ -14,6 +14,10 @@ namespace ash {
 class ChromeVoxPanel : public AccessibilityPanel {
  public:
   explicit ChromeVoxPanel(content::BrowserContext* browser_context);
+
+  ChromeVoxPanel(const ChromeVoxPanel&) = delete;
+  ChromeVoxPanel& operator=(const ChromeVoxPanel&) = delete;
+
   ~ChromeVoxPanel() override;
 
   class ChromeVoxPanelWebContentsObserver;
@@ -30,8 +34,6 @@ class ChromeVoxPanel : public AccessibilityPanel {
   std::string GetUrlForContent();
 
   std::unique_ptr<ChromeVoxPanelWebContentsObserver> web_contents_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVoxPanel);
 };
 
 }  // namespace ash

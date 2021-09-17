@@ -285,6 +285,10 @@ class ChromeRestartRequest
  public:
   explicit ChromeRestartRequest(const std::vector<std::string>& argv,
                                 RestartChromeReason reson);
+
+  ChromeRestartRequest(const ChromeRestartRequest&) = delete;
+  ChromeRestartRequest& operator=(const ChromeRestartRequest&) = delete;
+
   ~ChromeRestartRequest();
 
   // Starts the request.
@@ -301,8 +305,6 @@ class ChromeRestartRequest
   const RestartChromeReason reason_;
 
   base::OneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRestartRequest);
 };
 
 ChromeRestartRequest::ChromeRestartRequest(const std::vector<std::string>& argv,

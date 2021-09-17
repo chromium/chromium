@@ -34,6 +34,9 @@ class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
                            public BrowserListObserver,
                            public base::SupportsUserData::Data {
  public:
+  BrowserTabRestorer(const BrowserTabRestorer&) = delete;
+  BrowserTabRestorer& operator=(const BrowserTabRestorer&) = delete;
+
   ~BrowserTabRestorer() override;
 
   static void CreateIfNecessary(Browser* browser);
@@ -51,8 +54,6 @@ class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
 
   Browser* browser_;
   sessions::TabRestoreService* tab_restore_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserTabRestorer);
 };
 
 BrowserTabRestorer::~BrowserTabRestorer() {

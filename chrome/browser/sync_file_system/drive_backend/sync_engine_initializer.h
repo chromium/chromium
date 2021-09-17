@@ -66,6 +66,10 @@ class SyncEngineInitializer : public SyncTask {
   SyncEngineInitializer(SyncEngineContext* sync_context,
                         const base::FilePath& database_path,
                         leveldb::Env* env_override);
+
+  SyncEngineInitializer(const SyncEngineInitializer&) = delete;
+  SyncEngineInitializer& operator=(const SyncEngineInitializer&) = delete;
+
   ~SyncEngineInitializer() override;
   void RunPreflight(std::unique_ptr<SyncTaskToken> token) override;
 
@@ -111,8 +115,6 @@ class SyncEngineInitializer : public SyncTask {
   std::unique_ptr<google_apis::FileResource> sync_root_folder_;
 
   base::WeakPtrFactory<SyncEngineInitializer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineInitializer);
 };
 
 }  // namespace drive_backend

@@ -13,6 +13,12 @@ class GeolocationPermissionContextDelegateAndroid
     : public GeolocationPermissionContextDelegate {
  public:
   explicit GeolocationPermissionContextDelegateAndroid(Profile* profile);
+
+  GeolocationPermissionContextDelegateAndroid(
+      const GeolocationPermissionContextDelegateAndroid&) = delete;
+  GeolocationPermissionContextDelegateAndroid& operator=(
+      const GeolocationPermissionContextDelegateAndroid&) = delete;
+
   ~GeolocationPermissionContextDelegateAndroid() override;
 
   // GeolocationPermissionContext::Delegate:
@@ -31,9 +37,6 @@ class GeolocationPermissionContextDelegateAndroid
   void FinishNotifyPermissionSet(const permissions::PermissionRequestID& id,
                                  const GURL& requesting_origin,
                                  const GURL& embedding_origin) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GeolocationPermissionContextDelegateAndroid);
 };
 
 #endif  // CHROME_BROWSER_GEOLOCATION_GEOLOCATION_PERMISSION_CONTEXT_DELEGATE_ANDROID_H_

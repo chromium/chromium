@@ -16,10 +16,12 @@ class QRCodeGeneratorBubbleControllerTest : public testing::Test {
  public:
   QRCodeGeneratorBubbleControllerTest() = default;
 
-  ~QRCodeGeneratorBubbleControllerTest() override = default;
+  QRCodeGeneratorBubbleControllerTest(
+      const QRCodeGeneratorBubbleControllerTest&) = delete;
+  QRCodeGeneratorBubbleControllerTest& operator=(
+      const QRCodeGeneratorBubbleControllerTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(QRCodeGeneratorBubbleControllerTest);
+  ~QRCodeGeneratorBubbleControllerTest() override = default;
 };
 
 TEST_F(QRCodeGeneratorBubbleControllerTest, AllowedURLs) {

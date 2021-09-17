@@ -30,6 +30,11 @@ class ResourceLoadingHintsAgent
   ResourceLoadingHintsAgent(
       blink::AssociatedInterfaceRegistry* associated_interfaces,
       content::RenderFrame* render_frame);
+
+  ResourceLoadingHintsAgent(const ResourceLoadingHintsAgent&) = delete;
+  ResourceLoadingHintsAgent& operator=(const ResourceLoadingHintsAgent&) =
+      delete;
+
   ~ResourceLoadingHintsAgent() override;
 
  private:
@@ -52,8 +57,6 @@ class ResourceLoadingHintsAgent
   mojo::AssociatedReceiver<
       previews::mojom::PreviewsResourceLoadingHintsReceiver>
       receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceLoadingHintsAgent);
 };
 
 }  // namespace previews

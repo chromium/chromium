@@ -38,6 +38,11 @@ class FakeRemoteChangeProcessor : public RemoteChangeProcessor {
                    storage::FileSystemURL::Comparator> URLToFileMetadata;
 
   FakeRemoteChangeProcessor();
+
+  FakeRemoteChangeProcessor(const FakeRemoteChangeProcessor&) = delete;
+  FakeRemoteChangeProcessor& operator=(const FakeRemoteChangeProcessor&) =
+      delete;
+
   ~FakeRemoteChangeProcessor() override;
 
   // RemoteChangeProcessor overrides.
@@ -76,8 +81,6 @@ class FakeRemoteChangeProcessor : public RemoteChangeProcessor {
 
   // Initial local file metadata. These are overridden by applied changes.
   URLToFileMetadata local_file_metadata_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRemoteChangeProcessor);
 };
 
 }  // namespace sync_file_system

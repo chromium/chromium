@@ -30,6 +30,10 @@ class SimpleMenuModel;
 class SystemMenuModelBuilder {
  public:
   SystemMenuModelBuilder(ui::AcceleratorProvider* provider, Browser* browser);
+
+  SystemMenuModelBuilder(const SystemMenuModelBuilder&) = delete;
+  SystemMenuModelBuilder& operator=(const SystemMenuModelBuilder&) = delete;
+
   ~SystemMenuModelBuilder();
 
   // Populates the menu.
@@ -63,8 +67,6 @@ class SystemMenuModelBuilder {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<chromeos::MoveToDesksMenuModel> move_to_desks_model_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMenuModelBuilder);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_MODEL_BUILDER_H_

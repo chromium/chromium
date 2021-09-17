@@ -35,6 +35,10 @@ class DownloadUIModel {
       std::unique_ptr<DownloadUIModel, base::OnTaskRunnerDeleter>;
 
   DownloadUIModel();
+
+  DownloadUIModel(const DownloadUIModel&) = delete;
+  DownloadUIModel& operator=(const DownloadUIModel&) = delete;
+
   virtual ~DownloadUIModel();
 
   // Observer for a single DownloadUIModel.
@@ -358,8 +362,6 @@ class DownloadUIModel {
       offline_items_collection::FailState fail_state) const;
 
   base::WeakPtrFactory<DownloadUIModel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadUIModel);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_MODEL_H_

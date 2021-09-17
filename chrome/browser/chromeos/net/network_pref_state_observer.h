@@ -21,6 +21,10 @@ class NetworkPrefStateObserver
     : public session_manager::SessionManagerObserver {
  public:
   NetworkPrefStateObserver();
+
+  NetworkPrefStateObserver(const NetworkPrefStateObserver&) = delete;
+  NetworkPrefStateObserver& operator=(const NetworkPrefStateObserver&) = delete;
+
   ~NetworkPrefStateObserver() override;
 
   // session_manager::SessionManagerObserver:
@@ -32,8 +36,6 @@ class NetworkPrefStateObserver
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPrefStateObserver);
 };
 
 }  // namespace chromeos

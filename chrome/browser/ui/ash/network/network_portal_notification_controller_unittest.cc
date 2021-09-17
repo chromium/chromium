@@ -36,6 +36,12 @@ class NetworkPortalNotificationControllerTest
     : public BrowserWithTestWindowTest {
  public:
   NetworkPortalNotificationControllerTest() : controller_(nullptr) {}
+
+  NetworkPortalNotificationControllerTest(
+      const NetworkPortalNotificationControllerTest&) = delete;
+  NetworkPortalNotificationControllerTest& operator=(
+      const NetworkPortalNotificationControllerTest&) = delete;
+
   ~NetworkPortalNotificationControllerTest() override {}
 
   void SetUp() override {
@@ -60,9 +66,6 @@ class NetworkPortalNotificationControllerTest
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   NetworkPortalNotificationController controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalNotificationControllerTest);
 };
 
 TEST_F(NetworkPortalNotificationControllerTest, NetworkStateChanged) {

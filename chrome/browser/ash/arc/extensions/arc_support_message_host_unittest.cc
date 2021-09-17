@@ -21,6 +21,10 @@ namespace arc {
 class TestClient : public extensions::NativeMessageHost::Client {
  public:
   TestClient() = default;
+
+  TestClient(const TestClient&) = delete;
+  TestClient& operator=(const TestClient&) = delete;
+
   ~TestClient() override = default;
 
   void PostMessageFromNativeHost(const std::string& message) override {
@@ -35,13 +39,15 @@ class TestClient : public extensions::NativeMessageHost::Client {
 
  private:
   std::vector<std::string> messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
 
 class TestObserver : public ArcSupportMessageHost::Observer {
  public:
   TestObserver() = default;
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   void OnMessage(const base::DictionaryValue& message) override {
@@ -54,13 +60,16 @@ class TestObserver : public ArcSupportMessageHost::Observer {
 
  private:
   std::vector<std::unique_ptr<base::DictionaryValue>> values_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class ArcSupportMessageHostTest : public testing::Test {
  public:
   ArcSupportMessageHostTest() = default;
+
+  ArcSupportMessageHostTest(const ArcSupportMessageHostTest&) = delete;
+  ArcSupportMessageHostTest& operator=(const ArcSupportMessageHostTest&) =
+      delete;
+
   ~ArcSupportMessageHostTest() override = default;
 
   void SetUp() override {
@@ -90,8 +99,6 @@ class ArcSupportMessageHostTest : public testing::Test {
 
   std::unique_ptr<TestClient> client_;
   std::unique_ptr<extensions::NativeMessageHost> message_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSupportMessageHostTest);
 };
 
 TEST_F(ArcSupportMessageHostTest, SendMessage) {

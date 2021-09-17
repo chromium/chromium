@@ -21,6 +21,10 @@ class TimeLimitNotifierTest : public testing::Test {
       : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
         notification_tester_(&profile_),
         notifier_(&profile_, task_runner_) {}
+
+  TimeLimitNotifierTest(const TimeLimitNotifierTest&) = delete;
+  TimeLimitNotifierTest& operator=(const TimeLimitNotifierTest&) = delete;
+
   ~TimeLimitNotifierTest() override = default;
 
  protected:
@@ -57,9 +61,6 @@ class TimeLimitNotifierTest : public testing::Test {
   TestingProfile profile_;
   NotificationDisplayServiceTester notification_tester_;
   TimeLimitNotifier notifier_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TimeLimitNotifierTest);
 };
 
 TEST_F(TimeLimitNotifierTest, ShowLockNotifications) {

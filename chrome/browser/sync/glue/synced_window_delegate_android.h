@@ -21,6 +21,11 @@ namespace browser_sync {
 class SyncedWindowDelegateAndroid : public sync_sessions::SyncedWindowDelegate {
  public:
   SyncedWindowDelegateAndroid(TabModel* tab_model, bool is_tabbed_activity);
+
+  SyncedWindowDelegateAndroid(const SyncedWindowDelegateAndroid&) = delete;
+  SyncedWindowDelegateAndroid& operator=(const SyncedWindowDelegateAndroid&) =
+      delete;
+
   ~SyncedWindowDelegateAndroid() override;
 
   // sync_sessions::SyncedWindowDelegate implementation.
@@ -39,8 +44,6 @@ class SyncedWindowDelegateAndroid : public sync_sessions::SyncedWindowDelegate {
  private:
   TabModel* tab_model_;
   const bool is_tabbed_activity_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedWindowDelegateAndroid);
 };
 
 }  // namespace browser_sync

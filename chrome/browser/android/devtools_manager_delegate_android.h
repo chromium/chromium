@@ -15,6 +15,12 @@
 class DevToolsManagerDelegateAndroid : public content::DevToolsManagerDelegate {
  public:
   DevToolsManagerDelegateAndroid();
+
+  DevToolsManagerDelegateAndroid(const DevToolsManagerDelegateAndroid&) =
+      delete;
+  DevToolsManagerDelegateAndroid& operator=(
+      const DevToolsManagerDelegateAndroid&) = delete;
+
   ~DevToolsManagerDelegateAndroid() override;
 
  private:
@@ -26,8 +32,6 @@ class DevToolsManagerDelegateAndroid : public content::DevToolsManagerDelegate {
       const GURL& url) override;
   std::string GetDiscoveryPageHTML() override;
   bool IsBrowserTargetDiscoverable() override;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsManagerDelegateAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_DEVTOOLS_MANAGER_DELEGATE_ANDROID_H_

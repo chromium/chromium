@@ -35,6 +35,10 @@ class ThrottleService {
   };
 
   explicit ThrottleService(content::BrowserContext* context);
+
+  ThrottleService(const ThrottleService&) = delete;
+  ThrottleService& operator=(const ThrottleService&) = delete;
+
   virtual ~ThrottleService();
 
   void AddServiceObserver(ServiceObserver* observer);
@@ -91,8 +95,6 @@ class ThrottleService {
   base::TimeTicks last_throttle_transition_;
   base::ObserverList<ServiceObserver> service_observers_;
   base::WeakPtrFactory<ThrottleService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottleService);
 };
 
 }  // namespace chromeos

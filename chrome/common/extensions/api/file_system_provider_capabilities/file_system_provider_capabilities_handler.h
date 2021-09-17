@@ -48,6 +48,12 @@ class FileSystemProviderCapabilities : public Extension::ManifestData {
 class FileSystemProviderCapabilitiesHandler : public ManifestHandler {
  public:
   FileSystemProviderCapabilitiesHandler();
+
+  FileSystemProviderCapabilitiesHandler(
+      const FileSystemProviderCapabilitiesHandler&) = delete;
+  FileSystemProviderCapabilitiesHandler& operator=(
+      const FileSystemProviderCapabilitiesHandler&) = delete;
+
   ~FileSystemProviderCapabilitiesHandler() override;
 
   // ManifestHandler overrides.
@@ -56,8 +62,6 @@ class FileSystemProviderCapabilitiesHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemProviderCapabilitiesHandler);
 };
 
 }  // namespace extensions

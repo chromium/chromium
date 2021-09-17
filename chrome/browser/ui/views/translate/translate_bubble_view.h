@@ -76,6 +76,9 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
                                          kSourceLanguageDoneButton);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kErrorMessage);
 
+  TranslateBubbleView(const TranslateBubbleView&) = delete;
+  TranslateBubbleView& operator=(const TranslateBubbleView&) = delete;
+
   ~TranslateBubbleView() override;
 
   // Shows the Translate bubble. Returns the newly created bubble's Widget or
@@ -324,8 +327,6 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   bool should_never_translate_site_ = false;
 
   std::unique_ptr<WebContentMouseHandler> mouse_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_BUBBLE_VIEW_H_

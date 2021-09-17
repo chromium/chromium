@@ -253,6 +253,12 @@ class ChromeRenderProcessHostTestWithCommandLine
     : public ChromeRenderProcessHostTest {
  public:
   ChromeRenderProcessHostTestWithCommandLine() = default;
+
+  ChromeRenderProcessHostTestWithCommandLine(
+      const ChromeRenderProcessHostTestWithCommandLine&) = delete;
+  ChromeRenderProcessHostTestWithCommandLine& operator=(
+      const ChromeRenderProcessHostTestWithCommandLine&) = delete;
+
   ~ChromeRenderProcessHostTestWithCommandLine() override = default;
 
  protected:
@@ -260,9 +266,6 @@ class ChromeRenderProcessHostTestWithCommandLine
     ChromeRenderProcessHostTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kRendererProcessLimit, "1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderProcessHostTestWithCommandLine);
 };
 
 // TODO(crbug.com/1241506): Enable this test on macOS after the issue is fixed.
@@ -344,6 +347,12 @@ class ChromeRenderProcessHostBackgroundingTest
     : public ChromeRenderProcessHostTest {
  public:
   ChromeRenderProcessHostBackgroundingTest() = default;
+
+  ChromeRenderProcessHostBackgroundingTest(
+      const ChromeRenderProcessHostBackgroundingTest&) = delete;
+  ChromeRenderProcessHostBackgroundingTest& operator=(
+      const ChromeRenderProcessHostBackgroundingTest&) = delete;
+
   ~ChromeRenderProcessHostBackgroundingTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -387,8 +396,6 @@ class ChromeRenderProcessHostBackgroundingTest
 #endif
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderProcessHostBackgroundingTest);
 };
 
 #define EXPECT_PROCESS_IS_BACKGROUNDED(process_or_tab)                       \

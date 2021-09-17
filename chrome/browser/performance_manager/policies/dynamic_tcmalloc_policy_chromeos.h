@@ -21,6 +21,10 @@ namespace policies {
 class DynamicTcmallocPolicy : public GraphOwned {
  public:
   DynamicTcmallocPolicy();
+
+  DynamicTcmallocPolicy(const DynamicTcmallocPolicy&) = delete;
+  DynamicTcmallocPolicy& operator=(const DynamicTcmallocPolicy&) = delete;
+
   ~DynamicTcmallocPolicy() override;
 
   // GraphOwned implementation:
@@ -38,8 +42,6 @@ class DynamicTcmallocPolicy : public GraphOwned {
 
  private:
   Graph* graph_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DynamicTcmallocPolicy);
 };
 
 }  // namespace policies

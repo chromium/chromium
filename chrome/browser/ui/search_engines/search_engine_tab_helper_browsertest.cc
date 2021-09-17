@@ -45,14 +45,17 @@ class TemplateURLServiceObserver {
             &TemplateURLServiceObserver::StopLoop, base::Unretained(this)));
     service->Load();
   }
+
+  TemplateURLServiceObserver(const TemplateURLServiceObserver&) = delete;
+  TemplateURLServiceObserver& operator=(const TemplateURLServiceObserver&) =
+      delete;
+
   ~TemplateURLServiceObserver() {}
 
  private:
   void StopLoop() { runner_->Quit(); }
   base::RunLoop* runner_;
   base::CallbackListSubscription template_url_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceObserver);
 };
 
 testing::AssertionResult VerifyTemplateURLServiceLoad(
@@ -72,6 +75,12 @@ testing::AssertionResult VerifyTemplateURLServiceLoad(
 class SearchEngineTabHelperBrowserTest : public InProcessBrowserTest {
  public:
   SearchEngineTabHelperBrowserTest() = default;
+
+  SearchEngineTabHelperBrowserTest(const SearchEngineTabHelperBrowserTest&) =
+      delete;
+  SearchEngineTabHelperBrowserTest& operator=(
+      const SearchEngineTabHelperBrowserTest&) = delete;
+
   ~SearchEngineTabHelperBrowserTest() override = default;
 
  private:
@@ -107,8 +116,6 @@ class SearchEngineTabHelperBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override { ASSERT_TRUE(StartTestServer()); }
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEngineTabHelperBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperBrowserTest,

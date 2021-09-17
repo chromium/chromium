@@ -56,6 +56,11 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
         report_request_queue_generator_(&reporting_delegate_factory_) {
   }
 
+  ReportRequestQueueGeneratorTest(const ReportRequestQueueGeneratorTest&) =
+      delete;
+  ReportRequestQueueGeneratorTest& operator=(
+      const ReportRequestQueueGeneratorTest&) = delete;
+
   ~ReportRequestQueueGeneratorTest() override = default;
 
   void SetUp() override {
@@ -216,8 +221,6 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
   BrowserReportGenerator browser_report_generator_;
   ReportRequestQueueGenerator report_request_queue_generator_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportRequestQueueGeneratorTest);
 };
 
 TEST_F(ReportRequestQueueGeneratorTest, GenerateReport) {

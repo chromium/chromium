@@ -18,6 +18,12 @@ class MockUpdateNotificationServiceBridge
     : public UpdateNotificationServiceBridge {
  public:
   MockUpdateNotificationServiceBridge();
+
+  MockUpdateNotificationServiceBridge(
+      const MockUpdateNotificationServiceBridge&) = delete;
+  MockUpdateNotificationServiceBridge& operator=(
+      const MockUpdateNotificationServiceBridge&) = delete;
+
   ~MockUpdateNotificationServiceBridge();
 
   MOCK_METHOD1(UpdateLastShownTimeStamp, void(base::Time timestamp));
@@ -27,9 +33,6 @@ class MockUpdateNotificationServiceBridge
   MOCK_METHOD1(UpdateNegativeActionCount, void(int count));
   MOCK_METHOD0(GetNegativeActionCount, int());
   MOCK_METHOD1(LaunchChromeActivity, void(int state));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockUpdateNotificationServiceBridge);
 };
 
 }  // namespace test

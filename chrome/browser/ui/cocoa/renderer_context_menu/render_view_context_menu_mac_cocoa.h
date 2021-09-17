@@ -21,6 +21,10 @@ class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
                                 const content::ContextMenuParams& params,
                                 NSView* parent_view);
 
+  RenderViewContextMenuMacCocoa(const RenderViewContextMenuMacCocoa&) = delete;
+  RenderViewContextMenuMacCocoa& operator=(
+      const RenderViewContextMenuMacCocoa&) = delete;
+
   ~RenderViewContextMenuMacCocoa() override;
 
   // RenderViewContextMenuViewsMac:
@@ -43,8 +47,6 @@ class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
 
   // The Cocoa parent view.
   NSView* parent_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuMacCocoa);
 };
 
 // The ChromeSwizzleServicesMenuUpdater filters Services menu items in the

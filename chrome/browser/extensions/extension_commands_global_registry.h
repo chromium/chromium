@@ -43,6 +43,12 @@ class ExtensionCommandsGlobalRegistry
   static ExtensionCommandsGlobalRegistry* Get(content::BrowserContext* context);
 
   explicit ExtensionCommandsGlobalRegistry(content::BrowserContext* context);
+
+  ExtensionCommandsGlobalRegistry(const ExtensionCommandsGlobalRegistry&) =
+      delete;
+  ExtensionCommandsGlobalRegistry& operator=(
+      const ExtensionCommandsGlobalRegistry&) = delete;
+
   ~ExtensionCommandsGlobalRegistry() override;
 
   // Returns which non-global command registry is active (belonging to the
@@ -88,8 +94,6 @@ class ExtensionCommandsGlobalRegistry
   // and
   // NULL otherwise.
   ExtensionKeybindingRegistry* registry_for_active_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCommandsGlobalRegistry);
 };
 
 }  // namespace extensions

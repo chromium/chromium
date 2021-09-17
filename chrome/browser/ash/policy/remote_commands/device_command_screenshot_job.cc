@@ -67,6 +67,10 @@ class DeviceCommandScreenshotJob::Payload
     : public RemoteCommandJob::ResultPayload {
  public:
   explicit Payload(ResultCode result_code);
+
+  Payload(const Payload&) = delete;
+  Payload& operator=(const Payload&) = delete;
+
   ~Payload() override {}
 
   // RemoteCommandJob::ResultPayload:
@@ -74,8 +78,6 @@ class DeviceCommandScreenshotJob::Payload
 
  private:
   std::string payload_;
-
-  DISALLOW_COPY_AND_ASSIGN(Payload);
 };
 
 DeviceCommandScreenshotJob::Payload::Payload(ResultCode result_code) {

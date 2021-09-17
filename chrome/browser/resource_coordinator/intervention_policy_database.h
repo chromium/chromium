@@ -38,6 +38,11 @@ class InterventionPolicyDatabase {
   };
 
   InterventionPolicyDatabase();
+
+  InterventionPolicyDatabase(const InterventionPolicyDatabase&) = delete;
+  InterventionPolicyDatabase& operator=(const InterventionPolicyDatabase&) =
+      delete;
+
   ~InterventionPolicyDatabase();
 
   InterventionPolicy GetDiscardingPolicy(const url::Origin& origin) const;
@@ -75,8 +80,6 @@ class InterventionPolicyDatabase {
   InterventionsMap database_;
 
   base::WeakPtrFactory<InterventionPolicyDatabase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterventionPolicyDatabase);
 };
 
 }  // namespace resource_coordinator

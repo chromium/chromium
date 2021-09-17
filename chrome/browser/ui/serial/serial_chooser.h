@@ -13,12 +13,14 @@
 class SerialChooser : public content::SerialChooser {
  public:
   explicit SerialChooser(base::OnceClosure close_closure);
+
+  SerialChooser(const SerialChooser&) = delete;
+  SerialChooser& operator=(const SerialChooser&) = delete;
+
   ~SerialChooser() override = default;
 
  private:
   base::ScopedClosureRunner closure_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialChooser);
 };
 
 #endif  // CHROME_BROWSER_UI_SERIAL_SERIAL_CHOOSER_H_

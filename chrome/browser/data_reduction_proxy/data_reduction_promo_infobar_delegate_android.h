@@ -28,6 +28,12 @@ class DataReductionPromoInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
   static void Create(content::WebContents* web_contents);
 
   DataReductionPromoInfoBarDelegateAndroid();
+
+  DataReductionPromoInfoBarDelegateAndroid(
+      const DataReductionPromoInfoBarDelegateAndroid&) = delete;
+  DataReductionPromoInfoBarDelegateAndroid& operator=(
+      const DataReductionPromoInfoBarDelegateAndroid&) = delete;
+
   ~DataReductionPromoInfoBarDelegateAndroid() override;
 
   static void Launch(JNIEnv* env,
@@ -45,8 +51,6 @@ class DataReductionPromoInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   std::u16string GetMessageText() const override;
   bool Accept() override;
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionPromoInfoBarDelegateAndroid);
 };
 
 #endif  // CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROMO_INFOBAR_DELEGATE_ANDROID_H_

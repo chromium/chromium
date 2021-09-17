@@ -25,6 +25,10 @@ class FcmConnectionEstablisher : public ConnectionEstablisher {
  public:
   explicit FcmConnectionEstablisher(
       std::unique_ptr<base::OneShotTimer> retry_timer);
+
+  FcmConnectionEstablisher(const FcmConnectionEstablisher&) = delete;
+  FcmConnectionEstablisher& operator=(const FcmConnectionEstablisher&) = delete;
+
   ~FcmConnectionEstablisher() override;
 
   // ConnectionEstablisher:
@@ -100,8 +104,6 @@ class FcmConnectionEstablisher : public ConnectionEstablisher {
   static const base::TimeDelta kRetryDelay;
 
   base::WeakPtrFactory<FcmConnectionEstablisher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FcmConnectionEstablisher);
 };
 
 }  // namespace android_sms

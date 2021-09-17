@@ -181,6 +181,10 @@ net::NetworkIsolationKey CreateNetworkIsolationKey(const GURL& main_frame_url) {
 class PreconnectManagerTest : public testing::Test {
  public:
   PreconnectManagerTest();
+
+  PreconnectManagerTest(const PreconnectManagerTest&) = delete;
+  PreconnectManagerTest& operator=(const PreconnectManagerTest&) = delete;
+
   ~PreconnectManagerTest() override;
 
   void VerifyAndClearExpectations() const {
@@ -195,9 +199,6 @@ class PreconnectManagerTest : public testing::Test {
   std::unique_ptr<StrictMock<MockNetworkContext>> mock_network_context_;
   std::unique_ptr<StrictMock<MockPreconnectManagerDelegate>> mock_delegate_;
   std::unique_ptr<PreconnectManager> preconnect_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PreconnectManagerTest);
 };
 
 PreconnectManagerTest::PreconnectManagerTest()

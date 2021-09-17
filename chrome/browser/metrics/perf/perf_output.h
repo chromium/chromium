@@ -39,6 +39,10 @@ class PerfOutputCall {
                  base::TimeDelta duration,
                  const std::vector<std::string>& perf_args,
                  DoneCallback callback);
+
+  PerfOutputCall(const PerfOutputCall&) = delete;
+  PerfOutputCall& operator=(const PerfOutputCall&) = delete;
+
   virtual ~PerfOutputCall();
 
   // Stop() is made virtual for mocks in testing.
@@ -77,8 +81,6 @@ class PerfOutputCall {
 
   // To pass around the "this" pointer across threads safely.
   base::WeakPtrFactory<PerfOutputCall> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerfOutputCall);
 };
 
 }  // namespace metrics

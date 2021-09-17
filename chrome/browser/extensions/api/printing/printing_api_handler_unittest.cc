@@ -53,6 +53,9 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
     event_router_->AddEventObserver(this);
   }
 
+  PrintingEventObserver(const PrintingEventObserver&) = delete;
+  PrintingEventObserver& operator=(const PrintingEventObserver&) = delete;
+
   ~PrintingEventObserver() override {
     event_router_->RemoveEventObserver(this);
   }
@@ -82,8 +85,6 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
 
   // The arguments passed for the last observed event.
   base::Value event_args_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintingEventObserver);
 };
 
 constexpr char kExtensionId[] = "abcdefghijklmnopqrstuvwxyzabcdef";

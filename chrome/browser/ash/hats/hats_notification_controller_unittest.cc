@@ -37,6 +37,12 @@ namespace ash {
 class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
  public:
   HatsNotificationControllerTest() {}
+
+  HatsNotificationControllerTest(const HatsNotificationControllerTest&) =
+      delete;
+  HatsNotificationControllerTest& operator=(
+      const HatsNotificationControllerTest&) = delete;
+
   ~HatsNotificationControllerTest() override {}
 
   void SetUp() override {
@@ -82,9 +88,6 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
   NiceMock<MockNetworkPortalDetector> mock_network_portal_detector_;
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HatsNotificationControllerTest);
 };
 
 TEST_F(HatsNotificationControllerTest, NewDevice_ShouldNotShowNotification) {

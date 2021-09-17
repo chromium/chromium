@@ -32,6 +32,11 @@ class MultiUserContextMenuChromeos : public ui::SimpleMenuModel,
                                      public ui::SimpleMenuModel::Delegate {
  public:
   explicit MultiUserContextMenuChromeos(aura::Window* window);
+
+  MultiUserContextMenuChromeos(const MultiUserContextMenuChromeos&) = delete;
+  MultiUserContextMenuChromeos& operator=(const MultiUserContextMenuChromeos&) =
+      delete;
+
   ~MultiUserContextMenuChromeos() override {}
 
   // SimpleMenuModel::Delegate:
@@ -42,8 +47,6 @@ class MultiUserContextMenuChromeos : public ui::SimpleMenuModel,
  private:
   // The window for which this menu is.
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiUserContextMenuChromeos);
 };
 
 MultiUserContextMenuChromeos::MultiUserContextMenuChromeos(aura::Window* window)

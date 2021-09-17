@@ -21,15 +21,17 @@
 class HungRendererNavigationTest : public InProcessBrowserTest {
  public:
   HungRendererNavigationTest() {}
+
+  HungRendererNavigationTest(const HungRendererNavigationTest&) = delete;
+  HungRendererNavigationTest& operator=(const HungRendererNavigationTest&) =
+      delete;
+
   ~HungRendererNavigationTest() override {}
 
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HungRendererNavigationTest);
 };
 
 // Verify that a cross-process navigation will dismiss the hung renderer

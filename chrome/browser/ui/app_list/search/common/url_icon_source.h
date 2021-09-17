@@ -40,6 +40,10 @@ class UrlIconSource : public gfx::ImageSkiaSource,
                 const GURL& icon_url,
                 int icon_size,
                 int default_icon_resource_id);
+
+  UrlIconSource(const UrlIconSource&) = delete;
+  UrlIconSource& operator=(const UrlIconSource&) = delete;
+
   ~UrlIconSource() override;
 
  private:
@@ -67,8 +71,6 @@ class UrlIconSource : public gfx::ImageSkiaSource,
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 
   gfx::ImageSkia icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlIconSource);
 };
 
 }  // namespace app_list

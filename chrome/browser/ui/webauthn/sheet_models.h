@@ -32,6 +32,11 @@ class AuthenticatorSheetModelBase
  public:
   explicit AuthenticatorSheetModelBase(
       AuthenticatorRequestDialogModel* dialog_model);
+
+  AuthenticatorSheetModelBase(const AuthenticatorSheetModelBase&) = delete;
+  AuthenticatorSheetModelBase& operator=(const AuthenticatorSheetModelBase&) =
+      delete;
+
   ~AuthenticatorSheetModelBase() override;
 
   AuthenticatorRequestDialogModel* dialog_model() const {
@@ -61,8 +66,6 @@ class AuthenticatorSheetModelBase
 
  private:
   AuthenticatorRequestDialogModel* dialog_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorSheetModelBase);
 };
 
 // The sheet shown for selecting the transport over which the security key

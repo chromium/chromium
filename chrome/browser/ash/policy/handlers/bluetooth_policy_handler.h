@@ -19,6 +19,10 @@ namespace policy {
 class BluetoothPolicyHandler {
  public:
   explicit BluetoothPolicyHandler(ash::CrosSettings* cros_settings);
+
+  BluetoothPolicyHandler(const BluetoothPolicyHandler&) = delete;
+  BluetoothPolicyHandler& operator=(const BluetoothPolicyHandler&) = delete;
+
   ~BluetoothPolicyHandler();
 
  private:
@@ -37,8 +41,6 @@ class BluetoothPolicyHandler {
   base::CallbackListSubscription allowed_services_subscription_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   base::WeakPtrFactory<BluetoothPolicyHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothPolicyHandler);
 };
 
 }  // namespace policy

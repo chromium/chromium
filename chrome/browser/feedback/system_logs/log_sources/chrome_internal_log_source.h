@@ -21,6 +21,10 @@ namespace system_logs {
 class ChromeInternalLogSource : public SystemLogsSource {
  public:
   ChromeInternalLogSource();
+
+  ChromeInternalLogSource(const ChromeInternalLogSource&) = delete;
+  ChromeInternalLogSource& operator=(const ChromeInternalLogSource&) = delete;
+
   ~ChromeInternalLogSource() override;
 
   // SystemLogsSource override.
@@ -48,8 +52,6 @@ class ChromeInternalLogSource : public SystemLogsSource {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeInternalLogSource);
 };
 
 }  // namespace system_logs

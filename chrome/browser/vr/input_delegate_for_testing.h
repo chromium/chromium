@@ -20,6 +20,10 @@ struct ControllerTestInput;
 class InputDelegateForTesting : public InputDelegate {
  public:
   explicit InputDelegateForTesting(UiInterface* ui);
+
+  InputDelegateForTesting(const InputDelegateForTesting&) = delete;
+  InputDelegateForTesting& operator=(const InputDelegateForTesting&) = delete;
+
   ~InputDelegateForTesting() override;
 
   void QueueControllerActionForTesting(ControllerTestInput controller_input);
@@ -46,8 +50,6 @@ class InputDelegateForTesting : public InputDelegate {
   ControllerModel previous_controller_model_;
   base::TimeTicks last_touchpad_timestamp_;
   std::unique_ptr<GestureDetector> gesture_detector_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputDelegateForTesting);
 };
 
 }  // namespace vr

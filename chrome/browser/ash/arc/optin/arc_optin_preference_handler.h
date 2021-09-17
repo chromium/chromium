@@ -29,6 +29,11 @@ class ArcOptInPreferenceHandler {
  public:
   ArcOptInPreferenceHandler(ArcOptInPreferenceHandlerObserver* observer,
                             PrefService* pref_serive);
+
+  ArcOptInPreferenceHandler(const ArcOptInPreferenceHandler&) = delete;
+  ArcOptInPreferenceHandler& operator=(const ArcOptInPreferenceHandler&) =
+      delete;
+
   ~ArcOptInPreferenceHandler();
 
   void Start();
@@ -57,8 +62,6 @@ class ArcOptInPreferenceHandler {
   PrefChangeRegistrar pref_change_registrar_;
   // Metrics consent observer.
   base::CallbackListSubscription reporting_consent_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcOptInPreferenceHandler);
 };
 
 }  // namespace arc

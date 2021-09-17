@@ -66,6 +66,10 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   };
 
   AXTreeSourceArc(Delegate* delegate, aura::Window* window);
+
+  AXTreeSourceArc(const AXTreeSourceArc&) = delete;
+  AXTreeSourceArc& operator=(const AXTreeSourceArc&) = delete;
+
   ~AXTreeSourceArc() override;
 
   // Notify automation of an accessibility event.
@@ -216,8 +220,6 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
 
   extensions::AutomationEventRouterInterface*
       automation_event_router_for_test_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceArc);
 };
 
 }  // namespace arc

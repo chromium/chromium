@@ -25,6 +25,11 @@ class SupervisedUserGoogleAuthNavigationThrottle
   static std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle>
   MaybeCreate(content::NavigationHandle* navigation_handle);
 
+  SupervisedUserGoogleAuthNavigationThrottle(
+      const SupervisedUserGoogleAuthNavigationThrottle&) = delete;
+  SupervisedUserGoogleAuthNavigationThrottle& operator=(
+      const SupervisedUserGoogleAuthNavigationThrottle&) = delete;
+
   ~SupervisedUserGoogleAuthNavigationThrottle() override;
 
   ThrottleCheckResult WillStartRequest() override;
@@ -53,8 +58,6 @@ class SupervisedUserGoogleAuthNavigationThrottle
 
   base::WeakPtrFactory<SupervisedUserGoogleAuthNavigationThrottle>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserGoogleAuthNavigationThrottle);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_GOOGLE_AUTH_NAVIGATION_THROTTLE_H_

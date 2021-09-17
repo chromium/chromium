@@ -34,6 +34,10 @@ namespace webui {
 class LogWebUIUrlTest : public InProcessBrowserTest {
  public:
   LogWebUIUrlTest() {}
+
+  LogWebUIUrlTest(const LogWebUIUrlTest&) = delete;
+  LogWebUIUrlTest& operator=(const LogWebUIUrlTest&) = delete;
+
   ~LogWebUIUrlTest() override {}
 
   void RunTest(int title_ids, const GURL& url) {
@@ -49,8 +53,6 @@ class LogWebUIUrlTest : public InProcessBrowserTest {
 
  private:
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogWebUIUrlTest);
 };
 
 IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestExtensionsPage) {

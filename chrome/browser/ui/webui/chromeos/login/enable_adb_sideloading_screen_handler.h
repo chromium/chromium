@@ -43,6 +43,12 @@ class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
 
   explicit EnableAdbSideloadingScreenHandler(
       JSCallsContainer* js_calls_container);
+
+  EnableAdbSideloadingScreenHandler(const EnableAdbSideloadingScreenHandler&) =
+      delete;
+  EnableAdbSideloadingScreenHandler& operator=(
+      const EnableAdbSideloadingScreenHandler&) = delete;
+
   ~EnableAdbSideloadingScreenHandler() override;
 
   // EnableAdbSideloadingScreenView implementation:
@@ -62,8 +68,6 @@ class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(EnableAdbSideloadingScreenHandler);
 };
 
 }  // namespace chromeos

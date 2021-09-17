@@ -37,6 +37,10 @@ class DataProvider {
   DataProvider(Profile* profile,
                DeltaFileService* delta_file_service,
                bookmarks::BookmarkModel* bookmark_model);
+
+  DataProvider(const DataProvider&) = delete;
+  DataProvider& operator=(const DataProvider&) = delete;
+
   ~DataProvider();
 
   // Provides up to limit delta file entries with sequence number > last_seq_no.
@@ -53,8 +57,6 @@ class DataProvider {
   scoped_refptr<bookmarks::ModelLoader> bookmark_model_loader_;
   DeltaFileService* delta_file_service_;
   base::CancelableTaskTracker history_task_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataProvider);
 };
 
 }  // namespace history_report

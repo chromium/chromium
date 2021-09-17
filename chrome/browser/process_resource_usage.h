@@ -62,6 +62,10 @@ class ProcessResourceUsage {
   // Must be called from the same thread that created |service|.
   explicit ProcessResourceUsage(
       mojo::PendingRemote<content::mojom::ResourceUsageReporter> service);
+
+  ProcessResourceUsage(const ProcessResourceUsage&) = delete;
+  ProcessResourceUsage& operator=(const ProcessResourceUsage&) = delete;
+
   ~ProcessResourceUsage();
 
   // Refresh the resource usage information. |callback| is invoked when the
@@ -89,8 +93,6 @@ class ProcessResourceUsage {
   content::mojom::ResourceUsageDataPtr stats_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessResourceUsage);
 };
 
 #endif  // CHROME_BROWSER_PROCESS_RESOURCE_USAGE_H_

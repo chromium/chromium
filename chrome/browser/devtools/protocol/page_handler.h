@@ -32,6 +32,10 @@ class PageHandler : public protocol::Page::Backend {
   PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
               content::WebContents* web_contents,
               protocol::UberDispatcher* dispatcher);
+
+  PageHandler(const PageHandler&) = delete;
+  PageHandler& operator=(const PageHandler&) = delete;
+
   ~PageHandler() override;
 
   void ToggleAdBlocking(bool enabled);
@@ -91,8 +95,6 @@ class PageHandler : public protocol::Page::Backend {
   bool enabled_ = false;
 
   base::WeakPtrFactory<PageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PageHandler);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_PAGE_HANDLER_H_

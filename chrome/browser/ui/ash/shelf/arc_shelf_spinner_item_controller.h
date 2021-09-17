@@ -31,6 +31,10 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
                                 arc::UserInteractionType user_interaction_type,
                                 arc::mojom::WindowInfoPtr window_info);
 
+  ArcShelfSpinnerItemController(const ArcShelfSpinnerItemController&) = delete;
+  ArcShelfSpinnerItemController& operator=(
+      const ArcShelfSpinnerItemController&) = delete;
+
   ~ArcShelfSpinnerItemController() override;
 
   // ShelfSpinnerItemController:
@@ -73,8 +77,6 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
   std::unique_ptr<base::OneShotTimer> close_timer_;
 
   base::WeakPtrFactory<ArcShelfSpinnerItemController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcShelfSpinnerItemController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_ARC_SHELF_SPINNER_ITEM_CONTROLLER_H_

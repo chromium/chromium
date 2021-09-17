@@ -43,6 +43,11 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   ImmersiveModeControllerChromeosWebAppBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  ImmersiveModeControllerChromeosWebAppBrowserTest(
+      const ImmersiveModeControllerChromeosWebAppBrowserTest&) = delete;
+  ImmersiveModeControllerChromeosWebAppBrowserTest& operator=(
+      const ImmersiveModeControllerChromeosWebAppBrowserTest&) = delete;
+
   ~ImmersiveModeControllerChromeosWebAppBrowserTest() override = default;
 
   // WebAppControllerBrowserTest override:
@@ -134,8 +139,6 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
 
   net::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeosWebAppBrowserTest);
 };
 
 // Test the layout and visibility of the TopContainerView and web contents when

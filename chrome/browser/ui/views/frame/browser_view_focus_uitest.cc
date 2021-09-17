@@ -28,14 +28,15 @@ const char kSimplePage[] = "/focus/page_with_focus.html";
 class BrowserViewFocusTest : public InProcessBrowserTest {
  public:
   BrowserViewFocusTest() = default;
+
+  BrowserViewFocusTest(const BrowserViewFocusTest&) = delete;
+  BrowserViewFocusTest& operator=(const BrowserViewFocusTest&) = delete;
+
   ~BrowserViewFocusTest() override = default;
 
   bool IsViewFocused(ViewID vid) {
     return ui_test_utils::IsViewFocused(browser(), vid);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewFocusTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {

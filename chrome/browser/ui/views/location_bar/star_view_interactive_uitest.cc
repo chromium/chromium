@@ -45,6 +45,10 @@ namespace {
 class StarViewTest : public InProcessBrowserTest {
  public:
   StarViewTest() = default;
+
+  StarViewTest(const StarViewTest&) = delete;
+  StarViewTest& operator=(const StarViewTest&) = delete;
+
   ~StarViewTest() override = default;
 
   PageActionIconView* GetStarIcon() {
@@ -52,9 +56,6 @@ class StarViewTest : public InProcessBrowserTest {
         ->toolbar_button_provider()
         ->GetPageActionIconView(PageActionIconType::kBookmarkStar);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StarViewTest);
 };
 
 // Verifies clicking the star bookmarks the page.

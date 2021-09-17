@@ -29,6 +29,11 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest,
                                     public ::testing::WithParamInterface<bool> {
  public:
   ManagePasswordsIconViewTest() {}
+
+  ManagePasswordsIconViewTest(const ManagePasswordsIconViewTest&) = delete;
+  ManagePasswordsIconViewTest& operator=(const ManagePasswordsIconViewTest&) =
+      delete;
+
   ~ManagePasswordsIconViewTest() override {}
 
   password_manager::ui::State ViewState() { return GetView()->state_; }
@@ -89,8 +94,6 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest,
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagePasswordsIconViewTest);
 };
 
 IN_PROC_BROWSER_TEST_P(ManagePasswordsIconViewTest, DefaultStateIsInactive) {

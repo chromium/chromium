@@ -190,6 +190,10 @@ class DialogEnrollmentDelegate {
   DialogEnrollmentDelegate(const std::string& network_guid,
                            const std::string& network_name,
                            Profile* profile);
+
+  DialogEnrollmentDelegate(const DialogEnrollmentDelegate&) = delete;
+  DialogEnrollmentDelegate& operator=(const DialogEnrollmentDelegate&) = delete;
+
   ~DialogEnrollmentDelegate();
 
   bool Enroll(const std::vector<std::string>& uri_list);
@@ -198,8 +202,6 @@ class DialogEnrollmentDelegate {
   std::string network_guid_;
   std::string network_name_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogEnrollmentDelegate);
 };
 
 DialogEnrollmentDelegate::DialogEnrollmentDelegate(

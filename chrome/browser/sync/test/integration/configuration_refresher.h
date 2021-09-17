@@ -21,6 +21,10 @@
 class ConfigurationRefresher : public syncer::SyncServiceObserver {
  public:
   ConfigurationRefresher();
+
+  ConfigurationRefresher(const ConfigurationRefresher&) = delete;
+  ConfigurationRefresher& operator=(const ConfigurationRefresher&) = delete;
+
   ~ConfigurationRefresher() override;
   void Observe(syncer::SyncService* sync_service);
 
@@ -32,8 +36,6 @@ class ConfigurationRefresher : public syncer::SyncServiceObserver {
   base::ScopedMultiSourceObservation<syncer::SyncService,
                                      syncer::SyncServiceObserver>
       scoped_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigurationRefresher);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_CONFIGURATION_REFRESHER_H_

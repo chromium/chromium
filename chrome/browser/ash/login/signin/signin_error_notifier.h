@@ -33,6 +33,10 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
                             public KeyedService {
  public:
   SigninErrorNotifier(SigninErrorController* controller, Profile* profile);
+
+  SigninErrorNotifier(const SigninErrorNotifier&) = delete;
+  SigninErrorNotifier& operator=(const SigninErrorNotifier&) = delete;
+
   ~SigninErrorNotifier() override;
 
   static std::unique_ptr<base::AutoReset<bool>> IgnoreSyncErrorsForTesting();
@@ -91,7 +95,6 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   std::string secondary_account_notification_id_;
 
   base::WeakPtrFactory<SigninErrorNotifier> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorNotifier);
 };
 
 }  // namespace ash

@@ -21,6 +21,10 @@ class DownloadsHandler : public SettingsPageUIHandler,
                          public ui::SelectFileDialog::Listener {
  public:
   explicit DownloadsHandler(Profile* profile);
+
+  DownloadsHandler(const DownloadsHandler&) = delete;
+  DownloadsHandler& operator=(const DownloadsHandler&) = delete;
+
   ~DownloadsHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -80,8 +84,6 @@ class DownloadsHandler : public SettingsPageUIHandler,
   scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
 
   base::WeakPtrFactory<DownloadsHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsHandler);
 };
 
 }  // namespace settings

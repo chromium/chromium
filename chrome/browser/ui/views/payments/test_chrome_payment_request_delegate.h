@@ -33,6 +33,12 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
       bool is_valid_ssl,
       bool is_browser_window_active,
       bool skip_ui_for_basic_card);
+
+  TestChromePaymentRequestDelegate(const TestChromePaymentRequestDelegate&) =
+      delete;
+  TestChromePaymentRequestDelegate& operator=(
+      const TestChromePaymentRequestDelegate&) = delete;
+
   ~TestChromePaymentRequestDelegate() override;
 
   void SetRegionDataLoader(autofill::RegionDataLoader* region_data_loader) {
@@ -62,8 +68,6 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
   const bool is_valid_ssl_;
   const bool is_browser_window_active_;
   const bool skip_ui_for_basic_card_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChromePaymentRequestDelegate);
 };
 
 }  // namespace payments

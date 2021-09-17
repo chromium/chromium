@@ -13,12 +13,14 @@
 class HidChooser : public content::HidChooser {
  public:
   explicit HidChooser(base::OnceClosure close_closure);
+
+  HidChooser(const HidChooser&) = delete;
+  HidChooser& operator=(const HidChooser&) = delete;
+
   ~HidChooser() override = default;
 
  private:
   base::ScopedClosureRunner closure_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidChooser);
 };
 
 #endif  // CHROME_BROWSER_UI_HID_HID_CHOOSER_H_

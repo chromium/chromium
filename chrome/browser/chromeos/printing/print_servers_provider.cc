@@ -152,6 +152,9 @@ class PrintServersProviderImpl : public PrintServersProvider {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
+  PrintServersProviderImpl(const PrintServersProviderImpl&) = delete;
+  PrintServersProviderImpl& operator=(const PrintServersProviderImpl&) = delete;
+
   ~PrintServersProviderImpl() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
@@ -331,8 +334,6 @@ class PrintServersProviderImpl : public PrintServersProvider {
 
   base::ObserverList<PrintServersProvider::Observer>::Unchecked observers_;
   base::WeakPtrFactory<PrintServersProviderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintServersProviderImpl);
 };
 
 }  // namespace

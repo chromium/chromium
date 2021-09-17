@@ -79,6 +79,9 @@ class IncidentReportingService : public ProfileManagerObserver,
  public:
   explicit IncidentReportingService(SafeBrowsingService* safe_browsing_service);
 
+  IncidentReportingService(const IncidentReportingService&) = delete;
+  IncidentReportingService& operator=(const IncidentReportingService&) = delete;
+
   // All incident collection, data collection, and uploads in progress are
   // dropped at destruction.
   ~IncidentReportingService() override;
@@ -328,8 +331,6 @@ class IncidentReportingService : public ProfileManagerObserver,
   // that are posted during normal processing (e.g., environment collection,
   // and report uploads).
   base::WeakPtrFactory<IncidentReportingService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IncidentReportingService);
 };
 
 }  // namespace safe_browsing

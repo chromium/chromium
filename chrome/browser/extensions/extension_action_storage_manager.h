@@ -27,6 +27,11 @@ class ExtensionActionStorageManager : public ExtensionActionAPI::Observer,
                                       public ExtensionRegistryObserver {
  public:
   explicit ExtensionActionStorageManager(content::BrowserContext* context);
+
+  ExtensionActionStorageManager(const ExtensionActionStorageManager&) = delete;
+  ExtensionActionStorageManager& operator=(
+      const ExtensionActionStorageManager&) = delete;
+
   ~ExtensionActionStorageManager() override;
 
  private:
@@ -59,8 +64,6 @@ class ExtensionActionStorageManager : public ExtensionActionAPI::Observer,
       extension_registry_observation_{this};
 
   base::WeakPtrFactory<ExtensionActionStorageManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionStorageManager);
 };
 
 }  // namespace extensions

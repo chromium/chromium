@@ -28,6 +28,12 @@
 class PublicSessionMediaAccessHandler : public MediaAccessHandler {
  public:
   PublicSessionMediaAccessHandler();
+
+  PublicSessionMediaAccessHandler(const PublicSessionMediaAccessHandler&) =
+      delete;
+  PublicSessionMediaAccessHandler& operator=(
+      const PublicSessionMediaAccessHandler&) = delete;
+
   ~PublicSessionMediaAccessHandler() override;
 
   // MediaAccessHandler implementation.
@@ -55,8 +61,6 @@ class PublicSessionMediaAccessHandler : public MediaAccessHandler {
       const extensions::PermissionIDSet& allowed_permissions);
 
   ExtensionMediaAccessHandler extension_media_access_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicSessionMediaAccessHandler);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_PUBLIC_SESSION_MEDIA_ACCESS_HANDLER_H_

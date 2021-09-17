@@ -36,6 +36,9 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
     UpdateFindBarControllerFromPasteboard();
   }
 
+  FindBarPlatformHelperMac(const FindBarPlatformHelperMac&) = delete;
+  FindBarPlatformHelperMac& operator=(const FindBarPlatformHelperMac&) = delete;
+
   ~FindBarPlatformHelperMac() override {
     [[NSNotificationCenter defaultCenter]
         removeObserver:find_pasteboard_notification_observer_];
@@ -86,8 +89,6 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
   }
 
   id find_pasteboard_notification_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarPlatformHelperMac);
 };
 
 }  // namespace

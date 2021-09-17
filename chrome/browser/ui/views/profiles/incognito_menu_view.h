@@ -25,6 +25,10 @@ class IncognitoMenuView : public ProfileMenuViewBase {
  public:
   IncognitoMenuView(views::Button* anchor_button,
                     Browser* browser);
+
+  IncognitoMenuView(const IncognitoMenuView&) = delete;
+  IncognitoMenuView& operator=(const IncognitoMenuView&) = delete;
+
   ~IncognitoMenuView() override;
 
   // ProfileMenuViewBase:
@@ -39,8 +43,6 @@ class IncognitoMenuView : public ProfileMenuViewBase {
   void OnCreateShortcutButtonClicked();
 #endif
   void OnExitButtonClicked();
-
-  DISALLOW_COPY_AND_ASSIGN(IncognitoMenuView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_INCOGNITO_MENU_VIEW_H_

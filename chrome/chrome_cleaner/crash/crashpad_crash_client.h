@@ -26,6 +26,9 @@ namespace chrome_cleaner {
 // This class manages interaction with the Crashpad reporter.
 class CrashpadCrashClient : public CrashClient {
  public:
+  CrashpadCrashClient(const CrashpadCrashClient&) = delete;
+  CrashpadCrashClient& operator=(const CrashpadCrashClient&) = delete;
+
   ~CrashpadCrashClient() override;
 
   // Initializes the crash database only. Used in the crash reporter, which
@@ -58,8 +61,6 @@ class CrashpadCrashClient : public CrashClient {
 
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<crashpad::CrashReportDatabase> database_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashpadCrashClient);
 };
 
 }  // namespace chrome_cleaner

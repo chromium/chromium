@@ -151,6 +151,10 @@ class SystemLogDelegate : public SystemLogUploader::Delegate {
  public:
   explicit SystemLogDelegate(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  SystemLogDelegate(const SystemLogDelegate&) = delete;
+  SystemLogDelegate& operator=(const SystemLogDelegate&) = delete;
+
   ~SystemLogDelegate() override;
 
   // SystemLogUploader::Delegate:
@@ -167,8 +171,6 @@ class SystemLogDelegate : public SystemLogUploader::Delegate {
  private:
   // TaskRunner used for scheduling upload the upload task.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemLogDelegate);
 };
 
 SystemLogDelegate::SystemLogDelegate(

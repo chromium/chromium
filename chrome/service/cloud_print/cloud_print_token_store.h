@@ -22,6 +22,10 @@ class CloudPrintTokenStore {
   static CloudPrintTokenStore* current();
 
   CloudPrintTokenStore();
+
+  CloudPrintTokenStore(const CloudPrintTokenStore&) = delete;
+  CloudPrintTokenStore& operator=(const CloudPrintTokenStore&) = delete;
+
   ~CloudPrintTokenStore();
 
   void SetToken(const std::string& token);
@@ -35,8 +39,6 @@ class CloudPrintTokenStore {
 
   // Thread-affine per use of TLS in impl.
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintTokenStore);
 };
 
 }  // namespace cloud_print

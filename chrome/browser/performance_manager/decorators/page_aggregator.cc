@@ -57,6 +57,10 @@ class PageAggregator::Data : public NodeAttachedDataImpl<Data> {
   struct Traits : public NodeAttachedDataInternalOnNodeType<PageNodeImpl> {};
 
   explicit Data(const PageNodeImpl* page_node) {}
+
+  Data(const Data&) = delete;
+  Data& operator=(const Data&) = delete;
+
   ~Data() override {
     DCHECK_EQ(num_frames_holding_web_lock_, 0U);
     DCHECK_EQ(num_frames_holding_indexeddb_lock_, 0U);
@@ -96,8 +100,6 @@ class PageAggregator::Data : public NodeAttachedDataImpl<Data> {
 
   // The number of current frames which have received some form interaction.
   uint32_t num_current_frames_with_form_interaction_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Data);
 };
 #pragma pack(pop)
 

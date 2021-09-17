@@ -223,6 +223,10 @@ class AutoEnrollmentWithStatistics : public AutoEnrollmentLocalPolicyServer {
         system::kSerialNumberKeyForTest, test::kTestSerialNumber);
   }
 
+  AutoEnrollmentWithStatistics(const AutoEnrollmentWithStatistics&) = delete;
+  AutoEnrollmentWithStatistics& operator=(const AutoEnrollmentWithStatistics&) =
+      delete;
+
   ~AutoEnrollmentWithStatistics() override = default;
 
  protected:
@@ -243,12 +247,16 @@ class AutoEnrollmentWithStatistics : public AutoEnrollmentLocalPolicyServer {
 
  private:
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentWithStatistics);
 };
 
 class AutoEnrollmentNoStateKeys : public AutoEnrollmentWithStatistics {
  public:
   AutoEnrollmentNoStateKeys() = default;
+
+  AutoEnrollmentNoStateKeys(const AutoEnrollmentNoStateKeys&) = delete;
+  AutoEnrollmentNoStateKeys& operator=(const AutoEnrollmentNoStateKeys&) =
+      delete;
+
   ~AutoEnrollmentNoStateKeys() override = default;
 
   // AutoEnrollmentWithStatistics:
@@ -257,9 +265,6 @@ class AutoEnrollmentNoStateKeys : public AutoEnrollmentWithStatistics {
     // Session manager client is initialized by DeviceStateMixin.
     FakeSessionManagerClient::Get()->set_force_state_keys_missing(true);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentNoStateKeys);
 };
 
 class InitialEnrollmentTest : public EnrollmentLocalPolicyServerBase {
@@ -837,6 +842,9 @@ class EnrollmentRecoveryTest : public EnrollmentLocalPolicyServerBase {
         DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
   }
 
+  EnrollmentRecoveryTest(const EnrollmentRecoveryTest&) = delete;
+  EnrollmentRecoveryTest& operator=(const EnrollmentRecoveryTest&) = delete;
+
   ~EnrollmentRecoveryTest() override = default;
 
  protected:
@@ -846,9 +854,6 @@ class EnrollmentRecoveryTest : public EnrollmentLocalPolicyServerBase {
     // This triggers recovery enrollment.
     device_state_.RequestDevicePolicyUpdate()->policy_data()->Clear();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentRecoveryTest);
 };
 
 IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, Success) {

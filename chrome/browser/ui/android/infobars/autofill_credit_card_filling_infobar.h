@@ -25,6 +25,12 @@ class AutofillCreditCardFillingInfoBar : public infobars::ConfirmInfoBar {
   explicit AutofillCreditCardFillingInfoBar(
       std::unique_ptr<autofill::AutofillCreditCardFillingInfoBarDelegateMobile>
           delegate);
+
+  AutofillCreditCardFillingInfoBar(const AutofillCreditCardFillingInfoBar&) =
+      delete;
+  AutofillCreditCardFillingInfoBar& operator=(
+      const AutofillCreditCardFillingInfoBar&) = delete;
+
   ~AutofillCreditCardFillingInfoBar() override;
 
  private:
@@ -32,8 +38,6 @@ class AutofillCreditCardFillingInfoBar : public infobars::ConfirmInfoBar {
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillCreditCardFillingInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_H_

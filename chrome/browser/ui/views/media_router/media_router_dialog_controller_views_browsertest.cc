@@ -39,6 +39,12 @@ std::unique_ptr<StartPresentationContext> CreateStartPresentationContext(
 class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
  public:
   MediaRouterDialogControllerViewsTest() = default;
+
+  MediaRouterDialogControllerViewsTest(
+      const MediaRouterDialogControllerViewsTest&) = delete;
+  MediaRouterDialogControllerViewsTest& operator=(
+      const MediaRouterDialogControllerViewsTest&) = delete;
+
   ~MediaRouterDialogControllerViewsTest() override = default;
 
   void OpenMediaRouterDialog();
@@ -47,9 +53,6 @@ class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
  protected:
   WebContents* initiator_;
   MediaRouterDialogControllerViews* dialog_controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterDialogControllerViewsTest);
 };
 
 void MediaRouterDialogControllerViewsTest::CreateDialogController() {

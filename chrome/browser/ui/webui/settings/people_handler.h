@@ -53,6 +53,10 @@ class PeopleHandler : public SettingsPageUIHandler,
   static const char kPassphraseFailedPageStatus[];
 
   explicit PeopleHandler(Profile* profile);
+
+  PeopleHandler(const PeopleHandler&) = delete;
+  PeopleHandler& operator=(const PeopleHandler&) = delete;
+
   ~PeopleHandler() override;
 
  protected:
@@ -234,8 +238,6 @@ class PeopleHandler : public SettingsPageUIHandler,
       sync_service_observation_{this};
 
   base::WeakPtrFactory<PeopleHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PeopleHandler);
 };
 
 }  // namespace settings

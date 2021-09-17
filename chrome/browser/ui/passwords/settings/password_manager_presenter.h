@@ -42,6 +42,10 @@ class PasswordManagerPresenter
  public:
   // |password_view| the UI view that owns this presenter, must not be NULL.
   explicit PasswordManagerPresenter(PasswordUIView* password_view);
+
+  PasswordManagerPresenter(const PasswordManagerPresenter&) = delete;
+  PasswordManagerPresenter& operator=(const PasswordManagerPresenter&) = delete;
+
   ~PasswordManagerPresenter() override;
 
   void Initialize();
@@ -185,8 +189,6 @@ class PasswordManagerPresenter
 
   // Contains the helpers currently executing moving tasks.
   MovePasswordToAccountStoreHelperList move_to_account_helpers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerPresenter);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PRESENTER_H_

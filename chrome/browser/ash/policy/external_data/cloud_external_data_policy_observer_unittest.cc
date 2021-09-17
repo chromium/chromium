@@ -94,6 +94,12 @@ class CloudExternalDataPolicyObserverTest
   typedef std::pair<std::string, std::string> FetchedCall;
 
   CloudExternalDataPolicyObserverTest();
+
+  CloudExternalDataPolicyObserverTest(
+      const CloudExternalDataPolicyObserverTest&) = delete;
+  CloudExternalDataPolicyObserverTest& operator=(
+      const CloudExternalDataPolicyObserverTest&) = delete;
+
   ~CloudExternalDataPolicyObserverTest() override;
 
   // ash::DeviceSettingsTestBase:
@@ -164,9 +170,6 @@ class CloudExternalDataPolicyObserverTest
 
   TestingProfileManager profile_manager_;
   session_manager::SessionManager session_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloudExternalDataPolicyObserverTest);
 };
 
 CloudExternalDataPolicyObserverTest::CloudExternalDataPolicyObserverTest()

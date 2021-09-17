@@ -26,6 +26,12 @@ class FamilyLinkUserInternalsMessageHandler
       public SupervisedUserURLFilter::Observer {
  public:
   FamilyLinkUserInternalsMessageHandler();
+
+  FamilyLinkUserInternalsMessageHandler(
+      const FamilyLinkUserInternalsMessageHandler&) = delete;
+  FamilyLinkUserInternalsMessageHandler& operator=(
+      const FamilyLinkUserInternalsMessageHandler&) = delete;
+
   ~FamilyLinkUserInternalsMessageHandler() override;
 
  private:
@@ -66,8 +72,6 @@ class FamilyLinkUserInternalsMessageHandler
 
   base::WeakPtrFactory<FamilyLinkUserInternalsMessageHandler> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(FamilyLinkUserInternalsMessageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FAMILY_LINK_USER_INTERNALS_FAMILY_LINK_USER_INTERNALS_MESSAGE_HANDLER_H_

@@ -19,6 +19,10 @@ class TestPredicateWaiter : public TestConditionWaiter {
   using PredicateCheck = base::RepeatingCallback<bool(void)>;
 
   explicit TestPredicateWaiter(const PredicateCheck& is_fulfilled);
+
+  TestPredicateWaiter(const TestPredicateWaiter&) = delete;
+  TestPredicateWaiter& operator=(const TestPredicateWaiter&) = delete;
+
   ~TestPredicateWaiter() override;
 
   void set_description(const std::string& description) {
@@ -36,8 +40,6 @@ class TestPredicateWaiter : public TestConditionWaiter {
   base::RetainingOneShotTimer timer_;
   base::RunLoop run_loop_;
   std::string description_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPredicateWaiter);
 };
 
 }  // namespace test

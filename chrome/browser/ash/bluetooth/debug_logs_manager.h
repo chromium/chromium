@@ -27,6 +27,10 @@ class DebugLogsManager : public mojom::DebugLogsChangeHandler {
  public:
   DebugLogsManager(const std::string& primary_user_email,
                    PrefService* pref_service);
+
+  DebugLogsManager(const DebugLogsManager&) = delete;
+  DebugLogsManager& operator=(const DebugLogsManager&) = delete;
+
   ~DebugLogsManager() override;
 
   // State for capturing debug Bluetooth logs; logs are only captured when
@@ -64,8 +68,6 @@ class DebugLogsManager : public mojom::DebugLogsChangeHandler {
   mojo::ReceiverSet<mojom::DebugLogsChangeHandler> receivers_;
 
   base::WeakPtrFactory<DebugLogsManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DebugLogsManager);
 };
 
 }  // namespace bluetooth

@@ -41,6 +41,10 @@ class FindBarHost : public DropdownBarHost,
                     public FindBarTesting {
  public:
   explicit FindBarHost(BrowserView* browser_view);
+
+  FindBarHost(const FindBarHost&) = delete;
+  FindBarHost& operator=(const FindBarHost&) = delete;
+
   ~FindBarHost() override;
 
   // Forwards selected key events to the renderer. This is useful to make sure
@@ -161,8 +165,6 @@ class FindBarHost : public DropdownBarHost,
 
   // The number of audible alerts issued.
   size_t audible_alerts_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarHost);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FIND_BAR_HOST_H_

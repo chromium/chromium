@@ -40,6 +40,10 @@ class WrongHWIDScreenHandler : public WrongHWIDScreenView,
   using TView = WrongHWIDScreenView;
 
   explicit WrongHWIDScreenHandler(JSCallsContainer* js_calls_container);
+
+  WrongHWIDScreenHandler(const WrongHWIDScreenHandler&) = delete;
+  WrongHWIDScreenHandler& operator=(const WrongHWIDScreenHandler&) = delete;
+
   ~WrongHWIDScreenHandler() override;
 
  private:
@@ -58,8 +62,6 @@ class WrongHWIDScreenHandler : public WrongHWIDScreenView,
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WrongHWIDScreenHandler);
 };
 
 }  // namespace chromeos

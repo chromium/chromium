@@ -64,6 +64,9 @@ enum class RequestPermissionSource {
 
 class TabCloser : public content::WebContentsUserData<TabCloser> {
  public:
+  TabCloser(const TabCloser&) = delete;
+  TabCloser& operator=(const TabCloser&) = delete;
+
   ~TabCloser() override {}
 
   static void MaybeClose(WebContents* web_contents) {
@@ -108,8 +111,6 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
   base::WeakPtrFactory<TabCloser> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TabCloser);
 };
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCloser)

@@ -54,6 +54,10 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
     button_->AddObserver(this);
   }
 
+  MediaToolbarButtonWatcher(const MediaToolbarButtonWatcher&) = delete;
+  MediaToolbarButtonWatcher& operator=(const MediaToolbarButtonWatcher&) =
+      delete;
+
   ~MediaToolbarButtonWatcher() override {
     button_->RemoveObserver(this);
     if (observed_dialog_ &&
@@ -236,8 +240,6 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
   std::u16string expected_text_;
   int expected_notification_count_ = 0;
   bool expected_pip_visibility_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaToolbarButtonWatcher);
 };
 
 class TestWebContentsPresentationManager
@@ -316,6 +318,11 @@ class TestMediaRouter : public media_router::MockMediaRouter {
 class MediaDialogViewBrowserTest : public InProcessBrowserTest {
  public:
   MediaDialogViewBrowserTest() = default;
+
+  MediaDialogViewBrowserTest(const MediaDialogViewBrowserTest&) = delete;
+  MediaDialogViewBrowserTest& operator=(const MediaDialogViewBrowserTest&) =
+      delete;
+
   ~MediaDialogViewBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -618,8 +625,6 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDialogViewBrowserTest);
 };
 
 // This test was first disabled on defined(OS_MAC) && defined(ARCH_CPU_ARM64)

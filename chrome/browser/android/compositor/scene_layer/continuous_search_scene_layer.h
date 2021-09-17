@@ -23,6 +23,11 @@ class ContinuousSearchSceneLayer : public SceneLayer {
  public:
   ContinuousSearchSceneLayer(JNIEnv* env,
                              const base::android::JavaRef<jobject>& jobj);
+
+  ContinuousSearchSceneLayer(const ContinuousSearchSceneLayer&) = delete;
+  ContinuousSearchSceneLayer& operator=(const ContinuousSearchSceneLayer&) =
+      delete;
+
   ~ContinuousSearchSceneLayer() override;
 
   // Update the compositor version of the view.
@@ -46,8 +51,6 @@ class ContinuousSearchSceneLayer : public SceneLayer {
   SkColor background_color_;
   scoped_refptr<cc::Layer> view_container_;
   scoped_refptr<cc::UIResourceLayer> view_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContinuousSearchSceneLayer);
 };
 
 }  // namespace android

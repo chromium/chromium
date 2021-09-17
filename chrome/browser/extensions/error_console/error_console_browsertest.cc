@@ -153,6 +153,10 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
           error_console_(error_console) {
       error_console_->AddObserver(this);
     }
+
+    ErrorObserver(const ErrorObserver&) = delete;
+    ErrorObserver& operator=(const ErrorObserver&) = delete;
+
     virtual ~ErrorObserver() {
       if (error_console_)
         error_console_->RemoveObserver(this);
@@ -184,8 +188,6 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
     bool waiting_;
 
     ErrorConsole* error_console_;
-
-    DISALLOW_COPY_AND_ASSIGN(ErrorObserver);
   };
 
   // The type of action which we take after we load an extension in order to

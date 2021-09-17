@@ -36,6 +36,10 @@ class DownloadFeedbackService {
   DownloadFeedbackService(
       DownloadProtectionService* download_protection_service,
       base::TaskRunner* file_task_runner);
+
+  DownloadFeedbackService(const DownloadFeedbackService&) = delete;
+  DownloadFeedbackService& operator=(const DownloadFeedbackService&) = delete;
+
   ~DownloadFeedbackService();
 
   // Stores the request and response ping data from the download check, if the
@@ -92,8 +96,6 @@ class DownloadFeedbackService {
   base::queue<std::unique_ptr<DownloadFeedback>> active_feedback_;
 
   base::WeakPtrFactory<DownloadFeedbackService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFeedbackService);
 };
 }  // namespace safe_browsing
 

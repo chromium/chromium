@@ -41,6 +41,11 @@ using testing::Return;
 class MockDynamicTcmallocPolicy : public DynamicTcmallocPolicy {
  public:
   MockDynamicTcmallocPolicy() {}
+
+  MockDynamicTcmallocPolicy(const MockDynamicTcmallocPolicy&) = delete;
+  MockDynamicTcmallocPolicy& operator=(const MockDynamicTcmallocPolicy&) =
+      delete;
+
   ~MockDynamicTcmallocPolicy() override {}
 
   MOCK_METHOD0(CheckAndUpdateTunables, void(void));
@@ -57,9 +62,6 @@ class MockDynamicTcmallocPolicy : public DynamicTcmallocPolicy {
   float DefaultCalculateFreeMemoryRatio() {
     return DynamicTcmallocPolicy::CalculateFreeMemoryRatio();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDynamicTcmallocPolicy);
 };
 
 class MockTcmallocTunablesImpl : public tcmalloc::mojom::TcmallocTunables {
@@ -67,19 +69,27 @@ class MockTcmallocTunablesImpl : public tcmalloc::mojom::TcmallocTunables {
   explicit MockTcmallocTunablesImpl(
       mojo::PendingReceiver<tcmalloc::mojom::TcmallocTunables> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  MockTcmallocTunablesImpl(const MockTcmallocTunablesImpl&) = delete;
+  MockTcmallocTunablesImpl& operator=(const MockTcmallocTunablesImpl&) = delete;
+
   ~MockTcmallocTunablesImpl() override {}
 
   MOCK_METHOD1(SetMaxTotalThreadCacheBytes, void(uint32_t));
 
  private:
   mojo::Receiver<tcmalloc::mojom::TcmallocTunables> receiver_{this};
-  DISALLOW_COPY_AND_ASSIGN(MockTcmallocTunablesImpl);
 };
 
 class DynamicTcmallocPolicyTest : public ::testing::Test {
  public:
   DynamicTcmallocPolicyTest()
       : browser_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  DynamicTcmallocPolicyTest(const DynamicTcmallocPolicyTest&) = delete;
+  DynamicTcmallocPolicyTest& operator=(const DynamicTcmallocPolicyTest&) =
+      delete;
+
   ~DynamicTcmallocPolicyTest() override {}
 
   void SetUp() override {
@@ -142,8 +152,6 @@ class DynamicTcmallocPolicyTest : public ::testing::Test {
   TestNodeWrapper<ProcessNodeImpl> process_node_;
   TestNodeWrapper<PageNodeImpl> page_node_;
   TestNodeWrapper<FrameNodeImpl> frame_node_;
-
-  DISALLOW_COPY_AND_ASSIGN(DynamicTcmallocPolicyTest);
 };
 
 TEST_F(DynamicTcmallocPolicyTest, PeriodicPressureCheck) {

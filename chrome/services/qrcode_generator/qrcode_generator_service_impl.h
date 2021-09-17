@@ -21,6 +21,11 @@ class QRCodeGeneratorServiceImpl : public mojom::QRCodeGeneratorService {
  public:
   explicit QRCodeGeneratorServiceImpl(
       mojo::PendingReceiver<mojom::QRCodeGeneratorService> receiver);
+
+  QRCodeGeneratorServiceImpl(const QRCodeGeneratorServiceImpl&) = delete;
+  QRCodeGeneratorServiceImpl& operator=(const QRCodeGeneratorServiceImpl&) =
+      delete;
+
   ~QRCodeGeneratorServiceImpl() override;
 
  private:
@@ -62,8 +67,6 @@ class QRCodeGeneratorServiceImpl : public mojom::QRCodeGeneratorService {
   mojo::Receiver<mojom::QRCodeGeneratorService> receiver_;
 
   SkBitmap dino_bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(QRCodeGeneratorServiceImpl);
 };
 
 }  // namespace qrcode_generator

@@ -41,6 +41,10 @@ class OSSettingsUI : public ui::MojoWebUIController {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   explicit OSSettingsUI(content::WebUI* web_ui);
+
+  OSSettingsUI(const OSSettingsUI&) = delete;
+  OSSettingsUI& operator=(const OSSettingsUI&) = delete;
+
   ~OSSettingsUI() override;
 
   // Instantiates implementor of the mojom::CellularSetup mojo interface
@@ -108,8 +112,6 @@ class OSSettingsUI : public ui::MojoWebUIController {
       app_management_page_handler_factory_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OSSettingsUI);
 };
 
 }  // namespace settings

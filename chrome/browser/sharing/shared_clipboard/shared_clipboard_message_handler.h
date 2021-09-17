@@ -16,6 +16,11 @@ class SharingDeviceSource;
 class SharedClipboardMessageHandler : public SharingMessageHandler {
  public:
   explicit SharedClipboardMessageHandler(SharingDeviceSource* device_source);
+
+  SharedClipboardMessageHandler(const SharedClipboardMessageHandler&) = delete;
+  SharedClipboardMessageHandler& operator=(
+      const SharedClipboardMessageHandler&) = delete;
+
   ~SharedClipboardMessageHandler() override;
 
   // SharingMessageHandler implementation:
@@ -29,8 +34,6 @@ class SharedClipboardMessageHandler : public SharingMessageHandler {
 
  private:
   SharingDeviceSource* device_source_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardMessageHandler);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_MESSAGE_HANDLER_H_

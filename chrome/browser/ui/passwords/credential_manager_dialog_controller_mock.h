@@ -13,6 +13,12 @@ class CredentialManagerDialogControllerMock
     : public CredentialManagerDialogController {
  public:
   CredentialManagerDialogControllerMock();
+
+  CredentialManagerDialogControllerMock(
+      const CredentialManagerDialogControllerMock&) = delete;
+  CredentialManagerDialogControllerMock& operator=(
+      const CredentialManagerDialogControllerMock&) = delete;
+
   ~CredentialManagerDialogControllerMock() override;
 
   MOCK_CONST_METHOD0(GetLocalForms, const FormsVector&());
@@ -29,9 +35,6 @@ class CredentialManagerDialogControllerMock
   MOCK_METHOD0(OnAutoSigninOK, void());
   MOCK_METHOD0(OnAutoSigninTurnOff, void());
   MOCK_METHOD0(OnCloseDialog, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerDialogControllerMock);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_MOCK_H_

@@ -27,6 +27,12 @@ class MultiTabLoadingPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   MultiTabLoadingPageLoadMetricsObserver();
+
+  MultiTabLoadingPageLoadMetricsObserver(
+      const MultiTabLoadingPageLoadMetricsObserver&) = delete;
+  MultiTabLoadingPageLoadMetricsObserver& operator=(
+      const MultiTabLoadingPageLoadMetricsObserver&) = delete;
+
   ~MultiTabLoadingPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -51,8 +57,6 @@ class MultiTabLoadingPageLoadMetricsObserver
 
  private:
   int num_loading_tabs_when_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiTabLoadingPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_MULTI_TAB_LOADING_PAGE_LOAD_METRICS_OBSERVER_H_

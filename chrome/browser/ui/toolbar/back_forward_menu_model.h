@@ -40,6 +40,10 @@ class BackForwardMenuModel : public ui::MenuModel {
   enum class ModelType { kForward = 1, kBackward = 2 };
 
   BackForwardMenuModel(Browser* browser, ModelType model_type);
+
+  BackForwardMenuModel(const BackForwardMenuModel&) = delete;
+  BackForwardMenuModel& operator=(const BackForwardMenuModel&) = delete;
+
   ~BackForwardMenuModel() override;
 
   // MenuModel implementation.
@@ -193,8 +197,6 @@ class BackForwardMenuModel : public ui::MenuModel {
 
   // Used for loading favicons.
   base::CancelableTaskTracker cancelable_task_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackForwardMenuModel);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_BACK_FORWARD_MENU_MODEL_H_

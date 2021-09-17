@@ -28,6 +28,12 @@ class MediaPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  public:
   MediaPageLoadMetricsObserverTest() {}
+
+  MediaPageLoadMetricsObserverTest(const MediaPageLoadMetricsObserverTest&) =
+      delete;
+  MediaPageLoadMetricsObserverTest& operator=(
+      const MediaPageLoadMetricsObserverTest&) = delete;
+
   ~MediaPageLoadMetricsObserverTest() override = default;
 
   void ResetTest() {
@@ -87,8 +93,6 @@ class MediaPageLoadMetricsObserverTest
 
  private:
   page_load_metrics::mojom::PageLoadTiming timing_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPageLoadMetricsObserverTest);
 };
 
 TEST_F(MediaPageLoadMetricsObserverTest, MediaPlayed) {

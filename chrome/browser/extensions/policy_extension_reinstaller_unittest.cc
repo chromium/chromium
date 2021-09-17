@@ -28,6 +28,10 @@ class TestReinstallerTracker {
                                     base::Unretained(this))) {
     PolicyExtensionReinstaller::set_policy_reinstall_action_for_test(&action_);
   }
+
+  TestReinstallerTracker(const TestReinstallerTracker&) = delete;
+  TestReinstallerTracker& operator=(const TestReinstallerTracker&) = delete;
+
   ~TestReinstallerTracker() {
     PolicyExtensionReinstaller::set_policy_reinstall_action_for_test(nullptr);
   }
@@ -50,8 +54,6 @@ class TestReinstallerTracker {
   int call_count_ = 0;
   absl::optional<base::OnceClosure> saved_callback_;
   PolicyExtensionReinstaller::ReinstallCallback action_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReinstallerTracker);
 };
 
 using PolicyExtensionReinstallerUnittest = ExtensionServiceTestBase;

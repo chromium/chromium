@@ -97,6 +97,9 @@ class ScreenLockObserver : public SessionManagerClient::StubDelegate,
     SessionManagerClient::Get()->SetStubDelegate(this);
   }
 
+  ScreenLockObserver(const ScreenLockObserver&) = delete;
+  ScreenLockObserver& operator=(const ScreenLockObserver&) = delete;
+
   ~ScreenLockObserver() override {
     session_manager::SessionManager::Get()->RemoveObserver(this);
     if (SessionManagerClient::Get())
@@ -142,8 +145,6 @@ class ScreenLockObserver : public SessionManagerClient::StubDelegate,
 
  private:
   bool session_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLockObserver);
 };
 
 ScreenLockObserver* g_screen_lock_observer = nullptr;

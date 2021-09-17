@@ -52,6 +52,11 @@ class OptimizationGuideKeyedService
  public:
   explicit OptimizationGuideKeyedService(
       content::BrowserContext* browser_context);
+
+  OptimizationGuideKeyedService(const OptimizationGuideKeyedService&) = delete;
+  OptimizationGuideKeyedService& operator=(
+      const OptimizationGuideKeyedService&) = delete;
+
   ~OptimizationGuideKeyedService() override;
 
   // optimization_guide::OptimizationGuideDecider implementation:
@@ -156,8 +161,6 @@ class OptimizationGuideKeyedService
   // The tab URL provider to use for fetching information for the user's active
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideKeyedService);
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

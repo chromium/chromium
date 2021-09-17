@@ -64,6 +64,10 @@ class AppLauncherHandler
  public:
   AppLauncherHandler(extensions::ExtensionService* extension_service,
                      web_app::WebAppProvider* web_app_provider);
+
+  AppLauncherHandler(const AppLauncherHandler&) = delete;
+  AppLauncherHandler& operator=(const AppLauncherHandler&) = delete;
+
   ~AppLauncherHandler() override;
 
   void CreateWebAppInfo(const web_app::AppId& app_id,
@@ -279,8 +283,6 @@ class AppLauncherHandler
 
   // Used for passing callbacks.
   base::WeakPtrFactory<AppLauncherHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppLauncherHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_APP_LAUNCHER_HANDLER_H_

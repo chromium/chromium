@@ -64,6 +64,11 @@ void ReturnTwoPrintJobs(ash::PrintJobDatabase::GetPrintJobsCallback callback) {
 class PrintingMetricsApiUnittest : public ExtensionApiUnittest {
  public:
   PrintingMetricsApiUnittest() {}
+
+  PrintingMetricsApiUnittest(const PrintingMetricsApiUnittest&) = delete;
+  PrintingMetricsApiUnittest& operator=(const PrintingMetricsApiUnittest&) =
+      delete;
+
   ~PrintingMetricsApiUnittest() override = default;
 
   void SetUp() override {
@@ -91,9 +96,6 @@ class PrintingMetricsApiUnittest : public ExtensionApiUnittest {
     EXPECT_CALL(*print_job_history_service, GetPrintJobs(testing::_))
         .WillOnce(testing::Invoke(callback));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintingMetricsApiUnittest);
 };
 
 // Test that calling |printingMetrics.getPrintJobs()| returns no print jobs.

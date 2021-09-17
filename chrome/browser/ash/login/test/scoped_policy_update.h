@@ -21,6 +21,10 @@ class ScopedUserPolicyUpdate {
  public:
   explicit ScopedUserPolicyUpdate(policy::UserPolicyBuilder* policy_builder,
                                   base::OnceClosure callback);
+
+  ScopedUserPolicyUpdate(const ScopedUserPolicyUpdate&) = delete;
+  ScopedUserPolicyUpdate& operator=(const ScopedUserPolicyUpdate&) = delete;
+
   ~ScopedUserPolicyUpdate();
 
   // Policy payload proto - use this to set up desired policy values.
@@ -37,8 +41,6 @@ class ScopedUserPolicyUpdate {
  private:
   policy::UserPolicyBuilder* const policy_builder_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUserPolicyUpdate);
 };
 
 // Helper that is used by mixins to provide means for setting up device policy
@@ -50,6 +52,10 @@ class ScopedDevicePolicyUpdate {
  public:
   explicit ScopedDevicePolicyUpdate(policy::DevicePolicyBuilder* policy_builder,
                                     base::OnceClosure callback);
+
+  ScopedDevicePolicyUpdate(const ScopedDevicePolicyUpdate&) = delete;
+  ScopedDevicePolicyUpdate& operator=(const ScopedDevicePolicyUpdate&) = delete;
+
   ~ScopedDevicePolicyUpdate();
 
   // Policy payload proto - use this to set up desired policy values.
@@ -65,8 +71,6 @@ class ScopedDevicePolicyUpdate {
  private:
   policy::DevicePolicyBuilder* const policy_builder_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDevicePolicyUpdate);
 };
 
 }  // namespace ash

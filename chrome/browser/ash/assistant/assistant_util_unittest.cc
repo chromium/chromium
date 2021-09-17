@@ -87,6 +87,9 @@ class ScopedLogIn {
     MakeAccountAvailableAsPrimaryAccount(user_type);
   }
 
+  ScopedLogIn(const ScopedLogIn&) = delete;
+  ScopedLogIn& operator=(const ScopedLogIn&) = delete;
+
   ~ScopedLogIn() { fake_user_manager_->RemoveUserFromList(account_id_); }
 
  private:
@@ -173,8 +176,6 @@ class ScopedLogIn {
   FakeUserManagerWithLocalState* fake_user_manager_;
   signin::IdentityTestEnvironment* identity_test_env_;
   const AccountId account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLogIn);
 };
 
 }  // namespace
@@ -182,6 +183,10 @@ class ScopedLogIn {
 class ChromeAssistantUtilTest : public testing::Test {
  public:
   ChromeAssistantUtilTest() = default;
+
+  ChromeAssistantUtilTest(const ChromeAssistantUtilTest&) = delete;
+  ChromeAssistantUtilTest& operator=(const ChromeAssistantUtilTest&) = delete;
+
   ~ChromeAssistantUtilTest() override = default;
 
   void SetUp() override {
@@ -256,8 +261,6 @@ class ChromeAssistantUtilTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   // Owned by |profile_manager_|
   TestingProfile* profile_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAssistantUtilTest);
 };
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PrimaryUser) {

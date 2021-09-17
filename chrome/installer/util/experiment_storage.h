@@ -51,6 +51,9 @@ class ExperimentStorage {
   // are expected to not hold an instance across any blocking operations.
   class Lock {
    public:
+    Lock(const Lock&) = delete;
+    Lock& operator=(const Lock&) = delete;
+
     ~Lock();
 
     // Reads the participation state for the install. Returns false in case of
@@ -85,8 +88,6 @@ class ExperimentStorage {
     explicit Lock(ExperimentStorage* storage);
 
     ExperimentStorage* storage_;
-
-    DISALLOW_COPY_AND_ASSIGN(Lock);
   };
 
   ExperimentStorage();

@@ -417,6 +417,10 @@ class MTPDeviceDelegateImplLinux::MTPFileNode {
               const std::string& file_name,
               MTPFileNode* parent,
               FileIdToMTPFileNodeMap* file_id_to_node_map);
+
+  MTPFileNode(const MTPFileNode&) = delete;
+  MTPFileNode& operator=(const MTPFileNode&) = delete;
+
   ~MTPFileNode();
 
   const MTPFileNode* GetChild(const std::string& name) const;
@@ -446,8 +450,6 @@ class MTPDeviceDelegateImplLinux::MTPFileNode {
   ChildNodes children_;
   MTPFileNode* const parent_;
   FileIdToMTPFileNodeMap* file_id_to_node_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MTPFileNode);
 };
 
 MTPDeviceDelegateImplLinux::MTPFileNode::MTPFileNode(

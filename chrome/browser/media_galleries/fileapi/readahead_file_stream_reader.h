@@ -20,6 +20,10 @@ class ReadaheadFileStreamReader : public storage::FileStreamReader {
   // Takes ownership of |source|.
   explicit ReadaheadFileStreamReader(storage::FileStreamReader* source);
 
+  ReadaheadFileStreamReader(const ReadaheadFileStreamReader&) = delete;
+  ReadaheadFileStreamReader& operator=(const ReadaheadFileStreamReader&) =
+      delete;
+
   ~ReadaheadFileStreamReader() override;
 
   // FileStreamReader overrides.
@@ -57,8 +61,6 @@ class ReadaheadFileStreamReader : public storage::FileStreamReader {
   net::CompletionOnceCallback pending_read_callback_;
 
   base::WeakPtrFactory<ReadaheadFileStreamReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReadaheadFileStreamReader);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_READAHEAD_FILE_STREAM_READER_H_

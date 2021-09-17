@@ -2044,6 +2044,10 @@ class MultiBrowserObserver : public BrowserListObserver {
       : num_expected_(num_expected), event_(event) {
     BrowserList::AddObserver(this);
   }
+
+  MultiBrowserObserver(const MultiBrowserObserver&) = delete;
+  MultiBrowserObserver& operator=(const MultiBrowserObserver&) = delete;
+
   ~MultiBrowserObserver() override { BrowserList::RemoveObserver(this); }
 
   // Note that the returned pointers might no longer be valid (because the
@@ -2074,8 +2078,6 @@ class MultiBrowserObserver : public BrowserListObserver {
   Event event_;
   std::vector<Browser*> browsers_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiBrowserObserver);
 };
 
 }  // namespace

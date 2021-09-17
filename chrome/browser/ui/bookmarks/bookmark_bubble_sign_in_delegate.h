@@ -19,6 +19,11 @@ class BookmarkBubbleSignInDelegate : public BubbleSyncPromoDelegate,
                                      public BrowserListObserver {
  public:
   explicit BookmarkBubbleSignInDelegate(Browser* browser);
+
+  BookmarkBubbleSignInDelegate(const BookmarkBubbleSignInDelegate&) = delete;
+  BookmarkBubbleSignInDelegate& operator=(const BookmarkBubbleSignInDelegate&) =
+      delete;
+
   ~BookmarkBubbleSignInDelegate() override;
 
   // BubbleSyncPromoDelegate:
@@ -36,8 +41,6 @@ class BookmarkBubbleSignInDelegate : public BubbleSyncPromoDelegate,
 
   // The profile associated with |browser_|.
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBubbleSignInDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_BUBBLE_SIGN_IN_DELEGATE_H_

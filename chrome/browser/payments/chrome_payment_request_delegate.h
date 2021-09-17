@@ -28,6 +28,11 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
  public:
   explicit ChromePaymentRequestDelegate(
       content::RenderFrameHost* render_frame_host);
+
+  ChromePaymentRequestDelegate(const ChromePaymentRequestDelegate&) = delete;
+  ChromePaymentRequestDelegate& operator=(const ChromePaymentRequestDelegate&) =
+      delete;
+
   ~ChromePaymentRequestDelegate() override;
 
   // PaymentRequestDelegate:
@@ -89,8 +94,6 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   std::unique_ptr<SecurePaymentConfirmationNoCreds> spc_no_creds_dialog_;
 
   content::GlobalRenderFrameHostId frame_routing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePaymentRequestDelegate);
 };
 
 }  // namespace payments

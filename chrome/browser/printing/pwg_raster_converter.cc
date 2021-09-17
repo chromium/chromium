@@ -126,6 +126,10 @@ void PwgRasterConverterHelper::RunCallback(
 class PwgRasterConverterImpl : public PwgRasterConverter {
  public:
   PwgRasterConverterImpl();
+
+  PwgRasterConverterImpl(const PwgRasterConverterImpl&) = delete;
+  PwgRasterConverterImpl& operator=(const PwgRasterConverterImpl&) = delete;
+
   ~PwgRasterConverterImpl() override;
 
   void Start(const base::RefCountedMemory* data,
@@ -139,8 +143,6 @@ class PwgRasterConverterImpl : public PwgRasterConverter {
   // Cancelable version of PwgRasterConverter::ResultCallback.
   base::CancelableOnceCallback<void(base::ReadOnlySharedMemoryRegion)>
       cancelable_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PwgRasterConverterImpl);
 };
 
 PwgRasterConverterImpl::PwgRasterConverterImpl() = default;

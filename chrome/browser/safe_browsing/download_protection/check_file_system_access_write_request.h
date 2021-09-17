@@ -31,6 +31,12 @@ class CheckFileSystemAccessWriteRequest
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
+
+  CheckFileSystemAccessWriteRequest(const CheckFileSystemAccessWriteRequest&) =
+      delete;
+  CheckFileSystemAccessWriteRequest& operator=(
+      const CheckFileSystemAccessWriteRequest&) = delete;
+
   ~CheckFileSystemAccessWriteRequest() override;
 
  private:
@@ -61,8 +67,6 @@ class CheckFileSystemAccessWriteRequest
 
   base::WeakPtrFactory<CheckFileSystemAccessWriteRequest> weakptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckFileSystemAccessWriteRequest);
 };
 
 }  // namespace safe_browsing

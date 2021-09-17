@@ -28,13 +28,14 @@ namespace {
 class MockIdleTimeProvider : public content::IdleTimeProvider {
  public:
   MockIdleTimeProvider() = default;
+
+  MockIdleTimeProvider(const MockIdleTimeProvider&) = delete;
+  MockIdleTimeProvider& operator=(const MockIdleTimeProvider&) = delete;
+
   ~MockIdleTimeProvider() override = default;
 
   MOCK_METHOD0(CalculateIdleTime, base::TimeDelta());
   MOCK_METHOD0(CheckIdleStateIsLocked, bool());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIdleTimeProvider);
 };
 
 class IdleBrowserTest : public InProcessBrowserTest {

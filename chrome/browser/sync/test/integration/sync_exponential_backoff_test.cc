@@ -25,6 +25,11 @@ using syncer::SyncCycleSnapshot;
 class SyncExponentialBackoffTest : public SyncTest {
  public:
   SyncExponentialBackoffTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SyncExponentialBackoffTest(const SyncExponentialBackoffTest&) = delete;
+  SyncExponentialBackoffTest& operator=(const SyncExponentialBackoffTest&) =
+      delete;
+
   ~SyncExponentialBackoffTest() override {}
 
   void SetUp() override {
@@ -32,9 +37,6 @@ class SyncExponentialBackoffTest : public SyncTest {
     net::NetworkChangeNotifier::SetTestNotificationsOnly(true);
     SyncTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncExponentialBackoffTest);
 };
 
 // Helper class that checks if a sync client has successfully gone through

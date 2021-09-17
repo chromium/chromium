@@ -15,6 +15,12 @@ class MockAddressAccessoryController
     : public autofill::AddressAccessoryController {
  public:
   MockAddressAccessoryController();
+
+  MockAddressAccessoryController(const MockAddressAccessoryController&) =
+      delete;
+  MockAddressAccessoryController& operator=(
+      const MockAddressAccessoryController&) = delete;
+
   ~MockAddressAccessoryController() override;
 
   MOCK_METHOD(void,
@@ -38,9 +44,6 @@ class MockAddressAccessoryController
               (autofill::AccessoryAction toggled_action, bool enabled),
               (override));
   MOCK_METHOD(void, RefreshSuggestions, (), (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAddressAccessoryController);
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MOCK_ADDRESS_ACCESSORY_CONTROLLER_H_

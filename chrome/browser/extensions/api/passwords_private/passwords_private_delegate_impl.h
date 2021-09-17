@@ -43,6 +43,11 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
                                      public PasswordUIView {
  public:
   explicit PasswordsPrivateDelegateImpl(Profile* profile);
+
+  PasswordsPrivateDelegateImpl(const PasswordsPrivateDelegateImpl&) = delete;
+  PasswordsPrivateDelegateImpl& operator=(const PasswordsPrivateDelegateImpl&) =
+      delete;
+
   ~PasswordsPrivateDelegateImpl() override;
 
   // PasswordsPrivateDelegate implementation.
@@ -192,8 +197,6 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   content::WebContents* web_contents_;
 
   base::WeakPtrFactory<PasswordsPrivateDelegateImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordsPrivateDelegateImpl);
 };
 
 }  // namespace extensions

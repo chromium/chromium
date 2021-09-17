@@ -53,6 +53,12 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
 class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
  public:
   FullscreenInteractiveBrowserTest() {}
+
+  FullscreenInteractiveBrowserTest(const FullscreenInteractiveBrowserTest&) =
+      delete;
+  FullscreenInteractiveBrowserTest& operator=(
+      const FullscreenInteractiveBrowserTest&) = delete;
+
   ~FullscreenInteractiveBrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -63,9 +69,6 @@ class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenInteractiveBrowserTest);
 };
 
 // TODO(jonross): Investigate the flakiness on Linux and Mac. Sheriff if this

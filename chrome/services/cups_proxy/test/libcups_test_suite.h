@@ -13,14 +13,15 @@ namespace cups_proxy {
 class LibCupsTestSuite : public base::TestSuite {
  public:
   LibCupsTestSuite(int argc, char** argv);
+
+  LibCupsTestSuite(const LibCupsTestSuite&) = delete;
+  LibCupsTestSuite& operator=(const LibCupsTestSuite&) = delete;
+
   ~LibCupsTestSuite() override;
 
  protected:
   // base::TestSuite:
   void Initialize() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LibCupsTestSuite);
 };
 
 }  // namespace cups_proxy

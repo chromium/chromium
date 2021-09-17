@@ -113,6 +113,11 @@ class MockWorkingSetTrimmerPolicyChromeOS
             &MockWorkingSetTrimmerPolicyChromeOS::DefaultOnTrimArcVmProcesses));
   }
 
+  MockWorkingSetTrimmerPolicyChromeOS(
+      const MockWorkingSetTrimmerPolicyChromeOS&) = delete;
+  MockWorkingSetTrimmerPolicyChromeOS& operator=(
+      const MockWorkingSetTrimmerPolicyChromeOS&) = delete;
+
   ~MockWorkingSetTrimmerPolicyChromeOS() override {}
 
   base::MemoryPressureListener& listener() {
@@ -185,9 +190,6 @@ class MockWorkingSetTrimmerPolicyChromeOS
   void trim_arcvm_on_memory_pressure(bool enabled) {
     set_trim_arcvm_on_memory_pressure(enabled);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWorkingSetTrimmerPolicyChromeOS);
 };
 
 class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
@@ -195,6 +197,12 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
   WorkingSetTrimmerPolicyChromeOSTest()
       : GraphTestHarness(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         run_loop_(std::make_unique<base::RunLoop>()) {}
+
+  WorkingSetTrimmerPolicyChromeOSTest(
+      const WorkingSetTrimmerPolicyChromeOSTest&) = delete;
+  WorkingSetTrimmerPolicyChromeOSTest& operator=(
+      const WorkingSetTrimmerPolicyChromeOSTest&) = delete;
+
   ~WorkingSetTrimmerPolicyChromeOSTest() override {}
 
   void SetUp() override {
@@ -263,8 +271,6 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   MockWorkingSetTrimmerPolicyChromeOS* policy_ = nullptr;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerPolicyChromeOSTest);
 };
 
 // Validate that we don't walk again before the backoff period has expired.

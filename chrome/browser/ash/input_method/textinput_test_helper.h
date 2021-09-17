@@ -25,20 +25,26 @@ namespace input_method {
 class TextInputTestBase : public InProcessBrowserTest {
  public:
   TextInputTestBase();
+
+  TextInputTestBase(const TextInputTestBase&) = delete;
+  TextInputTestBase& operator=(const TextInputTestBase&) = delete;
+
   ~TextInputTestBase() override;
 
   ui::InputMethod* GetInputMethod() const;
 
  private:
   ui::ScopedTestInputMethodFactory scoped_test_input_method_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputTestBase);
 };
 
 // Provides text input test utilities.
 class TextInputTestHelper : public ui::InputMethodObserver {
  public:
   explicit TextInputTestHelper(ui::InputMethod* input_method);
+
+  TextInputTestHelper(const TextInputTestHelper&) = delete;
+  TextInputTestHelper& operator=(const TextInputTestHelper&) = delete;
+
   ~TextInputTestHelper() override;
 
   // Returns the latest status notified to ui::InputMethod
@@ -98,8 +104,6 @@ class TextInputTestHelper : public ui::InputMethodObserver {
   bool focus_state_;
   ui::TextInputType latest_text_input_type_;
   ui::InputMethod* input_method_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputTestHelper);
 };
 
 }  // namespace input_method

@@ -66,6 +66,9 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   TabManagerDelegate(const base::WeakPtr<TabManager>& tab_manager,
                      TabManagerDelegate::MemoryStat* mem_stat);
 
+  TabManagerDelegate(const TabManagerDelegate&) = delete;
+  TabManagerDelegate& operator=(const TabManagerDelegate&) = delete;
+
   ~TabManagerDelegate() override;
 
   void OnBrowserSetLastActive(Browser* browser) override;
@@ -219,8 +222,6 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
 
   // Weak pointer factory used for posting tasks to other threads.
   base::WeakPtrFactory<TabManagerDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabManagerDelegate);
 };
 
 // On ARC enabled machines, either a tab or an app could be a possible

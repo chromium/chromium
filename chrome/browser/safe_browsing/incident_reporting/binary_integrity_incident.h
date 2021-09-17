@@ -22,15 +22,16 @@ class BinaryIntegrityIncident : public Incident {
   explicit BinaryIntegrityIncident(
       std::unique_ptr<ClientIncidentReport_IncidentData_BinaryIntegrityIncident>
           binary_integrity);
+
+  BinaryIntegrityIncident(const BinaryIntegrityIncident&) = delete;
+  BinaryIntegrityIncident& operator=(const BinaryIntegrityIncident&) = delete;
+
   ~BinaryIntegrityIncident() override;
 
   // Incident methods:
   IncidentType GetType() const override;
   std::string GetKey() const override;
   uint32_t ComputeDigest() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BinaryIntegrityIncident);
 };
 
 }  // namespace safe_browsing

@@ -19,6 +19,10 @@ class ScriptContext;
 class TabsHooksDelegate : public APIBindingHooksDelegate {
  public:
   explicit TabsHooksDelegate(NativeRendererMessagingService* messaging_service);
+
+  TabsHooksDelegate(const TabsHooksDelegate&) = delete;
+  TabsHooksDelegate& operator=(const TabsHooksDelegate&) = delete;
+
   ~TabsHooksDelegate() override;
 
   // APIBindingHooksDelegate:
@@ -44,8 +48,6 @@ class TabsHooksDelegate : public APIBindingHooksDelegate {
   // The messaging service to handle connect() and sendMessage() calls.
   // Guaranteed to outlive this object.
   NativeRendererMessagingService* const messaging_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabsHooksDelegate);
 };
 
 }  // namespace extensions

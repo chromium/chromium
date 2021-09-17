@@ -57,6 +57,10 @@ class TestMHTMLArchiver : public OfflinePageMHTMLArchiver {
   TestMHTMLArchiver(const GURL& url,
                     const TestScenario test_scenario,
                     TestScopedOfflineClock* clock);
+
+  TestMHTMLArchiver(const TestMHTMLArchiver&) = delete;
+  TestMHTMLArchiver& operator=(const TestMHTMLArchiver&) = delete;
+
   ~TestMHTMLArchiver() override;
 
  private:
@@ -68,8 +72,6 @@ class TestMHTMLArchiver : public OfflinePageMHTMLArchiver {
   const TestScenario test_scenario_;
   // Not owned.
   TestScopedOfflineClock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMHTMLArchiver);
 };
 
 TestMHTMLArchiver::TestMHTMLArchiver(const GURL& url,
@@ -124,6 +126,11 @@ class OfflinePageMHTMLArchiverTest : public testing::Test {
           "OfflinePages.SavePage.ComputeDigestTime");
 
   OfflinePageMHTMLArchiverTest();
+
+  OfflinePageMHTMLArchiverTest(const OfflinePageMHTMLArchiverTest&) = delete;
+  OfflinePageMHTMLArchiverTest& operator=(const OfflinePageMHTMLArchiverTest&) =
+      delete;
+
   ~OfflinePageMHTMLArchiverTest() override;
 
   void SetUp() override;
@@ -173,8 +180,6 @@ class OfflinePageMHTMLArchiverTest : public testing::Test {
   base::OnceClosure async_operation_completed_callback_;
 
   TestScopedOfflineClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageMHTMLArchiverTest);
 };
 
 OfflinePageMHTMLArchiverTest::OfflinePageMHTMLArchiverTest()

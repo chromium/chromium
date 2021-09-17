@@ -45,6 +45,10 @@ class ServerPrintersFetcher {
                         const GURL& server_url,
                         const std::string& server_name,
                         OnPrintersFetchedCallback cb);
+
+  ServerPrintersFetcher(const ServerPrintersFetcher&) = delete;
+  ServerPrintersFetcher& operator=(const ServerPrintersFetcher&) = delete;
+
   virtual ~ServerPrintersFetcher();
 
   PrintServerQueryResult GetLastError() const;
@@ -58,8 +62,6 @@ class ServerPrintersFetcher {
   };
   // Internal object.
   std::unique_ptr<PrivateImplementation, PimDeleter> pim_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServerPrintersFetcher);
 };
 
 }  // namespace ash

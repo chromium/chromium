@@ -135,6 +135,9 @@ class MetadataDatabase {
       bool enable_on_disk_index,
       std::unique_ptr<MetadataDatabase>* metadata_database_out);
 
+  MetadataDatabase(const MetadataDatabase&) = delete;
+  MetadataDatabase& operator=(const MetadataDatabase&) = delete;
+
   ~MetadataDatabase();
 
   static void ClearDatabase(
@@ -403,8 +406,6 @@ class MetadataDatabase {
   std::unique_ptr<MetadataDatabaseIndexInterface> index_;
 
   base::WeakPtrFactory<MetadataDatabase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataDatabase);
 };
 
 }  // namespace drive_backend

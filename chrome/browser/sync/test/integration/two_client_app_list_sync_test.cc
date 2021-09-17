@@ -110,12 +110,13 @@ class RemoveDefaultAppSyncTest : public testing::WithParamInterface<bool>,
                                  public TwoClientAppListSyncTest {
  public:
   RemoveDefaultAppSyncTest() = default;
+
+  RemoveDefaultAppSyncTest(const RemoveDefaultAppSyncTest&) = delete;
+  RemoveDefaultAppSyncTest& operator=(const RemoveDefaultAppSyncTest&) = delete;
+
   ~RemoveDefaultAppSyncTest() override = default;
 
   bool MarkAppAsDefaultApp() { return GetParam(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoveDefaultAppSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, StartWithNoApps) {

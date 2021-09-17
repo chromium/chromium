@@ -26,6 +26,11 @@ struct CameraModel;
 class VR_BASE_EXPORT KeyboardDelegateForTesting : public KeyboardDelegate {
  public:
   KeyboardDelegateForTesting();
+
+  KeyboardDelegateForTesting(const KeyboardDelegateForTesting&) = delete;
+  KeyboardDelegateForTesting& operator=(const KeyboardDelegateForTesting&) =
+      delete;
+
   ~KeyboardDelegateForTesting() override;
 
   void QueueKeyboardInputForTesting(KeyboardTestInput keyboard_input);
@@ -50,8 +55,6 @@ class VR_BASE_EXPORT KeyboardDelegateForTesting : public KeyboardDelegate {
   TextInputInfo cached_keyboard_input_;
   bool keyboard_shown_ = false;
   bool pause_keyboard_input_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardDelegateForTesting);
 };
 
 }  // namespace vr

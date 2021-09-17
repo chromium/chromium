@@ -15,10 +15,11 @@ class MediaRouterInternalsUI : public content::WebUIController {
  public:
   // |web_ui| owns this object and is used to initialize the base class.
   explicit MediaRouterInternalsUI(content::WebUI* web_ui);
-  ~MediaRouterInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterInternalsUI);
+  MediaRouterInternalsUI(const MediaRouterInternalsUI&) = delete;
+  MediaRouterInternalsUI& operator=(const MediaRouterInternalsUI&) = delete;
+
+  ~MediaRouterInternalsUI() override;
 };
 
 }  // namespace media_router

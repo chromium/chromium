@@ -47,6 +47,10 @@ class AdbClientSocket {
                        const CommandCallback& callback);
 
   explicit AdbClientSocket(int port);
+
+  AdbClientSocket(const AdbClientSocket&) = delete;
+  AdbClientSocket& operator=(const AdbClientSocket&) = delete;
+
   ~AdbClientSocket();
 
  protected:
@@ -81,6 +85,5 @@ class AdbClientSocket {
   int port_;
 
   friend class AdbClientSocketTest;
-  DISALLOW_COPY_AND_ASSIGN(AdbClientSocket);
 };
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_ADB_CLIENT_SOCKET_H_

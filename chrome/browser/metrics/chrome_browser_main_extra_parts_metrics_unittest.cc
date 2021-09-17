@@ -35,6 +35,12 @@ const char kSupportsHDRHistogramName[] = "Hardware.Display.SupportsHDR";
 class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
  public:
   ChromeBrowserMainExtraPartsMetricsTest();
+
+  ChromeBrowserMainExtraPartsMetricsTest(
+      const ChromeBrowserMainExtraPartsMetricsTest&) = delete;
+  ChromeBrowserMainExtraPartsMetricsTest& operator=(
+      const ChromeBrowserMainExtraPartsMetricsTest&) = delete;
+
   ~ChromeBrowserMainExtraPartsMetricsTest() override;
 
  protected:
@@ -63,8 +69,6 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
 
   // Dummy screen required by a ChromeBrowserMainExtraPartsMetrics test target.
   display::test::TestScreen test_screen_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsMetricsTest);
 };
 
 ChromeBrowserMainExtraPartsMetricsTest::

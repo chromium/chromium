@@ -69,6 +69,10 @@ class DownloadProtectionService {
   // to call SetEnabled() to start it.  |sb_service| owns this object.
   explicit DownloadProtectionService(SafeBrowsingService* sb_service);
 
+  DownloadProtectionService(const DownloadProtectionService&) = delete;
+  DownloadProtectionService& operator=(const DownloadProtectionService&) =
+      delete;
+
   virtual ~DownloadProtectionService();
 
   // Parse a flag of blocklisted sha256 hashes to check at each download.
@@ -350,8 +354,6 @@ class DownloadProtectionService {
   DownloadReporter download_reporter_;
 
   base::WeakPtrFactory<DownloadProtectionService> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadProtectionService);
 };
 }  // namespace safe_browsing
 

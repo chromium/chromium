@@ -18,6 +18,10 @@ class SecurityHandler : public protocol::Security::Backend,
  public:
   SecurityHandler(content::WebContents* web_contents,
                   protocol::UberDispatcher* dispatcher);
+
+  SecurityHandler(const SecurityHandler&) = delete;
+  SecurityHandler& operator=(const SecurityHandler&) = delete;
+
   ~SecurityHandler() override;
 
   // Security::Backend:
@@ -30,8 +34,6 @@ class SecurityHandler : public protocol::Security::Backend,
 
   bool enabled_ = false;
   std::unique_ptr<protocol::Security::Frontend> frontend_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityHandler);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_SECURITY_HANDLER_H_

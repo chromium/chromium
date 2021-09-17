@@ -39,6 +39,9 @@ class CertificateErrorReporter {
       const uint8_t server_public_key[/* 32 */],
       const uint32_t server_public_key_version);
 
+  CertificateErrorReporter(const CertificateErrorReporter&) = delete;
+  CertificateErrorReporter& operator=(const CertificateErrorReporter&) = delete;
+
   virtual ~CertificateErrorReporter();
 
   // Sends a certificate report to the report collection server. The
@@ -75,8 +78,6 @@ class CertificateErrorReporter {
 
   const uint8_t* server_public_key_;
   const uint32_t server_public_key_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateErrorReporter);
 };
 
 #endif  // CHROME_BROWSER_SSL_CERTIFICATE_ERROR_REPORTER_H_

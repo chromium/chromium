@@ -66,6 +66,9 @@ class SyncWorker : public SyncWorkerInterface,
              extensions::ExtensionRegistry* extension_registry,
              leveldb::Env* env_override);
 
+  SyncWorker(const SyncWorker&) = delete;
+  SyncWorker& operator=(const SyncWorker&) = delete;
+
   ~SyncWorker() override;
 
   void Initialize(std::unique_ptr<SyncEngineContext> context) override;
@@ -181,7 +184,6 @@ class SyncWorker : public SyncWorkerInterface,
   base::SequenceChecker sequence_checker_;
 
   base::WeakPtrFactory<SyncWorker> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SyncWorker);
 };
 
 }  // namespace drive_backend

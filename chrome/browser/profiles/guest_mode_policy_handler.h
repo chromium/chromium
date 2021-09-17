@@ -17,13 +17,14 @@ class PolicyMap;
 class GuestModePolicyHandler : public TypeCheckingPolicyHandler {
  public:
   GuestModePolicyHandler();
+
+  GuestModePolicyHandler(const GuestModePolicyHandler&) = delete;
+  GuestModePolicyHandler& operator=(const GuestModePolicyHandler&) = delete;
+
   ~GuestModePolicyHandler() override;
 
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GuestModePolicyHandler);
 };
 
 }  // namespace policy

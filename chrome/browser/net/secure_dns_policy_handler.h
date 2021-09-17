@@ -17,6 +17,10 @@ namespace policy {
 class SecureDnsPolicyHandler : public ConfigurationPolicyHandler {
  public:
   SecureDnsPolicyHandler();
+
+  SecureDnsPolicyHandler(const SecureDnsPolicyHandler&) = delete;
+  SecureDnsPolicyHandler& operator=(const SecureDnsPolicyHandler&) = delete;
+
   ~SecureDnsPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -30,8 +34,6 @@ class SecureDnsPolicyHandler : public ConfigurationPolicyHandler {
                                      const base::StringPiece mode_str);
 
   bool ShouldSetTemplatesPref(const base::Value* templates);
-
-  DISALLOW_COPY_AND_ASSIGN(SecureDnsPolicyHandler);
 };
 
 }  // namespace policy

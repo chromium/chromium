@@ -41,14 +41,16 @@ struct SettingsOverrides : public Extension::ManifestData {
 class SettingsOverridesHandler : public ManifestHandler {
  public:
   SettingsOverridesHandler();
+
+  SettingsOverridesHandler(const SettingsOverridesHandler&) = delete;
+  SettingsOverridesHandler& operator=(const SettingsOverridesHandler&) = delete;
+
   ~SettingsOverridesHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsOverridesHandler);
 };
 
 }  // namespace extensions

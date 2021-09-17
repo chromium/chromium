@@ -23,6 +23,10 @@ namespace ash {
 class MockLoginDisplayHost : public LoginDisplayHost {
  public:
   MockLoginDisplayHost();
+
+  MockLoginDisplayHost(const MockLoginDisplayHost&) = delete;
+  MockLoginDisplayHost& operator=(const MockLoginDisplayHost&) = delete;
+
   virtual ~MockLoginDisplayHost();
 
   MOCK_METHOD(LoginDisplay*, GetLoginDisplay, (), (override));
@@ -103,9 +107,6 @@ class MockLoginDisplayHost : public LoginDisplayHost {
               (base::RepeatingClosure on_created),
               (final));
   MOCK_METHOD(WizardContext*, GetWizardContextForTesting, (), (final));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLoginDisplayHost);
 };
 
 }  // namespace ash

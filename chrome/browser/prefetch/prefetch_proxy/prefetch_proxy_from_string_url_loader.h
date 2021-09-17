@@ -39,6 +39,11 @@ class PrefetchProxyFromStringURLLoader : public network::mojom::URLLoader {
       std::unique_ptr<PrefetchedMainframeResponseContainer> response,
       const network::ResourceRequest& tentative_resource_request);
 
+  PrefetchProxyFromStringURLLoader(const PrefetchProxyFromStringURLLoader&) =
+      delete;
+  PrefetchProxyFromStringURLLoader& operator=(
+      const PrefetchProxyFromStringURLLoader&) = delete;
+
   ~PrefetchProxyFromStringURLLoader() override;
 
   // Called when the response should be served to the user. Returns a handler.
@@ -97,8 +102,6 @@ class PrefetchProxyFromStringURLLoader : public network::mojom::URLLoader {
 
   base::WeakPtrFactory<PrefetchProxyFromStringURLLoader> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchProxyFromStringURLLoader);
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_FROM_STRING_URL_LOADER_H_

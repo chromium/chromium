@@ -17,6 +17,10 @@ class AlternateNavInfoBarView : public InfoBarView {
  public:
   explicit AlternateNavInfoBarView(
       std::unique_ptr<AlternateNavInfoBarDelegate> delegate);
+
+  AlternateNavInfoBarView(const AlternateNavInfoBarView&) = delete;
+  AlternateNavInfoBarView& operator=(const AlternateNavInfoBarView&) = delete;
+
   ~AlternateNavInfoBarView() override;
 
  private:
@@ -42,8 +46,6 @@ class AlternateNavInfoBarView : public InfoBarView {
   views::Label* label_1_ = nullptr;
   views::Link* link_ = nullptr;
   views::Label* label_2_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AlternateNavInfoBarView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INFOBARS_ALTERNATE_NAV_INFOBAR_VIEW_H_

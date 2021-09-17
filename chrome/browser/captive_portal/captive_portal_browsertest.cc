@@ -199,6 +199,10 @@ bool IsLoginTab(WebContents* web_contents) {
 class MultiNavigationObserver : public content::NotificationObserver {
  public:
   MultiNavigationObserver();
+
+  MultiNavigationObserver(const MultiNavigationObserver&) = delete;
+  MultiNavigationObserver& operator=(const MultiNavigationObserver&) = delete;
+
   ~MultiNavigationObserver() override;
 
   // Waits for exactly |num_navigations_to_wait_for| LOAD_STOP
@@ -236,8 +240,6 @@ class MultiNavigationObserver : public content::NotificationObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiNavigationObserver);
 };
 
 MultiNavigationObserver::MultiNavigationObserver()
@@ -302,6 +304,11 @@ void MultiNavigationObserver::Observe(
 class FailLoadsAfterLoginObserver : public content::NotificationObserver {
  public:
   FailLoadsAfterLoginObserver();
+
+  FailLoadsAfterLoginObserver(const FailLoadsAfterLoginObserver&) = delete;
+  FailLoadsAfterLoginObserver& operator=(const FailLoadsAfterLoginObserver&) =
+      delete;
+
   ~FailLoadsAfterLoginObserver() override;
 
   void WaitForNavigations();
@@ -328,8 +335,6 @@ class FailLoadsAfterLoginObserver : public content::NotificationObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(FailLoadsAfterLoginObserver);
 };
 
 FailLoadsAfterLoginObserver::FailLoadsAfterLoginObserver()
@@ -473,6 +478,11 @@ void CaptivePortalObserver::Observe(
 class SSLInterstitialTimerObserver {
  public:
   explicit SSLInterstitialTimerObserver(content::WebContents* web_contents);
+
+  SSLInterstitialTimerObserver(const SSLInterstitialTimerObserver&) = delete;
+  SSLInterstitialTimerObserver& operator=(const SSLInterstitialTimerObserver&) =
+      delete;
+
   ~SSLInterstitialTimerObserver();
 
   // Waits until the interstitial delay timer in SSLErrorHandler is started.
@@ -485,8 +495,6 @@ class SSLInterstitialTimerObserver {
   SSLErrorHandler::TimerStartedCallback callback_;
 
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLInterstitialTimerObserver);
 };
 
 SSLInterstitialTimerObserver::SSLInterstitialTimerObserver(
@@ -561,6 +569,10 @@ class TabActivationWaiter : public TabStripModelObserver {
 class CaptivePortalBrowserTest : public InProcessBrowserTest {
  public:
   CaptivePortalBrowserTest();
+
+  CaptivePortalBrowserTest(const CaptivePortalBrowserTest&) = delete;
+  CaptivePortalBrowserTest& operator=(const CaptivePortalBrowserTest&) = delete;
+
   ~CaptivePortalBrowserTest() override;
 
   // InProcessBrowserTest:
@@ -936,9 +948,6 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
 #endif
   const BrowserList* browser_list_;
   bool intercept_bad_cert_ = true;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalBrowserTest);
 };
 
 CaptivePortalBrowserTest::CaptivePortalBrowserTest()

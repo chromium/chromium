@@ -20,6 +20,10 @@ namespace chromeos {
 class DhcpWpadUrlClient : public network::mojom::DhcpWpadUrlClient {
  public:
   DhcpWpadUrlClient() = default;
+
+  DhcpWpadUrlClient(const DhcpWpadUrlClient&) = delete;
+  DhcpWpadUrlClient& operator=(const DhcpWpadUrlClient&) = delete;
+
   ~DhcpWpadUrlClient() override {}
 
   // Gets the PAC script URL from the DefaultNetwork and calls |callback| with
@@ -39,9 +43,6 @@ class DhcpWpadUrlClient : public network::mojom::DhcpWpadUrlClient {
   // end of the test.
   static void SetPacUrlForTesting(const GURL& url);
   static void ClearPacUrlForTesting();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DhcpWpadUrlClient);
 };
 
 }  // namespace chromeos

@@ -39,6 +39,11 @@ class CandidateWindowControllerImpl
       public IMECandidateWindowHandlerInterface {
  public:
   CandidateWindowControllerImpl();
+
+  CandidateWindowControllerImpl(const CandidateWindowControllerImpl&) = delete;
+  CandidateWindowControllerImpl& operator=(
+      const CandidateWindowControllerImpl&) = delete;
+
   ~CandidateWindowControllerImpl() override;
 
   // CandidateWindowController overrides:
@@ -88,8 +93,6 @@ class CandidateWindowControllerImpl
   std::vector<ui::InfolistEntry> latest_infolist_entries_;
 
   base::ObserverList<CandidateWindowController::Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CandidateWindowControllerImpl);
 };
 
 }  // namespace input_method

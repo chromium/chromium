@@ -111,6 +111,10 @@ class RequestManager {
   RequestManager(Profile* profile,
                  const std::string& provider_id,
                  NotificationManagerInterface* notification_manager);
+
+  RequestManager(const RequestManager&) = delete;
+  RequestManager& operator=(const RequestManager&) = delete;
+
   virtual ~RequestManager();
 
   // Creates a request and returns its request id (greater than 0). Returns 0 in
@@ -187,8 +191,6 @@ class RequestManager {
   base::TimeDelta timeout_;
   base::ObserverList<Observer>::Unchecked observers_;
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RequestManager);
 };
 
 }  // namespace file_system_provider

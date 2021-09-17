@@ -28,6 +28,12 @@ class SubresourceFilterComponentInstallerPolicy
   static const int kCurrentRulesetFormat;
 
   SubresourceFilterComponentInstallerPolicy();
+
+  SubresourceFilterComponentInstallerPolicy(
+      const SubresourceFilterComponentInstallerPolicy&) = delete;
+  SubresourceFilterComponentInstallerPolicy& operator=(
+      const SubresourceFilterComponentInstallerPolicy&) = delete;
+
   ~SubresourceFilterComponentInstallerPolicy() override;
 
  private:
@@ -53,8 +59,6 @@ class SubresourceFilterComponentInstallerPolicy
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterComponentInstallerPolicy);
 };
 
 void RegisterSubresourceFilterComponent(ComponentUpdateService* cus);

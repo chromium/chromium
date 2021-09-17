@@ -16,6 +16,11 @@ namespace vr {
 class VR_EXPORT SoundsManagerAudioDelegate : public AudioDelegate {
  public:
   SoundsManagerAudioDelegate();
+
+  SoundsManagerAudioDelegate(const SoundsManagerAudioDelegate&) = delete;
+  SoundsManagerAudioDelegate& operator=(const SoundsManagerAudioDelegate&) =
+      delete;
+
   ~SoundsManagerAudioDelegate() override;
 
   // AudioDelegate implementation.
@@ -25,8 +30,6 @@ class VR_EXPORT SoundsManagerAudioDelegate : public AudioDelegate {
 
  private:
   std::unordered_map<SoundId, std::unique_ptr<std::string>> sounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoundsManagerAudioDelegate);
 };
 
 }  //  namespace vr

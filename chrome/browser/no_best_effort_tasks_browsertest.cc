@@ -43,6 +43,10 @@ class RunLoopUntilLoadedAndPainted : public content::WebContentsObserver {
   explicit RunLoopUntilLoadedAndPainted(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
 
+  RunLoopUntilLoadedAndPainted(const RunLoopUntilLoadedAndPainted&) = delete;
+  RunLoopUntilLoadedAndPainted& operator=(const RunLoopUntilLoadedAndPainted&) =
+      delete;
+
   ~RunLoopUntilLoadedAndPainted() override = default;
 
   // Runs a RunLoop on the main thread until the first non-empty frame is
@@ -72,8 +76,6 @@ class RunLoopUntilLoadedAndPainted : public content::WebContentsObserver {
   }
 
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunLoopUntilLoadedAndPainted);
 };
 
 class NoBestEffortTasksTest : public InProcessBrowserTest {

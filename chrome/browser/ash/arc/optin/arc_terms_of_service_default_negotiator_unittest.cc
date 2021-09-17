@@ -58,6 +58,12 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     : public BrowserWithTestWindowTest {
  public:
   ArcTermsOfServiceDefaultNegotiatorTest() = default;
+
+  ArcTermsOfServiceDefaultNegotiatorTest(
+      const ArcTermsOfServiceDefaultNegotiatorTest&) = delete;
+  ArcTermsOfServiceDefaultNegotiatorTest& operator=(
+      const ArcTermsOfServiceDefaultNegotiatorTest&) = delete;
+
   ~ArcTermsOfServiceDefaultNegotiatorTest() override = default;
 
   void SetUp() override {
@@ -115,8 +121,6 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<FakeArcSupport> fake_arc_support_;
   std::unique_ptr<ArcTermsOfServiceNegotiator> negotiator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceDefaultNegotiatorTest);
 };
 
 namespace {

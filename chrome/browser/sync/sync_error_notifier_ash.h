@@ -18,6 +18,10 @@ class SyncErrorNotifier : public syncer::SyncServiceObserver,
                           public KeyedService {
  public:
   SyncErrorNotifier(syncer::SyncService* sync_service, Profile* profile);
+
+  SyncErrorNotifier(const SyncErrorNotifier&) = delete;
+  SyncErrorNotifier& operator=(const SyncErrorNotifier&) = delete;
+
   ~SyncErrorNotifier() override;
 
   // KeyedService:
@@ -40,8 +44,6 @@ class SyncErrorNotifier : public syncer::SyncServiceObserver,
 
   // Used to keep track of the message center notification.
   std::string notification_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorNotifier);
 };
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_ERROR_NOTIFIER_ASH_H_

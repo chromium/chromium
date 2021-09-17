@@ -102,6 +102,12 @@ class WaitableDownloadLoggerObserver : public download::Logger::Observer {
       base::OnceCallback<void(const std::string& guid)>;
 
   WaitableDownloadLoggerObserver() = default;
+
+  WaitableDownloadLoggerObserver(const WaitableDownloadLoggerObserver&) =
+      delete;
+  WaitableDownloadLoggerObserver& operator=(
+      const WaitableDownloadLoggerObserver&) = delete;
+
   ~WaitableDownloadLoggerObserver() override = default;
 
   // Sets the |callback| to be invoked when a download has been accepted.
@@ -129,8 +135,6 @@ class WaitableDownloadLoggerObserver : public download::Logger::Observer {
 
  private:
   DownloadAcceptedCallback download_accepted_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableDownloadLoggerObserver);
 };
 
 // Observes the offline item collection's content provider and then invokes the
@@ -145,6 +149,12 @@ class OfflineContentProviderObserver final
       base::OnceCallback<void(const OfflineItem&)>;
 
   OfflineContentProviderObserver() = default;
+
+  OfflineContentProviderObserver(const OfflineContentProviderObserver&) =
+      delete;
+  OfflineContentProviderObserver& operator=(
+      const OfflineContentProviderObserver&) = delete;
+
   ~OfflineContentProviderObserver() final = default;
 
   void set_items_added_callback(ItemsAddedCallback callback) {
@@ -224,8 +234,6 @@ class OfflineContentProviderObserver final
   bool resume_ = false;
 
   OfflineItem latest_item_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineContentProviderObserver);
 };
 
 }  // namespace
@@ -235,6 +243,11 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   BackgroundFetchBrowserTest()
       : offline_content_provider_observer_(
             std::make_unique<OfflineContentProviderObserver>()) {}
+
+  BackgroundFetchBrowserTest(const BackgroundFetchBrowserTest&) = delete;
+  BackgroundFetchBrowserTest& operator=(const BackgroundFetchBrowserTest&) =
+      delete;
+
   ~BackgroundFetchBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -480,8 +493,6 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
   Browser* active_browser_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {

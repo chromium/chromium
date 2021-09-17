@@ -36,6 +36,12 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
   ExtensionServiceTestWithInstall();
   explicit ExtensionServiceTestWithInstall(
       std::unique_ptr<content::BrowserTaskEnvironment> task_environment);
+
+  ExtensionServiceTestWithInstall(const ExtensionServiceTestWithInstall&) =
+      delete;
+  ExtensionServiceTestWithInstall& operator=(
+      const ExtensionServiceTestWithInstall&) = delete;
+
   ~ExtensionServiceTestWithInstall() override;
 
  protected:
@@ -153,8 +159,6 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionServiceTestWithInstall);
 };
 
 }  // namespace extensions

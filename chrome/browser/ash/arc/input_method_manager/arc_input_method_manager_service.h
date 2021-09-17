@@ -57,6 +57,11 @@ class ArcInputMethodManagerService
 
   ArcInputMethodManagerService(content::BrowserContext* context,
                                ArcBridgeService* bridge_service);
+
+  ArcInputMethodManagerService(const ArcInputMethodManagerService&) = delete;
+  ArcInputMethodManagerService& operator=(const ArcInputMethodManagerService&) =
+      delete;
+
   ~ArcInputMethodManagerService() override;
 
   void SetInputMethodManagerBridgeForTesting(
@@ -164,8 +169,6 @@ class ArcInputMethodManagerService
   base::CallbackListSubscription accessibility_status_subscription_;
 
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcInputMethodManagerService);
 };
 
 }  // namespace arc

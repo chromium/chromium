@@ -25,6 +25,10 @@ class AttestationPolicyObserver {
   explicit AttestationPolicyObserver(
       MachineCertificateUploader* certificate_uploader);
 
+  AttestationPolicyObserver(const AttestationPolicyObserver&) = delete;
+  AttestationPolicyObserver& operator=(const AttestationPolicyObserver&) =
+      delete;
+
   ~AttestationPolicyObserver();
 
  private:
@@ -38,8 +42,6 @@ class AttestationPolicyObserver {
   MachineCertificateUploader* certificate_uploader_;
 
   base::CallbackListSubscription attestation_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(AttestationPolicyObserver);
 };
 
 }  // namespace attestation

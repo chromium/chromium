@@ -60,6 +60,10 @@ constexpr char kTabUnderAction[] = "Tab.TabUnderAction";
 class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   PopupOpenerTabHelperTest() : ChromeRenderViewHostTestHarness() {}
+
+  PopupOpenerTabHelperTest(const PopupOpenerTabHelperTest&) = delete;
+  PopupOpenerTabHelperTest& operator=(const PopupOpenerTabHelperTest&) = delete;
+
   ~PopupOpenerTabHelperTest() override {}
 
   void SetUp() override {
@@ -124,8 +128,6 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
   base::SimpleTestTickClock raw_clock_;
 
   std::vector<std::unique_ptr<content::WebContents>> popups_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupOpenerTabHelperTest);
 };
 
 TEST_F(PopupOpenerTabHelperTest, LogVisibleTime) {
@@ -407,6 +409,10 @@ class BlockTabUnderTest : public PopupOpenerTabHelperTest {
     scoped_feature_list_->InitAndEnableFeature(
         TabUnderNavigationThrottle::kBlockTabUnders);
   }
+
+  BlockTabUnderTest(const BlockTabUnderTest&) = delete;
+  BlockTabUnderTest& operator=(const BlockTabUnderTest&) = delete;
+
   ~BlockTabUnderTest() override = default;
 
   infobars::InfoBarAndroid* GetInfoBar() {
@@ -445,8 +451,6 @@ class BlockTabUnderTest : public PopupOpenerTabHelperTest {
 
  private:
   std::vector<GURL> blocked_urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockTabUnderTest);
 };
 
 TEST_F(BlockTabUnderTest, SimpleTabUnder_IsBlocked) {

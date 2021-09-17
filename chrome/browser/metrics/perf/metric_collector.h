@@ -37,6 +37,9 @@ class MetricCollector {
   MetricCollector(const std::string& name,
                   const CollectionParams& collection_params);
 
+  MetricCollector(const MetricCollector&) = delete;
+  MetricCollector& operator=(const MetricCollector&) = delete;
+
   virtual ~MetricCollector();
 
   virtual const char* ToolName() const = 0;
@@ -186,8 +189,6 @@ class MetricCollector {
 
   // A callback to be Run on each successfully collected profile.
   ProfileDoneCallback profile_done_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricCollector);
 };
 
 }  // namespace internal

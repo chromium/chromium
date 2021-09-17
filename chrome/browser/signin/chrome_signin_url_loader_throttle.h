@@ -27,6 +27,9 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle,
       std::unique_ptr<HeaderModificationDelegate> delegate,
       content::WebContents::Getter web_contents_getter);
 
+  URLLoaderThrottle(const URLLoaderThrottle&) = delete;
+  URLLoaderThrottle& operator=(const URLLoaderThrottle&) = delete;
+
   ~URLLoaderThrottle() override;
 
   // blink::URLLoaderThrottle
@@ -63,8 +66,6 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle,
   bool request_is_fetch_like_api_ = false;
 
   base::OnceClosure destruction_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderThrottle);
 };
 
 }  // namespace signin

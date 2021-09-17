@@ -17,6 +17,10 @@ class TestExtensionEventObserver
   explicit TestExtensionEventObserver(
       extensions::TestEventRouter* event_router);
 
+  TestExtensionEventObserver(const TestExtensionEventObserver&) = delete;
+  TestExtensionEventObserver& operator=(const TestExtensionEventObserver&) =
+      delete;
+
   ~TestExtensionEventObserver() override = default;
 
   // Removes |event_args_| from |*this| and returns them.
@@ -36,8 +40,6 @@ class TestExtensionEventObserver
   // The arguments passed for the last observed event.
   base::Value latest_event_args_;
   std::string latest_event_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionEventObserver);
 };
 
 std::unique_ptr<KeyedService> BuildSafeBrowsingPrivateEventRouter(

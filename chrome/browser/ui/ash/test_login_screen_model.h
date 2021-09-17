@@ -11,6 +11,10 @@
 class TestLoginScreenModel : public ash::LoginScreenModel {
  public:
   TestLoginScreenModel();
+
+  TestLoginScreenModel(const TestLoginScreenModel&) = delete;
+  TestLoginScreenModel& operator=(const TestLoginScreenModel&) = delete;
+
   ~TestLoginScreenModel() override;
 
   // ash::LoginScreenModel:
@@ -59,9 +63,6 @@ class TestLoginScreenModel : public ash::LoginScreenModel {
       bool show_full_management_disclosure) override;
   void HandleFocusLeavingLockScreenApps(bool reverse) override;
   void NotifyOobeDialogState(ash::OobeDialogState state) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLoginScreenModel);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_MODEL_H_

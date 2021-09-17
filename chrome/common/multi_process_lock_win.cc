@@ -15,6 +15,9 @@ class MultiProcessLockWin : public MultiProcessLock {
  public:
   explicit MultiProcessLockWin(const std::string& name) : name_(name) { }
 
+  MultiProcessLockWin(const MultiProcessLockWin&) = delete;
+  MultiProcessLockWin& operator=(const MultiProcessLockWin&) = delete;
+
   ~MultiProcessLockWin() override {
     if (event_.Get() != NULL) {
       Unlock();
@@ -54,7 +57,6 @@ class MultiProcessLockWin : public MultiProcessLock {
  private:
   std::string name_;
   base::win::ScopedHandle event_;
-  DISALLOW_COPY_AND_ASSIGN(MultiProcessLockWin);
 };
 
 std::unique_ptr<MultiProcessLock> MultiProcessLock::Create(

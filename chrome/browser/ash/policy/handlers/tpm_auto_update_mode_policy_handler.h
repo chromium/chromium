@@ -53,6 +53,12 @@ class TPMAutoUpdateModePolicyHandler {
 
   TPMAutoUpdateModePolicyHandler(ash::CrosSettings* cros_settings,
                                  PrefService* local_state);
+
+  TPMAutoUpdateModePolicyHandler(const TPMAutoUpdateModePolicyHandler&) =
+      delete;
+  TPMAutoUpdateModePolicyHandler& operator=(
+      const TPMAutoUpdateModePolicyHandler&) = delete;
+
   ~TPMAutoUpdateModePolicyHandler();
 
   // Sets a UpdateCheckerCallback for testing.
@@ -108,8 +114,6 @@ class TPMAutoUpdateModePolicyHandler {
   ShowNotificationCallback show_notification_callback_;
 
   base::WeakPtrFactory<TPMAutoUpdateModePolicyHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TPMAutoUpdateModePolicyHandler);
 };
 
 }  // namespace policy

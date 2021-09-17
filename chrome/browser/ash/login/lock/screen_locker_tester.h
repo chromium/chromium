@@ -22,6 +22,10 @@ namespace ash {
 class ScreenLockerTester : public session_manager::SessionManagerObserver {
  public:
   ScreenLockerTester();
+
+  ScreenLockerTester(const ScreenLockerTester&) = delete;
+  ScreenLockerTester& operator=(const ScreenLockerTester&) = delete;
+
   ~ScreenLockerTester() override;
 
   // Synchronously lock the device.
@@ -60,8 +64,6 @@ class ScreenLockerTester : public session_manager::SessionManagerObserver {
 
   base::OnceClosure on_lock_callback_;
   base::OnceClosure on_unlock_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLockerTester);
 };
 
 }  // namespace ash

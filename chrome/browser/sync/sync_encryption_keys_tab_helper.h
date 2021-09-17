@@ -33,6 +33,10 @@ class SyncEncryptionKeysTabHelper
           chrome::mojom::SyncEncryptionKeysExtension> receiver,
       content::RenderFrameHost* rfh);
 
+  SyncEncryptionKeysTabHelper(const SyncEncryptionKeysTabHelper&) = delete;
+  SyncEncryptionKeysTabHelper& operator=(const SyncEncryptionKeysTabHelper&) =
+      delete;
+
   ~SyncEncryptionKeysTabHelper() override;
 
   // content::WebContentsObserver:
@@ -56,8 +60,6 @@ class SyncEncryptionKeysTabHelper
   std::unique_ptr<EncryptionKeyApi> encryption_key_api_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEncryptionKeysTabHelper);
 };
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_ENCRYPTION_KEYS_TAB_HELPER_H_

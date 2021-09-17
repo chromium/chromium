@@ -30,12 +30,15 @@ class SingleClientSendTabToSelfSyncTest : public SyncTest {
   SingleClientSendTabToSelfSyncTest() : SyncTest(SINGLE_CLIENT) {
   }
 
+  SingleClientSendTabToSelfSyncTest(const SingleClientSendTabToSelfSyncTest&) =
+      delete;
+  SingleClientSendTabToSelfSyncTest& operator=(
+      const SingleClientSendTabToSelfSyncTest&) = delete;
+
   ~SingleClientSendTabToSelfSyncTest() override {}
 
  private:
   base::test::ScopedFeatureList scoped_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientSendTabToSelfSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,

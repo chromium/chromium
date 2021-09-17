@@ -28,6 +28,10 @@ class DeltaFileEntryWithData;
 class DeltaFileBackend : public base::trace_event::MemoryDumpProvider {
  public:
   explicit DeltaFileBackend(const base::FilePath& dir);
+
+  DeltaFileBackend(const DeltaFileBackend&) = delete;
+  DeltaFileBackend& operator=(const DeltaFileBackend&) = delete;
+
   ~DeltaFileBackend() override;
 
   // Adds new addition entry to delta file
@@ -66,8 +70,6 @@ class DeltaFileBackend : public base::trace_event::MemoryDumpProvider {
   base::FilePath path_;
   std::unique_ptr<leveldb::DB> db_;
   std::unique_ptr<DigitsComparator> leveldb_cmp_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaFileBackend);
 };
 
 }  // namespace history_report

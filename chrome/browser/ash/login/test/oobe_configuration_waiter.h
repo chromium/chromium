@@ -17,6 +17,9 @@ class OOBEConfigurationWaiter : public OobeConfiguration::Observer {
  public:
   OOBEConfigurationWaiter();
 
+  OOBEConfigurationWaiter(const OOBEConfigurationWaiter&) = delete;
+  OOBEConfigurationWaiter& operator=(const OOBEConfigurationWaiter&) = delete;
+
   ~OOBEConfigurationWaiter() override;
 
   // OobeConfiguration::Observer override:
@@ -27,8 +30,6 @@ class OOBEConfigurationWaiter : public OobeConfiguration::Observer {
 
  private:
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(OOBEConfigurationWaiter);
 };
 
 }  // namespace ash

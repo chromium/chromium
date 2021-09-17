@@ -370,6 +370,11 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
          features::kNavigationPredictorPreconnectHoldback},
         {});
   }
+
+  LoadingPredictorBrowserTest(const LoadingPredictorBrowserTest&) = delete;
+  LoadingPredictorBrowserTest& operator=(const LoadingPredictorBrowserTest&) =
+      delete;
+
   ~LoadingPredictorBrowserTest() override {}
 
   void SetUp() override {
@@ -531,8 +536,6 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<TestPreconnectManagerObserver> preconnect_manager_observer_;
   std::unique_ptr<TestPrefetchManagerObserver> prefetch_manager_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadingPredictorBrowserTest);
 };
 
 // Tests that a navigation triggers the LoadingPredictor.

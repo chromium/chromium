@@ -13,13 +13,15 @@ namespace system_logs {
 class TouchLogSource : public SystemLogsSource {
  public:
   TouchLogSource() : SystemLogsSource("Touch") {}
+
+  TouchLogSource(const TouchLogSource&) = delete;
+  TouchLogSource& operator=(const TouchLogSource&) = delete;
+
   ~TouchLogSource() override {}
 
  private:
   // Overridden from SystemLogsSource:
   void Fetch(SysLogsSourceCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchLogSource);
 };
 
 }  // namespace system_logs

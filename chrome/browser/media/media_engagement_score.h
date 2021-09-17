@@ -41,6 +41,10 @@ class MediaEngagementScore final {
   MediaEngagementScore(base::Clock* clock,
                        const url::Origin& origin,
                        HostContentSettingsMap* settings);
+
+  MediaEngagementScore(const MediaEngagementScore&) = delete;
+  MediaEngagementScore& operator=(const MediaEngagementScore&) = delete;
+
   ~MediaEngagementScore();
 
   MediaEngagementScore(MediaEngagementScore&&);
@@ -138,8 +142,6 @@ class MediaEngagementScore final {
   // The content settings map that will persist the score,
   // has a lifetime of the Profile like the service which owns |this|.
   HostContentSettingsMap* settings_map_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementScore);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SCORE_H_

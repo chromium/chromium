@@ -39,6 +39,10 @@ class WriteFile : public Operation {
             int64_t offset,
             int length,
             storage::AsyncFileUtil::StatusCallback callback);
+
+  WriteFile(const WriteFile&) = delete;
+  WriteFile& operator=(const WriteFile&) = delete;
+
   ~WriteFile() override;
 
   // Operation overrides.
@@ -56,8 +60,6 @@ class WriteFile : public Operation {
   int64_t offset_;
   int length_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(WriteFile);
 };
 
 }  // namespace operations

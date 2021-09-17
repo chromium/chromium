@@ -160,6 +160,9 @@ class FlocIdProviderUnitTest : public testing::Test {
   FlocIdProviderUnitTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  FlocIdProviderUnitTest(const FlocIdProviderUnitTest&) = delete;
+  FlocIdProviderUnitTest& operator=(const FlocIdProviderUnitTest&) = delete;
+
   ~FlocIdProviderUnitTest() override = default;
 
   void SetUp() override {
@@ -306,8 +309,6 @@ class FlocIdProviderUnitTest : public testing::Test {
   MockFlocSortingLshService* sorting_lsh_service_;
 
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlocIdProviderUnitTest);
 };
 
 TEST_F(FlocIdProviderUnitTest, DefaultSetup_ComputationState) {

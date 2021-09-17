@@ -34,6 +34,12 @@ class SubresourceFilterInterceptingBrowserTest
   SubresourceFilterInterceptingBrowserTest()
       : safe_browsing_test_server_(
             std::make_unique<net::test_server::EmbeddedTestServer>()) {}
+
+  SubresourceFilterInterceptingBrowserTest(
+      const SubresourceFilterInterceptingBrowserTest&) = delete;
+  SubresourceFilterInterceptingBrowserTest& operator=(
+      const SubresourceFilterInterceptingBrowserTest&) = delete;
+
   ~SubresourceFilterInterceptingBrowserTest() override {}
 
   net::test_server::EmbeddedTestServer* safe_browsing_test_server() {
@@ -107,7 +113,6 @@ class SubresourceFilterInterceptingBrowserTest
   // parent class' server.
   std::unique_ptr<net::test_server::EmbeddedTestServer>
       safe_browsing_test_server_;
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterInterceptingBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,

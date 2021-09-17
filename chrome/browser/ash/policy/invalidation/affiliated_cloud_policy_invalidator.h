@@ -44,6 +44,12 @@ class AffiliatedCloudPolicyInvalidator
       CloudPolicyCore* core,
       AffiliatedInvalidationServiceProvider* invalidation_service_provider,
       const std::string& device_local_account_id);
+
+  AffiliatedCloudPolicyInvalidator(const AffiliatedCloudPolicyInvalidator&) =
+      delete;
+  AffiliatedCloudPolicyInvalidator& operator=(
+      const AffiliatedCloudPolicyInvalidator&) = delete;
+
   ~AffiliatedCloudPolicyInvalidator() override;
 
   // AffiliatedInvalidationServiceProvider::Consumer:
@@ -72,8 +78,6 @@ class AffiliatedCloudPolicyInvalidator
   // The current |CloudPolicyInvalidator|. nullptr if no connected invalidation
   // service is available.
   std::unique_ptr<CloudPolicyInvalidator> invalidator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliatedCloudPolicyInvalidator);
 };
 
 }  // namespace policy

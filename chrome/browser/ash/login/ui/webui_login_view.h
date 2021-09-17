@@ -68,6 +68,10 @@ class WebUILoginView : public views::View,
 
   WebUILoginView(const WebViewSettings& settings,
                  base::WeakPtr<LoginDisplayHostWebUI> controller);
+
+  WebUILoginView(const WebUILoginView&) = delete;
+  WebUILoginView& operator=(const WebUILoginView&) = delete;
+
   ~WebUILoginView() override;
 
   // Initializes the webui login view.
@@ -213,8 +217,6 @@ class WebUILoginView : public views::View,
 
   base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
       observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUILoginView);
 };
 
 }  // namespace ash

@@ -116,6 +116,10 @@ scoped_refptr<const extensions::Extension> CreateTestNoteTakingApp(
 class TestFocusCyclerDelegate : public lock_screen_apps::FocusCyclerDelegate {
  public:
   TestFocusCyclerDelegate() = default;
+
+  TestFocusCyclerDelegate(const TestFocusCyclerDelegate&) = delete;
+  TestFocusCyclerDelegate& operator=(const TestFocusCyclerDelegate&) = delete;
+
   ~TestFocusCyclerDelegate() override = default;
 
   void RegisterLockScreenAppFocusHandler(
@@ -147,8 +151,6 @@ class TestFocusCyclerDelegate : public lock_screen_apps::FocusCyclerDelegate {
  private:
   bool lock_screen_app_focused_ = false;
   LockScreenAppFocusCallback focus_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusCyclerDelegate);
 };
 
 class TestAppManager : public lock_screen_apps::AppManager {
@@ -164,6 +166,9 @@ class TestAppManager : public lock_screen_apps::AppManager {
       lock_screen_apps::LockScreenProfileCreator* lock_screen_profile_creator)
       : expected_primary_profile_(expected_primary_profile),
         lock_screen_profile_creator_(lock_screen_profile_creator) {}
+
+  TestAppManager(const TestAppManager&) = delete;
+  TestAppManager& operator=(const TestAppManager&) = delete;
 
   ~TestAppManager() override = default;
 
@@ -244,13 +249,15 @@ class TestAppManager : public lock_screen_apps::AppManager {
   std::string app_id_;
   // Whether app launch should succeed.
   bool app_launchable_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppManager);
 };
 
 class TestStateObserver : public lock_screen_apps::StateObserver {
  public:
   TestStateObserver() = default;
+
+  TestStateObserver(const TestStateObserver&) = delete;
+  TestStateObserver& operator=(const TestStateObserver&) = delete;
+
   ~TestStateObserver() override = default;
 
   void OnLockScreenNoteStateChanged(TrayActionState state) override {
@@ -265,13 +272,14 @@ class TestStateObserver : public lock_screen_apps::StateObserver {
 
  private:
   std::vector<TrayActionState> observed_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStateObserver);
 };
 
 class TestTrayAction : public ash::mojom::TrayAction {
  public:
   TestTrayAction() = default;
+
+  TestTrayAction(const TestTrayAction&) = delete;
+  TestTrayAction& operator=(const TestTrayAction&) = delete;
 
   ~TestTrayAction() override = default;
 
@@ -307,8 +315,6 @@ class TestTrayAction : public ash::mojom::TrayAction {
   mojo::Remote<ash::mojom::TrayActionClient> client_;
 
   std::vector<TrayActionState> observed_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTrayAction);
 };
 
 // Wrapper around AppWindow used to manage the app window lifetime, and provide
@@ -320,6 +326,9 @@ class TestAppWindow : public content::WebContentsObserver {
             content::WebContentsTester::CreateTestWebContents(profile,
                                                               nullptr)),
         window_(window) {}
+
+  TestAppWindow(const TestAppWindow&) = delete;
+  TestAppWindow& operator=(const TestAppWindow&) = delete;
 
   ~TestAppWindow() override {
     // Make sure the window is initialized, so |window_| does not get leaked.
@@ -371,8 +380,6 @@ class TestAppWindow : public content::WebContentsObserver {
   extensions::AppWindow* window_;
   bool closed_ = false;
   bool initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppWindow);
 };
 
 class LockScreenAppStateTest : public BrowserWithTestWindowTest {
@@ -380,6 +387,9 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
   LockScreenAppStateTest()
       : fake_user_manager_(new ash::FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+
+  LockScreenAppStateTest(const LockScreenAppStateTest&) = delete;
+  LockScreenAppStateTest& operator=(const LockScreenAppStateTest&) = delete;
 
   ~LockScreenAppStateTest() override = default;
 
@@ -697,33 +707,37 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
   scoped_refptr<const extensions::Extension> app_;
 
   base::SimpleTestTickClock tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAppStateTest);
 };
 
 class LockScreenAppStateKioskUserTest : public LockScreenAppStateTest {
  public:
   LockScreenAppStateKioskUserTest() {}
+
+  LockScreenAppStateKioskUserTest(const LockScreenAppStateKioskUserTest&) =
+      delete;
+  LockScreenAppStateKioskUserTest& operator=(
+      const LockScreenAppStateKioskUserTest&) = delete;
+
   ~LockScreenAppStateKioskUserTest() override {}
 
   void AddTestUser(const AccountId& account_id) override {
     fake_user_manager()->AddKioskAppUser(account_id);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAppStateKioskUserTest);
 };
 
 // Tests that initially do not have stylus tools set as enabled.
 class LockScreenAppStateNoStylusInputTest : public LockScreenAppStateTest {
  public:
   LockScreenAppStateNoStylusInputTest() = default;
+
+  LockScreenAppStateNoStylusInputTest(
+      const LockScreenAppStateNoStylusInputTest&) = delete;
+  LockScreenAppStateNoStylusInputTest& operator=(
+      const LockScreenAppStateNoStylusInputTest&) = delete;
+
   ~LockScreenAppStateNoStylusInputTest() override = default;
 
   void SetUpStylusAvailability() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAppStateNoStylusInputTest);
 };
 
 }  // namespace

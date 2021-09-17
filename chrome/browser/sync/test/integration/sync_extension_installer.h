@@ -26,6 +26,10 @@ class Profile;
 class SyncedExtensionInstaller : public content::NotificationObserver {
  public:
   explicit SyncedExtensionInstaller(Profile* profile);
+
+  SyncedExtensionInstaller(const SyncedExtensionInstaller&) = delete;
+  SyncedExtensionInstaller& operator=(const SyncedExtensionInstaller&) = delete;
+
   ~SyncedExtensionInstaller() override;
 
   // content::NotificationObserver implementation.
@@ -40,8 +44,6 @@ class SyncedExtensionInstaller : public content::NotificationObserver {
   content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<SyncedExtensionInstaller> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedExtensionInstaller);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_EXTENSION_INSTALLER_H_

@@ -28,6 +28,10 @@ class SyncTaskAdapter : public ExclusiveTask {
  public:
   explicit SyncTaskAdapter(SyncTaskManager::Task task)
       : task_(std::move(task)) {}
+
+  SyncTaskAdapter(const SyncTaskAdapter&) = delete;
+  SyncTaskAdapter& operator=(const SyncTaskAdapter&) = delete;
+
   ~SyncTaskAdapter() override = default;
 
   void RunExclusive(SyncStatusCallback callback) override {
@@ -36,8 +40,6 @@ class SyncTaskAdapter : public ExclusiveTask {
 
  private:
   SyncTaskManager::Task task_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncTaskAdapter);
 };
 
 }  // namespace

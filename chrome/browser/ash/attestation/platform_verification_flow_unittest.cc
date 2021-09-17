@@ -47,6 +47,9 @@ class FakeDelegate : public PlatformVerificationFlow::Delegate {
  public:
   FakeDelegate() : is_in_supported_mode_(true) {}
 
+  FakeDelegate(const FakeDelegate&) = delete;
+  FakeDelegate& operator=(const FakeDelegate&) = delete;
+
   ~FakeDelegate() override {}
 
   bool IsInSupportedMode() override { return is_in_supported_mode_; }
@@ -57,8 +60,6 @@ class FakeDelegate : public PlatformVerificationFlow::Delegate {
 
  private:
   bool is_in_supported_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDelegate);
 };
 
 }  // namespace

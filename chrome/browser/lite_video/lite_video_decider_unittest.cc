@@ -86,6 +86,11 @@ class TestOptimizationGuideDecider
     : public optimization_guide::TestOptimizationGuideDecider {
  public:
   TestOptimizationGuideDecider() = default;
+
+  TestOptimizationGuideDecider(const TestOptimizationGuideDecider&) = delete;
+  TestOptimizationGuideDecider& operator=(const TestOptimizationGuideDecider&) =
+      delete;
+
   ~TestOptimizationGuideDecider() override = default;
 
   void RegisterOptimizationTypes(
@@ -140,8 +145,6 @@ class TestOptimizationGuideDecider
            std::tuple<optimization_guide::OptimizationGuideDecision,
                       optimization_guide::OptimizationMetadata>>
       responses_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOptimizationGuideDecider);
 };
 
 class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {

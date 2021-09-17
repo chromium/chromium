@@ -138,6 +138,12 @@ class ChromeShelfControllerUserSwitchObserver
     DCHECK(user_manager::UserManager::IsInitialized());
     user_manager::UserManager::Get()->AddSessionStateObserver(this);
   }
+
+  ChromeShelfControllerUserSwitchObserver(
+      const ChromeShelfControllerUserSwitchObserver&) = delete;
+  ChromeShelfControllerUserSwitchObserver& operator=(
+      const ChromeShelfControllerUserSwitchObserver&) = delete;
+
   ~ChromeShelfControllerUserSwitchObserver() override {
     user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
   }
@@ -158,8 +164,6 @@ class ChromeShelfControllerUserSwitchObserver
   // Users which were just added to the system, but which profiles were not yet
   // (fully) loaded.
   std::set<std::string> added_user_ids_waiting_for_profiles_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeShelfControllerUserSwitchObserver);
 };
 
 void ChromeShelfControllerUserSwitchObserver::UserAddedToSession(

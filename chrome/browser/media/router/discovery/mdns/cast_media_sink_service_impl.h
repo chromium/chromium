@@ -63,6 +63,10 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
                            DiscoveryNetworkMonitor* network_monitor,
                            MediaSinkServiceBase* dial_media_sink_service,
                            bool allow_all_ips);
+
+  CastMediaSinkServiceImpl(const CastMediaSinkServiceImpl&) = delete;
+  CastMediaSinkServiceImpl& operator=(const CastMediaSinkServiceImpl&) = delete;
+
   ~CastMediaSinkServiceImpl() override;
 
   // Returns the SequencedTaskRunner that should be used to invoke methods on
@@ -342,8 +346,6 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMediaSinkServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaSinkServiceImpl);
 };
 
 }  // namespace media_router

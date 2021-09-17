@@ -14,6 +14,11 @@ namespace chrome_cleaner {
 class ScopedDisableWow64Redirection {
  public:
   ScopedDisableWow64Redirection();
+
+  ScopedDisableWow64Redirection(const ScopedDisableWow64Redirection&) = delete;
+  ScopedDisableWow64Redirection& operator=(
+      const ScopedDisableWow64Redirection&) = delete;
+
   ~ScopedDisableWow64Redirection();
 
   bool is_active() const { return active_; }
@@ -21,8 +26,6 @@ class ScopedDisableWow64Redirection {
  private:
   bool active_;
   void* previous_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDisableWow64Redirection);
 };
 
 }  // namespace chrome_cleaner

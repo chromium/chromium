@@ -94,6 +94,10 @@ class UserActivityManager : public ui::UserActivityObserver,
       session_manager::SessionManager* session_manager,
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
       const ChromeUserManager* user_manager);
+
+  UserActivityManager(const UserActivityManager&) = delete;
+  UserActivityManager& operator=(const UserActivityManager&) = delete;
+
   ~UserActivityManager() override;
 
   // ui::UserActivityObserver overrides.
@@ -290,8 +294,6 @@ class UserActivityManager : public ui::UserActivityObserver,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<UserActivityManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserActivityManager);
 };
 
 }  // namespace ml

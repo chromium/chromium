@@ -107,6 +107,10 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
   // Creates a device settings service instance. This is meant for unit tests,
   // production code uses the singleton returned by Get() above.
   DeviceSettingsService();
+
+  DeviceSettingsService(const DeviceSettingsService&) = delete;
+  DeviceSettingsService& operator=(const DeviceSettingsService&) = delete;
+
   ~DeviceSettingsService() override;
 
   // To be called on startup once threads are initialized and D-Bus is ready.
@@ -281,8 +285,6 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
       device_off_hours_controller_;
 
   base::WeakPtrFactory<DeviceSettingsService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSettingsService);
 };
 
 // Helper class for tests. Initializes the DeviceSettingsService singleton on
@@ -290,10 +292,13 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
 class ScopedTestDeviceSettingsService {
  public:
   ScopedTestDeviceSettingsService();
-  ~ScopedTestDeviceSettingsService();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestDeviceSettingsService);
+  ScopedTestDeviceSettingsService(const ScopedTestDeviceSettingsService&) =
+      delete;
+  ScopedTestDeviceSettingsService& operator=(
+      const ScopedTestDeviceSettingsService&) = delete;
+
+  ~ScopedTestDeviceSettingsService();
 };
 
 }  // namespace ash

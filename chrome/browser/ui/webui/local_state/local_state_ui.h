@@ -29,10 +29,11 @@ void FilterPrefs(const std::vector<std::string>& valid_prefixes,
 class LocalStateUI : public content::WebUIController {
  public:
   explicit LocalStateUI(content::WebUI* web_ui);
-  ~LocalStateUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalStateUI);
+  LocalStateUI(const LocalStateUI&) = delete;
+  LocalStateUI& operator=(const LocalStateUI&) = delete;
+
+  ~LocalStateUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_LOCAL_STATE_LOCAL_STATE_UI_H_

@@ -20,6 +20,12 @@ class ChromeClientSideDetectionHostDelegate
 
   explicit ChromeClientSideDetectionHostDelegate(
       content::WebContents* web_contents);
+
+  ChromeClientSideDetectionHostDelegate(
+      const ChromeClientSideDetectionHostDelegate&) = delete;
+  ChromeClientSideDetectionHostDelegate& operator=(
+      const ChromeClientSideDetectionHostDelegate&) = delete;
+
   ~ChromeClientSideDetectionHostDelegate() override;
 
   // ClientSideDetectionHost::Delegate implementation.
@@ -47,8 +53,6 @@ class ChromeClientSideDetectionHostDelegate
   content::WebContents* web_contents_;
   SafeBrowsingNavigationObserverManager* observer_manager_for_testing_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeClientSideDetectionHostDelegate);
 };
 
 }  // namespace safe_browsing

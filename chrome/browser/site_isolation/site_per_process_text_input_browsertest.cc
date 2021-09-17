@@ -255,6 +255,12 @@ class RecordActiveViewsObserver {
 class SitePerProcessTextInputManagerTest : public InProcessBrowserTest {
  public:
   SitePerProcessTextInputManagerTest() {}
+
+  SitePerProcessTextInputManagerTest(
+      const SitePerProcessTextInputManagerTest&) = delete;
+  SitePerProcessTextInputManagerTest& operator=(
+      const SitePerProcessTextInputManagerTest&) = delete;
+
   ~SitePerProcessTextInputManagerTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -346,9 +352,6 @@ class SitePerProcessTextInputManagerTest : public InProcessBrowserTest {
       current = ChildFrameAt(current, index);
     return current;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessTextInputManagerTest);
 };
 
 // The following test loads a page with multiple nested <iframe> elements which
@@ -1169,6 +1172,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   class TextDeleteDelegate : public ui::TextEditKeyBindingsDelegateAuraLinux {
    public:
     TextDeleteDelegate() {}
+
+    TextDeleteDelegate(const TextDeleteDelegate&) = delete;
+    TextDeleteDelegate& operator=(const TextDeleteDelegate&) = delete;
+
     ~TextDeleteDelegate() override {}
 
     bool MatchEvent(
@@ -1180,9 +1187,6 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       }
       return true;
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TextDeleteDelegate);
   };
 
   TextDeleteDelegate delegate;
@@ -1222,6 +1226,10 @@ class ShowDefinitionForWordObserver
   explicit ShowDefinitionForWordObserver(content::WebContents* web_contents)
       : content::RenderWidgetHostViewCocoaObserver(web_contents) {}
 
+  ShowDefinitionForWordObserver(const ShowDefinitionForWordObserver&) = delete;
+  ShowDefinitionForWordObserver& operator=(
+      const ShowDefinitionForWordObserver&) = delete;
+
   ~ShowDefinitionForWordObserver() override {}
 
   const std::string& WaitForWordLookUp() {
@@ -1245,8 +1253,6 @@ class ShowDefinitionForWordObserver
   bool did_receive_string_ = false;
   std::string word_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShowDefinitionForWordObserver);
 };
 
 // Flakey (https:://crbug.com/874417).

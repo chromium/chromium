@@ -26,6 +26,11 @@ namespace {
 class UnifiedConsentBrowserTest : public SyncTest {
  public:
   UnifiedConsentBrowserTest() : SyncTest(TWO_CLIENT) {}
+
+  UnifiedConsentBrowserTest(const UnifiedConsentBrowserTest&) = delete;
+  UnifiedConsentBrowserTest& operator=(const UnifiedConsentBrowserTest&) =
+      delete;
+
   ~UnifiedConsentBrowserTest() override = default;
 
   void EnableSync(int client_id) {
@@ -66,8 +71,6 @@ class UnifiedConsentBrowserTest : public SyncTest {
   }
 
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedConsentBrowserTest);
 };
 
 // Tests that the settings histogram is recorded if unified consent is enabled.

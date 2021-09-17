@@ -94,6 +94,10 @@ class DialInternalMessageUtil final {
  public:
   // |hash_token|: A per-profile value used to hash sink IDs.
   explicit DialInternalMessageUtil(const std::string& hash_token);
+
+  DialInternalMessageUtil(const DialInternalMessageUtil&) = delete;
+  DialInternalMessageUtil& operator=(const DialInternalMessageUtil&) = delete;
+
   ~DialInternalMessageUtil();
 
   // Returns |true| if |message| is a valid STOP_SESSION message.
@@ -162,7 +166,6 @@ class DialInternalMessageUtil final {
                                       int sequence_number = -1) const;
 
   std::string hash_token_;
-  DISALLOW_COPY_AND_ASSIGN(DialInternalMessageUtil);
 };
 
 }  // namespace media_router

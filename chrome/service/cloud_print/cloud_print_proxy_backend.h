@@ -66,6 +66,10 @@ class CloudPrintProxyBackend {
       const gaia::OAuthClientInfo& oauth_client_info,
       bool enable_job_poll,
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  CloudPrintProxyBackend(const CloudPrintProxyBackend&) = delete;
+  CloudPrintProxyBackend& operator=(const CloudPrintProxyBackend&) = delete;
+
   ~CloudPrintProxyBackend();
 
   // Legacy mechanism when we have saved user credentials but no saved robot
@@ -104,8 +108,6 @@ class CloudPrintProxyBackend {
   CloudPrintProxyFrontend* const frontend_;
 
   friend class base::RefCountedThreadSafe<CloudPrintProxyBackend::Core>;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintProxyBackend);
 };
 
 }  // namespace cloud_print

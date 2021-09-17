@@ -16,20 +16,25 @@ class MockNetworkScreen : public NetworkScreen {
  public:
   MockNetworkScreen(NetworkScreenView* view,
                     const ScreenExitCallback& exit_callback);
+
+  MockNetworkScreen(const MockNetworkScreen&) = delete;
+  MockNetworkScreen& operator=(const MockNetworkScreen&) = delete;
+
   ~MockNetworkScreen() override;
 
   MOCK_METHOD(void, ShowImpl, ());
   MOCK_METHOD(void, HideImpl, ());
 
   void ExitScreen(NetworkScreen::Result result);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkScreen);
 };
 
 class MockNetworkScreenView : public NetworkScreenView {
  public:
   MockNetworkScreenView();
+
+  MockNetworkScreenView(const MockNetworkScreenView&) = delete;
+  MockNetworkScreenView& operator=(const MockNetworkScreenView&) = delete;
+
   ~MockNetworkScreenView() override;
 
   void Bind(NetworkScreen* screen) override;
@@ -45,8 +50,6 @@ class MockNetworkScreenView : public NetworkScreenView {
 
  private:
   NetworkScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkScreenView);
 };
 
 }  // namespace ash

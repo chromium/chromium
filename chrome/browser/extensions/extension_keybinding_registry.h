@@ -55,6 +55,10 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
                               ExtensionFilter extension_filter,
                               Delegate* delegate);
 
+  ExtensionKeybindingRegistry(const ExtensionKeybindingRegistry&) = delete;
+  ExtensionKeybindingRegistry& operator=(const ExtensionKeybindingRegistry&) =
+      delete;
+
   ~ExtensionKeybindingRegistry() override;
 
   // Enables/Disables general shortcut handling in Chrome.
@@ -190,8 +194,6 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
 
   // Listen for Media keys events.
   std::unique_ptr<ui::MediaKeysListener> media_keys_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionKeybindingRegistry);
 };
 
 }  // namespace extensions

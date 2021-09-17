@@ -17,6 +17,10 @@ struct Model;
 class Reticle : public UiElement {
  public:
   Reticle(UiScene* scene, Model* model);
+
+  Reticle(const Reticle&) = delete;
+  Reticle& operator=(const Reticle&) = delete;
+
   ~Reticle() override;
 
   UiElement* TargetElement() const;
@@ -24,6 +28,10 @@ class Reticle : public UiElement {
   class Renderer : public BaseQuadRenderer {
    public:
     Renderer();
+
+    Renderer(const Renderer&) = delete;
+    Renderer& operator=(const Renderer&) = delete;
+
     ~Renderer() override;
 
     void Draw(float opacity, const gfx::Transform& view_proj_matrix);
@@ -40,8 +48,6 @@ class Reticle : public UiElement {
     GLuint mid_ring_end_handle_;
     GLuint mid_ring_opacity_handle_;
     GLuint opacity_handle_;
-
-    DISALLOW_COPY_AND_ASSIGN(Renderer);
   };
 
  private:
@@ -66,8 +72,6 @@ class Reticle : public UiElement {
   // fully updated its geometry. We therefore retain a pointer to the model and
   // make use of it in |Render|.
   Model* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(Reticle);
 };
 
 }  // namespace vr

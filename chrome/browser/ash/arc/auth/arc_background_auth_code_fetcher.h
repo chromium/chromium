@@ -43,6 +43,11 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
       const CoreAccountId& account_id,
       bool initial_signin,
       bool is_primary_account);
+
+  ArcBackgroundAuthCodeFetcher(const ArcBackgroundAuthCodeFetcher&) = delete;
+  ArcBackgroundAuthCodeFetcher& operator=(const ArcBackgroundAuthCodeFetcher&) =
+      delete;
+
   ~ArcBackgroundAuthCodeFetcher() override;
 
   // ArcAuthCodeFetcher:
@@ -91,8 +96,6 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
   bool bypass_proxy_ = false;
 
   base::WeakPtrFactory<ArcBackgroundAuthCodeFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBackgroundAuthCodeFetcher);
 };
 
 }  // namespace arc

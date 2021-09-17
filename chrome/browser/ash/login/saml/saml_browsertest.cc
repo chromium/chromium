@@ -204,6 +204,10 @@ class SamlTest : public OobeBaseTest {
   SamlTest() {
     fake_gaia_.set_initialize_fake_merge_session(false);
   }
+
+  SamlTest(const SamlTest&) = delete;
+  SamlTest& operator=(const SamlTest&) = delete;
+
   ~SamlTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -329,8 +333,6 @@ class SamlTest : public OobeBaseTest {
   FakeSamlIdpMixin fake_saml_idp_mixin_{&mixin_host_, &fake_gaia_};
 
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SamlTest);
 };
 
 // Tests that signin frame should display the SAML notice and the 'back' button
@@ -815,6 +817,10 @@ IN_PROC_BROWSER_TEST_F(SamlTest, MetaRefreshToHTTPDisallowed) {
 class SAMLEnrollmentTest : public SamlTest {
  public:
   SAMLEnrollmentTest();
+
+  SAMLEnrollmentTest(const SAMLEnrollmentTest&) = delete;
+  SAMLEnrollmentTest& operator=(const SAMLEnrollmentTest&) = delete;
+
   ~SAMLEnrollmentTest() override;
 
   // SamlTest:
@@ -824,9 +830,6 @@ class SAMLEnrollmentTest : public SamlTest {
  protected:
   LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SAMLEnrollmentTest);
 };
 
 SAMLEnrollmentTest::SAMLEnrollmentTest() {
@@ -890,6 +893,10 @@ IN_PROC_BROWSER_TEST_F(SAMLEnrollmentTest, WithCredentialsPassingAPI) {
 class SAMLPolicyTest : public SamlTest {
  public:
   SAMLPolicyTest();
+
+  SAMLPolicyTest(const SAMLPolicyTest&) = delete;
+  SAMLPolicyTest& operator=(const SAMLPolicyTest&) = delete;
+
   ~SAMLPolicyTest() override;
 
   // SamlTest:
@@ -927,9 +934,6 @@ class SAMLPolicyTest : public SamlTest {
       &mixin_host_,
       {LoginManagerMixin::TestUserInfo(
           AccountId::FromUserEmailGaiaId("user@gmail.com", "1111"))}};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SAMLPolicyTest);
 };
 
 SAMLPolicyTest::SAMLPolicyTest()

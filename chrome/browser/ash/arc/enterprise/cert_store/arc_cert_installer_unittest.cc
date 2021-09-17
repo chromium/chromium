@@ -99,6 +99,9 @@ class ArcCertInstallerTest : public testing::Test {
         policy_instance_.get());
   }
 
+  ArcCertInstallerTest(const ArcCertInstallerTest&) = delete;
+  ArcCertInstallerTest& operator=(const ArcCertInstallerTest&) = delete;
+
   ~ArcCertInstallerTest() override {
     arc_service_manager_->arc_bridge_service()->policy()->CloseInstance(
         policy_instance_.get());
@@ -148,8 +151,6 @@ class ArcCertInstallerTest : public testing::Test {
   policy::RemoteCommandsQueue* queue_;
   std::unique_ptr<ArcCertInstaller> installer_;
   MockRemoteCommandsQueueObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcCertInstallerTest);
 };
 
 // Tests that installation of an empty cert list completes successfully.

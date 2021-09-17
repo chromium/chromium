@@ -34,6 +34,9 @@ class AppSearchResultRanker {
   AppSearchResultRanker(const base::FilePath& profile_path,
                         bool is_ephemeral_user);
 
+  AppSearchResultRanker(const AppSearchResultRanker&) = delete;
+  AppSearchResultRanker& operator=(const AppSearchResultRanker&) = delete;
+
   ~AppSearchResultRanker();
 
   // Trains on the |app_id| and (possibly) updates its internal representation.
@@ -65,8 +68,6 @@ class AppSearchResultRanker {
   const base::FilePath predictor_filename_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<AppSearchResultRanker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppSearchResultRanker);
 };
 
 }  // namespace app_list

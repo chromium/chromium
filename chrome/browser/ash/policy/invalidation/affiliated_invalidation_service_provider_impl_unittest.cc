@@ -81,6 +81,10 @@ void SendInvalidatorStateChangeNotification(
 class FakeConsumer : public AffiliatedInvalidationServiceProvider::Consumer {
  public:
   explicit FakeConsumer(AffiliatedInvalidationServiceProviderImpl* provider);
+
+  FakeConsumer(const FakeConsumer&) = delete;
+  FakeConsumer& operator=(const FakeConsumer&) = delete;
+
   ~FakeConsumer() override;
 
   // AffiliatedInvalidationServiceProvider::Consumer:
@@ -96,8 +100,6 @@ class FakeConsumer : public AffiliatedInvalidationServiceProvider::Consumer {
 
   int invalidation_service_set_count_ = 0;
   invalidation::InvalidationService* invalidation_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConsumer);
 };
 
 class AffiliatedInvalidationServiceProviderImplTest : public testing::Test {

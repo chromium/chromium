@@ -48,6 +48,10 @@ class SigninPrepareUserListTest : public testing::Test,
       : fake_user_manager_(new FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
 
+  SigninPrepareUserListTest(const SigninPrepareUserListTest&) = delete;
+  SigninPrepareUserListTest& operator=(const SigninPrepareUserListTest&) =
+      delete;
+
   ~SigninPrepareUserListTest() override {}
 
   // testing::Test:
@@ -94,8 +98,6 @@ class SigninPrepareUserListTest : public testing::Test,
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::map<std::string, proximity_auth::mojom::AuthType> user_auth_type_map;
   std::unique_ptr<MultiProfileUserController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninPrepareUserListTest);
 };
 
 TEST_F(SigninPrepareUserListTest, AlwaysKeepOwnerInList) {

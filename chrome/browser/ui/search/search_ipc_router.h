@@ -105,6 +105,11 @@ class SearchIPCRouter : public content::WebContentsObserver,
   class EmbeddedSearchClientFactory {
    public:
     EmbeddedSearchClientFactory() = default;
+
+    EmbeddedSearchClientFactory(const EmbeddedSearchClientFactory&) = delete;
+    EmbeddedSearchClientFactory& operator=(const EmbeddedSearchClientFactory&) =
+        delete;
+
     virtual ~EmbeddedSearchClientFactory() = default;
 
     // The returned pointer is owned by the factory.
@@ -114,14 +119,15 @@ class SearchIPCRouter : public content::WebContentsObserver,
         mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>
             receiver,
         content::RenderFrameHost* rfh) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(EmbeddedSearchClientFactory);
   };
 
   SearchIPCRouter(content::WebContents* web_contents,
                   Delegate* delegate,
                   std::unique_ptr<Policy> policy);
+
+  SearchIPCRouter(const SearchIPCRouter&) = delete;
+  SearchIPCRouter& operator=(const SearchIPCRouter&) = delete;
+
   ~SearchIPCRouter() override;
 
   void BindEmbeddedSearchConnecter(
@@ -211,8 +217,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
   mojo::AssociatedReceiver<search::mojom::EmbeddedSearch> receiver_{this};
 
   std::unique_ptr<EmbeddedSearchClientFactory> embedded_search_client_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchIPCRouter);
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_SEARCH_IPC_ROUTER_H_

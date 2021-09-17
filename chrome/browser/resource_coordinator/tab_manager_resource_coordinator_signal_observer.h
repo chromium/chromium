@@ -30,6 +30,12 @@ class TabManager::ResourceCoordinatorSignalObserver
 
   explicit ResourceCoordinatorSignalObserver(
       const base::WeakPtr<TabManager>& tab_manager);
+
+  ResourceCoordinatorSignalObserver(const ResourceCoordinatorSignalObserver&) =
+      delete;
+  ResourceCoordinatorSignalObserver& operator=(
+      const ResourceCoordinatorSignalObserver&) = delete;
+
   ~ResourceCoordinatorSignalObserver() override;
 
   // PageNode::ObserverDefaultImpl:
@@ -58,8 +64,6 @@ class TabManager::ResourceCoordinatorSignalObserver
   // we'd also then tear down this observer on the perf manager sequence itself,
   // but when one dies they're both about to die.
   base::WeakPtr<TabManager> tab_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceCoordinatorSignalObserver);
 };
 
 }  // namespace resource_coordinator

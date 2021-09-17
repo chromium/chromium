@@ -45,6 +45,9 @@ class ExternalProviderImpl : public ExternalProviderInterface {
                        mojom::ManifestLocation download_location,
                        int creation_flags);
 
+  ExternalProviderImpl(const ExternalProviderImpl&) = delete;
+  ExternalProviderImpl& operator=(const ExternalProviderImpl&) = delete;
+
   ~ExternalProviderImpl() override;
 
   // Populates a list with providers for all known sources.
@@ -151,8 +154,6 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   // Whether the provider should be allowed to update the set of external
   // extensions it provides.
   bool allow_updates_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProviderImpl);
 };
 
 }  // namespace extensions

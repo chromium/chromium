@@ -22,6 +22,10 @@ class ExtensionSyncData;
 class SyncBundle {
  public:
   SyncBundle();
+
+  SyncBundle(const SyncBundle&) = delete;
+  SyncBundle& operator=(const SyncBundle&) = delete;
+
   ~SyncBundle();
 
   void StartSyncing(
@@ -89,8 +93,6 @@ class SyncBundle {
   // server until we've installed the extension locally, to prevent the sync
   // state from flipping back and forth until all clients are up to date.
   std::map<ExtensionId, ExtensionSyncData> pending_sync_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncBundle);
 };
 
 }  // namespace extensions

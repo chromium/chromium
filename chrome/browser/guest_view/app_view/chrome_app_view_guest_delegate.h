@@ -14,15 +14,17 @@ namespace extensions {
 class ChromeAppViewGuestDelegate : public AppViewGuestDelegate {
  public:
   ChromeAppViewGuestDelegate();
+
+  ChromeAppViewGuestDelegate(const ChromeAppViewGuestDelegate&) = delete;
+  ChromeAppViewGuestDelegate& operator=(const ChromeAppViewGuestDelegate&) =
+      delete;
+
   ~ChromeAppViewGuestDelegate() override;
 
   // AppViewGuestDelegate:
   bool HandleContextMenu(content::WebContents* web_contents,
                          const content::ContextMenuParams& params) override;
   AppDelegate* CreateAppDelegate(content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppViewGuestDelegate);
 };
 
 }  // namespace extensions

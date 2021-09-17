@@ -35,14 +35,17 @@ class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
 
   explicit CommonAppsNavigationThrottle(
       content::NavigationHandle* navigation_handle);
+
+  CommonAppsNavigationThrottle(const CommonAppsNavigationThrottle&) = delete;
+  CommonAppsNavigationThrottle& operator=(const CommonAppsNavigationThrottle&) =
+      delete;
+
   ~CommonAppsNavigationThrottle() override;
 
  private:
   bool ShouldCancelNavigation(content::NavigationHandle* handle) override;
   bool ShouldShowDisablePage(content::NavigationHandle* handle) override;
   ThrottleCheckResult MaybeShowCustomResult() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CommonAppsNavigationThrottle);
 };
 
 }  // namespace apps

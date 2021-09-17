@@ -28,6 +28,11 @@ class ChromeExtensionWebContentsObserver
     : public ExtensionWebContentsObserver,
       public content::WebContentsUserData<ChromeExtensionWebContentsObserver> {
  public:
+  ChromeExtensionWebContentsObserver(
+      const ChromeExtensionWebContentsObserver&) = delete;
+  ChromeExtensionWebContentsObserver& operator=(
+      const ChromeExtensionWebContentsObserver&) = delete;
+
   ~ChromeExtensionWebContentsObserver() override;
 
   // Creates and initializes an instance of this class for the given
@@ -65,8 +70,6 @@ class ChromeExtensionWebContentsObserver
   void ReloadIfTerminated(content::RenderFrameHost* render_frame_host);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionWebContentsObserver);
 };
 
 }  // namespace extensions

@@ -32,6 +32,10 @@ bool disable_safe_decoding_for_testing = false;
 class IconSource : public gfx::ImageSkiaSource {
  public:
   IconSource(const SkBitmap& bitmap, int dimension_dip, bool normalize);
+
+  IconSource(const IconSource&) = delete;
+  IconSource& operator=(const IconSource&) = delete;
+
   ~IconSource() override = default;
 
  private:
@@ -40,8 +44,6 @@ class IconSource : public gfx::ImageSkiaSource {
   const SkBitmap bitmap_;
   const int dimension_dip_;
   const bool normalize_;
-
-  DISALLOW_COPY_AND_ASSIGN(IconSource);
 };
 
 IconSource::IconSource(const SkBitmap& bitmap,

@@ -51,6 +51,10 @@ class HIDDetectionScreen : public BaseScreen,
 
   HIDDetectionScreen(HIDDetectionView* view,
                      const ScreenExitCallback& exit_callback);
+
+  HIDDetectionScreen(const HIDDetectionScreen&) = delete;
+  HIDDetectionScreen& operator=(const HIDDetectionScreen&) = delete;
+
   ~HIDDetectionScreen() override;
 
   static std::string GetResultString(Result result);
@@ -257,8 +261,6 @@ class HIDDetectionScreen : public BaseScreen,
   bool devices_enumerated_ = false;
 
   base::WeakPtrFactory<HIDDetectionScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HIDDetectionScreen);
 };
 
 }  // namespace ash

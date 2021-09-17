@@ -21,6 +21,11 @@ class ExtensionImeMenuEventRouter
     : public input_method::InputMethodManager::ImeMenuObserver {
  public:
   explicit ExtensionImeMenuEventRouter(content::BrowserContext* context);
+
+  ExtensionImeMenuEventRouter(const ExtensionImeMenuEventRouter&) = delete;
+  ExtensionImeMenuEventRouter& operator=(const ExtensionImeMenuEventRouter&) =
+      delete;
+
   ~ExtensionImeMenuEventRouter() override;
 
   // input_method::InputMethodManager::ImeMenuObserver:
@@ -33,8 +38,6 @@ class ExtensionImeMenuEventRouter
 
  private:
   content::BrowserContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionImeMenuEventRouter);
 };
 
 }  // namespace chromeos

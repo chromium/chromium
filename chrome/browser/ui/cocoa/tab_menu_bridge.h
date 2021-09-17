@@ -30,6 +30,10 @@ class TabMenuBridge : public TabStripModelObserver {
  public:
   // The |menu_item| contains the actual menu this class manages.
   TabMenuBridge(TabStripModel* model, NSMenuItem* menu_item);
+
+  TabMenuBridge(const TabMenuBridge&) = delete;
+  TabMenuBridge& operator=(const TabMenuBridge&) = delete;
+
   ~TabMenuBridge() override;
 
   // It's legal to call this method more than once - it will clear all the
@@ -66,8 +70,6 @@ class TabMenuBridge : public TabStripModelObserver {
   // non-dynamic section of the menu. This offset is used to map menu items to
   // their underlying tabs.
   int dynamic_items_start_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabMenuBridge);
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_TAB_MENU_BRIDGE_H_

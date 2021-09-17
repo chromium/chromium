@@ -42,6 +42,11 @@ class AuthPolicyCredentialsManager
       public chromeos::NetworkStateHandlerObserver {
  public:
   explicit AuthPolicyCredentialsManager(Profile* profile);
+
+  AuthPolicyCredentialsManager(const AuthPolicyCredentialsManager&) = delete;
+  AuthPolicyCredentialsManager& operator=(const AuthPolicyCredentialsManager&) =
+      delete;
+
   ~AuthPolicyCredentialsManager() override;
 
   // KeyedService overrides.
@@ -116,7 +121,6 @@ class AuthPolicyCredentialsManager
   base::CancelableOnceClosure scheduled_get_user_status_call_;
 
   base::WeakPtrFactory<AuthPolicyCredentialsManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AuthPolicyCredentialsManager);
 };
 
 // Singleton that owns all AuthPolicyCredentialsManagers and associates them

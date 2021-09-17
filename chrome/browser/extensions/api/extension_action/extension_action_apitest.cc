@@ -74,6 +74,10 @@ class TestStateStoreObserver : public StateStore::TestObserver {
       : extension_id_(extension_id) {
     scoped_observation_.Observe(ExtensionSystem::Get(context)->state_store());
   }
+
+  TestStateStoreObserver(const TestStateStoreObserver&) = delete;
+  TestStateStoreObserver& operator=(const TestStateStoreObserver&) = delete;
+
   ~TestStateStoreObserver() override {}
 
   void WillSetExtensionValue(const std::string& extension_id,
@@ -93,8 +97,6 @@ class TestStateStoreObserver : public StateStore::TestObserver {
 
   base::ScopedObservation<StateStore, StateStore::TestObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestStateStoreObserver);
 };
 
 // A helper class to handle setting or getting the values for an action from JS.
@@ -110,6 +112,10 @@ class ActionTestHelper {
         get_method_name_(get_method_name),
         js_property_key_(js_property_key),
         web_contents_(web_contents) {}
+
+  ActionTestHelper(const ActionTestHelper&) = delete;
+  ActionTestHelper& operator=(const ActionTestHelper&) = delete;
+
   ~ActionTestHelper() = default;
 
   // Checks the value for the given |tab_id|.
@@ -176,8 +182,6 @@ class ActionTestHelper {
   const char* const js_property_key_;
   // The WebContents to use to execute API calls.
   content::WebContents* const web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionTestHelper);
 };
 
 // Forces a flush of the StateStore, where action state is persisted.

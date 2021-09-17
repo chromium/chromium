@@ -49,6 +49,9 @@ class FlocEventLoggerUnitTest : public testing::Test {
   FlocEventLoggerUnitTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  FlocEventLoggerUnitTest(const FlocEventLoggerUnitTest&) = delete;
+  FlocEventLoggerUnitTest& operator=(const FlocEventLoggerUnitTest&) = delete;
+
   ~FlocEventLoggerUnitTest() override = default;
 
   void SetUp() override {
@@ -115,8 +118,6 @@ class FlocEventLoggerUnitTest : public testing::Test {
   std::unique_ptr<FakeFlocRemotePermissionService>
       fake_floc_remote_permission_service_;
   std::unique_ptr<FlocEventLogger> floc_event_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlocEventLoggerUnitTest);
 };
 
 TEST_F(FlocEventLoggerUnitTest, DefaultSyncDisabled_EventLogging) {

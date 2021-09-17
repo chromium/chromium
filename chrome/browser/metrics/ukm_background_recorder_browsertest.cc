@@ -32,6 +32,12 @@ void DidGetRecordResult(base::OnceClosure quit_closure,
 class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
  public:
   UkmBackgroundRecorderBrowserTest() = default;
+
+  UkmBackgroundRecorderBrowserTest(const UkmBackgroundRecorderBrowserTest&) =
+      delete;
+  UkmBackgroundRecorderBrowserTest& operator=(
+      const UkmBackgroundRecorderBrowserTest&) = delete;
+
   ~UkmBackgroundRecorderBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -60,8 +66,6 @@ class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
 
  private:
   ukm::UkmBackgroundRecorderService* background_recorder_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmBackgroundRecorderBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(UkmBackgroundRecorderBrowserTest,

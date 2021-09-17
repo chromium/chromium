@@ -13,14 +13,16 @@
 class ProgressCalculator {
  public:
   ProgressCalculator() = default;
+
+  ProgressCalculator(const ProgressCalculator&) = delete;
+  ProgressCalculator& operator=(const ProgressCalculator&) = delete;
+
   ~ProgressCalculator() = default;
 
   int Calculate(installer::InstallerStage stage) const;
 
  private:
   mutable installer::InstallerStage last_stage_ = installer::NO_STAGE;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgressCalculator);
 };
 
 #endif  // CHROME_INSTALLER_SETUP_PROGRESS_CALCULATOR_H_

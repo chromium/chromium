@@ -35,6 +35,10 @@ bool IsFileSystemProviderLocalPath(const base::FilePath& local_path);
 class FileSystemURLParser {
  public:
   explicit FileSystemURLParser(const storage::FileSystemURL& url);
+
+  FileSystemURLParser(const FileSystemURLParser&) = delete;
+  FileSystemURLParser& operator=(const FileSystemURLParser&) = delete;
+
   virtual ~FileSystemURLParser();
 
   // Parses the |url| passed to the constructor. If parsing succeeds, then
@@ -48,8 +52,6 @@ class FileSystemURLParser {
   storage::FileSystemURL url_;
   ProvidedFileSystemInterface* file_system_;
   base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemURLParser);
 };
 
 // Finds a file system, which is responsible for handling the specified
@@ -58,6 +60,10 @@ class FileSystemURLParser {
 class LocalPathParser {
  public:
   LocalPathParser(Profile* profile, const base::FilePath& local_path);
+
+  LocalPathParser(const LocalPathParser&) = delete;
+  LocalPathParser& operator=(const LocalPathParser&) = delete;
+
   virtual ~LocalPathParser();
 
   // Parses the |local_path| passed to the constructor. If parsing succeeds,
@@ -72,8 +78,6 @@ class LocalPathParser {
   base::FilePath local_path_;
   ProvidedFileSystemInterface* file_system_;
   base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalPathParser);
 };
 
 }  // namespace util

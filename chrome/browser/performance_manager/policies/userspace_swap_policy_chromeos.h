@@ -33,6 +33,10 @@ class UserspaceSwapPolicy : public GraphOwned,
                             public SystemNode::ObserverDefaultImpl {
  public:
   UserspaceSwapPolicy();
+
+  UserspaceSwapPolicy(const UserspaceSwapPolicy&) = delete;
+  UserspaceSwapPolicy& operator=(const UserspaceSwapPolicy&) = delete;
+
   ~UserspaceSwapPolicy() override;
 
   // GraphOwned implementation:
@@ -110,7 +114,6 @@ class UserspaceSwapPolicy : public GraphOwned,
       std::make_unique<base::RepeatingTimer>();
 
   base::WeakPtrFactory<UserspaceSwapPolicy> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UserspaceSwapPolicy);
 };
 
 }  // namespace policies

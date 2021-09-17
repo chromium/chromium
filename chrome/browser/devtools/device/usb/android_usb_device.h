@@ -59,15 +59,16 @@ class AdbMessage {
              uint32_t arg0,
              uint32_t arg1,
              const std::string& body);
+
+  AdbMessage(const AdbMessage&) = delete;
+  AdbMessage& operator=(const AdbMessage&) = delete;
+
   ~AdbMessage();
 
   uint32_t command;
   uint32_t arg0;
   uint32_t arg1;
   std::string body;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AdbMessage);
 };
 
 class AndroidUsbDevice;

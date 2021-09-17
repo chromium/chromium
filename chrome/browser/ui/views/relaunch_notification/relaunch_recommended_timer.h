@@ -21,6 +21,9 @@ class RelaunchRecommendedTimer {
   RelaunchRecommendedTimer(base::Time upgrade_detected_time,
                            base::RepeatingClosure callback);
 
+  RelaunchRecommendedTimer(const RelaunchRecommendedTimer&) = delete;
+  RelaunchRecommendedTimer& operator=(const RelaunchRecommendedTimer&) = delete;
+
   ~RelaunchRecommendedTimer();
 
   // Returns current notification's title, composed depending on how much time
@@ -45,8 +48,6 @@ class RelaunchRecommendedTimer {
 
   // Callback which triggers the actual title update on Chrome desktop.
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RelaunchRecommendedTimer);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_RECOMMENDED_TIMER_H_

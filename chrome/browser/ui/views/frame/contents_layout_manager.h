@@ -14,6 +14,10 @@
 class ContentsLayoutManager : public views::LayoutManager {
  public:
   ContentsLayoutManager(views::View* devtools_view, views::View* contents_view);
+
+  ContentsLayoutManager(const ContentsLayoutManager&) = delete;
+  ContentsLayoutManager& operator=(const ContentsLayoutManager&) = delete;
+
   ~ContentsLayoutManager() override;
 
   // Sets the contents resizing strategy.
@@ -32,8 +36,6 @@ class ContentsLayoutManager : public views::LayoutManager {
   views::View* host_;
 
   DevToolsContentsResizingStrategy strategy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentsLayoutManager);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_LAYOUT_MANAGER_H_

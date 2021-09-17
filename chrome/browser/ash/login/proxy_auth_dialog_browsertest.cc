@@ -32,6 +32,9 @@ class ProxyAuthDialogWaiter : public content::WindowedNotificationObserver {
                                 base::Unretained(this))),
         login_handler_(nullptr) {}
 
+  ProxyAuthDialogWaiter(const ProxyAuthDialogWaiter&) = delete;
+  ProxyAuthDialogWaiter& operator=(const ProxyAuthDialogWaiter&) = delete;
+
   ~ProxyAuthDialogWaiter() override {}
 
   LoginHandler* login_handler() const { return login_handler_; }
@@ -45,8 +48,6 @@ class ProxyAuthDialogWaiter : public content::WindowedNotificationObserver {
   }
 
   LoginHandler* login_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyAuthDialogWaiter);
 };
 
 }  // namespace
@@ -60,6 +61,11 @@ class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
                       base::FilePath()) {
     login_manager_mixin_.AppendRegularUsers(1);
   }
+
+  ProxyAuthOnUserBoardScreenTest(const ProxyAuthOnUserBoardScreenTest&) =
+      delete;
+  ProxyAuthOnUserBoardScreenTest& operator=(
+      const ProxyAuthOnUserBoardScreenTest&) = delete;
 
   ~ProxyAuthOnUserBoardScreenTest() override {}
 
@@ -77,8 +83,6 @@ class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
  private:
   net::SpawnedTestServer proxy_server_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyAuthOnUserBoardScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ProxyAuthOnUserBoardScreenTest,

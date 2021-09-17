@@ -21,6 +21,10 @@ namespace internal {
 class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
  public:
   explicit DriveFsAsyncFileUtil(Profile* profile);
+
+  DriveFsAsyncFileUtil(const DriveFsAsyncFileUtil&) = delete;
+  DriveFsAsyncFileUtil& operator=(const DriveFsAsyncFileUtil&) = delete;
+
   ~DriveFsAsyncFileUtil() override;
 
   // AsyncFileUtil overrides:
@@ -40,8 +44,6 @@ class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
   Profile* const profile_;
 
   base::WeakPtrFactory<DriveFsAsyncFileUtil> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsAsyncFileUtil);
 };
 
 }  // namespace internal

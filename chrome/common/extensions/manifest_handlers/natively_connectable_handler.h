@@ -33,14 +33,17 @@ struct NativelyConnectableHosts : public Extension::ManifestData {
 class NativelyConnectableHandler : public ManifestHandler {
  public:
   NativelyConnectableHandler();
+
+  NativelyConnectableHandler(const NativelyConnectableHandler&) = delete;
+  NativelyConnectableHandler& operator=(const NativelyConnectableHandler&) =
+      delete;
+
   ~NativelyConnectableHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(NativelyConnectableHandler);
 };
 
 }  // namespace extensions

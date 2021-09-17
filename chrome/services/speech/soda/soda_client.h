@@ -27,6 +27,10 @@ class SodaClient {
  public:
   // Takes in the fully-qualified path to the SODA binary.
   explicit SodaClient(base::FilePath library_path);
+
+  SodaClient(const SodaClient&) = delete;
+  SodaClient& operator=(const SodaClient&) = delete;
+
   ~SodaClient();
 
   // Feeds raw audio to SODA in the form of a contiguous stream of characters.
@@ -70,8 +74,6 @@ class SodaClient {
   bool is_initialized_;
   int sample_rate_;
   int channel_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(SodaClient);
 };
 
 }  // namespace soda

@@ -59,6 +59,10 @@ class ChildStatusCollector : public StatusCollector,
                        chromeos::system::StatisticsProvider* provider,
                        const AndroidStatusFetcher& android_status_fetcher,
                        base::TimeDelta activity_day_start);
+
+  ChildStatusCollector(const ChildStatusCollector&) = delete;
+  ChildStatusCollector& operator=(const ChildStatusCollector&) = delete;
+
   ~ChildStatusCollector() override;
 
   // StatusCollector:
@@ -150,8 +154,6 @@ class ChildStatusCollector : public StatusCollector,
   std::unique_ptr<ChildActivityStorage> activity_storage_;
 
   base::WeakPtrFactory<ChildStatusCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChildStatusCollector);
 };
 
 }  // namespace policy

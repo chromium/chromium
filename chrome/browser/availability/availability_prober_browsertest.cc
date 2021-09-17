@@ -65,6 +65,11 @@ class TestDelegate : public AvailabilityProber::Delegate {
 class AvailabilityProberBrowserTest : public InProcessBrowserTest {
  public:
   AvailabilityProberBrowserTest() = default;
+
+  AvailabilityProberBrowserTest(const AvailabilityProberBrowserTest&) = delete;
+  AvailabilityProberBrowserTest& operator=(
+      const AvailabilityProberBrowserTest&) = delete;
+
   ~AvailabilityProberBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -110,8 +115,6 @@ class AvailabilityProberBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityProberBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AvailabilityProberBrowserTest, OK) {

@@ -21,6 +21,11 @@ namespace chrome {
 class BrowserTabStripModelDelegate : public TabStripModelDelegate {
  public:
   explicit BrowserTabStripModelDelegate(Browser* browser);
+
+  BrowserTabStripModelDelegate(const BrowserTabStripModelDelegate&) = delete;
+  BrowserTabStripModelDelegate& operator=(const BrowserTabStripModelDelegate&) =
+      delete;
+
   ~BrowserTabStripModelDelegate() override;
 
  private:
@@ -66,8 +71,6 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
 
   // The following factory is used to close the frame at a later time.
   base::WeakPtrFactory<BrowserTabStripModelDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserTabStripModelDelegate);
 };
 
 }  // namespace chrome

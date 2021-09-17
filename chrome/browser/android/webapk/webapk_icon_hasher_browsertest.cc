@@ -35,6 +35,11 @@ class WebApkIconHasherBrowserTest : public PlatformBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kSplitCacheByNetworkIsolationKey);
   }
+
+  WebApkIconHasherBrowserTest(const WebApkIconHasherBrowserTest&) = delete;
+  WebApkIconHasherBrowserTest& operator=(const WebApkIconHasherBrowserTest&) =
+      delete;
+
   ~WebApkIconHasherBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -65,8 +70,6 @@ class WebApkIconHasherBrowserTest : public PlatformBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkIconHasherBrowserTest);
 };
 
 namespace {

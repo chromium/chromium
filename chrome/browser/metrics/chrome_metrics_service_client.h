@@ -48,6 +48,10 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                                    public ukm::HistoryDeleteObserver,
                                    public ukm::UkmConsentStateObserver {
  public:
+  ChromeMetricsServiceClient(const ChromeMetricsServiceClient&) = delete;
+  ChromeMetricsServiceClient& operator=(const ChromeMetricsServiceClient&) =
+      delete;
+
   ~ChromeMetricsServiceClient() override;
 
   // Factory function.
@@ -210,8 +214,6 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 #endif
 
   base::WeakPtrFactory<ChromeMetricsServiceClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMetricsServiceClient);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_METRICS_SERVICE_CLIENT_H_

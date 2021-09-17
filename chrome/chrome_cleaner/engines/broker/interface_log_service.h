@@ -26,6 +26,9 @@ class InterfaceLogService : public InterfaceMetadataObserver {
       const base::WStringPiece file_name,
       const base::WStringPiece build_version);
 
+  InterfaceLogService(const InterfaceLogService&) = delete;
+  InterfaceLogService& operator=(const InterfaceLogService&) = delete;
+
   ~InterfaceLogService() override;
 
   // InterfaceMetadataObserver
@@ -63,8 +66,6 @@ class InterfaceLogService : public InterfaceMetadataObserver {
   mutable base::Lock lock_;
 
   base::TimeDelta GetTicksSinceCreation() const;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceLogService);
 };
 
 }  // namespace chrome_cleaner

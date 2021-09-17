@@ -24,6 +24,10 @@ class ContentSettingsService : public BrowserContextKeyedAPI,
                                public EarlyExtensionPrefsObserver {
  public:
   explicit ContentSettingsService(content::BrowserContext* context);
+
+  ContentSettingsService(const ContentSettingsService&) = delete;
+  ContentSettingsService& operator=(const ContentSettingsService&) = delete;
+
   ~ContentSettingsService() override;
 
   scoped_refptr<ContentSettingsStore> content_settings_store() const {
@@ -61,8 +65,6 @@ class ContentSettingsService : public BrowserContextKeyedAPI,
   scoped_refptr<ContentSettingsStore> content_settings_store_;
   base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsService);
 };
 
 }  // namespace extensions

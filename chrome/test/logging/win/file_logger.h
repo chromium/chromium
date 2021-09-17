@@ -45,6 +45,10 @@ class FileLogger {
        CHROME_TESTS_LOG_PROVIDER);
 
   FileLogger();
+
+  FileLogger(const FileLogger&) = delete;
+  FileLogger& operator=(const FileLogger&) = delete;
+
   ~FileLogger();
 
   // Initializes the instance to collect logs from all supported providers.
@@ -76,8 +80,6 @@ class FileLogger {
 
   base::win::EtwTraceController controller_;
   uint32_t event_provider_mask_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileLogger);
 };
 
 }  // namespace logging_win

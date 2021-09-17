@@ -16,6 +16,9 @@ namespace {
 
 class InvalidFileValidator : public storage::CopyOrMoveFileValidator {
  public:
+  InvalidFileValidator(const InvalidFileValidator&) = delete;
+  InvalidFileValidator& operator=(const InvalidFileValidator&) = delete;
+
   ~InvalidFileValidator() override {}
   void StartPreWriteValidation(storage::CopyOrMoveFileValidator::ResultCallback
                                    result_callback) override {
@@ -32,8 +35,6 @@ class InvalidFileValidator : public storage::CopyOrMoveFileValidator {
   friend class ::MediaFileValidatorFactory;
 
   InvalidFileValidator() {}
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidFileValidator);
 };
 
 }  // namespace

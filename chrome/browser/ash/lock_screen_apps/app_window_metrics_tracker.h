@@ -26,6 +26,10 @@ namespace lock_screen_apps {
 class AppWindowMetricsTracker : public content::WebContentsObserver {
  public:
   explicit AppWindowMetricsTracker(const base::TickClock* clock);
+
+  AppWindowMetricsTracker(const AppWindowMetricsTracker&) = delete;
+  AppWindowMetricsTracker& operator=(const AppWindowMetricsTracker&) = delete;
+
   ~AppWindowMetricsTracker() override;
 
   // Register app launch request.
@@ -78,8 +82,6 @@ class AppWindowMetricsTracker : public content::WebContentsObserver {
   // the window contents is loaded.
   // Should be either kForeground or kBackground.
   absl::optional<State> state_after_window_contents_load_ = State::kForeground;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowMetricsTracker);
 };
 
 }  // namespace lock_screen_apps

@@ -125,6 +125,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGoogleSearchUrlRequest(
 class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
  public:
   HintsFetcherDisabledBrowserTest() = default;
+
+  HintsFetcherDisabledBrowserTest(const HintsFetcherDisabledBrowserTest&) =
+      delete;
+  HintsFetcherDisabledBrowserTest& operator=(
+      const HintsFetcherDisabledBrowserTest&) = delete;
+
   ~HintsFetcherDisabledBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -432,14 +438,15 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
       expect_hints_request_for_hosts_and_urls_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(HintsFetcherDisabledBrowserTest);
 };
 
 // This test class enables OnePlatform Hints.
 class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
  public:
   HintsFetcherBrowserTest() = default;
+
+  HintsFetcherBrowserTest(const HintsFetcherBrowserTest&) = delete;
+  HintsFetcherBrowserTest& operator=(const HintsFetcherBrowserTest&) = delete;
 
   ~HintsFetcherBrowserTest() override = default;
 
@@ -478,9 +485,6 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
             browser()->profile());
     return keyed_service->GetTopHostProvider();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HintsFetcherBrowserTest);
 };
 
 // This test creates new browser with no profile and loads a random page with

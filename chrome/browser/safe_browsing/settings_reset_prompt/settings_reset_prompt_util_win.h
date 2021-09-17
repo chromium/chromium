@@ -21,12 +21,14 @@ void MaybeShowSettingsResetPromptWithDelay();
 class SettingsResetPromptDelegate {
  public:
   SettingsResetPromptDelegate();
+
+  SettingsResetPromptDelegate(const SettingsResetPromptDelegate&) = delete;
+  SettingsResetPromptDelegate& operator=(const SettingsResetPromptDelegate&) =
+      delete;
+
   virtual ~SettingsResetPromptDelegate();
 
   virtual void ShowSettingsResetPromptWithDelay() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptDelegate);
 };
 
 // Sets the global SettingsResetPromptDelegate, usually for testing.

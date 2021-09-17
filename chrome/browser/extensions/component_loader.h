@@ -34,6 +34,10 @@ class ExtensionSystem;
 class ComponentLoader {
  public:
   ComponentLoader(ExtensionSystem* extension_system, Profile* browser_context);
+
+  ComponentLoader(const ComponentLoader&) = delete;
+  ComponentLoader& operator=(const ComponentLoader&) = delete;
+
   virtual ~ComponentLoader();
 
   size_t registered_extensions_count() const {
@@ -230,8 +234,6 @@ class ComponentLoader {
   base::WeakPtrFactory<ComponentLoader> weak_factory_{this};
 
   friend class TtsApiTest;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentLoader);
 };
 
 }  // namespace extensions

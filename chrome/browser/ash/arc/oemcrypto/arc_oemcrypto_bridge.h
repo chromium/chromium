@@ -33,6 +33,10 @@ class ArcOemCryptoBridge : public KeyedService,
 
   ArcOemCryptoBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
+
+  ArcOemCryptoBridge(const ArcOemCryptoBridge&) = delete;
+  ArcOemCryptoBridge& operator=(const ArcOemCryptoBridge&) = delete;
+
   ~ArcOemCryptoBridge() override;
 
   // OemCrypto Mojo host interface
@@ -48,8 +52,6 @@ class ArcOemCryptoBridge : public KeyedService,
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcOemCryptoBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcOemCryptoBridge);
 };
 
 }  // namespace arc

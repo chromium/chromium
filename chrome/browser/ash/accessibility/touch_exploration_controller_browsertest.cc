@@ -36,6 +36,10 @@ class TouchExplorationTest : public InProcessBrowserTest {
     // Tests fail if time is ever 0.
     simulated_clock_->Advance(base::TimeDelta::FromMilliseconds(10));
   }
+
+  TouchExplorationTest(const TouchExplorationTest&) = delete;
+  TouchExplorationTest& operator=(const TouchExplorationTest&) = delete;
+
   ~TouchExplorationTest() override {}
 
  protected:
@@ -70,9 +74,6 @@ class TouchExplorationTest : public InProcessBrowserTest {
   base::SimpleTestTickClock* simulated_clock_;
   aura::Window* root_window_;
   std::unique_ptr<ui::test::TestEventHandler> event_handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationTest);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

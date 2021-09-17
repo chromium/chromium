@@ -37,6 +37,10 @@ class BufferingFileStreamReader : public storage::FileStreamReader {
       int preloading_buffer_length,
       int64_t max_bytes_to_read);
 
+  BufferingFileStreamReader(const BufferingFileStreamReader&) = delete;
+  BufferingFileStreamReader& operator=(const BufferingFileStreamReader&) =
+      delete;
+
   ~BufferingFileStreamReader() override;
 
   // storage::FileStreamReader overrides.
@@ -72,7 +76,6 @@ class BufferingFileStreamReader : public storage::FileStreamReader {
   int preloaded_bytes_;
 
   base::WeakPtrFactory<BufferingFileStreamReader> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BufferingFileStreamReader);
 };
 
 }  // namespace file_system_provider

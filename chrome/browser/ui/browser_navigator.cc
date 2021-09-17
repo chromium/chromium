@@ -384,6 +384,10 @@ class ScopedBrowserShower {
   explicit ScopedBrowserShower(NavigateParams* params,
                                content::WebContents** contents)
       : params_(params), contents_(contents) {}
+
+  ScopedBrowserShower(const ScopedBrowserShower&) = delete;
+  ScopedBrowserShower& operator=(const ScopedBrowserShower&) = delete;
+
   ~ScopedBrowserShower() {
     if (params_->window_action == NavigateParams::SHOW_WINDOW_INACTIVE) {
       params_->browser->window()->ShowInactive();
@@ -403,7 +407,6 @@ class ScopedBrowserShower {
  private:
   NavigateParams* params_;
   content::WebContents** contents_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedBrowserShower);
 };
 
 std::unique_ptr<content::WebContents> CreateTargetContents(

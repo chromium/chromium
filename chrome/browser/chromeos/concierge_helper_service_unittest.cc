@@ -21,6 +21,10 @@ namespace chromeos {
 class TestConciergeClient : public FakeConciergeClient {
  public:
   static void Initialize() { new TestConciergeClient(); }
+
+  TestConciergeClient(const TestConciergeClient&) = delete;
+  TestConciergeClient& operator=(const TestConciergeClient&) = delete;
+
   ~TestConciergeClient() override = default;
 
   void SetVmCpuRestriction(
@@ -67,13 +71,16 @@ class TestConciergeClient : public FakeConciergeClient {
   std::vector<dbus::ObjectProxy::WaitForServiceToBeAvailableCallback>
       callbacks_;
   bool service_is_available_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConciergeClient);
 };
 
 class ConciergeHelperServiceTest : public testing::Test {
  public:
   ConciergeHelperServiceTest() = default;
+
+  ConciergeHelperServiceTest(const ConciergeHelperServiceTest&) = delete;
+  ConciergeHelperServiceTest& operator=(const ConciergeHelperServiceTest&) =
+      delete;
+
   ~ConciergeHelperServiceTest() override = default;
 
   // testing::Test:
@@ -101,8 +108,6 @@ class ConciergeHelperServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   ConciergeHelperService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConciergeHelperServiceTest);
 };
 
 // Tests that ConciergeHelperService makes cpu restriction requests correctly.

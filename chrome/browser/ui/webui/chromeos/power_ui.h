@@ -13,10 +13,11 @@ namespace chromeos {
 class PowerUI : public content::WebUIController {
  public:
   explicit PowerUI(content::WebUI* web_ui);
-  ~PowerUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerUI);
+  PowerUI(const PowerUI&) = delete;
+  PowerUI& operator=(const PowerUI&) = delete;
+
+  ~PowerUI() override;
 };
 
 }  // namespace chromeos

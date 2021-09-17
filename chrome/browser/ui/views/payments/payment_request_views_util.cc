@@ -199,6 +199,12 @@ std::unique_ptr<views::Label> GetLabelForMissingInformation(
 class PaymentRequestRowBorderPainter : public views::Painter {
  public:
   explicit PaymentRequestRowBorderPainter(SkColor color) : color_(color) {}
+
+  PaymentRequestRowBorderPainter(const PaymentRequestRowBorderPainter&) =
+      delete;
+  PaymentRequestRowBorderPainter& operator=(
+      const PaymentRequestRowBorderPainter&) = delete;
+
   ~PaymentRequestRowBorderPainter() override {}
 
   // views::Painter:
@@ -217,7 +223,6 @@ class PaymentRequestRowBorderPainter : public views::Painter {
 
  private:
   SkColor color_;
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestRowBorderPainter);
 };
 
 }  // namespace

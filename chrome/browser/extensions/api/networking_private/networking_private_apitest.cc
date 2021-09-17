@@ -45,6 +45,10 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
   explicit TestNetworkingPrivateDelegate(bool test_failure)
       : fail_(test_failure) {}
 
+  TestNetworkingPrivateDelegate(const TestNetworkingPrivateDelegate&) = delete;
+  TestNetworkingPrivateDelegate& operator=(
+      const TestNetworkingPrivateDelegate&) = delete;
+
   ~TestNetworkingPrivateDelegate() override {}
 
   // Asynchronous methods
@@ -266,13 +270,15 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
   std::map<std::string, bool> enabled_;
   std::map<std::string, bool> disabled_;
   std::vector<std::string> scan_requested_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkingPrivateDelegate);
 };
 
 class NetworkingPrivateApiTest : public ExtensionApiTest {
  public:
   NetworkingPrivateApiTest() = default;
+
+  NetworkingPrivateApiTest(const NetworkingPrivateApiTest&) = delete;
+  NetworkingPrivateApiTest& operator=(const NetworkingPrivateApiTest&) = delete;
+
   ~NetworkingPrivateApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -329,8 +335,6 @@ class NetworkingPrivateApiTest : public ExtensionApiTest {
 
  protected:
   bool test_failure_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateApiTest);
 };
 
 }  // namespace
@@ -437,10 +441,13 @@ class NetworkingPrivateApiTestFail : public NetworkingPrivateApiTest {
  public:
   NetworkingPrivateApiTestFail() { test_failure_ = true; }
 
+  NetworkingPrivateApiTestFail(const NetworkingPrivateApiTestFail&) = delete;
+  NetworkingPrivateApiTestFail& operator=(const NetworkingPrivateApiTestFail&) =
+      delete;
+
   ~NetworkingPrivateApiTestFail() override = default;
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateApiTestFail);
 };
 
 }  // namespace

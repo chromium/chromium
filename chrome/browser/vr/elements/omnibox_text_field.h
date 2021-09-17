@@ -21,6 +21,10 @@ class VR_UI_EXPORT OmniboxTextField : public TextInput {
                    base::RepeatingCallback<void(const AutocompleteRequest&)>
                        autocomplete_start_callback,
                    base::RepeatingCallback<void()> autocomplete_stop_callback);
+
+  OmniboxTextField(const OmniboxTextField&) = delete;
+  OmniboxTextField& operator=(const OmniboxTextField&) = delete;
+
   ~OmniboxTextField() override;
 
   // This element uses its enabled status to manage outstanding autocomplete
@@ -41,8 +45,6 @@ class VR_UI_EXPORT OmniboxTextField : public TextInput {
   base::RepeatingCallback<void()> autocomplete_stop_callback_;
 
   bool allow_inline_autocomplete_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxTextField);
 };
 
 }  // namespace vr

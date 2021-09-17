@@ -21,6 +21,12 @@ using InitializationStatus = ExploreSitesStore::InitializationStatus;
 class ExploreSitesIncrementShownCountTaskTest : public TaskTestBase {
  public:
   ExploreSitesIncrementShownCountTaskTest() = default;
+
+  ExploreSitesIncrementShownCountTaskTest(
+      const ExploreSitesIncrementShownCountTaskTest&) = delete;
+  ExploreSitesIncrementShownCountTaskTest& operator=(
+      const ExploreSitesIncrementShownCountTaskTest&) = delete;
+
   ~ExploreSitesIncrementShownCountTaskTest() override = default;
 
   void SetUp() override {
@@ -53,8 +59,6 @@ class ExploreSitesIncrementShownCountTaskTest : public TaskTestBase {
   std::unique_ptr<ExploreSitesStore> store_;
   bool success_;
   bool callback_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesIncrementShownCountTaskTest);
 };
 
 void ExploreSitesIncrementShownCountTaskTest::PopulateCategories() {

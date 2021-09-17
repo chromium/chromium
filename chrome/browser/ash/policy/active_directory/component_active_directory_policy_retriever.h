@@ -49,6 +49,11 @@ class ComponentActiveDirectoryPolicyRetriever {
       std::vector<PolicyNamespace> namespaces,
       RetrieveCallback callback);
 
+  ComponentActiveDirectoryPolicyRetriever(
+      const ComponentActiveDirectoryPolicyRetriever&) = delete;
+  ComponentActiveDirectoryPolicyRetriever& operator=(
+      const ComponentActiveDirectoryPolicyRetriever&) = delete;
+
   ~ComponentActiveDirectoryPolicyRetriever();
 
   // Starts retrieving policy from Session Manager as specified in the
@@ -86,7 +91,6 @@ class ComponentActiveDirectoryPolicyRetriever {
 
   base::WeakPtrFactory<ComponentActiveDirectoryPolicyRetriever>
       weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ComponentActiveDirectoryPolicyRetriever);
 };
 
 }  // namespace policy

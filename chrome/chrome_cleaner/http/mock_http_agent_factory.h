@@ -72,6 +72,10 @@ class MockHttpAgentConfig {
   };
 
   MockHttpAgentConfig();
+
+  MockHttpAgentConfig(const MockHttpAgentConfig&) = delete;
+  MockHttpAgentConfig& operator=(const MockHttpAgentConfig&) = delete;
+
   ~MockHttpAgentConfig();
 
   // Adds a call configuration. There should be one configuration for each
@@ -115,8 +119,6 @@ class MockHttpAgentConfig {
 
   // The index of the current Calls configuration being used.
   size_t current_index_{kInvalidIndex};
-
-  DISALLOW_COPY_AND_ASSIGN(MockHttpAgentConfig);
 };
 
 // HttpAgent factory that creates mock HttpAgent objects that are controlled by

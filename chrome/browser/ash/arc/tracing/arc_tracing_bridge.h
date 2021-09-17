@@ -42,6 +42,10 @@ class ArcTracingBridge : public KeyedService,
 
   ArcTracingBridge(content::BrowserContext* context,
                    ArcBridgeService* bridge_service);
+
+  ArcTracingBridge(const ArcTracingBridge&) = delete;
+  ArcTracingBridge& operator=(const ArcTracingBridge&) = delete;
+
   ~ArcTracingBridge() override;
 
   void GetCategories(std::set<std::string>* category_set);
@@ -70,6 +74,10 @@ class ArcTracingBridge : public KeyedService,
   class ArcTracingAgent : public tracing::BaseAgent {
    public:
     explicit ArcTracingAgent(ArcTracingBridge* bridge);
+
+    ArcTracingAgent(const ArcTracingAgent&) = delete;
+    ArcTracingAgent& operator=(const ArcTracingAgent&) = delete;
+
     ~ArcTracingAgent() override;
 
    private:
@@ -77,8 +85,6 @@ class ArcTracingBridge : public KeyedService,
     void GetCategories(std::set<std::string>* category_set) override;
 
     ArcTracingBridge* const bridge_;
-
-    DISALLOW_COPY_AND_ASSIGN(ArcTracingAgent);
   };
 
   // A helper class for reading trace data from the client side. We separate
@@ -88,6 +94,10 @@ class ArcTracingBridge : public KeyedService,
   class ArcTracingReader {
    public:
     ArcTracingReader();
+
+    ArcTracingReader(const ArcTracingReader&) = delete;
+    ArcTracingReader& operator=(const ArcTracingReader&) = delete;
+
     ~ArcTracingReader();
 
     // Starts reading trace data from the given file descriptor.
@@ -104,8 +114,6 @@ class ArcTracingBridge : public KeyedService,
     base::ScopedFD read_fd_;
     std::unique_ptr<base::FileDescriptorWatcher::Controller> fd_watcher_;
     base::RingBuffer<std::string, kTraceEventBufferSize> ring_buffer_;
-
-    DISALLOW_COPY_AND_ASSIGN(ArcTracingReader);
   };
 
   struct Category;
@@ -134,8 +142,6 @@ class ArcTracingBridge : public KeyedService,
   // NOTE: Weak pointers must be invalidated before all other member variables
   // so it must be the last member.
   base::WeakPtrFactory<ArcTracingBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingBridge);
 };
 
 }  // namespace arc

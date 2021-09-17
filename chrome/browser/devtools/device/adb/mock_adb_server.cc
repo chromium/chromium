@@ -216,12 +216,20 @@ class SimpleHttpServer {
   using ParserFactory = base::RepeatingCallback<Parser*(const SendCallback&)>;
 
   SimpleHttpServer(const ParserFactory& factory, net::IPEndPoint endpoint);
+
+  SimpleHttpServer(const SimpleHttpServer&) = delete;
+  SimpleHttpServer& operator=(const SimpleHttpServer&) = delete;
+
   virtual ~SimpleHttpServer();
 
  private:
   class Connection {
    public:
     Connection(net::StreamSocket* socket, const ParserFactory& factory);
+
+    Connection(const Connection&) = delete;
+    Connection& operator=(const Connection&) = delete;
+
     virtual ~Connection();
 
    private:
@@ -241,8 +249,6 @@ class SimpleHttpServer {
     SEQUENCE_CHECKER(sequence_checker_);
 
     base::WeakPtrFactory<Connection> weak_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(Connection);
   };
 
   void OnConnect();
@@ -255,8 +261,6 @@ class SimpleHttpServer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SimpleHttpServer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleHttpServer);
 };
 
 SimpleHttpServer::SimpleHttpServer(const ParserFactory& factory,

@@ -35,6 +35,11 @@ class ExtensionSystem;
 class ChromeTestExtensionLoader {
  public:
   explicit ChromeTestExtensionLoader(content::BrowserContext* browser_context);
+
+  ChromeTestExtensionLoader(const ChromeTestExtensionLoader&) = delete;
+  ChromeTestExtensionLoader& operator=(const ChromeTestExtensionLoader&) =
+      delete;
+
   ~ChromeTestExtensionLoader();
 
   // Loads the extension specified by |file_path|. Works for both packed and
@@ -171,8 +176,6 @@ class ChromeTestExtensionLoader {
   // renderer and false otherwise (this roughly maps to "true in browser tests,
   // false in unit tests").
   absl::optional<bool> wait_for_renderers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTestExtensionLoader);
 };
 
 }  // namespace extensions

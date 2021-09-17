@@ -40,6 +40,10 @@ class CallbackTracker {
       std::map<internal::AbortHelper*, base::OnceClosure>;
 
   CallbackTracker();
+
+  CallbackTracker(const CallbackTracker&) = delete;
+  CallbackTracker& operator=(const CallbackTracker&) = delete;
+
   ~CallbackTracker();
 
   // Returns a wrapped callback.
@@ -65,8 +69,6 @@ class CallbackTracker {
       internal::AbortHelper* helper);
 
   AbortClosureByHelper helpers_;  // Owns AbortHelpers.
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackTracker);
 };
 
 }  // namespace drive_backend

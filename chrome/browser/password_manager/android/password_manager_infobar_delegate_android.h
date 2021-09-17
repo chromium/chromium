@@ -12,6 +12,11 @@
 // SavePasswordInfoBarDelegate.
 class PasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  PasswordManagerInfoBarDelegate(const PasswordManagerInfoBarDelegate&) =
+      delete;
+  PasswordManagerInfoBarDelegate& operator=(
+      const PasswordManagerInfoBarDelegate&) = delete;
+
   ~PasswordManagerInfoBarDelegate() override;
 
   // Getter for the message displayed in adition to the title. If no message
@@ -39,8 +44,6 @@ class PasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Used to display aditional information about where the passwords were saved.
   std::u16string details_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_INFOBAR_DELEGATE_ANDROID_H_

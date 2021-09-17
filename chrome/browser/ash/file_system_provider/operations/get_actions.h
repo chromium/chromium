@@ -36,6 +36,10 @@ class GetActions : public Operation {
              const ProvidedFileSystemInfo& file_system_info,
              const std::vector<base::FilePath>& entry_paths,
              ProvidedFileSystemInterface::GetActionsCallback callback);
+
+  GetActions(const GetActions&) = delete;
+  GetActions& operator=(const GetActions&) = delete;
+
   ~GetActions() override;
 
   // Operation overrides.
@@ -50,8 +54,6 @@ class GetActions : public Operation {
  private:
   const std::vector<base::FilePath> entry_paths_;
   ProvidedFileSystemInterface::GetActionsCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetActions);
 };
 
 }  // namespace operations

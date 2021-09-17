@@ -17,6 +17,12 @@ class ManagePasswordsUIControllerMock : public ManagePasswordsUIController {
  public:
   explicit ManagePasswordsUIControllerMock(
       content::WebContents* contents);
+
+  ManagePasswordsUIControllerMock(const ManagePasswordsUIControllerMock&) =
+      delete;
+  ManagePasswordsUIControllerMock& operator=(
+      const ManagePasswordsUIControllerMock&) = delete;
+
   ~ManagePasswordsUIControllerMock() override;
 
   MOCK_CONST_METHOD0(GetOrigin, url::Origin());
@@ -44,9 +50,6 @@ class ManagePasswordsUIControllerMock : public ManagePasswordsUIController {
                void(password_manager::ManagePasswordsReferrer));
   MOCK_METHOD0(NavigateToChromeSignIn, void());
   MOCK_METHOD0(OnDialogHidden, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManagePasswordsUIControllerMock);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_MOCK_H_

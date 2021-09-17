@@ -20,6 +20,10 @@ class PpdResolutionTracker {
   PpdResolutionTracker();
   PpdResolutionTracker(PpdResolutionTracker&& other);
   PpdResolutionTracker& operator=(PpdResolutionTracker&& rhs);
+
+  PpdResolutionTracker(const PpdResolutionTracker&) = delete;
+  PpdResolutionTracker& operator=(const PpdResolutionTracker&) = delete;
+
   ~PpdResolutionTracker();
 
   // Returns true if a |printer_id| is in |printer_state_| and if the printer
@@ -69,8 +73,6 @@ class PpdResolutionTracker {
   bool PrinterStateExists(const std::string& printer_id) const;
 
   std::unordered_map<std::string, PpdResolutionState> printer_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpdResolutionTracker);
 };
 
 }  // namespace ash

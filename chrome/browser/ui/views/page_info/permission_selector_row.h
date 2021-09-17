@@ -44,6 +44,10 @@ class PermissionSelectorRow {
   PermissionSelectorRow(ChromePageInfoUiDelegate* delegate,
                         const PageInfo::PermissionInfo& permission,
                         views::GridLayout* layout);
+
+  PermissionSelectorRow(const PermissionSelectorRow&) = delete;
+  PermissionSelectorRow& operator=(const PermissionSelectorRow&) = delete;
+
   virtual ~PermissionSelectorRow();
 
   // Retrieve the minimum height a |PermissionSelectorRow| can be.
@@ -85,8 +89,6 @@ class PermissionSelectorRow {
 
   base::ObserverList<PermissionSelectorRowObserver, false>::Unchecked
       observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionSelectorRow);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_SELECTOR_ROW_H_

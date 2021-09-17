@@ -39,6 +39,10 @@ class PepperFlashFontFileHost : public ppapi::host::ResourceHost {
       PP_Resource resource,
       const ppapi::proxy::SerializedFontDescription& description,
       PP_PrivateFontCharset charset);
+
+  PepperFlashFontFileHost(const PepperFlashFontFileHost&) = delete;
+  PepperFlashFontFileHost& operator=(const PepperFlashFontFileHost&) = delete;
+
   ~PepperFlashFontFileHost() override;
 
   int32_t OnResourceMessageReceived(
@@ -55,8 +59,6 @@ class PepperFlashFontFileHost : public ppapi::host::ResourceHost {
 #elif defined(OS_WIN)
   sk_sp<SkTypeface> typeface_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFlashFontFileHost);
 };
 
 #endif  // CHROME_RENDERER_PEPPER_PEPPER_FLASH_FONT_FILE_HOST_H_

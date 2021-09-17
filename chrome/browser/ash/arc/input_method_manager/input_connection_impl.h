@@ -27,6 +27,10 @@ class InputConnectionImpl : public mojom::InputConnection {
   InputConnectionImpl(ash::input_method::InputMethodEngine* ime_engine,
                       ArcInputMethodManagerBridge* imm_bridge,
                       int input_context_id);
+
+  InputConnectionImpl(const InputConnectionImpl&) = delete;
+  InputConnectionImpl& operator=(const InputConnectionImpl&) = delete;
+
   ~InputConnectionImpl() override;
 
   // Binds this class to a passed pending remote.
@@ -67,8 +71,6 @@ class InputConnectionImpl : public mojom::InputConnection {
   mojo::Receiver<mojom::InputConnection> receiver_{this};
 
   base::OneShotTimer state_update_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputConnectionImpl);
 };
 
 }  // namespace arc

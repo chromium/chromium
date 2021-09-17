@@ -38,6 +38,11 @@ class EditSearchEngineController {
       TemplateURL* template_url,
       EditSearchEngineControllerDelegate* edit_keyword_delegate,
       Profile* profile);
+
+  EditSearchEngineController(const EditSearchEngineController&) = delete;
+  EditSearchEngineController& operator=(const EditSearchEngineController&) =
+      delete;
+
   ~EditSearchEngineController() {}
 
   // Returns true if the value of |title_input| is a valid search engine name.
@@ -83,8 +88,6 @@ class EditSearchEngineController {
 
   // Profile whose TemplateURLService we're modifying.
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(EditSearchEngineController);
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_EDIT_SEARCH_ENGINE_CONTROLLER_H_

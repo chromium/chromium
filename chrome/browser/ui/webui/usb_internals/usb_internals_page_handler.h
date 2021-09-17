@@ -16,6 +16,10 @@ class UsbInternalsPageHandler : public mojom::UsbInternalsPageHandler {
  public:
   explicit UsbInternalsPageHandler(
       mojo::PendingReceiver<mojom::UsbInternalsPageHandler> receiver);
+
+  UsbInternalsPageHandler(const UsbInternalsPageHandler&) = delete;
+  UsbInternalsPageHandler& operator=(const UsbInternalsPageHandler&) = delete;
+
   ~UsbInternalsPageHandler() override;
 
   void BindUsbDeviceManagerInterface(
@@ -27,8 +31,6 @@ class UsbInternalsPageHandler : public mojom::UsbInternalsPageHandler {
 
  private:
   mojo::Receiver<mojom::UsbInternalsPageHandler> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbInternalsPageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_USB_INTERNALS_USB_INTERNALS_PAGE_HANDLER_H_

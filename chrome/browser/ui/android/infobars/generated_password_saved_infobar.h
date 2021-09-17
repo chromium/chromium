@@ -17,6 +17,11 @@ class GeneratedPasswordSavedInfoBar : public infobars::InfoBarAndroid {
  public:
   explicit GeneratedPasswordSavedInfoBar(
       std::unique_ptr<GeneratedPasswordSavedInfoBarDelegateAndroid> delegate);
+
+  GeneratedPasswordSavedInfoBar(const GeneratedPasswordSavedInfoBar&) = delete;
+  GeneratedPasswordSavedInfoBar& operator=(
+      const GeneratedPasswordSavedInfoBar&) = delete;
+
   ~GeneratedPasswordSavedInfoBar() override;
 
  private:
@@ -27,8 +32,6 @@ class GeneratedPasswordSavedInfoBar : public infobars::InfoBarAndroid {
   void OnLinkClicked(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj) override;
   void ProcessButton(int action) override;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedPasswordSavedInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_GENERATED_PASSWORD_SAVED_INFOBAR_H_

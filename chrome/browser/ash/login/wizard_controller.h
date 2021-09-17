@@ -94,6 +94,10 @@ class WizardController {
   enum class ScreenShownStatus { kSkipped = 0, kShown = 1, kMaxValue = kShown };
 
   explicit WizardController(WizardContext* wizard_context);
+
+  WizardController(const WizardController&) = delete;
+  WizardController& operator=(const WizardController&) = delete;
+
   ~WizardController();
 
   // Returns the default wizard controller if it has been created. This is a
@@ -518,8 +522,6 @@ class WizardController {
   base::ObserverList<ScreenObserver> screen_observers_;
 
   base::WeakPtrFactory<WizardController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WizardController);
 };
 
 }  // namespace ash

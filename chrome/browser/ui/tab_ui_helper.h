@@ -25,6 +25,9 @@
 class TabUIHelper : public content::WebContentsObserver,
                     public content::WebContentsUserData<TabUIHelper> {
  public:
+  TabUIHelper(const TabUIHelper&) = delete;
+  TabUIHelper& operator=(const TabUIHelper&) = delete;
+
   ~TabUIHelper() override;
 
   // Get the title of the tab. When the associated WebContents' title is empty,
@@ -87,8 +90,6 @@ class TabUIHelper : public content::WebContentsObserver,
   base::WeakPtrFactory<TabUIHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TabUIHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_UI_HELPER_H_

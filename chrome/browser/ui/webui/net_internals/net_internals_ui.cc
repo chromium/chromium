@@ -55,6 +55,11 @@ void IgnoreBoolCallback(bool result) {}
 class NetInternalsMessageHandler : public content::WebUIMessageHandler {
  public:
   explicit NetInternalsMessageHandler(content::WebUI* web_ui);
+
+  NetInternalsMessageHandler(const NetInternalsMessageHandler&) = delete;
+  NetInternalsMessageHandler& operator=(const NetInternalsMessageHandler&) =
+      delete;
+
   ~NetInternalsMessageHandler() override = default;
 
  protected:
@@ -91,8 +96,6 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
 
   content::WebUI* web_ui_;
   base::WeakPtrFactory<NetInternalsMessageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetInternalsMessageHandler);
 };
 
 NetInternalsMessageHandler::NetInternalsMessageHandler(content::WebUI* web_ui)

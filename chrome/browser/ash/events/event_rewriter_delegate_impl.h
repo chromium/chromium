@@ -21,6 +21,11 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
   EventRewriterDelegateImpl(wm::ActivationClient* activation_client,
                             std::unique_ptr<DeprecationNotificationController>
                                 deprecation_controller);
+
+  EventRewriterDelegateImpl(const EventRewriterDelegateImpl&) = delete;
+  EventRewriterDelegateImpl& operator=(const EventRewriterDelegateImpl&) =
+      delete;
+
   ~EventRewriterDelegateImpl() override;
 
   void set_pref_service_for_testing(const PrefService* pref_service) {
@@ -48,8 +53,6 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
 
   // Handles showing notifications when deprecated event rewrites occur.
   std::unique_ptr<DeprecationNotificationController> deprecation_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventRewriterDelegateImpl);
 };
 
 }  // namespace ash

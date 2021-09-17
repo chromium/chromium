@@ -55,6 +55,10 @@ namespace {
 class FileManagerPathUtilTest : public testing::Test {
  public:
   FileManagerPathUtilTest() = default;
+
+  FileManagerPathUtilTest(const FileManagerPathUtilTest&) = delete;
+  FileManagerPathUtilTest& operator=(const FileManagerPathUtilTest&) = delete;
+
   ~FileManagerPathUtilTest() override = default;
 
   void SetUp() override {
@@ -70,9 +74,6 @@ class FileManagerPathUtilTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileManagerPathUtilTest);
 };
 
 TEST_F(FileManagerPathUtilTest, GetDownloadsFolderForProfile) {
@@ -604,6 +605,12 @@ std::unique_ptr<KeyedService> CreateFileSystemOperationRunnerForTesting(
 class FileManagerPathUtilConvertUrlTest : public testing::Test {
  public:
   FileManagerPathUtilConvertUrlTest() = default;
+
+  FileManagerPathUtilConvertUrlTest(const FileManagerPathUtilConvertUrlTest&) =
+      delete;
+  FileManagerPathUtilConvertUrlTest& operator=(
+      const FileManagerPathUtilConvertUrlTest&) = delete;
+
   ~FileManagerPathUtilConvertUrlTest() override = default;
 
   void SetUp() override {
@@ -702,9 +709,6 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   base::FilePath drive_mount_point_;
   base::FilePath crostini_mount_point_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileManagerPathUtilConvertUrlTest);
 };
 
 FileSystemURL CreateExternalURL(const base::FilePath& path) {

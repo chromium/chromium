@@ -23,6 +23,12 @@ class ExtensionContextMenuController : public views::ContextMenuController {
  public:
   explicit ExtensionContextMenuController(
       ToolbarActionViewController* controller);
+
+  ExtensionContextMenuController(const ExtensionContextMenuController&) =
+      delete;
+  ExtensionContextMenuController& operator=(
+      const ExtensionContextMenuController&) = delete;
+
   ~ExtensionContextMenuController() override;
 
   // views::ContextMenuController:
@@ -52,8 +58,6 @@ class ExtensionContextMenuController : public views::ContextMenuController {
 
   // This controller contains the data for the extension's context menu.
   ToolbarActionViewController* const controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuController);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_CONTEXT_MENU_CONTROLLER_H_

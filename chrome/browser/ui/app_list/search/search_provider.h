@@ -26,6 +26,10 @@ class SearchProvider {
   using ResultChangedCallback = base::RepeatingClosure;
 
   SearchProvider();
+
+  SearchProvider(const SearchProvider&) = delete;
+  SearchProvider& operator=(const SearchProvider&) = delete;
+
   virtual ~SearchProvider();
 
   // Invoked to start a query.
@@ -74,8 +78,6 @@ class SearchProvider {
   ResultChangedCallback result_changed_callback_;
   SearchController* search_controller_;
   Results results_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchProvider);
 };
 
 }  // namespace app_list

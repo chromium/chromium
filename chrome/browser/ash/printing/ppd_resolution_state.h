@@ -17,6 +17,10 @@ class PpdResolutionState {
   PpdResolutionState();
   PpdResolutionState(PpdResolutionState&& other);
   PpdResolutionState& operator=(PpdResolutionState&& rhs);
+
+  PpdResolutionState(const PpdResolutionState&) = delete;
+  PpdResolutionState& operator=(const PpdResolutionState&) = delete;
+
   ~PpdResolutionState();
 
   // Marks PPD resolution was successful and stores |ppd_reference|.
@@ -54,8 +58,6 @@ class PpdResolutionState {
   bool is_not_autoconfigurable_;
   chromeos::Printer::PpdReference ppd_reference_;
   std::string usb_manufacturer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpdResolutionState);
 };
 
 }  // namespace ash

@@ -13,13 +13,15 @@ namespace extensions {
 class ChromeMetricsPrivateDelegate : public MetricsPrivateDelegate {
  public:
   ChromeMetricsPrivateDelegate() {}
+
+  ChromeMetricsPrivateDelegate(const ChromeMetricsPrivateDelegate&) = delete;
+  ChromeMetricsPrivateDelegate& operator=(const ChromeMetricsPrivateDelegate&) =
+      delete;
+
   ~ChromeMetricsPrivateDelegate() override {}
 
   // MetricsPrivateDelegate:
   bool IsCrashReportingEnabled() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeMetricsPrivateDelegate);
 };
 
 }  // namespace extensions

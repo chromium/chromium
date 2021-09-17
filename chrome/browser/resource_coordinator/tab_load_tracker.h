@@ -52,6 +52,9 @@ class TabLoadTracker {
 
   using LoadingState = ::mojom::LifecycleUnitLoadingState;
 
+  TabLoadTracker(const TabLoadTracker&) = delete;
+  TabLoadTracker& operator=(const TabLoadTracker&) = delete;
+
   // A brief note around loading states specifically as they are defined in the
   // context of a WebContents:
   //
@@ -196,8 +199,6 @@ class TabLoadTracker {
   base::ObserverList<Observer>::Unchecked observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TabLoadTracker);
 };
 
 // A class for observing loading state changes of WebContents under observation
@@ -208,6 +209,10 @@ class TabLoadTracker::Observer {
   using LoadingState = TabLoadTracker::LoadingState;
 
   Observer();
+
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   virtual ~Observer();
 
   // Called when a |web_contents| is starting to be tracked.
@@ -222,9 +227,6 @@ class TabLoadTracker::Observer {
   // Called when a |web_contents| is no longer being tracked.
   virtual void OnStopTracking(content::WebContents* web_contents,
                               LoadingState loading_state) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 }  // namespace resource_coordinator

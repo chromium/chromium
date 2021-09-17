@@ -60,6 +60,10 @@ struct UrlHandlers : public Extension::ManifestData {
 class UrlHandlersParser : public ManifestHandler {
  public:
   UrlHandlersParser();
+
+  UrlHandlersParser(const UrlHandlersParser&) = delete;
+  UrlHandlersParser& operator=(const UrlHandlersParser&) = delete;
+
   ~UrlHandlersParser() override;
 
   // ManifestHandler API
@@ -67,8 +71,6 @@ class UrlHandlersParser : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlHandlersParser);
 };
 
 }  // namespace extensions

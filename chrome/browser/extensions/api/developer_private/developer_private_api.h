@@ -74,6 +74,11 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                                     public content::NotificationObserver {
  public:
   explicit DeveloperPrivateEventRouter(Profile* profile);
+
+  DeveloperPrivateEventRouter(const DeveloperPrivateEventRouter&) = delete;
+  DeveloperPrivateEventRouter& operator=(const DeveloperPrivateEventRouter&) =
+      delete;
+
   ~DeveloperPrivateEventRouter() override;
 
   // Add or remove an ID to the list of extensions subscribed to events.
@@ -188,8 +193,6 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   content::NotificationRegistrar notification_registrar_;
 
   base::WeakPtrFactory<DeveloperPrivateEventRouter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeveloperPrivateEventRouter);
 };
 
 // The profile-keyed service that manages the DeveloperPrivate API.
@@ -208,6 +211,10 @@ class DeveloperPrivateAPI : public BrowserContextKeyedAPI,
   static DeveloperPrivateAPI* Get(content::BrowserContext* context);
 
   explicit DeveloperPrivateAPI(content::BrowserContext* context);
+
+  DeveloperPrivateAPI(const DeveloperPrivateAPI&) = delete;
+  DeveloperPrivateAPI& operator=(const DeveloperPrivateAPI&) = delete;
+
   ~DeveloperPrivateAPI() override;
 
   // Adds a path to the list of allowed unpacked paths for the given
@@ -296,8 +303,6 @@ class DeveloperPrivateAPI : public BrowserContextKeyedAPI,
   std::unique_ptr<DeveloperPrivateEventRouter> developer_private_event_router_;
 
   base::WeakPtrFactory<DeveloperPrivateAPI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeveloperPrivateAPI);
 };
 
 template <>

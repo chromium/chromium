@@ -31,6 +31,10 @@ namespace attestation {
 class AttestationCAClient : public ServerProxy {
  public:
   AttestationCAClient();
+
+  AttestationCAClient(const AttestationCAClient&) = delete;
+  AttestationCAClient& operator=(const AttestationCAClient&) = delete;
+
   ~AttestationCAClient() override;
 
   // chromeos::attestation::ServerProxy:
@@ -66,8 +70,6 @@ class AttestationCAClient : public ServerProxy {
   std::list<std::unique_ptr<network::SimpleURLLoader>> url_loaders_;
 
   network::mojom::NetworkContext* network_context_for_testing_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AttestationCAClient);
 };
 
 }  // namespace attestation

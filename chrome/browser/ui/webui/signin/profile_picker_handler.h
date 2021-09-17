@@ -24,6 +24,10 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                              public ProfileAttributesStorage::Observer {
  public:
   ProfilePickerHandler();
+
+  ProfilePickerHandler(const ProfilePickerHandler&) = delete;
+  ProfilePickerHandler& operator=(const ProfilePickerHandler&) = delete;
+
   ~ProfilePickerHandler() override;
 
   // Enables the startup performance metrics. Should only be called when the
@@ -135,8 +139,6 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // be added to the end of the list.
   std::unordered_map<base::FilePath, size_t> profiles_order_;
   base::WeakPtrFactory<ProfilePickerHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfilePickerHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_HANDLER_H_

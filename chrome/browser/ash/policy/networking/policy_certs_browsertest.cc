@@ -141,6 +141,10 @@ class NetworkCertLoaderTestObserver
     network_cert_loader_->AddObserver(this);
   }
 
+  NetworkCertLoaderTestObserver(const NetworkCertLoaderTestObserver&) = delete;
+  NetworkCertLoaderTestObserver& operator=(
+      const NetworkCertLoaderTestObserver&) = delete;
+
   ~NetworkCertLoaderTestObserver() override {
     network_cert_loader_->RemoveObserver(this);
   }
@@ -153,8 +157,6 @@ class NetworkCertLoaderTestObserver
  private:
   chromeos::NetworkCertLoader* network_cert_loader_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkCertLoaderTestObserver);
 };
 
 // Allows waiting until the |CertDatabase| notifies its observers that it has

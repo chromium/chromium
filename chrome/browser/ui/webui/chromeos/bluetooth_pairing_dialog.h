@@ -50,6 +50,10 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
 class BluetoothPairingDialogUI : public ui::MojoWebDialogUI {
  public:
   explicit BluetoothPairingDialogUI(content::WebUI* web_ui);
+
+  BluetoothPairingDialogUI(const BluetoothPairingDialogUI&) = delete;
+  BluetoothPairingDialogUI& operator=(const BluetoothPairingDialogUI&) = delete;
+
   ~BluetoothPairingDialogUI() override;
 
   // Instantiates implementor of the mojom::CrosBluetoothConfig mojo interface
@@ -60,8 +64,6 @@ class BluetoothPairingDialogUI : public ui::MojoWebDialogUI {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothPairingDialogUI);
 };
 
 }  // namespace chromeos

@@ -17,6 +17,10 @@ namespace {
 class BaseError : public GlobalError {
  public:
   BaseError() { ++count_; }
+
+  BaseError(const BaseError&) = delete;
+  BaseError& operator=(const BaseError&) = delete;
+
   ~BaseError() override { --count_; }
 
   static int count() { return count_; }
@@ -40,8 +44,6 @@ class BaseError : public GlobalError {
  private:
   // This tracks the number BaseError objects that are currently instantiated.
   static int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseError);
 };
 
 int BaseError::count_ = 0;

@@ -112,6 +112,11 @@ class ProtocolHandlerChangeListener : public ProtocolHandlerRegistry::Observer {
   explicit ProtocolHandlerChangeListener(ProtocolHandlerRegistry* registry) {
     registry_observation_.Observe(registry);
   }
+
+  ProtocolHandlerChangeListener(const ProtocolHandlerChangeListener&) = delete;
+  ProtocolHandlerChangeListener& operator=(
+      const ProtocolHandlerChangeListener&) = delete;
+
   ~ProtocolHandlerChangeListener() override = default;
 
   int events() { return events_; }
@@ -127,8 +132,6 @@ class ProtocolHandlerChangeListener : public ProtocolHandlerRegistry::Observer {
   base::ScopedObservation<ProtocolHandlerRegistry,
                           ProtocolHandlerRegistry::Observer>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolHandlerChangeListener);
 };
 
 class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {

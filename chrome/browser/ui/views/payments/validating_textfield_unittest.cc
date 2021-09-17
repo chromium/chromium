@@ -20,12 +20,20 @@ namespace payments {
 class ValidatingTextfieldTest : public ChromeViewsTestBase {
  public:
   ValidatingTextfieldTest() {}
+
+  ValidatingTextfieldTest(const ValidatingTextfieldTest&) = delete;
+  ValidatingTextfieldTest& operator=(const ValidatingTextfieldTest&) = delete;
+
   ~ValidatingTextfieldTest() override {}
 
  protected:
   class TestValidationDelegate : public ValidationDelegate {
    public:
     TestValidationDelegate() {}
+
+    TestValidationDelegate(const TestValidationDelegate&) = delete;
+    TestValidationDelegate& operator=(const TestValidationDelegate&) = delete;
+
     ~TestValidationDelegate() override {}
 
     // ValidationDelegate:
@@ -48,13 +56,7 @@ class ValidatingTextfieldTest : public ChromeViewsTestBase {
       return true;
     }
     void ComboboxModelChanged(ValidatingCombobox* combobox) override {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TestValidationDelegate);
   };
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ValidatingTextfieldTest);
 };
 
 TEST_F(ValidatingTextfieldTest, Validation) {

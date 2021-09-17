@@ -40,6 +40,10 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
 
   DownloadItemNotification(Profile* profile,
                            DownloadUIModel::DownloadUIModelPtr item);
+
+  DownloadItemNotification(const DownloadItemNotification&) = delete;
+  DownloadItemNotification& operator=(const DownloadItemNotification&) = delete;
+
   ~DownloadItemNotification() override;
 
   // Observer for this notification.
@@ -158,8 +162,6 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   ImageDecodeStatus image_decode_status_ = NOT_STARTED;
 
   base::WeakPtrFactory<DownloadItemNotification> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemNotification);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_NOTIFICATION_DOWNLOAD_ITEM_NOTIFICATION_H_

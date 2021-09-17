@@ -64,6 +64,10 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
 
   InternalsUIHandler(std::string call_on_load,
                      GetLogRouterFunction get_log_router_function);
+
+  InternalsUIHandler(const InternalsUIHandler&) = delete;
+  InternalsUIHandler& operator=(const InternalsUIHandler&) = delete;
+
   ~InternalsUIHandler() override;
 
  private:
@@ -94,8 +98,6 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   bool registered_with_log_router_ = false;
 
   absl::optional<AutofillCacheResetter> autofill_cache_resetter_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalsUIHandler);
 };
 
 }  // namespace autofill

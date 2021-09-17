@@ -16,13 +16,16 @@ class NetworkingPrivateUIDelegateChromeOS
     : public ::extensions::NetworkingPrivateDelegate::UIDelegate {
  public:
   NetworkingPrivateUIDelegateChromeOS();
+
+  NetworkingPrivateUIDelegateChromeOS(
+      const NetworkingPrivateUIDelegateChromeOS&) = delete;
+  NetworkingPrivateUIDelegateChromeOS& operator=(
+      const NetworkingPrivateUIDelegateChromeOS&) = delete;
+
   ~NetworkingPrivateUIDelegateChromeOS() override;
 
   // NetworkingPrivateDelegate::UIDelegate
   void ShowAccountDetails(const std::string& guid) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateUIDelegateChromeOS);
 };
 
 }  // namespace extensions

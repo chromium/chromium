@@ -76,6 +76,12 @@ class WaitForMainFrameResourceObserver : public content::WebContentsObserver {
  public:
   explicit WaitForMainFrameResourceObserver(WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
+
+  WaitForMainFrameResourceObserver(const WaitForMainFrameResourceObserver&) =
+      delete;
+  WaitForMainFrameResourceObserver& operator=(
+      const WaitForMainFrameResourceObserver&) = delete;
+
   ~WaitForMainFrameResourceObserver() override {}
 
   // content::WebContentsObserver implementation:
@@ -93,8 +99,6 @@ class WaitForMainFrameResourceObserver : public content::WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForMainFrameResourceObserver);
 };
 
 // This test fixture tests code in content/. The fixture itself is in chrome/

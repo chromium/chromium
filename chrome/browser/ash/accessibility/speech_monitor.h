@@ -31,6 +31,10 @@ struct SpeechMonitorUtterance {
 class SpeechMonitor : public content::TtsPlatform {
  public:
   SpeechMonitor();
+
+  SpeechMonitor(const SpeechMonitor&) = delete;
+  SpeechMonitor& operator=(const SpeechMonitor&) = delete;
+
   virtual ~SpeechMonitor();
 
   // Use these apis if you want to write an async test e.g.
@@ -132,8 +136,6 @@ class SpeechMonitor : public content::TtsPlatform {
   int stop_count_ = 0;
 
   base::WeakPtrFactory<SpeechMonitor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechMonitor);
 };
 
 }  // namespace test

@@ -34,6 +34,11 @@ namespace policy {
 class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
  public:
   LockToSingleUserManagerTest() = default;
+
+  LockToSingleUserManagerTest(const LockToSingleUserManagerTest&) = delete;
+  LockToSingleUserManagerTest& operator=(const LockToSingleUserManagerTest&) =
+      delete;
+
   ~LockToSingleUserManagerTest() override = default;
 
   void SetUp() override {
@@ -153,8 +158,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   chromeos::SessionTerminationManager termination_manager_;
   std::unique_ptr<LockToSingleUserManager> lock_to_single_user_manager_;
   chromeos::FakeConciergeClient* fake_concierge_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockToSingleUserManagerTest);
 };
 
 TEST_F(LockToSingleUserManagerTest, ArcSessionLockTest) {

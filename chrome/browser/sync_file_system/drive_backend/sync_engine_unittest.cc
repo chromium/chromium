@@ -36,6 +36,10 @@ class SyncEngineTest : public testing::Test,
   typedef RemoteFileSyncService::OriginStatusMap RemoteOriginStatusMap;
 
   SyncEngineTest() {}
+
+  SyncEngineTest(const SyncEngineTest&) = delete;
+  SyncEngineTest& operator=(const SyncEngineTest&) = delete;
+
   ~SyncEngineTest() override {}
 
   void SetUp() override {
@@ -128,8 +132,6 @@ class SyncEngineTest : public testing::Test,
   std::unique_ptr<drive_backend::SyncEngine> sync_engine_;
 
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineTest);
 };
 
 TEST_F(SyncEngineTest, OriginTest) {

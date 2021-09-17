@@ -21,6 +21,10 @@ namespace syncfs_internals {
 class ExtensionStatusesHandler : public content::WebUIMessageHandler {
  public:
   explicit ExtensionStatusesHandler(Profile* profile);
+
+  ExtensionStatusesHandler(const ExtensionStatusesHandler&) = delete;
+  ExtensionStatusesHandler& operator=(const ExtensionStatusesHandler&) = delete;
+
   ~ExtensionStatusesHandler() override;
 
   // Shared by Extension Statuses Tab and also File Metadata Tab to generate the
@@ -39,8 +43,6 @@ class ExtensionStatusesHandler : public content::WebUIMessageHandler {
 
   Profile* profile_;
   base::WeakPtrFactory<ExtensionStatusesHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionStatusesHandler);
 };
 
 }  // namespace syncfs_internals

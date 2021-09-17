@@ -87,6 +87,11 @@ class ChromeShelfControllerInitializer
     session_manager::SessionManager::Get()->AddObserver(this);
   }
 
+  ChromeShelfControllerInitializer(const ChromeShelfControllerInitializer&) =
+      delete;
+  ChromeShelfControllerInitializer& operator=(
+      const ChromeShelfControllerInitializer&) = delete;
+
   ~ChromeShelfControllerInitializer() override {
     if (!chrome_shelf_controller_)
       session_manager::SessionManager::Get()->RemoveObserver(this);
@@ -115,8 +120,6 @@ class ChromeShelfControllerInitializer
  private:
   std::unique_ptr<ChromeShelfItemFactory> chrome_shelf_item_factory_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeShelfControllerInitializer);
 };
 
 }  // namespace internal
@@ -336,6 +339,11 @@ class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
   UserProfileLoadedObserver() {
     session_observation_.Observe(session_manager::SessionManager::Get());
   }
+
+  UserProfileLoadedObserver(const UserProfileLoadedObserver&) = delete;
+  UserProfileLoadedObserver& operator=(const UserProfileLoadedObserver&) =
+      delete;
+
   ~UserProfileLoadedObserver() override = default;
 
   // session_manager::SessionManagerObserver:
@@ -358,6 +366,4 @@ class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserProfileLoadedObserver);
 };

@@ -19,6 +19,12 @@ class Browser;
 class AppBannerManagerBrowserTestBase : public InProcessBrowserTest {
  public:
   AppBannerManagerBrowserTestBase();
+
+  AppBannerManagerBrowserTestBase(const AppBannerManagerBrowserTestBase&) =
+      delete;
+  AppBannerManagerBrowserTestBase& operator=(
+      const AppBannerManagerBrowserTestBase&) = delete;
+
   ~AppBannerManagerBrowserTestBase() override;
   void SetUpOnMainThread() override;
 
@@ -43,9 +49,6 @@ class AppBannerManagerBrowserTestBase : public InProcessBrowserTest {
   GURL GetBannerURLWithManifestAndQuery(const std::string& manifest_url,
                                         const std::string& key,
                                         const std::string& value);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppBannerManagerBrowserTestBase);
   web_app::ScopedOsHooksSuppress os_hooks_suppress_;
 };
 

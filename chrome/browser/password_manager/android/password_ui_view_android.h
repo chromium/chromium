@@ -48,6 +48,10 @@ class PasswordUIViewAndroid : public PasswordUIView {
   };
 
   PasswordUIViewAndroid(JNIEnv* env, jobject);
+
+  PasswordUIViewAndroid(const PasswordUIViewAndroid&) = delete;
+  PasswordUIViewAndroid& operator=(const PasswordUIViewAndroid&) = delete;
+
   ~PasswordUIViewAndroid() override;
 
   // PasswordUIView implementation.
@@ -178,8 +182,6 @@ class PasswordUIViewAndroid : public PasswordUIView {
 
   // Used to open the view/edit/delete UI.
   std::unique_ptr<CredentialEditBridge> credential_edit_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordUIViewAndroid);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_UI_VIEW_ANDROID_H_

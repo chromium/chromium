@@ -40,6 +40,10 @@ class PrintJobWorker {
                               PrintingContext::Result)>;
 
   PrintJobWorker(int render_process_id, int render_frame_id);
+
+  PrintJobWorker(const PrintJobWorker&) = delete;
+  PrintJobWorker& operator=(const PrintJobWorker&) = delete;
+
   virtual ~PrintJobWorker();
 
   void SetPrintJob(PrintJob* print_job);
@@ -189,8 +193,6 @@ class PrintJobWorker {
 
   // Used to generate a WeakPtr for callbacks.
   base::WeakPtrFactory<PrintJobWorker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobWorker);
 };
 
 }  // namespace printing

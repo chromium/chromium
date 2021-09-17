@@ -20,6 +20,11 @@ class IdleActionWarningObserver : public PowerManagerClient::Observer,
                                   public views::WidgetObserver {
  public:
   IdleActionWarningObserver();
+
+  IdleActionWarningObserver(const IdleActionWarningObserver&) = delete;
+  IdleActionWarningObserver& operator=(const IdleActionWarningObserver&) =
+      delete;
+
   ~IdleActionWarningObserver() override;
 
   // PowerManagerClient::Observer:
@@ -37,8 +42,6 @@ class IdleActionWarningObserver : public PowerManagerClient::Observer,
 
   // Used to derive the correct idle action (IdleActionAC/IdleActionBattery).
   bool on_battery_power_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleActionWarningObserver);
 };
 
 }  // namespace ash

@@ -10,6 +10,11 @@
 
 class ContextMenuContentTypeExtensionPopup : public ContextMenuContentType {
  public:
+  ContextMenuContentTypeExtensionPopup(
+      const ContextMenuContentTypeExtensionPopup&) = delete;
+  ContextMenuContentTypeExtensionPopup& operator=(
+      const ContextMenuContentTypeExtensionPopup&) = delete;
+
   ~ContextMenuContentTypeExtensionPopup() override;
 
   // ContextMenuContentType overrides.
@@ -22,8 +27,6 @@ class ContextMenuContentTypeExtensionPopup : public ContextMenuContentType {
 
  private:
   friend class ContextMenuContentTypeFactory;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuContentTypeExtensionPopup);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_EXTENSION_POPUP_H_

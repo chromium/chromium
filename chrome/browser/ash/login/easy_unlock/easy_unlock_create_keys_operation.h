@@ -29,6 +29,11 @@ class EasyUnlockCreateKeysOperation {
                                 const std::string& tpm_public_key,
                                 const EasyUnlockDeviceKeyDataList& devices,
                                 CreateKeysCallback callback);
+
+  EasyUnlockCreateKeysOperation(const EasyUnlockCreateKeysOperation&) = delete;
+  EasyUnlockCreateKeysOperation& operator=(
+      const EasyUnlockCreateKeysOperation&) = delete;
+
   ~EasyUnlockCreateKeysOperation();
 
   void Start();
@@ -58,8 +63,6 @@ class EasyUnlockCreateKeysOperation {
   std::unique_ptr<ChallengeCreator> challenge_creator_;
 
   base::WeakPtrFactory<EasyUnlockCreateKeysOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockCreateKeysOperation);
 };
 
 }  // namespace ash

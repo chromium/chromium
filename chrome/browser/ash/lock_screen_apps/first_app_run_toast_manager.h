@@ -27,6 +27,10 @@ class FirstAppRunToastManager : public extensions::AppWindowRegistry::Observer,
                                 public views::WidgetObserver {
  public:
   explicit FirstAppRunToastManager(Profile* profile);
+
+  FirstAppRunToastManager(const FirstAppRunToastManager&) = delete;
+  FirstAppRunToastManager& operator=(const FirstAppRunToastManager&) = delete;
+
   ~FirstAppRunToastManager() override;
 
   // Runs the manager for an app window launch. It determines whether the first
@@ -83,8 +87,6 @@ class FirstAppRunToastManager : public extensions::AppWindowRegistry::Observer,
   std::unique_ptr<AppWidgetObserver> app_widget_observer_;
 
   base::WeakPtrFactory<FirstAppRunToastManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FirstAppRunToastManager);
 };
 
 }  // namespace lock_screen_apps

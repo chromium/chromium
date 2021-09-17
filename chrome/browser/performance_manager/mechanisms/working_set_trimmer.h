@@ -19,6 +19,9 @@ namespace mechanism {
 // trimmed.
 class WorkingSetTrimmer {
  public:
+  WorkingSetTrimmer(const WorkingSetTrimmer&) = delete;
+  WorkingSetTrimmer& operator=(const WorkingSetTrimmer&) = delete;
+
   virtual ~WorkingSetTrimmer() = default;
 
   // GetInstance will return the singleton instance of a working set trimmer for
@@ -38,7 +41,6 @@ class WorkingSetTrimmer {
 
  private:
   friend class base::NoDestructor<WorkingSetTrimmer>;
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmer);
 };
 
 }  // namespace mechanism

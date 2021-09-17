@@ -32,6 +32,10 @@ class WebContents;
 class InstantController : public TabStripModelObserver {
  public:
   explicit InstantController(Profile* profile, TabStripModel* tab_strip_model);
+
+  InstantController(const InstantController&) = delete;
+  InstantController& operator=(const InstantController&) = delete;
+
   ~InstantController() override;
 
   // TabStripModelObserver:
@@ -56,8 +60,6 @@ class InstantController : public TabStripModelObserver {
 
   // Observes the currently active tab, and calls us back if it becomes an NTP.
   std::unique_ptr<TabObserver> tab_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstantController);
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_INSTANT_CONTROLLER_H_

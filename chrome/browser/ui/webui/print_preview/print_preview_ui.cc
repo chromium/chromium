@@ -142,6 +142,12 @@ WebContents* GetInitiator(content::WebUI* web_ui) {
 class PrintPreviewRequestIdMapWithLock {
  public:
   PrintPreviewRequestIdMapWithLock() {}
+
+  PrintPreviewRequestIdMapWithLock(const PrintPreviewRequestIdMapWithLock&) =
+      delete;
+  PrintPreviewRequestIdMapWithLock& operator=(
+      const PrintPreviewRequestIdMapWithLock&) = delete;
+
   ~PrintPreviewRequestIdMapWithLock() {}
 
   // Gets the value for |preview_id|.
@@ -173,8 +179,6 @@ class PrintPreviewRequestIdMapWithLock {
 
   PrintPreviewRequestIdMap map_;
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewRequestIdMapWithLock);
 };
 
 // Written to on the UI thread, read from any thread.

@@ -51,6 +51,10 @@ class GalleryWatchManager
   static const char kCouldNotWatchGalleryError[];
 
   GalleryWatchManager();
+
+  GalleryWatchManager(const GalleryWatchManager&) = delete;
+  GalleryWatchManager& operator=(const GalleryWatchManager&) = delete;
+
   ~GalleryWatchManager() override;
 
   // Add or remove observer of change events - this is the only way to
@@ -173,8 +177,6 @@ class GalleryWatchManager
   BrowserContextSubscriptionMap browser_context_subscription_map_;
 
   base::WeakPtrFactory<GalleryWatchManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GalleryWatchManager);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_GALLERY_WATCH_MANAGER_H_

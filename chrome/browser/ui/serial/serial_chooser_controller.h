@@ -31,6 +31,10 @@ class SerialChooserController final
       content::RenderFrameHost* render_frame_host,
       std::vector<blink::mojom::SerialPortFilterPtr> filters,
       content::SerialChooser::Callback callback);
+
+  SerialChooserController(const SerialChooserController&) = delete;
+  SerialChooserController& operator=(const SerialChooserController&) = delete;
+
   ~SerialChooserController() override;
 
   // permissions::ChooserController:
@@ -72,8 +76,6 @@ class SerialChooserController final
   std::vector<device::mojom::SerialPortInfoPtr> ports_;
 
   base::WeakPtrFactory<SerialChooserController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SerialChooserController);
 };
 
 #endif  // CHROME_BROWSER_UI_SERIAL_SERIAL_CHOOSER_CONTROLLER_H_

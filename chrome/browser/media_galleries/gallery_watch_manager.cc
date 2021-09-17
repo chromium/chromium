@@ -73,6 +73,10 @@ const char GalleryWatchManager::kCouldNotWatchGalleryError[] =
 class GalleryWatchManager::FileWatchManager {
  public:
   explicit FileWatchManager(const base::FilePathWatcher::Callback& callback);
+
+  FileWatchManager(const FileWatchManager&) = delete;
+  FileWatchManager& operator=(const FileWatchManager&) = delete;
+
   ~FileWatchManager();
 
   // Posts success or failure via |callback| to the UI thread.
@@ -96,8 +100,6 @@ class GalleryWatchManager::FileWatchManager {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<FileWatchManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileWatchManager);
 };
 
 GalleryWatchManager::FileWatchManager::FileWatchManager(

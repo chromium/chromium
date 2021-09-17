@@ -22,6 +22,10 @@ class SavePaymentIconView : public PageActionIconView {
   SavePaymentIconView(CommandUpdater* command_updater,
                       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                       PageActionIconView::Delegate* page_action_icon_delegate);
+
+  SavePaymentIconView(const SavePaymentIconView&) = delete;
+  SavePaymentIconView& operator=(const SavePaymentIconView&) = delete;
+
   ~SavePaymentIconView() override;
 
   // PageActionIconView:
@@ -41,8 +45,6 @@ class SavePaymentIconView : public PageActionIconView {
 
   // gfx::AnimationDelegate:
   void AnimationEnded(const gfx::Animation* animation) override;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePaymentIconView);
 };
 
 }  // namespace autofill

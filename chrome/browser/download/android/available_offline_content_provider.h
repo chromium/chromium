@@ -29,6 +29,12 @@ class AvailableOfflineContentProvider
  public:
   // Public for testing.
   explicit AvailableOfflineContentProvider(int render_process_host_id);
+
+  AvailableOfflineContentProvider(const AvailableOfflineContentProvider&) =
+      delete;
+  AvailableOfflineContentProvider& operator=(
+      const AvailableOfflineContentProvider&) = delete;
+
   ~AvailableOfflineContentProvider() override;
 
   // chrome::mojom::AvailableOfflineContentProvider methods.
@@ -61,8 +67,6 @@ class AvailableOfflineContentProvider
       provider_self_owned_receiver_;
 
   base::WeakPtrFactory<AvailableOfflineContentProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AvailableOfflineContentProvider);
 };
 
 }  // namespace android

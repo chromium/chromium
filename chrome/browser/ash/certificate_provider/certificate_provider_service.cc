@@ -51,6 +51,10 @@ class CertificateProviderService::CertificateProviderImpl
   // CertificateProviderService.
   explicit CertificateProviderImpl(
       const base::WeakPtr<CertificateProviderService>& service);
+
+  CertificateProviderImpl(const CertificateProviderImpl&) = delete;
+  CertificateProviderImpl& operator=(const CertificateProviderImpl&) = delete;
+
   ~CertificateProviderImpl() override;
 
   void GetCertificates(
@@ -60,8 +64,6 @@ class CertificateProviderService::CertificateProviderImpl
 
   const base::WeakPtr<CertificateProviderService> service_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateProviderImpl);
 };
 
 // Implements an SSLPrivateKey backed by the signing function exposed by an
@@ -97,6 +99,10 @@ class CertificateProviderService::ClientCertIdentity
   ClientCertIdentity(scoped_refptr<net::X509Certificate> cert,
                      base::WeakPtr<CertificateProviderService> service)
       : net::ClientCertIdentity(std::move(cert)), service_(service) {}
+
+  ClientCertIdentity(const ClientCertIdentity&) = delete;
+  ClientCertIdentity& operator=(const ClientCertIdentity&) = delete;
+
   ~ClientCertIdentity() override;
 
   void AcquirePrivateKey(
@@ -106,8 +112,6 @@ class CertificateProviderService::ClientCertIdentity
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   const base::WeakPtr<CertificateProviderService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertIdentity);
 };
 
 CertificateProviderService::ClientCertIdentity::~ClientCertIdentity() {

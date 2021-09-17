@@ -48,6 +48,11 @@ class StatusTrayStateChangerProxyImpl : public StatusTrayStateChangerProxy {
     worker_thread_.init_com_with_mta(false);
   }
 
+  StatusTrayStateChangerProxyImpl(const StatusTrayStateChangerProxyImpl&) =
+      delete;
+  StatusTrayStateChangerProxyImpl& operator=(
+      const StatusTrayStateChangerProxyImpl&) = delete;
+
   ~StatusTrayStateChangerProxyImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
@@ -93,8 +98,6 @@ class StatusTrayStateChangerProxyImpl : public StatusTrayStateChangerProxy {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<StatusTrayStateChangerProxyImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTrayStateChangerProxyImpl);
 };
 
 StatusTrayWin::StatusTrayWin()

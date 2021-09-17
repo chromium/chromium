@@ -48,6 +48,9 @@ class DetachedResourceRequest {
 
   using OnResultCallback = base::OnceCallback<void(int net_error)>;
 
+  DetachedResourceRequest(const DetachedResourceRequest&) = delete;
+  DetachedResourceRequest& operator=(const DetachedResourceRequest&) = delete;
+
   ~DetachedResourceRequest();
 
   // Creates a detached request to a `url`, with a given initiating URL,
@@ -84,8 +87,6 @@ class DetachedResourceRequest {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   int redirects_;
   bool is_from_aga_;
-
-  DISALLOW_COPY_AND_ASSIGN(DetachedResourceRequest);
 };
 
 }  // namespace customtabs

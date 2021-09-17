@@ -26,6 +26,12 @@ const int kType = 5;
 class ExploreSitesRecordSiteClickTest : public TaskTestBase {
  public:
   ExploreSitesRecordSiteClickTest() = default;
+
+  ExploreSitesRecordSiteClickTest(const ExploreSitesRecordSiteClickTest&) =
+      delete;
+  ExploreSitesRecordSiteClickTest& operator=(
+      const ExploreSitesRecordSiteClickTest&) = delete;
+
   ~ExploreSitesRecordSiteClickTest() override = default;
 
   void SetUp() override {
@@ -49,8 +55,6 @@ class ExploreSitesRecordSiteClickTest : public TaskTestBase {
  private:
   std::unique_ptr<ExploreSitesStore> store_;
   bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesRecordSiteClickTest);
 };
 
 void ExploreSitesRecordSiteClickTest::PopulateActivity() {

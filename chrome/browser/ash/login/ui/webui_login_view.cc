@@ -74,6 +74,10 @@ class ScopedArrowKeyTraversal {
     views::FocusManager::set_arrow_key_traversal_enabled(
         new_arrow_key_tranversal_enabled);
   }
+
+  ScopedArrowKeyTraversal(const ScopedArrowKeyTraversal&) = delete;
+  ScopedArrowKeyTraversal& operator=(const ScopedArrowKeyTraversal&) = delete;
+
   ~ScopedArrowKeyTraversal() {
     views::FocusManager::set_arrow_key_traversal_enabled(
         previous_arrow_key_traversal_enabled_);
@@ -81,7 +85,6 @@ class ScopedArrowKeyTraversal {
 
  private:
   const bool previous_arrow_key_traversal_enabled_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedArrowKeyTraversal);
 };
 
 }  // namespace

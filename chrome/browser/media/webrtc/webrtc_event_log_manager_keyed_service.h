@@ -21,6 +21,11 @@ class WebRtcEventLogManagerKeyedService : public KeyedService {
   explicit WebRtcEventLogManagerKeyedService(
       content::BrowserContext* browser_context);
 
+  WebRtcEventLogManagerKeyedService(const WebRtcEventLogManagerKeyedService&) =
+      delete;
+  WebRtcEventLogManagerKeyedService& operator=(
+      const WebRtcEventLogManagerKeyedService&) = delete;
+
   ~WebRtcEventLogManagerKeyedService() override = default;
 
   void Shutdown() override;
@@ -34,8 +39,6 @@ class WebRtcEventLogManagerKeyedService : public KeyedService {
   // BrowserContext was loaded.
   // See usage for rationale.
   bool reported_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcEventLogManagerKeyedService);
 };
 
 }  // namespace webrtc_event_logging

@@ -47,6 +47,10 @@ std::unique_ptr<KeyedService> BuildFakeLoginUIService(
 class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
  public:
   SyncErrorNotifierTest() = default;
+
+  SyncErrorNotifierTest(const SyncErrorNotifierTest&) = delete;
+  SyncErrorNotifierTest& operator=(const SyncErrorNotifierTest&) = delete;
+
   ~SyncErrorNotifierTest() override = default;
 
   void SetUp() override {
@@ -88,9 +92,6 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   user_manager::ScopedUserManager scoped_user_manager_{
       std::make_unique<ash::MockUserManager>()};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorNotifierTest);
 };
 
 TEST_F(SyncErrorNotifierTest, NoNotificationWhenNoPassphrase) {

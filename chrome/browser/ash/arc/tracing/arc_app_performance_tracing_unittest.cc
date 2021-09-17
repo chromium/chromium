@@ -65,6 +65,11 @@ int64_t ReadFocusStatistics(const std::string& name) {
 class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
  public:
   ArcAppPerformanceTracingTest() = default;
+
+  ArcAppPerformanceTracingTest(const ArcAppPerformanceTracingTest&) = delete;
+  ArcAppPerformanceTracingTest& operator=(const ArcAppPerformanceTracingTest&) =
+      delete;
+
   ~ArcAppPerformanceTracingTest() override = default;
 
   // testing::Test:
@@ -120,8 +125,6 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
  private:
   ArcAppPerformanceTracingTestHelper tracing_helper_;
   ArcAppTest arc_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracingTest);
 };
 
 TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {

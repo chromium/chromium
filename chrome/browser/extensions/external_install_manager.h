@@ -32,6 +32,10 @@ class ExternalInstallManager : public ExtensionRegistryObserver,
  public:
   ExternalInstallManager(content::BrowserContext* browser_context,
                          bool is_first_run);
+
+  ExternalInstallManager(const ExternalInstallManager&) = delete;
+  ExternalInstallManager& operator=(const ExternalInstallManager&) = delete;
+
   ~ExternalInstallManager() override;
 
   // Called when the associated profile will be destroyed.
@@ -122,8 +126,6 @@ class ExternalInstallManager : public ExtensionRegistryObserver,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallManager);
 };
 
 }  // namespace extensions

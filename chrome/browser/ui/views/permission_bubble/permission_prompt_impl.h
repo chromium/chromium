@@ -31,6 +31,10 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   PermissionPromptImpl(Browser* browser,
                        content::WebContents* web_contents,
                        Delegate* delegate);
+
+  PermissionPromptImpl(const PermissionPromptImpl&) = delete;
+  PermissionPromptImpl& operator=(const PermissionPromptImpl&) = delete;
+
   ~PermissionPromptImpl() override;
 
   // permissions::PermissionPrompt:
@@ -76,8 +80,6 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
 
   // PermissionRequestManager owns `this` and outlives `PermissionPromptImpl`.
   permissions::PermissionRequestManager* manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionPromptImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_IMPL_H_

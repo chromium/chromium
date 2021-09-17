@@ -45,6 +45,11 @@ class ActiveTabPermissionGranter
   ActiveTabPermissionGranter(content::WebContents* web_contents,
                              int tab_id,
                              Profile* profile);
+
+  ActiveTabPermissionGranter(const ActiveTabPermissionGranter&) = delete;
+  ActiveTabPermissionGranter& operator=(const ActiveTabPermissionGranter&) =
+      delete;
+
   ~ActiveTabPermissionGranter() override;
 
   // Platform specific delegate should be set during startup.
@@ -82,8 +87,6 @@ class ActiveTabPermissionGranter
   // Listen to extension unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveTabPermissionGranter);
 };
 
 }  // namespace extensions

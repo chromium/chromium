@@ -121,6 +121,10 @@ class MockMagnificationObserver {
             base::Unretained(this)));
   }
 
+  MockMagnificationObserver(const MockMagnificationObserver&) = delete;
+  MockMagnificationObserver& operator=(const MockMagnificationObserver&) =
+      delete;
+
   virtual ~MockMagnificationObserver() {}
 
   bool observed() const { return observed_; }
@@ -142,8 +146,6 @@ class MockMagnificationObserver {
   bool observed_enabled_ = false;
 
   base::CallbackListSubscription accessibility_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMagnificationObserver);
 };
 
 class MagnificationManagerTest : public InProcessBrowserTest {

@@ -29,6 +29,9 @@ class SpellingRequest {
                   RequestTextCheckCallback callback,
                   DestructionCallback destruction_callback);
 
+  SpellingRequest(const SpellingRequest&) = delete;
+  SpellingRequest& operator=(const SpellingRequest&) = delete;
+
   ~SpellingRequest();
 
   // Exposed to tests only.
@@ -80,8 +83,6 @@ class SpellingRequest {
   DestructionCallback destruction_callback_;
 
   base::WeakPtrFactory<SpellingRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellingRequest);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLING_REQUEST_H_

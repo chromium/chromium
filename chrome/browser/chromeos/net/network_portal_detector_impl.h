@@ -53,6 +53,11 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
  public:
   explicit NetworkPortalDetectorImpl(
       network::mojom::URLLoaderFactory* loader_factory_for_testing = nullptr);
+
+  NetworkPortalDetectorImpl(const NetworkPortalDetectorImpl&) = delete;
+  NetworkPortalDetectorImpl& operator=(const NetworkPortalDetectorImpl&) =
+      delete;
+
   ~NetworkPortalDetectorImpl() override;
 
  private:
@@ -227,8 +232,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   base::TimeTicks time_ticks_for_testing_;
 
   base::WeakPtrFactory<NetworkPortalDetectorImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalDetectorImpl);
 };
 
 }  // namespace chromeos

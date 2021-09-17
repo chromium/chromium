@@ -302,6 +302,10 @@ class TestingUpdateManifestProvider
   };
   typedef std::map<std::string, Update> UpdateMap;
 
+  TestingUpdateManifestProvider(const TestingUpdateManifestProvider&) = delete;
+  TestingUpdateManifestProvider& operator=(
+      const TestingUpdateManifestProvider&) = delete;
+
   ~TestingUpdateManifestProvider();
   friend class RefCountedThreadSafe<TestingUpdateManifestProvider>;
 
@@ -311,8 +315,6 @@ class TestingUpdateManifestProvider
 
   std::string relative_update_url_;
   UpdateMap updates_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingUpdateManifestProvider);
 };
 
 TestingUpdateManifestProvider::Update::Update(const std::string& version,
@@ -765,6 +767,9 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
     profile_manager_observer_.Observe(g_browser_process->profile_manager());
   }
 
+  ExtensionInstallObserver(const ExtensionInstallObserver&) = delete;
+  ExtensionInstallObserver& operator=(const ExtensionInstallObserver&) = delete;
+
   ~ExtensionInstallObserver() override {
     if (registry_ != nullptr)
       registry_->RemoveObserver(this);
@@ -813,8 +818,6 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
       profile_manager_observer_{this};
   std::string waiting_extension_id_;
   bool observed_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallObserver);
 };
 
 // Tests that the data associated with a device local account is removed when

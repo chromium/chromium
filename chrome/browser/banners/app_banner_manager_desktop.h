@@ -33,6 +33,9 @@ class AppBannerManagerDesktop
       public content::WebContentsUserData<AppBannerManagerDesktop>,
       public web_app::AppRegistrarObserver {
  public:
+  AppBannerManagerDesktop(const AppBannerManagerDesktop&) = delete;
+  AppBannerManagerDesktop& operator=(const AppBannerManagerDesktop&) = delete;
+
   ~AppBannerManagerDesktop() override;
 
   static void CreateForWebContents(content::WebContents* web_contents);
@@ -104,8 +107,6 @@ class AppBannerManagerDesktop
   base::WeakPtrFactory<AppBannerManagerDesktop> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AppBannerManagerDesktop);
 };
 
 }  // namespace webapps

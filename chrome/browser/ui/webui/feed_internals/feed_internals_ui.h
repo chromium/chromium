@@ -26,6 +26,10 @@ class FeedV2InternalsPageHandler;
 class FeedInternalsUI : public ui::MojoWebUIController {
  public:
   explicit FeedInternalsUI(content::WebUI* web_ui);
+
+  FeedInternalsUI(const FeedInternalsUI&) = delete;
+  FeedInternalsUI& operator=(const FeedInternalsUI&) = delete;
+
   ~FeedInternalsUI() override;
 
   // Instantiates the implementor of the feed_internals::mojom::PageHandler mojo
@@ -37,8 +41,6 @@ class FeedInternalsUI : public ui::MojoWebUIController {
   Profile* profile_;
   std::unique_ptr<FeedV2InternalsPageHandler> v2_page_handler_;
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(FeedInternalsUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FEED_INTERNALS_FEED_INTERNALS_UI_H_

@@ -64,6 +64,10 @@ class ArcWallpaperServiceTest : public testing::Test {
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()),
         user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)) {}
+
+  ArcWallpaperServiceTest(const ArcWallpaperServiceTest&) = delete;
+  ArcWallpaperServiceTest& operator=(const ArcWallpaperServiceTest&) = delete;
+
   ~ArcWallpaperServiceTest() override = default;
 
   void SetUp() override {
@@ -126,8 +130,6 @@ class ArcWallpaperServiceTest : public testing::Test {
   // testing_profile_ needs to be deleted before arc_service_manager_.
   TestingProfile testing_profile_;
   TestingPrefServiceSimple pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcWallpaperServiceTest);
 };
 
 }  // namespace

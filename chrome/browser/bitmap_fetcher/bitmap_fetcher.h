@@ -32,6 +32,10 @@ class BitmapFetcher : public ImageDecoder::ImageRequest {
                 BitmapFetcherDelegate* delegate,
                 const net::NetworkTrafficAnnotationTag& traffic_annotation,
                 data_decoder::DataDecoder* data_decoder);
+
+  BitmapFetcher(const BitmapFetcher&) = delete;
+  BitmapFetcher& operator=(const BitmapFetcher&) = delete;
+
   ~BitmapFetcher() override;
 
   const GURL& url() const { return url_; }
@@ -81,8 +85,6 @@ class BitmapFetcher : public ImageDecoder::ImageRequest {
   base::TimeTicks start_time_;
 
   base::WeakPtrFactory<BitmapFetcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapFetcher);
 };
 
 #endif  // CHROME_BROWSER_BITMAP_FETCHER_BITMAP_FETCHER_H_

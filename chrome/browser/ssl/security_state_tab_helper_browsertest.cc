@@ -180,6 +180,11 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
   explicit SecurityStyleTestObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents),
         latest_security_style_(blink::SecurityStyle::kUnknown) {}
+
+  SecurityStyleTestObserver(const SecurityStyleTestObserver&) = delete;
+  SecurityStyleTestObserver& operator=(const SecurityStyleTestObserver&) =
+      delete;
+
   ~SecurityStyleTestObserver() override {}
 
   void DidChangeVisibleSecurityState() override {
@@ -209,7 +214,6 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
   blink::SecurityStyle latest_security_style_;
   content::SecurityStyleExplanations latest_explanations_;
   base::RunLoop run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(SecurityStyleTestObserver);
 };
 
 // Check that |observer|'s latest event was for an expired certificate
@@ -408,6 +412,10 @@ class SecurityStateTabHelperTest : public CertVerifierBrowserTest {
         true);
   }
 
+  SecurityStateTabHelperTest(const SecurityStateTabHelperTest&) = delete;
+  SecurityStateTabHelperTest& operator=(const SecurityStateTabHelperTest&) =
+      delete;
+
   ~SecurityStateTabHelperTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         absl::nullopt);
@@ -479,9 +487,6 @@ class SecurityStateTabHelperTest : public CertVerifierBrowserTest {
   }
 
   net::EmbeddedTestServer https_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityStateTabHelperTest);
 };
 
 // Same as SecurityStateTabHelperTest, but with Incognito enabled.
@@ -1283,15 +1288,16 @@ IN_PROC_BROWSER_TEST_F(PKPModelClientTest, PKPEnforced) {
 class SecurityStateLoadingTest : public SecurityStateTabHelperTest {
  public:
   SecurityStateLoadingTest() : SecurityStateTabHelperTest() {}
+
+  SecurityStateLoadingTest(const SecurityStateLoadingTest&) = delete;
+  SecurityStateLoadingTest& operator=(const SecurityStateLoadingTest&) = delete;
+
   ~SecurityStateLoadingTest() override {}
 
  protected:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityStateLoadingTest);
 };
 
 // Tests that navigation state changes cause the security state to be

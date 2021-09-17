@@ -50,6 +50,12 @@ class SecurityStatePageLoadMetricsObserver
 
   explicit SecurityStatePageLoadMetricsObserver(
       site_engagement::SiteEngagementService* engagement_service);
+
+  SecurityStatePageLoadMetricsObserver(
+      const SecurityStatePageLoadMetricsObserver&) = delete;
+  SecurityStatePageLoadMetricsObserver& operator=(
+      const SecurityStatePageLoadMetricsObserver&) = delete;
+
   ~SecurityStatePageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -73,8 +79,6 @@ class SecurityStatePageLoadMetricsObserver
   security_state::SecurityLevel initial_security_level_ = security_state::NONE;
   security_state::SecurityLevel current_security_level_ = security_state::NONE;
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityStatePageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_SECURITY_STATE_PAGE_LOAD_METRICS_OBSERVER_H_

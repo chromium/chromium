@@ -26,6 +26,12 @@ class SupervisedUserErrorPageControllerDelegateImpl
  public:
   explicit SupervisedUserErrorPageControllerDelegateImpl(
       content::RenderFrame* render_frame);
+
+  SupervisedUserErrorPageControllerDelegateImpl(
+      const SupervisedUserErrorPageControllerDelegateImpl&) = delete;
+  SupervisedUserErrorPageControllerDelegateImpl& operator=(
+      const SupervisedUserErrorPageControllerDelegateImpl&) = delete;
+
   ~SupervisedUserErrorPageControllerDelegateImpl() override;
 
   // Notifies us that a navigation error has occurred and will be committed.
@@ -54,8 +60,6 @@ class SupervisedUserErrorPageControllerDelegateImpl
 
   base::WeakPtrFactory<SupervisedUserErrorPageControllerDelegate>
       weak_supervised_user_error_controller_delegate_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserErrorPageControllerDelegateImpl);
 };
 
 #endif  // CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_DELEGATE_IMPL_H_

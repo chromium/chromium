@@ -41,6 +41,10 @@ class FingerprintStorage final
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   explicit FingerprintStorage(Profile* profile);
+
+  FingerprintStorage(const FingerprintStorage&) = delete;
+  FingerprintStorage& operator=(const FingerprintStorage&) = delete;
+
   ~FingerprintStorage() override;
 
   // feature_usage::FeatureUsageMetrics::Delegate:
@@ -87,8 +91,6 @@ class FingerprintStorage final
       feature_usage_metrics_service_;
 
   base::WeakPtrFactory<FingerprintStorage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintStorage);
 };
 
 }  // namespace quick_unlock

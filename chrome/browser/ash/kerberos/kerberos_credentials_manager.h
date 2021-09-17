@@ -49,6 +49,10 @@ class KerberosCredentialsManager : public KeyedService,
   class Observer : public base::CheckedObserver {
    public:
     Observer();
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     ~Observer() override;
 
     // Called when the set of accounts was changed through Kerberos credentials
@@ -58,9 +62,6 @@ class KerberosCredentialsManager : public KeyedService,
     // Called when Kerberos enabled/disabled state changes. The new state is
     // available via IsKerberosEnabled().
     virtual void OnKerberosEnabledStateChanged() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Maximum number of managed accounts addition retries per prefs change.
@@ -68,6 +69,11 @@ class KerberosCredentialsManager : public KeyedService,
 
   KerberosCredentialsManager(PrefService* local_state,
                              Profile* primary_profile);
+
+  KerberosCredentialsManager(const KerberosCredentialsManager&) = delete;
+  KerberosCredentialsManager& operator=(const KerberosCredentialsManager&) =
+      delete;
+
   ~KerberosCredentialsManager() override;
 
   // Registers prefs stored in local state.
@@ -301,7 +307,6 @@ class KerberosCredentialsManager : public KeyedService,
       add_managed_account_callback_for_testing_;
 
   base::WeakPtrFactory<KerberosCredentialsManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(KerberosCredentialsManager);
 };
 
 }  // namespace ash

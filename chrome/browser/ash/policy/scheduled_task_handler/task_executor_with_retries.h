@@ -30,6 +30,10 @@ class TaskExecutorWithRetries {
   // given up.
   // |retry_time| - Time between each retry.
   TaskExecutorWithRetries(int max_retries, base::TimeDelta retry_time);
+
+  TaskExecutorWithRetries(const TaskExecutorWithRetries&) = delete;
+  TaskExecutorWithRetries& operator=(const TaskExecutorWithRetries&) = delete;
+
   ~TaskExecutorWithRetries();
 
   // Runs |task| and caches |retry_failure_cb| which will be called when
@@ -65,8 +69,6 @@ class TaskExecutorWithRetries {
 
   // Timer used to retry |task| passed in |ScheduleRetry|.
   base::OneShotTimer retry_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskExecutorWithRetries);
 };
 
 }  // namespace policy

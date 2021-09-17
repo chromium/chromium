@@ -38,6 +38,10 @@ class TokenEncryptor {
 class CryptohomeTokenEncryptor : public TokenEncryptor {
  public:
   explicit CryptohomeTokenEncryptor(const std::string& system_salt);
+
+  CryptohomeTokenEncryptor(const CryptohomeTokenEncryptor&) = delete;
+  CryptohomeTokenEncryptor& operator=(const CryptohomeTokenEncryptor&) = delete;
+
   ~CryptohomeTokenEncryptor() override;
 
   // TokenEncryptor overrides:
@@ -68,8 +72,6 @@ class CryptohomeTokenEncryptor : public TokenEncryptor {
   // A key based on the system salt.  Useful for encrypting device-level
   // data for which we have no additional credentials.
   std::unique_ptr<crypto::SymmetricKey> system_salt_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptohomeTokenEncryptor);
 };
 
 }  // namespace ash

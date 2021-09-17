@@ -33,6 +33,10 @@ class SupervisedUserManager {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   SupervisedUserManager() {}
+
+  SupervisedUserManager(const SupervisedUserManager&) = delete;
+  SupervisedUserManager& operator=(const SupervisedUserManager&) = delete;
+
   virtual ~SupervisedUserManager() {}
 
   // Returns sync_user_id for supervised user with `user_id` or empty string if
@@ -66,9 +70,6 @@ class SupervisedUserManager {
   virtual void SetPasswordInformation(
       const std::string& user_id,
       const base::DictionaryValue* password_info) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserManager);
 };
 
 }  // namespace ash

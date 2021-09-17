@@ -13,6 +13,12 @@ class DefaultDownloadDirPolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
   DefaultDownloadDirPolicyHandler();
+
+  DefaultDownloadDirPolicyHandler(const DefaultDownloadDirPolicyHandler&) =
+      delete;
+  DefaultDownloadDirPolicyHandler& operator=(
+      const DefaultDownloadDirPolicyHandler&) = delete;
+
   ~DefaultDownloadDirPolicyHandler() override;
 
   // ConfigurationPolicyHandler:
@@ -27,9 +33,6 @@ class DefaultDownloadDirPolicyHandler
  protected:
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultDownloadDirPolicyHandler);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DEFAULT_DOWNLOAD_DIR_POLICY_HANDLER_H_

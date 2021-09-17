@@ -74,6 +74,11 @@ const char kTestEncodedP256Key[] =
 class PushMessagingTestingProfile : public TestingProfile {
  public:
   PushMessagingTestingProfile() = default;
+
+  PushMessagingTestingProfile(const PushMessagingTestingProfile&) = delete;
+  PushMessagingTestingProfile& operator=(const PushMessagingTestingProfile&) =
+      delete;
+
   ~PushMessagingTestingProfile() override = default;
 
   PushMessagingServiceImpl* GetPushMessagingService() override {
@@ -83,9 +88,6 @@ class PushMessagingTestingProfile : public TestingProfile {
   permissions::PermissionManager* GetPermissionControllerDelegate() override {
     return PermissionManagerFactory::GetForProfile(this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingTestingProfile);
 };
 
 std::unique_ptr<KeyedService> BuildFakeGCMProfileService(

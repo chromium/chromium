@@ -23,12 +23,13 @@ class BrowserTestParam : public InProcessBrowserTest,
                          public testing::WithParamInterface<bool> {
  public:
   BrowserTestParam() = default;
+
+  BrowserTestParam(const BrowserTestParam&) = delete;
+  BrowserTestParam& operator=(const BrowserTestParam&) = delete;
+
   ~BrowserTestParam() override = default;
 
   bool CreateV1App() { return GetParam(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserTestParam);
 };
 
 }  // namespace

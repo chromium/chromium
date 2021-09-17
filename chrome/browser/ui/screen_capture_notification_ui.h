@@ -16,15 +16,17 @@
 class ScreenCaptureNotificationUI : public MediaStreamUI {
  public:
   ScreenCaptureNotificationUI() = default;
+
+  ScreenCaptureNotificationUI(const ScreenCaptureNotificationUI&) = delete;
+  ScreenCaptureNotificationUI& operator=(const ScreenCaptureNotificationUI&) =
+      delete;
+
   ~ScreenCaptureNotificationUI() override = default;
 
   // Creates platform-specific screen capture notification UI. |text| specifies
   // the text that should be shown in the notification.
   static std::unique_ptr<ScreenCaptureNotificationUI> Create(
       const std::u16string& text);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenCaptureNotificationUI);
 };
 
 #endif  // CHROME_BROWSER_UI_SCREEN_CAPTURE_NOTIFICATION_UI_H_

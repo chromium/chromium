@@ -29,6 +29,11 @@ class PeriodicSamplingScheduler {
   PeriodicSamplingScheduler(base::TimeDelta sampling_duration,
                             double fraction_of_execution_time_to_sample,
                             base::TimeTicks start_time);
+
+  PeriodicSamplingScheduler(const PeriodicSamplingScheduler&) = delete;
+  PeriodicSamplingScheduler& operator=(const PeriodicSamplingScheduler&) =
+      delete;
+
   virtual ~PeriodicSamplingScheduler();
 
   // Returns the amount of time between now and the next collection.
@@ -43,14 +48,15 @@ class PeriodicSamplingScheduler {
   const base::TimeDelta period_duration_;
   const base::TimeDelta sampling_duration_;
   base::TimeTicks period_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(PeriodicSamplingScheduler);
 };
 
 // ThreadProfiler performs startup and periodic profiling of Chrome
 // threads.
 class ThreadProfiler {
  public:
+  ThreadProfiler(const ThreadProfiler&) = delete;
+  ThreadProfiler& operator=(const ThreadProfiler&) = delete;
+
   ~ThreadProfiler();
 
   // Creates a profiler for a main thread and immediately starts it. This
@@ -150,8 +156,6 @@ class ThreadProfiler {
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ThreadProfiler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadProfiler);
 };
 
 #endif  // CHROME_COMMON_PROFILER_THREAD_PROFILER_H_

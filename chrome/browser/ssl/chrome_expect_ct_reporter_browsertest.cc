@@ -43,6 +43,9 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
         true);
   }
 
+  ExpectCTBrowserTest(const ExpectCTBrowserTest&) = delete;
+  ExpectCTBrowserTest& operator=(const ExpectCTBrowserTest&) = delete;
+
   ~ExpectCTBrowserTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         absl::nullopt);
@@ -121,8 +124,6 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
   // The report-uri value to use in the Expect-CT header for requests handled by
   // ExpectCTHeaderRequestHandler.
   GURL report_uri_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectCTBrowserTest);
 };
 
 // Tests that an Expect-CT reporter is properly set up and used for violations

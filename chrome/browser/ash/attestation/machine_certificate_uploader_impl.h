@@ -35,6 +35,11 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   MachineCertificateUploaderImpl(policy::CloudPolicyClient* policy_client,
                                  AttestationFlow* attestation_flow);
 
+  MachineCertificateUploaderImpl(const MachineCertificateUploaderImpl&) =
+      delete;
+  MachineCertificateUploaderImpl& operator=(
+      const MachineCertificateUploaderImpl&) = delete;
+
   ~MachineCertificateUploaderImpl() override;
 
   // Sets the retry limit in number of tries; useful in testing.
@@ -114,8 +119,6 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<MachineCertificateUploaderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MachineCertificateUploaderImpl);
 };
 
 }  // namespace attestation

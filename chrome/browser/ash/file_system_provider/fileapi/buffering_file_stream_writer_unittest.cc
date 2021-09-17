@@ -53,6 +53,10 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
         flush_log_(flush_log),
         cancel_counter_(cancel_counter),
         write_error_(write_error) {}
+
+  FakeFileStreamWriter(const FakeFileStreamWriter&) = delete;
+  FakeFileStreamWriter& operator=(const FakeFileStreamWriter&) = delete;
+
   ~FakeFileStreamWriter() override {}
 
   // storage::FileStreamWriter overrides.
@@ -93,7 +97,6 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
   std::vector<int>* flush_log_;          // Not owned.
   int* cancel_counter_;                  // Not owned.
   net::Error write_error_;
-  DISALLOW_COPY_AND_ASSIGN(FakeFileStreamWriter);
 };
 
 }  // namespace

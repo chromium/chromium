@@ -43,6 +43,10 @@ class ExtensionGCMAppHandler : public gcm::GCMAppHandler,
                                public ExtensionRegistryObserver {
  public:
   explicit ExtensionGCMAppHandler(content::BrowserContext* context);
+
+  ExtensionGCMAppHandler(const ExtensionGCMAppHandler&) = delete;
+  ExtensionGCMAppHandler& operator=(const ExtensionGCMAppHandler&) = delete;
+
   ~ExtensionGCMAppHandler() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -104,8 +108,6 @@ class ExtensionGCMAppHandler : public gcm::GCMAppHandler,
   std::unique_ptr<extensions::GcmJsEventRouter> js_event_router_;
 
   base::WeakPtrFactory<ExtensionGCMAppHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGCMAppHandler);
 };
 
 }  // namespace extensions

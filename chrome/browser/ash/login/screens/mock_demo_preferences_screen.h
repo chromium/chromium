@@ -18,20 +18,27 @@ class MockDemoPreferencesScreen : public DemoPreferencesScreen {
  public:
   MockDemoPreferencesScreen(DemoPreferencesScreenView* view,
                             const ScreenExitCallback& exit_callback);
+
+  MockDemoPreferencesScreen(const MockDemoPreferencesScreen&) = delete;
+  MockDemoPreferencesScreen& operator=(const MockDemoPreferencesScreen&) =
+      delete;
+
   ~MockDemoPreferencesScreen() override;
 
   MOCK_METHOD(void, ShowImpl, ());
   MOCK_METHOD(void, HideImpl, ());
 
   void ExitScreen(Result result);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDemoPreferencesScreen);
 };
 
 class MockDemoPreferencesScreenView : public DemoPreferencesScreenView {
  public:
   MockDemoPreferencesScreenView();
+
+  MockDemoPreferencesScreenView(const MockDemoPreferencesScreenView&) = delete;
+  MockDemoPreferencesScreenView& operator=(
+      const MockDemoPreferencesScreenView&) = delete;
+
   ~MockDemoPreferencesScreenView() override;
 
   MOCK_METHOD(void, Show, ());
@@ -43,8 +50,6 @@ class MockDemoPreferencesScreenView : public DemoPreferencesScreenView {
 
  private:
   DemoPreferencesScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDemoPreferencesScreenView);
 };
 
 }  // namespace ash

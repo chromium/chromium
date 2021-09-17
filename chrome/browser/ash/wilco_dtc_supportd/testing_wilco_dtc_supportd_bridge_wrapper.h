@@ -37,6 +37,11 @@ class TestingWilcoDtcSupportdBridgeWrapper final {
       std::unique_ptr<WilcoDtcSupportdNetworkContext> network_context,
       std::unique_ptr<WilcoDtcSupportdBridge>* bridge);
 
+  TestingWilcoDtcSupportdBridgeWrapper(
+      const TestingWilcoDtcSupportdBridgeWrapper&) = delete;
+  TestingWilcoDtcSupportdBridgeWrapper& operator=(
+      const TestingWilcoDtcSupportdBridgeWrapper&) = delete;
+
   ~TestingWilcoDtcSupportdBridgeWrapper();
 
   // Simulates bootstrapping the Mojo communication between the
@@ -92,8 +97,6 @@ class TestingWilcoDtcSupportdBridgeWrapper final {
           chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdService>
           mojo_wilco_dtc_supportd_service_receiver)>
       mojo_get_service_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingWilcoDtcSupportdBridgeWrapper);
 };
 
 }  // namespace ash

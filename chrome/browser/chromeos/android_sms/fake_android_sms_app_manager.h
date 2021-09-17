@@ -25,6 +25,10 @@ class FakeAndroidSmsAppManager
       public multidevice_setup::FakeAndroidSmsAppHelperDelegate {
  public:
   FakeAndroidSmsAppManager();
+
+  FakeAndroidSmsAppManager(const FakeAndroidSmsAppManager&) = delete;
+  FakeAndroidSmsAppManager& operator=(const FakeAndroidSmsAppManager&) = delete;
+
   ~FakeAndroidSmsAppManager() override;
 
   void SetInstalledAppUrl(const absl::optional<GURL>& url);
@@ -34,8 +38,6 @@ class FakeAndroidSmsAppManager
   absl::optional<GURL> GetCurrentAppUrl() override;
 
   absl::optional<GURL> url_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAndroidSmsAppManager);
 };
 
 }  // namespace android_sms

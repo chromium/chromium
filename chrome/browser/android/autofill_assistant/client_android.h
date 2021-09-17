@@ -40,6 +40,9 @@ class ClientAndroid : public Client,
                       public AccessTokenFetcher,
                       public content::WebContentsUserData<ClientAndroid> {
  public:
+  ClientAndroid(const ClientAndroid&) = delete;
+  ClientAndroid& operator=(const ClientAndroid&) = delete;
+
   ~ClientAndroid() override;
 
   base::WeakPtr<ClientAndroid> GetWeakPtr();
@@ -181,8 +184,6 @@ class ClientAndroid : public Client,
       fetch_access_token_callback_;
 
   base::WeakPtrFactory<ClientAndroid> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientAndroid);
 };
 
 }  // namespace autofill_assistant.

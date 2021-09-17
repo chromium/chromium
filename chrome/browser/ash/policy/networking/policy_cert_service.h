@@ -59,6 +59,10 @@ class PolicyCertService : public KeyedService,
       bool may_use_profile_wide_trust_anchors,
       const std::string& user_id,
       user_manager::UserManager* user_manager);
+
+  PolicyCertService(const PolicyCertService&) = delete;
+  PolicyCertService& operator=(const PolicyCertService&) = delete;
+
   ~PolicyCertService() override;
 
   // Returns true if the profile that owns this service has used certificates
@@ -130,8 +134,6 @@ class PolicyCertService : public KeyedService,
   // as intermediates when NSS verifies a certificate.
   std::unique_ptr<network::NSSTempCertsCacheChromeOS>
       temp_policy_provided_certs_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyCertService);
 };
 
 }  // namespace policy

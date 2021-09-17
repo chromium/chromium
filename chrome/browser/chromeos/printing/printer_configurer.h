@@ -69,6 +69,9 @@ class PrinterConfigurer {
  public:
   static std::unique_ptr<PrinterConfigurer> Create(Profile* profile);
 
+  PrinterConfigurer(const PrinterConfigurer&) = delete;
+  PrinterConfigurer& operator=(const PrinterConfigurer&) = delete;
+
   virtual ~PrinterConfigurer() = default;
 
   // Set up |printer| retrieving the appropriate PPD and registering the printer
@@ -97,8 +100,6 @@ class PrinterConfigurer {
 
  protected:
   PrinterConfigurer() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterConfigurer);
 };
 
 // Return a message for |result| that can be used in device-log.

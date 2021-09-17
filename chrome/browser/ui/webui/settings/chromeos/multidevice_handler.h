@@ -48,6 +48,10 @@ class MultideviceHandler
       multidevice_setup::AndroidSmsPairingStateTracker*
           android_sms_pairing_state_tracker,
       android_sms::AndroidSmsAppManager* android_sms_app_manager);
+
+  MultideviceHandler(const MultideviceHandler&) = delete;
+  MultideviceHandler& operator=(const MultideviceHandler&) = delete;
+
   ~MultideviceHandler() override;
 
  protected:
@@ -156,8 +160,6 @@ class MultideviceHandler
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<MultideviceHandler> callback_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MultideviceHandler);
 };
 
 }  // namespace settings

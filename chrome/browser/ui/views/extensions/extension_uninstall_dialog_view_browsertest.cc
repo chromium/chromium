@@ -62,6 +62,11 @@ class TestExtensionUninstallDialogDelegate
       base::RepeatingClosure quit_closure)
       : quit_closure_(quit_closure) {}
 
+  TestExtensionUninstallDialogDelegate(
+      const TestExtensionUninstallDialogDelegate&) = delete;
+  TestExtensionUninstallDialogDelegate& operator=(
+      const TestExtensionUninstallDialogDelegate&) = delete;
+
   ~TestExtensionUninstallDialogDelegate() override {}
 
   bool canceled() const { return canceled_; }
@@ -82,8 +87,6 @@ class TestExtensionUninstallDialogDelegate
   bool did_close_ = false;
   bool canceled_ = false;
   std::u16string error_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionUninstallDialogDelegate);
 };
 
 }  // namespace

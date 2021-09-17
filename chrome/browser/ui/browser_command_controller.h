@@ -35,6 +35,10 @@ class BrowserCommandController : public CommandUpdater,
                                  public sessions::TabRestoreServiceObserver {
  public:
   explicit BrowserCommandController(Browser* browser);
+
+  BrowserCommandController(const BrowserCommandController&) = delete;
+  BrowserCommandController& operator=(const BrowserCommandController&) = delete;
+
   ~BrowserCommandController() override;
 
   // Returns true if |command_id| is a reserved command whose keyboard shortcuts
@@ -211,8 +215,6 @@ class BrowserCommandController : public CommandUpdater,
 
   // In locked fullscreen mode disallow enabling/disabling commands.
   bool is_locked_fullscreen_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserCommandController);
 };
 
 }  // namespace chrome

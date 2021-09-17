@@ -40,6 +40,11 @@ class TestTabStripModelObserver : public TabStripModelObserver {
       : model_(model), desired_count_(0) {
     model->AddObserver(this);
   }
+
+  TestTabStripModelObserver(const TestTabStripModelObserver&) = delete;
+  TestTabStripModelObserver& operator=(const TestTabStripModelObserver&) =
+      delete;
+
   ~TestTabStripModelObserver() override = default;
 
   void WaitForTabCount(int count) {
@@ -62,8 +67,6 @@ class TestTabStripModelObserver : public TabStripModelObserver {
   TabStripModel* model_;
   int desired_count_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTabStripModelObserver);
 };
 
 }  // namespace

@@ -14,6 +14,11 @@ class Extension;
 
 class ContextMenuContentTypePlatformApp : public ContextMenuContentType {
  public:
+  ContextMenuContentTypePlatformApp(const ContextMenuContentTypePlatformApp&) =
+      delete;
+  ContextMenuContentTypePlatformApp& operator=(
+      const ContextMenuContentTypePlatformApp&) = delete;
+
   ~ContextMenuContentTypePlatformApp() override;
 
   // ContextMenuContentType overrides.
@@ -27,8 +32,6 @@ class ContextMenuContentTypePlatformApp : public ContextMenuContentType {
   friend class ContextMenuContentTypeFactory;
 
   const extensions::Extension* GetExtension();
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuContentTypePlatformApp);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_PLATFORM_APP_H_

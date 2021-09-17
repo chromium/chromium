@@ -21,6 +21,10 @@ class OmniboxPopupHandler;
 class OmniboxUI : public ui::MojoWebUIController {
  public:
   explicit OmniboxUI(content::WebUI* contents);
+
+  OmniboxUI(const OmniboxUI&) = delete;
+  OmniboxUI& operator=(const OmniboxUI&) = delete;
+
   ~OmniboxUI() override;
 
   // Instantiates the implementor of the mojom::OmniboxPageHandler mojo
@@ -40,8 +44,6 @@ class OmniboxUI : public ui::MojoWebUIController {
 #endif
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_OMNIBOX_UI_H_

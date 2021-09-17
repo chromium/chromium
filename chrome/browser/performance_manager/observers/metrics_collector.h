@@ -32,6 +32,10 @@ class MetricsCollector : public FrameNode::ObserverDefaultImpl,
                          public ProcessNode::ObserverDefaultImpl {
  public:
   MetricsCollector();
+
+  MetricsCollector(const MetricsCollector&) = delete;
+  MetricsCollector& operator=(const MetricsCollector&) = delete;
+
   ~MetricsCollector() override;
 
   // FrameNodeObserver implementation:
@@ -98,8 +102,6 @@ class MetricsCollector : public FrameNode::ObserverDefaultImpl,
 
   // The graph to which this object belongs.
   Graph* graph_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsCollector);
 };
 
 }  // namespace performance_manager

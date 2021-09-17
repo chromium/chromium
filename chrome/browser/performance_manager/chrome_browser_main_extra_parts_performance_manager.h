@@ -40,6 +40,12 @@ class ChromeBrowserMainExtraPartsPerformanceManager
       public ProfileObserver {
  public:
   ChromeBrowserMainExtraPartsPerformanceManager();
+
+  ChromeBrowserMainExtraPartsPerformanceManager(
+      const ChromeBrowserMainExtraPartsPerformanceManager&) = delete;
+  ChromeBrowserMainExtraPartsPerformanceManager& operator=(
+      const ChromeBrowserMainExtraPartsPerformanceManager&) = delete;
+
   ~ChromeBrowserMainExtraPartsPerformanceManager() override;
 
   // Returns the only instance of this class.
@@ -89,8 +95,6 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   // Needed to maintain the PageNode::IsLoading() property.
   std::unique_ptr<performance_manager::PageLoadTrackerDecoratorHelper>
       page_load_tracker_decorator_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsPerformanceManager);
 };
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_CHROME_BROWSER_MAIN_EXTRA_PARTS_PERFORMANCE_MANAGER_H_

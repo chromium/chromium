@@ -21,6 +21,12 @@ class TestUsageTimeStateNotifierObserver
     : public UsageTimeStateNotifier::Observer {
  public:
   TestUsageTimeStateNotifierObserver() = default;
+
+  TestUsageTimeStateNotifierObserver(
+      const TestUsageTimeStateNotifierObserver&) = delete;
+  TestUsageTimeStateNotifierObserver& operator=(
+      const TestUsageTimeStateNotifierObserver&) = delete;
+
   ~TestUsageTimeStateNotifierObserver() override = default;
 
   const std::vector<UsageTimeStateNotifier::UsageTimeState>& events() const {
@@ -34,8 +40,6 @@ class TestUsageTimeStateNotifierObserver
   }
 
   std::vector<UsageTimeStateNotifier::UsageTimeState> usage_time_state_changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUsageTimeStateNotifierObserver);
 };
 
 }  // namespace

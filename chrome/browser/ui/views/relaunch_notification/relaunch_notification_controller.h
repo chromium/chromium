@@ -54,6 +54,12 @@ class RelaunchNotificationController : public UpgradeObserver {
   // |upgrade_detector| is expected to be the process-wide detector, and must
   // outlive the controller.
   explicit RelaunchNotificationController(UpgradeDetector* upgrade_detector);
+
+  RelaunchNotificationController(const RelaunchNotificationController&) =
+      delete;
+  RelaunchNotificationController& operator=(
+      const RelaunchNotificationController&) = delete;
+
   ~RelaunchNotificationController() override;
 
  protected:
@@ -200,8 +206,6 @@ class RelaunchNotificationController : public UpgradeObserver {
   // overridden to required. Changes to the policy value will not affect the
   // notification type.
   bool notification_type_required_overridden_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RelaunchNotificationController);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_NOTIFICATION_CONTROLLER_H_

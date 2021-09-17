@@ -22,6 +22,10 @@ class OAuth2TokenInitializer final : public OAuth2TokenFetcher::Delegate {
       base::OnceCallback<void(bool success, const UserContext& user_context)>;
 
   OAuth2TokenInitializer();
+
+  OAuth2TokenInitializer(const OAuth2TokenInitializer&) = delete;
+  OAuth2TokenInitializer& operator=(const OAuth2TokenInitializer&) = delete;
+
   ~OAuth2TokenInitializer() override;
 
   // Fetch OAuth2 tokens.
@@ -36,8 +40,6 @@ class OAuth2TokenInitializer final : public OAuth2TokenFetcher::Delegate {
   UserContext user_context_;
   FetchOAuth2TokensCallback callback_;
   std::unique_ptr<OAuth2TokenFetcher> oauth2_token_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2TokenInitializer);
 };
 
 }  // namespace ash

@@ -17,6 +17,11 @@
 class ChromeNativeAppWindowViewsMac : public ChromeNativeAppWindowViews {
  public:
   ChromeNativeAppWindowViewsMac();
+
+  ChromeNativeAppWindowViewsMac(const ChromeNativeAppWindowViewsMac&) = delete;
+  ChromeNativeAppWindowViewsMac& operator=(
+      const ChromeNativeAppWindowViewsMac&) = delete;
+
   ~ChromeNativeAppWindowViewsMac() override;
 
   // Called by |nswindow_observer_| for window resize events.
@@ -55,8 +60,6 @@ class ChromeNativeAppWindowViewsMac : public ChromeNativeAppWindowViews {
   // Set true during an exit fullscreen transition, so that the live resize
   // event AppKit sends can be distinguished from a zoom-triggered live resize.
   bool in_fullscreen_transition_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNativeAppWindowViewsMac);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_MAC_H_

@@ -21,6 +21,12 @@ class ArcPlayStoreEnabledPreferenceHandler {
  public:
   ArcPlayStoreEnabledPreferenceHandler(Profile* profile,
                                        ArcSessionManager* arc_session_manager);
+
+  ArcPlayStoreEnabledPreferenceHandler(
+      const ArcPlayStoreEnabledPreferenceHandler&) = delete;
+  ArcPlayStoreEnabledPreferenceHandler& operator=(
+      const ArcPlayStoreEnabledPreferenceHandler&) = delete;
+
   ~ArcPlayStoreEnabledPreferenceHandler();
 
   // Starts observing Google Play Store enabled preference change.
@@ -47,8 +53,6 @@ class ArcPlayStoreEnabledPreferenceHandler {
   // Must be the last member.
   base::WeakPtrFactory<ArcPlayStoreEnabledPreferenceHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreEnabledPreferenceHandler);
 };
 
 }  // namespace arc

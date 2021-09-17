@@ -43,6 +43,10 @@ class RealboxHandler : public realbox::mojom::PageHandler,
       mojo::PendingReceiver<realbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents);
+
+  RealboxHandler(const RealboxHandler&) = delete;
+  RealboxHandler& operator=(const RealboxHandler&) = delete;
+
   ~RealboxHandler() override;
 
   // realbox::mojom::PageHandler:
@@ -87,8 +91,6 @@ class RealboxHandler : public realbox::mojom::PageHandler,
   mojo::Receiver<realbox::mojom::PageHandler> page_handler_;
 
   base::WeakPtrFactory<RealboxHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RealboxHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_REALBOX_REALBOX_HANDLER_H_

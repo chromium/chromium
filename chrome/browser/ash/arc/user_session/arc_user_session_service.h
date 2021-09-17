@@ -33,6 +33,10 @@ class ArcUserSessionService
 
   ArcUserSessionService(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
+
+  ArcUserSessionService(const ArcUserSessionService&) = delete;
+  ArcUserSessionService& operator=(const ArcUserSessionService&) = delete;
+
   ~ArcUserSessionService() override;
 
   // ConnectionObserver<mojom::IntentHelperInstance> override.
@@ -44,8 +48,6 @@ class ArcUserSessionService
 
  private:
   ArcBridgeService* const arc_bridge_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcUserSessionService);
 };
 
 }  // namespace arc

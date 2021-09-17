@@ -26,6 +26,10 @@ class UserAgent {
   // @param product_version The product version.
   UserAgent(base::WStringPiece product_name,
             base::WStringPiece product_version);
+
+  UserAgent(const UserAgent&) = delete;
+  UserAgent& operator=(const UserAgent&) = delete;
+
   ~UserAgent();
 
   // @returns A string suitable for use as the value of a User-Agent header, and
@@ -59,8 +63,6 @@ class UserAgent {
   int32_t os_minor_version_;
   Architecture architecture_;
   std::wstring winhttp_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserAgent);
 };
 
 }  // namespace chrome_cleaner

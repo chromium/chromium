@@ -19,15 +19,18 @@ class AutoSigninFirstRunDialogAndroidTest
     : public ChromeRenderViewHostTestHarness {
  public:
   AutoSigninFirstRunDialogAndroidTest() {}
+
+  AutoSigninFirstRunDialogAndroidTest(
+      const AutoSigninFirstRunDialogAndroidTest&) = delete;
+  AutoSigninFirstRunDialogAndroidTest& operator=(
+      const AutoSigninFirstRunDialogAndroidTest&) = delete;
+
   ~AutoSigninFirstRunDialogAndroidTest() override {}
 
   PrefService* prefs();
 
  protected:
   AutoSigninFirstRunDialogAndroid* CreateDialog();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoSigninFirstRunDialogAndroidTest);
 };
 
 AutoSigninFirstRunDialogAndroid*

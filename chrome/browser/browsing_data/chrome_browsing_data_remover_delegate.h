@@ -48,6 +48,12 @@ class ChromeBrowsingDataRemoverDelegate
  public:
   explicit ChromeBrowsingDataRemoverDelegate(
       content::BrowserContext* browser_context);
+
+  ChromeBrowsingDataRemoverDelegate(const ChromeBrowsingDataRemoverDelegate&) =
+      delete;
+  ChromeBrowsingDataRemoverDelegate& operator=(
+      const ChromeBrowsingDataRemoverDelegate&) = delete;
+
   ~ChromeBrowsingDataRemoverDelegate() override;
 
   // KeyedService:
@@ -216,8 +222,6 @@ class ChromeBrowsingDataRemoverDelegate
 
   base::WeakPtrFactory<ChromeBrowsingDataRemoverDelegate> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowsingDataRemoverDelegate);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_REMOVER_DELEGATE_H_

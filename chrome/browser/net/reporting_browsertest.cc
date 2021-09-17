@@ -59,6 +59,9 @@ class ReportingBrowserTest : public CertVerifierBrowserTest,
         {});
   }
 
+  ReportingBrowserTest(const ReportingBrowserTest&) = delete;
+  ReportingBrowserTest& operator=(const ReportingBrowserTest&) = delete;
+
   ~ReportingBrowserTest() override = default;
 
   void SetUp() override;
@@ -116,8 +119,6 @@ class ReportingBrowserTest : public CertVerifierBrowserTest,
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       original_response_;
   std::unique_ptr<net::test_server::ControllableHttpResponse> upload_response_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingBrowserTest);
 };
 
 void ReportingBrowserTest::SetUp() {

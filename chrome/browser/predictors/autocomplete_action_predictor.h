@@ -74,6 +74,11 @@ class AutocompleteActionPredictor
   };
 
   explicit AutocompleteActionPredictor(Profile* profile);
+
+  AutocompleteActionPredictor(const AutocompleteActionPredictor&) = delete;
+  AutocompleteActionPredictor& operator=(const AutocompleteActionPredictor&) =
+      delete;
+
   ~AutocompleteActionPredictor() override;
 
   // Registers an AutocompleteResult for a given |user_text|. This will be used
@@ -267,8 +272,6 @@ class AutocompleteActionPredictor
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteActionPredictor);
 };
 
 }  // namespace predictors

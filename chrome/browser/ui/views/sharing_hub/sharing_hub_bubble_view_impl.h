@@ -33,6 +33,9 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
                            content::WebContents* web_contents,
                            SharingHubBubbleController* controller);
 
+  SharingHubBubbleViewImpl(const SharingHubBubbleViewImpl&) = delete;
+  SharingHubBubbleViewImpl& operator=(const SharingHubBubbleViewImpl&) = delete;
+
   ~SharingHubBubbleViewImpl() override;
 
   // SharingHubBubbleView:
@@ -78,8 +81,6 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   views::ScrollView* scroll_view_ = nullptr;
 
   base::WeakPtrFactory<SharingHubBubbleViewImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharingHubBubbleViewImpl);
 };
 
 }  // namespace sharing_hub

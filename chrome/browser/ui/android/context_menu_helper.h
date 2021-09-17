@@ -21,6 +21,9 @@ class WebContents;
 class ContextMenuHelper
     : public content::WebContentsUserData<ContextMenuHelper> {
  public:
+  ContextMenuHelper(const ContextMenuHelper&) = delete;
+  ContextMenuHelper& operator=(const ContextMenuHelper&) = delete;
+
   ~ContextMenuHelper() override;
 
   void ShowContextMenu(content::RenderFrameHost* render_frame_host,
@@ -45,8 +48,6 @@ class ContextMenuHelper
   content::ContextMenuParams context_menu_params_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_CONTEXT_MENU_HELPER_H_

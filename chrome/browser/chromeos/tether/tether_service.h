@@ -68,6 +68,10 @@ class TetherService
           multidevice_setup_client,
       chromeos::NetworkStateHandler* network_state_handler,
       session_manager::SessionManager* session_manager);
+
+  TetherService(const TetherService&) = delete;
+  TetherService& operator=(const TetherService&) = delete;
+
   ~TetherService() override;
 
   // Gets TetherService instance.
@@ -280,8 +284,6 @@ class TetherService
   std::unique_ptr<base::OneShotTimer> timer_;
 
   base::WeakPtrFactory<TetherService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherService);
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_TETHER_TETHER_SERVICE_H_

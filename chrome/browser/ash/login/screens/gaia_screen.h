@@ -34,6 +34,10 @@ class GaiaScreen : public BaseScreen {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   explicit GaiaScreen(const ScreenExitCallback& exit_callback);
+
+  GaiaScreen(const GaiaScreen&) = delete;
+  GaiaScreen& operator=(const GaiaScreen&) = delete;
+
   ~GaiaScreen() override;
 
   void SetView(GaiaView* view);
@@ -54,8 +58,6 @@ class GaiaScreen : public BaseScreen {
   GaiaView* view_ = nullptr;
 
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaScreen);
 };
 
 }  // namespace ash

@@ -22,6 +22,12 @@ namespace arc {
 class ArcDocumentsProviderWatcherManager : public storage::WatcherManager {
  public:
   ArcDocumentsProviderWatcherManager();
+
+  ArcDocumentsProviderWatcherManager(
+      const ArcDocumentsProviderWatcherManager&) = delete;
+  ArcDocumentsProviderWatcherManager& operator=(
+      const ArcDocumentsProviderWatcherManager&) = delete;
+
   ~ArcDocumentsProviderWatcherManager() override;
 
   // storage::WatcherManager overrides.
@@ -41,8 +47,6 @@ class ArcDocumentsProviderWatcherManager : public storage::WatcherManager {
 
   base::WeakPtrFactory<ArcDocumentsProviderWatcherManager> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderWatcherManager);
 };
 
 }  // namespace arc

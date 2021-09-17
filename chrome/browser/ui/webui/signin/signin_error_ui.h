@@ -15,6 +15,10 @@ class WebUI;
 class SigninErrorUI : public SigninWebDialogUI {
  public:
   explicit SigninErrorUI(content::WebUI* web_ui);
+
+  SigninErrorUI(const SigninErrorUI&) = delete;
+  SigninErrorUI& operator=(const SigninErrorUI&) = delete;
+
   ~SigninErrorUI() override {}
 
   // SigninWebDialogUI:
@@ -23,8 +27,6 @@ class SigninErrorUI : public SigninWebDialogUI {
  private:
   void InitializeMessageHandlerForProfilePicker();
   void Initialize(Browser* browser, bool is_system_profile);
-
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_UI_H_

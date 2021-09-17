@@ -29,6 +29,10 @@ class CommandUpdaterImpl : public CommandUpdater {
   // Create a CommandUpdaterImpl with |delegate| to handle the execution of
   // specific commands.
   explicit CommandUpdaterImpl(CommandUpdaterDelegate* delegate);
+
+  CommandUpdaterImpl(const CommandUpdaterImpl&) = delete;
+  CommandUpdaterImpl& operator=(const CommandUpdaterImpl&) = delete;
+
   ~CommandUpdaterImpl() override;
 
   // Overriden from CommandUpdater:
@@ -63,8 +67,6 @@ class CommandUpdaterImpl : public CommandUpdater {
 
   // This is a map of command IDs to states and observer lists
   std::unordered_map<int, std::unique_ptr<Command>> commands_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandUpdaterImpl);
 };
 
 #endif  // CHROME_BROWSER_COMMAND_UPDATER_IMPL_H_

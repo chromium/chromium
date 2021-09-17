@@ -58,6 +58,10 @@ class CrashDumpWaiter : public crash_reporter::CrashMetricsReporter::Observer {
   CrashDumpWaiter() {
     crash_reporter::CrashMetricsReporter::GetInstance()->AddObserver(this);
   }
+
+  CrashDumpWaiter(const CrashDumpWaiter&) = delete;
+  CrashDumpWaiter& operator=(const CrashDumpWaiter&) = delete;
+
   ~CrashDumpWaiter() {
     crash_reporter::CrashMetricsReporter::GetInstance()->RemoveObserver(this);
   }
@@ -81,7 +85,6 @@ class CrashDumpWaiter : public crash_reporter::CrashMetricsReporter::Observer {
 
   base::RunLoop waiter_;
   crash_reporter::CrashMetricsReporter::ReportedCrashTypeSet reported_counts_;
-  DISALLOW_COPY_AND_ASSIGN(CrashDumpWaiter);
 };
 #endif  // defined(OS_ANDROID)
 
@@ -89,6 +92,10 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
                                 public OutOfMemoryReporter::Observer {
  public:
   OutOfMemoryReporterTest() {}
+
+  OutOfMemoryReporterTest(const OutOfMemoryReporterTest&) = delete;
+  OutOfMemoryReporterTest& operator=(const OutOfMemoryReporterTest&) = delete;
+
   ~OutOfMemoryReporterTest() override {}
 
   // ChromeRenderViewHostTestHarness:
@@ -193,8 +200,6 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
 
  private:
   base::SimpleTestTickClock* test_tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(OutOfMemoryReporterTest);
 };
 
 TEST_F(OutOfMemoryReporterTest, SimpleOOM) {

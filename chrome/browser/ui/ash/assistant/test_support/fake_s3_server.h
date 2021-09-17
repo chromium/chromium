@@ -41,6 +41,10 @@ class FakeS3Server {
   // does not exist, it will automatically looker for an older version of the
   // file.
   explicit FakeS3Server(int data_file_version);
+
+  FakeS3Server(const FakeS3Server&) = delete;
+  FakeS3Server& operator=(const FakeS3Server&) = delete;
+
   ~FakeS3Server();
 
   // Starts the fake S3 server, and tells the Assistant service to use its URI
@@ -72,8 +76,6 @@ class FakeS3Server {
   std::unique_ptr<PortSelector> port_selector_;
 
   base::Process fake_s3_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeS3Server);
 };
 
 }  // namespace assistant

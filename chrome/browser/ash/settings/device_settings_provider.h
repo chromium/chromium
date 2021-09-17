@@ -45,6 +45,10 @@ class DeviceSettingsProvider
   DeviceSettingsProvider(const NotifyObserversCallback& notify_cb,
                          DeviceSettingsService* device_settings_service,
                          PrefService* pref_service);
+
+  DeviceSettingsProvider(const DeviceSettingsProvider&) = delete;
+  DeviceSettingsProvider& operator=(const DeviceSettingsProvider&) = delete;
+
   ~DeviceSettingsProvider() override;
 
   // Returns true if |path| is handled by this provider.
@@ -148,8 +152,6 @@ class DeviceSettingsProvider
   FRIEND_TEST_ALL_PREFIXES(DeviceSettingsProviderTest, SetPrefFailed);
   FRIEND_TEST_ALL_PREFIXES(DeviceSettingsProviderTest, SetPrefSucceed);
   FRIEND_TEST_ALL_PREFIXES(DeviceSettingsProviderTest, SetPrefTwice);
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSettingsProvider);
 };
 
 }  // namespace ash

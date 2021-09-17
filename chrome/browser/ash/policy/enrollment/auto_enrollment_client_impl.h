@@ -85,6 +85,10 @@ class AutoEnrollmentClientImpl
   class FactoryImpl : public Factory {
    public:
     FactoryImpl();
+
+    FactoryImpl(const FactoryImpl&) = delete;
+    FactoryImpl& operator=(const FactoryImpl&) = delete;
+
     ~FactoryImpl() override;
 
     std::unique_ptr<AutoEnrollmentClient> CreateForFRE(
@@ -106,10 +110,10 @@ class AutoEnrollmentClientImpl
         int power_initial,
         int power_limit,
         PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(FactoryImpl);
   };
+
+  AutoEnrollmentClientImpl(const AutoEnrollmentClientImpl&) = delete;
+  AutoEnrollmentClientImpl& operator=(const AutoEnrollmentClientImpl&) = delete;
 
   ~AutoEnrollmentClientImpl() override;
 
@@ -298,8 +302,6 @@ class AutoEnrollmentClientImpl
   // |AutoEnrollmentClient| used for FRE and ".InitialEnrollment" for an
   // |AutoEnrollmentclient| used for initial enrollment.
   const std::string uma_suffix_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentClientImpl);
 };
 
 }  // namespace policy

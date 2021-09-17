@@ -23,6 +23,12 @@ class VirtualFileRequestServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   VirtualFileRequestServiceProvider();
+
+  VirtualFileRequestServiceProvider(const VirtualFileRequestServiceProvider&) =
+      delete;
+  VirtualFileRequestServiceProvider& operator=(
+      const VirtualFileRequestServiceProvider&) = delete;
+
   ~VirtualFileRequestServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -39,8 +45,6 @@ class VirtualFileRequestServiceProvider
   // beginning of destruction.
   base::WeakPtrFactory<VirtualFileRequestServiceProvider> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualFileRequestServiceProvider);
 };
 
 }  // namespace ash

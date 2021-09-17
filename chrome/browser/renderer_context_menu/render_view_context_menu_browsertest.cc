@@ -309,6 +309,12 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
 class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
  public:
   PdfPluginContextMenuBrowserTest() = default;
+
+  PdfPluginContextMenuBrowserTest(const PdfPluginContextMenuBrowserTest&) =
+      delete;
+  PdfPluginContextMenuBrowserTest& operator=(
+      const PdfPluginContextMenuBrowserTest&) = delete;
+
   ~PdfPluginContextMenuBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -400,8 +406,6 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
  private:
   guest_view::TestGuestViewManagerFactory factory_;
   guest_view::TestGuestViewManager* test_guest_view_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PdfPluginContextMenuBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,

@@ -45,6 +45,11 @@ class NetworkConnectionObserverHelper
     content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
   }
 
+  NetworkConnectionObserverHelper(const NetworkConnectionObserverHelper&) =
+      delete;
+  NetworkConnectionObserverHelper& operator=(
+      const NetworkConnectionObserverHelper&) = delete;
+
   ~NetworkConnectionObserverHelper() override {
     content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
         this);
@@ -56,8 +61,6 @@ class NetworkConnectionObserverHelper
 
  private:
   base::RepeatingClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionObserverHelper);
 };
 
 // Used to select which type of network type NetworkConnectionTracker should

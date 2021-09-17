@@ -18,6 +18,10 @@ namespace vr {
 class Background : public UiElement {
  public:
   Background();
+
+  Background(const Background&) = delete;
+  Background& operator=(const Background&) = delete;
+
   ~Background() override;
 
   // UiElement:
@@ -39,6 +43,10 @@ class Background : public UiElement {
   class Renderer final : public BaseRenderer {
    public:
     Renderer();
+
+    Renderer(const Renderer&) = delete;
+    Renderer& operator=(const Renderer&) = delete;
+
     ~Renderer() override;
 
     void Draw(const gfx::Transform& view_proj_matrix,
@@ -63,8 +71,6 @@ class Background : public UiElement {
     GLuint vertex_buffer_;
     GLuint index_buffer_;
     GLuint index_count_;
-
-    DISALLOW_COPY_AND_ASSIGN(Renderer);
   };
 
  private:
@@ -92,8 +98,6 @@ class Background : public UiElement {
   float normal_factor_ = 1.0f;
   float incognito_factor_ = 0.0f;
   float fullscreen_factor_ = 0.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(Background);
 };
 
 }  // namespace vr

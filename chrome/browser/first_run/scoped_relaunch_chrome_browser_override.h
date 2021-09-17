@@ -18,12 +18,16 @@ class ScopedRelaunchChromeBrowserOverride {
  public:
   explicit ScopedRelaunchChromeBrowserOverride(
       RelaunchChromeBrowserCallback callback);
+
+  ScopedRelaunchChromeBrowserOverride(
+      const ScopedRelaunchChromeBrowserOverride&) = delete;
+  ScopedRelaunchChromeBrowserOverride& operator=(
+      const ScopedRelaunchChromeBrowserOverride&) = delete;
+
   ~ScopedRelaunchChromeBrowserOverride();
 
  private:
   RelaunchChromeBrowserCallback previous_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedRelaunchChromeBrowserOverride);
 };
 
 }  // namespace upgrade_util

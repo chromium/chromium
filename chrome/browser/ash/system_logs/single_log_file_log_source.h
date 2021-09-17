@@ -49,6 +49,10 @@ class SingleLogFileLogSource : public SystemLogsSource {
   };
 
   explicit SingleLogFileLogSource(SupportedSource source);
+
+  SingleLogFileLogSource(const SingleLogFileLogSource&) = delete;
+  SingleLogFileLogSource& operator=(const SingleLogFileLogSource&) = delete;
+
   ~SingleLogFileLogSource() override;
 
   // During testing, use this to set a custom Chrome start time to override the
@@ -107,8 +111,6 @@ class SingleLogFileLogSource : public SystemLogsSource {
   size_t max_read_size_;
 
   base::WeakPtrFactory<SingleLogFileLogSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SingleLogFileLogSource);
 };
 
 }  // namespace system_logs

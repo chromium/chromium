@@ -57,10 +57,12 @@ class TwoClientExtensionAppsSyncTest : public SyncTest {
  public:
   TwoClientExtensionAppsSyncTest() : SyncTest(TWO_CLIENT) {}
 
-  ~TwoClientExtensionAppsSyncTest() override = default;
+  TwoClientExtensionAppsSyncTest(const TwoClientExtensionAppsSyncTest&) =
+      delete;
+  TwoClientExtensionAppsSyncTest& operator=(
+      const TwoClientExtensionAppsSyncTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientExtensionAppsSyncTest);
+  ~TwoClientExtensionAppsSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,

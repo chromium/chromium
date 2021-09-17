@@ -53,6 +53,10 @@ class TestStorageHandler : public StorageHandler {
 class StorageHandlerTest : public testing::Test {
  public:
   StorageHandlerTest() = default;
+
+  StorageHandlerTest(const StorageHandlerTest&) = delete;
+  StorageHandlerTest& operator=(const StorageHandlerTest&) = delete;
+
   ~StorageHandlerTest() override = default;
 
   void SetUp() override {
@@ -207,7 +211,6 @@ class StorageHandlerTest : public testing::Test {
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
-  DISALLOW_COPY_AND_ASSIGN(StorageHandlerTest);
 };
 
 TEST_F(StorageHandlerTest, RoundByteSize) {

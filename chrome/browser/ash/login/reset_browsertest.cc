@@ -117,6 +117,10 @@ void ExpectConfirmationDialogClosed() {
 class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
  public:
   ResetTest() = default;
+
+  ResetTest(const ResetTest&) = delete;
+  ResetTest& operator=(const ResetTest&) = delete;
+
   ~ResetTest() override = default;
 
   // Simulates reset screen request from views based login.
@@ -139,13 +143,15 @@ class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
   LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(kTestUser1, kTestUser1GaiaId)};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {test_user_}};
-
-  DISALLOW_COPY_AND_ASSIGN(ResetTest);
 };
 
 class ResetOobeTest : public OobeBaseTest {
  public:
   ResetOobeTest() = default;
+
+  ResetOobeTest(const ResetOobeTest&) = delete;
+  ResetOobeTest& operator=(const ResetOobeTest&) = delete;
+
   ~ResetOobeTest() override = default;
 
   // OobeBaseTest:
@@ -161,9 +167,6 @@ class ResetOobeTest : public OobeBaseTest {
     EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
     ExpectConfirmationDialogClosed();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResetOobeTest);
 };
 
 class ResetFirstAfterBootTest : public ResetTest {

@@ -16,6 +16,10 @@
 class MinimizeButtonMetrics {
  public:
   MinimizeButtonMetrics();
+
+  MinimizeButtonMetrics(const MinimizeButtonMetrics&) = delete;
+  MinimizeButtonMetrics& operator=(const MinimizeButtonMetrics&) = delete;
+
   ~MinimizeButtonMetrics();
 
   void Init(HWND hwnd);
@@ -57,8 +61,6 @@ class MinimizeButtonMetrics {
 
   // Has OnHWNDActivated() been invoked?
   bool was_activated_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinimizeButtonMetrics);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MINIMIZE_BUTTON_METRICS_WIN_H_

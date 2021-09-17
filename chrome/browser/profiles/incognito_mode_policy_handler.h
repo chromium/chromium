@@ -19,6 +19,11 @@ class PolicyMap;
 class IncognitoModePolicyHandler : public ConfigurationPolicyHandler {
  public:
   IncognitoModePolicyHandler();
+
+  IncognitoModePolicyHandler(const IncognitoModePolicyHandler&) = delete;
+  IncognitoModePolicyHandler& operator=(const IncognitoModePolicyHandler&) =
+      delete;
+
   ~IncognitoModePolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -26,9 +31,6 @@ class IncognitoModePolicyHandler : public ConfigurationPolicyHandler {
                            PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IncognitoModePolicyHandler);
 };
 
 }  // namespace policy

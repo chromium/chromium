@@ -76,6 +76,12 @@ class MockExternalPolicyProviderVisitor
     : public extensions::ExternalProviderInterface::VisitorInterface {
  public:
   MockExternalPolicyProviderVisitor();
+
+  MockExternalPolicyProviderVisitor(const MockExternalPolicyProviderVisitor&) =
+      delete;
+  MockExternalPolicyProviderVisitor& operator=(
+      const MockExternalPolicyProviderVisitor&) = delete;
+
   virtual ~MockExternalPolicyProviderVisitor();
 
   MOCK_METHOD1(OnExternalExtensionFileFound,
@@ -89,9 +95,6 @@ class MockExternalPolicyProviderVisitor
                     const std::vector<ExternalInstallInfoUpdateUrl>&,
                     const std::vector<ExternalInstallInfoFile>&,
                     const std::set<std::string>& removed_extensions));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockExternalPolicyProviderVisitor);
 };
 
 MockExternalPolicyProviderVisitor::MockExternalPolicyProviderVisitor() {

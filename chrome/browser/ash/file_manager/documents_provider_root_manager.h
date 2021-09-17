@@ -70,6 +70,11 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
   };
   DocumentsProviderRootManager(Profile* profile,
                                arc::ArcFileSystemOperationRunner* runner);
+
+  DocumentsProviderRootManager(const DocumentsProviderRootManager&) = delete;
+  DocumentsProviderRootManager& operator=(const DocumentsProviderRootManager&) =
+      delete;
+
   ~DocumentsProviderRootManager() override;
 
   void AddObserver(Observer* observer);
@@ -128,8 +133,6 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
   std::vector<RootInfo> current_roots_;
 
   base::WeakPtrFactory<DocumentsProviderRootManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentsProviderRootManager);
 };
 
 }  // namespace file_manager

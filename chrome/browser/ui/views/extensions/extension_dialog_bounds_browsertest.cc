@@ -26,6 +26,11 @@ class ExtensionDialogBoundsTest
     : public SupportsTestDialog<extensions::ExtensionBrowserTest> {
  public:
   ExtensionDialogBoundsTest() = default;
+
+  ExtensionDialogBoundsTest(const ExtensionDialogBoundsTest&) = delete;
+  ExtensionDialogBoundsTest& operator=(const ExtensionDialogBoundsTest&) =
+      delete;
+
   ~ExtensionDialogBoundsTest() override = default;
 
   void SetUp() override {
@@ -72,8 +77,6 @@ class ExtensionDialogBoundsTest
     ASSERT_TRUE(dialog);
     ASSERT_TRUE(init_listener.WaitUntilSatisfied());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDialogBoundsTest);
 };
 
 // Note that the underscores in the test names below are important as whatever

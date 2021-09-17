@@ -157,6 +157,11 @@ class ModuleBlocklistCacheUpdater : public ModuleDatabaseObserver {
           initial_blocklisted_modules,
       OnCacheUpdatedCallback on_cache_updated_callback,
       bool module_analysis_disabled);
+
+  ModuleBlocklistCacheUpdater(const ModuleBlocklistCacheUpdater&) = delete;
+  ModuleBlocklistCacheUpdater& operator=(const ModuleBlocklistCacheUpdater&) =
+      delete;
+
   ~ModuleBlocklistCacheUpdater() override;
 
   // Returns true if the blocking of third-party modules is enabled. Can be
@@ -246,8 +251,6 @@ class ModuleBlocklistCacheUpdater : public ModuleDatabaseObserver {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ModuleBlocklistCacheUpdater> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleBlocklistCacheUpdater);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_BLOCKLIST_CACHE_UPDATER_H_

@@ -41,6 +41,10 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
                               content::WebContents* web_contents,
                               SendTabToSelfBubbleController* controller);
 
+  SendTabToSelfBubbleViewImpl(const SendTabToSelfBubbleViewImpl&) = delete;
+  SendTabToSelfBubbleViewImpl& operator=(const SendTabToSelfBubbleViewImpl&) =
+      delete;
+
   ~SendTabToSelfBubbleViewImpl() override;
 
   // SendTabToSelfBubbleView:
@@ -76,8 +80,6 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   // ScrollView containing the list of device buttons.
   // Only kept for GetButtonContainerForTesting().
   views::ScrollView* scroll_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfBubbleViewImpl);
 };
 
 }  // namespace send_tab_to_self

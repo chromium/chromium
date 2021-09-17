@@ -28,6 +28,10 @@ class Notification;
 class SharedClipboardTestBase : public testing::Test {
  public:
   SharedClipboardTestBase();
+
+  SharedClipboardTestBase(const SharedClipboardTestBase&) = delete;
+  SharedClipboardTestBase& operator=(const SharedClipboardTestBase&) = delete;
+
   ~SharedClipboardTestBase() override;
 
   void SetUp() override;
@@ -48,9 +52,6 @@ class SharedClipboardTestBase : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   std::unique_ptr<MockSharingService> sharing_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardTestBase);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_TEST_BASE_H_

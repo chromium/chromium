@@ -91,6 +91,10 @@ class TabActivityWatcherTest : public ChromeRenderViewHostTestHarness {
                                                      params);
     TabActivityWatcher::GetInstance()->ResetForTesting();
   }
+
+  TabActivityWatcherTest(const TabActivityWatcherTest&) = delete;
+  TabActivityWatcherTest& operator=(const TabActivityWatcherTest&) = delete;
+
   ~TabActivityWatcherTest() override = default;
 
   LifecycleUnit* AddNewTab(TabStripModel* tab_strip_model, int i) {
@@ -116,9 +120,6 @@ class TabActivityWatcherTest : public ChromeRenderViewHostTestHarness {
   UkmEntryChecker ukm_entry_checker_;
   TabActivitySimulator tab_activity_simulator_;
   base::test::ScopedFeatureList feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabActivityWatcherTest);
 };
 
 class TabActivityWatcherScorerType0Test : public TabActivityWatcherTest {
@@ -324,6 +325,10 @@ class TabMetricsTest : public TabActivityWatcherTest {
     SetParams({{"scorer_type", "0"},
                {"disable_background_log_with_TabRanker", "false"}});
   }
+
+  TabMetricsTest(const TabMetricsTest&) = delete;
+  TabMetricsTest& operator=(const TabMetricsTest&) = delete;
+
   ~TabMetricsTest() override = default;
 
  protected:
@@ -340,9 +345,6 @@ class TabMetricsTest : public TabActivityWatcherTest {
  protected:
   const char* kEntryName = TabManager_TabMetrics::kEntryName;
   size_t num_previous_entries = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabMetricsTest);
 };
 
 TEST_F(TabMetricsTest, Basic) {
@@ -814,6 +816,10 @@ class ForegroundedOrClosedTest : public TabActivityWatcherTest {
     SetParams({{"scorer_type", "0"},
                {"disable_background_log_with_TabRanker", "false"}});
   }
+
+  ForegroundedOrClosedTest(const ForegroundedOrClosedTest&) = delete;
+  ForegroundedOrClosedTest& operator=(const ForegroundedOrClosedTest&) = delete;
+
   ~ForegroundedOrClosedTest() override = default;
 
  protected:
@@ -825,8 +831,6 @@ class ForegroundedOrClosedTest : public TabActivityWatcherTest {
   base::SimpleTestTickClock test_clock_;
   resource_coordinator::ScopedSetTickClockForTesting
       scoped_set_tick_clock_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForegroundedOrClosedTest);
 };
 
 // Tests TabManager.Backgrounded.ForegroundedOrClosed UKM logging.

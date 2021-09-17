@@ -67,6 +67,11 @@ class InputMethodEngineBrowserTest
       public ::testing::WithParamInterface<TestType> {
  public:
   InputMethodEngineBrowserTest() = default;
+
+  InputMethodEngineBrowserTest(const InputMethodEngineBrowserTest&) = delete;
+  InputMethodEngineBrowserTest& operator=(const InputMethodEngineBrowserTest&) =
+      delete;
+
   virtual ~InputMethodEngineBrowserTest() = default;
 
   void TearDownInProcessBrowserTestFixture() override { extension_ = NULL; }
@@ -127,15 +132,16 @@ class InputMethodEngineBrowserTest
   }
 
   const extensions::Extension* extension_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputMethodEngineBrowserTest);
 };
 
 class KeyEventDoneCallback {
  public:
   explicit KeyEventDoneCallback(bool expected_argument)
       : expected_argument_(expected_argument) {}
+
+  KeyEventDoneCallback(const KeyEventDoneCallback&) = delete;
+  KeyEventDoneCallback& operator=(const KeyEventDoneCallback&) = delete;
+
   ~KeyEventDoneCallback() = default;
 
   void Run(bool consumed) {
@@ -148,14 +154,16 @@ class KeyEventDoneCallback {
  private:
   bool expected_argument_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyEventDoneCallback);
 };
 
 class TestTextInputClient : public ui::DummyTextInputClient {
  public:
   explicit TestTextInputClient(ui::TextInputType type)
       : ui::DummyTextInputClient(type) {}
+
+  TestTextInputClient(const TestTextInputClient&) = delete;
+  TestTextInputClient& operator=(const TestTextInputClient&) = delete;
+
   ~TestTextInputClient() override = default;
 
   void WaitUntilCalled() { run_loop_.Run(); }
@@ -173,8 +181,6 @@ class TestTextInputClient : public ui::DummyTextInputClient {
 
   std::u16string inserted_text_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTextInputClient);
 };
 
 INSTANTIATE_TEST_SUITE_P(InputMethodEngineBrowserTest,

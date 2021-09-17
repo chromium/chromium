@@ -23,6 +23,12 @@ class DeviceWilcoDtcConfigurationExternalDataHandler final
  public:
   explicit DeviceWilcoDtcConfigurationExternalDataHandler(
       PolicyService* policy_service);
+
+  DeviceWilcoDtcConfigurationExternalDataHandler(
+      const DeviceWilcoDtcConfigurationExternalDataHandler&) = delete;
+  DeviceWilcoDtcConfigurationExternalDataHandler& operator=(
+      const DeviceWilcoDtcConfigurationExternalDataHandler&) = delete;
+
   ~DeviceWilcoDtcConfigurationExternalDataHandler() override;
 
   // DeviceCloudExternalDataPolicyHandler:
@@ -35,8 +41,6 @@ class DeviceWilcoDtcConfigurationExternalDataHandler final
  private:
   std::unique_ptr<DeviceCloudExternalDataPolicyObserver>
       device_wilco_dtc_configuration_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceWilcoDtcConfigurationExternalDataHandler);
 };
 
 }  // namespace policy

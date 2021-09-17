@@ -39,6 +39,10 @@ class SessionManagerOperation {
 
   // Creates a new load operation.
   explicit SessionManagerOperation(Callback callback);
+
+  SessionManagerOperation(const SessionManagerOperation&) = delete;
+  SessionManagerOperation& operator=(const SessionManagerOperation&) = delete;
+
   virtual ~SessionManagerOperation();
 
   // Starts the operation.
@@ -131,8 +135,6 @@ class SessionManagerOperation {
       device_settings_;
 
   base::WeakPtrFactory<SessionManagerOperation> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionManagerOperation);
 };
 
 // This operation loads the public owner key from disk if appropriate, fetches
@@ -147,14 +149,15 @@ class LoadSettingsOperation : public SessionManagerOperation {
                         bool cloud_validations,
                         bool force_immediate_load,
                         Callback callback);
+
+  LoadSettingsOperation(const LoadSettingsOperation&) = delete;
+  LoadSettingsOperation& operator=(const LoadSettingsOperation&) = delete;
+
   ~LoadSettingsOperation() override;
 
  protected:
   // SessionManagerOperation:
   void Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoadSettingsOperation);
 };
 
 // Stores a pre-generated policy blob and reloads the device settings from
@@ -165,6 +168,10 @@ class StoreSettingsOperation : public SessionManagerOperation {
   StoreSettingsOperation(
       Callback callback,
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
+
+  StoreSettingsOperation(const StoreSettingsOperation&) = delete;
+  StoreSettingsOperation& operator=(const StoreSettingsOperation&) = delete;
+
   ~StoreSettingsOperation() override;
 
  protected:
@@ -178,8 +185,6 @@ class StoreSettingsOperation : public SessionManagerOperation {
   std::unique_ptr<enterprise_management::PolicyFetchResponse> policy_;
 
   base::WeakPtrFactory<StoreSettingsOperation> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StoreSettingsOperation);
 };
 
 }  // namespace ash

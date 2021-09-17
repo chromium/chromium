@@ -25,6 +25,10 @@ namespace {
 class DefaultDelegateImpl : public ArcInstanceThrottle::Delegate {
  public:
   DefaultDelegateImpl() = default;
+
+  DefaultDelegateImpl(const DefaultDelegateImpl&) = delete;
+  DefaultDelegateImpl& operator=(const DefaultDelegateImpl&) = delete;
+
   ~DefaultDelegateImpl() override = default;
   void SetCpuRestriction(CpuRestrictionState cpu_restriction_state) override {
     SetArcCpuRestriction(cpu_restriction_state);
@@ -37,9 +41,6 @@ class DefaultDelegateImpl : public ArcInstanceThrottle::Delegate {
              << " ms due to: " << observer_name;
     UmaHistogramLongTimes("Arc.CpuRestrictionDisabled." + observer_name, delta);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultDelegateImpl);
 };
 
 // Singleton factory for ArcInstanceThrottle.

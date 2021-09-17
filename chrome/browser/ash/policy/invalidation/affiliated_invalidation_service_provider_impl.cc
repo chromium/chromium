@@ -77,6 +77,11 @@ class AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver
   explicit InvalidationServiceObserver(
       AffiliatedInvalidationServiceProviderImpl* parent,
       invalidation::InvalidationService* invalidation_service);
+
+  InvalidationServiceObserver(const InvalidationServiceObserver&) = delete;
+  InvalidationServiceObserver& operator=(const InvalidationServiceObserver&) =
+      delete;
+
   ~InvalidationServiceObserver() override;
 
   invalidation::InvalidationService* GetInvalidationService();
@@ -98,8 +103,6 @@ class AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver
 
   // The number of times TRANSIENT_INVALIDATION_ERROR should cause disconnect.
   int transient_error_disconnect_limit_ = kTransientErrorDisconnectLimit;
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidationServiceObserver);
 };
 
 AffiliatedInvalidationServiceProviderImpl::InvalidationServiceObserver::

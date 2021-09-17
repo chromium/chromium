@@ -25,6 +25,11 @@ class ManagementTransitionScreenView {
   // Renamed from "supervision-transition".
   constexpr static StaticOobeScreenId kScreenId{"management-transition"};
 
+  ManagementTransitionScreenView(const ManagementTransitionScreenView&) =
+      delete;
+  ManagementTransitionScreenView& operator=(
+      const ManagementTransitionScreenView&) = delete;
+
   virtual ~ManagementTransitionScreenView() {}
 
   virtual void Bind(ash::ManagementTransitionScreen* screen) = 0;
@@ -34,9 +39,6 @@ class ManagementTransitionScreenView {
 
  protected:
   ManagementTransitionScreenView() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManagementTransitionScreenView);
 };
 
 class ManagementTransitionScreenHandler
@@ -47,6 +49,12 @@ class ManagementTransitionScreenHandler
 
   explicit ManagementTransitionScreenHandler(
       JSCallsContainer* js_calls_container);
+
+  ManagementTransitionScreenHandler(const ManagementTransitionScreenHandler&) =
+      delete;
+  ManagementTransitionScreenHandler& operator=(
+      const ManagementTransitionScreenHandler&) = delete;
+
   ~ManagementTransitionScreenHandler() override;
 
   // BaseScreenHandler:
@@ -89,8 +97,6 @@ class ManagementTransitionScreenHandler
   PrefChangeRegistrar registrar_;
 
   base::WeakPtrFactory<ManagementTransitionScreenHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementTransitionScreenHandler);
 };
 
 }  // namespace chromeos

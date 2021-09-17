@@ -35,6 +35,10 @@ class ButtonLayout : public views::LayoutManager {
   // parent must respect this width (by, for example, using ColumnSize::kUsePref
   // for the hosting column's size_type if it uses GridLayout).
   explicit ButtonLayout(int view_width);
+
+  ButtonLayout(const ButtonLayout&) = delete;
+  ButtonLayout& operator=(const ButtonLayout&) = delete;
+
   ~ButtonLayout() override;
 
  protected:
@@ -56,8 +60,6 @@ class ButtonLayout : public views::LayoutManager {
 
   // The desired width of the view.
   const int view_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonLayout);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRY_CHROME_DIALOG_WIN_BUTTON_LAYOUT_H_

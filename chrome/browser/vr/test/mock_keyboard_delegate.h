@@ -17,6 +17,10 @@ namespace vr {
 class MockKeyboardDelegate : public KeyboardDelegate {
  public:
   MockKeyboardDelegate();
+
+  MockKeyboardDelegate(const MockKeyboardDelegate&) = delete;
+  MockKeyboardDelegate& operator=(const MockKeyboardDelegate&) = delete;
+
   ~MockKeyboardDelegate() override;
 
   MOCK_METHOD0(ShowKeyboard, void());
@@ -32,9 +36,6 @@ class MockKeyboardDelegate : public KeyboardDelegate {
   MOCK_METHOD1(OnHoverMove, void(const gfx::PointF&));
   MOCK_METHOD1(OnButtonDown, void(const gfx::PointF&));
   MOCK_METHOD1(OnButtonUp, void(const gfx::PointF&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockKeyboardDelegate);
 };
 
 }  // namespace vr

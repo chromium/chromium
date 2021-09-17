@@ -19,6 +19,10 @@ class Extension;
 class TestIconImageObserver : public IconImage::Observer {
  public:
   TestIconImageObserver();
+
+  TestIconImageObserver(const TestIconImageObserver&) = delete;
+  TestIconImageObserver& operator=(const TestIconImageObserver&) = delete;
+
   ~TestIconImageObserver() override;
 
   void Wait(IconImage* icon);
@@ -33,8 +37,6 @@ class TestIconImageObserver : public IconImage::Observer {
 
   base::RunLoop run_loop_;
   base::ScopedObservation<IconImage, IconImage::Observer> observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestIconImageObserver);
 };
 }  // namespace extensions
 

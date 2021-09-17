@@ -23,6 +23,10 @@ namespace chromeos {
 class OobeDisplayChooser : public ui::InputDeviceEventObserver {
  public:
   OobeDisplayChooser();
+
+  OobeDisplayChooser(const OobeDisplayChooser&) = delete;
+  OobeDisplayChooser& operator=(const OobeDisplayChooser&) = delete;
+
   ~OobeDisplayChooser() override;
 
   // Tries to put the OOBE UI on a connected touch display (if available).
@@ -53,8 +57,6 @@ class OobeDisplayChooser : public ui::InputDeviceEventObserver {
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 
   base::WeakPtrFactory<OobeDisplayChooser> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OobeDisplayChooser);
 };
 
 }  // namespace chromeos

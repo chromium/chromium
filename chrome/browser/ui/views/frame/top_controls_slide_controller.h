@@ -18,6 +18,11 @@ class WebContents;
 class TopControlsSlideController {
  public:
   TopControlsSlideController() = default;
+
+  TopControlsSlideController(const TopControlsSlideController&) = delete;
+  TopControlsSlideController& operator=(const TopControlsSlideController&) =
+      delete;
+
   virtual ~TopControlsSlideController() = default;
 
   // Returns true when the browser top controls slide behavior with page scrolls
@@ -54,9 +59,6 @@ class TopControlsSlideController {
   // Returns true while the top controls are sliding up or down, and hasn't
   // reached a final steady state.
   virtual bool IsTopControlsSlidingInProgress() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TopControlsSlideController);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTROLS_SLIDE_CONTROLLER_H_

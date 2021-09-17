@@ -43,6 +43,10 @@ class SearchBox : public content::RenderFrameObserver,
   };
 
   explicit SearchBox(content::RenderFrame* render_frame);
+
+  SearchBox(const SearchBox&) = delete;
+  SearchBox& operator=(const SearchBox&) = delete;
+
   ~SearchBox() override;
 
   // Sends LogEvent to the browser.
@@ -172,8 +176,6 @@ class SearchBox : public content::RenderFrameObserver,
   absl::optional<NtpTheme> theme_;
 
   base::WeakPtrFactory<SearchBox> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBox);
 };
 
 #endif  // CHROME_RENDERER_SEARCHBOX_SEARCHBOX_H_

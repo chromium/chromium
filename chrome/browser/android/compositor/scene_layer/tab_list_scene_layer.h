@@ -30,6 +30,10 @@ class TabLayer;
 class TabListSceneLayer : public SceneLayer {
  public:
   TabListSceneLayer(JNIEnv* env, const base::android::JavaRef<jobject>& jobj);
+
+  TabListSceneLayer(const TabListSceneLayer&) = delete;
+  TabListSceneLayer& operator=(const TabListSceneLayer&) = delete;
+
   ~TabListSceneLayer() override;
 
   void BeginBuildingFrame(JNIEnv* env,
@@ -134,8 +138,6 @@ class TabListSceneLayer : public SceneLayer {
   SkColor background_color_;
 
   scoped_refptr<cc::Layer> own_tree_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabListSceneLayer);
 };
 
 }  // namespace android

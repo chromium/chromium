@@ -53,6 +53,10 @@ class ExternalCacheImplTest : public testing::Test,
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
+
+  ExternalCacheImplTest(const ExternalCacheImplTest&) = delete;
+  ExternalCacheImplTest& operator=(const ExternalCacheImplTest&) = delete;
+
   ~ExternalCacheImplTest() override = default;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() {
@@ -137,8 +141,6 @@ class ExternalCacheImplTest : public testing::Test,
   std::set<extensions::ExtensionId> deleted_extension_files_;
 
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalCacheImplTest);
 };
 
 TEST_F(ExternalCacheImplTest, Basic) {

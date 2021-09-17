@@ -16,6 +16,12 @@ class ArcPlaystoreShortcutShelfItemController
     : public AppShortcutShelfItemController {
  public:
   ArcPlaystoreShortcutShelfItemController();
+
+  ArcPlaystoreShortcutShelfItemController(
+      const ArcPlaystoreShortcutShelfItemController&) = delete;
+  ArcPlaystoreShortcutShelfItemController& operator=(
+      const ArcPlaystoreShortcutShelfItemController&) = delete;
+
   ~ArcPlaystoreShortcutShelfItemController() override;
 
   // AppShortcutShelfItemController overrides:
@@ -27,8 +33,6 @@ class ArcPlaystoreShortcutShelfItemController
 
  private:
   std::unique_ptr<ArcAppLauncher> playstore_launcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlaystoreShortcutShelfItemController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_ARC_PLAYSTORE_SHORTCUT_SHELF_ITEM_CONTROLLER_H_

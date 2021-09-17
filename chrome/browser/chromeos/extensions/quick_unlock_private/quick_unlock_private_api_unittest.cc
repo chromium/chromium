@@ -96,14 +96,15 @@ class FakeEasyUnlockService : public ash::EasyUnlockServiceRegular {
                                       fake_secure_channel_client,
                                       fake_device_sync_client,
                                       fake_multidevice_setup_client) {}
+
+  FakeEasyUnlockService(const FakeEasyUnlockService&) = delete;
+  FakeEasyUnlockService& operator=(const FakeEasyUnlockService&) = delete;
+
   ~FakeEasyUnlockService() override {}
 
   // ash::EasyUnlockServiceRegular:
   void InitializeInternal() override {}
   void ShutdownInternal() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeEasyUnlockService);
 };
 
 std::unique_ptr<KeyedService> CreateEasyUnlockServiceForTest(
@@ -161,6 +162,11 @@ class QuickUnlockPrivateUnitTest
   }
 
   QuickUnlockPrivateUnitTest() = default;
+
+  QuickUnlockPrivateUnitTest(const QuickUnlockPrivateUnitTest&) = delete;
+  QuickUnlockPrivateUnitTest& operator=(const QuickUnlockPrivateUnitTest&) =
+      delete;
+
   ~QuickUnlockPrivateUnitTest() override = default;
 
  protected:
@@ -653,8 +659,6 @@ class QuickUnlockPrivateUnitTest
   bool expect_modes_changed_ = false;
   chromeos::UserContext auth_token_user_context_;
   std::string token_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateUnitTest);
 };
 
 // Verifies that GetAuthTokenValid succeeds when a valid password is provided.

@@ -38,6 +38,11 @@ class WindowedIncognitoObserver {
  public:
   explicit WindowedIncognitoObserver(WindowedIncognitoMonitor* monitor,
                                      uint64_t incognito_open_count);
+
+  WindowedIncognitoObserver(const WindowedIncognitoObserver&) = delete;
+  WindowedIncognitoObserver& operator=(const WindowedIncognitoObserver&) =
+      delete;
+
   virtual ~WindowedIncognitoObserver() = default;
 
   // Made virtual for override in test.
@@ -50,8 +55,6 @@ class WindowedIncognitoObserver {
   // The number of incognito windows that has been opened when the observer is
   // created.
   uint64_t num_incognito_window_opened_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedIncognitoObserver);
 };
 
 // WindowedIncognitoMonitor watches for any incognito window being opened or

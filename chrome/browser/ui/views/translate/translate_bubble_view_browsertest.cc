@@ -36,6 +36,12 @@ namespace translate {
 class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
   TranslateBubbleViewBrowserTest() {}
+
+  TranslateBubbleViewBrowserTest(const TranslateBubbleViewBrowserTest&) =
+      delete;
+  TranslateBubbleViewBrowserTest& operator=(
+      const TranslateBubbleViewBrowserTest&) = delete;
+
   ~TranslateBubbleViewBrowserTest() override {}
 
   void SetUp() override {
@@ -76,9 +82,6 @@ class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
           ->Wait();
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TranslateBubbleViewBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,

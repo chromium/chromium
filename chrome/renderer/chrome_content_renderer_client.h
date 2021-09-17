@@ -83,6 +83,11 @@ class ChromeContentRendererClient
       public service_manager::LocalInterfaceProvider {
  public:
   ChromeContentRendererClient();
+
+  ChromeContentRendererClient(const ChromeContentRendererClient&) = delete;
+  ChromeContentRendererClient& operator=(const ChromeContentRendererClient&) =
+      delete;
+
   ~ChromeContentRendererClient() override;
 
   void RenderThreadStarted() override;
@@ -279,8 +284,6 @@ class ChromeContentRendererClient
 
   scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentRendererClient);
 };
 
 #endif  // CHROME_RENDERER_CHROME_CONTENT_RENDERER_CLIENT_H_

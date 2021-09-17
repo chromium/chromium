@@ -13,13 +13,14 @@ namespace arc {
 class ArcAppIdProviderImpl : public ash::ArcAppIdProvider {
  public:
   ArcAppIdProviderImpl();
+
+  ArcAppIdProviderImpl(const ArcAppIdProviderImpl&) = delete;
+  ArcAppIdProviderImpl& operator=(const ArcAppIdProviderImpl&) = delete;
+
   ~ArcAppIdProviderImpl() override;
 
   // ash::ArcAppIdProvider:
   std::string GetAppIdByPackageName(const std::string& package_name) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppIdProviderImpl);
 };
 
 }  // namespace arc

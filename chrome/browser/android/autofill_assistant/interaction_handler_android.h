@@ -43,6 +43,11 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
       RadioButtonController* radio_button_controller,
       base::android::ScopedJavaGlobalRef<jobject> jcontext,
       base::android::ScopedJavaGlobalRef<jobject> jdelegate);
+
+  InteractionHandlerAndroid(const InteractionHandlerAndroid&) = delete;
+  InteractionHandlerAndroid& operator=(const InteractionHandlerAndroid&) =
+      delete;
+
   ~InteractionHandlerAndroid() override;
 
   base::WeakPtr<InteractionHandlerAndroid> GetWeakPtr();
@@ -111,7 +116,6 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
       nested_ui_controllers_;
 
   base::WeakPtrFactory<InteractionHandlerAndroid> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InteractionHandlerAndroid);
 };
 
 }  //  namespace autofill_assistant

@@ -53,12 +53,12 @@ class MockIpcMessageSender : public IPC::Sender {
         .WillByDefault(DoAll(Invoke(MessageDeleter), Return(true)));
   }
 
+  MockIpcMessageSender(const MockIpcMessageSender&) = delete;
+  MockIpcMessageSender& operator=(const MockIpcMessageSender&) = delete;
+
   ~MockIpcMessageSender() override = default;
 
   MOCK_METHOD1(Send, bool(IPC::Message* message));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIpcMessageSender);
 };
 
 class MockRequestPeer : public blink::WebRequestPeer {

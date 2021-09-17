@@ -50,6 +50,10 @@ class CrosSettings {
   // production code uses the singleton returned by Get() above.
   CrosSettings(DeviceSettingsService* device_settings_service,
                PrefService* local_state);
+
+  CrosSettings(const CrosSettings&) = delete;
+  CrosSettings& operator=(const CrosSettings&) = delete;
+
   virtual ~CrosSettings();
 
   // Helper function to test if the given |path| is a valid cros setting.
@@ -145,8 +149,6 @@ class CrosSettings {
       settings_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CrosSettings);
 };
 
 // Helper class for tests. Initializes the CrosSettings singleton on
@@ -154,10 +156,11 @@ class CrosSettings {
 class ScopedTestCrosSettings {
  public:
   explicit ScopedTestCrosSettings(PrefService* local_state);
-  ~ScopedTestCrosSettings();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestCrosSettings);
+  ScopedTestCrosSettings(const ScopedTestCrosSettings&) = delete;
+  ScopedTestCrosSettings& operator=(const ScopedTestCrosSettings&) = delete;
+
+  ~ScopedTestCrosSettings();
 };
 
 }  // namespace ash

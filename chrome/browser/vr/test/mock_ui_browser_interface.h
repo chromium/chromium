@@ -14,6 +14,10 @@ namespace vr {
 class MockUiBrowserInterface : public UiBrowserInterface {
  public:
   MockUiBrowserInterface();
+
+  MockUiBrowserInterface(const MockUiBrowserInterface&) = delete;
+  MockUiBrowserInterface& operator=(const MockUiBrowserInterface&) = delete;
+
   ~MockUiBrowserInterface() override;
 
   MOCK_METHOD0(ExitPresent, void());
@@ -43,9 +47,6 @@ class MockUiBrowserInterface : public UiBrowserInterface {
   MOCK_METHOD0(StopAutocomplete, void());
   MOCK_METHOD0(ShowPageInfo, void());
   MOCK_METHOD0(LoadAssets, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockUiBrowserInterface);
 };
 
 }  // namespace vr

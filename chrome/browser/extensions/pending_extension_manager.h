@@ -88,6 +88,10 @@ class PendingExtensionManager {
   };
 
   explicit PendingExtensionManager(content::BrowserContext* context);
+
+  PendingExtensionManager(const PendingExtensionManager&) = delete;
+  PendingExtensionManager& operator=(const PendingExtensionManager&) = delete;
+
   ~PendingExtensionManager();
 
   // TODO(skerner): Many of these methods can be private once code in
@@ -222,8 +226,6 @@ class PendingExtensionManager {
   friend void SetupPendingExtensionManagerForTest(
       int count, const GURL& update_url,
       PendingExtensionManager* pending_extension_manager);
-
-  DISALLOW_COPY_AND_ASSIGN(PendingExtensionManager);
 };
 
 }  // namespace extensions

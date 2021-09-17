@@ -30,6 +30,12 @@ class AccessibilityPanel::AccessibilityPanelWebContentsObserver
   AccessibilityPanelWebContentsObserver(content::WebContents* web_contents,
                                         AccessibilityPanel* panel)
       : content::WebContentsObserver(web_contents), panel_(panel) {}
+
+  AccessibilityPanelWebContentsObserver(
+      const AccessibilityPanelWebContentsObserver&) = delete;
+  AccessibilityPanelWebContentsObserver& operator=(
+      const AccessibilityPanelWebContentsObserver&) = delete;
+
   ~AccessibilityPanelWebContentsObserver() override = default;
 
   // content::WebContentsObserver overrides.
@@ -39,8 +45,6 @@ class AccessibilityPanel::AccessibilityPanelWebContentsObserver
 
  private:
   AccessibilityPanel* panel_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityPanelWebContentsObserver);
 };
 
 AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,

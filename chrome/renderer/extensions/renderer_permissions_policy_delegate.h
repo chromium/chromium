@@ -17,6 +17,12 @@ class RendererPermissionsPolicyDelegate
     : public PermissionsData::PolicyDelegate {
  public:
   explicit RendererPermissionsPolicyDelegate(Dispatcher* dispatcher);
+
+  RendererPermissionsPolicyDelegate(const RendererPermissionsPolicyDelegate&) =
+      delete;
+  RendererPermissionsPolicyDelegate& operator=(
+      const RendererPermissionsPolicyDelegate&) = delete;
+
   ~RendererPermissionsPolicyDelegate() override;
 
   // PermissionsData::PolicyDelegate:
@@ -24,8 +30,6 @@ class RendererPermissionsPolicyDelegate
 
  private:
   Dispatcher* dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererPermissionsPolicyDelegate);
 };
 
 }  // namespace extensions

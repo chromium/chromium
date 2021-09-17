@@ -40,6 +40,10 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   EasyUnlockTpmKeyManager(const AccountId& account_id,
                           const std::string& username_hash,
                           PrefService* local_state);
+
+  EasyUnlockTpmKeyManager(const EasyUnlockTpmKeyManager&) = delete;
+  EasyUnlockTpmKeyManager& operator=(const EasyUnlockTpmKeyManager&) = delete;
+
   ~EasyUnlockTpmKeyManager() override;
 
   // Checks if the RSA public key is set in the local state. If not, creates
@@ -147,8 +151,6 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   base::WeakPtrFactory<EasyUnlockTpmKeyManager> get_tpm_slot_weak_ptr_factory_{
       this};
   base::WeakPtrFactory<EasyUnlockTpmKeyManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockTpmKeyManager);
 };
 
 }  // namespace ash

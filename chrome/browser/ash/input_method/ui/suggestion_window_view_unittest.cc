@@ -29,6 +29,10 @@ class MockAssistiveDelegate : public AssistiveDelegate {
 class SuggestionWindowViewTest : public ChromeViewsTestBase {
  public:
   SuggestionWindowViewTest() {}
+
+  SuggestionWindowViewTest(const SuggestionWindowViewTest&) = delete;
+  SuggestionWindowViewTest& operator=(const SuggestionWindowViewTest&) = delete;
+
   ~SuggestionWindowViewTest() override {}
 
  protected:
@@ -83,8 +87,6 @@ class SuggestionWindowViewTest : public ChromeViewsTestBase {
   AssistiveWindowButton candidate_button_;
   AssistiveWindowButton setting_link_view_;
   AssistiveWindowButton learn_more_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(SuggestionWindowViewTest);
 };
 
 TEST_F(SuggestionWindowViewTest, HighlightOneCandidateWhenIndexIsValid) {

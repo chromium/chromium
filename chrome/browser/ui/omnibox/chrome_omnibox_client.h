@@ -26,6 +26,10 @@ class Profile;
 class ChromeOmniboxClient : public OmniboxClient {
  public:
   ChromeOmniboxClient(OmniboxEditController* controller, Profile* profile);
+
+  ChromeOmniboxClient(const ChromeOmniboxClient&) = delete;
+  ChromeOmniboxClient& operator=(const ChromeOmniboxClient&) = delete;
+
   ~ChromeOmniboxClient() override;
 
   // OmniboxClient.
@@ -111,8 +115,6 @@ class ChromeOmniboxClient : public OmniboxClient {
   FaviconCache favicon_cache_;
 
   base::WeakPtrFactory<ChromeOmniboxClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOmniboxClient);
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_CLIENT_H_

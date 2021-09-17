@@ -36,6 +36,10 @@ class SigninUIError;
 class InlineLoginHandlerImpl : public InlineLoginHandler {
  public:
   InlineLoginHandlerImpl();
+
+  InlineLoginHandlerImpl(const InlineLoginHandlerImpl&) = delete;
+  InlineLoginHandlerImpl& operator=(const InlineLoginHandlerImpl&) = delete;
+
   ~InlineLoginHandlerImpl() override;
 
   using InlineLoginHandler::web_ui;
@@ -126,8 +130,6 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
   bool confirm_untrusted_signin_;
 
   base::WeakPtrFactory<InlineLoginHandlerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginHandlerImpl);
 };
 
 // Handles details of signing the user in with IdentityManager and turning on
@@ -150,6 +152,10 @@ class InlineSigninHelper : public GaiaAuthConsumer {
       const std::string& signin_scoped_device_id,
       bool confirm_untrusted_signin,
       bool is_force_sign_in_with_usermanager);
+
+  InlineSigninHelper(const InlineSigninHelper&) = delete;
+  InlineSigninHelper& operator=(const InlineSigninHelper&) = delete;
+
   ~InlineSigninHelper() override;
 
  protected:
@@ -185,8 +191,6 @@ class InlineSigninHelper : public GaiaAuthConsumer {
   std::string auth_code_;
   bool confirm_untrusted_signin_;
   bool is_force_sign_in_with_usermanager_;
-
-  DISALLOW_COPY_AND_ASSIGN(InlineSigninHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_IMPL_H_

@@ -29,6 +29,11 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
                                     public syncer::InvalidationsListener {
  public:
   SyncInternalsMessageHandler();
+
+  SyncInternalsMessageHandler(const SyncInternalsMessageHandler&) = delete;
+  SyncInternalsMessageHandler& operator=(const SyncInternalsMessageHandler&) =
+      delete;
+
   ~SyncInternalsMessageHandler() override;
 
   // content::WebUIMessageHandler implementation.
@@ -123,8 +128,6 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   AboutSyncDataDelegate about_sync_data_delegate_;
 
   base::WeakPtrFactory<SyncInternalsMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncInternalsMessageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SYNC_INTERNALS_SYNC_INTERNALS_MESSAGE_HANDLER_H_

@@ -88,6 +88,11 @@ void EqualModelPrediction(
 class TestingUserActivityUkmLogger : public UserActivityUkmLogger {
  public:
   TestingUserActivityUkmLogger() = default;
+
+  TestingUserActivityUkmLogger(const TestingUserActivityUkmLogger&) = delete;
+  TestingUserActivityUkmLogger& operator=(const TestingUserActivityUkmLogger&) =
+      delete;
+
   ~TestingUserActivityUkmLogger() override = default;
 
   const std::vector<UserActivityEvent>& events() const { return events_; }
@@ -99,8 +104,6 @@ class TestingUserActivityUkmLogger : public UserActivityUkmLogger {
 
  private:
   std::vector<UserActivityEvent> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingUserActivityUkmLogger);
 };
 
 class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
@@ -110,6 +113,9 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
+
+  UserActivityManagerTest(const UserActivityManagerTest&) = delete;
+  UserActivityManagerTest& operator=(const UserActivityManagerTest&) = delete;
 
   ~UserActivityManagerTest() override = default;
 
@@ -278,8 +284,6 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<UserActivityManager> activity_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActivityManagerTest);
 };
 
 // After an idle event, we have a ui::Event, we should expect one

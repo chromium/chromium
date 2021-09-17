@@ -60,6 +60,9 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
     std::string device_id;
   };
 
+  OwnerSettingsServiceAsh(const OwnerSettingsServiceAsh&) = delete;
+  OwnerSettingsServiceAsh& operator=(const OwnerSettingsServiceAsh&) = delete;
+
   ~OwnerSettingsServiceAsh() override;
 
   static OwnerSettingsServiceAsh* FromWebUI(content::WebUI* web_ui);
@@ -193,8 +196,6 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
   base::WeakPtrFactory<OwnerSettingsServiceAsh> weak_factory_{this};
 
   base::WeakPtrFactory<OwnerSettingsServiceAsh> store_settings_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceAsh);
 };
 
 }  // namespace ash

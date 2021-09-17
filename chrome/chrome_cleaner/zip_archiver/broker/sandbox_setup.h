@@ -26,6 +26,11 @@ class ZipArchiverSandboxSetupHooks : public MojoSandboxSetupHooks {
  public:
   ZipArchiverSandboxSetupHooks(scoped_refptr<MojoTaskRunner> mojo_task_runner,
                                base::OnceClosure connection_error_handler);
+
+  ZipArchiverSandboxSetupHooks(const ZipArchiverSandboxSetupHooks&) = delete;
+  ZipArchiverSandboxSetupHooks& operator=(const ZipArchiverSandboxSetupHooks&) =
+      delete;
+
   ~ZipArchiverSandboxSetupHooks() override;
 
   // SandboxSetupHooks
@@ -39,8 +44,6 @@ class ZipArchiverSandboxSetupHooks : public MojoSandboxSetupHooks {
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
   base::OnceClosure connection_error_handler_;
   RemoteZipArchiverPtr zip_archiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZipArchiverSandboxSetupHooks);
 };
 
 }  // namespace chrome_cleaner

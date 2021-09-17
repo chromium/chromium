@@ -34,6 +34,10 @@ class AccountManagerUIHandler
       account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       signin::IdentityManager* identity_manager);
+
+  AccountManagerUIHandler(const AccountManagerUIHandler&) = delete;
+  AccountManagerUIHandler& operator=(const AccountManagerUIHandler&) = delete;
+
   ~AccountManagerUIHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -124,8 +128,6 @@ class AccountManagerUIHandler
       identity_manager_observation_{this};
 
   base::WeakPtrFactory<AccountManagerUIHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccountManagerUIHandler);
 };
 
 }  // namespace settings

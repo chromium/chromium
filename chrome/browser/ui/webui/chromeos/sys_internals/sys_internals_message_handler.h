@@ -17,6 +17,11 @@
 class SysInternalsMessageHandler : public content::WebUIMessageHandler {
  public:
   SysInternalsMessageHandler();
+
+  SysInternalsMessageHandler(const SysInternalsMessageHandler&) = delete;
+  SysInternalsMessageHandler& operator=(const SysInternalsMessageHandler&) =
+      delete;
+
   ~SysInternalsMessageHandler() override;
 
   // content::WebUIMessageHandler methods:
@@ -60,8 +65,6 @@ class SysInternalsMessageHandler : public content::WebUIMessageHandler {
   void ReplySysInfo(base::Value callback_id, base::Value result);
 
   base::WeakPtrFactory<SysInternalsMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SysInternalsMessageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYS_INTERNALS_SYS_INTERNALS_MESSAGE_HANDLER_H_

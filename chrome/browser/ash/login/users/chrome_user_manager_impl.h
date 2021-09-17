@@ -62,6 +62,9 @@ class ChromeUserManagerImpl
       public ProfileManagerObserver,
       public MultiProfileUserControllerDelegate {
  public:
+  ChromeUserManagerImpl(const ChromeUserManagerImpl&) = delete;
+  ChromeUserManagerImpl& operator=(const ChromeUserManagerImpl&) = delete;
+
   ~ChromeUserManagerImpl() override;
 
   // Creates ChromeUserManagerImpl instance.
@@ -283,8 +286,6 @@ class ChromeUserManagerImpl
   bool user_added_removed_reporter_intialized_;
 
   base::WeakPtrFactory<ChromeUserManagerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUserManagerImpl);
 };
 
 }  // namespace ash

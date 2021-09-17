@@ -22,6 +22,9 @@ class RelaunchRequiredTimer {
   // |callback| is called every time the notification title has to be updated.
   RelaunchRequiredTimer(base::Time deadline, base::RepeatingClosure callback);
 
+  RelaunchRequiredTimer(const RelaunchRequiredTimer&) = delete;
+  RelaunchRequiredTimer& operator=(const RelaunchRequiredTimer&) = delete;
+
   ~RelaunchRequiredTimer();
 
   // Sets the relaunch deadline to |deadline| and refreshes the notifications's
@@ -48,8 +51,6 @@ class RelaunchRequiredTimer {
   // Callback which triggers the actual title update, which differs on Chrome
   // for desktop vs for Chrome OS.
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RelaunchRequiredTimer);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_REQUIRED_TIMER_H_

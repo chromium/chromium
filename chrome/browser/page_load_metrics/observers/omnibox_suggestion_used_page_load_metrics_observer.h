@@ -14,6 +14,12 @@ class OmniboxSuggestionUsedMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   OmniboxSuggestionUsedMetricsObserver();
+
+  OmniboxSuggestionUsedMetricsObserver(
+      const OmniboxSuggestionUsedMetricsObserver&) = delete;
+  OmniboxSuggestionUsedMetricsObserver& operator=(
+      const OmniboxSuggestionUsedMetricsObserver&) = delete;
+
   ~OmniboxSuggestionUsedMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -28,8 +34,6 @@ class OmniboxSuggestionUsedMetricsObserver
 
  private:
   ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxSuggestionUsedMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_OMNIBOX_SUGGESTION_USED_PAGE_LOAD_METRICS_OBSERVER_H_

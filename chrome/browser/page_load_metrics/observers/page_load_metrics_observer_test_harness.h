@@ -26,6 +26,12 @@ class PageLoadMetricsObserverTestHarness
   static const char kResourceUrl[];
 
   PageLoadMetricsObserverTestHarness();
+
+  PageLoadMetricsObserverTestHarness(
+      const PageLoadMetricsObserverTestHarness&) = delete;
+  PageLoadMetricsObserverTestHarness& operator=(
+      const PageLoadMetricsObserverTestHarness&) = delete;
+
   ~PageLoadMetricsObserverTestHarness() override;
 
   void SetUp() override;
@@ -37,8 +43,6 @@ class PageLoadMetricsObserverTestHarness
 
  private:
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsObserverTestHarness);
 };
 
 }  // namespace page_load_metrics

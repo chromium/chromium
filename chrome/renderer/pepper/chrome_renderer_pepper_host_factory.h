@@ -16,6 +16,12 @@ class RendererPpapiHost;
 class ChromeRendererPepperHostFactory : public ppapi::host::HostFactory {
  public:
   explicit ChromeRendererPepperHostFactory(content::RendererPpapiHost* host);
+
+  ChromeRendererPepperHostFactory(const ChromeRendererPepperHostFactory&) =
+      delete;
+  ChromeRendererPepperHostFactory& operator=(
+      const ChromeRendererPepperHostFactory&) = delete;
+
   ~ChromeRendererPepperHostFactory() override;
 
   // HostFactory.
@@ -28,8 +34,6 @@ class ChromeRendererPepperHostFactory : public ppapi::host::HostFactory {
  private:
   // Not owned by this object.
   content::RendererPpapiHost* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRendererPepperHostFactory);
 };
 
 #endif  // CHROME_RENDERER_PEPPER_CHROME_RENDERER_PEPPER_HOST_FACTORY_H_

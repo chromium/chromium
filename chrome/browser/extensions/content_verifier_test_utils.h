@@ -36,6 +36,10 @@ namespace content_verifier_test {
 class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
  public:
   DownloaderTestDelegate();
+
+  DownloaderTestDelegate(const DownloaderTestDelegate&) = delete;
+  DownloaderTestDelegate& operator=(const DownloaderTestDelegate&) = delete;
+
   ~DownloaderTestDelegate();
 
   // This makes it so that update check requests for |extension_id| will return
@@ -59,8 +63,6 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
   // The prepared responses - this maps an extension id to a (version string,
   // crx file path) pair.
   std::map<ExtensionId, std::pair<base::Version, base::FilePath>> responses_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloaderTestDelegate);
 };
 
 // This lets us simulate a policy-installed extension being "force" installed;
@@ -68,6 +70,10 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
 class ForceInstallProvider : public ManagementPolicy::Provider {
  public:
   explicit ForceInstallProvider(const ExtensionId& id);
+
+  ForceInstallProvider(const ForceInstallProvider&) = delete;
+  ForceInstallProvider& operator=(const ForceInstallProvider&) = delete;
+
   ~ForceInstallProvider() override;
 
   std::string GetDebugPolicyProviderName() const override;
@@ -79,8 +85,6 @@ class ForceInstallProvider : public ManagementPolicy::Provider {
  private:
   // The extension id we want to disallow uninstall/disable for.
   ExtensionId id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForceInstallProvider);
 };
 
 // A helper for intercepting the normal action that
@@ -89,6 +93,9 @@ class ForceInstallProvider : public ManagementPolicy::Provider {
 class DelayTracker {
  public:
   DelayTracker();
+
+  DelayTracker(const DelayTracker&) = delete;
+  DelayTracker& operator=(const DelayTracker&) = delete;
 
   ~DelayTracker();
 
@@ -101,8 +108,6 @@ class DelayTracker {
   std::vector<base::TimeDelta> calls_;
   absl::optional<base::OnceClosure> saved_callback_;
   PolicyExtensionReinstaller::ReinstallCallback action_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayTracker);
 };
 
 }  // namespace content_verifier_test

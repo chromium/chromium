@@ -28,6 +28,10 @@ struct ContextualSearchContext {
   ContextualSearchContext(const std::string& home_country,
                           const GURL& page_url,
                           const std::string& encoding);
+
+  ContextualSearchContext(const ContextualSearchContext&) = delete;
+  ContextualSearchContext& operator=(const ContextualSearchContext&) = delete;
+
   ~ContextualSearchContext();
 
   // Calls the destructor.  Should be called when this native object is no
@@ -169,8 +173,6 @@ struct ContextualSearchContext {
   // that any WeakPtrs to this instance are invalidated before its members
   // variable's destructors are executed, rendering them invalid.
   base::WeakPtrFactory<ContextualSearchContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchContext);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_CONTEXT_H_

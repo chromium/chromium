@@ -67,6 +67,10 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
   OfflinePageBridge(JNIEnv* env,
                     SimpleFactoryKey* key,
                     OfflinePageModel* offline_page_model);
+
+  OfflinePageBridge(const OfflinePageBridge&) = delete;
+  OfflinePageBridge& operator=(const OfflinePageBridge&) = delete;
+
   ~OfflinePageBridge() override;
 
   // OfflinePageModel::Observer implementation.
@@ -268,8 +272,6 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
   OfflinePageModel* offline_page_model_;
 
   base::WeakPtrFactory<OfflinePageBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageBridge);
 };
 
 }  // namespace android

@@ -32,6 +32,10 @@ using TypedPrefMap = std::map<std::string, api::settings_private::PrefType>;
 class SettingsPrivateDelegate : public KeyedService {
  public:
   explicit SettingsPrivateDelegate(Profile* profile);
+
+  SettingsPrivateDelegate(const SettingsPrivateDelegate&) = delete;
+  SettingsPrivateDelegate& operator=(const SettingsPrivateDelegate&) = delete;
+
   ~SettingsPrivateDelegate() override;
 
   // Sets the pref with the given name and value in the proper PrefService.
@@ -55,9 +59,6 @@ class SettingsPrivateDelegate : public KeyedService {
  protected:
   Profile* profile_;  // weak; not owned by us
   std::unique_ptr<PrefsUtil> prefs_util_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SettingsPrivateDelegate);
 };
 
 }  // namespace extensions

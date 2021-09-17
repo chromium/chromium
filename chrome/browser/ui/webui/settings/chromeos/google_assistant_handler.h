@@ -17,6 +17,10 @@ class GoogleAssistantHandler : public ::settings::SettingsPageUIHandler,
                                chromeos::CrasAudioHandler::AudioObserver {
  public:
   GoogleAssistantHandler();
+
+  GoogleAssistantHandler(const GoogleAssistantHandler&) = delete;
+  GoogleAssistantHandler& operator=(const GoogleAssistantHandler&) = delete;
+
   ~GoogleAssistantHandler() override;
 
   void RegisterMessages() override;
@@ -39,8 +43,6 @@ class GoogleAssistantHandler : public ::settings::SettingsPageUIHandler,
   bool pending_hotword_update_ = false;
 
   base::WeakPtrFactory<GoogleAssistantHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GoogleAssistantHandler);
 };
 
 }  // namespace settings

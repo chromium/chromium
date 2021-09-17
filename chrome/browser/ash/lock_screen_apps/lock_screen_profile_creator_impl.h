@@ -31,6 +31,11 @@ class LockScreenProfileCreatorImpl
   //     used to determine lock screen note taking availability.
   LockScreenProfileCreatorImpl(Profile* primary_profile,
                                const base::TickClock* tick_clock);
+
+  LockScreenProfileCreatorImpl(const LockScreenProfileCreatorImpl&) = delete;
+  LockScreenProfileCreatorImpl& operator=(const LockScreenProfileCreatorImpl&) =
+      delete;
+
   ~LockScreenProfileCreatorImpl() override;
 
   // chromeos::NoteTakingHelper::Observer:
@@ -65,8 +70,6 @@ class LockScreenProfileCreatorImpl
       note_taking_helper_observation_{this};
 
   base::WeakPtrFactory<LockScreenProfileCreatorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenProfileCreatorImpl);
 };
 
 }  // namespace lock_screen_apps

@@ -53,6 +53,10 @@ class DownloadRequestMaker {
       const std::vector<ClientDownloadRequest::Resource>& resources,
       bool is_user_initiated,
       ReferrerChainData* referrer_chain_data);
+
+  DownloadRequestMaker(const DownloadRequestMaker&) = delete;
+  DownloadRequestMaker& operator=(const DownloadRequestMaker&) = delete;
+
   ~DownloadRequestMaker();
 
   // Starts filling in fields in the download ping. Will run the callback with
@@ -89,8 +93,6 @@ class DownloadRequestMaker {
   Callback callback_;
 
   base::WeakPtrFactory<DownloadRequestMaker> weakptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadRequestMaker);
 };
 
 }  // namespace safe_browsing

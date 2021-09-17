@@ -12,10 +12,11 @@
 class InvalidationsUI : public content::WebUIController {
  public:
   explicit InvalidationsUI(content::WebUI* web_ui);
-  ~InvalidationsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(InvalidationsUI);
+  InvalidationsUI(const InvalidationsUI&) = delete;
+  InvalidationsUI& operator=(const InvalidationsUI&) = delete;
+
+  ~InvalidationsUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INVALIDATIONS_INVALIDATIONS_UI_H_

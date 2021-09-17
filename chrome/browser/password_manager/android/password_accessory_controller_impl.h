@@ -45,6 +45,12 @@ class PasswordAccessoryControllerImpl
   using PasswordDriverSupplierForFocusedFrame =
       base::RepeatingCallback<password_manager::PasswordManagerDriver*(
           content::WebContents*)>;
+
+  PasswordAccessoryControllerImpl(const PasswordAccessoryControllerImpl&) =
+      delete;
+  PasswordAccessoryControllerImpl& operator=(
+      const PasswordAccessoryControllerImpl&) = delete;
+
   ~PasswordAccessoryControllerImpl() override;
 
   // AccessoryController:
@@ -220,8 +226,6 @@ class PasswordAccessoryControllerImpl
       security_state::NONE;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordAccessoryControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_IMPL_H_

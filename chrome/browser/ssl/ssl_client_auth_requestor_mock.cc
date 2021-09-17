@@ -22,6 +22,10 @@ class FakeClientCertificateDelegate
                                 base::OnceClosure done_callback)
       : requestor_(requestor), done_callback_(std::move(done_callback)) {}
 
+  FakeClientCertificateDelegate(const FakeClientCertificateDelegate&) = delete;
+  FakeClientCertificateDelegate& operator=(
+      const FakeClientCertificateDelegate&) = delete;
+
   ~FakeClientCertificateDelegate() override {
     if (requestor_) {
       requestor_->CancelCertificateSelection();
@@ -40,8 +44,6 @@ class FakeClientCertificateDelegate
  private:
   scoped_refptr<SSLClientAuthRequestorMock> requestor_;
   base::OnceClosure done_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClientCertificateDelegate);
 };
 
 }  // namespace

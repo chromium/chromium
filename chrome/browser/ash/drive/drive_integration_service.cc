@@ -342,6 +342,9 @@ class DriveIntegrationService::PreferenceWatcher
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
+  PreferenceWatcher(const PreferenceWatcher&) = delete;
+  PreferenceWatcher& operator=(const PreferenceWatcher&) = delete;
+
   ~PreferenceWatcher() override {
     if (integration_service_) {
       content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
@@ -435,7 +438,6 @@ class DriveIntegrationService::PreferenceWatcher
       chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN;
 
   base::WeakPtrFactory<PreferenceWatcher> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PreferenceWatcher);
 };
 
 class DriveIntegrationService::DriveFsHolder

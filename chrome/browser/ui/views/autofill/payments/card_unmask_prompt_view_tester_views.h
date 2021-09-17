@@ -16,6 +16,12 @@ class CardUnmaskPromptViews;
 class CardUnmaskPromptViewTesterViews : public CardUnmaskPromptViewTester {
  public:
   explicit CardUnmaskPromptViewTesterViews(CardUnmaskPromptViews* view);
+
+  CardUnmaskPromptViewTesterViews(const CardUnmaskPromptViewTesterViews&) =
+      delete;
+  CardUnmaskPromptViewTesterViews& operator=(
+      const CardUnmaskPromptViewTesterViews&) = delete;
+
   ~CardUnmaskPromptViewTesterViews() override;
 
   // CardUnmaskPromptViewTester:
@@ -24,8 +30,6 @@ class CardUnmaskPromptViewTesterViews : public CardUnmaskPromptViewTester {
 
  private:
   CardUnmaskPromptViews* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptViewTesterViews);
 };
 
 }  // namespace autofill

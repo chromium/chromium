@@ -20,6 +20,12 @@ class AnnouncementNotificationDelegate
  public:
   explicit AnnouncementNotificationDelegate(
       NotificationDisplayService* display_service);
+
+  AnnouncementNotificationDelegate(const AnnouncementNotificationDelegate&) =
+      delete;
+  AnnouncementNotificationDelegate& operator=(
+      const AnnouncementNotificationDelegate&) = delete;
+
   ~AnnouncementNotificationDelegate() override;
 
  private:
@@ -29,8 +35,6 @@ class AnnouncementNotificationDelegate
 
   // Used to show the notification.
   NotificationDisplayService* display_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationDelegate);
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_DELEGATE_H_

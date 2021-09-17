@@ -143,6 +143,10 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
         {});
   }
 
+  PageLoadMetricsBrowserTest(const PageLoadMetricsBrowserTest&) = delete;
+  PageLoadMetricsBrowserTest& operator=(const PageLoadMetricsBrowserTest&) =
+      delete;
+
   ~PageLoadMetricsBrowserTest() override {}
 
  protected:
@@ -530,9 +534,6 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoNavigation) {
@@ -2120,6 +2121,11 @@ class SessionRestorePageLoadMetricsBrowserTest
 class SessionRestorePaintWaiter : public SessionRestoreObserver {
  public:
   SessionRestorePaintWaiter() { SessionRestore::AddObserver(this); }
+
+  SessionRestorePaintWaiter(const SessionRestorePaintWaiter&) = delete;
+  SessionRestorePaintWaiter& operator=(const SessionRestorePaintWaiter&) =
+      delete;
+
   ~SessionRestorePaintWaiter() { SessionRestore::RemoveObserver(this); }
 
   // SessionRestoreObserver implementation:
@@ -2148,8 +2154,6 @@ class SessionRestorePaintWaiter : public SessionRestoreObserver {
   std::unordered_map<content::WebContents*,
                      std::unique_ptr<PageLoadMetricsTestWaiter>>
       waiters_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestorePaintWaiter);
 };
 
 IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,

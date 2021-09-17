@@ -107,6 +107,10 @@ constexpr int kInvokeDemoModeGestureTapsCount = 10;
 class DemoSetupTestBase : public OobeBaseTest {
  public:
   DemoSetupTestBase() = default;
+
+  DemoSetupTestBase(const DemoSetupTestBase&) = delete;
+  DemoSetupTestBase& operator=(const DemoSetupTestBase&) = delete;
+
   ~DemoSetupTestBase() override = default;
 
   void SetUpOnMainThread() override {
@@ -302,8 +306,6 @@ class DemoSetupTestBase : public OobeBaseTest {
   base::ScopedTempDir fake_demo_resources_dir_;
   policy::MockCloudPolicyStore mock_policy_store_;
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupTestBase);
 };
 
 class DemoSetupArcSupportedTest : public DemoSetupTestBase {
@@ -999,6 +1001,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
  public:
   DemoSetupProgressStepsTest() = default;
+
+  DemoSetupProgressStepsTest(const DemoSetupProgressStepsTest&) = delete;
+  DemoSetupProgressStepsTest& operator=(const DemoSetupProgressStepsTest&) =
+      delete;
+
   ~DemoSetupProgressStepsTest() override = default;
 
   // Checks how many steps have been rendered in the demo setup screen.
@@ -1021,7 +1028,6 @@ class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupProgressStepsTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
@@ -1055,6 +1061,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
 class DemoSetupArcUnsupportedTest : public DemoSetupTestBase {
  public:
   DemoSetupArcUnsupportedTest() = default;
+
+  DemoSetupArcUnsupportedTest(const DemoSetupArcUnsupportedTest&) = delete;
+  DemoSetupArcUnsupportedTest& operator=(const DemoSetupArcUnsupportedTest&) =
+      delete;
+
   ~DemoSetupArcUnsupportedTest() override = default;
 
   // DemoSetupTestBase:
@@ -1063,9 +1074,6 @@ class DemoSetupArcUnsupportedTest : public DemoSetupTestBase {
     command_line->AppendSwitchASCII(switches::kArcAvailability, "none");
     ASSERT_FALSE(arc::IsArcAvailable());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupArcUnsupportedTest);
 };
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.

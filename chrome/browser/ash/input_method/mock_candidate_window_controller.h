@@ -16,6 +16,11 @@ namespace input_method {
 class MockCandidateWindowController : public CandidateWindowController {
  public:
   MockCandidateWindowController();
+
+  MockCandidateWindowController(const MockCandidateWindowController&) = delete;
+  MockCandidateWindowController& operator=(
+      const MockCandidateWindowController&) = delete;
+
   ~MockCandidateWindowController() override;
 
   // CandidateWindowController overrides:
@@ -33,8 +38,6 @@ class MockCandidateWindowController : public CandidateWindowController {
 
  private:
   base::ObserverList<CandidateWindowController::Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCandidateWindowController);
 };
 
 }  // namespace input_method

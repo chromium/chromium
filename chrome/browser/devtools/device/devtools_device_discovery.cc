@@ -153,6 +153,10 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
       const std::string& target_path,
       const std::string& type,
       base::Value* value);
+
+  AgentHostDelegate(const AgentHostDelegate&) = delete;
+  AgentHostDelegate& operator=(const AgentHostDelegate&) = delete;
+
   ~AgentHostDelegate() override;
 
  private:
@@ -194,7 +198,6 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
   std::map<content::DevToolsExternalAgentProxy*,
            std::unique_ptr<WebSocketProxy>>
       proxies_;
-  DISALLOW_COPY_AND_ASSIGN(AgentHostDelegate);
 };
 
 static std::string GetStringProperty(const base::Value& value,

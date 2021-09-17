@@ -37,6 +37,11 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
   explicit BrowserWindowStateDelegate(Browser* browser) : browser_(browser) {
     DCHECK(browser_);
   }
+
+  BrowserWindowStateDelegate(const BrowserWindowStateDelegate&) = delete;
+  BrowserWindowStateDelegate& operator=(const BrowserWindowStateDelegate&) =
+      delete;
+
   ~BrowserWindowStateDelegate() override {}
 
   // Overridden from ash::WindowStateDelegate.
@@ -51,8 +56,6 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
 
  private:
   Browser* browser_;  // not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowStateDelegate);
 };
 
 }  // namespace

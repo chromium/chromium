@@ -19,6 +19,11 @@ class BrandcodedDefaultSettings {
   BrandcodedDefaultSettings();
   // Constructs BrandcodedDefaultSettings directly from preferences.
   explicit BrandcodedDefaultSettings(const std::string& prefs);
+
+  BrandcodedDefaultSettings(const BrandcodedDefaultSettings&) = delete;
+  BrandcodedDefaultSettings& operator=(const BrandcodedDefaultSettings&) =
+      delete;
+
   ~BrandcodedDefaultSettings();
 
   // The following methods return non-zero value if the default value was
@@ -41,8 +46,6 @@ class BrandcodedDefaultSettings {
   std::unique_ptr<base::ListValue> ExtractList(const char* pref_name) const;
 
   std::unique_ptr<base::DictionaryValue> master_dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrandcodedDefaultSettings);
 };
 
 #endif  // CHROME_BROWSER_PROFILE_RESETTER_BRANDCODED_DEFAULT_SETTINGS_H_

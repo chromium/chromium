@@ -96,6 +96,10 @@ class MediaGalleriesPermissionController
   class DialogIdMap {
    public:
     DialogIdMap();
+
+    DialogIdMap(const DialogIdMap&) = delete;
+    DialogIdMap& operator=(const DialogIdMap&) = delete;
+
     ~DialogIdMap();
     GalleryDialogId GetDialogId(MediaGalleryPrefId pref_id);
     MediaGalleryPrefId GetPrefId(GalleryDialogId id) const;
@@ -104,7 +108,6 @@ class MediaGalleriesPermissionController
     GalleryDialogId next_dialog_id_;
     std::map<MediaGalleryPrefId, GalleryDialogId> back_map_;
     std::vector<MediaGalleryPrefId> forward_mapping_;
-    DISALLOW_COPY_AND_ASSIGN(DialogIdMap);
   };
 
 

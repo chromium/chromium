@@ -22,6 +22,11 @@ class ProcessNodeImpl;
 class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
  public:
   BrowserChildProcessWatcher();
+
+  BrowserChildProcessWatcher(const BrowserChildProcessWatcher&) = delete;
+  BrowserChildProcessWatcher& operator=(const BrowserChildProcessWatcher&) =
+      delete;
+
   ~BrowserChildProcessWatcher() override;
 
   // Initialize this watcher.
@@ -54,8 +59,6 @@ class BrowserChildProcessWatcher : public content::BrowserChildProcessObserver {
   // secondaries are very transient. This map keeps track of all GPU processes
   // by their unique ID from |content::ChildProcessData|.
   base::flat_map<int, std::unique_ptr<ProcessNodeImpl>> gpu_process_nodes_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserChildProcessWatcher);
 };
 
 }  // namespace performance_manager

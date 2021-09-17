@@ -37,6 +37,10 @@ class ChromeSigninClient
 {
  public:
   explicit ChromeSigninClient(Profile* profile);
+
+  ChromeSigninClient(const ChromeSigninClient&) = delete;
+  ChromeSigninClient& operator=(const ChromeSigninClient&) = delete;
+
   ~ChromeSigninClient() override;
 
   void DoFinalInit() override;
@@ -109,8 +113,6 @@ class ChromeSigninClient
       url_loader_factory_for_testing_;
 
   base::WeakPtrFactory<ChromeSigninClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSigninClient);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_CLIENT_H_

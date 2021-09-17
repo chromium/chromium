@@ -67,6 +67,12 @@ class TestExternalRegistryLoader : public ExternalRegistryLoader {
 class ExternalRegistryLoaderUnittest : public testing::Test {
  public:
   ExternalRegistryLoaderUnittest() {}
+
+  ExternalRegistryLoaderUnittest(const ExternalRegistryLoaderUnittest&) =
+      delete;
+  ExternalRegistryLoaderUnittest& operator=(
+      const ExternalRegistryLoaderUnittest&) = delete;
+
   ~ExternalRegistryLoaderUnittest() override {}
 
  protected:
@@ -74,8 +80,6 @@ class ExternalRegistryLoaderUnittest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalRegistryLoaderUnittest);
 };
 
 // Tests that calling StartLoading() more than once doesn't fail DCHECK.

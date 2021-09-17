@@ -22,6 +22,9 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
  public:
   TexturedElement();
 
+  TexturedElement(const TexturedElement&) = delete;
+  TexturedElement& operator=(const TexturedElement&) = delete;
+
   ~TexturedElement() override;
 
   void Initialize(SkiaSurfaceProvider* provider) final;
@@ -60,8 +63,6 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
 
   sk_sp<SkSurface> surface_;
   SkiaSurfaceProvider* provider_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TexturedElement);
 };
 
 }  // namespace vr

@@ -38,6 +38,10 @@ namespace {
 class LocalStateUIHandler : public content::WebUIMessageHandler {
  public:
   LocalStateUIHandler();
+
+  LocalStateUIHandler(const LocalStateUIHandler&) = delete;
+  LocalStateUIHandler& operator=(const LocalStateUIHandler&) = delete;
+
   ~LocalStateUIHandler() override;
 
   // content::WebUIMessageHandler:
@@ -47,8 +51,6 @@ class LocalStateUIHandler : public content::WebUIMessageHandler {
   // Called from JS when the page has loaded. Serializes local state prefs and
   // sends them to the page.
   void HandleRequestJson(const base::ListValue* args);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalStateUIHandler);
 };
 
 LocalStateUIHandler::LocalStateUIHandler() {

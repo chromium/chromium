@@ -25,6 +25,12 @@ constexpr base::TimeDelta kShutdownSoundDuration =
 class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
  public:
   FakeAccessibilityControllerClient() = default;
+
+  FakeAccessibilityControllerClient(const FakeAccessibilityControllerClient&) =
+      delete;
+  FakeAccessibilityControllerClient& operator=(
+      const FakeAccessibilityControllerClient&) = delete;
+
   ~FakeAccessibilityControllerClient() override = default;
 
   // AccessibilityControllerClient:
@@ -77,7 +83,6 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
 
  private:
   bool dictation_on_ = false;
-  DISALLOW_COPY_AND_ASSIGN(FakeAccessibilityControllerClient);
 };
 
 }  // namespace
@@ -85,12 +90,16 @@ class FakeAccessibilityControllerClient : public AccessibilityControllerClient {
 class AccessibilityControllerClientTest : public testing::Test {
  public:
   AccessibilityControllerClientTest() = default;
+
+  AccessibilityControllerClientTest(const AccessibilityControllerClientTest&) =
+      delete;
+  AccessibilityControllerClientTest& operator=(
+      const AccessibilityControllerClientTest&) = delete;
+
   ~AccessibilityControllerClientTest() override = default;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerClientTest);
 };
 
 TEST_F(AccessibilityControllerClientTest, MethodCalls) {

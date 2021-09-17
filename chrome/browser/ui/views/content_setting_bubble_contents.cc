@@ -72,6 +72,10 @@ struct LayoutRow {
 class MediaComboboxModel : public ui::ComboboxModel {
  public:
   explicit MediaComboboxModel(blink::mojom::MediaStreamType type);
+
+  MediaComboboxModel(const MediaComboboxModel&) = delete;
+  MediaComboboxModel& operator=(const MediaComboboxModel&) = delete;
+
   ~MediaComboboxModel() override;
 
   blink::mojom::MediaStreamType type() const { return type_; }
@@ -84,8 +88,6 @@ class MediaComboboxModel : public ui::ComboboxModel {
 
  private:
   blink::mojom::MediaStreamType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaComboboxModel);
 };
 
 // A view representing one or more rows, each containing a label and combobox

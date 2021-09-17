@@ -1379,6 +1379,10 @@ TEST_F(MultiProfileSupportTest, ShowForUserSwitchesDesktop) {
 class TestWindowObserver : public aura::WindowObserver {
  public:
   TestWindowObserver() : resize_calls_(0) {}
+
+  TestWindowObserver(const TestWindowObserver&) = delete;
+  TestWindowObserver& operator=(const TestWindowObserver&) = delete;
+
   ~TestWindowObserver() override {}
 
   void OnWindowBoundsChanged(aura::Window* window,
@@ -1392,8 +1396,6 @@ class TestWindowObserver : public aura::WindowObserver {
 
  private:
   int resize_calls_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowObserver);
 };
 
 // Test that switching between different user won't change the activated windows

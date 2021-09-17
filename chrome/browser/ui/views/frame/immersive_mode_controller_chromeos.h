@@ -25,6 +25,12 @@ class ImmersiveModeControllerChromeos
       public aura::WindowObserver {
  public:
   ImmersiveModeControllerChromeos();
+
+  ImmersiveModeControllerChromeos(const ImmersiveModeControllerChromeos&) =
+      delete;
+  ImmersiveModeControllerChromeos& operator=(
+      const ImmersiveModeControllerChromeos&) = delete;
+
   ~ImmersiveModeControllerChromeos() override;
 
   chromeos::ImmersiveFullscreenController* controller() { return &controller_; }
@@ -82,8 +88,6 @@ class ImmersiveModeControllerChromeos
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeos);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_CHROMEOS_H_

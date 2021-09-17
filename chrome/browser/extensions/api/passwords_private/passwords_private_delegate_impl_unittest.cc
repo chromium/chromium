@@ -120,6 +120,9 @@ class PasswordEventObserver
   // The observer will only listen to events with the |event_name|.
   explicit PasswordEventObserver(const std::string& event_name);
 
+  PasswordEventObserver(const PasswordEventObserver&) = delete;
+  PasswordEventObserver& operator=(const PasswordEventObserver&) = delete;
+
   ~PasswordEventObserver() override;
 
   // Removes |event_args_| from |*this| and returns them.
@@ -134,8 +137,6 @@ class PasswordEventObserver
 
   // The arguments passed for the last observed event.
   base::Value event_args_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordEventObserver);
 };
 
 PasswordEventObserver::PasswordEventObserver(const std::string& event_name)
@@ -174,6 +175,12 @@ password_manager::PasswordForm CreateSampleForm() {
 class PasswordsPrivateDelegateImplTest : public testing::Test {
  public:
   PasswordsPrivateDelegateImplTest();
+
+  PasswordsPrivateDelegateImplTest(const PasswordsPrivateDelegateImplTest&) =
+      delete;
+  PasswordsPrivateDelegateImplTest& operator=(
+      const PasswordsPrivateDelegateImplTest&) = delete;
+
   ~PasswordsPrivateDelegateImplTest() override;
 
   // Sets up a testing password store and fills it with |forms|.
@@ -198,7 +205,6 @@ class PasswordsPrivateDelegateImplTest : public testing::Test {
 
  private:
   base::HistogramTester histogram_tester_;
-  DISALLOW_COPY_AND_ASSIGN(PasswordsPrivateDelegateImplTest);
 };
 
 PasswordsPrivateDelegateImplTest::PasswordsPrivateDelegateImplTest() {

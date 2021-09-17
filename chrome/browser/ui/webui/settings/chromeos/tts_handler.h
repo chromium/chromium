@@ -17,6 +17,10 @@ class TtsHandler : public SettingsPageUIHandler,
                    public content::UtteranceEventDelegate {
  public:
   TtsHandler();
+
+  TtsHandler(const TtsHandler&) = delete;
+  TtsHandler& operator=(const TtsHandler&) = delete;
+
   ~TtsHandler() override;
 
   void HandleGetAllTtsVoiceData(const base::ListValue* args);
@@ -46,8 +50,6 @@ class TtsHandler : public SettingsPageUIHandler,
   void RemoveTtsControllerDelegates();
 
   base::WeakPtrFactory<TtsHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TtsHandler);
 };
 
 }  // namespace settings

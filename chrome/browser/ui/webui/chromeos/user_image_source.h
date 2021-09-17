@@ -27,6 +27,10 @@ namespace chromeos {
 class UserImageSource : public content::URLDataSource {
  public:
   UserImageSource();
+
+  UserImageSource(const UserImageSource&) = delete;
+  UserImageSource& operator=(const UserImageSource&) = delete;
+
   ~UserImageSource() override;
 
   // content::URLDataSource implementation.
@@ -42,9 +46,6 @@ class UserImageSource : public content::URLDataSource {
   // the 100%-scale asset.
   static scoped_refptr<base::RefCountedMemory> GetUserImage(
       const AccountId& account_id);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserImageSource);
 };
 
 }  // namespace chromeos

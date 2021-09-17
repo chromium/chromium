@@ -27,6 +27,11 @@ class DownloadProgressInfoBarDelegate : public infobars::InfoBarDelegate {
     data_.Reset(env, jdata);
   }
 
+  DownloadProgressInfoBarDelegate(const DownloadProgressInfoBarDelegate&) =
+      delete;
+  DownloadProgressInfoBarDelegate& operator=(
+      const DownloadProgressInfoBarDelegate&) = delete;
+
   ~DownloadProgressInfoBarDelegate() override = default;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
@@ -45,8 +50,6 @@ class DownloadProgressInfoBarDelegate : public infobars::InfoBarDelegate {
  private:
   base::android::ScopedJavaGlobalRef<jobject> client_;
   base::android::ScopedJavaGlobalRef<jobject> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadProgressInfoBarDelegate);
 };
 
 DownloadProgressInfoBar::DownloadProgressInfoBar(

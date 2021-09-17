@@ -27,6 +27,9 @@ namespace tasks {
 class TaskTabHelper : public content::WebContentsObserver,
                       public content::WebContentsUserData<TaskTabHelper> {
  public:
+  TaskTabHelper(const TaskTabHelper&) = delete;
+  TaskTabHelper& operator=(const TaskTabHelper&) = delete;
+
   ~TaskTabHelper() override;
 
   // WebContentsObserver
@@ -71,8 +74,6 @@ class TaskTabHelper : public content::WebContentsObserver,
       local_navigation_task_id_map_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TaskTabHelper);
 };
 
 }  // namespace tasks

@@ -49,6 +49,11 @@ void RecordRemovalResult(
 class DemoModeResourcesRemoverTest : public testing::Test {
  public:
   DemoModeResourcesRemoverTest() = default;
+
+  DemoModeResourcesRemoverTest(const DemoModeResourcesRemoverTest&) = delete;
+  DemoModeResourcesRemoverTest& operator=(const DemoModeResourcesRemoverTest&) =
+      delete;
+
   ~DemoModeResourcesRemoverTest() override = default;
 
   void SetUp() override {
@@ -173,38 +178,42 @@ class DemoModeResourcesRemoverTest : public testing::Test {
   base::FilePath demo_resources_path_;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoModeResourcesRemoverTest);
 };
 
 class ManagedDemoModeResourcesRemoverTest
     : public DemoModeResourcesRemoverTest {
  public:
   ManagedDemoModeResourcesRemoverTest() = default;
+
+  ManagedDemoModeResourcesRemoverTest(
+      const ManagedDemoModeResourcesRemoverTest&) = delete;
+  ManagedDemoModeResourcesRemoverTest& operator=(
+      const ManagedDemoModeResourcesRemoverTest&) = delete;
+
   ~ManagedDemoModeResourcesRemoverTest() override = default;
 
   std::unique_ptr<StubInstallAttributes> CreateInstallAttributes() override {
     return StubInstallAttributes::CreateCloudManaged("test-domain",
                                                      "FAKE_DEVICE_ID");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManagedDemoModeResourcesRemoverTest);
 };
 
 class DemoModeResourcesRemoverInLegacyDemoRetailModeTest
     : public DemoModeResourcesRemoverTest {
  public:
   DemoModeResourcesRemoverInLegacyDemoRetailModeTest() = default;
+
+  DemoModeResourcesRemoverInLegacyDemoRetailModeTest(
+      const DemoModeResourcesRemoverInLegacyDemoRetailModeTest&) = delete;
+  DemoModeResourcesRemoverInLegacyDemoRetailModeTest& operator=(
+      const DemoModeResourcesRemoverInLegacyDemoRetailModeTest&) = delete;
+
   ~DemoModeResourcesRemoverInLegacyDemoRetailModeTest() override = default;
 
   std::unique_ptr<StubInstallAttributes> CreateInstallAttributes() override {
     return StubInstallAttributes::CreateCloudManaged("us-retailmode.com",
                                                      "FAKE_DEVICE_ID");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DemoModeResourcesRemoverInLegacyDemoRetailModeTest);
 };
 
 TEST(LegacyDemoRetailModeDomainMatching, Matching) {

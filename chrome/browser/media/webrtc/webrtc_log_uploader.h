@@ -73,6 +73,10 @@ class WebRtcLogUploader {
   };
 
   WebRtcLogUploader();
+
+  WebRtcLogUploader(const WebRtcLogUploader&) = delete;
+  WebRtcLogUploader& operator=(const WebRtcLogUploader&) = delete;
+
   ~WebRtcLogUploader();
 
   // Returns true is number of logs limit is not reached yet. Increases log
@@ -230,8 +234,6 @@ class WebRtcLogUploader {
 
   // When true, don't create new URL loaders.
   bool shutdown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcLogUploader);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_LOG_UPLOADER_H_

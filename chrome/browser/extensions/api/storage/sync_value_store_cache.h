@@ -39,6 +39,10 @@ class SyncValueStoreCache : public ValueStoreCache {
   SyncValueStoreCache(scoped_refptr<value_store::ValueStoreFactory> factory,
                       scoped_refptr<SettingsObserverList> observers,
                       const base::FilePath& profile_path);
+
+  SyncValueStoreCache(const SyncValueStoreCache&) = delete;
+  SyncValueStoreCache& operator=(const SyncValueStoreCache&) = delete;
+
   ~SyncValueStoreCache() override;
 
   base::WeakPtr<SyncValueStoreCache> AsWeakPtr();
@@ -59,8 +63,6 @@ class SyncValueStoreCache : public ValueStoreCache {
   std::unique_ptr<SyncStorageBackend> app_backend_;
   std::unique_ptr<SyncStorageBackend> extension_backend_;
   base::WeakPtrFactory<SyncValueStoreCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncValueStoreCache);
 };
 
 }  // namespace extensions

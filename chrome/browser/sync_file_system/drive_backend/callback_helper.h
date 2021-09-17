@@ -47,6 +47,9 @@ class CallbackHolder {
     DCHECK(task_runner_.get());
   }
 
+  CallbackHolder(const CallbackHolder&) = delete;
+  CallbackHolder& operator=(const CallbackHolder&) = delete;
+
   ~CallbackHolder() {
     if (callback_) {
       task_runner_->PostTask(from_here_,
@@ -67,8 +70,6 @@ class CallbackHolder {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const base::Location from_here_;
   CallbackType callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackHolder);
 };
 
 }  // namespace internal

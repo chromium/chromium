@@ -91,6 +91,9 @@ class NetBiosHostLocatorTest : public testing::Test {
         &NetBiosHostLocatorTest::SetTrueOnReturned, base::Unretained(this));
   }
 
+  NetBiosHostLocatorTest(const NetBiosHostLocatorTest&) = delete;
+  NetBiosHostLocatorTest& operator=(const NetBiosHostLocatorTest&) = delete;
+
   ~NetBiosHostLocatorTest() override = default;
 
  protected:
@@ -152,8 +155,6 @@ class NetBiosHostLocatorTest : public testing::Test {
   // Each entry in the map represents an IP, packet pair that should be returned
   // by that NetBiosClient.
   std::vector<std::map<net::IPEndPoint, Packet>> clients_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetBiosHostLocatorTest);
 };
 
 // Calculate broadcast address correctly calculates the broadcast address

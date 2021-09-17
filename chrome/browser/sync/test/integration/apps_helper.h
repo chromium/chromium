@@ -124,6 +124,10 @@ class AppsMatchChecker : public StatusChangeChecker,
                          public extensions::InstallObserver {
  public:
   AppsMatchChecker();
+
+  AppsMatchChecker(const AppsMatchChecker&) = delete;
+  AppsMatchChecker& operator=(const AppsMatchChecker&) = delete;
+
   ~AppsMatchChecker() override;
 
   // StatusChangeChecker implementation.
@@ -170,8 +174,6 @@ class AppsMatchChecker : public StatusChangeChecker,
   base::ScopedMultiSourceObservation<extensions::InstallTracker,
                                      extensions::InstallObserver>
       install_tracker_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppsMatchChecker);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_APPS_HELPER_H_

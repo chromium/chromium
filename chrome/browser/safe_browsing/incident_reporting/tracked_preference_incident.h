@@ -25,6 +25,11 @@ class TrackedPreferenceIncident : public Incident {
           ClientIncidentReport_IncidentData_TrackedPreferenceIncident>
           tracked_preference,
       bool is_personal);
+
+  TrackedPreferenceIncident(const TrackedPreferenceIncident&) = delete;
+  TrackedPreferenceIncident& operator=(const TrackedPreferenceIncident&) =
+      delete;
+
   ~TrackedPreferenceIncident() override;
 
   // Incident methods:
@@ -35,8 +40,6 @@ class TrackedPreferenceIncident : public Incident {
 
  private:
   bool is_personal_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackedPreferenceIncident);
 };
 
 }  // namespace safe_browsing

@@ -87,6 +87,10 @@ class MockFileSelector : public file_manager::FileSelector {
         success_(success),
         selected_path_(selected_path) {
   }
+
+  MockFileSelector(const MockFileSelector&) = delete;
+  MockFileSelector& operator=(const MockFileSelector&) = delete;
+
   ~MockFileSelector() override = default;
 
   // file_manager::FileSelector implementation.
@@ -127,8 +131,6 @@ class MockFileSelector : public file_manager::FileSelector {
   bool success_;
   // File path that should be returned to the function.
   base::FilePath selected_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFileSelector);
 };
 
 // Mocks file selector factory for the test.
@@ -142,6 +144,10 @@ class MockFileSelectorFactory : public file_manager::FileSelectorFactory {
         success_(test_case.success),
         selected_path_(test_case.selected_path) {
   }
+
+  MockFileSelectorFactory(const MockFileSelectorFactory&) = delete;
+  MockFileSelectorFactory& operator=(const MockFileSelectorFactory&) = delete;
+
   ~MockFileSelectorFactory() override = default;
 
   // file_manager::FileSelectorFactory implementation.
@@ -161,8 +167,6 @@ class MockFileSelectorFactory : public file_manager::FileSelectorFactory {
   bool success_;
   // File path that should be returned to the function.
   base::FilePath selected_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFileSelectorFactory);
 };
 
 // Extension api test for the fileBrowserHandler extension API.

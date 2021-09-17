@@ -50,6 +50,9 @@ class ProxyConfigMonitor : public net::ProxyConfigService::Observer,
   // associated with a profile. Must be destroyed before |local_state|.
   explicit ProxyConfigMonitor(PrefService* local_state);
 
+  ProxyConfigMonitor(const ProxyConfigMonitor&) = delete;
+  ProxyConfigMonitor& operator=(const ProxyConfigMonitor&) = delete;
+
   ~ProxyConfigMonitor() override;
 
   // Populates proxy-related fields of |network_context_params|. Updated
@@ -93,8 +96,6 @@ class ProxyConfigMonitor : public net::ProxyConfigService::Observer,
   mojo::ReceiverSet<network::mojom::ProxyErrorClient> error_receiver_set_;
   Profile* profile_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigMonitor);
 };
 
 #endif  // CHROME_BROWSER_NET_PROXY_CONFIG_MONITOR_H_

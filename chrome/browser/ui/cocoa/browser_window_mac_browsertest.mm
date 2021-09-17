@@ -63,15 +63,16 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
 class BrowserWindowMacA11yTest : public BrowserWindowMacTest {
  public:
   BrowserWindowMacA11yTest() = default;
+
+  BrowserWindowMacA11yTest(const BrowserWindowMacA11yTest&) = delete;
+  BrowserWindowMacA11yTest& operator=(const BrowserWindowMacA11yTest&) = delete;
+
   ~BrowserWindowMacA11yTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     BrowserWindowMacTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kForceRendererAccessibility);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowMacA11yTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest, A11yTreeIsWellFormed) {

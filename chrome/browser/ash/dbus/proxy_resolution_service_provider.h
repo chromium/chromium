@@ -67,6 +67,12 @@ class ProxyResolutionServiceProvider
                               const std::string& pac_string)>;
 
   ProxyResolutionServiceProvider();
+
+  ProxyResolutionServiceProvider(const ProxyResolutionServiceProvider&) =
+      delete;
+  ProxyResolutionServiceProvider& operator=(
+      const ProxyResolutionServiceProvider&) = delete;
+
   ~ProxyResolutionServiceProvider() override;
 
   void set_network_context_for_test(
@@ -125,8 +131,6 @@ class ProxyResolutionServiceProvider
   const net::NetworkIsolationKey network_isolation_key_;
 
   base::WeakPtrFactory<ProxyResolutionServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolutionServiceProvider);
 };
 
 }  // namespace ash

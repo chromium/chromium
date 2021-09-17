@@ -51,6 +51,10 @@ class EulaScreen : public BaseScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   EulaScreen(EulaView* view, const ScreenExitCallback& exit_callback);
+
+  EulaScreen(const EulaScreen&) = delete;
+  EulaScreen& operator=(const EulaScreen&) = delete;
+
   ~EulaScreen() override;
 
   // Returns URL of the OEM EULA page that should be displayed using current
@@ -95,8 +99,6 @@ class EulaScreen : public BaseScreen {
   EulaView* view_;
 
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(EulaScreen);
 };
 
 }  // namespace ash

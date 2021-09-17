@@ -51,6 +51,10 @@ class LevelDBWrapper {
   class Iterator {
    public:
     explicit Iterator(LevelDBWrapper* db);
+
+    Iterator(const Iterator&) = delete;
+    Iterator& operator=(const Iterator&) = delete;
+
     ~Iterator();
 
     bool Valid();
@@ -69,8 +73,6 @@ class LevelDBWrapper {
     LevelDBWrapper* db_;  // do not own
     std::unique_ptr<leveldb::Iterator> db_iterator_;
     PendingOperationMap::iterator map_iterator_;
-
-    DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
 
   explicit LevelDBWrapper(std::unique_ptr<leveldb::DB> db);

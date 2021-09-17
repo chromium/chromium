@@ -46,6 +46,11 @@ class ClickToCallContextMenuObserverTest : public testing::Test {
  public:
   ClickToCallContextMenuObserverTest() = default;
 
+  ClickToCallContextMenuObserverTest(
+      const ClickToCallContextMenuObserverTest&) = delete;
+  ClickToCallContextMenuObserverTest& operator=(
+      const ClickToCallContextMenuObserverTest&) = delete;
+
   ~ClickToCallContextMenuObserverTest() override = default;
 
   void SetUp() override {
@@ -91,8 +96,6 @@ class ClickToCallContextMenuObserverTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ClickToCallContextMenuObserver> observer_;
   SharingMessage sharing_message;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickToCallContextMenuObserverTest);
 };
 
 }  // namespace

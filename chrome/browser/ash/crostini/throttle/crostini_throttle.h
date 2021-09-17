@@ -26,12 +26,13 @@ class CrostiniThrottle : public KeyedService, public chromeos::ThrottleService {
   class Delegate {
    public:
     Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() = default;
 
     virtual void SetCpuRestriction(bool) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Returns singleton instance for the given BrowserContext, or nullptr if
@@ -40,6 +41,10 @@ class CrostiniThrottle : public KeyedService, public chromeos::ThrottleService {
       content::BrowserContext* context);
 
   explicit CrostiniThrottle(content::BrowserContext* context);
+
+  CrostiniThrottle(const CrostiniThrottle&) = delete;
+  CrostiniThrottle& operator=(const CrostiniThrottle&) = delete;
+
   ~CrostiniThrottle() override;
 
   // KeyedService:
@@ -57,8 +62,6 @@ class CrostiniThrottle : public KeyedService, public chromeos::ThrottleService {
                                        base::TimeDelta delta) override {}
 
   std::unique_ptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniThrottle);
 };
 
 }  // namespace crostini

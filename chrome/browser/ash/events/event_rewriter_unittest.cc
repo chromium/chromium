@@ -3724,6 +3724,10 @@ TEST_F(EventRewriterTest, TestRewriteNonNativeEvent) {
 class EventBuffer : public ui::test::TestEventProcessor {
  public:
   EventBuffer() {}
+
+  EventBuffer(const EventBuffer&) = delete;
+  EventBuffer& operator=(const EventBuffer&) = delete;
+
   ~EventBuffer() override {}
 
   void PopEvents(std::vector<std::unique_ptr<ui::Event>>* events) {
@@ -3739,8 +3743,6 @@ class EventBuffer : public ui::test::TestEventProcessor {
   }
 
   std::vector<std::unique_ptr<ui::Event>> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventBuffer);
 };
 
 // Trivial EventSource that does nothing but send events.
@@ -3764,6 +3766,10 @@ class EventRewriterAshTest : public ChromeAshTestBase {
       : source_(&buffer_),
         fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+
+  EventRewriterAshTest(const EventRewriterAshTest&) = delete;
+  EventRewriterAshTest& operator=(const EventRewriterAshTest&) = delete;
+
   ~EventRewriterAshTest() override {}
 
   ui::EventDispatchDetails Send(ui::Event* event) {
@@ -3839,8 +3845,6 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   FakeChromeUserManager* fake_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventRewriterAshTest);
 };
 
 TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {

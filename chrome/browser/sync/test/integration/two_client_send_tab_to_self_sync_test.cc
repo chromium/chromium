@@ -32,10 +32,12 @@ class TwoClientSendTabToSelfSyncTest : public SyncTest {
  public:
   TwoClientSendTabToSelfSyncTest() : SyncTest(TWO_CLIENT) {}
 
-  ~TwoClientSendTabToSelfSyncTest() override {}
+  TwoClientSendTabToSelfSyncTest(const TwoClientSendTabToSelfSyncTest&) =
+      delete;
+  TwoClientSendTabToSelfSyncTest& operator=(
+      const TwoClientSendTabToSelfSyncTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientSendTabToSelfSyncTest);
+  ~TwoClientSendTabToSelfSyncTest() override {}
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,

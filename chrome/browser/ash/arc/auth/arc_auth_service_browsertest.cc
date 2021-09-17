@@ -97,6 +97,10 @@ namespace arc {
 class FakeAuthInstance : public mojom::AuthInstance {
  public:
   FakeAuthInstance() = default;
+
+  FakeAuthInstance(const FakeAuthInstance&) = delete;
+  FakeAuthInstance& operator=(const FakeAuthInstance&) = delete;
+
   ~FakeAuthInstance() override = default;
 
   void Init(mojo::PendingRemote<mojom::AuthHost> host_remote,
@@ -193,7 +197,6 @@ class FakeAuthInstance : public mojom::AuthInstance {
   std::string last_removed_account_;
 
   base::WeakPtrFactory<FakeAuthInstance> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FakeAuthInstance);
 };
 
 class ArcAuthServiceTest : public InProcessBrowserTest {
@@ -845,6 +848,12 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, AccountRemovalsArePropagated) {
 class ArcRobotAccountAuthServiceTest : public ArcAuthServiceTest {
  public:
   ArcRobotAccountAuthServiceTest() = default;
+
+  ArcRobotAccountAuthServiceTest(const ArcRobotAccountAuthServiceTest&) =
+      delete;
+  ArcRobotAccountAuthServiceTest& operator=(
+      const ArcRobotAccountAuthServiceTest&) = delete;
+
   ~ArcRobotAccountAuthServiceTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -892,8 +901,6 @@ class ArcRobotAccountAuthServiceTest : public ArcAuthServiceTest {
     cloud_policy_client->SetDMToken("fake-dm-token");
     cloud_policy_client->client_id_ = "client-id";
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ArcRobotAccountAuthServiceTest);
 };
 
 // Tests that when ARC requests account info for a demo session account,

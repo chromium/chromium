@@ -26,6 +26,12 @@ class CredentialLeakControllerAndroid {
       const GURL& origin,
       const std::u16string& username,
       ui::WindowAndroid* window_android);
+
+  CredentialLeakControllerAndroid(const CredentialLeakControllerAndroid&) =
+      delete;
+  CredentialLeakControllerAndroid& operator=(
+      const CredentialLeakControllerAndroid&) = delete;
+
   ~CredentialLeakControllerAndroid();
 
   // Called when a leaked credential was detected.
@@ -78,8 +84,6 @@ class CredentialLeakControllerAndroid {
   ui::WindowAndroid* window_android_;
 
   std::unique_ptr<CredentialLeakDialogViewAndroid> dialog_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialLeakControllerAndroid);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_CREDENTIAL_LEAK_CONTROLLER_ANDROID_H_

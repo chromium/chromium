@@ -24,12 +24,13 @@ static constexpr float kArcEpsilon = 1e-3f;
 class TestSpinner : public Spinner {
  public:
   explicit TestSpinner(int maximum_width) : Spinner(maximum_width) {}
+
+  TestSpinner(const TestSpinner&) = delete;
+  TestSpinner& operator=(const TestSpinner&) = delete;
+
   ~TestSpinner() override {}
 
   UiTexture* GetTexture() const override { return Spinner::GetTexture(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSpinner);
 };
 
 }  // namespace

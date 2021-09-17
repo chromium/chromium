@@ -40,6 +40,10 @@ class ProfileHelper
     : public user_manager::UserManager::UserSessionStateObserver {
  public:
   ProfileHelper();
+
+  ProfileHelper(const ProfileHelper&) = delete;
+  ProfileHelper& operator=(const ProfileHelper&) = delete;
+
   ~ProfileHelper() override;
 
   // Creates and returns ProfileHelper implementation instance to
@@ -202,8 +206,6 @@ class ProfileHelper
   // If true and enable_profile_to_user_testing is true then primary user will
   // always be returned by GetUserByProfile().
   static bool always_return_primary_user_for_testing;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileHelper);
 };
 
 }  // namespace ash

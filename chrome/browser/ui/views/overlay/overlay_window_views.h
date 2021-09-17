@@ -39,6 +39,9 @@ class OverlayWindowViews : public content::OverlayWindow,
   static std::unique_ptr<OverlayWindowViews> Create(
       content::PictureInPictureWindowController* controller);
 
+  OverlayWindowViews(const OverlayWindowViews&) = delete;
+  OverlayWindowViews& operator=(const OverlayWindowViews&) = delete;
+
   ~OverlayWindowViews() override;
 
   enum class WindowQuadrant { kBottomLeft, kBottomRight, kTopLeft, kTopRight };
@@ -282,8 +285,6 @@ class OverlayWindowViews : public content::OverlayWindow,
   // and hiding automatically. Only used for testing via
   // ForceControlsVisibleForTesting().
   absl::optional<bool> force_controls_visible_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayWindowViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_WINDOW_VIEWS_H_

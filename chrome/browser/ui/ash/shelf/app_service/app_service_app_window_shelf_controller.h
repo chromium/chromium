@@ -45,6 +45,12 @@ class AppServiceAppWindowShelfController
   using ProfileList = std::vector<Profile*>;
 
   explicit AppServiceAppWindowShelfController(ChromeShelfController* owner);
+
+  AppServiceAppWindowShelfController(
+      const AppServiceAppWindowShelfController&) = delete;
+  AppServiceAppWindowShelfController& operator=(
+      const AppServiceAppWindowShelfController&) = delete;
+
   ~AppServiceAppWindowShelfController() override;
 
   // AppWindowShelfController:
@@ -152,8 +158,6 @@ class AppServiceAppWindowShelfController
 
   // A list of windows added for users.
   WindowList window_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceAppWindowShelfController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_APP_SERVICE_APP_WINDOW_SHELF_CONTROLLER_H_

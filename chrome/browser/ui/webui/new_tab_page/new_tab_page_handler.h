@@ -68,6 +68,10 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                     const ui::ThemeProvider* theme_provider,
                     content::WebContents* web_contents,
                     const base::Time& ntp_navigation_start_time);
+
+  NewTabPageHandler(const NewTabPageHandler&) = delete;
+  NewTabPageHandler& operator=(const NewTabPageHandler&) = delete;
+
   ~NewTabPageHandler() override;
 
   // Histograms being recorded when a module is dismissed or restored.
@@ -206,8 +210,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   mojo::Receiver<new_tab_page::mojom::PageHandler> receiver_;
 
   base::WeakPtrFactory<NewTabPageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabPageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_HANDLER_H_

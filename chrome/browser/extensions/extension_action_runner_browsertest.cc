@@ -237,6 +237,10 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
         : runner_(runner) {
       runner_->set_observer_for_testing(this);
     }
+
+    BlockedActionWaiter(const BlockedActionWaiter&) = delete;
+    BlockedActionWaiter& operator=(const BlockedActionWaiter&) = delete;
+
     ~BlockedActionWaiter() { runner_->set_observer_for_testing(nullptr); }
 
     void Wait() { run_loop_.Run(); }
@@ -247,8 +251,6 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
 
     ExtensionActionRunner* runner_;
     base::RunLoop run_loop_;
-
-    DISALLOW_COPY_AND_ASSIGN(BlockedActionWaiter);
   };
 
   BlockedActionWaiter waiter(runner);

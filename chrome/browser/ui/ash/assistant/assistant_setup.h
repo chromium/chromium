@@ -22,6 +22,10 @@ class AssistantSetup : public ash::AssistantSetup,
                        public SearchAndAssistantEnabledChecker::Delegate {
  public:
   AssistantSetup();
+
+  AssistantSetup(const AssistantSetup&) = delete;
+  AssistantSetup& operator=(const AssistantSetup&) = delete;
+
   ~AssistantSetup() override;
 
   // ash::AssistantSetup:
@@ -50,8 +54,6 @@ class AssistantSetup : public ash::AssistantSetup,
       search_and_assistant_enabled_checker_;
 
   base::WeakPtrFactory<AssistantSetup> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantSetup);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_SETUP_H_

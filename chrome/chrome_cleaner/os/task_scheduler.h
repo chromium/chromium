@@ -93,6 +93,10 @@ class TaskScheduler {
   // Instantiate the proper version based on the Windows version. Ownership is
   // transfered to caller.
   static TaskScheduler* CreateInstance();
+
+  TaskScheduler(const TaskScheduler&) = delete;
+  TaskScheduler& operator=(const TaskScheduler&) = delete;
+
   virtual ~TaskScheduler() {}
 
   // Set a delegate to be given when creating new instances of a mock
@@ -143,8 +147,6 @@ class TaskScheduler {
 
  private:
   static TaskScheduler* mock_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskScheduler);
 };
 
 }  // namespace chrome_cleaner

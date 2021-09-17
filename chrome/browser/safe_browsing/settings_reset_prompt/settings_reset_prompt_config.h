@@ -30,6 +30,10 @@ class SettingsResetPromptConfig {
   // with the config parameters.
   static std::unique_ptr<SettingsResetPromptConfig> Create();
 
+  SettingsResetPromptConfig(const SettingsResetPromptConfig&) = delete;
+  SettingsResetPromptConfig& operator=(const SettingsResetPromptConfig&) =
+      delete;
+
   virtual ~SettingsResetPromptConfig();
 
   // Returns a non-negative integer ID if |url| should trigger a
@@ -72,8 +76,6 @@ class SettingsResetPromptConfig {
   base::TimeDelta delay_before_prompt_;
   int prompt_wave_ = 0;
   base::TimeDelta time_between_prompts_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptConfig);
 };
 
 }  // namespace safe_browsing

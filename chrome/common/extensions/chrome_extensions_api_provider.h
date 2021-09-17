@@ -13,6 +13,11 @@ namespace extensions {
 class ChromeExtensionsAPIProvider : public ExtensionsAPIProvider {
  public:
   ChromeExtensionsAPIProvider();
+
+  ChromeExtensionsAPIProvider(const ChromeExtensionsAPIProvider&) = delete;
+  ChromeExtensionsAPIProvider& operator=(const ChromeExtensionsAPIProvider&) =
+      delete;
+
   ~ChromeExtensionsAPIProvider() override;
 
   // ExtensionsAPIProvider:
@@ -25,9 +30,6 @@ class ChromeExtensionsAPIProvider : public ExtensionsAPIProvider {
   base::StringPiece GetAPISchema(const std::string& name) override;
   void RegisterPermissions(PermissionsInfo* permissions_info) override;
   void RegisterManifestHandlers() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsAPIProvider);
 };
 
 }  // namespace extensions

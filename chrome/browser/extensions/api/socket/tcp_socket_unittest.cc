@@ -474,6 +474,11 @@ class ExtensionsMockClientSocket : public net::MockTCPClientSocket {
         success_(success) {
     this->set_enable_read_if_ready(true);
   }
+
+  ExtensionsMockClientSocket(const ExtensionsMockClientSocket&) = delete;
+  ExtensionsMockClientSocket& operator=(const ExtensionsMockClientSocket&) =
+      delete;
+
   ~ExtensionsMockClientSocket() override {}
 
   bool SetNoDelay(bool no_delay) override { return success_; }
@@ -482,8 +487,6 @@ class ExtensionsMockClientSocket : public net::MockTCPClientSocket {
  private:
   // Whether to return success for SetNoDelay() and SetKeepAlive().
   const bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsMockClientSocket);
 };
 
 static const net::MockRead kMockReads[] = {net::MockRead(net::ASYNC, net::OK)};
@@ -493,6 +496,10 @@ static const net::MockRead kMockReads[] = {net::MockRead(net::ASYNC, net::OK)};
 class TestSocketFactory : public net::ClientSocketFactory {
  public:
   explicit TestSocketFactory(bool success) : success_(success) {}
+
+  TestSocketFactory(const TestSocketFactory&) = delete;
+  TestSocketFactory& operator=(const TestSocketFactory&) = delete;
+
   ~TestSocketFactory() override = default;
 
   std::unique_ptr<net::DatagramClientSocket> CreateDatagramClientSocket(
@@ -541,8 +548,6 @@ class TestSocketFactory : public net::ClientSocketFactory {
   // Whether to return success for net::TransportClientSocket::SetNoDelay() and
   // SetKeepAlive().
   const bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketFactory);
 };
 
 }  // namespace

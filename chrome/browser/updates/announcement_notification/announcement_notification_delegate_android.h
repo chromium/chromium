@@ -12,14 +12,18 @@ class AnnouncementNotificationDelegateAndroid
     : public AnnouncementNotificationService::Delegate {
  public:
   AnnouncementNotificationDelegateAndroid();
+
+  AnnouncementNotificationDelegateAndroid(
+      const AnnouncementNotificationDelegateAndroid&) = delete;
+  AnnouncementNotificationDelegateAndroid& operator=(
+      const AnnouncementNotificationDelegateAndroid&) = delete;
+
   ~AnnouncementNotificationDelegateAndroid() override;
 
  private:
   // AnnouncementNotificationService::Delegate implementation.
   void ShowNotification() override;
   bool IsFirstRun() override;
-
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationDelegateAndroid);
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_DELEGATE_ANDROID_H_

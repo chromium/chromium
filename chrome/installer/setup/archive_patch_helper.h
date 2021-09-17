@@ -39,6 +39,9 @@ class ArchivePatchHelper {
                      const base::FilePath& target,
                      UnPackConsumer consumer);
 
+  ArchivePatchHelper(const ArchivePatchHelper&) = delete;
+  ArchivePatchHelper& operator=(const ArchivePatchHelper&) = delete;
+
   ~ArchivePatchHelper();
 
   // Uncompresses |compressed_archive| in |working_directory| then applies the
@@ -101,8 +104,6 @@ class ArchivePatchHelper {
   base::FilePath target_;
   base::FilePath last_uncompressed_file_;
   UnPackConsumer consumer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArchivePatchHelper);
 };
 
 }  // namespace installer

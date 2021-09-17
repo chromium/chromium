@@ -35,6 +35,12 @@ class SessionStateChangedEventDispatcher
 
   explicit SessionStateChangedEventDispatcher(
       content::BrowserContext* browser_context_);
+
+  SessionStateChangedEventDispatcher(
+      const SessionStateChangedEventDispatcher&) = delete;
+  SessionStateChangedEventDispatcher& operator=(
+      const SessionStateChangedEventDispatcher&) = delete;
+
   ~SessionStateChangedEventDispatcher() override;
 
   // SessionManagerObserver implementation.
@@ -59,8 +65,6 @@ class SessionStateChangedEventDispatcher
   content::BrowserContext* browser_context_;
   EventRouter* event_router_;
   api::login_state::SessionState session_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStateChangedEventDispatcher);
 };
 
 template <>

@@ -48,6 +48,10 @@ class CvcUnmaskViewController
       base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
           result_delegate,
       content::WebContents* web_contents);
+
+  CvcUnmaskViewController(const CvcUnmaskViewController&) = delete;
+  CvcUnmaskViewController& operator=(const CvcUnmaskViewController&) = delete;
+
   ~CvcUnmaskViewController() override;
 
   // autofill::RiskDataLoader:
@@ -105,8 +109,6 @@ class CvcUnmaskViewController
   base::WeakPtr<autofill::CardUnmaskDelegate> unmask_delegate_;
 
   base::WeakPtrFactory<CvcUnmaskViewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CvcUnmaskViewController);
 };
 
 }  // namespace payments

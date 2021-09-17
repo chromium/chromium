@@ -31,15 +31,18 @@ namespace {
 class KeywordExtensionsDelegateImplTest : public ExtensionServiceTestBase {
  public:
   KeywordExtensionsDelegateImplTest() {}
+
+  KeywordExtensionsDelegateImplTest(const KeywordExtensionsDelegateImplTest&) =
+      delete;
+  KeywordExtensionsDelegateImplTest& operator=(
+      const KeywordExtensionsDelegateImplTest&) = delete;
+
   ~KeywordExtensionsDelegateImplTest() override {}
 
  protected:
   void SetUp() override;
 
   void RunTest(bool incognito);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeywordExtensionsDelegateImplTest);
 };
 
 void KeywordExtensionsDelegateImplTest::SetUp() {

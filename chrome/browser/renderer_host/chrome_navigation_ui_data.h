@@ -28,6 +28,10 @@ class ChromeNavigationUIData : public content::NavigationUIData {
  public:
   ChromeNavigationUIData();
   explicit ChromeNavigationUIData(content::NavigationHandle* navigation_handle);
+
+  ChromeNavigationUIData(const ChromeNavigationUIData&) = delete;
+  ChromeNavigationUIData& operator=(const ChromeNavigationUIData&) = delete;
+
   ~ChromeNavigationUIData() override;
 
   // Creates an instance of ChromeNavigationUIData associated with the given
@@ -95,8 +99,6 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   // TypedNavigationUpgradeThrottle to determine if the navigation should be
   // observed and fall back to using http scheme if necessary.
   bool is_using_https_as_default_scheme_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNavigationUIData);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_HOST_CHROME_NAVIGATION_UI_DATA_H_

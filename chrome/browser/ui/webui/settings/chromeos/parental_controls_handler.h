@@ -17,6 +17,10 @@ namespace settings {
 class ParentalControlsHandler : public ::settings::SettingsPageUIHandler {
  public:
   explicit ParentalControlsHandler(Profile* profile);
+
+  ParentalControlsHandler(const ParentalControlsHandler&) = delete;
+  ParentalControlsHandler& operator=(const ParentalControlsHandler&) = delete;
+
   ~ParentalControlsHandler() override;
 
  protected:
@@ -33,8 +37,6 @@ class ParentalControlsHandler : public ::settings::SettingsPageUIHandler {
   void HandleLaunchFamilyLinkSettings(const base::ListValue* args);
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParentalControlsHandler);
 };
 
 }  // namespace settings

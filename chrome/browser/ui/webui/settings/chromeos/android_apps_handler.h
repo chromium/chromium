@@ -32,6 +32,10 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
  public:
   explicit AndroidAppsHandler(Profile* profile,
                               apps::AppServiceProxyChromeOs* app_service_proxy);
+
+  AndroidAppsHandler(const AndroidAppsHandler&) = delete;
+  AndroidAppsHandler& operator=(const AndroidAppsHandler&) = delete;
+
   ~AndroidAppsHandler() override;
 
   // SettingsPageUIHandler
@@ -65,8 +69,6 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
   Profile* profile_;  // unowned
   apps::AppServiceProxyChromeOs* app_service_proxy_;
   base::WeakPtrFactory<AndroidAppsHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidAppsHandler);
 };
 
 }  // namespace settings

@@ -19,6 +19,9 @@ class IdleDetector : public ui::UserActivityObserver {
   IdleDetector(const base::RepeatingClosure& on_idle_callback,
                const base::TickClock* tick_clock);
 
+  IdleDetector(const IdleDetector&) = delete;
+  IdleDetector& operator=(const IdleDetector&) = delete;
+
   ~IdleDetector() override;
 
   void Start(const base::TimeDelta& timeout);
@@ -35,8 +38,6 @@ class IdleDetector : public ui::UserActivityObserver {
   base::RepeatingClosure idle_callback_;
 
   base::TimeDelta timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleDetector);
 };
 
 }  // namespace chromeos

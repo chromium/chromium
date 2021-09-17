@@ -23,6 +23,10 @@ class ExtensionUninstaller
   ExtensionUninstaller(Profile* profile,
                        const std::string& extension_id,
                        gfx::NativeWindow parent_window = nullptr);
+
+  ExtensionUninstaller(const ExtensionUninstaller&) = delete;
+  ExtensionUninstaller& operator=(const ExtensionUninstaller&) = delete;
+
   ~ExtensionUninstaller() override;
 
   void Run();
@@ -38,8 +42,6 @@ class ExtensionUninstaller
   std::string app_id_;
   gfx::NativeWindow parent_window_;  // Can be null.
   std::unique_ptr<extensions::ExtensionUninstallDialog> dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionUninstaller);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_EXTENSION_UNINSTALLER_H_

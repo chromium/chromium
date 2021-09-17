@@ -52,6 +52,11 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
                             bool require_native_initiated_connections,
                             const std::string& connect_id,
                             const std::string& error_arg);
+
+  NativeProcessLauncherImpl(const NativeProcessLauncherImpl&) = delete;
+  NativeProcessLauncherImpl& operator=(const NativeProcessLauncherImpl&) =
+      delete;
+
   ~NativeProcessLauncherImpl() override;
 
   void Launch(const GURL& origin,
@@ -110,8 +115,6 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeProcessLauncherImpl);
 };
 
 NativeProcessLauncherImpl::Core::Core(bool allow_user_level_hosts,

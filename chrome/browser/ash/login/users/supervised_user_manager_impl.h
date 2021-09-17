@@ -21,6 +21,10 @@ class SupervisedUserTestBase;
 // Implementation of the UserManager.
 class SupervisedUserManagerImpl : public SupervisedUserManager {
  public:
+  SupervisedUserManagerImpl(const SupervisedUserManagerImpl&) = delete;
+  SupervisedUserManagerImpl& operator=(const SupervisedUserManagerImpl&) =
+      delete;
+
   ~SupervisedUserManagerImpl() override;
 
   std::string GetUserSyncId(const std::string& user_id) const override;
@@ -75,8 +79,6 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
 
   // Interface to the signed settings store.
   CrosSettings* cros_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserManagerImpl);
 };
 
 }  // namespace ash

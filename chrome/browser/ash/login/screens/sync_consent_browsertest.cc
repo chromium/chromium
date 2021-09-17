@@ -143,6 +143,10 @@ class SyncConsentTest
             WizardController::ForceBrandedBuildForTesting(true)) {
     login_manager_mixin_.set_session_restore_enabled();
   }
+
+  SyncConsentTest(const SyncConsentTest&) = delete;
+  SyncConsentTest& operator=(const SyncConsentTest&) = delete;
+
   ~SyncConsentTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -311,7 +315,6 @@ class SyncConsentTest
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 
   std::unique_ptr<base::AutoReset<bool>> force_branded_build_;
-  DISALLOW_COPY_AND_ASSIGN(SyncConsentTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedNotBrandedBuild) {
@@ -417,10 +420,12 @@ class SyncConsentTestWithParams
       public ::testing::WithParamInterface<std::string> {
  public:
   SyncConsentTestWithParams() = default;
-  ~SyncConsentTestWithParams() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncConsentTestWithParams);
+  SyncConsentTestWithParams(const SyncConsentTestWithParams&) = delete;
+  SyncConsentTestWithParams& operator=(const SyncConsentTestWithParams&) =
+      delete;
+
+  ~SyncConsentTestWithParams() override = default;
 };
 
 IN_PROC_BROWSER_TEST_P(SyncConsentTestWithParams, SyncConsentTestWithLocale) {

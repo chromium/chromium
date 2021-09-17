@@ -14,6 +14,11 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  public:
   ChromeBrowserMainPartsAndroid(const content::MainFunctionParams& parameters,
                                 StartupData* startup_data);
+
+  ChromeBrowserMainPartsAndroid(const ChromeBrowserMainPartsAndroid&) = delete;
+  ChromeBrowserMainPartsAndroid& operator=(
+      const ChromeBrowserMainPartsAndroid&) = delete;
+
   ~ChromeBrowserMainPartsAndroid() override;
 
   // content::BrowserMainParts overrides.
@@ -29,8 +34,6 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  private:
   std::unique_ptr<android::ChromeBackupWatcher> backup_watcher_;
   std::unique_ptr<ProfileManagerAndroid> profile_manager_android_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainPartsAndroid);
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_

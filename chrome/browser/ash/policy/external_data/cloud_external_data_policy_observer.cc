@@ -37,6 +37,10 @@ class CloudExternalDataPolicyObserver::PolicyServiceObserver
   PolicyServiceObserver(CloudExternalDataPolicyObserver* parent,
                         const std::string& user_id,
                         PolicyService* policy_service);
+
+  PolicyServiceObserver(const PolicyServiceObserver&) = delete;
+  PolicyServiceObserver& operator=(const PolicyServiceObserver&) = delete;
+
   ~PolicyServiceObserver() override;
 
   // PolicyService::Observer:
@@ -48,8 +52,6 @@ class CloudExternalDataPolicyObserver::PolicyServiceObserver
   CloudExternalDataPolicyObserver* parent_;
   const std::string user_id_;
   PolicyService* policy_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyServiceObserver);
 };
 
 CloudExternalDataPolicyObserver::PolicyServiceObserver::PolicyServiceObserver(

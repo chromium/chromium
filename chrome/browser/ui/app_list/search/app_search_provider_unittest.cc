@@ -145,6 +145,10 @@ class AppSearchProviderTest : public AppListTestBase {
     scoped_feature_list_.InitWithFeatures(
         {}, {app_list_features::kEnableFuzzyAppSearch});
   }
+
+  AppSearchProviderTest(const AppSearchProviderTest&) = delete;
+  AppSearchProviderTest& operator=(const AppSearchProviderTest&) = delete;
+
   ~AppSearchProviderTest() override {}
 
   // AppListTestBase overrides:
@@ -310,8 +314,6 @@ class AppSearchProviderTest : public AppListTestBase {
       mock_sync_sessions_client_;
   std::unique_ptr<sync_sessions::SyncedSessionTracker> session_tracker_;
   std::unique_ptr<sync_sessions::OpenTabsUIDelegateImpl> open_tabs_ui_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppSearchProviderTest);
 };
 
 TEST_F(AppSearchProviderTest, Basic) {
@@ -903,10 +905,13 @@ class AppSearchProviderWithExtensionInstallType
       public ::testing::WithParamInterface<TestExtensionInstallType> {
  public:
   AppSearchProviderWithExtensionInstallType() = default;
-  ~AppSearchProviderWithExtensionInstallType() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppSearchProviderWithExtensionInstallType);
+  AppSearchProviderWithExtensionInstallType(
+      const AppSearchProviderWithExtensionInstallType&) = delete;
+  AppSearchProviderWithExtensionInstallType& operator=(
+      const AppSearchProviderWithExtensionInstallType&) = delete;
+
+  ~AppSearchProviderWithExtensionInstallType() override = default;
 };
 
 TEST_P(AppSearchProviderWithExtensionInstallType, InstallInternallyRanking) {
@@ -1033,10 +1038,13 @@ class AppSearchProviderWithArcAppInstallType
       public ::testing::WithParamInterface<TestArcAppInstallType> {
  public:
   AppSearchProviderWithArcAppInstallType() = default;
-  ~AppSearchProviderWithArcAppInstallType() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppSearchProviderWithArcAppInstallType);
+  AppSearchProviderWithArcAppInstallType(
+      const AppSearchProviderWithArcAppInstallType&) = delete;
+  AppSearchProviderWithArcAppInstallType& operator=(
+      const AppSearchProviderWithArcAppInstallType&) = delete;
+
+  ~AppSearchProviderWithArcAppInstallType() override = default;
 };
 
 // TODO (879413): Enable this after resolving flakiness.

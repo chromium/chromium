@@ -58,6 +58,10 @@ class FakeCredentialProvider
     : public password_manager::CredentialProviderInterface {
  public:
   FakeCredentialProvider() = default;
+
+  FakeCredentialProvider(const FakeCredentialProvider&) = delete;
+  FakeCredentialProvider& operator=(const FakeCredentialProvider&) = delete;
+
   ~FakeCredentialProvider() override = default;
 
   // password_manager::CredentialProviderInterface
@@ -71,8 +75,6 @@ class FakeCredentialProvider
 
  private:
   std::vector<std::unique_ptr<PasswordForm>> passwords_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCredentialProvider);
 };
 
 std::vector<std::unique_ptr<PasswordForm>>

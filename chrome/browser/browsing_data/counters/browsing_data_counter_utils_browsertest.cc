@@ -26,10 +26,13 @@ namespace browsing_data_counter_utils {
 class BrowsingDataCounterUtilsBrowserTest : public SyncTest {
  public:
   BrowsingDataCounterUtilsBrowserTest() : SyncTest(SINGLE_CLIENT) {}
-  ~BrowsingDataCounterUtilsBrowserTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataCounterUtilsBrowserTest);
+  BrowsingDataCounterUtilsBrowserTest(
+      const BrowsingDataCounterUtilsBrowserTest&) = delete;
+  BrowsingDataCounterUtilsBrowserTest& operator=(
+      const BrowsingDataCounterUtilsBrowserTest&) = delete;
+
+  ~BrowsingDataCounterUtilsBrowserTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,

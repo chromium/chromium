@@ -74,6 +74,9 @@ class UpgradeDetector {
   // Returns the singleton implementation instance.
   static UpgradeDetector* GetInstance();
 
+  UpgradeDetector(const UpgradeDetector&) = delete;
+  UpgradeDetector& operator=(const UpgradeDetector&) = delete;
+
   virtual ~UpgradeDetector();
 
   // Returns the default delta from upgrade detection until high annoyance is
@@ -395,8 +398,6 @@ class UpgradeDetector {
   base::ObserverList<UpgradeObserver>::Unchecked observer_list_;
 
   base::WeakPtrFactory<UpgradeDetector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpgradeDetector);
 };
 
 #endif  // CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_DETECTOR_H_

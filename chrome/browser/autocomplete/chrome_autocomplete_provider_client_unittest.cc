@@ -21,14 +21,15 @@ namespace {
 class TestSchemeClassifier : public AutocompleteSchemeClassifier {
  public:
   TestSchemeClassifier() = default;
+
+  TestSchemeClassifier(const TestSchemeClassifier&) = delete;
+  TestSchemeClassifier& operator=(const TestSchemeClassifier&) = delete;
+
   ~TestSchemeClassifier() override = default;
 
   // Overridden from AutocompleteInputSchemeClassifier:
   metrics::OmniboxInputType GetInputTypeForScheme(
       const std::string& scheme) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSchemeClassifier);
 };
 
 metrics::OmniboxInputType TestSchemeClassifier::GetInputTypeForScheme(

@@ -17,6 +17,12 @@ namespace chromeos {
 class FakeUpdateRequiredScreenHandler : public UpdateRequiredView {
  public:
   FakeUpdateRequiredScreenHandler() = default;
+
+  FakeUpdateRequiredScreenHandler(const FakeUpdateRequiredScreenHandler&) =
+      delete;
+  FakeUpdateRequiredScreenHandler& operator=(
+      const FakeUpdateRequiredScreenHandler&) = delete;
+
   ~FakeUpdateRequiredScreenHandler() override {}
 
   UpdateRequiredView::UIState ui_state() { return ui_state_; }
@@ -40,8 +46,6 @@ class FakeUpdateRequiredScreenHandler : public UpdateRequiredView {
   void SetIsUserDataPresent(bool data_present) override {}
 
   UpdateRequiredView::UIState ui_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUpdateRequiredScreenHandler);
 };
 
 }  // namespace chromeos

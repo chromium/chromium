@@ -34,6 +34,10 @@ class VR_UI_EXPORT UiScene {
   typedef base::RepeatingCallback<void()> PerFrameCallback;
 
   UiScene();
+
+  UiScene(const UiScene&) = delete;
+  UiScene& operator=(const UiScene&) = delete;
+
   ~UiScene();
 
   void AddUiElement(UiElementName parent, std::unique_ptr<UiElement> element);
@@ -110,8 +114,6 @@ class VR_UI_EXPORT UiScene {
 
   std::vector<std::unique_ptr<Sequence>> scheduled_tasks_;
   SkiaSurfaceProvider* provider_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UiScene);
 };
 
 }  // namespace vr

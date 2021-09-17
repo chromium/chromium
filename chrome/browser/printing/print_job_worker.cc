@@ -56,6 +56,10 @@ namespace {
 class PrintingContextDelegate : public PrintingContext::Delegate {
  public:
   PrintingContextDelegate(int render_process_id, int render_frame_id);
+
+  PrintingContextDelegate(const PrintingContextDelegate&) = delete;
+  PrintingContextDelegate& operator=(const PrintingContextDelegate&) = delete;
+
   ~PrintingContextDelegate() override;
 
   gfx::NativeView GetParentView() override;
@@ -70,8 +74,6 @@ class PrintingContextDelegate : public PrintingContext::Delegate {
  private:
   const int render_process_id_;
   const int render_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintingContextDelegate);
 };
 
 PrintingContextDelegate::PrintingContextDelegate(int render_process_id,

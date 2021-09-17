@@ -36,6 +36,9 @@ class FindBarController : public content::NotificationObserver,
  public:
   explicit FindBarController(std::unique_ptr<FindBar> find_bar);
 
+  FindBarController(const FindBarController&) = delete;
+  FindBarController& operator=(const FindBarController&) = delete;
+
   ~FindBarController() override;
 
   // Shows the find bar. Any previous search string will again be visible.
@@ -112,8 +115,6 @@ class FindBarController : public content::NotificationObserver,
   base::ScopedObservation<find_in_page::FindTabHelper,
                           find_in_page::FindResultObserver>
       find_tab_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarController);
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_H_

@@ -60,6 +60,10 @@ class InstantService : public KeyedService,
                        public ThemeServiceObserver {
  public:
   explicit InstantService(Profile* profile);
+
+  InstantService(const InstantService&) = delete;
+  InstantService& operator=(const InstantService&) = delete;
+
   ~InstantService() override;
 
   // Add, remove, and query RenderProcessHost IDs that are associated with
@@ -184,8 +188,6 @@ class InstantService : public KeyedService,
   base::TimeTicks background_updated_timestamp_;
 
   base::WeakPtrFactory<InstantService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstantService);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_INSTANT_SERVICE_H_

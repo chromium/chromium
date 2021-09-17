@@ -933,6 +933,12 @@ TEST_F(ExtensionPrefsComponentExtension, ExtensionPrefsComponentExtension) {
 class ExtensionPrefsRuntimeGrantedPermissions : public ExtensionPrefsTest {
  public:
   ExtensionPrefsRuntimeGrantedPermissions() = default;
+
+  ExtensionPrefsRuntimeGrantedPermissions(
+      const ExtensionPrefsRuntimeGrantedPermissions&) = delete;
+  ExtensionPrefsRuntimeGrantedPermissions& operator=(
+      const ExtensionPrefsRuntimeGrantedPermissions&) = delete;
+
   ~ExtensionPrefsRuntimeGrantedPermissions() override {}
 
   void Initialize() override {
@@ -1011,8 +1017,6 @@ class ExtensionPrefsRuntimeGrantedPermissions : public ExtensionPrefsTest {
  private:
   scoped_refptr<const Extension> extension_a_;
   scoped_refptr<const Extension> extension_b_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefsRuntimeGrantedPermissions);
 };
 TEST_F(ExtensionPrefsRuntimeGrantedPermissions,
        ExtensionPrefsRuntimeGrantedPermissions) {}
@@ -1021,6 +1025,12 @@ TEST_F(ExtensionPrefsRuntimeGrantedPermissions,
 class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
  public:
   ExtensionPrefsObsoletePrefRemoval() = default;
+
+  ExtensionPrefsObsoletePrefRemoval(const ExtensionPrefsObsoletePrefRemoval&) =
+      delete;
+  ExtensionPrefsObsoletePrefRemoval& operator=(
+      const ExtensionPrefsObsoletePrefRemoval&) = delete;
+
   ~ExtensionPrefsObsoletePrefRemoval() override = default;
 
   void Initialize() override {
@@ -1047,8 +1057,6 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
 
  private:
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefsObsoletePrefRemoval);
 };
 
 TEST_F(ExtensionPrefsObsoletePrefRemoval, ExtensionPrefsObsoletePrefRemoval) {}
@@ -1057,6 +1065,11 @@ TEST_F(ExtensionPrefsObsoletePrefRemoval, ExtensionPrefsObsoletePrefRemoval) {}
 class ExtensionPrefsMigratedPref : public ExtensionPrefsTest {
  public:
   ExtensionPrefsMigratedPref() = default;
+
+  ExtensionPrefsMigratedPref(const ExtensionPrefsMigratedPref&) = delete;
+  ExtensionPrefsMigratedPref& operator=(const ExtensionPrefsMigratedPref&) =
+      delete;
+
   ~ExtensionPrefsMigratedPref() override = default;
 
   void Initialize() override {
@@ -1086,8 +1099,6 @@ class ExtensionPrefsMigratedPref : public ExtensionPrefsTest {
 
  private:
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefsMigratedPref);
 };
 
 TEST_F(ExtensionPrefsMigratedPref, ExtensionPrefsMigratedPref) {}
@@ -1099,6 +1110,12 @@ class ExtensionPrefsMigrateOldBlocklistPrefs : public ExtensionPrefsTest {
   static constexpr char kLegacyBlocklistAcknowledgedPref[] = "ack_blacklist";
 
   ExtensionPrefsMigrateOldBlocklistPrefs() = default;
+
+  ExtensionPrefsMigrateOldBlocklistPrefs(
+      const ExtensionPrefsMigrateOldBlocklistPrefs&) = delete;
+  ExtensionPrefsMigrateOldBlocklistPrefs& operator=(
+      const ExtensionPrefsMigrateOldBlocklistPrefs&) = delete;
+
   ~ExtensionPrefsMigrateOldBlocklistPrefs() override = default;
 
   void Initialize() override {
@@ -1147,8 +1164,6 @@ class ExtensionPrefsMigrateOldBlocklistPrefs : public ExtensionPrefsTest {
 
  private:
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefsMigrateOldBlocklistPrefs);
 };
 
 // static

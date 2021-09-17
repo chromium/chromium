@@ -18,6 +18,11 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 #endif  // !defined(NACL_WIN64)
 
   ChromeCrashReporterClient();
+
+  ChromeCrashReporterClient(const ChromeCrashReporterClient&) = delete;
+  ChromeCrashReporterClient& operator=(const ChromeCrashReporterClient&) =
+      delete;
+
   ~ChromeCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient implementation.
@@ -49,9 +54,6 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
   bool ShouldMonitorCrashHandlerExpensively() override;
 
   bool EnableBreakpadForProcess(const std::string& process_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeCrashReporterClient);
 };
 
 #endif  // CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_WIN_H_

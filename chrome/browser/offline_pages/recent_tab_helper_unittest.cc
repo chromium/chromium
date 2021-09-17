@@ -87,6 +87,10 @@ class RecentTabHelperTest
       public OfflinePageTestArchiver::Observer {
  public:
   RecentTabHelperTest();
+
+  RecentTabHelperTest(const RecentTabHelperTest&) = delete;
+  RecentTabHelperTest& operator=(const RecentTabHelperTest&) = delete;
+
   ~RecentTabHelperTest() override {}
 
   void SetUp() override;
@@ -176,8 +180,6 @@ class RecentTabHelperTest
       mocked_main_runner_;
 
   base::WeakPtrFactory<RecentTabHelperTest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecentTabHelperTest);
 };
 
 TestDelegate::TestDelegate(

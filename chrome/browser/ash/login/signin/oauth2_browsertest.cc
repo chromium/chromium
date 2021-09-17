@@ -179,6 +179,10 @@ class ThreadBlocker {
         FROM_HERE,
         base::BindOnce(&BlockThreadOnThread, base::Owned(unblock_event_)));
   }
+
+  ThreadBlocker(const ThreadBlocker&) = delete;
+  ThreadBlocker& operator=(const ThreadBlocker&) = delete;
+
   ~ThreadBlocker() { unblock_event_->Signal(); }
 
  private:
@@ -187,8 +191,6 @@ class ThreadBlocker {
 
   // `unblock_event_` is deleted after BlockThreadOnThread returns.
   base::WaitableEvent* const unblock_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadBlocker);
 };
 
 // Helper class that is added as a RequestMonitor of embedded test server to
@@ -480,6 +482,10 @@ class OAuth2Test : public OobeBaseTest {
 class CookieReader {
  public:
   CookieReader() = default;
+
+  CookieReader(const CookieReader&) = delete;
+  CookieReader& operator=(const CookieReader&) = delete;
+
   ~CookieReader() = default;
 
   void ReadCookies(Profile* profile) {
@@ -509,8 +515,6 @@ class CookieReader {
   }
 
   net::CookieList cookie_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieReader);
 };
 
 // PRE_MergeSession is testing merge session for a new profile.
@@ -786,6 +790,9 @@ class FakeGoogle {
         merge_session_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                              base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
+  FakeGoogle(const FakeGoogle&) = delete;
+  FakeGoogle& operator=(const FakeGoogle&) = delete;
+
   ~FakeGoogle() {}
 
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
@@ -862,8 +869,6 @@ class FakeGoogle {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::RunLoop> merge_session_run_loop_;
   bool hang_merge_session_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGoogle);
 };
 
 class MergeSessionTest : public OAuth2Test,

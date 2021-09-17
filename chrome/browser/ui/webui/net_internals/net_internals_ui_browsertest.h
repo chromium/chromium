@@ -13,6 +13,10 @@
 class NetInternalsTest : public WebUIBrowserTest {
  public:
   NetInternalsTest();
+
+  NetInternalsTest(const NetInternalsTest&) = delete;
+  NetInternalsTest& operator=(const NetInternalsTest&) = delete;
+
   ~NetInternalsTest() override;
 
   void SetUpOnMainThread() override;
@@ -31,8 +35,6 @@ class NetInternalsTest : public WebUIBrowserTest {
 
   // True if the test server has already been successfully started.
   bool test_server_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetInternalsTest);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NET_INTERNALS_NET_INTERNALS_UI_BROWSERTEST_H_

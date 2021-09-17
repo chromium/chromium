@@ -28,6 +28,10 @@ class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
       : web_view_(NULL) {
   }
 
+  ShapedAppWindowTargeterTest(const ShapedAppWindowTargeterTest&) = delete;
+  ShapedAppWindowTargeterTest& operator=(const ShapedAppWindowTargeterTest&) =
+      delete;
+
   ~ShapedAppWindowTargeterTest() override {}
 
   views::Widget* widget() { return widget_.get(); }
@@ -69,8 +73,6 @@ class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
   views::WebView web_view_;
   std::unique_ptr<views::Widget> widget_;
   ChromeNativeAppWindowViewsAura app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapedAppWindowTargeterTest);
 };
 
 TEST_F(ShapedAppWindowTargeterTest, HitTestBasic) {

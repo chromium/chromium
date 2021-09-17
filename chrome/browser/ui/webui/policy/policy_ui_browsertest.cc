@@ -71,6 +71,10 @@ class PolicySchemaAvailableWaiter : public policy::SchemaRegistry::Observer {
       : registry_(profile->GetPolicySchemaRegistryService()->registry()),
         policy_namespace_(policy_namespace) {}
 
+  PolicySchemaAvailableWaiter(const PolicySchemaAvailableWaiter&) = delete;
+  PolicySchemaAvailableWaiter& operator=(const PolicySchemaAvailableWaiter&) =
+      delete;
+
   ~PolicySchemaAvailableWaiter() override { registry_->RemoveObserver(this); }
 
   // Starts waiting for a policy schema to be available for the
@@ -101,8 +105,6 @@ class PolicySchemaAvailableWaiter : public policy::SchemaRegistry::Observer {
   policy::SchemaRegistry* const registry_;
   const policy::PolicyNamespace policy_namespace_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicySchemaAvailableWaiter);
 };
 
 std::vector<std::string> PopulateExpectedPolicy(
@@ -198,6 +200,10 @@ base::FilePath export_policies_test_file_path;
 class PolicyUITest : public InProcessBrowserTest {
  public:
   PolicyUITest();
+
+  PolicyUITest(const PolicyUITest&) = delete;
+  PolicyUITest& operator=(const PolicyUITest&) = delete;
+
   ~PolicyUITest() override;
 
  protected:
@@ -216,9 +222,6 @@ class PolicyUITest : public InProcessBrowserTest {
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyUITest);
 };
 
 // An artificial SelectFileDialog that immediately returns the location of test

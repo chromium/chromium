@@ -28,6 +28,10 @@ namespace ash {
 class DemoModeTestHelper {
  public:
   DemoModeTestHelper();
+
+  DemoModeTestHelper(const DemoModeTestHelper&) = delete;
+  DemoModeTestHelper& operator=(const DemoModeTestHelper&) = delete;
+
   ~DemoModeTestHelper();
 
   // Starts a Demo Mode session and loads a fake Demo Mode resources component.
@@ -69,8 +73,6 @@ class DemoModeTestHelper {
 
   // True if this class initialized the DBusThreadManager.
   bool dbus_thread_manager_initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoModeTestHelper);
 };
 
 }  // namespace ash

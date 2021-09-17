@@ -55,6 +55,10 @@ class AndroidManagementClient {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const CoreAccountId& account_id,
       signin::IdentityManager* identity_manager);
+
+  AndroidManagementClient(const AndroidManagementClient&) = delete;
+  AndroidManagementClient& operator=(const AndroidManagementClient&) = delete;
+
   ~AndroidManagementClient();
 
   // Starts sending of check Android management request to DM server, issues
@@ -97,8 +101,6 @@ class AndroidManagementClient {
   StatusCallback callback_;
 
   base::WeakPtrFactory<AndroidManagementClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidManagementClient);
 };
 
 // Outputs the stringified |result| to |os|. This is only for logging purposes.

@@ -44,6 +44,10 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
       DisconnectCallback on_disconnect);
+
+  ProxyingURLLoaderFactory(const ProxyingURLLoaderFactory&) = delete;
+  ProxyingURLLoaderFactory& operator=(const ProxyingURLLoaderFactory&) = delete;
+
   ~ProxyingURLLoaderFactory() override;
 
   // Called when a renderer needs a URLLoaderFactory to give this module the
@@ -90,8 +94,6 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       requests_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   DisconnectCallback on_disconnect_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyingURLLoaderFactory);
 };
 
 }  // namespace signin

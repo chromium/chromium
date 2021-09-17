@@ -64,6 +64,12 @@ namespace extensions {
 class PrintJobFinishedEventDispatcherUnittest : public testing::Test {
  public:
   PrintJobFinishedEventDispatcherUnittest() {}
+
+  PrintJobFinishedEventDispatcherUnittest(
+      const PrintJobFinishedEventDispatcherUnittest&) = delete;
+  PrintJobFinishedEventDispatcherUnittest& operator=(
+      const PrintJobFinishedEventDispatcherUnittest&) = delete;
+
   ~PrintJobFinishedEventDispatcherUnittest() override = default;
 
   void SetUp() override {
@@ -101,8 +107,6 @@ class PrintJobFinishedEventDispatcherUnittest : public testing::Test {
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<PrintJobFinishedEventDispatcher> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobFinishedEventDispatcherUnittest);
 };
 
 // Test that |OnPrintJobFinished| is dispatched when the print job is saved by

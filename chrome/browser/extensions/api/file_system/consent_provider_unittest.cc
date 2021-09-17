@@ -44,6 +44,11 @@ class TestingConsentProviderDelegate
         dialog_button_(ui::DIALOG_BUTTON_NONE),
         is_auto_launched_(false) {}
 
+  TestingConsentProviderDelegate(const TestingConsentProviderDelegate&) =
+      delete;
+  TestingConsentProviderDelegate& operator=(
+      const TestingConsentProviderDelegate&) = delete;
+
   ~TestingConsentProviderDelegate() {}
 
   // Sets a fake dialog response.
@@ -97,8 +102,6 @@ class TestingConsentProviderDelegate
   ui::DialogButton dialog_button_;
   bool is_auto_launched_;
   std::string allowlisted_component_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingConsentProviderDelegate);
 };
 
 // Rewrites result of a consent request from |result| to |log|.

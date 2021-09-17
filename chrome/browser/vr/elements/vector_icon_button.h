@@ -23,6 +23,10 @@ class VR_UI_EXPORT VectorIconButton : public Button {
   VectorIconButton(base::RepeatingCallback<void()> click_handler,
                    const gfx::VectorIcon& icon,
                    AudioDelegate* audio_delegate);
+
+  VectorIconButton(const VectorIconButton&) = delete;
+  VectorIconButton& operator=(const VectorIconButton&) = delete;
+
   ~VectorIconButton() override;
 
   VectorIcon* foreground() const { return foreground_; }
@@ -43,7 +47,6 @@ class VR_UI_EXPORT VectorIconButton : public Button {
   // externally to create a smaller or larger icon.
   float icon_scale_factor_;
   VectorIcon* foreground_;
-  DISALLOW_COPY_AND_ASSIGN(VectorIconButton);
 };
 
 }  // namespace vr

@@ -30,6 +30,9 @@ class FakeNetBiosClient : public NetBiosClientInterface {
   explicit FakeNetBiosClient(
       std::map<net::IPEndPoint, std::vector<uint8_t>> fake_data);
 
+  FakeNetBiosClient(const FakeNetBiosClient&) = delete;
+  FakeNetBiosClient& operator=(const FakeNetBiosClient&) = delete;
+
   ~FakeNetBiosClient() override;
 
   // NetBiosClientInterface override.
@@ -39,8 +42,6 @@ class FakeNetBiosClient : public NetBiosClientInterface {
 
  private:
   std::map<net::IPEndPoint, std::vector<uint8_t>> fake_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNetBiosClient);
 };
 
 }  // namespace smb_client

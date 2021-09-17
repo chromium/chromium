@@ -18,6 +18,10 @@ class TemplateURLTableModel;
 class KeywordEditorController {
  public:
   explicit KeywordEditorController(Profile* profile);
+
+  KeywordEditorController(const KeywordEditorController&) = delete;
+  KeywordEditorController& operator=(const KeywordEditorController&) = delete;
+
   ~KeywordEditorController();
 
   // Invoked when the user succesfully fills out the add keyword dialog.
@@ -81,8 +85,6 @@ class KeywordEditorController {
 
   // Model for the TableView.
   std::unique_ptr<TemplateURLTableModel> table_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeywordEditorController);
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_KEYWORD_EDITOR_CONTROLLER_H_

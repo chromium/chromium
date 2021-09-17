@@ -17,6 +17,11 @@ namespace media_router {
 class CastDialogNoSinksViewTest : public ChromeViewsTestBase {
  public:
   CastDialogNoSinksViewTest() = default;
+
+  CastDialogNoSinksViewTest(const CastDialogNoSinksViewTest&) = delete;
+  CastDialogNoSinksViewTest& operator=(const CastDialogNoSinksViewTest&) =
+      delete;
+
   ~CastDialogNoSinksViewTest() override = default;
 
   void SetUp() override {
@@ -37,8 +42,6 @@ class CastDialogNoSinksViewTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<CastDialogNoSinksView> no_sinks_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastDialogNoSinksViewTest);
 };
 
 TEST_F(CastDialogNoSinksViewTest, SwitchViews) {

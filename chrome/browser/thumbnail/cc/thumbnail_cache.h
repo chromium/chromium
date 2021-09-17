@@ -51,6 +51,9 @@ class ThumbnailCache : ThumbnailDelegate {
                  bool save_jpeg_thumbnails,
                  double jpeg_aspect_ratio);
 
+  ThumbnailCache(const ThumbnailCache&) = delete;
+  ThumbnailCache& operator=(const ThumbnailCache&) = delete;
+
   ~ThumbnailCache() override;
 
   void SetUIResourceProvider(ui::UIResourceProvider* ui_resource_provider);
@@ -190,8 +193,6 @@ class ThumbnailCache : ThumbnailDelegate {
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_;
   base::WeakPtrFactory<ThumbnailCache> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThumbnailCache);
 };
 
 #endif  // CHROME_BROWSER_THUMBNAIL_CC_THUMBNAIL_CACHE_H_

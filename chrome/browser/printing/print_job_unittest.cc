@@ -45,6 +45,9 @@ class TestQuery : public PrinterQuery {
     FAIL();
   }
 
+  TestQuery(const TestQuery&) = delete;
+  TestQuery& operator=(const TestQuery&) = delete;
+
   ~TestQuery() override {}
 
   std::unique_ptr<PrintJobWorker> DetachWorker() override {
@@ -62,9 +65,6 @@ class TestQuery : public PrinterQuery {
 
     return std::move(worker);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestQuery);
 };
 
 class TestPrintJob : public PrintJob {

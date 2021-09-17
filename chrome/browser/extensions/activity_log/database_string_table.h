@@ -34,6 +34,9 @@ class DatabaseStringTable {
  public:
   explicit DatabaseStringTable(const std::string& table);
 
+  DatabaseStringTable(const DatabaseStringTable&) = delete;
+  DatabaseStringTable& operator=(const DatabaseStringTable&) = delete;
+
   ~DatabaseStringTable();
 
   // Initialize the database table.  This will create the table if it does not
@@ -70,8 +73,6 @@ class DatabaseStringTable {
   std::string table_;
 
   FRIEND_TEST_ALL_PREFIXES(DatabaseStringTableTest, Prune);
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseStringTable);
 };
 
 }  // namespace extensions

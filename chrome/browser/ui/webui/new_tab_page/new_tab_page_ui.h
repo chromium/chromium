@@ -73,6 +73,10 @@ class NewTabPageUI
       content::WebContentsObserver {
  public:
   explicit NewTabPageUI(content::WebUI* web_ui);
+
+  NewTabPageUI(const NewTabPageUI&) = delete;
+  NewTabPageUI& operator=(const NewTabPageUI&) = delete;
+
   ~NewTabPageUI() override;
 
   static bool IsNewTabPageOrigin(const GURL& url);
@@ -234,8 +238,6 @@ class NewTabPageUI
   base::WeakPtrFactory<NewTabPageUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabPageUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_UI_H_

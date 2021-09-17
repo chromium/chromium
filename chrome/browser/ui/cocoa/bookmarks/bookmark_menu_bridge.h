@@ -42,6 +42,10 @@ class AppMenuControllerTest;
 class BookmarkMenuBridge : public bookmarks::BookmarkModelObserver {
  public:
   BookmarkMenuBridge(Profile* profile, NSMenu* menu_root);
+
+  BookmarkMenuBridge(const BookmarkMenuBridge&) = delete;
+  BookmarkMenuBridge& operator=(const BookmarkMenuBridge&) = delete;
+
   ~BookmarkMenuBridge() override;
 
   // bookmarks::BookmarkModelObserver:
@@ -148,8 +152,6 @@ class BookmarkMenuBridge : public bookmarks::BookmarkModelObserver {
   // In order to appropriately update items in the bookmark menu, without
   // forcing a rebuild, map the model's nodes to menu items.
   std::map<const bookmarks::BookmarkNode*, NSMenuItem*> bookmark_nodes_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkMenuBridge);
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_BOOKMARKS_BOOKMARK_MENU_BRIDGE_H_

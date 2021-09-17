@@ -40,10 +40,13 @@ class AutofillProfileDisabledChecker : public SingleClientStatusChangeChecker {
 class SingleClientAutofillProfileSyncTest : public SyncTest {
  public:
   SingleClientAutofillProfileSyncTest() : SyncTest(SINGLE_CLIENT) {}
-  ~SingleClientAutofillProfileSyncTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientAutofillProfileSyncTest);
+  SingleClientAutofillProfileSyncTest(
+      const SingleClientAutofillProfileSyncTest&) = delete;
+  SingleClientAutofillProfileSyncTest& operator=(
+      const SingleClientAutofillProfileSyncTest&) = delete;
+
+  ~SingleClientAutofillProfileSyncTest() override {}
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientAutofillProfileSyncTest,

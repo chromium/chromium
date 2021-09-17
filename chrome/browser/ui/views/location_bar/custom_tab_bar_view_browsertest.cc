@@ -176,6 +176,11 @@ class CustomTabBarViewBrowserTest
     : public web_app::WebAppControllerBrowserTest {
  public:
   CustomTabBarViewBrowserTest() = default;
+
+  CustomTabBarViewBrowserTest(const CustomTabBarViewBrowserTest&) = delete;
+  CustomTabBarViewBrowserTest& operator=(const CustomTabBarViewBrowserTest&) =
+      delete;
+
   ~CustomTabBarViewBrowserTest() override = default;
 
  protected:
@@ -241,8 +246,6 @@ class CustomTabBarViewBrowserTest
   }
 
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomTabBarViewBrowserTest);
 };
 
 // Check the custom tab bar is not instantiated for a tabbed browser window.

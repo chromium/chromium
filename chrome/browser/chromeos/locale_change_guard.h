@@ -36,6 +36,10 @@ class LocaleChangeGuard : public content::NotificationObserver,
                           public base::SupportsWeakPtr<LocaleChangeGuard> {
  public:
   explicit LocaleChangeGuard(Profile* profile);
+
+  LocaleChangeGuard(const LocaleChangeGuard&) = delete;
+  LocaleChangeGuard& operator=(const LocaleChangeGuard&) = delete;
+
   ~LocaleChangeGuard() override;
 
   // Called just before changing locale.
@@ -100,8 +104,6 @@ class LocaleChangeGuard : public content::NotificationObserver,
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleChangeGuard);
 };
 
 }  // namespace chromeos

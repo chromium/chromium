@@ -61,6 +61,10 @@ GetImageAnnotatorBinderOverride() {
 class ImageAnnotatorClient : public image_annotation::Annotator::Client {
  public:
   explicit ImageAnnotatorClient(Profile* profile) : profile_(profile) {}
+
+  ImageAnnotatorClient(const ImageAnnotatorClient&) = delete;
+  ImageAnnotatorClient& operator=(const ImageAnnotatorClient&) = delete;
+
   ~ImageAnnotatorClient() override = default;
 
   // image_annotation::Annotator::Client implementation:
@@ -117,8 +121,6 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
  private:
   Profile* const profile_;
   data_decoder::DataDecoder data_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageAnnotatorClient);
 };
 
 }  // namespace

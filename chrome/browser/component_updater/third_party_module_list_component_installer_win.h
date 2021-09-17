@@ -29,6 +29,12 @@ class ThirdPartyModuleListComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   ThirdPartyModuleListComponentInstallerPolicy();
+
+  ThirdPartyModuleListComponentInstallerPolicy(
+      const ThirdPartyModuleListComponentInstallerPolicy&) = delete;
+  ThirdPartyModuleListComponentInstallerPolicy& operator=(
+      const ThirdPartyModuleListComponentInstallerPolicy&) = delete;
+
   ~ThirdPartyModuleListComponentInstallerPolicy() override;
 
  private:
@@ -51,8 +57,6 @@ class ThirdPartyModuleListComponentInstallerPolicy
 
   // Returns the path to the proto file for the given |install_dir|.
   static base::FilePath GetModuleListPath(const base::FilePath& install_dir);
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyModuleListComponentInstallerPolicy);
 };
 
 void RegisterThirdPartyModuleListComponent(

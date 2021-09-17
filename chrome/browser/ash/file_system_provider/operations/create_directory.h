@@ -36,6 +36,10 @@ class CreateDirectory : public Operation {
                   const base::FilePath& directory_path,
                   bool recursive,
                   storage::AsyncFileUtil::StatusCallback callback);
+
+  CreateDirectory(const CreateDirectory&) = delete;
+  CreateDirectory& operator=(const CreateDirectory&) = delete;
+
   ~CreateDirectory() override;
 
   // Operation overrides.
@@ -51,8 +55,6 @@ class CreateDirectory : public Operation {
   base::FilePath directory_path_;
   bool recursive_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CreateDirectory);
 };
 
 }  // namespace operations

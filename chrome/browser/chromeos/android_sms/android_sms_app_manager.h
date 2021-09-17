@@ -33,6 +33,10 @@ class AndroidSmsAppManager
   };
 
   AndroidSmsAppManager();
+
+  AndroidSmsAppManager(const AndroidSmsAppManager&) = delete;
+  AndroidSmsAppManager& operator=(const AndroidSmsAppManager&) = delete;
+
   ~AndroidSmsAppManager() override;
 
   // If no app is installed, null is returned.
@@ -46,8 +50,6 @@ class AndroidSmsAppManager
 
  private:
   base::ObserverList<Observer> observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppManager);
 };
 
 }  // namespace android_sms

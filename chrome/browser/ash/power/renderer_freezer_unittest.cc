@@ -44,6 +44,10 @@ namespace {
 class ActionRecorder {
  public:
   ActionRecorder() {}
+
+  ActionRecorder(const ActionRecorder&) = delete;
+  ActionRecorder& operator=(const ActionRecorder&) = delete;
+
   virtual ~ActionRecorder() {}
 
   // Returns a comma-separated string describing the actions that were
@@ -67,8 +71,6 @@ class ActionRecorder {
  private:
   // Comma-separated list of actions that have been performed.
   std::string actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionRecorder);
 };
 
 // Actions that can be returned by TestDelegate::GetActions().
@@ -85,6 +87,9 @@ class TestDelegate : public RendererFreezer::Delegate, public ActionRecorder {
   TestDelegate()
       : can_freeze_renderers_(true),
         thaw_renderers_result_(true) {}
+
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
 
   ~TestDelegate() override {}
 
@@ -121,8 +126,6 @@ class TestDelegate : public RendererFreezer::Delegate, public ActionRecorder {
  private:
   bool can_freeze_renderers_;
   bool thaw_renderers_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 }  // namespace
@@ -130,6 +133,9 @@ class TestDelegate : public RendererFreezer::Delegate, public ActionRecorder {
 class RendererFreezerTest : public testing::Test {
  public:
   RendererFreezerTest() : test_delegate_(new TestDelegate()) {}
+
+  RendererFreezerTest(const RendererFreezerTest&) = delete;
+  RendererFreezerTest& operator=(const RendererFreezerTest&) = delete;
 
   ~RendererFreezerTest() override = default;
 
@@ -154,8 +160,6 @@ class RendererFreezerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererFreezerTest);
 };
 
 // Tests that the RendererFreezer freezes renderers on suspend and thaws them on
@@ -211,6 +215,12 @@ TEST_F(RendererFreezerTest, ErrorThawingRenderers) {
 class RendererFreezerTestWithExtensions : public RendererFreezerTest {
  public:
   RendererFreezerTestWithExtensions() {}
+
+  RendererFreezerTestWithExtensions(const RendererFreezerTestWithExtensions&) =
+      delete;
+  RendererFreezerTestWithExtensions& operator=(
+      const RendererFreezerTestWithExtensions&) = delete;
+
   ~RendererFreezerTestWithExtensions() override {}
 
   // testing::Test overrides.
@@ -275,8 +285,6 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
  private:
   // Chrome OS needs the CrosSettings test helper.
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererFreezerTestWithExtensions);
 };
 
 // Tests that the RendererFreezer freezes renderers that are not hosting

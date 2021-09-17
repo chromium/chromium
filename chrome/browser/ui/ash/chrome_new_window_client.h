@@ -32,6 +32,10 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
                               public arc::ControlCameraAppDelegate {
  public:
   ChromeNewWindowClient();
+
+  ChromeNewWindowClient(const ChromeNewWindowClient&) = delete;
+  ChromeNewWindowClient& operator=(const ChromeNewWindowClient&) = delete;
+
   ~ChromeNewWindowClient() override;
 
   static ChromeNewWindowClient* Get();
@@ -86,8 +90,6 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   const std::map<arc::mojom::ChromePage, std::string> browser_settings_pages_;
 
   const std::map<arc::mojom::ChromePage, std::string> about_pages_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNewWindowClient);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_NEW_WINDOW_CLIENT_H_

@@ -57,6 +57,10 @@ using ReputationCheckCallback =
 class ReputationService : public KeyedService {
  public:
   explicit ReputationService(Profile* profile);
+
+  ReputationService(const ReputationService&) = delete;
+  ReputationService& operator=(const ReputationService&) = delete;
+
   ~ReputationService() override;
 
   static ReputationService* Get(Profile* profile);
@@ -111,7 +115,6 @@ class ReputationService : public KeyedService {
   size_t num_sensitive_keywords_;
 
   base::WeakPtrFactory<ReputationService> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ReputationService);
 };
 
 #endif  // CHROME_BROWSER_REPUTATION_REPUTATION_SERVICE_H_

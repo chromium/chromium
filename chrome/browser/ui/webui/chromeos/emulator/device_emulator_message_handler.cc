@@ -69,6 +69,9 @@ class DeviceEmulatorMessageHandler::BluetoothObserver
     owner_->fake_bluetooth_device_client_->AddObserver(this);
   }
 
+  BluetoothObserver(const BluetoothObserver&) = delete;
+  BluetoothObserver& operator=(const BluetoothObserver&) = delete;
+
   ~BluetoothObserver() override {
     owner_->fake_bluetooth_device_client_->RemoveObserver(this);
   }
@@ -85,8 +88,6 @@ class DeviceEmulatorMessageHandler::BluetoothObserver
 
  private:
   DeviceEmulatorMessageHandler* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothObserver);
 };
 
 void DeviceEmulatorMessageHandler::BluetoothObserver::DeviceAdded(
@@ -120,6 +121,9 @@ class DeviceEmulatorMessageHandler::CrasAudioObserver
     chromeos::FakeCrasAudioClient::Get()->AddObserver(this);
   }
 
+  CrasAudioObserver(const CrasAudioObserver&) = delete;
+  CrasAudioObserver& operator=(const CrasAudioObserver&) = delete;
+
   ~CrasAudioObserver() override {
     chromeos::FakeCrasAudioClient::Get()->RemoveObserver(this);
   }
@@ -129,8 +133,6 @@ class DeviceEmulatorMessageHandler::CrasAudioObserver
 
  private:
   DeviceEmulatorMessageHandler* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrasAudioObserver);
 };
 
 class DeviceEmulatorMessageHandler::PowerObserver
@@ -140,6 +142,9 @@ class DeviceEmulatorMessageHandler::PowerObserver
     owner_->fake_power_manager_client_->AddObserver(this);
   }
 
+  PowerObserver(const PowerObserver&) = delete;
+  PowerObserver& operator=(const PowerObserver&) = delete;
+
   ~PowerObserver() override {
     owner_->fake_power_manager_client_->RemoveObserver(this);
   }
@@ -148,8 +153,6 @@ class DeviceEmulatorMessageHandler::PowerObserver
 
  private:
   DeviceEmulatorMessageHandler* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerObserver);
 };
 
 void DeviceEmulatorMessageHandler::PowerObserver::PowerChanged(

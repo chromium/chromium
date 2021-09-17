@@ -25,13 +25,16 @@ namespace chromeos {
 class CupsProxyServiceManager : public KeyedService {
  public:
   CupsProxyServiceManager();
+
+  CupsProxyServiceManager(const CupsProxyServiceManager&) = delete;
+  CupsProxyServiceManager& operator=(const CupsProxyServiceManager&) = delete;
+
   ~CupsProxyServiceManager() override;
 
  private:
   void OnDaemonAvailable(bool daemon_available);
 
   base::WeakPtrFactory<CupsProxyServiceManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CupsProxyServiceManager);
 };
 
 }  // namespace chromeos

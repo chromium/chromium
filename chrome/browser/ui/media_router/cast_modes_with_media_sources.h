@@ -22,6 +22,11 @@ class CastModesWithMediaSources {
  public:
   explicit CastModesWithMediaSources(const MediaSink& sink);
   CastModesWithMediaSources(CastModesWithMediaSources&& other);
+
+  CastModesWithMediaSources(const CastModesWithMediaSources&) = delete;
+  CastModesWithMediaSources& operator=(const CastModesWithMediaSources&) =
+      delete;
+
   ~CastModesWithMediaSources();
 
   const MediaSink& sink() const { return sink_; }
@@ -47,8 +52,6 @@ class CastModesWithMediaSources {
   MediaSink sink_;
   std::map<MediaCastMode, std::unordered_set<MediaSource, MediaSource::Hash>>
       cast_modes_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastModesWithMediaSources);
 };
 
 }  // namespace media_router

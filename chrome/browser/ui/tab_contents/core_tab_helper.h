@@ -24,6 +24,9 @@
 class CoreTabHelper : public content::WebContentsObserver,
                       public content::WebContentsUserData<CoreTabHelper> {
  public:
+  CoreTabHelper(const CoreTabHelper&) = delete;
+  CoreTabHelper& operator=(const CoreTabHelper&) = delete;
+
   ~CoreTabHelper() override;
 
   // Initial title assigned to NavigationEntries from Navigate.
@@ -125,8 +128,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   base::WeakPtrFactory<CoreTabHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CoreTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_CONTENTS_CORE_TAB_HELPER_H_

@@ -34,6 +34,9 @@ class DisplayResolutionHandler : public DisplaySettingsPolicyHandler {
  public:
   DisplayResolutionHandler();
 
+  DisplayResolutionHandler(const DisplayResolutionHandler&) = delete;
+  DisplayResolutionHandler& operator=(const DisplayResolutionHandler&) = delete;
+
   ~DisplayResolutionHandler() override;
 
   // DisplaySettingsPolicyHandler
@@ -52,8 +55,6 @@ class DisplayResolutionHandler : public DisplaySettingsPolicyHandler {
   std::unique_ptr<ExternalDisplaySettings> external_display_settings_;
   std::unique_ptr<InternalDisplaySettings> internal_display_settings_;
   std::set<std::string> resized_display_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayResolutionHandler);
 };
 
 }  // namespace policy

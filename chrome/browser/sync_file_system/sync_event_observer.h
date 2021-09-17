@@ -22,6 +22,10 @@ namespace sync_file_system {
 class SyncEventObserver {
  public:
   SyncEventObserver() {}
+
+  SyncEventObserver(const SyncEventObserver&) = delete;
+  SyncEventObserver& operator=(const SyncEventObserver&) = delete;
+
   virtual ~SyncEventObserver() {}
 
   // Reports there was a state change in the sync file system backend.
@@ -37,9 +41,6 @@ class SyncEventObserver {
                             SyncFileStatus status,
                             SyncAction action,
                             SyncDirection direction) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncEventObserver);
 };
 
 }  // namespace sync_file_system

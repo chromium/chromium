@@ -57,6 +57,10 @@ class TabLifecycleUnitSource::TabLifecycleUnit
       UsageClock* usage_clock,
       content::WebContents* web_contents,
       TabStripModel* tab_strip_model);
+
+  TabLifecycleUnit(const TabLifecycleUnit&) = delete;
+  TabLifecycleUnit& operator=(const TabLifecycleUnit&) = delete;
+
   ~TabLifecycleUnit() override;
 
   // Sets the TabStripModel associated with this tab. The source that created
@@ -168,8 +172,6 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   base::TimeTicks recently_audible_time_;
 
   std::unique_ptr<TabLifecycleUnitExternalImpl> external_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabLifecycleUnit);
 };
 
 }  // namespace resource_coordinator

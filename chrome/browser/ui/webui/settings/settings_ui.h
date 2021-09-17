@@ -49,6 +49,10 @@ class SettingsUI :
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   explicit SettingsUI(content::WebUI* web_ui);
+
+  SettingsUI(const SettingsUI&) = delete;
+  SettingsUI& operator=(const SettingsUI&) = delete;
+
   ~SettingsUI() override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -87,8 +91,6 @@ class SettingsUI :
   WebuiLoadTimer webui_load_timer_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsUI);
 };
 
 }  // namespace settings

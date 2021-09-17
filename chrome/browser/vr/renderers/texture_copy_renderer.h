@@ -15,6 +15,10 @@ namespace vr {
 class VR_UI_EXPORT TextureCopyRenderer : public BaseQuadRenderer {
  public:
   TextureCopyRenderer();
+
+  TextureCopyRenderer(const TextureCopyRenderer&) = delete;
+  TextureCopyRenderer& operator=(const TextureCopyRenderer&) = delete;
+
   ~TextureCopyRenderer() override;
 
   void Draw(int texture_handle,
@@ -27,8 +31,6 @@ class VR_UI_EXPORT TextureCopyRenderer : public BaseQuadRenderer {
   GLuint uv_transform_;
   GLuint x_border_handle_;
   GLuint y_border_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextureCopyRenderer);
 };
 
 }  // namespace vr

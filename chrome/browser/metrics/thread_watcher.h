@@ -95,6 +95,9 @@ class ThreadWatcher {
           crash_on_hang(crash_on_hang_in) {}
   };
 
+  ThreadWatcher(const ThreadWatcher&) = delete;
+  ThreadWatcher& operator=(const ThreadWatcher&) = delete;
+
   virtual ~ThreadWatcher();
 
   // This method starts performing health check on the given |thread_id|. It
@@ -293,8 +296,6 @@ class ThreadWatcher {
   // use this during ping-pong messaging between WatchDog thread and watched
   // thread.
   base::WeakPtrFactory<ThreadWatcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadWatcher);
 };
 
 // Class with a list of all active thread watchers.  A thread watcher is active
@@ -462,6 +463,9 @@ class WatchDogThread : public base::Thread {
   // Constructor.
   WatchDogThread();
 
+  WatchDogThread(const WatchDogThread&) = delete;
+  WatchDogThread& operator=(const WatchDogThread&) = delete;
+
   // Destroys the thread and stops the thread.
   ~WatchDogThread() override;
 
@@ -490,8 +494,6 @@ class WatchDogThread : public base::Thread {
   static bool PostTaskHelper(const base::Location& from_here,
                              base::OnceClosure task,
                              base::TimeDelta delay);
-
-  DISALLOW_COPY_AND_ASSIGN(WatchDogThread);
 };
 
 // ShutdownWatcherHelper is useless on Android because there is no shutdown,
@@ -503,6 +505,9 @@ class ShutdownWatcherHelper {
  public:
   // Create an empty holder for |shutdown_watchdog_|.
   ShutdownWatcherHelper();
+
+  ShutdownWatcherHelper(const ShutdownWatcherHelper&) = delete;
+  ShutdownWatcherHelper& operator=(const ShutdownWatcherHelper&) = delete;
 
   // Destructor disarm's shutdown_watchdog_ so that alarm doesn't go off.
   ~ShutdownWatcherHelper();
@@ -521,8 +526,6 @@ class ShutdownWatcherHelper {
 
   // The |thread_id_| on which this object is constructed.
   const base::PlatformThreadId thread_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownWatcherHelper);
 };
 
 #endif  // !defined(OS_ANDROID)

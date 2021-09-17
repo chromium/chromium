@@ -23,6 +23,11 @@ class StatusIndicatorSceneLayer : public SceneLayer {
  public:
   StatusIndicatorSceneLayer(JNIEnv* env,
                             const base::android::JavaRef<jobject>& jobj);
+
+  StatusIndicatorSceneLayer(const StatusIndicatorSceneLayer&) = delete;
+  StatusIndicatorSceneLayer& operator=(const StatusIndicatorSceneLayer&) =
+      delete;
+
   ~StatusIndicatorSceneLayer() override;
 
   // Update the compositor version of the view.
@@ -46,8 +51,6 @@ class StatusIndicatorSceneLayer : public SceneLayer {
   SkColor background_color_;
   scoped_refptr<cc::Layer> view_container_;
   scoped_refptr<cc::UIResourceLayer> view_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIndicatorSceneLayer);
 };
 
 }  // namespace android

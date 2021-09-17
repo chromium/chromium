@@ -23,6 +23,10 @@ class DeviceNameHandler : public ::settings::SettingsPageUIHandler,
                           public chromeos::DeviceNameStore::Observer {
  public:
   DeviceNameHandler();
+
+  DeviceNameHandler(const DeviceNameHandler&) = delete;
+  DeviceNameHandler& operator=(const DeviceNameHandler&) = delete;
+
   ~DeviceNameHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -49,8 +53,6 @@ class DeviceNameHandler : public ::settings::SettingsPageUIHandler,
   base::ScopedObservation<chromeos::DeviceNameStore,
                           chromeos::DeviceNameStore::Observer>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceNameHandler);
 };
 
 }  // namespace settings

@@ -28,6 +28,10 @@ void DispatchVolumeListChangeEvent(content::BrowserContext* browser_context);
 class ChromeFileSystemDelegate : public FileSystemDelegate {
  public:
   ChromeFileSystemDelegate();
+
+  ChromeFileSystemDelegate(const ChromeFileSystemDelegate&) = delete;
+  ChromeFileSystemDelegate& operator=(const ChromeFileSystemDelegate&) = delete;
+
   ~ChromeFileSystemDelegate() override;
 
   // FileSystemDelegate:
@@ -64,9 +68,6 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   SavedFilesServiceInterface* GetSavedFilesService(
       content::BrowserContext* browser_context) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeFileSystemDelegate);
 };
 
 }  // namespace extensions

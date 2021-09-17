@@ -77,6 +77,10 @@ class DeadlockCheckerObserver {
               base::Unretained(this), base::Unretained(pref)));
     }
   }
+
+  DeadlockCheckerObserver(const DeadlockCheckerObserver&) = delete;
+  DeadlockCheckerObserver& operator=(const DeadlockCheckerObserver&) = delete;
+
   virtual ~DeadlockCheckerObserver() {}
 
   bool notification_received() const { return notification_received_; }
@@ -95,7 +99,6 @@ class DeadlockCheckerObserver {
   PrefProvider* provider_;
   PrefChangeRegistrar pref_change_registrar_;
   bool notification_received_;
-  DISALLOW_COPY_AND_ASSIGN(DeadlockCheckerObserver);
 };
 
 class PrefProviderTest : public testing::Test {

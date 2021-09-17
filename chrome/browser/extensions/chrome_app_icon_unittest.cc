@@ -60,6 +60,9 @@ class TestAppIcon : public ChromeAppIconDelegate {
     DCHECK(app_icon_);
   }
 
+  TestAppIcon(const TestAppIcon&) = delete;
+  TestAppIcon& operator=(const TestAppIcon&) = delete;
+
   ~TestAppIcon() override = default;
 
   void Reset() { app_icon_.reset(); }
@@ -97,14 +100,16 @@ class TestAppIcon : public ChromeAppIconDelegate {
   size_t icon_update_count_expected_ = 0;
 
   base::OnceClosure icon_updated_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppIcon);
 };
 
 // Receives icon image updates from ChromeAppIconLoader.
 class TestAppIconLoader : public AppIconLoaderDelegate {
  public:
   TestAppIconLoader() = default;
+
+  TestAppIconLoader(const TestAppIconLoader&) = delete;
+  TestAppIconLoader& operator=(const TestAppIconLoader&) = delete;
+
   ~TestAppIconLoader() override = default;
 
   // AppIconLoaderDelegate:
@@ -118,8 +123,6 @@ class TestAppIconLoader : public AppIconLoaderDelegate {
 
  private:
   gfx::ImageSkia image_skia_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppIconLoader);
 };
 
 // Returns true if provided |image| consists from only empty pixels.
@@ -188,6 +191,10 @@ bool IsBadgeApplied(const gfx::ImageSkia& src,
 class ChromeAppIconTest : public ExtensionServiceTestBase {
  public:
   ChromeAppIconTest() = default;
+
+  ChromeAppIconTest(const ChromeAppIconTest&) = delete;
+  ChromeAppIconTest& operator=(const ChromeAppIconTest&) = delete;
+
   ~ChromeAppIconTest() override = default;
 
   // ExtensionServiceTestBase:
@@ -201,9 +208,6 @@ class ChromeAppIconTest : public ExtensionServiceTestBase {
     InitializeInstalledExtensionService(pref_path, source_install_dir);
     service_->Init();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppIconTest);
 };
 
 TEST_F(ChromeAppIconTest, IconLifeCycle) {

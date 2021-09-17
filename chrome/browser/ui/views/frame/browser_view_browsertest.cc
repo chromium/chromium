@@ -88,6 +88,10 @@ class TestWebContentsObserver : public content::WebContentsObserver {
                           content::WebContents* other)
       : content::WebContentsObserver(source),
         other_(other) {}
+
+  TestWebContentsObserver(const TestWebContentsObserver&) = delete;
+  TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
+
   ~TestWebContentsObserver() override {}
 
   void WebContentsDestroyed() override {
@@ -97,8 +101,6 @@ class TestWebContentsObserver : public content::WebContentsObserver {
 
  private:
   content::WebContents* other_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);
 };
 
 class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {

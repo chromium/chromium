@@ -56,6 +56,10 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
       DeviceCloudPolicyManagerAsh* policy_manager,
       chromeos::system::StatisticsProvider* statistics_provider);
 
+  DeviceCloudPolicyInitializer(const DeviceCloudPolicyInitializer&) = delete;
+  DeviceCloudPolicyInitializer& operator=(const DeviceCloudPolicyInitializer&) =
+      delete;
+
   ~DeviceCloudPolicyInitializer() override;
 
   virtual void Init();
@@ -106,8 +110,6 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   // The URLLoaderFactory set in tests.
   scoped_refptr<network::SharedURLLoaderFactory>
       system_url_loader_factory_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyInitializer);
 };
 
 }  // namespace policy

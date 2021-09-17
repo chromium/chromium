@@ -38,6 +38,9 @@ class ArcAppWindow : public AppWindowBase,
                ArcAppWindowDelegate* owner,
                Profile* profile);
 
+  ArcAppWindow(const ArcAppWindow&) = delete;
+  ArcAppWindow& operator=(const ArcAppWindow&) = delete;
+
   ~ArcAppWindow() override;
 
   void SetFullscreenMode(FullScreenMode mode) override;
@@ -81,8 +84,6 @@ class ArcAppWindow : public AppWindowBase,
   // Loads the ARC app icon to the window icon keys. Nullptr once a custom icon
   // has been successfully set.
   std::unique_ptr<AppServiceAppIconLoader> app_icon_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppWindow);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_ARC_APP_WINDOW_H_

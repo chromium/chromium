@@ -17,12 +17,13 @@ class FeatureToggler : public testing::WithParamInterface<bool> {
  public:
   explicit FeatureToggler(const base::Feature& feature);
 
+  FeatureToggler(const FeatureToggler&) = delete;
+  FeatureToggler& operator=(const FeatureToggler&) = delete;
+
   ~FeatureToggler();
 
  private:
   base::test::ScopedFeatureList override_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureToggler);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_FEATURE_TOGGLER_H_

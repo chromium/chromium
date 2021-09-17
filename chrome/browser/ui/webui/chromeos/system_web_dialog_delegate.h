@@ -48,6 +48,10 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   // |gurl| is the HTML file path for the dialog content and must be set.
   // |title| may be empty in which case ShouldShowDialogTitle() returns false.
   SystemWebDialogDelegate(const GURL& gurl, const std::u16string& title);
+
+  SystemWebDialogDelegate(const SystemWebDialogDelegate&) = delete;
+  SystemWebDialogDelegate& operator=(const SystemWebDialogDelegate&) = delete;
+
   ~SystemWebDialogDelegate() override;
 
   // Returns an identifier used for matching an instance in FindInstance.
@@ -115,8 +119,6 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   content::WebUI* webui_ = nullptr;
   ui::ModalType modal_type_;
   gfx::NativeWindow dialog_window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemWebDialogDelegate);
 };
 
 }  // namespace chromeos

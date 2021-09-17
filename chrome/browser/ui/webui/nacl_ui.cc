@@ -83,6 +83,10 @@ content::WebUIDataSource* CreateNaClUIHTMLSource() {
 class NaClDomHandler : public WebUIMessageHandler {
  public:
   NaClDomHandler();
+
+  NaClDomHandler(const NaClDomHandler&) = delete;
+  NaClDomHandler& operator=(const NaClDomHandler&) = delete;
+
   ~NaClDomHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -137,8 +141,6 @@ class NaClDomHandler : public WebUIMessageHandler {
   std::string pnacl_version_string_;
 
   base::WeakPtrFactory<NaClDomHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NaClDomHandler);
 };
 
 NaClDomHandler::NaClDomHandler()

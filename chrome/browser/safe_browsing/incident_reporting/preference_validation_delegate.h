@@ -28,6 +28,11 @@ class PreferenceValidationDelegate
   PreferenceValidationDelegate(
       Profile* profile,
       std::unique_ptr<IncidentReceiver> incident_receiver);
+
+  PreferenceValidationDelegate(const PreferenceValidationDelegate&) = delete;
+  PreferenceValidationDelegate& operator=(const PreferenceValidationDelegate&) =
+      delete;
+
   ~PreferenceValidationDelegate() override;
 
  private:
@@ -50,8 +55,6 @@ class PreferenceValidationDelegate
 
   Profile* profile_;
   std::unique_ptr<IncidentReceiver> incident_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreferenceValidationDelegate);
 };
 
 }  // namespace safe_browsing

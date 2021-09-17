@@ -63,6 +63,10 @@ class EnrollmentScreenHandler
       JSCallsContainer* js_calls_container,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
       ErrorScreen* error_screen);
+
+  EnrollmentScreenHandler(const EnrollmentScreenHandler&) = delete;
+  EnrollmentScreenHandler& operator=(const EnrollmentScreenHandler&) = delete;
+
   ~EnrollmentScreenHandler() override;
 
   // Implements WebUIMessageHandler:
@@ -211,8 +215,6 @@ class EnrollmentScreenHandler
   bool use_fake_login_for_testing_ = false;
 
   base::WeakPtrFactory<EnrollmentScreenHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentScreenHandler);
 };
 
 }  // namespace chromeos

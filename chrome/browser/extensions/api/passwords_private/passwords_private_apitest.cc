@@ -41,6 +41,10 @@ namespace {
 class PasswordsPrivateApiTest : public ExtensionApiTest {
  public:
   PasswordsPrivateApiTest() = default;
+
+  PasswordsPrivateApiTest(const PasswordsPrivateApiTest&) = delete;
+  PasswordsPrivateApiTest& operator=(const PasswordsPrivateApiTest&) = delete;
+
   ~PasswordsPrivateApiTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -108,8 +112,6 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
 
  private:
   TestPasswordsPrivateDelegate* s_test_delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordsPrivateApiTest);
 };
 
 }  // namespace

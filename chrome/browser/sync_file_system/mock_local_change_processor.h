@@ -15,6 +15,10 @@ namespace sync_file_system {
 class MockLocalChangeProcessor : public LocalChangeProcessor {
  public:
   MockLocalChangeProcessor();
+
+  MockLocalChangeProcessor(const MockLocalChangeProcessor&) = delete;
+  MockLocalChangeProcessor& operator=(const MockLocalChangeProcessor&) = delete;
+
   ~MockLocalChangeProcessor() override;
 
   // LocalChangeProcessor override.
@@ -31,8 +35,6 @@ class MockLocalChangeProcessor : public LocalChangeProcessor {
                             const SyncFileMetadata& local_file_metadata,
                             const storage::FileSystemURL& url,
                             SyncStatusCallback callback);
-
-  DISALLOW_COPY_AND_ASSIGN(MockLocalChangeProcessor);
 };
 
 }  // namespace sync_file_system

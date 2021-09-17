@@ -48,6 +48,9 @@ class NetErrorTabHelper
   typedef base::RepeatingCallback<void(error_page::DnsProbeStatus)>
       DnsProbeStatusSnoopCallback;
 
+  NetErrorTabHelper(const NetErrorTabHelper&) = delete;
+  NetErrorTabHelper& operator=(const NetErrorTabHelper&) = delete;
+
   ~NetErrorTabHelper() override;
 
   static void BindNetErrorPageSupport(
@@ -175,8 +178,6 @@ class NetErrorTabHelper
   base::WeakPtrFactory<NetErrorTabHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NetErrorTabHelper);
 };
 
 }  // namespace chrome_browser_net

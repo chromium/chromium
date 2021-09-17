@@ -56,6 +56,9 @@ class MDnsHostLocator::Impl {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
   ~Impl() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
   void FindHosts(FindHostsCallback callback);
@@ -118,8 +121,6 @@ class MDnsHostLocator::Impl {
   std::vector<std::unique_ptr<net::MDnsTransaction>> transactions_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 MDnsHostLocator::MDnsHostLocator()

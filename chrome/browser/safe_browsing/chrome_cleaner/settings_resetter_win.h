@@ -31,6 +31,10 @@ class PostCleanupSettingsResetter {
   class Delegate {
    public:
     Delegate();
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     virtual void FetchDefaultSettings(
@@ -38,12 +42,14 @@ class PostCleanupSettingsResetter {
 
     virtual std::unique_ptr<ProfileResetter> GetProfileResetter(
         Profile* profile);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   PostCleanupSettingsResetter();
+
+  PostCleanupSettingsResetter(const PostCleanupSettingsResetter&) = delete;
+  PostCleanupSettingsResetter& operator=(const PostCleanupSettingsResetter&) =
+      delete;
+
   virtual ~PostCleanupSettingsResetter();
 
   // Returns true if the in-browser cleaner UI is enabled.
@@ -63,16 +69,6 @@ class PostCleanupSettingsResetter {
 
   // Registers the settings reset pending tracked preference.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
- private:
-  // This object doesn't hold any state, so it's safe to delete it even after
-  // an async function is called. For example, it's fine to let the object get
-  // out of scope after invoking ResetTaggedProfiles() and there is no need
-  // to wait for the callback to be run to release it. If you are intending to
-  // change that assumption, please make sure you don't break the contract
-  // where this class is used.
-
-  DISALLOW_COPY_AND_ASSIGN(PostCleanupSettingsResetter);
 };
 
 }  // namespace safe_browsing

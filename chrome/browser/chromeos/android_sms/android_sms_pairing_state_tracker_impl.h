@@ -27,6 +27,12 @@ class AndroidSmsPairingStateTrackerImpl
   AndroidSmsPairingStateTrackerImpl(
       Profile* profile,
       AndroidSmsAppManager* android_sms_app_manager);
+
+  AndroidSmsPairingStateTrackerImpl(const AndroidSmsPairingStateTrackerImpl&) =
+      delete;
+  AndroidSmsPairingStateTrackerImpl& operator=(
+      const AndroidSmsPairingStateTrackerImpl&) = delete;
+
   ~AndroidSmsPairingStateTrackerImpl() override;
 
   // AndroidSmsPairingStateTracker:
@@ -56,8 +62,6 @@ class AndroidSmsPairingStateTrackerImpl
   bool was_paired_on_last_update_ = false;
   base::WeakPtrFactory<AndroidSmsPairingStateTrackerImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsPairingStateTrackerImpl);
 };
 
 }  // namespace android_sms

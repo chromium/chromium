@@ -35,6 +35,10 @@ class SadTabView : public SadTab, public views::View {
   METADATA_HEADER(SadTabView);
 
   SadTabView(content::WebContents* web_contents, SadTabKind kind);
+
+  SadTabView(const SadTabView&) = delete;
+  SadTabView& operator=(const SadTabView&) = delete;
+
   ~SadTabView() override;
 
   // Overridden from SadTab:
@@ -61,8 +65,6 @@ class SadTabView : public SadTab, public views::View {
   views::LabelButton* action_button_;
   views::Label* title_;
   views::WebView* owner_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SadTabView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SAD_TAB_VIEW_H__

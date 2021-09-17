@@ -31,6 +31,10 @@ class NightLightClient : public ash::NightLightController::Observer,
  public:
   explicit NightLightClient(
       scoped_refptr<network::SharedURLLoaderFactory> factory);
+
+  NightLightClient(const NightLightClient&) = delete;
+  NightLightClient& operator=(const NightLightClient&) = delete;
+
   ~NightLightClient() override;
 
   // Starts watching changes in the Night Light schedule type in order to begin
@@ -107,8 +111,6 @@ class NightLightClient : public ash::NightLightController::Observer,
   // "custom", which means this client will be retrieving the IP-based
   // geoposition once per day.
   bool using_geoposition_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NightLightClient);
 };
 
 #endif  // CHROME_BROWSER_ASH_NIGHT_LIGHT_NIGHT_LIGHT_CLIENT_H_

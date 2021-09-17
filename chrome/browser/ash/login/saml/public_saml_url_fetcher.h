@@ -26,6 +26,10 @@ namespace ash {
 class PublicSamlUrlFetcher {
  public:
   explicit PublicSamlUrlFetcher(AccountId account_id);
+
+  PublicSamlUrlFetcher(const PublicSamlUrlFetcher&) = delete;
+  PublicSamlUrlFetcher& operator=(const PublicSamlUrlFetcher&) = delete;
+
   ~PublicSamlUrlFetcher();
 
   // Sends request to the DM server, gets and checks the response and
@@ -58,8 +62,6 @@ class PublicSamlUrlFetcher {
   // Called at the end of Fetch().
   base::OnceClosure callback_;
   base::WeakPtrFactory<PublicSamlUrlFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PublicSamlUrlFetcher);
 };
 
 }  // namespace ash

@@ -33,6 +33,10 @@ class PaymentRequestDialogView;
 // a list of profiles and allow exactly one of them to be selected.
 class ProfileListViewController : public PaymentRequestSheetController {
  public:
+  ProfileListViewController(const ProfileListViewController&) = delete;
+  ProfileListViewController& operator=(const ProfileListViewController&) =
+      delete;
+
   ~ProfileListViewController() override;
 
   // Creates a controller which lists and allows selection of profiles
@@ -99,7 +103,6 @@ class ProfileListViewController : public PaymentRequestSheetController {
   PaymentRequestItemList list_;
 
   base::WeakPtrFactory<ProfileListViewController> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ProfileListViewController);
 };
 
 }  // namespace payments

@@ -374,6 +374,10 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
      public:
       explicit PrintJobCanceler(Microsoft::WRL::ComPtr<IXpsPrintJob>* job_ptr)
           : job_ptr_(job_ptr) {}
+
+      PrintJobCanceler(const PrintJobCanceler&) = delete;
+      PrintJobCanceler& operator=(const PrintJobCanceler&) = delete;
+
       ~PrintJobCanceler() {
         if (job_ptr_ && job_ptr_->Get()) {
           (*job_ptr_)->Cancel();
@@ -385,8 +389,6 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
 
      private:
       Microsoft::WRL::ComPtr<IXpsPrintJob>* job_ptr_;
-
-      DISALLOW_COPY_AND_ASSIGN(PrintJobCanceler);
     };
 
     void PrintJobDone(bool success) {

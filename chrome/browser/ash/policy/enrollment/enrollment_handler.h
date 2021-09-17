@@ -81,6 +81,10 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
       const std::string& requisition,
       const std::string& sub_organization,
       EnrollmentCallback completion_callback);
+
+  EnrollmentHandler(const EnrollmentHandler&) = delete;
+  EnrollmentHandler& operator=(const EnrollmentHandler&) = delete;
+
   ~EnrollmentHandler() override;
 
   // Starts the enrollment process and reports the result to
@@ -249,8 +253,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   int lockbox_init_duration_ = 0;
 
   base::WeakPtrFactory<EnrollmentHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentHandler);
 };
 
 }  // namespace policy

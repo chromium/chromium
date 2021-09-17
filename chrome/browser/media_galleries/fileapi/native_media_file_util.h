@@ -28,6 +28,10 @@ class NativeMediaFileUtil : public storage::AsyncFileUtil {
   // be the same TaskRunner passed in each FileSystemOperationContext.
   explicit NativeMediaFileUtil(
       scoped_refptr<base::SequencedTaskRunner> media_task_runner);
+
+  NativeMediaFileUtil(const NativeMediaFileUtil&) = delete;
+  NativeMediaFileUtil& operator=(const NativeMediaFileUtil&) = delete;
+
   ~NativeMediaFileUtil() override;
 
   // Uses the MIME sniffer code, which actually looks into the file,
@@ -122,8 +126,6 @@ class NativeMediaFileUtil : public storage::AsyncFileUtil {
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMediaFileUtil);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_NATIVE_MEDIA_FILE_UTIL_H_

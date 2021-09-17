@@ -45,6 +45,11 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
  public:
   ChromeRenderFrameObserver(content::RenderFrame* render_frame,
                             web_cache::WebCacheImpl* web_cache_impl);
+
+  ChromeRenderFrameObserver(const ChromeRenderFrameObserver&) = delete;
+  ChromeRenderFrameObserver& operator=(const ChromeRenderFrameObserver&) =
+      delete;
+
   ~ChromeRenderFrameObserver() override;
 
   service_manager::BinderRegistry* registry() { return &registry_; }
@@ -147,8 +152,6 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 
   service_manager::BinderRegistry registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderFrameObserver);
 };
 
 #endif  // CHROME_RENDERER_CHROME_RENDER_FRAME_OBSERVER_H_

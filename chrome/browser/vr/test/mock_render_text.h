@@ -14,6 +14,10 @@ namespace vr {
 class MockRenderText : public RenderTextWrapper {
  public:
   MockRenderText();
+
+  MockRenderText(const MockRenderText&) = delete;
+  MockRenderText& operator=(const MockRenderText&) = delete;
+
   ~MockRenderText() override;
 
   MOCK_METHOD1(SetColor, void(SkColor value));
@@ -25,9 +29,6 @@ class MockRenderText : public RenderTextWrapper {
   MOCK_METHOD2(ApplyWeight,
                void(gfx::Font::Weight weight, const gfx::Range& range));
   MOCK_METHOD1(SetDirectionalityMode, void(gfx::DirectionalityMode mode));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockRenderText);
 };
 
 }  // namespace vr

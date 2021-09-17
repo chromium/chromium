@@ -27,6 +27,9 @@ class TerminalSource : public content::URLDataSource {
 
   static std::unique_ptr<TerminalSource> ForTerminal(Profile* profile);
 
+  TerminalSource(const TerminalSource&) = delete;
+  TerminalSource& operator=(const TerminalSource&) = delete;
+
   ~TerminalSource() override;
 
  private:
@@ -53,8 +56,6 @@ class TerminalSource : public content::URLDataSource {
   std::string source_;
   std::string default_file_;
   ui::TemplateReplacements replacements_;
-
-  DISALLOW_COPY_AND_ASSIGN(TerminalSource);
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_TERMINAL_SOURCE_H_

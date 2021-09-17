@@ -26,6 +26,9 @@ class PortForwardingController {
 
   explicit PortForwardingController(Profile* profile);
 
+  PortForwardingController(const PortForwardingController&) = delete;
+  PortForwardingController& operator=(const PortForwardingController&) = delete;
+
   virtual ~PortForwardingController();
 
   ForwardingStatus DeviceListChanged(
@@ -47,8 +50,6 @@ class PortForwardingController {
 
   typedef std::map<int, std::string> ForwardingMap;
   ForwardingMap forwarding_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortForwardingController);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_PORT_FORWARDING_CONTROLLER_H_

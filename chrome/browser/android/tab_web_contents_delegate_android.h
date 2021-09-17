@@ -40,6 +40,11 @@ class TabWebContentsDelegateAndroid
       public find_in_page::FindResultObserver {
  public:
   TabWebContentsDelegateAndroid(JNIEnv* env, jobject obj);
+
+  TabWebContentsDelegateAndroid(const TabWebContentsDelegateAndroid&) = delete;
+  TabWebContentsDelegateAndroid& operator=(
+      const TabWebContentsDelegateAndroid&) = delete;
+
   ~TabWebContentsDelegateAndroid() override;
 
   void PortalWebContentsCreated(content::WebContents* portal_contents) override;
@@ -149,8 +154,6 @@ class TabWebContentsDelegateAndroid
   base::ScopedMultiSourceObservation<find_in_page::FindTabHelper,
                                      find_in_page::FindResultObserver>
       find_result_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabWebContentsDelegateAndroid);
 };
 
 }  // namespace android

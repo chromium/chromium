@@ -28,6 +28,10 @@ class TabStripUI : public ui::MojoWebUIController,
                    public tab_strip::mojom::PageHandlerFactory {
  public:
   explicit TabStripUI(content::WebUI* web_ui);
+
+  TabStripUI(const TabStripUI&) = delete;
+  TabStripUI& operator=(const TabStripUI&) = delete;
+
   ~TabStripUI() override;
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
@@ -68,7 +72,6 @@ class TabStripUI : public ui::MojoWebUIController,
   TabStripUIEmbedder* embedder_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-  DISALLOW_COPY_AND_ASSIGN(TabStripUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_H_

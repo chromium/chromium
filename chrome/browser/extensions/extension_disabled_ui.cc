@@ -58,6 +58,11 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
   ExtensionDisabledGlobalError(ExtensionService* service,
                                const Extension* extension,
                                bool is_remote_install);
+
+  ExtensionDisabledGlobalError(const ExtensionDisabledGlobalError&) = delete;
+  ExtensionDisabledGlobalError& operator=(const ExtensionDisabledGlobalError&) =
+      delete;
+
   ~ExtensionDisabledGlobalError() override;
 
   // GlobalError:
@@ -115,8 +120,6 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDisabledGlobalError);
 };
 
 // TODO(yoz): create error at startup for disabled extensions.

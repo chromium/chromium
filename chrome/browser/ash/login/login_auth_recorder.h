@@ -67,6 +67,10 @@ class LoginAuthRecorder : public session_manager::SessionManagerObserver {
   };
 
   LoginAuthRecorder();
+
+  LoginAuthRecorder(const LoginAuthRecorder&) = delete;
+  LoginAuthRecorder& operator=(const LoginAuthRecorder&) = delete;
+
   ~LoginAuthRecorder() override;
 
   // Called when user attempts authentication using AuthMethod `type`.
@@ -77,8 +81,6 @@ class LoginAuthRecorder : public session_manager::SessionManagerObserver {
 
  private:
   AuthMethod last_auth_method_ = AuthMethod::kNothing;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginAuthRecorder);
 };
 
 }  // namespace ash

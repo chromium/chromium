@@ -22,6 +22,11 @@ class SearchGeolocationDisclosureTabHelper
       public content::WebContentsUserData<
           SearchGeolocationDisclosureTabHelper> {
  public:
+  SearchGeolocationDisclosureTabHelper(
+      const SearchGeolocationDisclosureTabHelper&) = delete;
+  SearchGeolocationDisclosureTabHelper& operator=(
+      const SearchGeolocationDisclosureTabHelper&) = delete;
+
   ~SearchGeolocationDisclosureTabHelper() override;
 
   // content::WebContentsObserver overrides.
@@ -63,8 +68,6 @@ class SearchGeolocationDisclosureTabHelper
   Profile* GetProfile();
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SearchGeolocationDisclosureTabHelper);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_GEOLOCATION_DISCLOSURE_TAB_HELPER_H_

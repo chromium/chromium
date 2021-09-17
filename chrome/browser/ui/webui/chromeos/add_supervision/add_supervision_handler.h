@@ -51,6 +51,10 @@ class AddSupervisionHandler
       content::WebUI* web_ui,
       signin::IdentityManager* identity_manager,
       Delegate* delegate);
+
+  AddSupervisionHandler(const AddSupervisionHandler&) = delete;
+  AddSupervisionHandler& operator=(const AddSupervisionHandler&) = delete;
+
   ~AddSupervisionHandler() override;
 
   // add_supervision::mojom::AddSupervisionHandler overrides:
@@ -78,8 +82,6 @@ class AddSupervisionHandler
   Delegate* delegate_;
 
   base::WeakPtrFactory<AddSupervisionHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AddSupervisionHandler);
 };
 
 }  // namespace chromeos

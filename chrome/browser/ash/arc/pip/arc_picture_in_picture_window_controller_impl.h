@@ -27,6 +27,12 @@ class ArcPictureInPictureWindowControllerImpl
  public:
   explicit ArcPictureInPictureWindowControllerImpl(
       arc::ArcPipBridge* arc_pip_bridge);
+
+  ArcPictureInPictureWindowControllerImpl(
+      const ArcPictureInPictureWindowControllerImpl&) = delete;
+  ArcPictureInPictureWindowControllerImpl& operator=(
+      const ArcPictureInPictureWindowControllerImpl&) = delete;
+
   ~ArcPictureInPictureWindowControllerImpl() override;
 
   // PictureInPictureWindowController:
@@ -49,8 +55,6 @@ class ArcPictureInPictureWindowControllerImpl
 
  private:
   arc::ArcPipBridge* const arc_pip_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPictureInPictureWindowControllerImpl);
 };
 
 }  // namespace arc

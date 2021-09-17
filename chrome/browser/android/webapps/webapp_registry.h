@@ -18,6 +18,10 @@ class GURL;
 class WebappRegistry {
  public:
   WebappRegistry() { }
+
+  WebappRegistry(const WebappRegistry&) = delete;
+  WebappRegistry& operator=(const WebappRegistry&) = delete;
+
   virtual ~WebappRegistry() { }
 
   // Cleans up data stored by web apps on URLs matching |url_filter|.
@@ -28,9 +32,6 @@ class WebappRegistry {
   // URLs matching |url_filter|, whilst leaving other data intact.
   virtual void ClearWebappHistoryForUrls(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebappRegistry);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_

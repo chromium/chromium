@@ -30,6 +30,10 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
                              public UpgradeObserver {
  public:
   SystemTrayClientImpl();
+
+  SystemTrayClientImpl(const SystemTrayClientImpl&) = delete;
+  SystemTrayClientImpl& operator=(const SystemTrayClientImpl&) = delete;
+
   ~SystemTrayClientImpl() override;
 
   static SystemTrayClientImpl* Get();
@@ -136,8 +140,6 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   std::string last_enterprise_account_domain_manager_;
 
   std::unique_ptr<EnterpriseAccountObserver> enterprise_account_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTrayClientImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SYSTEM_TRAY_CLIENT_IMPL_H_

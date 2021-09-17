@@ -54,6 +54,9 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
     OnWillChangeFocus(NULL, focus_manager_->GetFocusedView());
   }
 
+  ViewFocusChangeWaiter(const ViewFocusChangeWaiter&) = delete;
+  ViewFocusChangeWaiter& operator=(const ViewFocusChangeWaiter&) = delete;
+
   ~ViewFocusChangeWaiter() override {
     focus_manager_->RemoveFocusChangeListener(this);
   }
@@ -78,8 +81,6 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
   views::FocusManager* focus_manager_;
   int previous_view_id_;
   base::WeakPtrFactory<ViewFocusChangeWaiter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ViewFocusChangeWaiter);
 };
 
 class SendKeysMenuListener : public AppMenuButtonObserver {
@@ -92,6 +93,9 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
         test_dismiss_menu_(test_dismiss_menu) {
     observation_.Observe(app_menu_button);
   }
+
+  SendKeysMenuListener(const SendKeysMenuListener&) = delete;
+  SendKeysMenuListener& operator=(const SendKeysMenuListener&) = delete;
 
   ~SendKeysMenuListener() override = default;
 
@@ -124,8 +128,6 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
 
   base::ScopedObservation<AppMenuButton, AppMenuButtonObserver> observation_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(SendKeysMenuListener);
 };
 
 class KeyboardAccessTest : public InProcessBrowserTest {

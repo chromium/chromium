@@ -241,6 +241,10 @@ class InstallUtil {
   class ProgramCompare : public RegistryValuePredicate {
    public:
     explicit ProgramCompare(const base::FilePath& path_to_match);
+
+    ProgramCompare(const ProgramCompare&) = delete;
+    ProgramCompare& operator=(const ProgramCompare&) = delete;
+
     ~ProgramCompare() override;
     bool Evaluate(const std::wstring& value) const override;
     bool EvaluatePath(const base::FilePath& path) const;
@@ -253,9 +257,6 @@ class InstallUtil {
     base::FilePath path_to_match_;
     base::File file_;
     BY_HANDLE_FILE_INFORMATION file_info_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ProgramCompare);
   };  // class ProgramCompare
 
   // Converts a product GUID into a SQuished gUID that is used for MSI installer

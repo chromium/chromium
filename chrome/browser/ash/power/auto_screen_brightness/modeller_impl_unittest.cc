@@ -78,6 +78,10 @@ class FakeTrainer : public Trainer {
     // If personal curve is valid, then the trainer must be configured.
     DCHECK(!is_personal_curve_valid_ || is_configured_);
   }
+
+  FakeTrainer(const FakeTrainer&) = delete;
+  FakeTrainer& operator=(const FakeTrainer&) = delete;
+
   ~FakeTrainer() override = default;
 
   // Trainer overrides:
@@ -129,13 +133,15 @@ class FakeTrainer : public Trainer {
 
   bool return_new_curve_ = false;
   double curve_error_ = 0.0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTrainer);
 };
 
 class TestObserver : public Modeller::Observer {
  public:
   TestObserver() {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   // Modeller::Observer overrides:
@@ -165,8 +171,6 @@ class TestObserver : public Modeller::Observer {
  private:
   bool model_initialized_ = false;
   Model model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -189,6 +193,9 @@ class ModellerImplTest : public testing::Test {
     fake_light_provider_ =
         std::make_unique<FakeLightProvider>(als_reader_.get());
   }
+
+  ModellerImplTest(const ModellerImplTest&) = delete;
+  ModellerImplTest& operator=(const ModellerImplTest&) = delete;
 
   ~ModellerImplTest() override {
     base::ThreadPoolInstance::Get()->FlushForTesting();
@@ -283,9 +290,6 @@ class ModellerImplTest : public testing::Test {
   std::unique_ptr<ModellerImpl> modeller_;
   std::unique_ptr<TestObserver> test_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ModellerImplTest);
 };
 
 // AlsReader is |kDisabled| when Modeller is created.

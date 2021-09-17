@@ -29,6 +29,10 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                   const AccountId& account_id,
                   LocalPolicyTestServerMixin* policy_server);
+
+  UserPolicyMixin(const UserPolicyMixin&) = delete;
+  UserPolicyMixin& operator=(const UserPolicyMixin&) = delete;
+
   ~UserPolicyMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -71,8 +75,6 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   policy::UserPolicyBuilder user_policy_builder_;
 
   base::WeakPtrFactory<UserPolicyMixin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserPolicyMixin);
 };
 
 }  // namespace ash

@@ -32,6 +32,11 @@ class TableModelObserver;
 class CustomHomePagesTableModel : public ui::TableModel {
  public:
   explicit CustomHomePagesTableModel(Profile* profile);
+
+  CustomHomePagesTableModel(const CustomHomePagesTableModel&) = delete;
+  CustomHomePagesTableModel& operator=(const CustomHomePagesTableModel&) =
+      delete;
+
   ~CustomHomePagesTableModel() override;
 
   // Sets the set of urls that this model contains.
@@ -112,8 +117,6 @@ class CustomHomePagesTableModel : public ui::TableModel {
   // Used to keep track of when it's time to update the observer when loading
   // multiple titles.
   int num_outstanding_title_lookups_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomHomePagesTableModel);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CUSTOM_HOME_PAGES_TABLE_MODEL_H_

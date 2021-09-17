@@ -129,6 +129,11 @@ class TabRestoreServiceChangesObserver
       service_->AddObserver(this);
   }
 
+  TabRestoreServiceChangesObserver(const TabRestoreServiceChangesObserver&) =
+      delete;
+  TabRestoreServiceChangesObserver& operator=(
+      const TabRestoreServiceChangesObserver&) = delete;
+
   ~TabRestoreServiceChangesObserver() override {
     if (service_)
       service_->RemoveObserver(this);
@@ -149,8 +154,6 @@ class TabRestoreServiceChangesObserver
 
   sessions::TabRestoreService* service_ = nullptr;
   size_t changes_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestoreServiceChangesObserver);
 };
 
 class TestBrowserCloseManager : public BrowserCloseManager {

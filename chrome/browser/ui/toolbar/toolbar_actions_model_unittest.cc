@@ -60,6 +60,12 @@ using ActionType = extensions::ExtensionBuilder::ActionType;
 class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
  public:
   explicit ToolbarActionsModelTestObserver(ToolbarActionsModel* model);
+
+  ToolbarActionsModelTestObserver(const ToolbarActionsModelTestObserver&) =
+      delete;
+  ToolbarActionsModelTestObserver& operator=(
+      const ToolbarActionsModelTestObserver&) = delete;
+
   ~ToolbarActionsModelTestObserver() override;
 
   size_t inserted_count() const { return inserted_count_; }
@@ -99,8 +105,6 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
   size_t initialized_count_;
 
   std::vector<ToolbarActionsModel::ActionId> last_pinned_action_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(ToolbarActionsModelTestObserver);
 };
 
 ToolbarActionsModelTestObserver::ToolbarActionsModelTestObserver(
@@ -122,6 +126,11 @@ class ToolbarActionsModelUnitTest
     : public extensions::ExtensionServiceTestBase {
  public:
   ToolbarActionsModelUnitTest() {}
+
+  ToolbarActionsModelUnitTest(const ToolbarActionsModelUnitTest&) = delete;
+  ToolbarActionsModelUnitTest& operator=(const ToolbarActionsModelUnitTest&) =
+      delete;
+
   ~ToolbarActionsModelUnitTest() override {}
 
  protected:
@@ -196,8 +205,6 @@ class ToolbarActionsModelUnitTest
   scoped_refptr<const extensions::Extension> browser_action_extension_;
   scoped_refptr<const extensions::Extension> page_action_extension_;
   scoped_refptr<const extensions::Extension> no_action_extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(ToolbarActionsModelUnitTest);
 };
 
 void ToolbarActionsModelUnitTest::Init() {

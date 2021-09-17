@@ -111,10 +111,11 @@ class UserEventCommitChecker : public SingleClientStatusChangeChecker {
 class SyncErrorTest : public SyncTest {
  public:
   SyncErrorTest() : SyncTest(SINGLE_CLIENT) {}
-  ~SyncErrorTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorTest);
+  SyncErrorTest(const SyncErrorTest&) = delete;
+  SyncErrorTest& operator=(const SyncErrorTest&) = delete;
+
+  ~SyncErrorTest() override {}
 };
 
 // Helper class that waits until the sync engine has hit an actionable error.
@@ -122,6 +123,9 @@ class ActionableErrorChecker : public SingleClientStatusChangeChecker {
  public:
   explicit ActionableErrorChecker(SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
+
+  ActionableErrorChecker(const ActionableErrorChecker&) = delete;
+  ActionableErrorChecker& operator=(const ActionableErrorChecker&) = delete;
 
   ~ActionableErrorChecker() override {}
 
@@ -134,9 +138,6 @@ class ActionableErrorChecker : public SingleClientStatusChangeChecker {
     return (status.sync_protocol_error.action != syncer::UNKNOWN_ACTION &&
             service()->HasUnrecoverableError());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActionableErrorChecker);
 };
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, BirthdayErrorTest) {

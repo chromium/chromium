@@ -20,6 +20,12 @@ class InlineLoginHandlerModalDelegate
   // (|InlineLoginHandlerDialogChromeOS|).
   explicit InlineLoginHandlerModalDelegate(
       web_modal::WebContentsModalDialogHost* host);
+
+  InlineLoginHandlerModalDelegate(const InlineLoginHandlerModalDelegate&) =
+      delete;
+  InlineLoginHandlerModalDelegate& operator=(
+      const InlineLoginHandlerModalDelegate&) = delete;
+
   ~InlineLoginHandlerModalDelegate() override;
 
   // web_modal::WebContentsModalDialogManagerDelegate overrides.
@@ -29,8 +35,6 @@ class InlineLoginHandlerModalDelegate
  private:
   // Non-owning pointer.
   web_modal::WebContentsModalDialogHost* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginHandlerModalDelegate);
 };
 
 }  // namespace chromeos

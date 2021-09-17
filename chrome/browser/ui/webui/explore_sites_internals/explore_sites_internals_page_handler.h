@@ -24,6 +24,12 @@ class ExploreSitesInternalsPageHandler
           receiver,
       ExploreSitesService* explore_sites_service,
       Profile* profile);
+
+  ExploreSitesInternalsPageHandler(const ExploreSitesInternalsPageHandler&) =
+      delete;
+  ExploreSitesInternalsPageHandler& operator=(
+      const ExploreSitesInternalsPageHandler&) = delete;
+
   ~ExploreSitesInternalsPageHandler() override;
 
  private:
@@ -38,8 +44,6 @@ class ExploreSitesInternalsPageHandler
   mojo::Receiver<explore_sites_internals::mojom::PageHandler> receiver_;
   ExploreSitesService* explore_sites_service_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesInternalsPageHandler);
 };
 
 }  // namespace explore_sites

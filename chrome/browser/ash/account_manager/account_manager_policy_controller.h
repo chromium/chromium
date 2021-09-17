@@ -35,6 +35,12 @@ class AccountManagerPolicyController : public KeyedService {
       account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       const AccountId& device_account_id);
+
+  AccountManagerPolicyController(const AccountManagerPolicyController&) =
+      delete;
+  AccountManagerPolicyController& operator=(
+      const AccountManagerPolicyController&) = delete;
+
   ~AccountManagerPolicyController() override;
 
   // Starts applying the behaviour required by |account_manager::AccountManager|
@@ -85,8 +91,6 @@ class AccountManagerPolicyController : public KeyedService {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AccountManagerPolicyController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccountManagerPolicyController);
 };
 
 }  // namespace ash

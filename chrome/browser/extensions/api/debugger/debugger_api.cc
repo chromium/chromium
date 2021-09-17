@@ -173,6 +173,10 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
                               scoped_refptr<const Extension> extension,
                               const Debuggee& debuggee);
 
+  ExtensionDevToolsClientHost(const ExtensionDevToolsClientHost&) = delete;
+  ExtensionDevToolsClientHost& operator=(const ExtensionDevToolsClientHost&) =
+      delete;
+
   ~ExtensionDevToolsClientHost() override;
 
   bool Attach();
@@ -226,8 +230,6 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   // Listen to extension unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDevToolsClientHost);
 };
 
 ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(

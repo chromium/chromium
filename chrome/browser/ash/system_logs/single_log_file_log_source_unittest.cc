@@ -26,6 +26,10 @@ class SingleLogFileLogSourceTest : public ::testing::Test {
     InitializeTestLogDir();
   }
 
+  SingleLogFileLogSourceTest(const SingleLogFileLogSourceTest&) = delete;
+  SingleLogFileLogSourceTest& operator=(const SingleLogFileLogSourceTest&) =
+      delete;
+
   ~SingleLogFileLogSourceTest() override {
     SingleLogFileLogSource::SetChromeStartTimeForTesting(nullptr);
   }
@@ -132,8 +136,6 @@ class SingleLogFileLogSourceTest : public ::testing::Test {
 
   // Path to the dummy log file in |log_dir_|.
   base::FilePath log_file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleLogFileLogSourceTest);
 };
 
 TEST_F(SingleLogFileLogSourceTest, EmptyFile) {

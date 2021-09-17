@@ -99,6 +99,9 @@ class ThemeService::ThemeObserver
         extensions::ExtensionRegistry::Get(theme_service_->profile_));
   }
 
+  ThemeObserver(const ThemeObserver&) = delete;
+  ThemeObserver& operator=(const ThemeObserver&) = delete;
+
   ~ThemeObserver() override {
   }
 
@@ -152,8 +155,6 @@ class ThemeService::ThemeObserver
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeObserver);
 };
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

@@ -39,6 +39,10 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
   PlatformKeysTestBase(SystemTokenStatus system_token_status,
                        EnrollmentStatus enrollment_status,
                        UserStatus user_status);
+
+  PlatformKeysTestBase(const PlatformKeysTestBase&) = delete;
+  PlatformKeysTestBase& operator=(const PlatformKeysTestBase&) = delete;
+
   ~PlatformKeysTestBase() override;
 
  protected:
@@ -102,8 +106,6 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
   FakeGaia fake_gaia_;
   net::EmbeddedTestServer gaia_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   chromeos::ScopedStubInstallAttributes install_attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformKeysTestBase);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_TEST_BASE_H_

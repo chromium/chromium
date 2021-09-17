@@ -29,6 +29,10 @@ class StatusIconWin : public StatusIcon {
  public:
   // Constructor which provides this icon's unique ID and messaging window.
   StatusIconWin(StatusTrayWin* tray, UINT id, HWND window, UINT message);
+
+  StatusIconWin(const StatusIconWin&) = delete;
+  StatusIconWin& operator=(const StatusIconWin&) = delete;
+
   ~StatusIconWin() override;
 
   // Handles a click event from the user - if |left_button_click| is true and
@@ -85,8 +89,6 @@ class StatusIconWin : public StatusIcon {
 
   // Context menu associated with this icon (if any).
   std::unique_ptr<views::MenuRunner> menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconWin);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_WIN_H_

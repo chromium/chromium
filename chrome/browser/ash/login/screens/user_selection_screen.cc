@@ -236,6 +236,11 @@ class UserSelectionScreen::DircryptoMigrationChecker {
  public:
   explicit DircryptoMigrationChecker(UserSelectionScreen* owner)
       : owner_(owner) {}
+
+  DircryptoMigrationChecker(const DircryptoMigrationChecker&) = delete;
+  DircryptoMigrationChecker& operator=(const DircryptoMigrationChecker&) =
+      delete;
+
   ~DircryptoMigrationChecker() = default;
 
   // Start to check whether the given user needs dircrypto migration.
@@ -326,8 +331,6 @@ class UserSelectionScreen::DircryptoMigrationChecker {
   std::map<AccountId, bool> needs_dircrypto_migration_cache_;
 
   base::WeakPtrFactory<DircryptoMigrationChecker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DircryptoMigrationChecker);
 };
 
 // Helper class  to check whether tpm is locked and update UI with time left to

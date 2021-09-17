@@ -14,6 +14,11 @@ class InstallerCrashReporterClient
     : public crash_reporter::CrashReporterClient {
  public:
   explicit InstallerCrashReporterClient(bool is_per_user_install);
+
+  InstallerCrashReporterClient(const InstallerCrashReporterClient&) = delete;
+  InstallerCrashReporterClient& operator=(const InstallerCrashReporterClient&) =
+      delete;
+
   ~InstallerCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient methods:
@@ -40,8 +45,6 @@ class InstallerCrashReporterClient
 
  private:
   bool is_per_user_install_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallerCrashReporterClient);
 };
 
 #endif  // CHROME_INSTALLER_SETUP_INSTALLER_CRASH_REPORTER_CLIENT_H_

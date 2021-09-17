@@ -76,10 +76,11 @@ bool ProfileContainsSamePrintersAsVerifier(int index);
 class PrintersMatchChecker : public AwaitMatchStatusChangeChecker {
  public:
   PrintersMatchChecker();
-  ~PrintersMatchChecker() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintersMatchChecker);
+  PrintersMatchChecker(const PrintersMatchChecker&) = delete;
+  PrintersMatchChecker& operator=(const PrintersMatchChecker&) = delete;
+
+  ~PrintersMatchChecker() override;
 };
 
 }  // namespace printers_helper

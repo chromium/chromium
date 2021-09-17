@@ -24,6 +24,10 @@ namespace extensions {
 class ProcessesEventRouter : public task_manager::TaskManagerObserver {
  public:
   explicit ProcessesEventRouter(content::BrowserContext* context);
+
+  ProcessesEventRouter(const ProcessesEventRouter&) = delete;
+  ProcessesEventRouter& operator=(const ProcessesEventRouter&) = delete;
+
   ~ProcessesEventRouter() override;
 
   // Called when an extension process wants to listen to process events.
@@ -65,8 +69,6 @@ class ProcessesEventRouter : public task_manager::TaskManagerObserver {
 
   // Count of listeners, so we avoid sending updates if no one is interested.
   int listeners_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessesEventRouter);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,6 +77,10 @@ class ProcessesAPI : public BrowserContextKeyedAPI,
                      public EventRouter::Observer {
  public:
   explicit ProcessesAPI(content::BrowserContext* context);
+
+  ProcessesAPI(const ProcessesAPI&) = delete;
+  ProcessesAPI& operator=(const ProcessesAPI&) = delete;
+
   ~ProcessesAPI() override;
 
   // BrowserContextKeyedAPI:
@@ -104,8 +110,6 @@ class ProcessesAPI : public BrowserContextKeyedAPI,
 
   // Created lazily on first access.
   std::unique_ptr<ProcessesEventRouter> processes_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessesAPI);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

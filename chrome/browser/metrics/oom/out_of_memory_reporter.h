@@ -42,6 +42,10 @@ class OutOfMemoryReporter
     virtual void OnForegroundOOMDetected(const GURL& url,
                                          ukm::SourceId source_id) = 0;
   };
+
+  OutOfMemoryReporter(const OutOfMemoryReporter&) = delete;
+  OutOfMemoryReporter& operator=(const OutOfMemoryReporter&) = delete;
+
   ~OutOfMemoryReporter() override;
 
   void AddObserver(Observer* observer);
@@ -82,8 +86,6 @@ class OutOfMemoryReporter
       scoped_observation_{this};
 #endif
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OutOfMemoryReporter);
 };
 
 #endif  // CHROME_BROWSER_METRICS_OOM_OUT_OF_MEMORY_REPORTER_H_

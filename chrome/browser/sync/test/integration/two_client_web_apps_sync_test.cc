@@ -62,6 +62,9 @@ class TwoClientWebAppsSyncTest : public SyncTest {
 #endif
   }
 
+  TwoClientWebAppsSyncTest(const TwoClientWebAppsSyncTest&) = delete;
+  TwoClientWebAppsSyncTest& operator=(const TwoClientWebAppsSyncTest&) = delete;
+
   ~TwoClientWebAppsSyncTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -95,8 +98,6 @@ class TwoClientWebAppsSyncTest : public SyncTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   ScopedOsHooksSuppress os_hooks_suppress_;
-
-  DISALLOW_COPY_AND_ASSIGN(TwoClientWebAppsSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {

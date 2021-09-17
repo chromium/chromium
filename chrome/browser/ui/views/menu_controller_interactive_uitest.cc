@@ -15,6 +15,10 @@ class MenuControllerMnemonicTest : public MenuTestBase {
   MenuControllerMnemonicTest() {
   }
 
+  MenuControllerMnemonicTest(const MenuControllerMnemonicTest&) = delete;
+  MenuControllerMnemonicTest& operator=(const MenuControllerMnemonicTest&) =
+      delete;
+
   ~MenuControllerMnemonicTest() override {
   }
 
@@ -46,9 +50,6 @@ class MenuControllerMnemonicTest : public MenuTestBase {
     ASSERT_FALSE(menu()->GetSubmenu()->IsShowing());
     Done();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuControllerMnemonicTest);
 };
 
 // Pressing the mnemonic for a menu item should execute the command for that

@@ -87,6 +87,11 @@ class DeviceCommandScreenshotJob : public RemoteCommandJob,
 
   explicit DeviceCommandScreenshotJob(
       std::unique_ptr<Delegate> screenshot_delegate);
+
+  DeviceCommandScreenshotJob(const DeviceCommandScreenshotJob&) = delete;
+  DeviceCommandScreenshotJob& operator=(const DeviceCommandScreenshotJob&) =
+      delete;
+
   ~DeviceCommandScreenshotJob() override;
 
   // RemoteCommandJob:
@@ -133,8 +138,6 @@ class DeviceCommandScreenshotJob : public RemoteCommandJob,
   std::unique_ptr<UploadJob> upload_job_;
 
   base::WeakPtrFactory<DeviceCommandScreenshotJob> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandScreenshotJob);
 };
 
 }  // namespace policy

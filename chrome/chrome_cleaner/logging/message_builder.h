@@ -62,14 +62,16 @@ class MessageBuilder {
    public:
     explicit ScopedIndent(MessageBuilder* builder);
     ScopedIndent(ScopedIndent&& other);
+
+    ScopedIndent(const ScopedIndent&) = delete;
+    ScopedIndent& operator=(const ScopedIndent&) = delete;
+
     ~ScopedIndent();
 
     ScopedIndent& operator=(ScopedIndent&& other);
 
    private:
     MessageBuilder* builder_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedIndent);
   };
 
   MessageBuilder() = default;

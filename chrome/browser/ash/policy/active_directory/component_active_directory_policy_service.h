@@ -66,6 +66,12 @@ class ComponentActiveDirectoryPolicyService : public SchemaRegistry::Observer {
       const std::string& account_id,
       Delegate* delegate,
       SchemaRegistry* schema_registry);
+
+  ComponentActiveDirectoryPolicyService(
+      const ComponentActiveDirectoryPolicyService&) = delete;
+  ComponentActiveDirectoryPolicyService& operator=(
+      const ComponentActiveDirectoryPolicyService&) = delete;
+
   ~ComponentActiveDirectoryPolicyService() override;
 
   // Retrieves policies from Session Manager, validates schemas and signals
@@ -124,7 +130,6 @@ class ComponentActiveDirectoryPolicyService : public SchemaRegistry::Observer {
 
   base::WeakPtrFactory<ComponentActiveDirectoryPolicyService> weak_ptr_factory_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(ComponentActiveDirectoryPolicyService);
 };
 
 }  // namespace policy

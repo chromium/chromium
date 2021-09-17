@@ -92,6 +92,10 @@ class DriveWebContentsManager : public content::WebContentsObserver,
                           const std::string& app_id,
                           const std::string& endpoint_url,
                           CompletionCallback completion_callback);
+
+  DriveWebContentsManager(const DriveWebContentsManager&) = delete;
+  DriveWebContentsManager& operator=(const DriveWebContentsManager&) = delete;
+
   ~DriveWebContentsManager() override;
 
   // Start loading the WebContents for the endpoint in the context of the Drive
@@ -147,8 +151,6 @@ class DriveWebContentsManager : public content::WebContentsObserver,
   bool started_ = false;
   CompletionCallback completion_callback_;
   base::WeakPtrFactory<DriveWebContentsManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveWebContentsManager);
 };
 
 DriveWebContentsManager::DriveWebContentsManager(

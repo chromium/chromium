@@ -19,6 +19,11 @@ class SettingsApiBubbleDelegate
     : public ExtensionMessageBubbleController::Delegate {
  public:
   SettingsApiBubbleDelegate(Profile* profile, SettingsApiOverrideType type);
+
+  SettingsApiBubbleDelegate(const SettingsApiBubbleDelegate&) = delete;
+  SettingsApiBubbleDelegate& operator=(const SettingsApiBubbleDelegate&) =
+      delete;
+
   ~SettingsApiBubbleDelegate() override;
 
   // The preference used to indicate if the user has acknowledged the extension
@@ -64,8 +69,6 @@ class SettingsApiBubbleDelegate
   std::string extension_id_;
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsApiBubbleDelegate);
 };
 
 }  // namespace extensions

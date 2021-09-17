@@ -47,6 +47,10 @@ class ArcTermsOfServiceScreen : public BaseScreen,
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   ArcTermsOfServiceScreen(ArcTermsOfServiceScreenView* view,
                           const ScreenExitCallback& exit_callback);
+
+  ArcTermsOfServiceScreen(const ArcTermsOfServiceScreen&) = delete;
+  ArcTermsOfServiceScreen& operator=(const ArcTermsOfServiceScreen&) = delete;
+
   ~ArcTermsOfServiceScreen() override;
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
@@ -73,8 +77,6 @@ class ArcTermsOfServiceScreen : public BaseScreen,
  private:
   ArcTermsOfServiceScreenView* view_;
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreen);
 };
 
 }  // namespace ash

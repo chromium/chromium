@@ -72,6 +72,10 @@ MigrationList MakeList(syncer::ModelType type1,
 class MigrationTest : public SyncTest  {
  public:
   explicit MigrationTest(TestType test_type) : SyncTest(test_type) {}
+
+  MigrationTest(const MigrationTest&) = delete;
+  MigrationTest& operator=(const MigrationTest&) = delete;
+
   ~MigrationTest() override {}
 
   enum TriggerMethod { MODIFY_PREF, MODIFY_BOOKMARK, TRIGGER_REFRESH };
@@ -202,13 +206,16 @@ class MigrationTest : public SyncTest  {
  private:
   // Used to keep track of the migration progress for each sync client.
   std::vector<std::unique_ptr<MigrationWatcher>> migration_watchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MigrationTest);
 };
 
 class MigrationSingleClientTest : public MigrationTest {
  public:
   MigrationSingleClientTest() : MigrationTest(SINGLE_CLIENT) {}
+
+  MigrationSingleClientTest(const MigrationSingleClientTest&) = delete;
+  MigrationSingleClientTest& operator=(const MigrationSingleClientTest&) =
+      delete;
+
   ~MigrationSingleClientTest() override {}
 
   void RunSingleClientMigrationTest(const MigrationList& migration_list,
@@ -216,9 +223,6 @@ class MigrationSingleClientTest : public MigrationTest {
     ASSERT_TRUE(SetupSync());
     RunMigrationTest(migration_list, trigger_method);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MigrationSingleClientTest);
 };
 
 // The simplest possible migration tests -- a single data type.
@@ -314,6 +318,10 @@ IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, AllTypesWithNigoriAtOnce) {
 class MigrationTwoClientTest : public MigrationTest {
  public:
   MigrationTwoClientTest() : MigrationTest(TWO_CLIENT) {}
+
+  MigrationTwoClientTest(const MigrationTwoClientTest&) = delete;
+  MigrationTwoClientTest& operator=(const MigrationTwoClientTest&) = delete;
+
   ~MigrationTwoClientTest() override = default;
 
   // Helper function that verifies that preferences sync still works.
@@ -336,9 +344,6 @@ class MigrationTwoClientTest : public MigrationTest {
     // test.
     VerifyPrefSync();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MigrationTwoClientTest);
 };
 
 // Easiest possible test of migration errors: triggers a server
@@ -387,10 +392,10 @@ class MigrationReconfigureTest : public MigrationTwoClientTest {
     // Do not add optional datatypes.
   }
 
-  ~MigrationReconfigureTest() override {}
+  MigrationReconfigureTest(const MigrationReconfigureTest&) = delete;
+  MigrationReconfigureTest& operator=(const MigrationReconfigureTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MigrationReconfigureTest);
+  ~MigrationReconfigureTest() override {}
 };
 
 }  // namespace

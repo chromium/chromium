@@ -155,6 +155,11 @@ class SimpleFakeDriveService : public drive::DummyDriveService {
 class PluginVmInstallerTestBase : public testing::Test {
  public:
   PluginVmInstallerTestBase() = default;
+
+  PluginVmInstallerTestBase(const PluginVmInstallerTestBase&) = delete;
+  PluginVmInstallerTestBase& operator=(const PluginVmInstallerTestBase&) =
+      delete;
+
   ~PluginVmInstallerTestBase() override = default;
 
  protected:
@@ -291,13 +296,17 @@ class PluginVmInstallerTestBase : public testing::Test {
   }
 
   base::ScopedTempDir profiles_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstallerTestBase);
 };
 
 class PluginVmInstallerDownloadServiceTest : public PluginVmInstallerTestBase {
  public:
   PluginVmInstallerDownloadServiceTest() = default;
+
+  PluginVmInstallerDownloadServiceTest(
+      const PluginVmInstallerDownloadServiceTest&) = delete;
+  PluginVmInstallerDownloadServiceTest& operator=(
+      const PluginVmInstallerDownloadServiceTest&) = delete;
+
   ~PluginVmInstallerDownloadServiceTest() override = default;
 
  protected:
@@ -326,12 +335,16 @@ class PluginVmInstallerDownloadServiceTest : public PluginVmInstallerTestBase {
 
  private:
   std::unique_ptr<PluginVmImageDownloadClient> client_;
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstallerDownloadServiceTest);
 };
 
 class PluginVmInstallerDriveTest : public PluginVmInstallerTestBase {
  public:
   PluginVmInstallerDriveTest() = default;
+
+  PluginVmInstallerDriveTest(const PluginVmInstallerDriveTest&) = delete;
+  PluginVmInstallerDriveTest& operator=(const PluginVmInstallerDriveTest&) =
+      delete;
+
   ~PluginVmInstallerDriveTest() override = default;
 
  protected:
@@ -394,9 +407,6 @@ class PluginVmInstallerDriveTest : public PluginVmInstallerTestBase {
   PluginVmDriveImageDownloadService* drive_download_service_;
   drive::FakeDriveService* fake_drive_service_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstallerDriveTest);
 };
 
 TEST_F(PluginVmInstallerDownloadServiceTest, ProgressUpdates) {

@@ -48,6 +48,10 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
                        public calculator::SizeCalculator::Observer {
  public:
   StorageHandler(Profile* profile, content::WebUIDataSource* html_source);
+
+  StorageHandler(const StorageHandler&) = delete;
+  StorageHandler& operator=(const StorageHandler&) = delete;
+
   ~StorageHandler() override;
 
   // ::settings::SettingsPageUIHandler:
@@ -132,8 +136,6 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   const re2::RE2 special_volume_path_pattern_;
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StorageHandler);
 };
 
 }  // namespace settings

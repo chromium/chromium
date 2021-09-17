@@ -36,6 +36,11 @@ class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
   using TView = DeviceDisabledScreenView;
 
   explicit DeviceDisabledScreenHandler(JSCallsContainer* js_calls_container);
+
+  DeviceDisabledScreenHandler(const DeviceDisabledScreenHandler&) = delete;
+  DeviceDisabledScreenHandler& operator=(const DeviceDisabledScreenHandler&) =
+      delete;
+
   ~DeviceDisabledScreenHandler() override;
 
   // DeviceDisabledScreenActor:
@@ -56,8 +61,6 @@ class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
   void RegisterMessages() override;
 
   ash::DeviceDisabledScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisabledScreenHandler);
 };
 
 }  // namespace chromeos
@@ -69,4 +72,3 @@ using ::chromeos::DeviceDisabledScreenView;
 }
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEVICE_DISABLED_SCREEN_HANDLER_H_
-

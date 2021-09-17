@@ -16,10 +16,11 @@ namespace cellular_setup {
 class MobileSetupUI : public ui::WebDialogUI {
  public:
   explicit MobileSetupUI(content::WebUI* web_ui);
-  ~MobileSetupUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MobileSetupUI);
+  MobileSetupUI(const MobileSetupUI&) = delete;
+  MobileSetupUI& operator=(const MobileSetupUI&) = delete;
+
+  ~MobileSetupUI() override;
 };
 
 }  // namespace cellular_setup

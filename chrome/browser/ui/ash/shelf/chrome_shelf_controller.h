@@ -77,6 +77,10 @@ class ChromeShelfController
   ChromeShelfController(Profile* profile,
                         ash::ShelfModel* model,
                         ChromeShelfItemFactory* shelf_item_factory);
+
+  ChromeShelfController(const ChromeShelfController&) = delete;
+  ChromeShelfController& operator=(const ChromeShelfController&) = delete;
+
   ~ChromeShelfController() override;
 
   Profile* profile() const { return profile_; }
@@ -474,8 +478,6 @@ class ChromeShelfController
   scoped_refptr<base::SequencedTaskRunner> standard_icon_task_runner_;
 
   base::WeakPtrFactory<ChromeShelfController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeShelfController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_CONTROLLER_H_

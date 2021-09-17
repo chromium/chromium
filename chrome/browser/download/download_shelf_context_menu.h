@@ -29,6 +29,9 @@ class DownloadShelfContextMenu : public ui::SimpleMenuModel::Delegate,
   // Only show a context menu for a dangerous download if it is malicious.
   static bool WantsContextMenu(DownloadUIModel* download_model);
 
+  DownloadShelfContextMenu(const DownloadShelfContextMenu&) = delete;
+  DownloadShelfContextMenu& operator=(const DownloadShelfContextMenu&) = delete;
+
   ~DownloadShelfContextMenu() override;
 
  protected:
@@ -84,8 +87,6 @@ class DownloadShelfContextMenu : public ui::SimpleMenuModel::Delegate,
   // Use WeakPtr because the context menu may outlive |download_|.
   base::WeakPtr<DownloadUIModel> download_;
   std::unique_ptr<DownloadCommands> download_commands_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadShelfContextMenu);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_CONTEXT_MENU_H_

@@ -103,6 +103,11 @@ class IdentityInternalsTokenRevoker : public GaiaAuthConsumer {
                                 const std::string& callback_id,
                                 Profile* profile,
                                 IdentityInternalsUIMessageHandler* consumer);
+
+  IdentityInternalsTokenRevoker(const IdentityInternalsTokenRevoker&) = delete;
+  IdentityInternalsTokenRevoker& operator=(
+      const IdentityInternalsTokenRevoker&) = delete;
+
   ~IdentityInternalsTokenRevoker() override;
 
   // Returns the access token being revoked.
@@ -126,8 +131,6 @@ class IdentityInternalsTokenRevoker : public GaiaAuthConsumer {
   const std::string callback_id_;
   // An object that needs to be notified once the access token is revoked.
   IdentityInternalsUIMessageHandler* consumer_;  // weak.
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityInternalsTokenRevoker);
 };
 
 IdentityInternalsUIMessageHandler::IdentityInternalsUIMessageHandler() {}

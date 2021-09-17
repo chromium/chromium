@@ -50,6 +50,10 @@ extern const char kLocation[];
 class EnrollmentUIMixin : public InProcessBrowserTestMixin {
  public:
   explicit EnrollmentUIMixin(InProcessBrowserTestMixinHost* host);
+
+  EnrollmentUIMixin(const EnrollmentUIMixin&) = delete;
+  EnrollmentUIMixin& operator=(const EnrollmentUIMixin&) = delete;
+
   ~EnrollmentUIMixin() override;
 
   // Waits until specific enrollment step is displayed.
@@ -84,8 +88,6 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
   absl::optional<base::RunLoop> screen_exit_waiter_;
 
   void HandleScreenExit(EnrollmentScreen::Result result);
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentUIMixin);
 };
 
 }  // namespace test

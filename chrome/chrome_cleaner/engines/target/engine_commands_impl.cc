@@ -27,6 +27,9 @@ class ScopedCrashStageRecorder {
     SetCrashKey(kStageCrashKey, stage_);
   }
 
+  ScopedCrashStageRecorder(const ScopedCrashStageRecorder&) = delete;
+  ScopedCrashStageRecorder& operator=(const ScopedCrashStageRecorder&) = delete;
+
   ~ScopedCrashStageRecorder() {
     stage_ += "-done";
     SetCrashKey(kStageCrashKey, stage_);
@@ -34,8 +37,6 @@ class ScopedCrashStageRecorder {
 
  private:
   std::string stage_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCrashStageRecorder);
 };
 
 }  // namespace

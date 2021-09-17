@@ -29,6 +29,11 @@ class RelaunchRecommendedBubbleView : public LocationBarBubbleDelegateView {
   static views::Widget* ShowBubble(Browser* browser,
                                    base::Time detection_time,
                                    base::RepeatingClosure on_accept);
+
+  RelaunchRecommendedBubbleView(const RelaunchRecommendedBubbleView&) = delete;
+  RelaunchRecommendedBubbleView& operator=(
+      const RelaunchRecommendedBubbleView&) = delete;
+
   ~RelaunchRecommendedBubbleView() override;
 
   // LocationBarBubbleDelegateView:
@@ -55,8 +60,6 @@ class RelaunchRecommendedBubbleView : public LocationBarBubbleDelegateView {
 
   // Timer that schedules title refreshes.
   RelaunchRecommendedTimer relaunch_recommended_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RelaunchRecommendedBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_RECOMMENDED_BUBBLE_VIEW_H_

@@ -31,6 +31,12 @@ class AppServiceInstanceRegistryHelper {
  public:
   explicit AppServiceInstanceRegistryHelper(
       AppServiceAppWindowShelfController* controller);
+
+  AppServiceInstanceRegistryHelper(const AppServiceInstanceRegistryHelper&) =
+      delete;
+  AppServiceInstanceRegistryHelper& operator=(
+      const AppServiceInstanceRegistryHelper&) = delete;
+
   ~AppServiceInstanceRegistryHelper();
 
   void ActiveUserChanged();
@@ -144,8 +150,6 @@ class AppServiceInstanceRegistryHelper {
   // Maps the tab instance to the browser window in the browser.
   std::map<apps::Instance::InstanceKey, aura::Window*>
       tab_instance_to_browser_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceInstanceRegistryHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_SERVICE_APP_SERVICE_INSTANCE_REGISTRY_HELPER_H_

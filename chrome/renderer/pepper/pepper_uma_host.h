@@ -33,6 +33,9 @@ class PepperUMAHost : public ppapi::host::ResourceHost {
                 PP_Instance instance,
                 PP_Resource resource);
 
+  PepperUMAHost(const PepperUMAHost&) = delete;
+  PepperUMAHost& operator=(const PepperUMAHost&) = delete;
+
   ~PepperUMAHost() override;
 
   // ppapi::host::ResourceMessageHandler implementation.
@@ -75,8 +78,6 @@ class PepperUMAHost : public ppapi::host::ResourceHost {
   std::set<std::string> allowed_histogram_prefixes_;
   // Set of plugin files names that are allowed to use this interface.
   std::set<base::FilePath::StringType> allowed_plugin_base_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperUMAHost);
 };
 
 #endif  // CHROME_RENDERER_PEPPER_PEPPER_UMA_HOST_H_

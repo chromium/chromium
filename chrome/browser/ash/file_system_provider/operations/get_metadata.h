@@ -47,6 +47,10 @@ class GetMetadata : public Operation {
               const base::FilePath& entry_path,
               ProvidedFileSystemInterface::MetadataFieldMask fields,
               ProvidedFileSystemInterface::GetMetadataCallback callback);
+
+  GetMetadata(const GetMetadata&) = delete;
+  GetMetadata& operator=(const GetMetadata&) = delete;
+
   ~GetMetadata() override;
 
   // Operation overrides.
@@ -62,8 +66,6 @@ class GetMetadata : public Operation {
   base::FilePath entry_path_;
   ProvidedFileSystemInterface::MetadataFieldMask fields_;
   ProvidedFileSystemInterface::GetMetadataCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetMetadata);
 };
 
 }  // namespace operations

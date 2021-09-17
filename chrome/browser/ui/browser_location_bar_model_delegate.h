@@ -16,6 +16,12 @@ class Browser;
 class BrowserLocationBarModelDelegate : public ChromeLocationBarModelDelegate {
  public:
   explicit BrowserLocationBarModelDelegate(Browser* browser);
+
+  BrowserLocationBarModelDelegate(const BrowserLocationBarModelDelegate&) =
+      delete;
+  BrowserLocationBarModelDelegate& operator=(
+      const BrowserLocationBarModelDelegate&) = delete;
+
   ~BrowserLocationBarModelDelegate() override;
 
   // ChromeLocationBarModelDelegate:
@@ -23,8 +29,6 @@ class BrowserLocationBarModelDelegate : public ChromeLocationBarModelDelegate {
 
  private:
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserLocationBarModelDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LOCATION_BAR_MODEL_DELEGATE_H_

@@ -25,6 +25,10 @@ namespace util {
 class LoggingDispatchEventImpl {
  public:
   explicit LoggingDispatchEventImpl(bool dispatch_reply);
+
+  LoggingDispatchEventImpl(const LoggingDispatchEventImpl&) = delete;
+  LoggingDispatchEventImpl& operator=(const LoggingDispatchEventImpl&) = delete;
+
   virtual ~LoggingDispatchEventImpl();
 
   // Handles sending an event to a providing extension.
@@ -36,8 +40,6 @@ class LoggingDispatchEventImpl {
  private:
   std::vector<std::unique_ptr<extensions::Event>> events_;
   bool dispatch_reply_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingDispatchEventImpl);
 };
 
 // Container for remembering operations' callback invocations.

@@ -36,6 +36,12 @@ class PasswordReuseControllerAndroid
                                  ChromePasswordProtectionService* service,
                                  ReusedPasswordAccountType password_type,
                                  OnWarningDone done_callback);
+
+  PasswordReuseControllerAndroid(const PasswordReuseControllerAndroid&) =
+      delete;
+  PasswordReuseControllerAndroid& operator=(
+      const PasswordReuseControllerAndroid&) = delete;
+
   ~PasswordReuseControllerAndroid() override;
 
   // Called by |ChromePasswordProtectionService| when modal dialog needs to be
@@ -90,8 +96,6 @@ class PasswordReuseControllerAndroid
 
   // Records the start time when modal warning is constructed.
   base::TimeTicks modal_construction_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordReuseControllerAndroid);
 };
 
 }  // namespace safe_browsing

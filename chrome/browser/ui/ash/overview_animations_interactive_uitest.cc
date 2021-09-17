@@ -24,6 +24,10 @@ class OverviewAnimationsTest
       public testing::WithParamInterface<::testing::tuple<int, bool, bool>> {
  public:
   OverviewAnimationsTest() = default;
+
+  OverviewAnimationsTest(const OverviewAnimationsTest&) = delete;
+  OverviewAnimationsTest& operator=(const OverviewAnimationsTest&) = delete;
+
   ~OverviewAnimationsTest() override = default;
 
   // UIPerformanceTest:
@@ -70,7 +74,6 @@ class OverviewAnimationsTest
 
  private:
   bool tablet_mode_ = false;
-  DISALLOW_COPY_AND_ASSIGN(OverviewAnimationsTest);
 };
 
 // TODO(https://crbug.com/1033653) flaky test

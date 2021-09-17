@@ -77,6 +77,11 @@ class PrintPreviewDialogDelegate : public ui::WebDialogDelegate,
                                    public content::WebContentsObserver {
  public:
   explicit PrintPreviewDialogDelegate(WebContents* initiator);
+
+  PrintPreviewDialogDelegate(const PrintPreviewDialogDelegate&) = delete;
+  PrintPreviewDialogDelegate& operator=(const PrintPreviewDialogDelegate&) =
+      delete;
+
   ~PrintPreviewDialogDelegate() override;
 
   ui::ModalType GetDialogModalType() const override;
@@ -96,8 +101,6 @@ class PrintPreviewDialogDelegate : public ui::WebDialogDelegate,
   WebContents* initiator() const { return web_contents(); }
 
   bool on_dialog_closed_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogDelegate);
 };
 
 PrintPreviewDialogDelegate::PrintPreviewDialogDelegate(WebContents* initiator)

@@ -1814,6 +1814,12 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
   explicit BrowserAutofillManagerTestDelegateDevtoolsImpl(
       WebContents* inspectedContents)
       : inspected_contents_(inspectedContents) {}
+
+  BrowserAutofillManagerTestDelegateDevtoolsImpl(
+      const BrowserAutofillManagerTestDelegateDevtoolsImpl&) = delete;
+  BrowserAutofillManagerTestDelegateDevtoolsImpl& operator=(
+      const BrowserAutofillManagerTestDelegateDevtoolsImpl&) = delete;
+
   ~BrowserAutofillManagerTestDelegateDevtoolsImpl() override {}
 
   void DidPreviewFormData() override {}
@@ -1829,8 +1835,6 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
 
  private:
   WebContents* inspected_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAutofillManagerTestDelegateDevtoolsImpl);
 };
 
 // Disabled. Failing on MacOS MSAN. See https://crbug.com/849129.
@@ -2333,6 +2337,10 @@ class StaticURLDataSource : public content::URLDataSource {
  public:
   StaticURLDataSource(const std::string& source, const std::string& content)
       : source_(source), content_(content) {}
+
+  StaticURLDataSource(const StaticURLDataSource&) = delete;
+  StaticURLDataSource& operator=(const StaticURLDataSource&) = delete;
+
   ~StaticURLDataSource() override = default;
 
   // content::URLDataSource:
@@ -2351,8 +2359,6 @@ class StaticURLDataSource : public content::URLDataSource {
  private:
   const std::string source_;
   const std::string content_;
-
-  DISALLOW_COPY_AND_ASSIGN(StaticURLDataSource);
 };
 
 class MockWebUIProvider
@@ -2360,6 +2366,10 @@ class MockWebUIProvider
  public:
   MockWebUIProvider(const std::string& source, const std::string& content)
       : source_(source), content_(content) {}
+
+  MockWebUIProvider(const MockWebUIProvider&) = delete;
+  MockWebUIProvider& operator=(const MockWebUIProvider&) = delete;
+
   ~MockWebUIProvider() override = default;
 
   std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
@@ -2373,7 +2383,6 @@ class MockWebUIProvider
  private:
   std::string source_;
   std::string content_;
-  DISALLOW_COPY_AND_ASSIGN(MockWebUIProvider);
 };
 
 // This tests checks that window is correctly initialized when DevTools is

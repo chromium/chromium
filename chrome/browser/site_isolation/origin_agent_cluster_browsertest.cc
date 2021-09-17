@@ -31,6 +31,11 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
  public:
   OriginAgentClusterBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  OriginAgentClusterBrowserTest(const OriginAgentClusterBrowserTest&) = delete;
+  OriginAgentClusterBrowserTest& operator=(
+      const OriginAgentClusterBrowserTest&) = delete;
+
   ~OriginAgentClusterBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -76,8 +81,6 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
 
   net::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginAgentClusterBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest, Navigations) {

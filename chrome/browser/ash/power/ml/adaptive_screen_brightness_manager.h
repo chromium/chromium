@@ -61,6 +61,11 @@ class AdaptiveScreenBrightnessManager
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
       std::unique_ptr<base::RepeatingTimer> periodic_timer);
 
+  AdaptiveScreenBrightnessManager(const AdaptiveScreenBrightnessManager&) =
+      delete;
+  AdaptiveScreenBrightnessManager& operator=(
+      const AdaptiveScreenBrightnessManager&) = delete;
+
   ~AdaptiveScreenBrightnessManager() override;
 
   // Returns a new instance of AdaptiveScreenBrightnessManager.
@@ -155,8 +160,6 @@ class AdaptiveScreenBrightnessManager
   absl::optional<ScreenBrightnessEvent_Event_Reason> reason_;
 
   base::WeakPtrFactory<AdaptiveScreenBrightnessManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AdaptiveScreenBrightnessManager);
 };
 
 }  // namespace ml

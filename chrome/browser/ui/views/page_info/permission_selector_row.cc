@@ -99,6 +99,10 @@ class PermissionCombobox : public views::Combobox {
   PermissionCombobox(ComboboxModelAdapter* model,
                      bool enabled,
                      bool use_default);
+
+  PermissionCombobox(const PermissionCombobox&) = delete;
+  PermissionCombobox& operator=(const PermissionCombobox&) = delete;
+
   ~PermissionCombobox() override;
 
   void UpdateSelectedIndex(bool use_default);
@@ -115,8 +119,6 @@ class PermissionCombobox : public views::Combobox {
 
   // Minimum width for |PermissionCombobox|.
   int min_width_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionCombobox);
 };
 
 PermissionCombobox::PermissionCombobox(ComboboxModelAdapter* model,

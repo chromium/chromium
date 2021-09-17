@@ -46,6 +46,10 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   };
 
   explicit VersionInfoUpdater(Delegate* delegate);
+
+  VersionInfoUpdater(const VersionInfoUpdater&) = delete;
+  VersionInfoUpdater& operator=(const VersionInfoUpdater&) = delete;
+
   ~VersionInfoUpdater() override;
 
   // Sets delegate.
@@ -100,8 +104,6 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
   // at a later time without worrying that they will actually try to
   // happen after the lifetime of this object.
   base::WeakPtrFactory<VersionInfoUpdater> weak_pointer_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VersionInfoUpdater);
 };
 
 }  // namespace ash

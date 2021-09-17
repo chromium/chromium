@@ -65,6 +65,9 @@ class TryChromeDialog : public views::WidgetObserver, public ui::EventHandler {
   // The dialog does not steal focus and does not have an entry in the taskbar.
   static Result Show(size_t group, ActiveModalDialogListener listener);
 
+  TryChromeDialog(const TryChromeDialog&) = delete;
+  TryChromeDialog& operator=(const TryChromeDialog&) = delete;
+
   ~TryChromeDialog() override;
 
  private:
@@ -167,8 +170,6 @@ class TryChromeDialog : public views::WidgetObserver, public ui::EventHandler {
   bool has_hover_ = false;
 
   SEQUENCE_CHECKER(my_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TryChromeDialog);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRY_CHROME_DIALOG_WIN_TRY_CHROME_DIALOG_H_

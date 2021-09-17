@@ -46,6 +46,10 @@ class UserSelectionScreen
       public UserOnlineSigninNotifier::Observer {
  public:
   explicit UserSelectionScreen(DisplayedScreen display_type);
+
+  UserSelectionScreen(const UserSelectionScreen&) = delete;
+  UserSelectionScreen& operator=(const UserSelectionScreen&) = delete;
+
   ~UserSelectionScreen() override;
 
   void SetView(UserBoardView* view);
@@ -181,8 +185,6 @@ class UserSelectionScreen
       scoped_observation_{this};
 
   base::WeakPtrFactory<UserSelectionScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserSelectionScreen);
 };
 
 }  // namespace ash

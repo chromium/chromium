@@ -18,6 +18,10 @@
 class MostVisitedIframeSource : public content::URLDataSource {
  public:
   MostVisitedIframeSource();
+
+  MostVisitedIframeSource(const MostVisitedIframeSource&) = delete;
+  MostVisitedIframeSource& operator=(const MostVisitedIframeSource&) = delete;
+
   ~MostVisitedIframeSource() override;
 
   // content::URLDataSource:
@@ -52,9 +56,6 @@ class MostVisitedIframeSource : public content::URLDataSource {
   // does not exist
   virtual bool GetOrigin(const content::WebContents::Getter& wc_getter,
                          std::string* origin) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MostVisitedIframeSource);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_MOST_VISITED_IFRAME_SOURCE_H_

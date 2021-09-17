@@ -33,6 +33,11 @@ class HistoryStatisticsReporterTest : public testing::Test {
   HistoryStatisticsReporterTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  HistoryStatisticsReporterTest(const HistoryStatisticsReporterTest&) = delete;
+  HistoryStatisticsReporterTest& operator=(
+      const HistoryStatisticsReporterTest&) = delete;
+
   ~HistoryStatisticsReporterTest() override {}
 
   void SetUp() override {
@@ -81,8 +86,6 @@ class HistoryStatisticsReporterTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<HistoryStatisticsReporter> reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryStatisticsReporterTest);
 };
 
 TEST_F(HistoryStatisticsReporterTest, HistoryNotLoaded) {

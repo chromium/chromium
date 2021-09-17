@@ -35,6 +35,12 @@ class PeriodicBackgroundSyncPermissionContext
  public:
   explicit PeriodicBackgroundSyncPermissionContext(
       content::BrowserContext* browser_context);
+
+  PeriodicBackgroundSyncPermissionContext(
+      const PeriodicBackgroundSyncPermissionContext&) = delete;
+  PeriodicBackgroundSyncPermissionContext& operator=(
+      const PeriodicBackgroundSyncPermissionContext&) = delete;
+
   ~PeriodicBackgroundSyncPermissionContext() override;
 
  protected:
@@ -66,8 +72,6 @@ class PeriodicBackgroundSyncPermissionContext
                            bool persist,
                            ContentSetting content_setting,
                            bool is_one_time) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PeriodicBackgroundSyncPermissionContext);
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_

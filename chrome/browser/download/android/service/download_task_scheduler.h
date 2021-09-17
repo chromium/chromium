@@ -19,6 +19,10 @@ namespace android {
 class DownloadTaskScheduler : public TaskScheduler {
  public:
   DownloadTaskScheduler();
+
+  DownloadTaskScheduler(const DownloadTaskScheduler&) = delete;
+  DownloadTaskScheduler& operator=(const DownloadTaskScheduler&) = delete;
+
   ~DownloadTaskScheduler() override;
 
   // TaskScheduler implementation.
@@ -29,9 +33,6 @@ class DownloadTaskScheduler : public TaskScheduler {
                     int64_t window_start_time_seconds,
                     int64_t window_end_time_seconds) override;
   void CancelTask(DownloadTaskType task_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadTaskScheduler);
 };
 
 }  // namespace android

@@ -34,6 +34,11 @@ class TestUpgradeDetectorChromeos : public UpgradeDetectorChromeos {
   explicit TestUpgradeDetectorChromeos(const base::Clock* clock,
                                        const base::TickClock* tick_clock)
       : UpgradeDetectorChromeos(clock, tick_clock) {}
+
+  TestUpgradeDetectorChromeos(const TestUpgradeDetectorChromeos&) = delete;
+  TestUpgradeDetectorChromeos& operator=(const TestUpgradeDetectorChromeos&) =
+      delete;
+
   ~TestUpgradeDetectorChromeos() override = default;
 
   // Exposed for testing.
@@ -46,8 +51,6 @@ class TestUpgradeDetectorChromeos : public UpgradeDetectorChromeos {
            GetAnnoyanceLevelDeadline(
                UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestUpgradeDetectorChromeos);
 };
 
 class MockUpgradeObserver : public UpgradeObserver {
@@ -56,6 +59,10 @@ class MockUpgradeObserver : public UpgradeObserver {
       : upgrade_detector_(upgrade_detector) {
     upgrade_detector_->AddObserver(this);
   }
+
+  MockUpgradeObserver(const MockUpgradeObserver&) = delete;
+  MockUpgradeObserver& operator=(const MockUpgradeObserver&) = delete;
+
   ~MockUpgradeObserver() override { upgrade_detector_->RemoveObserver(this); }
   MOCK_METHOD0(OnUpdateOverCellularAvailable, void());
   MOCK_METHOD0(OnUpdateOverCellularOneTimePermissionGranted, void());
@@ -67,7 +74,6 @@ class MockUpgradeObserver : public UpgradeObserver {
 
  private:
   UpgradeDetector* const upgrade_detector_;
-  DISALLOW_COPY_AND_ASSIGN(MockUpgradeObserver);
 };
 
 }  // namespace

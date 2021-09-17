@@ -34,6 +34,12 @@ class BrowserAutofillManagerTestDelegateImpl
     : public autofill::BrowserAutofillManagerTestDelegate {
  public:
   BrowserAutofillManagerTestDelegateImpl();
+
+  BrowserAutofillManagerTestDelegateImpl(
+      const BrowserAutofillManagerTestDelegateImpl&) = delete;
+  BrowserAutofillManagerTestDelegateImpl& operator=(
+      const BrowserAutofillManagerTestDelegateImpl&) = delete;
+
   ~BrowserAutofillManagerTestDelegateImpl() override;
 
   // Controls whether back-to-back events of |type|, except for the first one,
@@ -64,8 +70,6 @@ class BrowserAutofillManagerTestDelegateImpl
   std::unique_ptr<EventWaiter<ObservedUiEvents>> event_waiter_;
   DenseSet<ObservedUiEvents> ignore_back_to_back_event_types_;
   ObservedUiEvents last_event_ = ObservedUiEvents::kNoEvent;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAutofillManagerTestDelegateImpl);
 };
 
 class AutofillUiTest : public InProcessBrowserTest,

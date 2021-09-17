@@ -17,6 +17,12 @@ class KioskExternalUpdateNotificationView;
 class KioskExternalUpdateNotification {
  public:
   explicit KioskExternalUpdateNotification(const std::u16string& message);
+
+  KioskExternalUpdateNotification(const KioskExternalUpdateNotification&) =
+      delete;
+  KioskExternalUpdateNotification& operator=(
+      const KioskExternalUpdateNotification&) = delete;
+
   virtual ~KioskExternalUpdateNotification();
 
   void ShowMessage(const std::u16string& message);
@@ -27,8 +33,6 @@ class KioskExternalUpdateNotification {
   void CreateAndShowNotificationView(const std::u16string& message);
 
   KioskExternalUpdateNotificationView* view_;  // Owned by views hierarchy.
-
-  DISALLOW_COPY_AND_ASSIGN(KioskExternalUpdateNotification);
 };
 
 }  // namespace ash

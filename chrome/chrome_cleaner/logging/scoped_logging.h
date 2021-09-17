@@ -20,13 +20,14 @@ std::wstring ConvertIfNull(const wchar_t* str);
 class ScopedLogging {
  public:
   explicit ScopedLogging(base::FilePath::StringPieceType suffix);
+
+  ScopedLogging(const ScopedLogging&) = delete;
+  ScopedLogging& operator=(const ScopedLogging&) = delete;
+
   ~ScopedLogging();
 
   // Returns the path to the log file for the current process.
   static base::FilePath GetLogFilePath(base::FilePath::StringPieceType suffix);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedLogging);
 };
 
 }  // namespace chrome_cleaner

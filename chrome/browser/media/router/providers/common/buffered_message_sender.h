@@ -22,6 +22,10 @@ namespace media_router {
 class BufferedMessageSender {
  public:
   explicit BufferedMessageSender(mojom::MediaRouter* media_router);
+
+  BufferedMessageSender(const BufferedMessageSender&) = delete;
+  BufferedMessageSender& operator=(const BufferedMessageSender&) = delete;
+
   ~BufferedMessageSender();
 
   // Sends |messages| for route given by |route_id|. The messages are buffered
@@ -46,8 +50,6 @@ class BufferedMessageSender {
 
   // Non-owned pointer provided by DialMediaRouteProvider.
   mojom::MediaRouter* const media_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferedMessageSender);
 };
 
 }  // namespace media_router

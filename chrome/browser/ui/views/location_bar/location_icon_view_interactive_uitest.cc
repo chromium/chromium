@@ -20,10 +20,11 @@ namespace {
 class LocationIconViewTest : public InProcessBrowserTest {
  public:
   LocationIconViewTest() = default;
-  ~LocationIconViewTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocationIconViewTest);
+  LocationIconViewTest(const LocationIconViewTest&) = delete;
+  LocationIconViewTest& operator=(const LocationIconViewTest&) = delete;
+
+  ~LocationIconViewTest() override = default;
 };
 
 // Verify that clicking the location icon a second time hides the bubble.

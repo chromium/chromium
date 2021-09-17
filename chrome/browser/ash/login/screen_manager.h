@@ -19,6 +19,10 @@ class BaseScreen;
 class ScreenManager {
  public:
   ScreenManager();
+
+  ScreenManager(const ScreenManager&) = delete;
+  ScreenManager& operator=(const ScreenManager&) = delete;
+
   ~ScreenManager();
 
   // Initialize all screen instances.
@@ -35,8 +39,6 @@ class ScreenManager {
  private:
   // Created screens.
   std::map<OobeScreenId, std::unique_ptr<BaseScreen>> screens_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenManager);
 };
 
 }  // namespace ash

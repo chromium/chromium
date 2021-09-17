@@ -17,6 +17,10 @@ class AssistantStateClient
       public arc::ArcSessionManagerObserver {
  public:
   AssistantStateClient();
+
+  AssistantStateClient(const AssistantStateClient&) = delete;
+  AssistantStateClient& operator=(const AssistantStateClient&) = delete;
+
   ~AssistantStateClient() override;
 
  private:
@@ -40,8 +44,6 @@ class AssistantStateClient
   Profile* profile_ = nullptr;
 
   base::WeakPtrFactory<AssistantStateClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantStateClient);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_STATE_CLIENT_H_

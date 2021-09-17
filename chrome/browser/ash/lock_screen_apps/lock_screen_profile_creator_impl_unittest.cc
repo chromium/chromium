@@ -76,6 +76,10 @@ void SetWasRun(bool* was_run) {
 class PendingProfileCreation : public Profile::Delegate {
  public:
   PendingProfileCreation() {}
+
+  PendingProfileCreation(const PendingProfileCreation&) = delete;
+  PendingProfileCreation& operator=(const PendingProfileCreation&) = delete;
+
   ~PendingProfileCreation() override {}
 
   // Sets the pending profile creation to track a profile creation,
@@ -170,8 +174,6 @@ class PendingProfileCreation : public Profile::Delegate {
   Profile* profile_ = nullptr;
   bool success_ = false;
   bool is_new_profile_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingProfileCreation);
 };
 
 // Test profile manager implementation used to track async profile creation.
@@ -211,6 +213,12 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
  public:
   LockScreenProfileCreatorImplTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  LockScreenProfileCreatorImplTest(const LockScreenProfileCreatorImplTest&) =
+      delete;
+  LockScreenProfileCreatorImplTest& operator=(
+      const LockScreenProfileCreatorImplTest&) = delete;
+
   ~LockScreenProfileCreatorImplTest() override {}
 
   void SetUp() override {
@@ -374,8 +382,6 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
 
   std::unique_ptr<LockScreenProfileCreator> lock_screen_profile_creator_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenProfileCreatorImplTest);
 };
 
 }  // namespace

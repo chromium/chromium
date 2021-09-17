@@ -60,6 +60,11 @@ class MockGalleryChangeObserver
   explicit MockGalleryChangeObserver(MediaGalleriesPreferences* pref)
       : pref_(pref),
         notifications_(0) {}
+
+  MockGalleryChangeObserver(const MockGalleryChangeObserver&) = delete;
+  MockGalleryChangeObserver& operator=(const MockGalleryChangeObserver&) =
+      delete;
+
   ~MockGalleryChangeObserver() override {}
 
   int notifications() const { return notifications_;}
@@ -100,8 +105,6 @@ class MockGalleryChangeObserver
 
   MediaGalleriesPreferences* pref_;
   int notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockGalleryChangeObserver);
 };
 
 }  // namespace
@@ -113,6 +116,10 @@ class MediaGalleriesPreferencesTest : public testing::Test {
 
   MediaGalleriesPreferencesTest()
       : profile_(new TestingProfile()), default_galleries_count_(0) {}
+
+  MediaGalleriesPreferencesTest(const MediaGalleriesPreferencesTest&) = delete;
+  MediaGalleriesPreferencesTest& operator=(
+      const MediaGalleriesPreferencesTest&) = delete;
 
   ~MediaGalleriesPreferencesTest() override {}
 
@@ -372,8 +379,6 @@ class MediaGalleriesPreferencesTest : public testing::Test {
   std::unique_ptr<MediaGalleriesPreferences> gallery_prefs_;
 
   uint64_t default_galleries_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesPreferencesTest);
 };
 
 TEST_F(MediaGalleriesPreferencesTest, GalleryManagement) {

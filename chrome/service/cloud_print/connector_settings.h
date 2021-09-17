@@ -24,6 +24,10 @@ namespace cloud_print {
 class ConnectorSettings {
  public:
   ConnectorSettings();
+
+  ConnectorSettings(const ConnectorSettings&) = delete;
+  ConnectorSettings& operator=(const ConnectorSettings&) = delete;
+
   ~ConnectorSettings();
 
   void InitFrom(ServiceProcessPrefs* prefs);
@@ -90,11 +94,8 @@ class ConnectorSettings {
 
   // Print system settings.
   std::unique_ptr<base::DictionaryValue> print_system_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectorSettings);
 };
 
 }  // namespace cloud_print
 
 #endif  // CHROME_SERVICE_CLOUD_PRINT_CONNECTOR_SETTINGS_H_
-

@@ -33,6 +33,11 @@ class DataReductionProxySettingsAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
+  DataReductionProxySettingsAndroid(const DataReductionProxySettingsAndroid&) =
+      delete;
+  DataReductionProxySettingsAndroid& operator=(
+      const DataReductionProxySettingsAndroid&) = delete;
+
   virtual ~DataReductionProxySettingsAndroid();
 
   void InitDataReductionProxySettings(Profile* profile);
@@ -116,8 +121,6 @@ class DataReductionProxySettingsAndroid {
   virtual data_reduction_proxy::DataReductionProxySettings* Settings();
 
   base::WeakPtrFactory<DataReductionProxySettingsAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxySettingsAndroid);
 };
 
 #endif  // CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_SETTINGS_ANDROID_H_

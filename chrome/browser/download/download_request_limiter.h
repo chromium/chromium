@@ -95,6 +95,10 @@ class DownloadRequestLimiter
     // download status.
     TabDownloadState(DownloadRequestLimiter* host,
                      content::WebContents* web_contents);
+
+    TabDownloadState(const TabDownloadState&) = delete;
+    TabDownloadState& operator=(const TabDownloadState&) = delete;
+
     ~TabDownloadState() override;
 
     // Sets the current limiter state and the underlying automatic downloads
@@ -221,8 +225,6 @@ class DownloadRequestLimiter
     // becomes moot.
     base::WeakPtrFactory<DownloadRequestLimiter::TabDownloadState> factory_{
         this};
-
-    DISALLOW_COPY_AND_ASSIGN(TabDownloadState);
   };
 
   DownloadRequestLimiter();

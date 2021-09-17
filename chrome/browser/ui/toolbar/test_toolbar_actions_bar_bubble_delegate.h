@@ -17,6 +17,12 @@ class TestToolbarActionsBarBubbleDelegate {
   TestToolbarActionsBarBubbleDelegate(const std::u16string& heading,
                                       const std::u16string& body,
                                       const std::u16string& action);
+
+  TestToolbarActionsBarBubbleDelegate(
+      const TestToolbarActionsBarBubbleDelegate&) = delete;
+  TestToolbarActionsBarBubbleDelegate& operator=(
+      const TestToolbarActionsBarBubbleDelegate&) = delete;
+
   ~TestToolbarActionsBarBubbleDelegate();
 
   // Returns a delegate to pass to the bubble. Since the bubble typically owns
@@ -87,8 +93,6 @@ class TestToolbarActionsBarBubbleDelegate {
 
   // Information about the extra view to show, if any.
   std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo> info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestToolbarActionsBarBubbleDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_TEST_TOOLBAR_ACTIONS_BAR_BUBBLE_DELEGATE_H_

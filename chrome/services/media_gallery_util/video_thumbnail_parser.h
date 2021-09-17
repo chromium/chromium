@@ -21,6 +21,10 @@ class DataSource;
 class VideoThumbnailParser {
  public:
   explicit VideoThumbnailParser(std::unique_ptr<media::DataSource> source);
+
+  VideoThumbnailParser(const VideoThumbnailParser&) = delete;
+  VideoThumbnailParser& operator=(const VideoThumbnailParser&) = delete;
+
   ~VideoThumbnailParser();
 
   void Start(MediaParser::ExtractVideoFrameCallback video_frame_callback);
@@ -32,8 +36,6 @@ class VideoThumbnailParser {
   std::unique_ptr<media::DataSource> data_source_;
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoThumbnailParser);
 };
 
 #endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_VIDEO_THUMBNAIL_PARSER_H_

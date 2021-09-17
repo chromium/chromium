@@ -59,6 +59,10 @@ class RendererFreezer : public PowerManagerClient::RenderProcessManagerDelegate,
   };
 
   explicit RendererFreezer(std::unique_ptr<Delegate> delegate);
+
+  RendererFreezer(const RendererFreezer&) = delete;
+  RendererFreezer& operator=(const RendererFreezer&) = delete;
+
   ~RendererFreezer() override;
 
   // PowerManagerClient::RenderProcessManagerDelegate implementation.
@@ -97,8 +101,6 @@ class RendererFreezer : public PowerManagerClient::RenderProcessManagerDelegate,
   content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<RendererFreezer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RendererFreezer);
 };
 
 }  // namespace ash

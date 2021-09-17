@@ -24,6 +24,10 @@ class DownloadReporter
       public ProfileObserver {
  public:
   DownloadReporter();
+
+  DownloadReporter(const DownloadReporter&) = delete;
+  DownloadReporter& operator=(const DownloadReporter&) = delete;
+
   ~DownloadReporter() override;
 
   // ProfileManagerObserver:
@@ -65,8 +69,6 @@ class DownloadReporter
   void ReportAndRecordDangerousDownloadWarningBypassed(
       download::DownloadItem* download,
       download::DownloadDangerType danger_type);
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadReporter);
 };
 
 }  // namespace safe_browsing

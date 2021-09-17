@@ -98,6 +98,10 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
       mojo::PendingReceiver<discards::mojom::DetailsProvider> receiver)
       : receiver_(this, std::move(receiver)) {}
 
+  DiscardsDetailsProviderImpl(const DiscardsDetailsProviderImpl&) = delete;
+  DiscardsDetailsProviderImpl& operator=(const DiscardsDetailsProviderImpl&) =
+      delete;
+
   ~DiscardsDetailsProviderImpl() override {}
 
   // discards::mojom::DetailsProvider overrides:
@@ -202,8 +206,6 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
 
  private:
   mojo::Receiver<discards::mojom::DetailsProvider> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardsDetailsProviderImpl);
 };
 
 }  // namespace

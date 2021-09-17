@@ -16,6 +16,12 @@
 class GoogleUpdateMetricsProviderWin : public metrics::MetricsProvider {
  public:
   GoogleUpdateMetricsProviderWin();
+
+  GoogleUpdateMetricsProviderWin(const GoogleUpdateMetricsProviderWin&) =
+      delete;
+  GoogleUpdateMetricsProviderWin& operator=(
+      const GoogleUpdateMetricsProviderWin&) = delete;
+
   ~GoogleUpdateMetricsProviderWin() override;
 
   // metrics::MetricsProvider
@@ -60,8 +66,6 @@ class GoogleUpdateMetricsProviderWin : public metrics::MetricsProvider {
   GoogleUpdateMetrics google_update_metrics_;
 
   base::WeakPtrFactory<GoogleUpdateMetricsProviderWin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GoogleUpdateMetricsProviderWin);
 };
 
 #endif  // CHROME_BROWSER_METRICS_GOOGLE_UPDATE_METRICS_PROVIDER_WIN_H_

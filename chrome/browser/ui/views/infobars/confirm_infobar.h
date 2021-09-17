@@ -23,6 +23,10 @@ class MdTextButton;
 class ConfirmInfoBar : public InfoBarView {
  public:
   explicit ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate);
+
+  ConfirmInfoBar(const ConfirmInfoBar&) = delete;
+  ConfirmInfoBar& operator=(const ConfirmInfoBar&) = delete;
+
   ~ConfirmInfoBar() override;
 
   // InfoBarView:
@@ -49,8 +53,6 @@ class ConfirmInfoBar : public InfoBarView {
   views::MdTextButton* cancel_button_ = nullptr;
   views::Link* link_ = nullptr;
   std::unique_ptr<ElevationIconSetter> elevation_icon_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfirmInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INFOBARS_CONFIRM_INFOBAR_H_

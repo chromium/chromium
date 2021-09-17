@@ -37,6 +37,10 @@ class PowerMetricsReporter : public PowerManagerClient::Observer {
   // RegisterLocalStatePrefs() must be called before instantiating this class.
   PowerMetricsReporter(PowerManagerClient* power_manager_client,
                        PrefService* local_state_pref_service);
+
+  PowerMetricsReporter(const PowerMetricsReporter&) = delete;
+  PowerMetricsReporter& operator=(const PowerMetricsReporter&) = delete;
+
   ~PowerMetricsReporter() override;
 
   // PowerManagerClient::Observer:
@@ -71,8 +75,6 @@ class PowerMetricsReporter : public PowerManagerClient::Observer {
 
   // Map from local store pref name backing a daily count to the count itself.
   std::map<std::string, int> daily_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMetricsReporter);
 };
 
 }  // namespace ash

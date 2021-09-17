@@ -21,6 +21,11 @@ class ExtensionShelfContextMenu : public ShelfContextMenu {
   ExtensionShelfContextMenu(ChromeShelfController* controller,
                             const ash::ShelfItem* item,
                             int64_t display_id);
+
+  ExtensionShelfContextMenu(const ExtensionShelfContextMenu&) = delete;
+  ExtensionShelfContextMenu& operator=(const ExtensionShelfContextMenu&) =
+      delete;
+
   ~ExtensionShelfContextMenu() override;
 
   // ShelfContextMenu overrides:
@@ -47,8 +52,6 @@ class ExtensionShelfContextMenu : public ShelfContextMenu {
   std::unique_ptr<ui::SimpleMenuModel> open_new_submenu_model_;
 
   std::unique_ptr<extensions::ContextMenuMatcher> extension_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionShelfContextMenu);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_EXTENSION_SHELF_CONTEXT_MENU_H_

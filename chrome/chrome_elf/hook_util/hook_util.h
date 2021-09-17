@@ -29,6 +29,10 @@ sandbox::ServiceResolverThunk* HookSystemService(bool relaxed);
 class IATHook {
  public:
   IATHook();
+
+  IATHook(const IATHook&) = delete;
+  IATHook& operator=(const IATHook&) = delete;
+
   ~IATHook();
 
   // Intercept a function in an import table of a specific
@@ -57,8 +61,6 @@ class IATHook {
   void* intercept_function_;
   void* original_function_;
   IMAGE_THUNK_DATA* iat_thunk_;
-
-  DISALLOW_COPY_AND_ASSIGN(IATHook);
 };
 
 }  // namespace elf_hook

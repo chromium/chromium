@@ -28,6 +28,11 @@ class PasswordsPrivateEventRouter : public KeyedService {
  public:
   static PasswordsPrivateEventRouter* Create(
       content::BrowserContext* browser_context);
+
+  PasswordsPrivateEventRouter(const PasswordsPrivateEventRouter&) = delete;
+  PasswordsPrivateEventRouter& operator=(const PasswordsPrivateEventRouter&) =
+      delete;
+
   ~PasswordsPrivateEventRouter() override;
 
   // Notifies listeners of updated passwords.
@@ -89,8 +94,6 @@ class PasswordsPrivateEventRouter : public KeyedService {
   absl::optional<std::vector<base::Value>> cached_saved_password_parameters_;
   absl::optional<std::vector<base::Value>>
       cached_password_exception_parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordsPrivateEventRouter);
 };
 
 }  // namespace extensions

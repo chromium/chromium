@@ -163,6 +163,9 @@ class SessionCrashedBubbleView::BrowserRemovalObserver
     BrowserList::AddObserver(this);
   }
 
+  BrowserRemovalObserver(const BrowserRemovalObserver&) = delete;
+  BrowserRemovalObserver& operator=(const BrowserRemovalObserver&) = delete;
+
   ~BrowserRemovalObserver() override { BrowserList::RemoveObserver(this); }
 
   // Overridden from BrowserListObserver.
@@ -175,8 +178,6 @@ class SessionCrashedBubbleView::BrowserRemovalObserver
 
  private:
   Browser* browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserRemovalObserver);
 };
 
 // static

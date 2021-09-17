@@ -22,6 +22,10 @@ class TabletModePageBehavior : public ash::TabletModeObserver,
                                public TabStripModelObserver {
  public:
   TabletModePageBehavior();
+
+  TabletModePageBehavior(const TabletModePageBehavior&) = delete;
+  TabletModePageBehavior& operator=(const TabletModePageBehavior&) = delete;
+
   ~TabletModePageBehavior() override;
 
   // Notify the tablet mode change.
@@ -54,8 +58,6 @@ class TabletModePageBehavior : public ash::TabletModeObserver,
   // to observe webcontents being added to the tabstrips in order to trigger
   // a refresh of its WebKit prefs.
   std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModePageBehavior);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TABLET_MODE_PAGE_BEHAVIOR_H_

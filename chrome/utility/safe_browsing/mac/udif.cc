@@ -284,6 +284,10 @@ class UDIFPartitionReadStream : public ReadStream {
   UDIFPartitionReadStream(ReadStream* stream,
                           uint16_t block_size,
                           const UDIFBlock* partition_block);
+
+  UDIFPartitionReadStream(const UDIFPartitionReadStream&) = delete;
+  UDIFPartitionReadStream& operator=(const UDIFPartitionReadStream&) = delete;
+
   ~UDIFPartitionReadStream() override;
 
   bool Read(uint8_t* buffer, size_t buffer_size, size_t* bytes_read) override;
@@ -297,8 +301,6 @@ class UDIFPartitionReadStream : public ReadStream {
   uint64_t current_chunk_;  // The current chunk number.
   // The current chunk stream.
   std::unique_ptr<UDIFBlockChunkReadStream> chunk_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(UDIFPartitionReadStream);
 };
 
 // A ReadStream for a single block chunk, which transparently handles
@@ -308,6 +310,10 @@ class UDIFBlockChunkReadStream : public ReadStream {
   UDIFBlockChunkReadStream(ReadStream* stream,
                            uint16_t block_size,
                            const UDIFBlockChunk* chunk);
+
+  UDIFBlockChunkReadStream(const UDIFBlockChunkReadStream&) = delete;
+  UDIFBlockChunkReadStream& operator=(const UDIFBlockChunkReadStream&) = delete;
+
   ~UDIFBlockChunkReadStream() override;
 
   bool Read(uint8_t* buffer, size_t buffer_size, size_t* bytes_read) override;
@@ -339,8 +345,6 @@ class UDIFBlockChunkReadStream : public ReadStream {
   size_t offset_;  // The offset into the decompressed buffer.
   std::vector<uint8_t> decompress_buffer_;  // Decompressed data buffer.
   bool did_decompress_;  // Whether or not the chunk has been decompressed.
-
-  DISALLOW_COPY_AND_ASSIGN(UDIFBlockChunkReadStream);
 };
 
 }  // namespace

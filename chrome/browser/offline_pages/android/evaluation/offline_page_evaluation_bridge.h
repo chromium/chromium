@@ -34,6 +34,10 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
                               OfflinePageModel* offline_page_model,
                               RequestCoordinator* request_coordinator);
 
+  OfflinePageEvaluationBridge(const OfflinePageEvaluationBridge&) = delete;
+  OfflinePageEvaluationBridge& operator=(const OfflinePageEvaluationBridge&) =
+      delete;
+
   ~OfflinePageEvaluationBridge() override;
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
@@ -101,8 +105,6 @@ class OfflinePageEvaluationBridge : public OfflinePageModel::Observer,
   OfflinePageModel* offline_page_model_;
   // Not owned.
   RequestCoordinator* request_coordinator_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageEvaluationBridge);
 };
 
 }  // namespace android

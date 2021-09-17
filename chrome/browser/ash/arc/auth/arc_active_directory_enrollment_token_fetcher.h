@@ -34,6 +34,12 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
  public:
   explicit ArcActiveDirectoryEnrollmentTokenFetcher(
       ArcSupportHost* support_host);
+
+  ArcActiveDirectoryEnrollmentTokenFetcher(
+      const ArcActiveDirectoryEnrollmentTokenFetcher&) = delete;
+  ArcActiveDirectoryEnrollmentTokenFetcher& operator=(
+      const ArcActiveDirectoryEnrollmentTokenFetcher&) = delete;
+
   ~ArcActiveDirectoryEnrollmentTokenFetcher() override;
 
   enum class Status {
@@ -97,8 +103,6 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
 
   base::WeakPtrFactory<ArcActiveDirectoryEnrollmentTokenFetcher>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcActiveDirectoryEnrollmentTokenFetcher);
 };
 
 }  // namespace arc

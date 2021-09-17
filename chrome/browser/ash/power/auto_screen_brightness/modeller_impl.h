@@ -78,6 +78,10 @@ class ModellerImpl : public Modeller,
                ModelConfigLoader* model_config_loader,
                ui::UserActivityDetector* user_activity_detector,
                std::unique_ptr<Trainer> trainer);
+
+  ModellerImpl(const ModellerImpl&) = delete;
+  ModellerImpl& operator=(const ModellerImpl&) = delete;
+
   ~ModellerImpl() override;
 
   // Modeller overrides:
@@ -284,8 +288,6 @@ class ModellerImpl : public Modeller,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ModellerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModellerImpl);
 };
 
 // Saves |model| to disk at location specified by |model_saving_spec| and

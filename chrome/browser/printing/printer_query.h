@@ -33,6 +33,10 @@ class PrinterQuery {
 
   // Can only be called on the IO thread.
   PrinterQuery(int render_process_id, int render_frame_id);
+
+  PrinterQuery(const PrinterQuery&) = delete;
+  PrinterQuery& operator=(const PrinterQuery&) = delete;
+
   virtual ~PrinterQuery();
 
   // Detach the PrintJobWorker associated to this object. Virtual so that tests
@@ -114,8 +118,6 @@ class PrinterQuery {
   // are blocking and enters a message loop without your consent. There is one
   // worker thread per print job.
   std::unique_ptr<PrintJobWorker> worker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterQuery);
 };
 
 }  // namespace printing

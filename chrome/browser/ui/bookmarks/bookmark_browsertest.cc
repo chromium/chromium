@@ -64,6 +64,11 @@ bool IsShowingInterstitial(content::WebContents* tab) {
 class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
  public:
   TestBookmarkTabHelperObserver() : starred_(false) {}
+
+  TestBookmarkTabHelperObserver(const TestBookmarkTabHelperObserver&) = delete;
+  TestBookmarkTabHelperObserver& operator=(
+      const TestBookmarkTabHelperObserver&) = delete;
+
   ~TestBookmarkTabHelperObserver() override {}
 
   void URLStarredChanged(content::WebContents*, bool starred) override {
@@ -73,8 +78,6 @@ class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
 
  private:
   bool starred_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBookmarkTabHelperObserver);
 };
 
 class BookmarkBrowsertest : public InProcessBrowserTest {

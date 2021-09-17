@@ -35,6 +35,12 @@ class LockToSingleUserServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   LockToSingleUserServiceProvider();
+
+  LockToSingleUserServiceProvider(const LockToSingleUserServiceProvider&) =
+      delete;
+  LockToSingleUserServiceProvider& operator=(
+      const LockToSingleUserServiceProvider&) = delete;
+
   ~LockToSingleUserServiceProvider() override;
 
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
@@ -46,8 +52,6 @@ class LockToSingleUserServiceProvider
   void NotifyVmStarting(dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender response_sender);
   base::WeakPtrFactory<LockToSingleUserServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockToSingleUserServiceProvider);
 };
 
 }  // namespace ash

@@ -29,6 +29,9 @@ class MTPFileStreamReader : public storage::FileStreamReader {
                       const base::Time& expected_modification_time,
                       bool do_media_header_validation);
 
+  MTPFileStreamReader(const MTPFileStreamReader&) = delete;
+  MTPFileStreamReader& operator=(const MTPFileStreamReader&) = delete;
+
   ~MTPFileStreamReader() override;
 
   // FileStreamReader overrides.
@@ -69,8 +72,6 @@ class MTPFileStreamReader : public storage::FileStreamReader {
   bool media_header_validated_;
 
   base::WeakPtrFactory<MTPFileStreamReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MTPFileStreamReader);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_MTP_FILE_STREAM_READER_H_

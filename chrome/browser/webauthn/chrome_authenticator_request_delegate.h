@@ -101,6 +101,12 @@ class ChromeAuthenticatorRequestDelegate
   // The |render_frame_host| must outlive this instance.
   explicit ChromeAuthenticatorRequestDelegate(
       content::RenderFrameHost* render_frame_host);
+
+  ChromeAuthenticatorRequestDelegate(
+      const ChromeAuthenticatorRequestDelegate&) = delete;
+  ChromeAuthenticatorRequestDelegate& operator=(
+      const ChromeAuthenticatorRequestDelegate&) = delete;
+
   ~ChromeAuthenticatorRequestDelegate() override;
 
   // SetGlobalObserverForTesting sets the single |TestObserver| that is active
@@ -218,8 +224,6 @@ class ChromeAuthenticatorRequestDelegate
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAuthenticatorRequestDelegate);
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_CHROME_AUTHENTICATOR_REQUEST_DELEGATE_H_

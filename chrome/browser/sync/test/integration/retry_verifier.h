@@ -27,6 +27,10 @@ class RetryVerifier {
  public:
   static const int kMaxRetry = 3;
   RetryVerifier();
+
+  RetryVerifier(const RetryVerifier&) = delete;
+  RetryVerifier& operator=(const RetryVerifier&) = delete;
+
   ~RetryVerifier();
   int retry_count() const { return retry_count_; }
 
@@ -43,7 +47,6 @@ class RetryVerifier {
   DelayInfo delay_table_[kMaxRetry];
   bool success_;
   bool done_;
-  DISALLOW_COPY_AND_ASSIGN(RetryVerifier);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_RETRY_VERIFIER_H_

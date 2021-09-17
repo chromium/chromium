@@ -34,6 +34,11 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
   using TView = MultiDeviceSetupScreenView;
 
   explicit MultiDeviceSetupScreenHandler(JSCallsContainer* js_calls_container);
+
+  MultiDeviceSetupScreenHandler(const MultiDeviceSetupScreenHandler&) = delete;
+  MultiDeviceSetupScreenHandler& operator=(
+      const MultiDeviceSetupScreenHandler&) = delete;
+
   ~MultiDeviceSetupScreenHandler() override;
 
   // BaseScreenHandler:
@@ -49,8 +54,6 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
  private:
   // BaseScreenHandler:
   void Initialize() override;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupScreenHandler);
 };
 
 }  // namespace chromeos

@@ -39,6 +39,10 @@ namespace extensions {
 class LocalExtensionCacheTest : public testing::Test {
  public:
   LocalExtensionCacheTest() = default;
+
+  LocalExtensionCacheTest(const LocalExtensionCacheTest&) = delete;
+  LocalExtensionCacheTest& operator=(const LocalExtensionCacheTest&) = delete;
+
   ~LocalExtensionCacheTest() override = default;
 
   base::FilePath CreateCacheDir() {
@@ -112,8 +116,6 @@ class LocalExtensionCacheTest : public testing::Test {
 
   base::ScopedTempDir cache_dir_;
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalExtensionCacheTest);
 };
 
 static void SimpleCallback(bool* ptr) {

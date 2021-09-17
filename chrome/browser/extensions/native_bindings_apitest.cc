@@ -34,6 +34,10 @@ namespace extensions {
 class NativeBindingsApiTest : public ExtensionApiTest {
  public:
   NativeBindingsApiTest() {}
+
+  NativeBindingsApiTest(const NativeBindingsApiTest&) = delete;
+  NativeBindingsApiTest& operator=(const NativeBindingsApiTest&) = delete;
+
   ~NativeBindingsApiTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -48,9 +52,6 @@ class NativeBindingsApiTest : public ExtensionApiTest {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeBindingsApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, SimpleEndToEndTest) {

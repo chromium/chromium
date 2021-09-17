@@ -19,6 +19,10 @@ namespace chromeos {
 class U2FNotification {
  public:
   U2FNotification();
+
+  U2FNotification(const U2FNotification&) = delete;
+  U2FNotification& operator=(const U2FNotification&) = delete;
+
   ~U2FNotification();
 
   // Asynchronously checks whether the legacy implementation is enabled and if
@@ -36,8 +40,6 @@ class U2FNotification {
   void OnNotificationClick(const absl::optional<int> button_index);
 
   base::WeakPtrFactory<U2FNotification> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(U2FNotification);
 };
 
 }  // namespace chromeos

@@ -70,6 +70,10 @@ ArcAppIcon::ReadResult::~ReadResult() = default;
 class ArcAppIcon::Source : public gfx::ImageSkiaSource {
  public:
   Source(const base::WeakPtr<ArcAppIcon>& host, int resource_size_in_dip);
+
+  Source(const Source&) = delete;
+  Source& operator=(const Source&) = delete;
+
   ~Source() override;
 
  private:
@@ -86,8 +90,6 @@ class ArcAppIcon::Source : public gfx::ImageSkiaSource {
   // is a cache to avoid resizing IDR icons in GetImageForScale every time.
   static base::LazyInstance<std::map<std::pair<int, int>, gfx::ImageSkia>>::
       DestructorAtExit default_icons_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(Source);
 };
 
 base::LazyInstance<std::map<std::pair<int, int>, gfx::ImageSkia>>::
@@ -150,6 +152,10 @@ class ArcAppIcon::DecodeRequest : public ImageDecoder::ImageRequest {
       bool retain_padding,
       gfx::ImageSkia& image_skia,
       std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors);
+
+  DecodeRequest(const DecodeRequest&) = delete;
+  DecodeRequest& operator=(const DecodeRequest&) = delete;
+
   ~DecodeRequest() override;
 
   // ImageDecoder::ImageRequest
@@ -163,7 +169,6 @@ class ArcAppIcon::DecodeRequest : public ImageDecoder::ImageRequest {
   const bool retain_padding_;
   gfx::ImageSkia& image_skia_;
   std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors_;
-  DISALLOW_COPY_AND_ASSIGN(DecodeRequest);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

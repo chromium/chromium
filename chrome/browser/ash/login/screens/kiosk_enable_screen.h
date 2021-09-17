@@ -23,6 +23,10 @@ class KioskEnableScreen : public BaseScreen {
  public:
   KioskEnableScreen(KioskEnableScreenView* view,
                     const base::RepeatingClosure& exit_callback);
+
+  KioskEnableScreen(const KioskEnableScreen&) = delete;
+  KioskEnableScreen& operator=(const KioskEnableScreen&) = delete;
+
   ~KioskEnableScreen() override;
 
   // This method is called, when view is being destroyed. Note, if Screen
@@ -52,8 +56,6 @@ class KioskEnableScreen : public BaseScreen {
   bool is_configurable_ = false;
 
   base::WeakPtrFactory<KioskEnableScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskEnableScreen);
 };
 
 }  // namespace ash

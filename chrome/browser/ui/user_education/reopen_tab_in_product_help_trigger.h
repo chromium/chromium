@@ -27,6 +27,11 @@ class ReopenTabInProductHelpTrigger {
  public:
   ReopenTabInProductHelpTrigger(feature_engagement::Tracker* tracker,
                                 const base::TickClock* clock);
+
+  ReopenTabInProductHelpTrigger(const ReopenTabInProductHelpTrigger&) = delete;
+  ReopenTabInProductHelpTrigger& operator=(
+      const ReopenTabInProductHelpTrigger&) = delete;
+
   ~ReopenTabInProductHelpTrigger();
 
   using ShowHelpCallback = base::RepeatingCallback<void()>;
@@ -68,8 +73,6 @@ class ReopenTabInProductHelpTrigger {
   TriggerState trigger_state_;
 
   base::TimeTicks time_of_last_step_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReopenTabInProductHelpTrigger);
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_REOPEN_TAB_IN_PRODUCT_HELP_TRIGGER_H_

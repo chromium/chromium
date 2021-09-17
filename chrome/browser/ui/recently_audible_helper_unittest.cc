@@ -20,6 +20,10 @@ class RecentlyAudibleHelperTest : public testing::Test {
  public:
   RecentlyAudibleHelperTest() = default;
 
+  RecentlyAudibleHelperTest(const RecentlyAudibleHelperTest&) = delete;
+  RecentlyAudibleHelperTest& operator=(const RecentlyAudibleHelperTest&) =
+      delete;
+
   ~RecentlyAudibleHelperTest() override {}
 
   void SetUp() override {
@@ -118,8 +122,6 @@ class RecentlyAudibleHelperTest : public testing::Test {
   base::CallbackListSubscription subscription_;
 
   std::list<bool> recently_audible_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecentlyAudibleHelperTest);
 };
 
 TEST_F(RecentlyAudibleHelperTest, AllStateTransitions) {

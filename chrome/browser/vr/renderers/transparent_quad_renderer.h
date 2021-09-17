@@ -13,9 +13,11 @@ namespace vr {
 class TransparentQuadRenderer : public TexturedQuadRenderer {
  public:
   TransparentQuadRenderer();
-  ~TransparentQuadRenderer() override;
 
-  DISALLOW_COPY_AND_ASSIGN(TransparentQuadRenderer);
+  TransparentQuadRenderer(const TransparentQuadRenderer&) = delete;
+  TransparentQuadRenderer& operator=(const TransparentQuadRenderer&) = delete;
+
+  ~TransparentQuadRenderer() override;
 };
 
 }  // namespace vr

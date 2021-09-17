@@ -53,6 +53,9 @@ class AutoLockMutex {
     DPCHECK(result == WAIT_OBJECT_0) << "Result = " << result;
   }
 
+  AutoLockMutex(const AutoLockMutex&) = delete;
+  AutoLockMutex& operator=(const AutoLockMutex&) = delete;
+
   ~AutoLockMutex() {
     BOOL released = ::ReleaseMutex(mutex_);
     DPCHECK(released);
@@ -60,7 +63,6 @@ class AutoLockMutex {
 
  private:
   HANDLE mutex_;
-  DISALLOW_COPY_AND_ASSIGN(AutoLockMutex);
 };
 
 // A helper class that releases the given |mutex| while the AutoUnlockMutex is
@@ -72,6 +74,9 @@ class AutoUnlockMutex {
     DPCHECK(released);
   }
 
+  AutoUnlockMutex(const AutoUnlockMutex&) = delete;
+  AutoUnlockMutex& operator=(const AutoUnlockMutex&) = delete;
+
   ~AutoUnlockMutex() {
     DWORD result = ::WaitForSingleObject(mutex_, INFINITE);
     DPCHECK(result == WAIT_OBJECT_0) << "Result = " << result;
@@ -79,7 +84,6 @@ class AutoUnlockMutex {
 
  private:
   HANDLE mutex_;
-  DISALLOW_COPY_AND_ASSIGN(AutoUnlockMutex);
 };
 
 // Checks the visibility of the enumerated window and signals once a visible

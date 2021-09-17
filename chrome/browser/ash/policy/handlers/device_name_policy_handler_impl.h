@@ -29,6 +29,11 @@ class DeviceNamePolicyHandlerImpl
       public chromeos::NetworkStateHandlerObserver {
  public:
   explicit DeviceNamePolicyHandlerImpl(ash::CrosSettings* cros_settings);
+
+  DeviceNamePolicyHandlerImpl(const DeviceNamePolicyHandlerImpl&) = delete;
+  DeviceNamePolicyHandlerImpl& operator=(const DeviceNamePolicyHandlerImpl&) =
+      delete;
+
   ~DeviceNamePolicyHandlerImpl() override;
 
   // DeviceNamePolicyHandler:
@@ -73,8 +78,6 @@ class DeviceNamePolicyHandlerImpl
   base::CallbackListSubscription configurable_policy_subscription_;
   std::string hostname_;
   base::WeakPtrFactory<DeviceNamePolicyHandlerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceNamePolicyHandlerImpl);
 };
 
 std::ostream& operator<<(

@@ -23,6 +23,9 @@ class RequestValue {
   // proper content.
   RequestValue();
 
+  RequestValue(const RequestValue&) = delete;
+  RequestValue& operator=(const RequestValue&) = delete;
+
   virtual ~RequestValue();
 
   static std::unique_ptr<RequestValue> CreateForUnmountSuccess(
@@ -123,8 +126,6 @@ class RequestValue {
                       OperationRequestedError::Params>
       operation_error_params_;
   std::unique_ptr<std::string> testing_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestValue);
 };
 
 }  // namespace file_system_provider

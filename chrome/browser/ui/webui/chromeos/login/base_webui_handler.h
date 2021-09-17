@@ -39,6 +39,10 @@ class OobeUI;
 class BaseWebUIHandler : public content::WebUIMessageHandler {
  public:
   explicit BaseWebUIHandler(JSCallsContainer* js_calls_container);
+
+  BaseWebUIHandler(const BaseWebUIHandler&) = delete;
+  BaseWebUIHandler& operator=(const BaseWebUIHandler&) = delete;
+
   ~BaseWebUIHandler() override;
 
   // Gets localized strings to be used on the page.
@@ -192,8 +196,6 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   bool javascript_disallowed_ = false;
 
   JSCallsContainer* js_calls_container_ = nullptr;  // non-owning pointers.
-
-  DISALLOW_COPY_AND_ASSIGN(BaseWebUIHandler);
 };
 
 }  // namespace chromeos

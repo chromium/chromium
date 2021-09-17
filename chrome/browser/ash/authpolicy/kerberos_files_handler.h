@@ -38,6 +38,10 @@ extern const char kKrb5ConfFile[];
 class KerberosFilesHandler {
  public:
   explicit KerberosFilesHandler(base::RepeatingClosure get_kerberos_files);
+
+  KerberosFilesHandler(const KerberosFilesHandler&) = delete;
+  KerberosFilesHandler& operator=(const KerberosFilesHandler&) = delete;
+
   virtual ~KerberosFilesHandler();
 
   // Writes the Kerberos credentials to disk asynchronously.
@@ -66,7 +70,6 @@ class KerberosFilesHandler {
   base::OnceClosure files_changed_for_testing_;
 
   base::WeakPtrFactory<KerberosFilesHandler> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(KerberosFilesHandler);
 };
 
 }  // namespace ash

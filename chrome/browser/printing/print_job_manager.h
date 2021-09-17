@@ -60,6 +60,10 @@ class PrintQueriesQueue : public base::RefCountedThreadSafe<PrintQueriesQueue> {
 class PrintJobManager : public content::NotificationObserver {
  public:
   PrintJobManager();
+
+  PrintJobManager(const PrintJobManager&) = delete;
+  PrintJobManager& operator=(const PrintJobManager&) = delete;
+
   ~PrintJobManager() override;
 
   // On browser quit, we should wait to have the print job finished.
@@ -96,8 +100,6 @@ class PrintJobManager : public content::NotificationObserver {
   scoped_refptr<PrintQueriesQueue> queue_;
 
   bool is_shutdown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobManager);
 };
 
 }  // namespace printing

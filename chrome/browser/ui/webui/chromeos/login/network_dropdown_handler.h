@@ -14,6 +14,10 @@ namespace chromeos {
 class NetworkDropdownHandler : public BaseWebUIHandler {
  public:
   explicit NetworkDropdownHandler(JSCallsContainer* js_calls_container);
+
+  NetworkDropdownHandler(const NetworkDropdownHandler&) = delete;
+  NetworkDropdownHandler& operator=(const NetworkDropdownHandler&) = delete;
+
   ~NetworkDropdownHandler() override;
 
   // BaseScreenHandler implementation:
@@ -29,8 +33,6 @@ class NetworkDropdownHandler : public BaseWebUIHandler {
   void HandleLaunchAddWiFiNetworkDialog();
   void HandleShowNetworkDetails(const base::ListValue* args);
   void HandleShowNetworkConfig(const base::ListValue* args);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkDropdownHandler);
 };
 
 }  // namespace chromeos

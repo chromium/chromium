@@ -27,6 +27,10 @@ class MultiDeviceSetupScreen : public BaseScreen {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   MultiDeviceSetupScreen(MultiDeviceSetupScreenView* view,
                          const ScreenExitCallback& exit_callback);
+
+  MultiDeviceSetupScreen(const MultiDeviceSetupScreen&) = delete;
+  MultiDeviceSetupScreen& operator=(const MultiDeviceSetupScreen&) = delete;
+
   ~MultiDeviceSetupScreen() override;
 
   void AddExitCallbackForTesting(const ScreenExitCallback& testing_callback) {
@@ -74,8 +78,6 @@ class MultiDeviceSetupScreen : public BaseScreen {
 
   MultiDeviceSetupScreenView* view_;
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupScreen);
 };
 
 }  // namespace ash

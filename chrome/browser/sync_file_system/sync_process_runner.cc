@@ -41,12 +41,13 @@ class BaseTimerHelper : public SyncProcessRunner::TimerHelper {
 
   base::TimeTicks Now() const override { return base::TimeTicks::Now(); }
 
+  BaseTimerHelper(const BaseTimerHelper&) = delete;
+  BaseTimerHelper& operator=(const BaseTimerHelper&) = delete;
+
   ~BaseTimerHelper() override {}
 
  private:
   base::OneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseTimerHelper);
 };
 
 bool WasSuccessfulSync(SyncStatusCode status) {

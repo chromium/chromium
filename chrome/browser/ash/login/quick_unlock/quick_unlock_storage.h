@@ -24,6 +24,10 @@ class PinStoragePrefs;
 class QuickUnlockStorage : public KeyedService {
  public:
   explicit QuickUnlockStorage(Profile* profile);
+
+  QuickUnlockStorage(const QuickUnlockStorage&) = delete;
+  QuickUnlockStorage& operator=(const QuickUnlockStorage&) = delete;
+
   ~QuickUnlockStorage() override;
 
   // Replaces default clock with a test clock for testing.
@@ -88,8 +92,6 @@ class QuickUnlockStorage : public KeyedService {
   base::Clock* clock_;
   std::unique_ptr<FingerprintStorage> fingerprint_storage_;
   std::unique_ptr<PinStoragePrefs> pin_storage_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockStorage);
 };
 
 }  // namespace quick_unlock

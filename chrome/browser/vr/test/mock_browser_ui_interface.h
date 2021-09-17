@@ -18,6 +18,10 @@ namespace vr {
 class MockBrowserUiInterface : public BrowserUiInterface {
  public:
   MockBrowserUiInterface();
+
+  MockBrowserUiInterface(const MockBrowserUiInterface&) = delete;
+  MockBrowserUiInterface& operator=(const MockBrowserUiInterface&) = delete;
+
   ~MockBrowserUiInterface() override;
 
   MOCK_METHOD1(SetWebVrMode, void(bool enabled));
@@ -61,9 +65,6 @@ class MockBrowserUiInterface : public BrowserUiInterface {
   MOCK_METHOD1(PerformKeyboardInputForTesting, void(KeyboardTestInput));
   MOCK_METHOD1(SetVisibleExternalPromptNotification,
                void(ExternalPromptNotificationType));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockBrowserUiInterface);
 };
 
 }  // namespace vr

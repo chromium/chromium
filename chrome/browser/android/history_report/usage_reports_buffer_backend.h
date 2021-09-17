@@ -32,6 +32,10 @@ class UsageReportsBufferBackend : public base::trace_event::MemoryDumpProvider {
  public:
   explicit UsageReportsBufferBackend(const base::FilePath& dir);
 
+  UsageReportsBufferBackend(const UsageReportsBufferBackend&) = delete;
+  UsageReportsBufferBackend& operator=(const UsageReportsBufferBackend&) =
+      delete;
+
   ~UsageReportsBufferBackend() override;
 
   // Creates and initializes the internal data structures.
@@ -58,8 +62,6 @@ class UsageReportsBufferBackend : public base::trace_event::MemoryDumpProvider {
   // NULL until Init method is called.
   std::unique_ptr<leveldb::DB> db_;
   base::FilePath db_file_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageReportsBufferBackend);
 };
 
 }  // namespace history_report

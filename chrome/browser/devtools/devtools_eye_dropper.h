@@ -26,6 +26,10 @@ class DevToolsEyeDropper : public content::WebContentsObserver,
 
   DevToolsEyeDropper(content::WebContents* web_contents,
                      EyeDropperCallback callback);
+
+  DevToolsEyeDropper(const DevToolsEyeDropper&) = delete;
+  DevToolsEyeDropper& operator=(const DevToolsEyeDropper&) = delete;
+
   ~DevToolsEyeDropper() override;
 
  private:
@@ -61,8 +65,6 @@ class DevToolsEyeDropper : public content::WebContentsObserver,
   content::RenderWidgetHost* host_ = nullptr;
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer_;
   base::WeakPtrFactory<DevToolsEyeDropper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsEyeDropper);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_EYE_DROPPER_H_

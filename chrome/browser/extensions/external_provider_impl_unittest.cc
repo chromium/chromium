@@ -95,6 +95,10 @@ const wchar_t kExternalAppRegistryKey[] =
 class ExternalProviderImplTest : public ExtensionServiceTestBase {
  public:
   ExternalProviderImplTest() {}
+
+  ExternalProviderImplTest(const ExternalProviderImplTest&) = delete;
+  ExternalProviderImplTest& operator=(const ExternalProviderImplTest&) = delete;
+
   ~ExternalProviderImplTest() override {}
 
   void InitService() {
@@ -248,8 +252,6 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   base::win::RegKey external_extension_key_;
   registry_util::RegistryOverrideManager registry_override_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProviderImplTest);
 };
 
 }  // namespace

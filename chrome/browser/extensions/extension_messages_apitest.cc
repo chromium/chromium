@@ -135,6 +135,10 @@ class MessageSender : public content::NotificationObserver {
 class MessagingApiTest : public ExtensionApiTest {
  public:
   MessagingApiTest() {}
+
+  MessagingApiTest(const MessagingApiTest&) = delete;
+  MessagingApiTest& operator=(const MessagingApiTest&) = delete;
+
   ~MessagingApiTest() override {}
 
   void SetUpOnMainThread() override {
@@ -142,9 +146,6 @@ class MessagingApiTest : public ExtensionApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessagingApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, Messaging) {
@@ -1073,14 +1074,17 @@ class ExternallyConnectableMessagingTestNoChannelID
     : public ExternallyConnectableMessagingTest {
  public:
   ExternallyConnectableMessagingTestNoChannelID() {}
+
+  ExternallyConnectableMessagingTestNoChannelID(
+      const ExternallyConnectableMessagingTestNoChannelID&) = delete;
+  ExternallyConnectableMessagingTestNoChannelID& operator=(
+      const ExternallyConnectableMessagingTestNoChannelID&) = delete;
+
   ~ExternallyConnectableMessagingTestNoChannelID() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExternallyConnectableMessagingTest::SetUpCommandLine(command_line);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternallyConnectableMessagingTestNoChannelID);
 };
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTestNoChannelID,

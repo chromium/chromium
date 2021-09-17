@@ -62,6 +62,10 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
       Browser* browser,
       base::RepeatingCallback<content::PageNavigator*()> get_navigator,
       views::Widget* parent);
+
+  BookmarkMenuDelegate(const BookmarkMenuDelegate&) = delete;
+  BookmarkMenuDelegate& operator=(const BookmarkMenuDelegate&) = delete;
+
   ~BookmarkMenuDelegate() override;
 
   // Creates the menus from the model.
@@ -234,8 +238,6 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // Whether the involved menu uses mnemonics or not. If it does, ampersands
   // inside bookmark titles need to be escaped.
   bool menu_uses_mnemonics_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkMenuDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_MENU_DELEGATE_H_

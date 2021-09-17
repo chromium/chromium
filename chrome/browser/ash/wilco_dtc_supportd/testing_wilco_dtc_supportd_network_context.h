@@ -23,6 +23,12 @@ class TestingWilcoDtcSupportdNetworkContext
     : public WilcoDtcSupportdNetworkContext {
  public:
   TestingWilcoDtcSupportdNetworkContext();
+
+  TestingWilcoDtcSupportdNetworkContext(
+      const TestingWilcoDtcSupportdNetworkContext&) = delete;
+  TestingWilcoDtcSupportdNetworkContext& operator=(
+      const TestingWilcoDtcSupportdNetworkContext&) = delete;
+
   ~TestingWilcoDtcSupportdNetworkContext() override;
 
   // WilcoDtcSupportdNetworkContext overrides:
@@ -32,8 +38,6 @@ class TestingWilcoDtcSupportdNetworkContext
 
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingWilcoDtcSupportdNetworkContext);
 };
 
 }  // namespace ash

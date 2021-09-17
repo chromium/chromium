@@ -16,6 +16,10 @@ namespace welcome {
 class BookmarkHandler : public content::WebUIMessageHandler {
  public:
   explicit BookmarkHandler(PrefService* prefs);
+
+  BookmarkHandler(const BookmarkHandler&) = delete;
+  BookmarkHandler& operator=(const BookmarkHandler&) = delete;
+
   ~BookmarkHandler() override;
 
   // WebUIMessageHandler:
@@ -28,8 +32,6 @@ class BookmarkHandler : public content::WebUIMessageHandler {
  private:
   // Weak reference.
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkHandler);
 };
 
 }  // namespace welcome

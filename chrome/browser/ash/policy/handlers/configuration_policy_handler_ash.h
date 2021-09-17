@@ -23,6 +23,11 @@ class Schema;
 class ExternalDataPolicyHandler : public TypeCheckingPolicyHandler {
  public:
   explicit ExternalDataPolicyHandler(const char* policy_name);
+
+  ExternalDataPolicyHandler(const ExternalDataPolicyHandler&) = delete;
+  ExternalDataPolicyHandler& operator=(const ExternalDataPolicyHandler&) =
+      delete;
+
   ~ExternalDataPolicyHandler() override;
 
   // TypeCheckingPolicyHandler:
@@ -31,9 +36,6 @@ class ExternalDataPolicyHandler : public TypeCheckingPolicyHandler {
 
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternalDataPolicyHandler);
 };
 
 // ConfigurationPolicyHandler for validation of the network configuration
@@ -43,6 +45,11 @@ class NetworkConfigurationPolicyHandler : public TypeCheckingPolicyHandler {
  public:
   static NetworkConfigurationPolicyHandler* CreateForUserPolicy();
   static NetworkConfigurationPolicyHandler* CreateForDevicePolicy();
+
+  NetworkConfigurationPolicyHandler(const NetworkConfigurationPolicyHandler&) =
+      delete;
+  NetworkConfigurationPolicyHandler& operator=(
+      const NetworkConfigurationPolicyHandler&) = delete;
 
   ~NetworkConfigurationPolicyHandler() override;
 
@@ -71,8 +78,6 @@ class NetworkConfigurationPolicyHandler : public TypeCheckingPolicyHandler {
 
   // The name of the pref to apply the policy to.
   const char* pref_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConfigurationPolicyHandler);
 };
 
 // Maps the PinnedLauncherApps policy to the corresponding pref. List entries
@@ -80,6 +85,12 @@ class NetworkConfigurationPolicyHandler : public TypeCheckingPolicyHandler {
 class PinnedLauncherAppsPolicyHandler : public ListPolicyHandler {
  public:
   PinnedLauncherAppsPolicyHandler();
+
+  PinnedLauncherAppsPolicyHandler(const PinnedLauncherAppsPolicyHandler&) =
+      delete;
+  PinnedLauncherAppsPolicyHandler& operator=(
+      const PinnedLauncherAppsPolicyHandler&) = delete;
+
   ~PinnedLauncherAppsPolicyHandler() override;
 
  protected:
@@ -92,22 +103,21 @@ class PinnedLauncherAppsPolicyHandler : public ListPolicyHandler {
   // Converts the list of strings |filtered_list| to a list of dictionaries and
   // sets the pref.
   void ApplyList(base::Value filtered_list, PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PinnedLauncherAppsPolicyHandler);
 };
 
 class ScreenMagnifierPolicyHandler : public IntRangePolicyHandlerBase {
  public:
   ScreenMagnifierPolicyHandler();
+
+  ScreenMagnifierPolicyHandler(const ScreenMagnifierPolicyHandler&) = delete;
+  ScreenMagnifierPolicyHandler& operator=(const ScreenMagnifierPolicyHandler&) =
+      delete;
+
   ~ScreenMagnifierPolicyHandler() override;
 
   // IntRangePolicyHandlerBase:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenMagnifierPolicyHandler);
 };
 
 // Policy handler for login screen power management settings. This does not
@@ -117,14 +127,17 @@ class LoginScreenPowerManagementPolicyHandler
     : public SchemaValidatingPolicyHandler {
  public:
   explicit LoginScreenPowerManagementPolicyHandler(const Schema& chrome_schema);
+
+  LoginScreenPowerManagementPolicyHandler(
+      const LoginScreenPowerManagementPolicyHandler&) = delete;
+  LoginScreenPowerManagementPolicyHandler& operator=(
+      const LoginScreenPowerManagementPolicyHandler&) = delete;
+
   ~LoginScreenPowerManagementPolicyHandler() override;
 
   // SchemaValidatingPolicyHandler:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenPowerManagementPolicyHandler);
 };
 
 // Handles the deprecated IdleAction policy, so both kIdleActionBattery and
@@ -132,14 +145,16 @@ class LoginScreenPowerManagementPolicyHandler
 class DeprecatedIdleActionHandler : public IntRangePolicyHandlerBase {
  public:
   DeprecatedIdleActionHandler();
+
+  DeprecatedIdleActionHandler(const DeprecatedIdleActionHandler&) = delete;
+  DeprecatedIdleActionHandler& operator=(const DeprecatedIdleActionHandler&) =
+      delete;
+
   ~DeprecatedIdleActionHandler() override;
 
   // IntRangePolicyHandlerBase:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeprecatedIdleActionHandler);
 };
 
 class PowerManagementIdleSettingsPolicyHandler
@@ -147,41 +162,49 @@ class PowerManagementIdleSettingsPolicyHandler
  public:
   explicit PowerManagementIdleSettingsPolicyHandler(
       const Schema& chrome_schema);
+
+  PowerManagementIdleSettingsPolicyHandler(
+      const PowerManagementIdleSettingsPolicyHandler&) = delete;
+  PowerManagementIdleSettingsPolicyHandler& operator=(
+      const PowerManagementIdleSettingsPolicyHandler&) = delete;
+
   ~PowerManagementIdleSettingsPolicyHandler() override;
 
   // SchemaValidatingPolicyHandler:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerManagementIdleSettingsPolicyHandler);
 };
 
 class ScreenLockDelayPolicyHandler : public SchemaValidatingPolicyHandler {
  public:
   explicit ScreenLockDelayPolicyHandler(const Schema& chrome_schema);
+
+  ScreenLockDelayPolicyHandler(const ScreenLockDelayPolicyHandler&) = delete;
+  ScreenLockDelayPolicyHandler& operator=(const ScreenLockDelayPolicyHandler&) =
+      delete;
+
   ~ScreenLockDelayPolicyHandler() override;
 
   // SchemaValidatingPolicyHandler:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenLockDelayPolicyHandler);
 };
 
 class ScreenBrightnessPercentPolicyHandler
     : public SchemaValidatingPolicyHandler {
  public:
   explicit ScreenBrightnessPercentPolicyHandler(const Schema& chrome_schema);
+
+  ScreenBrightnessPercentPolicyHandler(
+      const ScreenBrightnessPercentPolicyHandler&) = delete;
+  ScreenBrightnessPercentPolicyHandler& operator=(
+      const ScreenBrightnessPercentPolicyHandler&) = delete;
+
   ~ScreenBrightnessPercentPolicyHandler() override;
 
   // SchemaValidatingPolicyHandler:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenBrightnessPercentPolicyHandler);
 };
 
 // Supported values for the |ArcBackupRestoreServiceEnabled| and

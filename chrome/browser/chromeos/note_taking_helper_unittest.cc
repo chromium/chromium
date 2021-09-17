@@ -112,6 +112,10 @@ std::string GetArcUrl(const base::FilePath& path) {
 class TestObserver : public NoteTakingHelper::Observer {
  public:
   TestObserver() { NoteTakingHelper::Get()->AddObserver(this); }
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override { NoteTakingHelper::Get()->RemoveObserver(this); }
 
   int num_updates() const { return num_updates_; }
@@ -135,8 +139,6 @@ class TestObserver : public NoteTakingHelper::Observer {
 
   // Profiles for which OnPreferredNoteTakingAppUpdated was called.
   std::vector<Profile*> preferred_app_updates_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -144,6 +146,10 @@ class TestObserver : public NoteTakingHelper::Observer {
 class NoteTakingHelperTest : public BrowserWithTestWindowTest {
  public:
   NoteTakingHelperTest() = default;
+
+  NoteTakingHelperTest(const NoteTakingHelperTest&) = delete;
+  NoteTakingHelperTest& operator=(const NoteTakingHelperTest&) = delete;
+
   ~NoteTakingHelperTest() override = default;
 
   void SetUp() override {
@@ -454,8 +460,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
 
   ArcAppTest arc_test_;
   std::unique_ptr<arc::ArcIntentHelperBridge> intent_helper_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoteTakingHelperTest);
 };
 
 TEST_F(NoteTakingHelperTest, PaletteNotEnabled) {

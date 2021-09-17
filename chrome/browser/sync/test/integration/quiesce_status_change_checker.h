@@ -26,6 +26,11 @@ class QuiesceStatusChangeChecker : public MultiClientStatusChangeChecker {
  public:
   explicit QuiesceStatusChangeChecker(
       std::vector<syncer::SyncServiceImpl*> services);
+
+  QuiesceStatusChangeChecker(const QuiesceStatusChangeChecker&) = delete;
+  QuiesceStatusChangeChecker& operator=(const QuiesceStatusChangeChecker&) =
+      delete;
+
   ~QuiesceStatusChangeChecker() override;
 
   // Implementation of StatusChangeChecker.
@@ -34,8 +39,6 @@ class QuiesceStatusChangeChecker : public MultiClientStatusChangeChecker {
  private:
   class NestedUpdatedProgressMarkerChecker;
   std::vector<std::unique_ptr<NestedUpdatedProgressMarkerChecker>> checkers_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuiesceStatusChangeChecker);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_QUIESCE_STATUS_CHANGE_CHECKER_H_

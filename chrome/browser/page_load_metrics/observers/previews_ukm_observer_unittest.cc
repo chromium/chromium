@@ -40,6 +40,9 @@ class TestPreviewsUKMObserver : public PreviewsUKMObserver {
   explicit TestPreviewsUKMObserver(bool save_data_enabled)
       : save_data_enabled_(save_data_enabled) {}
 
+  TestPreviewsUKMObserver(const TestPreviewsUKMObserver&) = delete;
+  TestPreviewsUKMObserver& operator=(const TestPreviewsUKMObserver&) = delete;
+
   ~TestPreviewsUKMObserver() override {}
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
@@ -55,14 +58,16 @@ class TestPreviewsUKMObserver : public PreviewsUKMObserver {
   }
 
   const bool save_data_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPreviewsUKMObserver);
 };
 
 class PreviewsUKMObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  public:
   PreviewsUKMObserverTest() {}
+
+  PreviewsUKMObserverTest(const PreviewsUKMObserverTest&) = delete;
+  PreviewsUKMObserverTest& operator=(const PreviewsUKMObserverTest&) = delete;
+
   ~PreviewsUKMObserverTest() override {}
 
   void RunTest(bool save_data_enabled) {
@@ -104,8 +109,6 @@ class PreviewsUKMObserverTest
 
  private:
   bool save_data_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PreviewsUKMObserverTest);
 };
 
 

@@ -16,6 +16,11 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
  public:
   EmbeddedTestServerSetupMixin(InProcessBrowserTestMixinHost* host,
                                net::EmbeddedTestServer* server);
+
+  EmbeddedTestServerSetupMixin(const EmbeddedTestServerSetupMixin&) = delete;
+  EmbeddedTestServerSetupMixin& operator=(const EmbeddedTestServerSetupMixin&) =
+      delete;
+
   ~EmbeddedTestServerSetupMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -29,8 +34,6 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
 
   // Embedded test server owned by test that uses this mixin.
   net::EmbeddedTestServer* embedded_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedTestServerSetupMixin);
 };
 
 }  // namespace ash

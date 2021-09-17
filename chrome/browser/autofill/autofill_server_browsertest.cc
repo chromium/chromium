@@ -70,6 +70,10 @@ class WindowedNetworkObserver {
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
             &WindowedNetworkObserver::OnIntercept, base::Unretained(this)));
   }
+
+  WindowedNetworkObserver(const WindowedNetworkObserver&) = delete;
+  WindowedNetworkObserver& operator=(const WindowedNetworkObserver&) = delete;
+
   ~WindowedNetworkObserver() {}
 
   // Waits for a network request with the |expected_upload_data_|.
@@ -122,8 +126,6 @@ class WindowedNetworkObserver {
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedNetworkObserver);
 };
 
 }  // namespace

@@ -121,6 +121,12 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
  public:
   ChromeBrowserMainPartsChromeos(const content::MainFunctionParams& parameters,
                                  StartupData* startup_data);
+
+  ChromeBrowserMainPartsChromeos(const ChromeBrowserMainPartsChromeos&) =
+      delete;
+  ChromeBrowserMainPartsChromeos& operator=(
+      const ChromeBrowserMainPartsChromeos&) = delete;
+
   ~ChromeBrowserMainPartsChromeos() override;
 
   // ChromeBrowserMainParts overrides.
@@ -232,8 +238,6 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<ash::quick_pair::QuickPairBrowserDelegateImpl>
       quick_pair_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainPartsChromeos);
 };
 
 }  // namespace chromeos

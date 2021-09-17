@@ -20,6 +20,10 @@ namespace test {
 class GlobalErrorWaiter : public GlobalErrorObserver {
  public:
   explicit GlobalErrorWaiter(Profile* profile);
+
+  GlobalErrorWaiter(const GlobalErrorWaiter&) = delete;
+  GlobalErrorWaiter& operator=(const GlobalErrorWaiter&) = delete;
+
   ~GlobalErrorWaiter() override;
 
   // GlobalErrorObserver:
@@ -34,8 +38,6 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
   base::RunLoop run_loop_;
   base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalErrorWaiter);
 };
 
 }  // namespace test

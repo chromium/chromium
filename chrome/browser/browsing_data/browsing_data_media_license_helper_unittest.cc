@@ -40,6 +40,10 @@ const char kClearKeyCdmPluginId[] = "application_x-ppapi-clearkey-cdm";
 class AwaitCompletionHelper {
  public:
   AwaitCompletionHelper() : start_(false), already_quit_(false) {}
+
+  AwaitCompletionHelper(const AwaitCompletionHelper&) = delete;
+  AwaitCompletionHelper& operator=(const AwaitCompletionHelper&) = delete;
+
   virtual ~AwaitCompletionHelper() {}
 
   void BlockUntilNotified() {
@@ -74,8 +78,6 @@ class AwaitCompletionHelper {
   // immediately.
   bool start_;
   bool already_quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwaitCompletionHelper);
 };
 
 // The FileSystem APIs are all asynchronous; this testing class wraps up the
@@ -92,6 +94,11 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
     helper_ = BrowsingDataMediaLicenseHelper::Create(filesystem_context_);
     base::RunLoop().RunUntilIdle();
   }
+
+  BrowsingDataMediaLicenseHelperTest(
+      const BrowsingDataMediaLicenseHelperTest&) = delete;
+  BrowsingDataMediaLicenseHelperTest& operator=(
+      const BrowsingDataMediaLicenseHelperTest&) = delete;
 
   ~BrowsingDataMediaLicenseHelperTest() override {
     // Avoid memory leaks.
@@ -268,8 +275,6 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
   // Storage to pass information back from callbacks.
   std::unique_ptr<std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>>
       media_license_info_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataMediaLicenseHelperTest);
 };
 
 // Verifies that the BrowsingDataMediaLicenseHelper correctly handles an empty

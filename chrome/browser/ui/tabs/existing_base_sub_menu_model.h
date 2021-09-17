@@ -48,6 +48,9 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   static constexpr int kMinExistingWindowCommandId = 1001;
   static constexpr int kMinExistingTabGroupCommandId = 1301;
 
+  ExistingBaseSubMenuModel(const ExistingBaseSubMenuModel&) = delete;
+  ExistingBaseSubMenuModel& operator=(const ExistingBaseSubMenuModel&) = delete;
+
   ~ExistingBaseSubMenuModel() override;
 
   const base::flat_map<int, int>& command_id_to_target_index_for_testing() {
@@ -121,8 +124,6 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   // Stores a mapping from a menu item's command id to its target index (e.g.
   // tab-group index or browser index).
   base::flat_map<int, int> command_id_to_target_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExistingBaseSubMenuModel);
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_EXISTING_BASE_SUB_MENU_MODEL_H_

@@ -24,6 +24,9 @@ class FileStreamWriter : public storage::FileStreamWriter {
  public:
   FileStreamWriter(const storage::FileSystemURL& url, int64_t initial_offset);
 
+  FileStreamWriter(const FileStreamWriter&) = delete;
+  FileStreamWriter& operator=(const FileStreamWriter&) = delete;
+
   ~FileStreamWriter() override;
 
   // storage::FileStreamWriter overrides.
@@ -80,7 +83,6 @@ class FileStreamWriter : public storage::FileStreamWriter {
   State state_;
 
   base::WeakPtrFactory<FileStreamWriter> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FileStreamWriter);
 };
 
 }  // namespace file_system_provider

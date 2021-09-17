@@ -19,6 +19,10 @@ class Profile;
 class PrefMetricsService : public KeyedService {
  public:
   explicit PrefMetricsService(Profile* profile);
+
+  PrefMetricsService(const PrefMetricsService&) = delete;
+  PrefMetricsService& operator=(const PrefMetricsService&) = delete;
+
   ~PrefMetricsService() override;
 
   // Records metrics about the state of the homepage on launch.
@@ -52,8 +56,6 @@ class PrefMetricsService : public KeyedService {
   PrefService* prefs_;
 
   base::WeakPtrFactory<PrefMetricsService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefMetricsService);
 };
 
 #endif  // CHROME_BROWSER_PREFS_PREF_METRICS_SERVICE_H_

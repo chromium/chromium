@@ -30,6 +30,10 @@ class CastDialogMetrics {
   CastDialogMetrics(const base::Time& initialization_time,
                     MediaRouterDialogOpenOrigin activation_location,
                     Profile* profile);
+
+  CastDialogMetrics(const CastDialogMetrics&) = delete;
+  CastDialogMetrics& operator=(const CastDialogMetrics&) = delete;
+
   virtual ~CastDialogMetrics();
 
   // Records the time it took to load sinks when called for the first time. This
@@ -85,8 +89,6 @@ class CastDialogMetrics {
   bool first_action_recorded_ = false;
 
   bool activation_location_and_cast_mode_recorded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CastDialogMetrics);
 };
 
 }  // namespace media_router

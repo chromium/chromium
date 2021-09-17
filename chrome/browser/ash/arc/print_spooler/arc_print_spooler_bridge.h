@@ -35,6 +35,10 @@ class ArcPrintSpoolerBridge : public KeyedService,
 
   ArcPrintSpoolerBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
+
+  ArcPrintSpoolerBridge(const ArcPrintSpoolerBridge&) = delete;
+  ArcPrintSpoolerBridge& operator=(const ArcPrintSpoolerBridge&) = delete;
+
   ~ArcPrintSpoolerBridge() override;
 
   // mojom::PrintSpoolerHost:
@@ -63,8 +67,6 @@ class ArcPrintSpoolerBridge : public KeyedService,
   Profile* const profile_;
 
   base::WeakPtrFactory<ArcPrintSpoolerBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPrintSpoolerBridge);
 };
 
 }  // namespace arc

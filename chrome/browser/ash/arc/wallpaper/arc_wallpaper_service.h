@@ -37,6 +37,10 @@ class ArcWallpaperService : public KeyedService, public mojom::WallpaperHost {
 
   ArcWallpaperService(content::BrowserContext* context,
                       ArcBridgeService* bridge_service);
+
+  ArcWallpaperService(const ArcWallpaperService&) = delete;
+  ArcWallpaperService& operator=(const ArcWallpaperService&) = delete;
+
   ~ArcWallpaperService() override;
 
   // mojom::WallpaperHost overrides.
@@ -77,8 +81,6 @@ class ArcWallpaperService : public KeyedService, public mojom::WallpaperHost {
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
   std::unique_ptr<DecodeRequest> decode_request_;
   std::unique_ptr<DecodeRequestSender> decode_request_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcWallpaperService);
 };
 
 }  // namespace arc

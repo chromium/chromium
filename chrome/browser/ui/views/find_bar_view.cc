@@ -65,6 +65,10 @@ class FindBarMatchCountLabel : public views::Label {
   METADATA_HEADER(FindBarMatchCountLabel);
 
   FindBarMatchCountLabel() = default;
+
+  FindBarMatchCountLabel(const FindBarMatchCountLabel&) = delete;
+  FindBarMatchCountLabel& operator=(const FindBarMatchCountLabel&) = delete;
+
   ~FindBarMatchCountLabel() override = default;
 
   gfx::Size CalculatePreferredSize() const override {
@@ -114,8 +118,6 @@ class FindBarMatchCountLabel : public views::Label {
 
  private:
   absl::optional<find_in_page::FindNotificationDetails> last_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarMatchCountLabel);
 };
 
 BEGIN_VIEW_BUILDER(/* No Export */, FindBarMatchCountLabel, views::Label)

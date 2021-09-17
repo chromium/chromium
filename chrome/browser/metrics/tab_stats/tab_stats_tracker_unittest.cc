@@ -64,6 +64,10 @@ class TestTabStatsTracker : public TabStatsTracker {
   using UmaStatsReportingDelegate = TabStatsTracker::UmaStatsReportingDelegate;
 
   explicit TestTabStatsTracker(PrefService* pref_service);
+
+  TestTabStatsTracker(const TestTabStatsTracker&) = delete;
+  TestTabStatsTracker& operator=(const TestTabStatsTracker&) = delete;
+
   ~TestTabStatsTracker() override {}
 
   // Helper functions to update the number of tabs/windows.
@@ -133,8 +137,6 @@ class TestTabStatsTracker : public TabStatsTracker {
 
  private:
   PrefService* pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTabStatsTracker);
 };
 
 class TestUmaStatsReportingDelegate

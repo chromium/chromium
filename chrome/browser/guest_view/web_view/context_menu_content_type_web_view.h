@@ -18,6 +18,10 @@ class Extension;
 // guests are: searching, printing, speech and instant.
 class ContextMenuContentTypeWebView : public ContextMenuContentType {
  public:
+  ContextMenuContentTypeWebView(const ContextMenuContentTypeWebView&) = delete;
+  ContextMenuContentTypeWebView& operator=(
+      const ContextMenuContentTypeWebView&) = delete;
+
   ~ContextMenuContentTypeWebView() override;
 
   // ContextMenuContentType overrides.
@@ -31,8 +35,6 @@ class ContextMenuContentTypeWebView : public ContextMenuContentType {
   friend class ContextMenuContentTypeFactory;
 
   const extensions::Extension* GetExtension() const;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuContentTypeWebView);
 };
 
 #endif  // CHROME_BROWSER_GUEST_VIEW_WEB_VIEW_CONTEXT_MENU_CONTENT_TYPE_WEB_VIEW_H_

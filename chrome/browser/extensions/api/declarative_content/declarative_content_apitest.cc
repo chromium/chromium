@@ -440,12 +440,15 @@ class ParameterizedShowActionDeclarativeContentApiTest
       public testing::WithParamInterface<const char*> {
  public:
   ParameterizedShowActionDeclarativeContentApiTest() {}
+
+  ParameterizedShowActionDeclarativeContentApiTest(
+      const ParameterizedShowActionDeclarativeContentApiTest&) = delete;
+  ParameterizedShowActionDeclarativeContentApiTest& operator=(
+      const ParameterizedShowActionDeclarativeContentApiTest&) = delete;
+
   ~ParameterizedShowActionDeclarativeContentApiTest() override {}
 
   void TestShowAction(absl::optional<ActionInfo::Type> action_type);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ParameterizedShowActionDeclarativeContentApiTest);
 };
 
 void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(

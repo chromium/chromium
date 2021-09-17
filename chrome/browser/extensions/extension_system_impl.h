@@ -46,6 +46,10 @@ class ExtensionSystemImpl : public ExtensionSystem {
   using InstallUpdateCallback = ExtensionSystem::InstallUpdateCallback;
 
   explicit ExtensionSystemImpl(Profile* profile);
+
+  ExtensionSystemImpl(const ExtensionSystemImpl&) = delete;
+  ExtensionSystemImpl& operator=(const ExtensionSystemImpl&) = delete;
+
   ~ExtensionSystemImpl() override;
 
   // KeyedService implementation.
@@ -169,8 +173,6 @@ class ExtensionSystemImpl : public ExtensionSystem {
   Profile* profile_;
 
   Shared* shared_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSystemImpl);
 };
 
 }  // namespace extensions

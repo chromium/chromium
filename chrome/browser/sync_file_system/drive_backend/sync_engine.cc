@@ -116,6 +116,9 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
     sequence_checker_.DetachFromSequence();
   }
 
+  WorkerObserver(const WorkerObserver&) = delete;
+  WorkerObserver& operator=(const WorkerObserver&) = delete;
+
   ~WorkerObserver() override {
     DCHECK(sequence_checker_.CalledOnValidSequence());
   }
@@ -175,8 +178,6 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
   base::WeakPtr<SyncEngine> sync_engine_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerObserver);
 };
 
 std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(

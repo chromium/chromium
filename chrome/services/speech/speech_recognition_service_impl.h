@@ -24,6 +24,11 @@ class SpeechRecognitionServiceImpl
  public:
   explicit SpeechRecognitionServiceImpl(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionService> receiver);
+
+  SpeechRecognitionServiceImpl(const SpeechRecognitionServiceImpl&) = delete;
+  SpeechRecognitionServiceImpl& operator=(const SpeechRecognitionServiceImpl&) =
+      delete;
+
   ~SpeechRecognitionServiceImpl() override;
 
   // media::mojom::SpeechRecognitionService
@@ -71,8 +76,6 @@ class SpeechRecognitionServiceImpl
   base::FilePath config_path_ = base::FilePath();
 
   base::WeakPtrFactory<SpeechRecognitionServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionServiceImpl);
 };
 
 }  // namespace speech

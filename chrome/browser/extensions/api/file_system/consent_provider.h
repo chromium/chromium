@@ -69,6 +69,10 @@ class ConsentProvider {
   };
 
   explicit ConsentProvider(DelegateInterface* delegate);
+
+  ConsentProvider(const ConsentProvider&) = delete;
+  ConsentProvider& operator=(const ConsentProvider&) = delete;
+
   ~ConsentProvider();
 
   // Requests consent for granting |writable| permissions to the |volume|
@@ -91,8 +95,6 @@ class ConsentProvider {
 
  private:
   DelegateInterface* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConsentProvider);
 };
 
 // Handles interaction with user as well as environment checks (allowlists,
@@ -100,6 +102,10 @@ class ConsentProvider {
 class ConsentProviderDelegate : public ConsentProvider::DelegateInterface {
  public:
   explicit ConsentProviderDelegate(Profile* profile);
+
+  ConsentProviderDelegate(const ConsentProviderDelegate&) = delete;
+  ConsentProviderDelegate& operator=(const ConsentProviderDelegate&) = delete;
+
   ~ConsentProviderDelegate();
 
  private:
@@ -124,8 +130,6 @@ class ConsentProviderDelegate : public ConsentProvider::DelegateInterface {
   bool HasRequestDownloadsPermission(const Extension& extension) override;
 
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConsentProviderDelegate);
 };
 
 }  // namespace file_system_api

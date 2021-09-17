@@ -65,6 +65,9 @@ class TestImageRequest : public ImageDecoder::ImageRequest {
         quit_closure_(std::move(quit_closure)),
         quit_called_(false) {}
 
+  TestImageRequest(const TestImageRequest&) = delete;
+  TestImageRequest& operator=(const TestImageRequest&) = delete;
+
   ~TestImageRequest() override {
     if (!quit_called_) {
       std::move(quit_closure_).Run();
@@ -95,8 +98,6 @@ class TestImageRequest : public ImageDecoder::ImageRequest {
   base::OnceClosure quit_closure_;
   bool quit_called_;
   SkBitmap bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestImageRequest);
 };
 
 }  // namespace

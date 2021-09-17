@@ -23,6 +23,11 @@ class SyncEncryptionKeysExtension : public content::RenderFrameObserver {
  public:
   // Creates a new instance, with ownership transferred to |*frame|.
   static void Create(content::RenderFrame* frame);
+
+  SyncEncryptionKeysExtension(const SyncEncryptionKeysExtension&) = delete;
+  SyncEncryptionKeysExtension& operator=(const SyncEncryptionKeysExtension&) =
+      delete;
+
   ~SyncEncryptionKeysExtension() override;
 
   // content::RenderFrameObserver:
@@ -41,8 +46,6 @@ class SyncEncryptionKeysExtension : public content::RenderFrameObserver {
 
   mojo::AssociatedRemote<chrome::mojom::SyncEncryptionKeysExtension> remote_;
   base::WeakPtrFactory<SyncEncryptionKeysExtension> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEncryptionKeysExtension);
 };
 
 #endif  // CHROME_RENDERER_SYNC_ENCRYPTION_KEYS_EXTENSION_H_

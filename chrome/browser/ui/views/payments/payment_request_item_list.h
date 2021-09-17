@@ -41,6 +41,10 @@ class PaymentRequestItemList {
          bool selected,
          bool clickable,
          bool show_edit_button);
+
+    Item(const Item&) = delete;
+    Item& operator=(const Item&) = delete;
+
     ~Item() override;
 
     bool selected() const { return selected_; }
@@ -114,8 +118,6 @@ class PaymentRequestItemList {
     std::u16string accessible_item_description_;
     bool selected_;
     bool show_edit_button_;
-
-    DISALLOW_COPY_AND_ASSIGN(Item);
   };
 
   explicit PaymentRequestItemList(

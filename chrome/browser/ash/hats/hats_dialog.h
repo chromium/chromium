@@ -31,6 +31,9 @@ class HatsDialog : public ui::WebDialogDelegate {
       const base::flat_map<std::string, std::string>& product_specific_data =
           base::flat_map<std::string, std::string>());
 
+  HatsDialog(const HatsDialog&) = delete;
+  HatsDialog& operator=(const HatsDialog&) = delete;
+
   ~HatsDialog() override;
 
  private:
@@ -82,8 +85,6 @@ class HatsDialog : public ui::WebDialogDelegate {
   std::string url_;
   Profile* user_profile_;
   const std::string histogram_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(HatsDialog);
 };
 
 }  // namespace ash

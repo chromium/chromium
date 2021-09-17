@@ -45,6 +45,11 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   // Constructor for injecting dependencies in tests.
   MediaRouterActionController(Profile* profile,
                               media_router::MediaRouter* router);
+
+  MediaRouterActionController(const MediaRouterActionController&) = delete;
+  MediaRouterActionController& operator=(const MediaRouterActionController&) =
+      delete;
+
   ~MediaRouterActionController() override;
 
   // Whether the media router action is shown by an administrator policy.
@@ -127,8 +132,6 @@ class MediaRouterActionController : public media_router::IssuesObserver,
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<MediaRouterActionController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterActionController);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_ACTION_CONTROLLER_H_

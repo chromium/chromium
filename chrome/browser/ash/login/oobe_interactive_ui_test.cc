@@ -425,6 +425,12 @@ std::unique_ptr<RecommendAppsFetcher> CreateRecommendAppsFetcher(
 class NativeWindowVisibilityObserver : public aura::WindowObserver {
  public:
   NativeWindowVisibilityObserver() = default;
+
+  NativeWindowVisibilityObserver(const NativeWindowVisibilityObserver&) =
+      delete;
+  NativeWindowVisibilityObserver& operator=(
+      const NativeWindowVisibilityObserver&) = delete;
+
   // aura::Window will remove observers on destruction.
   ~NativeWindowVisibilityObserver() override = default;
 
@@ -445,8 +451,6 @@ class NativeWindowVisibilityObserver : public aura::WindowObserver {
   bool was_visible_ = false;
 
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWindowVisibilityObserver);
 };
 
 // Sets the `NativeWindowVisibilityObserver` to observe the
@@ -459,6 +463,12 @@ class NativeWindowVisibilityBrowserMainExtraParts
   explicit NativeWindowVisibilityBrowserMainExtraParts(
       NativeWindowVisibilityObserver* observer)
       : observer_(observer) {}
+
+  NativeWindowVisibilityBrowserMainExtraParts(
+      const NativeWindowVisibilityBrowserMainExtraParts&) = delete;
+  NativeWindowVisibilityBrowserMainExtraParts& operator=(
+      const NativeWindowVisibilityBrowserMainExtraParts&) = delete;
+
   ~NativeWindowVisibilityBrowserMainExtraParts() override = default;
 
   // ChromeBrowserMainExtraParts:
@@ -471,8 +481,6 @@ class NativeWindowVisibilityBrowserMainExtraParts
 
  private:
   NativeWindowVisibilityObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWindowVisibilityBrowserMainExtraParts);
 };
 
 class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
@@ -509,6 +517,11 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
           {}, {features::kHideShelfControlsInTabletMode});
     }
   }
+
+  OobeEndToEndTestSetupMixin(const OobeEndToEndTestSetupMixin&) = delete;
+  OobeEndToEndTestSetupMixin& operator=(const OobeEndToEndTestSetupMixin&) =
+      delete;
+
   ~OobeEndToEndTestSetupMixin() override = default;
 
   // InProcessBrowserTestMixin:
@@ -600,8 +613,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   std::unique_ptr<ScopedTestRecommendAppsFetcherFactory>
       recommend_apps_fetcher_factory_;
   net::EmbeddedTestServer* arc_tos_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeEndToEndTestSetupMixin);
 };
 
 }  // namespace
@@ -614,6 +625,10 @@ class OobeInteractiveUITest : public OobeBaseTest,
     branded_build_override_ =
         WizardController::ForceBrandedBuildForTesting(true);
   }
+
+  OobeInteractiveUITest(const OobeInteractiveUITest&) = delete;
+  OobeInteractiveUITest& operator=(const OobeInteractiveUITest&) = delete;
+
   ~OobeInteractiveUITest() override = default;
 
   // OobeBaseTest:
@@ -655,7 +670,6 @@ class OobeInteractiveUITest : public OobeBaseTest,
   EmbeddedTestServerSetupMixin arc_tos_server_setup_{&mixin_host_,
                                                      &arc_tos_server_};
   OobeEndToEndTestSetupMixin setup_{&mixin_host_, &arc_tos_server_, GetParam()};
-  DISALLOW_COPY_AND_ASSIGN(OobeInteractiveUITest);
 };
 
 void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
@@ -755,6 +769,12 @@ INSTANTIATE_TEST_SUITE_P(
 class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
  public:
   OobeZeroTouchInteractiveUITest() = default;
+
+  OobeZeroTouchInteractiveUITest(const OobeZeroTouchInteractiveUITest&) =
+      delete;
+  OobeZeroTouchInteractiveUITest& operator=(
+      const OobeZeroTouchInteractiveUITest&) = delete;
+
   ~OobeZeroTouchInteractiveUITest() override = default;
 
   void SetUpOnMainThread() override {
@@ -789,8 +809,6 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
   LocalPolicyTestServerMixin policy_server_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeZeroTouchInteractiveUITest);
 };
 
 void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {

@@ -113,6 +113,11 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
          {feature_engagement::kIPHDesktopPwaInstallFeature, {}}},
         {});
   }
+
+  PwaInstallViewBrowserTest(const PwaInstallViewBrowserTest&) = delete;
+  PwaInstallViewBrowserTest& operator=(const PwaInstallViewBrowserTest&) =
+      delete;
+
   ~PwaInstallViewBrowserTest() override = default;
 
   void SetUp() override {
@@ -281,8 +286,6 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   PageActionIconView* pwa_install_view_ = nullptr;
   content::WebContents* web_contents_ = nullptr;
   webapps::TestAppBannerManagerDesktop* app_banner_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PwaInstallViewBrowserTest);
 
  private:
   web_app::ScopedOsHooksSuppress os_hooks_suppress_;

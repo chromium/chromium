@@ -32,6 +32,10 @@ class UiSceneCreator {
                  TextInputDelegate* text_input_delegate,
                  AudioDelegate* audio_delegate,
                  Model* model);
+
+  UiSceneCreator(const UiSceneCreator&) = delete;
+  UiSceneCreator& operator=(const UiSceneCreator&) = delete;
+
   ~UiSceneCreator();
 
   void CreateScene();
@@ -67,8 +71,6 @@ class UiSceneCreator {
   TextInputDelegate* text_input_delegate_;
   AudioDelegate* audio_delegate_;
   Model* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiSceneCreator);
 };
 
 }  // namespace vr

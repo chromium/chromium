@@ -83,6 +83,10 @@ class ArcPlayStoreDisabledWaiter : public ArcSessionManagerObserver {
  public:
   ArcPlayStoreDisabledWaiter() { ArcSessionManager::Get()->AddObserver(this); }
 
+  ArcPlayStoreDisabledWaiter(const ArcPlayStoreDisabledWaiter&) = delete;
+  ArcPlayStoreDisabledWaiter& operator=(const ArcPlayStoreDisabledWaiter&) =
+      delete;
+
   ~ArcPlayStoreDisabledWaiter() override {
     ArcSessionManager::Get()->RemoveObserver(this);
   }
@@ -103,8 +107,6 @@ class ArcPlayStoreDisabledWaiter : public ArcSessionManagerObserver {
   }
 
   base::RunLoop* run_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreDisabledWaiter);
 };
 
 class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {

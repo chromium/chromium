@@ -40,6 +40,11 @@ class SupervisedUserNavigationObserver
       public SupervisedUserServiceObserver,
       public supervised_user::mojom::SupervisedUserCommands {
  public:
+  SupervisedUserNavigationObserver(const SupervisedUserNavigationObserver&) =
+      delete;
+  SupervisedUserNavigationObserver& operator=(
+      const SupervisedUserNavigationObserver&) = delete;
+
   ~SupervisedUserNavigationObserver() override;
 
   const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>&
@@ -176,8 +181,6 @@ class SupervisedUserNavigationObserver
       this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserNavigationObserver);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_NAVIGATION_OBSERVER_H_

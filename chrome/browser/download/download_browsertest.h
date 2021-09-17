@@ -16,6 +16,12 @@ class DownloadTestObserverNotInProgress : public content::DownloadTestObserver {
  public:
   DownloadTestObserverNotInProgress(content::DownloadManager* download_manager,
                                     size_t count);
+
+  DownloadTestObserverNotInProgress(const DownloadTestObserverNotInProgress&) =
+      delete;
+  DownloadTestObserverNotInProgress& operator=(
+      const DownloadTestObserverNotInProgress&) = delete;
+
   ~DownloadTestObserverNotInProgress() override;
 
   void StartObserving();
@@ -24,8 +30,6 @@ class DownloadTestObserverNotInProgress : public content::DownloadTestObserver {
   bool IsDownloadInFinalState(download::DownloadItem* download) override;
 
   bool started_observing_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTestObserverNotInProgress);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_BROWSERTEST_H_

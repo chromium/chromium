@@ -29,6 +29,12 @@ class ArcDocumentsProviderFileStreamWriter : public storage::FileStreamWriter {
  public:
   ArcDocumentsProviderFileStreamWriter(const storage::FileSystemURL& url,
                                        int64_t offset);
+
+  ArcDocumentsProviderFileStreamWriter(
+      const ArcDocumentsProviderFileStreamWriter&) = delete;
+  ArcDocumentsProviderFileStreamWriter& operator=(
+      const ArcDocumentsProviderFileStreamWriter&) = delete;
+
   ~ArcDocumentsProviderFileStreamWriter() override;
 
   // storage::FileStreamWriter overrides:
@@ -53,8 +59,6 @@ class ArcDocumentsProviderFileStreamWriter : public storage::FileStreamWriter {
 
   base::WeakPtrFactory<ArcDocumentsProviderFileStreamWriter> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderFileStreamWriter);
 };
 
 }  // namespace arc

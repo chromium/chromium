@@ -26,6 +26,10 @@ class OmniboxProvider : public SearchProvider,
  public:
   explicit OmniboxProvider(Profile* profile,
                            AppListControllerDelegate* list_controller);
+
+  OmniboxProvider(const OmniboxProvider&) = delete;
+  OmniboxProvider& operator=(const OmniboxProvider&) = delete;
+
   ~OmniboxProvider() override;
 
   // SearchProvider overrides:
@@ -53,10 +57,6 @@ class OmniboxProvider : public SearchProvider,
   std::unique_ptr<AutocompleteController> controller_;
 
   FaviconCache favicon_cache_;
-
-  // TODO(crbug.com/1247475): Score normalizers removed due to stability issues.
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxProvider);
 };
 
 }  // namespace app_list

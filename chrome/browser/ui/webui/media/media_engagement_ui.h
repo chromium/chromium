@@ -16,6 +16,10 @@
 class MediaEngagementUI : public ui::MojoWebUIController {
  public:
   explicit MediaEngagementUI(content::WebUI* web_ui);
+
+  MediaEngagementUI(const MediaEngagementUI&) = delete;
+  MediaEngagementUI& operator=(const MediaEngagementUI&) = delete;
+
   ~MediaEngagementUI() override;
 
   // Instantiates the implementor of the MediaEngagementScoreDetailsProvider
@@ -29,8 +33,6 @@ class MediaEngagementUI : public ui::MojoWebUIController {
       ui_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MEDIA_MEDIA_ENGAGEMENT_UI_H_

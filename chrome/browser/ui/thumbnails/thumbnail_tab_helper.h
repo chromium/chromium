@@ -24,6 +24,9 @@ class ThumbnailScheduler;
 class ThumbnailTabHelper
     : public content::WebContentsUserData<ThumbnailTabHelper> {
  public:
+  ThumbnailTabHelper(const ThumbnailTabHelper&) = delete;
+  ThumbnailTabHelper& operator=(const ThumbnailTabHelper&) = delete;
+
   ~ThumbnailTabHelper() override;
 
   scoped_refptr<ThumbnailImage> thumbnail() const { return thumbnail_; }
@@ -94,8 +97,6 @@ class ThumbnailTabHelper
 
   base::WeakPtrFactory<ThumbnailTabHelper>
       weak_factory_for_thumbnail_on_tab_hidden_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThumbnailTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_TAB_HELPER_H_

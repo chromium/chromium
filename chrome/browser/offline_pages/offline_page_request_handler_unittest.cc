@@ -127,6 +127,11 @@ bool GetTabId(int tab_id_value,
 class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
  public:
   TestNetworkChangeNotifier() : online_(true) {}
+
+  TestNetworkChangeNotifier(const TestNetworkChangeNotifier&) = delete;
+  TestNetworkChangeNotifier& operator=(const TestNetworkChangeNotifier&) =
+      delete;
+
   ~TestNetworkChangeNotifier() override {}
 
   net::NetworkChangeNotifier::ConnectionType GetCurrentConnectionType()
@@ -140,8 +145,6 @@ class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
 
  private:
   bool online_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkChangeNotifier);
 };
 
 class TestURLLoaderClient : public network::mojom::URLLoaderClient {
@@ -291,6 +294,11 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
 class OfflinePageRequestHandlerTest : public testing::Test {
  public:
   OfflinePageRequestHandlerTest();
+
+  OfflinePageRequestHandlerTest(const OfflinePageRequestHandlerTest&) = delete;
+  OfflinePageRequestHandlerTest& operator=(
+      const OfflinePageRequestHandlerTest&) = delete;
+
   ~OfflinePageRequestHandlerTest() override {}
 
   void SetUp() override;
@@ -456,8 +464,6 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   base::OnceClosure async_operation_completed_callback_;
 
   OfflinePageURLLoaderBuilder interceptor_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageRequestHandlerTest);
 };
 
 OfflinePageRequestHandlerTest::OfflinePageRequestHandlerTest()

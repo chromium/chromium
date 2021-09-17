@@ -21,6 +21,12 @@ void DialogResultCallback(bool result, bool can_show_browser_window) {}
 class EnterpriseStartupDialogViewBrowserTest : public DialogBrowserTest {
  public:
   EnterpriseStartupDialogViewBrowserTest() = default;
+
+  EnterpriseStartupDialogViewBrowserTest(
+      const EnterpriseStartupDialogViewBrowserTest&) = delete;
+  EnterpriseStartupDialogViewBrowserTest& operator=(
+      const EnterpriseStartupDialogViewBrowserTest&) = delete;
+
   ~EnterpriseStartupDialogViewBrowserTest() override = default;
 
   // override DialogBrowserTest
@@ -49,8 +55,6 @@ class EnterpriseStartupDialogViewBrowserTest : public DialogBrowserTest {
 
  private:
   EnterpriseStartupDialogView* dialog;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseStartupDialogViewBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(EnterpriseStartupDialogViewBrowserTest,

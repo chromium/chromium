@@ -24,6 +24,10 @@ namespace vr {
 class VR_UI_EXPORT Repositioner : public UiElement {
  public:
   Repositioner();
+
+  Repositioner(const Repositioner&) = delete;
+  Repositioner& operator=(const Repositioner&) = delete;
+
   ~Repositioner() override;
 
   void set_laser_direction(const gfx::Vector3dF& laser_direction) {
@@ -58,8 +62,6 @@ class VR_UI_EXPORT Repositioner : public UiElement {
 
   gfx::Transform initial_transform_;
   gfx::Vector3dF initial_laser_direction_;
-
-  DISALLOW_COPY_AND_ASSIGN(Repositioner);
 };
 
 }  // namespace vr

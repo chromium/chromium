@@ -18,6 +18,10 @@ class AndroidVSyncHelper {
  public:
   using Callback = base::RepeatingCallback<void(base::TimeTicks)>;
   explicit AndroidVSyncHelper(Callback callback);
+
+  AndroidVSyncHelper(const AndroidVSyncHelper&) = delete;
+  AndroidVSyncHelper& operator=(const AndroidVSyncHelper&) = delete;
+
   ~AndroidVSyncHelper();
   void OnVSync(JNIEnv* env,
                const base::android::JavaParamRef<jobject>& obj,
@@ -40,8 +44,6 @@ class AndroidVSyncHelper {
   bool vsync_requested_ = false;
 
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidVSyncHelper);
 };
 
 }  // namespace vr

@@ -84,6 +84,10 @@ class TabStatsDataStore : public TabStatsObserver {
       base::flat_map<TabID, TabStateDuringInterval>;
 
   explicit TabStatsDataStore(PrefService* pref_service);
+
+  TabStatsDataStore(const TabStatsDataStore&) = delete;
+  TabStatsDataStore& operator=(const TabStatsDataStore&) = delete;
+
   ~TabStatsDataStore() override;
 
   // TabStatsObserver:
@@ -159,8 +163,6 @@ class TabStatsDataStore : public TabStatsObserver {
   base::flat_map<content::WebContents*, TabID> existing_tabs_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TabStatsDataStore);
 };
 
 }  // namespace metrics

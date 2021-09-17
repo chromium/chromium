@@ -32,6 +32,10 @@ class WildcardLoginChecker : public UserInfoFetcher::Delegate {
   using StatusCallback = base::OnceCallback<void(Result)>;
 
   WildcardLoginChecker();
+
+  WildcardLoginChecker(const WildcardLoginChecker&) = delete;
+  WildcardLoginChecker& operator=(const WildcardLoginChecker&) = delete;
+
   virtual ~WildcardLoginChecker();
 
   // Starts checking with a provided refresh token.
@@ -61,8 +65,6 @@ class WildcardLoginChecker : public UserInfoFetcher::Delegate {
 
   std::unique_ptr<PolicyOAuth2TokenFetcher> token_fetcher_;
   std::unique_ptr<UserInfoFetcher> user_info_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WildcardLoginChecker);
 };
 
 }  // namespace policy

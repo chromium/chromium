@@ -36,6 +36,12 @@ class BrowserNonClientFrameViewBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
   BrowserNonClientFrameViewBrowserTest() = default;
+
+  BrowserNonClientFrameViewBrowserTest(
+      const BrowserNonClientFrameViewBrowserTest&) = delete;
+  BrowserNonClientFrameViewBrowserTest& operator=(
+      const BrowserNonClientFrameViewBrowserTest&) = delete;
+
   ~BrowserNonClientFrameViewBrowserTest() override = default;
 
   void SetUp() override {
@@ -86,8 +92,6 @@ class BrowserNonClientFrameViewBrowserTest
 
  private:
   GURL GetAppURL() { return embedded_test_server()->GetURL("/empty.html"); }
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameViewBrowserTest);
 };
 
 // Tests the frame color for a normal browser window.

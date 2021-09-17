@@ -16,6 +16,12 @@ class WebContents;
 class PrintPreviewContextMenuObserver : public RenderViewContextMenuObserver {
  public:
   explicit PrintPreviewContextMenuObserver(content::WebContents* contents);
+
+  PrintPreviewContextMenuObserver(const PrintPreviewContextMenuObserver&) =
+      delete;
+  PrintPreviewContextMenuObserver& operator=(
+      const PrintPreviewContextMenuObserver&) = delete;
+
   ~PrintPreviewContextMenuObserver() override;
 
   // RenderViewContextMenuObserver implementation.
@@ -26,8 +32,6 @@ class PrintPreviewContextMenuObserver : public RenderViewContextMenuObserver {
   bool IsPrintPreviewDialog();
 
   content::WebContents* contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewContextMenuObserver);
 };
 
 #endif  // CHROME_BROWSER_PRINTING_PRINT_PREVIEW_CONTEXT_MENU_OBSERVER_H_

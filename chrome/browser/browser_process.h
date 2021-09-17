@@ -116,6 +116,10 @@ class TabManager;
 class BrowserProcess {
  public:
   BrowserProcess();
+
+  BrowserProcess(const BrowserProcess&) = delete;
+  BrowserProcess& operator=(const BrowserProcess&) = delete;
+
   virtual ~BrowserProcess();
 
   // Invoked when the user is logging out/shutting down. When logging off we may
@@ -277,9 +281,6 @@ class BrowserProcess {
   // or nullptr if breadcrumbs logging is disabled.
   virtual breadcrumbs::BreadcrumbPersistentStorageManager*
   GetBreadcrumbPersistentStorageManager() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcess);
 };
 
 extern BrowserProcess* g_browser_process;

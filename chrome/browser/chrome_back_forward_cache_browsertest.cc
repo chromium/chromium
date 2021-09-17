@@ -61,6 +61,12 @@ struct FeatureEqualOperator {
 class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
  public:
   ChromeBackForwardCacheBrowserTest() = default;
+
+  ChromeBackForwardCacheBrowserTest(const ChromeBackForwardCacheBrowserTest&) =
+      delete;
+  ChromeBackForwardCacheBrowserTest& operator=(
+      const ChromeBackForwardCacheBrowserTest&) = delete;
+
   ~ChromeBackForwardCacheBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -146,8 +152,6 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
                      FeatureEqualOperator>
       features_with_params_;
   std::vector<base::Feature> disabled_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBackForwardCacheBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, Basic) {

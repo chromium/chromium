@@ -26,6 +26,11 @@ class PluginVmInstaller;
 class PluginVmImageDownloadClient : public download::Client {
  public:
   explicit PluginVmImageDownloadClient(Profile* profile);
+
+  PluginVmImageDownloadClient(const PluginVmImageDownloadClient&) = delete;
+  PluginVmImageDownloadClient& operator=(const PluginVmImageDownloadClient&) =
+      delete;
+
   ~PluginVmImageDownloadClient() override;
 
  private:
@@ -61,8 +66,6 @@ class PluginVmImageDownloadClient : public download::Client {
                      download::GetUploadDataCallback callback) override;
 
   absl::optional<double> GetFractionComplete(int64_t bytes_downloaded);
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmImageDownloadClient);
 };
 
 }  // namespace plugin_vm

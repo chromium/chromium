@@ -31,6 +31,11 @@ class ExtensionGarbageCollector : public KeyedService,
                                   public InstallGate {
  public:
   explicit ExtensionGarbageCollector(content::BrowserContext* context);
+
+  ExtensionGarbageCollector(const ExtensionGarbageCollector&) = delete;
+  ExtensionGarbageCollector& operator=(const ExtensionGarbageCollector&) =
+      delete;
+
   ~ExtensionGarbageCollector() override;
 
   static ExtensionGarbageCollector* Get(content::BrowserContext* context);
@@ -89,8 +94,6 @@ class ExtensionGarbageCollector : public KeyedService,
   // Generate weak pointers for safely posting to the file thread for garbage
   // collection.
   base::WeakPtrFactory<ExtensionGarbageCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGarbageCollector);
 };
 
 }  // namespace extensions

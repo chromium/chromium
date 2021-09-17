@@ -33,6 +33,10 @@ class ClientCertStoreChromeOS : public net::ClientCertStore {
       bool use_system_slot,
       const std::string& username_hash,
       const PasswordDelegateFactory& password_delegate_factory);
+
+  ClientCertStoreChromeOS(const ClientCertStoreChromeOS&) = delete;
+  ClientCertStoreChromeOS& operator=(const ClientCertStoreChromeOS&) = delete;
+
   ~ClientCertStoreChromeOS() override;
 
   // net::ClientCertStore:
@@ -56,8 +60,6 @@ class ClientCertStoreChromeOS : public net::ClientCertStore {
   // The factory for creating the delegate for requesting a password to a
   // PKCS#11 token. May be null.
   PasswordDelegateFactory password_delegate_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertStoreChromeOS);
 };
 
 }  // namespace chromeos

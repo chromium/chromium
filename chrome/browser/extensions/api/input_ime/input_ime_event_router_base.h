@@ -19,6 +19,10 @@ namespace extensions {
 class InputImeEventRouterBase {
  public:
   explicit InputImeEventRouterBase(Profile* profile);
+
+  InputImeEventRouterBase(const InputImeEventRouterBase&) = delete;
+  InputImeEventRouterBase& operator=(const InputImeEventRouterBase&) = delete;
+
   virtual ~InputImeEventRouterBase();
 
   // Gets the input method engine if the extension is active.
@@ -30,8 +34,6 @@ class InputImeEventRouterBase {
 
  private:
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputImeEventRouterBase);
 };
 
 }  // namespace extensions

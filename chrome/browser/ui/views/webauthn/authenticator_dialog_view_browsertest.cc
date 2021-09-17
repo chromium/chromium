@@ -26,6 +26,10 @@ namespace {
 class TestSheetModel : public AuthenticatorRequestSheetModel {
  public:
   TestSheetModel() = default;
+
+  TestSheetModel(const TestSheetModel&) = delete;
+  TestSheetModel& operator=(const TestSheetModel&) = delete;
+
   ~TestSheetModel() override = default;
 
   // Getters for data on step specific content:
@@ -70,8 +74,6 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   void OnBack() override {}
   void OnAccept() override {}
   void OnCancel() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestSheetModel);
 };
 
 class TestSheetView : public AuthenticatorRequestSheetView {
@@ -80,6 +82,9 @@ class TestSheetView : public AuthenticatorRequestSheetView {
       : AuthenticatorRequestSheetView(std::move(model)) {
     ReInitChildViews();
   }
+
+  TestSheetView(const TestSheetView&) = delete;
+  TestSheetView& operator=(const TestSheetView&) = delete;
 
   ~TestSheetView() override = default;
 
@@ -95,8 +100,6 @@ class TestSheetView : public AuthenticatorRequestSheetView {
                               test_sheet_model()->GetStepSpecificLabelText()),
                           AutoFocus::kNo);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestSheetView);
 };
 
 }  // namespace

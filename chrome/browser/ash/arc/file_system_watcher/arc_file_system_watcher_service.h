@@ -47,6 +47,10 @@ class ArcFileSystemWatcherService
   ArcFileSystemWatcherService(content::BrowserContext* context,
                               ArcBridgeService* bridge_service);
 
+  ArcFileSystemWatcherService(const ArcFileSystemWatcherService&) = delete;
+  ArcFileSystemWatcherService& operator=(const ArcFileSystemWatcherService&) =
+      delete;
+
   ~ArcFileSystemWatcherService() override;
 
   // ConnectionObserver<mojom::FileSystemInstance> overrides.
@@ -87,8 +91,6 @@ class ArcFileSystemWatcherService
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ArcFileSystemWatcherService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcFileSystemWatcherService);
 };
 
 }  // namespace arc

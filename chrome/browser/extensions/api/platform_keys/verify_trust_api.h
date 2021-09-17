@@ -48,6 +48,10 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
 
   // Consumers should use the factory instead of this constructor.
   explicit VerifyTrustAPI(content::BrowserContext* context);
+
+  VerifyTrustAPI(const VerifyTrustAPI&) = delete;
+  VerifyTrustAPI& operator=(const VerifyTrustAPI&) = delete;
+
   ~VerifyTrustAPI() override;
 
   // Verifies the server certificate as described by |params| for the
@@ -101,8 +105,6 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
       registry_observation_{this};
 
   base::WeakPtrFactory<VerifyTrustAPI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VerifyTrustAPI);
 };
 
 template <>

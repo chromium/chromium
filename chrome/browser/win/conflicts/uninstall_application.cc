@@ -134,6 +134,11 @@ class UninstallAppController::AutomationControllerDelegate
       scoped_refptr<base::SequencedTaskRunner> controller_runner,
       base::OnceClosure on_automation_finished,
       const std::wstring& application_name);
+
+  AutomationControllerDelegate(const AutomationControllerDelegate&) = delete;
+  AutomationControllerDelegate& operator=(const AutomationControllerDelegate&) =
+      delete;
+
   ~AutomationControllerDelegate() override;
 
   // AutomationController::Delegate:
@@ -157,8 +162,6 @@ class UninstallAppController::AutomationControllerDelegate
   mutable base::OnceClosure on_automation_finished_;
 
   const std::wstring application_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationControllerDelegate);
 };
 
 UninstallAppController::AutomationControllerDelegate::

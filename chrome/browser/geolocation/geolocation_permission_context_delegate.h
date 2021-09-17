@@ -23,6 +23,12 @@ class GeolocationPermissionContextDelegate
  public:
   explicit GeolocationPermissionContextDelegate(
       content::BrowserContext* browser_context);
+
+  GeolocationPermissionContextDelegate(
+      const GeolocationPermissionContextDelegate&) = delete;
+  GeolocationPermissionContextDelegate& operator=(
+      const GeolocationPermissionContextDelegate&) = delete;
+
   ~GeolocationPermissionContextDelegate() override;
 
   // In addition to the base class flow the geolocation permission decision
@@ -39,8 +45,6 @@ class GeolocationPermissionContextDelegate
  private:
   // This must only be accessed from the UI thread.
   GeolocationPermissionContextExtensions extensions_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationPermissionContextDelegate);
 };
 
 #endif  // CHROME_BROWSER_GEOLOCATION_GEOLOCATION_PERMISSION_CONTEXT_DELEGATE_H_

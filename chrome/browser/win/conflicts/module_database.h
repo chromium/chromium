@@ -60,6 +60,10 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   // Creates the ModuleDatabase. Must be created and set on the sequence
   // returned by GetTaskRunner().
   explicit ModuleDatabase(bool third_party_blocking_policy_enabled);
+
+  ModuleDatabase(const ModuleDatabase&) = delete;
+  ModuleDatabase& operator=(const ModuleDatabase&) = delete;
+
   ~ModuleDatabase() override;
 
   // Returns the SequencedTaskRunner on which the ModuleDatabase lives. Can be
@@ -278,8 +282,6 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   ThirdPartyMetricsRecorder third_party_metrics_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleDatabase);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_DATABASE_H_

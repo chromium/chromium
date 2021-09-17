@@ -109,6 +109,10 @@ class DriveIntegrationService : public KeyedService,
       const std::string& test_mount_point_name,
       const base::FilePath& test_cache_root,
       DriveFsMojoListenerFactory test_drivefs_mojo_listener_factory = {});
+
+  DriveIntegrationService(const DriveIntegrationService&) = delete;
+  DriveIntegrationService& operator=(const DriveIntegrationService&) = delete;
+
   ~DriveIntegrationService() override;
 
   // KeyedService override:
@@ -318,7 +322,6 @@ class DriveIntegrationService : public KeyedService,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DriveIntegrationService> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DriveIntegrationService);
 };
 
 // Singleton that owns all instances of DriveIntegrationService and

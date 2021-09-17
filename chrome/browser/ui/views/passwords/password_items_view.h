@@ -21,6 +21,10 @@ class PasswordItemsView : public PasswordBubbleViewBase {
  public:
   PasswordItemsView(content::WebContents* web_contents,
                     views::View* anchor_view);
+
+  PasswordItemsView(const PasswordItemsView&) = delete;
+  PasswordItemsView& operator=(const PasswordItemsView&) = delete;
+
   ~PasswordItemsView() override;
 
  private:
@@ -45,8 +49,6 @@ class PasswordItemsView : public PasswordBubbleViewBase {
   gfx::Image favicon_;
 
   ItemsBubbleController controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordItemsView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_ITEMS_VIEW_H_

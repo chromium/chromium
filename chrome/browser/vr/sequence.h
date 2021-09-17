@@ -18,6 +18,10 @@ namespace vr {
 class Sequence {
  public:
   Sequence();
+
+  Sequence(const Sequence&) = delete;
+  Sequence& operator=(const Sequence&) = delete;
+
   ~Sequence();
 
   void Tick(base::TimeTicks now);
@@ -38,8 +42,6 @@ class Sequence {
   std::list<SequencedTask> tasks_;
   base::TimeTicks start_time_;
   bool started_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Sequence);
 };
 
 }  // namespace vr

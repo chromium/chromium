@@ -76,6 +76,10 @@ content::WebUIDataSource* CreateSystemInfoUIDataSource() {
 class SystemInfoHandler : public WebUIMessageHandler {
  public:
   SystemInfoHandler();
+
+  SystemInfoHandler(const SystemInfoHandler&) = delete;
+  SystemInfoHandler& operator=(const SystemInfoHandler&) = delete;
+
   ~SystemInfoHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -91,7 +95,6 @@ class SystemInfoHandler : public WebUIMessageHandler {
  private:
   std::string callback_id_;
   base::WeakPtrFactory<SystemInfoHandler> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SystemInfoHandler);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

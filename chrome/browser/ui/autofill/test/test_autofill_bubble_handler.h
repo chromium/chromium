@@ -25,6 +25,11 @@ class TestSaveUPIBubble final : public SaveUPIBubble {
 class TestAutofillBubbleHandler : public AutofillBubbleHandler {
  public:
   TestAutofillBubbleHandler();
+
+  TestAutofillBubbleHandler(const TestAutofillBubbleHandler&) = delete;
+  TestAutofillBubbleHandler& operator=(const TestAutofillBubbleHandler&) =
+      delete;
+
   ~TestAutofillBubbleHandler() override;
 
   // AutofillBubbleHandler:
@@ -69,8 +74,6 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   std::unique_ptr<TestAutofillBubble> update_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> edit_address_profile_bubble_view_;
   std::unique_ptr<TestAutofillBubble> virtual_card_manual_fallback_bubble_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillBubbleHandler);
 };
 
 }  // namespace autofill

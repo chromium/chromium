@@ -22,6 +22,12 @@ class ExtensionWebUIOverrideRegistrar : public BrowserContextKeyedAPI,
                                         public ExtensionRegistryObserver {
  public:
   explicit ExtensionWebUIOverrideRegistrar(content::BrowserContext* context);
+
+  ExtensionWebUIOverrideRegistrar(const ExtensionWebUIOverrideRegistrar&) =
+      delete;
+  ExtensionWebUIOverrideRegistrar& operator=(
+      const ExtensionWebUIOverrideRegistrar&) = delete;
+
   ~ExtensionWebUIOverrideRegistrar() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -54,8 +60,6 @@ class ExtensionWebUIOverrideRegistrar : public BrowserContextKeyedAPI,
       extension_registry_observation_{this};
 
   base::WeakPtrFactory<ExtensionWebUIOverrideRegistrar> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionWebUIOverrideRegistrar);
 };
 
 }  // namespace extensions

@@ -33,6 +33,9 @@ class SadTab;
 class SadTabHelper : public content::WebContentsObserver,
                      public content::WebContentsUserData<SadTabHelper> {
  public:
+  SadTabHelper(const SadTabHelper&) = delete;
+  SadTabHelper& operator=(const SadTabHelper&) = delete;
+
   ~SadTabHelper() override;
 
   SadTab* sad_tab() { return sad_tab_.get(); }
@@ -59,8 +62,6 @@ class SadTabHelper : public content::WebContentsObserver,
   std::unique_ptr<SadTab> sad_tab_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SadTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_SAD_TAB_HELPER_H_

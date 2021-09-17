@@ -38,6 +38,10 @@ const double kDmgAnalysisTimeoutMs = 10000;
 class MachOFeatureExtractor {
  public:
   MachOFeatureExtractor();
+
+  MachOFeatureExtractor(const MachOFeatureExtractor&) = delete;
+  MachOFeatureExtractor& operator=(const MachOFeatureExtractor&) = delete;
+
   ~MachOFeatureExtractor();
 
   // Tests if the stream references a Mach-O image by examinig its magic
@@ -57,8 +61,6 @@ class MachOFeatureExtractor {
 
   scoped_refptr<BinaryFeatureExtractor> bfe_;
   std::vector<uint8_t> buffer_;  // Buffer that contains read stream data.
-
-  DISALLOW_COPY_AND_ASSIGN(MachOFeatureExtractor);
 };
 
 MachOFeatureExtractor::MachOFeatureExtractor()

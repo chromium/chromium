@@ -91,6 +91,9 @@ class ArcInitialStartHandler : public ArcSessionManagerObserver {
     session_manager->AddObserver(this);
   }
 
+  ArcInitialStartHandler(const ArcInitialStartHandler&) = delete;
+  ArcInitialStartHandler& operator=(const ArcInitialStartHandler&) = delete;
+
   ~ArcInitialStartHandler() override { session_manager_->RemoveObserver(this); }
 
   // ArcSessionManagerObserver:
@@ -105,8 +108,6 @@ class ArcInitialStartHandler : public ArcSessionManagerObserver {
   bool was_called_ = false;
 
   ArcSessionManager* const session_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcInitialStartHandler);
 };
 
 class FileExpansionObserver : public ArcSessionManagerObserver {
@@ -173,6 +174,11 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
             base::BindRepeating(FakeArcSession::Create)));
   }
 
+  ArcSessionManagerInLoginScreenTest(
+      const ArcSessionManagerInLoginScreenTest&) = delete;
+  ArcSessionManagerInLoginScreenTest& operator=(
+      const ArcSessionManagerInLoginScreenTest&) = delete;
+
   ~ArcSessionManagerInLoginScreenTest() override {
     arc_session_manager_->Shutdown();
     arc_session_manager_.reset();
@@ -198,8 +204,6 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManagerInLoginScreenTest);
 };
 
 // We expect mini instance starts to run if EmitLoginPromptVisible signal is
@@ -248,6 +252,11 @@ class ArcSessionManagerTestBase : public testing::Test {
         test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
     arc::prefs::RegisterLocalStatePrefs(test_local_state_->registry());
   }
+
+  ArcSessionManagerTestBase(const ArcSessionManagerTestBase&) = delete;
+  ArcSessionManagerTestBase& operator=(const ArcSessionManagerTestBase&) =
+      delete;
+
   ~ArcSessionManagerTestBase() override = default;
 
   void SetUp() override {
@@ -352,8 +361,6 @@ class ArcSessionManagerTestBase : public testing::Test {
   user_manager::ScopedUserManager user_manager_enabler_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> test_local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManagerTestBase);
 };
 
 class ArcSessionManagerTest : public ArcSessionManagerTestBase {

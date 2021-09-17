@@ -20,6 +20,11 @@ class RecoveryInstallGlobalError : public GlobalErrorWithStandardBubble,
                                    public KeyedService {
  public:
   explicit RecoveryInstallGlobalError(Profile* profile);
+
+  RecoveryInstallGlobalError(const RecoveryInstallGlobalError&) = delete;
+  RecoveryInstallGlobalError& operator=(const RecoveryInstallGlobalError&) =
+      delete;
+
   ~RecoveryInstallGlobalError() override;
 
  private:
@@ -59,8 +64,6 @@ class RecoveryInstallGlobalError : public GlobalErrorWithStandardBubble,
   PrefChangeRegistrar pref_registrar_;
 
   bool has_shown_bubble_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecoveryInstallGlobalError);
 };
 
 #endif  // CHROME_BROWSER_RECOVERY_RECOVERY_INSTALL_GLOBAL_ERROR_H_

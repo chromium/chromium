@@ -36,6 +36,10 @@ class FolderCreator {
                 MetadataDatabase* metadata_database,
                 const std::string& parent_folder_id,
                 const std::string& title);
+
+  FolderCreator(const FolderCreator&) = delete;
+  FolderCreator& operator=(const FolderCreator&) = delete;
+
   ~FolderCreator();
 
   void Run(FileIDCallback callback);
@@ -57,8 +61,6 @@ class FolderCreator {
   const std::string title_;
 
   base::WeakPtrFactory<FolderCreator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FolderCreator);
 };
 
 }  // namespace drive_backend

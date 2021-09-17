@@ -19,6 +19,10 @@ class SharingHubSubMenuModel : public ui::SimpleMenuModel,
                                public ui::SimpleMenuModel::Delegate {
  public:
   explicit SharingHubSubMenuModel(Browser* browser);
+
+  SharingHubSubMenuModel(const SharingHubSubMenuModel&) = delete;
+  SharingHubSubMenuModel& operator=(const SharingHubSubMenuModel&) = delete;
+
   ~SharingHubSubMenuModel() override;
 
   // Overridden from ui::SimpleMenuModel::Delegate:
@@ -36,8 +40,6 @@ class SharingHubSubMenuModel : public ui::SimpleMenuModel,
 
   // A list of user action names mapped to action id.
   std::map<int, std::string> user_actions_by_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingHubSubMenuModel);
 };
 }  // namespace sharing_hub
 

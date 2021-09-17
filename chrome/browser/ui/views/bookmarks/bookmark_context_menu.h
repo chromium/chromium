@@ -51,6 +51,10 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
       const bookmarks::BookmarkNode* parent,
       const std::vector<const bookmarks::BookmarkNode*>& selection,
       bool close_on_remove);
+
+  BookmarkContextMenu(const BookmarkContextMenu&) = delete;
+  BookmarkContextMenu& operator=(const BookmarkContextMenu&) = delete;
+
   ~BookmarkContextMenu() override;
 
   // Installs a callback to be run before the context menu is run. The callback
@@ -99,8 +103,6 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
 
   // Should the menu close when a node is removed.
   bool close_on_remove_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkContextMenu);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_CONTEXT_MENU_H_

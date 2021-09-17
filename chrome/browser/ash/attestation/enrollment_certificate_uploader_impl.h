@@ -37,6 +37,11 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   EnrollmentCertificateUploaderImpl(policy::CloudPolicyClient* policy_client,
                                     AttestationFlow* attestation_flow);
 
+  EnrollmentCertificateUploaderImpl(const EnrollmentCertificateUploaderImpl&) =
+      delete;
+  EnrollmentCertificateUploaderImpl& operator=(
+      const EnrollmentCertificateUploaderImpl&) = delete;
+
   ~EnrollmentCertificateUploaderImpl() override;
 
   // Sets the retry limit in number of tries; useful in testing.
@@ -105,8 +110,6 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<EnrollmentCertificateUploaderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentCertificateUploaderImpl);
 };
 
 }  // namespace attestation

@@ -38,6 +38,11 @@ class CustomizationWallpaperDownloader {
       base::OnceCallback<void(bool success, const GURL&)>
           on_wallpaper_fetch_completed);
 
+  CustomizationWallpaperDownloader(const CustomizationWallpaperDownloader&) =
+      delete;
+  CustomizationWallpaperDownloader& operator=(
+      const CustomizationWallpaperDownloader&) = delete;
+
   ~CustomizationWallpaperDownloader();
 
   // Start download.
@@ -101,8 +106,6 @@ class CustomizationWallpaperDownloader {
       on_wallpaper_fetch_completed_;
 
   base::WeakPtrFactory<CustomizationWallpaperDownloader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CustomizationWallpaperDownloader);
 };
 
 }  // namespace ash

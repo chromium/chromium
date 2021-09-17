@@ -165,6 +165,11 @@ bool CheckPnaclComponentManifest(const base::Value& manifest,
 class PnaclComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   PnaclComponentInstallerPolicy();
+
+  PnaclComponentInstallerPolicy(const PnaclComponentInstallerPolicy&) = delete;
+  PnaclComponentInstallerPolicy& operator=(
+      const PnaclComponentInstallerPolicy&) = delete;
+
   ~PnaclComponentInstallerPolicy() override;
 
  private:
@@ -184,8 +189,6 @@ class PnaclComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PnaclComponentInstallerPolicy);
 };
 
 PnaclComponentInstallerPolicy::PnaclComponentInstallerPolicy() = default;

@@ -97,6 +97,10 @@ struct TpmStatusInfo {
 class SampledData {
  public:
   SampledData();
+
+  SampledData(const SampledData&) = delete;
+  SampledData& operator=(const SampledData&) = delete;
+
   ~SampledData();
 
   // Sampling timestamp.
@@ -107,8 +111,6 @@ class SampledData {
   std::map<std::string, enterprise_management::ThermalSample> thermal_samples;
   // CPU thermal samples.
   std::map<std::string, enterprise_management::CPUTempInfo> cpu_samples;
-
-  DISALLOW_COPY_AND_ASSIGN(SampledData);
 };
 
 // Collects and summarizes the status of an enterprise-managed ChromeOS device.
@@ -195,6 +197,9 @@ class DeviceStatusCollector : public StatusCollector,
   // |pref_service|.
   DeviceStatusCollector(PrefService* pref_service,
                         chromeos::system::StatisticsProvider* provider);
+
+  DeviceStatusCollector(const DeviceStatusCollector&) = delete;
+  DeviceStatusCollector& operator=(const DeviceStatusCollector&) = delete;
 
   ~DeviceStatusCollector() override;
 
@@ -489,8 +494,6 @@ class DeviceStatusCollector : public StatusCollector,
   std::unique_ptr<EnterpriseActivityStorage> activity_storage_;
 
   base::WeakPtrFactory<DeviceStatusCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceStatusCollector);
 };
 
 }  // namespace policy

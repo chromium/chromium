@@ -40,6 +40,11 @@ class RoamingConfigurationMigrationHandler;
 // listening for notifications from CrosSettings.
 class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
  public:
+  DeviceNetworkConfigurationUpdater(const DeviceNetworkConfigurationUpdater&) =
+      delete;
+  DeviceNetworkConfigurationUpdater& operator=(
+      const DeviceNetworkConfigurationUpdater&) = delete;
+
   ~DeviceNetworkConfigurationUpdater() override;
 
   // Fetches the device's administrator-annotated asset ID.
@@ -94,8 +99,6 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
   DeviceAssetIDFetcher device_asset_id_fetcher_;
 
   base::WeakPtrFactory<DeviceNetworkConfigurationUpdater> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceNetworkConfigurationUpdater);
 };
 
 }  // namespace policy

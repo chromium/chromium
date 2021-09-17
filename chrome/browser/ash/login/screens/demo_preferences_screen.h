@@ -30,6 +30,10 @@ class DemoPreferencesScreen
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   DemoPreferencesScreen(DemoPreferencesScreenView* view,
                         const ScreenExitCallback& exit_callback);
+
+  DemoPreferencesScreen(const DemoPreferencesScreen&) = delete;
+  DemoPreferencesScreen& operator=(const DemoPreferencesScreen&) = delete;
+
   ~DemoPreferencesScreen() override;
 
   void SetLocale(const std::string& locale);
@@ -71,8 +75,6 @@ class DemoPreferencesScreen
 
   DemoPreferencesScreenView* view_;
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoPreferencesScreen);
 };
 
 }  // namespace ash

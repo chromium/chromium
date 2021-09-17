@@ -50,6 +50,11 @@ extern const char kHistogramFromGWSCumulativeLayoutShiftMainFrame[];
 class FromGWSPageLoadMetricsLogger {
  public:
   FromGWSPageLoadMetricsLogger();
+
+  FromGWSPageLoadMetricsLogger(const FromGWSPageLoadMetricsLogger&) = delete;
+  FromGWSPageLoadMetricsLogger& operator=(const FromGWSPageLoadMetricsLogger&) =
+      delete;
+
   ~FromGWSPageLoadMetricsLogger();
 
   void SetPreviouslyCommittedUrl(const GURL& url);
@@ -132,8 +137,6 @@ class FromGWSPageLoadMetricsLogger {
 
   // The time of first user interaction after paint from navigation start.
   absl::optional<base::TimeDelta> first_user_interaction_after_paint_;
-
-  DISALLOW_COPY_AND_ASSIGN(FromGWSPageLoadMetricsLogger);
 };
 
 class FromGWSPageLoadMetricsObserver

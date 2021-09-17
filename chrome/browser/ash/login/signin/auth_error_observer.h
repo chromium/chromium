@@ -26,6 +26,10 @@ class AuthErrorObserver : public KeyedService,
   static bool ShouldObserve(Profile* profile);
 
   explicit AuthErrorObserver(Profile* profile);
+
+  AuthErrorObserver(const AuthErrorObserver&) = delete;
+  AuthErrorObserver& operator=(const AuthErrorObserver&) = delete;
+
   ~AuthErrorObserver() override;
 
   // Starts to observe SyncService and SigninErrorController.
@@ -50,8 +54,6 @@ class AuthErrorObserver : public KeyedService,
   void HandleAuthError(const GoogleServiceAuthError& auth_error);
 
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthErrorObserver);
 };
 
 }  // namespace ash

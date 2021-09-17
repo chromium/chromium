@@ -25,6 +25,11 @@ class MediaFileValidatorFactory
  public:
   explicit MediaFileValidatorFactory(
       download::QuarantineConnectionCallback quarantine_connection_callback);
+
+  MediaFileValidatorFactory(const MediaFileValidatorFactory&) = delete;
+  MediaFileValidatorFactory& operator=(const MediaFileValidatorFactory&) =
+      delete;
+
   ~MediaFileValidatorFactory() override;
 
   // CopyOrMoveFileValidatorFactory implementation.
@@ -34,8 +39,6 @@ class MediaFileValidatorFactory
 
  private:
   download::QuarantineConnectionCallback quarantine_connection_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileValidatorFactory);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_MEDIA_FILE_VALIDATOR_FACTORY_H_

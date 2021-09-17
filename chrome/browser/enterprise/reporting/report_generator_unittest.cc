@@ -159,6 +159,10 @@ class ReportGeneratorTest : public ::testing::Test {
   ReportGeneratorTest()
       : generator_(&delegate_factory_),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  ReportGeneratorTest(const ReportGeneratorTest&) = delete;
+  ReportGeneratorTest& operator=(const ReportGeneratorTest&) = delete;
+
   ~ReportGeneratorTest() override = default;
 
   void SetUp() override {
@@ -315,8 +319,6 @@ class ReportGeneratorTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportGeneratorTest);
 };
 
 #if defined(OS_ANDROID)

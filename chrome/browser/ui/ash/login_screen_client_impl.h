@@ -32,6 +32,10 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   class Delegate {
    public:
     Delegate();
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
     virtual void HandleAuthenticateUserWithPasswordOrPin(
         const AccountId& account_id,
@@ -54,9 +58,6 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
     virtual void HandleLaunchPublicSession(const AccountId& account_id,
                                            const std::string& locale,
                                            const std::string& input_method) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Handles methods related to parent access coming from ash into chrome.
@@ -68,6 +69,10 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   };
 
   LoginScreenClientImpl();
+
+  LoginScreenClientImpl(const LoginScreenClientImpl&) = delete;
+  LoginScreenClientImpl& operator=(const LoginScreenClientImpl&) = delete;
+
   ~LoginScreenClientImpl() override;
   static bool HasInstance();
   static LoginScreenClientImpl* Get();
@@ -155,8 +160,6 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   base::ObserverList<LoginScreenShownObserver> login_screen_shown_observers_;
 
   base::WeakPtrFactory<LoginScreenClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenClientImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_IMPL_H_

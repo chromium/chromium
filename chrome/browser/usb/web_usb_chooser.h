@@ -24,6 +24,9 @@ class WebUsbChooser {
  public:
   explicit WebUsbChooser(content::RenderFrameHost* render_frame_host);
 
+  WebUsbChooser(const WebUsbChooser&) = delete;
+  WebUsbChooser& operator=(const WebUsbChooser&) = delete;
+
   virtual ~WebUsbChooser();
 
   void GetPermission(
@@ -39,8 +42,6 @@ class WebUsbChooser {
 
  private:
   content::RenderFrameHost* const render_frame_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUsbChooser);
 };
 
 #endif  // CHROME_BROWSER_USB_WEB_USB_CHOOSER_H_

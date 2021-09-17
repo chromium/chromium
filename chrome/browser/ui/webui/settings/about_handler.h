@@ -40,6 +40,10 @@ class AboutHandler : public settings::SettingsPageUIHandler,
                      public UpgradeObserver {
  public:
   explicit AboutHandler(Profile* profile);
+
+  AboutHandler(const AboutHandler&) = delete;
+  AboutHandler& operator=(const AboutHandler&) = delete;
+
   ~AboutHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -194,8 +198,6 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   // Used for callbacks.
   base::WeakPtrFactory<AboutHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AboutHandler);
 };
 
 }  // namespace settings

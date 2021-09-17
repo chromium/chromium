@@ -24,6 +24,9 @@ class GnubbyNotification : public chromeos::GnubbyClient::Observer {
  public:
   GnubbyNotification();
 
+  GnubbyNotification(const GnubbyNotification&) = delete;
+  GnubbyNotification& operator=(const GnubbyNotification&) = delete;
+
   // Resets GnubbyClient NotificationHandler.
   ~GnubbyNotification() override;
 
@@ -43,8 +46,6 @@ class GnubbyNotification : public chromeos::GnubbyClient::Observer {
   bool notificationActive = false;
 
   base::WeakPtrFactory<GnubbyNotification> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GnubbyNotification);
 };
 
 }  // namespace ash

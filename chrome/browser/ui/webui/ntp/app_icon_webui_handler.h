@@ -23,6 +23,10 @@ class AppIconWebUIHandler : public content::WebUIMessageHandler,
                             public ExtensionIconManager::Observer {
  public:
   AppIconWebUIHandler();
+
+  AppIconWebUIHandler(const AppIconWebUIHandler&) = delete;
+  AppIconWebUIHandler& operator=(const AppIconWebUIHandler&) = delete;
+
   ~AppIconWebUIHandler() override;
 
   // WebUIMessageHandler
@@ -39,8 +43,6 @@ class AppIconWebUIHandler : public content::WebUIMessageHandler,
 
   // Manage retrieval of icons from apps.
   ExtensionIconManager extension_icon_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppIconWebUIHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_APP_ICON_WEBUI_HANDLER_H_

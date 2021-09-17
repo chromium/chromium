@@ -62,6 +62,9 @@ class ActiveDirectoryLoginTest : public OobeBaseTest {
         test_realm_(user_manager::kSupervisedUserDomain),
         test_user_(kTestActiveDirectoryUser + ("@" + test_realm_)) {}
 
+  ActiveDirectoryLoginTest(const ActiveDirectoryLoginTest&) = delete;
+  ActiveDirectoryLoginTest& operator=(const ActiveDirectoryLoginTest&) = delete;
+
   ~ActiveDirectoryLoginTest() override = default;
 
  protected:
@@ -75,9 +78,6 @@ class ActiveDirectoryLoginTest : public OobeBaseTest {
       &mixin_host_,
       DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED};
   ActiveDirectoryLoginMixin ad_login_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryLoginTest);
 };
 
 class ActiveDirectoryLoginAutocompleteTest : public ActiveDirectoryLoginTest {

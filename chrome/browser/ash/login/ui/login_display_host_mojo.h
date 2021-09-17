@@ -48,6 +48,10 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
                              public views::ViewObserver {
  public:
   explicit LoginDisplayHostMojo(DisplayedScreen displayed_screen);
+
+  LoginDisplayHostMojo(const LoginDisplayHostMojo&) = delete;
+  LoginDisplayHostMojo& operator=(const LoginDisplayHostMojo&) = delete;
+
   ~LoginDisplayHostMojo() override;
 
   // Called when the gaia dialog is destroyed.
@@ -236,8 +240,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   base::ObserverList<LoginDisplayHost::Observer> observers_;
 
   base::WeakPtrFactory<LoginDisplayHostMojo> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplayHostMojo);
 };
 
 }  // namespace ash

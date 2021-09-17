@@ -19,6 +19,11 @@ class PrinterEventTrackerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* browser_context);
 
   PrinterEventTrackerFactory();
+
+  PrinterEventTrackerFactory(const PrinterEventTrackerFactory&) = delete;
+  PrinterEventTrackerFactory& operator=(const PrinterEventTrackerFactory&) =
+      delete;
+
   ~PrinterEventTrackerFactory() override;
 
   // Enables/Disables logging for all trackers. Trackers created in the future
@@ -34,8 +39,6 @@ class PrinterEventTrackerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterEventTrackerFactory);
 };
 
 }  // namespace ash

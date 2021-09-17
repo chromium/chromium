@@ -50,6 +50,10 @@ struct LookupProxyForURLMockResult {
 class MockNetworkContext : public network::TestNetworkContext {
  public:
   MockNetworkContext() {}
+
+  MockNetworkContext(const MockNetworkContext&) = delete;
+  MockNetworkContext& operator=(const MockNetworkContext&) = delete;
+
   ~MockNetworkContext() override {}
 
   // network::mojom::NetworkContext implementation:
@@ -91,8 +95,6 @@ class MockNetworkContext : public network::TestNetworkContext {
   chromeos::ScopedStubInstallAttributes test_install_attributes_{
       chromeos::StubInstallAttributes::CreateCloudManaged("fake-domain",
                                                           "fake-id")};
-
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkContext);
 };
 
 }  // namespace
@@ -109,6 +111,11 @@ class ProxyResolutionServiceProviderTest : public testing::Test {
                        chromeos::kNetworkProxyServiceResolveProxyMethod,
                        service_provider_.get());
   }
+
+  ProxyResolutionServiceProviderTest(
+      const ProxyResolutionServiceProviderTest&) = delete;
+  ProxyResolutionServiceProviderTest& operator=(
+      const ProxyResolutionServiceProviderTest&) = delete;
 
   ~ProxyResolutionServiceProviderTest() override {
     test_helper_.TearDown();
@@ -141,8 +148,6 @@ class ProxyResolutionServiceProviderTest : public testing::Test {
 
   std::unique_ptr<ProxyResolutionServiceProvider> service_provider_;
   ServiceProviderTestHelper test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolutionServiceProviderTest);
 };
 
 // Tests the normal success case. The proxy resolver returns a single proxy.

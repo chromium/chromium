@@ -35,6 +35,11 @@ class OptimizationGuideWebContentsObserver
       public content::WebContentsUserData<
           OptimizationGuideWebContentsObserver> {
  public:
+  OptimizationGuideWebContentsObserver(
+      const OptimizationGuideWebContentsObserver&) = delete;
+  OptimizationGuideWebContentsObserver& operator=(
+      const OptimizationGuideWebContentsObserver&) = delete;
+
   ~OptimizationGuideWebContentsObserver() override;
 
   // Notifies |this| to flush |last_navigation_data| so metrics are recorded.
@@ -161,8 +166,6 @@ class OptimizationGuideWebContentsObserver
       this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideWebContentsObserver);
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_WEB_CONTENTS_OBSERVER_H_

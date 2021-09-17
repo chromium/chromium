@@ -28,6 +28,12 @@ class ExtensionSettingModelTypeController
       SyncableServiceProvider syncable_service_provider,
       const base::RepeatingClosure& dump_stack,
       Profile* profile);
+
+  ExtensionSettingModelTypeController(
+      const ExtensionSettingModelTypeController&) = delete;
+  ExtensionSettingModelTypeController& operator=(
+      const ExtensionSettingModelTypeController&) = delete;
+
   ~ExtensionSettingModelTypeController() override;
 
   // DataTypeController overrides.
@@ -36,8 +42,6 @@ class ExtensionSettingModelTypeController
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSettingModelTypeController);
 };
 
 }  // namespace browser_sync

@@ -18,6 +18,11 @@ namespace ash {
 class FakeWilcoDtcSupportdClient final : public WilcoDtcSupportdClient {
  public:
   FakeWilcoDtcSupportdClient();
+
+  FakeWilcoDtcSupportdClient(const FakeWilcoDtcSupportdClient&) = delete;
+  FakeWilcoDtcSupportdClient& operator=(const FakeWilcoDtcSupportdClient&) =
+      delete;
+
   ~FakeWilcoDtcSupportdClient() override;
 
   // DBusClient overrides:
@@ -53,8 +58,6 @@ class FakeWilcoDtcSupportdClient final : public WilcoDtcSupportdClient {
   absl::optional<bool> bootstrap_mojo_connection_result_;
   std::vector<VoidDBusMethodCallback>
       pending_bootstrap_mojo_connection_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWilcoDtcSupportdClient);
 };
 
 }  // namespace ash

@@ -17,6 +17,10 @@ class UpdatePasswordInfoBar : public infobars::ConfirmInfoBar {
  public:
   UpdatePasswordInfoBar(std::unique_ptr<UpdatePasswordInfoBarDelegate> delegate,
                         absl::optional<AccountInfo> account_info);
+
+  UpdatePasswordInfoBar(const UpdatePasswordInfoBar&) = delete;
+  UpdatePasswordInfoBar& operator=(const UpdatePasswordInfoBar&) = delete;
+
   ~UpdatePasswordInfoBar() override;
 
   int GetIdOfSelectedUsername() const;
@@ -32,8 +36,6 @@ class UpdatePasswordInfoBar : public infobars::ConfirmInfoBar {
   base::android::ScopedJavaGlobalRef<jobject> java_infobar_;
 
   absl::optional<AccountInfo> account_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdatePasswordInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_UPDATE_PASSWORD_INFOBAR_H_

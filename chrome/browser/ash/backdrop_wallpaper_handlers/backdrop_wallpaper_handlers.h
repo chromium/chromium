@@ -27,6 +27,10 @@ class CollectionInfoFetcher {
       void(bool success, const std::vector<backdrop::Collection>& collections)>;
 
   CollectionInfoFetcher();
+
+  CollectionInfoFetcher(const CollectionInfoFetcher&) = delete;
+  CollectionInfoFetcher& operator=(const CollectionInfoFetcher&) = delete;
+
   ~CollectionInfoFetcher();
 
   // Starts the fetcher.
@@ -42,8 +46,6 @@ class CollectionInfoFetcher {
   // The callback upon completion of downloading and deserializing the
   // collections info.
   OnCollectionsInfoFetched callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CollectionInfoFetcher);
 };
 
 // Downloads the wallpaper images info from the Backdrop service.
@@ -55,6 +57,10 @@ class ImageInfoFetcher {
                               const std::vector<backdrop::Image>& images)>;
 
   explicit ImageInfoFetcher(const std::string& collection_id);
+
+  ImageInfoFetcher(const ImageInfoFetcher&) = delete;
+  ImageInfoFetcher& operator=(const ImageInfoFetcher&) = delete;
+
   ~ImageInfoFetcher();
 
   // Starts the fetcher.
@@ -73,8 +79,6 @@ class ImageInfoFetcher {
   // The callback upon completion of downloading and deserializing the images
   // info.
   OnImagesInfoFetched callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageInfoFetcher);
 };
 
 // Downloads the surprise me image info from the Backdrop service.
@@ -87,6 +91,10 @@ class SurpriseMeImageFetcher {
 
   SurpriseMeImageFetcher(const std::string& collection_id,
                          const std::string& resume_token);
+
+  SurpriseMeImageFetcher(const SurpriseMeImageFetcher&) = delete;
+  SurpriseMeImageFetcher& operator=(const SurpriseMeImageFetcher&) = delete;
+
   ~SurpriseMeImageFetcher();
 
   // Starts the fetcher.
@@ -109,8 +117,6 @@ class SurpriseMeImageFetcher {
   // The callback upon completion of downloading and deserializing the surprise
   // me image info.
   OnSurpriseMeImageFetched callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurpriseMeImageFetcher);
 };
 
 }  // namespace backdrop_wallpaper_handlers

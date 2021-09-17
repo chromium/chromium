@@ -13,14 +13,17 @@ class ChromeWebModalDialogManagerDelegate
     : public web_modal::WebContentsModalDialogManagerDelegate {
  public:
   ChromeWebModalDialogManagerDelegate();
+
+  ChromeWebModalDialogManagerDelegate(
+      const ChromeWebModalDialogManagerDelegate&) = delete;
+  ChromeWebModalDialogManagerDelegate& operator=(
+      const ChromeWebModalDialogManagerDelegate&) = delete;
+
   ~ChromeWebModalDialogManagerDelegate() override;
 
  protected:
   // Overridden from web_modal::WebContentsModalDialogManagerDelegate:
   bool IsWebContentsVisible(content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebModalDialogManagerDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_CHROME_WEB_MODAL_DIALOG_MANAGER_DELEGATE_H_

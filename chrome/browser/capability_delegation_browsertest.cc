@@ -22,6 +22,11 @@ class CapabilityDelegationBrowserTest
         features::kCapabilityDelegationPaymentRequest);
   }
 
+  CapabilityDelegationBrowserTest(const CapabilityDelegationBrowserTest&) =
+      delete;
+  CapabilityDelegationBrowserTest& operator=(
+      const CapabilityDelegationBrowserTest&) = delete;
+
   ~CapabilityDelegationBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -35,8 +40,6 @@ class CapabilityDelegationBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapabilityDelegationBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest, PaymentRequest) {

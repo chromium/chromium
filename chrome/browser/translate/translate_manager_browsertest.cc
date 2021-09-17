@@ -235,6 +235,10 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
                             base::Unretained(this)));
   }
 
+  TranslateManagerBrowserTest(const TranslateManagerBrowserTest&) = delete;
+  TranslateManagerBrowserTest& operator=(const TranslateManagerBrowserTest&) =
+      delete;
+
   ~TranslateManagerBrowserTest() override = default;
 
   void WaitUntilLanguageDetermined() { language_determined_waiter_->Wait(); }
@@ -353,8 +357,6 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<TranslateWaiter> language_determined_waiter_;
 
   std::string script_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateManagerBrowserTest);
 };
 
 // Tests that the CLD (Compact Language Detection) works properly.

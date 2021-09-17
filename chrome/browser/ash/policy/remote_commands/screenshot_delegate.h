@@ -24,6 +24,10 @@ namespace policy {
 class ScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {
  public:
   ScreenshotDelegate();
+
+  ScreenshotDelegate(const ScreenshotDelegate&) = delete;
+  ScreenshotDelegate& operator=(const ScreenshotDelegate&) = delete;
+
   ~ScreenshotDelegate() override;
 
   // DeviceCommandScreenshotJob::Delegate:
@@ -40,8 +44,6 @@ class ScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {
                        scoped_refptr<base::RefCountedMemory> png_data);
 
   base::WeakPtrFactory<ScreenshotDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenshotDelegate);
 };
 
 }  // namespace policy

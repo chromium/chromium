@@ -31,9 +31,11 @@ class SmbShareDialog : public SystemWebDialogDelegate {
 class SmbShareDialogUI : public ui::WebDialogUI {
  public:
   explicit SmbShareDialogUI(content::WebUI* web_ui);
-  ~SmbShareDialogUI() override;
 
-  DISALLOW_COPY_AND_ASSIGN(SmbShareDialogUI);
+  SmbShareDialogUI(const SmbShareDialogUI&) = delete;
+  SmbShareDialogUI& operator=(const SmbShareDialogUI&) = delete;
+
+  ~SmbShareDialogUI() override;
 };
 
 }  // namespace smb_dialog

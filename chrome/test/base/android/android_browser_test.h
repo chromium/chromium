@@ -26,6 +26,10 @@
 class AndroidBrowserTest : public content::BrowserTestBase {
  public:
   AndroidBrowserTest();
+
+  AndroidBrowserTest(const AndroidBrowserTest&) = delete;
+  AndroidBrowserTest& operator=(const AndroidBrowserTest&) = delete;
+
   ~AndroidBrowserTest() override;
 
   // Sets up default command line that will be visible to the code under test.
@@ -44,8 +48,6 @@ class AndroidBrowserTest : public content::BrowserTestBase {
   // Temporary user data directory. Used only when a user data directory is not
   // specified in the command line.
   base::ScopedTempDir temp_user_data_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidBrowserTest);
 };
 
 // When including either android_browser_test.h or in_process_browser_test.h

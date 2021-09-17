@@ -21,6 +21,10 @@ class MockAssistiveDelegate : public AssistiveDelegate {
 class UndoWindowTest : public ChromeViewsTestBase {
  public:
   UndoWindowTest() {}
+
+  UndoWindowTest(const UndoWindowTest&) = delete;
+  UndoWindowTest& operator=(const UndoWindowTest&) = delete;
+
   ~UndoWindowTest() override {}
 
  protected:
@@ -41,8 +45,6 @@ class UndoWindowTest : public ChromeViewsTestBase {
   std::unique_ptr<MockAssistiveDelegate> delegate_ =
       std::make_unique<MockAssistiveDelegate>();
   AssistiveWindowButton undo_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(UndoWindowTest);
 };
 
 TEST_F(UndoWindowTest, HighlightsUndoButtonWhenNotHighlighted) {

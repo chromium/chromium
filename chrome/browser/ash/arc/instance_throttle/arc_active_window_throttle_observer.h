@@ -16,15 +16,18 @@ class ArcActiveWindowThrottleObserver
     : public chromeos::WindowThrottleObserverBase {
  public:
   ArcActiveWindowThrottleObserver();
+
+  ArcActiveWindowThrottleObserver(const ArcActiveWindowThrottleObserver&) =
+      delete;
+  ArcActiveWindowThrottleObserver& operator=(
+      const ArcActiveWindowThrottleObserver&) = delete;
+
   ~ArcActiveWindowThrottleObserver() override = default;
 
   // WindowThrottleObserverBase:
   bool ProcessWindowActivation(ActivationReason reason,
                                aura::Window* gained_active,
                                aura::Window* lost_active) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcActiveWindowThrottleObserver);
 };
 
 }  // namespace arc

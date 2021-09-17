@@ -16,6 +16,10 @@ namespace syncfs_internals {
 class DumpDatabaseHandler : public content::WebUIMessageHandler {
  public:
   explicit DumpDatabaseHandler(Profile* profile);
+
+  DumpDatabaseHandler(const DumpDatabaseHandler&) = delete;
+  DumpDatabaseHandler& operator=(const DumpDatabaseHandler&) = delete;
+
   ~DumpDatabaseHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -26,8 +30,6 @@ class DumpDatabaseHandler : public content::WebUIMessageHandler {
   void DidGetDatabaseDump(std::string callback_id, const base::ListValue& list);
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DumpDatabaseHandler);
 };
 
 }  // namespace syncfs_internals

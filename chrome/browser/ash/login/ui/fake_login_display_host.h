@@ -22,6 +22,10 @@ namespace ash {
 class FakeLoginDisplayHost : public LoginDisplayHost {
  public:
   FakeLoginDisplayHost();
+
+  FakeLoginDisplayHost(const FakeLoginDisplayHost&) = delete;
+  FakeLoginDisplayHost& operator=(const FakeLoginDisplayHost&) = delete;
+
   ~FakeLoginDisplayHost() override;
 
   // LoginDisplayHost:
@@ -86,8 +90,6 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   std::unique_ptr<FakeBaseScreen> fake_screen_;
   std::unique_ptr<WizardContext> wizard_context_;
   std::unique_ptr<WizardController> wizard_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLoginDisplayHost);
 };
 
 }  // namespace ash

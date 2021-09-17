@@ -41,6 +41,10 @@ class TestExtensionPrefs {
  public:
   explicit TestExtensionPrefs(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  TestExtensionPrefs(const TestExtensionPrefs&) = delete;
+  TestExtensionPrefs& operator=(const TestExtensionPrefs&) = delete;
+
   virtual ~TestExtensionPrefs();
 
   ExtensionPrefs* prefs();
@@ -119,7 +123,6 @@ class TestExtensionPrefs {
   std::unique_ptr<IncrementalClock> clock_;
   TestingProfile profile_;
   bool extensions_disabled_;
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionPrefs);
 };
 
 }  // namespace extensions

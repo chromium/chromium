@@ -115,6 +115,9 @@ class SupervisedUserService : public KeyedService,
   };
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+  SupervisedUserService(const SupervisedUserService&) = delete;
+  SupervisedUserService& operator=(const SupervisedUserService&) = delete;
+
   ~SupervisedUserService() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -447,8 +450,6 @@ class SupervisedUserService : public KeyedService,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtrFactory<SupervisedUserService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserService);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SERVICE_H_

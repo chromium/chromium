@@ -27,6 +27,9 @@ class CustomTypesTest : public NativeExtensionBindingsSystemUnittest {
       : extension_id_(crx_file::id_util::GenerateId("id")),
         allowlisted_extension_id_(extension_id_) {}
 
+  CustomTypesTest(const CustomTypesTest&) = delete;
+  CustomTypesTest& operator=(const CustomTypesTest&) = delete;
+
   ~CustomTypesTest() override = default;
 
   // Checks behavior of script after the main context is invalidated.
@@ -74,8 +77,6 @@ class CustomTypesTest : public NativeExtensionBindingsSystemUnittest {
  private:
   std::string extension_id_;
   SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlisted_extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomTypesTest);
 };
 
 TEST_F(CustomTypesTest, ContentSettingsUseAfterInvalidation) {

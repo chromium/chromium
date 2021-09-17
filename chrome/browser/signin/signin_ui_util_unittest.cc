@@ -68,6 +68,11 @@ const char kSecondaryGaiaID[] = "secondary_gaia_id";
 class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
  public:
   SigninUiUtilTestBrowserWindow() = default;
+
+  SigninUiUtilTestBrowserWindow(const SigninUiUtilTestBrowserWindow&) = delete;
+  SigninUiUtilTestBrowserWindow& operator=(
+      const SigninUiUtilTestBrowserWindow&) = delete;
+
   ~SigninUiUtilTestBrowserWindow() override = default;
   void set_browser(Browser* browser) { browser_ = browser; }
 
@@ -83,8 +88,6 @@ class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
 
  private:
   Browser* browser_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninUiUtilTestBrowserWindow);
 };
 
 }  // namespace

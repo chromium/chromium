@@ -18,6 +18,12 @@ class ChromeConstrainedWindowViewsClient
     : public constrained_window::ConstrainedWindowViewsClient {
  public:
   ChromeConstrainedWindowViewsClient() {}
+
+  ChromeConstrainedWindowViewsClient(
+      const ChromeConstrainedWindowViewsClient&) = delete;
+  ChromeConstrainedWindowViewsClient& operator=(
+      const ChromeConstrainedWindowViewsClient&) = delete;
+
   ~ChromeConstrainedWindowViewsClient() override {}
 
  private:
@@ -35,8 +41,6 @@ class ChromeConstrainedWindowViewsClient
   gfx::NativeView GetDialogHostView(gfx::NativeWindow parent) override {
     return platform_util::GetViewForWindow(parent);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeConstrainedWindowViewsClient);
 };
 
 }  // namespace

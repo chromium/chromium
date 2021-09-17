@@ -51,6 +51,10 @@ class AndroidSmsService : public KeyedService,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       web_app::WebAppProvider* web_app_provider,
       app_list::AppListSyncableService* app_list_syncable_service);
+
+  AndroidSmsService(const AndroidSmsService&) = delete;
+  AndroidSmsService& operator=(const AndroidSmsService&) = delete;
+
   ~AndroidSmsService() override;
 
   AndroidSmsAppManager* android_sms_app_manager() {
@@ -79,8 +83,6 @@ class AndroidSmsService : public KeyedService,
       android_sms_pairing_state_tracker_;
   std::unique_ptr<PairingLostNotifier> pairing_lost_notifier_;
   std::unique_ptr<ConnectionManager> connection_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsService);
 };
 
 }  // namespace android_sms

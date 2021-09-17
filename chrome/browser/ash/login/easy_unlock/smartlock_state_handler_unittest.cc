@@ -39,6 +39,11 @@ class FakeProximityAuthPrefManager
     : public proximity_auth::ProximityAuthPrefManager {
  public:
   FakeProximityAuthPrefManager() = default;
+
+  FakeProximityAuthPrefManager(const FakeProximityAuthPrefManager&) = delete;
+  FakeProximityAuthPrefManager& operator=(const FakeProximityAuthPrefManager&) =
+      delete;
+
   ~FakeProximityAuthPrefManager() override = default;
 
   // proximity_auth::ProximityAuthPrefManager:
@@ -70,8 +75,6 @@ class FakeProximityAuthPrefManager
 
  private:
   bool has_shown_login_disabled_message_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeProximityAuthPrefManager);
 };
 
 // Checks if `input` string has any unreplaced placeholders.
@@ -92,6 +95,10 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
       : account_id_(account_id),
         show_icon_count_(0u),
         auth_type_(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD) {}
+
+  TestLockHandler(const TestLockHandler&) = delete;
+  TestLockHandler& operator=(const TestLockHandler&) = delete;
+
   ~TestLockHandler() override {}
 
   // proximity_auth::ScreenlockBridge::LockHandler implementation:
@@ -244,8 +251,6 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   // Auth type and value set using `SetAuthType`.
   proximity_auth::mojom::AuthType auth_type_;
   std::u16string auth_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLockHandler);
 };
 
 class SmartLockStateHandlerTest : public testing::Test {

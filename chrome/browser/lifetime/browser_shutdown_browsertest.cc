@@ -32,13 +32,15 @@ using testing::AtLeast;
 class BrowserShutdownBrowserTest : public InProcessBrowserTest {
  public:
   BrowserShutdownBrowserTest() {}
+
+  BrowserShutdownBrowserTest(const BrowserShutdownBrowserTest&) = delete;
+  BrowserShutdownBrowserTest& operator=(const BrowserShutdownBrowserTest&) =
+      delete;
+
   ~BrowserShutdownBrowserTest() override {}
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserShutdownBrowserTest);
 };
 
 class BrowserClosingObserver : public BrowserListObserver {

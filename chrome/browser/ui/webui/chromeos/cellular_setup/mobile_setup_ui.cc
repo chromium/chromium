@@ -175,6 +175,10 @@ base::Value GetCellularNetworkInfoValue(const NetworkState* network,
 class MobileSetupUIHTMLSource : public content::URLDataSource {
  public:
   MobileSetupUIHTMLSource();
+
+  MobileSetupUIHTMLSource(const MobileSetupUIHTMLSource&) = delete;
+  MobileSetupUIHTMLSource& operator=(const MobileSetupUIHTMLSource&) = delete;
+
   ~MobileSetupUIHTMLSource() override {}
 
   // content::URLDataSource implementation.
@@ -193,8 +197,6 @@ class MobileSetupUIHTMLSource : public content::URLDataSource {
 
  private:
   base::WeakPtrFactory<MobileSetupUIHTMLSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MobileSetupUIHTMLSource);
 };
 
 // The handler for Javascript messages related to the "register" view.
@@ -203,6 +205,10 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
                            public NetworkStateHandlerObserver {
  public:
   MobileSetupHandler();
+
+  MobileSetupHandler(const MobileSetupHandler&) = delete;
+  MobileSetupHandler& operator=(const MobileSetupHandler&) = delete;
+
   ~MobileSetupHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -255,8 +261,6 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
   // Initial value is true.
   bool lte_portal_reachable_;
   base::WeakPtrFactory<MobileSetupHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MobileSetupHandler);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

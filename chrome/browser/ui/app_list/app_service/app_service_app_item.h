@@ -23,6 +23,10 @@ class AppServiceAppItem : public ChromeAppListItem,
                     AppListModelUpdater* model_updater,
                     const app_list::AppListSyncableService::SyncItem* sync_item,
                     const apps::AppUpdate& app_update);
+
+  AppServiceAppItem(const AppServiceAppItem&) = delete;
+  AppServiceAppItem& operator=(const AppServiceAppItem&) = delete;
+
   ~AppServiceAppItem() override;
 
   void OnAppUpdate(const apps::AppUpdate& app_update);
@@ -51,8 +55,6 @@ class AppServiceAppItem : public ChromeAppListItem,
   std::unique_ptr<app_list::AppContextMenu> context_menu_;
 
   base::WeakPtrFactory<AppServiceAppItem> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceAppItem);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_SERVICE_APP_SERVICE_APP_ITEM_H_

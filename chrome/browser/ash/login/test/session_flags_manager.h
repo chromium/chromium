@@ -36,6 +36,10 @@ class SessionFlagsManager {
   using Switch = std::pair<std::string, std::string>;
 
   SessionFlagsManager();
+
+  SessionFlagsManager(const SessionFlagsManager&) = delete;
+  SessionFlagsManager& operator=(const SessionFlagsManager&) = delete;
+
   ~SessionFlagsManager();
 
   // Sets the manager up for session restore.It should be called early in
@@ -107,8 +111,6 @@ class SessionFlagsManager {
   // If `session_restore_enabled_` is set, the path to the file where session
   // state is saved.
   base::FilePath backing_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionFlagsManager);
 };
 
 }  // namespace test

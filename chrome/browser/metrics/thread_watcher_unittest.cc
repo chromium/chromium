@@ -368,6 +368,9 @@ class ThreadWatcherTest : public ::testing::Test {
     }
   }
 
+  ThreadWatcherTest(const ThreadWatcherTest&) = delete;
+  ThreadWatcherTest& operator=(const ThreadWatcherTest&) = delete;
+
   ~ThreadWatcherTest() override {
     ThreadWatcherList::DeleteAll();
     io_watcher_ = nullptr;
@@ -384,8 +387,6 @@ class ThreadWatcherTest : public ::testing::Test {
   base::ConditionVariable setup_complete_;
   bool initialized_;
   std::unique_ptr<WatchDogThread> watchdog_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadWatcherTest);
 };
 
 class ThreadWatcherTestWithMockTime : public ThreadWatcherTest {

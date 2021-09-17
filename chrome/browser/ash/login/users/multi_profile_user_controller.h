@@ -49,6 +49,11 @@ class MultiProfileUserController {
 
   MultiProfileUserController(MultiProfileUserControllerDelegate* delegate,
                              PrefService* local_state);
+
+  MultiProfileUserController(const MultiProfileUserController&) = delete;
+  MultiProfileUserController& operator=(const MultiProfileUserController&) =
+      delete;
+
   ~MultiProfileUserController();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -99,8 +104,6 @@ class MultiProfileUserController {
   MultiProfileUserControllerDelegate* delegate_;  // Not owned.
   PrefService* local_state_;                      // Not owned.
   std::vector<std::unique_ptr<PrefChangeRegistrar>> pref_watchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiProfileUserController);
 };
 
 }  // namespace ash

@@ -174,6 +174,9 @@ class ExtensionService : public ExtensionServiceInterface,
                    bool extensions_enabled,
                    base::OneShotEvent* ready);
 
+  ExtensionService(const ExtensionService&) = delete;
+  ExtensionService& operator=(const ExtensionService&) = delete;
+
   ~ExtensionService() override;
 
   // ExtensionServiceInterface implementation.
@@ -771,8 +774,6 @@ class ExtensionService : public ExtensionServiceInterface,
   friend class ::BlocklistedExtensionSyncServiceTest;
   friend class SafeBrowsingVerdictHandlerUnitTest;
   friend class BlocklistStatesInteractionUnitTest;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionService);
 };
 
 }  // namespace extensions

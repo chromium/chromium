@@ -34,6 +34,10 @@ constexpr auto kKohaku = MetricsReporter::DeviceClass::kKohaku;
 class MetricsReporterTest : public testing::Test {
  public:
   MetricsReporterTest() = default;
+
+  MetricsReporterTest(const MetricsReporterTest&) = delete;
+  MetricsReporterTest& operator=(const MetricsReporterTest&) = delete;
+
   ~MetricsReporterTest() override = default;
 
   void SetUp() override {
@@ -78,9 +82,6 @@ class MetricsReporterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<MetricsReporter> reporter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricsReporterTest);
 };
 
 TEST_F(MetricsReporterTest, CountAndReportEvents) {

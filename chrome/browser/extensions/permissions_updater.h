@@ -67,6 +67,10 @@ class PermissionsUpdater {
   explicit PermissionsUpdater(content::BrowserContext* browser_context);
   PermissionsUpdater(content::BrowserContext* browser_context,
                      InitFlag init_flag);
+
+  PermissionsUpdater(const PermissionsUpdater&) = delete;
+  PermissionsUpdater& operator=(const PermissionsUpdater&) = delete;
+
   ~PermissionsUpdater();
 
   // Sets a delegate to provide platform-specific logic. This should be set
@@ -235,8 +239,6 @@ class PermissionsUpdater {
   // Initialization flag that determines whether prefs is consulted about the
   // extension. Transient extensions should not have entries in prefs.
   InitFlag init_flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsUpdater);
 };
 
 }  // namespace extensions

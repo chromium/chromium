@@ -227,6 +227,11 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
       browser->tab_strip_model()->AddObserver(this);
   }
 
+  NewTabNavigationOrSwapObserver(const NewTabNavigationOrSwapObserver&) =
+      delete;
+  NewTabNavigationOrSwapObserver& operator=(
+      const NewTabNavigationOrSwapObserver&) = delete;
+
   ~NewTabNavigationOrSwapObserver() override {
     BrowserList::RemoveObserver(this);
   }
@@ -260,8 +265,6 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
  private:
   base::RunLoop new_tab_run_loop_;
   std::unique_ptr<NavigationOrSwapObserver> swap_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabNavigationOrSwapObserver);
 };
 
 class NoStatePrefetchBrowserTest

@@ -34,6 +34,10 @@ class ExtensionCacheImpl : public ExtensionCache,
  public:
   explicit ExtensionCacheImpl(
       std::unique_ptr<ChromeOSExtensionCacheDelegate> delegate);
+
+  ExtensionCacheImpl(const ExtensionCacheImpl&) = delete;
+  ExtensionCacheImpl& operator=(const ExtensionCacheImpl&) = delete;
+
   ~ExtensionCacheImpl() override;
 
   // Implementation of ExtensionCache.
@@ -76,8 +80,6 @@ class ExtensionCacheImpl : public ExtensionCache,
 
   // Weak factory for callbacks.
   base::WeakPtrFactory<ExtensionCacheImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCacheImpl);
 };
 
 }  // namespace extensions

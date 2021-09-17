@@ -41,6 +41,10 @@ class TestNetworkConnectionObserver
     tracker_->AddNetworkConnectionObserver(this);
   }
 
+  TestNetworkConnectionObserver(const TestNetworkConnectionObserver&) = delete;
+  TestNetworkConnectionObserver& operator=(
+      const TestNetworkConnectionObserver&) = delete;
+
   ~TestNetworkConnectionObserver() override {
     tracker_->RemoveNetworkConnectionObserver(this);
   }
@@ -77,8 +81,6 @@ class TestNetworkConnectionObserver
   network::mojom::ConnectionType connection_type_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkConnectionObserver);
 };
 
 }  // namespace

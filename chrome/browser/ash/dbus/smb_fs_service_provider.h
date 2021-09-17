@@ -24,6 +24,10 @@ namespace ash {
 class SmbFsServiceProvider : public CrosDBusService::ServiceProviderInterface {
  public:
   SmbFsServiceProvider();
+
+  SmbFsServiceProvider(const SmbFsServiceProvider&) = delete;
+  SmbFsServiceProvider& operator=(const SmbFsServiceProvider&) = delete;
+
   ~SmbFsServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -36,8 +40,6 @@ class SmbFsServiceProvider : public CrosDBusService::ServiceProviderInterface {
       dbus::ExportedObject::ResponseSender response_sender);
 
   base::WeakPtrFactory<SmbFsServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SmbFsServiceProvider);
 };
 
 }  // namespace ash

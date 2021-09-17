@@ -14,6 +14,12 @@ class Profile;
 class ChromeAutocompleteSchemeClassifier : public AutocompleteSchemeClassifier {
  public:
   explicit ChromeAutocompleteSchemeClassifier(Profile* profile);
+
+  ChromeAutocompleteSchemeClassifier(
+      const ChromeAutocompleteSchemeClassifier&) = delete;
+  ChromeAutocompleteSchemeClassifier& operator=(
+      const ChromeAutocompleteSchemeClassifier&) = delete;
+
   ~ChromeAutocompleteSchemeClassifier() override;
 
   // AutocompleteInputSchemeChecker:
@@ -22,8 +28,6 @@ class ChromeAutocompleteSchemeClassifier : public AutocompleteSchemeClassifier {
 
  private:
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAutocompleteSchemeClassifier);
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_CHROME_AUTOCOMPLETE_SCHEME_CLASSIFIER_H_

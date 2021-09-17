@@ -27,6 +27,11 @@ class ProcessSingletonModalDialogLock {
   explicit ProcessSingletonModalDialogLock(
       const ProcessSingleton::NotificationCallback& original_callback);
 
+  ProcessSingletonModalDialogLock(const ProcessSingletonModalDialogLock&) =
+      delete;
+  ProcessSingletonModalDialogLock& operator=(
+      const ProcessSingletonModalDialogLock&) = delete;
+
   ~ProcessSingletonModalDialogLock();
 
   // Receives a callback to be run to close the active modal dialog, or an empty
@@ -45,8 +50,6 @@ class ProcessSingletonModalDialogLock {
 
   base::RepeatingClosure notification_handler_;
   ProcessSingleton::NotificationCallback original_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSingletonModalDialogLock);
 };
 
 #endif  // CHROME_BROWSER_PROCESS_SINGLETON_MODAL_DIALOG_LOCK_H_

@@ -27,6 +27,10 @@ namespace ash {
 class ServerPrintersProvider {
  public:
   static std::unique_ptr<ServerPrintersProvider> Create(Profile* profile);
+
+  ServerPrintersProvider(const ServerPrintersProvider&) = delete;
+  ServerPrintersProvider& operator=(const ServerPrintersProvider&) = delete;
+
   virtual ~ServerPrintersProvider() = default;
 
   using OnPrintersUpdateCallback = base::RepeatingCallback<void(bool complete)>;
@@ -48,9 +52,6 @@ class ServerPrintersProvider {
 
  protected:
   ServerPrintersProvider() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServerPrintersProvider);
 };
 
 }  // namespace ash

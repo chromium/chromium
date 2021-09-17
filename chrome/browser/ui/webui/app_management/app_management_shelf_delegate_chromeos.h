@@ -23,6 +23,11 @@ class AppManagementShelfDelegate : public ash::ShelfModelObserver {
  public:
   explicit AppManagementShelfDelegate(AppManagementPageHandler* page_handler,
                                       Profile* profile);
+
+  AppManagementShelfDelegate(const AppManagementShelfDelegate&) = delete;
+  AppManagementShelfDelegate& operator=(const AppManagementShelfDelegate&) =
+      delete;
+
   ~AppManagementShelfDelegate() override;
 
   bool IsPinned(const std::string& app_id);
@@ -38,8 +43,6 @@ class AppManagementShelfDelegate : public ash::ShelfModelObserver {
 
   AppManagementPageHandler* page_handler_;
   std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppManagementShelfDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_SHELF_DELEGATE_CHROMEOS_H_

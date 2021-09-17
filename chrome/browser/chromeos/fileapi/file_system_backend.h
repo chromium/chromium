@@ -87,6 +87,10 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
       std::unique_ptr<FileSystemBackendDelegate> smbfs_delegate,
       scoped_refptr<storage::ExternalMountPoints> mount_points,
       storage::ExternalMountPoints* system_mount_points);
+
+  FileSystemBackend(const FileSystemBackend&) = delete;
+  FileSystemBackend& operator=(const FileSystemBackend&) = delete;
+
   ~FileSystemBackend() override;
 
   // Adds system mount points, such as "archive", and "removable". This
@@ -190,8 +194,6 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
   // Globally visible mount points. System MountPonts instance should outlive
   // all FileSystemBackend instances, so raw pointer is safe.
   storage::ExternalMountPoints* system_mount_points_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemBackend);
 };
 
 }  // namespace chromeos

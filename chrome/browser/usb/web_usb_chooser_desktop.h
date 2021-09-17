@@ -16,6 +16,10 @@
 class WebUsbChooserDesktop : public WebUsbChooser {
  public:
   explicit WebUsbChooserDesktop(content::RenderFrameHost* render_frame_host);
+
+  WebUsbChooserDesktop(const WebUsbChooserDesktop&) = delete;
+  WebUsbChooserDesktop& operator=(const WebUsbChooserDesktop&) = delete;
+
   ~WebUsbChooserDesktop() override;
 
   // WebUsbChooser implementation
@@ -27,7 +31,6 @@ class WebUsbChooserDesktop : public WebUsbChooser {
   base::ScopedClosureRunner closure_runner_{base::DoNothing()};
 
   base::WeakPtrFactory<WebUsbChooserDesktop> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(WebUsbChooserDesktop);
 };
 
 #endif  // CHROME_BROWSER_USB_WEB_USB_CHOOSER_DESKTOP_H_

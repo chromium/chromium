@@ -33,6 +33,10 @@ class DriveUploaderOnWorker : public drive::DriveUploaderInterface {
       const base::WeakPtr<DriveUploaderWrapper>& wrapper,
       base::SingleThreadTaskRunner* ui_task_runner,
       base::SequencedTaskRunner* worker_task_runner);
+
+  DriveUploaderOnWorker(const DriveUploaderOnWorker&) = delete;
+  DriveUploaderOnWorker& operator=(const DriveUploaderOnWorker&) = delete;
+
   ~DriveUploaderOnWorker() override;
 
   void StartBatchProcessing() override;
@@ -68,8 +72,6 @@ class DriveUploaderOnWorker : public drive::DriveUploaderInterface {
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 
   base::SequenceChecker sequece_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveUploaderOnWorker);
 };
 
 }  // namespace drive_backend

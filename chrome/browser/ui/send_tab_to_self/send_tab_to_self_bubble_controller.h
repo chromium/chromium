@@ -37,6 +37,10 @@ struct TargetDeviceInfo;
 class SendTabToSelfBubbleController
     : public content::WebContentsUserData<SendTabToSelfBubbleController> {
  public:
+  SendTabToSelfBubbleController(const SendTabToSelfBubbleController&) = delete;
+  SendTabToSelfBubbleController& operator=(
+      const SendTabToSelfBubbleController&) = delete;
+
   ~SendTabToSelfBubbleController() override;
 
   static SendTabToSelfBubbleController* CreateOrGetFromWebContents(
@@ -106,8 +110,6 @@ class SendTabToSelfBubbleController
   bool bubble_shown_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfBubbleController);
 };
 
 }  // namespace send_tab_to_self

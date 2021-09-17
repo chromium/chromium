@@ -21,6 +21,10 @@ namespace history_report {
 class DeltaFileBackendTest : public testing::Test {
  public:
   DeltaFileBackendTest() {}
+
+  DeltaFileBackendTest(const DeltaFileBackendTest&) = delete;
+  DeltaFileBackendTest& operator=(const DeltaFileBackendTest&) = delete;
+
   ~DeltaFileBackendTest() override {}
 
  protected:
@@ -33,8 +37,6 @@ class DeltaFileBackendTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaFileBackendTest);
 };
 
 TEST_F(DeltaFileBackendTest, AddPage) {

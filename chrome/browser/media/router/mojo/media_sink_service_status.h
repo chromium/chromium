@@ -22,6 +22,10 @@ namespace media_router {
 class MediaSinkServiceStatus {
  public:
   MediaSinkServiceStatus();
+
+  MediaSinkServiceStatus(const MediaSinkServiceStatus&) = delete;
+  MediaSinkServiceStatus& operator=(const MediaSinkServiceStatus&) = delete;
+
   ~MediaSinkServiceStatus();
 
   // Called when a media sink service reports discovered sinks to MR.
@@ -52,7 +56,6 @@ class MediaSinkServiceStatus {
   base::MRUCache<std::string, std::vector<MediaSinkInternal>> available_sinks_;
 
   base::WeakPtrFactory<MediaSinkServiceStatus> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MediaSinkServiceStatus);
 };
 
 }  // namespace media_router

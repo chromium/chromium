@@ -150,13 +150,16 @@ class FakePerUserTopicSubscriptionManager
             /*url_loader_factory=*/nullptr,
             /*project_id*/ kInvalidationGCMSenderId,
             /*migrate_prefs=*/false) {}
+
+  FakePerUserTopicSubscriptionManager(
+      const FakePerUserTopicSubscriptionManager&) = delete;
+  FakePerUserTopicSubscriptionManager& operator=(
+      const FakePerUserTopicSubscriptionManager&) = delete;
+
   ~FakePerUserTopicSubscriptionManager() override = default;
 
   void UpdateSubscribedTopics(const invalidation::Topics& topics,
                               const std::string& instance_id_token) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakePerUserTopicSubscriptionManager);
 };
 
 std::unique_ptr<invalidation::FCMNetworkHandler> CreateFCMNetworkHandler(

@@ -59,6 +59,11 @@ class ProfileNetworkContextService
       public content_settings::CookieSettings::Observer {
  public:
   explicit ProfileNetworkContextService(Profile* profile);
+
+  ProfileNetworkContextService(const ProfileNetworkContextService&) = delete;
+  ProfileNetworkContextService& operator=(const ProfileNetworkContextService&) =
+      delete;
+
   ~ProfileNetworkContextService() override;
 
   // Configures the NetworkContextParams and the CertVerifierCreationParams for
@@ -187,8 +192,6 @@ class ProfileNetworkContextService
   // Used for testing.
   base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>
       client_cert_store_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileNetworkContextService);
 };
 
 #endif  // CHROME_BROWSER_NET_PROFILE_NETWORK_CONTEXT_SERVICE_H_

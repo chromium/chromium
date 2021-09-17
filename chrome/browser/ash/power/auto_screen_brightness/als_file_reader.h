@@ -36,6 +36,10 @@ class AlsFileReader : public LightProviderInterface {
       base::TimeDelta::FromSecondsD(1.0 / AlsReader::kAlsPollFrequency);
 
   explicit AlsFileReader(AlsReader* als_reader);
+
+  AlsFileReader(const AlsFileReader&) = delete;
+  AlsFileReader& operator=(const AlsFileReader&) = delete;
+
   ~AlsFileReader() override;
 
   // Checks if an ALS is enabled, and if the config is valid . Also
@@ -86,8 +90,6 @@ class AlsFileReader : public LightProviderInterface {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AlsFileReader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AlsFileReader);
 };
 
 }  // namespace auto_screen_brightness

@@ -20,6 +20,10 @@ class JSCallsContainer;
 class JSCallsContainerTestApi {
  public:
   explicit JSCallsContainerTestApi(JSCallsContainer* js_calls_container);
+
+  JSCallsContainerTestApi(const JSCallsContainerTestApi&) = delete;
+  JSCallsContainerTestApi& operator=(const JSCallsContainerTestApi&) = delete;
+
   ~JSCallsContainerTestApi();
 
   // `function` has arguments serialized to make matching easier. For example, a
@@ -35,7 +39,6 @@ class JSCallsContainerTestApi {
 
  private:
   JSCallsContainer* const js_calls_container_;
-  DISALLOW_COPY_AND_ASSIGN(JSCallsContainerTestApi);
 };
 
 }  // namespace chromeos

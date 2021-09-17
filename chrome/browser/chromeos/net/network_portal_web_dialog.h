@@ -22,6 +22,10 @@ class NetworkPortalWebDialog : public ui::WebDialogDelegate {
  public:
   explicit NetworkPortalWebDialog(
       base::WeakPtr<NetworkPortalNotificationController> controller);
+
+  NetworkPortalWebDialog(const NetworkPortalWebDialog&) = delete;
+  NetworkPortalWebDialog& operator=(const NetworkPortalWebDialog&) = delete;
+
   ~NetworkPortalWebDialog() override;
 
   void SetWidget(views::Widget* widget);
@@ -44,8 +48,6 @@ class NetworkPortalWebDialog : public ui::WebDialogDelegate {
   base::WeakPtr<NetworkPortalNotificationController> controller_;
 
   views::Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalWebDialog);
 };
 
 }  // namespace chromeos

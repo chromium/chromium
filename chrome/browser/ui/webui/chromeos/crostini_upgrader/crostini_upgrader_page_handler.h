@@ -34,6 +34,11 @@ class CrostiniUpgraderPageHandler
           pending_page,
       base::OnceClosure on_page_closed,
       base::OnceCallback<void(bool)> launch_callback);
+
+  CrostiniUpgraderPageHandler(const CrostiniUpgraderPageHandler&) = delete;
+  CrostiniUpgraderPageHandler& operator=(const CrostiniUpgraderPageHandler&) =
+      delete;
+
   ~CrostiniUpgraderPageHandler() override;
 
   // Send a close request to the web page.
@@ -79,8 +84,6 @@ class CrostiniUpgraderPageHandler
   bool restart_required_ = true;
 
   base::WeakPtrFactory<CrostiniUpgraderPageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUpgraderPageHandler);
 };
 
 }  // namespace chromeos

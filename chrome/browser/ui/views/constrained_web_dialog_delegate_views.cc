@@ -127,6 +127,12 @@ class WebDialogWebContentsDelegateViews
             std::make_unique<ChromeWebContentsHandler>()),
         initiator_observer_(observer),
         web_view_(web_view) {}
+
+  WebDialogWebContentsDelegateViews(const WebDialogWebContentsDelegateViews&) =
+      delete;
+  WebDialogWebContentsDelegateViews& operator=(
+      const WebDialogWebContentsDelegateViews&) = delete;
+
   ~WebDialogWebContentsDelegateViews() override = default;
 
   // ui::WebDialogWebContentsDelegate:
@@ -175,8 +181,6 @@ class WebDialogWebContentsDelegateViews
  private:
   InitiatorWebContentsObserver* const initiator_observer_;
   ConstrainedDialogWebView* web_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogWebContentsDelegateViews);
 };
 
 // Views implementation of ConstrainedWebDialogDelegate.
@@ -195,6 +199,12 @@ class ConstrainedWebDialogDelegateViews
       content::BrowserContext* browser_context,
       std::unique_ptr<ui::WebDialogDelegate> web_dialog_delegate,
       std::unique_ptr<WebDialogWebContentsDelegate> tab_delegate);
+
+  ConstrainedWebDialogDelegateViews(const ConstrainedWebDialogDelegateViews&) =
+      delete;
+  ConstrainedWebDialogDelegateViews& operator=(
+      const ConstrainedWebDialogDelegateViews&) = delete;
+
   ~ConstrainedWebDialogDelegateViews() override;
 
   bool closed_via_webui() const;
@@ -252,8 +262,6 @@ class ConstrainedWebDialogDelegateViews
   views::WebView* view_;
 
   std::unique_ptr<WebDialogWebContentsDelegate> override_tab_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConstrainedWebDialogDelegateViews);
 };
 
 using content::NativeWebKeyboardEvent;

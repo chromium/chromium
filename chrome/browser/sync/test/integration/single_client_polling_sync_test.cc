@@ -30,10 +30,12 @@ namespace {
 class SingleClientPollingSyncTest : public SyncTest {
  public:
   SingleClientPollingSyncTest() : SyncTest(SINGLE_CLIENT) {}
-  ~SingleClientPollingSyncTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientPollingSyncTest);
+  SingleClientPollingSyncTest(const SingleClientPollingSyncTest&) = delete;
+  SingleClientPollingSyncTest& operator=(const SingleClientPollingSyncTest&) =
+      delete;
+
+  ~SingleClientPollingSyncTest() override {}
 };
 
 // This test verifies that the poll interval in prefs gets initialized if no

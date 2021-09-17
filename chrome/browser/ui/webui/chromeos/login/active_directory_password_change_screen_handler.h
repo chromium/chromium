@@ -46,6 +46,12 @@ class ActiveDirectoryPasswordChangeScreenHandler
 
   explicit ActiveDirectoryPasswordChangeScreenHandler(
       JSCallsContainer* js_calls_container);
+
+  ActiveDirectoryPasswordChangeScreenHandler(
+      const ActiveDirectoryPasswordChangeScreenHandler&) = delete;
+  ActiveDirectoryPasswordChangeScreenHandler& operator=(
+      const ActiveDirectoryPasswordChangeScreenHandler&) = delete;
+
   ~ActiveDirectoryPasswordChangeScreenHandler() override;
 
   // BaseScreenHandler implementation:
@@ -68,8 +74,6 @@ class ActiveDirectoryPasswordChangeScreenHandler
                       const std::string& new_password);
 
   ash::ActiveDirectoryPasswordChangeScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryPasswordChangeScreenHandler);
 };
 
 }  // namespace chromeos

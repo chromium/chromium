@@ -53,6 +53,10 @@ class NetworkScreenHandler : public NetworkScreenView,
   using TView = NetworkScreenView;
 
   explicit NetworkScreenHandler(JSCallsContainer* js_calls_container);
+
+  NetworkScreenHandler(const NetworkScreenHandler&) = delete;
+  NetworkScreenHandler& operator=(const NetworkScreenHandler&) = delete;
+
   ~NetworkScreenHandler() override;
 
  private:
@@ -75,8 +79,6 @@ class NetworkScreenHandler : public NetworkScreenView,
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkScreenHandler);
 };
 
 }  // namespace chromeos

@@ -57,6 +57,10 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
                              public SystemTrayObserver {
  public:
   explicit OobeUIDialogDelegate(base::WeakPtr<LoginDisplayHostMojo> controller);
+
+  OobeUIDialogDelegate(const OobeUIDialogDelegate&) = delete;
+  OobeUIDialogDelegate& operator=(const OobeUIDialogDelegate&) = delete;
+
   ~OobeUIDialogDelegate() override;
 
   // Show the dialog widget.
@@ -165,8 +169,6 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   // Whether the captive portal screen should be shown the next time the Gaia
   // dialog is opened.
   bool should_display_captive_portal_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeUIDialogDelegate);
 };
 
 }  // namespace ash

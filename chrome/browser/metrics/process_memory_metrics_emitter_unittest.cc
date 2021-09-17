@@ -637,6 +637,12 @@ class ProcessMemoryMetricsEmitterTest
     : public testing::TestWithParam<HistogramProcessType> {
  public:
   ProcessMemoryMetricsEmitterTest() {}
+
+  ProcessMemoryMetricsEmitterTest(const ProcessMemoryMetricsEmitterTest&) =
+      delete;
+  ProcessMemoryMetricsEmitterTest& operator=(
+      const ProcessMemoryMetricsEmitterTest&) = delete;
+
   ~ProcessMemoryMetricsEmitterTest() override {}
 
  protected:
@@ -666,9 +672,6 @@ class ProcessMemoryMetricsEmitterTest
 
   content::BrowserTaskEnvironment task_environment_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterTest);
 };
 
 TEST_P(ProcessMemoryMetricsEmitterTest, CollectsSingleProcessUKMs) {

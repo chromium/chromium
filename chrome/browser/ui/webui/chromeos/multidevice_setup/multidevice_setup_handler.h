@@ -16,6 +16,10 @@ namespace multidevice_setup {
 class MultideviceSetupHandler : public content::WebUIMessageHandler {
  public:
   MultideviceSetupHandler();
+
+  MultideviceSetupHandler(const MultideviceSetupHandler&) = delete;
+  MultideviceSetupHandler& operator=(const MultideviceSetupHandler&) = delete;
+
   ~MultideviceSetupHandler() override;
 
  private:
@@ -24,8 +28,6 @@ class MultideviceSetupHandler : public content::WebUIMessageHandler {
 
   void HandleGetProfileInfo(const base::ListValue* args);
   void HandleOpenMultiDeviceSettings(const base::ListValue* args);
-
-  DISALLOW_COPY_AND_ASSIGN(MultideviceSetupHandler);
 };
 
 }  // namespace multidevice_setup

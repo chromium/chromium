@@ -24,6 +24,10 @@ namespace ash {
 class LoginManagerTest : public MixinBasedInProcessBrowserTest {
  public:
   LoginManagerTest();
+
+  LoginManagerTest(const LoginManagerTest&) = delete;
+  LoginManagerTest& operator=(const LoginManagerTest&) = delete;
+
   ~LoginManagerTest() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -65,7 +69,6 @@ class LoginManagerTest : public MixinBasedInProcessBrowserTest {
   bool should_launch_browser_ = false;
   EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,
                                                      embedded_test_server()};
-  DISALLOW_COPY_AND_ASSIGN(LoginManagerTest);
 };
 
 }  // namespace ash

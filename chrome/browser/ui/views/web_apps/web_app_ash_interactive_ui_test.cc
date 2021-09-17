@@ -20,6 +20,11 @@
 class WebAppAshInteractiveUITest : public web_app::WebAppControllerBrowserTest {
  public:
   WebAppAshInteractiveUITest() = default;
+
+  WebAppAshInteractiveUITest(const WebAppAshInteractiveUITest&) = delete;
+  WebAppAshInteractiveUITest& operator=(const WebAppAshInteractiveUITest&) =
+      delete;
+
   ~WebAppAshInteractiveUITest() override = default;
 
   // InProcessBrowserTest override:
@@ -62,9 +67,6 @@ class WebAppAshInteractiveUITest : public web_app::WebAppControllerBrowserTest {
 
   BrowserView* browser_view_ = nullptr;
   ImmersiveModeController* controller_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppAshInteractiveUITest);
 };
 
 // Test that the web app menu button opens a menu on click.

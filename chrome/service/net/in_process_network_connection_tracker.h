@@ -20,6 +20,12 @@ class InProcessNetworkConnectionTracker
       private net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   InProcessNetworkConnectionTracker();
+
+  InProcessNetworkConnectionTracker(const InProcessNetworkConnectionTracker&) =
+      delete;
+  InProcessNetworkConnectionTracker& operator=(
+      const InProcessNetworkConnectionTracker&) = delete;
+
   ~InProcessNetworkConnectionTracker() override;
 
  protected:
@@ -29,8 +35,6 @@ class InProcessNetworkConnectionTracker
   // net::NetworkChangeNotifier::NetworkChangeObserver implementation:
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessNetworkConnectionTracker);
 };
 
 #endif  // CHROME_SERVICE_NET_IN_PROCESS_NETWORK_CONNECTION_TRACKER_H_

@@ -18,6 +18,10 @@
 class UtilWinImpl : public chrome::mojom::UtilWin {
  public:
   explicit UtilWinImpl(mojo::PendingReceiver<chrome::mojom::UtilWin> receiver);
+
+  UtilWinImpl(const UtilWinImpl&) = delete;
+  UtilWinImpl& operator=(const UtilWinImpl&) = delete;
+
   ~UtilWinImpl() override;
 
  private:
@@ -39,8 +43,6 @@ class UtilWinImpl : public chrome::mojom::UtilWin {
                             GetAntiVirusProductsCallback callback) override;
 
   mojo::Receiver<chrome::mojom::UtilWin> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(UtilWinImpl);
 };
 
 #endif  // CHROME_SERVICES_UTIL_WIN_UTIL_WIN_IMPL_H_

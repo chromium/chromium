@@ -46,6 +46,10 @@ class FakeDiskMountManager : public chromeos::disks::DiskMountManager {
   };
 
   FakeDiskMountManager();
+
+  FakeDiskMountManager(const FakeDiskMountManager&) = delete;
+  FakeDiskMountManager& operator=(const FakeDiskMountManager&) = delete;
+
   ~FakeDiskMountManager() override;
 
   const std::vector<MountRequest>& mount_requests() const {
@@ -118,8 +122,6 @@ class FakeDiskMountManager : public chromeos::disks::DiskMountManager {
   std::vector<std::string> unmount_requests_;
   std::vector<RemountAllRequest> remount_all_requests_;
   std::map<std::string, chromeos::MountError> unmount_errors_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDiskMountManager);
 };
 
 }  // namespace file_manager

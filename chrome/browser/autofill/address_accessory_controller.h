@@ -24,6 +24,11 @@ class AddressAccessoryController
       public AccessoryController {
  public:
   AddressAccessoryController() = default;
+
+  AddressAccessoryController(const AddressAccessoryController&) = delete;
+  AddressAccessoryController& operator=(const AddressAccessoryController&) =
+      delete;
+
   ~AddressAccessoryController() override = default;
 
   // Returns true if the accessory controller may exist for |web_contents|.
@@ -39,9 +44,6 @@ class AddressAccessoryController
 
   // Fetches suggestions and propagates them to the frontend.
   virtual void RefreshSuggestions() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AddressAccessoryController);
 };
 
 }  // namespace autofill

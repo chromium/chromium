@@ -26,6 +26,10 @@ class NetworkThrottlingObserverTest : public ::testing::Test {
     observer_ = std::make_unique<NetworkThrottlingObserver>(local_state_.get());
   }
 
+  NetworkThrottlingObserverTest(const NetworkThrottlingObserverTest&) = delete;
+  NetworkThrottlingObserverTest& operator=(
+      const NetworkThrottlingObserverTest&) = delete;
+
   ~NetworkThrottlingObserverTest() override {
     observer_.reset();
     local_state_.reset();
@@ -44,8 +48,6 @@ class NetworkThrottlingObserverTest : public ::testing::Test {
   NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<NetworkThrottlingObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkThrottlingObserverTest);
 };
 
 TEST_F(NetworkThrottlingObserverTest, ThrottlingChangeCallsShill) {

@@ -94,6 +94,11 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
              &EnterprisePrintersProviderImpl::UpdateUserRecommendedPrinters);
   }
 
+  EnterprisePrintersProviderImpl(const EnterprisePrintersProviderImpl&) =
+      delete;
+  EnterprisePrintersProviderImpl& operator=(
+      const EnterprisePrintersProviderImpl&) = delete;
+
   ~EnterprisePrintersProviderImpl() override {
     if (device_printers_)
       device_printers_->RemoveObserver(this);
@@ -273,7 +278,6 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
   base::ObserverList<EnterprisePrintersProvider::Observer>::Unchecked
       observers_;
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(EnterprisePrintersProviderImpl);
 };
 
 }  // namespace

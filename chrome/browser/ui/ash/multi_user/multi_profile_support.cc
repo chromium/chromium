@@ -91,6 +91,10 @@ void RecordUMAForTransferredWindowType(aura::Window* window) {
 class AppObserver : public extensions::AppWindowRegistry::Observer {
  public:
   explicit AppObserver(const std::string& user_id) : user_id_(user_id) {}
+
+  AppObserver(const AppObserver&) = delete;
+  AppObserver& operator=(const AppObserver&) = delete;
+
   ~AppObserver() override {}
 
   // AppWindowRegistry::Observer overrides:
@@ -103,8 +107,6 @@ class AppObserver : public extensions::AppWindowRegistry::Observer {
 
  private:
   std::string user_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppObserver);
 };
 
 // static

@@ -26,6 +26,10 @@ enum class ImageJobType { kSiteIcon, kCategoryImage };
 class ImageHelper {
  public:
   ImageHelper();
+
+  ImageHelper(const ImageHelper&) = delete;
+  ImageHelper& operator=(const ImageHelper&) = delete;
+
   virtual ~ImageHelper();
 
   // Compose a single site icon and return via |callback|.
@@ -57,8 +61,6 @@ class ImageHelper {
   int last_used_job_id_;
 
   base::WeakPtrFactory<ImageHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageHelper);
 };
 
 }  // namespace explore_sites

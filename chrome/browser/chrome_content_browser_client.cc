@@ -925,6 +925,12 @@ class CertificateReportingServiceCertReporter : public SSLCertReporter {
       content::WebContents* web_contents)
       : service_(CertificateReportingServiceFactory::GetForBrowserContext(
             web_contents->GetBrowserContext())) {}
+
+  CertificateReportingServiceCertReporter(
+      const CertificateReportingServiceCertReporter&) = delete;
+  CertificateReportingServiceCertReporter& operator=(
+      const CertificateReportingServiceCertReporter&) = delete;
+
   ~CertificateReportingServiceCertReporter() override {}
 
   // SSLCertReporter implementation
@@ -935,8 +941,6 @@ class CertificateReportingServiceCertReporter : public SSLCertReporter {
 
  private:
   CertificateReportingService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateReportingServiceCertReporter);
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

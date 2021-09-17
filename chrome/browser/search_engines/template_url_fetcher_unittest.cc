@@ -51,6 +51,10 @@ class TestTemplateUrlFetcher : public TemplateURLFetcher {
       const base::RepeatingClosure& request_completed_callback)
       : TemplateURLFetcher(template_url_service),
         callback_(request_completed_callback) {}
+
+  TestTemplateUrlFetcher(const TestTemplateUrlFetcher&) = delete;
+  TestTemplateUrlFetcher& operator=(const TestTemplateUrlFetcher&) = delete;
+
   ~TestTemplateUrlFetcher() override {}
 
  protected:
@@ -62,8 +66,6 @@ class TestTemplateUrlFetcher : public TemplateURLFetcher {
  private:
   // Callback to be run when a request completes.
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTemplateUrlFetcher);
 };
 
 // Basic set-up for TemplateURLFetcher tests.

@@ -296,6 +296,10 @@ class KioskFakeDiskMountManager : public file_manager::FakeDiskMountManager {
  public:
   KioskFakeDiskMountManager() {}
 
+  KioskFakeDiskMountManager(const KioskFakeDiskMountManager&) = delete;
+  KioskFakeDiskMountManager& operator=(const KioskFakeDiskMountManager&) =
+      delete;
+
   ~KioskFakeDiskMountManager() override {}
 
   void set_usb_mount_path(const std::string& usb_mount_path) {
@@ -316,8 +320,6 @@ class KioskFakeDiskMountManager : public file_manager::FakeDiskMountManager {
 
  private:
   std::string usb_mount_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskFakeDiskMountManager);
 };
 
 class AppDataLoadWaiter : public KioskAppManagerObserver {
@@ -334,6 +336,9 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
         version_(version) {
     manager_->AddObserver(this);
   }
+
+  AppDataLoadWaiter(const AppDataLoadWaiter&) = delete;
+  AppDataLoadWaiter& operator=(const AppDataLoadWaiter&) = delete;
 
   ~AppDataLoadWaiter() override { manager_->RemoveObserver(this); }
 
@@ -422,8 +427,6 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
   bool quit_;
   std::string app_id_;
   std::string version_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppDataLoadWaiter);
 };
 
 // Replaces settings urls for KioskSettingsNavigationThrottle.
@@ -490,6 +493,9 @@ class KioskTest : public OobeBaseTest {
     // TODO(https://crbug.com/937244): Remove this.
     KioskAppData::SetIgnoreKioskAppDataLoadFailuresForTesting(true);
   }
+
+  KioskTest(const KioskTest&) = delete;
+  KioskTest& operator=(const KioskTest&) = delete;
 
   ~KioskTest() override = default;
 
@@ -837,8 +843,6 @@ class KioskTest : public OobeBaseTest {
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
   std::unique_ptr<base::AutoReset<base::TimeDelta>> network_wait_override_;
   std::unique_ptr<base::AutoReset<bool>> block_app_launch_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskTest);
 };
 
 class KioskDeviceOwnedTest : public KioskTest {
@@ -1676,6 +1680,10 @@ IN_PROC_BROWSER_TEST_F(
 class KioskUpdateTest : public KioskTest {
  public:
   KioskUpdateTest() {}
+
+  KioskUpdateTest(const KioskUpdateTest&) = delete;
+  KioskUpdateTest& operator=(const KioskUpdateTest&) = delete;
+
   ~KioskUpdateTest() override {}
 
   struct TestAppInfo {
@@ -1912,6 +1920,10 @@ class KioskUpdateTest : public KioskTest {
       manager_->AddObserver(this);
     }
 
+    KioskAppExternalUpdateWaiter(const KioskAppExternalUpdateWaiter&) = delete;
+    KioskAppExternalUpdateWaiter& operator=(
+        const KioskAppExternalUpdateWaiter&) = delete;
+
     ~KioskAppExternalUpdateWaiter() override { manager_->RemoveObserver(this); }
 
     void Wait() {
@@ -1946,14 +1958,10 @@ class KioskUpdateTest : public KioskTest {
     bool quit_;
     bool update_success_;
     bool app_update_notified_;
-
-    DISALLOW_COPY_AND_ASSIGN(KioskAppExternalUpdateWaiter);
   };
 
   // Owned by DiskMountManager.
   KioskFakeDiskMountManager* fake_disk_mount_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskUpdateTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchOfflineEnabledAppNoNetwork) {
@@ -2703,6 +2711,9 @@ class KioskVirtualKeyboardTest : public KioskDeviceOwnedTest,
     audio::FakeSystemInfo::OverrideGlobalBinderForAudioService(this);
   }
 
+  KioskVirtualKeyboardTest(const KioskVirtualKeyboardTest&) = delete;
+  KioskVirtualKeyboardTest& operator=(const KioskVirtualKeyboardTest&) = delete;
+
   ~KioskVirtualKeyboardTest() override {
     audio::FakeSystemInfo::ClearGlobalBinderForAudioService();
   }
@@ -2727,9 +2738,6 @@ class KioskVirtualKeyboardTest : public KioskDeviceOwnedTest,
   void HasInputDevices(HasInputDevicesCallback callback) override {
     std::move(callback).Run(true);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KioskVirtualKeyboardTest);
 };
 
 // Flaky. crbug.com/1094809

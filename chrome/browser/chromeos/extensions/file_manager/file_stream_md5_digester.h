@@ -27,6 +27,10 @@ class FileStreamMd5Digester {
   using ResultCallback = base::OnceCallback<void(std::string)>;
 
   FileStreamMd5Digester();
+
+  FileStreamMd5Digester(const FileStreamMd5Digester&) = delete;
+  FileStreamMd5Digester& operator=(const FileStreamMd5Digester&) = delete;
+
   ~FileStreamMd5Digester();
 
   // Computes an MD5 digest of data read from the given |streamReader|.  The
@@ -48,8 +52,6 @@ class FileStreamMd5Digester {
   scoped_refptr<net::IOBuffer> buffer_;
   base::MD5Context md5_context_;
   ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileStreamMd5Digester);
 };
 
 }  // namespace util

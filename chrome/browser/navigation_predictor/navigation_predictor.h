@@ -36,6 +36,10 @@ class NavigationPredictor : public content::DocumentServiceBase<
  public:
   NavigationPredictor(content::RenderFrameHost* render_frame_host,
                       mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
+
+  NavigationPredictor(const NavigationPredictor&) = delete;
+  NavigationPredictor& operator=(const NavigationPredictor&) = delete;
+
   ~NavigationPredictor() override;
 
   // Create and bind NavigationPredictor.
@@ -97,8 +101,6 @@ class NavigationPredictor : public content::DocumentServiceBase<
   base::TimeTicks navigation_start_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationPredictor);
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_H_

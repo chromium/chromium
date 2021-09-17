@@ -96,6 +96,9 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
                    content::NotificationService::AllSources());
   }
 
+  CupsPrintJobManagerImpl(const CupsPrintJobManagerImpl&) = delete;
+  CupsPrintJobManagerImpl& operator=(const CupsPrintJobManagerImpl&) = delete;
+
   ~CupsPrintJobManagerImpl() override = default;
 
   // CupsPrintJobManager overrides:
@@ -375,8 +378,6 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
   content::NotificationRegistrar registrar_;
   std::unique_ptr<CupsWrapper> cups_wrapper_;
   base::WeakPtrFactory<CupsPrintJobManagerImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintJobManagerImpl);
 };
 
 // static

@@ -22,6 +22,10 @@ class NetBenchmarking : public chrome::mojom::NetBenchmarking {
  public:
   NetBenchmarking(base::WeakPtr<predictors::LoadingPredictor> loading_predictor,
                   int render_process_id);
+
+  NetBenchmarking(const NetBenchmarking&) = delete;
+  NetBenchmarking& operator=(const NetBenchmarking&) = delete;
+
   ~NetBenchmarking() override;
 
   // Creates a NetBenchmarking instance and connects it strongly to a mojo pipe.
@@ -45,8 +49,6 @@ class NetBenchmarking : public chrome::mojom::NetBenchmarking {
   // These weak pointers should be dereferenced only on the UI thread.
   base::WeakPtr<predictors::LoadingPredictor> loading_predictor_;
   const int render_process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetBenchmarking);
 };
 
 #endif  // CHROME_BROWSER_NET_BENCHMARKING_H_

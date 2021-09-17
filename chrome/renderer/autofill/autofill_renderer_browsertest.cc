@@ -138,6 +138,9 @@ class AutofillRendererTest : public ChromeRenderViewTest {
  public:
   AutofillRendererTest() {}
 
+  AutofillRendererTest(const AutofillRendererTest&) = delete;
+  AutofillRendererTest& operator=(const AutofillRendererTest&) = delete;
+
   ~AutofillRendererTest() override {}
 
  protected:
@@ -161,9 +164,6 @@ class AutofillRendererTest : public ChromeRenderViewTest {
   }
 
   FakeContentAutofillDriver fake_driver_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillRendererTest);
 };
 
 TEST_F(AutofillRendererTest, SendForms) {

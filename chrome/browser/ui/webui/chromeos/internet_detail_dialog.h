@@ -50,6 +50,10 @@ class InternetDetailDialog : public SystemWebDialogDelegate {
 class InternetDetailDialogUI : public ui::MojoWebDialogUI {
  public:
   explicit InternetDetailDialogUI(content::WebUI* web_ui);
+
+  InternetDetailDialogUI(const InternetDetailDialogUI&) = delete;
+  InternetDetailDialogUI& operator=(const InternetDetailDialogUI&) = delete;
+
   ~InternetDetailDialogUI() override;
 
   // Instantiates implementor of the mojom::CrosNetworkConfig mojo interface
@@ -60,8 +64,6 @@ class InternetDetailDialogUI : public ui::MojoWebDialogUI {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(InternetDetailDialogUI);
 };
 
 }  // namespace chromeos

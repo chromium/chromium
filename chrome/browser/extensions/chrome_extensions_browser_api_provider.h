@@ -13,12 +13,15 @@ namespace extensions {
 class ChromeExtensionsBrowserAPIProvider : public ExtensionsBrowserAPIProvider {
  public:
   ChromeExtensionsBrowserAPIProvider();
+
+  ChromeExtensionsBrowserAPIProvider(
+      const ChromeExtensionsBrowserAPIProvider&) = delete;
+  ChromeExtensionsBrowserAPIProvider& operator=(
+      const ChromeExtensionsBrowserAPIProvider&) = delete;
+
   ~ChromeExtensionsBrowserAPIProvider() override;
 
   void RegisterExtensionFunctions(ExtensionFunctionRegistry* registry) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsBrowserAPIProvider);
 };
 
 }  // namespace extensions

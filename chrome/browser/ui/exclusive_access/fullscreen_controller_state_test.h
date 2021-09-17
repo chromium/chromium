@@ -64,6 +64,11 @@ class FullscreenControllerStateTest {
   static const int kMaxStateNameLength = 39;
 
   FullscreenControllerStateTest();
+
+  FullscreenControllerStateTest(const FullscreenControllerStateTest&) = delete;
+  FullscreenControllerStateTest& operator=(
+      const FullscreenControllerStateTest&) = delete;
+
   virtual ~FullscreenControllerStateTest();
 
   static const char* GetStateString(State state);
@@ -196,8 +201,6 @@ class FullscreenControllerStateTest {
 
   // Log of operations reported on errors via GetAndClearDebugLog().
   std::ostringstream debugging_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControllerStateTest);
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_FULLSCREEN_CONTROLLER_STATE_TEST_H_

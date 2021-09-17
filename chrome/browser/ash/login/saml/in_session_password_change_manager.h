@@ -105,6 +105,12 @@ class InSessionPasswordChangeManager
   static InSessionPasswordChangeManager* Get();
 
   explicit InSessionPasswordChangeManager(Profile* primary_profile);
+
+  InSessionPasswordChangeManager(const InSessionPasswordChangeManager&) =
+      delete;
+  InSessionPasswordChangeManager& operator=(
+      const InSessionPasswordChangeManager&) = delete;
+
   ~InSessionPasswordChangeManager() override;
 
   // Sets the given instance as the singleton for testing.
@@ -191,8 +197,6 @@ class InSessionPasswordChangeManager
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
 
   friend class InSessionPasswordChangeManagerTest;
-
-  DISALLOW_COPY_AND_ASSIGN(InSessionPasswordChangeManager);
 };
 
 }  // namespace ash

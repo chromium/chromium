@@ -56,6 +56,11 @@ class SpellcheckHunspellDictionary
                                const std::string& platform_spellcheck_language,
                                content::BrowserContext* browser_context,
                                SpellcheckService* spellcheck_service);
+
+  SpellcheckHunspellDictionary(const SpellcheckHunspellDictionary&) = delete;
+  SpellcheckHunspellDictionary& operator=(const SpellcheckHunspellDictionary&) =
+      delete;
+
   ~SpellcheckHunspellDictionary() override;
 
   // SpellcheckDictionary implementation:
@@ -101,6 +106,10 @@ class SpellcheckHunspellDictionary
   struct DictionaryFile {
    public:
     explicit DictionaryFile(base::TaskRunner* task_runner);
+
+    DictionaryFile(const DictionaryFile&) = delete;
+    DictionaryFile& operator=(const DictionaryFile&) = delete;
+
     ~DictionaryFile();
 
     DictionaryFile(DictionaryFile&& other);
@@ -115,8 +124,6 @@ class SpellcheckHunspellDictionary
    private:
     // Task runner where the file is created.
     scoped_refptr<base::TaskRunner> task_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(DictionaryFile);
   };
 
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
@@ -193,8 +200,6 @@ class SpellcheckHunspellDictionary
   DictionaryFile dictionary_file_;
 
   base::WeakPtrFactory<SpellcheckHunspellDictionary> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckHunspellDictionary);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_HUNSPELL_DICTIONARY_H_

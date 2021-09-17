@@ -555,6 +555,10 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
 class RestartTest : public BetterSessionRestoreTest {
  public:
   RestartTest() = default;
+
+  RestartTest(const RestartTest&) = delete;
+  RestartTest& operator=(const RestartTest&) = delete;
+
   ~RestartTest() override = default;
 
  protected:
@@ -568,9 +572,6 @@ class RestartTest : public BetterSessionRestoreTest {
     PrefService* pref_service = g_browser_process->local_state();
     pref_service->SetBoolean(prefs::kWasRestarted, true);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RestartTest);
 };
 
 IN_PROC_BROWSER_TEST_F(RestartTest, PRE_SessionCookies) {

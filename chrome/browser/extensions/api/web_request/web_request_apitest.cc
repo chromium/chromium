@@ -152,6 +152,9 @@ class CancelLoginDialog : public content::NotificationObserver {
                    content::NotificationService::AllSources());
   }
 
+  CancelLoginDialog(const CancelLoginDialog&) = delete;
+  CancelLoginDialog& operator=(const CancelLoginDialog&) = delete;
+
   ~CancelLoginDialog() override {}
 
   void Observe(int type,
@@ -164,8 +167,6 @@ class CancelLoginDialog : public content::NotificationObserver {
 
  private:
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(CancelLoginDialog);
 };
 
 // Observer that listens for messages from chrome.test.sendMessage to allow them

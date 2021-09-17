@@ -48,6 +48,11 @@ class ChromeFeaturesServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   ChromeFeaturesServiceProvider();
+
+  ChromeFeaturesServiceProvider(const ChromeFeaturesServiceProvider&) = delete;
+  ChromeFeaturesServiceProvider& operator=(
+      const ChromeFeaturesServiceProvider&) = delete;
+
   ~ChromeFeaturesServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -88,8 +93,6 @@ class ChromeFeaturesServiceProvider
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<ChromeFeaturesServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeFeaturesServiceProvider);
 };
 
 }  // namespace ash

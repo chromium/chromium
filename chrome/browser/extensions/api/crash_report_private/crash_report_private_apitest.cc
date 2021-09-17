@@ -40,6 +40,11 @@ constexpr const char* kTestExtensionId = "jjeoclcdfjddkdjokiejckgcildcflpp";
 class CrashReportPrivateApiTest : public ExtensionApiTest {
  public:
   CrashReportPrivateApiTest() = default;
+
+  CrashReportPrivateApiTest(const CrashReportPrivateApiTest&) = delete;
+  CrashReportPrivateApiTest& operator=(const CrashReportPrivateApiTest&) =
+      delete;
+
   ~CrashReportPrivateApiTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -88,9 +93,6 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
   const Extension* extension_;
   std::unique_ptr<MockCrashEndpoint> crash_endpoint_;
   std::unique_ptr<ScopedMockChromeJsErrorReportProcessor> processor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashReportPrivateApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {

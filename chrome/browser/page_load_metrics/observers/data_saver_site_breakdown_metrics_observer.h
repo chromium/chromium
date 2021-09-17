@@ -25,6 +25,12 @@ class DataSaverSiteBreakdownMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   DataSaverSiteBreakdownMetricsObserver();
+
+  DataSaverSiteBreakdownMetricsObserver(
+      const DataSaverSiteBreakdownMetricsObserver&) = delete;
+  DataSaverSiteBreakdownMetricsObserver& operator=(
+      const DataSaverSiteBreakdownMetricsObserver&) = delete;
+
   ~DataSaverSiteBreakdownMetricsObserver() override;
 
  private:
@@ -48,8 +54,6 @@ class DataSaverSiteBreakdownMetricsObserver
   content::BrowserContext* browser_context_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DataSaverSiteBreakdownMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DATA_SAVER_SITE_BREAKDOWN_METRICS_OBSERVER_H_

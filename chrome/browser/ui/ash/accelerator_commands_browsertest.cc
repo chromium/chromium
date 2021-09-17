@@ -45,6 +45,12 @@ class AcceleratorCommandsFullscreenBrowserTest
  public:
   AcceleratorCommandsFullscreenBrowserTest()
       : initial_show_state_(GetParam()) {}
+
+  AcceleratorCommandsFullscreenBrowserTest(
+      const AcceleratorCommandsFullscreenBrowserTest&) = delete;
+  AcceleratorCommandsFullscreenBrowserTest& operator=(
+      const AcceleratorCommandsFullscreenBrowserTest&) = delete;
+
   virtual ~AcceleratorCommandsFullscreenBrowserTest() {}
 
   // Sets |widget|'s show state to |initial_show_state_|.
@@ -67,8 +73,6 @@ class AcceleratorCommandsFullscreenBrowserTest
 
  private:
   ui::WindowShowState initial_show_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorCommandsFullscreenBrowserTest);
 };
 
 // Test that toggling window fullscreen works properly.
@@ -179,6 +183,12 @@ class AcceleratorCommandsPlatformAppFullscreenBrowserTest
  public:
   AcceleratorCommandsPlatformAppFullscreenBrowserTest()
       : initial_show_state_(GetParam()) {}
+
+  AcceleratorCommandsPlatformAppFullscreenBrowserTest(
+      const AcceleratorCommandsPlatformAppFullscreenBrowserTest&) = delete;
+  AcceleratorCommandsPlatformAppFullscreenBrowserTest& operator=(
+      const AcceleratorCommandsPlatformAppFullscreenBrowserTest&) = delete;
+
   virtual ~AcceleratorCommandsPlatformAppFullscreenBrowserTest() {}
 
   // Sets |app_window|'s show state to |initial_show_state_|.
@@ -199,8 +209,6 @@ class AcceleratorCommandsPlatformAppFullscreenBrowserTest
 
  private:
   ui::WindowShowState initial_show_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorCommandsPlatformAppFullscreenBrowserTest);
 };
 
 // Test the behavior of platform apps when ToggleFullscreen() is called.

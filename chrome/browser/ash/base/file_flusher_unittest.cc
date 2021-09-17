@@ -37,6 +37,10 @@ void WriteStringToFile(const base::FilePath path, const std::string& data) {
 class FileFlusherTest : public testing::Test {
  public:
   FileFlusherTest() {}
+
+  FileFlusherTest(const FileFlusherTest&) = delete;
+  FileFlusherTest& operator=(const FileFlusherTest&) = delete;
+
   ~FileFlusherTest() override {}
 
   // testing::Test
@@ -82,8 +86,6 @@ class FileFlusherTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::map<base::FilePath, int> flush_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileFlusherTest);
 };
 
 TEST_F(FileFlusherTest, Flush) {

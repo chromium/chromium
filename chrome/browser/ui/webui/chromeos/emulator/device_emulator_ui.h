@@ -12,10 +12,11 @@
 class DeviceEmulatorUI : public content::WebUIController {
  public:
   explicit DeviceEmulatorUI(content::WebUI* web_ui);
-  ~DeviceEmulatorUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceEmulatorUI);
+  DeviceEmulatorUI(const DeviceEmulatorUI&) = delete;
+  DeviceEmulatorUI& operator=(const DeviceEmulatorUI&) = delete;
+
+  ~DeviceEmulatorUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMULATOR_DEVICE_EMULATOR_UI_H_

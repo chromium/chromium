@@ -23,12 +23,14 @@ class RegistryEntry;
 class ScopedUserProtocolEntry {
  public:
   explicit ScopedUserProtocolEntry(const wchar_t* protocol);
+
+  ScopedUserProtocolEntry(const ScopedUserProtocolEntry&) = delete;
+  ScopedUserProtocolEntry& operator=(const ScopedUserProtocolEntry&) = delete;
+
   ~ScopedUserProtocolEntry();
 
  private:
   std::vector<std::unique_ptr<RegistryEntry>> entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUserProtocolEntry);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_SCOPED_USER_PROTOCOL_ENTRY_H_

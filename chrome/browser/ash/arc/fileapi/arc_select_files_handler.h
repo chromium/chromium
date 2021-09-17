@@ -38,6 +38,11 @@ extern const char kScriptGetElements[];
 class ArcSelectFilesHandlersManager {
  public:
   explicit ArcSelectFilesHandlersManager(content::BrowserContext* context);
+
+  ArcSelectFilesHandlersManager(const ArcSelectFilesHandlersManager&) = delete;
+  ArcSelectFilesHandlersManager& operator=(
+      const ArcSelectFilesHandlersManager&) = delete;
+
   ~ArcSelectFilesHandlersManager();
 
   // Delete all handlers and close all SelectFileDialogs.
@@ -73,14 +78,16 @@ class ArcSelectFilesHandlersManager {
   std::map<int, std::unique_ptr<ArcSelectFilesHandler>> handlers_by_task_id_;
 
   base::WeakPtrFactory<ArcSelectFilesHandlersManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSelectFilesHandlersManager);
 };
 
 // Manages a single SelectFileDialog instance.
 class ArcSelectFilesHandler : public ui::SelectFileDialog::Listener {
  public:
   explicit ArcSelectFilesHandler(content::BrowserContext* context);
+
+  ArcSelectFilesHandler(const ArcSelectFilesHandler&) = delete;
+  ArcSelectFilesHandler& operator=(const ArcSelectFilesHandler&) = delete;
+
   ~ArcSelectFilesHandler() override;
 
   void SelectFiles(const mojom::SelectFilesRequestPtr& request,
@@ -115,8 +122,6 @@ class ArcSelectFilesHandler : public ui::SelectFileDialog::Listener {
 
   mojom::FileSystemHost::SelectFilesCallback callback_;
   std::unique_ptr<SelectFileDialogHolder> dialog_holder_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSelectFilesHandler);
 };
 
 // Wrapper for SelectFileDialogExtension.

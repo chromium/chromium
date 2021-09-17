@@ -17,6 +17,12 @@ class SharedClipboardMessageHandlerDesktop
  public:
   SharedClipboardMessageHandlerDesktop(SharingDeviceSource* device_source,
                                        Profile* profile);
+
+  SharedClipboardMessageHandlerDesktop(
+      const SharedClipboardMessageHandlerDesktop&) = delete;
+  SharedClipboardMessageHandlerDesktop& operator=(
+      const SharedClipboardMessageHandlerDesktop&) = delete;
+
   ~SharedClipboardMessageHandlerDesktop() override;
 
  private:
@@ -24,8 +30,6 @@ class SharedClipboardMessageHandlerDesktop
   void ShowNotification(const std::string& device_name) override;
 
   Profile* profile_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardMessageHandlerDesktop);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_MESSAGE_HANDLER_DESKTOP_H_

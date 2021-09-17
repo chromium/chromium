@@ -138,6 +138,10 @@ struct KeyEvent {
 class KeyEventBuilder {
  public:
   KeyEventBuilder();
+
+  KeyEventBuilder(const KeyEventBuilder&) = delete;
+  KeyEventBuilder& operator=(const KeyEventBuilder&) = delete;
+
   virtual ~KeyEventBuilder();
 
   KeyEventBuilder* SetType(KeyEventType type);
@@ -157,8 +161,6 @@ class KeyEventBuilder {
   void UpdateKeyString();
 
   KeyEvent key_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyEventBuilder);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_UI_EVENTS_H_

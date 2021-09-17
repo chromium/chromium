@@ -28,6 +28,10 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
   // session starts.
   explicit SessionStateWaiter(absl::optional<session_manager::SessionState>
                                   target_state = absl::nullopt);
+
+  SessionStateWaiter(const SessionStateWaiter&) = delete;
+  SessionStateWaiter& operator=(const SessionStateWaiter&) = delete;
+
   ~SessionStateWaiter() override;
 
   void Wait();
@@ -44,8 +48,6 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
       session_observation_{this};
 
   bool done_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStateWaiter);
 };
 
 }  // namespace ash

@@ -78,6 +78,11 @@ struct PasswordCheckPrefs {
 class CredentialBufferValidator {
  public:
   CredentialBufferValidator();
+
+  CredentialBufferValidator(const CredentialBufferValidator&) = delete;
+  CredentialBufferValidator& operator=(const CredentialBufferValidator&) =
+      delete;
+
   ~CredentialBufferValidator();
 
   // Returns ERROR_SUCCESS if the credential buffer given matches the
@@ -96,8 +101,6 @@ class CredentialBufferValidator {
 
   // Buffer holding information about the current process token.
   std::unique_ptr<char[]> cur_token_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialBufferValidator);
 };
 
 CredentialBufferValidator::CredentialBufferValidator() {

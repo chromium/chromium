@@ -29,6 +29,11 @@ class BackgroundPrintingManager {
   class Observer;
 
   BackgroundPrintingManager();
+
+  BackgroundPrintingManager(const BackgroundPrintingManager&) = delete;
+  BackgroundPrintingManager& operator=(const BackgroundPrintingManager&) =
+      delete;
+
   ~BackgroundPrintingManager();
 
   // Takes ownership of |preview_dialog| and deletes it when |preview_dialog|
@@ -71,8 +76,6 @@ class BackgroundPrintingManager {
   std::map<content::WebContents*, PrintingContents> printing_contents_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundPrintingManager);
 };
 
 }  // namespace printing

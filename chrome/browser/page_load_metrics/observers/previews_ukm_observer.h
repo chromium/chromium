@@ -21,6 +21,10 @@ namespace previews {
 class PreviewsUKMObserver : public page_load_metrics::PageLoadMetricsObserver {
  public:
   PreviewsUKMObserver();
+
+  PreviewsUKMObserver(const PreviewsUKMObserver&) = delete;
+  PreviewsUKMObserver& operator=(const PreviewsUKMObserver&) = delete;
+
   ~PreviewsUKMObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -48,8 +52,6 @@ class PreviewsUKMObserver : public page_load_metrics::PageLoadMetricsObserver {
   bool save_data_enabled_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PreviewsUKMObserver);
 };
 
 }  // namespace previews

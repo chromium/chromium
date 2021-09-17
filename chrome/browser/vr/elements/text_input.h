@@ -32,6 +32,10 @@ class VR_UI_EXPORT TextInput : public UiElement {
       OnInputCommittedCallback;
   TextInput(float font_height_meters,
             OnInputEditedCallback input_edit_callback);
+
+  TextInput(const TextInput&) = delete;
+  TextInput& operator=(const TextInput&) = delete;
+
   ~TextInput() override;
 
   void OnButtonDown(const gfx::PointF& position,
@@ -85,8 +89,6 @@ class VR_UI_EXPORT TextInput : public UiElement {
   Text* hint_element_ = nullptr;
   Text* text_element_ = nullptr;
   Rect* cursor_element_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInput);
 };
 
 }  // namespace vr

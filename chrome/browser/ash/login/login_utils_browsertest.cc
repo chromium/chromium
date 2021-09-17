@@ -45,6 +45,10 @@ class LoginUtilsTest : public LoginManagerTest {
     scoped_fake_statistics_provider_.SetMachineStatistic(
         system::kRlzBrandCodeKey, kTestBrand);
   }
+
+  LoginUtilsTest(const LoginUtilsTest&) = delete;
+  LoginUtilsTest& operator=(const LoginUtilsTest&) = delete;
+
   ~LoginUtilsTest() override = default;
 
   PrefService* local_state() { return g_browser_process->local_state(); }
@@ -53,8 +57,6 @@ class LoginUtilsTest : public LoginManagerTest {
 
  private:
   system::ScopedFakeStatisticsProvider scoped_fake_statistics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginUtilsTest);
 };
 
 #if BUILDFLAG(ENABLE_RLZ)

@@ -39,6 +39,10 @@ namespace {
 class TestDataReceiver {
  public:
   TestDataReceiver() = default;
+
+  TestDataReceiver(const TestDataReceiver&) = delete;
+  TestDataReceiver& operator=(const TestDataReceiver&) = delete;
+
   virtual ~TestDataReceiver() = default;
 
   bool data_received() const { return data_received_; }
@@ -60,8 +64,6 @@ class TestDataReceiver {
  private:
   bool data_received_ = false;
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataReceiver);
 };
 
 }  // namespace

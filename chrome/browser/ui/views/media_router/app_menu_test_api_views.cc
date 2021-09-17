@@ -17,6 +17,10 @@ namespace {
 class AppMenuTestApiViews : public test::AppMenuTestApi {
  public:
   explicit AppMenuTestApiViews(Browser* browser);
+
+  AppMenuTestApiViews(const AppMenuTestApiViews&) = delete;
+  AppMenuTestApiViews& operator=(const AppMenuTestApiViews&) = delete;
+
   ~AppMenuTestApiViews() override;
 
   // AppMenuTestApi:
@@ -29,8 +33,6 @@ class AppMenuTestApiViews : public test::AppMenuTestApi {
   AppMenu* GetAppMenu();
 
   Browser* browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenuTestApiViews);
 };
 
 AppMenuTestApiViews::AppMenuTestApiViews(Browser* browser)

@@ -14,6 +14,12 @@ class JavascriptFrameworksUkmObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   JavascriptFrameworksUkmObserver();
+
+  JavascriptFrameworksUkmObserver(const JavascriptFrameworksUkmObserver&) =
+      delete;
+  JavascriptFrameworksUkmObserver& operator=(
+      const JavascriptFrameworksUkmObserver&) = delete;
+
   ~JavascriptFrameworksUkmObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver
@@ -32,7 +38,6 @@ class JavascriptFrameworksUkmObserver
   // Bitmap containing the blink::LoadingBehaviorFlag values corresponding to
   // frameworks that are detected.
   int32_t frameworks_detected_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(JavascriptFrameworksUkmObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_JAVASCRIPT_FRAMEWORKS_UKM_OBSERVER_H_

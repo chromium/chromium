@@ -74,6 +74,10 @@ class PermissionManagerBrowserTest : public InProcessBrowserTest {
  public:
   PermissionManagerBrowserTest() = default;
 
+  PermissionManagerBrowserTest(const PermissionManagerBrowserTest&) = delete;
+  PermissionManagerBrowserTest& operator=(const PermissionManagerBrowserTest&) =
+      delete;
+
   ~PermissionManagerBrowserTest() override = default;
 
   static std::unique_ptr<KeyedService> CreateTestingPermissionManager(
@@ -98,7 +102,6 @@ class PermissionManagerBrowserTest : public InProcessBrowserTest {
 
  private:
   Browser* incognito_browser_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(PermissionManagerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,

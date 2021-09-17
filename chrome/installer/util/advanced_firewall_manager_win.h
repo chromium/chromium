@@ -24,6 +24,10 @@ namespace installer {
 class AdvancedFirewallManager {
  public:
   AdvancedFirewallManager();
+
+  AdvancedFirewallManager(const AdvancedFirewallManager&) = delete;
+  AdvancedFirewallManager& operator=(const AdvancedFirewallManager&) = delete;
+
   ~AdvancedFirewallManager();
 
   // Initializes object to manage application win name |app_name| and path
@@ -67,8 +71,6 @@ class AdvancedFirewallManager {
   base::FilePath app_path_;
   Microsoft::WRL::ComPtr<INetFwPolicy2> firewall_policy_;
   Microsoft::WRL::ComPtr<INetFwRules> firewall_rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(AdvancedFirewallManager);
 };
 
 }  // namespace installer

@@ -325,6 +325,10 @@ std::string RefCountedMemoryToString(
 class FakePwgRasterConverter : public PwgRasterConverter {
  public:
   FakePwgRasterConverter() {}
+
+  FakePwgRasterConverter(const FakePwgRasterConverter&) = delete;
+  FakePwgRasterConverter& operator=(const FakePwgRasterConverter&) = delete;
+
   ~FakePwgRasterConverter() override = default;
 
   // PwgRasterConverter implementation. It writes |data| to shared memory.
@@ -366,8 +370,6 @@ class FakePwgRasterConverter : public PwgRasterConverter {
   PdfRenderSettings conversion_settings_;
   PwgRasterSettings bitmap_settings_;
   bool fail_conversion_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePwgRasterConverter);
 };
 
 // Information about received print requests.
@@ -382,6 +384,10 @@ struct PrintRequestInfo {
 class FakePrinterProviderAPI : public PrinterProviderAPI {
  public:
   FakePrinterProviderAPI() = default;
+
+  FakePrinterProviderAPI(const FakePrinterProviderAPI&) = delete;
+  FakePrinterProviderAPI& operator=(const FakePrinterProviderAPI&) = delete;
+
   ~FakePrinterProviderAPI() override = default;
 
   void DispatchGetPrintersRequested(
@@ -480,8 +486,6 @@ class FakePrinterProviderAPI : public PrinterProviderAPI {
   base::queue<PrintRequestInfo> pending_print_requests_;
   base::queue<PrinterProviderAPI::GetPrinterInfoCallback>
       pending_usb_info_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePrinterProviderAPI);
 };
 
 std::unique_ptr<KeyedService> BuildTestingPrinterProviderAPI(
@@ -494,6 +498,11 @@ std::unique_ptr<KeyedService> BuildTestingPrinterProviderAPI(
 class ExtensionPrinterHandlerTest : public testing::Test {
  public:
   ExtensionPrinterHandlerTest() = default;
+
+  ExtensionPrinterHandlerTest(const ExtensionPrinterHandlerTest&) = delete;
+  ExtensionPrinterHandlerTest& operator=(const ExtensionPrinterHandlerTest&) =
+      delete;
+
   ~ExtensionPrinterHandlerTest() override = default;
 
   void SetUp() override {
@@ -528,9 +537,6 @@ class ExtensionPrinterHandlerTest : public testing::Test {
 
   // Owned by |extension_printer_handler_|.
   FakePwgRasterConverter* pwg_raster_converter_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrinterHandlerTest);
 };
 
 TEST_F(ExtensionPrinterHandlerTest, GetPrinters) {

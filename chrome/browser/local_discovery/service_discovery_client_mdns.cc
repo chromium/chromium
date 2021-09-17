@@ -41,6 +41,9 @@ class ServiceDiscoveryClientMdns::Proxy {
     client_->proxies_.AddObserver(this);
   }
 
+  Proxy(const Proxy&) = delete;
+  Proxy& operator=(const Proxy&) = delete;
+
   virtual ~Proxy() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     client_->proxies_.RemoveObserver(this);
@@ -110,8 +113,6 @@ class ServiceDiscoveryClientMdns::Proxy {
   // Delayed |mdns_runner_| tasks.
   std::vector<base::OnceClosure> delayed_tasks_;
   base::WeakPtrFactory<Proxy> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Proxy);
 };
 
 namespace {
@@ -163,6 +164,9 @@ class ProxyBase : public ServiceDiscoveryClientMdns::Proxy, public T {
       : Proxy(client) {
   }
 
+  ProxyBase(const ProxyBase&) = delete;
+  ProxyBase& operator=(const ProxyBase&) = delete;
+
   ~ProxyBase() override {
     DeleteOnMdnsThread(implementation_.release());
   }
@@ -186,8 +190,6 @@ class ProxyBase : public ServiceDiscoveryClientMdns::Proxy, public T {
 
  private:
   std::unique_ptr<T> implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyBase);
 };
 
 class ServiceWatcherProxy : public ProxyBase<ServiceWatcher> {

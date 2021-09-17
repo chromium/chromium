@@ -15,6 +15,10 @@
 class CrostiniAppDisplay {
  public:
   CrostiniAppDisplay();
+
+  CrostiniAppDisplay(const CrostiniAppDisplay&) = delete;
+  CrostiniAppDisplay& operator=(const CrostiniAppDisplay&) = delete;
+
   ~CrostiniAppDisplay();
 
   // Register that |app_id| app should be shown in |display_id| monitor.
@@ -29,8 +33,6 @@ class CrostiniAppDisplay {
 
   std::map<std::string, int64_t> app_id_to_display_id_;
   std::deque<std::string> app_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniAppDisplay);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CROSTINI_APP_DISPLAY_H_

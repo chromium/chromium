@@ -65,6 +65,9 @@ class DemoSessionTest : public testing::Test {
             g_browser_process->platform_part()),
         scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
 
+  DemoSessionTest(const DemoSessionTest&) = delete;
+  DemoSessionTest& operator=(const DemoSessionTest&) = delete;
+
   ~DemoSessionTest() override = default;
 
   void SetUp() override {
@@ -151,8 +154,6 @@ class DemoSessionTest : public testing::Test {
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
   user_manager::ScopedUserManager scoped_user_manager_;
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionTest);
 };
 
 TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {

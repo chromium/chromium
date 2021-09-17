@@ -18,6 +18,10 @@ class PrintingService : public mojom::PrintingService {
  public:
   explicit PrintingService(
       mojo::PendingReceiver<mojom::PrintingService> receiver);
+
+  PrintingService(const PrintingService&) = delete;
+  PrintingService& operator=(const PrintingService&) = delete;
+
   ~PrintingService() override;
 
  private:
@@ -40,8 +44,6 @@ class PrintingService : public mojom::PrintingService {
 #endif
 
   mojo::Receiver<mojom::PrintingService> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintingService);
 };
 
 }  // namespace printing

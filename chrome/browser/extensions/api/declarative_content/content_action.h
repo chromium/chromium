@@ -79,6 +79,9 @@ class RequestContentScript : public ContentAction,
                        const Extension* extension,
                        const ScriptData& script_data);
 
+  RequestContentScript(const RequestContentScript&) = delete;
+  RequestContentScript& operator=(const RequestContentScript&) = delete;
+
   ~RequestContentScript() override;
 
   static std::unique_ptr<ContentAction> Create(
@@ -115,8 +118,6 @@ class RequestContentScript : public ContentAction,
   ExtensionUserScriptLoader* script_loader_ = nullptr;
   base::ScopedObservation<UserScriptLoader, UserScriptLoader::Observer>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RequestContentScript);
 };
 
 }  // namespace extensions

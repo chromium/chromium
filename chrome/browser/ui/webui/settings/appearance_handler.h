@@ -27,6 +27,10 @@ namespace settings {
 class AppearanceHandler : public SettingsPageUIHandler {
  public:
   explicit AppearanceHandler(content::WebUI* webui);
+
+  AppearanceHandler(const AppearanceHandler&) = delete;
+  AppearanceHandler& operator=(const AppearanceHandler&) = delete;
+
   ~AppearanceHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -48,8 +52,6 @@ class AppearanceHandler : public SettingsPageUIHandler {
   Profile* profile_;  // Weak pointer.
 
   base::WeakPtrFactory<AppearanceHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppearanceHandler);
 };
 
 }  // namespace settings

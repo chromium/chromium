@@ -32,14 +32,16 @@ class MockMetricsMonitorObserver : public SystemObserver {
 class TestMetricEvaluatorsHelper : public MetricEvaluatorsHelper {
  public:
   TestMetricEvaluatorsHelper() = default;
+
+  TestMetricEvaluatorsHelper(const TestMetricEvaluatorsHelper&) = delete;
+  TestMetricEvaluatorsHelper& operator=(const TestMetricEvaluatorsHelper&) =
+      delete;
+
   ~TestMetricEvaluatorsHelper() override = default;
 
   absl::optional<int> GetFreePhysicalMemoryMb() override {
     return kFakeFreePhysMemoryMb;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMetricEvaluatorsHelper);
 };
 
 }  // namespace

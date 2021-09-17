@@ -24,6 +24,10 @@ namespace chromeos {
 class AssistantOptInUI : public ui::WebDialogUI {
  public:
   explicit AssistantOptInUI(content::WebUI* web_ui);
+
+  AssistantOptInUI(const AssistantOptInUI&) = delete;
+  AssistantOptInUI& operator=(const AssistantOptInUI&) = delete;
+
   ~AssistantOptInUI() override;
 
   // Called when the dialog is closed.
@@ -36,8 +40,6 @@ class AssistantOptInUI : public ui::WebDialogUI {
   JSCallsContainer js_calls_container_;
   AssistantOptInFlowScreenHandler* assistant_handler_ptr_;
   base::WeakPtrFactory<AssistantOptInUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInUI);
 };
 
 // Dialog delegate for the assistant optin page.

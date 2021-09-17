@@ -27,6 +27,10 @@ namespace {
 class MockSyncErrorFactory : public syncer::SyncErrorFactory {
  public:
   explicit MockSyncErrorFactory(syncer::ModelType type);
+
+  MockSyncErrorFactory(const MockSyncErrorFactory&) = delete;
+  MockSyncErrorFactory& operator=(const MockSyncErrorFactory&) = delete;
+
   ~MockSyncErrorFactory() override;
 
   // SyncErrorFactory implementation:
@@ -35,8 +39,6 @@ class MockSyncErrorFactory : public syncer::SyncErrorFactory {
 
  private:
   syncer::ModelType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSyncErrorFactory);
 };
 
 MockSyncErrorFactory::MockSyncErrorFactory(syncer::ModelType type)

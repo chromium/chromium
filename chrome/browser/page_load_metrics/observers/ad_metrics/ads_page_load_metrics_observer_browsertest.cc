@@ -118,6 +118,12 @@ class AdsPageLoadMetricsObserverBrowserTest
  public:
   AdsPageLoadMetricsObserverBrowserTest()
       : subresource_filter::SubresourceFilterBrowserTest() {}
+
+  AdsPageLoadMetricsObserverBrowserTest(
+      const AdsPageLoadMetricsObserverBrowserTest&) = delete;
+  AdsPageLoadMetricsObserverBrowserTest& operator=(
+      const AdsPageLoadMetricsObserverBrowserTest&) = delete;
+
   ~AdsPageLoadMetricsObserverBrowserTest() override {}
 
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
@@ -149,8 +155,6 @@ class AdsPageLoadMetricsObserverBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(AdsPageLoadMetricsObserverBrowserTest);
 };
 
 // Test that an embedded ad is same origin.
@@ -2302,6 +2306,12 @@ class AdsMemoryMeasurementBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
   AdsMemoryMeasurementBrowserTest() = default;
+
+  AdsMemoryMeasurementBrowserTest(const AdsMemoryMeasurementBrowserTest&) =
+      delete;
+  AdsMemoryMeasurementBrowserTest& operator=(
+      const AdsMemoryMeasurementBrowserTest&) = delete;
+
   ~AdsMemoryMeasurementBrowserTest() override = default;
 
   void SetUp() override {
@@ -2347,8 +2357,6 @@ class AdsMemoryMeasurementBrowserTest
  private:
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter> waiter_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(AdsMemoryMeasurementBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,

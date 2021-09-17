@@ -13,10 +13,11 @@ namespace chromeos {
 class DeviceLogUI : public content::WebUIController {
  public:
   explicit DeviceLogUI(content::WebUI* web_ui);
-  ~DeviceLogUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceLogUI);
+  DeviceLogUI(const DeviceLogUI&) = delete;
+  DeviceLogUI& operator=(const DeviceLogUI&) = delete;
+
+  ~DeviceLogUI() override;
 };
 
 }  // namespace chromeos

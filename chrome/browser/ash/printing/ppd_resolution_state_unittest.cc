@@ -14,10 +14,11 @@ namespace {
 class PpdResolutionStateTest : public testing::Test {
  public:
   PpdResolutionStateTest() = default;
-  ~PpdResolutionStateTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PpdResolutionStateTest);
+  PpdResolutionStateTest(const PpdResolutionStateTest&) = delete;
+  PpdResolutionStateTest& operator=(const PpdResolutionStateTest&) = delete;
+
+  ~PpdResolutionStateTest() override = default;
 };
 
 TEST_F(PpdResolutionStateTest, TestDefaultState) {

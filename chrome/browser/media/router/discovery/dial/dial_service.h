@@ -96,6 +96,10 @@ class DialService {
 class DialServiceImpl : public DialService {
  public:
   explicit DialServiceImpl(net::NetLog* net_log);
+
+  DialServiceImpl(const DialServiceImpl&) = delete;
+  DialServiceImpl& operator=(const DialServiceImpl&) = delete;
+
   ~DialServiceImpl() override;
 
   // DialService implementation
@@ -114,6 +118,10 @@ class DialServiceImpl : public DialService {
   class DialSocket {
    public:
     explicit DialSocket(DialServiceImpl* dial_service);
+
+    DialSocket(const DialSocket&) = delete;
+    DialSocket& operator=(const DialSocket&) = delete;
+
     ~DialSocket();
 
     // Creates a socket using |net_log| and binds it to |bind_ip_address|.
@@ -181,8 +189,6 @@ class DialServiceImpl : public DialService {
 
     // Pointer to the DialServiceImpl that owns this socket.
     DialServiceImpl* const dial_service_;
-
-    DISALLOW_COPY_AND_ASSIGN(DialSocket);
   };
 
   // Starts the control flow for one discovery cycle.
@@ -274,7 +280,6 @@ class DialServiceImpl : public DialService {
   FRIEND_TEST_ALL_PREFIXES(DialServiceTest, TestOnDiscoveryFinished);
   FRIEND_TEST_ALL_PREFIXES(DialServiceTest, TestOnDiscoveryRequest);
   FRIEND_TEST_ALL_PREFIXES(DialServiceTest, TestResponseParsing);
-  DISALLOW_COPY_AND_ASSIGN(DialServiceImpl);
 };
 
 }  // namespace media_router

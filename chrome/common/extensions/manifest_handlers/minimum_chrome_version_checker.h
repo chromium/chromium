@@ -14,6 +14,11 @@ namespace extensions {
 class MinimumChromeVersionChecker : public ManifestHandler {
  public:
   MinimumChromeVersionChecker();
+
+  MinimumChromeVersionChecker(const MinimumChromeVersionChecker&) = delete;
+  MinimumChromeVersionChecker& operator=(const MinimumChromeVersionChecker&) =
+      delete;
+
   ~MinimumChromeVersionChecker() override;
 
   // Validate minimum Chrome version. We don't need to store this, since the
@@ -22,8 +27,6 @@ class MinimumChromeVersionChecker : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(MinimumChromeVersionChecker);
 };
 
 }  // namespace extensions

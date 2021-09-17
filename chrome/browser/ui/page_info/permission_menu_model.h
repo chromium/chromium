@@ -24,6 +24,10 @@ class PermissionMenuModel : public ui::SimpleMenuModel,
   PermissionMenuModel(ChromePageInfoUiDelegate* delegate,
                       const PageInfo::PermissionInfo& info,
                       ChangeCallback callback);
+
+  PermissionMenuModel(const PermissionMenuModel&) = delete;
+  PermissionMenuModel& operator=(const PermissionMenuModel&) = delete;
+
   ~PermissionMenuModel() override;
 
   // Overridden from ui::SimpleMenuModel::Delegate:
@@ -37,8 +41,6 @@ class PermissionMenuModel : public ui::SimpleMenuModel,
 
   // Callback to be called when the permission's setting is changed.
   ChangeCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionMenuModel);
 };
 
 #endif  // CHROME_BROWSER_UI_PAGE_INFO_PERMISSION_MENU_MODEL_H_

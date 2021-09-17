@@ -11,10 +11,11 @@
 class MemoryInternalsUI : public content::WebUIController {
  public:
   explicit MemoryInternalsUI(content::WebUI* web_ui);
-  ~MemoryInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MemoryInternalsUI);
+  MemoryInternalsUI(const MemoryInternalsUI&) = delete;
+  MemoryInternalsUI& operator=(const MemoryInternalsUI&) = delete;
+
+  ~MemoryInternalsUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MEMORY_INTERNALS_UI_H_

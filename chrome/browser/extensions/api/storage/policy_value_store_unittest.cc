@@ -76,6 +76,10 @@ class MutablePolicyValueStore : public PolicyValueStore {
                          std::make_unique<value_store::LeveldbValueStore>(
                              kDatabaseUMAClientName,
                              path)) {}
+
+  MutablePolicyValueStore(const MutablePolicyValueStore&) = delete;
+  MutablePolicyValueStore& operator=(const MutablePolicyValueStore&) = delete;
+
   ~MutablePolicyValueStore() override = default;
 
   WriteResult Set(WriteOptions options,
@@ -98,9 +102,6 @@ class MutablePolicyValueStore : public PolicyValueStore {
   }
 
   WriteResult Clear() override { return delegate()->Clear(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MutablePolicyValueStore);
 };
 
 ValueStore* Param(const base::FilePath& file_path) {

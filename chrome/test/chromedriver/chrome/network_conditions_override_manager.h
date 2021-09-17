@@ -25,6 +25,12 @@ class Status;
 class NetworkConditionsOverrideManager : public DevToolsEventListener {
  public:
   explicit NetworkConditionsOverrideManager(DevToolsClient* client);
+
+  NetworkConditionsOverrideManager(const NetworkConditionsOverrideManager&) =
+      delete;
+  NetworkConditionsOverrideManager& operator=(
+      const NetworkConditionsOverrideManager&) = delete;
+
   ~NetworkConditionsOverrideManager() override;
 
   Status OverrideNetworkConditions(const NetworkConditions& network_conditions);
@@ -41,8 +47,6 @@ class NetworkConditionsOverrideManager : public DevToolsEventListener {
 
   DevToolsClient* client_;
   const NetworkConditions* overridden_network_conditions_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConditionsOverrideManager);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_NETWORK_CONDITIONS_OVERRIDE_MANAGER_H_

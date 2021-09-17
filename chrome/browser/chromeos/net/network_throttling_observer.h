@@ -22,6 +22,11 @@ namespace chromeos {
 class NetworkThrottlingObserver {
  public:
   explicit NetworkThrottlingObserver(PrefService* local_state);
+
+  NetworkThrottlingObserver(const NetworkThrottlingObserver&) = delete;
+  NetworkThrottlingObserver& operator=(const NetworkThrottlingObserver&) =
+      delete;
+
   ~NetworkThrottlingObserver();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -32,8 +37,6 @@ class NetworkThrottlingObserver {
 
   PrefService* local_state_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkThrottlingObserver);
 };
 
 }  // namespace chromeos

@@ -30,6 +30,10 @@ namespace {
 class TestObserver : public ModelConfigLoader::Observer {
  public:
   TestObserver() {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   // ModelConfigLoader::Observer overrides:
@@ -46,8 +50,6 @@ class TestObserver : public ModelConfigLoader::Observer {
  private:
   bool model_config_loader_initialized_ = false;
   absl::optional<ModelConfig> model_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -59,6 +61,10 @@ class ModelConfigLoaderImplTest : public testing::Test {
     CHECK(temp_dir_.CreateUniqueTempDir());
     temp_params_path_ = temp_dir_.GetPath().Append("model_params.json");
   }
+
+  ModelConfigLoaderImplTest(const ModelConfigLoaderImplTest&) = delete;
+  ModelConfigLoaderImplTest& operator=(const ModelConfigLoaderImplTest&) =
+      delete;
 
   ~ModelConfigLoaderImplTest() override {
     base::ThreadPoolInstance::Get()->FlushForTesting();
@@ -102,9 +108,6 @@ class ModelConfigLoaderImplTest : public testing::Test {
 
   std::unique_ptr<ModelConfigLoaderImpl> model_config_loader_;
   std::unique_ptr<TestObserver> test_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ModelConfigLoaderImplTest);
 };
 
 TEST_F(ModelConfigLoaderImplTest, ValidModelParamsLoaded) {

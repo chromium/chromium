@@ -69,6 +69,9 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
         pending_loop_(nullptr) {
   }
 
+  GalleryWatchManagerTest(const GalleryWatchManagerTest&) = delete;
+  GalleryWatchManagerTest& operator=(const GalleryWatchManagerTest&) = delete;
+
   ~GalleryWatchManagerTest() override {}
 
   void SetUp() override {
@@ -216,8 +219,6 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   bool expect_gallery_changed_;
   bool expect_gallery_watch_dropped_;
   base::RunLoop* pending_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(GalleryWatchManagerTest);
 };
 
 // TODO(crbug.com/936065): Flaky on ChromeOS.

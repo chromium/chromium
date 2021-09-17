@@ -29,6 +29,12 @@ class RegisterProtocolHandlerPermissionRequest
       const ProtocolHandler& handler,
       GURL url,
       base::ScopedClosureRunner fullscreen_block);
+
+  RegisterProtocolHandlerPermissionRequest(
+      const RegisterProtocolHandlerPermissionRequest&) = delete;
+  RegisterProtocolHandlerPermissionRequest& operator=(
+      const RegisterProtocolHandlerPermissionRequest&) = delete;
+
   ~RegisterProtocolHandlerPermissionRequest() override;
 
  private:
@@ -46,8 +52,6 @@ class RegisterProtocolHandlerPermissionRequest
   // TODO(avi): Move to either permissions::PermissionRequest or the
   // PermissionRequestManager?
   base::ScopedClosureRunner fullscreen_block_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegisterProtocolHandlerPermissionRequest);
 };
 
 #endif  // CHROME_BROWSER_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_

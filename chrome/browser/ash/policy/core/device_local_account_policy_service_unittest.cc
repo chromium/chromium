@@ -89,6 +89,12 @@ class DeviceLocalAccountPolicyServiceTestBase
     : public ash::DeviceSettingsTestBase {
  public:
   DeviceLocalAccountPolicyServiceTestBase();
+
+  DeviceLocalAccountPolicyServiceTestBase(
+      const DeviceLocalAccountPolicyServiceTestBase&) = delete;
+  DeviceLocalAccountPolicyServiceTestBase& operator=(
+      const DeviceLocalAccountPolicyServiceTestBase&) = delete;
+
   ~DeviceLocalAccountPolicyServiceTestBase() override;
 
   // ash::DeviceSettingsTestBase:
@@ -117,9 +123,6 @@ class DeviceLocalAccountPolicyServiceTestBase
   FakeAffiliatedInvalidationServiceProvider
       affiliated_invalidation_service_provider_;
   std::unique_ptr<DeviceLocalAccountPolicyService> service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyServiceTestBase);
 };
 
 class DeviceLocalAccountPolicyServiceTest

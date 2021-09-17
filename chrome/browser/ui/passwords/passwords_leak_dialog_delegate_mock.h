@@ -12,6 +12,12 @@
 class PasswordsLeakDialogDelegateMock : public PasswordsLeakDialogDelegate {
  public:
   PasswordsLeakDialogDelegateMock();
+
+  PasswordsLeakDialogDelegateMock(const PasswordsLeakDialogDelegateMock&) =
+      delete;
+  PasswordsLeakDialogDelegateMock& operator=(
+      const PasswordsLeakDialogDelegateMock&) = delete;
+
   ~PasswordsLeakDialogDelegateMock() override;
 
   MOCK_METHOD(void, OnLeakDialogHidden, (), (override));
@@ -19,9 +25,6 @@ class PasswordsLeakDialogDelegateMock : public PasswordsLeakDialogDelegate {
               NavigateToPasswordCheckup,
               (password_manager::PasswordCheckReferrer),
               (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordsLeakDialogDelegateMock);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_MOCK_H_

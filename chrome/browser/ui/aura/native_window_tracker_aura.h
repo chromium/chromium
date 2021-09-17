@@ -13,6 +13,10 @@ class NativeWindowTrackerAura : public NativeWindowTracker,
                                 public aura::WindowObserver {
  public:
   explicit NativeWindowTrackerAura(gfx::NativeWindow window);
+
+  NativeWindowTrackerAura(const NativeWindowTrackerAura&) = delete;
+  NativeWindowTrackerAura& operator=(const NativeWindowTrackerAura&) = delete;
+
   ~NativeWindowTrackerAura() override;
 
   // NativeWindowTracker:
@@ -23,8 +27,6 @@ class NativeWindowTrackerAura : public NativeWindowTracker,
   void OnWindowDestroying(aura::Window* window) override;
 
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWindowTrackerAura);
 };
 
 #endif  // CHROME_BROWSER_UI_AURA_NATIVE_WINDOW_TRACKER_AURA_H_

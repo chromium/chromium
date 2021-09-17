@@ -27,6 +27,11 @@ class ExtensionHooksDelegateTest
     : public NativeExtensionBindingsSystemUnittest {
  public:
   ExtensionHooksDelegateTest() {}
+
+  ExtensionHooksDelegateTest(const ExtensionHooksDelegateTest&) = delete;
+  ExtensionHooksDelegateTest& operator=(const ExtensionHooksDelegateTest&) =
+      delete;
+
   ~ExtensionHooksDelegateTest() override {}
 
   // NativeExtensionBindingsSystemUnittest:
@@ -78,8 +83,6 @@ class ExtensionHooksDelegateTest
 
   ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionHooksDelegateTest);
 };
 
 // Test chrome.extension messaging methods. Many of these are just aliased to

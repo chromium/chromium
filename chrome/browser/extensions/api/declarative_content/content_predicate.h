@@ -30,6 +30,9 @@ class Extension;
 // subclasses.
 class ContentPredicate {
  public:
+  ContentPredicate(const ContentPredicate&) = delete;
+  ContentPredicate& operator=(const ContentPredicate&) = delete;
+
   virtual ~ContentPredicate();
 
   // Returns true if this predicate should be ignored during evaluation. By
@@ -41,9 +44,6 @@ class ContentPredicate {
 
  protected:
   ContentPredicate();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentPredicate);
 };
 
 // Defines the interface for objects that create predicates.
@@ -55,6 +55,9 @@ class ContentPredicate {
 // ["input[type='password']"] JSON entities encoded in |value|.
 class ContentPredicateFactory {
  public:
+  ContentPredicateFactory(const ContentPredicateFactory&) = delete;
+  ContentPredicateFactory& operator=(const ContentPredicateFactory&) = delete;
+
   virtual ~ContentPredicateFactory();
 
   // Creates a new predicate from |value|, as specified in the declarative
@@ -66,9 +69,6 @@ class ContentPredicateFactory {
 
  protected:
   ContentPredicateFactory();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentPredicateFactory);
 };
 
 }  // namespace extensions

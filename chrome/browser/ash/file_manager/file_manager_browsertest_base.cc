@@ -530,6 +530,11 @@ class FileManagerTestMessageListener : public extensions::TestApiObserver {
         extensions::TestApiObserverRegistry::GetInstance());
   }
 
+  FileManagerTestMessageListener(const FileManagerTestMessageListener&) =
+      delete;
+  FileManagerTestMessageListener& operator=(
+      const FileManagerTestMessageListener&) = delete;
+
   ~FileManagerTestMessageListener() override = default;
 
   Message GetNextMessage() {
@@ -579,8 +584,6 @@ class FileManagerTestMessageListener : public extensions::TestApiObserver {
   base::ScopedObservation<extensions::TestApiObserverRegistry,
                           extensions::TestApiObserver>
       test_api_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileManagerTestMessageListener);
 };
 
 // Test volume.
@@ -813,6 +816,10 @@ class FileManagerBrowserTestBase::MockFileTasksObserver
 class LocalTestVolume : public TestVolume {
  public:
   explicit LocalTestVolume(const std::string& name) : TestVolume(name) {}
+
+  LocalTestVolume(const LocalTestVolume&) = delete;
+  LocalTestVolume& operator=(const LocalTestVolume&) = delete;
+
   ~LocalTestVolume() override = default;
 
   // Adds this local volume. Returns true on success.
@@ -888,14 +895,16 @@ class LocalTestVolume : public TestVolume {
   }
 
   std::map<base::FilePath, const AddEntriesMessage::TestEntryInfo> entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalTestVolume);
 };
 
 // DownloadsTestVolume: local test volume for the "Downloads" directory.
 class DownloadsTestVolume : public LocalTestVolume {
  public:
   DownloadsTestVolume() : LocalTestVolume("MyFiles") {}
+
+  DownloadsTestVolume(const DownloadsTestVolume&) = delete;
+  DownloadsTestVolume& operator=(const DownloadsTestVolume&) = delete;
+
   ~DownloadsTestVolume() override = default;
 
   void EnsureDownloadsFolderExists() {
@@ -933,14 +942,15 @@ class DownloadsTestVolume : public LocalTestVolume {
     auto* volume = VolumeManager::Get(profile);
     volume->RemoveDownloadsDirectoryForTesting();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadsTestVolume);
 };
 
 class AndroidFilesTestVolume : public LocalTestVolume {
  public:
   AndroidFilesTestVolume() : LocalTestVolume("AndroidFiles") {}
+
+  AndroidFilesTestVolume(const AndroidFilesTestVolume&) = delete;
+  AndroidFilesTestVolume& operator=(const AndroidFilesTestVolume&) = delete;
+
   ~AndroidFilesTestVolume() override = default;
 
   bool Mount(Profile* profile) override {
@@ -955,15 +965,16 @@ class AndroidFilesTestVolume : public LocalTestVolume {
     VolumeManager::Get(profile)->RemoveAndroidFilesDirectoryForTesting(
         root_path());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidFilesTestVolume);
 };
 
 // CrostiniTestVolume: local test volume for the "Linux files" directory.
 class CrostiniTestVolume : public LocalTestVolume {
  public:
   CrostiniTestVolume() : LocalTestVolume("Crostini") {}
+
+  CrostiniTestVolume(const CrostiniTestVolume&) = delete;
+  CrostiniTestVolume& operator=(const CrostiniTestVolume&) = delete;
+
   ~CrostiniTestVolume() override = default;
 
   // Create root dir so entries can be created, but volume is not mounted.
@@ -976,9 +987,6 @@ class CrostiniTestVolume : public LocalTestVolume {
   }
 
   const base::FilePath& mount_path() const { return root_path(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniTestVolume);
 };
 
 // FakeTestVolume: local test volume with a given volume and device type.
@@ -990,6 +998,10 @@ class FakeTestVolume : public LocalTestVolume {
       : LocalTestVolume(name),
         volume_type_(volume_type),
         device_type_(device_type) {}
+
+  FakeTestVolume(const FakeTestVolume&) = delete;
+  FakeTestVolume& operator=(const FakeTestVolume&) = delete;
+
   ~FakeTestVolume() override = default;
 
   // Add the fake test volume entries.
@@ -1066,9 +1078,6 @@ class FakeTestVolume : public LocalTestVolume {
   const VolumeType volume_type_;
   const chromeos::DeviceType device_type_;
   const bool read_only_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeTestVolume);
 };
 
 // Removable TestVolume: local test volume for external media devices.
@@ -1084,6 +1093,10 @@ class RemovableTestVolume : public FakeTestVolume {
         device_path_(device_path),
         drive_label_(drive_label),
         file_system_type_(file_system_type) {}
+
+  RemovableTestVolume(const RemovableTestVolume&) = delete;
+  RemovableTestVolume& operator=(const RemovableTestVolume&) = delete;
+
   ~RemovableTestVolume() override = default;
 
   bool Mount(Profile* profile) override {
@@ -1108,8 +1121,6 @@ class RemovableTestVolume : public FakeTestVolume {
   const base::FilePath device_path_;
   const std::string drive_label_;
   const std::string file_system_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovableTestVolume);
 };
 
 // DriveFsTestVolume: test volume for Google Drive using DriveFS.
@@ -1117,6 +1128,10 @@ class DriveFsTestVolume : public TestVolume {
  public:
   explicit DriveFsTestVolume(Profile* original_profile)
       : TestVolume("drive"), original_profile_(original_profile) {}
+
+  DriveFsTestVolume(const DriveFsTestVolume&) = delete;
+  DriveFsTestVolume& operator=(const DriveFsTestVolume&) = delete;
+
   ~DriveFsTestVolume() override = default;
 
   drive::DriveIntegrationService* CreateDriveIntegrationService(
@@ -1324,8 +1339,6 @@ class DriveFsTestVolume : public TestVolume {
   Profile* const original_profile_;
   std::map<base::FilePath, const AddEntriesMessage::TestEntryInfo> entries_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsTestVolume);
 };
 
 // DocumentsProviderTestVolume: test volume for Android DocumentsProvider.
@@ -1352,6 +1365,11 @@ class DocumentsProviderTestVolume : public TestVolume {
                                     authority,
                                     root_document_id,
                                     read_only) {}
+
+  DocumentsProviderTestVolume(const DocumentsProviderTestVolume&) = delete;
+  DocumentsProviderTestVolume& operator=(const DocumentsProviderTestVolume&) =
+      delete;
+
   ~DocumentsProviderTestVolume() override = default;
 
   virtual void CreateEntry(const AddEntriesMessage::TestEntryInfo& entry) {
@@ -1433,8 +1451,6 @@ class DocumentsProviderTestVolume : public TestVolume {
     url::EncodeURIComponent(component.c_str(), component.size(), &encoded);
     return {encoded.data(), static_cast<size_t>(encoded.length())};
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentsProviderTestVolume);
 };
 
 // MediaViewTestVolume: Test volume for the "media views": Audio, Images and
@@ -1450,6 +1466,9 @@ class MediaViewTestVolume : public DocumentsProviderTestVolume {
                                     root_document_id,
                                     true /* read_only */) {}
 
+  MediaViewTestVolume(const MediaViewTestVolume&) = delete;
+  MediaViewTestVolume& operator=(const MediaViewTestVolume&) = delete;
+
   ~MediaViewTestVolume() override = default;
 
   bool Mount(Profile* profile) override {
@@ -1457,9 +1476,6 @@ class MediaViewTestVolume : public DocumentsProviderTestVolume {
     return VolumeManager::Get(profile)->RegisterMediaViewForTesting(
         root_document_id_);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaViewTestVolume);
 };
 
 class MockSmbFsMounter : public smbfs::SmbFsMounter {
@@ -1493,6 +1509,10 @@ class MockSmbFsImpl : public smbfs::mojom::SmbFs {
 class SmbfsTestVolume : public LocalTestVolume {
  public:
   SmbfsTestVolume() : LocalTestVolume("smbfs") {}
+
+  SmbfsTestVolume(const SmbfsTestVolume&) = delete;
+  SmbfsTestVolume& operator=(const SmbfsTestVolume&) = delete;
+
   ~SmbfsTestVolume() override = default;
 
   // Create root dir so entries can be created, but volume is not mounted.
@@ -1580,8 +1600,6 @@ class SmbfsTestVolume : public LocalTestVolume {
 
   std::unique_ptr<MockSmbFsImpl> mock_smbfs_;
   mojo::Remote<smbfs::mojom::SmbFsDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbfsTestVolume);
 };
 
 FileManagerBrowserTestBase::FileManagerBrowserTestBase() = default;

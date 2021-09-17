@@ -34,6 +34,10 @@ class SavePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save);
 
+  SavePasswordInfoBarDelegate(const SavePasswordInfoBarDelegate&) = delete;
+  SavePasswordInfoBarDelegate& operator=(const SavePasswordInfoBarDelegate&) =
+      delete;
+
   ~SavePasswordInfoBarDelegate() override;
 
   // ConfirmInfoBarDelegate:
@@ -61,8 +65,6 @@ class SavePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   // Measures the "Save password?" prompt lifetime. Used to report an UMA
   // signal.
   base::ElapsedTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePasswordInfoBarDelegate);
 };
 
 // Creates the platform-specific SavePassword InfoBar. This function is defined

@@ -30,6 +30,10 @@ class AppCommands {
       CommandMapRange;
 
   AppCommands();
+
+  AppCommands(const AppCommands&) = delete;
+  AppCommands& operator=(const AppCommands&) = delete;
+
   ~AppCommands();
 
   // Initialize an instance from the set of commands in a given registry key
@@ -64,8 +68,6 @@ class AppCommands {
 
  protected:
   CommandMap commands_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppCommands);
 };
 
 }  // namespace installer

@@ -16,6 +16,10 @@ class AppServiceAppModelBuilder : public AppListModelBuilder,
  public:
   explicit AppServiceAppModelBuilder(AppListControllerDelegate* controller);
 
+  AppServiceAppModelBuilder(const AppServiceAppModelBuilder&) = delete;
+  AppServiceAppModelBuilder& operator=(const AppServiceAppModelBuilder&) =
+      delete;
+
   ~AppServiceAppModelBuilder() override;
 
  private:
@@ -30,8 +34,6 @@ class AppServiceAppModelBuilder : public AppListModelBuilder,
       apps::AppRegistryCache* cache) override;
 
   std::unique_ptr<AppListModelUpdaterObserver> crostini_folder_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceAppModelBuilder);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_SERVICE_APP_SERVICE_APP_MODEL_BUILDER_H_

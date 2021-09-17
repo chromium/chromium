@@ -35,6 +35,10 @@ class VRUiHostImpl : public content::VrUiHost,
  public:
   VRUiHostImpl(device::mojom::XRDeviceId device_id,
                mojo::PendingRemote<device::mojom::XRCompositorHost> compositor);
+
+  VRUiHostImpl(const VRUiHostImpl&) = delete;
+  VRUiHostImpl& operator=(const VRUiHostImpl&) = delete;
+
   ~VRUiHostImpl() override;
 
  private:
@@ -119,8 +123,6 @@ class VRUiHostImpl : public content::VrUiHost,
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<VRUiHostImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VRUiHostImpl);
 };
 
 }  // namespace vr

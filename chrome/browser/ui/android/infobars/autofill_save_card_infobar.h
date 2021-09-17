@@ -23,6 +23,9 @@ class AutofillSaveCardInfoBar : public infobars::ConfirmInfoBar {
       std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile>
           delegate);
 
+  AutofillSaveCardInfoBar(const AutofillSaveCardInfoBar&) = delete;
+  AutofillSaveCardInfoBar& operator=(const AutofillSaveCardInfoBar&) = delete;
+
   ~AutofillSaveCardInfoBar() override;
 
   // Called when a link in the legal message text was clicked.
@@ -41,8 +44,6 @@ class AutofillSaveCardInfoBar : public infobars::ConfirmInfoBar {
   // of autofill_save_card_infobar_delegate_mobile.cc as Android icon .xmls
   // are stored in /chrome and /components cannot depend on /chrome.
   int GetGooglePayBrandingIconId();
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillSaveCardInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_AUTOFILL_SAVE_CARD_INFOBAR_H_

@@ -40,6 +40,12 @@ class ChromeMetricsServicesManagerClient
     : public metrics_services_manager::MetricsServicesManagerClient {
  public:
   explicit ChromeMetricsServicesManagerClient(PrefService* local_state);
+
+  ChromeMetricsServicesManagerClient(
+      const ChromeMetricsServicesManagerClient&) = delete;
+  ChromeMetricsServicesManagerClient& operator=(
+      const ChromeMetricsServicesManagerClient&) = delete;
+
   ~ChromeMetricsServicesManagerClient() override;
 
   metrics::MetricsStateManager* GetMetricsStateManagerForTesting();
@@ -109,8 +115,6 @@ class ChromeMetricsServicesManagerClient
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CallbackListSubscription reporting_setting_subscription_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMetricsServicesManagerClient);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_METRICS_SERVICES_MANAGER_CLIENT_H_

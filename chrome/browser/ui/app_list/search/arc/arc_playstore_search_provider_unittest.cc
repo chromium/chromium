@@ -30,6 +30,12 @@ namespace app_list {
 class ArcPlayStoreSearchProviderTest : public AppListTestBase {
  public:
   ArcPlayStoreSearchProviderTest() = default;
+
+  ArcPlayStoreSearchProviderTest(const ArcPlayStoreSearchProviderTest&) =
+      delete;
+  ArcPlayStoreSearchProviderTest& operator=(
+      const ArcPlayStoreSearchProviderTest&) = delete;
+
   ~ArcPlayStoreSearchProviderTest() override = default;
 
   // AppListTestBase:
@@ -63,8 +69,6 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
  private:
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   ArcAppTest arc_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreSearchProviderTest);
 };
 
 TEST_F(ArcPlayStoreSearchProviderTest, Basic) {

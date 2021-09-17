@@ -92,6 +92,10 @@ const std::vector<TestItem>& TestItems() {
 class LocationBarModelTest : public BrowserWithTestWindowTest {
  public:
   LocationBarModelTest();
+
+  LocationBarModelTest(const LocationBarModelTest&) = delete;
+  LocationBarModelTest& operator=(const LocationBarModelTest&) = delete;
+
   ~LocationBarModelTest() override;
 
   // BrowserWithTestWindowTest:
@@ -103,9 +107,6 @@ class LocationBarModelTest : public BrowserWithTestWindowTest {
       const std::u16string& expected_formatted_full_url,
       const std::u16string& expected_elided_url_for_display);
   void NavigateAndCheckElided(const GURL& https_url);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocationBarModelTest);
 };
 
 LocationBarModelTest::LocationBarModelTest() {}

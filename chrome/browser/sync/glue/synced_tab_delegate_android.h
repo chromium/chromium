@@ -23,6 +23,10 @@ namespace browser_sync {
 class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
  public:
   explicit SyncedTabDelegateAndroid(TabAndroid* owning_tab_);
+
+  SyncedTabDelegateAndroid(const SyncedTabDelegateAndroid&) = delete;
+  SyncedTabDelegateAndroid& operator=(const SyncedTabDelegateAndroid&) = delete;
+
   ~SyncedTabDelegateAndroid() override;
 
   // SyncedTabDelegate:
@@ -38,8 +42,6 @@ class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
 
  private:
   TabAndroid* tab_android_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedTabDelegateAndroid);
 };
 }  // namespace browser_sync
 

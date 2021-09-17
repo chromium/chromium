@@ -182,6 +182,12 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, MultipleCalls) {
 class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
  public:
   CaptivePortalWindowCtorDtorTest() = default;
+
+  CaptivePortalWindowCtorDtorTest(const CaptivePortalWindowCtorDtorTest&) =
+      delete;
+  CaptivePortalWindowCtorDtorTest& operator=(
+      const CaptivePortalWindowCtorDtorTest&) = delete;
+
   ~CaptivePortalWindowCtorDtorTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -213,8 +219,6 @@ class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
   // Use fake GAIA to avoid potential flakiness when real GAIA would not
   // load and Error screen would be shown instead of Login screen.
   FakeGaiaMixin fake_gaia_{&mixin_host_};
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalWindowCtorDtorTest);
 };
 
 // Flaky on multiple builders, see crbug.com/1244162

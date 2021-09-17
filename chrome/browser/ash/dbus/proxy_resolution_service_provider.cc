@@ -64,6 +64,9 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
                                        std::move(proxy_lookup_client));
   }
 
+  ProxyLookupRequest(const ProxyLookupRequest&) = delete;
+  ProxyLookupRequest& operator=(const ProxyLookupRequest&) = delete;
+
   ~ProxyLookupRequest() override = default;
 
   void OnProxyLookupComplete(
@@ -115,7 +118,6 @@ class ProxyLookupRequest : public network::mojom::ProxyLookupClient {
   mojo::Receiver<network::mojom::ProxyLookupClient> receiver_{this};
   ProxyResolutionServiceProvider::NotifyCallback notify_callback_;
   chromeos::SystemProxyOverride system_proxy_override_;
-  DISALLOW_COPY_AND_ASSIGN(ProxyLookupRequest);
 };
 
 }  // namespace

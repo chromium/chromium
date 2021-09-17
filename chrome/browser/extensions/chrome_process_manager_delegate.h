@@ -27,6 +27,11 @@ class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
                                      public ProfileObserver {
  public:
   ChromeProcessManagerDelegate();
+
+  ChromeProcessManagerDelegate(const ChromeProcessManagerDelegate&) = delete;
+  ChromeProcessManagerDelegate& operator=(const ChromeProcessManagerDelegate&) =
+      delete;
+
   ~ChromeProcessManagerDelegate() override;
 
   // ProcessManagerDelegate:
@@ -51,8 +56,6 @@ class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
  private:
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeProcessManagerDelegate);
 };
 
 }  // namespace extensions

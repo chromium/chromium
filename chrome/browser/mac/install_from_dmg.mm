@@ -548,6 +548,11 @@ class ScopedDASessionScheduleWithRunLoop {
     DASessionScheduleWithRunLoop(session_, run_loop_, run_loop_mode_);
   }
 
+  ScopedDASessionScheduleWithRunLoop(
+      const ScopedDASessionScheduleWithRunLoop&) = delete;
+  ScopedDASessionScheduleWithRunLoop& operator=(
+      const ScopedDASessionScheduleWithRunLoop&) = delete;
+
   ~ScopedDASessionScheduleWithRunLoop() {
     DASessionUnscheduleFromRunLoop(session_, run_loop_, run_loop_mode_);
   }
@@ -556,8 +561,6 @@ class ScopedDASessionScheduleWithRunLoop {
   DASessionRef session_;
   CFRunLoopRef run_loop_;
   CFStringRef run_loop_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDASessionScheduleWithRunLoop);
 };
 
 // A small structure used to ferry data between SynchronousDAOperation and

@@ -35,6 +35,10 @@ using ::testing::Mock;
 class EnrollmentScreenTest : public OobeBaseTest {
  public:
   EnrollmentScreenTest() = default;
+
+  EnrollmentScreenTest(const EnrollmentScreenTest&) = delete;
+  EnrollmentScreenTest& operator=(const EnrollmentScreenTest&) = delete;
+
   ~EnrollmentScreenTest() override = default;
 
   // OobeBaseTest:
@@ -54,9 +58,6 @@ class EnrollmentScreenTest : public OobeBaseTest {
   }
 
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestCancel) {
@@ -79,6 +80,12 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestSuccess) {
 class AttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
  public:
   AttestationAuthEnrollmentScreenTest() = default;
+
+  AttestationAuthEnrollmentScreenTest(
+      const AttestationAuthEnrollmentScreenTest&) = delete;
+  AttestationAuthEnrollmentScreenTest& operator=(
+      const AttestationAuthEnrollmentScreenTest&) = delete;
+
   ~AttestationAuthEnrollmentScreenTest() override = default;
 
  private:
@@ -87,8 +94,6 @@ class AttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
     EnrollmentScreenTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kEnterpriseEnableZeroTouchEnrollment);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AttestationAuthEnrollmentScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AttestationAuthEnrollmentScreenTest, TestCancel) {
@@ -118,6 +123,12 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollmentSpinner) {
 class ForcedAttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
  public:
   ForcedAttestationAuthEnrollmentScreenTest() = default;
+
+  ForcedAttestationAuthEnrollmentScreenTest(
+      const ForcedAttestationAuthEnrollmentScreenTest&) = delete;
+  ForcedAttestationAuthEnrollmentScreenTest& operator=(
+      const ForcedAttestationAuthEnrollmentScreenTest&) = delete;
+
   ~ForcedAttestationAuthEnrollmentScreenTest() override = default;
 
  private:
@@ -127,8 +138,6 @@ class ForcedAttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableZeroTouchEnrollment, "forced");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ForcedAttestationAuthEnrollmentScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ForcedAttestationAuthEnrollmentScreenTest, TestCancel) {
@@ -142,6 +151,11 @@ IN_PROC_BROWSER_TEST_F(ForcedAttestationAuthEnrollmentScreenTest, TestCancel) {
 class MultiAuthEnrollmentScreenTest : public EnrollmentScreenTest {
  public:
   MultiAuthEnrollmentScreenTest() = default;
+
+  MultiAuthEnrollmentScreenTest(const MultiAuthEnrollmentScreenTest&) = delete;
+  MultiAuthEnrollmentScreenTest& operator=(
+      const MultiAuthEnrollmentScreenTest&) = delete;
+
   ~MultiAuthEnrollmentScreenTest() override = default;
 
  private:
@@ -157,8 +171,6 @@ class MultiAuthEnrollmentScreenTest : public EnrollmentScreenTest {
         switches::kAppOemManifestFile,
         test_data_dir.AppendASCII("kiosk_manifest.json"));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MultiAuthEnrollmentScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MultiAuthEnrollmentScreenTest, TestCancel) {
@@ -172,6 +184,12 @@ IN_PROC_BROWSER_TEST_F(MultiAuthEnrollmentScreenTest, TestCancel) {
 class ProvisionedEnrollmentScreenTest : public EnrollmentScreenTest {
  public:
   ProvisionedEnrollmentScreenTest() = default;
+
+  ProvisionedEnrollmentScreenTest(const ProvisionedEnrollmentScreenTest&) =
+      delete;
+  ProvisionedEnrollmentScreenTest& operator=(
+      const ProvisionedEnrollmentScreenTest&) = delete;
+
   ~ProvisionedEnrollmentScreenTest() override = default;
 
  private:
@@ -185,8 +203,6 @@ class ProvisionedEnrollmentScreenTest : public EnrollmentScreenTest {
         switches::kAppOemManifestFile,
         test_data_dir.AppendASCII("kiosk_manifest.json"));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ProvisionedEnrollmentScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ProvisionedEnrollmentScreenTest, TestBackButton) {

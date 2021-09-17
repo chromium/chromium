@@ -20,6 +20,10 @@ class PrefService;
 class FontSizePrefsAndroid {
  public:
   FontSizePrefsAndroid(JNIEnv* env, jobject obj);
+
+  FontSizePrefsAndroid(const FontSizePrefsAndroid&) = delete;
+  FontSizePrefsAndroid& operator=(const FontSizePrefsAndroid&) = delete;
+
   ~FontSizePrefsAndroid();
 
   void SetFontScaleFactor(JNIEnv* env,
@@ -42,8 +46,6 @@ class FontSizePrefsAndroid {
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   PrefService* const pref_service_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontSizePrefsAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_ACCESSIBILITY_FONT_SIZE_PREFS_ANDROID_H_

@@ -213,6 +213,10 @@ class CrostiniManager : public KeyedService,
   static CrostiniManager* GetForProfile(Profile* profile);
 
   explicit CrostiniManager(Profile* profile);
+
+  CrostiniManager(const CrostiniManager&) = delete;
+  CrostiniManager& operator=(const CrostiniManager&) = delete;
+
   ~CrostiniManager() override;
 
   base::WeakPtr<CrostiniManager> GetWeakPtr();
@@ -933,8 +937,6 @@ class CrostiniManager : public KeyedService,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<CrostiniManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniManager);
 };
 
 }  // namespace crostini

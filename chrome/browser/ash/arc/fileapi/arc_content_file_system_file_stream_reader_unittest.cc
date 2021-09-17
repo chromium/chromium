@@ -80,6 +80,11 @@ class ArcContentFileSystemFileStreamReaderTest : public testing::Test {
  public:
   ArcContentFileSystemFileStreamReaderTest() = default;
 
+  ArcContentFileSystemFileStreamReaderTest(
+      const ArcContentFileSystemFileStreamReaderTest&) = delete;
+  ArcContentFileSystemFileStreamReaderTest& operator=(
+      const ArcContentFileSystemFileStreamReaderTest&) = delete;
+
   ~ArcContentFileSystemFileStreamReaderTest() override = default;
 
   void SetUp() override {
@@ -117,8 +122,6 @@ class ArcContentFileSystemFileStreamReaderTest : public testing::Test {
   // ChromeBrowserMainPartsChromeos.
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemFileStreamReaderTest);
 };
 
 }  // namespace

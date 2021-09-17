@@ -18,6 +18,11 @@ class PlatformControllerForTesting : public PlatformController {
       ControllerModel* prev_model,
       ControllerModel* cur_model,
       base::TimeTicks last_touchpad_timestamp);
+
+  PlatformControllerForTesting(const PlatformControllerForTesting&) = delete;
+  PlatformControllerForTesting& operator=(const PlatformControllerForTesting&) =
+      delete;
+
   ~PlatformControllerForTesting() override {}
 
   bool IsButtonDown(PlatformController::ButtonType type) const override;
@@ -36,7 +41,6 @@ class PlatformControllerForTesting : public PlatformController {
   ControllerModel* prev_model_;
   ControllerModel* cur_model_;
   base::TimeTicks last_touchpad_timestamp_;
-  DISALLOW_COPY_AND_ASSIGN(PlatformControllerForTesting);
 };
 
 }  // namespace vr

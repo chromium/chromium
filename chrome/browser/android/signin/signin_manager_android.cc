@@ -83,6 +83,9 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
     }
   }
 
+  ProfileDataRemover(const ProfileDataRemover&) = delete;
+  ProfileDataRemover& operator=(const ProfileDataRemover&) = delete;
+
   ~ProfileDataRemover() override {}
 
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
@@ -106,8 +109,6 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
   base::OnceClosure callback_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_runner_;
   content::BrowsingDataRemover* remover_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileDataRemover);
 };
 
 // Returns whether the user is a managed user or not.

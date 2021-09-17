@@ -104,6 +104,10 @@ policy::CloudPolicyStore* GetStoreForUser(const user_manager::User* user) {
 class UserImageChangeWaiter : public user_manager::UserManager::Observer {
  public:
   UserImageChangeWaiter() {}
+
+  UserImageChangeWaiter(const UserImageChangeWaiter&) = delete;
+  UserImageChangeWaiter& operator=(const UserImageChangeWaiter&) = delete;
+
   ~UserImageChangeWaiter() override {}
 
   void Wait() {
@@ -121,8 +125,6 @@ class UserImageChangeWaiter : public user_manager::UserManager::Observer {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserImageChangeWaiter);
 };
 
 }  // namespace

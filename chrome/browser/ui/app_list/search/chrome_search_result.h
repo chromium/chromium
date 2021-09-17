@@ -43,6 +43,10 @@ class ChromeSearchResult {
   using IconShape = ash::SearchResultIconShape;
 
   ChromeSearchResult();
+
+  ChromeSearchResult(const ChromeSearchResult&) = delete;
+  ChromeSearchResult& operator=(const ChromeSearchResult&) = delete;
+
   virtual ~ChromeSearchResult();
 
   const std::u16string& title() const { return metadata_->title; }
@@ -198,8 +202,6 @@ class ChromeSearchResult {
   std::unique_ptr<ash::SearchResultMetadata> metadata_;
 
   AppListModelUpdater* model_updater_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSearchResult);
 };
 
 ::std::ostream& operator<<(::std::ostream& os,

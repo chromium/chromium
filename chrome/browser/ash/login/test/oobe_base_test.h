@@ -29,6 +29,10 @@ class LoginOrLockScreenVisibleWaiter;
 class OobeBaseTest : public MixinBasedInProcessBrowserTest {
  public:
   OobeBaseTest();
+
+  OobeBaseTest(const OobeBaseTest&) = delete;
+  OobeBaseTest& operator=(const OobeBaseTest&) = delete;
+
   ~OobeBaseTest() override;
 
   // Subclasses may register their own custom request handlers that will
@@ -85,8 +89,6 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
   std::unique_ptr<LoginOrLockScreenVisibleWaiter> login_screen_load_observer_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeBaseTest);
 };
 
 }  // namespace ash

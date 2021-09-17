@@ -38,6 +38,12 @@ class NetworkPortalNotificationController
 
   explicit NetworkPortalNotificationController(
       NetworkPortalDetector* network_portal_dectector);
+
+  NetworkPortalNotificationController(
+      const NetworkPortalNotificationController&) = delete;
+  NetworkPortalNotificationController& operator=(
+      const NetworkPortalNotificationController&) = delete;
+
   ~NetworkPortalNotificationController() override;
 
   // Creates NetworkPortalWebDialog.
@@ -87,8 +93,6 @@ class NetworkPortalNotificationController
   bool ignore_no_network_for_testing_ = false;
 
   base::WeakPtrFactory<NetworkPortalNotificationController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalNotificationController);
 };
 
 }  // namespace chromeos

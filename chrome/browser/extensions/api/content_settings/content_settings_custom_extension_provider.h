@@ -22,6 +22,9 @@ class CustomExtensionProvider : public ObservableProvider,
                               extensions_settings,
                           bool incognito);
 
+  CustomExtensionProvider(const CustomExtensionProvider&) = delete;
+  CustomExtensionProvider& operator=(const CustomExtensionProvider&) = delete;
+
   ~CustomExtensionProvider() override;
 
   // ProviderInterface methods:
@@ -52,8 +55,6 @@ class CustomExtensionProvider : public ObservableProvider,
 
   // The backend storing content setting rules defined by extensions.
   scoped_refptr<extensions::ContentSettingsStore> extensions_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomExtensionProvider);
 };
 
 }  // namespace content_settings

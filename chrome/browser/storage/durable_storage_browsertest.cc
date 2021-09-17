@@ -30,6 +30,11 @@
 class DurableStorageBrowserTest : public InProcessBrowserTest {
  public:
   DurableStorageBrowserTest() = default;
+
+  DurableStorageBrowserTest(const DurableStorageBrowserTest&) = delete;
+  DurableStorageBrowserTest& operator=(const DurableStorageBrowserTest&) =
+      delete;
+
   ~DurableStorageBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine*) override;
@@ -85,9 +90,6 @@ class DurableStorageBrowserTest : public InProcessBrowserTest {
   }
 
   GURL url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DurableStorageBrowserTest);
 };
 
 void DurableStorageBrowserTest::SetUpCommandLine(

@@ -13,12 +13,15 @@ namespace vr {
 class ExternalTexturedQuadRenderer : public TexturedQuadRenderer {
  public:
   ExternalTexturedQuadRenderer();
+
+  ExternalTexturedQuadRenderer(const ExternalTexturedQuadRenderer&) = delete;
+  ExternalTexturedQuadRenderer& operator=(const ExternalTexturedQuadRenderer&) =
+      delete;
+
   ~ExternalTexturedQuadRenderer() override;
 
  private:
   GLenum TextureType() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalTexturedQuadRenderer);
 };
 
 }  // namespace vr

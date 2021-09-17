@@ -22,6 +22,12 @@ class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
   explicit DeviceCommandRefreshMachineCertificateJob(
       ash::attestation::MachineCertificateUploader*
           machine_certificate_uploader);
+
+  DeviceCommandRefreshMachineCertificateJob(
+      const DeviceCommandRefreshMachineCertificateJob&) = delete;
+  DeviceCommandRefreshMachineCertificateJob& operator=(
+      const DeviceCommandRefreshMachineCertificateJob&) = delete;
+
   ~DeviceCommandRefreshMachineCertificateJob() override;
 
   // RemoteCommandJob:
@@ -41,8 +47,6 @@ class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
 
   base::WeakPtrFactory<DeviceCommandRefreshMachineCertificateJob>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandRefreshMachineCertificateJob);
 };
 
 }  // namespace policy

@@ -31,6 +31,11 @@ class ArcAppShortcutsMenuBuilder {
                              int64_t display_id,
                              int command_id_first,
                              int command_id_last);
+
+  ArcAppShortcutsMenuBuilder(const ArcAppShortcutsMenuBuilder&) = delete;
+  ArcAppShortcutsMenuBuilder& operator=(const ArcAppShortcutsMenuBuilder&) =
+      delete;
+
   ~ArcAppShortcutsMenuBuilder();
 
   // Builds arc app shortcuts menu.
@@ -62,8 +67,6 @@ class ArcAppShortcutsMenuBuilder {
 
   // Handles requesting app shortcuts from Android.
   std::unique_ptr<ArcAppShortcutsRequest> arc_app_shortcuts_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShortcutsMenuBuilder);
 };
 
 }  // namespace arc

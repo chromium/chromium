@@ -18,6 +18,9 @@ class FindBarPlatformHelper {
   static std::unique_ptr<FindBarPlatformHelper> Create(
       FindBarController* find_bar_controller);
 
+  FindBarPlatformHelper(const FindBarPlatformHelper&) = delete;
+  FindBarPlatformHelper& operator=(const FindBarPlatformHelper&) = delete;
+
   virtual ~FindBarPlatformHelper();
 
   // Called when the user changes the find text to |text|.
@@ -28,9 +31,6 @@ class FindBarPlatformHelper {
 
   // Owns FindBarPlatformHelper.
   FindBarController* const find_bar_controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FindBarPlatformHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_PLATFORM_HELPER_H_

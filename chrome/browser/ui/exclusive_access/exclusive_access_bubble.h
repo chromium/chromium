@@ -33,6 +33,10 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   ExclusiveAccessBubble(ExclusiveAccessManager* manager,
                         const GURL& url,
                         ExclusiveAccessBubbleType bubble_type);
+
+  ExclusiveAccessBubble(const ExclusiveAccessBubble&) = delete;
+  ExclusiveAccessBubble& operator=(const ExclusiveAccessBubble&) = delete;
+
   ~ExclusiveAccessBubble() override;
 
   // Informs the ExclusiveAccessBubble of some user input, which may update
@@ -137,8 +141,6 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   // if the mouse has moved since our last check. Only used in non-simplified
   // fullscreen mode.
   gfx::Point last_mouse_pos_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExclusiveAccessBubble);
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_H_

@@ -13,12 +13,14 @@ namespace welcome {
 class SetAsDefaultHandler : public settings::DefaultBrowserHandler {
  public:
   SetAsDefaultHandler();
+
+  SetAsDefaultHandler(const SetAsDefaultHandler&) = delete;
+  SetAsDefaultHandler& operator=(const SetAsDefaultHandler&) = delete;
+
   ~SetAsDefaultHandler() override;
 
  protected:
   void RecordSetAsDefaultUMA() override;
-
-  DISALLOW_COPY_AND_ASSIGN(SetAsDefaultHandler);
 };
 
 }  // namespace welcome

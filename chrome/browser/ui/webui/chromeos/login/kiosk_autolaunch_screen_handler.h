@@ -36,6 +36,11 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
   using TView = KioskAutolaunchScreenView;
 
   explicit KioskAutolaunchScreenHandler(JSCallsContainer* js_calls_container);
+
+  KioskAutolaunchScreenHandler(const KioskAutolaunchScreenHandler&) = delete;
+  KioskAutolaunchScreenHandler& operator=(const KioskAutolaunchScreenHandler&) =
+      delete;
+
   ~KioskAutolaunchScreenHandler() override;
 
   // KioskAutolaunchScreenView:
@@ -68,8 +73,6 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
   bool is_visible_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAutolaunchScreenHandler);
 };
 
 }  // namespace chromeos

@@ -48,6 +48,11 @@ class FingerprintSetupScreenHandler : public BaseScreenHandler,
   using TView = FingerprintSetupScreenView;
 
   explicit FingerprintSetupScreenHandler(JSCallsContainer* js_calls_container);
+
+  FingerprintSetupScreenHandler(const FingerprintSetupScreenHandler&) = delete;
+  FingerprintSetupScreenHandler& operator=(
+      const FingerprintSetupScreenHandler&) = delete;
+
   ~FingerprintSetupScreenHandler() override;
 
   // BaseScreenHandler:
@@ -69,8 +74,6 @@ class FingerprintSetupScreenHandler : public BaseScreenHandler,
 
  private:
   ash::FingerprintSetupScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintSetupScreenHandler);
 };
 
 }  // namespace chromeos

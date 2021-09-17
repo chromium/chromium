@@ -45,6 +45,11 @@ class EncryptionMigrationScreen : public BaseScreen,
   };
 
   explicit EncryptionMigrationScreen(EncryptionMigrationScreenView* view);
+
+  EncryptionMigrationScreen(const EncryptionMigrationScreen&) = delete;
+  EncryptionMigrationScreen& operator=(const EncryptionMigrationScreen&) =
+      delete;
+
   ~EncryptionMigrationScreen() override;
 
   // This method is called, when view is being destroyed. Note, if Delegate is
@@ -165,8 +170,6 @@ class EncryptionMigrationScreen : public BaseScreen,
       power_manager_observation_{this};
 
   base::WeakPtrFactory<EncryptionMigrationScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EncryptionMigrationScreen);
 };
 
 }  // namespace ash

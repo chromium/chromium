@@ -28,6 +28,10 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
                       public ui::InputDeviceEventObserver {
  public:
   StylusHandler();
+
+  StylusHandler(const StylusHandler&) = delete;
+  StylusHandler& operator=(const StylusHandler&) = delete;
+
   ~StylusHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -64,8 +68,6 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
       note_observation_{this};
   base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
       input_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StylusHandler);
 };
 
 }  // namespace settings

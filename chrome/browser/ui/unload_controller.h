@@ -25,6 +25,10 @@ class UnloadController : public WebContentsCollection::Observer,
                          public TabStripModelObserver {
  public:
   explicit UnloadController(Browser* browser);
+
+  UnloadController(const UnloadController&) = delete;
+  UnloadController& operator=(const UnloadController&) = delete;
+
   ~UnloadController() override;
 
   // Returns true if |contents| can be cleanly closed. When |browser_| is being
@@ -153,8 +157,6 @@ class UnloadController : public WebContentsCollection::Observer,
   base::RepeatingCallback<void(bool)> on_close_confirmed_;
 
   base::WeakPtrFactory<UnloadController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UnloadController);
 };
 
 #endif  // CHROME_BROWSER_UI_UNLOAD_CONTROLLER_H_

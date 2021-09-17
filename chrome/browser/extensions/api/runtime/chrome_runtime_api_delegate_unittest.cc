@@ -44,6 +44,10 @@ class TestEventRouter : public EventRouter {
  public:
   explicit TestEventRouter(content::BrowserContext* context)
       : EventRouter(context, ExtensionPrefs::Get(context)) {}
+
+  TestEventRouter(const TestEventRouter&) = delete;
+  TestEventRouter& operator=(const TestEventRouter&) = delete;
+
   ~TestEventRouter() override {}
 
   // An entry in our fake event registry.
@@ -62,8 +66,6 @@ class TestEventRouter : public EventRouter {
 
  private:
   std::set<Entry> fake_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventRouter);
 };
 
 std::unique_ptr<KeyedService> TestEventRouterFactoryFunction(

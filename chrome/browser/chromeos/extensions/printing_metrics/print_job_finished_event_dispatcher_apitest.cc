@@ -40,6 +40,12 @@ std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
 class PrintJobFinishedEventDispatcherApiTest : public ExtensionApiTest {
  public:
   PrintJobFinishedEventDispatcherApiTest() {}
+
+  PrintJobFinishedEventDispatcherApiTest(
+      const PrintJobFinishedEventDispatcherApiTest&) = delete;
+  PrintJobFinishedEventDispatcherApiTest& operator=(
+      const PrintJobFinishedEventDispatcherApiTest&) = delete;
+
   ~PrintJobFinishedEventDispatcherApiTest() override = default;
 
  protected:
@@ -69,8 +75,6 @@ class PrintJobFinishedEventDispatcherApiTest : public ExtensionApiTest {
   }
 
   base::CallbackListSubscription create_services_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobFinishedEventDispatcherApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PrintJobFinishedEventDispatcherApiTest,

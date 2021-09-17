@@ -44,6 +44,11 @@ class OsAndPoliciesUpdateChecker
  public:
   explicit OsAndPoliciesUpdateChecker(
       chromeos::NetworkStateHandler* network_state_handler);
+
+  OsAndPoliciesUpdateChecker(const OsAndPoliciesUpdateChecker&) = delete;
+  OsAndPoliciesUpdateChecker& operator=(const OsAndPoliciesUpdateChecker&) =
+      delete;
+
   ~OsAndPoliciesUpdateChecker() override;
 
   using UpdateCheckCompletionCallback = base::OnceCallback<void(bool result)>;
@@ -130,8 +135,6 @@ class OsAndPoliciesUpdateChecker
   chromeos::UpdateEngineClient* const update_engine_client_;
 
   base::WeakPtrFactory<OsAndPoliciesUpdateChecker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OsAndPoliciesUpdateChecker);
 };
 
 }  // namespace policy

@@ -28,6 +28,11 @@ class GlobalShortcutListenerWin : public GlobalShortcutListener,
                                   public ui::MediaKeysListener::Delegate {
  public:
   GlobalShortcutListenerWin();
+
+  GlobalShortcutListenerWin(const GlobalShortcutListenerWin&) = delete;
+  GlobalShortcutListenerWin& operator=(const GlobalShortcutListenerWin&) =
+      delete;
+
   ~GlobalShortcutListenerWin() override;
 
  private:
@@ -54,8 +59,6 @@ class GlobalShortcutListenerWin : public GlobalShortcutListener,
   using HotKeyMap = std::map<ui::Accelerator,
                              std::unique_ptr<gfx::SingletonHwndHotKeyObserver>>;
   HotKeyMap hotkeys_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalShortcutListenerWin);
 };
 
 }  // namespace extensions

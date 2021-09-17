@@ -30,6 +30,10 @@ const char16_t kTestTopLevelDragData[] = u"test_top_level_drag_data";
 class TestDragView : public views::View {
  public:
   TestDragView();
+
+  TestDragView(const TestDragView&) = delete;
+  TestDragView& operator=(const TestDragView&) = delete;
+
   ~TestDragView() override;
 
  private:
@@ -37,8 +41,6 @@ class TestDragView : public views::View {
   int GetDragOperations(const gfx::Point& point) override;
   void WriteDragData(const gfx::Point& point,
                      ui::OSExchangeData* data) override;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDragView);
 };
 
 TestDragView::TestDragView() {
@@ -60,6 +62,10 @@ void TestDragView::WriteDragData(const gfx::Point& point,
 class TestTargetView : public views::View {
  public:
   TestTargetView() = default;
+
+  TestTargetView(const TestTargetView&) = delete;
+  TestTargetView& operator=(const TestTargetView&) = delete;
+
   ~TestTargetView() override = default;
 
   // Initializes this view to have the same bounds as its parent, and to have
@@ -90,8 +96,6 @@ class TestTargetView : public views::View {
 
   // Whether or not a drop has been performed on the view.
   bool dropped_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTargetView);
 };
 
 void TestTargetView::Init() {
@@ -161,6 +165,10 @@ class MenuViewDragAndDropTest : public MenuTestBase,
                                 public views::WidgetObserver {
  public:
   MenuViewDragAndDropTest() = default;
+
+  MenuViewDragAndDropTest(const MenuViewDragAndDropTest&) = delete;
+  MenuViewDragAndDropTest& operator=(const MenuViewDragAndDropTest&) = delete;
+
   ~MenuViewDragAndDropTest() override = default;
 
  protected:
@@ -221,7 +229,6 @@ class MenuViewDragAndDropTest : public MenuTestBase,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
-  DISALLOW_COPY_AND_ASSIGN(MenuViewDragAndDropTest);
 };
 
 void MenuViewDragAndDropTest::BuildMenu(views::MenuItemView* menu) {

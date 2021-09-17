@@ -20,6 +20,10 @@ class ResourceCoordinatorTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ResourceCoordinatorTabHelper> {
  public:
+  ResourceCoordinatorTabHelper(const ResourceCoordinatorTabHelper&) = delete;
+  ResourceCoordinatorTabHelper& operator=(const ResourceCoordinatorTabHelper&) =
+      delete;
+
   ~ResourceCoordinatorTabHelper() override;
 
   // Helper function to check if a given WebContents is loaded. Returns true by
@@ -45,8 +49,6 @@ class ResourceCoordinatorTabHelper
   friend class content::WebContentsUserData<ResourceCoordinatorTabHelper>;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceCoordinatorTabHelper);
 };
 
 }  // namespace resource_coordinator

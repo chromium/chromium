@@ -49,6 +49,9 @@ class SessionRestorePolicy {
 
   SessionRestorePolicy();
 
+  SessionRestorePolicy(const SessionRestorePolicy&) = delete;
+  SessionRestorePolicy& operator=(const SessionRestorePolicy&) = delete;
+
   // Overridden for testing.
   virtual ~SessionRestorePolicy();
 
@@ -312,8 +315,6 @@ class SessionRestorePolicy {
   // notifications in flight. The messages are bound to a weak pointer so that
   // they are not delivered after the policy object is destroyed.
   base::WeakPtrFactory<SessionRestorePolicy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestorePolicy);
 };
 
 // Abstracts away testing seams for the policy engine. In production code the
@@ -322,6 +323,10 @@ class SessionRestorePolicy {
 class SessionRestorePolicy::Delegate {
  public:
   Delegate();
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   virtual ~Delegate();
 
   virtual size_t GetNumberOfCores() const = 0;
@@ -329,9 +334,6 @@ class SessionRestorePolicy::Delegate {
   virtual base::TimeTicks NowTicks() const = 0;
   virtual size_t GetSiteEngagementScore(
       content::WebContents* contents) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 }  // namespace resource_coordinator

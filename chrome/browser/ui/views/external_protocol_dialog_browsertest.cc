@@ -83,6 +83,11 @@ class ExternalProtocolDialogBrowserTest
     ExternalProtocolHandler::SetDelegateForTesting(this);
   }
 
+  ExternalProtocolDialogBrowserTest(const ExternalProtocolDialogBrowserTest&) =
+      delete;
+  ExternalProtocolDialogBrowserTest& operator=(
+      const ExternalProtocolDialogBrowserTest&) = delete;
+
   ~ExternalProtocolDialogBrowserTest() override {
     ExternalProtocolHandler::SetDelegateForTesting(nullptr);
   }
@@ -148,9 +153,6 @@ class ExternalProtocolDialogBrowserTest
   BlockState blocked_state_ = BlockState::UNKNOWN;
   bool url_did_launch_ = false;
   std::string launch_url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternalProtocolDialogBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestAccept) {

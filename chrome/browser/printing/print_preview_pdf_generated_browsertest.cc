@@ -292,6 +292,12 @@ class PrintPreviewDelegate : printing::PrintPreviewUI::TestDelegate {
 class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
  public:
   PrintPreviewPdfGeneratedBrowserTest() {}
+
+  PrintPreviewPdfGeneratedBrowserTest(
+      const PrintPreviewPdfGeneratedBrowserTest&) = delete;
+  PrintPreviewPdfGeneratedBrowserTest& operator=(
+      const PrintPreviewPdfGeneratedBrowserTest&) = delete;
+
   ~PrintPreviewPdfGeneratedBrowserTest() override {}
 
   // Navigates to the given web page, then initiates print preview and waits
@@ -539,8 +545,6 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
   // TODO(ivandavid): Keep it as a ScopedTempDir and change the layout test
   // framework so that it tells the browser test how many test files there are.
   base::ScopedTempDir tmp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewPdfGeneratedBrowserTest);
 };
 
 // This test acts as a driver for the layout test framework.

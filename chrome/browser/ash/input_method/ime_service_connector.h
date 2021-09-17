@@ -27,6 +27,10 @@ class ImeServiceConnector
     : public chromeos::ime::mojom::PlatformAccessProvider {
  public:
   explicit ImeServiceConnector(Profile* profile);
+
+  ImeServiceConnector(const ImeServiceConnector&) = delete;
+  ImeServiceConnector& operator=(const ImeServiceConnector&) = delete;
+
   ~ImeServiceConnector() override;
 
   // chromeos::ime::mojom::PlatformAccessProvider overrides:
@@ -53,8 +57,6 @@ class ImeServiceConnector
   mojo::Remote<chromeos::ime::mojom::ImeService> remote_service_;
   mojo::Receiver<chromeos::ime::mojom::PlatformAccessProvider>
       platform_access_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImeServiceConnector);
 };
 
 }  // namespace input_method

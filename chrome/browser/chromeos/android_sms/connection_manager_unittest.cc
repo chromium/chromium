@@ -43,6 +43,11 @@ class ConnectionManagerTest : public testing::Test {
         content::FakeServiceWorkerContext* old_url_service_worker)
         : new_url_service_worker_(new_url_service_worker),
           old_url_service_worker_(old_url_service_worker) {}
+
+    TestServiceWorkerProvider(const TestServiceWorkerProvider&) = delete;
+    TestServiceWorkerProvider& operator=(const TestServiceWorkerProvider&) =
+        delete;
+
     ~TestServiceWorkerProvider() override = default;
 
    private:
@@ -61,8 +66,6 @@ class ConnectionManagerTest : public testing::Test {
 
     content::FakeServiceWorkerContext* new_url_service_worker_;
     content::FakeServiceWorkerContext* old_url_service_worker_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestServiceWorkerProvider);
   };
 
   enum class PwaState { kEnabledWithNewUrl, kEnabledWithOldUrl, kDisabled };

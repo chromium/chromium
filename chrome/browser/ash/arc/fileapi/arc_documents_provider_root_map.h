@@ -35,6 +35,10 @@ class ArcFileSystemOperationRunner;
 // All member function must be called on the UI thread.
 class ArcDocumentsProviderRootMap : public KeyedService {
  public:
+  ArcDocumentsProviderRootMap(const ArcDocumentsProviderRootMap&) = delete;
+  ArcDocumentsProviderRootMap& operator=(const ArcDocumentsProviderRootMap&) =
+      delete;
+
   ~ArcDocumentsProviderRootMap() override;
 
   // Returns an instance for the given browser context, or nullptr if ARC is not
@@ -87,8 +91,6 @@ class ArcDocumentsProviderRootMap : public KeyedService {
   // Key is (authority, root_document_id).
   using Key = std::pair<std::string, std::string>;
   std::map<Key, std::unique_ptr<ArcDocumentsProviderRoot>> map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderRootMap);
 };
 
 }  // namespace arc

@@ -111,6 +111,11 @@ class ChromeXrIntegrationClient;
 class ChromeContentBrowserClient : public content::ContentBrowserClient {
  public:
   ChromeContentBrowserClient();
+
+  ChromeContentBrowserClient(const ChromeContentBrowserClient&) = delete;
+  ChromeContentBrowserClient& operator=(const ChromeContentBrowserClient&) =
+      delete;
+
   ~ChromeContentBrowserClient() override;
 
   // TODO(https://crbug.com/787567): This file is about calls from content/ out
@@ -862,8 +867,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #endif
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClient);
 };
 
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_H_

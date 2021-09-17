@@ -48,6 +48,10 @@ const char kServerAuthSecret[] = "test_server_auth_secret";
 class FakeGCMDriver : public gcm::FakeGCMDriver {
  public:
   FakeGCMDriver() = default;
+
+  FakeGCMDriver(const FakeGCMDriver&) = delete;
+  FakeGCMDriver& operator=(const FakeGCMDriver&) = delete;
+
   ~FakeGCMDriver() override = default;
 
   void EncryptMessage(const std::string& app_id,
@@ -71,13 +75,15 @@ class FakeGCMDriver : public gcm::FakeGCMDriver {
 
  private:
   std::string app_id_, authorized_entity_, p256dh_, auth_secret_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGCMDriver);
 };
 
 class FakeWebPushSender : public WebPushSender {
  public:
   FakeWebPushSender() : WebPushSender(/*url_loader_factory=*/nullptr) {}
+
+  FakeWebPushSender(const FakeWebPushSender&) = delete;
+  FakeWebPushSender& operator=(const FakeWebPushSender&) = delete;
+
   ~FakeWebPushSender() override = default;
 
   void SendMessage(const std::string& fcm_token,
@@ -102,13 +108,15 @@ class FakeWebPushSender : public WebPushSender {
   crypto::ECPrivateKey* vapid_key_;
   absl::optional<WebPushMessage> message_;
   SendWebPushMessageResult result_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWebPushSender);
 };
 
 class FakeSharingMessageBridge : public SharingMessageBridge {
  public:
   FakeSharingMessageBridge() = default;
+
+  FakeSharingMessageBridge(const FakeSharingMessageBridge&) = delete;
+  FakeSharingMessageBridge& operator=(const FakeSharingMessageBridge&) = delete;
+
   ~FakeSharingMessageBridge() override = default;
 
   // SharingMessageBridge:
@@ -139,8 +147,6 @@ class FakeSharingMessageBridge : public SharingMessageBridge {
  private:
   absl::optional<sync_pb::SharingMessageSpecifics> specifics_;
   sync_pb::SharingMessageCommitError::ErrorCode error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSharingMessageBridge);
 };
 
 class MockVapidKeyManager : public VapidKeyManager {

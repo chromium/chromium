@@ -27,6 +27,9 @@ class ScopedActiveInstall : public InstallObserver {
   // is still deregistered upon destruction.
   ScopedActiveInstall(InstallTracker* tracker, const std::string& extension_id);
 
+  ScopedActiveInstall(const ScopedActiveInstall&) = delete;
+  ScopedActiveInstall& operator=(const ScopedActiveInstall&) = delete;
+
   ~ScopedActiveInstall() override;
 
   // Ensures that the active install is not deregistered upon destruction. This
@@ -44,8 +47,6 @@ class ScopedActiveInstall : public InstallObserver {
   base::ScopedObservation<InstallTracker, InstallObserver> tracker_observation_{
       this};
   const std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedActiveInstall);
 };
 
 }  // namespace extensions

@@ -65,6 +65,9 @@ class TestResponseAdapter : public signin::ResponseAdapter,
     headers_->SetHeader(header_name, header_value);
   }
 
+  TestResponseAdapter(const TestResponseAdapter&) = delete;
+  TestResponseAdapter& operator=(const TestResponseAdapter&) = delete;
+
   ~TestResponseAdapter() override {}
 
   content::WebContents::Getter GetWebContentsGetter() const override {
@@ -96,8 +99,6 @@ class TestResponseAdapter : public signin::ResponseAdapter,
  private:
   bool is_main_frame_;
   scoped_refptr<net::HttpResponseHeaders> headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestResponseAdapter);
 };
 
 }  // namespace

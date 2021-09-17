@@ -36,6 +36,9 @@ class MediaMetadataParser {
                       const std::string& mime_type,
                       bool get_attached_images);
 
+  MediaMetadataParser(const MediaMetadataParser&) = delete;
+  MediaMetadataParser& operator=(const MediaMetadataParser&) = delete;
+
   ~MediaMetadataParser();
 
   // |callback| is called on same message loop.
@@ -54,8 +57,6 @@ class MediaMetadataParser {
   // TODO(tommycli): Replace with a reference to a WorkerPool if we ever use
   // this class in batch mode.
   std::unique_ptr<base::Thread> media_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaMetadataParser);
 };
 
 #endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_MEDIA_METADATA_PARSER_H_

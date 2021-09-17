@@ -50,6 +50,10 @@ class SettingsAppMonitor {
 
   // |delegate| must outlive the monitor.
   explicit SettingsAppMonitor(Delegate* delegate);
+
+  SettingsAppMonitor(const SettingsAppMonitor&) = delete;
+  SettingsAppMonitor& operator=(const SettingsAppMonitor&) = delete;
+
   ~SettingsAppMonitor();
 
  private:
@@ -73,8 +77,6 @@ class SettingsAppMonitor {
   // Weak pointers are passed to the AutomationControllerDelegate so that it can
   // safely call back the monitor from any thread.
   base::WeakPtrFactory<SettingsAppMonitor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsAppMonitor);
 };
 
 #endif  // CHROME_BROWSER_WIN_SETTINGS_APP_MONITOR_H_

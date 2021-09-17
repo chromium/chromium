@@ -36,6 +36,10 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
       const base::WeakPtr<DriveServiceWrapper>& wrapper,
       base::SingleThreadTaskRunner* ui_task_runner,
       base::SequencedTaskRunner* worker_task_runner);
+
+  DriveServiceOnWorker(const DriveServiceOnWorker&) = delete;
+  DriveServiceOnWorker& operator=(const DriveServiceOnWorker&) = delete;
+
   ~DriveServiceOnWorker() override;
 
   google_apis::CancelCallbackOnce AddNewDirectory(
@@ -201,8 +205,6 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveServiceOnWorker);
 };
 
 }  // namespace drive_backend

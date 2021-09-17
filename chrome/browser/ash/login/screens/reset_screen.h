@@ -36,6 +36,10 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   ResetScreen(ResetView* view,
               ErrorScreen* error_screen,
               const base::RepeatingClosure& exit_callback);
+
+  ResetScreen(const ResetScreen&) = delete;
+  ResetScreen& operator=(const ResetScreen&) = delete;
+
   ~ResetScreen() override;
 
   // Called when view is destroyed so there's no dead reference to it.
@@ -97,8 +101,6 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   std::unique_ptr<ScopedGuestButtonBlocker> scoped_guest_button_blocker_;
 
   base::WeakPtrFactory<ResetScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResetScreen);
 };
 
 }  // namespace ash

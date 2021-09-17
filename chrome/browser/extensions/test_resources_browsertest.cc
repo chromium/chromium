@@ -44,6 +44,12 @@ class ExtensionBrowserTestWithCustomTestResourcesLocation
     : public ExtensionBrowserTest {
  public:
   ExtensionBrowserTestWithCustomTestResourcesLocation() = default;
+
+  ExtensionBrowserTestWithCustomTestResourcesLocation(
+      const ExtensionBrowserTestWithCustomTestResourcesLocation&) = delete;
+  ExtensionBrowserTestWithCustomTestResourcesLocation& operator=(
+      const ExtensionBrowserTestWithCustomTestResourcesLocation&) = delete;
+
   ~ExtensionBrowserTestWithCustomTestResourcesLocation() override = default;
 
  private:
@@ -54,8 +60,6 @@ class ExtensionBrowserTestWithCustomTestResourcesLocation
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_root_path);
     return test_root_path.AppendASCII("extensions/test_resources_test");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionBrowserTestWithCustomTestResourcesLocation);
 };
 
 }  // namespace

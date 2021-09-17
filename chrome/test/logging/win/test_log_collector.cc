@@ -33,6 +33,10 @@ const char kTraceLogExtension[] = ".etl";
 class TestLogCollector {
  public:
   TestLogCollector();
+
+  TestLogCollector(const TestLogCollector&) = delete;
+  TestLogCollector& operator=(const TestLogCollector&) = delete;
+
   ~TestLogCollector();
 
   void Initialize(testing::UnitTest* unit_test);
@@ -51,6 +55,10 @@ class TestLogCollector {
     // Ownership of |default_result_printer| is taken by the new instance.
     EventListener(TestLogCollector* test_log_collector,
                   testing::TestEventListener* default_result_printer);
+
+    EventListener(const EventListener&) = delete;
+    EventListener& operator=(const EventListener&) = delete;
+
     ~EventListener() override;
 
     // Sets up the log collector.
@@ -125,8 +133,6 @@ class TestLogCollector {
    private:
     TestLogCollector* test_log_collector_;
     std::unique_ptr<testing::TestEventListener> default_result_printer_;
-
-    DISALLOW_COPY_AND_ASSIGN(EventListener);
   };
 
   // The Google Test unit test into which the collector has been installed.
@@ -145,8 +151,6 @@ class TestLogCollector {
 
   // True if --also-emit-success-logs was specified on the command line.
   bool also_emit_success_logs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLogCollector);
 };
 
 base::LazyInstance<TestLogCollector>::DestructorAtExit g_test_log_collector =

@@ -52,6 +52,10 @@ class SettingsResetPromptModel {
       Profile* profile,
       std::unique_ptr<SettingsResetPromptConfig> prompt_config,
       std::unique_ptr<ProfileResetter> profile_resetter);
+
+  SettingsResetPromptModel(const SettingsResetPromptModel&) = delete;
+  SettingsResetPromptModel& operator=(const SettingsResetPromptModel&) = delete;
+
   virtual ~SettingsResetPromptModel();
 
   Profile* profile() const;
@@ -141,8 +145,6 @@ class SettingsResetPromptModel {
   std::unordered_set<int> domain_ids_for_startup_urls_to_reset_;
   ResetState startup_urls_reset_state_ =
       NO_RESET_REQUIRED_DUE_TO_DOMAIN_NOT_MATCHED;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptModel);
 };
 
 }  // namespace safe_browsing

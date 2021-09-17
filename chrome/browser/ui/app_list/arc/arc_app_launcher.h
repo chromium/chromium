@@ -31,6 +31,10 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer,
                  bool deferred_launch_allowed,
                  int64_t display_id,
                  apps::mojom::LaunchSource launch_source);
+
+  ArcAppLauncher(const ArcAppLauncher&) = delete;
+  ArcAppLauncher& operator=(const ArcAppLauncher&) = delete;
+
   ~ArcAppLauncher() override;
 
   bool app_launched() const { return app_launched_; }
@@ -68,8 +72,6 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer,
   bool app_launched_ = false;
   // Enum that indicates what type of metric to record to UMA on launch.
   apps::mojom::LaunchSource launch_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppLauncher);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_LAUNCHER_H_

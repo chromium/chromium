@@ -76,6 +76,11 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
   using TView = UpdateRequiredView;
 
   explicit UpdateRequiredScreenHandler(JSCallsContainer* js_calls_container);
+
+  UpdateRequiredScreenHandler(const UpdateRequiredScreenHandler&) = delete;
+  UpdateRequiredScreenHandler& operator=(const UpdateRequiredScreenHandler&) =
+      delete;
+
   ~UpdateRequiredScreenHandler() override;
 
  private:
@@ -108,8 +113,6 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
 
   // The domain name for which update required screen is being shown.
   std::string domain_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateRequiredScreenHandler);
 };
 
 }  // namespace chromeos

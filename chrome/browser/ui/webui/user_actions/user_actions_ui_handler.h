@@ -20,6 +20,10 @@ class TimeTicks;
 class UserActionsUIHandler : public content::WebUIMessageHandler {
  public:
   UserActionsUIHandler();
+
+  UserActionsUIHandler(const UserActionsUIHandler&) = delete;
+  UserActionsUIHandler& operator=(const UserActionsUIHandler&) = delete;
+
   ~UserActionsUIHandler() override;
 
   // WebUIMessageHandler implementation:
@@ -32,8 +36,6 @@ class UserActionsUIHandler : public content::WebUIMessageHandler {
   void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
   base::ActionCallback action_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActionsUIHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_USER_ACTIONS_USER_ACTIONS_UI_HANDLER_H_

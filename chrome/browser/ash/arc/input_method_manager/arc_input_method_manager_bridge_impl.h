@@ -24,6 +24,12 @@ class ArcInputMethodManagerBridgeImpl
  public:
   ArcInputMethodManagerBridgeImpl(Delegate* delegate,
                                   ArcBridgeService* bridge_service);
+
+  ArcInputMethodManagerBridgeImpl(const ArcInputMethodManagerBridgeImpl&) =
+      delete;
+  ArcInputMethodManagerBridgeImpl& operator=(
+      const ArcInputMethodManagerBridgeImpl&) = delete;
+
   ~ArcInputMethodManagerBridgeImpl() override;
 
   // ArcInputMethodManagerBridge overrides:
@@ -49,8 +55,6 @@ class ArcInputMethodManagerBridgeImpl
  private:
   Delegate* const delegate_;
   ArcBridgeService* const bridge_service_;  // Owned by ArcServiceManager
-
-  DISALLOW_COPY_AND_ASSIGN(ArcInputMethodManagerBridgeImpl);
 };
 
 }  // namespace arc

@@ -69,6 +69,12 @@ class TestQuietNotificationPermissionUiSelector
   explicit TestQuietNotificationPermissionUiSelector(
       const Decision& canned_decision)
       : canned_decision_(canned_decision) {}
+
+  TestQuietNotificationPermissionUiSelector(
+      const TestQuietNotificationPermissionUiSelector&) = delete;
+  TestQuietNotificationPermissionUiSelector& operator=(
+      const TestQuietNotificationPermissionUiSelector&) = delete;
+
   ~TestQuietNotificationPermissionUiSelector() override = default;
 
  protected:
@@ -85,8 +91,6 @@ class TestQuietNotificationPermissionUiSelector
 
  private:
   Decision canned_decision_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestQuietNotificationPermissionUiSelector);
 };
 
 class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
@@ -95,6 +99,11 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(
         permissions::features::kBlockRepeatedNotificationPermissionPrompts);
   }
+
+  PermissionRequestManagerBrowserTest(
+      const PermissionRequestManagerBrowserTest&) = delete;
+  PermissionRequestManagerBrowserTest& operator=(
+      const PermissionRequestManagerBrowserTest&) = delete;
 
   ~PermissionRequestManagerBrowserTest() override = default;
 
@@ -208,8 +217,6 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<permissions::MockPermissionPromptFactory>
       mock_permission_prompt_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionRequestManagerBrowserTest);
 };
 
 class PermissionRequestManagerWithBackForwardCacheBrowserTest

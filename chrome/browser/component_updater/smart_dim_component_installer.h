@@ -27,6 +27,12 @@ class ComponentUpdateService;
 class SmartDimComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   explicit SmartDimComponentInstallerPolicy(std::string expected_version);
+
+  SmartDimComponentInstallerPolicy(const SmartDimComponentInstallerPolicy&) =
+      delete;
+  SmartDimComponentInstallerPolicy& operator=(
+      const SmartDimComponentInstallerPolicy&) = delete;
+
   ~SmartDimComponentInstallerPolicy() override;
 
  private:
@@ -51,8 +57,6 @@ class SmartDimComponentInstallerPolicy : public ComponentInstallerPolicy {
   // Only expected_version_ can pass VerifyInstallation and be fed to
   // SmartDimMlAgent.
   std::string expected_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmartDimComponentInstallerPolicy);
 };
 
 // Call once during startup to make the component update service aware of

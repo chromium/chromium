@@ -109,6 +109,11 @@ class UserSessionRestoreObserver : public UserSessionStateObserver {
     if (!user_sessions_restored_)
       UserSessionManager::GetInstance()->AddSessionStateObserver(this);
   }
+
+  UserSessionRestoreObserver(const UserSessionRestoreObserver&) = delete;
+  UserSessionRestoreObserver& operator=(const UserSessionRestoreObserver&) =
+      delete;
+
   ~UserSessionRestoreObserver() override {}
 
   void PendingUserSessionsRestoreFinished() override {
@@ -137,8 +142,6 @@ class UserSessionRestoreObserver : public UserSessionStateObserver {
   bool running_loop_;
   bool user_sessions_restored_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserSessionRestoreObserver);
 };
 
 class CrashRestoreComplexTest : public CrashRestoreSimpleTest {

@@ -46,6 +46,10 @@ void ValidatePreviewData(scoped_refptr<base::RefCountedMemory> data) {
 class PrintPreviewDataStore {
  public:
   PrintPreviewDataStore() {}
+
+  PrintPreviewDataStore(const PrintPreviewDataStore&) = delete;
+  PrintPreviewDataStore& operator=(const PrintPreviewDataStore&) = delete;
+
   ~PrintPreviewDataStore() {}
 
   // Get the preview page for the specified |index|.
@@ -88,8 +92,6 @@ class PrintPreviewDataStore {
   }
 
   PreviewPageDataMap page_data_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewDataStore);
 };
 
 // static

@@ -19,6 +19,11 @@ class Profile;
 class ExtensionInstallUIDefault : public extensions::ExtensionInstallUI {
  public:
   explicit ExtensionInstallUIDefault(content::BrowserContext* context);
+
+  ExtensionInstallUIDefault(const ExtensionInstallUIDefault&) = delete;
+  ExtensionInstallUIDefault& operator=(const ExtensionInstallUIDefault&) =
+      delete;
+
   ~ExtensionInstallUIDefault() override;
 
   // ExtensionInstallUI:
@@ -46,8 +51,6 @@ class ExtensionInstallUIDefault : public extensions::ExtensionInstallUI {
   // Whether to show an installed bubble on app install, or use the default
   // action of opening a new tab page.
   bool use_app_installed_bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallUIDefault);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DEFAULT_H_

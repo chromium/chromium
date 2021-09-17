@@ -28,6 +28,10 @@ class ExtensionDownloadsEventRouter;
 class DownloadCoreService : public KeyedService {
  public:
   DownloadCoreService();
+
+  DownloadCoreService(const DownloadCoreService&) = delete;
+  DownloadCoreService& operator=(const DownloadCoreService&) = delete;
+
   ~DownloadCoreService() override;
 
   // Get the download manager delegate, creating it if it doesn't already exist.
@@ -74,9 +78,6 @@ class DownloadCoreService : public KeyedService {
   // Returns false if at least one extension has disabled the shelf, true
   // otherwise.
   virtual bool IsShelfEnabled() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadCoreService);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_CORE_SERVICE_H_

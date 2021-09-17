@@ -24,6 +24,11 @@ using DailyUsageType = OfflineMetricsCollectorImpl::DailyUsageType;
 class OfflineMetricsCollectorTest : public testing::Test {
  public:
   OfflineMetricsCollectorTest() {}
+
+  OfflineMetricsCollectorTest(const OfflineMetricsCollectorTest&) = delete;
+  OfflineMetricsCollectorTest& operator=(const OfflineMetricsCollectorTest&) =
+      delete;
+
   ~OfflineMetricsCollectorTest() override {}
 
   // testing::Test:
@@ -76,8 +81,6 @@ class OfflineMetricsCollectorTest : public testing::Test {
   std::unique_ptr<OfflineMetricsCollectorImpl> collector_;
   base::HistogramTester histogram_tester_;
   TestScopedOfflineClock test_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineMetricsCollectorTest);
 };
 
 TEST_F(OfflineMetricsCollectorTest, CheckCleanInit) {

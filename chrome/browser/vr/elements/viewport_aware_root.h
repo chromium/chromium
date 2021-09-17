@@ -20,6 +20,10 @@ class VR_UI_EXPORT ViewportAwareRoot : public UiElement {
   static const float kViewportRotationTriggerDegrees;
 
   ViewportAwareRoot();
+
+  ViewportAwareRoot(const ViewportAwareRoot&) = delete;
+  ViewportAwareRoot& operator=(const ViewportAwareRoot&) = delete;
+
   ~ViewportAwareRoot() override;
 
   void Reset();
@@ -42,8 +46,6 @@ class VR_UI_EXPORT ViewportAwareRoot : public UiElement {
   float z_center = 0;
   bool children_visible_ = false;
   bool recenter_on_rotate_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewportAwareRoot);
 };
 
 }  // namespace vr

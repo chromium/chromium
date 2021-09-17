@@ -88,6 +88,10 @@ class ExtensionManagement : public KeyedService {
   };
 
   explicit ExtensionManagement(Profile* profile);
+
+  ExtensionManagement(const ExtensionManagement&) = delete;
+  ExtensionManagement& operator=(const ExtensionManagement&) = delete;
+
   ~ExtensionManagement() override;
 
   // KeyedService implementations:
@@ -302,8 +306,6 @@ class ExtensionManagement : public KeyedService {
   base::ObserverList<Observer, true>::Unchecked observer_list_;
   PrefChangeRegistrar pref_change_registrar_;
   std::vector<std::unique_ptr<ManagementPolicy::Provider>> providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionManagement);
 };
 
 class ExtensionManagementFactory : public BrowserContextKeyedServiceFactory {

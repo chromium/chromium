@@ -51,6 +51,10 @@ class AutofillMetricsBrowserTest : public InProcessBrowserTest {
  public:
   AutofillMetricsBrowserTest() {}
 
+  AutofillMetricsBrowserTest(const AutofillMetricsBrowserTest&) = delete;
+  AutofillMetricsBrowserTest& operator=(const AutofillMetricsBrowserTest&) =
+      delete;
+
   ~AutofillMetricsBrowserTest() override {}
 
  protected:
@@ -76,9 +80,6 @@ class AutofillMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AutofillMetricsBrowserTest,
@@ -206,6 +207,11 @@ class SitePerProcessAutofillMetricsBrowserTest
  public:
   SitePerProcessAutofillMetricsBrowserTest() {}
 
+  SitePerProcessAutofillMetricsBrowserTest(
+      const SitePerProcessAutofillMetricsBrowserTest&) = delete;
+  SitePerProcessAutofillMetricsBrowserTest& operator=(
+      const SitePerProcessAutofillMetricsBrowserTest&) = delete;
+
   ~SitePerProcessAutofillMetricsBrowserTest() override {}
 
  protected:
@@ -215,9 +221,6 @@ class SitePerProcessAutofillMetricsBrowserTest
     // Append --site-per-process flag.
     content::IsolateAllSitesForTesting(command_line);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessAutofillMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessAutofillMetricsBrowserTest,

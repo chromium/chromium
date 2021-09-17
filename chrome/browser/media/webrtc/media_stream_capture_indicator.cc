@@ -141,6 +141,10 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
   WebContentsDeviceUsage(scoped_refptr<MediaStreamCaptureIndicator> indicator,
                          WebContents* web_contents)
       : WebContentsObserver(web_contents), indicator_(std::move(indicator)) {}
+
+  WebContentsDeviceUsage(const WebContentsDeviceUsage&) = delete;
+  WebContentsDeviceUsage& operator=(const WebContentsDeviceUsage&) = delete;
+
   ~WebContentsDeviceUsage() override = default;
 
   bool IsCapturingAudio() const { return audio_stream_count_ > 0; }
@@ -181,8 +185,6 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
 
   base::OnceClosure stop_callback_;
   base::WeakPtrFactory<WebContentsDeviceUsage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsDeviceUsage);
 };
 
 // Implements MediaStreamUI interface. Instances of this class are created for
@@ -207,6 +209,9 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(!devices_.empty());
   }
+
+  UIDelegate(const UIDelegate&) = delete;
+  UIDelegate& operator=(const UIDelegate&) = delete;
 
   ~UIDelegate() override {
     if (started_ && device_usage_)
@@ -273,8 +278,6 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 #endif
   const std::u16string application_title_;
   bool started_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UIDelegate);
 };
 
 std::unique_ptr<content::MediaStreamUI>

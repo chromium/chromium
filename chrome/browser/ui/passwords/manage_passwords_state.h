@@ -29,6 +29,10 @@ class ManagePasswordsState {
       base::OnceCallback<void(const password_manager::PasswordForm*)>;
 
   ManagePasswordsState();
+
+  ManagePasswordsState(const ManagePasswordsState&) = delete;
+  ManagePasswordsState& operator=(const ManagePasswordsState&) = delete;
+
   ~ManagePasswordsState();
 
   // The embedder of this class has to set the client for logging.
@@ -164,8 +168,6 @@ class ManagePasswordsState {
   // Whether the last attempt to authenticate to opt-in using password account
   // storage failed.
   bool auth_for_account_storage_opt_in_failed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagePasswordsState);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_STATE_H_

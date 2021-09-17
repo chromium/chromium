@@ -115,6 +115,11 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
  public:
   SingleClientDeviceInfoSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
+  SingleClientDeviceInfoSyncTest(const SingleClientDeviceInfoSyncTest&) =
+      delete;
+  SingleClientDeviceInfoSyncTest& operator=(
+      const SingleClientDeviceInfoSyncTest&) = delete;
+
   ~SingleClientDeviceInfoSyncTest() override = default;
 
   std::string GetLocalCacheGuid() {
@@ -145,9 +150,6 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
             specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientDeviceInfoSyncTest);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

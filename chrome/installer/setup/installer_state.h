@@ -40,6 +40,9 @@ class InstallerState {
   // Constructs an initialized but empty instance.
   explicit InstallerState(Level level);
 
+  InstallerState(const InstallerState&) = delete;
+  InstallerState& operator=(const InstallerState&) = delete;
+
   ~InstallerState();
 
   // Initializes this object based on the current operation.
@@ -128,9 +131,6 @@ class InstallerState {
   HKEY root_key_;
   bool msi_;
   bool verbose_logging_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallerState);
 };
 
 }  // namespace installer

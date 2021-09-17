@@ -71,6 +71,11 @@ class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
  public:
   SingleClientHistoryDeleteDirectivesSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
+  SingleClientHistoryDeleteDirectivesSyncTest(
+      const SingleClientHistoryDeleteDirectivesSyncTest&) = delete;
+  SingleClientHistoryDeleteDirectivesSyncTest& operator=(
+      const SingleClientHistoryDeleteDirectivesSyncTest&) = delete;
+
   ~SingleClientHistoryDeleteDirectivesSyncTest() override {}
 
   bool WaitForHistoryDeleteDirectives(size_t num_expected_directives) {
@@ -100,9 +105,6 @@ class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
     loop.Run();
     return exists;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientHistoryDeleteDirectivesSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistoryDeleteDirectivesSyncTest,

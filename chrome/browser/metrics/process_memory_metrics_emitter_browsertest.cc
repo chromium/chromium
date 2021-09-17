@@ -313,6 +313,11 @@ class ProcessMemoryMetricsEmitterTest
     scoped_feature_list_.InitAndEnableFeature(ukm::kUkmFeature);
   }
 
+  ProcessMemoryMetricsEmitterTest(const ProcessMemoryMetricsEmitterTest&) =
+      delete;
+  ProcessMemoryMetricsEmitterTest& operator=(
+      const ProcessMemoryMetricsEmitterTest&) = delete;
+
   ~ProcessMemoryMetricsEmitterTest() override {}
 
   void SetUpOnMainThread() override {
@@ -524,8 +529,6 @@ class ProcessMemoryMetricsEmitterTest
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::vector<std::unique_ptr<TestExtensionDir>> temp_dirs_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterTest);
 };
 
 // TODO(crbug.com/732501): Re-enable on Win once not flaky.

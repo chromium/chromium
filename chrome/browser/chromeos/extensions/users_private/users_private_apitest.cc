@@ -99,6 +99,10 @@ class TestDelegate : public UsersPrivateDelegate {
     profile_ = profile;
     prefs_util_ = nullptr;
   }
+
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
+
   ~TestDelegate() override = default;
 
   PrefsUtil* GetPrefsUtil() override {
@@ -111,8 +115,6 @@ class TestDelegate : public UsersPrivateDelegate {
  private:
   Profile* profile_;  // weak
   std::unique_ptr<TestPrefsUtil> prefs_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class UsersPrivateApiTest : public ExtensionApiTest {
@@ -130,6 +132,10 @@ class UsersPrivateApiTest : public ExtensionApiTest {
     scoped_testing_cros_settings_.device_settings()->Set(
         chromeos::kDeviceOwner, base::Value("testuser@gmail.com"));
   }
+
+  UsersPrivateApiTest(const UsersPrivateApiTest&) = delete;
+  UsersPrivateApiTest& operator=(const UsersPrivateApiTest&) = delete;
+
   ~UsersPrivateApiTest() override = default;
 
   static std::unique_ptr<KeyedService> GetUsersPrivateDelegate(
@@ -163,8 +169,6 @@ class UsersPrivateApiTest : public ExtensionApiTest {
  private:
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateApiTest);
 };
 
 // static

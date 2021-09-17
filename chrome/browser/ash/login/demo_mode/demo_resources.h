@@ -34,6 +34,10 @@ class DemoResources {
   static base::FilePath GetPreInstalledPath();
 
   explicit DemoResources(DemoSession::DemoModeConfig config);
+
+  DemoResources(const DemoResources&) = delete;
+  DemoResources& operator=(const DemoResources&) = delete;
+
   ~DemoResources();
 
   // Converts a relative path to an absolute path under the demo
@@ -110,8 +114,6 @@ class DemoResources {
   std::list<base::OnceClosure> load_callbacks_;
 
   base::WeakPtrFactory<DemoResources> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoResources);
 };
 
 }  // namespace ash

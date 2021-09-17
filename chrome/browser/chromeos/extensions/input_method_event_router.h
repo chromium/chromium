@@ -20,6 +20,12 @@ class ExtensionInputMethodEventRouter
     : public input_method::InputMethodManager::Observer {
  public:
   explicit ExtensionInputMethodEventRouter(content::BrowserContext* context);
+
+  ExtensionInputMethodEventRouter(const ExtensionInputMethodEventRouter&) =
+      delete;
+  ExtensionInputMethodEventRouter& operator=(
+      const ExtensionInputMethodEventRouter&) = delete;
+
   ~ExtensionInputMethodEventRouter() override;
 
   // Implements input_method::InputMethodManager::Observer:
@@ -29,8 +35,6 @@ class ExtensionInputMethodEventRouter
 
  private:
   content::BrowserContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInputMethodEventRouter);
 };
 
 }  // namespace chromeos

@@ -142,6 +142,12 @@ class OobeConfigurationTest : public OobeBaseTest {
 class OobeConfigurationEnrollmentTest : public OobeConfigurationTest {
  public:
   OobeConfigurationEnrollmentTest() = default;
+
+  OobeConfigurationEnrollmentTest(const OobeConfigurationEnrollmentTest&) =
+      delete;
+  OobeConfigurationEnrollmentTest& operator=(
+      const OobeConfigurationEnrollmentTest&) = delete;
+
   ~OobeConfigurationEnrollmentTest() override = default;
 
  protected:
@@ -149,9 +155,6 @@ class OobeConfigurationEnrollmentTest : public OobeConfigurationTest {
   // We need fake gaia to fetch device local account tokens.
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OobeConfigurationEnrollmentTest);
 };
 
 // Check that configuration lets correctly pass Welcome screen.

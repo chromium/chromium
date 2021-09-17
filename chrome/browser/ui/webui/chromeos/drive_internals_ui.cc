@@ -233,6 +233,10 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
  public:
   DriveInternalsWebUIHandler() : last_sent_event_id_(-1) {}
 
+  DriveInternalsWebUIHandler(const DriveInternalsWebUIHandler&) = delete;
+  DriveInternalsWebUIHandler& operator=(const DriveInternalsWebUIHandler&) =
+      delete;
+
   ~DriveInternalsWebUIHandler() override {}
 
   void DownloadLogsZip(const base::FilePath& path) {
@@ -813,7 +817,6 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
   bool developer_mode_ = false;
 
   base::WeakPtrFactory<DriveInternalsWebUIHandler> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DriveInternalsWebUIHandler);
 };
 
 class LogsZipper : public download::AllDownloadItemNotifier::Observer {

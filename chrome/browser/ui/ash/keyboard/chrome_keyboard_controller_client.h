@@ -79,6 +79,11 @@ class ChromeKeyboardControllerClient
   // Used in tests to determine whether this has been instantiated.
   static bool HasInstance();
 
+  ChromeKeyboardControllerClient(const ChromeKeyboardControllerClient&) =
+      delete;
+  ChromeKeyboardControllerClient& operator=(
+      const ChromeKeyboardControllerClient&) = delete;
+
   ~ChromeKeyboardControllerClient() override;
 
   // Called after ash::Shell is created.
@@ -211,8 +216,6 @@ class ChromeKeyboardControllerClient
   GURL virtual_keyboard_url_for_test_;
 
   base::WeakPtrFactory<ChromeKeyboardControllerClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardControllerClient);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_KEYBOARD_CHROME_KEYBOARD_CONTROLLER_CLIENT_H_

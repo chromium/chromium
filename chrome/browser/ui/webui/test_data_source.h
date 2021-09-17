@@ -17,6 +17,10 @@
 class TestDataSource : public content::URLDataSource {
  public:
   explicit TestDataSource(std::string root);
+
+  TestDataSource(const TestDataSource&) = delete;
+  TestDataSource& operator=(const TestDataSource&) = delete;
+
   ~TestDataSource() override;
 
  private:
@@ -44,8 +48,6 @@ class TestDataSource : public content::URLDataSource {
   base::FilePath src_root_;
   base::FilePath gen_root_;
   std::map<std::string, std::string> custom_paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataSource);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TEST_DATA_SOURCE_H_

@@ -42,6 +42,10 @@ class ThumbnailMediaParserImpl : public ThumbnailMediaParser,
  public:
   ThumbnailMediaParserImpl(const std::string& mime_type,
                            const base::FilePath& file_path);
+
+  ThumbnailMediaParserImpl(const ThumbnailMediaParserImpl&) = delete;
+  ThumbnailMediaParserImpl& operator=(const ThumbnailMediaParserImpl&) = delete;
+
   ~ThumbnailMediaParserImpl() override;
 
   // ThumbnailMediaParser implementation.
@@ -118,8 +122,6 @@ class ThumbnailMediaParserImpl : public ThumbnailMediaParser,
   bool decode_done_;
 
   base::WeakPtrFactory<ThumbnailMediaParserImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThumbnailMediaParserImpl);
 };
 
 #endif  // CHROME_BROWSER_THUMBNAIL_GENERATOR_ANDROID_THUMBNAIL_MEDIA_PARSER_IMPL_H_

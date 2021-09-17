@@ -123,10 +123,13 @@ class SingleClientExtensionAppsOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
   SingleClientExtensionAppsOsSyncTest()
       : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
-  ~SingleClientExtensionAppsOsSyncTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientExtensionAppsOsSyncTest);
+  SingleClientExtensionAppsOsSyncTest(
+      const SingleClientExtensionAppsOsSyncTest&) = delete;
+  SingleClientExtensionAppsOsSyncTest& operator=(
+      const SingleClientExtensionAppsOsSyncTest&) = delete;
+
+  ~SingleClientExtensionAppsOsSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsOsSyncTest,

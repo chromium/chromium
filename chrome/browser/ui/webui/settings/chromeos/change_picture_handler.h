@@ -36,6 +36,10 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
                              public CameraPresenceNotifier::Observer {
  public:
   ChangePictureHandler();
+
+  ChangePictureHandler(const ChangePictureHandler&) = delete;
+  ChangePictureHandler& operator=(const ChangePictureHandler&) = delete;
+
   ~ChangePictureHandler() override;
 
   // The name of the histogram that records when a user changes a device image.
@@ -152,8 +156,6 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
       camera_observation_{this};
 
   base::WeakPtrFactory<ChangePictureHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChangePictureHandler);
 };
 
 }  // namespace settings

@@ -45,6 +45,10 @@ class CastAppDiscoveryServiceTest : public testing::Test {
     task_runner_->RunPendingTasks();
   }
 
+  CastAppDiscoveryServiceTest(const CastAppDiscoveryServiceTest&) = delete;
+  CastAppDiscoveryServiceTest& operator=(const CastAppDiscoveryServiceTest&) =
+      delete;
+
   ~CastAppDiscoveryServiceTest() override { task_runner_->RunPendingTasks(); }
 
   MOCK_METHOD2(OnSinkQueryUpdated,
@@ -81,9 +85,6 @@ class CastAppDiscoveryServiceTest : public testing::Test {
   CastMediaSource source_a_1_;
   CastMediaSource source_a_2_;
   CastMediaSource source_b_1_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastAppDiscoveryServiceTest);
 };
 
 TEST_F(CastAppDiscoveryServiceTest, StartObservingMediaSinks) {

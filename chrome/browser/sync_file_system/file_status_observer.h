@@ -20,6 +20,10 @@ namespace sync_file_system {
 class FileStatusObserver {
  public:
   FileStatusObserver() {}
+
+  FileStatusObserver(const FileStatusObserver&) = delete;
+  FileStatusObserver& operator=(const FileStatusObserver&) = delete;
+
   virtual ~FileStatusObserver() {}
 
   virtual void OnFileStatusChanged(const storage::FileSystemURL& url,
@@ -27,9 +31,6 @@ class FileStatusObserver {
                                    SyncFileStatus sync_status,
                                    SyncAction action_taken,
                                    SyncDirection direction) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileStatusObserver);
 };
 
 }  // namespace sync_file_system

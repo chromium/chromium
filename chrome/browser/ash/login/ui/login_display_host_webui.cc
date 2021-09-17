@@ -158,6 +158,10 @@ class AnimationObserver : public ui::ImplicitAnimationObserver {
  public:
   explicit AnimationObserver(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
+
+  AnimationObserver(const AnimationObserver&) = delete;
+  AnimationObserver& operator=(const AnimationObserver&) = delete;
+
   ~AnimationObserver() override {}
 
  private:
@@ -168,8 +172,6 @@ class AnimationObserver : public ui::ImplicitAnimationObserver {
   }
 
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationObserver);
 };
 
 // Even if oobe is complete we may still want to show it, for example, if there
@@ -379,6 +381,10 @@ class CloseAfterCommit : public ui::CompositorObserver,
     widget->GetCompositor()->AddObserver(this);
     widget_->AddObserver(this);
   }
+
+  CloseAfterCommit(const CloseAfterCommit&) = delete;
+  CloseAfterCommit& operator=(const CloseAfterCommit&) = delete;
+
   ~CloseAfterCommit() override {
     widget_->RemoveObserver(this);
     widget_->GetCompositor()->RemoveObserver(this);
@@ -399,8 +405,6 @@ class CloseAfterCommit : public ui::CompositorObserver,
 
  private:
   views::Widget* const widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseAfterCommit);
 };
 
 // Returns true if we have default audio device.
@@ -430,6 +434,11 @@ class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
     : public ui::EventHandler {
  public:
   KeyboardDrivenOobeKeyHandler() { Shell::Get()->AddPreTargetHandler(this); }
+
+  KeyboardDrivenOobeKeyHandler(const KeyboardDrivenOobeKeyHandler&) = delete;
+  KeyboardDrivenOobeKeyHandler& operator=(const KeyboardDrivenOobeKeyHandler&) =
+      delete;
+
   ~KeyboardDrivenOobeKeyHandler() override {
     Shell::Get()->RemovePreTargetHandler(this);
   }
@@ -442,8 +451,6 @@ class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
       event->StopPropagation();
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardDrivenOobeKeyHandler);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

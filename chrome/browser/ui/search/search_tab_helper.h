@@ -54,6 +54,9 @@ class SearchTabHelper : public content::WebContentsObserver,
                         public SearchIPCRouter::Delegate,
                         public OmniboxTabHelper::Observer {
  public:
+  SearchTabHelper(const SearchTabHelper&) = delete;
+  SearchTabHelper& operator=(const SearchTabHelper&) = delete;
+
   ~SearchTabHelper() override;
 
   static void BindEmbeddedSearchConnecter(
@@ -150,8 +153,6 @@ class SearchTabHelper : public content::WebContentsObserver,
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   base::WeakPtrFactory<SearchTabHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_SEARCH_TAB_HELPER_H_

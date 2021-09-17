@@ -25,6 +25,11 @@ class WebContentsLoadFinishedWaiter : public content::WebContentsObserver {
  public:
   explicit WebContentsLoadFinishedWaiter(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
+
+  WebContentsLoadFinishedWaiter(const WebContentsLoadFinishedWaiter&) = delete;
+  WebContentsLoadFinishedWaiter& operator=(
+      const WebContentsLoadFinishedWaiter&) = delete;
+
   ~WebContentsLoadFinishedWaiter() override = default;
 
   void Wait() {
@@ -43,8 +48,6 @@ class WebContentsLoadFinishedWaiter : public content::WebContentsObserver {
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsLoadFinishedWaiter);
 };
 
 // Helper invoked by GuestViewManager::ForEachGuest to collect WebContents of

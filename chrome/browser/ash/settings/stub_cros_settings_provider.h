@@ -20,6 +20,10 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
  public:
   explicit StubCrosSettingsProvider(const NotifyObserversCallback& notify_cb);
   StubCrosSettingsProvider();
+
+  StubCrosSettingsProvider(const StubCrosSettingsProvider&) = delete;
+  StubCrosSettingsProvider& operator=(const StubCrosSettingsProvider&) = delete;
+
   ~StubCrosSettingsProvider() override;
 
   // CrosSettingsProvider implementation.
@@ -59,8 +63,6 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
 
   // Pending callbacks to invoke when switching away from TEMPORARILY_UNTRUSTED.
   std::vector<base::OnceClosure> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubCrosSettingsProvider);
 };
 
 }  // namespace ash

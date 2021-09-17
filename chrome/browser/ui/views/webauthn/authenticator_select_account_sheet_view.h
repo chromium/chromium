@@ -20,6 +20,12 @@ class AuthenticatorSelectAccountSheetView
  public:
   explicit AuthenticatorSelectAccountSheetView(
       std::unique_ptr<AuthenticatorSelectAccountSheetModel> model);
+
+  AuthenticatorSelectAccountSheetView(
+      const AuthenticatorSelectAccountSheetView&) = delete;
+  AuthenticatorSelectAccountSheetView& operator=(
+      const AuthenticatorSelectAccountSheetView&) = delete;
+
   ~AuthenticatorSelectAccountSheetView() override;
 
  private:
@@ -34,8 +40,6 @@ class AuthenticatorSelectAccountSheetView
 
   // AccountHoverListModel::Delegate:
   void OnItemSelected(int index) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorSelectAccountSheetView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_SELECT_ACCOUNT_SHEET_VIEW_H_

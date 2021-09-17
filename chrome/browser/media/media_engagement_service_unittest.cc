@@ -56,6 +56,10 @@ class MediaEngagementChangeWaiter : public content_settings::Observer {
     HostContentSettingsMapFactory::GetForProfile(profile)->AddObserver(this);
   }
 
+  MediaEngagementChangeWaiter(const MediaEngagementChangeWaiter&) = delete;
+  MediaEngagementChangeWaiter& operator=(const MediaEngagementChangeWaiter&) =
+      delete;
+
   ~MediaEngagementChangeWaiter() override {
     HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(
         this);
@@ -76,8 +80,6 @@ class MediaEngagementChangeWaiter : public content_settings::Observer {
 
   Profile* profile_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementChangeWaiter);
 };
 
 base::Time GetReferenceTime() {

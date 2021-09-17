@@ -24,6 +24,11 @@ class DeltaFileEntryWithDataTest : public testing::Test {
   DeltaFileEntryWithDataTest()
       : entry_(),
         data_(entry_) {}
+
+  DeltaFileEntryWithDataTest(const DeltaFileEntryWithDataTest&) = delete;
+  DeltaFileEntryWithDataTest& operator=(const DeltaFileEntryWithDataTest&) =
+      delete;
+
   ~DeltaFileEntryWithDataTest() override {}
 
  protected:
@@ -31,9 +36,6 @@ class DeltaFileEntryWithDataTest : public testing::Test {
 
   DeltaFileEntry entry_;
   DeltaFileEntryWithData data_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeltaFileEntryWithDataTest);
 };
 
 TEST_F(DeltaFileEntryWithDataTest, NotValid) {

@@ -55,6 +55,10 @@ bool NotificationCallback(const base::CommandLine& command_line,
 class ScopedVisibleWindow {
  public:
   ScopedVisibleWindow() : class_(0), window_(NULL) {}
+
+  ScopedVisibleWindow(const ScopedVisibleWindow&) = delete;
+  ScopedVisibleWindow& operator=(const ScopedVisibleWindow&) = delete;
+
   ~ScopedVisibleWindow() {
     if (window_)
       ::DestroyWindow(window_);
@@ -92,8 +96,6 @@ class ScopedVisibleWindow {
  private:
   ATOM class_;
   HWND window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVisibleWindow);
 };
 
 MULTIPROCESS_TEST_MAIN(ProcessSingletonTestProcessMain) {

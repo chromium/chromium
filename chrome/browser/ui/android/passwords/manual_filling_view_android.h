@@ -30,6 +30,10 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   // Builds the UI for the |controller|.
   ManualFillingViewAndroid(ManualFillingController* controller,
                            content::WebContents* web_contents);
+
+  ManualFillingViewAndroid(const ManualFillingViewAndroid&) = delete;
+  ManualFillingViewAndroid& operator=(const ManualFillingViewAndroid&) = delete;
+
   ~ManualFillingViewAndroid() override;
 
   // ManualFillingViewInterface:
@@ -91,8 +95,6 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
 
   // The corresponding java object. Use `GetOrCreateJavaObject()` to access.
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManualFillingViewAndroid);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_PASSWORDS_MANUAL_FILLING_VIEW_ANDROID_H_

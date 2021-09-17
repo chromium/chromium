@@ -27,6 +27,12 @@ class ComponentUpdateService;
 class VrAssetsComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   VrAssetsComponentInstallerPolicy() = default;
+
+  VrAssetsComponentInstallerPolicy(const VrAssetsComponentInstallerPolicy&) =
+      delete;
+  VrAssetsComponentInstallerPolicy& operator=(
+      const VrAssetsComponentInstallerPolicy&) = delete;
+
   ~VrAssetsComponentInstallerPolicy() override = default;
 
  private:
@@ -59,8 +65,6 @@ class VrAssetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   friend bool ShouldRegisterVrAssetsComponentOnStartup();
   friend void RegisterVrAssetsComponent(ComponentUpdateService* cus);
   friend void UpdateVrAssetsComponent(ComponentUpdateService* cus);
-
-  DISALLOW_COPY_AND_ASSIGN(VrAssetsComponentInstallerPolicy);
 };
 
 // Returns true if the assets component should be registered at startup.

@@ -24,6 +24,10 @@ namespace extensions {
 class SystemIndicatorApiTest : public ExtensionApiTest {
  public:
   SystemIndicatorApiTest() : scoped_channel_(version_info::Channel::DEV) {}
+
+  SystemIndicatorApiTest(const SystemIndicatorApiTest&) = delete;
+  SystemIndicatorApiTest& operator=(const SystemIndicatorApiTest&) = delete;
+
   ~SystemIndicatorApiTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -45,8 +49,6 @@ class SystemIndicatorApiTest : public ExtensionApiTest {
 
  private:
   ScopedCurrentChannel scoped_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemIndicatorApiTest);
 };
 
 // https://crbug.com/960363: Test crashes on ChromeOS.

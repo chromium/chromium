@@ -58,6 +58,9 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
       drivefs::mojom::DriveFs* drivefs_for_testing)
       : drivefs_for_testing_(drivefs_for_testing) {}
 
+  DriveFsNativeMessageHost(const DriveFsNativeMessageHost&) = delete;
+  DriveFsNativeMessageHost& operator=(const DriveFsNativeMessageHost&) = delete;
+
   ~DriveFsNativeMessageHost() override = default;
 
   void OnMessage(const std::string& message) override {
@@ -148,8 +151,6 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
       base::ThreadTaskRunnerHandle::Get();
 
   base::WeakPtrFactory<DriveFsNativeMessageHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsNativeMessageHost);
 };
 
 std::unique_ptr<extensions::NativeMessageHost> CreateDriveFsNativeMessageHost(

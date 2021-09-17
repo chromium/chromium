@@ -46,6 +46,11 @@ class ChromeProcessManagerDelegate;
 class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
  public:
   ChromeExtensionsBrowserClient();
+
+  ChromeExtensionsBrowserClient(const ChromeExtensionsBrowserClient&) = delete;
+  ChromeExtensionsBrowserClient& operator=(
+      const ChromeExtensionsBrowserClient&) = delete;
+
   ~ChromeExtensionsBrowserClient() override;
 
   // ExtensionsBrowserClient overrides:
@@ -181,8 +186,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<KioskDelegate> kiosk_delegate_;
 
   UserScriptListener user_script_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsBrowserClient);
 };
 
 }  // namespace extensions

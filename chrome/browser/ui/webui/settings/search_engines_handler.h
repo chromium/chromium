@@ -34,6 +34,10 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
                              public EditSearchEngineControllerDelegate {
  public:
   explicit SearchEnginesHandler(Profile* profile);
+
+  SearchEnginesHandler(const SearchEnginesHandler&) = delete;
+  SearchEnginesHandler& operator=(const SearchEnginesHandler&) = delete;
+
   ~SearchEnginesHandler() override;
 
   // ui::TableModelObserver implementation.
@@ -106,8 +110,6 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   std::unique_ptr<EditSearchEngineController> edit_controller_;
   PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<SearchEnginesHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEnginesHandler);
 };
 
 }  // namespace settings

@@ -34,6 +34,10 @@ class WallpaperPrivateApiUnittest : public testing::Test {
         fake_user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {}
 
+  WallpaperPrivateApiUnittest(const WallpaperPrivateApiUnittest&) = delete;
+  WallpaperPrivateApiUnittest& operator=(const WallpaperPrivateApiUnittest&) =
+      delete;
+
   ~WallpaperPrivateApiUnittest() override = default;
 
   void SetUp() override {
@@ -56,8 +60,6 @@ class WallpaperPrivateApiUnittest : public testing::Test {
   ash::FakeChromeUserManager* fake_user_manager_;
 
   user_manager::ScopedUserManager scoped_user_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateApiUnittest);
 };
 
 // Test wallpaperPrivate.resetWallpaper() function. Regression test for
@@ -82,4 +84,3 @@ TEST_F(WallpaperPrivateApiUnittest, ResetWallpaper) {
   // Expect SetDefaultWallpaper() to be called exactly once.
   EXPECT_EQ(1, test_controller.set_default_wallpaper_count());
 }
-

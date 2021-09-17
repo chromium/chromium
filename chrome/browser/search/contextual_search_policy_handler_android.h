@@ -17,14 +17,17 @@ class ContextualSearchPolicyHandlerAndroid
   : public TypeCheckingPolicyHandler {
  public:
   ContextualSearchPolicyHandlerAndroid();
+
+  ContextualSearchPolicyHandlerAndroid(
+      const ContextualSearchPolicyHandlerAndroid&) = delete;
+  ContextualSearchPolicyHandlerAndroid& operator=(
+      const ContextualSearchPolicyHandlerAndroid&) = delete;
+
   ~ContextualSearchPolicyHandlerAndroid() override;
 
   // ConfigurationPolicyHandler methods:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchPolicyHandlerAndroid);
 };
 
 }  // namespace policy

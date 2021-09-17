@@ -41,6 +41,10 @@ using ::views::Button;
 class NetworkScreenTest : public InProcessBrowserTest {
  public:
   NetworkScreenTest() = default;
+
+  NetworkScreenTest(const NetworkScreenTest&) = delete;
+  NetworkScreenTest& operator=(const NetworkScreenTest&) = delete;
+
   ~NetworkScreenTest() override = default;
 
   // InProcessBrowserTest:
@@ -103,8 +107,6 @@ class NetworkScreenTest : public InProcessBrowserTest {
   login::MockNetworkStateHelper* mock_network_state_helper_;
   NetworkScreen* network_screen_;
   absl::optional<NetworkScreen::Result> last_screen_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkScreenTest, CanConnect) {

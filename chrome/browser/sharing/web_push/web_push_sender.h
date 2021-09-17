@@ -24,6 +24,10 @@ class WebPushSender {
  public:
   explicit WebPushSender(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  WebPushSender(const WebPushSender&) = delete;
+  WebPushSender& operator=(const WebPushSender&) = delete;
+
   virtual ~WebPushSender();
 
   // Sends a WebPushMessage via FCM Web Push. Authenticates with FCM server
@@ -47,8 +51,6 @@ class WebPushSender {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::WeakPtrFactory<WebPushSender> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebPushSender);
 };
 
 #endif  // CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_SENDER_H_

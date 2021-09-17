@@ -31,6 +31,12 @@ class PrefetchProxyPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   PrefetchProxyPageLoadMetricsObserver();
+
+  PrefetchProxyPageLoadMetricsObserver(
+      const PrefetchProxyPageLoadMetricsObserver&) = delete;
+  PrefetchProxyPageLoadMetricsObserver& operator=(
+      const PrefetchProxyPageLoadMetricsObserver&) = delete;
+
   ~PrefetchProxyPageLoadMetricsObserver() override;
 
  protected:
@@ -99,8 +105,6 @@ class PrefetchProxyPageLoadMetricsObserver
 
   base::WeakPtrFactory<PrefetchProxyPageLoadMetricsObserver> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchProxyPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREFETCH_PROXY_PAGE_LOAD_METRICS_OBSERVER_H_

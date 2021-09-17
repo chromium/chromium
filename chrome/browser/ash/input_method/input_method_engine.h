@@ -86,6 +86,9 @@ class InputMethodEngine : public InputMethodEngineBase,
 
   InputMethodEngine();
 
+  InputMethodEngine(const InputMethodEngine&) = delete;
+  InputMethodEngine& operator=(const InputMethodEngine&) = delete;
+
   ~InputMethodEngine() override;
 
   // InputMethodEngineBase overrides.
@@ -224,8 +227,6 @@ class InputMethodEngine : public InputMethodEngineBase,
 
   // Whether the desktop is being casted.
   bool is_casting_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodEngine);
 };
 
 }  // namespace input_method

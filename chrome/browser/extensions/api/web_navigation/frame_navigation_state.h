@@ -24,6 +24,9 @@ namespace extensions {
 class FrameNavigationState
     : public content::RenderDocumentHostUserData<FrameNavigationState> {
  public:
+  FrameNavigationState(const FrameNavigationState&) = delete;
+  FrameNavigationState& operator=(const FrameNavigationState&) = delete;
+
   ~FrameNavigationState() override;
 
   // True if in general webNavigation events may be sent for the given URL.
@@ -82,8 +85,6 @@ class FrameNavigationState
 
   // If true, also allow events from chrome-extension:// URLs.
   static bool allow_extension_scheme_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameNavigationState);
 };
 
 }  // namespace extensions

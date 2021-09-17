@@ -36,6 +36,9 @@ class ChildAccountService : public KeyedService,
  public:
   enum class AuthState { AUTHENTICATED, NOT_AUTHENTICATED, PENDING };
 
+  ChildAccountService(const ChildAccountService&) = delete;
+  ChildAccountService& operator=(const ChildAccountService&) = delete;
+
   ~ChildAccountService() override;
 
   static bool IsChildAccountDetectionEnabled();
@@ -122,8 +125,6 @@ class ChildAccountService : public KeyedService,
   std::vector<base::OnceClosure> status_received_callback_list_;
 
   base::WeakPtrFactory<ChildAccountService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChildAccountService);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_CHILD_ACCOUNT_SERVICE_H_

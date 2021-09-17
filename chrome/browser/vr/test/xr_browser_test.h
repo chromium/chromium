@@ -70,6 +70,10 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   };
 
   XrBrowserTestBase();
+
+  XrBrowserTestBase(const XrBrowserTestBase&) = delete;
+  XrBrowserTestBase& operator=(const XrBrowserTestBase&) = delete;
+
   ~XrBrowserTestBase() override;
 
   void SetUp() override;
@@ -235,7 +239,6 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   bool test_skipped_at_startup_ = false;
   bool javascript_failed_ = false;
-  DISALLOW_COPY_AND_ASSIGN(XrBrowserTestBase);
 };
 
 }  // namespace vr

@@ -49,6 +49,11 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
 class AutofillPopupBaseViewTest : public InProcessBrowserTest {
  public:
   AutofillPopupBaseViewTest() {}
+
+  AutofillPopupBaseViewTest(const AutofillPopupBaseViewTest&) = delete;
+  AutofillPopupBaseViewTest& operator=(const AutofillPopupBaseViewTest&) =
+      delete;
+
   ~AutofillPopupBaseViewTest() override {}
 
   void SetUpOnMainThread() override {
@@ -80,8 +85,6 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
  protected:
   testing::NiceMock<MockAutofillPopupViewDelegate> mock_delegate_;
   AutofillPopupBaseView* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupBaseViewTest);
 };
 
 // Regression test for crbug.com/391316

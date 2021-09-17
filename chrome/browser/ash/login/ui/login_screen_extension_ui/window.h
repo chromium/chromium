@@ -27,6 +27,10 @@ class WebDialogView;
 class Window {
  public:
   explicit Window(CreateOptions* create_options);
+
+  Window(const Window&) = delete;
+  Window& operator=(const Window&) = delete;
+
   ~Window();
 
   DialogDelegate* GetDialogDelegateForTesting();
@@ -36,18 +40,18 @@ class Window {
   DialogDelegate* dialog_delegate_ = nullptr;
   WebDialogView* dialog_view_ = nullptr;
   views::Widget* dialog_widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(Window);
 };
 
 class WindowFactory {
  public:
   WindowFactory();
+
+  WindowFactory(const WindowFactory&) = delete;
+  WindowFactory& operator=(const WindowFactory&) = delete;
+
   virtual ~WindowFactory();
 
   virtual std::unique_ptr<Window> Create(CreateOptions* create_options);
-
-  DISALLOW_COPY_AND_ASSIGN(WindowFactory);
 };
 
 }  // namespace login_screen_extension_ui

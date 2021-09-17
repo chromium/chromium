@@ -34,6 +34,12 @@ class ArcProvisionNotificationService
 
   ArcProvisionNotificationService(content::BrowserContext* context,
                                   ArcBridgeService* bridge_service);
+
+  ArcProvisionNotificationService(const ArcProvisionNotificationService&) =
+      delete;
+  ArcProvisionNotificationService& operator=(
+      const ArcProvisionNotificationService&) = delete;
+
   ~ArcProvisionNotificationService() override;
 
   // session_manager::SessionManagerObserver:
@@ -61,8 +67,6 @@ class ArcProvisionNotificationService
 
   // Indicates whether notification should be shown right after session starts.
   bool show_on_session_starts_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProvisionNotificationService);
 };
 
 }  // namespace arc

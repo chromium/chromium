@@ -26,6 +26,10 @@ namespace extensions {
 class InstallVerifierTest : public ExtensionServiceTestBase {
  public:
   InstallVerifierTest() = default;
+
+  InstallVerifierTest(const InstallVerifierTest&) = delete;
+  InstallVerifierTest& operator=(const InstallVerifierTest&) = delete;
+
   ~InstallVerifierTest() override = default;
 
   void SetUp() override {
@@ -50,8 +54,6 @@ class InstallVerifierTest : public ExtensionServiceTestBase {
       ScopedInstallVerifierBypassForTest::kForceOn};
   std::unique_ptr<ExtensionManagement> extension_management_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallVerifierTest);
 };
 
 // Test the behavior of the InstallVerifier for various extensions.

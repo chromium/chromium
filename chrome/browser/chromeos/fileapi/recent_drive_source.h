@@ -32,6 +32,10 @@ class RecentFile;
 class RecentDriveSource : public RecentSource {
  public:
   explicit RecentDriveSource(Profile* profile);
+
+  RecentDriveSource(const RecentDriveSource&) = delete;
+  RecentDriveSource& operator=(const RecentDriveSource&) = delete;
+
   ~RecentDriveSource() override;
 
   // RecentSource overrides:
@@ -58,8 +62,6 @@ class RecentDriveSource : public RecentSource {
   mojo::Remote<drivefs::mojom::SearchQuery> search_query_;
 
   base::WeakPtrFactory<RecentDriveSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecentDriveSource);
 };
 
 }  // namespace chromeos

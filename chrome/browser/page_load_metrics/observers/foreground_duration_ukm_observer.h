@@ -17,6 +17,11 @@ class ForegroundDurationUKMObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   ForegroundDurationUKMObserver();
+
+  ForegroundDurationUKMObserver(const ForegroundDurationUKMObserver&) = delete;
+  ForegroundDurationUKMObserver& operator=(
+      const ForegroundDurationUKMObserver&) = delete;
+
   ~ForegroundDurationUKMObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -41,8 +46,6 @@ class ForegroundDurationUKMObserver
   void RecordUkmIfInForeground(base::TimeTicks end_time);
   void RecordInputTimingMetrics(
       ukm::builders::PageForegroundSession* ukm_builder);
-
-  DISALLOW_COPY_AND_ASSIGN(ForegroundDurationUKMObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_FOREGROUND_DURATION_UKM_OBSERVER_H_

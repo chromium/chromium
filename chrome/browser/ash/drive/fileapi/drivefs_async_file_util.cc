@@ -29,6 +29,10 @@ namespace {
 class DriveFsFileUtil : public storage::LocalFileUtil {
  public:
   DriveFsFileUtil() = default;
+
+  DriveFsFileUtil(const DriveFsFileUtil&) = delete;
+  DriveFsFileUtil& operator=(const DriveFsFileUtil&) = delete;
+
   ~DriveFsFileUtil() override = default;
 
  protected:
@@ -36,9 +40,6 @@ class DriveFsFileUtil : public storage::LocalFileUtil {
     // DriveFS is a trusted filesystem, allow symlinks.
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DriveFsFileUtil);
 };
 
 class CopyOperation {

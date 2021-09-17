@@ -87,11 +87,12 @@ class MockReportGenerator : public ReportGenerator {
 class MockReportUploader : public ReportUploader {
  public:
   MockReportUploader() : ReportUploader(nullptr, 0) {}
+
+  MockReportUploader(const MockReportUploader&) = delete;
+  MockReportUploader& operator=(const MockReportUploader&) = delete;
+
   ~MockReportUploader() override = default;
   MOCK_METHOD2(SetRequestAndUpload, void(ReportRequests, ReportCallback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockReportUploader);
 };
 
 class MockRealTimeReportGenerator : public RealTimeReportGenerator {
@@ -125,6 +126,10 @@ class ReportSchedulerTest : public ::testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         local_state_(TestingBrowserProcess::GetGlobal()),
         profile_manager_(TestingBrowserProcess::GetGlobal(), &local_state_) {}
+
+  ReportSchedulerTest(const ReportSchedulerTest&) = delete;
+  ReportSchedulerTest& operator=(const ReportSchedulerTest&) = delete;
+
   ~ReportSchedulerTest() override = default;
 
   void SetUp() override {
@@ -261,7 +266,6 @@ class ReportSchedulerTest : public ::testing::Test {
   std::unique_ptr<MockReportUploader> uploader_ptr_;
   std::unique_ptr<MockRealTimeReportGenerator> real_time_generator_ptr_;
   std::unique_ptr<MockRealTimeUploader> extension_request_uploader_ptr_;
-  DISALLOW_COPY_AND_ASSIGN(ReportSchedulerTest);
 };
 
 class ReportSchedulerFeatureTest : public ::testing::WithParamInterface<bool>,

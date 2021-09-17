@@ -238,6 +238,10 @@ class WebViewImpl : public WebView {
 class WebViewImplHolder {
  public:
   explicit WebViewImplHolder(WebViewImpl* web_view);
+
+  WebViewImplHolder(const WebViewImplHolder&) = delete;
+  WebViewImplHolder& operator=(const WebViewImplHolder&) = delete;
+
   ~WebViewImplHolder();
 
  private:
@@ -246,8 +250,6 @@ class WebViewImplHolder {
     bool was_locked;
   };
   std::vector<Item> items_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewImplHolder);
 };
 
 namespace internal {

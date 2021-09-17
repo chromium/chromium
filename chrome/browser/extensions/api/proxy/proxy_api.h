@@ -28,6 +28,10 @@ class EventRouterForwarder;
 class ProxyPrefTransformer : public PrefTransformerInterface {
  public:
   ProxyPrefTransformer();
+
+  ProxyPrefTransformer(const ProxyPrefTransformer&) = delete;
+  ProxyPrefTransformer& operator=(const ProxyPrefTransformer&) = delete;
+
   ~ProxyPrefTransformer() override;
 
   // Implementation of PrefTransformerInterface.
@@ -38,9 +42,6 @@ class ProxyPrefTransformer : public PrefTransformerInterface {
   std::unique_ptr<base::Value> BrowserToExtensionPref(
       const base::Value* browser_pref,
       bool is_incognito_profile) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyPrefTransformer);
 };
 
 // This class observes proxy error events and routes them to the appropriate

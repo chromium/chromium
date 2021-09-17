@@ -251,6 +251,12 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
   static constexpr int kFakePolicyPublicKeyVersion = 1;
 
   SigninExtensionsDeviceCloudPolicyBrowserTest() = default;
+
+  SigninExtensionsDeviceCloudPolicyBrowserTest(
+      const SigninExtensionsDeviceCloudPolicyBrowserTest&) = delete;
+  SigninExtensionsDeviceCloudPolicyBrowserTest& operator=(
+      const SigninExtensionsDeviceCloudPolicyBrowserTest&) = delete;
+
   ~SigninExtensionsDeviceCloudPolicyBrowserTest() override = default;
 
   void SetUp() override {
@@ -373,8 +379,6 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
   }
 
   ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninExtensionsDeviceCloudPolicyBrowserTest);
 };
 
 }  // namespace

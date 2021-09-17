@@ -27,6 +27,10 @@ class Profile;
 class BrowserInstantController {
  public:
   explicit BrowserInstantController(Browser* browser);
+
+  BrowserInstantController(const BrowserInstantController&) = delete;
+  BrowserInstantController& operator=(const BrowserInstantController&) = delete;
+
   ~BrowserInstantController();
 
  private:
@@ -40,8 +44,6 @@ class BrowserInstantController {
   InstantController instant_;
 
   std::unique_ptr<SearchEngineBaseURLTracker> search_engine_base_url_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserInstantController);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_INSTANT_CONTROLLER_H_

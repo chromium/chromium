@@ -25,6 +25,10 @@ class InputMethodPersistence : public InputMethodManager::Observer {
   // OnSessionStateChange whenever the InputMethodManager::UISessionState
   // changes.
   explicit InputMethodPersistence(InputMethodManager* input_method_manager);
+
+  InputMethodPersistence(const InputMethodPersistence&) = delete;
+  InputMethodPersistence& operator=(const InputMethodPersistence&) = delete;
+
   ~InputMethodPersistence() override;
 
   // InputMethodManager::Observer overrides.
@@ -40,7 +44,6 @@ class InputMethodPersistence : public InputMethodManager::Observer {
 
  private:
   InputMethodManager* input_method_manager_;
-  DISALLOW_COPY_AND_ASSIGN(InputMethodPersistence);
 };
 
 void SetUserLastInputMethodPreferenceForTesting(

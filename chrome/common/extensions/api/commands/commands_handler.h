@@ -39,6 +39,10 @@ struct CommandsInfo : public Extension::ManifestData {
 class CommandsHandler : public ManifestHandler {
  public:
   CommandsHandler();
+
+  CommandsHandler(const CommandsHandler&) = delete;
+  CommandsHandler& operator=(const CommandsHandler&) = delete;
+
   ~CommandsHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
@@ -52,8 +56,6 @@ class CommandsHandler : public ManifestHandler {
                                     CommandsInfo* info);
 
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandsHandler);
 };
 
 }  // namespace extensions

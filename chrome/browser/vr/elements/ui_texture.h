@@ -25,6 +25,10 @@ namespace vr {
 class UiTexture {
  public:
   UiTexture();
+
+  UiTexture(const UiTexture&) = delete;
+  UiTexture& operator=(const UiTexture&) = delete;
+
   virtual ~UiTexture();
 
   void DrawTexture(SkCanvas* canvas, const gfx::Size& texture_size);
@@ -72,8 +76,6 @@ class UiTexture {
   bool dirty_ = true;
   absl::optional<SkColor> foreground_color_;
   absl::optional<SkColor> background_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiTexture);
 };
 
 }  // namespace vr

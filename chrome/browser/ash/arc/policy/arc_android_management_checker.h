@@ -19,6 +19,11 @@ namespace arc {
 class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
  public:
   ArcAndroidManagementChecker(Profile* profile, bool retry_on_error);
+
+  ArcAndroidManagementChecker(const ArcAndroidManagementChecker&) = delete;
+  ArcAndroidManagementChecker& operator=(const ArcAndroidManagementChecker&) =
+      delete;
+
   ~ArcAndroidManagementChecker() override;
 
   static void StartClient();
@@ -64,8 +69,6 @@ class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
   CheckCallback callback_;
 
   base::WeakPtrFactory<ArcAndroidManagementChecker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAndroidManagementChecker);
 };
 
 }  // namespace arc

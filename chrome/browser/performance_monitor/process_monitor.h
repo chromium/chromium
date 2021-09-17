@@ -104,6 +104,9 @@ class ProcessMonitor {
   // returns nullptr.
   static ProcessMonitor* Get();
 
+  ProcessMonitor(const ProcessMonitor&) = delete;
+  ProcessMonitor& operator=(const ProcessMonitor&) = delete;
+
   virtual ~ProcessMonitor();
 
   // Start the cycle of metrics gathering.
@@ -159,8 +162,6 @@ class ProcessMonitor {
 #endif
 
   base::WeakPtrFactory<ProcessMonitor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMonitor);
 };
 
 }  // namespace performance_monitor

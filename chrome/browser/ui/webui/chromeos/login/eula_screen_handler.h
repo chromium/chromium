@@ -48,6 +48,10 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   using TView = EulaView;
 
   explicit EulaScreenHandler(JSCallsContainer* js_calls_container);
+
+  EulaScreenHandler(const EulaScreenHandler&) = delete;
+  EulaScreenHandler& operator=(const EulaScreenHandler&) = delete;
+
   ~EulaScreenHandler() override;
 
   // EulaView implementation:
@@ -81,8 +85,6 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   scoped_refptr<HelpAppLauncher> help_app_;
 
   base::WeakPtrFactory<EulaScreenHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EulaScreenHandler);
 };
 
 }  // namespace chromeos

@@ -45,15 +45,16 @@ const int kInfolistHideDelayMilliSeconds = 500;
 class InfolistBorder : public views::BubbleBorder {
  public:
   InfolistBorder();
+
+  InfolistBorder(const InfolistBorder&) = delete;
+  InfolistBorder& operator=(const InfolistBorder&) = delete;
+
   ~InfolistBorder() override;
 
   // views::BubbleBorder implementation.
   gfx::Rect GetBounds(const gfx::Rect& anchor_rect,
                       const gfx::Size& contents_size) const override;
   gfx::Insets GetInsets() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InfolistBorder);
 };
 
 InfolistBorder::InfolistBorder()

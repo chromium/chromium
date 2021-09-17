@@ -52,6 +52,10 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   Preferences();
   explicit Preferences(
       input_method::InputMethodManager* input_method_manager);  // for testing
+
+  Preferences(const Preferences&) = delete;
+  Preferences& operator=(const Preferences&) = delete;
+
   ~Preferences() override;
 
   // These method will register the prefs associated with Chrome OS settings.
@@ -185,8 +189,6 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   std::unique_ptr<ash::input_method::InputMethodSyncer> input_method_syncer_;
 
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(Preferences);
 };
 
 }  // namespace chromeos

@@ -67,6 +67,12 @@ class TestChromeBrowserMainExtraParts : public ChromeBrowserMainExtraParts {
  public:
   explicit TestChromeBrowserMainExtraParts(ExtensionUpdateClientBaseTest* test)
       : test_(test) {}
+
+  TestChromeBrowserMainExtraParts(const TestChromeBrowserMainExtraParts&) =
+      delete;
+  TestChromeBrowserMainExtraParts& operator=(
+      const TestChromeBrowserMainExtraParts&) = delete;
+
   ~TestChromeBrowserMainExtraParts() override = default;
 
   // ChromeBrowserMainExtraParts:
@@ -74,8 +80,6 @@ class TestChromeBrowserMainExtraParts : public ChromeBrowserMainExtraParts {
 
  private:
   ExtensionUpdateClientBaseTest* test_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChromeBrowserMainExtraParts);
 };
 
 class UpdateClientCompleteEventWaiter
@@ -85,6 +89,11 @@ class UpdateClientCompleteEventWaiter
 
   explicit UpdateClientCompleteEventWaiter(const std::string& id)
       : id_(id), event_(UpdateClientEvents::COMPONENT_UPDATE_ERROR) {}
+
+  UpdateClientCompleteEventWaiter(const UpdateClientCompleteEventWaiter&) =
+      delete;
+  UpdateClientCompleteEventWaiter& operator=(
+      const UpdateClientCompleteEventWaiter&) = delete;
 
   ~UpdateClientCompleteEventWaiter() override = default;
 
@@ -107,8 +116,6 @@ class UpdateClientCompleteEventWaiter
   const std::string id_;
   UpdateClientEvents event_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateClientCompleteEventWaiter);
 };
 
 }  // namespace

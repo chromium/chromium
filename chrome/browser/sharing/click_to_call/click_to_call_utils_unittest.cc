@@ -44,6 +44,9 @@ class ClickToCallUtilsTest : public testing::Test {
  public:
   ClickToCallUtilsTest() = default;
 
+  ClickToCallUtilsTest(const ClickToCallUtilsTest&) = delete;
+  ClickToCallUtilsTest& operator=(const ClickToCallUtilsTest&) = delete;
+
   ~ClickToCallUtilsTest() override = default;
 
   void SetUp() override {
@@ -75,8 +78,6 @@ class ClickToCallUtilsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   bool create_service_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickToCallUtilsTest);
 };
 
 }  // namespace

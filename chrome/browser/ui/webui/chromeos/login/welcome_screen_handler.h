@@ -66,6 +66,10 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
 
   WelcomeScreenHandler(JSCallsContainer* js_calls_container,
                        CoreOobeView* core_oobe_view);
+
+  WelcomeScreenHandler(const WelcomeScreenHandler&) = delete;
+  WelcomeScreenHandler& operator=(const WelcomeScreenHandler&) = delete;
+
   ~WelcomeScreenHandler() override;
 
   // WelcomeView:
@@ -120,8 +124,6 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   bool show_on_init_ = false;
 
   base::CallbackListSubscription accessibility_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(WelcomeScreenHandler);
 };
 
 }  // namespace chromeos

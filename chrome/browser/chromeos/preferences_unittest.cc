@@ -142,6 +142,10 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
 class PreferencesTest : public testing::Test {
  public:
   PreferencesTest() {}
+
+  PreferencesTest(const PreferencesTest&) = delete;
+  PreferencesTest& operator=(const PreferencesTest&) = delete;
+
   ~PreferencesTest() override {}
 
   void SetUp() override {
@@ -203,9 +207,6 @@ class PreferencesTest : public testing::Test {
   TestingProfile* test_profile_;
   sync_preferences::TestingPrefServiceSyncable* pref_service_;
   input_method::MyMockInputMethodManager* mock_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PreferencesTest);
 };
 
 TEST_F(PreferencesTest, TestUpdatePrefOnBrowserScreenDetails) {
@@ -229,6 +230,11 @@ class InputMethodPreferencesTest : public PreferencesTest,
           ash::features::kSyncSettingsCategorization);
     }
   }
+
+  InputMethodPreferencesTest(const InputMethodPreferencesTest&) = delete;
+  InputMethodPreferencesTest& operator=(const InputMethodPreferencesTest&) =
+      delete;
+
   ~InputMethodPreferencesTest() override = default;
 
   void SetUp() override {
@@ -400,9 +406,6 @@ class InputMethodPreferencesTest : public PreferencesTest,
   StringPrefMember enabled_imes_syncable_;
 
   base::test::ScopedFeatureList feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputMethodPreferencesTest);
 };
 
 // Tests that the server values are added to the values chosen at OOBE.

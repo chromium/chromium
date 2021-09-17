@@ -54,6 +54,12 @@ class WilcoDtcSupportdBridgeDelegateImpl final
     : public WilcoDtcSupportdBridge::Delegate {
  public:
   WilcoDtcSupportdBridgeDelegateImpl();
+
+  WilcoDtcSupportdBridgeDelegateImpl(
+      const WilcoDtcSupportdBridgeDelegateImpl&) = delete;
+  WilcoDtcSupportdBridgeDelegateImpl& operator=(
+      const WilcoDtcSupportdBridgeDelegateImpl&) = delete;
+
   ~WilcoDtcSupportdBridgeDelegateImpl() override;
 
   // Delegate overrides:
@@ -62,9 +68,6 @@ class WilcoDtcSupportdBridgeDelegateImpl final
           chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>*
           wilco_dtc_supportd_service_factory_mojo_remote,
       base::ScopedFD* remote_endpoint_fd) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdBridgeDelegateImpl);
 };
 
 WilcoDtcSupportdBridgeDelegateImpl::WilcoDtcSupportdBridgeDelegateImpl() =

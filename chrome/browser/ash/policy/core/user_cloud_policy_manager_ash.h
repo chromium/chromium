@@ -111,6 +111,11 @@ class UserCloudPolicyManagerAsh
       base::OnceClosure fatal_error_callback,
       const AccountId& account_id,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  UserCloudPolicyManagerAsh(const UserCloudPolicyManagerAsh&) = delete;
+  UserCloudPolicyManagerAsh& operator=(const UserCloudPolicyManagerAsh&) =
+      delete;
+
   ~UserCloudPolicyManagerAsh() override;
 
   // Initializes the cloud connection. |local_state| and
@@ -342,8 +347,6 @@ class UserCloudPolicyManagerAsh
   // whether this class has triggered a re-registration after the client failed
   // to load policy with error |DM_STATUS_SERVICE_DEVICE_NOT_FOUND|.
   bool is_in_reregistration_state_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerAsh);
 };
 
 }  // namespace policy

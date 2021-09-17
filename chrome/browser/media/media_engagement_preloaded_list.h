@@ -24,6 +24,11 @@ class MediaEngagementPreloadedList {
   static MediaEngagementPreloadedList* GetInstance();
 
   MediaEngagementPreloadedList();
+
+  MediaEngagementPreloadedList(const MediaEngagementPreloadedList&) = delete;
+  MediaEngagementPreloadedList& operator=(const MediaEngagementPreloadedList&) =
+      delete;
+
   ~MediaEngagementPreloadedList();
 
   // Load the contents from |path|.
@@ -119,8 +124,6 @@ class MediaEngagementPreloadedList {
   bool is_loaded_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementPreloadedList);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_PRELOADED_LIST_H_

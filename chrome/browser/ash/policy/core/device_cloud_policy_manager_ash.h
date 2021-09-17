@@ -79,6 +79,11 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       ServerBackedStateKeysBroker* state_keys_broker);
+
+  DeviceCloudPolicyManagerAsh(const DeviceCloudPolicyManagerAsh&) = delete;
+  DeviceCloudPolicyManagerAsh& operator=(const DeviceCloudPolicyManagerAsh&) =
+      delete;
+
   ~DeviceCloudPolicyManagerAsh() override;
 
   // Initializes state keys.
@@ -219,8 +224,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   bool component_policy_disabled_for_testing_ = false;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyManagerAsh);
 };
 
 }  // namespace policy

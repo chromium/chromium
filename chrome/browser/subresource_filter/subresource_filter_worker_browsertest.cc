@@ -25,6 +25,12 @@ class SubresourceFilterWorkerFetchBrowserTest
     : public SubresourceFilterBrowserTest {
  public:
   SubresourceFilterWorkerFetchBrowserTest() = default;
+
+  SubresourceFilterWorkerFetchBrowserTest(
+      const SubresourceFilterWorkerFetchBrowserTest&) = delete;
+  SubresourceFilterWorkerFetchBrowserTest& operator=(
+      const SubresourceFilterWorkerFetchBrowserTest&) = delete;
+
   ~SubresourceFilterWorkerFetchBrowserTest() override = default;
 
  protected:
@@ -70,9 +76,6 @@ class SubresourceFilterWorkerFetchBrowserTest
     ASSERT_TRUE(content::ExecJs(web_contents()->GetMainFrame(),
                                 "document.title = \"\";"));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterWorkerFetchBrowserTest);
 };
 
 // TODO(https://crbug.com/1011208): Add more tests for workers like top-level

@@ -67,6 +67,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   // All UI initialization is deferred till Init() call.
   ExistingUserController();
+
+  ExistingUserController(const ExistingUserController&) = delete;
+  ExistingUserController& operator=(const ExistingUserController&) = delete;
+
   ~ExistingUserController() override;
 
   // Creates and shows login UI for known users.
@@ -392,8 +396,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   // Factory of callbacks.
   base::WeakPtrFactory<ExistingUserController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExistingUserController);
 };
 
 }  // namespace ash

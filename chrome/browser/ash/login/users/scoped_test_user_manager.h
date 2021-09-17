@@ -17,12 +17,14 @@ class ChromeUserManager;
 class ScopedTestUserManager {
  public:
   ScopedTestUserManager();
+
+  ScopedTestUserManager(const ScopedTestUserManager&) = delete;
+  ScopedTestUserManager& operator=(const ScopedTestUserManager&) = delete;
+
   ~ScopedTestUserManager();
 
  private:
   std::unique_ptr<ChromeUserManager> chrome_user_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestUserManager);
 };
 
 }  // namespace ash

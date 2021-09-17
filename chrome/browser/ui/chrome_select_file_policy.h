@@ -18,6 +18,10 @@ class WebContents;
 class ChromeSelectFilePolicy : public ui::SelectFilePolicy {
  public:
   explicit ChromeSelectFilePolicy(content::WebContents* source_contents);
+
+  ChromeSelectFilePolicy(const ChromeSelectFilePolicy&) = delete;
+  ChromeSelectFilePolicy& operator=(const ChromeSelectFilePolicy&) = delete;
+
   ~ChromeSelectFilePolicy() override;
 
   // Overridden from ui::SelectFilePolicy:
@@ -29,8 +33,6 @@ class ChromeSelectFilePolicy : public ui::SelectFilePolicy {
 
  private:
   content::WebContents* source_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSelectFilePolicy);
 };
 
 #endif  // CHROME_BROWSER_UI_CHROME_SELECT_FILE_POLICY_H_

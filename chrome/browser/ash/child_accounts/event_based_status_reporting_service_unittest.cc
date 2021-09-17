@@ -38,6 +38,12 @@ class TestingConsumerStatusReportingService
   explicit TestingConsumerStatusReportingService(
       content::BrowserContext* context)
       : ChildStatusReportingService(context) {}
+
+  TestingConsumerStatusReportingService(
+      const TestingConsumerStatusReportingService&) = delete;
+  TestingConsumerStatusReportingService& operator=(
+      const TestingConsumerStatusReportingService&) = delete;
+
   ~TestingConsumerStatusReportingService() override = default;
 
   bool RequestImmediateStatusReport() override {
@@ -49,22 +55,22 @@ class TestingConsumerStatusReportingService
 
  private:
   int performed_status_reports_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingConsumerStatusReportingService);
 };
 
 class TestingScreenTimeController : public ScreenTimeController {
  public:
   explicit TestingScreenTimeController(content::BrowserContext* context)
       : ScreenTimeController(context) {}
+
+  TestingScreenTimeController(const TestingScreenTimeController&) = delete;
+  TestingScreenTimeController& operator=(const TestingScreenTimeController&) =
+      delete;
+
   ~TestingScreenTimeController() override = default;
 
   // Override this method so that it doesn't call the StatusUploader instance in
   // ConsumerStatusReportingService, which doesn't exist in these tests.
   base::TimeDelta GetScreenTimeDuration() override { return base::TimeDelta(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingScreenTimeController);
 };
 
 std::unique_ptr<KeyedService> CreateTestingConsumerStatusReportingService(

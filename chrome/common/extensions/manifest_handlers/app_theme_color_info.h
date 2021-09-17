@@ -28,14 +28,16 @@ struct AppThemeColorInfo : public Extension::ManifestData {
 class AppThemeColorHandler : public ManifestHandler {
  public:
   AppThemeColorHandler();
+
+  AppThemeColorHandler(const AppThemeColorHandler&) = delete;
+  AppThemeColorHandler& operator=(const AppThemeColorHandler&) = delete;
+
   ~AppThemeColorHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AppThemeColorHandler);
 };
 
 }  // namespace extensions

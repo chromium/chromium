@@ -20,15 +20,18 @@ class NtpCustomBackgroundEnabledPolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
   NtpCustomBackgroundEnabledPolicyHandler();
+
+  NtpCustomBackgroundEnabledPolicyHandler(
+      const NtpCustomBackgroundEnabledPolicyHandler&) = delete;
+  NtpCustomBackgroundEnabledPolicyHandler& operator=(
+      const NtpCustomBackgroundEnabledPolicyHandler&) = delete;
+
   ~NtpCustomBackgroundEnabledPolicyHandler() override;
 
  protected:
   // ConfigurationPolicyHandler:
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NtpCustomBackgroundEnabledPolicyHandler);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_NTP_CUSTOM_BACKGROUND_ENABLED_POLICY_HANDLER_H_

@@ -20,6 +20,12 @@ class LoginHandler;
 class LoginPromptBrowserTestObserver : public content::NotificationObserver {
  public:
   LoginPromptBrowserTestObserver();
+
+  LoginPromptBrowserTestObserver(const LoginPromptBrowserTestObserver&) =
+      delete;
+  LoginPromptBrowserTestObserver& operator=(
+      const LoginPromptBrowserTestObserver&) = delete;
+
   ~LoginPromptBrowserTestObserver() override;
 
   void Observe(int type,
@@ -52,8 +58,6 @@ class LoginPromptBrowserTestObserver : public content::NotificationObserver {
 
  private:
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginPromptBrowserTestObserver);
 };
 
 template <int T>

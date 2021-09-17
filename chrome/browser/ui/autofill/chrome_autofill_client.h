@@ -53,6 +53,9 @@ class ChromeAutofillClient
 #endif  // !defined(OS_ANDROID)
 {
  public:
+  ChromeAutofillClient(const ChromeAutofillClient&) = delete;
+  ChromeAutofillClient& operator=(const ChromeAutofillClient&) = delete;
+
   ~ChromeAutofillClient() override;
 
   // AutofillClient:
@@ -217,8 +220,6 @@ class ChromeAutofillClient
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAutofillClient);
 };
 
 }  // namespace autofill

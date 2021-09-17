@@ -46,6 +46,9 @@ class SnapshotFileDetails {
   SnapshotFileDetails(SnapshotRequestInfo request_info,
                       const base::File::Info& file_info);
 
+  SnapshotFileDetails(const SnapshotFileDetails&) = delete;
+  SnapshotFileDetails& operator=(const SnapshotFileDetails&) = delete;
+
   ~SnapshotFileDetails();
 
   uint32_t file_id() const { return request_info_.file_id; }
@@ -101,8 +104,6 @@ class SnapshotFileDetails {
 
   // Whether an error occurred during file transfer.
   bool error_occurred_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapshotFileDetails);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_SNAPSHOT_FILE_DETAILS_H_

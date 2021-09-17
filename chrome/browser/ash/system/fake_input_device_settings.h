@@ -17,6 +17,10 @@ class FakeInputDeviceSettings : public InputDeviceSettings,
                                 public InputDeviceSettings::FakeInterface {
  public:
   FakeInputDeviceSettings();
+
+  FakeInputDeviceSettings(const FakeInputDeviceSettings&) = delete;
+  FakeInputDeviceSettings& operator=(const FakeInputDeviceSettings&) = delete;
+
   ~FakeInputDeviceSettings() override;
 
   // Overridden from InputDeviceSettings.
@@ -65,8 +69,6 @@ class FakeInputDeviceSettings : public InputDeviceSettings,
   bool touchpad_exists_ = true;
   bool mouse_exists_ = true;
   bool pointing_stick_exists_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeInputDeviceSettings);
 };
 
 }  // namespace system

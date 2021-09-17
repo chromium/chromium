@@ -23,6 +23,11 @@ class WebContents;
 class WebDragBookmarkHandlerAura : public content::WebDragDestDelegate {
  public:
   WebDragBookmarkHandlerAura();
+
+  WebDragBookmarkHandlerAura(const WebDragBookmarkHandlerAura&) = delete;
+  WebDragBookmarkHandlerAura& operator=(const WebDragBookmarkHandlerAura&) =
+      delete;
+
   ~WebDragBookmarkHandlerAura() override;
 
   // Overridden from content::WebDragDestDelegate:
@@ -44,8 +49,6 @@ class WebDragBookmarkHandlerAura : public content::WebDragDestDelegate {
 
   // The bookmark data for the active drag.  Empty when there is no active drag.
   bookmarks::BookmarkNodeData bookmark_drag_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDragBookmarkHandlerAura);
 };
 
 #endif  // CHROME_BROWSER_UI_AURA_TAB_CONTENTS_WEB_DRAG_BOOKMARK_HANDLER_AURA_H_

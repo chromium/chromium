@@ -135,6 +135,10 @@ TEST_F(ModuleDatabaseTest, DatabaseIsConsistent) {
 class DummyObserver : public ModuleDatabaseObserver {
  public:
   DummyObserver() = default;
+
+  DummyObserver(const DummyObserver&) = delete;
+  DummyObserver& operator=(const DummyObserver&) = delete;
+
   ~DummyObserver() override = default;
 
   void OnNewModuleFound(const ModuleInfoKey& module_key,
@@ -161,8 +165,6 @@ class DummyObserver : public ModuleDatabaseObserver {
   int new_module_count_ = 0;
   int known_module_loaded_count_ = 0;
   bool on_module_database_idle_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyObserver);
 };
 
 TEST_F(ModuleDatabaseTest, Observers) {

@@ -25,6 +25,11 @@ namespace sync_file_system {
 class MockRemoteChangeProcessor : public RemoteChangeProcessor {
  public:
   MockRemoteChangeProcessor();
+
+  MockRemoteChangeProcessor(const MockRemoteChangeProcessor&) = delete;
+  MockRemoteChangeProcessor& operator=(const MockRemoteChangeProcessor&) =
+      delete;
+
   ~MockRemoteChangeProcessor() override;
 
   // RemoteChangeProcessor overrides.
@@ -44,9 +49,6 @@ class MockRemoteChangeProcessor : public RemoteChangeProcessor {
                void(const storage::FileSystemURL& url,
                     const FileChange& change,
                     SyncStatusCallback callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockRemoteChangeProcessor);
 };
 
 }  // namespace sync_file_system

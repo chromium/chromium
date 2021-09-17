@@ -115,6 +115,11 @@ class SettingsAppMonitor::AutomationControllerDelegate
   AutomationControllerDelegate(
       scoped_refptr<base::SequencedTaskRunner> monitor_runner,
       base::WeakPtr<SettingsAppMonitor> monitor);
+
+  AutomationControllerDelegate(const AutomationControllerDelegate&) = delete;
+  AutomationControllerDelegate& operator=(const AutomationControllerDelegate&) =
+      delete;
+
   ~AutomationControllerDelegate() override;
 
   // AutomationController::Delegate:
@@ -149,8 +154,6 @@ class SettingsAppMonitor::AutomationControllerDelegate
 
   // The browser chooser must only be invoked once.
   mutable bool browser_chooser_invoked_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationControllerDelegate);
 };
 
 SettingsAppMonitor::AutomationControllerDelegate::AutomationControllerDelegate(

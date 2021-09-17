@@ -18,6 +18,11 @@ namespace {
 class BrowserFinderWithDesksTest : public InProcessBrowserTest {
  public:
   BrowserFinderWithDesksTest() = default;
+
+  BrowserFinderWithDesksTest(const BrowserFinderWithDesksTest&) = delete;
+  BrowserFinderWithDesksTest& operator=(const BrowserFinderWithDesksTest&) =
+      delete;
+
   ~BrowserFinderWithDesksTest() override = default;
 
   // InProcessBrowserTest:
@@ -37,9 +42,6 @@ class BrowserFinderWithDesksTest : public InProcessBrowserTest {
     ActivateBrowser(new_browser);
     return new_browser;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserFinderWithDesksTest);
 };
 
 }  // namespace

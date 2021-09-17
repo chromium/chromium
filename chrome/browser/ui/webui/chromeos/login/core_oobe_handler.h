@@ -72,6 +72,10 @@ class CoreOobeHandler : public BaseWebUIHandler,
                         public OobeConfiguration::Observer {
  public:
   explicit CoreOobeHandler(JSCallsContainer* js_calls_container);
+
+  CoreOobeHandler(const CoreOobeHandler&) = delete;
+  CoreOobeHandler& operator=(const CoreOobeHandler&) = delete;
+
   ~CoreOobeHandler() override;
 
   // BaseScreenHandler implementation:
@@ -182,8 +186,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 
   base::WeakPtrFactory<CoreOobeHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CoreOobeHandler);
 };
 
 }  // namespace chromeos

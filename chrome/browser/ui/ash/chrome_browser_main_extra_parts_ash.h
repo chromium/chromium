@@ -62,6 +62,12 @@ class ChromeShelfControllerInitializer;
 class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
  public:
   ChromeBrowserMainExtraPartsAsh();
+
+  ChromeBrowserMainExtraPartsAsh(const ChromeBrowserMainExtraPartsAsh&) =
+      delete;
+  ChromeBrowserMainExtraPartsAsh& operator=(
+      const ChromeBrowserMainExtraPartsAsh&) = delete;
+
   ~ChromeBrowserMainExtraPartsAsh() override;
 
   // Overridden from ChromeBrowserMainExtraParts:
@@ -127,8 +133,6 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<NightLightClient> night_light_client_;
   std::unique_ptr<AmbientClientImpl> ambient_client_;
   std::unique_ptr<QuickAnswersBrowserClientImpl> quick_answers_browser_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsAsh);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_

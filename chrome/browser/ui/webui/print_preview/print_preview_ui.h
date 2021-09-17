@@ -43,6 +43,9 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
  public:
   explicit PrintPreviewUI(content::WebUI* web_ui);
 
+  PrintPreviewUI(const PrintPreviewUI&) = delete;
+  PrintPreviewUI& operator=(const PrintPreviewUI&) = delete;
+
   ~PrintPreviewUI() override;
 
   mojo::PendingAssociatedRemote<mojom::PrintPreviewUI> BindPrintPreviewUI();
@@ -321,8 +324,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   mojo::AssociatedReceiver<mojom::PrintPreviewUI> receiver_{this};
 
   base::WeakPtrFactory<PrintPreviewUI> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewUI);
 };
 
 }  // namespace printing

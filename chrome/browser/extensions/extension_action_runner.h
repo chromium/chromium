@@ -54,6 +54,10 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   };
 
   explicit ExtensionActionRunner(content::WebContents* web_contents);
+
+  ExtensionActionRunner(const ExtensionActionRunner&) = delete;
+  ExtensionActionRunner& operator=(const ExtensionActionRunner&) = delete;
+
   ~ExtensionActionRunner() override;
 
   // Returns the ExtensionActionRunner for the given |web_contents|, or null
@@ -259,8 +263,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
       extension_registry_observation_{this};
 
   base::WeakPtrFactory<ExtensionActionRunner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionRunner);
 };
 
 }  // namespace extensions

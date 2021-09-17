@@ -31,6 +31,11 @@ void OnVoidDBusMethod(VoidDBusMethodCallback callback,
 class WilcoDtcSupportdClientImpl final : public WilcoDtcSupportdClient {
  public:
   WilcoDtcSupportdClientImpl();
+
+  WilcoDtcSupportdClientImpl(const WilcoDtcSupportdClientImpl&) = delete;
+  WilcoDtcSupportdClientImpl& operator=(const WilcoDtcSupportdClientImpl&) =
+      delete;
+
   ~WilcoDtcSupportdClientImpl() override;
 
   // WilcoDtcSupportdClient overrides:
@@ -44,8 +49,6 @@ class WilcoDtcSupportdClientImpl final : public WilcoDtcSupportdClient {
   dbus::ObjectProxy* wilco_dtc_supportd_proxy_ = nullptr;
 
   base::WeakPtrFactory<WilcoDtcSupportdClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdClientImpl);
 };
 
 WilcoDtcSupportdClientImpl::WilcoDtcSupportdClientImpl() = default;

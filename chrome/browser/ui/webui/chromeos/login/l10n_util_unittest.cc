@@ -53,6 +53,10 @@ void VerifyLanguageCode(const base::ListValue& list,
 class L10nUtilTest : public testing::Test {
  public:
   L10nUtilTest();
+
+  L10nUtilTest(const L10nUtilTest&) = delete;
+  L10nUtilTest& operator=(const L10nUtilTest&) = delete;
+
   ~L10nUtilTest() override;
 
   void SetInputMethods1();
@@ -62,8 +66,6 @@ class L10nUtilTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   system::ScopedFakeStatisticsProvider scoped_fake_statistics_provider_;
   MockInputMethodManagerWithInputMethods* input_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(L10nUtilTest);
 };
 
 L10nUtilTest::L10nUtilTest()

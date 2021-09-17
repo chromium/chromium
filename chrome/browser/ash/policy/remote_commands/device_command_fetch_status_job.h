@@ -13,6 +13,11 @@ namespace policy {
 class DeviceCommandFetchStatusJob : public RemoteCommandJob {
  public:
   DeviceCommandFetchStatusJob();
+
+  DeviceCommandFetchStatusJob(const DeviceCommandFetchStatusJob&) = delete;
+  DeviceCommandFetchStatusJob& operator=(const DeviceCommandFetchStatusJob&) =
+      delete;
+
   ~DeviceCommandFetchStatusJob() override;
 
   // RemoteCommandJob:
@@ -22,9 +27,6 @@ class DeviceCommandFetchStatusJob : public RemoteCommandJob {
   // RemoteCommandJob:
   void RunImpl(CallbackWithResult succeeded_callback,
                CallbackWithResult failed_callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandFetchStatusJob);
 };
 
 }  // namespace policy

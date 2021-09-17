@@ -63,6 +63,10 @@ content::WebUIDataSource* CreateSlowUIHTMLSource() {
 class SlowHandler : public WebUIMessageHandler {
  public:
   explicit SlowHandler(Profile* profile);
+
+  SlowHandler(const SlowHandler&) = delete;
+  SlowHandler& operator=(const SlowHandler&) = delete;
+
   ~SlowHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -78,8 +82,6 @@ class SlowHandler : public WebUIMessageHandler {
 
   Profile* profile_;
   std::unique_ptr<PrefChangeRegistrar> user_pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(SlowHandler);
 };
 
 // SlowHandler ------------------------------------------------------------
@@ -141,4 +143,3 @@ SlowUI::SlowUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 }
 
 }  // namespace chromeos
-

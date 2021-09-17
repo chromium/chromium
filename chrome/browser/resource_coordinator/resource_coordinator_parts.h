@@ -28,6 +28,10 @@ class TabLifecycleUnitSource;
 class ResourceCoordinatorParts {
  public:
   ResourceCoordinatorParts();
+
+  ResourceCoordinatorParts(const ResourceCoordinatorParts&) = delete;
+  ResourceCoordinatorParts& operator=(const ResourceCoordinatorParts&) = delete;
+
   ~ResourceCoordinatorParts();
 
   TabMemoryMetricsReporter* tab_memory_metrics_reporter() {
@@ -72,8 +76,6 @@ class ResourceCoordinatorParts {
   TabManager tab_manager_;
   TabLifecycleUnitSource tab_lifecycle_unit_source_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceCoordinatorParts);
 };
 
 }  // namespace resource_coordinator

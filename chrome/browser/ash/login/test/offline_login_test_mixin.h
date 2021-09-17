@@ -20,6 +20,10 @@ namespace ash {
 class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
  public:
   explicit OfflineLoginTestMixin(InProcessBrowserTestMixinHost* host);
+
+  OfflineLoginTestMixin(const OfflineLoginTestMixin&) = delete;
+  OfflineLoginTestMixin& operator=(const OfflineLoginTestMixin&) = delete;
+
   ~OfflineLoginTestMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -55,8 +59,6 @@ class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
 
   // This is ised to disable networking.
   std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineLoginTestMixin);
 };
 
 }  // namespace ash

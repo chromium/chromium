@@ -23,6 +23,10 @@ class ProfileManager;
 class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
  public:
   explicit NaClBrowserDelegateImpl(ProfileManager* profile_manager);
+
+  NaClBrowserDelegateImpl(const NaClBrowserDelegateImpl&) = delete;
+  NaClBrowserDelegateImpl& operator=(const NaClBrowserDelegateImpl&) = delete;
+
   ~NaClBrowserDelegateImpl() override;
 
   void ShowMissingArchInfobar(int render_process_id,
@@ -55,7 +59,6 @@ class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
   ProfileManager* profile_manager_;
   bool inverse_debug_patterns_;
   std::set<std::string> allowed_nonsfi_origins_;
-  DISALLOW_COPY_AND_ASSIGN(NaClBrowserDelegateImpl);
 };
 
 

@@ -27,6 +27,11 @@ class MediaRouterDialogControllerViews
       public views::WidgetObserver,
       public MediaRouterUIService::Observer {
  public:
+  MediaRouterDialogControllerViews(const MediaRouterDialogControllerViews&) =
+      delete;
+  MediaRouterDialogControllerViews& operator=(
+      const MediaRouterDialogControllerViews&) = delete;
+
   ~MediaRouterDialogControllerViews() override;
 
   // MediaRouterDialogController:
@@ -79,8 +84,6 @@ class MediaRouterDialogControllerViews
   MediaRouterUIService* const media_router_ui_service_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterDialogControllerViews);
 };
 
 }  // namespace media_router

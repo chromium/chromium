@@ -144,6 +144,10 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
 class SessionRestoreStatsCollector::StatsReportingDelegate {
  public:
   StatsReportingDelegate() {}
+
+  StatsReportingDelegate(const StatsReportingDelegate&) = delete;
+  StatsReportingDelegate& operator=(const StatsReportingDelegate&) = delete;
+
   virtual ~StatsReportingDelegate() {}
 
   // Called when TabLoader has completed its work.
@@ -152,9 +156,6 @@ class SessionRestoreStatsCollector::StatsReportingDelegate {
   // Called when a tab starts being tracked. Logs the relative time since last
   // use of the tab.
   virtual void ReportTabTimeSinceActive(base::TimeDelta elapsed) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StatsReportingDelegate);
 };
 
 // The default reporting delegate, which reports statistics via UMA.
@@ -162,15 +163,16 @@ class SessionRestoreStatsCollector::UmaStatsReportingDelegate
     : public StatsReportingDelegate {
  public:
   UmaStatsReportingDelegate();
+
+  UmaStatsReportingDelegate(const UmaStatsReportingDelegate&) = delete;
+  UmaStatsReportingDelegate& operator=(const UmaStatsReportingDelegate&) =
+      delete;
+
   ~UmaStatsReportingDelegate() override {}
 
   // StatsReportingDelegate:
   void ReportTabLoaderStats(const TabLoaderStats& tab_loader_stats) override;
   void ReportTabTimeSinceActive(base::TimeDelta elapsed) override;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(UmaStatsReportingDelegate);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_STATS_COLLECTOR_H_

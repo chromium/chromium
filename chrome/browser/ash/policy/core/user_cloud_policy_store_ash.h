@@ -49,6 +49,10 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
       const AccountId& account_id,
       const base::FilePath& user_policy_key_dir,
       bool is_active_directory);
+
+  UserCloudPolicyStoreAsh(const UserCloudPolicyStoreAsh&) = delete;
+  UserCloudPolicyStoreAsh& operator=(const UserCloudPolicyStoreAsh&) = delete;
+
   ~UserCloudPolicyStoreAsh() override;
 
   // CloudPolicyStore:
@@ -100,8 +104,6 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   std::unique_ptr<CachedPolicyKeyLoader> cached_policy_key_loader_;
 
   base::WeakPtrFactory<UserCloudPolicyStoreAsh> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreAsh);
 };
 
 }  // namespace policy

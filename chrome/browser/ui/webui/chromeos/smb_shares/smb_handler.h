@@ -25,6 +25,10 @@ class SmbHandler : public content::WebUIMessageHandler {
                               const std::string& password)>;
 
   SmbHandler(Profile* profile, UpdateCredentialsCallback update_cred_callback);
+
+  SmbHandler(const SmbHandler&) = delete;
+  SmbHandler& operator=(const SmbHandler&) = delete;
+
   ~SmbHandler() override;
 
  private:
@@ -57,8 +61,6 @@ class SmbHandler : public content::WebUIMessageHandler {
   Profile* const profile_;
   UpdateCredentialsCallback update_cred_callback_;
   base::WeakPtrFactory<SmbHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SmbHandler);
 };
 
 }  // namespace smb_dialog

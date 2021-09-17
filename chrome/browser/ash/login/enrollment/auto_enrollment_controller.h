@@ -123,6 +123,10 @@ class AutoEnrollmentController {
   }
 
   AutoEnrollmentController();
+
+  AutoEnrollmentController(const AutoEnrollmentController&) = delete;
+  AutoEnrollmentController& operator=(const AutoEnrollmentController&) = delete;
+
   ~AutoEnrollmentController();
 
   // Starts the auto-enrollment check.  Safe to call multiple times: aborts in
@@ -295,8 +299,6 @@ class AutoEnrollmentController {
   base::WeakPtrFactory<AutoEnrollmentController> client_start_weak_factory_{
       this};
   base::WeakPtrFactory<AutoEnrollmentController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentController);
 };
 
 }  // namespace ash

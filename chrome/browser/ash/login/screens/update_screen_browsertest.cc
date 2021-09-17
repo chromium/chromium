@@ -107,6 +107,10 @@ chromeos::OobeUI* GetOobeUI() {
 class UpdateScreenTest : public OobeBaseTest {
  public:
   UpdateScreenTest() {}
+
+  UpdateScreenTest(const UpdateScreenTest&) = delete;
+  UpdateScreenTest& operator=(const UpdateScreenTest&) = delete;
+
   ~UpdateScreenTest() override = default;
 
   void CheckUpdatingDialogComponents(
@@ -172,8 +176,6 @@ class UpdateScreenTest : public OobeBaseTest {
   base::OnceClosure screen_result_callback_;
 
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateScreenTest);
 };
 
 class BetterUpdateScreenTest : public UpdateScreenTest {

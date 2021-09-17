@@ -74,6 +74,10 @@ class CastDeviceCache : public media_router::MediaRoutesObserver,
 
   explicit CastDeviceCache(
       const base::RepeatingClosure& update_devices_callback);
+
+  CastDeviceCache(const CastDeviceCache&) = delete;
+  CastDeviceCache& operator=(const CastDeviceCache&) = delete;
+
   ~CastDeviceCache() override;
 
   // This may run |update_devices_callback_| before returning.
@@ -94,8 +98,6 @@ class CastDeviceCache : public media_router::MediaRoutesObserver,
   MediaRoutes routes_;
 
   base::RepeatingClosure update_devices_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastDeviceCache);
 };
 
 CastDeviceCache::CastDeviceCache(

@@ -27,6 +27,10 @@ class AccountHoverListModel : public HoverListModel {
   AccountHoverListModel(
       const std::vector<device::PublicKeyCredentialUserEntity>* users_list,
       Delegate* delegate);
+
+  AccountHoverListModel(const AccountHoverListModel&) = delete;
+  AccountHoverListModel& operator=(const AccountHoverListModel&) = delete;
+
   ~AccountHoverListModel() override;
 
   // HoverListModel:
@@ -45,8 +49,6 @@ class AccountHoverListModel : public HoverListModel {
  private:
   const std::vector<device::PublicKeyCredentialUserEntity>* users_list_;
   Delegate* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountHoverListModel);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_ACCOUNT_HOVER_LIST_MODEL_H_

@@ -44,6 +44,10 @@ class MTPDeviceDelegateImplMac::DeviceListener
  public:
   DeviceListener(MTPDeviceDelegateImplMac* delegate)
       : delegate_(delegate) {}
+
+  DeviceListener(const DeviceListener&) = delete;
+  DeviceListener& operator=(const DeviceListener&) = delete;
+
   ~DeviceListener() override {}
 
   void OpenCameraSession(const std::string& device_id);
@@ -68,8 +72,6 @@ class MTPDeviceDelegateImplMac::DeviceListener
 
   // Weak pointer
   MTPDeviceDelegateImplMac* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceListener);
 };
 
 void MTPDeviceDelegateImplMac::DeviceListener::OpenCameraSession(

@@ -52,6 +52,9 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
         test_safe_browsing_factory_(
             std::make_unique<TestSafeBrowsingServiceFactory>()) {}
 
+  DownloadDangerPromptTest(const DownloadDangerPromptTest&) = delete;
+  DownloadDangerPromptTest& operator=(const DownloadDangerPromptTest&) = delete;
+
   ~DownloadDangerPromptTest() override {}
 
   void SetUp() override {
@@ -174,8 +177,6 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
   bool did_receive_callback_;
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_safe_browsing_factory_;
   std::string expected_serialized_report_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDangerPromptTest);
 };
 
 // Disabled for flaky timeouts on Windows. crbug.com/446696

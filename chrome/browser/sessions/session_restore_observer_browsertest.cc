@@ -71,6 +71,11 @@ class NavigationStartWebContentsObserver : public content::WebContentsObserver {
 class MockSessionRestoreObserver : public SessionRestoreObserver {
  public:
   MockSessionRestoreObserver() { SessionRestore::AddObserver(this); }
+
+  MockSessionRestoreObserver(const MockSessionRestoreObserver&) = delete;
+  MockSessionRestoreObserver& operator=(const MockSessionRestoreObserver&) =
+      delete;
+
   ~MockSessionRestoreObserver() { SessionRestore::RemoveObserver(this); }
 
   enum class SessionRestoreEvent { kStartedLoadingTabs, kFinishedLoadingTabs };
@@ -103,8 +108,6 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
   std::unordered_map<WebContents*,
                      std::unique_ptr<NavigationStartWebContentsObserver>>
       navigation_start_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSessionRestoreObserver);
 };
 
 class SessionRestoreObserverTest : public InProcessBrowserTest {

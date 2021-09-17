@@ -27,6 +27,10 @@ class AcceleratorProvider;
 
 class RenderViewContextMenuViews : public RenderViewContextMenu {
  public:
+  RenderViewContextMenuViews(const RenderViewContextMenuViews&) = delete;
+  RenderViewContextMenuViews& operator=(const RenderViewContextMenuViews&) =
+      delete;
+
   ~RenderViewContextMenuViews() override;
 
   // Factory function to create an instance.
@@ -73,8 +77,6 @@ class RenderViewContextMenuViews : public RenderViewContextMenu {
   // View observer of the submenu view and widget. SubmenuViewObserver is used
   // to observe bounds changes.
   std::unique_ptr<SubmenuViewObserver> submenu_view_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_VIEWS_H_

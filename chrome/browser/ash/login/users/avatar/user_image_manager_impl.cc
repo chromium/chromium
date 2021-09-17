@@ -142,6 +142,10 @@ class UserImageManagerImpl::Job {
  public:
   // The `Job` will update the user object corresponding to `parent`.
   explicit Job(UserImageManagerImpl* parent);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
   // Loads the image at `image_path` or one of the default images,
@@ -225,8 +229,6 @@ class UserImageManagerImpl::Job {
   base::FilePath image_path_;
 
   base::WeakPtrFactory<Job> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 UserImageManagerImpl::Job::Job(UserImageManagerImpl* parent)

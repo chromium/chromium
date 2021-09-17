@@ -139,6 +139,9 @@ class StartupObserver
     : public performance_manager::GraphOwned,
       public performance_manager::PageNode::ObserverDefaultImpl {
  public:
+  StartupObserver(const StartupObserver&) = delete;
+  StartupObserver& operator=(const StartupObserver&) = delete;
+
   ~StartupObserver() override = default;
 
   static void Start();
@@ -202,7 +205,6 @@ class StartupObserver
   }
 
   bool startup_complete_ = false;
-  DISALLOW_COPY_AND_ASSIGN(StartupObserver);
 };
 
 // static

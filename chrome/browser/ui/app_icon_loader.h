@@ -17,6 +17,9 @@ class Profile;
 // and ArcAppIconLoader.
 class AppIconLoader {
  public:
+  AppIconLoader(const AppIconLoader&) = delete;
+  AppIconLoader& operator=(const AppIconLoader&) = delete;
+
   virtual ~AppIconLoader();
 
   // Returns true is this AppIconLoader is able to load an image for the
@@ -51,8 +54,6 @@ class AppIconLoader {
 
   // The delegate object which receives the icon images. No ownership.
   AppIconLoaderDelegate* const delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AppIconLoader);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_ICON_LOADER_H_

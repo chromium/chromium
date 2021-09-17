@@ -51,6 +51,9 @@ class HeartbeatScheduler : public gcm::GCMAppHandler,
       const std::string& device_id,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
+  HeartbeatScheduler(const HeartbeatScheduler&) = delete;
+  HeartbeatScheduler& operator=(const HeartbeatScheduler&) = delete;
+
   ~HeartbeatScheduler() override;
 
   // Returns the time of the last heartbeat, or Time(0) if no heartbeat
@@ -157,8 +160,6 @@ class HeartbeatScheduler : public gcm::GCMAppHandler,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<HeartbeatScheduler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HeartbeatScheduler);
 };
 
 }  // namespace policy

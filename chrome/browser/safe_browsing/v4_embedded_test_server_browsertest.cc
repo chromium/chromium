@@ -72,6 +72,12 @@ namespace safe_browsing {
 class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
  public:
   V4EmbeddedTestServerBrowserTest() {}
+
+  V4EmbeddedTestServerBrowserTest(const V4EmbeddedTestServerBrowserTest&) =
+      delete;
+  V4EmbeddedTestServerBrowserTest& operator=(
+      const V4EmbeddedTestServerBrowserTest&) = delete;
+
   ~V4EmbeddedTestServerBrowserTest() override {}
 
   void SetUp() override {
@@ -111,8 +117,6 @@ class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
 
   // Owned by the V4Database.
   TestV4DatabaseFactory* v4_db_factory_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(V4EmbeddedTestServerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, SimpleTest) {

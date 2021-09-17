@@ -47,6 +47,10 @@ UnPackStatus UnPackArchive(const base::FilePath& archive,
 class LzmaUtilImpl {
  public:
   LzmaUtilImpl();
+
+  LzmaUtilImpl(const LzmaUtilImpl&) = delete;
+  LzmaUtilImpl& operator=(const LzmaUtilImpl&) = delete;
+
   ~LzmaUtilImpl();
 
   UnPackStatus OpenArchive(const base::FilePath& archivePath);
@@ -70,8 +74,6 @@ class LzmaUtilImpl {
   base::File archive_file_;
   std::set<base::FilePath> directories_created_;
   absl::optional<DWORD> error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(LzmaUtilImpl);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_LZMA_UTIL_H_

@@ -25,6 +25,10 @@ class LocalMediaDataSourceFactory
       const base::FilePath& file_path,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
 
+  LocalMediaDataSourceFactory(const LocalMediaDataSourceFactory&) = delete;
+  LocalMediaDataSourceFactory& operator=(const LocalMediaDataSourceFactory&) =
+      delete;
+
   ~LocalMediaDataSourceFactory() override;
 
   // SafeMediaMetadataParser::MediaDataSourceFactory implementation.
@@ -36,8 +40,6 @@ class LocalMediaDataSourceFactory
   // Local downloaded media file path. This is user-defined input.
   base::FilePath file_path_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalMediaDataSourceFactory);
 };
 
 #endif  // CHROME_BROWSER_THUMBNAIL_GENERATOR_ANDROID_LOCAL_MEDIA_DATA_SOURCE_FACTORY_H_

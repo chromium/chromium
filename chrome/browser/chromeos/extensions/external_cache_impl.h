@@ -57,6 +57,10 @@ class ExternalCacheImpl : public ExternalCache,
       ExternalCacheDelegate* delegate,
       bool always_check_updates,
       bool wait_for_cache_initialization);
+
+  ExternalCacheImpl(const ExternalCacheImpl&) = delete;
+  ExternalCacheImpl& operator=(const ExternalCacheImpl&) = delete;
+
   ~ExternalCacheImpl() override;
 
   // Implementation of ExternalCache:
@@ -159,8 +163,6 @@ class ExternalCacheImpl : public ExternalCache,
 
   // Weak factory for callbacks.
   base::WeakPtrFactory<ExternalCacheImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalCacheImpl);
 };
 
 }  // namespace chromeos

@@ -33,6 +33,10 @@ class DownloadHistory : public download::AllDownloadItemNotifier::Observer {
   class HistoryAdapter {
    public:
     explicit HistoryAdapter(history::HistoryService* history);
+
+    HistoryAdapter(const HistoryAdapter&) = delete;
+    HistoryAdapter& operator=(const HistoryAdapter&) = delete;
+
     virtual ~HistoryAdapter();
 
     virtual void QueryDownloads(
@@ -49,7 +53,6 @@ class DownloadHistory : public download::AllDownloadItemNotifier::Observer {
 
    private:
     history::HistoryService* history_;
-    DISALLOW_COPY_AND_ASSIGN(HistoryAdapter);
   };
 
   class Observer {
@@ -87,6 +90,9 @@ class DownloadHistory : public download::AllDownloadItemNotifier::Observer {
   // created and destroys DownloadHistory as DownloadManager is shutting down.
   DownloadHistory(content::DownloadManager* manager,
                   std::unique_ptr<HistoryAdapter> history);
+
+  DownloadHistory(const DownloadHistory&) = delete;
+  DownloadHistory& operator=(const DownloadHistory&) = delete;
 
   ~DownloadHistory() override;
 
@@ -156,8 +162,6 @@ class DownloadHistory : public download::AllDownloadItemNotifier::Observer {
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<DownloadHistory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadHistory);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_HISTORY_H_

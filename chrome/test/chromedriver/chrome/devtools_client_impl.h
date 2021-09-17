@@ -81,6 +81,9 @@ class DevToolsClientImpl : public DevToolsClient {
                      const FrontendCloserFunc& frontend_closer_func,
                      const ParserFunc& parser_func);
 
+  DevToolsClientImpl(const DevToolsClientImpl&) = delete;
+  DevToolsClientImpl& operator=(const DevToolsClientImpl&) = delete;
+
   ~DevToolsClientImpl() override;
 
   void SetParserFuncForTesting(const ParserFunc& parser_func);
@@ -193,8 +196,6 @@ class DevToolsClientImpl : public DevToolsClient {
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;
   int next_id_;  // The id identifying a particular request.
   int stack_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsClientImpl);
 };
 
 namespace internal {

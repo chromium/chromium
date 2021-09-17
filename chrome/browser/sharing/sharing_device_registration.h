@@ -45,6 +45,11 @@ class SharingDeviceRegistration {
                             VapidKeyManager* vapid_key_manager,
                             instance_id::InstanceIDDriver* instance_id_driver,
                             syncer::SyncService* sync_service);
+
+  SharingDeviceRegistration(const SharingDeviceRegistration&) = delete;
+  SharingDeviceRegistration& operator=(const SharingDeviceRegistration&) =
+      delete;
+
   virtual ~SharingDeviceRegistration();
 
   // Registers device with sharing sync preferences. Takes a |callback| function
@@ -130,8 +135,6 @@ class SharingDeviceRegistration {
       enabled_features_testing_value_;
 
   base::WeakPtrFactory<SharingDeviceRegistration> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharingDeviceRegistration);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_DEVICE_REGISTRATION_H_

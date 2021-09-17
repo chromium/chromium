@@ -87,6 +87,10 @@ void ShowToast(const std::string& id, const std::u16string& message) {
 class AccountBuilder {
  public:
   AccountBuilder() = default;
+
+  AccountBuilder(const AccountBuilder&) = delete;
+  AccountBuilder& operator=(const AccountBuilder&) = delete;
+
   ~AccountBuilder() = default;
 
   void PopulateFrom(base::DictionaryValue account) {
@@ -158,7 +162,6 @@ class AccountBuilder {
 
  private:
   base::DictionaryValue account_;
-  DISALLOW_COPY_AND_ASSIGN(AccountBuilder);
 };
 
 }  // namespace

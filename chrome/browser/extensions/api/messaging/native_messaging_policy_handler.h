@@ -18,6 +18,12 @@ class NativeMessagingHostListPolicyHandler : public policy::ListPolicyHandler {
   NativeMessagingHostListPolicyHandler(const char* policy_name,
                                        const char* pref_path,
                                        bool allow_wildcards);
+
+  NativeMessagingHostListPolicyHandler(
+      const NativeMessagingHostListPolicyHandler&) = delete;
+  NativeMessagingHostListPolicyHandler& operator=(
+      const NativeMessagingHostListPolicyHandler&) = delete;
+
   ~NativeMessagingHostListPolicyHandler() override;
 
  protected:
@@ -32,8 +38,6 @@ class NativeMessagingHostListPolicyHandler : public policy::ListPolicyHandler {
  private:
   const char* pref_path_;
   bool allow_wildcards_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessagingHostListPolicyHandler);
 };
 
 }  // namespace extensions

@@ -26,6 +26,10 @@ class LifecycleUnitBase : public LifecycleUnit {
   explicit LifecycleUnitBase(LifecycleUnitSourceBase* source,
                              content::Visibility visibility,
                              UsageClock* usage_clock);
+
+  LifecycleUnitBase(const LifecycleUnitBase&) = delete;
+  LifecycleUnitBase& operator=(const LifecycleUnitBase&) = delete;
+
   ~LifecycleUnitBase() override;
 
   // LifecycleUnit:
@@ -100,8 +104,6 @@ class LifecycleUnitBase : public LifecycleUnit {
   int discard_count_ = 0;
 
   base::ObserverList<LifecycleUnitObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LifecycleUnitBase);
 };
 
 }  // namespace resource_coordinator

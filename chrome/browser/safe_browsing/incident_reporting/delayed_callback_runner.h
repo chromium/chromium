@@ -27,6 +27,10 @@ class DelayedCallbackRunner {
   // |delay| time to pass before and between each callback.
   DelayedCallbackRunner(base::TimeDelta delay,
                         const scoped_refptr<base::TaskRunner>& task_runner);
+
+  DelayedCallbackRunner(const DelayedCallbackRunner&) = delete;
+  DelayedCallbackRunner& operator=(const DelayedCallbackRunner&) = delete;
+
   ~DelayedCallbackRunner();
 
   // Registers |callback| with the runner. A copy of |callback| is held until it
@@ -54,8 +58,6 @@ class DelayedCallbackRunner {
 
   // A timer upon the firing of which the next callback will be run.
   base::DelayTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedCallbackRunner);
 };
 
 }  // namespace safe_browsing

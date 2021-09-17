@@ -39,6 +39,10 @@ class MenuTestBase : public ViewEventTestBase,
                      public views::MenuDelegate {
  public:
   MenuTestBase();
+
+  MenuTestBase(const MenuTestBase&) = delete;
+  MenuTestBase& operator=(const MenuTestBase&) = delete;
+
   ~MenuTestBase() override;
 
   // AXEventObserver overrides.
@@ -97,8 +101,6 @@ class MenuTestBase : public ViewEventTestBase,
   static constexpr int kNumEvents =
       static_cast<size_t>(ax::mojom::Event::kMaxValue) + 1;
   std::array<int, kNumEvents> ax_event_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuTestBase);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MENU_TEST_BASE_H_

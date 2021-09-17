@@ -23,6 +23,10 @@ class FindBarState : public KeyedService,
                      public find_in_page::FindTabHelper::Delegate {
  public:
   explicit FindBarState(content::BrowserContext* browser_context);
+
+  FindBarState(const FindBarState&) = delete;
+  FindBarState& operator=(const FindBarState&) = delete;
+
   ~FindBarState() override;
 
   // Creates a find_in_page::FindTabHelper for the given contents and sets the
@@ -36,8 +40,6 @@ class FindBarState : public KeyedService,
  private:
   Profile* profile_;
   std::u16string last_prepopulate_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarState);
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_STATE_H_

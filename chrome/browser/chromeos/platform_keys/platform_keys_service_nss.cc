@@ -78,6 +78,9 @@ class NSSOperationState {
   explicit NSSOperationState(ServiceWeakPtr weak_ptr)
       : service_weak_ptr_(weak_ptr) {}
 
+  NSSOperationState(const NSSOperationState&) = delete;
+  NSSOperationState& operator=(const NSSOperationState&) = delete;
+
   virtual ~NSSOperationState() = default;
 
   // Called if an error occurred during the execution of the NSS operation
@@ -95,9 +98,6 @@ class NSSOperationState {
   // Weak pointer to the PlatformKeysServiceImpl that created this state. Used
   // to check if the callback should be still called.
   ServiceWeakPtr service_weak_ptr_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NSSOperationState);
 };
 
 using GetCertDBCallback =

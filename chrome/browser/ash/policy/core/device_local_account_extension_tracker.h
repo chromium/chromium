@@ -27,6 +27,11 @@ class DeviceLocalAccountExtensionTracker : public CloudPolicyStore::Observer {
                                      CloudPolicyStore* store,
                                      SchemaRegistry* schema_registry);
 
+  DeviceLocalAccountExtensionTracker(
+      const DeviceLocalAccountExtensionTracker&) = delete;
+  DeviceLocalAccountExtensionTracker& operator=(
+      const DeviceLocalAccountExtensionTracker&) = delete;
+
   ~DeviceLocalAccountExtensionTracker() override;
 
   // CloudPolicyStore::Observer:
@@ -38,8 +43,6 @@ class DeviceLocalAccountExtensionTracker : public CloudPolicyStore::Observer {
 
   CloudPolicyStore* store_;
   SchemaRegistry* schema_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountExtensionTracker);
 };
 
 }  // namespace policy

@@ -43,6 +43,12 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
                                        public content::WebContentsObserver {
  public:
   ChromeKeyboardContentsDelegate() = default;
+
+  ChromeKeyboardContentsDelegate(const ChromeKeyboardContentsDelegate&) =
+      delete;
+  ChromeKeyboardContentsDelegate& operator=(
+      const ChromeKeyboardContentsDelegate&) = delete;
+
   ~ChromeKeyboardContentsDelegate() override = default;
 
  private:
@@ -127,8 +133,6 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override { delete this; }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardContentsDelegate);
 };
 
 }  // namespace

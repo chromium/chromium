@@ -100,6 +100,10 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
     manager->AddObserver(this);
   }
 
+  DownloadItemCreatedObserver(const DownloadItemCreatedObserver&) = delete;
+  DownloadItemCreatedObserver& operator=(const DownloadItemCreatedObserver&) =
+      delete;
+
   ~DownloadItemCreatedObserver() override {
     if (manager_)
       manager_->RemoveObserver(this);
@@ -146,8 +150,6 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
   base::OnceClosure quit_waiting_callback_;
   DownloadManager* manager_;
   std::vector<DownloadItem*> items_seen_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemCreatedObserver);
 };
 
 class InnerContentsCreationObserver : public content::WebContentsObserver {
@@ -214,14 +216,16 @@ class TestNavigationObserverManager
     }
   }
 
+  TestNavigationObserverManager(const TestNavigationObserverManager&) = delete;
+  TestNavigationObserverManager& operator=(
+      const TestNavigationObserverManager&) = delete;
+
   ~TestNavigationObserverManager() override = default;
 
  private:
   std::vector<std::unique_ptr<SafeBrowsingNavigationObserver>> observer_list_;
   std::vector<std::unique_ptr<InnerContentsCreationObserver>>
       inner_contents_creation_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationObserverManager);
 };
 
 class SBNavigationObserverBrowserTest : public InProcessBrowserTest {

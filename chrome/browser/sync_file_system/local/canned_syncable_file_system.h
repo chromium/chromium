@@ -70,6 +70,10 @@ class CannedSyncableFileSystem
       bool in_memory_file_system,
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
       const scoped_refptr<base::SingleThreadTaskRunner>& file_task_runner);
+
+  CannedSyncableFileSystem(const CannedSyncableFileSystem&) = delete;
+  CannedSyncableFileSystem& operator=(const CannedSyncableFileSystem&) = delete;
+
   ~CannedSyncableFileSystem() override;
 
   // SetUp must be called before using this instance.
@@ -239,8 +243,6 @@ class CannedSyncableFileSystem
   bool is_filesystem_opened_;  // Should be accessed only on the IO thread.
 
   scoped_refptr<ObserverList> sync_status_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedSyncableFileSystem);
 };
 
 }  // namespace sync_file_system

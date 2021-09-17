@@ -14,14 +14,17 @@ class ChromeContentBrowserClientTabStripPart
     : public ChromeContentBrowserClientParts {
  public:
   ChromeContentBrowserClientTabStripPart();
+
+  ChromeContentBrowserClientTabStripPart(
+      const ChromeContentBrowserClientTabStripPart&) = delete;
+  ChromeContentBrowserClientTabStripPart& operator=(
+      const ChromeContentBrowserClientTabStripPart&) = delete;
+
   ~ChromeContentBrowserClientTabStripPart() override;
 
   // ChromeContentBrowserClientParts:
   void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* web_prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientTabStripPart);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_STRIP_CHROME_CONTENT_BROWSER_CLIENT_TAB_STRIP_PART_H_

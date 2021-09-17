@@ -92,6 +92,9 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   RenderViewContextMenu(content::RenderFrameHost* render_frame_host,
                         const content::ContextMenuParams& params);
 
+  RenderViewContextMenu(const RenderViewContextMenu&) = delete;
+  RenderViewContextMenu& operator=(const RenderViewContextMenu&) = delete;
+
   ~RenderViewContextMenu() override;
 
   // Adds the spell check service item to the context menu.
@@ -375,8 +378,6 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   std::unique_ptr<lens::LensRegionSearchController>
       lens_region_search_controller_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenu);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_H_

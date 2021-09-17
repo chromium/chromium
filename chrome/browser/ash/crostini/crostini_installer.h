@@ -78,6 +78,10 @@ class CrostiniInstaller : public KeyedService,
   static CrostiniInstaller* GetForProfile(Profile* profile);
 
   explicit CrostiniInstaller(Profile* profile);
+
+  CrostiniInstaller(const CrostiniInstaller&) = delete;
+  CrostiniInstaller& operator=(const CrostiniInstaller&) = delete;
+
   ~CrostiniInstaller() override;
   void Shutdown() override;
 
@@ -166,8 +170,6 @@ class CrostiniInstaller : public KeyedService,
       ansible_management_service_observation_{this};
 
   base::WeakPtrFactory<CrostiniInstaller> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniInstaller);
 };
 
 }  // namespace crostini

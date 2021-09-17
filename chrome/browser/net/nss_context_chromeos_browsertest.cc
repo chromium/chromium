@@ -117,6 +117,9 @@ class UserAddingFinishObserver : public ash::UserAddingScreen::Observer {
     ash::UserAddingScreen::Get()->AddObserver(this);
   }
 
+  UserAddingFinishObserver(const UserAddingFinishObserver&) = delete;
+  UserAddingFinishObserver& operator=(const UserAddingFinishObserver&) = delete;
+
   ~UserAddingFinishObserver() override {
     ash::UserAddingScreen::Get()->RemoveObserver(this);
   }
@@ -145,7 +148,6 @@ class UserAddingFinishObserver : public ash::UserAddingScreen::Observer {
  private:
   bool finished_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(UserAddingFinishObserver);
 };
 
 }  // namespace

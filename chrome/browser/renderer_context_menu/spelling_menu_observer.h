@@ -48,6 +48,10 @@ struct SpellCheckResult;
 class SpellingMenuObserver : public RenderViewContextMenuObserver {
  public:
   explicit SpellingMenuObserver(RenderViewContextMenuProxy* proxy);
+
+  SpellingMenuObserver(const SpellingMenuObserver&) = delete;
+  SpellingMenuObserver& operator=(const SpellingMenuObserver&) = delete;
+
   ~SpellingMenuObserver() override;
 
   // RenderViewContextMenuObserver implementation.
@@ -178,8 +182,6 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   base::WeakPtrFactory<SpellingMenuObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellingMenuObserver);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_MENU_OBSERVER_H_

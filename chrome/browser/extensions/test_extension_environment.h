@@ -56,6 +56,9 @@ class TestExtensionEnvironment {
 
   explicit TestExtensionEnvironment(Type type = Type::kWithTaskEnvironment);
 
+  TestExtensionEnvironment(const TestExtensionEnvironment&) = delete;
+  TestExtensionEnvironment& operator=(const TestExtensionEnvironment&) = delete;
+
   ~TestExtensionEnvironment();
 
   TestingProfile* profile() const;
@@ -112,8 +115,6 @@ class TestExtensionEnvironment {
 
   std::unique_ptr<TestingProfile> profile_;
   ExtensionService* extension_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionEnvironment);
 };
 
 }  // namespace extensions

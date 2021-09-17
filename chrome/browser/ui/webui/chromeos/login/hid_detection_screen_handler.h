@@ -50,6 +50,11 @@ class HIDDetectionScreenHandler
   using TView = HIDDetectionView;
 
   explicit HIDDetectionScreenHandler(JSCallsContainer* js_calls_container);
+
+  HIDDetectionScreenHandler(const HIDDetectionScreenHandler&) = delete;
+  HIDDetectionScreenHandler& operator=(const HIDDetectionScreenHandler&) =
+      delete;
+
   ~HIDDetectionScreenHandler() override;
 
   // HIDDetectionView implementation:
@@ -116,8 +121,6 @@ class HIDDetectionScreenHandler
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HIDDetectionScreenHandler);
 };
 
 }  // namespace chromeos

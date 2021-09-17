@@ -71,6 +71,10 @@ class CertificateProviderService : public KeyedService {
   class Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() {}
 
     // Returns the ids of the extensions that want to provide certificates and
@@ -92,9 +96,6 @@ class CertificateProviderService : public KeyedService {
         uint16_t algorithm,
         const scoped_refptr<net::X509Certificate>& certificate,
         base::span<const uint8_t> input) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   class Observer : public base::CheckedObserver {

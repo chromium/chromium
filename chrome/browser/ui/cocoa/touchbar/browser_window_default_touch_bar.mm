@@ -169,6 +169,10 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
   bool show_home_button() { return show_home_button_.GetValue(); }
 
+  TouchBarNotificationBridge(const TouchBarNotificationBridge&) = delete;
+  TouchBarNotificationBridge& operator=(const TouchBarNotificationBridge&) =
+      delete;
+
   ~TouchBarNotificationBridge() override {
     BrowserList::RemoveObserver(this);
     browser_->tab_strip_model()->RemoveObserver(this);
@@ -256,8 +260,6 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   BooleanPrefMember show_home_button_;
 
   PrefChangeRegistrar profile_pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchBarNotificationBridge);
 };
 
 }  // namespace

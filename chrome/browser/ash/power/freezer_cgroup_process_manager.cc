@@ -41,6 +41,9 @@ class FreezerCgroupProcessManager::FileWorker {
     DCHECK(ui_thread_->RunsTasksInCurrentSequence());
   }
 
+  FileWorker(const FileWorker&) = delete;
+  FileWorker& operator=(const FileWorker&) = delete;
+
   // Called on FILE thread.
   virtual ~FileWorker() { DCHECK(file_thread_->RunsTasksInCurrentSequence()); }
 
@@ -152,8 +155,6 @@ class FreezerCgroupProcessManager::FileWorker {
   // True iff FreezeRenderers() wrote its command successfully the last time it
   // was called.
   bool froze_successfully_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileWorker);
 };
 
 FreezerCgroupProcessManager::FreezerCgroupProcessManager()

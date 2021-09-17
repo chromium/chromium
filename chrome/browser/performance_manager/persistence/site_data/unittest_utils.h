@@ -18,6 +18,11 @@ namespace testing {
 class TestWithPerformanceManager : public ::testing::Test {
  public:
   TestWithPerformanceManager();
+
+  TestWithPerformanceManager(const TestWithPerformanceManager&) = delete;
+  TestWithPerformanceManager& operator=(const TestWithPerformanceManager&) =
+      delete;
+
   ~TestWithPerformanceManager() override;
 
   void SetUp() override;
@@ -26,8 +31,6 @@ class TestWithPerformanceManager : public ::testing::Test {
  private:
   std::unique_ptr<PerformanceManagerImpl> performance_manager_;
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWithPerformanceManager);
 };
 
 }  // namespace testing

@@ -27,6 +27,11 @@ class ProcessSingletonStartupLock {
  public:
   explicit ProcessSingletonStartupLock(
       const ProcessSingleton::NotificationCallback& original_callback);
+
+  ProcessSingletonStartupLock(const ProcessSingletonStartupLock&) = delete;
+  ProcessSingletonStartupLock& operator=(const ProcessSingletonStartupLock&) =
+      delete;
+
   ~ProcessSingletonStartupLock();
 
   // Returns the ProcessSingleton::NotificationCallback.
@@ -52,8 +57,6 @@ class ProcessSingletonStartupLock {
   ProcessSingleton::NotificationCallback original_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSingletonStartupLock);
 };
 
 #endif  // CHROME_BROWSER_PROCESS_SINGLETON_STARTUP_LOCK_H_

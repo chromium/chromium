@@ -27,6 +27,9 @@ class TouchEventHandler : public ui::EventHandler {
         num_pointers_down_(0),
         recursion_enabled_(false) {}
 
+  TouchEventHandler(const TouchEventHandler&) = delete;
+  TouchEventHandler& operator=(const TouchEventHandler&) = delete;
+
   ~TouchEventHandler() override {}
 
   // OnTouchEvent will simulate a second touch event (at |touch_point|) to force
@@ -90,12 +93,15 @@ class TouchEventHandler : public ui::EventHandler {
   base::RepeatingClosure quit_closure_;
   bool recursion_enabled_;
   gfx::Point touch_point_;
-  DISALLOW_COPY_AND_ASSIGN(TouchEventHandler);
 };
 
 class TestingGestureRecognizer : public ui::GestureRecognizerImpl {
  public:
   TestingGestureRecognizer() = default;
+
+  TestingGestureRecognizer(const TestingGestureRecognizer&) = delete;
+  TestingGestureRecognizer& operator=(const TestingGestureRecognizer&) = delete;
+
   ~TestingGestureRecognizer() override = default;
 
   int num_touch_press_events() const { return num_touch_press_events_; }
@@ -123,7 +129,6 @@ class TestingGestureRecognizer : public ui::GestureRecognizerImpl {
  private:
   int num_touch_press_events_ = 0;
   int num_touch_release_events_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(TestingGestureRecognizer);
 };
 
 }  // namespace

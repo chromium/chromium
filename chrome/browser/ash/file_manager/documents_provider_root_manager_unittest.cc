@@ -61,6 +61,12 @@ class TestObserver : public DocumentsProviderRootManager::Observer {
 class DocumentsProviderRootManagerTest : public testing::Test {
  public:
   DocumentsProviderRootManagerTest() = default;
+
+  DocumentsProviderRootManagerTest(const DocumentsProviderRootManagerTest&) =
+      delete;
+  DocumentsProviderRootManagerTest& operator=(
+      const DocumentsProviderRootManagerTest&) = delete;
+
   ~DocumentsProviderRootManagerTest() override = default;
 
   void SetUp() override {
@@ -111,8 +117,6 @@ class DocumentsProviderRootManagerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<arc::ArcFileSystemOperationRunner> runner_;
   TestObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentsProviderRootManagerTest);
 };
 
 TEST_F(DocumentsProviderRootManagerTest, AddMultipleRoots) {

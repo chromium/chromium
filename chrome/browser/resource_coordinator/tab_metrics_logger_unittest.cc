@@ -46,6 +46,10 @@ constexpr char kExampleDomain[] = "example.com";
 class FakeBrowserWindow : public TestBrowserWindow {
  public:
   FakeBrowserWindow() = default;
+
+  FakeBrowserWindow(const FakeBrowserWindow&) = delete;
+  FakeBrowserWindow& operator=(const FakeBrowserWindow&) = delete;
+
   ~FakeBrowserWindow() override = default;
 
   // Helper function to handle FakeBrowserWindow lifetime. Modeled after
@@ -106,8 +110,6 @@ class FakeBrowserWindow : public TestBrowserWindow {
   Browser* browser_ = nullptr;
   bool is_active_ = false;
   ui::WindowShowState show_state_ = ui::SHOW_STATE_NORMAL;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBrowserWindow);
 };
 
 }  // namespace

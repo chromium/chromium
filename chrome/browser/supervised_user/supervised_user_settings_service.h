@@ -68,6 +68,11 @@ class SupervisedUserSettingsService : public KeyedService,
       base::RepeatingCallbackList<ShutdownCallbackType>;
 
   SupervisedUserSettingsService();
+
+  SupervisedUserSettingsService(const SupervisedUserSettingsService&) = delete;
+  SupervisedUserSettingsService& operator=(
+      const SupervisedUserSettingsService&) = delete;
+
   ~SupervisedUserSettingsService() override;
 
   // Initializes the service by loading its settings from a file underneath the
@@ -188,8 +193,6 @@ class SupervisedUserSettingsService : public KeyedService,
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncErrorFactory> error_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserSettingsService);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SETTINGS_SERVICE_H_

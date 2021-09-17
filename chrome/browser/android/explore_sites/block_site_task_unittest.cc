@@ -27,6 +27,11 @@ const char kGoogleUrl[] = "https://www.google.com";
 class ExploreSitesBlockSiteTest : public TaskTestBase {
  public:
   ExploreSitesBlockSiteTest() = default;
+
+  ExploreSitesBlockSiteTest(const ExploreSitesBlockSiteTest&) = delete;
+  ExploreSitesBlockSiteTest& operator=(const ExploreSitesBlockSiteTest&) =
+      delete;
+
   ~ExploreSitesBlockSiteTest() override = default;
 
   void SetUp() override {
@@ -59,8 +64,6 @@ class ExploreSitesBlockSiteTest : public TaskTestBase {
   std::unique_ptr<ExploreSitesStore> store_;
   bool success_;
   bool callback_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesBlockSiteTest);
 };
 
 void ExploreSitesBlockSiteTest::PopulateActivity() {

@@ -48,6 +48,11 @@ class SessionControllerClientImpl
       public crosapi::BrowserManagerObserver {
  public:
   SessionControllerClientImpl();
+
+  SessionControllerClientImpl(const SessionControllerClientImpl&) = delete;
+  SessionControllerClientImpl& operator=(const SessionControllerClientImpl&) =
+      delete;
+
   ~SessionControllerClientImpl() override;
 
   void Init();
@@ -180,8 +185,6 @@ class SessionControllerClientImpl
   std::unique_ptr<ash::UserSession> last_sent_user_session_;
 
   base::WeakPtrFactory<SessionControllerClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionControllerClientImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SESSION_CONTROLLER_CLIENT_IMPL_H_

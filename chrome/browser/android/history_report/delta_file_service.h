@@ -30,6 +30,10 @@ class DeltaFileBackend;
 class DeltaFileService {
  public:
   explicit DeltaFileService(const base::FilePath& dir);
+
+  DeltaFileService(const DeltaFileService&) = delete;
+  DeltaFileService& operator=(const DeltaFileService&) = delete;
+
   virtual ~DeltaFileService();
 
   // Adds new addition entry to delta file.
@@ -55,8 +59,6 @@ class DeltaFileService {
  private:
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<DeltaFileBackend> delta_file_backend_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaFileService);
 };
 
 }  // namespace history_report

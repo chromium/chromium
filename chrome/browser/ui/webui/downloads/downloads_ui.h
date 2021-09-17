@@ -25,6 +25,10 @@ class DownloadsUI : public ui::MojoWebUIController,
                     public downloads::mojom::PageHandlerFactory {
  public:
   explicit DownloadsUI(content::WebUI* web_ui);
+
+  DownloadsUI(const DownloadsUI&) = delete;
+  DownloadsUI& operator=(const DownloadsUI&) = delete;
+
   ~DownloadsUI() override;
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
@@ -47,8 +51,6 @@ class DownloadsUI : public ui::MojoWebUIController,
       this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DOWNLOADS_DOWNLOADS_UI_H_

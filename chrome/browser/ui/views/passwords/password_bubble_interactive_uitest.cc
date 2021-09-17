@@ -66,6 +66,12 @@ namespace metrics_util = password_manager::metrics_util;
 class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
  public:
   PasswordBubbleInteractiveUiTest() {}
+
+  PasswordBubbleInteractiveUiTest(const PasswordBubbleInteractiveUiTest&) =
+      delete;
+  PasswordBubbleInteractiveUiTest& operator=(
+      const PasswordBubbleInteractiveUiTest&) = delete;
+
   ~PasswordBubbleInteractiveUiTest() override {}
 
   MOCK_METHOD0(OnIconRequestDone, void());
@@ -78,9 +84,6 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
     }
     return std::move(response);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordBubbleInteractiveUiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {

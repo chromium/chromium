@@ -114,6 +114,10 @@ class FakePerfOutputCall : public PerfOutputCall {
     collection_done_timer_.Start(FROM_HERE, duration, this,
                                  &FakePerfOutputCall::OnCollectionDone);
   }
+
+  FakePerfOutputCall(const FakePerfOutputCall&) = delete;
+  FakePerfOutputCall& operator=(const FakePerfOutputCall&) = delete;
+
   ~FakePerfOutputCall() override = default;
 
   void Stop() override {
@@ -135,8 +139,6 @@ class FakePerfOutputCall : public PerfOutputCall {
   DoneCallback done_callback_;
   base::OneShotTimer collection_done_timer_;
   base::OnceClosure on_stop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePerfOutputCall);
 };
 
 // Allows testing of PerfCollector behavior when an incognito window is opened.

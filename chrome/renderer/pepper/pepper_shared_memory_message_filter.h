@@ -27,6 +27,12 @@ class PepperSharedMemoryMessageFilter
     : public ppapi::host::InstanceMessageFilter {
  public:
   explicit PepperSharedMemoryMessageFilter(content::RendererPpapiHost* host);
+
+  PepperSharedMemoryMessageFilter(const PepperSharedMemoryMessageFilter&) =
+      delete;
+  PepperSharedMemoryMessageFilter& operator=(
+      const PepperSharedMemoryMessageFilter&) = delete;
+
   ~PepperSharedMemoryMessageFilter() override;
 
   // InstanceMessageFilter:
@@ -43,8 +49,6 @@ class PepperSharedMemoryMessageFilter
       ppapi::proxy::SerializedHandle* plugin_shm_handle);
 
   content::RendererPpapiHost* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperSharedMemoryMessageFilter);
 };
 
 #endif  // CHROME_RENDERER_PEPPER_PEPPER_SHARED_MEMORY_MESSAGE_FILTER_H_

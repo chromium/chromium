@@ -22,14 +22,16 @@ class TestableNotificationController : public EasyUnlockNotificationController {
   explicit TestableNotificationController(Profile* profile)
       : EasyUnlockNotificationController(profile) {}
 
+  TestableNotificationController(const TestableNotificationController&) =
+      delete;
+  TestableNotificationController& operator=(
+      const TestableNotificationController&) = delete;
+
   ~TestableNotificationController() override {}
 
   // EasyUnlockNotificationController:
   MOCK_METHOD0(LaunchEasyUnlockSettings, void());
   MOCK_METHOD0(LockScreen, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestableNotificationController);
 };
 
 class EasyUnlockNotificationControllerTest : public BrowserWithTestWindowTest {

@@ -14,6 +14,10 @@ class Profile;
 class PrefsInternalsSource : public content::URLDataSource {
  public:
   explicit PrefsInternalsSource(Profile* profile);
+
+  PrefsInternalsSource(const PrefsInternalsSource&) = delete;
+  PrefsInternalsSource& operator=(const PrefsInternalsSource&) = delete;
+
   ~PrefsInternalsSource() override;
 
   // content::URLDataSource:
@@ -26,8 +30,6 @@ class PrefsInternalsSource : public content::URLDataSource {
 
  private:
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefsInternalsSource);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PREFS_INTERNALS_SOURCE_H_

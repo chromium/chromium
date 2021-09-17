@@ -21,6 +21,10 @@ class EnumHistogramChecker {
  public:
   EnumHistogramChecker(const std::string& histogram, int count,
                        base::HistogramSamples* base);
+
+  EnumHistogramChecker(const EnumHistogramChecker&) = delete;
+  EnumHistogramChecker& operator=(const EnumHistogramChecker&) = delete;
+
   ~EnumHistogramChecker();
 
   // Sets expectation for a given enum key. |key| must be between 0
@@ -40,8 +44,6 @@ class EnumHistogramChecker {
   // When not NULL, expected values are compared with actual values
   // minus base.
   base::HistogramSamples* base_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnumHistogramChecker);
 };
 
 }  // namespace chromeos

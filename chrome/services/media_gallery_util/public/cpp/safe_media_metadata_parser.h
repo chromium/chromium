@@ -52,6 +52,10 @@ class SafeMediaMetadataParser : public MediaParserProvider {
       const std::string& mime_type,
       bool get_attached_images,
       std::unique_ptr<MediaDataSourceFactory> media_source_factory);
+
+  SafeMediaMetadataParser(const SafeMediaMetadataParser&) = delete;
+  SafeMediaMetadataParser& operator=(const SafeMediaMetadataParser&) = delete;
+
   ~SafeMediaMetadataParser() override;
 
   // Initiates parsing. |callback| is invoked on the same sequence that calls
@@ -84,8 +88,6 @@ class SafeMediaMetadataParser : public MediaParserProvider {
   std::unique_ptr<MediaDataSourceFactory> media_source_factory_;
 
   base::WeakPtrFactory<SafeMediaMetadataParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SafeMediaMetadataParser);
 };
 
 #endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_SAFE_MEDIA_METADATA_PARSER_H_

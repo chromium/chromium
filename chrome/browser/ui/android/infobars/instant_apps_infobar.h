@@ -15,6 +15,9 @@ class InstantAppsInfoBar : public infobars::ConfirmInfoBar {
   InstantAppsInfoBar(
       std::unique_ptr<InstantAppsInfoBarDelegate> delegate);
 
+  InstantAppsInfoBar(const InstantAppsInfoBar&) = delete;
+  InstantAppsInfoBar& operator=(const InstantAppsInfoBar&) = delete;
+
   ~InstantAppsInfoBar() override;
 
  private:
@@ -24,8 +27,6 @@ class InstantAppsInfoBar : public infobars::ConfirmInfoBar {
       const ResourceIdMapper& resource_id_mapper) override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_infobar_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstantAppsInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_INSTANT_APPS_INFOBAR_H_

@@ -19,6 +19,12 @@ using ::mojom::LifecycleUnitState;
 class DiscardMetricsLifecycleUnitObserver : public LifecycleUnitObserver {
  public:
   DiscardMetricsLifecycleUnitObserver();
+
+  DiscardMetricsLifecycleUnitObserver(
+      const DiscardMetricsLifecycleUnitObserver&) = delete;
+  DiscardMetricsLifecycleUnitObserver& operator=(
+      const DiscardMetricsLifecycleUnitObserver&) = delete;
+
   ~DiscardMetricsLifecycleUnitObserver() override;
 
   // LifecycleUnitObserver:
@@ -50,8 +56,6 @@ class DiscardMetricsLifecycleUnitObserver : public LifecycleUnitObserver {
   // The last time at which the LifecycleUnit was reloaded after being
   // discarded.
   base::TimeTicks reload_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardMetricsLifecycleUnitObserver);
 };
 
 }  // namespace resource_coordinator

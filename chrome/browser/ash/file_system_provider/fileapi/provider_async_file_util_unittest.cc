@@ -51,6 +51,10 @@ const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 class EventLogger {
  public:
   EventLogger() {}
+
+  EventLogger(const EventLogger&) = delete;
+  EventLogger& operator=(const EventLogger&) = delete;
+
   virtual ~EventLogger() {}
 
   void OnStatus(base::File::Error error) {
@@ -99,7 +103,6 @@ class EventLogger {
  private:
   std::unique_ptr<base::File::Error> result_;
   storage::AsyncFileUtil::EntryList read_directory_list_;
-  DISALLOW_COPY_AND_ASSIGN(EventLogger);
 };
 
 // Creates a cracked FileSystemURL for tests.

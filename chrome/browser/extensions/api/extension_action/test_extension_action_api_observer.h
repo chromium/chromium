@@ -29,6 +29,12 @@ class TestExtensionActionAPIObserver : public ExtensionActionAPI::Observer {
       content::BrowserContext* context,
       const ExtensionId& extension_id,
       const std::set<content::WebContents*>& contents_to_observe);
+
+  TestExtensionActionAPIObserver(const TestExtensionActionAPIObserver&) =
+      delete;
+  TestExtensionActionAPIObserver& operator=(
+      const TestExtensionActionAPIObserver&) = delete;
+
   ~TestExtensionActionAPIObserver() override;
 
   // Waits until the extension action is updated and the update is seen for all
@@ -57,8 +63,6 @@ class TestExtensionActionAPIObserver : public ExtensionActionAPI::Observer {
 
   // An optional set of web contents to observe for extension action updates.
   std::set<content::WebContents*> contents_to_observe_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionActionAPIObserver);
 };
 
 }  // namespace extensions

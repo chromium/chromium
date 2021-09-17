@@ -29,6 +29,10 @@ class DownloadItemModel : public DownloadUIModel,
   // Constructs a DownloadItemModel. The caller must ensure that |download|
   // outlives this object.
   explicit DownloadItemModel(download::DownloadItem* download);
+
+  DownloadItemModel(const DownloadItemModel&) = delete;
+  DownloadItemModel& operator=(const DownloadItemModel&) = delete;
+
   ~DownloadItemModel() override;
 
   // DownloadUIModel implementation.
@@ -117,8 +121,6 @@ class DownloadItemModel : public DownloadUIModel,
   // itself shouldn't maintain any state since there can be more than one
   // DownloadItemModel in use with the same DownloadItem.
   download::DownloadItem* download_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemModel);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_MODEL_H_

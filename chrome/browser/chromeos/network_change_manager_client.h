@@ -30,6 +30,11 @@ class NetworkChangeManagerClient
  public:
   NetworkChangeManagerClient(
       net::NetworkChangeNotifierPosix* network_change_notifier);
+
+  NetworkChangeManagerClient(const NetworkChangeManagerClient&) = delete;
+  NetworkChangeManagerClient& operator=(const NetworkChangeManagerClient&) =
+      delete;
+
   ~NetworkChangeManagerClient() override;
 
   // PowerManagerClient::Observer overrides.
@@ -89,8 +94,6 @@ class NetworkChangeManagerClient
 
   net::NetworkChangeNotifierPosix* network_change_notifier_;
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeManagerClient);
 };
 
 }  // namespace chromeos

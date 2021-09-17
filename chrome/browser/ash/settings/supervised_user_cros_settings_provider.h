@@ -21,6 +21,12 @@ class SupervisedUserCrosSettingsProvider : public CrosSettingsProvider {
  public:
   explicit SupervisedUserCrosSettingsProvider(
       const CrosSettingsProvider::NotifyObserversCallback& notify_cb);
+
+  SupervisedUserCrosSettingsProvider(
+      const SupervisedUserCrosSettingsProvider&) = delete;
+  SupervisedUserCrosSettingsProvider& operator=(
+      const SupervisedUserCrosSettingsProvider&) = delete;
+
   ~SupervisedUserCrosSettingsProvider() override;
 
   // CrosSettingsProvider:
@@ -31,8 +37,6 @@ class SupervisedUserCrosSettingsProvider : public CrosSettingsProvider {
  private:
   // Cros pref name to pref value.
   std::map<std::string, base::Value> child_user_restrictions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserCrosSettingsProvider);
 };
 
 }  // namespace ash

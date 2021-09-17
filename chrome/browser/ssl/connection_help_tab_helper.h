@@ -23,6 +23,9 @@ class ConnectionHelpTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ConnectionHelpTabHelper> {
  public:
+  ConnectionHelpTabHelper(const ConnectionHelpTabHelper&) = delete;
+  ConnectionHelpTabHelper& operator=(const ConnectionHelpTabHelper&) = delete;
+
   ~ConnectionHelpTabHelper() override;
 
   // WebContentsObserver:
@@ -41,7 +44,5 @@ class ConnectionHelpTabHelper
 
   GURL testing_url_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionHelpTabHelper);
 };
 #endif  // CHROME_BROWSER_SSL_CONNECTION_HELP_TAB_HELPER_H_

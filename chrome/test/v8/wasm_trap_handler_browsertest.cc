@@ -35,6 +35,11 @@ constexpr bool kIsTrapHandlerSupported = false;
 class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
  public:
   WasmTrapHandlerBrowserTest() {}
+
+  WasmTrapHandlerBrowserTest(const WasmTrapHandlerBrowserTest&) = delete;
+  WasmTrapHandlerBrowserTest& operator=(const WasmTrapHandlerBrowserTest&) =
+      delete;
+
   ~WasmTrapHandlerBrowserTest() override {}
 
  protected:
@@ -84,8 +89,6 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII(switches::kJavaScriptFlags,
                                     "--allow-natives-syntax");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(WasmTrapHandlerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WasmTrapHandlerBrowserTest, OutOfBounds) {

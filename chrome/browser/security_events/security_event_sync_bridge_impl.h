@@ -22,6 +22,11 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
   SecurityEventSyncBridgeImpl(
       syncer::OnceModelTypeStoreFactory store_factory,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  SecurityEventSyncBridgeImpl(const SecurityEventSyncBridgeImpl&) = delete;
+  SecurityEventSyncBridgeImpl& operator=(const SecurityEventSyncBridgeImpl&) =
+      delete;
+
   ~SecurityEventSyncBridgeImpl() override;
 
   void RecordSecurityEvent(sync_pb::SecurityEventSpecifics specifics) override;
@@ -68,8 +73,6 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
   base::WeakPtrFactory<SecurityEventSyncBridgeImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityEventSyncBridgeImpl);
 };
 
 #endif  // CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_SYNC_BRIDGE_IMPL_H_

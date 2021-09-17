@@ -26,6 +26,12 @@ using UkmEntry = ukm::builders::PageForegroundSession;
 class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
  public:
   ForegroundDurationUKMObserverBrowserTest() {}
+
+  ForegroundDurationUKMObserverBrowserTest(
+      const ForegroundDurationUKMObserverBrowserTest&) = delete;
+  ForegroundDurationUKMObserverBrowserTest& operator=(
+      const ForegroundDurationUKMObserverBrowserTest&) = delete;
+
   ~ForegroundDurationUKMObserverBrowserTest() override {}
 
   void PreRunTestOnMainThread() override {
@@ -71,8 +77,6 @@ class ForegroundDurationUKMObserverBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForegroundDurationUKMObserverBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, RecordSimple) {

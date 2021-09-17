@@ -54,13 +54,15 @@ class SmbCredentialsDialog : public SystemWebDialogDelegate {
 class SmbCredentialsDialogUI : public ui::WebDialogUI {
  public:
   explicit SmbCredentialsDialogUI(content::WebUI* web_ui);
+
+  SmbCredentialsDialogUI(const SmbCredentialsDialogUI&) = delete;
+  SmbCredentialsDialogUI& operator=(const SmbCredentialsDialogUI&) = delete;
+
   ~SmbCredentialsDialogUI() override;
 
  private:
   void OnUpdateCredentials(const std::string& username,
                            const std::string& password);
-
-  DISALLOW_COPY_AND_ASSIGN(SmbCredentialsDialogUI);
 };
 
 }  // namespace smb_dialog

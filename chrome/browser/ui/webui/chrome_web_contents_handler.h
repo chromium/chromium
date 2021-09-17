@@ -13,6 +13,10 @@ class ChromeWebContentsHandler
     : public ui::WebDialogWebContentsDelegate::WebContentsHandler {
  public:
   ChromeWebContentsHandler();
+
+  ChromeWebContentsHandler(const ChromeWebContentsHandler&) = delete;
+  ChromeWebContentsHandler& operator=(const ChromeWebContentsHandler&) = delete;
+
   ~ChromeWebContentsHandler() override;
 
   // Overridden from WebDialogWebContentsDelegate::WebContentsHandler:
@@ -30,9 +34,6 @@ class ChromeWebContentsHandler
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebContentsHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROME_WEB_CONTENTS_HANDLER_H_

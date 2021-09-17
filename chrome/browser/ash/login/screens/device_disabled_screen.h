@@ -18,6 +18,10 @@ class DeviceDisabledScreen : public BaseScreen,
                              public system::DeviceDisablingManager::Observer {
  public:
   explicit DeviceDisabledScreen(DeviceDisabledScreenView* view);
+
+  DeviceDisabledScreen(const DeviceDisabledScreen&) = delete;
+  DeviceDisabledScreen& operator=(const DeviceDisabledScreen&) = delete;
+
   ~DeviceDisabledScreen() override;
 
   // Called when the view is being destroyed. Note that if the Delegate is
@@ -33,8 +37,6 @@ class DeviceDisabledScreen : public BaseScreen,
   void HideImpl() override;
 
   DeviceDisabledScreenView* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisabledScreen);
 };
 
 }  // namespace ash

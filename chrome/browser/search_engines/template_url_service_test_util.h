@@ -44,6 +44,11 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
 class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
  public:
   TemplateURLServiceTestUtil();
+
+  TemplateURLServiceTestUtil(const TemplateURLServiceTestUtil&) = delete;
+  TemplateURLServiceTestUtil& operator=(const TemplateURLServiceTestUtil&) =
+      delete;
+
   ~TemplateURLServiceTestUtil() override;
 
   // TemplateURLServiceObserver implemementation.
@@ -102,8 +107,6 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
   scoped_refptr<KeywordWebDataService> web_data_service_;
   std::unique_ptr<TemplateURLService> model_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceTestUtil);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_TEST_UTIL_H_

@@ -32,6 +32,10 @@ class OriginVerifier {
                  const base::android::JavaRef<jobject>& obj,
                  const base::android::JavaRef<jobject>& jweb_contents,
                  const base::android::JavaRef<jobject>& jprofile);
+
+  OriginVerifier(const OriginVerifier&) = delete;
+  OriginVerifier& operator=(const OriginVerifier&) = delete;
+
   ~OriginVerifier();
 
   // Verify origin with the given parameters. No network requests can be made
@@ -59,8 +63,6 @@ class OriginVerifier {
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
 
   static int clear_browsing_data_call_count_for_tests_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginVerifier);
 };
 
 }  // namespace customtabs

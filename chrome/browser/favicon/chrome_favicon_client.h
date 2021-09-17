@@ -15,6 +15,10 @@ class Profile;
 class ChromeFaviconClient : public favicon::FaviconClient {
  public:
   explicit ChromeFaviconClient(Profile* profile);
+
+  ChromeFaviconClient(const ChromeFaviconClient&) = delete;
+  ChromeFaviconClient& operator=(const ChromeFaviconClient&) = delete;
+
   ~ChromeFaviconClient() override;
 
  private:
@@ -29,8 +33,6 @@ class ChromeFaviconClient : public favicon::FaviconClient {
       base::CancelableTaskTracker* tracker) override;
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeFaviconClient);
 };
 
 #endif  // CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_

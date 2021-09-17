@@ -20,6 +20,9 @@ class BrowserSyncedTabDelegate
     : public TabContentsSyncedTabDelegate,
       public content::WebContentsUserData<BrowserSyncedTabDelegate> {
  public:
+  BrowserSyncedTabDelegate(const BrowserSyncedTabDelegate&) = delete;
+  BrowserSyncedTabDelegate& operator=(const BrowserSyncedTabDelegate&) = delete;
+
   ~BrowserSyncedTabDelegate() override;
 
   // SyncedTabDelegate:
@@ -32,8 +35,6 @@ class BrowserSyncedTabDelegate
   friend class content::WebContentsUserData<BrowserSyncedTabDelegate>;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSyncedTabDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_TAB_DELEGATE_H_

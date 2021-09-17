@@ -22,14 +22,23 @@ class Value;
 class DomainReliabilityInternalsUI : public content::WebUIController {
  public:
   explicit DomainReliabilityInternalsUI(content::WebUI* web_ui);
-  ~DomainReliabilityInternalsUI() override;
 
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityInternalsUI);
+  DomainReliabilityInternalsUI(const DomainReliabilityInternalsUI&) = delete;
+  DomainReliabilityInternalsUI& operator=(const DomainReliabilityInternalsUI&) =
+      delete;
+
+  ~DomainReliabilityInternalsUI() override;
 };
 
 class DomainReliabilityInternalsHandler : public content::WebUIMessageHandler {
  public:
   DomainReliabilityInternalsHandler();
+
+  DomainReliabilityInternalsHandler(const DomainReliabilityInternalsHandler&) =
+      delete;
+  DomainReliabilityInternalsHandler& operator=(
+      const DomainReliabilityInternalsHandler&) = delete;
+
   ~DomainReliabilityInternalsHandler() override;
 
   // content::WebUIMessageHandler:
@@ -41,8 +50,6 @@ class DomainReliabilityInternalsHandler : public content::WebUIMessageHandler {
 
   std::string callback_id_;
   base::WeakPtrFactory<DomainReliabilityInternalsHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityInternalsHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DOMAIN_RELIABILITY_INTERNALS_UI_H_

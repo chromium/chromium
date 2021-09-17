@@ -149,6 +149,12 @@ class ExtensionMetricsProviderInstallsTest
     : public extensions::ExtensionServiceTestBase {
  public:
   ExtensionMetricsProviderInstallsTest() {}
+
+  ExtensionMetricsProviderInstallsTest(
+      const ExtensionMetricsProviderInstallsTest&) = delete;
+  ExtensionMetricsProviderInstallsTest& operator=(
+      const ExtensionMetricsProviderInstallsTest&) = delete;
+
   ~ExtensionMetricsProviderInstallsTest() override {}
 
   void SetUp() override {
@@ -176,8 +182,6 @@ class ExtensionMetricsProviderInstallsTest
  private:
   extensions::ExtensionPrefs* prefs_ = nullptr;
   base::Time last_sample_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMetricsProviderInstallsTest);
 };
 
 // Tests the various aspects of constructing a relevant proto for a given

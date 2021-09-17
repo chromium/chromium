@@ -11,10 +11,11 @@
 class AshShellInit {
  public:
   AshShellInit();
-  ~AshShellInit();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AshShellInit);
+  AshShellInit(const AshShellInit&) = delete;
+  AshShellInit& operator=(const AshShellInit&) = delete;
+
+  ~AshShellInit();
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ASH_SHELL_INIT_H_

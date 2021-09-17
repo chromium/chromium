@@ -37,6 +37,11 @@ class UserCloudExternalDataManager : public CloudExternalDataManagerBase {
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
       const base::FilePath& cache_path,
       CloudPolicyStore* policy_store);
+
+  UserCloudExternalDataManager(const UserCloudExternalDataManager&) = delete;
+  UserCloudExternalDataManager& operator=(const UserCloudExternalDataManager&) =
+      delete;
+
   ~UserCloudExternalDataManager() override;
 
  private:
@@ -57,8 +62,6 @@ class UserCloudExternalDataManager : public CloudExternalDataManagerBase {
   //   |resource_cache_|.
   // Because of this destruction sequence, a scoped_ptr cannot be used.
   ResourceCache* resource_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudExternalDataManager);
 };
 
 }  // namespace policy

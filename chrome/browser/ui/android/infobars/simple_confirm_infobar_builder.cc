@@ -34,6 +34,10 @@ class SimpleConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
       const std::u16string& link_text_str,
       bool auto_expire);
 
+  SimpleConfirmInfoBarDelegate(const SimpleConfirmInfoBarDelegate&) = delete;
+  SimpleConfirmInfoBarDelegate& operator=(const SimpleConfirmInfoBarDelegate&) =
+      delete;
+
   ~SimpleConfirmInfoBarDelegate() override;
 
   // ConfirmInfoBarDelegate:
@@ -58,8 +62,6 @@ class SimpleConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string secondary_str_;
   std::u16string link_text_str_;
   bool auto_expire_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleConfirmInfoBarDelegate);
 };
 
 SimpleConfirmInfoBarDelegate::SimpleConfirmInfoBarDelegate(

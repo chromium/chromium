@@ -28,6 +28,10 @@ extern const char kSignInPromoQueryKeyShowAccountManagement[];
 class InlineLoginHandler : public content::WebUIMessageHandler {
  public:
   InlineLoginHandler();
+
+  InlineLoginHandler(const InlineLoginHandler&) = delete;
+  InlineLoginHandler& operator=(const InlineLoginHandler&) = delete;
+
   ~InlineLoginHandler() override;
 
   // content::WebUIMessageHandler overrides:
@@ -88,8 +92,6 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
                              base::Value edu_login_params) = 0;
 
   base::WeakPtrFactory<InlineLoginHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_H_

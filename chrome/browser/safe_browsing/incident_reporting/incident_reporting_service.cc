@@ -165,6 +165,10 @@ class IncidentReportingService::UploadContext {
       PersistentIncidentStateCollection;
 
   explicit UploadContext(std::unique_ptr<ClientIncidentReport> report);
+
+  UploadContext(const UploadContext&) = delete;
+  UploadContext& operator=(const UploadContext&) = delete;
+
   ~UploadContext();
 
   // The report being uploaded.
@@ -176,9 +180,6 @@ class IncidentReportingService::UploadContext {
   // A mapping of profile contexts to the data to be persisted upon successful
   // upload.
   PersistentIncidentStateCollection profiles_to_state;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UploadContext);
 };
 
 // An IncidentReceiver that is weakly-bound to the service and transparently
@@ -186,6 +187,10 @@ class IncidentReportingService::UploadContext {
 class IncidentReportingService::Receiver : public IncidentReceiver {
  public:
   explicit Receiver(const base::WeakPtr<IncidentReportingService>& service);
+
+  Receiver(const Receiver&) = delete;
+  Receiver& operator=(const Receiver&) = delete;
+
   ~Receiver() override;
 
   // IncidentReceiver methods:
@@ -206,8 +211,6 @@ class IncidentReportingService::Receiver : public IncidentReceiver {
 
   base::WeakPtr<IncidentReportingService> service_;
   scoped_refptr<base::SingleThreadTaskRunner> thread_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Receiver);
 };
 
 IncidentReportingService::Receiver::Receiver(

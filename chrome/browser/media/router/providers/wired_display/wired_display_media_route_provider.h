@@ -47,6 +47,12 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
       mojo::PendingReceiver<mojom::MediaRouteProvider> receiver,
       mojo::PendingRemote<mojom::MediaRouter> media_router,
       Profile* profile);
+
+  WiredDisplayMediaRouteProvider(const WiredDisplayMediaRouteProvider&) =
+      delete;
+  WiredDisplayMediaRouteProvider& operator=(
+      const WiredDisplayMediaRouteProvider&) = delete;
+
   ~WiredDisplayMediaRouteProvider() override;
 
   // mojom::MediaRouteProvider:
@@ -113,6 +119,10 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
    public:
     explicit Presentation(const MediaRoute& route);
     Presentation(Presentation&& other);
+
+    Presentation(const Presentation&) = delete;
+    Presentation& operator=(const Presentation&) = delete;
+
     ~Presentation();
 
     // Updates the title for the presentation page, and notifies media status
@@ -148,8 +158,6 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
     // |media_status_observer|, when set, gets notified whenever |status|
     // changes.
     mojo::Remote<mojom::MediaStatusObserver> media_status_observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(Presentation);
   };
 
   // Sends the current list of routes to each query in |route_queries_|.
@@ -208,8 +216,6 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
   WiredDisplayDeviceCountMetrics device_count_metrics_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WiredDisplayMediaRouteProvider);
 };
 
 }  // namespace media_router

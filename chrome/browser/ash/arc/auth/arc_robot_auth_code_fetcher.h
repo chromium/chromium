@@ -25,6 +25,10 @@ namespace arc {
 class ArcRobotAuthCodeFetcher : public ArcAuthCodeFetcher {
  public:
   ArcRobotAuthCodeFetcher();
+
+  ArcRobotAuthCodeFetcher(const ArcRobotAuthCodeFetcher&) = delete;
+  ArcRobotAuthCodeFetcher& operator=(const ArcRobotAuthCodeFetcher&) = delete;
+
   ~ArcRobotAuthCodeFetcher() override;
 
   // ArcAuthCodeFetcher:
@@ -40,8 +44,6 @@ class ArcRobotAuthCodeFetcher : public ArcAuthCodeFetcher {
 
   std::unique_ptr<policy::DeviceManagementService::Job> fetch_request_job_;
   base::WeakPtrFactory<ArcRobotAuthCodeFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcRobotAuthCodeFetcher);
 };
 
 }  // namespace arc

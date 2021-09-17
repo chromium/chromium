@@ -71,6 +71,10 @@ class UploadJobImpl : public UploadJob,
       std::unique_ptr<MimeBoundaryGenerator> boundary_generator,
       net::NetworkTrafficAnnotationTag traffic_annotation,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  UploadJobImpl(const UploadJobImpl&) = delete;
+  UploadJobImpl& operator=(const UploadJobImpl&) = delete;
+
   ~UploadJobImpl() override;
 
   // UploadJob:
@@ -189,8 +193,6 @@ class UploadJobImpl : public UploadJob,
   // Should remain the last member so it will be destroyed first and
   // invalidate all weak pointers.
   base::WeakPtrFactory<UploadJobImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UploadJobImpl);
 };
 
 }  // namespace policy

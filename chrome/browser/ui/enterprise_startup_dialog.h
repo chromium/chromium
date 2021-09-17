@@ -29,6 +29,9 @@ class EnterpriseStartupDialog {
   using DialogResultCallback =
       base::OnceCallback<void(bool was_accepted, bool can_show_browser_window)>;
 
+  EnterpriseStartupDialog(const EnterpriseStartupDialog&) = delete;
+  EnterpriseStartupDialog& operator=(const EnterpriseStartupDialog&) = delete;
+
   virtual ~EnterpriseStartupDialog() = default;
 
   // Show the dialog. Please note that the dialog won't contain any
@@ -51,9 +54,6 @@ class EnterpriseStartupDialog {
 
  protected:
   EnterpriseStartupDialog() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseStartupDialog);
 };
 
 }  // namespace policy

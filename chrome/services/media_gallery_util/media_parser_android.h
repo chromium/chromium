@@ -14,6 +14,10 @@
 class MediaParserAndroid : public MediaParser {
  public:
   MediaParserAndroid();
+
+  MediaParserAndroid(const MediaParserAndroid&) = delete;
+  MediaParserAndroid& operator=(const MediaParserAndroid&) = delete;
+
   ~MediaParserAndroid() override;
 
   // MediaParser implementation.
@@ -22,9 +26,6 @@ class MediaParserAndroid : public MediaParser {
       uint32_t total_size,
       mojo::PendingRemote<chrome::mojom::MediaDataSource> media_data_source,
       ExtractVideoFrameCallback video_frame_callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaParserAndroid);
 };
 
 #endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_MEDIA_PARSER_ANDROID_H_

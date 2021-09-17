@@ -138,6 +138,10 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
               &FullscreenWaiter::OnViewVisibilityChanged,
               base::Unretained(this), base::Unretained(location_bar_view)));
     }
+
+    FullscreenWaiter(const FullscreenWaiter&) = delete;
+    FullscreenWaiter& operator=(const FullscreenWaiter&) = delete;
+
     ~FullscreenWaiter() = default;
 
    private:
@@ -152,8 +156,6 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowViewBrowserTest,
     base::CallbackListSubscription subscription_;
     const AwaitType await_type_;
     base::OnceClosure fullscreen_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(FullscreenWaiter);
   };
 
   {

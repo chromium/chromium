@@ -56,6 +56,10 @@ class ArcGraphicsJankDetector {
   static constexpr int kJankDetectionThresholdPercent = 190;
 
   explicit ArcGraphicsJankDetector(const JankCallback& callback);
+
+  ArcGraphicsJankDetector(const ArcGraphicsJankDetector&) = delete;
+  ArcGraphicsJankDetector& operator=(const ArcGraphicsJankDetector&) = delete;
+
   ~ArcGraphicsJankDetector();
 
   // Resets detector to its initial state, stage is set to |Stage::kWarmUp| with
@@ -90,8 +94,6 @@ class ArcGraphicsJankDetector {
   base::TimeDelta period_;
   // Period fixed.
   bool period_fixed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcGraphicsJankDetector);
 };
 
 }  // namespace arc

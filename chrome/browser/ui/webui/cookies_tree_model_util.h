@@ -23,6 +23,10 @@ class Value;
 class CookiesTreeModelUtil {
  public:
   CookiesTreeModelUtil();
+
+  CookiesTreeModelUtil(const CookiesTreeModelUtil&) = delete;
+  CookiesTreeModelUtil& operator=(const CookiesTreeModelUtil&) = delete;
+
   ~CookiesTreeModelUtil();
 
   // Finds or creates an ID for given |node| and returns it as string.
@@ -67,8 +71,6 @@ class CookiesTreeModelUtil {
 
   // Reverse look up map to find the ID for a node.
   CookieTreeNodeMap node_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookiesTreeModelUtil);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_COOKIES_TREE_MODEL_UTIL_H_

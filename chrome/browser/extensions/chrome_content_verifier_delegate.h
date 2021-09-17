@@ -69,6 +69,10 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
 
   explicit ChromeContentVerifierDelegate(content::BrowserContext* context);
 
+  ChromeContentVerifierDelegate(const ChromeContentVerifierDelegate&) = delete;
+  ChromeContentVerifierDelegate& operator=(
+      const ChromeContentVerifierDelegate&) = delete;
+
   ~ChromeContentVerifierDelegate() override;
 
   // ContentVerifierDelegate:
@@ -108,8 +112,6 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   std::set<std::string> would_be_reinstalled_ids_;
 
   std::unique_ptr<PolicyExtensionReinstaller> policy_extension_reinstaller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentVerifierDelegate);
 };
 
 }  // namespace extensions

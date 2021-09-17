@@ -48,6 +48,10 @@ class PrintServersProvider
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static std::unique_ptr<PrintServersProvider> Create();
+
+  PrintServersProvider(const PrintServersProvider&) = delete;
+  PrintServersProvider& operator=(const PrintServersProvider&) = delete;
+
   virtual ~PrintServersProvider() = default;
 
   // This method sets the allowlist to calculate resultant list of servers.
@@ -70,9 +74,6 @@ class PrintServersProvider
 
  protected:
   PrintServersProvider() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintServersProvider);
 };
 
 }  // namespace chromeos

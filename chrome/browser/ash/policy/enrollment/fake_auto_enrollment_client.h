@@ -29,6 +29,10 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
     explicit FactoryImpl(
         const base::RepeatingCallback<void(FakeAutoEnrollmentClient*)>&
             fake_client_created_callback);
+
+    FactoryImpl(const FactoryImpl&) = delete;
+    FactoryImpl& operator=(const FactoryImpl&) = delete;
+
     ~FactoryImpl() override;
 
     std::unique_ptr<AutoEnrollmentClient> CreateForFRE(
@@ -55,8 +59,6 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
    private:
     base::RepeatingCallback<void(FakeAutoEnrollmentClient*)>
         fake_client_created_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(FactoryImpl);
   };
 
   explicit FakeAutoEnrollmentClient(const ProgressCallback& progress_callback);

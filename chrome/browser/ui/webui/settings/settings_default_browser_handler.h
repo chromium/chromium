@@ -28,6 +28,10 @@ namespace settings {
 class DefaultBrowserHandler : public SettingsPageUIHandler {
  public:
   DefaultBrowserHandler();
+
+  DefaultBrowserHandler(const DefaultBrowserHandler&) = delete;
+  DefaultBrowserHandler& operator=(const DefaultBrowserHandler&) = delete;
+
   ~DefaultBrowserHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -62,8 +66,6 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
 
   // Used to invalidate the DefaultBrowserWorker callback.
   base::WeakPtrFactory<DefaultBrowserHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultBrowserHandler);
 };
 
 }  // namespace settings

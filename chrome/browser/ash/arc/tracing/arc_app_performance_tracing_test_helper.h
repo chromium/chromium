@@ -31,6 +31,12 @@ class ArcAppPerformanceTracingSession;
 class ArcAppPerformanceTracingTestHelper {
  public:
   ArcAppPerformanceTracingTestHelper();
+
+  ArcAppPerformanceTracingTestHelper(
+      const ArcAppPerformanceTracingTestHelper&) = delete;
+  ArcAppPerformanceTracingTestHelper& operator=(
+      const ArcAppPerformanceTracingTestHelper&) = delete;
+
   virtual ~ArcAppPerformanceTracingTestHelper();
 
   // Creates app window as ARC++ window.
@@ -64,8 +70,6 @@ class ArcAppPerformanceTracingTestHelper {
   Profile* profile_ = nullptr;
 
   std::unique_ptr<exo::WMHelper> wm_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracingTestHelper);
 };
 
 }  // namespace arc

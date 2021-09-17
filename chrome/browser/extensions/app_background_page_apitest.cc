@@ -62,6 +62,11 @@ class BackgroundContentsCreationObserver
         BackgroundContentsServiceFactory::GetForProfile(profile));
   }
 
+  BackgroundContentsCreationObserver(
+      const BackgroundContentsCreationObserver&) = delete;
+  BackgroundContentsCreationObserver& operator=(
+      const BackgroundContentsCreationObserver&) = delete;
+
   ~BackgroundContentsCreationObserver() override = default;
 
   void OnBackgroundContentsOpened(
@@ -78,8 +83,6 @@ class BackgroundContentsCreationObserver
   base::ScopedObservation<BackgroundContentsService,
                           BackgroundContentsServiceObserver>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundContentsCreationObserver);
 };
 
 }  // namespace

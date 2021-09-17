@@ -76,6 +76,12 @@ class DesktopCaptureCancelChooseDesktopMediaFunctionBase
 class DesktopCaptureRequestsRegistry {
  public:
   DesktopCaptureRequestsRegistry();
+
+  DesktopCaptureRequestsRegistry(const DesktopCaptureRequestsRegistry&) =
+      delete;
+  DesktopCaptureRequestsRegistry& operator=(
+      const DesktopCaptureRequestsRegistry&) = delete;
+
   ~DesktopCaptureRequestsRegistry();
 
   static DesktopCaptureRequestsRegistry* GetInstance();
@@ -103,8 +109,6 @@ class DesktopCaptureRequestsRegistry {
       std::map<RequestId, DesktopCaptureChooseDesktopMediaFunctionBase*>;
 
   RequestsMap requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopCaptureRequestsRegistry);
 };
 
 }  // namespace extensions

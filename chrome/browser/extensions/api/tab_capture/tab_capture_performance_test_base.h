@@ -41,6 +41,11 @@ class HttpResponse;
 class TabCapturePerformanceTestBase : public InProcessBrowserTest {
  public:
   TabCapturePerformanceTestBase();
+
+  TabCapturePerformanceTestBase(const TabCapturePerformanceTestBase&) = delete;
+  TabCapturePerformanceTestBase& operator=(
+      const TabCapturePerformanceTestBase&) = delete;
+
   ~TabCapturePerformanceTestBase() override;
 
   // SetUp overrides to enable pixel output, configure the embedded test server,
@@ -150,8 +155,6 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
 
   // Manages the Audio Service feature set, enabled for these performance tests.
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabCapturePerformanceTestBase);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_TAB_CAPTURE_TAB_CAPTURE_PERFORMANCE_TEST_BASE_H_

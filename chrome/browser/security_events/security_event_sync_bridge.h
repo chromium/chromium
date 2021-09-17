@@ -15,6 +15,10 @@ class SecurityEventSpecifics;
 class SecurityEventSyncBridge {
  public:
   SecurityEventSyncBridge() = default;
+
+  SecurityEventSyncBridge(const SecurityEventSyncBridge&) = delete;
+  SecurityEventSyncBridge& operator=(const SecurityEventSyncBridge&) = delete;
+
   virtual ~SecurityEventSyncBridge() = default;
 
   virtual void RecordSecurityEvent(
@@ -23,9 +27,6 @@ class SecurityEventSyncBridge {
   // Returns the delegate for the controller, i.e. sync integration point.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityEventSyncBridge);
 };
 
 #endif  // CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_SYNC_BRIDGE_H_

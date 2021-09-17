@@ -83,6 +83,10 @@ class LoggingObserver : public VolumeManagerObserver {
   };
 
   LoggingObserver() = default;
+
+  LoggingObserver(const LoggingObserver&) = delete;
+  LoggingObserver& operator=(const LoggingObserver&) = delete;
+
   ~LoggingObserver() override = default;
 
   const std::vector<Event>& events() const { return events_; }
@@ -203,8 +207,6 @@ class LoggingObserver : public VolumeManagerObserver {
 
  private:
   std::vector<Event> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingObserver);
 };
 
 class FakeUser : public user_manager::User {

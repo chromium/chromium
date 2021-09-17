@@ -36,6 +36,10 @@ class EasyUnlockServiceSignin
   EasyUnlockServiceSignin(
       Profile* profile,
       secure_channel::SecureChannelClient* secure_channel_client);
+
+  EasyUnlockServiceSignin(const EasyUnlockServiceSignin&) = delete;
+  EasyUnlockServiceSignin& operator=(const EasyUnlockServiceSignin&) = delete;
+
   ~EasyUnlockServiceSignin() override;
 
   // Wraps the challenge for the remote device identified by `account_id` and
@@ -152,8 +156,6 @@ class EasyUnlockServiceSignin
       pref_manager_;
 
   base::WeakPtrFactory<EasyUnlockServiceSignin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockServiceSignin);
 };
 
 }  // namespace ash

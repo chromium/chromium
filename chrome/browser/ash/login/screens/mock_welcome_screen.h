@@ -18,20 +18,25 @@ class MockWelcomeScreen : public WelcomeScreen {
  public:
   MockWelcomeScreen(WelcomeView* view,
                     const WelcomeScreen::ScreenExitCallback& exit_callback);
+
+  MockWelcomeScreen(const MockWelcomeScreen&) = delete;
+  MockWelcomeScreen& operator=(const MockWelcomeScreen&) = delete;
+
   ~MockWelcomeScreen() override;
 
   MOCK_METHOD(void, ShowImpl, ());
   MOCK_METHOD(void, HideImpl, ());
 
   void ExitScreen(Result result);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWelcomeScreen);
 };
 
 class MockWelcomeView : public WelcomeView {
  public:
   MockWelcomeView();
+
+  MockWelcomeView(const MockWelcomeView&) = delete;
+  MockWelcomeView& operator=(const MockWelcomeView&) = delete;
+
   ~MockWelcomeView() override;
 
   void Bind(WelcomeScreen* screen) override;
@@ -52,8 +57,6 @@ class MockWelcomeView : public WelcomeView {
 
  private:
   WelcomeScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWelcomeView);
 };
 
 }  // namespace ash

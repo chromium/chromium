@@ -21,6 +21,11 @@ class ChromeVariationsServiceClient
     : public variations::VariationsServiceClient {
  public:
   ChromeVariationsServiceClient();
+
+  ChromeVariationsServiceClient(const ChromeVariationsServiceClient&) = delete;
+  ChromeVariationsServiceClient& operator=(
+      const ChromeVariationsServiceClient&) = delete;
+
   ~ChromeVariationsServiceClient() override;
 
   // variations::VariationsServiceClient:
@@ -34,8 +39,6 @@ class ChromeVariationsServiceClient
  private:
   // variations::VariationsServiceClient:
   version_info::Channel GetChannel() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVariationsServiceClient);
 };
 
 #endif  // CHROME_BROWSER_METRICS_VARIATIONS_CHROME_VARIATIONS_SERVICE_CLIENT_H_

@@ -38,6 +38,10 @@ class LoginUIServiceTest : public testing::Test {
   LoginUIServiceTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
         profile_(nullptr) {}
+
+  LoginUIServiceTest(const LoginUIServiceTest&) = delete;
+  LoginUIServiceTest& operator=(const LoginUIServiceTest&) = delete;
+
   ~LoginUIServiceTest() override {}
 
   void SetUp() override {
@@ -51,19 +55,17 @@ class LoginUIServiceTest : public testing::Test {
   TestingProfileManager profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
   TestingProfile* profile_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginUIServiceTest);
 };
 
 class TestLoginUI : public LoginUIService::LoginUI {
  public:
   TestLoginUI() { }
+
+  TestLoginUI(const TestLoginUI&) = delete;
+  TestLoginUI& operator=(const TestLoginUI&) = delete;
+
   ~TestLoginUI() override {}
   void FocusUI() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLoginUI);
 };
 
 TEST_F(LoginUIServiceTest, CanSetMultipleLoginUIs) {

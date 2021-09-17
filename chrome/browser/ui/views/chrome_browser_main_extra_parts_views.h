@@ -38,6 +38,12 @@ class RelaunchNotificationController;
 class ChromeBrowserMainExtraPartsViews : public ChromeBrowserMainExtraParts {
  public:
   ChromeBrowserMainExtraPartsViews();
+
+  ChromeBrowserMainExtraPartsViews(const ChromeBrowserMainExtraPartsViews&) =
+      delete;
+  ChromeBrowserMainExtraPartsViews& operator=(
+      const ChromeBrowserMainExtraPartsViews&) = delete;
+
   ~ChromeBrowserMainExtraPartsViews() override;
 
   // Returns global singleton.
@@ -73,8 +79,6 @@ class ChromeBrowserMainExtraPartsViews : public ChromeBrowserMainExtraParts {
   // Manages the relaunch notification prompts.
   std::unique_ptr<RelaunchNotificationController>
       relaunch_notification_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_BROWSER_MAIN_EXTRA_PARTS_VIEWS_H_

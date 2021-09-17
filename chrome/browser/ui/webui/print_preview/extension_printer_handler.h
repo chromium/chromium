@@ -43,6 +43,9 @@ class ExtensionPrinterHandler : public PrinterHandler {
 
   explicit ExtensionPrinterHandler(Profile* profile);
 
+  ExtensionPrinterHandler(const ExtensionPrinterHandler&) = delete;
+  ExtensionPrinterHandler& operator=(const ExtensionPrinterHandler&) = delete;
+
   ~ExtensionPrinterHandler() override;
 
   // PrinterHandler implementation:
@@ -102,8 +105,6 @@ class ExtensionPrinterHandler : public PrinterHandler {
   int pending_enumeration_count_ = 0;
 
   base::WeakPtrFactory<ExtensionPrinterHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrinterHandler);
 };
 
 }  // namespace printing

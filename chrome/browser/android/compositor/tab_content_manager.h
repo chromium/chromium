@@ -48,6 +48,9 @@ class TabContentManager : public ThumbnailCacheObserver {
                     jboolean use_approximation_thumbnail,
                     jboolean save_jpeg_thumbnails);
 
+  TabContentManager(const TabContentManager&) = delete;
+  TabContentManager& operator=(const TabContentManager&) = delete;
+
   virtual ~TabContentManager();
 
   void Destroy(JNIEnv* env);
@@ -154,8 +157,6 @@ class TabContentManager : public ThumbnailCacheObserver {
 
   JavaObjectWeakGlobalRef weak_java_tab_content_manager_;
   base::WeakPtrFactory<TabContentManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabContentManager);
 };
 
 }  // namespace android

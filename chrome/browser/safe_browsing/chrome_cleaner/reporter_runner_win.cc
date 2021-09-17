@@ -543,6 +543,9 @@ class ReporterRunner {
                            base::Unretained(GetCleanerController()))),
         time_info_(std::move(time_info)) {}
 
+  ReporterRunner(const ReporterRunner&) = delete;
+  ReporterRunner& operator=(const ReporterRunner&) = delete;
+
   ~ReporterRunner() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_EQ(instance_, this);
@@ -850,8 +853,6 @@ class ReporterRunner {
   ReporterRunTimeInfo time_info_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ReporterRunner);
 };
 
 // static

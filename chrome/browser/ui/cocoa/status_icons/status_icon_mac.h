@@ -23,6 +23,10 @@
 class StatusIconMac : public StatusIcon {
  public:
   StatusIconMac();
+
+  StatusIconMac(const StatusIconMac&) = delete;
+  StatusIconMac& operator=(const StatusIconMac&) = delete;
+
   ~StatusIconMac() override;
 
   // Overridden from StatusIcon.
@@ -60,8 +64,6 @@ class StatusIconMac : public StatusIcon {
   // Status menu shown when right-clicking the system icon, if it has been
   // created by |UpdatePlatformContextMenu|.
   base::scoped_nsobject<MenuControllerCocoa> menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconMac);
 };
 
 #endif // CHROME_BROWSER_UI_COCOA_STATUS_ICONS_STATUS_ICON_MAC_H_

@@ -37,6 +37,12 @@ GURL GetURL(const std::string& filename) {
 class FindBarPlatformHelperMacInteractiveUITest : public InProcessBrowserTest {
  public:
   FindBarPlatformHelperMacInteractiveUITest() {}
+
+  FindBarPlatformHelperMacInteractiveUITest(
+      const FindBarPlatformHelperMacInteractiveUITest&) = delete;
+  FindBarPlatformHelperMacInteractiveUITest& operator=(
+      const FindBarPlatformHelperMacInteractiveUITest&) = delete;
+
   ~FindBarPlatformHelperMacInteractiveUITest() override = default;
 
   void SetUpOnMainThread() override {
@@ -51,8 +57,6 @@ class FindBarPlatformHelperMacInteractiveUITest : public InProcessBrowserTest {
 
  private:
   NSString* old_find_text_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarPlatformHelperMacInteractiveUITest);
 };
 
 // Tests that the pasteboard is updated when the find bar is changed.

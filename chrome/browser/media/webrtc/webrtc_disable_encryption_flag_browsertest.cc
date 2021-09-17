@@ -31,6 +31,12 @@ static const char kMainWebrtcTestHtmlPage[] =
 class WebRtcDisableEncryptionFlagBrowserTest : public WebRtcTestBase {
  public:
   WebRtcDisableEncryptionFlagBrowserTest() {}
+
+  WebRtcDisableEncryptionFlagBrowserTest(
+      const WebRtcDisableEncryptionFlagBrowserTest&) = delete;
+  WebRtcDisableEncryptionFlagBrowserTest& operator=(
+      const WebRtcDisableEncryptionFlagBrowserTest&) = delete;
+
   ~WebRtcDisableEncryptionFlagBrowserTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -41,9 +47,6 @@ class WebRtcDisableEncryptionFlagBrowserTest : public WebRtcTestBase {
     // Disable encryption with the command line flag.
     command_line->AppendSwitch(switches::kDisableWebRtcEncryption);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcDisableEncryptionFlagBrowserTest);
 };
 
 // Makes a call and checks that there's encryption or not in the SDP offer.

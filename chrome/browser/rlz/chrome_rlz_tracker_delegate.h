@@ -24,6 +24,10 @@ class ChromeRLZTrackerDelegate : public rlz::RLZTrackerDelegate,
                                  public content::NotificationObserver {
  public:
   ChromeRLZTrackerDelegate();
+
+  ChromeRLZTrackerDelegate(const ChromeRLZTrackerDelegate&) = delete;
+  ChromeRLZTrackerDelegate& operator=(const ChromeRLZTrackerDelegate&) = delete;
+
   ~ChromeRLZTrackerDelegate() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -63,8 +67,6 @@ class ChromeRLZTrackerDelegate : public rlz::RLZTrackerDelegate,
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
   base::CallbackListSubscription omnibox_url_opened_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRLZTrackerDelegate);
 };
 
 #endif  // CHROME_BROWSER_RLZ_CHROME_RLZ_TRACKER_DELEGATE_H_

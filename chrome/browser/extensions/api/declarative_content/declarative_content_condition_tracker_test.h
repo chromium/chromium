@@ -30,6 +30,12 @@ namespace extensions {
 class DeclarativeContentConditionTrackerTest : public testing::Test {
  public:
   DeclarativeContentConditionTrackerTest();
+
+  DeclarativeContentConditionTrackerTest(
+      const DeclarativeContentConditionTrackerTest&) = delete;
+  DeclarativeContentConditionTrackerTest& operator=(
+      const DeclarativeContentConditionTrackerTest&) = delete;
+
   ~DeclarativeContentConditionTrackerTest() override;
 
  protected:
@@ -62,8 +68,6 @@ class DeclarativeContentConditionTrackerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   uintptr_t next_predicate_group_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentConditionTrackerTest);
 };
 
 }  // namespace extensions

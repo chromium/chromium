@@ -19,6 +19,10 @@ class NativeAppWindow;
 class AppBaseWindow : public ui::BaseWindow {
  public:
   explicit AppBaseWindow(AppWindow* app_window);
+
+  AppBaseWindow(const AppBaseWindow&) = delete;
+  AppBaseWindow& operator=(const AppBaseWindow&) = delete;
+
   virtual ~AppBaseWindow();
 
  private:
@@ -49,8 +53,6 @@ class AppBaseWindow : public ui::BaseWindow {
   NativeAppWindow* GetBaseWindow() const;
 
   AppWindow* app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppBaseWindow);
 };
 
 }  // namespace extensions

@@ -46,6 +46,10 @@ class ModuleInspector : public ModuleDatabaseObserver {
 
   explicit ModuleInspector(
       const OnModuleInspectedCallback& on_module_inspected_callback);
+
+  ModuleInspector(const ModuleInspector&) = delete;
+  ModuleInspector& operator=(const ModuleInspector&) = delete;
+
   ~ModuleInspector() override;
 
   // Adds the module to the queue of modules to inspect. Starts the inspection
@@ -160,8 +164,6 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // Weak pointers are used to safely post the inspection result back to the
   // ModuleInspector from the task scheduler.
   base::WeakPtrFactory<ModuleInspector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleInspector);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_INSPECTOR_H_

@@ -92,6 +92,12 @@ class CommittedBookmarkEntityNameObserver : public FakeServer::Observer {
 class SingleClientCustomPassphraseSyncTest : public SyncTest {
  public:
   SingleClientCustomPassphraseSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SingleClientCustomPassphraseSyncTest(
+      const SingleClientCustomPassphraseSyncTest&) = delete;
+  SingleClientCustomPassphraseSyncTest& operator=(
+      const SingleClientCustomPassphraseSyncTest&) = delete;
+
   ~SingleClientCustomPassphraseSyncTest() override {}
 
   // Waits until the given set of bookmarks appears on the server, encrypted
@@ -176,9 +182,6 @@ class SingleClientCustomPassphraseSyncTest : public SyncTest {
         server_entity->GetSpecifics().bookmark(), key_params));
     GetFakeServer()->InjectEntity(std::move(server_entity));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientCustomPassphraseSyncTest);
 };
 
 class SingleClientCustomPassphraseDoNotUseScryptSyncTest

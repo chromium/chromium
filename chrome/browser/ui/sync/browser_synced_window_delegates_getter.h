@@ -18,6 +18,12 @@ class BrowserSyncedWindowDelegatesGetter
     : public sync_sessions::SyncedWindowDelegatesGetter {
  public:
   explicit BrowserSyncedWindowDelegatesGetter(Profile* profile);
+
+  BrowserSyncedWindowDelegatesGetter(
+      const BrowserSyncedWindowDelegatesGetter&) = delete;
+  BrowserSyncedWindowDelegatesGetter& operator=(
+      const BrowserSyncedWindowDelegatesGetter&) = delete;
+
   ~BrowserSyncedWindowDelegatesGetter() override;
 
   // SyncedWindowDelegatesGetter implementation
@@ -26,8 +32,6 @@ class BrowserSyncedWindowDelegatesGetter
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSyncedWindowDelegatesGetter);
 };
 
 }  // namespace browser_sync

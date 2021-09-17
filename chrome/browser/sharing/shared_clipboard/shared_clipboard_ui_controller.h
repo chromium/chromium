@@ -26,6 +26,10 @@ class SharedClipboardUiController
   static SharedClipboardUiController* GetOrCreateFromWebContents(
       content::WebContents* web_contents);
 
+  SharedClipboardUiController(const SharedClipboardUiController&) = delete;
+  SharedClipboardUiController& operator=(const SharedClipboardUiController&) =
+      delete;
+
   ~SharedClipboardUiController() override;
 
   void OnDeviceSelected(const std::u16string& text,
@@ -58,8 +62,6 @@ class SharedClipboardUiController
   base::WeakPtrFactory<SharedClipboardUiController> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardUiController);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_UI_CONTROLLER_H_

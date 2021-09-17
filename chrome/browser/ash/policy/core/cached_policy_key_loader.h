@@ -35,6 +35,10 @@ class CachedPolicyKeyLoader {
                         scoped_refptr<base::SequencedTaskRunner> task_runner,
                         const AccountId& account_id,
                         const base::FilePath& user_policy_key_dir);
+
+  CachedPolicyKeyLoader(const CachedPolicyKeyLoader&) = delete;
+  CachedPolicyKeyLoader& operator=(const CachedPolicyKeyLoader&) = delete;
+
   ~CachedPolicyKeyLoader();
 
   // Invokes |callback| after loading |policy_key_|, if it hasn't been loaded
@@ -97,8 +101,6 @@ class CachedPolicyKeyLoader {
 
   // Must be the last memeber.
   base::WeakPtrFactory<CachedPolicyKeyLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CachedPolicyKeyLoader);
 };
 
 }  // namespace policy

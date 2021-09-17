@@ -27,6 +27,12 @@ class ChromeExtensionTestNotificationObserver
   explicit ChromeExtensionTestNotificationObserver(Browser* browser);
   explicit ChromeExtensionTestNotificationObserver(
       content::BrowserContext* browser_context);
+
+  ChromeExtensionTestNotificationObserver(
+      const ChromeExtensionTestNotificationObserver&) = delete;
+  ChromeExtensionTestNotificationObserver& operator=(
+      const ChromeExtensionTestNotificationObserver&) = delete;
+
   ~ChromeExtensionTestNotificationObserver() override;
 
   // Waits for the number of visible page actions to change to |count|.
@@ -51,8 +57,6 @@ class ChromeExtensionTestNotificationObserver
       content::BrowserContext* browser_context) override;
 
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionTestNotificationObserver);
 };
 
 }  // namespace extensions

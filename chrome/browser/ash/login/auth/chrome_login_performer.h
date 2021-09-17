@@ -35,6 +35,10 @@ namespace ash {
 class ChromeLoginPerformer : public LoginPerformer {
  public:
   explicit ChromeLoginPerformer(Delegate* delegate);
+
+  ChromeLoginPerformer(const ChromeLoginPerformer&) = delete;
+  ChromeLoginPerformer& operator=(const ChromeLoginPerformer&) = delete;
+
   ~ChromeLoginPerformer() override;
 
   // LoginPerformer:
@@ -72,8 +76,6 @@ class ChromeLoginPerformer : public LoginPerformer {
   // Used to verify logins that matched wildcard on the login allowlist.
   std::unique_ptr<policy::WildcardLoginChecker> wildcard_login_checker_;
   base::WeakPtrFactory<ChromeLoginPerformer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeLoginPerformer);
 };
 
 }  // namespace ash

@@ -114,6 +114,12 @@ class MockAutomaticRebootManagerObserver
     : public AutomaticRebootManagerObserver {
  public:
   MockAutomaticRebootManagerObserver();
+
+  MockAutomaticRebootManagerObserver(
+      const MockAutomaticRebootManagerObserver&) = delete;
+  MockAutomaticRebootManagerObserver& operator=(
+      const MockAutomaticRebootManagerObserver&) = delete;
+
   ~MockAutomaticRebootManagerObserver() override;
 
   void Init(AutomaticRebootManager* automatic_reboot_manger);
@@ -126,8 +132,6 @@ class MockAutomaticRebootManagerObserver
   void StopObserving();
 
   AutomaticRebootManager* automatic_reboot_manger_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAutomaticRebootManagerObserver);
 };
 
 }  // namespace

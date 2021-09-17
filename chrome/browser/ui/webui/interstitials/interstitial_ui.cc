@@ -99,6 +99,10 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
 class InterstitialHTMLSource : public content::URLDataSource {
  public:
   InterstitialHTMLSource() = default;
+
+  InterstitialHTMLSource(const InterstitialHTMLSource&) = delete;
+  InterstitialHTMLSource& operator=(const InterstitialHTMLSource&) = delete;
+
   ~InterstitialHTMLSource() override = default;
 
   // content::URLDataSource:
@@ -115,8 +119,6 @@ class InterstitialHTMLSource : public content::URLDataSource {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   std::string GetSupervisedUserInterstitialHTML(const std::string& path);
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(InterstitialHTMLSource);
 };
 
 std::unique_ptr<SSLBlockingPage> CreateSslBlockingPage(

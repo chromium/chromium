@@ -19,6 +19,11 @@ class PasswordsModelDelegateMock
       public base::SupportsWeakPtr<PasswordsModelDelegateMock> {
  public:
   PasswordsModelDelegateMock();
+
+  PasswordsModelDelegateMock(const PasswordsModelDelegateMock&) = delete;
+  PasswordsModelDelegateMock& operator=(const PasswordsModelDelegateMock&) =
+      delete;
+
   ~PasswordsModelDelegateMock() override;
 
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
@@ -110,9 +115,6 @@ class PasswordsModelDelegateMock
               ArePasswordsRevealedWhenBubbleIsOpened,
               (),
               (const override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordsModelDelegateMock);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_MODEL_DELEGATE_MOCK_H_

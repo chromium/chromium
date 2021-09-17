@@ -22,6 +22,11 @@ struct ModuleInfoKey;
 class ThirdPartyMetricsRecorder : public ModuleDatabaseObserver {
  public:
   ThirdPartyMetricsRecorder();
+
+  ThirdPartyMetricsRecorder(const ThirdPartyMetricsRecorder&) = delete;
+  ThirdPartyMetricsRecorder& operator=(const ThirdPartyMetricsRecorder&) =
+      delete;
+
   ~ThirdPartyMetricsRecorder() override;
 
   // ModuleDatabaseObserver:
@@ -82,8 +87,6 @@ class ThirdPartyMetricsRecorder : public ModuleDatabaseObserver {
 
   // Counts the number of shell extensions.
   size_t shell_extensions_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyMetricsRecorder);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_THIRD_PARTY_METRICS_RECORDER_H_

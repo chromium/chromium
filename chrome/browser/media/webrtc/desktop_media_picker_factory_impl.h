@@ -18,6 +18,11 @@
 class DesktopMediaPickerFactoryImpl : public DesktopMediaPickerFactory {
  public:
   DesktopMediaPickerFactoryImpl();
+
+  DesktopMediaPickerFactoryImpl(const DesktopMediaPickerFactoryImpl&) = delete;
+  DesktopMediaPickerFactoryImpl& operator=(
+      const DesktopMediaPickerFactoryImpl&) = delete;
+
   ~DesktopMediaPickerFactoryImpl() override;
 
   // Get the lazy initialized instance of the factory.
@@ -33,9 +38,6 @@ class DesktopMediaPickerFactoryImpl : public DesktopMediaPickerFactory {
       content::WebContents* web_contents,
       DesktopMediaList::WebContentsFilter includable_web_contents_filter)
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaPickerFactoryImpl);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_FACTORY_IMPL_H_

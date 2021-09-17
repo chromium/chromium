@@ -28,6 +28,10 @@ enum class GoogleAppsInteraction {
 class GoogleAppsHandler : public content::WebUIMessageHandler {
  public:
   GoogleAppsHandler();
+
+  GoogleAppsHandler(const GoogleAppsHandler&) = delete;
+  GoogleAppsHandler& operator=(const GoogleAppsHandler&) = delete;
+
   ~GoogleAppsHandler() override;
 
   // WebUIMessageHandler:
@@ -39,8 +43,6 @@ class GoogleAppsHandler : public content::WebUIMessageHandler {
 
  private:
   std::vector<BookmarkItem> google_apps_;
-
-  DISALLOW_COPY_AND_ASSIGN(GoogleAppsHandler);
 };
 
 }  // namespace welcome

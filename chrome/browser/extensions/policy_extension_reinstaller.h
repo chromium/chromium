@@ -27,6 +27,11 @@ class PolicyExtensionReinstaller {
                                    base::TimeDelta delay)>;
 
   explicit PolicyExtensionReinstaller(content::BrowserContext* context);
+
+  PolicyExtensionReinstaller(const PolicyExtensionReinstaller&) = delete;
+  PolicyExtensionReinstaller& operator=(const PolicyExtensionReinstaller&) =
+      delete;
+
   ~PolicyExtensionReinstaller();
 
   // Notifies this reinstaller about a policy extension corruption.
@@ -47,8 +52,6 @@ class PolicyExtensionReinstaller {
   bool scheduled_fire_pending_ = false;
 
   base::WeakPtrFactory<PolicyExtensionReinstaller> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyExtensionReinstaller);
 };
 
 }  // namespace extensions

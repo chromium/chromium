@@ -216,6 +216,11 @@ class AccessibilityPanelWidgetObserver : public views::WidgetObserver {
     widget_->AddObserver(this);
   }
 
+  AccessibilityPanelWidgetObserver(const AccessibilityPanelWidgetObserver&) =
+      delete;
+  AccessibilityPanelWidgetObserver& operator=(
+      const AccessibilityPanelWidgetObserver&) = delete;
+
   ~AccessibilityPanelWidgetObserver() override { CHECK(!IsInObserverList()); }
 
   void OnWidgetClosing(views::Widget* widget) override {
@@ -236,8 +241,6 @@ class AccessibilityPanelWidgetObserver : public views::WidgetObserver {
   views::Widget* widget_;
 
   base::OnceCallback<void()> on_destroying_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityPanelWidgetObserver);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

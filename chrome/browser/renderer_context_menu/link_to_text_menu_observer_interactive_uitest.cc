@@ -81,6 +81,10 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest,
 
   bool ShouldPreemptivelyGenerateLink() { return GetParam(); }
 
+  LinkToTextMenuObserverTest(const LinkToTextMenuObserverTest&) = delete;
+  LinkToTextMenuObserverTest& operator=(const LinkToTextMenuObserverTest&) =
+      delete;
+
   ~LinkToTextMenuObserverTest() override;
   MockRenderViewContextMenu* menu() { return menu_.get(); }
   LinkToTextMenuObserver* observer() { return observer_.get(); }
@@ -93,7 +97,6 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest,
  private:
   std::unique_ptr<LinkToTextMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
-  DISALLOW_COPY_AND_ASSIGN(LinkToTextMenuObserverTest);
 };
 
 LinkToTextMenuObserverTest::LinkToTextMenuObserverTest() = default;

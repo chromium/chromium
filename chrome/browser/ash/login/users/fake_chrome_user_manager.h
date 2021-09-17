@@ -27,6 +27,10 @@ class FakeSupervisedUserManager;
 class FakeChromeUserManager : public ChromeUserManager {
  public:
   FakeChromeUserManager();
+
+  FakeChromeUserManager(const FakeChromeUserManager&) = delete;
+  FakeChromeUserManager& operator=(const FakeChromeUserManager&) = delete;
+
   ~FakeChromeUserManager() override;
 
   // Create and add various types of users.
@@ -263,8 +267,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   // Fake cache of removed users. Used for reporting testing.
   std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
       removed_user_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeChromeUserManager);
 };
 
 }  // namespace ash

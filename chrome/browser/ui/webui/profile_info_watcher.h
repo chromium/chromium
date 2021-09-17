@@ -23,6 +23,10 @@ class IdentityManager;
 class ProfileInfoWatcher : public ProfileAttributesStorage::Observer {
  public:
   ProfileInfoWatcher(Profile* profile, base::RepeatingClosure callback);
+
+  ProfileInfoWatcher(const ProfileInfoWatcher&) = delete;
+  ProfileInfoWatcher& operator=(const ProfileInfoWatcher&) = delete;
+
   ~ProfileInfoWatcher() override;
 
   // Gets the authenticated username (e.g. username@gmail.com) for |profile_|.
@@ -46,8 +50,6 @@ class ProfileInfoWatcher : public ProfileAttributesStorage::Observer {
   base::RepeatingClosure callback_;
 
   BooleanPrefMember signin_allowed_pref_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileInfoWatcher);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PROFILE_INFO_WATCHER_H_

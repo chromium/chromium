@@ -306,6 +306,9 @@ class SessionRestoreImpl : public BrowserListObserver {
     return web_contents;
   }
 
+  SessionRestoreImpl(const SessionRestoreImpl&) = delete;
+  SessionRestoreImpl& operator=(const SessionRestoreImpl&) = delete;
+
   ~SessionRestoreImpl() override {
     BrowserList::RemoveObserver(this);
     active_session_restorers->erase(this);
@@ -981,8 +984,6 @@ class SessionRestoreImpl : public BrowserListObserver {
   bool read_error_ = false;
 
   base::WeakPtrFactory<SessionRestoreImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestoreImpl);
 };
 
 // SessionRestore -------------------------------------------------------------

@@ -110,6 +110,9 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
   explicit PrinterConfigurerImpl(Profile* profile)
       : ppd_provider_(ash::CreatePpdProvider(profile)) {}
 
+  PrinterConfigurerImpl(const PrinterConfigurerImpl&) = delete;
+  PrinterConfigurerImpl& operator=(const PrinterConfigurerImpl&) = delete;
+
   ~PrinterConfigurerImpl() override {}
 
   void SetUpPrinter(const Printer& printer,
@@ -198,8 +201,6 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
 
   scoped_refptr<PpdProvider> ppd_provider_;
   base::WeakPtrFactory<PrinterConfigurerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterConfigurerImpl);
 };
 
 }  // namespace

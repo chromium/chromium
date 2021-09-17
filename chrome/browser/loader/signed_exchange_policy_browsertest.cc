@@ -18,6 +18,12 @@
 class SignedExchangePolicyBrowserTest : public CertVerifierBrowserTest {
  public:
   SignedExchangePolicyBrowserTest() = default;
+
+  SignedExchangePolicyBrowserTest(const SignedExchangePolicyBrowserTest&) =
+      delete;
+  SignedExchangePolicyBrowserTest& operator=(
+      const SignedExchangePolicyBrowserTest&) = delete;
+
   ~SignedExchangePolicyBrowserTest() override = default;
 
  protected:
@@ -49,8 +55,6 @@ class SignedExchangePolicyBrowserTest : public CertVerifierBrowserTest {
   }
 
   content::SignedExchangeBrowserTestHelper sxg_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangePolicyBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {

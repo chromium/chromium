@@ -18,6 +18,10 @@ namespace vr {
 class BaseQuadRenderer : public BaseRenderer {
  public:
   BaseQuadRenderer(const char* vertex_src, const char* fragment_src);
+
+  BaseQuadRenderer(const BaseQuadRenderer&) = delete;
+  BaseQuadRenderer& operator=(const BaseQuadRenderer&) = delete;
+
   ~BaseQuadRenderer() override;
 
   VR_UI_EXPORT static void CreateBuffers();
@@ -29,8 +33,6 @@ class BaseQuadRenderer : public BaseRenderer {
 
   static GLuint vertex_buffer_;
   static GLuint index_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseQuadRenderer);
 };
 
 }  // namespace vr

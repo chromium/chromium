@@ -34,6 +34,9 @@ class StatusTray {
   // platform does not support status icons.
   static std::unique_ptr<StatusTray> Create();
 
+  StatusTray(const StatusTray&) = delete;
+  StatusTray& operator=(const StatusTray&) = delete;
+
   virtual ~StatusTray();
 
   // Creates a new StatusIcon. The StatusTray retains ownership of the
@@ -63,8 +66,6 @@ class StatusTray {
   // List containing all active StatusIcons. The icons are owned by this
   // StatusTray.
   StatusIcons status_icons_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTray);
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_STATUS_TRAY_H_

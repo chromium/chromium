@@ -23,6 +23,11 @@ namespace ash {
 class ActiveDirectoryLoginMixin : public InProcessBrowserTestMixin {
  public:
   explicit ActiveDirectoryLoginMixin(InProcessBrowserTestMixinHost* host);
+
+  ActiveDirectoryLoginMixin(const ActiveDirectoryLoginMixin&) = delete;
+  ActiveDirectoryLoginMixin& operator=(const ActiveDirectoryLoginMixin&) =
+      delete;
+
   ~ActiveDirectoryLoginMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -81,8 +86,6 @@ class ActiveDirectoryLoginMixin : public InProcessBrowserTestMixin {
 
   std::string autocomplete_realm_;
   std::unique_ptr<content::DOMMessageQueue> message_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryLoginMixin);
 };
 
 }  // namespace ash

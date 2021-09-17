@@ -23,15 +23,18 @@ class PermissionSet;
 class PermissionsUpdaterDelegateChromeOS : public PermissionsUpdater::Delegate {
  public:
   PermissionsUpdaterDelegateChromeOS();
+
+  PermissionsUpdaterDelegateChromeOS(
+      const PermissionsUpdaterDelegateChromeOS&) = delete;
+  PermissionsUpdaterDelegateChromeOS& operator=(
+      const PermissionsUpdaterDelegateChromeOS&) = delete;
+
   ~PermissionsUpdaterDelegateChromeOS() override;
 
   // PermissionsUpdater::Delegate
   void InitializePermissions(
       const Extension* extension,
       std::unique_ptr<const PermissionSet>* granted_permissions) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PermissionsUpdaterDelegateChromeOS);
 };
 
 }  // namespace extensions

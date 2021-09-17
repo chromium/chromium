@@ -81,6 +81,10 @@ class FakePredictor : public RecurrencePredictor {
   explicit FakePredictor(const std::string& model_identifier);
   FakePredictor(const FakePredictorConfig& config,
                 const std::string& model_identifier);
+
+  FakePredictor(const FakePredictor&) = delete;
+  FakePredictor& operator=(const FakePredictor&) = delete;
+
   ~FakePredictor() override;
 
   // RecurrencePredictor:
@@ -95,8 +99,6 @@ class FakePredictor : public RecurrencePredictor {
 
  private:
   std::map<unsigned int, float> counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePredictor);
 };
 
 // DefaultPredictor does no work on its own. Using this predictor makes the
@@ -106,6 +108,10 @@ class DefaultPredictor : public RecurrencePredictor {
  public:
   DefaultPredictor(const DefaultPredictorConfig& config,
                    const std::string& model_identifier);
+
+  DefaultPredictor(const DefaultPredictor&) = delete;
+  DefaultPredictor& operator=(const DefaultPredictor&) = delete;
+
   ~DefaultPredictor() override;
 
   // RecurrencePredictor:
@@ -116,9 +122,6 @@ class DefaultPredictor : public RecurrencePredictor {
   const char* GetPredictorName() const override;
 
   static const char kPredictorName[];
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultPredictor);
 };
 
 // A simple frequency predictor that scores targets by their normalized counts.
@@ -127,6 +130,10 @@ class FrequencyPredictor : public RecurrencePredictor {
   explicit FrequencyPredictor(const std::string& model_identifier);
   FrequencyPredictor(const FrequencyPredictorConfig& config,
                      const std::string& model_identifier);
+
+  FrequencyPredictor(const FrequencyPredictor&) = delete;
+  FrequencyPredictor& operator=(const FrequencyPredictor&) = delete;
+
   ~FrequencyPredictor() override;
 
   // RecurrencePredictor:
@@ -141,8 +148,6 @@ class FrequencyPredictor : public RecurrencePredictor {
 
  private:
   std::map<unsigned int, int> counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrequencyPredictor);
 };
 
 // Represents a conditional probability table which stores the frequency of
@@ -158,6 +163,11 @@ class ConditionalFrequencyPredictor : public RecurrencePredictor {
       const ConditionalFrequencyPredictorConfig& config,
       const std::string& model_identifier);
   explicit ConditionalFrequencyPredictor(const std::string& model_identifier);
+
+  ConditionalFrequencyPredictor(const ConditionalFrequencyPredictor&) = delete;
+  ConditionalFrequencyPredictor& operator=(
+      const ConditionalFrequencyPredictor&) = delete;
+
   ~ConditionalFrequencyPredictor() override;
 
   // Stores a mapping from events to frequencies, along with the total frequency
@@ -196,8 +206,6 @@ class ConditionalFrequencyPredictor : public RecurrencePredictor {
  private:
   // Stores a mapping from conditions to events to frequencies.
   std::map<unsigned int, ConditionalFrequencyPredictor::Events> table_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConditionalFrequencyPredictor);
 };
 
 // FrecencyPredictor ranks targets according to their frecency, and
@@ -217,6 +225,10 @@ class FrecencyPredictor : public RecurrencePredictor {
  public:
   FrecencyPredictor(const FrecencyPredictorConfig& config,
                     const std::string& model_identifier);
+
+  FrecencyPredictor(const FrecencyPredictor&) = delete;
+  FrecencyPredictor& operator=(const FrecencyPredictor&) = delete;
+
   ~FrecencyPredictor() override;
 
   // Records all information about a target: its id and score, along with the
@@ -253,8 +265,6 @@ class FrecencyPredictor : public RecurrencePredictor {
 
   // This stores all the data of the frecency predictor.
   std::map<unsigned int, FrecencyPredictor::TargetData> targets_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrecencyPredictor);
 };
 
 // |HourBinPredictor| ranks targets according to their frequency during
@@ -264,6 +274,10 @@ class HourBinPredictor : public RecurrencePredictor {
  public:
   HourBinPredictor(const HourBinPredictorConfig& config,
                    const std::string& model_identifier);
+
+  HourBinPredictor(const HourBinPredictor&) = delete;
+  HourBinPredictor& operator=(const HourBinPredictor&) = delete;
+
   ~HourBinPredictor() override;
 
   // RecurrencePredictor:
@@ -303,8 +317,6 @@ class HourBinPredictor : public RecurrencePredictor {
 
   // How much to decay frequencies each week.
   float weekly_decay_coeff_;
-
-  DISALLOW_COPY_AND_ASSIGN(HourBinPredictor);
 };
 
 // A first-order Markov chain that predicts the next target from the previous.
@@ -313,6 +325,10 @@ class MarkovPredictor : public RecurrencePredictor {
  public:
   MarkovPredictor(const MarkovPredictorConfig& config,
                   const std::string& model_identifier);
+
+  MarkovPredictor(const MarkovPredictor&) = delete;
+  MarkovPredictor& operator=(const MarkovPredictor&) = delete;
+
   ~MarkovPredictor() override;
 
   // RecurrencePredictor:
@@ -334,8 +350,6 @@ class MarkovPredictor : public RecurrencePredictor {
 
   // The most recently observed target.
   absl::optional<unsigned int> previous_target_;
-
-  DISALLOW_COPY_AND_ASSIGN(MarkovPredictor);
 };
 
 // A predictor that uses a weighted ensemble of other predictors' scores. Any
@@ -354,6 +368,11 @@ class ExponentialWeightsEnsemble : public RecurrencePredictor {
  public:
   ExponentialWeightsEnsemble(const ExponentialWeightsEnsembleConfig& config,
                              const std::string& model_identifier);
+
+  ExponentialWeightsEnsemble(const ExponentialWeightsEnsemble&) = delete;
+  ExponentialWeightsEnsemble& operator=(const ExponentialWeightsEnsemble&) =
+      delete;
+
   ~ExponentialWeightsEnsemble() override;
 
   // RecurrencePredictor:
@@ -375,8 +394,6 @@ class ExponentialWeightsEnsemble : public RecurrencePredictor {
       predictors_;
 
   float learning_rate_ = 0.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(ExponentialWeightsEnsemble);
 };
 
 }  // namespace app_list

@@ -103,6 +103,10 @@ class AvatarMenu :
   AvatarMenu(ProfileAttributesStorage* profile_storage,
              AvatarMenuObserver* observer,
              Browser* browser);
+
+  AvatarMenu(const AvatarMenu&) = delete;
+  AvatarMenu& operator=(const AvatarMenu&) = delete;
+
   ~AvatarMenu() override;
 
   // Sets |image| to the avatar corresponding to the profile at |profile_path|.
@@ -200,8 +204,6 @@ class AvatarMenu :
 
   // Browser in which this avatar menu resides. Weak.
   Browser* browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvatarMenu);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_AVATAR_MENU_H_

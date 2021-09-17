@@ -14,6 +14,12 @@ class ChromeContentBrowserClientChromeOsPart
     : public ChromeContentBrowserClientParts {
  public:
   ChromeContentBrowserClientChromeOsPart();
+
+  ChromeContentBrowserClientChromeOsPart(
+      const ChromeContentBrowserClientChromeOsPart&) = delete;
+  ChromeContentBrowserClientChromeOsPart& operator=(
+      const ChromeContentBrowserClientChromeOsPart&) = delete;
+
   ~ChromeContentBrowserClientChromeOsPart() override;
 
   // ChromeContentBrowserClientParts:
@@ -21,9 +27,6 @@ class ChromeContentBrowserClientChromeOsPart
                            blink::web_pref::WebPreferences* web_prefs) override;
 
   static bool UseDefaultFontSizeForTest(const GURL& url);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientChromeOsPart);
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_CHROME_CONTENT_BROWSER_CLIENT_CHROMEOS_PART_H_

@@ -69,6 +69,10 @@ class MockContextMenuObserver : public MediaRouterContextualMenu::Observer {
 class CastToolbarButtonTest : public ChromeViewsTestBase {
  public:
   CastToolbarButtonTest() = default;
+
+  CastToolbarButtonTest(const CastToolbarButtonTest&) = delete;
+  CastToolbarButtonTest& operator=(const CastToolbarButtonTest&) = delete;
+
   ~CastToolbarButtonTest() override = default;
 
   void SetUp() override {
@@ -146,9 +150,6 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
       CreateLocalDisplayRoute()};
   const std::vector<MediaRoute> non_local_display_route_list_ = {
       CreateNonLocalDisplayRoute(), CreateLocalNonDisplayRoute()};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastToolbarButtonTest);
 };
 
 TEST_F(CastToolbarButtonTest, ShowAndHideButton) {

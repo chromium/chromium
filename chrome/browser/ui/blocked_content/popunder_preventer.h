@@ -16,6 +16,10 @@
 class PopunderPreventer : public content::WebContentsObserver {
  public:
   explicit PopunderPreventer(content::WebContents* activating_contents);
+
+  PopunderPreventer(const PopunderPreventer&) = delete;
+  PopunderPreventer& operator=(const PopunderPreventer&) = delete;
+
   ~PopunderPreventer() override;
 
  private:
@@ -23,8 +27,6 @@ class PopunderPreventer : public content::WebContentsObserver {
   void WebContentsDestroyed() override;
 
   content::WebContents* popup_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopunderPreventer);
 };
 
 #endif  // CHROME_BROWSER_UI_BLOCKED_CONTENT_POPUNDER_PREVENTER_H_

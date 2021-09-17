@@ -27,6 +27,10 @@ class Extension;
 class ResourceRequestPolicy {
  public:
   explicit ResourceRequestPolicy(Dispatcher* dispatcher);
+
+  ResourceRequestPolicy(const ResourceRequestPolicy&) = delete;
+  ResourceRequestPolicy& operator=(const ResourceRequestPolicy&) = delete;
+
   ~ResourceRequestPolicy();
 
   void OnExtensionLoaded(const Extension& extension);
@@ -47,8 +51,6 @@ class ResourceRequestPolicy {
   // The set of extension IDs with any potentially web- or webview-accessible
   // resources.
   std::set<ExtensionId> web_accessible_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceRequestPolicy);
 };
 
 }  // namespace extensions

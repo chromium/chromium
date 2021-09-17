@@ -25,6 +25,12 @@ class DeviceLocalAccountManagementPolicyProvider
  public:
   explicit DeviceLocalAccountManagementPolicyProvider(
       policy::DeviceLocalAccount::Type account_type);
+
+  DeviceLocalAccountManagementPolicyProvider(
+      const DeviceLocalAccountManagementPolicyProvider&) = delete;
+  DeviceLocalAccountManagementPolicyProvider& operator=(
+      const DeviceLocalAccountManagementPolicyProvider&) = delete;
+
   ~DeviceLocalAccountManagementPolicyProvider() override;
 
   // Used to check whether an extension is explicitly whitelisted.
@@ -37,8 +43,6 @@ class DeviceLocalAccountManagementPolicyProvider
 
  private:
   const policy::DeviceLocalAccount::Type account_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountManagementPolicyProvider);
 };
 
 }  // namespace chromeos

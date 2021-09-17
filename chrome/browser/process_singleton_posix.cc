@@ -487,6 +487,9 @@ class ProcessSingleton::LinuxWatcher
                    this, &SocketReader::CleanupAndDeleteSelf);
     }
 
+    SocketReader(const SocketReader&) = delete;
+    SocketReader& operator=(const SocketReader&) = delete;
+
     ~SocketReader() { CloseSocket(fd_); }
 
     // Finish handling the incoming message by optionally sending back an ACK
@@ -524,8 +527,6 @@ class ProcessSingleton::LinuxWatcher
     size_t bytes_read_;
 
     base::OneShotTimer timer_;
-
-    DISALLOW_COPY_AND_ASSIGN(SocketReader);
   };
 
   // We expect to only be constructed on the UI thread.

@@ -29,6 +29,10 @@ class EndpointResolver {
       base::OnceCallback<void(const net::IPEndPoint& endpoint)>;
 
   EndpointResolver();
+
+  EndpointResolver(const EndpointResolver&) = delete;
+  EndpointResolver& operator=(const EndpointResolver&) = delete;
+
   ~EndpointResolver();
 
   void Start(const net::HostPortPair& address, ResultCallback callback);
@@ -44,8 +48,6 @@ class EndpointResolver {
   scoped_refptr<ServiceDiscoverySharedClient> service_discovery_client_;
   std::unique_ptr<ServiceResolver> service_resolver_;
   std::unique_ptr<LocalDomainResolver> domain_resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(EndpointResolver);
 };
 
 }  // namespace local_discovery

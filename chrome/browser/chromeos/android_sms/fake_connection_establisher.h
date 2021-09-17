@@ -18,6 +18,11 @@ namespace android_sms {
 class FakeConnectionEstablisher : public ConnectionEstablisher {
  public:
   FakeConnectionEstablisher();
+
+  FakeConnectionEstablisher(const FakeConnectionEstablisher&) = delete;
+  FakeConnectionEstablisher& operator=(const FakeConnectionEstablisher&) =
+      delete;
+
   ~FakeConnectionEstablisher() override;
 
   const std::vector<
@@ -46,8 +51,6 @@ class FakeConnectionEstablisher : public ConnectionEstablisher {
       establish_connection_calls_;
   std::vector<std::tuple<GURL, content::ServiceWorkerContext*>>
       tear_down_connection_calls_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionEstablisher);
 };
 
 }  // namespace android_sms

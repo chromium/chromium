@@ -35,6 +35,10 @@ namespace feedback {
 class FeedbackUploaderChrome : public FeedbackUploader {
  public:
   explicit FeedbackUploaderChrome(content::BrowserContext* context);
+
+  FeedbackUploaderChrome(const FeedbackUploaderChrome&) = delete;
+  FeedbackUploaderChrome& operator=(const FeedbackUploaderChrome&) = delete;
+
   ~FeedbackUploaderChrome() override;
 
   class Delegate {
@@ -80,8 +84,6 @@ class FeedbackUploaderChrome : public FeedbackUploader {
   Delegate* delegate_ = nullptr;  // Not owned.
 
   content::BrowserContext* context_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderChrome);
 };
 
 }  // namespace feedback

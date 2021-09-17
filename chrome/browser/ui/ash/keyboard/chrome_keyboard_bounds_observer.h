@@ -23,6 +23,11 @@ class ChromeKeyboardBoundsObserver
       public ChromeKeyboardControllerClient::Observer {
  public:
   explicit ChromeKeyboardBoundsObserver(aura::Window* keyboard_window);
+
+  ChromeKeyboardBoundsObserver(const ChromeKeyboardBoundsObserver&) = delete;
+  ChromeKeyboardBoundsObserver& operator=(const ChromeKeyboardBoundsObserver&) =
+      delete;
+
   ~ChromeKeyboardBoundsObserver() override;
 
   // keyboard::ChromeKeyboardControllerClient::Observer:
@@ -50,8 +55,6 @@ class ChromeKeyboardBoundsObserver
   aura::Window* const keyboard_window_;
   std::set<views::Widget*> observed_widgets_;
   gfx::Rect occluded_bounds_in_screen_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardBoundsObserver);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_KEYBOARD_CHROME_KEYBOARD_BOUNDS_OBSERVER_H_

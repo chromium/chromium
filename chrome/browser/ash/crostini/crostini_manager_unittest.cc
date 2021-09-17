@@ -202,6 +202,9 @@ class CrostiniManagerTest : public testing::Test {
             chromeos::DBusThreadManager::Get()->GetAnomalyDetectorClient());
   }
 
+  CrostiniManagerTest(const CrostiniManagerTest&) = delete;
+  CrostiniManagerTest& operator=(const CrostiniManagerTest&) = delete;
+
   ~CrostiniManagerTest() override {
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
@@ -291,8 +294,6 @@ class CrostiniManagerTest : public testing::Test {
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniManagerTest);
 };
 
 TEST_F(CrostiniManagerTest, CreateDiskImageEmptyNameError) {

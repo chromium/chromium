@@ -18,6 +18,10 @@ class TabAndroid;
 class TabModelObserver {
  public:
   TabModelObserver();
+
+  TabModelObserver(const TabModelObserver&) = delete;
+  TabModelObserver& operator=(const TabModelObserver&) = delete;
+
   virtual ~TabModelObserver();
 
   // Called when a |tab| is selected.
@@ -60,9 +64,6 @@ class TabModelObserver {
   // Called after a tab has been removed. At this point the tab is no longer in
   // the TabModel.
   virtual void TabRemoved(TabAndroid* tab);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabModelObserver);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_OBSERVER_H_

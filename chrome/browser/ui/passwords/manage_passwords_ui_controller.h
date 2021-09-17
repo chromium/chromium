@@ -57,6 +57,10 @@ class ManagePasswordsUIController
       public PasswordsModelDelegate,
       public PasswordsClientUIDelegate {
  public:
+  ManagePasswordsUIController(const ManagePasswordsUIController&) = delete;
+  ManagePasswordsUIController& operator=(const ManagePasswordsUIController&) =
+      delete;
+
   ~ManagePasswordsUIController() override;
 
 #if defined(UNIT_TEST)
@@ -353,8 +357,6 @@ class ManagePasswordsUIController
   base::WeakPtrFactory<ManagePasswordsUIController> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ManagePasswordsUIController);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_H_

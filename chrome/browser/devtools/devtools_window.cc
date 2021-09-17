@@ -146,6 +146,10 @@ class DevToolsToolboxDelegate
   DevToolsToolboxDelegate(
       WebContents* toolbox_contents,
       DevToolsWindow::ObserverWithAccessor* web_contents_observer);
+
+  DevToolsToolboxDelegate(const DevToolsToolboxDelegate&) = delete;
+  DevToolsToolboxDelegate& operator=(const DevToolsToolboxDelegate&) = delete;
+
   ~DevToolsToolboxDelegate() override;
 
   content::WebContents* OpenURLFromTab(
@@ -162,7 +166,6 @@ class DevToolsToolboxDelegate
  private:
   BrowserWindow* GetInspectedBrowserWindow();
   DevToolsWindow::ObserverWithAccessor* inspected_contents_observer_;
-  DISALLOW_COPY_AND_ASSIGN(DevToolsToolboxDelegate);
 };
 
 DevToolsToolboxDelegate::DevToolsToolboxDelegate(
@@ -366,6 +369,9 @@ class DevToolsWindow::Throttle : public content::NavigationThrottle {
     devtools_window_->throttle_ = this;
   }
 
+  Throttle(const Throttle&) = delete;
+  Throttle& operator=(const Throttle&) = delete;
+
   ~Throttle() override {
     if (devtools_window_)
       devtools_window_->throttle_ = nullptr;
@@ -388,8 +394,6 @@ class DevToolsWindow::Throttle : public content::NavigationThrottle {
 
  private:
   DevToolsWindow* devtools_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(Throttle);
 };
 
 // Helper class that holds the owned main WebContents for the docked

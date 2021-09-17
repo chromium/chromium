@@ -44,6 +44,10 @@ class ErrorScreen : public BaseScreen,
   static const char kUserActionCancel[];
 
   explicit ErrorScreen(ErrorScreenView* view);
+
+  ErrorScreen(const ErrorScreen&) = delete;
+  ErrorScreen& operator=(const ErrorScreen&) = delete;
+
   ~ErrorScreen() override;
 
   CaptivePortalWindowProxy* captive_portal_window_proxy() {
@@ -197,8 +201,6 @@ class ErrorScreen : public BaseScreen,
   base::RepeatingCallbackList<void()> connect_request_callbacks_;
 
   base::WeakPtrFactory<ErrorScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorScreen);
 };
 
 }  // namespace ash

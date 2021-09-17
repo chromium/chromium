@@ -54,6 +54,11 @@ class DataReductionProxyChromeSettings
   // the UI thread.
   explicit DataReductionProxyChromeSettings(bool is_off_the_record_profile);
 
+  DataReductionProxyChromeSettings(const DataReductionProxyChromeSettings&) =
+      delete;
+  DataReductionProxyChromeSettings& operator=(
+      const DataReductionProxyChromeSettings&) = delete;
+
   // Destructs the settings object.
   ~DataReductionProxyChromeSettings() override;
 
@@ -107,8 +112,6 @@ class DataReductionProxyChromeSettings
 
   // Null before InitDataReductionProxySettings is called.
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxyChromeSettings);
 };
 
 #endif  // CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_CHROME_SETTINGS_H_

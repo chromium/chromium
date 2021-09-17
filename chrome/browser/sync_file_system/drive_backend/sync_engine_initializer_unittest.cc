@@ -49,6 +49,11 @@ class SyncEngineInitializerTest : public testing::Test {
   };
 
   SyncEngineInitializerTest() {}
+
+  SyncEngineInitializerTest(const SyncEngineInitializerTest&) = delete;
+  SyncEngineInitializerTest& operator=(const SyncEngineInitializerTest&) =
+      delete;
+
   ~SyncEngineInitializerTest() override {}
 
   void SetUp() override {
@@ -211,8 +216,6 @@ class SyncEngineInitializerTest : public testing::Test {
   std::unique_ptr<SyncTaskManager> sync_task_manager_;
   std::unique_ptr<SyncEngineContext> sync_context_;
   drive::FakeDriveService* fake_drive_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineInitializerTest);
 };
 
 TEST_F(SyncEngineInitializerTest, EmptyDatabase_NoRemoteSyncRoot) {

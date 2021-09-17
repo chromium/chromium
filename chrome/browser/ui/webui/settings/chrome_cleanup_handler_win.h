@@ -25,6 +25,10 @@ class ChromeCleanupHandler
       public safe_browsing::ChromeCleanerController::Observer {
  public:
   explicit ChromeCleanupHandler(Profile* profile);
+
+  ChromeCleanupHandler(const ChromeCleanupHandler&) = delete;
+  ChromeCleanupHandler& operator=(const ChromeCleanupHandler&) = delete;
+
   ~ChromeCleanupHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -85,8 +89,6 @@ class ChromeCleanupHandler
   safe_browsing::ChromeCleanerController* controller_;
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanupHandler);
 };
 
 }  // namespace settings

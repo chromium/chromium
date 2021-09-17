@@ -19,6 +19,10 @@ class RenderViewContextMenuMac : public RenderViewContextMenu,
  public:
   RenderViewContextMenuMac(content::RenderFrameHost* render_frame_host,
                            const content::ContextMenuParams& params);
+
+  RenderViewContextMenuMac(const RenderViewContextMenuMac&) = delete;
+  RenderViewContextMenuMac& operator=(const RenderViewContextMenuMac&) = delete;
+
   ~RenderViewContextMenuMac() override;
 
   void Show() override {}
@@ -52,8 +56,6 @@ class RenderViewContextMenuMac : public RenderViewContextMenu,
 
   // The context menu that adds and handles Speech and BiDi.
   ui::TextServicesContextMenu text_services_context_menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuMac);
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_MAC_H_

@@ -29,6 +29,12 @@ class PrintJobFinishedEventDispatcher
  public:
   explicit PrintJobFinishedEventDispatcher(
       content::BrowserContext* browser_context);
+
+  PrintJobFinishedEventDispatcher(const PrintJobFinishedEventDispatcher&) =
+      delete;
+  PrintJobFinishedEventDispatcher& operator=(
+      const PrintJobFinishedEventDispatcher&) = delete;
+
   ~PrintJobFinishedEventDispatcher() override;
 
   // BrowserContextKeyedAPI:
@@ -54,8 +60,6 @@ class PrintJobFinishedEventDispatcher
   base::ScopedObservation<ash::PrintJobHistoryService,
                           ash::PrintJobHistoryService::Observer>
       print_job_history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobFinishedEventDispatcher);
 };
 
 template <>

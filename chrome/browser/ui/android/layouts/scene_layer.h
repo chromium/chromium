@@ -32,6 +32,10 @@ class SceneLayer {
   SceneLayer(JNIEnv* env,
              const base::android::JavaRef<jobject>& jobj,
              scoped_refptr<cc::Layer> layer);
+
+  SceneLayer(const SceneLayer&) = delete;
+  SceneLayer& operator=(const SceneLayer&) = delete;
+
   virtual ~SceneLayer();
 
   // Notifies that this scene layer is about to be detached from its parent.
@@ -59,9 +63,6 @@ class SceneLayer {
  protected:
   JavaObjectWeakGlobalRef weak_java_scene_layer_;
   scoped_refptr<cc::Layer> layer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SceneLayer);
 };
 
 }  // namespace android

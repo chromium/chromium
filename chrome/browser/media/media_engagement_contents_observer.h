@@ -24,6 +24,11 @@ class MediaEngagementSession;
 
 class MediaEngagementContentsObserver : public content::WebContentsObserver {
  public:
+  MediaEngagementContentsObserver(const MediaEngagementContentsObserver&) =
+      delete;
+  MediaEngagementContentsObserver& operator=(
+      const MediaEngagementContentsObserver&) = delete;
+
   ~MediaEngagementContentsObserver() override;
 
   // WebContentsObserver implementation.
@@ -250,8 +255,6 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
   // may be shared by other instances if they are part of the same session. It
   // willl be null if it is not part of a session.
   scoped_refptr<MediaEngagementSession> session_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementContentsObserver);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_CONTENTS_OBSERVER_H_

@@ -54,6 +54,11 @@ class CastAppAvailabilityTracker {
       std::pair<cast_channel::GetAppAvailabilityResult, base::TimeTicks>;
 
   CastAppAvailabilityTracker();
+
+  CastAppAvailabilityTracker(const CastAppAvailabilityTracker&) = delete;
+  CastAppAvailabilityTracker& operator=(const CastAppAvailabilityTracker&) =
+      delete;
+
   ~CastAppAvailabilityTracker();
 
   // Registers |source| with the tracker. Returns a list of new app IDs that
@@ -123,8 +128,6 @@ class CastAppAvailabilityTracker {
   // IDs and app availabilities of known sinks.
   base::flat_map<MediaSink::Id, CapabilitiesAndAvailabilityMap>
       capabilities_and_availabilities_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAppAvailabilityTracker);
 };
 
 }  // namespace media_router

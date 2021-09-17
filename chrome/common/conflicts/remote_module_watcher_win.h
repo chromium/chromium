@@ -36,6 +36,9 @@ class RemoteModuleWatcher {
   // events in one batch to the browser process.
   static constexpr base::TimeDelta kIdleDelay = base::TimeDelta::FromSeconds(5);
 
+  RemoteModuleWatcher(const RemoteModuleWatcher&) = delete;
+  RemoteModuleWatcher& operator=(const RemoteModuleWatcher&) = delete;
+
   ~RemoteModuleWatcher();
 
   // Creates a RemoteModuleWatcher instance and initializes it on |task_runner|.
@@ -80,8 +83,6 @@ class RemoteModuleWatcher {
   base::DelayTimer delay_timer_;
 
   base::WeakPtrFactory<RemoteModuleWatcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteModuleWatcher);
 };
 
 #endif  // CHROME_COMMON_CONFLICTS_REMOTE_MODULE_WATCHER_WIN_H_

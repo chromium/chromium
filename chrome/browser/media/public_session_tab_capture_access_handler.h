@@ -27,6 +27,12 @@
 class PublicSessionTabCaptureAccessHandler : public CaptureAccessHandlerBase {
  public:
   PublicSessionTabCaptureAccessHandler();
+
+  PublicSessionTabCaptureAccessHandler(
+      const PublicSessionTabCaptureAccessHandler&) = delete;
+  PublicSessionTabCaptureAccessHandler& operator=(
+      const PublicSessionTabCaptureAccessHandler&) = delete;
+
   ~PublicSessionTabCaptureAccessHandler() override;
 
   // MediaAccessHandler implementation.
@@ -54,8 +60,6 @@ class PublicSessionTabCaptureAccessHandler : public CaptureAccessHandlerBase {
       const extensions::PermissionIDSet& allowed_permissions);
 
   TabCaptureAccessHandler tab_capture_access_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicSessionTabCaptureAccessHandler);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_PUBLIC_SESSION_TAB_CAPTURE_ACCESS_HANDLER_H_

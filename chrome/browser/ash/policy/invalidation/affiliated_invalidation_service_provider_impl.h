@@ -32,6 +32,12 @@ class AffiliatedInvalidationServiceProviderImpl
       public session_manager::SessionManagerObserver {
  public:
   AffiliatedInvalidationServiceProviderImpl();
+
+  AffiliatedInvalidationServiceProviderImpl(
+      const AffiliatedInvalidationServiceProviderImpl&) = delete;
+  AffiliatedInvalidationServiceProviderImpl& operator=(
+      const AffiliatedInvalidationServiceProviderImpl&) = delete;
+
   ~AffiliatedInvalidationServiceProviderImpl() override;
 
   // session_manager::SessionManagerObserver:
@@ -111,8 +117,6 @@ class AffiliatedInvalidationServiceProviderImpl
   int consumer_count_;
 
   bool is_shut_down_;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliatedInvalidationServiceProviderImpl);
 };
 
 }  // namespace policy

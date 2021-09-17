@@ -33,6 +33,9 @@ class WebNavigationTabObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<WebNavigationTabObserver> {
  public:
+  WebNavigationTabObserver(const WebNavigationTabObserver&) = delete;
+  WebNavigationTabObserver& operator=(const WebNavigationTabObserver&) = delete;
+
   ~WebNavigationTabObserver() override;
 
   // Returns the object for the given |web_contents|.
@@ -86,8 +89,6 @@ class WebNavigationTabObserver
   std::unique_ptr<Event> pending_on_before_navigate_event_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebNavigationTabObserver);
 };
 
 // Tracks new tab navigations and routes them as events to the extension system.
@@ -95,6 +96,10 @@ class WebNavigationEventRouter : public TabStripModelObserver,
                                  public BrowserTabStripTrackerDelegate {
  public:
   explicit WebNavigationEventRouter(Profile* profile);
+
+  WebNavigationEventRouter(const WebNavigationEventRouter&) = delete;
+  WebNavigationEventRouter& operator=(const WebNavigationEventRouter&) = delete;
+
   ~WebNavigationEventRouter() override;
 
   // Router level handler for the creation of WebContents. Stores information
@@ -114,6 +119,10 @@ class WebNavigationEventRouter : public TabStripModelObserver,
   class PendingWebContents : public content::WebContentsObserver {
    public:
     PendingWebContents();
+
+    PendingWebContents(const PendingWebContents&) = delete;
+    PendingWebContents& operator=(const PendingWebContents&) = delete;
+
     ~PendingWebContents() override;
 
     void Set(int source_tab_id,
@@ -144,8 +153,6 @@ class WebNavigationEventRouter : public TabStripModelObserver,
     content::WebContents* target_web_contents_ = nullptr;
     GURL target_url_;
     base::OnceCallback<void(content::WebContents*)> on_destroy_;
-
-    DISALLOW_COPY_AND_ASSIGN(PendingWebContents);
   };
 
   // BrowserTabStripTrackerDelegate implementation.
@@ -172,8 +179,6 @@ class WebNavigationEventRouter : public TabStripModelObserver,
   Profile* profile_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebNavigationEventRouter);
 };
 
 // API function that returns the state of a given frame.
@@ -195,6 +200,10 @@ class WebNavigationAPI : public BrowserContextKeyedAPI,
                          public extensions::EventRouter::Observer {
  public:
   explicit WebNavigationAPI(content::BrowserContext* context);
+
+  WebNavigationAPI(const WebNavigationAPI&) = delete;
+  WebNavigationAPI& operator=(const WebNavigationAPI&) = delete;
+
   ~WebNavigationAPI() override;
 
   // KeyedService implementation.
@@ -221,8 +230,6 @@ class WebNavigationAPI : public BrowserContextKeyedAPI,
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<WebNavigationEventRouter> web_navigation_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebNavigationAPI);
 };
 
 }  // namespace extensions

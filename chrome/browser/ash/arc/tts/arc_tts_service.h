@@ -33,6 +33,10 @@ class ArcTtsService : public KeyedService,
 
   ArcTtsService(content::BrowserContext* context,
                 ArcBridgeService* bridge_service);
+
+  ArcTtsService(const ArcTtsService&) = delete;
+  ArcTtsService& operator=(const ArcTtsService&) = delete;
+
   ~ArcTtsService() override;
 
   // mojom::TtsHost overrides:
@@ -55,8 +59,6 @@ class ArcTtsService : public KeyedService,
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   content::TtsController* tts_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTtsService);
 };
 
 }  // namespace arc

@@ -29,9 +29,13 @@ class GCMProfileServiceFactory : public BrowserContextKeyedServiceFactory {
   class ScopedTestingFactoryInstaller {
    public:
     explicit ScopedTestingFactoryInstaller(TestingFactory testing_factory);
-    ~ScopedTestingFactoryInstaller();
 
-    DISALLOW_COPY_AND_ASSIGN(ScopedTestingFactoryInstaller);
+    ScopedTestingFactoryInstaller(const ScopedTestingFactoryInstaller&) =
+        delete;
+    ScopedTestingFactoryInstaller& operator=(
+        const ScopedTestingFactoryInstaller&) = delete;
+
+    ~ScopedTestingFactoryInstaller();
   };
 
  private:

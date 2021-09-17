@@ -42,6 +42,11 @@ class BadgeBackgroundImageSource : public gfx::CanvasImageSource {
  public:
   explicit BadgeBackgroundImageSource(int size)
       : CanvasImageSource(gfx::Size(size, size)) {}
+
+  BadgeBackgroundImageSource(const BadgeBackgroundImageSource&) = delete;
+  BadgeBackgroundImageSource& operator=(const BadgeBackgroundImageSource&) =
+      delete;
+
   ~BadgeBackgroundImageSource() override = default;
 
  private:
@@ -54,8 +59,6 @@ class BadgeBackgroundImageSource : public gfx::CanvasImageSource {
     const float origin = static_cast<float>(size().width()) / 2;
     canvas->DrawCircle(gfx::PointF(origin, origin), origin, flags);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BadgeBackgroundImageSource);
 };
 
 gfx::ImageSkia CreateBadgeIcon(const gfx::VectorIcon& vector_icon,

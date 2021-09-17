@@ -46,6 +46,12 @@ class WilcoDtcSupportdWebRequestService final {
 
   explicit WilcoDtcSupportdWebRequestService(
       std::unique_ptr<WilcoDtcSupportdNetworkContext> network_context);
+
+  WilcoDtcSupportdWebRequestService(const WilcoDtcSupportdWebRequestService&) =
+      delete;
+  WilcoDtcSupportdWebRequestService& operator=(
+      const WilcoDtcSupportdWebRequestService&) = delete;
+
   ~WilcoDtcSupportdWebRequestService();
 
   // Performs web request. The response is returned by |callback| which is
@@ -93,8 +99,6 @@ class WilcoDtcSupportdWebRequestService final {
 
   base::queue<std::unique_ptr<WebRequest>> request_queue_;
   std::unique_ptr<WebRequest> active_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdWebRequestService);
 };
 
 }  // namespace ash

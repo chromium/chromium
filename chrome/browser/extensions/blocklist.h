@@ -53,12 +53,14 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
         scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
             database_manager);
 
+    ScopedDatabaseManagerForTest(const ScopedDatabaseManagerForTest&) = delete;
+    ScopedDatabaseManagerForTest& operator=(
+        const ScopedDatabaseManagerForTest&) = delete;
+
     ~ScopedDatabaseManagerForTest();
 
    private:
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> original_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedDatabaseManagerForTest);
   };
 
   using BlocklistStateMap = std::map<std::string, BlocklistState>;

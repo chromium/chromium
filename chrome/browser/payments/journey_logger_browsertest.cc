@@ -16,6 +16,9 @@ class JourneyLoggerTest : public PaymentRequestPlatformBrowserTestBase {
  public:
   JourneyLoggerTest() : gpay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  JourneyLoggerTest(const JourneyLoggerTest&) = delete;
+  JourneyLoggerTest& operator=(const JourneyLoggerTest&) = delete;
+
   ~JourneyLoggerTest() override = default;
 
   void PreRunTestOnMainThread() override {
@@ -55,8 +58,6 @@ class JourneyLoggerTest : public PaymentRequestPlatformBrowserTestBase {
   GURL main_frame_url_;
   GURL gpay_scope_url_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(JourneyLoggerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, NoPaymentMethodSupported) {

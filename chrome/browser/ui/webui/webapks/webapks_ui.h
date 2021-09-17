@@ -12,10 +12,11 @@
 class WebApksUI : public content::WebUIController {
  public:
   explicit WebApksUI(content::WebUI* web_ui);
-  ~WebApksUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebApksUI);
+  WebApksUI(const WebApksUI&) = delete;
+  WebApksUI& operator=(const WebApksUI&) = delete;
+
+  ~WebApksUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBAPKS_WEBAPKS_UI_H_

@@ -28,6 +28,10 @@ namespace extensions {
 class ManifestV3BrowserTest : public ExtensionBrowserTest {
  public:
   ManifestV3BrowserTest() {}
+
+  ManifestV3BrowserTest(const ManifestV3BrowserTest&) = delete;
+  ManifestV3BrowserTest& operator=(const ManifestV3BrowserTest&) = delete;
+
   ~ManifestV3BrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -38,8 +42,6 @@ class ManifestV3BrowserTest : public ExtensionBrowserTest {
 
  private:
   ScopedCurrentChannel channel_override_{version_info::Channel::UNKNOWN};
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestV3BrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {

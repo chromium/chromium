@@ -62,6 +62,10 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
       RecommendAppsFetcherDelegate* delegate,
       mojo::PendingRemote<mojom::CrosDisplayConfigController> display_config,
       network::mojom::URLLoaderFactory* url_loader_factory);
+
+  RecommendAppsFetcherImpl(const RecommendAppsFetcherImpl&) = delete;
+  RecommendAppsFetcherImpl& operator=(const RecommendAppsFetcherImpl&) = delete;
+
   ~RecommendAppsFetcherImpl() override;
 
   // Provide a retry method to download the app list again.
@@ -154,8 +158,6 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   mojo::Remote<mojom::CrosDisplayConfigController> cros_display_config_;
   base::WeakPtrFactory<RecommendAppsFetcherImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecommendAppsFetcherImpl);
 };
 
 }  // namespace ash

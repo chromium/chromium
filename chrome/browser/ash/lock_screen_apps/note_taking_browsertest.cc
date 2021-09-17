@@ -34,6 +34,11 @@ const char kTestAppId[] = "cadfeochfldmbdgoccgbeianhamecbae";
 class LockScreenAppsEnabledWaiter : public lock_screen_apps::StateObserver {
  public:
   LockScreenAppsEnabledWaiter() = default;
+
+  LockScreenAppsEnabledWaiter(const LockScreenAppsEnabledWaiter&) = delete;
+  LockScreenAppsEnabledWaiter& operator=(const LockScreenAppsEnabledWaiter&) =
+      delete;
+
   ~LockScreenAppsEnabledWaiter() override {}
 
   // Runs loop until lock_screen_apps::StateController enters |target_state|.
@@ -68,13 +73,15 @@ class LockScreenAppsEnabledWaiter : public lock_screen_apps::StateObserver {
       lock_screen_apps_state_observation_{this};
 
   base::OnceClosure state_change_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAppsEnabledWaiter);
 };
 
 class LockScreenNoteTakingTest : public extensions::ExtensionBrowserTest {
  public:
   LockScreenNoteTakingTest() { set_chromeos_user_ = true; }
+
+  LockScreenNoteTakingTest(const LockScreenNoteTakingTest&) = delete;
+  LockScreenNoteTakingTest& operator=(const LockScreenNoteTakingTest&) = delete;
+
   ~LockScreenNoteTakingTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* cmd_line) override {
@@ -182,8 +189,6 @@ class LockScreenNoteTakingTest : public extensions::ExtensionBrowserTest {
 
  private:
   std::unique_ptr<extensions::ResultCatcher> result_catcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenNoteTakingTest);
 };
 
 }  // namespace

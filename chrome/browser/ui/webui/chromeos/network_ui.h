@@ -23,6 +23,10 @@ namespace chromeos {
 class NetworkUI : public ui::MojoWebUIController {
  public:
   explicit NetworkUI(content::WebUI* web_ui);
+
+  NetworkUI(const NetworkUI&) = delete;
+  NetworkUI& operator=(const NetworkUI&) = delete;
+
   ~NetworkUI() override;
 
   static void GetLocalizedStrings(base::DictionaryValue* localized_strings);
@@ -51,8 +55,6 @@ class NetworkUI : public ui::MojoWebUIController {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkUI);
 };
 
 }  // namespace chromeos

@@ -36,6 +36,10 @@ class TabLoaderDelegateImpl
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   explicit TabLoaderDelegateImpl(TabLoaderCallback* callback);
+
+  TabLoaderDelegateImpl(const TabLoaderDelegateImpl&) = delete;
+  TabLoaderDelegateImpl& operator=(const TabLoaderDelegateImpl&) = delete;
+
   ~TabLoaderDelegateImpl() override;
 
   // TabLoaderDelegate:
@@ -100,8 +104,6 @@ class TabLoaderDelegateImpl
   base::TimeDelta timeout_;
 
   base::WeakPtrFactory<TabLoaderDelegateImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabLoaderDelegateImpl);
 };
 
 TabLoaderDelegateImpl::TabLoaderDelegateImpl(TabLoaderCallback* callback)

@@ -13,13 +13,14 @@
 class PageLoadMetricsProvider : public metrics::MetricsProvider {
  public:
   PageLoadMetricsProvider();
+
+  PageLoadMetricsProvider(const PageLoadMetricsProvider&) = delete;
+  PageLoadMetricsProvider& operator=(const PageLoadMetricsProvider&) = delete;
+
   ~PageLoadMetricsProvider() override;
 
   // metrics:MetricsProvider:
   void OnAppEnterBackground() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_PAGE_LOAD_METRICS_PROVIDER_H_

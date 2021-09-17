@@ -35,6 +35,10 @@ class FontPrefChangeNotifier : public PrefObserver, public KeyedService {
   class Registrar {
    public:
     Registrar();
+
+    Registrar(const Registrar&) = delete;
+    Registrar& operator=(const Registrar&) = delete;
+
     ~Registrar();
 
     bool is_registered() const { return !!notifier_; }
@@ -52,8 +56,6 @@ class FontPrefChangeNotifier : public PrefObserver, public KeyedService {
 
     FontPrefChangeNotifier* notifier_ = nullptr;
     FontPrefChangeNotifier::Callback callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(Registrar);
   };
 
   // The pref service must outlive this class.

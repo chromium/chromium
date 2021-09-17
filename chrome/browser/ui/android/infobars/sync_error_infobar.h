@@ -14,6 +14,10 @@ class SyncErrorInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit SyncErrorInfoBar(
       std::unique_ptr<SyncErrorInfoBarDelegateAndroid> delegate);
+
+  SyncErrorInfoBar(const SyncErrorInfoBar&) = delete;
+  SyncErrorInfoBar& operator=(const SyncErrorInfoBar&) = delete;
+
   ~SyncErrorInfoBar() override;
 
  protected:
@@ -21,8 +25,6 @@ class SyncErrorInfoBar : public infobars::ConfirmInfoBar {
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_SYNC_ERROR_INFOBAR_H_

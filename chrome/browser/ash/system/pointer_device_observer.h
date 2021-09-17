@@ -16,6 +16,10 @@ namespace system {
 class PointerDeviceObserver : public ui::InputDeviceEventObserver {
  public:
   PointerDeviceObserver();
+
+  PointerDeviceObserver(const PointerDeviceObserver&) = delete;
+  PointerDeviceObserver& operator=(const PointerDeviceObserver&) = delete;
+
   ~PointerDeviceObserver() override;
 
   // Start observing device hierarchy.
@@ -54,8 +58,6 @@ class PointerDeviceObserver : public ui::InputDeviceEventObserver {
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<PointerDeviceObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PointerDeviceObserver);
 };
 
 }  // namespace system

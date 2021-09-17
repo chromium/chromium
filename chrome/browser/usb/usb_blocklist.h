@@ -37,6 +37,9 @@ class UsbBlocklist final {
     uint16_t max_version;
   };
 
+  UsbBlocklist(const UsbBlocklist&) = delete;
+  UsbBlocklist& operator=(const UsbBlocklist&) = delete;
+
   ~UsbBlocklist();
 
   // Returns a singleton instance of the blocklist.
@@ -76,8 +79,6 @@ class UsbBlocklist final {
 
   // Set of blocklist entries.
   std::vector<Entry> dynamic_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbBlocklist);
 };
 
 #endif  // CHROME_BROWSER_USB_USB_BLOCKLIST_H_

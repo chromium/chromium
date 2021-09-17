@@ -32,6 +32,10 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   static const char kTestAuthCode[];
 
   explicit EnrollmentHelperMixin(InProcessBrowserTestMixinHost* host);
+
+  EnrollmentHelperMixin(const EnrollmentHelperMixin&) = delete;
+  EnrollmentHelperMixin& operator=(const EnrollmentHelperMixin&) = delete;
+
   ~EnrollmentHelperMixin() override;
 
   // Resets mock (to be used in tests that retry enrollment.
@@ -87,8 +91,6 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
   // Unowned reference to last created mock.
   EnterpriseEnrollmentHelperMock* mock_ = nullptr;
   base::WeakPtrFactory<EnrollmentHelperMixin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentHelperMixin);
 };
 
 }  // namespace test

@@ -24,6 +24,10 @@ class TopToolbarSceneLayer : public SceneLayer {
  public:
   TopToolbarSceneLayer(JNIEnv* env,
                        const base::android::JavaRef<jobject>& jobj);
+
+  TopToolbarSceneLayer(const TopToolbarSceneLayer&) = delete;
+  TopToolbarSceneLayer& operator=(const TopToolbarSceneLayer&) = delete;
+
   ~TopToolbarSceneLayer() override;
 
   // Update the compositor version of the toolbar.
@@ -69,8 +73,6 @@ class TopToolbarSceneLayer : public SceneLayer {
   SkColor background_color_;
   scoped_refptr<cc::Layer> content_container_;
   scoped_refptr<ToolbarLayer> toolbar_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopToolbarSceneLayer);
 };
 
 }  // namespace android

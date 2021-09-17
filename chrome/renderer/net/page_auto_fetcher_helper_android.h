@@ -22,6 +22,10 @@ class PageAutoFetcherHelper {
   using FetcherScheduleResult =
       chrome::mojom::OfflinePageAutoFetcherScheduleResult;
   explicit PageAutoFetcherHelper(content::RenderFrame* render_frame);
+
+  PageAutoFetcherHelper(const PageAutoFetcherHelper&) = delete;
+  PageAutoFetcherHelper& operator=(const PageAutoFetcherHelper&) = delete;
+
   virtual ~PageAutoFetcherHelper();
   // Should be called for each page load.
   void OnCommitLoad();
@@ -43,8 +47,6 @@ class PageAutoFetcherHelper {
   mojo::Remote<chrome::mojom::OfflinePageAutoFetcher> fetcher_;
 
   base::WeakPtrFactory<PageAutoFetcherHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PageAutoFetcherHelper);
 };
 
 #endif  // CHROME_RENDERER_NET_PAGE_AUTO_FETCHER_HELPER_ANDROID_H_

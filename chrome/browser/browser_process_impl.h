@@ -97,6 +97,10 @@ class BrowserProcessImpl : public BrowserProcess,
   // will take the PrefService owned by the creator as the Local State instead
   // of loading the JSON file from disk.
   explicit BrowserProcessImpl(StartupData* startup_data);
+
+  BrowserProcessImpl(const BrowserProcessImpl&) = delete;
+  BrowserProcessImpl& operator=(const BrowserProcessImpl&) = delete;
+
   ~BrowserProcessImpl() override;
 
   // Called to complete initialization.
@@ -451,8 +455,6 @@ class BrowserProcessImpl : public BrowserProcess,
       application_breadcrumbs_logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessImpl);
 };
 
 #endif  // CHROME_BROWSER_BROWSER_PROCESS_IMPL_H_

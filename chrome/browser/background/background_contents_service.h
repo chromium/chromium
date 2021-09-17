@@ -63,6 +63,11 @@ class BackgroundContentsService : private content::NotificationObserver,
  public:
   BackgroundContentsService(Profile* profile,
                             const base::CommandLine* command_line);
+
+  BackgroundContentsService(const BackgroundContentsService&) = delete;
+  BackgroundContentsService& operator=(const BackgroundContentsService&) =
+      delete;
+
   ~BackgroundContentsService() override;
 
   // Allows tests to reduce the time between a force-installed app/extension
@@ -267,8 +272,6 @@ class BackgroundContentsService : private content::NotificationObserver,
       extension_registry_observation_{this};
 
   base::WeakPtrFactory<BackgroundContentsService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundContentsService);
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_BACKGROUND_CONTENTS_SERVICE_H_

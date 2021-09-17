@@ -35,6 +35,10 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
                         public crostini::ContainerShutdownObserver {
  public:
   explicit CrostiniHandler(Profile* profile);
+
+  CrostiniHandler(const CrostiniHandler&) = delete;
+  CrostiniHandler& operator=(const CrostiniHandler&) = delete;
+
   ~CrostiniHandler() override;
 
   // SettingsPageUIHandler
@@ -132,8 +136,6 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   PrefChangeRegistrar pref_change_registrar_;
   // weak_ptr_factory_ should always be last member.
   base::WeakPtrFactory<CrostiniHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniHandler);
 };
 
 }  // namespace settings

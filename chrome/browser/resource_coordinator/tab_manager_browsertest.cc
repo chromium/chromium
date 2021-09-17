@@ -76,6 +76,10 @@ class ExpectStateTransitionObserver : public LifecycleUnitObserver {
     lifecycle_unit_->AddObserver(this);
   }
 
+  ExpectStateTransitionObserver(const ExpectStateTransitionObserver&) = delete;
+  ExpectStateTransitionObserver& operator=(
+      const ExpectStateTransitionObserver&) = delete;
+
   ~ExpectStateTransitionObserver() override {
     lifecycle_unit_->RemoveObserver(this);
   }
@@ -110,8 +114,6 @@ class ExpectStateTransitionObserver : public LifecycleUnitObserver {
   const LifecycleUnitState expected_state_;
   std::set<LifecycleUnitState> allowed_states_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectStateTransitionObserver);
 };
 
 class DiscardWaiter : public TabLifecycleObserver {

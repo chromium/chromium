@@ -19,14 +19,17 @@ class SyncedWindowDelegatesGetterAndroid
     : public sync_sessions::SyncedWindowDelegatesGetter {
  public:
   SyncedWindowDelegatesGetterAndroid();
+
+  SyncedWindowDelegatesGetterAndroid(
+      const SyncedWindowDelegatesGetterAndroid&) = delete;
+  SyncedWindowDelegatesGetterAndroid& operator=(
+      const SyncedWindowDelegatesGetterAndroid&) = delete;
+
   ~SyncedWindowDelegatesGetterAndroid() override;
 
   // SyncedWindowDelegatesGetter implementation
   SyncedWindowDelegateMap GetSyncedWindowDelegates() override;
   const sync_sessions::SyncedWindowDelegate* FindById(SessionID id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncedWindowDelegatesGetterAndroid);
 };
 
 }  // namespace browser_sync

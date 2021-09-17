@@ -64,6 +64,10 @@ class GuestOsSharePath : public KeyedService,
 
   static GuestOsSharePath* GetForProfile(Profile* profile);
   explicit GuestOsSharePath(Profile* profile);
+
+  GuestOsSharePath(const GuestOsSharePath&) = delete;
+  GuestOsSharePath& operator=(const GuestOsSharePath&) = delete;
+
   ~GuestOsSharePath() override;
 
   // KeyedService:
@@ -178,8 +182,6 @@ class GuestOsSharePath : public KeyedService,
   std::map<base::FilePath, SharedPathInfo> shared_paths_;
 
   base::WeakPtrFactory<GuestOsSharePath> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsSharePath);
 };  // class
 
 }  // namespace guest_os

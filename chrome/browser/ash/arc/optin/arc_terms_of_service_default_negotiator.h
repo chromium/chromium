@@ -27,6 +27,12 @@ class ArcTermsOfServiceDefaultNegotiator
  public:
   ArcTermsOfServiceDefaultNegotiator(PrefService* pref_service,
                                      ArcSupportHost* support_host);
+
+  ArcTermsOfServiceDefaultNegotiator(
+      const ArcTermsOfServiceDefaultNegotiator&) = delete;
+  ArcTermsOfServiceDefaultNegotiator& operator=(
+      const ArcTermsOfServiceDefaultNegotiator&) = delete;
+
   ~ArcTermsOfServiceDefaultNegotiator() override;
 
  private:
@@ -51,8 +57,6 @@ class ArcTermsOfServiceDefaultNegotiator
   ArcSupportHost* const support_host_;
 
   std::unique_ptr<ArcOptInPreferenceHandler> preference_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceDefaultNegotiator);
 };
 
 }  // namespace arc

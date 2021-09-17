@@ -24,6 +24,11 @@ struct NotifierId;
 class DesktopNotificationBalloon {
  public:
   DesktopNotificationBalloon();
+
+  DesktopNotificationBalloon(const DesktopNotificationBalloon&) = delete;
+  DesktopNotificationBalloon& operator=(const DesktopNotificationBalloon&) =
+      delete;
+
   virtual ~DesktopNotificationBalloon();
 
   void DisplayBalloon(const gfx::ImageSkia& icon,
@@ -34,8 +39,6 @@ class DesktopNotificationBalloon {
  private:
   // Counter to provide unique ids to notifications.
   static int id_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopNotificationBalloon);
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_DESKTOP_NOTIFICATION_BALLOON_H_

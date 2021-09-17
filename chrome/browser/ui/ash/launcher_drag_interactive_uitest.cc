@@ -26,6 +26,11 @@
 class LauncherDragClamshellModeTest : public UIPerformanceTest {
  public:
   LauncherDragClamshellModeTest() = default;
+
+  LauncherDragClamshellModeTest(const LauncherDragClamshellModeTest&) = delete;
+  LauncherDragClamshellModeTest& operator=(
+      const LauncherDragClamshellModeTest&) = delete;
+
   ~LauncherDragClamshellModeTest() override = default;
 
   // UIPerformanceTest:
@@ -53,9 +58,6 @@ class LauncherDragClamshellModeTest : public UIPerformanceTest {
         ->GetDisplayNearestWindow(window)
         .bounds();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LauncherDragClamshellModeTest);
 };
 
 // Drag to open the launcher from shelf. In tablet mode, swiping up from shelf
@@ -94,6 +96,10 @@ class LauncherDragTest : public LauncherDragClamshellModeTest,
                                         {chromeos::features::kShelfHotseat});
     }
   }
+
+  LauncherDragTest(const LauncherDragTest&) = delete;
+  LauncherDragTest& operator=(const LauncherDragTest&) = delete;
+
   ~LauncherDragTest() override = default;
 
   // UIPerformanceTest:
@@ -115,8 +121,6 @@ class LauncherDragTest : public LauncherDragClamshellModeTest,
  private:
   bool tablet_mode_ = false;
   base::test::ScopedFeatureList scoped_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(LauncherDragTest);
 };
 
 IN_PROC_BROWSER_TEST_P(LauncherDragTest, Close) {

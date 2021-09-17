@@ -290,6 +290,12 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
   };
 
   FileSystemExtensionApiTestBase() = default;
+
+  FileSystemExtensionApiTestBase(const FileSystemExtensionApiTestBase&) =
+      delete;
+  FileSystemExtensionApiTestBase& operator=(
+      const FileSystemExtensionApiTestBase&) = delete;
+
   ~FileSystemExtensionApiTestBase() override = default;
 
   virtual std::vector<TestDirConfig> GetTestDirContents() {
@@ -405,8 +411,6 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
 
  private:
   std::unique_ptr<media_router::MockMediaRouter> media_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemExtensionApiTestBase);
 };
 
 // Tests for a native local file system.

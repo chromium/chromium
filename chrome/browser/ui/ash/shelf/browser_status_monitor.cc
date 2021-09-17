@@ -54,6 +54,9 @@ class BrowserStatusMonitor::LocalWebContentsObserver
                            BrowserStatusMonitor* monitor)
       : content::WebContentsObserver(contents), monitor_(monitor) {}
 
+  LocalWebContentsObserver(const LocalWebContentsObserver&) = delete;
+  LocalWebContentsObserver& operator=(const LocalWebContentsObserver&) = delete;
+
   ~LocalWebContentsObserver() override = default;
 
   // content::WebContentsObserver
@@ -77,8 +80,6 @@ class BrowserStatusMonitor::LocalWebContentsObserver
 
  private:
   BrowserStatusMonitor* monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalWebContentsObserver);
 };
 
 BrowserStatusMonitor::BrowserStatusMonitor(

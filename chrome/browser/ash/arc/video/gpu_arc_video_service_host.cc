@@ -56,6 +56,11 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
  public:
   VideoAcceleratorFactoryService() = default;
 
+  VideoAcceleratorFactoryService(const VideoAcceleratorFactoryService&) =
+      delete;
+  VideoAcceleratorFactoryService& operator=(
+      const VideoAcceleratorFactoryService&) = delete;
+
   ~VideoAcceleratorFactoryService() override = default;
 
   void CreateDecodeAccelerator(
@@ -94,9 +99,6 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
                                     std::move(receiver)));
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoAcceleratorFactoryService);
 };
 
 }  // namespace

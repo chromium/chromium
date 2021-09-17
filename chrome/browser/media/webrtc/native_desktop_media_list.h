@@ -24,6 +24,10 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
   // |capturer| must exist.
   NativeDesktopMediaList(DesktopMediaList::Type type,
                          std::unique_ptr<webrtc::DesktopCapturer> capturer);
+
+  NativeDesktopMediaList(const NativeDesktopMediaList&) = delete;
+  NativeDesktopMediaList& operator=(const NativeDesktopMediaList&) = delete;
+
   ~NativeDesktopMediaList() override;
 
  private:
@@ -61,8 +65,6 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
   bool pending_native_thumbnail_capture_ = false;
 #endif
   base::WeakPtrFactory<NativeDesktopMediaList> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeDesktopMediaList);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_NATIVE_DESKTOP_MEDIA_LIST_H_

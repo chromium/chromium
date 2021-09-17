@@ -37,6 +37,10 @@ class MockDesktopMediaListObserver : public DesktopMediaListObserver {
 class DesktopMediaListAshTest : public ChromeAshTestBase {
  public:
   DesktopMediaListAshTest() {}
+
+  DesktopMediaListAshTest(const DesktopMediaListAshTest&) = delete;
+  DesktopMediaListAshTest& operator=(const DesktopMediaListAshTest&) = delete;
+
   ~DesktopMediaListAshTest() override {}
 
   void TearDown() override {
@@ -56,7 +60,6 @@ class DesktopMediaListAshTest : public ChromeAshTestBase {
  protected:
   MockDesktopMediaListObserver observer_;
   std::unique_ptr<DesktopMediaListAsh> list_;
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaListAshTest);
 };
 
 ACTION(QuitMessageLoop) {

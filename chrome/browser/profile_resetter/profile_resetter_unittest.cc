@@ -233,6 +233,10 @@ std::unique_ptr<BrandcodeConfigFetcher> ConfigParserTest::WaitForRequest(
 class ShortcutHandler {
  public:
   ShortcutHandler();
+
+  ShortcutHandler(const ShortcutHandler&) = delete;
+  ShortcutHandler& operator=(const ShortcutHandler&) = delete;
+
   ~ShortcutHandler();
 
   static bool IsSupported();
@@ -247,7 +251,6 @@ class ShortcutHandler {
 #if defined(OS_WIN)
   base::FilePath shortcut_path_;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(ShortcutHandler);
 };
 
 #if defined(OS_WIN)

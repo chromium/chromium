@@ -33,6 +33,10 @@ class SyncableFileOperationRunner
   class Task {
    public:
     Task() {}
+
+    Task(const Task&) = delete;
+    Task& operator=(const Task&) = delete;
+
     virtual ~Task() {}
 
     // Only one of Run() or Cancel() is called.
@@ -47,8 +51,6 @@ class SyncableFileOperationRunner
     friend class SyncableFileOperationRunner;
     bool IsRunnable(LocalFileSyncStatus* status) const;
     void Start(LocalFileSyncStatus* status);
-
-    DISALLOW_COPY_AND_ASSIGN(Task);
   };
 
   SyncableFileOperationRunner(int64_t max_inflight_tasks,

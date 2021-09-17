@@ -21,6 +21,10 @@ namespace extensions {
 class ClipboardExtensionHelper {
  public:
   ClipboardExtensionHelper();
+
+  ClipboardExtensionHelper(const ClipboardExtensionHelper&) = delete;
+  ClipboardExtensionHelper& operator=(const ClipboardExtensionHelper&) = delete;
+
   ~ClipboardExtensionHelper();
 
   // Decodes and saves the image data on clipboard. Must run on UI thread.
@@ -46,8 +50,6 @@ class ClipboardExtensionHelper {
   base::OnceClosure image_save_success_callback_;
   base::OnceCallback<void(const std::string&)> image_save_error_callback_;
   AdditionalDataItemList additonal_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardExtensionHelper);
 };
 
 }  // namespace extensions

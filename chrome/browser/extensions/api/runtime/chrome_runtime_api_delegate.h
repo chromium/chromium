@@ -39,6 +39,10 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
                                  public extensions::ExtensionRegistryObserver {
  public:
   explicit ChromeRuntimeAPIDelegate(content::BrowserContext* context);
+
+  ChromeRuntimeAPIDelegate(const ChromeRuntimeAPIDelegate&) = delete;
+  ChromeRuntimeAPIDelegate& operator=(const ChromeRuntimeAPIDelegate&) = delete;
+
   ~ChromeRuntimeAPIDelegate() override;
 
   // Sets a custom TickClock to use in tests.
@@ -93,8 +97,6 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRuntimeAPIDelegate);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_RUNTIME_CHROME_RUNTIME_API_DELEGATE_H_

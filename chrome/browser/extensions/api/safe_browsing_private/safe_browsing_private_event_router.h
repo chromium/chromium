@@ -112,6 +112,11 @@ class SafeBrowsingPrivateEventRouter
 
   explicit SafeBrowsingPrivateEventRouter(content::BrowserContext* context);
 
+  SafeBrowsingPrivateEventRouter(const SafeBrowsingPrivateEventRouter&) =
+      delete;
+  SafeBrowsingPrivateEventRouter& operator=(
+      const SafeBrowsingPrivateEventRouter&) = delete;
+
   ~SafeBrowsingPrivateEventRouter() override;
 
   // Notifies listeners that the user reused a protected password.
@@ -358,7 +363,6 @@ class SafeBrowsingPrivateEventRouter
       rejected_dm_token_timers_;
 
   base::WeakPtrFactory<SafeBrowsingPrivateEventRouter> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingPrivateEventRouter);
 };
 
 }  // namespace extensions

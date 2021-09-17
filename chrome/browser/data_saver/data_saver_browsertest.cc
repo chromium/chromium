@@ -77,6 +77,11 @@ class TestEffectiveConnectionTypeObserver
     tracker_->AddEffectiveConnectionTypeObserver(this);
   }
 
+  TestEffectiveConnectionTypeObserver(
+      const TestEffectiveConnectionTypeObserver&) = delete;
+  TestEffectiveConnectionTypeObserver& operator=(
+      const TestEffectiveConnectionTypeObserver&) = delete;
+
   ~TestEffectiveConnectionTypeObserver() override {
     tracker_->RemoveEffectiveConnectionTypeObserver(this);
   }
@@ -113,8 +118,6 @@ class TestEffectiveConnectionTypeObserver
   std::unique_ptr<base::RunLoop> run_loop_;
   network::NetworkQualityTracker* tracker_;
   net::EffectiveConnectionType effective_connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEffectiveConnectionTypeObserver);
 };
 
 // Test version of the observer. Used to wait for the event when the network
@@ -128,6 +131,11 @@ class TestRTTAndThroughputEstimatesObserver
         downstream_throughput_kbps_(std::numeric_limits<int32_t>::max()) {
     tracker_->AddRTTAndThroughputEstimatesObserver(this);
   }
+
+  TestRTTAndThroughputEstimatesObserver(
+      const TestRTTAndThroughputEstimatesObserver&) = delete;
+  TestRTTAndThroughputEstimatesObserver& operator=(
+      const TestRTTAndThroughputEstimatesObserver&) = delete;
 
   ~TestRTTAndThroughputEstimatesObserver() override {
     tracker_->RemoveRTTAndThroughputEstimatesObserver(this);
@@ -173,8 +181,6 @@ class TestRTTAndThroughputEstimatesObserver
   base::TimeDelta http_rtt_;
   int32_t downstream_throughput_kbps_;
   base::TimeDelta http_rtt_notification_wait_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRTTAndThroughputEstimatesObserver);
 };
 
 }  // namespace

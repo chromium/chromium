@@ -40,6 +40,9 @@ class SigninManagerAndroid : public KeyedService {
   SigninManagerAndroid(Profile* profile,
                        signin::IdentityManager* identity_manager);
 
+  SigninManagerAndroid(const SigninManagerAndroid&) = delete;
+  SigninManagerAndroid& operator=(const SigninManagerAndroid&) = delete;
+
   ~SigninManagerAndroid() override;
 
   void Shutdown() override;
@@ -131,8 +134,6 @@ class SigninManagerAndroid : public KeyedService {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<SigninManagerAndroid> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninManagerAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SIGNIN_SIGNIN_MANAGER_ANDROID_H_

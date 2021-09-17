@@ -17,14 +17,18 @@ namespace extensions {
 class ExtensionInstallErrorMenuItemIdProvider {
  public:
   ExtensionInstallErrorMenuItemIdProvider();
+
+  ExtensionInstallErrorMenuItemIdProvider(
+      const ExtensionInstallErrorMenuItemIdProvider&) = delete;
+  ExtensionInstallErrorMenuItemIdProvider& operator=(
+      const ExtensionInstallErrorMenuItemIdProvider&) = delete;
+
   ~ExtensionInstallErrorMenuItemIdProvider();
 
   int menu_command_id() { return menu_command_id_; }
 
  private:
   int menu_command_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallErrorMenuItemIdProvider);
 };
 
 }  // namespace extensions

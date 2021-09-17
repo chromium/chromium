@@ -50,6 +50,11 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
   using TView = MarketingOptInScreenView;
 
   explicit MarketingOptInScreenHandler(JSCallsContainer* js_calls_container);
+
+  MarketingOptInScreenHandler(const MarketingOptInScreenHandler&) = delete;
+  MarketingOptInScreenHandler& operator=(const MarketingOptInScreenHandler&) =
+      delete;
+
   ~MarketingOptInScreenHandler() override;
 
   // BaseScreenHandler:
@@ -82,8 +87,6 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
   // second delay to avoid overreporting when the user keeps toggling the
   // setting value in the screen UI.
   base::OneShotTimer a11y_nav_buttons_toggle_metrics_reporter_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MarketingOptInScreenHandler);
 };
 
 }  // namespace chromeos

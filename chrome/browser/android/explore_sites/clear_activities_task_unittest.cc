@@ -64,6 +64,10 @@ std::vector<ActivityInfo> GetAllActivitiesSync(sql::Database* db) {
 class ClearActivitiesTaskTest : public TaskTestBase {
  public:
   ClearActivitiesTaskTest() = default;
+
+  ClearActivitiesTaskTest(const ClearActivitiesTaskTest&) = delete;
+  ClearActivitiesTaskTest& operator=(const ClearActivitiesTaskTest&) = delete;
+
   ~ClearActivitiesTaskTest() override = default;
 
   void SetUp() override {
@@ -97,8 +101,6 @@ class ClearActivitiesTaskTest : public TaskTestBase {
   bool callback_called_ = false;
   bool success_ = false;
   std::vector<ActivityInfo> activities_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClearActivitiesTaskTest);
 };
 
 void ClearActivitiesTaskTest::PopulateActivities() {

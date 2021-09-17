@@ -46,6 +46,9 @@ class AppBannerManagerTest : public AppBannerManager {
   explicit AppBannerManagerTest(content::WebContents* web_contents)
       : AppBannerManager(web_contents) {}
 
+  AppBannerManagerTest(const AppBannerManagerTest&) = delete;
+  AppBannerManagerTest& operator=(const AppBannerManagerTest&) = delete;
+
   ~AppBannerManagerTest() override {}
 
   void RequestAppBanner(const GURL& validated_url) override {
@@ -159,8 +162,6 @@ class AppBannerManagerTest : public AppBannerManager {
   std::unique_ptr<WebappInstallSource> install_source_;
 
   base::WeakPtrFactory<AppBannerManagerTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppBannerManagerTest);
 };
 
 class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {

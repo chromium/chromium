@@ -45,6 +45,10 @@ class MockMediaNotificationItem
 class MockMediaDialogDelegate : public MediaDialogDelegate {
  public:
   MockMediaDialogDelegate();
+
+  MockMediaDialogDelegate(const MockMediaDialogDelegate&) = delete;
+  MockMediaDialogDelegate& operator=(const MockMediaDialogDelegate&) = delete;
+
   ~MockMediaDialogDelegate() override;
 
   void Open(MediaNotificationService* service);
@@ -65,8 +69,6 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
 
  private:
   MediaNotificationService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaDialogDelegate);
 };
 
 class MockMediaItemsManager : public MediaItemsManager {

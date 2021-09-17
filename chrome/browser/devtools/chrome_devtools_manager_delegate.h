@@ -33,6 +33,11 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   static const char kTypeBackgroundPage[];
 
   ChromeDevToolsManagerDelegate();
+
+  ChromeDevToolsManagerDelegate(const ChromeDevToolsManagerDelegate&) = delete;
+  ChromeDevToolsManagerDelegate& operator=(
+      const ChromeDevToolsManagerDelegate&) = delete;
+
   ~ChromeDevToolsManagerDelegate() override;
 
   static ChromeDevToolsManagerDelegate* GetInstance();
@@ -94,8 +99,6 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   content::DevToolsAgentHost::List remote_agent_hosts_;
   RemoteLocations remote_locations_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeDevToolsManagerDelegate);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_CHROME_DEVTOOLS_MANAGER_DELEGATE_H_

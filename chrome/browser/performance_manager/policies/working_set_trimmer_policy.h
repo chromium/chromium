@@ -37,6 +37,10 @@ class WorkingSetTrimmerPolicy : public GraphOwned,
                                 public NodeDataDescriberDefaultImpl {
  public:
   WorkingSetTrimmerPolicy();
+
+  WorkingSetTrimmerPolicy(const WorkingSetTrimmerPolicy&) = delete;
+  WorkingSetTrimmerPolicy& operator=(const WorkingSetTrimmerPolicy&) = delete;
+
   ~WorkingSetTrimmerPolicy() override;
 
   // CreatePolicyForPlatform will create a working set trimmer policy for a
@@ -80,8 +84,6 @@ class WorkingSetTrimmerPolicy : public GraphOwned,
 
   // NodeDataDescriber implementation:
   base::Value DescribeProcessNodeData(const ProcessNode* node) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerPolicy);
 };
 
 }  // namespace policies

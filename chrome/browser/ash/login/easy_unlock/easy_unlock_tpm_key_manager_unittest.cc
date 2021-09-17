@@ -201,6 +201,11 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
         user_manager_(new FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  EasyUnlockTpmKeyManagerTest(const EasyUnlockTpmKeyManagerTest&) = delete;
+  EasyUnlockTpmKeyManagerTest& operator=(const EasyUnlockTpmKeyManagerTest&) =
+      delete;
+
   ~EasyUnlockTpmKeyManagerTest() override {}
 
   void SetUp() override {
@@ -358,8 +363,6 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
 
   // The test user's username hash.
   std::string username_hash_;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockTpmKeyManagerTest);
 };
 
 TEST_F(EasyUnlockTpmKeyManagerTest, CreateKeyPair) {

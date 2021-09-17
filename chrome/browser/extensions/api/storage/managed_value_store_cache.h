@@ -48,6 +48,10 @@ class ManagedValueStoreCache : public ValueStoreCache,
   ManagedValueStoreCache(content::BrowserContext* context,
                          scoped_refptr<value_store::ValueStoreFactory> factory,
                          scoped_refptr<SettingsObserverList> observers);
+
+  ManagedValueStoreCache(const ManagedValueStoreCache&) = delete;
+  ManagedValueStoreCache& operator=(const ManagedValueStoreCache&) = delete;
+
   ~ManagedValueStoreCache() override;
 
  private:
@@ -102,8 +106,6 @@ class ManagedValueStoreCache : public ValueStoreCache,
   // All the PolicyValueStores live on the FILE thread, and |store_map_| can be
   // accessed only on the FILE thread as well.
   std::map<std::string, std::unique_ptr<PolicyValueStore>> store_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedValueStoreCache);
 };
 
 }  // namespace extensions

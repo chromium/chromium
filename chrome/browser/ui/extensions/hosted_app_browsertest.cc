@@ -180,6 +180,10 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
     scoped_feature_list_.InitAndDisableFeature(
         predictors::kSpeculativePreconnectFeature);
   }
+
+  HostedOrWebAppTest(const HostedOrWebAppTest&) = delete;
+  HostedOrWebAppTest& operator=(const HostedOrWebAppTest&) = delete;
+
   ~HostedOrWebAppTest() override = default;
 
   void SetUp() override {
@@ -335,7 +339,6 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   content::ContentMockCertVerifier cert_verifier_;
 
   web_app::ScopedOsHooksSuppress os_hooks_suppress_;
-  DISALLOW_COPY_AND_ASSIGN(HostedOrWebAppTest);
 };
 
 // Tests that "Open link in new tab" opens a link in a foreground tab.
@@ -738,6 +741,11 @@ constexpr const char kHostedAppProcessModelManifest[] =
 class HostedAppProcessModelTest : public HostedOrWebAppTest {
  public:
   HostedAppProcessModelTest() = default;
+
+  HostedAppProcessModelTest(const HostedAppProcessModelTest&) = delete;
+  HostedAppProcessModelTest& operator=(const HostedAppProcessModelTest&) =
+      delete;
+
   ~HostedAppProcessModelTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -884,9 +892,6 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
   GURL isolated_url_;
   GURL isolated_url_outside_app_;
   GURL cross_site_url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostedAppProcessModelTest);
 };
 
 // Tests that same-site iframes stay inside the hosted app process, even when
@@ -1987,6 +1992,11 @@ constexpr const char kHostedAppOriginIsolationManifest[] =
 class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
  public:
   HostedAppOriginIsolationTest() = default;
+
+  HostedAppOriginIsolationTest(const HostedAppOriginIsolationTest&) = delete;
+  HostedAppOriginIsolationTest& operator=(const HostedAppOriginIsolationTest&) =
+      delete;
+
   ~HostedAppOriginIsolationTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -2059,9 +2069,6 @@ class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
               web_contents->GetMainFrame()->GetLastCommittedOrigin());
     // If we get here without a crash, the test has passed.
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostedAppOriginIsolationTest);
 };
 
 // This test case implements creis@'s repro case from

@@ -45,6 +45,10 @@ class InstantRestrictedIDCache {
   typedef std::vector<ItemIDPair> ItemIDVector;
 
   explicit InstantRestrictedIDCache(size_t max_cache_size);
+
+  InstantRestrictedIDCache(const InstantRestrictedIDCache&) = delete;
+  InstantRestrictedIDCache& operator=(const InstantRestrictedIDCache&) = delete;
+
   ~InstantRestrictedIDCache();
 
   // Adds items to the cache, assigning restricted IDs in the process. May
@@ -80,8 +84,6 @@ class InstantRestrictedIDCache {
   mutable CacheImpl cache_;
   typename CacheImpl::reverse_iterator last_add_start_;
   InstantRestrictedID last_restricted_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstantRestrictedIDCache);
 };
 
 template <typename T>

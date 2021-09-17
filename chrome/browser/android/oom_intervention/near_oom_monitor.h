@@ -24,6 +24,9 @@ class NearOomMonitor {
   // OomInterventionConfig::is_swap_monitor_enabled().
   static NearOomMonitor* GetInstance();
 
+  NearOomMonitor(const NearOomMonitor&) = delete;
+  NearOomMonitor& operator=(const NearOomMonitor&) = delete;
+
   virtual ~NearOomMonitor();
 
   base::TimeDelta GetMonitoringInterval() const { return monitoring_interval_; }
@@ -78,8 +81,6 @@ class NearOomMonitor {
 
   bool component_callback_is_enabled_;
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(NearOomMonitor);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OOM_INTERVENTION_NEAR_OOM_MONITOR_H_

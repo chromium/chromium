@@ -31,6 +31,10 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
  public:
   explicit ChromeOSMetricsProvider(
       metrics::MetricsLogUploader::MetricServiceType service_type);
+
+  ChromeOSMetricsProvider(const ChromeOSMetricsProvider&) = delete;
+  ChromeOSMetricsProvider& operator=(const ChromeOSMetricsProvider&) = delete;
+
   ~ChromeOSMetricsProvider() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -109,8 +113,6 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   absl::optional<std::string> arc_release_ = absl::nullopt;
 
   base::WeakPtrFactory<ChromeOSMetricsProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROMEOS_METRICS_PROVIDER_H_

@@ -19,6 +19,10 @@ struct DefaultSingletonTraits;
 class ChromeAppWindowClient : public extensions::AppWindowClient {
  public:
   ChromeAppWindowClient();
+
+  ChromeAppWindowClient(const ChromeAppWindowClient&) = delete;
+  ChromeAppWindowClient& operator=(const ChromeAppWindowClient&) = delete;
+
   ~ChromeAppWindowClient() override;
 
   // Get the LazyInstance for ChromeAppWindowClient.
@@ -46,8 +50,6 @@ class ChromeAppWindowClient : public extensions::AppWindowClient {
   static extensions::NativeAppWindow* CreateNativeAppWindowImpl(
       extensions::AppWindow* window,
       const extensions::AppWindow::CreateParams& params);
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppWindowClient);
 };
 
 #endif  // CHROME_BROWSER_UI_APPS_CHROME_APP_WINDOW_CLIENT_H_

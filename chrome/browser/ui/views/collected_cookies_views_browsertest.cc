@@ -18,6 +18,11 @@
 class CollectedCookiesViewsTest : public InProcessBrowserTest {
  public:
   CollectedCookiesViewsTest() = default;
+
+  CollectedCookiesViewsTest(const CollectedCookiesViewsTest&) = delete;
+  CollectedCookiesViewsTest& operator=(const CollectedCookiesViewsTest&) =
+      delete;
+
   ~CollectedCookiesViewsTest() override = default;
 
   // InProcessBrowserTest:
@@ -54,8 +59,6 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
 
  private:
   CollectedCookiesViews* cookies_dialog_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CollectedCookiesViewsTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, CloseDialog) {

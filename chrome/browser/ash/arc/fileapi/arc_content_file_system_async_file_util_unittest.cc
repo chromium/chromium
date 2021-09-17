@@ -47,6 +47,12 @@ std::unique_ptr<KeyedService> CreateArcFileSystemOperationRunnerForTesting(
 class ArcContentFileSystemAsyncFileUtilTest : public testing::Test {
  public:
   ArcContentFileSystemAsyncFileUtilTest() = default;
+
+  ArcContentFileSystemAsyncFileUtilTest(
+      const ArcContentFileSystemAsyncFileUtilTest&) = delete;
+  ArcContentFileSystemAsyncFileUtilTest& operator=(
+      const ArcContentFileSystemAsyncFileUtilTest&) = delete;
+
   ~ArcContentFileSystemAsyncFileUtilTest() override = default;
 
   void SetUp() override {
@@ -92,9 +98,6 @@ class ArcContentFileSystemAsyncFileUtilTest : public testing::Test {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcContentFileSystemAsyncFileUtil> async_file_util_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemAsyncFileUtilTest);
 };
 
 }  // namespace

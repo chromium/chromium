@@ -85,6 +85,11 @@ MATCHER(HasActivationLevelEnabled, "") {
 class SubresourceFilterBrowserTest : public PlatformBrowserTest {
  public:
   SubresourceFilterBrowserTest();
+
+  SubresourceFilterBrowserTest(const SubresourceFilterBrowserTest&) = delete;
+  SubresourceFilterBrowserTest& operator=(const SubresourceFilterBrowserTest&) =
+      delete;
+
   ~SubresourceFilterBrowserTest() override;
 
   // Names of DocumentLoad histograms.
@@ -209,8 +214,6 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
 
   // Owned by the profile.
   SubresourceFilterProfileContext* profile_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterBrowserTest);
 };
 
 // This class automatically syncs the SubresourceFilter SafeBrowsing list

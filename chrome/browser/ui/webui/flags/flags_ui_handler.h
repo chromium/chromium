@@ -19,6 +19,10 @@ class FlagsStorage;
 class FlagsUIHandler : public content::WebUIMessageHandler {
  public:
   FlagsUIHandler();
+
+  FlagsUIHandler(const FlagsUIHandler&) = delete;
+  FlagsUIHandler& operator=(const FlagsUIHandler&) = delete;
+
   ~FlagsUIHandler() override;
 
   // Initializes the UI handler with the provided flags storage and flags
@@ -58,8 +62,6 @@ class FlagsUIHandler : public content::WebUIMessageHandler {
   flags_ui::FlagAccess access_;
   std::string experimental_features_callback_id_;
   bool deprecated_features_only_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlagsUIHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FLAGS_FLAGS_UI_HANDLER_H_

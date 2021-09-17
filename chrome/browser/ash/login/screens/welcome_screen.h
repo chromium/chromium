@@ -71,6 +71,10 @@ class WelcomeScreen : public BaseScreen,
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   WelcomeScreen(WelcomeView* view, const ScreenExitCallback& exit_callback);
+
+  WelcomeScreen(const WelcomeScreen&) = delete;
+  WelcomeScreen& operator=(const WelcomeScreen&) = delete;
+
   ~WelcomeScreen() override;
 
   static std::string GetResultString(Result result);
@@ -186,8 +190,6 @@ class WelcomeScreen : public BaseScreen,
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<WelcomeScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WelcomeScreen);
 };
 
 }  // namespace ash

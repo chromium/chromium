@@ -654,6 +654,11 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
     : public MediaFileSystemContext {
  public:
   MediaFileSystemContextImpl() {}
+
+  MediaFileSystemContextImpl(const MediaFileSystemContextImpl&) = delete;
+  MediaFileSystemContextImpl& operator=(const MediaFileSystemContextImpl&) =
+      delete;
+
   ~MediaFileSystemContextImpl() override {}
 
   bool RegisterFileSystem(const std::string& device_id,
@@ -729,8 +734,6 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
     return false;
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileSystemContextImpl);
 };
 
 // Constructor in 'private' section because depends on private class definition.

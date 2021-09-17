@@ -33,6 +33,10 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   CupsPrintJobNotification(CupsPrintJobNotificationManager* manager,
                            base::WeakPtr<CupsPrintJob> print_job,
                            Profile* profile);
+
+  CupsPrintJobNotification(const CupsPrintJobNotification&) = delete;
+  CupsPrintJobNotification& operator=(const CupsPrintJobNotification&) = delete;
+
   virtual ~CupsPrintJobNotification();
 
   void OnPrintJobStatusUpdated();
@@ -67,8 +71,6 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   std::unique_ptr<base::OneShotTimer> success_timer_;
 
   base::WeakPtrFactory<CupsPrintJobNotification> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintJobNotification);
 };
 
 }  // namespace chromeos

@@ -48,6 +48,9 @@ class TestBlocklist {
 
   explicit TestBlocklist(Blocklist* blocklist);
 
+  TestBlocklist(const TestBlocklist&) = delete;
+  TestBlocklist& operator=(const TestBlocklist&) = delete;
+
   ~TestBlocklist();
 
   void Attach(Blocklist* blocklist);
@@ -87,8 +90,6 @@ class TestBlocklist {
   scoped_refptr<FakeSafeBrowsingDatabaseManager> blocklist_db_;
 
   Blocklist::ScopedDatabaseManagerForTest scoped_blocklist_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBlocklist);
 };
 
 }  // namespace extensions

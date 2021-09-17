@@ -20,6 +20,10 @@ class UsbChooserDialogAndroid;
 class WebUsbChooserAndroid : public WebUsbChooser {
  public:
   explicit WebUsbChooserAndroid(content::RenderFrameHost* render_frame_host);
+
+  WebUsbChooserAndroid(const WebUsbChooserAndroid&) = delete;
+  WebUsbChooserAndroid& operator=(const WebUsbChooserAndroid&) = delete;
+
   ~WebUsbChooserAndroid() override;
 
   // WebUsbChooser implementation
@@ -33,8 +37,6 @@ class WebUsbChooserAndroid : public WebUsbChooser {
   std::unique_ptr<UsbChooserDialogAndroid> dialog_;
 
   base::WeakPtrFactory<WebUsbChooserAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebUsbChooserAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_USB_WEB_USB_CHOOSER_ANDROID_H_

@@ -455,6 +455,9 @@ class DBusServices {
             std::make_unique<MachineLearningDecisionServiceProvider>()));
   }
 
+  DBusServices(const DBusServices&) = delete;
+  DBusServices& operator=(const DBusServices&) = delete;
+
   ~DBusServices() {
     ash::rollback_network_config::Shutdown();
     sensors::SensorHalDispatcher::Shutdown();
@@ -514,8 +517,6 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> lock_to_single_user_service_;
   std::unique_ptr<CrosDBusService> mojo_connection_service_;
   std::unique_ptr<CrosDBusService> dlp_files_policy_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DBusServices);
 };
 
 }  // namespace internal

@@ -32,6 +32,11 @@ class HostedAppBrowserController : public web_app::AppBrowserController,
                                    public ExtensionUninstallDialog::Delegate {
  public:
   explicit HostedAppBrowserController(Browser* browser);
+
+  HostedAppBrowserController(const HostedAppBrowserController&) = delete;
+  HostedAppBrowserController& operator=(const HostedAppBrowserController&) =
+      delete;
+
   ~HostedAppBrowserController() override;
 
   // web_app::AppBrowserController:
@@ -73,7 +78,6 @@ class HostedAppBrowserController : public web_app::AppBrowserController,
   std::unique_ptr<ExtensionUninstallDialog> uninstall_dialog_;
 
   base::WeakPtrFactory<HostedAppBrowserController> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(HostedAppBrowserController);
 };
 
 }  // namespace extensions

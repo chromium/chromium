@@ -22,6 +22,10 @@ class UserImageManager;
 class UserManagerInterface {
  public:
   UserManagerInterface() {}
+
+  UserManagerInterface(const UserManagerInterface&) = delete;
+  UserManagerInterface& operator=(const UserManagerInterface&) = delete;
+
   virtual ~UserManagerInterface() {}
 
   virtual MultiProfileUserController* GetMultiProfileUserController() = 0;
@@ -47,8 +51,6 @@ class UserManagerInterface {
 
   // Resets user flow for user identified by `account_id`.
   virtual void ResetUserFlow(const AccountId& account_id) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UserManagerInterface);
 };
 
 }  // namespace ash

@@ -17,6 +17,11 @@
 class DownloadCompletionBlocker : public base::SupportsUserData::Data {
  public:
   DownloadCompletionBlocker();
+
+  DownloadCompletionBlocker(const DownloadCompletionBlocker&) = delete;
+  DownloadCompletionBlocker& operator=(const DownloadCompletionBlocker&) =
+      delete;
+
   ~DownloadCompletionBlocker() override;
 
   bool is_complete() const { return is_complete_; }
@@ -35,8 +40,6 @@ class DownloadCompletionBlocker : public base::SupportsUserData::Data {
  private:
   bool is_complete_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadCompletionBlocker);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_COMPLETION_BLOCKER_H_

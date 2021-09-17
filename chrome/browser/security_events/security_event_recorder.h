@@ -19,6 +19,10 @@ class GaiaPasswordReuse;
 class SecurityEventRecorder : public KeyedService {
  public:
   SecurityEventRecorder() = default;
+
+  SecurityEventRecorder(const SecurityEventRecorder&) = delete;
+  SecurityEventRecorder& operator=(const SecurityEventRecorder&) = delete;
+
   ~SecurityEventRecorder() override = default;
 
   // Records the GaiaPasswordReuse security event for the currently signed-in
@@ -29,9 +33,6 @@ class SecurityEventRecorder : public KeyedService {
   // Returns the underlying Sync integration point.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityEventRecorder);
 };
 
 #endif  // CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_RECORDER_H_

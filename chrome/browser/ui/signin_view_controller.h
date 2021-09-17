@@ -65,6 +65,10 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
   };
 
   explicit SigninViewController(Browser* browser);
+
+  SigninViewController(const SigninViewController&) = delete;
+  SigninViewController& operator=(const SigninViewController&) = delete;
+
   ~SigninViewController() override;
 
   // Returns true if the signin flow should be shown for |mode|.
@@ -190,8 +194,6 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
       delegate_observation_{this};
 
   base::WeakPtrFactory<SigninViewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninViewController);
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_H_

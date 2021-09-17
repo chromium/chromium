@@ -16,6 +16,10 @@ class WebAppInfoImageSource : public gfx::ImageSkiaSource {
  public:
   WebAppInfoImageSource(int dip_size,
                         const std::map<SquareSizePx, SkBitmap>& icons);
+
+  WebAppInfoImageSource(const WebAppInfoImageSource&) = delete;
+  WebAppInfoImageSource& operator=(const WebAppInfoImageSource&) = delete;
+
   ~WebAppInfoImageSource() override;
 
  private:
@@ -24,8 +28,6 @@ class WebAppInfoImageSource : public gfx::ImageSkiaSource {
 
   int dip_size_;
   std::map<SquareSizePx, SkBitmap> icons_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppInfoImageSource);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INFO_IMAGE_SOURCE_H_

@@ -147,10 +147,11 @@ void EnsureGraphicsModelsEqual(const ArcTracingGraphicsModel& model1,
 class ArcTracingModelTest : public testing::Test {
  public:
   ArcTracingModelTest() = default;
-  ~ArcTracingModelTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingModelTest);
+  ArcTracingModelTest(const ArcTracingModelTest&) = delete;
+  ArcTracingModelTest& operator=(const ArcTracingModelTest&) = delete;
+
+  ~ArcTracingModelTest() override = default;
 };
 
 // TopLevel test is performed on the data collected from the real test device.

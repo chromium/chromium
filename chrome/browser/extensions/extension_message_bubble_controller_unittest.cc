@@ -88,6 +88,12 @@ class TestExtensionMessageBubbleController :
         action_button_callback_count_(0),
         dismiss_button_callback_count_(0),
         link_click_callback_count_(0) {}
+
+  TestExtensionMessageBubbleController(
+      const TestExtensionMessageBubbleController&) = delete;
+  TestExtensionMessageBubbleController& operator=(
+      const TestExtensionMessageBubbleController&) = delete;
+
   ~TestExtensionMessageBubbleController() override {}
 
   // ExtensionMessageBubbleController:
@@ -113,8 +119,6 @@ class TestExtensionMessageBubbleController :
   size_t action_button_callback_count_;
   size_t dismiss_button_callback_count_;
   size_t link_click_callback_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionMessageBubbleController);
 };
 
 // A fake bubble used for testing the controller. Takes an action that specifies
@@ -356,6 +360,10 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
         profile(), base::BindRepeating(&BuildToolbarModel));
   }
 
+  ExtensionMessageBubbleTest(const ExtensionMessageBubbleTest&) = delete;
+  ExtensionMessageBubbleTest& operator=(const ExtensionMessageBubbleTest&) =
+      delete;
+
   ~ExtensionMessageBubbleTest() override {}
 
   void SetUp() override {
@@ -431,8 +439,6 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
  private:
   std::unique_ptr<base::CommandLine> command_line_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleTest);
 };
 
 // Test that the bubble correctly treats dismissal due to deactivation.

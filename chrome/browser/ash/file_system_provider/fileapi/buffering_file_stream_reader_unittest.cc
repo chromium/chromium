@@ -46,6 +46,10 @@ class FakeFileStreamReader : public storage::FileStreamReader {
  public:
   FakeFileStreamReader(std::vector<int>* log, net::Error return_error)
       : log_(log), return_error_(return_error) {}
+
+  FakeFileStreamReader(const FakeFileStreamReader&) = delete;
+  FakeFileStreamReader& operator=(const FakeFileStreamReader&) = delete;
+
   ~FakeFileStreamReader() override {}
 
   // storage::FileStreamReader overrides.
@@ -79,7 +83,6 @@ class FakeFileStreamReader : public storage::FileStreamReader {
  private:
   std::vector<int>* log_;  // Not owned.
   net::Error return_error_;
-  DISALLOW_COPY_AND_ASSIGN(FakeFileStreamReader);
 };
 
 }  // namespace

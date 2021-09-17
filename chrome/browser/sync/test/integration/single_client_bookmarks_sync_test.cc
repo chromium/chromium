@@ -100,10 +100,12 @@ MATCHER(HasUniquePosition, "") {
 class SingleClientBookmarksSyncTest : public SyncTest {
  public:
   SingleClientBookmarksSyncTest() : SyncTest(SINGLE_CLIENT) {}
-  ~SingleClientBookmarksSyncTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientBookmarksSyncTest);
+  SingleClientBookmarksSyncTest(const SingleClientBookmarksSyncTest&) = delete;
+  SingleClientBookmarksSyncTest& operator=(
+      const SingleClientBookmarksSyncTest&) = delete;
+
+  ~SingleClientBookmarksSyncTest() override = default;
 };
 
 class SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks

@@ -32,6 +32,10 @@ class WebstoreDataFetcher : public base::SupportsWeakPtr<WebstoreDataFetcher> {
   WebstoreDataFetcher(WebstoreDataFetcherDelegate* delegate,
                       const GURL& referrer_url,
                       const std::string webstore_item_id);
+
+  WebstoreDataFetcher(const WebstoreDataFetcher&) = delete;
+  WebstoreDataFetcher& operator=(const WebstoreDataFetcher&) = delete;
+
   ~WebstoreDataFetcher();
 
   static void SetLogResponseCodeForTesting(bool enabled);
@@ -59,8 +63,6 @@ class WebstoreDataFetcher : public base::SupportsWeakPtr<WebstoreDataFetcher> {
   // Maximum auto retry times on server 5xx error or ERR_NETWORK_CHANGED.
   // Default is 0 which means to use the URLFetcher default behavior.
   int max_auto_retries_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstoreDataFetcher);
 };
 
 }  // namespace extensions

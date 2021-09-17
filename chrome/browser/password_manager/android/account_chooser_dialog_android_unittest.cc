@@ -79,6 +79,12 @@ class MockPasswordManagerClient
 class AccountChooserDialogAndroidTest : public ChromeRenderViewHostTestHarness {
  public:
   AccountChooserDialogAndroidTest();
+
+  AccountChooserDialogAndroidTest(const AccountChooserDialogAndroidTest&) =
+      delete;
+  AccountChooserDialogAndroidTest& operator=(
+      const AccountChooserDialogAndroidTest&) = delete;
+
   ~AccountChooserDialogAndroidTest() override {}
 
   void SetUp() override;
@@ -100,7 +106,6 @@ class AccountChooserDialogAndroidTest : public ChromeRenderViewHostTestHarness {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(AccountChooserDialogAndroidTest);
 };
 
 AccountChooserDialogAndroidTest::AccountChooserDialogAndroidTest() {

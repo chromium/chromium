@@ -44,6 +44,10 @@ class DropdownBarHost : public ui::AcceleratorTarget,
                         public views::WidgetDelegate {
  public:
   explicit DropdownBarHost(BrowserView* browser_view);
+
+  DropdownBarHost(const DropdownBarHost&) = delete;
+  DropdownBarHost& operator=(const DropdownBarHost&) = delete;
+
   ~DropdownBarHost() override;
 
   // Initializes the DropdownBarHost. This creates the widget that |view| paints
@@ -183,8 +187,6 @@ class DropdownBarHost : public ui::AcceleratorTarget,
   // A flag to manually manage visibility. GTK/X11 is asynchronous and
   // the state of the widget can be out of sync.
   bool is_visible_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DropdownBarHost);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DROPDOWN_BAR_HOST_H_

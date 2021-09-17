@@ -12,6 +12,12 @@ class ScreenOrientationDelegateChromeos
     : public content::ScreenOrientationDelegate {
  public:
   ScreenOrientationDelegateChromeos();
+
+  ScreenOrientationDelegateChromeos(const ScreenOrientationDelegateChromeos&) =
+      delete;
+  ScreenOrientationDelegateChromeos& operator=(
+      const ScreenOrientationDelegateChromeos&) = delete;
+
   ~ScreenOrientationDelegateChromeos() override;
 
  private:
@@ -21,8 +27,6 @@ class ScreenOrientationDelegateChromeos
             device::mojom::ScreenOrientationLockType lock_orientation) override;
   bool ScreenOrientationProviderSupported() override;
   void Unlock(content::WebContents* web_contents) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationDelegateChromeos);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SCREEN_ORIENTATION_DELEGATE_CHROMEOS_H_

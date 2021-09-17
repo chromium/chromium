@@ -30,6 +30,10 @@ class AutomaticUsbPrinterConfigurer
       chromeos::PrinterInstallationManager* installation_manager,
       UsbPrinterNotificationController* notification_controller);
 
+  AutomaticUsbPrinterConfigurer(const AutomaticUsbPrinterConfigurer&) = delete;
+  AutomaticUsbPrinterConfigurer& operator=(
+      const AutomaticUsbPrinterConfigurer&) = delete;
+
   ~AutomaticUsbPrinterConfigurer() override;
 
   // CupsPrintersManager::Observer override.
@@ -78,8 +82,6 @@ class AutomaticUsbPrinterConfigurer
   base::flat_set<std::string> unconfigured_printers_;
 
   base::WeakPtrFactory<AutomaticUsbPrinterConfigurer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutomaticUsbPrinterConfigurer);
 };
 
 }  // namespace ash

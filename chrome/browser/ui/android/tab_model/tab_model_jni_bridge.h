@@ -32,6 +32,10 @@ class TabModelJniBridge : public TabModel {
                     Profile* profile,
                     chrome::android::ActivityType activity_type);
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+
+  TabModelJniBridge(const TabModelJniBridge&) = delete;
+  TabModelJniBridge& operator=(const TabModelJniBridge&) = delete;
+
   ~TabModelJniBridge() override;
 
   // Called by JNI
@@ -88,9 +92,6 @@ class TabModelJniBridge : public TabModel {
   // It corresponds to a Java observer that is registered with the corresponding
   // Java TabModelJniBridge.
   std::unique_ptr<TabModelObserverJniBridge> observer_bridge_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabModelJniBridge);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_JNI_BRIDGE_H_

@@ -67,6 +67,10 @@ std::unique_ptr<KeyedService> CreateCertificateProviderService(
 class ScreenLockerUnitTest : public testing::Test {
  public:
   ScreenLockerUnitTest() = default;
+
+  ScreenLockerUnitTest(const ScreenLockerUnitTest&) = delete;
+  ScreenLockerUnitTest& operator=(const ScreenLockerUnitTest&) = delete;
+
   ~ScreenLockerUnitTest() override = default;
 
   void SetUp() override {
@@ -180,7 +184,6 @@ class ScreenLockerUnitTest : public testing::Test {
   chromeos::SessionTerminationManager session_termination_manager_;
 
   std::unique_ptr<audio::TestObserver> observer_;
-  DISALLOW_COPY_AND_ASSIGN(ScreenLockerUnitTest);
 };
 
 // Chrome notifies Ash when screen is locked. Ash is responsible for suspending

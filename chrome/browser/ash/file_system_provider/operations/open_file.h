@@ -36,6 +36,10 @@ class OpenFile : public Operation {
            const base::FilePath& file_path,
            OpenFileMode mode,
            ProvidedFileSystemInterface::OpenFileCallback callback);
+
+  OpenFile(const OpenFile&) = delete;
+  OpenFile& operator=(const OpenFile&) = delete;
+
   ~OpenFile() override;
 
   // Operation overrides.
@@ -51,8 +55,6 @@ class OpenFile : public Operation {
   base::FilePath file_path_;
   OpenFileMode mode_;
   ProvidedFileSystemInterface::OpenFileCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenFile);
 };
 
 }  // namespace operations

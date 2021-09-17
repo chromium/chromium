@@ -36,6 +36,10 @@ const char kExampleKeyword[] = "example.com";
 class OmniboxResultTest : public AppListTestBase {
  public:
   OmniboxResultTest() {}
+
+  OmniboxResultTest(const OmniboxResultTest&) = delete;
+  OmniboxResultTest& operator=(const OmniboxResultTest&) = delete;
+
   ~OmniboxResultTest() override {}
 
   // AppListTestBase overrides:
@@ -77,8 +81,6 @@ class OmniboxResultTest : public AppListTestBase {
  private:
   std::unique_ptr<::test::TestAppListControllerDelegate>
       app_list_controller_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxResultTest);
 };
 
 TEST_F(OmniboxResultTest, Basic) {

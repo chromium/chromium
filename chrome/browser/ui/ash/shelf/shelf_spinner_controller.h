@@ -37,6 +37,10 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
   class ShelfSpinnerData;
 
   explicit ShelfSpinnerController(ChromeShelfController* owner);
+
+  ShelfSpinnerController(const ShelfSpinnerController&) = delete;
+  ShelfSpinnerController& operator=(const ShelfSpinnerController&) = delete;
+
   ~ShelfSpinnerController() override;
 
   bool HasApp(const std::string& app_id) const;
@@ -108,8 +112,6 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
 
   // Always keep this the last member of this class.
   base::WeakPtrFactory<ShelfSpinnerController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfSpinnerController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_SHELF_SPINNER_CONTROLLER_H_

@@ -41,6 +41,10 @@ class PinSetupScreenHandler : public BaseScreenHandler,
   using TView = PinSetupScreenView;
 
   explicit PinSetupScreenHandler(JSCallsContainer* js_calls_container);
+
+  PinSetupScreenHandler(const PinSetupScreenHandler&) = delete;
+  PinSetupScreenHandler& operator=(const PinSetupScreenHandler&) = delete;
+
   ~PinSetupScreenHandler() override;
 
   // BaseScreenHandler:
@@ -58,8 +62,6 @@ class PinSetupScreenHandler : public BaseScreenHandler,
 
  private:
   ash::PinSetupScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PinSetupScreenHandler);
 };
 
 }  // namespace chromeos

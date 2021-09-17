@@ -25,6 +25,10 @@ class AndroidUsbSocket : public net::StreamSocket {
                    uint32_t socket_id,
                    const std::string& command,
                    base::OnceClosure delete_callback);
+
+  AndroidUsbSocket(const AndroidUsbSocket&) = delete;
+  AndroidUsbSocket& operator=(const AndroidUsbSocket&) = delete;
+
   ~AndroidUsbSocket() override;
 
   void HandleIncoming(std::unique_ptr<AdbMessage> message);
@@ -82,8 +86,6 @@ class AndroidUsbSocket : public net::StreamSocket {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AndroidUsbSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidUsbSocket);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_USB_ANDROID_USB_SOCKET_H_

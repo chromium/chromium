@@ -52,6 +52,11 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
         controller_(nullptr),
         profile_(new TestingProfile()) {}
 
+  MediaGalleriesPermissionControllerTest(
+      const MediaGalleriesPermissionControllerTest&) = delete;
+  MediaGalleriesPermissionControllerTest& operator=(
+      const MediaGalleriesPermissionControllerTest&) = delete;
+
   ~MediaGalleriesPermissionControllerTest() override {
     EXPECT_FALSE(controller_);
     EXPECT_FALSE(dialog_);
@@ -164,8 +169,6 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
 
   base::WeakPtrFactory<MediaGalleriesPermissionControllerTest> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesPermissionControllerTest);
 };
 
 GalleryDialogId

@@ -39,6 +39,10 @@ GURL GetAndroidMessagesURLOld(bool use_install_url = false) {
 class TestObserver : public AndroidSmsAppManager::Observer {
  public:
   TestObserver() = default;
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   size_t num_installed_app_url_changed_events() {
@@ -52,8 +56,6 @@ class TestObserver : public AndroidSmsAppManager::Observer {
   }
 
   size_t num_installed_app_url_changed_events_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class AndroidSmsAppManagerImplTest : public testing::Test {
@@ -61,6 +63,10 @@ class AndroidSmsAppManagerImplTest : public testing::Test {
   class TestPwaDelegate : public AndroidSmsAppManagerImpl::PwaDelegate {
    public:
     TestPwaDelegate() = default;
+
+    TestPwaDelegate(const TestPwaDelegate&) = delete;
+    TestPwaDelegate& operator=(const TestPwaDelegate&) = delete;
+
     ~TestPwaDelegate() override = default;
 
     const std::vector<std::string>& opened_app_ids() const {
@@ -100,8 +106,6 @@ class AndroidSmsAppManagerImplTest : public testing::Test {
         transfer_item_attribute_params_;
     scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_ =
         base::MakeRefCounted<base::TestSimpleTaskRunner>();
-
-    DISALLOW_COPY_AND_ASSIGN(TestPwaDelegate);
   };
 
   AndroidSmsAppManagerImplTest() = default;

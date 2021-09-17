@@ -34,6 +34,10 @@ class BufferingFileStreamWriter : public storage::FileStreamWriter {
       std::unique_ptr<storage::FileStreamWriter> file_stream_writer,
       int intermediate_buffer_length);
 
+  BufferingFileStreamWriter(const BufferingFileStreamWriter&) = delete;
+  BufferingFileStreamWriter& operator=(const BufferingFileStreamWriter&) =
+      delete;
+
   ~BufferingFileStreamWriter() override;
 
   // storage::FileStreamWriter overrides.
@@ -90,7 +94,6 @@ class BufferingFileStreamWriter : public storage::FileStreamWriter {
   int buffered_bytes_;
 
   base::WeakPtrFactory<BufferingFileStreamWriter> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BufferingFileStreamWriter);
 };
 
 }  // namespace file_system_provider

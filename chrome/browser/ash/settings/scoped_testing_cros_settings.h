@@ -37,6 +37,10 @@ class ScopedTestingCrosSettings {
   // for testing.
   ScopedTestingCrosSettings();
 
+  ScopedTestingCrosSettings(const ScopedTestingCrosSettings&) = delete;
+  ScopedTestingCrosSettings& operator=(const ScopedTestingCrosSettings&) =
+      delete;
+
   ~ScopedTestingCrosSettings();
 
   StubCrosSettingsProvider* device_settings() { return device_settings_ptr_; }
@@ -49,8 +53,6 @@ class ScopedTestingCrosSettings {
   // These are raw pointers since these objects are owned by |test_instance_|.
   StubCrosSettingsProvider* device_settings_ptr_;
   SystemSettingsProvider* system_settings_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestingCrosSettings);
 };
 
 }  // namespace ash

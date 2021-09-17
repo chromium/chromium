@@ -17,6 +17,12 @@ class ChromeClientSideDetectionServiceDelegate
     : public ClientSideDetectionService::Delegate {
  public:
   explicit ChromeClientSideDetectionServiceDelegate(Profile* profile);
+
+  ChromeClientSideDetectionServiceDelegate(
+      const ChromeClientSideDetectionServiceDelegate&) = delete;
+  ChromeClientSideDetectionServiceDelegate& operator=(
+      const ChromeClientSideDetectionServiceDelegate&) = delete;
+
   ~ChromeClientSideDetectionServiceDelegate() override;
 
   // ClientSideDetectionService::Delegate implementation.
@@ -28,8 +34,6 @@ class ChromeClientSideDetectionServiceDelegate
 
  private:
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeClientSideDetectionServiceDelegate);
 };
 
 }  // namespace safe_browsing

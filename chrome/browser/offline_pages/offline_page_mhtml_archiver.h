@@ -47,6 +47,10 @@ namespace offline_pages {
 class OfflinePageMHTMLArchiver : public OfflinePageArchiver {
  public:
   OfflinePageMHTMLArchiver();
+
+  OfflinePageMHTMLArchiver(const OfflinePageMHTMLArchiver&) = delete;
+  OfflinePageMHTMLArchiver& operator=(const OfflinePageMHTMLArchiver&) = delete;
+
   ~OfflinePageMHTMLArchiver() override;
 
   // OfflinePageArchiver implementation:
@@ -87,8 +91,6 @@ class OfflinePageMHTMLArchiver : public OfflinePageArchiver {
   CreateArchiveCallback callback_;
 
   base::WeakPtrFactory<OfflinePageMHTMLArchiver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageMHTMLArchiver);
 };
 
 }  // namespace offline_pages

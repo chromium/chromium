@@ -27,6 +27,10 @@ class PrefRegistrySyncable;
 class NewTabUI : public content::WebUIController {
  public:
   explicit NewTabUI(content::WebUI* web_ui);
+
+  NewTabUI(const NewTabUI&) = delete;
+  NewTabUI& operator=(const NewTabUI&) = delete;
+
   ~NewTabUI() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -52,6 +56,10 @@ class NewTabUI : public content::WebUIController {
   class NewTabHTMLSource : public content::URLDataSource {
    public:
     explicit NewTabHTMLSource(Profile* profile);
+
+    NewTabHTMLSource(const NewTabHTMLSource&) = delete;
+    NewTabHTMLSource& operator=(const NewTabHTMLSource&) = delete;
+
     ~NewTabHTMLSource() override;
 
     // content::URLDataSource implementation.
@@ -68,15 +76,11 @@ class NewTabUI : public content::WebUIController {
    private:
     // Pointer back to the original profile.
     Profile* profile_;
-
-    DISALLOW_COPY_AND_ASSIGN(NewTabHTMLSource);
   };
 
   void OnShowBookmarkBarChanged();
 
   Profile* GetProfile() const;
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_NEW_TAB_UI_H_

@@ -73,6 +73,10 @@ class LocalDataContainer {
       scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
       scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper,
       scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper);
+
+  LocalDataContainer(const LocalDataContainer&) = delete;
+  LocalDataContainer& operator=(const LocalDataContainer&) = delete;
+
   virtual ~LocalDataContainer();
 
   // This method must be called to start the process of fetching the resources.
@@ -152,8 +156,6 @@ class LocalDataContainer {
   int batches_started_ = 0;
 
   base::WeakPtrFactory<LocalDataContainer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalDataContainer);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_LOCAL_DATA_CONTAINER_H_

@@ -26,6 +26,10 @@ class StartupPagesHandler : public SettingsPageUIHandler,
                             public ui::TableModelObserver {
  public:
   explicit StartupPagesHandler(content::WebUI* webui);
+
+  StartupPagesHandler(const StartupPagesHandler&) = delete;
+  StartupPagesHandler& operator=(const StartupPagesHandler&) = delete;
+
   ~StartupPagesHandler() override;
 
   // SettingsPageUIHandler:
@@ -68,8 +72,6 @@ class StartupPagesHandler : public SettingsPageUIHandler,
 
   // The set of pages to launch on startup.
   CustomHomePagesTableModel startup_custom_pages_table_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupPagesHandler);
 };
 
 }  // namespace settings

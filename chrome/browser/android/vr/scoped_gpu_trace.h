@@ -28,6 +28,9 @@ class ScopedGpuTrace {
  public:
   explicit ScopedGpuTrace(const char* name);
 
+  ScopedGpuTrace(const ScopedGpuTrace&) = delete;
+  ScopedGpuTrace& operator=(const ScopedGpuTrace&) = delete;
+
   virtual ~ScopedGpuTrace();
 
   gl::GLFenceAndroidNativeFenceSync* fence() { return fence_.get(); }
@@ -39,8 +42,6 @@ class ScopedGpuTrace {
   std::unique_ptr<gl::GLFenceAndroidNativeFenceSync> fence_;
   const char* const name_;
   uint32_t trace_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGpuTrace);
 };
 
 }  // namespace vr

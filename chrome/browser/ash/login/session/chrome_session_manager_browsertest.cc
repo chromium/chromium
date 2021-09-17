@@ -56,6 +56,10 @@ using ::chromeos::StubInstallAttributes;
 class UserAddingScreenWaiter : public UserAddingScreen::Observer {
  public:
   UserAddingScreenWaiter() { UserAddingScreen::Get()->AddObserver(this); }
+
+  UserAddingScreenWaiter(const UserAddingScreenWaiter&) = delete;
+  UserAddingScreenWaiter& operator=(const UserAddingScreenWaiter&) = delete;
+
   ~UserAddingScreenWaiter() override {
     UserAddingScreen::Get()->RemoveObserver(this);
   }
@@ -75,8 +79,6 @@ class UserAddingScreenWaiter : public UserAddingScreen::Observer {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserAddingScreenWaiter);
 };
 
 }  // anonymous namespace
@@ -84,6 +86,10 @@ class UserAddingScreenWaiter : public UserAddingScreen::Observer {
 class ChromeSessionManagerTest : public LoginManagerTest {
  public:
   ChromeSessionManagerTest() = default;
+
+  ChromeSessionManagerTest(const ChromeSessionManagerTest&) = delete;
+  ChromeSessionManagerTest& operator=(const ChromeSessionManagerTest&) = delete;
+
   ~ChromeSessionManagerTest() override {}
 
   // LoginManagerTest:
@@ -97,9 +103,6 @@ class ChromeSessionManagerTest : public LoginManagerTest {
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeSessionManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeSessionManagerTest, OobeNewUser) {

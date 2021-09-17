@@ -36,6 +36,12 @@
 class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
  public:
   WebAppOpaqueBrowserFrameViewTest() = default;
+
+  WebAppOpaqueBrowserFrameViewTest(const WebAppOpaqueBrowserFrameViewTest&) =
+      delete;
+  WebAppOpaqueBrowserFrameViewTest& operator=(
+      const WebAppOpaqueBrowserFrameViewTest&) = delete;
+
   ~WebAppOpaqueBrowserFrameViewTest() override = default;
 
   static GURL GetAppURL() { return GURL("https://test.org"); }
@@ -107,9 +113,6 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
   // Disable animations.
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppOpaqueBrowserFrameViewTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, NoThemeColor) {

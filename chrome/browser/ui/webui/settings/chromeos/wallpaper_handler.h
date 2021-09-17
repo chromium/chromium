@@ -19,6 +19,10 @@ namespace settings {
 class WallpaperHandler : public ::settings::SettingsPageUIHandler {
  public:
   WallpaperHandler();
+
+  WallpaperHandler(const WallpaperHandler&) = delete;
+  WallpaperHandler& operator=(const WallpaperHandler&) = delete;
+
   ~WallpaperHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -38,8 +42,6 @@ class WallpaperHandler : public ::settings::SettingsPageUIHandler {
 
   // Helper function to resolve the Javascript callback.
   void ResolveCallback(const base::Value& callback_id, bool result);
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperHandler);
 };
 
 }  // namespace settings

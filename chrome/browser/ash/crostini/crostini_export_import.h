@@ -89,6 +89,10 @@ class CrostiniExportImport : public KeyedService,
   static CrostiniExportImport* GetForProfile(Profile* profile);
 
   explicit CrostiniExportImport(Profile* profile);
+
+  CrostiniExportImport(const CrostiniExportImport&) = delete;
+  CrostiniExportImport& operator=(const CrostiniExportImport&) = delete;
+
   ~CrostiniExportImport() override;
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
@@ -250,8 +254,6 @@ class CrostiniExportImport : public KeyedService,
   base::ObserverList<Observer> observers_;
   // weak_ptr_factory_ should always be last member.
   base::WeakPtrFactory<CrostiniExportImport> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniExportImport);
 };
 
 }  // namespace crostini

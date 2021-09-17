@@ -16,6 +16,12 @@ namespace extensions {
 class ExtensionGarbageCollectorChromeOS : public ExtensionGarbageCollector {
  public:
   explicit ExtensionGarbageCollectorChromeOS(content::BrowserContext* context);
+
+  ExtensionGarbageCollectorChromeOS(const ExtensionGarbageCollectorChromeOS&) =
+      delete;
+  ExtensionGarbageCollectorChromeOS& operator=(
+      const ExtensionGarbageCollectorChromeOS&) = delete;
+
   ~ExtensionGarbageCollectorChromeOS() override;
 
   static ExtensionGarbageCollectorChromeOS* Get(
@@ -49,8 +55,6 @@ class ExtensionGarbageCollectorChromeOS : public ExtensionGarbageCollector {
   // class are created per-profile so this static variable prevents multiple
   // processing.
   static bool shared_extensions_garbage_collected_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGarbageCollectorChromeOS);
 };
 
 }  // namespace extensions

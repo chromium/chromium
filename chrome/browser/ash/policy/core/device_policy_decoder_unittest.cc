@@ -58,14 +58,15 @@ constexpr char kInvalidBluetoothServiceUUIDList[] = "[\"wrong-uuid\"]";
 class DevicePolicyDecoderTest : public testing::Test {
  public:
   DevicePolicyDecoderTest() = default;
+
+  DevicePolicyDecoderTest(const DevicePolicyDecoderTest&) = delete;
+  DevicePolicyDecoderTest& operator=(const DevicePolicyDecoderTest&) = delete;
+
   ~DevicePolicyDecoderTest() override = default;
 
  protected:
   std::unique_ptr<base::Value> GetWallpaperDict() const;
   std::unique_ptr<base::Value> GetBluetoothServiceAllowedList() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DevicePolicyDecoderTest);
 };
 
 std::unique_ptr<base::Value> DevicePolicyDecoderTest::GetWallpaperDict() const {

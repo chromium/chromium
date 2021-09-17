@@ -14,13 +14,14 @@ namespace system_logs {
 class MemoryDetailsLogSource : public SystemLogsSource {
  public:
   MemoryDetailsLogSource();
+
+  MemoryDetailsLogSource(const MemoryDetailsLogSource&) = delete;
+  MemoryDetailsLogSource& operator=(const MemoryDetailsLogSource&) = delete;
+
   ~MemoryDetailsLogSource() override;
 
   // SystemLogsSource override.
   void Fetch(SysLogsSourceCallback request) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MemoryDetailsLogSource);
 };
 
 }  // namespace system_logs

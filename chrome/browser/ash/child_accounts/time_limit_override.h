@@ -48,6 +48,10 @@ class TimeLimitOverride {
   TimeLimitOverride(Action action,
                     base::Time created_at,
                     absl::optional<base::TimeDelta> duration);
+
+  TimeLimitOverride(const TimeLimitOverride&) = delete;
+  TimeLimitOverride& operator=(const TimeLimitOverride&) = delete;
+
   ~TimeLimitOverride();
   TimeLimitOverride(TimeLimitOverride&&);
   TimeLimitOverride& operator=(TimeLimitOverride&&);
@@ -75,8 +79,6 @@ class TimeLimitOverride {
   Action action_;
   base::Time created_at_;
   absl::optional<base::TimeDelta> duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeLimitOverride);
 };
 
 }  // namespace usage_time_limit

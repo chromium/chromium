@@ -56,6 +56,9 @@ class ProxyManagerImpl : public ProxyManager {
         base::BindOnce([] { LOG(ERROR) << "CupsProxy mojo connection lost"; }));
   }
 
+  ProxyManagerImpl(const ProxyManagerImpl&) = delete;
+  ProxyManagerImpl& operator=(const ProxyManagerImpl&) = delete;
+
   ~ProxyManagerImpl() override = default;
 
   void ProxyRequest(const std::string& method,
@@ -110,7 +113,6 @@ class ProxyManagerImpl : public ProxyManager {
 
   mojo::Receiver<mojom::CupsProxier> receiver_;
   base::WeakPtrFactory<ProxyManagerImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ProxyManagerImpl);
 };
 
 absl::optional<std::vector<uint8_t>> RebuildIppRequest(

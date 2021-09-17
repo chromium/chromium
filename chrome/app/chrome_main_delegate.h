@@ -42,6 +42,10 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   // |exe_entry_point_ticks| is the time at which the main function of the
   // executable was entered, or null if not available.
   explicit ChromeMainDelegate(base::TimeTicks exe_entry_point_ticks);
+
+  ChromeMainDelegate(const ChromeMainDelegate&) = delete;
+  ChromeMainDelegate& operator=(const ChromeMainDelegate&) = delete;
+
   ~ChromeMainDelegate() override;
 
  protected:
@@ -91,8 +95,6 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<chromeos::LacrosService> lacros_service_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMainDelegate);
 };
 
 #endif  // CHROME_APP_CHROME_MAIN_DELEGATE_H_

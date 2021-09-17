@@ -27,6 +27,11 @@ class UnhandledTapWebContentsObserver
   // those messages.
   explicit UnhandledTapWebContentsObserver(content::WebContents* web_contents);
 
+  UnhandledTapWebContentsObserver(const UnhandledTapWebContentsObserver&) =
+      delete;
+  UnhandledTapWebContentsObserver& operator=(
+      const UnhandledTapWebContentsObserver&) = delete;
+
   ~UnhandledTapWebContentsObserver() override;
 
   void set_device_scale_factor(float factor) { device_scale_factor_ = factor; }
@@ -50,8 +55,6 @@ class UnhandledTapWebContentsObserver
   UnhandledTapCallback unhandled_tap_callback_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(UnhandledTapWebContentsObserver);
 };
 
 }  // namespace contextual_search

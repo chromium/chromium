@@ -28,6 +28,10 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
   explicit KeyboardVisibleWaiter(bool visible) : visible_(visible) {
     ChromeKeyboardControllerClient::Get()->AddObserver(this);
   }
+
+  KeyboardVisibleWaiter(const KeyboardVisibleWaiter&) = delete;
+  KeyboardVisibleWaiter& operator=(const KeyboardVisibleWaiter&) = delete;
+
   ~KeyboardVisibleWaiter() override {
     ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   }
@@ -43,8 +47,6 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
  private:
   base::RunLoop run_loop_;
   const bool visible_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardVisibleWaiter);
 };  // namespace
 
 bool WaitUntilShown() {
@@ -150,10 +152,13 @@ class KeyboardEndToEndFormTest : public KeyboardEndToEndTest {
  public:
   KeyboardEndToEndFormTest()
       : KeyboardEndToEndTest(base::FilePath("form.html")) {}
+
+  KeyboardEndToEndFormTest(const KeyboardEndToEndFormTest&) = delete;
+  KeyboardEndToEndFormTest& operator=(const KeyboardEndToEndFormTest&) = delete;
+
   ~KeyboardEndToEndFormTest() override {}
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEndToEndFormTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFormTest, ClickTextFieldShowsKeyboard) {
@@ -252,10 +257,14 @@ class KeyboardEndToEndFocusTest : public KeyboardEndToEndTest {
  public:
   KeyboardEndToEndFocusTest()
       : KeyboardEndToEndTest(base::FilePath("focus.html")) {}
+
+  KeyboardEndToEndFocusTest(const KeyboardEndToEndFocusTest&) = delete;
+  KeyboardEndToEndFocusTest& operator=(const KeyboardEndToEndFocusTest&) =
+      delete;
+
   ~KeyboardEndToEndFocusTest() override {}
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEndToEndFocusTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KeyboardEndToEndFocusTest,
@@ -322,6 +331,12 @@ class KeyboardEndToEndOverscrollTest : public KeyboardEndToEndTest {
  public:
   KeyboardEndToEndOverscrollTest()
       : KeyboardEndToEndTest(base::FilePath("form.html")) {}
+
+  KeyboardEndToEndOverscrollTest(const KeyboardEndToEndOverscrollTest&) =
+      delete;
+  KeyboardEndToEndOverscrollTest& operator=(
+      const KeyboardEndToEndOverscrollTest&) = delete;
+
   ~KeyboardEndToEndOverscrollTest() override {}
 
   void FocusAndShowKeyboard() { ClickElementWithId(web_contents_, "username"); }
@@ -337,8 +352,6 @@ class KeyboardEndToEndOverscrollTest : public KeyboardEndToEndTest {
         ->GetVisibleViewportSize()
         .height();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEndToEndOverscrollTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KeyboardEndToEndOverscrollTest,

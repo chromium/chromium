@@ -75,6 +75,10 @@ class EnterpriseEnrollmentHelper {
   static void SetEnrollmentHelperMock(
       std::unique_ptr<EnterpriseEnrollmentHelper> mock);
 
+  EnterpriseEnrollmentHelper(const EnterpriseEnrollmentHelper&) = delete;
+  EnterpriseEnrollmentHelper& operator=(const EnterpriseEnrollmentHelper&) =
+      delete;
+
   virtual ~EnterpriseEnrollmentHelper();
 
   // Starts enterprise enrollment using `auth_code`. First tries to exchange the
@@ -140,8 +144,6 @@ class EnterpriseEnrollmentHelper {
 
   // If this is not nullptr, then it will be used to as next enrollment helper.
   static EnterpriseEnrollmentHelper* mock_enrollment_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseEnrollmentHelper);
 };
 
 }  // namespace ash

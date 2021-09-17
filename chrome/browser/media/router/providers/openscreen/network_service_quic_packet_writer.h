@@ -49,6 +49,11 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
       Delegate* delegate,
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
 
+  NetworkServiceQuicPacketWriter(const NetworkServiceQuicPacketWriter&) =
+      delete;
+  NetworkServiceQuicPacketWriter& operator=(
+      const NetworkServiceQuicPacketWriter&) = delete;
+
   ~NetworkServiceQuicPacketWriter() override;
 
   // quic::QuicPacketWriter
@@ -112,7 +117,6 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
   bool writable_ = true;
 
   base::WeakPtrFactory<NetworkServiceQuicPacketWriter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceQuicPacketWriter);
 };
 
 }  // namespace media_router

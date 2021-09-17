@@ -36,6 +36,10 @@ class CrOSActionRecorder {
   using CrOSAction = std::tuple<CrOSActionName>;
 
   CrOSActionRecorder();
+
+  CrOSActionRecorder(const CrOSActionRecorder&) = delete;
+  CrOSActionRecorder& operator=(const CrOSActionRecorder&) = delete;
+
   ~CrOSActionRecorder();
   // Get the pointer of the singleton.
   static CrOSActionRecorder* GetCrosActionRecorder();
@@ -110,8 +114,6 @@ class CrOSActionRecorder {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSActionRecorder);
 };
 
 }  // namespace app_list

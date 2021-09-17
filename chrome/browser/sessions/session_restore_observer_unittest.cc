@@ -34,6 +34,10 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
  public:
   MockSessionRestoreObserver() { SessionRestore::AddObserver(this); }
 
+  MockSessionRestoreObserver(const MockSessionRestoreObserver&) = delete;
+  MockSessionRestoreObserver& operator=(const MockSessionRestoreObserver&) =
+      delete;
+
   ~MockSessionRestoreObserver() { SessionRestore::RemoveObserver(this); }
 
   enum class SessionRestoreEvent {
@@ -69,8 +73,6 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
  private:
   std::vector<SessionRestoreEvent> session_restore_events_;
   std::set<content::WebContents*> tabs_restoring_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSessionRestoreObserver);
 };
 
 class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {

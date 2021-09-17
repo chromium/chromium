@@ -134,6 +134,10 @@ class MenuBuilder {
         browser_(browser),
         menu_manager_(menu_manager),
         cur_id_(0) {}
+
+  MenuBuilder(const MenuBuilder&) = delete;
+  MenuBuilder& operator=(const MenuBuilder&) = delete;
+
   ~MenuBuilder() {}
 
   std::unique_ptr<ExtensionContextMenuModel> BuildMenu() {
@@ -177,8 +181,6 @@ class MenuBuilder {
   Browser* browser_;
   MenuManager* menu_manager_;
   int cur_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuBuilder);
 };
 
 // Returns the number of extension menu items that show up in |model|.

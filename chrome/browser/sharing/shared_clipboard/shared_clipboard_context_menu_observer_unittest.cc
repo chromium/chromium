@@ -46,6 +46,11 @@ class SharedClipboardContextMenuObserverTest : public testing::Test {
  public:
   SharedClipboardContextMenuObserverTest() = default;
 
+  SharedClipboardContextMenuObserverTest(
+      const SharedClipboardContextMenuObserverTest&) = delete;
+  SharedClipboardContextMenuObserverTest& operator=(
+      const SharedClipboardContextMenuObserverTest&) = delete;
+
   ~SharedClipboardContextMenuObserverTest() override = default;
 
   void SetUp() override {
@@ -92,8 +97,6 @@ class SharedClipboardContextMenuObserverTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<SharedClipboardContextMenuObserver> observer_;
   SharingMessage sharing_message;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardContextMenuObserverTest);
 };
 
 }  // namespace

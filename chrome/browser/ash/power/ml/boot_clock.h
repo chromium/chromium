@@ -21,6 +21,10 @@ namespace ml {
 class BootClock {
  public:
   BootClock();
+
+  BootClock(const BootClock&) = delete;
+  BootClock& operator=(const BootClock&) = delete;
+
   ~BootClock();
 
   base::TimeDelta GetTimeSinceBoot() const;
@@ -29,8 +33,6 @@ class BootClock {
   // Null unless time is mocked. When time is mocked, this pretends boot
   // happened 5 minutes before the creation of this BootClock.
   const base::TimeTicks mock_boot_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(BootClock);
 };
 
 }  // namespace ml

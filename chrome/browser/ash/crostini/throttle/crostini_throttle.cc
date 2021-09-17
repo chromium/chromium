@@ -20,6 +20,10 @@ class DefaultDelegateImpl : public CrostiniThrottle::Delegate {
  public:
   explicit DefaultDelegateImpl(content::BrowserContext* context)
       : context_(context) {}
+
+  DefaultDelegateImpl(const DefaultDelegateImpl&) = delete;
+  DefaultDelegateImpl& operator=(const DefaultDelegateImpl&) = delete;
+
   ~DefaultDelegateImpl() override = default;
 
   void SetCpuRestriction(bool do_restrict) override {
@@ -29,8 +33,6 @@ class DefaultDelegateImpl : public CrostiniThrottle::Delegate {
 
  private:
   content::BrowserContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultDelegateImpl);
 };
 
 class CrostiniThrottleFactory : public BrowserContextKeyedServiceFactory {

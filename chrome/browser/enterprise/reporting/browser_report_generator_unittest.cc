@@ -152,6 +152,11 @@ class BrowserReportGeneratorTest : public ::testing::Test {
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
         generator_(&delegate_factory_) {
   }
+
+  BrowserReportGeneratorTest(const BrowserReportGeneratorTest&) = delete;
+  BrowserReportGeneratorTest& operator=(const BrowserReportGeneratorTest&) =
+      delete;
+
   ~BrowserReportGeneratorTest() override = default;
 
   void SetUp() override {
@@ -275,8 +280,6 @@ class BrowserReportGeneratorTest : public ::testing::Test {
 #if !defined(OS_ANDROID)
   ScopedExtensionRequestReportThrottler throttler_;
 #endif  // !defined(OS_ANDROID)
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserReportGeneratorTest);
 };
 
 TEST_F(BrowserReportGeneratorTest, GenerateBasicReport) {

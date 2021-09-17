@@ -34,6 +34,9 @@ class TabLoaderCallback {
 // the loading of hidden tabs starts.
 class TabLoaderDelegate {
  public:
+  TabLoaderDelegate(const TabLoaderDelegate&) = delete;
+  TabLoaderDelegate& operator=(const TabLoaderDelegate&) = delete;
+
   virtual ~TabLoaderDelegate() {}
 
   // Create a tab loader delegate. |TabLoaderCallback::SetTabLoadingEnabled| can
@@ -82,9 +85,6 @@ class TabLoaderDelegate {
  protected:
   // The delegate should only be created via the factory function.
   TabLoaderDelegate() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabLoaderDelegate);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_TAB_LOADER_DELEGATE_H_

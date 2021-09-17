@@ -50,6 +50,10 @@ class DbusAppmenu : public AvatarMenuObserver,
                     public ui::SimpleMenuModel::Delegate {
  public:
   DbusAppmenu(BrowserView* browser_view, uint32_t browser_frame_id);
+
+  DbusAppmenu(const DbusAppmenu&) = delete;
+  DbusAppmenu& operator=(const DbusAppmenu&) = delete;
+
   ~DbusAppmenu() override;
 
   void Initialize(DbusMenu::InitializedCallback callback);
@@ -190,8 +194,6 @@ class DbusAppmenu : public AvatarMenuObserver,
 
   // For callbacks may be run after destruction.
   base::WeakPtrFactory<DbusAppmenu> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DbusAppmenu);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_DBUS_APPMENU_H_

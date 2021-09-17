@@ -59,6 +59,9 @@ class MockGCMDriver : public testing::StrictMock<gcm::FakeGCMDriver> {
  public:
   MockGCMDriver() { IgnoreDefaultHeartbeatsInterval(); }
 
+  MockGCMDriver(const MockGCMDriver&) = delete;
+  MockGCMDriver& operator=(const MockGCMDriver&) = delete;
+
   ~MockGCMDriver() override {}
 
   MOCK_METHOD2(RegisterImpl,
@@ -120,8 +123,6 @@ class MockGCMDriver : public testing::StrictMock<gcm::FakeGCMDriver> {
 
  private:
   gcm::GCMConnectionObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockGCMDriver);
 };
 
 class HeartbeatSchedulerTest : public testing::Test {

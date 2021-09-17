@@ -23,6 +23,12 @@ class CredentialManagerDialogControllerImpl
  public:
   CredentialManagerDialogControllerImpl(Profile* profile,
                                         PasswordsModelDelegate* delegate);
+
+  CredentialManagerDialogControllerImpl(
+      const CredentialManagerDialogControllerImpl&) = delete;
+  CredentialManagerDialogControllerImpl& operator=(
+      const CredentialManagerDialogControllerImpl&) = delete;
+
   ~CredentialManagerDialogControllerImpl() override;
 
   // Pop up the account chooser dialog.
@@ -57,8 +63,6 @@ class CredentialManagerDialogControllerImpl
   AutoSigninFirstRunPrompt* autosignin_dialog_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       local_credentials_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerDialogControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_IMPL_H_

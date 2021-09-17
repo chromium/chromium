@@ -22,6 +22,10 @@ class SigninGlobalError : public GlobalErrorWithStandardBubble,
  public:
   SigninGlobalError(SigninErrorController* error_controller,
                     Profile* profile);
+
+  SigninGlobalError(const SigninGlobalError&) = delete;
+  SigninGlobalError& operator=(const SigninGlobalError&) = delete;
+
   ~SigninGlobalError() override;
 
   // Returns true if there is an authentication error.
@@ -56,8 +60,6 @@ class SigninGlobalError : public GlobalErrorWithStandardBubble,
 
   // The SigninErrorController that provides auth status.
   SigninErrorController* error_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninGlobalError);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_GLOBAL_ERROR_H_

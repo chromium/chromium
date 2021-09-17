@@ -79,6 +79,10 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
                          public ui::AcceleratorProvider {
  public:
   AppMenuModelTest() = default;
+
+  AppMenuModelTest(const AppMenuModelTest&) = delete;
+  AppMenuModelTest& operator=(const AppMenuModelTest&) = delete;
+
   ~AppMenuModelTest() override = default;
 
   // Don't handle accelerators.
@@ -86,9 +90,6 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
                                   ui::Accelerator* accelerator) const override {
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppMenuModelTest);
 };
 
 // Copies parts of MenuModelTest::Delegate and combines them with the

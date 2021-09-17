@@ -40,6 +40,11 @@ class RendererEventInjectionTest
       public ::testing::WithParamInterface<const char*> {
  public:
   RendererEventInjectionTest() {}
+
+  RendererEventInjectionTest(const RendererEventInjectionTest&) = delete;
+  RendererEventInjectionTest& operator=(const RendererEventInjectionTest&) =
+      delete;
+
   ~RendererEventInjectionTest() override {}
 
   // InProcessBrowserTest:
@@ -66,8 +71,6 @@ class RendererEventInjectionTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererEventInjectionTest);
 };
 
 // Detects when a touch press is received.
@@ -77,6 +80,10 @@ class TouchEventObserver
   TouchEventObserver(const gfx::Point& location,
                      base::RepeatingClosure quit_closure)
       : expected_location_(location), quit_closure_(std::move(quit_closure)) {}
+
+  TouchEventObserver(const TouchEventObserver&) = delete;
+  TouchEventObserver& operator=(const TouchEventObserver&) = delete;
+
   ~TouchEventObserver() override = default;
 
  private:
@@ -102,8 +109,6 @@ class TouchEventObserver
 
   const gfx::Point expected_location_;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchEventObserver);
 };
 
 IN_PROC_BROWSER_TEST_P(RendererEventInjectionTest, TestRootTransform) {

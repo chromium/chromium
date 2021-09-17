@@ -32,6 +32,10 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
       const url::Origin& origin,
       ManagePasswordsState::CredentialsCallback callback);
 
+  AccountChooserDialogAndroid(const AccountChooserDialogAndroid&) = delete;
+  AccountChooserDialogAndroid& operator=(const AccountChooserDialogAndroid&) =
+      delete;
+
   ~AccountChooserDialogAndroid() override;
   // Returns true if the dialog is shown. Otherwise, the instance is deleted.
   bool ShowDialog();
@@ -91,8 +95,6 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
   ManagePasswordsState passwords_data_;
   url::Origin origin_;
   base::android::ScopedJavaGlobalRef<jobject> dialog_jobject_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountChooserDialogAndroid);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCOUNT_CHOOSER_DIALOG_ANDROID_H_

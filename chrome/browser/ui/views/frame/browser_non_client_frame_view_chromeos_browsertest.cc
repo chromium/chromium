@@ -398,6 +398,11 @@ class WebAppNonClientFrameViewAshTest
  public:
   WebAppNonClientFrameViewAshTest() = default;
 
+  WebAppNonClientFrameViewAshTest(const WebAppNonClientFrameViewAshTest&) =
+      delete;
+  WebAppNonClientFrameViewAshTest& operator=(
+      const WebAppNonClientFrameViewAshTest&) = delete;
+
   ~WebAppNonClientFrameViewAshTest() override = default;
 
   GURL GetAppURL() const {
@@ -521,8 +526,6 @@ class WebAppNonClientFrameViewAshTest
   // For mocking a secure site.
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   content::ContentMockCertVerifier cert_verifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppNonClientFrameViewAshTest);
 };
 
 }  // namespace
@@ -1008,6 +1011,12 @@ class HomeLauncherBrowserNonClientFrameViewChromeOSTest
     : public TopChromeMdParamTest<InProcessBrowserTest> {
  public:
   HomeLauncherBrowserNonClientFrameViewChromeOSTest() = default;
+
+  HomeLauncherBrowserNonClientFrameViewChromeOSTest(
+      const HomeLauncherBrowserNonClientFrameViewChromeOSTest&) = delete;
+  HomeLauncherBrowserNonClientFrameViewChromeOSTest& operator=(
+      const HomeLauncherBrowserNonClientFrameViewChromeOSTest&) = delete;
+
   ~HomeLauncherBrowserNonClientFrameViewChromeOSTest() override = default;
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
@@ -1016,9 +1025,6 @@ class HomeLauncherBrowserNonClientFrameViewChromeOSTest
 
     command_line->AppendSwitch(ash::switches::kAshEnableTabletMode);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HomeLauncherBrowserNonClientFrameViewChromeOSTest);
 };
 
 }  // namespace

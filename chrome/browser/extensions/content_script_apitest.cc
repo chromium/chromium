@@ -112,15 +112,16 @@ const char kNewTabHtml[] = "<html>NewTabOverride!</html>";
 class ContentScriptApiTest : public ExtensionApiTest {
  public:
   ContentScriptApiTest() {}
+
+  ContentScriptApiTest(const ContentScriptApiTest&) = delete;
+  ContentScriptApiTest& operator=(const ContentScriptApiTest&) = delete;
+
   ~ContentScriptApiTest() override {}
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentScriptApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptAllFrames) {
@@ -1210,6 +1211,11 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
 class ContentScriptRelatedFrameTest : public ContentScriptApiTest {
  public:
   ContentScriptRelatedFrameTest() = default;
+
+  ContentScriptRelatedFrameTest(const ContentScriptRelatedFrameTest&) = delete;
+  ContentScriptRelatedFrameTest& operator=(
+      const ContentScriptRelatedFrameTest&) = delete;
+
   ~ContentScriptRelatedFrameTest() override = default;
 
   void SetUpOnMainThread() override;
@@ -1283,8 +1289,6 @@ class ContentScriptRelatedFrameTest : public ContentScriptApiTest {
 
   // The test directory used to load our extension.
   TestExtensionDir test_extension_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentScriptRelatedFrameTest);
 };
 
 constexpr char ContentScriptRelatedFrameTest::kMarkerSpanId[];

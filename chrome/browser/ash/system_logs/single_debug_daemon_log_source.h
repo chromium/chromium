@@ -37,6 +37,11 @@ class SingleDebugDaemonLogSource : public SystemLogsSource {
   };
 
   explicit SingleDebugDaemonLogSource(SupportedSource source);
+
+  SingleDebugDaemonLogSource(const SingleDebugDaemonLogSource&) = delete;
+  SingleDebugDaemonLogSource& operator=(const SingleDebugDaemonLogSource&) =
+      delete;
+
   ~SingleDebugDaemonLogSource() override;
 
   // system_logs::SystemLogsSource:
@@ -49,8 +54,6 @@ class SingleDebugDaemonLogSource : public SystemLogsSource {
                        absl::optional<std::string> result) const;
 
   base::WeakPtrFactory<SingleDebugDaemonLogSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SingleDebugDaemonLogSource);
 };
 
 }  // namespace system_logs

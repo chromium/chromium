@@ -65,6 +65,10 @@ class FakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
  public:
   FakeDebugDaemonClient()
       : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+
+  FakeDebugDaemonClient(const FakeDebugDaemonClient&) = delete;
+  FakeDebugDaemonClient& operator=(const FakeDebugDaemonClient&) = delete;
+
   ~FakeDebugDaemonClient() override {
     EXPECT_FALSE(perf_output_file_.IsValid());
   }
@@ -119,8 +123,6 @@ class FakeDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
   base::File perf_output_file_;
   chromeos::DBusMethodCallback<uint64_t> get_perf_outjput_callback_;
   bool stop_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDebugDaemonClient);
 };
 
 }  // namespace

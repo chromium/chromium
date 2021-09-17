@@ -15,10 +15,11 @@
 class ScopedMenuBarLock {
  public:
   ScopedMenuBarLock();
-  ~ScopedMenuBarLock();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedMenuBarLock);
+  ScopedMenuBarLock(const ScopedMenuBarLock&) = delete;
+  ScopedMenuBarLock& operator=(const ScopedMenuBarLock&) = delete;
+
+  ~ScopedMenuBarLock();
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_SCOPED_MENU_BAR_LOCK_H_

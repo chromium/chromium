@@ -34,6 +34,9 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
       content::WebContents* web_contents,
       gfx::NativeWindow parent);
 
+  CertificateViewerDialog(const CertificateViewerDialog&) = delete;
+  CertificateViewerDialog& operator=(const CertificateViewerDialog&) = delete;
+
   ~CertificateViewerDialog() override;
 
   gfx::NativeWindow GetNativeWebContentsModalDialog();
@@ -68,8 +71,6 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
 
   content::WebUI* webui_ = nullptr;
   ConstrainedWebDialogDelegate* delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateViewerDialog);
 };
 
 // Dialog handler which handles calls from the JS WebUI code to view certificate
@@ -78,6 +79,12 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
  public:
   CertificateViewerDialogHandler(CertificateViewerDialog* dialog,
                                  net::ScopedCERTCertificateList cert_chain);
+
+  CertificateViewerDialogHandler(const CertificateViewerDialogHandler&) =
+      delete;
+  CertificateViewerDialogHandler& operator=(
+      const CertificateViewerDialogHandler&) = delete;
+
   ~CertificateViewerDialogHandler() override;
 
   // Overridden from WebUIMessageHandler
@@ -106,8 +113,6 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
 
   // The certificate chain.
   net::ScopedCERTCertificateList cert_chain_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateViewerDialogHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_WEBUI_H_

@@ -42,6 +42,10 @@ class SiteDataSizeCollector {
       scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
       scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
       scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper);
+
+  SiteDataSizeCollector(const SiteDataSizeCollector&) = delete;
+  SiteDataSizeCollector& operator=(const SiteDataSizeCollector&) = delete;
+
   virtual ~SiteDataSizeCollector();
 
   using FetchCallback = base::OnceCallback<void(int64_t)>;
@@ -93,8 +97,6 @@ class SiteDataSizeCollector {
   int64_t total_bytes_;
 
   base::WeakPtrFactory<SiteDataSizeCollector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataSizeCollector);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_SITE_DATA_SIZE_COLLECTOR_H_

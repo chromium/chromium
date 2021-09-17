@@ -153,6 +153,11 @@ class ImeControllerClientImplTest : public testing::Test {
     input_method_manager_.delegate_.set_get_localized_string_callback(
         base::BindRepeating(&GetLocalizedString));
   }
+
+  ImeControllerClientImplTest(const ImeControllerClientImplTest&) = delete;
+  ImeControllerClientImplTest& operator=(const ImeControllerClientImplTest&) =
+      delete;
+
   ~ImeControllerClientImplTest() override = default;
 
  protected:
@@ -163,8 +168,6 @@ class ImeControllerClientImplTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeControllerClientImplTest);
 };
 
 TEST_F(ImeControllerClientImplTest, Construction) {

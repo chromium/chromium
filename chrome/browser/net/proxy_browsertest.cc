@@ -133,6 +133,12 @@ class BaseHttpProxyScriptBrowserTest : public InProcessBrowserTest {
   BaseHttpProxyScriptBrowserTest() {
     http_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
+
+  BaseHttpProxyScriptBrowserTest(const BaseHttpProxyScriptBrowserTest&) =
+      delete;
+  BaseHttpProxyScriptBrowserTest& operator=(
+      const BaseHttpProxyScriptBrowserTest&) = delete;
+
   ~BaseHttpProxyScriptBrowserTest() override {}
 
   void SetUp() override {
@@ -149,24 +155,23 @@ class BaseHttpProxyScriptBrowserTest : public InProcessBrowserTest {
  protected:
   virtual std::string GetPacFilename() = 0;
   net::EmbeddedTestServer http_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BaseHttpProxyScriptBrowserTest);
 };
 
 // Tests the use of a PAC script that rejects requests to http://www.google.com/
 class HttpProxyScriptBrowserTest : public BaseHttpProxyScriptBrowserTest {
  public:
   HttpProxyScriptBrowserTest() = default;
+
+  HttpProxyScriptBrowserTest(const HttpProxyScriptBrowserTest&) = delete;
+  HttpProxyScriptBrowserTest& operator=(const HttpProxyScriptBrowserTest&) =
+      delete;
+
   ~HttpProxyScriptBrowserTest() override {}
 
   std::string GetPacFilename() override {
     // PAC script that sends all requests to an invalid proxy server.
     return "bad_server.pac";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HttpProxyScriptBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(HttpProxyScriptBrowserTest, Verify) {
@@ -180,6 +185,12 @@ IN_PROC_BROWSER_TEST_F(HttpProxyScriptBrowserTest, Verify) {
 class WPADHttpProxyScriptBrowserTest : public HttpProxyScriptBrowserTest {
  public:
   WPADHttpProxyScriptBrowserTest() = default;
+
+  WPADHttpProxyScriptBrowserTest(const WPADHttpProxyScriptBrowserTest&) =
+      delete;
+  WPADHttpProxyScriptBrowserTest& operator=(
+      const WPADHttpProxyScriptBrowserTest&) = delete;
+
   ~WPADHttpProxyScriptBrowserTest() override {}
 
   void SetUp() override {
@@ -200,7 +211,6 @@ class WPADHttpProxyScriptBrowserTest : public HttpProxyScriptBrowserTest {
 
  private:
   GURL pac_url_;
-  DISALLOW_COPY_AND_ASSIGN(WPADHttpProxyScriptBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WPADHttpProxyScriptBrowserTest, Verify) {
@@ -214,6 +224,12 @@ class MyIpAddressProxyScriptBrowserTest
     : public BaseHttpProxyScriptBrowserTest {
  public:
   MyIpAddressProxyScriptBrowserTest() = default;
+
+  MyIpAddressProxyScriptBrowserTest(const MyIpAddressProxyScriptBrowserTest&) =
+      delete;
+  MyIpAddressProxyScriptBrowserTest& operator=(
+      const MyIpAddressProxyScriptBrowserTest&) = delete;
+
   ~MyIpAddressProxyScriptBrowserTest() override {}
 
   std::string GetPacFilename() override {
@@ -221,9 +237,6 @@ class MyIpAddressProxyScriptBrowserTest
     // myIpAddress() and myIpAddressEx() are not loopback addresses.
     return "my_ip_address.pac";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MyIpAddressProxyScriptBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MyIpAddressProxyScriptBrowserTest, Verify) {
@@ -234,6 +247,12 @@ IN_PROC_BROWSER_TEST_F(MyIpAddressProxyScriptBrowserTest, Verify) {
 class HangingPacRequestProxyScriptBrowserTest : public InProcessBrowserTest {
  public:
   HangingPacRequestProxyScriptBrowserTest() {}
+
+  HangingPacRequestProxyScriptBrowserTest(
+      const HangingPacRequestProxyScriptBrowserTest&) = delete;
+  HangingPacRequestProxyScriptBrowserTest& operator=(
+      const HangingPacRequestProxyScriptBrowserTest&) = delete;
+
   ~HangingPacRequestProxyScriptBrowserTest() override {}
 
   void SetUp() override {
@@ -268,9 +287,6 @@ class HangingPacRequestProxyScriptBrowserTest : public InProcessBrowserTest {
  protected:
   std::unique_ptr<net::test_server::SimpleConnectionListener>
       connection_listener_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HangingPacRequestProxyScriptBrowserTest);
 };
 
 // Check that the URLRequest for a PAC that is still alive during shutdown is

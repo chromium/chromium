@@ -21,6 +21,11 @@ class TraceEventSystemStatsMonitor
       public performance_monitor::SystemMonitor::SystemObserver {
  public:
   TraceEventSystemStatsMonitor();
+
+  TraceEventSystemStatsMonitor(const TraceEventSystemStatsMonitor&) = delete;
+  TraceEventSystemStatsMonitor& operator=(const TraceEventSystemStatsMonitor&) =
+      delete;
+
   ~TraceEventSystemStatsMonitor() override;
 
   // base::trace_event::TraceLog::EnabledStateChangedObserver overrides:
@@ -45,8 +50,6 @@ class TraceEventSystemStatsMonitor
   bool is_profiling_ = false;
 
   base::WeakPtrFactory<TraceEventSystemStatsMonitor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TraceEventSystemStatsMonitor);
 };
 
 }  // namespace tracing

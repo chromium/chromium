@@ -47,6 +47,10 @@ class PluginVmManagerImpl
   using LaunchPluginVmCallback = base::OnceCallback<void(bool success)>;
 
   explicit PluginVmManagerImpl(Profile* profile);
+
+  PluginVmManagerImpl(const PluginVmManagerImpl&) = delete;
+  PluginVmManagerImpl& operator=(const PluginVmManagerImpl&) = delete;
+
   ~PluginVmManagerImpl() override;
 
   void OnPrimaryUserSessionStarted() override;
@@ -186,8 +190,6 @@ class PluginVmManagerImpl
   bool pending_destroy_disk_image_ = false;
 
   base::WeakPtrFactory<PluginVmManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmManagerImpl);
 };
 
 }  // namespace plugin_vm

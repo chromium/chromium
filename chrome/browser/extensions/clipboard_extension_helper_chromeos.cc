@@ -28,6 +28,10 @@ class ClipboardExtensionHelper::ClipboardImageDataDecoder
   explicit ClipboardImageDataDecoder(ClipboardExtensionHelper* owner)
       : owner_(owner) {}
 
+  ClipboardImageDataDecoder(const ClipboardImageDataDecoder&) = delete;
+  ClipboardImageDataDecoder& operator=(const ClipboardImageDataDecoder&) =
+      delete;
+
   ~ClipboardImageDataDecoder() override { ImageDecoder::Cancel(this); }
 
   bool has_request_pending() const { return has_request_pending_; }
@@ -72,8 +76,6 @@ class ClipboardExtensionHelper::ClipboardImageDataDecoder
  private:
   ClipboardExtensionHelper* owner_;  // Not owned.
   bool has_request_pending_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardImageDataDecoder);
 };
 
 ClipboardExtensionHelper::ClipboardExtensionHelper() {

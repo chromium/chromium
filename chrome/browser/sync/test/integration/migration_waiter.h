@@ -22,6 +22,9 @@ class MigrationWaiter : public StatusChangeChecker {
   MigrationWaiter(syncer::ModelTypeSet expected_types,
                   MigrationWatcher* watcher);
 
+  MigrationWaiter(const MigrationWaiter&) = delete;
+  MigrationWaiter& operator=(const MigrationWaiter&) = delete;
+
   ~MigrationWaiter() override;
 
   // StatusChangeChecker implementation .
@@ -36,8 +39,6 @@ class MigrationWaiter : public StatusChangeChecker {
 
   // The set of data types that are expected to eventually undergo migration.
   const syncer::ModelTypeSet expected_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(MigrationWaiter);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_MIGRATION_WAITER_H_

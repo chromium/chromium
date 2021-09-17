@@ -14,6 +14,10 @@ namespace vr {
 class InvisibleHitTarget : public UiElement {
  public:
   InvisibleHitTarget();
+
+  InvisibleHitTarget(const InvisibleHitTarget&) = delete;
+  InvisibleHitTarget& operator=(const InvisibleHitTarget&) = delete;
+
   ~InvisibleHitTarget() override;
 
   void Render(UiElementRenderer* renderer,
@@ -24,9 +28,6 @@ class InvisibleHitTarget : public UiElement {
   void OnHoverLeave(base::TimeTicks timestamp) override;
 
   bool hovered() const { return hovered_; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InvisibleHitTarget);
   bool hovered_ = false;
 };
 

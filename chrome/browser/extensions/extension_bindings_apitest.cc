@@ -65,6 +65,10 @@ void MouseUpInWebContents(content::WebContents* web_contents) {
 class ExtensionBindingsApiTest : public ExtensionApiTest {
  public:
   ExtensionBindingsApiTest() {}
+
+  ExtensionBindingsApiTest(const ExtensionBindingsApiTest&) = delete;
+  ExtensionBindingsApiTest& operator=(const ExtensionBindingsApiTest&) = delete;
+
   ~ExtensionBindingsApiTest() override {}
 
   void SetUpOnMainThread() override {
@@ -79,9 +83,6 @@ class ExtensionBindingsApiTest : public ExtensionApiTest {
     // deferred commits.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionBindingsApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,

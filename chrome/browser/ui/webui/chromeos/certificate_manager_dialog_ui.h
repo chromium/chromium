@@ -14,11 +14,12 @@ namespace chromeos {
 class CertificateManagerDialogUI : public ui::WebDialogUI {
  public:
   explicit CertificateManagerDialogUI(content::WebUI* web_ui);
+
+  CertificateManagerDialogUI(const CertificateManagerDialogUI&) = delete;
+  CertificateManagerDialogUI& operator=(const CertificateManagerDialogUI&) =
+      delete;
+
   ~CertificateManagerDialogUI() override;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateManagerDialogUI);
 };
 
 }  // namespace chromeos

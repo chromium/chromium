@@ -27,6 +27,10 @@ class SharedClipboardContextMenuObserver
   class SubMenuDelegate : public ui::SimpleMenuModel::Delegate {
    public:
     explicit SubMenuDelegate(SharedClipboardContextMenuObserver* parent);
+
+    SubMenuDelegate(const SubMenuDelegate&) = delete;
+    SubMenuDelegate& operator=(const SubMenuDelegate&) = delete;
+
     ~SubMenuDelegate() override;
 
     bool IsCommandIdEnabled(int command_id) const override;
@@ -34,8 +38,6 @@ class SharedClipboardContextMenuObserver
 
    private:
     SharedClipboardContextMenuObserver* const parent_;
-
-    DISALLOW_COPY_AND_ASSIGN(SubMenuDelegate);
   };
 
   explicit SharedClipboardContextMenuObserver(

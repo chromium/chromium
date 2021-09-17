@@ -29,6 +29,10 @@ class ExclusiveAccessManager {
  public:
   explicit ExclusiveAccessManager(
       ExclusiveAccessContext* exclusive_access_context);
+
+  ExclusiveAccessManager(const ExclusiveAccessManager&) = delete;
+  ExclusiveAccessManager& operator=(const ExclusiveAccessManager&) = delete;
+
   ~ExclusiveAccessManager();
 
   FullscreenController* fullscreen_controller() {
@@ -77,8 +81,6 @@ class ExclusiveAccessManager {
   FullscreenController fullscreen_controller_;
   KeyboardLockController keyboard_lock_controller_;
   MouseLockController mouse_lock_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExclusiveAccessManager);
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_MANAGER_H_

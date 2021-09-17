@@ -37,6 +37,10 @@ class RegistryLogger {
   // Construct a RegistryLogger that writes to the location specified by |mode|.
   explicit RegistryLogger(Mode mode);
   RegistryLogger(Mode mode, const std::string& suffix);
+
+  RegistryLogger(const RegistryLogger&) = delete;
+  RegistryLogger& operator=(const RegistryLogger&) = delete;
+
   ~RegistryLogger();
 
   // Write the currently running version of the tool to the key specified by
@@ -136,8 +140,6 @@ class RegistryLogger {
   base::win::RegKey scan_times_key_;
   Mode mode_;
   std::wstring suffix_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryLogger);
 };
 
 }  // namespace chrome_cleaner

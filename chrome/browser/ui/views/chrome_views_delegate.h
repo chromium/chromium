@@ -24,6 +24,10 @@ class ScopedProfileKeepAlive;
 class ChromeViewsDelegate : public views::ViewsDelegate {
  public:
   ChromeViewsDelegate();
+
+  ChromeViewsDelegate(const ChromeViewsDelegate&) = delete;
+  ChromeViewsDelegate& operator=(const ChromeViewsDelegate&) = delete;
+
   ~ChromeViewsDelegate() override;
 
   // views::ViewsDelegate:
@@ -109,8 +113,6 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
 
   base::WeakPtrFactory<ChromeViewsDelegate> weak_factory_{this};
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeViewsDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_VIEWS_DELEGATE_H_

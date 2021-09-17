@@ -30,6 +30,10 @@ std::unique_ptr<gfx::CubicBezierTimingFunction> CreateTimingFunction() {
 class SpinnerTexture : public UiTexture {
  public:
   SpinnerTexture() {}
+
+  SpinnerTexture(const SpinnerTexture&) = delete;
+  SpinnerTexture& operator=(const SpinnerTexture&) = delete;
+
   ~SpinnerTexture() override {}
 
   void SetAngleSweep(float angle) { SetAndDirty(&angle_sweep_, angle); }
@@ -57,8 +61,6 @@ class SpinnerTexture : public UiTexture {
   float angle_start_ = 0.0f;
   float rotation_ = 0.0f;
   SkColor color_ = SK_ColorWHITE;
-
-  DISALLOW_COPY_AND_ASSIGN(SpinnerTexture);
 };
 
 Spinner::Spinner(int texture_width)

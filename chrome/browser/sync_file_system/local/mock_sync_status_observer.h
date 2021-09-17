@@ -14,14 +14,15 @@ namespace sync_file_system {
 class MockSyncStatusObserver : public LocalFileSyncStatus::Observer {
  public:
   MockSyncStatusObserver();
+
+  MockSyncStatusObserver(const MockSyncStatusObserver&) = delete;
+  MockSyncStatusObserver& operator=(const MockSyncStatusObserver&) = delete;
+
   ~MockSyncStatusObserver() override;
 
   // LocalFileSyncStatus::Observer overrides.
   MOCK_METHOD1(OnSyncEnabled, void(const storage::FileSystemURL& url));
   MOCK_METHOD1(OnWriteEnabled, void(const storage::FileSystemURL& url));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSyncStatusObserver);
 };
 
 }  // namespace sync_file_system

@@ -21,6 +21,11 @@ namespace chromeos {
 class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
  public:
   NetworkPortalDetectorTestImpl();
+
+  NetworkPortalDetectorTestImpl(const NetworkPortalDetectorTestImpl&) = delete;
+  NetworkPortalDetectorTestImpl& operator=(
+      const NetworkPortalDetectorTestImpl&) = delete;
+
   ~NetworkPortalDetectorTestImpl() override;
 
   void SetDefaultNetworkForTesting(const std::string& guid);
@@ -65,8 +70,6 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   bool portal_detection_in_progress_ = false;
 
   std::vector<base::OnceClosure> start_detection_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkPortalDetectorTestImpl);
 };
 
 }  // namespace chromeos

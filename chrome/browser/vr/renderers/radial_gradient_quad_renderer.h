@@ -23,6 +23,11 @@ struct CornerRadii;
 class RadialGradientQuadRenderer : public BaseRenderer {
  public:
   RadialGradientQuadRenderer();
+
+  RadialGradientQuadRenderer(const RadialGradientQuadRenderer&) = delete;
+  RadialGradientQuadRenderer& operator=(const RadialGradientQuadRenderer&) =
+      delete;
+
   ~RadialGradientQuadRenderer() override;
 
   void Draw(const gfx::Transform& model_view_proj_matrix,
@@ -45,8 +50,6 @@ class RadialGradientQuadRenderer : public BaseRenderer {
   GLuint center_color_handle_;
   GLuint edge_color_handle_;
   GLuint aspect_ratio_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(RadialGradientQuadRenderer);
 };
 
 }  // namespace vr

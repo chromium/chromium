@@ -56,6 +56,9 @@ class DownloadQueryTest : public testing::Test {
  public:
   DownloadQueryTest() {}
 
+  DownloadQueryTest(const DownloadQueryTest&) = delete;
+  DownloadQueryTest& operator=(const DownloadQueryTest&) = delete;
+
   ~DownloadQueryTest() override {}
 
   void TearDown() override {}
@@ -109,8 +112,6 @@ class DownloadQueryTest : public testing::Test {
   std::vector<std::unique_ptr<download::MockDownloadItem>> owned_mocks_;
   DownloadQuery query_;
   DownloadVector results_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadQueryTest);
 };
 
 template<> void DownloadQueryTest::AddFilter(

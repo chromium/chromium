@@ -40,6 +40,11 @@ class ArcCustomTabModalDialogHost
  public:
   ArcCustomTabModalDialogHost(std::unique_ptr<arc::CustomTab> custom_tab,
                               content::WebContents* web_contents);
+
+  ArcCustomTabModalDialogHost(const ArcCustomTabModalDialogHost&) = delete;
+  ArcCustomTabModalDialogHost& operator=(const ArcCustomTabModalDialogHost&) =
+      delete;
+
   ~ArcCustomTabModalDialogHost() override = 0;
 
   // content::WebContentsObserver:
@@ -63,8 +68,6 @@ class ArcCustomTabModalDialogHost
  private:
   base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
       observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcCustomTabModalDialogHost);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ARC_CUSTOM_TAB_MODAL_DIALOG_HOST_H_

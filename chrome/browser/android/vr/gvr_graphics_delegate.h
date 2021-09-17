@@ -82,6 +82,10 @@ class GvrGraphicsDelegate : public BaseGraphicsDelegate {
                       bool pause_content,
                       bool low_density,
                       size_t sliding_time_size);
+
+  GvrGraphicsDelegate(const GvrGraphicsDelegate&) = delete;
+  GvrGraphicsDelegate& operator=(const GvrGraphicsDelegate&) = delete;
+
   ~GvrGraphicsDelegate() override;
 
   void set_webxr_presentation_state(device::WebXrPresentationState* webxr) {
@@ -220,8 +224,6 @@ class GvrGraphicsDelegate : public BaseGraphicsDelegate {
   unsigned int last_bound_buffer_index_;
 
   base::WeakPtrFactory<GvrGraphicsDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GvrGraphicsDelegate);
 };
 
 }  // namespace vr

@@ -17,6 +17,10 @@ class NavigationMetricsRecorder
     : public content::WebContentsObserver,
       public content::WebContentsUserData<NavigationMetricsRecorder> {
  public:
+  NavigationMetricsRecorder(const NavigationMetricsRecorder&) = delete;
+  NavigationMetricsRecorder& operator=(const NavigationMetricsRecorder&) =
+      delete;
+
   ~NavigationMetricsRecorder() override;
 
   // Turns on a synthetic field trial that is set on any navigation to a site
@@ -36,8 +40,6 @@ class NavigationMetricsRecorder
   bool is_synthetic_isolation_trial_enabled_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationMetricsRecorder);
 };
 
 #endif  // CHROME_BROWSER_TAB_CONTENTS_NAVIGATION_METRICS_RECORDER_H_

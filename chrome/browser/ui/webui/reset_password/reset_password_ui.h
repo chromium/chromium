@@ -22,6 +22,10 @@ using password_manager::metrics_util::PasswordType;
 class ResetPasswordUI : public ui::MojoWebUIController {
  public:
   explicit ResetPasswordUI(content::WebUI* web_ui);
+
+  ResetPasswordUI(const ResetPasswordUI&) = delete;
+  ResetPasswordUI& operator=(const ResetPasswordUI&) = delete;
+
   ~ResetPasswordUI() override;
 
   // Instantiates the implementor of the mojom::ResetPasswordHandler mojo
@@ -36,8 +40,6 @@ class ResetPasswordUI : public ui::MojoWebUIController {
   const PasswordType password_type_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ResetPasswordUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_RESET_PASSWORD_RESET_PASSWORD_UI_H_

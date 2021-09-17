@@ -17,6 +17,10 @@ namespace ash {
 class PrinterMetricsProvider : public metrics::MetricsProvider {
  public:
   PrinterMetricsProvider();
+
+  PrinterMetricsProvider(const PrinterMetricsProvider&) = delete;
+  PrinterMetricsProvider& operator=(const PrinterMetricsProvider&) = delete;
+
   ~PrinterMetricsProvider() override;
 
   // metrics::MetricsProvider overrides:
@@ -24,9 +28,6 @@ class PrinterMetricsProvider : public metrics::MetricsProvider {
   void OnRecordingDisabled() override;
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrinterMetricsProvider);
 };
 
 }  // namespace ash

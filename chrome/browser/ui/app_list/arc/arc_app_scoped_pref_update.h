@@ -27,6 +27,10 @@ class ArcAppScopedPrefUpdate : public DictionaryPrefUpdate {
   ArcAppScopedPrefUpdate(PrefService* service,
                          const std::string& id,
                          const std::string& path);
+
+  ArcAppScopedPrefUpdate(const ArcAppScopedPrefUpdate&) = delete;
+  ArcAppScopedPrefUpdate& operator=(const ArcAppScopedPrefUpdate&) = delete;
+
   ~ArcAppScopedPrefUpdate() override;
 
   // DictionaryPrefUpdate:
@@ -34,8 +38,6 @@ class ArcAppScopedPrefUpdate : public DictionaryPrefUpdate {
 
  private:
   const std::string id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppScopedPrefUpdate);
 };
 
 }  // namespace arc

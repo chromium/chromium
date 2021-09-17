@@ -29,6 +29,10 @@ class InstallationState;
 class ProductState {
  public:
   ProductState();
+
+  ProductState(const ProductState&) = delete;
+  ProductState& operator=(const ProductState&) = delete;
+
   ~ProductState();
 
   // Returns true if the product is installed (i.e., the product's Clients key
@@ -105,8 +109,6 @@ class ProductState {
 
  private:
   friend class InstallationState;
-
-  DISALLOW_COPY_AND_ASSIGN(ProductState);
 };  // class ProductState
 
 // Encapsulates the state of all products on the system.

@@ -20,6 +20,11 @@
 class ImporterTestRegistryOverrider {
  public:
   ImporterTestRegistryOverrider();
+
+  ImporterTestRegistryOverrider(const ImporterTestRegistryOverrider&) = delete;
+  ImporterTestRegistryOverrider& operator=(
+      const ImporterTestRegistryOverrider&) = delete;
+
   ~ImporterTestRegistryOverrider();
 
   // Returns a test key if one was chosen and set by a call to
@@ -28,8 +33,6 @@ class ImporterTestRegistryOverrider {
 
  private:
   std::wstring temporary_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImporterTestRegistryOverrider);
 };
 
 #endif  // CHROME_COMMON_IMPORTER_IMPORTER_TEST_REGISTRY_OVERRIDER_WIN_H_

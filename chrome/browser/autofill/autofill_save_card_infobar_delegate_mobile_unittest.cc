@@ -32,6 +32,12 @@ class AutofillSaveCardInfoBarDelegateMobileTest
     : public ChromeRenderViewHostTestHarness {
  public:
   AutofillSaveCardInfoBarDelegateMobileTest();
+
+  AutofillSaveCardInfoBarDelegateMobileTest(
+      const AutofillSaveCardInfoBarDelegateMobileTest&) = delete;
+  AutofillSaveCardInfoBarDelegateMobileTest& operator=(
+      const AutofillSaveCardInfoBarDelegateMobileTest&) = delete;
+
   ~AutofillSaveCardInfoBarDelegateMobileTest() override;
 
   void SetUp() override;
@@ -63,8 +69,6 @@ class AutofillSaveCardInfoBarDelegateMobileTest
   }
 
   CreditCard credit_card_to_save_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillSaveCardInfoBarDelegateMobileTest);
 };
 
 AutofillSaveCardInfoBarDelegateMobileTest::

@@ -39,6 +39,10 @@ class ProfileSyncComponentsFactoryImpl;
 class ChromeSyncClient : public browser_sync::BrowserSyncClient {
  public:
   explicit ChromeSyncClient(Profile* profile);
+
+  ChromeSyncClient(const ChromeSyncClient&) = delete;
+  ChromeSyncClient& operator=(const ChromeSyncClient&) = delete;
+
   ~ChromeSyncClient() override;
 
   // BrowserSyncClient implementation.
@@ -108,8 +112,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
 
   // Generates and monitors the ExtensionsActivity object used by sync.
   ExtensionsActivityMonitor extensions_activity_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSyncClient);
 };
 
 }  // namespace browser_sync

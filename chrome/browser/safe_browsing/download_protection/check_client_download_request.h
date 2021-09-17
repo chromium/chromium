@@ -39,6 +39,11 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor);
+
+  CheckClientDownloadRequest(const CheckClientDownloadRequest&) = delete;
+  CheckClientDownloadRequest& operator=(const CheckClientDownloadRequest&) =
+      delete;
+
   ~CheckClientDownloadRequest() override;
 
   // download::DownloadItem::Observer:
@@ -94,8 +99,6 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   base::TimeTicks upload_start_time_;
 
   base::WeakPtrFactory<CheckClientDownloadRequest> weakptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckClientDownloadRequest);
 };
 
 }  // namespace safe_browsing

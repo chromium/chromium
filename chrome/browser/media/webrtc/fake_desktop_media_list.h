@@ -12,6 +12,10 @@
 class FakeDesktopMediaList : public DesktopMediaList {
  public:
   explicit FakeDesktopMediaList(DesktopMediaList::Type type);
+
+  FakeDesktopMediaList(const FakeDesktopMediaList&) = delete;
+  FakeDesktopMediaList& operator=(const FakeDesktopMediaList&) = delete;
+
   ~FakeDesktopMediaList() override;
 
   void AddSource(int id);
@@ -36,8 +40,6 @@ class FakeDesktopMediaList : public DesktopMediaList {
   DesktopMediaListObserver* observer_;
   gfx::ImageSkia thumbnail_;
   const DesktopMediaList::Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopMediaList);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_FAKE_DESKTOP_MEDIA_LIST_H_

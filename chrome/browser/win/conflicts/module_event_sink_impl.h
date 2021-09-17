@@ -41,6 +41,10 @@ class ModuleEventSinkImpl : public mojom::ModuleEventSink {
   ModuleEventSinkImpl(base::Process process,
                       content::ProcessType process_type,
                       const OnModuleLoadCallback& on_module_load_callback);
+
+  ModuleEventSinkImpl(const ModuleEventSinkImpl&) = delete;
+  ModuleEventSinkImpl& operator=(const ModuleEventSinkImpl&) = delete;
+
   ~ModuleEventSinkImpl() override;
 
   // Factory function for use with service_manager::InterfaceRegistry. This
@@ -68,8 +72,6 @@ class ModuleEventSinkImpl : public mojom::ModuleEventSink {
 
   // The callback this forwards events to.
   OnModuleLoadCallback on_module_load_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleEventSinkImpl);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_EVENT_SINK_IMPL_H_

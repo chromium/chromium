@@ -71,6 +71,9 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager);
 
+  PPAPIDownloadRequest(const PPAPIDownloadRequest&) = delete;
+  PPAPIDownloadRequest& operator=(const PPAPIDownloadRequest&) = delete;
+
   ~PPAPIDownloadRequest() override;
 
   // Start the process of checking the download request. The callback passed as
@@ -175,8 +178,6 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
   content::WebContents* web_contents_;
 
   base::WeakPtrFactory<PPAPIDownloadRequest> weakptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PPAPIDownloadRequest);
 };
 
 }  // namespace safe_browsing

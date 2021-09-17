@@ -37,6 +37,11 @@ class DeviceEmulatorMessageHandler :
     public content::WebUIMessageHandler {
  public:
   DeviceEmulatorMessageHandler();
+
+  DeviceEmulatorMessageHandler(const DeviceEmulatorMessageHandler&) = delete;
+  DeviceEmulatorMessageHandler& operator=(const DeviceEmulatorMessageHandler&) =
+      delete;
+
   ~DeviceEmulatorMessageHandler() override;
 
   // Adds |this| as an observer to all necessary objects.
@@ -137,8 +142,6 @@ class DeviceEmulatorMessageHandler :
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
   base::WeakPtrFactory<DeviceEmulatorMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceEmulatorMessageHandler);
 };
 
 }  // namespace chromeos

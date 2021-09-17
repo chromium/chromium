@@ -24,6 +24,10 @@ namespace {
 class TestableTtsController : public content::TtsController {
  public:
   TestableTtsController() = default;
+
+  TestableTtsController(const TestableTtsController&) = delete;
+  TestableTtsController& operator=(const TestableTtsController&) = delete;
+
   ~TestableTtsController() override = default;
 
   void OnTtsEvent(int utterance_id,
@@ -71,9 +75,6 @@ class TestableTtsController : public content::TtsController {
   int last_char_index_;
   int last_length_;
   std::string last_error_message_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestableTtsController);
 };
 
 class ArcTtsServiceTest : public testing::Test {
@@ -86,6 +87,9 @@ class ArcTtsServiceTest : public testing::Test {
             testing_profile_.get())) {
     tts_service_->set_tts_controller_for_testing(tts_controller_.get());
   }
+
+  ArcTtsServiceTest(const ArcTtsServiceTest&) = delete;
+  ArcTtsServiceTest& operator=(const ArcTtsServiceTest&) = delete;
 
   ~ArcTtsServiceTest() override { tts_service_->Shutdown(); }
 
@@ -101,8 +105,6 @@ class ArcTtsServiceTest : public testing::Test {
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<TestableTtsController> tts_controller_;
   ArcTtsService* const tts_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTtsServiceTest);
 };
 
 // Tests that ArcTtsService can be constructed and destructed.

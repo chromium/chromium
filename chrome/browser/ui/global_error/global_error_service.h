@@ -28,6 +28,10 @@ class GlobalErrorService : public KeyedService {
 
   // Constructs a GlobalErrorService object.
   GlobalErrorService();
+
+  GlobalErrorService(const GlobalErrorService&) = delete;
+  GlobalErrorService& operator=(const GlobalErrorService&) = delete;
+
   ~GlobalErrorService() override;
 
   void AddObserver(GlobalErrorObserver* observer);
@@ -77,8 +81,6 @@ class GlobalErrorService : public KeyedService {
 
   GlobalErrorList all_errors_;
   std::map<GlobalError*, std::unique_ptr<GlobalError>> owned_errors_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalErrorService);
 };
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_ERROR_GLOBAL_ERROR_SERVICE_H_

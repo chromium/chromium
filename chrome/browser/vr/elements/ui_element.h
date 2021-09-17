@@ -102,6 +102,10 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
                                public gfx::ColorAnimationCurve::Target {
  public:
   UiElement();
+
+  UiElement(const UiElement&) = delete;
+  UiElement& operator=(const UiElement&) = delete;
+
   ~UiElement() override;
 
   enum OperationIndex {
@@ -673,8 +677,6 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
   bool resizable_by_layout_ = false;
 
   CursorType cursor_type_ = kCursorDefault;
-
-  DISALLOW_COPY_AND_ASSIGN(UiElement);
 };
 
 }  // namespace vr

@@ -254,6 +254,11 @@ std::unique_ptr<KeyedService> CreateFileSystemOperationRunnerForTesting(
 class ArcDocumentsProviderRootTest : public testing::Test {
  public:
   ArcDocumentsProviderRootTest() = default;
+
+  ArcDocumentsProviderRootTest(const ArcDocumentsProviderRootTest&) = delete;
+  ArcDocumentsProviderRootTest& operator=(const ArcDocumentsProviderRootTest&) =
+      delete;
+
   ~ArcDocumentsProviderRootTest() override = default;
 
   void SetUp() override {
@@ -323,9 +328,6 @@ class ArcDocumentsProviderRootTest : public testing::Test {
   std::unique_ptr<ArcDocumentsProviderRoot> no_capacity_root_;
   std::unique_ptr<ArcDocumentsProviderRoot> no_available_root_;
   std::unique_ptr<ArcDocumentsProviderRoot> read_only_root_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderRootTest);
 };
 
 }  // namespace

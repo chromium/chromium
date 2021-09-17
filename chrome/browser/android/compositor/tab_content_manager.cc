@@ -89,6 +89,9 @@ class TabContentManager::TabReadbackRequest {
                           std::move(result_callback));
   }
 
+  TabReadbackRequest(const TabReadbackRequest&) = delete;
+  TabReadbackRequest& operator=(const TabReadbackRequest&) = delete;
+
   virtual ~TabReadbackRequest() {}
 
   void OnFinishGetTabThumbnailBitmap(const SkBitmap& bitmap) {
@@ -110,8 +113,6 @@ class TabContentManager::TabReadbackRequest {
   bool drop_after_readback_;
 
   base::WeakPtrFactory<TabReadbackRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabReadbackRequest);
 };
 
 // static

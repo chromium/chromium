@@ -40,6 +40,11 @@ class ArcPackageSyncModelTypeController
       syncer::SyncService* sync_service,
       Profile* profile);
 
+  ArcPackageSyncModelTypeController(const ArcPackageSyncModelTypeController&) =
+      delete;
+  ArcPackageSyncModelTypeController& operator=(
+      const ArcPackageSyncModelTypeController&) = delete;
+
   ~ArcPackageSyncModelTypeController() override;
 
   // DataTypeController overrides.
@@ -60,8 +65,6 @@ class ArcPackageSyncModelTypeController
   Profile* const profile_;
   ArcAppListPrefs* const arc_prefs_;
   PrefChangeRegistrar pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPackageSyncModelTypeController);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_PACKAGE_SYNC_MODEL_TYPE_CONTROLLER_H_

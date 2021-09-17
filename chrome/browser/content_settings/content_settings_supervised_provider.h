@@ -23,6 +23,10 @@ class SupervisedProvider : public ObservableProvider {
  public:
   explicit SupervisedProvider(
       SupervisedUserSettingsService* supervised_user_settings_service);
+
+  SupervisedProvider(const SupervisedProvider&) = delete;
+  SupervisedProvider& operator=(const SupervisedProvider&) = delete;
+
   ~SupervisedProvider() override;
 
   // ProviderInterface implementations.
@@ -52,8 +56,6 @@ class SupervisedProvider : public ObservableProvider {
   mutable base::Lock lock_;
 
   base::CallbackListSubscription user_settings_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedProvider);
 };
 
 }  // namespace content_settings

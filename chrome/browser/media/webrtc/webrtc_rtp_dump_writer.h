@@ -48,6 +48,9 @@ class WebRtcRtpDumpWriter {
                       size_t max_dump_size,
                       base::RepeatingClosure max_dump_size_reached_callback);
 
+  WebRtcRtpDumpWriter(const WebRtcRtpDumpWriter&) = delete;
+  WebRtcRtpDumpWriter& operator=(const WebRtcRtpDumpWriter&) = delete;
+
   virtual ~WebRtcRtpDumpWriter();
 
   // Adds a RTP packet to the dump. The caller must make sure it's a valid RTP
@@ -139,8 +142,6 @@ class WebRtcRtpDumpWriter {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<WebRtcRtpDumpWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcRtpDumpWriter);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_RTP_DUMP_WRITER_H_

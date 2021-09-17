@@ -129,6 +129,11 @@ std::vector<std::string> CanonicalizeHostnamePatterns(
 class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
  public:
   explicit SSLConfigServiceManagerPref(PrefService* local_state);
+
+  SSLConfigServiceManagerPref(const SSLConfigServiceManagerPref&) = delete;
+  SSLConfigServiceManagerPref& operator=(const SSLConfigServiceManagerPref&) =
+      delete;
+
   ~SSLConfigServiceManagerPref() override {}
 
   // Register local_state SSL preferences.
@@ -184,8 +189,6 @@ class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
   bool variations_unrestricted_ = true;
 
   mojo::RemoteSet<network::mojom::SSLConfigClient> ssl_config_client_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLConfigServiceManagerPref);
 };
 
 SSLConfigServiceManagerPref::SSLConfigServiceManagerPref(

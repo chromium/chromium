@@ -15,6 +15,10 @@ namespace ash {
 class UserBoardViewMojo : public UserBoardView {
  public:
   UserBoardViewMojo();
+
+  UserBoardViewMojo(const UserBoardViewMojo&) = delete;
+  UserBoardViewMojo& operator=(const UserBoardViewMojo&) = delete;
+
   ~UserBoardViewMojo() override;
 
   // UserBoardView:
@@ -45,8 +49,6 @@ class UserBoardViewMojo : public UserBoardView {
 
  private:
   base::WeakPtrFactory<UserBoardViewMojo> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserBoardViewMojo);
 };
 
 }  // namespace ash

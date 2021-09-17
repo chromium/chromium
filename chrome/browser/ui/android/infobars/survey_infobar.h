@@ -17,6 +17,10 @@ class SurveyInfoBarDelegate;
 class SurveyInfoBar : public infobars::InfoBarAndroid {
  public:
   explicit SurveyInfoBar(std::unique_ptr<SurveyInfoBarDelegate> delegate);
+
+  SurveyInfoBar(const SurveyInfoBar&) = delete;
+  SurveyInfoBar& operator=(const SurveyInfoBar&) = delete;
+
   ~SurveyInfoBar() override;
 
   base::android::ScopedJavaLocalRef<jobject> GetTab(
@@ -31,9 +35,6 @@ class SurveyInfoBar : public infobars::InfoBarAndroid {
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SurveyInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_SURVEY_INFOBAR_H_

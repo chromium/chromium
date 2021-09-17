@@ -25,6 +25,10 @@ struct PasswordForm;
 class NavigationObserver : public content::WebContentsObserver {
  public:
   explicit NavigationObserver(content::WebContents* web_contents);
+
+  NavigationObserver(const NavigationObserver&) = delete;
+  NavigationObserver& operator=(const NavigationObserver&) = delete;
+
   ~NavigationObserver() override;
 
   // Normally Wait() will not return until a main frame navigation occurs.
@@ -55,8 +59,6 @@ class NavigationObserver : public content::WebContentsObserver {
   content::RenderFrameHost* render_frame_host_;
   bool quit_on_entry_committed_ = false;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
 };
 
 // Checks the save password prompt for a specified WebContents and allows
@@ -144,6 +146,11 @@ class PasswordStoreResultsObserver
     : public password_manager::PasswordStoreConsumer {
  public:
   PasswordStoreResultsObserver();
+
+  PasswordStoreResultsObserver(const PasswordStoreResultsObserver&) = delete;
+  PasswordStoreResultsObserver& operator=(const PasswordStoreResultsObserver&) =
+      delete;
+
   ~PasswordStoreResultsObserver() override;
 
   // Waits for OnGetPasswordStoreResults() and returns the result.
@@ -156,13 +163,17 @@ class PasswordStoreResultsObserver
 
   base::RunLoop run_loop_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> results_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreResultsObserver);
 };
 
 class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
  public:
   PasswordManagerBrowserTestBase();
+
+  PasswordManagerBrowserTestBase(const PasswordManagerBrowserTestBase&) =
+      delete;
+  PasswordManagerBrowserTestBase& operator=(
+      const PasswordManagerBrowserTestBase&) = delete;
+
   ~PasswordManagerBrowserTestBase() override;
 
   // InProcessBrowserTest:
@@ -247,8 +258,6 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   content::WebContents* web_contents_;
 
   base::CallbackListSubscription create_services_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerBrowserTestBase);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_TEST_BASE_H_

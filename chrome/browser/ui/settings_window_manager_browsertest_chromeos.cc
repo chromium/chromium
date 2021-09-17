@@ -58,6 +58,10 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
         .InstallSystemAppsForTesting();
   }
 
+  SettingsWindowManagerTest(const SettingsWindowManagerTest&) = delete;
+  SettingsWindowManagerTest& operator=(const SettingsWindowManagerTest&) =
+      delete;
+
   ~SettingsWindowManagerTest() override = default;
 
   void ShowSettingsForProfile(Profile* profile) {
@@ -80,8 +84,6 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
 
  protected:
   chrome::SettingsWindowManager* settings_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsWindowManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {

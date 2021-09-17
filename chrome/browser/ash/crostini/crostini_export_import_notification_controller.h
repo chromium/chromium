@@ -57,6 +57,11 @@ class CrostiniExportImportNotificationController
                                              base::FilePath path,
                                              ContainerId container_id);
 
+  CrostiniExportImportNotificationController(
+      const CrostiniExportImportNotificationController&) = delete;
+  CrostiniExportImportNotificationController& operator=(
+      const CrostiniExportImportNotificationController&) = delete;
+
   ~CrostiniExportImportNotificationController() override;
 
   // Getters for testing.
@@ -99,8 +104,6 @@ class CrostiniExportImportNotificationController
   bool hidden_ = false;
   base::WeakPtrFactory<CrostiniExportImportNotificationController>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniExportImportNotificationController);
 };
 
 }  // namespace crostini

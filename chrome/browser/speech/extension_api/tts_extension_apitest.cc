@@ -221,6 +221,11 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
 class FakeNetworkOnlineStateForTest : public net::NetworkChangeNotifier {
  public:
   explicit FakeNetworkOnlineStateForTest(bool online) : online_(online) {}
+
+  FakeNetworkOnlineStateForTest(const FakeNetworkOnlineStateForTest&) = delete;
+  FakeNetworkOnlineStateForTest& operator=(
+      const FakeNetworkOnlineStateForTest&) = delete;
+
   ~FakeNetworkOnlineStateForTest() override {}
 
   ConnectionType GetCurrentConnectionType() const override {
@@ -231,7 +236,6 @@ class FakeNetworkOnlineStateForTest : public net::NetworkChangeNotifier {
 
  private:
   bool online_;
-  DISALLOW_COPY_AND_ASSIGN(FakeNetworkOnlineStateForTest);
 };
 
 class EventRouterAddListenerWaiter : public EventRouter::Observer {
@@ -241,6 +245,10 @@ class EventRouterAddListenerWaiter : public EventRouter::Observer {
     DCHECK(profile);
     event_router_->RegisterObserver(this, event_name);
   }
+
+  EventRouterAddListenerWaiter(const EventRouterAddListenerWaiter&) = delete;
+  EventRouterAddListenerWaiter& operator=(const EventRouterAddListenerWaiter&) =
+      delete;
 
   ~EventRouterAddListenerWaiter() override {
     event_router_->UnregisterObserver(this);
@@ -256,8 +264,6 @@ class EventRouterAddListenerWaiter : public EventRouter::Observer {
  private:
   EventRouter* const event_router_;
   base::RunLoop loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventRouterAddListenerWaiter);
 };
 
 class TtsApiTest : public ExtensionApiTest {

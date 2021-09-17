@@ -151,6 +151,9 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
     PrintPreviewUI::SetDelegateForTesting(this);
   }
 
+  PrintPreviewObserver(const PrintPreviewObserver&) = delete;
+  PrintPreviewObserver& operator=(const PrintPreviewObserver&) = delete;
+
   ~PrintPreviewObserver() override {
     PrintPreviewUI::SetDelegateForTesting(nullptr);
   }
@@ -203,8 +206,6 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   uint32_t rendered_page_count_ = 0;
   content::WebContents* preview_dialog_ = nullptr;
   base::RunLoop* run_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewObserver);
 };
 
 class TestPrintRenderFrame

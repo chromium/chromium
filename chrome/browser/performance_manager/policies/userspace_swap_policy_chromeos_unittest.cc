@@ -37,6 +37,10 @@ using testing::StrictMock;
 class MockUserspaceSwapPolicy : public UserspaceSwapPolicy {
  public:
   MockUserspaceSwapPolicy() : UserspaceSwapPolicy(InitTestConfig()) {}
+
+  MockUserspaceSwapPolicy(const MockUserspaceSwapPolicy&) = delete;
+  MockUserspaceSwapPolicy& operator=(const MockUserspaceSwapPolicy&) = delete;
+
   ~MockUserspaceSwapPolicy() override {}
 
   MOCK_METHOD0(SwapNodesOnGraph, void(void));
@@ -89,14 +93,16 @@ class MockUserspaceSwapPolicy : public UserspaceSwapPolicy {
   }
 
   UserspaceSwapConfig test_config_ = {};
-
-  DISALLOW_COPY_AND_ASSIGN(MockUserspaceSwapPolicy);
 };
 
 class UserspaceSwapPolicyTest : public ::testing::Test {
  public:
   UserspaceSwapPolicyTest()
       : browser_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  UserspaceSwapPolicyTest(const UserspaceSwapPolicyTest&) = delete;
+  UserspaceSwapPolicyTest& operator=(const UserspaceSwapPolicyTest&) = delete;
+
   ~UserspaceSwapPolicyTest() override {}
 
   void SetUp() override {
@@ -172,8 +178,6 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
   TestNodeWrapper<PageNodeImpl> page_node_;
   TestNodeWrapper<FrameNodeImpl> frame_node_;
   std::unique_ptr<TestNodeWrapper<SystemNodeImpl>> system_node_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserspaceSwapPolicyTest);
 };
 
 // This test validates that we only initialize a ProcessNode once.

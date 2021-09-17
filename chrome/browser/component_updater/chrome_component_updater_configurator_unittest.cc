@@ -24,6 +24,12 @@ namespace component_updater {
 class ChromeComponentUpdaterConfiguratorTest : public testing::Test {
  public:
   ChromeComponentUpdaterConfiguratorTest() = default;
+
+  ChromeComponentUpdaterConfiguratorTest(
+      const ChromeComponentUpdaterConfiguratorTest&) = delete;
+  ChromeComponentUpdaterConfiguratorTest& operator=(
+      const ChromeComponentUpdaterConfiguratorTest&) = delete;
+
   ~ChromeComponentUpdaterConfiguratorTest() override = default;
 
   // Overrides from testing::Test.
@@ -34,8 +40,6 @@ class ChromeComponentUpdaterConfiguratorTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeComponentUpdaterConfiguratorTest);
 };
 
 void ChromeComponentUpdaterConfiguratorTest::SetUp() {

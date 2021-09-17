@@ -18,6 +18,11 @@ namespace {
 class ExtensionTabUtilTestDelegate : public ExtensionTabUtil::Delegate {
  public:
   ExtensionTabUtilTestDelegate() {}
+
+  ExtensionTabUtilTestDelegate(const ExtensionTabUtilTestDelegate&) = delete;
+  ExtensionTabUtilTestDelegate& operator=(const ExtensionTabUtilTestDelegate&) =
+      delete;
+
   ~ExtensionTabUtilTestDelegate() override {}
 
   // ExtensionTabUtil::Delegate
@@ -25,9 +30,6 @@ class ExtensionTabUtilTestDelegate : public ExtensionTabUtil::Delegate {
       const Extension* extension) override {
     return ExtensionTabUtil::kScrubTabUrlToOrigin;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionTabUtilTestDelegate);
 };
 
 }  // namespace

@@ -26,6 +26,11 @@ class ScreenLockServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   ScreenLockServiceProvider();
+
+  ScreenLockServiceProvider(const ScreenLockServiceProvider&) = delete;
+  ScreenLockServiceProvider& operator=(const ScreenLockServiceProvider&) =
+      delete;
+
   ~ScreenLockServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -45,8 +50,6 @@ class ScreenLockServiceProvider
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<ScreenLockServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLockServiceProvider);
 };
 
 }  // namespace ash

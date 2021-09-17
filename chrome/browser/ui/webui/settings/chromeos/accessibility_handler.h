@@ -24,6 +24,10 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
                              public speech::SodaInstaller::Observer {
  public:
   explicit AccessibilityHandler(Profile* profile);
+
+  AccessibilityHandler(const AccessibilityHandler&) = delete;
+  AccessibilityHandler& operator=(const AccessibilityHandler&) = delete;
+
   ~AccessibilityHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -79,8 +83,6 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
       soda_observation_{this};
 
   base::WeakPtrFactory<AccessibilityHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityHandler);
 };
 
 }  // namespace settings

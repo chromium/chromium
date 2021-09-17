@@ -32,6 +32,10 @@ class AmbientLightSampleBuffer {
   // Constructs a buffer that keeps samples younger than |horizon|. |horizon|
   // should be greater than 0.
   explicit AmbientLightSampleBuffer(base::TimeDelta horizon);
+
+  AmbientLightSampleBuffer(const AmbientLightSampleBuffer&) = delete;
+  AmbientLightSampleBuffer& operator=(const AmbientLightSampleBuffer&) = delete;
+
   ~AmbientLightSampleBuffer();
 
   // Adds |sample| to the buffer and discards samples that are now too old.
@@ -60,7 +64,6 @@ class AmbientLightSampleBuffer {
 
   // Removes samples from |samples_| that have time <= |now| - |horizon_|.
   void Prune(base::TimeTicks now);
-  DISALLOW_COPY_AND_ASSIGN(AmbientLightSampleBuffer);
 };
 
 }  // namespace auto_screen_brightness

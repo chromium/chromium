@@ -17,6 +17,12 @@ class MockWebContentsCloseHandlerDelegate
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         got_clone_(false),
         got_destroy_(false) {}
+
+  MockWebContentsCloseHandlerDelegate(
+      const MockWebContentsCloseHandlerDelegate&) = delete;
+  MockWebContentsCloseHandlerDelegate& operator=(
+      const MockWebContentsCloseHandlerDelegate&) = delete;
+
   ~MockWebContentsCloseHandlerDelegate() override {}
 
   void Clear() {
@@ -37,8 +43,6 @@ class MockWebContentsCloseHandlerDelegate
   base::test::SingleThreadTaskEnvironment task_environment_;
   bool got_clone_;
   bool got_destroy_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWebContentsCloseHandlerDelegate);
 };
 
 // -----------------------------------------------------------------------------
@@ -46,6 +50,11 @@ class MockWebContentsCloseHandlerDelegate
 class WebContentsCloseHandlerTest : public testing::Test {
  public:
   WebContentsCloseHandlerTest() : close_handler_(&close_handler_delegate_) {}
+
+  WebContentsCloseHandlerTest(const WebContentsCloseHandlerTest&) = delete;
+  WebContentsCloseHandlerTest& operator=(const WebContentsCloseHandlerTest&) =
+      delete;
+
   ~WebContentsCloseHandlerTest() override {}
 
  protected:
@@ -55,9 +64,6 @@ class WebContentsCloseHandlerTest : public testing::Test {
 
   MockWebContentsCloseHandlerDelegate close_handler_delegate_;
   WebContentsCloseHandler close_handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsCloseHandlerTest);
 };
 
 // Verifies ActiveTabChanged() sends the right functions to the delegate.

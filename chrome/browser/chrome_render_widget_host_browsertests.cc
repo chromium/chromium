@@ -31,6 +31,12 @@
 class ActiveRenderWidgetHostBrowserTest : public InProcessBrowserTest {
  public:
   ActiveRenderWidgetHostBrowserTest() = default;
+
+  ActiveRenderWidgetHostBrowserTest(const ActiveRenderWidgetHostBrowserTest&) =
+      delete;
+  ActiveRenderWidgetHostBrowserTest& operator=(
+      const ActiveRenderWidgetHostBrowserTest&) = delete;
+
   ~ActiveRenderWidgetHostBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -45,9 +51,6 @@ class ActiveRenderWidgetHostBrowserTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveRenderWidgetHostBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest,

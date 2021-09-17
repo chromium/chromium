@@ -79,6 +79,11 @@ class ExtensionsMenuViewUnitTest : public TestWithBrowserView {
   ExtensionsMenuViewUnitTest()
       : allow_extension_menu_instances_(
             ExtensionsMenuView::AllowInstancesForTesting()) {}
+
+  ExtensionsMenuViewUnitTest(const ExtensionsMenuViewUnitTest&) = delete;
+  ExtensionsMenuViewUnitTest& operator=(const ExtensionsMenuViewUnitTest&) =
+      delete;
+
   ~ExtensionsMenuViewUnitTest() override = default;
 
   // TestWithBrowserView:
@@ -129,8 +134,6 @@ class ExtensionsMenuViewUnitTest : public TestWithBrowserView {
   base::AutoReset<bool> allow_extension_menu_instances_;
 
   extensions::ExtensionService* extension_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsMenuViewUnitTest);
 };
 
 void ExtensionsMenuViewUnitTest::SetUp() {

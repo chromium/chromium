@@ -27,6 +27,11 @@ class CreditCardScannerViewAndroid : public CreditCardScannerView {
   CreditCardScannerViewAndroid(
       const base::WeakPtr<CreditCardScannerViewDelegate>& delegate,
       content::WebContents* web_contents);
+
+  CreditCardScannerViewAndroid(const CreditCardScannerViewAndroid&) = delete;
+  CreditCardScannerViewAndroid& operator=(const CreditCardScannerViewAndroid&) =
+      delete;
+
   ~CreditCardScannerViewAndroid() override;
 
   // Called by JNI when user cancelled credit card scan.
@@ -51,8 +56,6 @@ class CreditCardScannerViewAndroid : public CreditCardScannerView {
 
   // The corresponding Java object that uses Android APIs for scanning.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardScannerViewAndroid);
 };
 
 }  // namespace autofill

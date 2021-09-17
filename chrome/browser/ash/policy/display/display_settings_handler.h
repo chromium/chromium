@@ -52,6 +52,9 @@ class DisplaySettingsHandler : public ash::mojom::CrosDisplayConfigObserver {
   // This class must be constructed after CrosSettings is initialized.
   DisplaySettingsHandler();
 
+  DisplaySettingsHandler(const DisplaySettingsHandler&) = delete;
+  DisplaySettingsHandler& operator=(const DisplaySettingsHandler&) = delete;
+
   ~DisplaySettingsHandler() override;
 
   // ash::mojom::CrosDisplayConfigObserver
@@ -101,8 +104,6 @@ class DisplaySettingsHandler : public ash::mojom::CrosDisplayConfigObserver {
 
   // Must be the last member.
   base::WeakPtrFactory<DisplaySettingsHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplaySettingsHandler);
 };
 
 }  // namespace policy

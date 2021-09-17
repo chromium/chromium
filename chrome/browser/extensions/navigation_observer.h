@@ -34,6 +34,10 @@ class NavigationObserver : public content::NotificationObserver,
                            public ExtensionRegistryObserver {
  public:
   explicit NavigationObserver(Profile* profile);
+
+  NavigationObserver(const NavigationObserver&) = delete;
+  NavigationObserver& operator=(const NavigationObserver&) = delete;
+
   ~NavigationObserver() override;
 
   // content::NotificationObserver
@@ -80,8 +84,6 @@ class NavigationObserver : public content::NotificationObserver,
       extension_registry_observation_{this};
 
   base::WeakPtrFactory<NavigationObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
 };
 
 }  // namespace extensions

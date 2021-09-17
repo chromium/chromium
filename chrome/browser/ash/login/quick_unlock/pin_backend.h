@@ -38,6 +38,10 @@ class PinBackend {
 
   // Use GetInstance().
   PinBackend();
+
+  PinBackend(const PinBackend&) = delete;
+  PinBackend& operator=(const PinBackend&) = delete;
+
   ~PinBackend();
 
   // Check to see if the PinBackend supports login. This is true when the
@@ -170,8 +174,6 @@ class PinBackend {
 
   // Blocks chrome from restarting while migrating from prefs to cryptohome PIN.
   std::unique_ptr<ScopedKeepAlive> scoped_keep_alive_;
-
-  DISALLOW_COPY_AND_ASSIGN(PinBackend);
 };
 
 }  // namespace quick_unlock

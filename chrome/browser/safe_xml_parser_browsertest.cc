@@ -30,6 +30,10 @@ constexpr char kTestJson[] = R"(
 class SafeXmlParserTest : public InProcessBrowserTest {
  public:
   SafeXmlParserTest() = default;
+
+  SafeXmlParserTest(const SafeXmlParserTest&) = delete;
+  SafeXmlParserTest& operator=(const SafeXmlParserTest&) = delete;
+
   ~SafeXmlParserTest() override = default;
 
  protected:
@@ -67,8 +71,6 @@ class SafeXmlParserTest : public InProcessBrowserTest {
     ASSERT_TRUE(result.value);
     EXPECT_EQ(*expected_value, *result.value);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SafeXmlParserTest);
 };
 
 }  // namespace

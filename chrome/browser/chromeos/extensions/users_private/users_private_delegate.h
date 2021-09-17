@@ -23,6 +23,10 @@ namespace extensions {
 class UsersPrivateDelegate : public KeyedService {
  public:
   explicit UsersPrivateDelegate(Profile* profile);
+
+  UsersPrivateDelegate(const UsersPrivateDelegate&) = delete;
+  UsersPrivateDelegate& operator=(const UsersPrivateDelegate&) = delete;
+
   ~UsersPrivateDelegate() override;
 
   // Gets a PrefsUtil object used for persisting settings.
@@ -32,9 +36,6 @@ class UsersPrivateDelegate : public KeyedService {
  protected:
   Profile* profile_;  // weak; not owned by us
   std::unique_ptr<PrefsUtil> prefs_util_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateDelegate);
 };
 
 }  // namespace extensions

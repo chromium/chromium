@@ -103,6 +103,9 @@ class AvailabilityChecker {
   };
   using ResponseCallback = base::OnceCallback<void(const Status&)>;
 
+  AvailabilityChecker(const AvailabilityChecker&) = delete;
+  AvailabilityChecker& operator=(const AvailabilityChecker&) = delete;
+
   ~AvailabilityChecker() { Cancel(); }
 
   static void Start(ResponseCallback callback, base::TimeDelta timeout) {
@@ -210,8 +213,6 @@ class AvailabilityChecker {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   std::unique_ptr<base::FilePathWatcher> watcher_;
   base::WeakPtrFactory<AvailabilityChecker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityChecker);
 };
 
 void GetAvailableUpdateModes(

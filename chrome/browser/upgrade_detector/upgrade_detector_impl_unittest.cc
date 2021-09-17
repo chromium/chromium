@@ -44,6 +44,10 @@ class TestUpgradeDetectorImpl : public UpgradeDetectorImpl {
   explicit TestUpgradeDetectorImpl(const base::Clock* clock,
                                    const base::TickClock* tick_clock)
       : UpgradeDetectorImpl(clock, tick_clock) {}
+
+  TestUpgradeDetectorImpl(const TestUpgradeDetectorImpl&) = delete;
+  TestUpgradeDetectorImpl& operator=(const TestUpgradeDetectorImpl&) = delete;
+
   ~TestUpgradeDetectorImpl() override = default;
 
   // Exposed for testing.
@@ -68,8 +72,6 @@ class TestUpgradeDetectorImpl : public UpgradeDetectorImpl {
   // How many times TriggerCriticalUpdate() has been called. Expected to either
   // be 0 or 1.
   int trigger_critical_update_call_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUpgradeDetectorImpl);
 };
 
 class TestUpgradeNotificationListener : public UpgradeObserver {
@@ -79,6 +81,12 @@ class TestUpgradeNotificationListener : public UpgradeObserver {
     DCHECK(detector_);
     detector_->AddObserver(this);
   }
+
+  TestUpgradeNotificationListener(const TestUpgradeNotificationListener&) =
+      delete;
+  TestUpgradeNotificationListener& operator=(
+      const TestUpgradeNotificationListener&) = delete;
+
   ~TestUpgradeNotificationListener() override {
     detector_->RemoveObserver(this);
   }
@@ -93,8 +101,6 @@ class TestUpgradeNotificationListener : public UpgradeObserver {
   int notifications_count_;
 
   UpgradeDetector* detector_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUpgradeNotificationListener);
 };
 
 class MockUpgradeObserver : public UpgradeObserver {
@@ -103,6 +109,10 @@ class MockUpgradeObserver : public UpgradeObserver {
       : upgrade_detector_(upgrade_detector) {
     upgrade_detector_->AddObserver(this);
   }
+
+  MockUpgradeObserver(const MockUpgradeObserver&) = delete;
+  MockUpgradeObserver& operator=(const MockUpgradeObserver&) = delete;
+
   ~MockUpgradeObserver() override { upgrade_detector_->RemoveObserver(this); }
   MOCK_METHOD0(OnUpdateOverCellularAvailable, void());
   MOCK_METHOD0(OnUpdateOverCellularOneTimePermissionGranted, void());
@@ -113,7 +123,6 @@ class MockUpgradeObserver : public UpgradeObserver {
 
  private:
   UpgradeDetector* const upgrade_detector_;
-  DISALLOW_COPY_AND_ASSIGN(MockUpgradeObserver);
 };
 
 }  // namespace

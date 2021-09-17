@@ -33,6 +33,10 @@ class UsbChooserDialogAndroid : public permissions::ChooserController::View {
   explicit UsbChooserDialogAndroid(
       std::unique_ptr<permissions::ChooserController> controller,
       base::OnceClosure on_close);
+
+  UsbChooserDialogAndroid(const UsbChooserDialogAndroid&) = delete;
+  UsbChooserDialogAndroid& operator=(const UsbChooserDialogAndroid&) = delete;
+
   ~UsbChooserDialogAndroid() override;
 
   // permissions::ChooserController::View implementation
@@ -62,8 +66,6 @@ class UsbChooserDialogAndroid : public permissions::ChooserController::View {
   std::vector<std::string> item_id_map_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbChooserDialogAndroid);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_USB_CHOOSER_DIALOG_ANDROID_H_

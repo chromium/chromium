@@ -13,14 +13,15 @@
 class UpgradeMetricsProvider : public metrics::MetricsProvider {
  public:
   UpgradeMetricsProvider();
+
+  UpgradeMetricsProvider(const UpgradeMetricsProvider&) = delete;
+  UpgradeMetricsProvider& operator=(const UpgradeMetricsProvider&) = delete;
+
   ~UpgradeMetricsProvider() override;
 
   // metrics::MetricsProvider:
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpgradeMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_UPGRADE_METRICS_PROVIDER_H_

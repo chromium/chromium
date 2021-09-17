@@ -81,6 +81,10 @@ class SystemTrayClientClockTest : public ash::LoginManagerTest {
     account_id2_ = login_mixin_.users()[1].account_id;
   }
 
+  SystemTrayClientClockTest(const SystemTrayClientClockTest&) = delete;
+  SystemTrayClientClockTest& operator=(const SystemTrayClientClockTest&) =
+      delete;
+
   ~SystemTrayClientClockTest() override = default;
 
   void SetupUserProfile(const AccountId& account_id, bool use_24_hour_clock) {
@@ -95,9 +99,6 @@ class SystemTrayClientClockTest : public ash::LoginManagerTest {
   AccountId account_id1_;
   AccountId account_id2_;
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemTrayClientClockTest);
 };
 
 // Test that clock type is taken from user profile for current active user.

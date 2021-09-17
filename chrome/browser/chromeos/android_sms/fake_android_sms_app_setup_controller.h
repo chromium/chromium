@@ -25,6 +25,12 @@ namespace android_sms {
 class FakeAndroidSmsAppSetupController : public AndroidSmsAppSetupController {
  public:
   FakeAndroidSmsAppSetupController();
+
+  FakeAndroidSmsAppSetupController(const FakeAndroidSmsAppSetupController&) =
+      delete;
+  FakeAndroidSmsAppSetupController& operator=(
+      const FakeAndroidSmsAppSetupController&) = delete;
+
   ~FakeAndroidSmsAppSetupController() override;
 
   struct AppMetadata {
@@ -89,8 +95,6 @@ class FakeAndroidSmsAppSetupController : public AndroidSmsAppSetupController {
   std::list<std::unique_ptr<DeleteCookieData>> pending_delete_cookie_requests_;
 
   base::flat_map<GURL, AppMetadata> install_url_to_metadata_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAndroidSmsAppSetupController);
 };
 
 }  // namespace android_sms

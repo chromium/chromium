@@ -26,6 +26,10 @@ class ListValue;
 class MetricsHandler : public content::WebUIMessageHandler {
  public:
   MetricsHandler();
+
+  MetricsHandler(const MetricsHandler&) = delete;
+  MetricsHandler& operator=(const MetricsHandler&) = delete;
+
   ~MetricsHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -58,9 +62,6 @@ class MetricsHandler : public content::WebUIMessageHandler {
   // UmaHistogramMedium. Handles times up to 3 minutes. |args| contains the
   // histogram name and a value in milliseconds.
   void HandleRecordMediumTime(const base::ListValue* args);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricsHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_HANDLER_H_

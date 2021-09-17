@@ -13,6 +13,10 @@
 class ChromeShellDelegate : public ash::ShellDelegate {
  public:
   ChromeShellDelegate();
+
+  ChromeShellDelegate(const ChromeShellDelegate&) = delete;
+  ChromeShellDelegate& operator=(const ChromeShellDelegate&) = delete;
+
   ~ChromeShellDelegate() override;
 
   // ash::ShellDelegate:
@@ -58,9 +62,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
 
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeShellDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_SHELL_DELEGATE_H_

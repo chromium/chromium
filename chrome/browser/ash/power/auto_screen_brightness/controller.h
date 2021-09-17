@@ -28,6 +28,10 @@ class ModellerImpl;
 class Controller : public session_manager::SessionManagerObserver {
  public:
   Controller();
+
+  Controller(const Controller&) = delete;
+  Controller& operator=(const Controller&) = delete;
+
   ~Controller() override;
 
   // session_manager::SessionManagerObserver overrides:
@@ -53,8 +57,6 @@ class Controller : public session_manager::SessionManagerObserver {
   std::unique_ptr<ModelConfigLoaderImpl> model_config_loader_;
   std::unique_ptr<ModellerImpl> modeller_;
   std::unique_ptr<Adapter> adapter_;
-
-  DISALLOW_COPY_AND_ASSIGN(Controller);
 };
 
 }  // namespace auto_screen_brightness

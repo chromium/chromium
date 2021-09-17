@@ -26,6 +26,10 @@ using ::ash::AccessibilityManager;
 class SoundsManagerTestImpl : public audio::SoundsManager {
  public:
   SoundsManagerTestImpl() = default;
+
+  SoundsManagerTestImpl(const SoundsManagerTestImpl&) = delete;
+  SoundsManagerTestImpl& operator=(const SoundsManagerTestImpl&) = delete;
+
   ~SoundsManagerTestImpl() override {}
 
   bool Initialize(SoundKey key, const base::StringPiece& /* data */) override {
@@ -51,13 +55,15 @@ class SoundsManagerTestImpl : public audio::SoundsManager {
  private:
   std::map<SoundKey, bool> is_sound_initialized_;
   std::map<SoundKey, int> num_play_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoundsManagerTestImpl);
 };
 
 class VolumeControllerTest : public InProcessBrowserTest {
  public:
   VolumeControllerTest() {}
+
+  VolumeControllerTest(const VolumeControllerTest&) = delete;
+  VolumeControllerTest& operator=(const VolumeControllerTest&) = delete;
+
   ~VolumeControllerTest() override {}
 
   void SetUpOnMainThread() override {
@@ -81,9 +87,6 @@ class VolumeControllerTest : public InProcessBrowserTest {
 
  protected:
   ash::CrasAudioHandler* audio_handler_;  // Not owned.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VolumeControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerTest, VolumeUpAndDown) {
@@ -157,6 +160,11 @@ IN_PROC_BROWSER_TEST_F(VolumeControllerTest, Mutes) {
 class VolumeControllerSoundsTest : public VolumeControllerTest {
  public:
   VolumeControllerSoundsTest() : sounds_manager_(NULL) {}
+
+  VolumeControllerSoundsTest(const VolumeControllerSoundsTest&) = delete;
+  VolumeControllerSoundsTest& operator=(const VolumeControllerSoundsTest&) =
+      delete;
+
   ~VolumeControllerSoundsTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -176,8 +184,6 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
 
  private:
   SoundsManagerTestImpl* sounds_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeControllerSoundsTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, Simple) {
@@ -229,15 +235,18 @@ IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, EdgeCases) {
 class VolumeControllerSoundsDisabledTest : public VolumeControllerSoundsTest {
  public:
   VolumeControllerSoundsDisabledTest() {}
+
+  VolumeControllerSoundsDisabledTest(
+      const VolumeControllerSoundsDisabledTest&) = delete;
+  VolumeControllerSoundsDisabledTest& operator=(
+      const VolumeControllerSoundsDisabledTest&) = delete;
+
   ~VolumeControllerSoundsDisabledTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     VolumeControllerSoundsTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(chromeos::switches::kDisableVolumeAdjustSound);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VolumeControllerSoundsDisabledTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsDisabledTest, VolumeAdjustSounds) {

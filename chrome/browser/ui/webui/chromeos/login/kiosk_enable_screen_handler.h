@@ -37,6 +37,10 @@ class KioskEnableScreenHandler : public KioskEnableScreenView,
   using TView = KioskEnableScreenView;
 
   explicit KioskEnableScreenHandler(JSCallsContainer* js_calls_container);
+
+  KioskEnableScreenHandler(const KioskEnableScreenHandler&) = delete;
+  KioskEnableScreenHandler& operator=(const KioskEnableScreenHandler&) = delete;
+
   ~KioskEnableScreenHandler() override;
 
   // KioskEnableScreenView:
@@ -54,8 +58,6 @@ class KioskEnableScreenHandler : public KioskEnableScreenView,
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskEnableScreenHandler);
 };
 
 }  // namespace chromeos

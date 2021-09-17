@@ -77,6 +77,9 @@ class ThemeChangeWaiter {
   explicit ThemeChangeWaiter(ThemeService* theme_service)
       : waiter_(theme_service) {}
 
+  ThemeChangeWaiter(const ThemeChangeWaiter&) = delete;
+  ThemeChangeWaiter& operator=(const ThemeChangeWaiter&) = delete;
+
   ~ThemeChangeWaiter() {
     waiter_.WaitForThemeChanged();
     // Theme changes propagate asynchronously in DesktopWindowTreeHostX11::
@@ -86,13 +89,14 @@ class ThemeChangeWaiter {
 
  private:
   test::ThemeServiceChangedWaiter waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeChangeWaiter);
 };
 
 class TestAXEventObserver : public views::AXEventObserver {
  public:
   TestAXEventObserver() { views::AXEventManager::Get()->AddObserver(this); }
+
+  TestAXEventObserver(const TestAXEventObserver&) = delete;
+  TestAXEventObserver& operator=(const TestAXEventObserver&) = delete;
 
   ~TestAXEventObserver() override {
     views::AXEventManager::Get()->RemoveObserver(this);
@@ -150,8 +154,6 @@ class TestAXEventObserver : public views::AXEventObserver {
   int active_descendant_changed_count_ = 0;
   std::string omnibox_value_;
   std::string selected_option_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAXEventObserver);
 };
 
 }  // namespace

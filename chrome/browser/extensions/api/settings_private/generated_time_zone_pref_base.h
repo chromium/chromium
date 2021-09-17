@@ -21,6 +21,10 @@ class GeneratedTimeZonePrefBase
     : public GeneratedPref,
       public ash::system::TimeZoneResolverManager::Observer {
  public:
+  GeneratedTimeZonePrefBase(const GeneratedTimeZonePrefBase&) = delete;
+  GeneratedTimeZonePrefBase& operator=(const GeneratedTimeZonePrefBase&) =
+      delete;
+
   ~GeneratedTimeZonePrefBase() override;
 
   // chromeos::system::TimeZoneResolverManager::Observer
@@ -35,8 +39,6 @@ class GeneratedTimeZonePrefBase
   const std::string pref_name_;
 
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedTimeZonePrefBase);
 };
 
 }  // namespace settings_private

@@ -18,6 +18,11 @@ struct DefaultSingletonTraits;
 class ChromeSerializedNavigationDriver
     : public sessions::ContentSerializedNavigationDriver {
  public:
+  ChromeSerializedNavigationDriver(const ChromeSerializedNavigationDriver&) =
+      delete;
+  ChromeSerializedNavigationDriver& operator=(
+      const ChromeSerializedNavigationDriver&) = delete;
+
   ~ChromeSerializedNavigationDriver() override;
 
   // Returns the singleton ChromeSerializedNavigationDriver.  Almost all
@@ -31,8 +36,6 @@ class ChromeSerializedNavigationDriver
   friend struct base::DefaultSingletonTraits<ChromeSerializedNavigationDriver>;
 
   ChromeSerializedNavigationDriver();
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSerializedNavigationDriver);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_CHROME_SERIALIZED_NAVIGATION_DRIVER_H_

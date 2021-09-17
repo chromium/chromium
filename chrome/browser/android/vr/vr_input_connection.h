@@ -23,6 +23,10 @@ namespace vr {
 class VrInputConnection {
  public:
   explicit VrInputConnection(content::WebContents* web_contents);
+
+  VrInputConnection(const VrInputConnection&) = delete;
+  VrInputConnection& operator=(const VrInputConnection&) = delete;
+
   ~VrInputConnection();
 
   void OnKeyboardEdit(const TextEdits& edits);
@@ -37,8 +41,6 @@ class VrInputConnection {
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
   std::queue<vr::TextStateUpdateCallback> text_state_update_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(VrInputConnection);
 };
 
 }  // namespace vr

@@ -30,6 +30,10 @@ namespace ash {
 class TokenHandleUtil {
  public:
   TokenHandleUtil();
+
+  TokenHandleUtil(const TokenHandleUtil&) = delete;
+  TokenHandleUtil& operator=(const TokenHandleUtil&) = delete;
+
   ~TokenHandleUtil();
 
   enum TokenHandleStatus { VALID, INVALID, UNKNOWN };
@@ -75,6 +79,10 @@ class TokenHandleUtil {
         const std::string& token,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         TokenValidationCallback callback);
+
+    TokenDelegate(const TokenDelegate&) = delete;
+    TokenDelegate& operator=(const TokenDelegate&) = delete;
+
     ~TokenDelegate() override;
 
     void OnOAuthError() override;
@@ -90,8 +98,6 @@ class TokenHandleUtil {
     base::TimeTicks tokeninfo_response_start_time_;
     TokenValidationCallback callback_;
     gaia::GaiaOAuthClient gaia_client_;
-
-    DISALLOW_COPY_AND_ASSIGN(TokenDelegate);
   };
 
   void OnValidationComplete(const std::string& token);
@@ -101,8 +107,6 @@ class TokenHandleUtil {
       validation_delegates_;
 
   base::WeakPtrFactory<TokenHandleUtil> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TokenHandleUtil);
 };
 
 }  // namespace ash

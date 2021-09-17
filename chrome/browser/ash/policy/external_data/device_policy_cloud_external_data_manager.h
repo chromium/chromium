@@ -37,6 +37,12 @@ class DevicePolicyCloudExternalDataManager
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
       const base::FilePath& cache_path,
       CloudPolicyStore* policy_store);
+
+  DevicePolicyCloudExternalDataManager(
+      const DevicePolicyCloudExternalDataManager&) = delete;
+  DevicePolicyCloudExternalDataManager& operator=(
+      const DevicePolicyCloudExternalDataManager&) = delete;
+
   ~DevicePolicyCloudExternalDataManager() override;
 
   // Sets the cache maximum size for testing.
@@ -46,8 +52,6 @@ class DevicePolicyCloudExternalDataManager
  private:
   // Cache used by the data store. Must outlive the data store.
   std::unique_ptr<ResourceCache> resource_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePolicyCloudExternalDataManager);
 };
 
 }  // namespace policy

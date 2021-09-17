@@ -21,6 +21,10 @@ class ProfileAttributesStorage;
 class ProfileListDesktop : public ProfileList {
  public:
   explicit ProfileListDesktop(ProfileAttributesStorage* profile_storage);
+
+  ProfileListDesktop(const ProfileListDesktop&) = delete;
+  ProfileListDesktop& operator=(const ProfileListDesktop&) = delete;
+
   ~ProfileListDesktop() override;
 
  private:
@@ -43,8 +47,6 @@ class ProfileListDesktop : public ProfileList {
 
   // List of built "menu items."
   std::vector<std::unique_ptr<AvatarMenu::Item>> items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileListDesktop);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_LIST_DESKTOP_H_

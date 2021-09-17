@@ -122,6 +122,12 @@ std::string AcceleratorIdsToString(
 class KeyboardShortcutViewerMetadataTest : public testing::Test {
  public:
   KeyboardShortcutViewerMetadataTest() = default;
+
+  KeyboardShortcutViewerMetadataTest(
+      const KeyboardShortcutViewerMetadataTest&) = delete;
+  KeyboardShortcutViewerMetadataTest& operator=(
+      const KeyboardShortcutViewerMetadataTest&) = delete;
+
   ~KeyboardShortcutViewerMetadataTest() override = default;
 
   void SetUp() override {
@@ -144,9 +150,6 @@ class KeyboardShortcutViewerMetadataTest : public testing::Test {
 
   // Chrome accelerator ids.
   std::set<ash::AcceleratorId> chrome_accelerator_ids_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardShortcutViewerMetadataTest);
 };
 
 }  // namespace

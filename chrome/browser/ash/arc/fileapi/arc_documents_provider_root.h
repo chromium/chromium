@@ -89,6 +89,10 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
                            const std::string& root_id,
                            bool read_only,
                            const std::vector<std::string>& mime_types);
+
+  ArcDocumentsProviderRoot(const ArcDocumentsProviderRoot&) = delete;
+  ArcDocumentsProviderRoot& operator=(const ArcDocumentsProviderRoot&) = delete;
+
   ~ArcDocumentsProviderRoot() override;
 
   // Queries information of a file just like AsyncFileUtil.GetFileInfo(). If the
@@ -415,8 +419,6 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   uint64_t next_watcher_request_id_ = 1;
 
   base::WeakPtrFactory<ArcDocumentsProviderRoot> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderRoot);
 };
 
 }  // namespace arc

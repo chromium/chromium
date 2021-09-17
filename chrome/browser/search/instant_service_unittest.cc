@@ -73,14 +73,16 @@ TEST_F(InstantServiceTest, TestNoNtpTheme) {
 class InstantServiceThemeTest : public InstantServiceTest {
  public:
   InstantServiceThemeTest() {}
+
+  InstantServiceThemeTest(const InstantServiceThemeTest&) = delete;
+  InstantServiceThemeTest& operator=(const InstantServiceThemeTest&) = delete;
+
   ~InstantServiceThemeTest() override {}
 
   ui::TestNativeTheme* theme() { return &theme_; }
 
  private:
   ui::TestNativeTheme theme_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstantServiceThemeTest);
 };
 
 TEST_F(InstantServiceTest, SetNTPElementsNtpTheme) {

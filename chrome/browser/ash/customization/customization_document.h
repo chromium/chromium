@@ -59,6 +59,9 @@ class ServicesCustomizationExternalLoader;
 // Base class for OEM customization document classes.
 class CustomizationDocument {
  public:
+  CustomizationDocument(const CustomizationDocument&) = delete;
+  CustomizationDocument& operator=(const CustomizationDocument&) = delete;
+
   virtual ~CustomizationDocument();
 
   // Return true if the document was successfully fetched and parsed.
@@ -79,9 +82,6 @@ class CustomizationDocument {
   // Value of the "version" attribute that is supported.
   // Otherwise config is not loaded.
   std::string accepted_version_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CustomizationDocument);
 };
 
 // OEM startup customization document class.

@@ -17,6 +17,10 @@ namespace android {
 class MockDownloadController : public DownloadControllerBase {
  public:
   MockDownloadController();
+
+  MockDownloadController(const MockDownloadController&) = delete;
+  MockDownloadController& operator=(const MockDownloadController&) = delete;
+
   ~MockDownloadController() override;
 
   // DownloadControllerBase implementation.
@@ -34,7 +38,6 @@ class MockDownloadController : public DownloadControllerBase {
 
  private:
   bool approve_file_access_request_;
-  DISALLOW_COPY_AND_ASSIGN(MockDownloadController);
 };
 
 }  // namespace android

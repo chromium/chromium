@@ -23,6 +23,11 @@ class PaymentMethodViewController : public PaymentRequestSheetController {
   PaymentMethodViewController(base::WeakPtr<PaymentRequestSpec> spec,
                               base::WeakPtr<PaymentRequestState> state,
                               base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  PaymentMethodViewController(const PaymentMethodViewController&) = delete;
+  PaymentMethodViewController& operator=(const PaymentMethodViewController&) =
+      delete;
+
   ~PaymentMethodViewController() override;
 
  private:
@@ -39,8 +44,6 @@ class PaymentMethodViewController : public PaymentRequestSheetController {
 
   // Whether or not adding a new card is allowed.
   bool enable_add_card_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentMethodViewController);
 };
 
 }  // namespace payments

@@ -42,6 +42,10 @@ class SyncEngineContext;
 class FakeSyncWorker : public SyncWorkerInterface {
  public:
   FakeSyncWorker();
+
+  FakeSyncWorker(const FakeSyncWorker&) = delete;
+  FakeSyncWorker& operator=(const FakeSyncWorker&) = delete;
+
   ~FakeSyncWorker() override;
 
   // SyncWorkerInterface overrides.
@@ -95,8 +99,6 @@ class FakeSyncWorker : public SyncWorkerInterface {
 
   base::ObserverList<Observer>::Unchecked observers_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSyncWorker);
 };
 
 }  // namespace drive_backend

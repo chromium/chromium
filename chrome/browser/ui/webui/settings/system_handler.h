@@ -21,6 +21,10 @@ namespace settings {
 class SystemHandler : public SettingsPageUIHandler {
  public:
   SystemHandler();
+
+  SystemHandler(const SystemHandler&) = delete;
+  SystemHandler& operator=(const SystemHandler&) = delete;
+
   ~SystemHandler() override;
 
   // Populates handler-specific loadTimeData values used by the system page.
@@ -34,8 +38,6 @@ class SystemHandler : public SettingsPageUIHandler {
  private:
   // Handler for the "showProxySettings" message. No args.
   void HandleShowProxySettings(const base::ListValue* /*args*/);
-
-  DISALLOW_COPY_AND_ASSIGN(SystemHandler);
 };
 
 }  // namespace settings

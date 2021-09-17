@@ -54,6 +54,10 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
   ForeignSessionHandler();
+
+  ForeignSessionHandler(const ForeignSessionHandler&) = delete;
+  ForeignSessionHandler& operator=(const ForeignSessionHandler&) = delete;
+
   ~ForeignSessionHandler() override;
 
   void InitializeForeignSessions();
@@ -105,8 +109,6 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   base::Value initial_session_list_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForeignSessionHandler);
 };
 
 }  // namespace browser_sync

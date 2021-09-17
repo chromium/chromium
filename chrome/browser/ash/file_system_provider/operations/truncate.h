@@ -38,6 +38,10 @@ class Truncate : public Operation {
            const base::FilePath& file_path,
            int64_t length,
            storage::AsyncFileUtil::StatusCallback callback);
+
+  Truncate(const Truncate&) = delete;
+  Truncate& operator=(const Truncate&) = delete;
+
   ~Truncate() override;
 
   // Operation overrides.
@@ -53,8 +57,6 @@ class Truncate : public Operation {
   base::FilePath file_path_;
   int64_t length_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Truncate);
 };
 
 }  // namespace operations

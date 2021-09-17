@@ -22,6 +22,10 @@ class LoginDisplayMojo : public LoginDisplay,
                          public user_manager::UserManager::Observer {
  public:
   explicit LoginDisplayMojo(LoginDisplayHostMojo* host);
+
+  LoginDisplayMojo(const LoginDisplayMojo&) = delete;
+  LoginDisplayMojo& operator=(const LoginDisplayMojo&) = delete;
+
   ~LoginDisplayMojo() override;
 
   // Updates the state of the authentication methods supported for the user.
@@ -64,8 +68,6 @@ class LoginDisplayMojo : public LoginDisplay,
   LoginDisplayWebUIHandler* webui_handler_ = nullptr;
 
   base::WeakPtrFactory<LoginDisplayMojo> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplayMojo);
 };
 
 }  // namespace ash

@@ -479,6 +479,11 @@ class TranslateManagerRenderViewHostInvalidLocaleTest
     SetApplicationLocale(kInvalidLocale);
   }
 
+  TranslateManagerRenderViewHostInvalidLocaleTest(
+      const TranslateManagerRenderViewHostInvalidLocaleTest&) = delete;
+  TranslateManagerRenderViewHostInvalidLocaleTest& operator=(
+      const TranslateManagerRenderViewHostInvalidLocaleTest&) = delete;
+
   ~TranslateManagerRenderViewHostInvalidLocaleTest() override {
     SetApplicationLocale(original_locale_);
   }
@@ -491,8 +496,6 @@ class TranslateManagerRenderViewHostInvalidLocaleTest
     translate::TranslateDownloadManager::GetInstance()->set_application_locale(
         g_browser_process->GetApplicationLocale());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateManagerRenderViewHostInvalidLocaleTest);
 };
 
 // A list of languages to fake being returned by the translate server.

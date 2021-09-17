@@ -69,6 +69,10 @@ void WriteLocationToStream(const base::StringPiece& file,
 class EventPrinter : public logging_win::LogFileDelegate {
  public:
   explicit EventPrinter(std::ostream* out);
+
+  EventPrinter(const EventPrinter&) = delete;
+  EventPrinter& operator=(const EventPrinter&) = delete;
+
   ~EventPrinter() override;
 
   void OnUnknownEvent(const EVENT_TRACE* event) override;
@@ -98,7 +102,6 @@ class EventPrinter : public logging_win::LogFileDelegate {
   void PrintBadEvent(const EVENT_TRACE* event, const base::StringPiece& error);
 
   std::ostream* out_;
-  DISALLOW_COPY_AND_ASSIGN(EventPrinter);
 };
 
 EventPrinter::EventPrinter(std::ostream* out)

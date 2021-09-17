@@ -42,6 +42,10 @@ class NavigationObserver : public content::WebContentsObserver {
 
   explicit NavigationObserver(content::WebContents* web_contents)
       : WebContentsObserver(web_contents), navigation_result_(NOT_FINISHED) {}
+
+  NavigationObserver(const NavigationObserver&) = delete;
+  NavigationObserver& operator=(const NavigationObserver&) = delete;
+
   ~NavigationObserver() override = default;
 
   void DidFinishNavigation(
@@ -76,8 +80,6 @@ class NavigationObserver : public content::WebContentsObserver {
   net::Error net_error_ = net::OK;
   bool got_navigation_ = false;
   int http_status_code_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
 };
 
 }  // namespace

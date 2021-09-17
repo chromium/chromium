@@ -23,6 +23,11 @@ class DangerousDownloadInfoBarDelegate
   static void Create(infobars::ContentInfoBarManager* infobar_manager,
                      download::DownloadItem* download_item);
 
+  DangerousDownloadInfoBarDelegate(const DangerousDownloadInfoBarDelegate&) =
+      delete;
+  DangerousDownloadInfoBarDelegate& operator=(
+      const DangerousDownloadInfoBarDelegate&) = delete;
+
   ~DangerousDownloadInfoBarDelegate() override;
 
   // download::DownloadItem::Observer:
@@ -45,8 +50,6 @@ class DangerousDownloadInfoBarDelegate
   // the infobar is showing.
   download::DownloadItem* download_item_;
   std::u16string message_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(DangerousDownloadInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_H_

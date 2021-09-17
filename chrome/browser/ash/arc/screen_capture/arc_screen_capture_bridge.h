@@ -33,6 +33,10 @@ class ArcScreenCaptureBridge : public KeyedService,
 
   ArcScreenCaptureBridge(content::BrowserContext* context,
                          ArcBridgeService* bridge_service);
+
+  ArcScreenCaptureBridge(const ArcScreenCaptureBridge&) = delete;
+  ArcScreenCaptureBridge& operator=(const ArcScreenCaptureBridge&) = delete;
+
   ~ArcScreenCaptureBridge() override;
 
   // mojom::ScreenCaptureHost overrides:
@@ -92,8 +96,6 @@ class ArcScreenCaptureBridge : public KeyedService,
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcScreenCaptureBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcScreenCaptureBridge);
 };
 
 }  // namespace arc

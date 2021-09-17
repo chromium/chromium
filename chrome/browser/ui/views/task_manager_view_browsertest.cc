@@ -54,6 +54,10 @@ class TaskManagerViewTest : public InProcessBrowserTest {
     feature_list_.InitAndEnableFeature(features::kViewsTaskManager);
 #endif
   }
+
+  TaskManagerViewTest(const TaskManagerViewTest&) = delete;
+  TaskManagerViewTest& operator=(const TaskManagerViewTest&) = delete;
+
   ~TaskManagerViewTest() override {}
 
   void SetUpOnMainThread() override {
@@ -125,8 +129,6 @@ class TaskManagerViewTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerViewTest);
 };
 
 // Tests that all defined columns have a corresponding string IDs for keying

@@ -67,6 +67,10 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   RecentTabsSubMenuModel(ui::AcceleratorProvider* accelerator_provider,
                          Browser* browser);
+
+  RecentTabsSubMenuModel(const RecentTabsSubMenuModel&) = delete;
+  RecentTabsSubMenuModel& operator=(const RecentTabsSubMenuModel&) = delete;
+
   ~RecentTabsSubMenuModel() override;
 
   // Overridden from ui::SimpleMenuModel::Delegate:
@@ -275,8 +279,6 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   base::WeakPtrFactory<RecentTabsSubMenuModel> weak_ptr_factory_{this};
   base::WeakPtrFactory<RecentTabsSubMenuModel>
       weak_ptr_factory_for_other_devices_tab_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecentTabsSubMenuModel);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_SUB_MENU_MODEL_H_

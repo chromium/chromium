@@ -24,6 +24,10 @@ class AppWindowController : public WindowController {
   AppWindowController(AppWindow* window,
                       std::unique_ptr<AppBaseWindow> base_window,
                       Profile* profile);
+
+  AppWindowController(const AppWindowController&) = delete;
+  AppWindowController& operator=(const AppWindowController&) = delete;
+
   ~AppWindowController() override;
 
   // extensions::WindowController:
@@ -38,8 +42,6 @@ class AppWindowController : public WindowController {
  private:
   AppWindow* app_window_;  // Owns us.
   std::unique_ptr<AppBaseWindow> base_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowController);
 };
 
 }  // namespace extensions

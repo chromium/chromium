@@ -298,6 +298,9 @@ class MockService : public TestExtensionService {
         downloader_delegate_override_(nullptr),
         test_shared_url_loader_factory_(url_loader_factory) {}
 
+  MockService(const MockService&) = delete;
+  MockService& operator=(const MockService&) = delete;
+
   ~MockService() override = default;
 
   PendingExtensionManager* pending_extension_manager() override {
@@ -394,8 +397,6 @@ class MockService : public TestExtensionService {
 
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockService);
 };
 
 bool ShouldInstallExtensionsOnly(const Extension* extension,

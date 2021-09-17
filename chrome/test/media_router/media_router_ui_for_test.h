@@ -28,6 +28,9 @@ class MediaRouterUiForTest
   static MediaRouterUiForTest* GetOrCreateForWebContents(
       content::WebContents* web_contents);
 
+  MediaRouterUiForTest(const MediaRouterUiForTest&) = delete;
+  MediaRouterUiForTest& operator=(const MediaRouterUiForTest&) = delete;
+
   ~MediaRouterUiForTest() override;
 
   // Cleans up after a test.
@@ -122,8 +125,6 @@ class MediaRouterUiForTest
   base::WeakPtrFactory<MediaRouterUiForTest> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterUiForTest);
 };
 
 }  // namespace media_router

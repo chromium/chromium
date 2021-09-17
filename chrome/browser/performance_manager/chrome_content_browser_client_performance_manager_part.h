@@ -15,6 +15,12 @@ class ChromeContentBrowserClientPerformanceManagerPart
     : public ChromeContentBrowserClientParts {
  public:
   ChromeContentBrowserClientPerformanceManagerPart();
+
+  ChromeContentBrowserClientPerformanceManagerPart(
+      const ChromeContentBrowserClientPerformanceManagerPart&) = delete;
+  ChromeContentBrowserClientPerformanceManagerPart& operator=(
+      const ChromeContentBrowserClientPerformanceManagerPart&) = delete;
+
   ~ChromeContentBrowserClientPerformanceManagerPart() override;
 
   // ChromeContentBrowserClientParts overrides.
@@ -22,9 +28,6 @@ class ChromeContentBrowserClientPerformanceManagerPart
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientPerformanceManagerPart);
 };
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_CHROME_CONTENT_BROWSER_CLIENT_PERFORMANCE_MANAGER_PART_H_

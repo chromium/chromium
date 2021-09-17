@@ -22,6 +22,12 @@ class ExtensionDictionaryEventRouter
     : public SpellcheckCustomDictionary::Observer {
  public:
   explicit ExtensionDictionaryEventRouter(content::BrowserContext* context);
+
+  ExtensionDictionaryEventRouter(const ExtensionDictionaryEventRouter&) =
+      delete;
+  ExtensionDictionaryEventRouter& operator=(
+      const ExtensionDictionaryEventRouter&) = delete;
+
   virtual ~ExtensionDictionaryEventRouter();
 
   // SpellcheckCustomDictionary::Observer implementation.
@@ -35,8 +41,6 @@ class ExtensionDictionaryEventRouter
   content::BrowserContext* context_;
   base::WeakPtr<SpellcheckService> service_;
   bool loaded_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDictionaryEventRouter);
 };
 
 }  // namespace chromeos

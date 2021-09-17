@@ -13,15 +13,18 @@ class PaymentHandlerEnableDelegationsTest
     : public PaymentRequestPlatformBrowserTestBase {
  public:
   PaymentHandlerEnableDelegationsTest() = default;
+
+  PaymentHandlerEnableDelegationsTest(
+      const PaymentHandlerEnableDelegationsTest&) = delete;
+  PaymentHandlerEnableDelegationsTest& operator=(
+      const PaymentHandlerEnableDelegationsTest&) = delete;
+
   ~PaymentHandlerEnableDelegationsTest() override = default;
 
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
     NavigateTo("/payment_handler.html");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerEnableDelegationsTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerEnableDelegationsTest, EnableDelegations) {

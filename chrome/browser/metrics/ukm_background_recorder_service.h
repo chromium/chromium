@@ -44,6 +44,11 @@ class UkmBackgroundRecorderService : public KeyedService {
 
   // |profile| is needed to access the appropriate services |this| depends on.
   explicit UkmBackgroundRecorderService(Profile* profile);
+
+  UkmBackgroundRecorderService(const UkmBackgroundRecorderService&) = delete;
+  UkmBackgroundRecorderService& operator=(const UkmBackgroundRecorderService&) =
+      delete;
+
   ~UkmBackgroundRecorderService() override;
 
   void Shutdown() override;
@@ -73,8 +78,6 @@ class UkmBackgroundRecorderService : public KeyedService {
   base::CancelableTaskTracker task_tracker_;
 
   base::WeakPtrFactory<UkmBackgroundRecorderService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UkmBackgroundRecorderService);
 };
 
 class UkmBackgroundRecorderFactory : public BrowserContextKeyedServiceFactory {

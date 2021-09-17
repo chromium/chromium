@@ -21,6 +21,9 @@ class InterventionDelegate;
 // specifics, and NearOomMessageDelegate for behavior specifics.
 class NearOomReductionInfoBar : public infobars::InfoBarAndroid {
  public:
+  NearOomReductionInfoBar(const NearOomReductionInfoBar&) = delete;
+  NearOomReductionInfoBar& operator=(const NearOomReductionInfoBar&) = delete;
+
   ~NearOomReductionInfoBar() override;
 
   static void Show(content::WebContents* web_contents,
@@ -38,7 +41,6 @@ class NearOomReductionInfoBar : public infobars::InfoBarAndroid {
   void ProcessButton(int action) override;
 
   InterventionDelegate* delegate_;
-  DISALLOW_COPY_AND_ASSIGN(NearOomReductionInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_NEAR_OOM_REDUCTION_INFOBAR_H_

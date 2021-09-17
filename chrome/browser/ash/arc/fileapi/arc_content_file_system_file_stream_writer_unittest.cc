@@ -41,6 +41,11 @@ class ArcContentFileSystemFileStreamWriterTest : public testing::Test {
  public:
   ArcContentFileSystemFileStreamWriterTest() = default;
 
+  ArcContentFileSystemFileStreamWriterTest(
+      const ArcContentFileSystemFileStreamWriterTest&) = delete;
+  ArcContentFileSystemFileStreamWriterTest& operator=(
+      const ArcContentFileSystemFileStreamWriterTest&) = delete;
+
   ~ArcContentFileSystemFileStreamWriterTest() override = default;
 
   void SetUp() override {
@@ -111,8 +116,6 @@ class ArcContentFileSystemFileStreamWriterTest : public testing::Test {
   // ChromeBrowserMainPartsChromeos.
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemFileStreamWriterTest);
 };
 
 void NeverCalled(int unused) {

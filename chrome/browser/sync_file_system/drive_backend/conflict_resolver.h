@@ -42,6 +42,10 @@ class ConflictResolver : public SyncTask {
   typedef std::vector<std::string> FileIDList;
 
   explicit ConflictResolver(SyncEngineContext* sync_context);
+
+  ConflictResolver(const ConflictResolver&) = delete;
+  ConflictResolver& operator=(const ConflictResolver&) = delete;
+
   ~ConflictResolver() override;
   void RunPreflight(std::unique_ptr<SyncTaskToken> token) override;
   void RunExclusive(std::unique_ptr<SyncTaskToken> token);
@@ -79,8 +83,6 @@ class ConflictResolver : public SyncTask {
   SyncEngineContext* sync_context_;  // Not owned.
 
   base::WeakPtrFactory<ConflictResolver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConflictResolver);
 };
 
 }  // namespace drive_backend

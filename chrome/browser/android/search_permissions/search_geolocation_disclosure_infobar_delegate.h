@@ -29,6 +29,11 @@ class WebContents;
 class SearchGeolocationDisclosureInfoBarDelegate
     : public infobars::InfoBarDelegate {
  public:
+  SearchGeolocationDisclosureInfoBarDelegate(
+      const SearchGeolocationDisclosureInfoBarDelegate&) = delete;
+  SearchGeolocationDisclosureInfoBarDelegate& operator=(
+      const SearchGeolocationDisclosureInfoBarDelegate&) = delete;
+
   ~SearchGeolocationDisclosureInfoBarDelegate() override;
 
   // Create and show the infobar.
@@ -81,8 +86,6 @@ class SearchGeolocationDisclosureInfoBarDelegate
 
   // The time the infobar was created.
   base::Time creation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchGeolocationDisclosureInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_DELEGATE_H_

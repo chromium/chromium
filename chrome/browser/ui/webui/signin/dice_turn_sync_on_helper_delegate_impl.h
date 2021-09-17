@@ -24,6 +24,12 @@ class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
                                          public LoginUIService::Observer {
  public:
   explicit DiceTurnSyncOnHelperDelegateImpl(Browser* browser);
+
+  DiceTurnSyncOnHelperDelegateImpl(const DiceTurnSyncOnHelperDelegateImpl&) =
+      delete;
+  DiceTurnSyncOnHelperDelegateImpl& operator=(
+      const DiceTurnSyncOnHelperDelegateImpl&) = delete;
+
   ~DiceTurnSyncOnHelperDelegateImpl() override;
 
  protected:
@@ -64,8 +70,6 @@ class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
       sync_confirmation_callback_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       scoped_login_ui_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelperDelegateImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_DELEGATE_IMPL_H_

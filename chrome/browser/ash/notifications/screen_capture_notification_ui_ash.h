@@ -15,6 +15,12 @@ class ScreenCaptureNotificationUIAsh : public ScreenCaptureNotificationUI {
  public:
   // |text| is used to specify the text for the notification.
   explicit ScreenCaptureNotificationUIAsh(const std::u16string& text);
+
+  ScreenCaptureNotificationUIAsh(const ScreenCaptureNotificationUIAsh&) =
+      delete;
+  ScreenCaptureNotificationUIAsh& operator=(
+      const ScreenCaptureNotificationUIAsh&) = delete;
+
   ~ScreenCaptureNotificationUIAsh() override;
 
   // ScreenCaptureNotificationUI overrides.
@@ -28,8 +34,6 @@ class ScreenCaptureNotificationUIAsh : public ScreenCaptureNotificationUI {
 
   const std::u16string text_;
   base::OnceClosure stop_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenCaptureNotificationUIAsh);
 };
 
 }  // namespace ash

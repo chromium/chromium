@@ -32,6 +32,10 @@ class SyncSessionsRouterTabHelper
       public translate::TranslateDriver::LanguageDetectionObserver,
       public favicon::FaviconDriverObserver {
  public:
+  SyncSessionsRouterTabHelper(const SyncSessionsRouterTabHelper&) = delete;
+  SyncSessionsRouterTabHelper& operator=(const SyncSessionsRouterTabHelper&) =
+      delete;
+
   ~SyncSessionsRouterTabHelper() override;
 
   // WebContentsObserver implementation.
@@ -78,8 +82,6 @@ class SyncSessionsRouterTabHelper
   favicon::FaviconDriver* favicon_driver_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsRouterTabHelper);
 };
 
 }  // namespace sync_sessions

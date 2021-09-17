@@ -14,6 +14,10 @@ class DataReductionPromoInfoBar : public infobars::ConfirmInfoBar {
   explicit DataReductionPromoInfoBar(
       std::unique_ptr<DataReductionPromoInfoBarDelegateAndroid> delegate);
 
+  DataReductionPromoInfoBar(const DataReductionPromoInfoBar&) = delete;
+  DataReductionPromoInfoBar& operator=(const DataReductionPromoInfoBar&) =
+      delete;
+
   ~DataReductionPromoInfoBar() override;
 
  private:
@@ -23,8 +27,6 @@ class DataReductionPromoInfoBar : public infobars::ConfirmInfoBar {
       const ResourceIdMapper& resource_id_mapper) override;
 
   DataReductionPromoInfoBarDelegateAndroid* GetDelegate();
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionPromoInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_DATA_REDUCTION_PROMO_INFOBAR_H_

@@ -28,6 +28,10 @@ class ChromeMetricsServicesManagerClient;
 class ChromeFeatureListCreator {
  public:
   ChromeFeatureListCreator();
+
+  ChromeFeatureListCreator(const ChromeFeatureListCreator&) = delete;
+  ChromeFeatureListCreator& operator=(const ChromeFeatureListCreator&) = delete;
+
   ~ChromeFeatureListCreator();
 
   // Initializes all necessary parameters to create the feature list and calls
@@ -104,8 +108,6 @@ class ChromeFeatureListCreator {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<installer::InitialPreferences> installer_initial_prefs_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeFeatureListCreator);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_FEATURE_LIST_CREATOR_H_

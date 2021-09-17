@@ -28,6 +28,10 @@ using ::testing::Return;
 class NetworkScreenUnitTest : public testing::Test {
  public:
   NetworkScreenUnitTest() = default;
+
+  NetworkScreenUnitTest(const NetworkScreenUnitTest&) = delete;
+  NetworkScreenUnitTest& operator=(const NetworkScreenUnitTest&) = delete;
+
   ~NetworkScreenUnitTest() override = default;
 
   // testing::Test:
@@ -72,8 +76,6 @@ class NetworkScreenUnitTest : public testing::Test {
 
   // More accessory objects needed by NetworkScreen.
   MockNetworkScreenView mock_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkScreenUnitTest);
 };
 
 TEST_F(NetworkScreenUnitTest, ContinuesAutomatically) {

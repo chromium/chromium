@@ -33,6 +33,10 @@ class IncidentReportUploaderImpl : public IncidentReportUploader {
   // The id associated with the URLFetcher, for use by tests.
   static const int kTestUrlFetcherId;
 
+  IncidentReportUploaderImpl(const IncidentReportUploaderImpl&) = delete;
+  IncidentReportUploaderImpl& operator=(const IncidentReportUploaderImpl&) =
+      delete;
+
   ~IncidentReportUploaderImpl() override;
 
   // Uploads a report with a caller-provided URL context. |callback| will be run
@@ -67,8 +71,6 @@ class IncidentReportUploaderImpl : public IncidentReportUploader {
 
   // The time at which the upload was initiated.
   base::TimeTicks time_begin_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncidentReportUploaderImpl);
 };
 
 }  // namespace safe_browsing

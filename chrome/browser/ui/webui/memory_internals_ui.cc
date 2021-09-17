@@ -128,6 +128,11 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
                                   ui::SelectFileDialog::Listener {
  public:
   explicit MemoryInternalsDOMHandler(content::WebUI* web_ui);
+
+  MemoryInternalsDOMHandler(const MemoryInternalsDOMHandler&) = delete;
+  MemoryInternalsDOMHandler& operator=(const MemoryInternalsDOMHandler&) =
+      delete;
+
   ~MemoryInternalsDOMHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -169,8 +174,6 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
   content::WebUI* web_ui_;  // The WebUI that owns us.
 
   base::WeakPtrFactory<MemoryInternalsDOMHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryInternalsDOMHandler);
 };
 
 MemoryInternalsDOMHandler::MemoryInternalsDOMHandler(content::WebUI* web_ui)

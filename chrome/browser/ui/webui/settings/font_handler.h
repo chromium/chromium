@@ -24,6 +24,10 @@ namespace settings {
 class FontHandler : public SettingsPageUIHandler {
  public:
   explicit FontHandler(Profile* profile);
+
+  FontHandler(const FontHandler&) = delete;
+  FontHandler& operator=(const FontHandler&) = delete;
+
   ~FontHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -40,8 +44,6 @@ class FontHandler : public SettingsPageUIHandler {
                          std::unique_ptr<base::ListValue> list);
 
   base::WeakPtrFactory<FontHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FontHandler);
 };
 
 }  // namespace settings

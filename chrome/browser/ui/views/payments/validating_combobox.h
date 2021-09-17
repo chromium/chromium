@@ -18,6 +18,10 @@ class ValidatingCombobox : public views::Combobox {
  public:
   ValidatingCombobox(std::unique_ptr<ui::ComboboxModel> model,
                      std::unique_ptr<ValidationDelegate> delegate);
+
+  ValidatingCombobox(const ValidatingCombobox&) = delete;
+  ValidatingCombobox& operator=(const ValidatingCombobox&) = delete;
+
   ~ValidatingCombobox() override;
 
   // Combobox:
@@ -43,8 +47,6 @@ class ValidatingCombobox : public views::Combobox {
 
   std::unique_ptr<ValidationDelegate> delegate_;
   bool being_removed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidatingCombobox);
 };
 
 }  // namespace payments

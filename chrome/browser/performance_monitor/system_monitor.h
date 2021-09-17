@@ -46,6 +46,9 @@ class SystemMonitor {
     kDefaultFrequency,
   };
 
+  SystemMonitor(const SystemMonitor&) = delete;
+  SystemMonitor& operator=(const SystemMonitor&) = delete;
+
   virtual ~SystemMonitor();
 
   // Creates and returns the application-wide SystemMonitor. Can only be called
@@ -128,6 +131,10 @@ class SystemMonitor {
     };
 
     explicit MetricEvaluator(Type type);
+
+    MetricEvaluator(const MetricEvaluator&) = delete;
+    MetricEvaluator& operator=(const MetricEvaluator&) = delete;
+
     virtual ~MetricEvaluator();
 
     // Called when the metric needs to be evaluated.
@@ -145,8 +152,6 @@ class SystemMonitor {
 
    private:
     const Type type_;
-
-    DISALLOW_COPY_AND_ASSIGN(MetricEvaluator);
   };
 
   // Templated implementation of the MetricEvaluator interface.
@@ -160,6 +165,10 @@ class SystemMonitor {
         Type type,
         base::OnceCallback<absl::optional<T>()> evaluate_function,
         void (SystemObserver::*notify_function)(ObserverArgType));
+
+    MetricEvaluatorImpl(const MetricEvaluatorImpl&) = delete;
+    MetricEvaluatorImpl& operator=(const MetricEvaluatorImpl&) = delete;
+
     virtual ~MetricEvaluatorImpl();
 
     // Called when the metrics needs to be refreshed.
@@ -183,8 +192,6 @@ class SystemMonitor {
 
     // The value, initialized in |Evaluate|.
     absl::optional<T> value_;
-
-    DISALLOW_COPY_AND_ASSIGN(MetricEvaluatorImpl);
   };
 
   // Structure storing all the functions specific to a metric.
@@ -276,14 +283,16 @@ class SystemMonitor {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SystemMonitor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMonitor);
 };
 
 // A builder class used to easily create a MetricRefreshFrequencies object.
 class SystemMonitor::SystemObserver::MetricRefreshFrequencies::Builder {
  public:
   Builder() = default;
+
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
+
   ~Builder() = default;
 
   Builder& SetFreePhysMemoryMbFrequency(SamplingFrequency freq);
@@ -294,8 +303,6 @@ class SystemMonitor::SystemObserver::MetricRefreshFrequencies::Builder {
 
  private:
   MetricRefreshFrequencies metrics_and_frequencies_ = {};
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 // An helper class used by the MetricEvaluator object to retrieve the info
@@ -303,6 +310,10 @@ class SystemMonitor::SystemObserver::MetricRefreshFrequencies::Builder {
 class MetricEvaluatorsHelper {
  public:
   MetricEvaluatorsHelper() = default;
+
+  MetricEvaluatorsHelper(const MetricEvaluatorsHelper&) = delete;
+  MetricEvaluatorsHelper& operator=(const MetricEvaluatorsHelper&) = delete;
+
   virtual ~MetricEvaluatorsHelper() = default;
 
   // Returns the free physical memory, in megabytes.
@@ -313,9 +324,6 @@ class MetricEvaluatorsHelper {
   // NOTE: This function doesn't have to be virtual, the base::SystemMetrics
   // struct is an abstraction that already has a per-platform definition.
   absl::optional<base::SystemMetrics> GetSystemMetricsStruct();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricEvaluatorsHelper);
 };
 
 }  // namespace performance_monitor

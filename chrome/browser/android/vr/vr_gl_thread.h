@@ -57,6 +57,9 @@ class VrGLThread : public base::android::JavaHandlerThread,
       base::WaitableEvent* gl_surface_created_event,
       base::OnceCallback<gfx::AcceleratedWidget()> surface_callback);
 
+  VrGLThread(const VrGLThread&) = delete;
+  VrGLThread& operator=(const VrGLThread&) = delete;
+
   ~VrGLThread() override;
   base::WeakPtr<BrowserRenderer> GetBrowserRenderer();
   void SetInputConnection(VrInputConnection* input_connection);
@@ -182,8 +185,6 @@ class VrGLThread : public base::android::JavaHandlerThread,
 
   // This state is used for initializing the BrowserRenderer.
   std::unique_ptr<BrowserRendererFactory::Params> factory_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(VrGLThread);
 };
 
 }  // namespace vr

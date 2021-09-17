@@ -21,6 +21,10 @@ namespace vr {
 class VR_UI_EXPORT Rect : public UiElement {
  public:
   Rect();
+
+  Rect(const Rect&) = delete;
+  Rect& operator=(const Rect&) = delete;
+
   ~Rect() override;
 
   // Syntactic sugar for setting both the edge and center colors simultaneously.
@@ -53,8 +57,6 @@ class VR_UI_EXPORT Rect : public UiElement {
 
   // This value is not inherited by descendants.
   float local_opacity_ = 1.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(Rect);
 };
 
 }  // namespace vr

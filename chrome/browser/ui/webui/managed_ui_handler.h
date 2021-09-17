@@ -24,6 +24,10 @@ class ManagedUIHandler : public content::WebUIMessageHandler,
                          public policy::PolicyService::Observer {
  public:
   explicit ManagedUIHandler(Profile* profile);
+
+  ManagedUIHandler(const ManagedUIHandler&) = delete;
+  ManagedUIHandler& operator=(const ManagedUIHandler&) = delete;
+
   ~ManagedUIHandler() override;
 
   // Sets load-time constants on |source|. This handles a flicker-free initial
@@ -78,8 +82,6 @@ class ManagedUIHandler : public content::WebUIMessageHandler,
 
   // Name of the WebUIDataSource to update.
   std::string source_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedUIHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MANAGED_UI_HANDLER_H_

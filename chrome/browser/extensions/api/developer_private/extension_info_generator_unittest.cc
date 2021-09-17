@@ -103,6 +103,12 @@ std::string SiteControlsToString(
 class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
  public:
   ExtensionInfoGeneratorUnitTest() {}
+
+  ExtensionInfoGeneratorUnitTest(const ExtensionInfoGeneratorUnitTest&) =
+      delete;
+  ExtensionInfoGeneratorUnitTest& operator=(
+      const ExtensionInfoGeneratorUnitTest&) = delete;
+
   ~ExtensionInfoGeneratorUnitTest() override {}
 
  protected:
@@ -243,8 +249,6 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
 
  private:
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInfoGeneratorUnitTest);
 };
 
 // Test some of the basic fields.

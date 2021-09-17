@@ -138,6 +138,9 @@ class AvatarImageSource : public gfx::CanvasImageSource {
                     AvatarPosition position,
                     AvatarBorder border);
 
+  AvatarImageSource(const AvatarImageSource&) = delete;
+  AvatarImageSource& operator=(const AvatarImageSource&) = delete;
+
   ~AvatarImageSource() override;
 
   // CanvasImageSource override:
@@ -151,8 +154,6 @@ class AvatarImageSource : public gfx::CanvasImageSource {
   const AvatarPosition position_;
   const AvatarBorder border_;
   const profiles::AvatarShape shape_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvatarImageSource);
 };
 
 AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
@@ -298,6 +299,10 @@ class ImageWithBackgroundSource : public gfx::CanvasImageSource {
         image_(image),
         background_(background) {}
 
+  ImageWithBackgroundSource(const ImageWithBackgroundSource&) = delete;
+  ImageWithBackgroundSource& operator=(const ImageWithBackgroundSource&) =
+      delete;
+
   ~ImageWithBackgroundSource() override = default;
 
   // gfx::CanvasImageSource override.
@@ -309,8 +314,6 @@ class ImageWithBackgroundSource : public gfx::CanvasImageSource {
  private:
   const gfx::ImageSkia image_;
   const SkColor background_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageWithBackgroundSource);
 };
 
 }  // namespace

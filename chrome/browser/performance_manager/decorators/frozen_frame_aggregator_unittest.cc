@@ -23,12 +23,15 @@ using LifecycleState = PageNodeImpl::LifecycleState;
 class LenientMockProcessNodeObserver : public ProcessNode::ObserverDefaultImpl {
  public:
   LenientMockProcessNodeObserver() = default;
+
+  LenientMockProcessNodeObserver(const LenientMockProcessNodeObserver&) =
+      delete;
+  LenientMockProcessNodeObserver& operator=(
+      const LenientMockProcessNodeObserver&) = delete;
+
   ~LenientMockProcessNodeObserver() override = default;
 
   MOCK_METHOD1(OnAllFramesInProcessFrozen, void(const ProcessNode*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LenientMockProcessNodeObserver);
 };
 
 using MockProcessNodeObserver =

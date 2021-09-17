@@ -84,6 +84,9 @@ class CastInternalMessage {
   // a valid Cast internal message.
   static std::unique_ptr<CastInternalMessage> From(base::Value message);
 
+  CastInternalMessage(const CastInternalMessage&) = delete;
+  CastInternalMessage& operator=(const CastInternalMessage&) = delete;
+
   ~CastInternalMessage();
 
   Type type() const { return type_; }
@@ -135,8 +138,6 @@ class CastInternalMessage {
   const std::string session_id_;
   const std::string namespace_or_v2_type_;
   const base::Value message_body_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastInternalMessage);
 };
 
 // Represents a Cast session on a Cast device. Cast sessions are derived from

@@ -33,6 +33,9 @@ class AccountAvatarFetcher : public BitmapFetcherDelegate {
       const GURL& url,
       const base::WeakPtr<AccountAvatarFetcherDelegate>& delegate);
 
+  AccountAvatarFetcher(const AccountAvatarFetcher&) = delete;
+  AccountAvatarFetcher& operator=(const AccountAvatarFetcher&) = delete;
+
   ~AccountAvatarFetcher() override;
 
   void Start(network::mojom::URLLoaderFactory* loader_factory);
@@ -43,8 +46,6 @@ class AccountAvatarFetcher : public BitmapFetcherDelegate {
 
   BitmapFetcher fetcher_;
   base::WeakPtr<AccountAvatarFetcherDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountAvatarFetcher);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_ACCOUNT_AVATAR_FETCHER_H_

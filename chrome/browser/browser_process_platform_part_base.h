@@ -17,6 +17,12 @@ class CommandLine;
 class BrowserProcessPlatformPartBase {
  public:
   BrowserProcessPlatformPartBase();
+
+  BrowserProcessPlatformPartBase(const BrowserProcessPlatformPartBase&) =
+      delete;
+  BrowserProcessPlatformPartBase& operator=(
+      const BrowserProcessPlatformPartBase&) = delete;
+
   virtual ~BrowserProcessPlatformPartBase();
 
   // Called after creating the process singleton or when another chrome
@@ -35,9 +41,6 @@ class BrowserProcessPlatformPartBase {
 
   // Called at the end of BrowserProcessImpl::PreMainMessageLoopRun().
   virtual void PreMainMessageLoopRun();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessPlatformPartBase);
 };
 
 #endif  // CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_

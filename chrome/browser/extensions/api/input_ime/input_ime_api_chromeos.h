@@ -192,6 +192,10 @@ class InputMethodPrivateGetCompositionBoundsFunction
 class InputImeEventRouter : public InputImeEventRouterBase {
  public:
   explicit InputImeEventRouter(Profile* profile);
+
+  InputImeEventRouter(const InputImeEventRouter&) = delete;
+  InputImeEventRouter& operator=(const InputImeEventRouter&) = delete;
+
   ~InputImeEventRouter() override;
 
   bool RegisterImeExtension(
@@ -219,8 +223,6 @@ class InputImeEventRouter : public InputImeEventRouterBase {
       engine_map_;
   // The first party ime extension which is unloaded unexpectedly.
   std::string unloaded_component_extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputImeEventRouter);
 };
 
 }  // namespace extensions

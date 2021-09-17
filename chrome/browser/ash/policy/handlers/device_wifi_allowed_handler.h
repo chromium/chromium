@@ -17,6 +17,10 @@ namespace policy {
 class DeviceWiFiAllowedHandler {
  public:
   explicit DeviceWiFiAllowedHandler(ash::CrosSettings* cros_settings);
+
+  DeviceWiFiAllowedHandler(const DeviceWiFiAllowedHandler&) = delete;
+  DeviceWiFiAllowedHandler& operator=(const DeviceWiFiAllowedHandler&) = delete;
+
   ~DeviceWiFiAllowedHandler();
 
  private:
@@ -25,8 +29,6 @@ class DeviceWiFiAllowedHandler {
   ash::CrosSettings* cros_settings_;
   base::CallbackListSubscription wifi_policy_subscription_;
   base::WeakPtrFactory<DeviceWiFiAllowedHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceWiFiAllowedHandler);
 };
 
 }  // namespace policy

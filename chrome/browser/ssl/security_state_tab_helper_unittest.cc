@@ -28,6 +28,12 @@ class SecurityStateTabHelperHistogramTest
     : public ChromeRenderViewHostTestHarness {
  public:
   SecurityStateTabHelperHistogramTest() : helper_(nullptr) {}
+
+  SecurityStateTabHelperHistogramTest(
+      const SecurityStateTabHelperHistogramTest&) = delete;
+  SecurityStateTabHelperHistogramTest& operator=(
+      const SecurityStateTabHelperHistogramTest&) = delete;
+
   ~SecurityStateTabHelperHistogramTest() override {}
 
   void SetUp() override {
@@ -74,7 +80,6 @@ class SecurityStateTabHelperHistogramTest
 
  private:
   SecurityStateTabHelper* helper_;
-  DISALLOW_COPY_AND_ASSIGN(SecurityStateTabHelperHistogramTest);
 };
 
 TEST_F(SecurityStateTabHelperHistogramTest, FormSubmissionHistogram) {

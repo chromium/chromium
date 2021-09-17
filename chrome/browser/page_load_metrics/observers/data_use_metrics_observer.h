@@ -22,6 +22,10 @@ class DataUseMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   DataUseMetricsObserver();
+
+  DataUseMetricsObserver(const DataUseMetricsObserver&) = delete;
+  DataUseMetricsObserver& operator=(const DataUseMetricsObserver&) = delete;
+
   ~DataUseMetricsObserver() override;
 
  private:
@@ -36,8 +40,6 @@ class DataUseMetricsObserver
       const std::string& mime_type) const override;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DataUseMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DATA_USE_METRICS_OBSERVER_H_

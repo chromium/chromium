@@ -53,6 +53,10 @@ class EasyUnlockCreateKeysOperation::ChallengeCreator {
                    const std::string& tpm_pub_key,
                    EasyUnlockDeviceKeyData* device,
                    ChallengeCreatedCallback callback);
+
+  ChallengeCreator(const ChallengeCreator&) = delete;
+  ChallengeCreator& operator=(const ChallengeCreator&) = delete;
+
   ~ChallengeCreator();
 
   void Start();
@@ -86,8 +90,6 @@ class EasyUnlockCreateKeysOperation::ChallengeCreator {
   EasyUnlockClient* easy_unlock_client_;
 
   base::WeakPtrFactory<ChallengeCreator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChallengeCreator);
 };
 
 EasyUnlockCreateKeysOperation::ChallengeCreator::ChallengeCreator(

@@ -36,6 +36,11 @@ class PaymentRequestSheetController {
   PaymentRequestSheetController(base::WeakPtr<PaymentRequestSpec> spec,
                                 base::WeakPtr<PaymentRequestState> state,
                                 base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  PaymentRequestSheetController(const PaymentRequestSheetController&) = delete;
+  PaymentRequestSheetController& operator=(
+      const PaymentRequestSheetController&) = delete;
+
   virtual ~PaymentRequestSheetController();
 
   // Creates a view to be displayed in the PaymentRequestDialog. The header view
@@ -201,8 +206,6 @@ class PaymentRequestSheetController {
   bool is_active_ = true;
 
   base::WeakPtrFactory<PaymentRequestSheetController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestSheetController);
 };
 
 }  // namespace payments

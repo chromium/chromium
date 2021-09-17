@@ -85,6 +85,12 @@ void WaitForRenderWidgetHostCount(size_t target_count) {
 class SitePerProcessInteractiveBrowserTest : public InProcessBrowserTest {
  public:
   SitePerProcessInteractiveBrowserTest() {}
+
+  SitePerProcessInteractiveBrowserTest(
+      const SitePerProcessInteractiveBrowserTest&) = delete;
+  SitePerProcessInteractiveBrowserTest& operator=(
+      const SitePerProcessInteractiveBrowserTest&) = delete;
+
   ~SitePerProcessInteractiveBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -115,9 +121,6 @@ class SitePerProcessInteractiveBrowserTest : public InProcessBrowserTest {
   };
 
   void FullscreenElementInABA(FullscreenExitMethod exit_method);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessInteractiveBrowserTest);
 };
 
 // Check that document.hasFocus() works properly with out-of-process iframes.
@@ -1134,6 +1137,12 @@ class SitePerProcessInteractivePDFTest
     : public SitePerProcessInteractiveBrowserTest {
  public:
   SitePerProcessInteractivePDFTest() : test_guest_view_manager_(nullptr) {}
+
+  SitePerProcessInteractivePDFTest(const SitePerProcessInteractivePDFTest&) =
+      delete;
+  SitePerProcessInteractivePDFTest& operator=(
+      const SitePerProcessInteractivePDFTest&) = delete;
+
   ~SitePerProcessInteractivePDFTest() override {}
 
   void SetUpOnMainThread() override {
@@ -1154,8 +1163,6 @@ class SitePerProcessInteractivePDFTest
  private:
   guest_view::TestGuestViewManagerFactory factory_;
   guest_view::TestGuestViewManager* test_guest_view_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessInteractivePDFTest);
 };
 
 // This class observes a WebContents for a navigation to an extension scheme to
@@ -1356,12 +1363,21 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractivePDFTest,
 class SitePerProcessAutofillTest : public SitePerProcessInteractiveBrowserTest {
  public:
   SitePerProcessAutofillTest() : SitePerProcessInteractiveBrowserTest() {}
+
+  SitePerProcessAutofillTest(const SitePerProcessAutofillTest&) = delete;
+  SitePerProcessAutofillTest& operator=(const SitePerProcessAutofillTest&) =
+      delete;
+
   ~SitePerProcessAutofillTest() override {}
 
  protected:
   class TestAutofillClient : public autofill::TestAutofillClient {
    public:
     TestAutofillClient() : popup_shown_(false) {}
+
+    TestAutofillClient(const TestAutofillClient&) = delete;
+    TestAutofillClient& operator=(const TestAutofillClient&) = delete;
+
     ~TestAutofillClient() override {}
 
     void WaitForNextPopup() {
@@ -1386,8 +1402,6 @@ class SitePerProcessAutofillTest : public SitePerProcessInteractiveBrowserTest {
     gfx::RectF element_bounds_;
     bool popup_shown_;
     scoped_refptr<content::MessageLoopRunner> loop_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestAutofillClient);
   };
 
   const int kIframeTopDisplacement = 150;
@@ -1422,8 +1436,6 @@ class SitePerProcessAutofillTest : public SitePerProcessInteractiveBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   TestAutofillClient test_autofill_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessAutofillTest);
 };
 
 // Waits until transforming |sample_point| from |render_frame_host| coordinates

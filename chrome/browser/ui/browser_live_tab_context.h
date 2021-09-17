@@ -31,6 +31,10 @@ class Rect;
 class BrowserLiveTabContext : public sessions::LiveTabContext {
  public:
   explicit BrowserLiveTabContext(Browser* browser) : browser_(browser) {}
+
+  BrowserLiveTabContext(const BrowserLiveTabContext&) = delete;
+  BrowserLiveTabContext& operator=(const BrowserLiveTabContext&) = delete;
+
   ~BrowserLiveTabContext() override {}
 
   // Overridden from LiveTabContext:
@@ -102,8 +106,6 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
 
  private:
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserLiveTabContext);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LIVE_TAB_CONTEXT_H_

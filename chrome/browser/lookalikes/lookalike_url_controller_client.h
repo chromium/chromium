@@ -27,6 +27,10 @@ class LookalikeUrlControllerClient
       const GURL& request_url,
       const GURL& safe_url);
 
+  LookalikeUrlControllerClient(const LookalikeUrlControllerClient&) = delete;
+  LookalikeUrlControllerClient& operator=(const LookalikeUrlControllerClient&) =
+      delete;
+
   ~LookalikeUrlControllerClient() override;
 
   // security_interstitials::ControllerClient overrides.
@@ -36,8 +40,6 @@ class LookalikeUrlControllerClient
  private:
   const GURL request_url_;
   const GURL safe_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(LookalikeUrlControllerClient);
 };
 
 #endif  // CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_CONTROLLER_CLIENT_H_

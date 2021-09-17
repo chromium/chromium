@@ -14,6 +14,11 @@ class MockManualFillingController
       public base::SupportsWeakPtr<MockManualFillingController> {
  public:
   MockManualFillingController();
+
+  MockManualFillingController(const MockManualFillingController&) = delete;
+  MockManualFillingController& operator=(const MockManualFillingController&) =
+      delete;
+
   ~MockManualFillingController() override;
 
   MOCK_METHOD1(RefreshSuggestions, void(const autofill::AccessorySheetData&));
@@ -38,9 +43,6 @@ class MockManualFillingController
       void(autofill::AccessoryTabType,
            base::OnceCallback<void(const autofill::AccessorySheetData&)>));
   MOCK_CONST_METHOD0(container_view, gfx::NativeView());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockManualFillingController);
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_

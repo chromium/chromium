@@ -412,6 +412,10 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   static gin::WrapperInfo kWrapperInfo;
 
   SearchBoxBindings();
+
+  SearchBoxBindings(const SearchBoxBindings&) = delete;
+  SearchBoxBindings& operator=(const SearchBoxBindings&) = delete;
+
   ~SearchBoxBindings() override;
 
  private:
@@ -426,8 +430,6 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   // Handlers for JS functions.
   static void StartCapturingKeyStrokes();
   static void StopCapturingKeyStrokes();
-
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxBindings);
 };
 
 gin::WrapperInfo SearchBoxBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -486,6 +488,10 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
   static gin::WrapperInfo kWrapperInfo;
 
   NewTabPageBindings();
+
+  NewTabPageBindings(const NewTabPageBindings&) = delete;
+  NewTabPageBindings& operator=(const NewTabPageBindings&) = delete;
+
   ~NewTabPageBindings() override;
 
  private:
@@ -529,8 +535,6 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
   static void RevertThemeChanges();
   static void ConfirmThemeChanges();
   static v8::Local<v8::Value> GetColorsInfo(v8::Isolate* isolate);
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabPageBindings);
 };
 
 gin::WrapperInfo NewTabPageBindings::kWrapperInfo = {gin::kEmbedderNativeGin};

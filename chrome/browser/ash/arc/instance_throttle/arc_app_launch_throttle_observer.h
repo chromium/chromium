@@ -27,6 +27,11 @@ class ArcAppLaunchThrottleObserver : public chromeos::ThrottleObserver,
                                      public AppLaunchObserver {
  public:
   ArcAppLaunchThrottleObserver();
+
+  ArcAppLaunchThrottleObserver(const ArcAppLaunchThrottleObserver&) = delete;
+  ArcAppLaunchThrottleObserver& operator=(const ArcAppLaunchThrottleObserver&) =
+      delete;
+
   ~ArcAppLaunchThrottleObserver() override;
 
   // chromeos::ThrottleObserver:
@@ -50,8 +55,6 @@ class ArcAppLaunchThrottleObserver : public chromeos::ThrottleObserver,
   std::set<std::string> current_requests_;
   // Must go last.
   base::WeakPtrFactory<ArcAppLaunchThrottleObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppLaunchThrottleObserver);
 };
 
 }  // namespace arc

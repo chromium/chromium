@@ -12,10 +12,12 @@
 class FamilyLinkUserInternalsUI : public content::WebUIController {
  public:
   explicit FamilyLinkUserInternalsUI(content::WebUI* web_ui);
-  ~FamilyLinkUserInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FamilyLinkUserInternalsUI);
+  FamilyLinkUserInternalsUI(const FamilyLinkUserInternalsUI&) = delete;
+  FamilyLinkUserInternalsUI& operator=(const FamilyLinkUserInternalsUI&) =
+      delete;
+
+  ~FamilyLinkUserInternalsUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FAMILY_LINK_USER_INTERNALS_FAMILY_LINK_USER_INTERNALS_UI_H_

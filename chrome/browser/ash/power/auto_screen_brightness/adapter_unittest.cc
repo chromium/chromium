@@ -133,6 +133,9 @@ class AdapterTest : public testing::Test {
   AdapterTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  AdapterTest(const AdapterTest&) = delete;
+  AdapterTest& operator=(const AdapterTest&) = delete;
+
   ~AdapterTest() override = default;
 
   void SetUp() override {
@@ -314,9 +317,6 @@ class AdapterTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<Adapter> adapter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AdapterTest);
 };
 
 // AlsReader is |kDisabled| when Adapter is created.

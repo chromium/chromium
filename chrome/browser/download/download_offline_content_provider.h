@@ -48,6 +48,12 @@ class DownloadOfflineContentProvider
  public:
   explicit DownloadOfflineContentProvider(OfflineContentAggregator* aggregator,
                                           const std::string& name_space);
+
+  DownloadOfflineContentProvider(const DownloadOfflineContentProvider&) =
+      delete;
+  DownloadOfflineContentProvider& operator=(
+      const DownloadOfflineContentProvider&) = delete;
+
   ~DownloadOfflineContentProvider() override;
 
   // Should be called when a DownloadManager is available.
@@ -145,8 +151,6 @@ class DownloadOfflineContentProvider
   Profile* profile_;
 
   base::WeakPtrFactory<DownloadOfflineContentProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadOfflineContentProvider);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_OFFLINE_CONTENT_PROVIDER_H_

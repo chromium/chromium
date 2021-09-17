@@ -147,6 +147,9 @@ class TabClosedChecker : public StatusChangeChecker,
     DCHECK(web_contents);
   }
 
+  TabClosedChecker(const TabClosedChecker&) = delete;
+  TabClosedChecker& operator=(const TabClosedChecker&) = delete;
+
   ~TabClosedChecker() override = default;
 
   // StatusChangeChecker overrides.
@@ -163,8 +166,6 @@ class TabClosedChecker : public StatusChangeChecker,
 
  private:
   bool closed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TabClosedChecker);
 };
 
 // Used to wait until a page's title changes to a certain value (useful to
@@ -178,6 +179,9 @@ class PageTitleChecker : public StatusChangeChecker,
         expected_title_(base::UTF8ToUTF16(expected_title)) {
     DCHECK(web_contents);
   }
+
+  PageTitleChecker(const PageTitleChecker&) = delete;
+  PageTitleChecker& operator=(const PageTitleChecker&) = delete;
 
   ~PageTitleChecker() override = default;
 
@@ -197,8 +201,6 @@ class PageTitleChecker : public StatusChangeChecker,
 
  private:
   const std::u16string expected_title_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageTitleChecker);
 };
 
 // Used to wait until IsTrustedVaultKeyRequiredForPreferredDataTypes() returns
@@ -294,21 +296,29 @@ class FakeSecurityDomainsServerMemberStatusChecker
 class SingleClientNigoriSyncTest : public SyncTest {
  public:
   SingleClientNigoriSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SingleClientNigoriSyncTest(const SingleClientNigoriSyncTest&) = delete;
+  SingleClientNigoriSyncTest& operator=(const SingleClientNigoriSyncTest&) =
+      delete;
+
   ~SingleClientNigoriSyncTest() override = default;
 
   bool WaitForPasswordForms(
       const std::vector<password_manager::PasswordForm>& forms) const {
     return PasswordFormsChecker(0, forms).Wait();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientNigoriSyncTest);
 };
 
 class SingleClientNigoriSyncTestWithNotAwaitQuiescence
     : public SingleClientNigoriSyncTest {
  public:
   SingleClientNigoriSyncTestWithNotAwaitQuiescence() = default;
+
+  SingleClientNigoriSyncTestWithNotAwaitQuiescence(
+      const SingleClientNigoriSyncTestWithNotAwaitQuiescence&) = delete;
+  SingleClientNigoriSyncTestWithNotAwaitQuiescence& operator=(
+      const SingleClientNigoriSyncTestWithNotAwaitQuiescence&) = delete;
+
   ~SingleClientNigoriSyncTestWithNotAwaitQuiescence() override = default;
 
   bool TestUsesSelfNotifications() override {
@@ -317,9 +327,6 @@ class SingleClientNigoriSyncTestWithNotAwaitQuiescence
     // achieved and isn't needed.
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientNigoriSyncTestWithNotAwaitQuiescence);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
@@ -585,6 +592,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithNotAwaitQuiescence,
 class SingleClientNigoriWithWebApiTest : public SyncTest {
  public:
   SingleClientNigoriWithWebApiTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SingleClientNigoriWithWebApiTest(const SingleClientNigoriWithWebApiTest&) =
+      delete;
+  SingleClientNigoriWithWebApiTest& operator=(
+      const SingleClientNigoriWithWebApiTest&) = delete;
+
   ~SingleClientNigoriWithWebApiTest() override = default;
 
   // InProcessBrowserTest:
@@ -627,8 +640,6 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
 
  private:
   std::unique_ptr<syncer::FakeSecurityDomainsServer> security_domains_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientNigoriWithWebApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,

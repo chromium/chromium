@@ -62,6 +62,12 @@ class ChromeExtensionsRendererClient
     : public extensions::ExtensionsRendererClient {
  public:
   ChromeExtensionsRendererClient();
+
+  ChromeExtensionsRendererClient(const ChromeExtensionsRendererClient&) =
+      delete;
+  ChromeExtensionsRendererClient& operator=(
+      const ChromeExtensionsRendererClient&) = delete;
+
   ~ChromeExtensionsRendererClient() override;
 
   // Get the LazyInstance for ChromeExtensionsRendererClient.
@@ -126,8 +132,6 @@ class ChromeExtensionsRendererClient
   std::unique_ptr<guest_view::GuestViewContainerDispatcher>
       guest_view_container_dispatcher_;
   std::unique_ptr<extensions::ResourceRequestPolicy> resource_request_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsRendererClient);
 };
 
 #endif  // CHROME_RENDERER_EXTENSIONS_CHROME_EXTENSIONS_RENDERER_CLIENT_H_

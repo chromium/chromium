@@ -41,6 +41,9 @@ class FaviconSource : public content::URLDataSource {
   // |type| is the type of icon this FaviconSource will provide.
   explicit FaviconSource(Profile* profile, chrome::FaviconUrlFormat format);
 
+  FaviconSource(const FaviconSource&) = delete;
+  FaviconSource& operator=(const FaviconSource&) = delete;
+
   ~FaviconSource() override;
 
   // content::URLDataSource implementation.
@@ -103,8 +106,6 @@ class FaviconSource : public content::URLDataSource {
   base::CancelableTaskTracker cancelable_task_tracker_;
 
   base::WeakPtrFactory<FaviconSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconSource);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FAVICON_SOURCE_H_

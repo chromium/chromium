@@ -127,6 +127,9 @@ class ScopedLogIn {
     }
   }
 
+  ScopedLogIn(const ScopedLogIn&) = delete;
+  ScopedLogIn& operator=(const ScopedLogIn&) = delete;
+
   ~ScopedLogIn() { fake_user_manager_->RemoveUserFromList(account_id_); }
 
  private:
@@ -147,8 +150,6 @@ class ScopedLogIn {
 
   FakeUserManagerWithLocalState* fake_user_manager_;
   const AccountId account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLogIn);
 };
 
 bool IsArcAllowedForProfileOnFirstCall(const Profile* profile) {
@@ -161,6 +162,10 @@ bool IsArcAllowedForProfileOnFirstCall(const Profile* profile) {
 class ChromeArcUtilTest : public testing::Test {
  public:
   ChromeArcUtilTest() = default;
+
+  ChromeArcUtilTest(const ChromeArcUtilTest&) = delete;
+  ChromeArcUtilTest& operator=(const ChromeArcUtilTest&) = delete;
+
   ~ChromeArcUtilTest() override = default;
 
   void SetUp() override {
@@ -212,8 +217,6 @@ class ChromeArcUtilTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   // Owned by |profile_manager_|
   TestingProfile* profile_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeArcUtilTest);
 };
 
 TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile) {
@@ -763,6 +766,9 @@ class ArcOobeTest : public ChromeArcUtilTest {
     oobe_configuration_ = std::make_unique<ash::OobeConfiguration>();
   }
 
+  ArcOobeTest(const ArcOobeTest&) = delete;
+  ArcOobeTest& operator=(const ArcOobeTest&) = delete;
+
   ~ArcOobeTest() override {
     // Fake display host have to be shut down first, as it may access
     // configuration.
@@ -785,8 +791,6 @@ class ArcOobeTest : public ChromeArcUtilTest {
  private:
   std::unique_ptr<ash::OobeConfiguration> oobe_configuration_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcOobeTest);
 };
 
 TEST_F(ArcOobeTest, TermsOfServiceOobeNegotiationNeededForManagedUser) {

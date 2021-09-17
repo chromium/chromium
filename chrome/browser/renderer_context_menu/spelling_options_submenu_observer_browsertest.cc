@@ -24,6 +24,12 @@ namespace {
 class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
  public:
   SpellingOptionsSubMenuObserverTest() {}
+
+  SpellingOptionsSubMenuObserverTest(
+      const SpellingOptionsSubMenuObserverTest&) = delete;
+  SpellingOptionsSubMenuObserverTest& operator=(
+      const SpellingOptionsSubMenuObserverTest&) = delete;
+
   ~SpellingOptionsSubMenuObserverTest() override {}
 
   void SetUpOnMainThread() override {
@@ -79,8 +85,6 @@ class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<MockRenderViewContextMenu> menu_;
   std::unique_ptr<SpellingOptionsSubMenuObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellingOptionsSubMenuObserverTest);
 };
 
 // Tests that selecting the "Use basic spell check" item toggles the value

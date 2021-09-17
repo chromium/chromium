@@ -18,6 +18,12 @@ namespace extensions {
 class ChromeMimeHandlerViewGuestDelegate : public MimeHandlerViewGuestDelegate {
  public:
   ChromeMimeHandlerViewGuestDelegate();
+
+  ChromeMimeHandlerViewGuestDelegate(
+      const ChromeMimeHandlerViewGuestDelegate&) = delete;
+  ChromeMimeHandlerViewGuestDelegate& operator=(
+      const ChromeMimeHandlerViewGuestDelegate&) = delete;
+
   ~ChromeMimeHandlerViewGuestDelegate() override;
 
   // MimeHandlerViewGuestDelegate.
@@ -25,9 +31,6 @@ class ChromeMimeHandlerViewGuestDelegate : public MimeHandlerViewGuestDelegate {
                          const content::ContextMenuParams& params) override;
   void RecordLoadMetric(bool in_main_frame,
                         const std::string& mime_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeMimeHandlerViewGuestDelegate);
 };
 
 }  // namespace extensions

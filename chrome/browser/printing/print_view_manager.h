@@ -23,6 +23,9 @@ namespace printing {
 class PrintViewManager : public PrintViewManagerBase,
                          public content::WebContentsUserData<PrintViewManager> {
  public:
+  PrintViewManager(const PrintViewManager&) = delete;
+  PrintViewManager& operator=(const PrintViewManager&) = delete;
+
   ~PrintViewManager() override;
 
   static void BindPrintManagerHost(
@@ -167,8 +170,6 @@ class PrintViewManager : public PrintViewManagerBase,
   // beginning of destruction. Note that PrintViewManagerBase has its own
   // base::WeakPtrFactory as well, but PrintViewManager should use this one.
   base::WeakPtrFactory<PrintViewManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintViewManager);
 };
 
 }  // namespace printing

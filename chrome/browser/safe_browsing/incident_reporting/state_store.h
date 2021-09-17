@@ -44,6 +44,10 @@ class StateStore {
   class Transaction {
    public:
     explicit Transaction(StateStore* store);
+
+    Transaction(const Transaction&) = delete;
+    Transaction& operator=(const Transaction&) = delete;
+
     ~Transaction();
 
     // Marks the described incident as having been reported.
@@ -78,8 +82,6 @@ class StateStore {
     // A ScopedUserPrefUpdate through which changes to the incidents_sent
     // preference are made.
     std::unique_ptr<DictionaryPrefUpdate> pref_update_;
-
-    DISALLOW_COPY_AND_ASSIGN(Transaction);
   };
 
   explicit StateStore(Profile* profile);

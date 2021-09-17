@@ -38,6 +38,10 @@ class EasyUnlockKeyManager {
   using GetDeviceDataListCallback = EasyUnlockGetKeysOperation::GetKeysCallback;
 
   EasyUnlockKeyManager();
+
+  EasyUnlockKeyManager(const EasyUnlockKeyManager&) = delete;
+  EasyUnlockKeyManager& operator=(const EasyUnlockKeyManager&) = delete;
+
   ~EasyUnlockKeyManager();
 
   // Clears existing Easy unlock keys and creates new ones for the given
@@ -110,8 +114,6 @@ class EasyUnlockKeyManager {
   std::unique_ptr<EasyUnlockGetKeysOperation> pending_read_operation_;
 
   base::WeakPtrFactory<EasyUnlockKeyManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockKeyManager);
 };
 
 }  // namespace ash

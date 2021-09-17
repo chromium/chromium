@@ -30,6 +30,10 @@ class TabManager::WebContentsData
   using LoadingState = resource_coordinator::TabLoadTracker::LoadingState;
 
   explicit WebContentsData(content::WebContents* web_contents);
+
+  WebContentsData(const WebContentsData&) = delete;
+  WebContentsData& operator=(const WebContentsData&) = delete;
+
   ~WebContentsData() override;
 
   // WebContentsObserver implementation:
@@ -87,8 +91,6 @@ class TabManager::WebContentsData
 
   // Contains all the needed data for the tab.
   Data tab_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsData);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

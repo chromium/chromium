@@ -42,6 +42,11 @@ class LoadingPredictorPageLoadMetricsObserver
       predictors::ResourcePrefetchPredictor* predictor,
       predictors::LoadingPredictorTabHelper* predictor_tab_helper);
 
+  LoadingPredictorPageLoadMetricsObserver(
+      const LoadingPredictorPageLoadMetricsObserver&) = delete;
+  LoadingPredictorPageLoadMetricsObserver& operator=(
+      const LoadingPredictorPageLoadMetricsObserver&) = delete;
+
   ~LoadingPredictorPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -59,8 +64,6 @@ class LoadingPredictorPageLoadMetricsObserver
   predictors::ResourcePrefetchPredictor* predictor_;
   predictors::LoadingPredictorTabHelper* predictor_tab_helper_;
   bool record_histogram_preconnectable_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadingPredictorPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_LOADING_PREDICTOR_PAGE_LOAD_METRICS_OBSERVER_H_

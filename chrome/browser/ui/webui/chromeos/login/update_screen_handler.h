@@ -64,6 +64,10 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
   using TView = UpdateView;
 
   explicit UpdateScreenHandler(JSCallsContainer* js_calls_container);
+
+  UpdateScreenHandler(const UpdateScreenHandler&) = delete;
+  UpdateScreenHandler& operator=(const UpdateScreenHandler&) = delete;
+
   ~UpdateScreenHandler() override;
 
  private:
@@ -93,8 +97,6 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateScreenHandler);
 };
 
 }  // namespace chromeos

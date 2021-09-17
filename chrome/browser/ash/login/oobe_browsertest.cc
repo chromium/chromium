@@ -55,6 +55,10 @@ namespace ash {
 class OobeTest : public OobeBaseTest {
  public:
   OobeTest() = default;
+
+  OobeTest(const OobeTest&) = delete;
+  OobeTest& operator=(const OobeTest&) = delete;
+
   ~OobeTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -85,8 +89,6 @@ class OobeTest : public OobeBaseTest {
 
  private:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
-
-  DISALLOW_COPY_AND_ASSIGN(OobeTest);
 };
 
 IN_PROC_BROWSER_TEST_F(OobeTest, NewUser) {

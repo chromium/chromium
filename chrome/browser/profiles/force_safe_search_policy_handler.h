@@ -22,15 +22,17 @@ class PolicyMap;
 class ForceSafeSearchPolicyHandler : public TypeCheckingPolicyHandler {
  public:
   ForceSafeSearchPolicyHandler();
+
+  ForceSafeSearchPolicyHandler(const ForceSafeSearchPolicyHandler&) = delete;
+  ForceSafeSearchPolicyHandler& operator=(const ForceSafeSearchPolicyHandler&) =
+      delete;
+
   ~ForceSafeSearchPolicyHandler() override;
 
  protected:
   // ConfigurationPolicyHandler:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ForceSafeSearchPolicyHandler);
 };
 
 }  // namespace policy

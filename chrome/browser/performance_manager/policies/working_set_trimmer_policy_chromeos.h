@@ -51,6 +51,11 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
         bool trim_once_after_arcvm_boot) = 0;
   };
 
+  WorkingSetTrimmerPolicyChromeOS(const WorkingSetTrimmerPolicyChromeOS&) =
+      delete;
+  WorkingSetTrimmerPolicyChromeOS& operator=(
+      const WorkingSetTrimmerPolicyChromeOS&) = delete;
+
   ~WorkingSetTrimmerPolicyChromeOS() override;
   WorkingSetTrimmerPolicyChromeOS();
 
@@ -161,8 +166,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   base::ElapsedTimer time_since_last_arcvm_trim_metric_report_;
 
   base::WeakPtrFactory<WorkingSetTrimmerPolicyChromeOS> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerPolicyChromeOS);
 };
 
 }  // namespace policies

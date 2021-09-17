@@ -14,9 +14,11 @@ namespace ash {
 class PpdResolutionTrackerTest : public testing::Test {
  public:
   PpdResolutionTrackerTest() = default;
-  ~PpdResolutionTrackerTest() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(PpdResolutionTrackerTest);
+  PpdResolutionTrackerTest(const PpdResolutionTrackerTest&) = delete;
+  PpdResolutionTrackerTest& operator=(const PpdResolutionTrackerTest&) = delete;
+
+  ~PpdResolutionTrackerTest() override = default;
 };
 
 TEST_F(PpdResolutionTrackerTest, PendingResolution) {

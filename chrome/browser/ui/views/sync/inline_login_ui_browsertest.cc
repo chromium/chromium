@@ -403,6 +403,10 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
  public:
   InlineLoginHelperBrowserTest() : forced_signin_setter_(true) {}
 
+  InlineLoginHelperBrowserTest(const InlineLoginHelperBrowserTest&) = delete;
+  InlineLoginHelperBrowserTest& operator=(const InlineLoginHelperBrowserTest&) =
+      delete;
+
   ~InlineLoginHelperBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -499,8 +503,6 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
   base::CallbackListSubscription create_services_subscription_;
   Profile* profile_ = nullptr;
   signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginHelperBrowserTest);
 };
 
 // Test signin helper calls correct fetcher methods when called with an

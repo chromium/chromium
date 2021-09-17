@@ -35,6 +35,10 @@ class ChromeAppSorting : public AppSorting,
                          public web_app::AppRegistrarObserver {
  public:
   explicit ChromeAppSorting(content::BrowserContext* browser_context);
+
+  ChromeAppSorting(const ChromeAppSorting&) = delete;
+  ChromeAppSorting& operator=(const ChromeAppSorting&) = delete;
+
   ~ChromeAppSorting() override;
 
   // AppSorting implementation:
@@ -192,8 +196,6 @@ class ChromeAppSorting : public AppSorting,
   std::set<std::string> ntp_hidden_extensions_;
 
   base::WeakPtrFactory<ChromeAppSorting> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppSorting);
 };
 
 }  // namespace extensions

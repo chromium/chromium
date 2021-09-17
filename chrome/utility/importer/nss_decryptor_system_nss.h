@@ -25,6 +25,10 @@ class FilePath;
 class NSSDecryptor {
  public:
   NSSDecryptor();
+
+  NSSDecryptor(const NSSDecryptor&) = delete;
+  NSSDecryptor& operator=(const NSSDecryptor&) = delete;
+
   ~NSSDecryptor();
 
   // Initializes NSS if it hasn't already been initialized.
@@ -58,8 +62,6 @@ class NSSDecryptor {
 
   bool is_nss_initialized_;
   PK11SlotInfo* db_slot_;
-
-  DISALLOW_COPY_AND_ASSIGN(NSSDecryptor);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_NSS_DECRYPTOR_SYSTEM_NSS_H_

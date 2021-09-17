@@ -106,6 +106,10 @@ void RequestProxyResolvingSocketFactory(
 class Waiter {
  public:
   Waiter() {}
+
+  Waiter(const Waiter&) = delete;
+  Waiter& operator=(const Waiter&) = delete;
+
   ~Waiter() {}
 
   // Waits until the asynchronous operation finishes.
@@ -156,8 +160,6 @@ class Waiter {
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(Waiter);
 };
 
 class FakeExtensionGCMAppHandler : public ExtensionGCMAppHandler {
@@ -169,6 +171,10 @@ class FakeExtensionGCMAppHandler : public ExtensionGCMAppHandler {
         delete_id_result_(instance_id::InstanceID::UNKNOWN_ERROR),
         app_handler_count_drop_to_zero_(false) {
   }
+
+  FakeExtensionGCMAppHandler(const FakeExtensionGCMAppHandler&) = delete;
+  FakeExtensionGCMAppHandler& operator=(const FakeExtensionGCMAppHandler&) =
+      delete;
 
   ~FakeExtensionGCMAppHandler() override {}
 
@@ -215,8 +221,6 @@ class FakeExtensionGCMAppHandler : public ExtensionGCMAppHandler {
   gcm::GCMClient::Result unregistration_result_;
   instance_id::InstanceID::Result delete_id_result_;
   bool app_handler_count_drop_to_zero_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeExtensionGCMAppHandler);
 };
 
 class ExtensionGCMAppHandlerTest : public testing::Test {
@@ -249,6 +253,10 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
         extension_service_(nullptr),
         registration_result_(gcm::GCMClient::UNKNOWN_ERROR),
         unregistration_result_(gcm::GCMClient::UNKNOWN_ERROR) {}
+
+  ExtensionGCMAppHandlerTest(const ExtensionGCMAppHandlerTest&) = delete;
+  ExtensionGCMAppHandlerTest& operator=(const ExtensionGCMAppHandlerTest&) =
+      delete;
 
   ~ExtensionGCMAppHandlerTest() override {}
 
@@ -426,8 +434,6 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   std::unique_ptr<FakeExtensionGCMAppHandler> gcm_app_handler_;
   gcm::GCMClient::Result registration_result_;
   gcm::GCMClient::Result unregistration_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGCMAppHandlerTest);
 };
 
 TEST_F(ExtensionGCMAppHandlerTest, AddAndRemoveAppHandler) {

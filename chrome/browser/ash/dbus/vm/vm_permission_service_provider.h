@@ -97,6 +97,11 @@ class VmPermissionServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   VmPermissionServiceProvider();
+
+  VmPermissionServiceProvider(const VmPermissionServiceProvider&) = delete;
+  VmPermissionServiceProvider& operator=(const VmPermissionServiceProvider&) =
+      delete;
+
   ~VmPermissionServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -153,8 +158,6 @@ class VmPermissionServiceProvider
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<VmPermissionServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VmPermissionServiceProvider);
 };
 
 }  // namespace ash

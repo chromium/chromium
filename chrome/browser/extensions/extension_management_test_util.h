@@ -25,6 +25,12 @@ namespace extensions {
 class ExtensionManagementPrefUpdaterBase {
  public:
   ExtensionManagementPrefUpdaterBase();
+
+  ExtensionManagementPrefUpdaterBase(
+      const ExtensionManagementPrefUpdaterBase&) = delete;
+  ExtensionManagementPrefUpdaterBase& operator=(
+      const ExtensionManagementPrefUpdaterBase&) = delete;
+
   virtual ~ExtensionManagementPrefUpdaterBase();
 
   // Helper functions for per extension settings.
@@ -118,8 +124,6 @@ class ExtensionManagementPrefUpdaterBase {
   void RemoveStringFromList(const std::string& path, const std::string& str);
 
   std::unique_ptr<base::DictionaryValue> pref_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionManagementPrefUpdaterBase);
 };
 
 // A helper class to manipulate the extension management preference in unit
@@ -139,14 +143,17 @@ class ExtensionManagementPrefUpdater
       SetPref(new base::DictionaryValue);
   }
 
+  ExtensionManagementPrefUpdater(const ExtensionManagementPrefUpdater&) =
+      delete;
+  ExtensionManagementPrefUpdater& operator=(
+      const ExtensionManagementPrefUpdater&) = delete;
+
   virtual ~ExtensionManagementPrefUpdater() {
     service_->SetManagedPref(pref_names::kExtensionManagement, TakePref());
   }
 
  private:
   TestingPrefService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionManagementPrefUpdater);
 };
 
 // A helper class to manipulate the extension management policy in browser
@@ -156,13 +163,17 @@ class ExtensionManagementPolicyUpdater
  public:
   explicit ExtensionManagementPolicyUpdater(
       policy::MockConfigurationPolicyProvider* provider);
+
+  ExtensionManagementPolicyUpdater(const ExtensionManagementPolicyUpdater&) =
+      delete;
+  ExtensionManagementPolicyUpdater& operator=(
+      const ExtensionManagementPolicyUpdater&) = delete;
+
   ~ExtensionManagementPolicyUpdater() override;
 
  private:
   policy::MockConfigurationPolicyProvider* provider_;
   std::unique_ptr<policy::PolicyBundle> policies_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionManagementPolicyUpdater);
 };
 
 }  // namespace extensions

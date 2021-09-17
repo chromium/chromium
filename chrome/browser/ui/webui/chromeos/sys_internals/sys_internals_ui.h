@@ -12,10 +12,11 @@
 class SysInternalsUI : public content::WebUIController {
  public:
   explicit SysInternalsUI(content::WebUI* web_ui);
-  ~SysInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SysInternalsUI);
+  SysInternalsUI(const SysInternalsUI&) = delete;
+  SysInternalsUI& operator=(const SysInternalsUI&) = delete;
+
+  ~SysInternalsUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYS_INTERNALS_SYS_INTERNALS_UI_H_

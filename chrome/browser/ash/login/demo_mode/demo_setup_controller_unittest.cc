@@ -48,6 +48,11 @@ class DemoSetupControllerTestHelper {
  public:
   DemoSetupControllerTestHelper()
       : run_loop_(std::make_unique<base::RunLoop>()) {}
+
+  DemoSetupControllerTestHelper(const DemoSetupControllerTestHelper&) = delete;
+  DemoSetupControllerTestHelper& operator=(
+      const DemoSetupControllerTestHelper&) = delete;
+
   virtual ~DemoSetupControllerTestHelper() = default;
 
   void OnSetupError(const DemoSetupController::DemoSetupError& error) {
@@ -101,8 +106,6 @@ class DemoSetupControllerTestHelper {
   absl::optional<DemoSetupController::DemoSetupStep> setup_step_;
   absl::optional<DemoSetupController::DemoSetupError> error_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupControllerTestHelper);
 };
 
 class DemoSetupControllerTest : public testing::Test {

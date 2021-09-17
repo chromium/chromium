@@ -39,6 +39,9 @@ class TestDelegate : public SessionRestorePolicy::Delegate {
  public:
   explicit TestDelegate(base::TickClock* clock) : clock_(clock) {}
 
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
+
   ~TestDelegate() override {}
 
   size_t GetNumberOfCores() const override { return number_of_cores_; }
@@ -67,8 +70,6 @@ class TestDelegate : public SessionRestorePolicy::Delegate {
   size_t free_memory_mb_ = 0;
   base::TickClock* clock_ = nullptr;
   size_t site_engagement_score_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class LenientTabScoreChangeMock {
@@ -107,6 +108,9 @@ class TestSessionRestorePolicy : public SessionRestorePolicy {
   TestSessionRestorePolicy(bool policy_enabled, const Delegate* delegate)
       : SessionRestorePolicy(policy_enabled, delegate) {}
 
+  TestSessionRestorePolicy(const TestSessionRestorePolicy&) = delete;
+  TestSessionRestorePolicy& operator=(const TestSessionRestorePolicy&) = delete;
+
   ~TestSessionRestorePolicy() override {}
 
   using RescoreTabCallback =
@@ -132,8 +136,6 @@ class TestSessionRestorePolicy : public SessionRestorePolicy {
 
  private:
   RescoreTabCallback rescore_tab_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionRestorePolicy);
 };
 
 }  // namespace
@@ -141,6 +143,9 @@ class TestSessionRestorePolicy : public SessionRestorePolicy {
 class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
  public:
   SessionRestorePolicyTest() : delegate_(&clock_) {}
+
+  SessionRestorePolicyTest(const SessionRestorePolicyTest&) = delete;
+  SessionRestorePolicyTest& operator=(const SessionRestorePolicyTest&) = delete;
 
   ~SessionRestorePolicyTest() override {}
 
@@ -274,9 +279,6 @@ class SessionRestorePolicyTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<content::WebContents> contents3_;
 
   std::vector<content::WebContents*> tab_for_scoring_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionRestorePolicyTest);
 };
 
 TEST_F(SessionRestorePolicyTest, CalculateSimultaneousTabLoads) {

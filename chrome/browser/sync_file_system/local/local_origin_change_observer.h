@@ -15,12 +15,14 @@ namespace sync_file_system {
 class LocalOriginChangeObserver {
  public:
   LocalOriginChangeObserver() {}
+
+  LocalOriginChangeObserver(const LocalOriginChangeObserver&) = delete;
+  LocalOriginChangeObserver& operator=(const LocalOriginChangeObserver&) =
+      delete;
+
   ~LocalOriginChangeObserver() {}
 
   virtual void OnChangesAvailableInOrigins(const std::set<GURL>& origins) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalOriginChangeObserver);
 };
 
 }  // namespace sync_file_system

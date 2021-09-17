@@ -80,6 +80,10 @@ class DesktopMediaPicker {
       const content::MediaStreamRequest* request = nullptr);
 
   DesktopMediaPicker() = default;
+
+  DesktopMediaPicker(const DesktopMediaPicker&) = delete;
+  DesktopMediaPicker& operator=(const DesktopMediaPicker&) = delete;
+
   virtual ~DesktopMediaPicker() = default;
 
   // Shows dialog with list of desktop media sources (screens, windows, tabs)
@@ -89,9 +93,6 @@ class DesktopMediaPicker {
   virtual void Show(const Params& params,
                     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
                     DoneCallback done_callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaPicker);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_H_

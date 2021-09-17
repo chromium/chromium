@@ -16,13 +16,14 @@ class RefCountedMemory;
 class ComponentsUI : public content::WebUIController {
  public:
   explicit ComponentsUI(content::WebUI* web_ui);
+
+  ComponentsUI(const ComponentsUI&) = delete;
+  ComponentsUI& operator=(const ComponentsUI&) = delete;
+
   ~ComponentsUI() override;
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ComponentsUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_COMPONENTS_COMPONENTS_UI_H_

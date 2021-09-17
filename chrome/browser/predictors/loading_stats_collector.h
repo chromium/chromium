@@ -50,6 +50,10 @@ class LoadingStatsCollector {
  public:
   LoadingStatsCollector(ResourcePrefetchPredictor* predictor,
                         const LoadingPredictorConfig& config);
+
+  LoadingStatsCollector(const LoadingStatsCollector&) = delete;
+  LoadingStatsCollector& operator=(const LoadingStatsCollector&) = delete;
+
   ~LoadingStatsCollector();
 
   // Records statistics about a finished preconnect operation.
@@ -71,8 +75,6 @@ class LoadingStatsCollector {
   ResourcePrefetchPredictor* predictor_;
   base::TimeDelta max_stats_age_;
   std::map<GURL, std::unique_ptr<PreconnectStats>> preconnect_stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadingStatsCollector);
 };
 
 }  // namespace predictors

@@ -30,6 +30,12 @@ class PaymentHandlerModalDialogManagerDelegate
   // |host| must not be null.
   explicit PaymentHandlerModalDialogManagerDelegate(
       content::WebContents* host_web_contents);
+
+  PaymentHandlerModalDialogManagerDelegate(
+      const PaymentHandlerModalDialogManagerDelegate&) = delete;
+  PaymentHandlerModalDialogManagerDelegate& operator=(
+      const PaymentHandlerModalDialogManagerDelegate&) = delete;
+
   ~PaymentHandlerModalDialogManagerDelegate() override;
 
   // Sets the |web_contents| that is behind the modal dialogs managed by this
@@ -51,8 +57,6 @@ class PaymentHandlerModalDialogManagerDelegate
 
   // A not-owned pointer to the WebContents behind the modal dialogs.
   content::WebContents* web_contents_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerModalDialogManagerDelegate);
 };
 
 }  // namespace payments

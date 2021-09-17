@@ -105,6 +105,11 @@ class LoadedIncognitoObserver : public ExtensionRegistryObserver {
 class LazyBackgroundPageApiTest : public ExtensionApiTest {
  public:
   LazyBackgroundPageApiTest() {}
+
+  LazyBackgroundPageApiTest(const LazyBackgroundPageApiTest&) = delete;
+  LazyBackgroundPageApiTest& operator=(const LazyBackgroundPageApiTest&) =
+      delete;
+
   ~LazyBackgroundPageApiTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -158,9 +163,6 @@ class LazyBackgroundPageApiTest : public ExtensionApiTest {
                                                    extension->id().c_str()),
                                                browser(), api_test_utils::NONE);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LazyBackgroundPageApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, BrowserActionCreateTab) {
@@ -709,6 +711,12 @@ class PictureInPictureLazyBackgroundPageApiTest
     : public LazyBackgroundPageApiTest {
  public:
   PictureInPictureLazyBackgroundPageApiTest() = default;
+
+  PictureInPictureLazyBackgroundPageApiTest(
+      const PictureInPictureLazyBackgroundPageApiTest&) = delete;
+  PictureInPictureLazyBackgroundPageApiTest& operator=(
+      const PictureInPictureLazyBackgroundPageApiTest&) = delete;
+
   ~PictureInPictureLazyBackgroundPageApiTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -717,9 +725,6 @@ class PictureInPictureLazyBackgroundPageApiTest
     ProcessManager::SetEventPageIdleTimeForTesting(2000);
     ProcessManager::SetEventPageSuspendingTimeForTesting(2000);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureLazyBackgroundPageApiTest);
 };
 
 // Tests that the lazy background page stays alive while a video is playing in

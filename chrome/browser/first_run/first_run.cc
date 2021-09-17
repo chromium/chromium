@@ -86,6 +86,10 @@ base::Time g_cached_sentinel_creation_time;
 class ImportEndedObserver : public importer::ImporterProgressObserver {
  public:
   ImportEndedObserver() : ended_(false) {}
+
+  ImportEndedObserver(const ImportEndedObserver&) = delete;
+  ImportEndedObserver& operator=(const ImportEndedObserver&) = delete;
+
   ~ImportEndedObserver() override {}
 
   // importer::ImporterProgressObserver:
@@ -111,8 +115,6 @@ class ImportEndedObserver : public importer::ImporterProgressObserver {
   bool ended_;
 
   base::OnceClosure callback_for_import_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImportEndedObserver);
 };
 
 // Launches the import, via |importer_host|, from |source_profile| into

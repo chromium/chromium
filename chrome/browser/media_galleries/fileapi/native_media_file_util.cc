@@ -75,6 +75,10 @@ class NativeMediaFileUtil::Core {
  public:
   explicit Core(scoped_refptr<base::SequencedTaskRunner> media_task_runner)
       : media_task_runner_(std::move(media_task_runner)) {}
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() = default;
 
   // The following calls are made on the media TaskRunner, using
@@ -167,8 +171,6 @@ class NativeMediaFileUtil::Core {
 
   MediaPathFilter media_path_filter_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 NativeMediaFileUtil::NativeMediaFileUtil(

@@ -37,6 +37,10 @@ class AddWatcher : public Operation {
              const base::FilePath& entry_path,
              bool recursive,
              storage::AsyncFileUtil::StatusCallback callback);
+
+  AddWatcher(const AddWatcher&) = delete;
+  AddWatcher& operator=(const AddWatcher&) = delete;
+
   ~AddWatcher() override;
 
   // Operation overrides.
@@ -52,8 +56,6 @@ class AddWatcher : public Operation {
   const base::FilePath entry_path_;
   const bool recursive_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddWatcher);
 };
 
 }  // namespace operations

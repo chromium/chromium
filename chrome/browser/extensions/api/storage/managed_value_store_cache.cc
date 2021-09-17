@@ -71,6 +71,10 @@ class ManagedValueStoreCache::ExtensionTracker
     : public ExtensionRegistryObserver {
  public:
   ExtensionTracker(Profile* profile, policy::PolicyDomain policy_domain);
+
+  ExtensionTracker(const ExtensionTracker&) = delete;
+  ExtensionTracker& operator=(const ExtensionTracker&) = delete;
+
   ~ExtensionTracker() override {}
 
  private:
@@ -104,8 +108,6 @@ class ManagedValueStoreCache::ExtensionTracker
       extension_registry_observation_{this};
   policy::SchemaRegistry* schema_registry_;
   base::WeakPtrFactory<ExtensionTracker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionTracker);
 };
 
 ManagedValueStoreCache::ExtensionTracker::ExtensionTracker(

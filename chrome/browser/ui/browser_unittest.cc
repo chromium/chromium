@@ -34,6 +34,10 @@ using session_manager::SessionState;
 class BrowserUnitTest : public BrowserWithTestWindowTest {
  public:
   BrowserUnitTest() {}
+
+  BrowserUnitTest(const BrowserUnitTest&) = delete;
+  BrowserUnitTest& operator=(const BrowserUnitTest&) = delete;
+
   ~BrowserUnitTest() override {}
 
   // Caller owns the memory.
@@ -41,9 +45,6 @@ class BrowserUnitTest : public BrowserWithTestWindowTest {
     return WebContentsTester::CreateTestWebContents(
         profile(), SiteInstance::Create(profile()));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserUnitTest);
 };
 
 // Ensure crashed tabs are not reloaded when selected. crbug.com/232323
@@ -278,6 +279,10 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
 class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
  public:
   BrowserBookmarkBarTest() {}
+
+  BrowserBookmarkBarTest(const BrowserBookmarkBarTest&) = delete;
+  BrowserBookmarkBarTest& operator=(const BrowserBookmarkBarTest&) = delete;
+
   ~BrowserBookmarkBarTest() override {}
 
  protected:
@@ -302,6 +307,12 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
    public:
     BookmarkBarStateTestBrowserWindow()
         : browser_(nullptr), bookmark_bar_state_(BookmarkBar::HIDDEN) {}
+
+    BookmarkBarStateTestBrowserWindow(
+        const BookmarkBarStateTestBrowserWindow&) = delete;
+    BookmarkBarStateTestBrowserWindow& operator=(
+        const BookmarkBarStateTestBrowserWindow&) = delete;
+
     ~BookmarkBarStateTestBrowserWindow() override {}
 
     void set_browser(Browser* browser) { browser_ = browser; }
@@ -329,11 +340,7 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
 
     Browser* browser_;  // Weak ptr.
     BookmarkBar::State bookmark_bar_state_;
-
-    DISALLOW_COPY_AND_ASSIGN(BookmarkBarStateTestBrowserWindow);
   };
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserBookmarkBarTest);
 };
 
 // Ensure bookmark bar states in Browser and BrowserWindow are in sync after

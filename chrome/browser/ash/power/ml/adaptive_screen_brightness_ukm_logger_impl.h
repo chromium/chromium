@@ -17,6 +17,12 @@ class AdaptiveScreenBrightnessUkmLoggerImpl
     : public AdaptiveScreenBrightnessUkmLogger {
  public:
   AdaptiveScreenBrightnessUkmLoggerImpl() = default;
+
+  AdaptiveScreenBrightnessUkmLoggerImpl(
+      const AdaptiveScreenBrightnessUkmLoggerImpl&) = delete;
+  AdaptiveScreenBrightnessUkmLoggerImpl& operator=(
+      const AdaptiveScreenBrightnessUkmLoggerImpl&) = delete;
+
   ~AdaptiveScreenBrightnessUkmLoggerImpl() override;
 
   // ash::power::ml::AdaptiveScreenBrightnessUkmLogger overrides:
@@ -28,8 +34,6 @@ class AdaptiveScreenBrightnessUkmLoggerImpl
   // This ID is incremented each time a ScreenBrightessEvent is logged to UKM.
   // Event index resets when a new user session starts.
   int next_sequence_id_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(AdaptiveScreenBrightnessUkmLoggerImpl);
 };
 
 }  // namespace ml

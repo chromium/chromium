@@ -29,6 +29,11 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
   PaymentSheetViewController(base::WeakPtr<PaymentRequestSpec> spec,
                              base::WeakPtr<PaymentRequestState> state,
                              base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  PaymentSheetViewController(const PaymentSheetViewController&) = delete;
+  PaymentSheetViewController& operator=(const PaymentSheetViewController&) =
+      delete;
+
   ~PaymentSheetViewController() override;
 
   // PaymentRequestSpec::Observer:
@@ -65,8 +70,6 @@ class PaymentSheetViewController : public PaymentRequestSheetController,
   void AddShippingButtonPressed();
   void AddPaymentMethodButtonPressed();
   void AddContactInfoButtonPressed();
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentSheetViewController);
 };
 
 }  // namespace payments

@@ -337,6 +337,11 @@ class ExtensionDownloadsEventRouter
 
   explicit ExtensionDownloadsEventRouter(
       Profile* profile, content::DownloadManager* manager);
+
+  ExtensionDownloadsEventRouter(const ExtensionDownloadsEventRouter&) = delete;
+  ExtensionDownloadsEventRouter& operator=(
+      const ExtensionDownloadsEventRouter&) = delete;
+
   ~ExtensionDownloadsEventRouter() override;
 
   void SetShelfEnabled(const extensions::Extension* extension, bool enabled);
@@ -389,8 +394,6 @@ class ExtensionDownloadsEventRouter
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDownloadsEventRouter);
 };
 
 }  // namespace extensions

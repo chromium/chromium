@@ -37,6 +37,9 @@ class TabLifecycleUnitSource::TabLifecycleUnitHolder
     : public content::WebContentsUserData<
           TabLifecycleUnitSource::TabLifecycleUnitHolder> {
  public:
+  TabLifecycleUnitHolder(const TabLifecycleUnitHolder&) = delete;
+  TabLifecycleUnitHolder& operator=(const TabLifecycleUnitHolder&) = delete;
+
   ~TabLifecycleUnitHolder() override = default;
 
   TabLifecycleUnit* lifecycle_unit() const { return lifecycle_unit_.get(); }
@@ -53,8 +56,6 @@ class TabLifecycleUnitSource::TabLifecycleUnitHolder
   explicit TabLifecycleUnitHolder(content::WebContents*) {}
 
   std::unique_ptr<TabLifecycleUnit> lifecycle_unit_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabLifecycleUnitHolder);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
@@ -72,6 +73,11 @@ class TabLifecycleStateObserver
   using WebContentsProxy = performance_manager::WebContentsProxy;
 
   TabLifecycleStateObserver() = default;
+
+  TabLifecycleStateObserver(const TabLifecycleStateObserver&) = delete;
+  TabLifecycleStateObserver& operator=(const TabLifecycleStateObserver&) =
+      delete;
+
   ~TabLifecycleStateObserver() override = default;
 
  private:
@@ -102,8 +108,6 @@ class TabLifecycleStateObserver
   void OnTakenFromGraph(Graph* graph) override {
     graph->RemovePageNodeObserver(this);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TabLifecycleStateObserver);
 };
 
 TabLifecycleUnitSource::TabLifecycleUnitSource(

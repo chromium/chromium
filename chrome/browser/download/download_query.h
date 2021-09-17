@@ -100,6 +100,10 @@ class DownloadQuery {
                            const download::DownloadItem& item);
 
   DownloadQuery();
+
+  DownloadQuery(const DownloadQuery&) = delete;
+  DownloadQuery& operator=(const DownloadQuery&) = delete;
+
   ~DownloadQuery();
 
   // Adds a new filter of type |type| with value |value| and returns true if
@@ -158,8 +162,6 @@ class DownloadQuery {
   FilterCallbackVector filters_;
   SorterVector sorters_;
   size_t limit_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadQuery);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_QUERY_H_

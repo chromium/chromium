@@ -12,10 +12,11 @@
 class NTPTilesInternalsUI : public content::WebUIController {
  public:
   explicit NTPTilesInternalsUI(content::WebUI* web_ui);
-  ~NTPTilesInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NTPTilesInternalsUI);
+  NTPTilesInternalsUI(const NTPTilesInternalsUI&) = delete;
+  NTPTilesInternalsUI& operator=(const NTPTilesInternalsUI&) = delete;
+
+  ~NTPTilesInternalsUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_TILES_INTERNALS_UI_H_

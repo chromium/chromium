@@ -41,6 +41,11 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
 class EnsureMediaDirectoriesExists {
  public:
   EnsureMediaDirectoriesExists();
+
+  EnsureMediaDirectoriesExists(const EnsureMediaDirectoriesExists&) = delete;
+  EnsureMediaDirectoriesExists& operator=(const EnsureMediaDirectoriesExists&) =
+      delete;
+
   ~EnsureMediaDirectoriesExists();
 
   int num_galleries() const { return num_galleries_; }
@@ -75,8 +80,6 @@ class EnsureMediaDirectoriesExists {
 #if defined(OS_MAC)
   std::unique_ptr<MockPreferences> mac_preferences_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(EnsureMediaDirectoriesExists);
 };
 
 extern base::FilePath MakeMediaGalleriesTestingPath(const std::string& dir);

@@ -34,6 +34,10 @@ using OnDialSinkAddedCallback =
 class DialMediaSinkService {
  public:
   DialMediaSinkService();
+
+  DialMediaSinkService(const DialMediaSinkService&) = delete;
+  DialMediaSinkService& operator=(const DialMediaSinkService&) = delete;
+
   virtual ~DialMediaSinkService();
 
   // Starts discovery of DIAL sinks. Can only be called once.
@@ -68,8 +72,6 @@ class DialMediaSinkService {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DialMediaSinkService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DialMediaSinkService);
 };
 
 }  // namespace media_router

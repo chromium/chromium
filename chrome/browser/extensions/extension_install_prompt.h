@@ -100,6 +100,10 @@ class ExtensionInstallPrompt {
   class Prompt {
    public:
     explicit Prompt(PromptType type);
+
+    Prompt(const Prompt&) = delete;
+    Prompt& operator=(const Prompt&) = delete;
+
     ~Prompt();
 
     void AddPermissionSet(const extensions::PermissionSet& permissions);
@@ -239,8 +243,6 @@ class ExtensionInstallPrompt {
     std::vector<std::u16string> retained_device_messages_;
 
     base::ObserverList<Observer> observers_;
-
-    DISALLOW_COPY_AND_ASSIGN(Prompt);
   };
 
   static const int kMinExtensionRating = 0;

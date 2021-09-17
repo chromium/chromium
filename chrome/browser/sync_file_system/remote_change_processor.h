@@ -40,6 +40,10 @@ class RemoteChangeProcessor {
                               const FileChangeList& changes)>;
 
   RemoteChangeProcessor() {}
+
+  RemoteChangeProcessor(const RemoteChangeProcessor&) = delete;
+  RemoteChangeProcessor& operator=(const RemoteChangeProcessor&) = delete;
+
   virtual ~RemoteChangeProcessor() {}
 
   // This must be called before processing the change for the |url|.
@@ -80,9 +84,6 @@ class RemoteChangeProcessor {
   virtual void RecordFakeLocalChange(const storage::FileSystemURL& url,
                                      const FileChange& change,
                                      SyncStatusCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteChangeProcessor);
 };
 
 }  // namespace sync_file_system

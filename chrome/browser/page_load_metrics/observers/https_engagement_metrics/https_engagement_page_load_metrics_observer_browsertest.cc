@@ -29,6 +29,12 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   HttpsEngagementPageLoadMetricsBrowserTest()
       : metrics_provider_(new HttpsEngagementMetricsProvider()) {}
+
+  HttpsEngagementPageLoadMetricsBrowserTest(
+      const HttpsEngagementPageLoadMetricsBrowserTest&) = delete;
+  HttpsEngagementPageLoadMetricsBrowserTest& operator=(
+      const HttpsEngagementPageLoadMetricsBrowserTest&) = delete;
+
   ~HttpsEngagementPageLoadMetricsBrowserTest() override {}
 
   void StartHttpsServer(bool cert_error) {
@@ -166,8 +172,6 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_test_server_;
   std::unique_ptr<HttpsEngagementMetricsProvider> metrics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpsEngagementPageLoadMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(HttpsEngagementPageLoadMetricsBrowserTest,

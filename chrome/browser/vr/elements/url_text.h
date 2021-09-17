@@ -20,6 +20,10 @@ namespace vr {
 class VR_UI_EXPORT UrlText : public Text {
  public:
   explicit UrlText(float font_height_dmm);
+
+  UrlText(const UrlText&) = delete;
+  UrlText& operator=(const UrlText&) = delete;
+
   ~UrlText() override;
 
   void SetUrl(const GURL& url);
@@ -40,8 +44,6 @@ class VR_UI_EXPORT UrlText : public Text {
   SkColor deemphasized_color_ = SK_ColorBLACK;
   ElisionParameters elision_parameters_;
   float font_height_dmm_ = 0.f;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlText);
 };
 
 }  // namespace vr

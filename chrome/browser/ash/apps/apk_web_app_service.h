@@ -44,6 +44,10 @@ class ApkWebAppService : public KeyedService,
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   explicit ApkWebAppService(Profile* profile);
+
+  ApkWebAppService(const ApkWebAppService&) = delete;
+  ApkWebAppService& operator=(const ApkWebAppService&) = delete;
+
   ~ApkWebAppService() override;
 
   void SetArcAppListPrefsForTesting(ArcAppListPrefs* prefs);
@@ -122,8 +126,6 @@ class ApkWebAppService : public KeyedService,
 
   // Must go last.
   base::WeakPtrFactory<ApkWebAppService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ApkWebAppService);
 };
 
 }  // namespace ash

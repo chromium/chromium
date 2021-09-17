@@ -51,6 +51,11 @@ class AMPPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   AMPPageLoadMetricsObserver();
+
+  AMPPageLoadMetricsObserver(const AMPPageLoadMetricsObserver&) = delete;
+  AMPPageLoadMetricsObserver& operator=(const AMPPageLoadMetricsObserver&) =
+      delete;
+
   ~AMPPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -139,8 +144,6 @@ class AMPPageLoadMetricsObserver
 
   bool observed_amp_main_frame_ = false;
   bool observed_amp_sub_frame_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AMPPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_AMP_PAGE_LOAD_METRICS_OBSERVER_H_

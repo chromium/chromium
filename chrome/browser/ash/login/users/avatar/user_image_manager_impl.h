@@ -43,6 +43,10 @@ class UserImageManagerImpl : public UserImageManager,
   // UserImageManager:
   UserImageManagerImpl(const AccountId& account_id,
                        user_manager::UserManager* user_manager);
+
+  UserImageManagerImpl(const UserImageManagerImpl&) = delete;
+  UserImageManagerImpl& operator=(const UserImageManagerImpl&) = delete;
+
   ~UserImageManagerImpl() override;
 
   void LoadUserImage() override;
@@ -206,8 +210,6 @@ class UserImageManagerImpl : public UserImageManager,
   bool is_random_image_set_ = false;
 
   base::WeakPtrFactory<UserImageManagerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserImageManagerImpl);
 };
 
 }  // namespace ash

@@ -40,6 +40,12 @@ namespace offline_pages {
 class PrefetchBackgroundTaskHandlerImpl : public PrefetchBackgroundTaskHandler {
  public:
   explicit PrefetchBackgroundTaskHandlerImpl(PrefService* profile);
+
+  PrefetchBackgroundTaskHandlerImpl(const PrefetchBackgroundTaskHandlerImpl&) =
+      delete;
+  PrefetchBackgroundTaskHandlerImpl& operator=(
+      const PrefetchBackgroundTaskHandlerImpl&) = delete;
+
   ~PrefetchBackgroundTaskHandlerImpl() override;
 
   // PrefetchBackgroundTaskHandler implementation.
@@ -63,8 +69,6 @@ class PrefetchBackgroundTaskHandlerImpl : public PrefetchBackgroundTaskHandler {
 
   PrefService* prefs_;
   const base::TickClock* tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchBackgroundTaskHandlerImpl);
 };
 
 }  // namespace offline_pages

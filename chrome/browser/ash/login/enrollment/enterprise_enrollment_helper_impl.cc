@@ -52,6 +52,10 @@ const char kOAuthConsumerName[] = "enterprise_enrollment";
 class TokenRevoker : public GaiaAuthConsumer {
  public:
   TokenRevoker();
+
+  TokenRevoker(const TokenRevoker&) = delete;
+  TokenRevoker& operator=(const TokenRevoker&) = delete;
+
   ~TokenRevoker() override;
 
   void Start(const std::string& token);
@@ -62,8 +66,6 @@ class TokenRevoker : public GaiaAuthConsumer {
 
  private:
   GaiaAuthFetcher gaia_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenRevoker);
 };
 
 TokenRevoker::TokenRevoker()

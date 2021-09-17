@@ -60,6 +60,10 @@ class ContentPredicateEvaluator : public ContentPredicateFactory {
  public:
   class Delegate;
 
+  ContentPredicateEvaluator(const ContentPredicateEvaluator&) = delete;
+  ContentPredicateEvaluator& operator=(const ContentPredicateEvaluator&) =
+      delete;
+
   ~ContentPredicateEvaluator() override;
 
   // Returns the attribute name in the API for this evaluator's predicates.
@@ -109,9 +113,6 @@ class ContentPredicateEvaluator : public ContentPredicateFactory {
 
  protected:
   ContentPredicateEvaluator();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentPredicateEvaluator);
 };
 
 // Allows an evaluator to notify that predicate evaluation state has been

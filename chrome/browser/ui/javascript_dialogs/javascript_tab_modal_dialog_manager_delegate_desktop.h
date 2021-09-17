@@ -20,6 +20,12 @@ class JavaScriptTabModalDialogManagerDelegateDesktop
  public:
   explicit JavaScriptTabModalDialogManagerDelegateDesktop(
       content::WebContents* web_contents);
+
+  JavaScriptTabModalDialogManagerDelegateDesktop(
+      const JavaScriptTabModalDialogManagerDelegateDesktop&) = delete;
+  JavaScriptTabModalDialogManagerDelegateDesktop& operator=(
+      const JavaScriptTabModalDialogManagerDelegateDesktop&) = delete;
+
   ~JavaScriptTabModalDialogManagerDelegateDesktop() override;
 
   // javascript_dialogs::TabModalDialogManagerDelegate
@@ -70,8 +76,6 @@ class JavaScriptTabModalDialogManagerDelegateDesktop
   // be different from the WebContents that requested the dialog, such as with
   // Chrome app <webview>s.
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptTabModalDialogManagerDelegateDesktop);
 };
 
 #endif  // CHROME_BROWSER_UI_JAVASCRIPT_DIALOGS_JAVASCRIPT_TAB_MODAL_DIALOG_MANAGER_DELEGATE_DESKTOP_H_

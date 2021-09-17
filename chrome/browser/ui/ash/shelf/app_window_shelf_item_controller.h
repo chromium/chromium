@@ -29,6 +29,11 @@ class AppWindowShelfItemController : public ash::ShelfItemDelegate,
   using WindowList = std::list<AppWindowBase*>;
 
   explicit AppWindowShelfItemController(const ash::ShelfID& shelf_id);
+
+  AppWindowShelfItemController(const AppWindowShelfItemController&) = delete;
+  AppWindowShelfItemController& operator=(const AppWindowShelfItemController&) =
+      delete;
+
   ~AppWindowShelfItemController() override;
 
   void AddWindow(AppWindowBase* window);
@@ -103,8 +108,6 @@ class AppWindowShelfItemController : public ash::ShelfItemDelegate,
       observed_windows_{this};
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowShelfItemController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_APP_WINDOW_SHELF_ITEM_CONTROLLER_H_

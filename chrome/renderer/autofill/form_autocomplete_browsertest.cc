@@ -309,6 +309,10 @@ void SimulateFillFormWithNonFillableFields(
 class FormAutocompleteTest : public ChromeRenderViewTest {
  public:
   FormAutocompleteTest() {}
+
+  FormAutocompleteTest(const FormAutocompleteTest&) = delete;
+  FormAutocompleteTest& operator=(const FormAutocompleteTest&) = delete;
+
   ~FormAutocompleteTest() override {}
 
  protected:
@@ -349,9 +353,6 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
 
   FakeContentAutofillDriver fake_driver_;
   std::unique_ptr<test::FocusTestUtils> focus_test_utils_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FormAutocompleteTest);
 };
 
 // Tests that submitting a form generates FormSubmitted message with the form

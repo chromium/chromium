@@ -52,6 +52,11 @@ class ArcUserSessionServiceTest : public InProcessBrowserTest {
     // pinned app sync. https://crbug.com/1085597
     SkipPinnedAppsFromSyncForTest();
   }
+
+  ArcUserSessionServiceTest(const ArcUserSessionServiceTest&) = delete;
+  ArcUserSessionServiceTest& operator=(const ArcUserSessionServiceTest&) =
+      delete;
+
   ~ArcUserSessionServiceTest() override = default;
 
   // InProcessBrowserTest:
@@ -81,9 +86,6 @@ class ArcUserSessionServiceTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<FakeIntentHelperInstance> fake_intent_helper_instance_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcUserSessionServiceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcUserSessionServiceTest,

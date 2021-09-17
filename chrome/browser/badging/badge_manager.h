@@ -78,6 +78,10 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   using BadgeValue = absl::optional<uint64_t>;
 
   explicit BadgeManager(Profile* profile);
+
+  BadgeManager(const BadgeManager&) = delete;
+  BadgeManager& operator=(const BadgeManager&) = delete;
+
   ~BadgeManager() override;
 
   // Sets the delegate used for setting/clearing badges.
@@ -191,8 +195,6 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
 
   // Maps app_id to badge contents.
   std::map<web_app::AppId, BadgeValue> badged_apps_;
-
-  DISALLOW_COPY_AND_ASSIGN(BadgeManager);
 };
 
 // Determines the text to put on the badge based on some badge_content.

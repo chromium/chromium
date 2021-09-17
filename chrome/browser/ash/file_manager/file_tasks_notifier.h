@@ -51,6 +51,10 @@ class FileTasksNotifier : public KeyedService,
   };
 
   explicit FileTasksNotifier(Profile* profile);
+
+  FileTasksNotifier(const FileTasksNotifier&) = delete;
+  FileTasksNotifier& operator=(const FileTasksNotifier&) = delete;
+
   ~FileTasksNotifier() override;
 
   static FileTasksNotifier* GetForProfile(Profile* profile);
@@ -94,8 +98,6 @@ class FileTasksNotifier : public KeyedService,
   Profile* const profile_;
   download::AllDownloadItemNotifier download_notifier_;
   base::ObserverList<FileTasksObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileTasksNotifier);
 };
 
 }  // namespace file_tasks

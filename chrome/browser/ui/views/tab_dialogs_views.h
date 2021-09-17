@@ -12,6 +12,10 @@
 class TabDialogsViews : public TabDialogs {
  public:
   explicit TabDialogsViews(content::WebContents* contents);
+
+  TabDialogsViews(const TabDialogsViews&) = delete;
+  TabDialogsViews& operator=(const TabDialogsViews&) = delete;
+
   ~TabDialogsViews() override;
 
   // TabDialogs:
@@ -33,8 +37,6 @@ class TabDialogsViews : public TabDialogs {
 
  private:
   content::WebContents* web_contents_;  // Weak. Owns this.
-
-  DISALLOW_COPY_AND_ASSIGN(TabDialogsViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_DIALOGS_VIEWS_H_

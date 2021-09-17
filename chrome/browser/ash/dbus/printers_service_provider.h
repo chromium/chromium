@@ -23,6 +23,10 @@ class PrintersServiceProvider
       public chromeos::CupsPrintersManager::Observer {
  public:
   PrintersServiceProvider();
+
+  PrintersServiceProvider(const PrintersServiceProvider&) = delete;
+  PrintersServiceProvider& operator=(const PrintersServiceProvider&) = delete;
+
   ~PrintersServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -43,8 +47,6 @@ class PrintersServiceProvider
   base::ScopedObservation<chromeos::CupsPrintersManagerProxy,
                           chromeos::CupsPrintersManager::Observer>
       printers_manager_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintersServiceProvider);
 };
 
 }  // namespace ash

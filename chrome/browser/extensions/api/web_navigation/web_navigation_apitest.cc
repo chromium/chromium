@@ -81,6 +81,11 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
     browser->tab_strip_model()->AddObserver(this);
   }
 
+  DelayLoadStartAndExecuteJavascript(
+      const DelayLoadStartAndExecuteJavascript&) = delete;
+  DelayLoadStartAndExecuteJavascript& operator=(
+      const DelayLoadStartAndExecuteJavascript&) = delete;
+
   ~DelayLoadStartAndExecuteJavascript() override {}
 
   // TabStripModelObserver:
@@ -173,8 +178,6 @@ class DelayLoadStartAndExecuteJavascript : public TabStripModelObserver,
   bool has_user_gesture_ = false;
   bool script_was_executed_ = false;
   content::RenderFrameHost* rfh_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayLoadStartAndExecuteJavascript);
 };
 
 // Handles requests for URLs with paths of "/test*" sent to the test server, so

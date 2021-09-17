@@ -37,6 +37,11 @@ constexpr char kTestHardwareClass[] = "hw";
 class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
  public:
   explicit LocalPolicyTestServerMixin(InProcessBrowserTestMixinHost* host);
+
+  LocalPolicyTestServerMixin(const LocalPolicyTestServerMixin&) = delete;
+  LocalPolicyTestServerMixin& operator=(const LocalPolicyTestServerMixin&) =
+      delete;
+
   ~LocalPolicyTestServerMixin() override;
 
   policy::LocalPolicyTestServer* server() { return policy_test_server_.get(); }
@@ -128,8 +133,6 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
   base::Value server_config_;
   bool canned_signing_keys_enabled_ = false;
   bool automatic_rotation_of_signing_keys_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalPolicyTestServerMixin);
 };
 
 }  // namespace ash

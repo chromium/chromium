@@ -144,6 +144,11 @@ ArcGoogleLocationServiceConsent BuildArcGoogleLocationServiceConsent(
 class ArcTermsOfServiceScreenTest : public OobeBaseTest {
  public:
   ArcTermsOfServiceScreenTest() = default;
+
+  ArcTermsOfServiceScreenTest(const ArcTermsOfServiceScreenTest&) = delete;
+  ArcTermsOfServiceScreenTest& operator=(const ArcTermsOfServiceScreenTest&) =
+      delete;
+
   ~ArcTermsOfServiceScreenTest() override = default;
 
   void RegisterAdditionalRequestHandlers() override {
@@ -294,8 +299,6 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
   base::OnceClosure on_screen_exit_called_ = base::DoNothing();
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenTest);
 };
 
 // Tests that screen fetches the terms of service from the specified URL
@@ -520,6 +523,12 @@ class ParameterizedArcTermsOfServiceScreenTest
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ParameterizedArcTermsOfServiceScreenTest() = default;
+
+  ParameterizedArcTermsOfServiceScreenTest(
+      const ParameterizedArcTermsOfServiceScreenTest&) = delete;
+  ParameterizedArcTermsOfServiceScreenTest& operator=(
+      const ParameterizedArcTermsOfServiceScreenTest&) = delete;
+
   ~ParameterizedArcTermsOfServiceScreenTest() = default;
 
   void SetUp() override {
@@ -576,8 +585,6 @@ class ParameterizedArcTermsOfServiceScreenTest
  protected:
   bool accept_backup_restore_;
   bool accept_location_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParameterizedArcTermsOfServiceScreenTest);
 };
 
 // Tests that clicking on "Accept" button records the expected consents.
@@ -615,6 +622,12 @@ class PublicAccountArcTermsOfServiceScreenTest
     : public ArcTermsOfServiceScreenTest {
  public:
   PublicAccountArcTermsOfServiceScreenTest() = default;
+
+  PublicAccountArcTermsOfServiceScreenTest(
+      const PublicAccountArcTermsOfServiceScreenTest&) = delete;
+  PublicAccountArcTermsOfServiceScreenTest& operator=(
+      const PublicAccountArcTermsOfServiceScreenTest&) = delete;
+
   ~PublicAccountArcTermsOfServiceScreenTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -704,7 +717,6 @@ class PublicAccountArcTermsOfServiceScreenTest
   LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  DISALLOW_COPY_AND_ASSIGN(PublicAccountArcTermsOfServiceScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PublicAccountArcTermsOfServiceScreenTest,

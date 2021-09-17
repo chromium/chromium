@@ -217,6 +217,12 @@ class AuthenticatorRequestDialogModel {
   };
 
   explicit AuthenticatorRequestDialogModel(const std::string& relying_party_id);
+
+  AuthenticatorRequestDialogModel(const AuthenticatorRequestDialogModel&) =
+      delete;
+  AuthenticatorRequestDialogModel& operator=(
+      const AuthenticatorRequestDialogModel&) = delete;
+
   ~AuthenticatorRequestDialogModel();
 
   Step current_step() const { return current_step_; }
@@ -674,8 +680,6 @@ class AuthenticatorRequestDialogModel {
   absl::optional<std::string> cable_qr_string_;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestDialogModel);
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_MODEL_H_

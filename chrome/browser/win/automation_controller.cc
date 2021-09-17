@@ -160,6 +160,10 @@ class AutomationController::Context::EventHandler
   END_COM_MAP()
 
   EventHandler();
+
+  EventHandler(const EventHandler&) = delete;
+  EventHandler& operator=(const EventHandler&) = delete;
+
   ~EventHandler();
 
   // Initializes the object. Events will be dispatched back to |context| via
@@ -179,8 +183,6 @@ class AutomationController::Context::EventHandler
 
   // Pointer to the delegate.
   scoped_refptr<RefCountedDelegate> ref_counted_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventHandler);
 };
 
 AutomationController::Context::EventHandler::EventHandler() = default;

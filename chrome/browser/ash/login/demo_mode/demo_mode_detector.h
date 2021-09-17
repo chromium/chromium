@@ -30,6 +30,10 @@ class DemoModeDetector {
   };
 
   DemoModeDetector(const base::TickClock* clock, Observer* observer);
+
+  DemoModeDetector(const DemoModeDetector&) = delete;
+  DemoModeDetector& operator=(const DemoModeDetector&) = delete;
+
   virtual ~DemoModeDetector();
 
   // Registers the preference for derelict state.
@@ -71,8 +75,6 @@ class DemoModeDetector {
   const base::TickClock* tick_clock_;
 
   base::WeakPtrFactory<DemoModeDetector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoModeDetector);
 };
 
 }  // namespace ash

@@ -38,6 +38,10 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
   };
 
   TimeZoneResolverManager();
+
+  TimeZoneResolverManager(const TimeZoneResolverManager&) = delete;
+  TimeZoneResolverManager& operator=(const TimeZoneResolverManager&) = delete;
+
   ~TimeZoneResolverManager() override;
 
   // This sets primary_user_prefs_.
@@ -105,8 +109,6 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
   bool initialized_ = false;
 
   base::WeakPtrFactory<TimeZoneResolverManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneResolverManager);
 };
 
 }  // namespace system

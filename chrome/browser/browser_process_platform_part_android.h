@@ -12,13 +12,15 @@
 class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
  public:
   BrowserProcessPlatformPart();
+
+  BrowserProcessPlatformPart(const BrowserProcessPlatformPart&) = delete;
+  BrowserProcessPlatformPart& operator=(const BrowserProcessPlatformPart&) =
+      delete;
+
   ~BrowserProcessPlatformPart() override;
 
   // Overridden from BrowserProcessPlatformPartBase:
   void AttemptExit(bool try_to_quit_application) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessPlatformPart);
 };
 
 #endif  // CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_ANDROID_H_

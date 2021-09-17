@@ -21,6 +21,9 @@ class WebContents;
 
 class DevToolsWindowTesting {
  public:
+  DevToolsWindowTesting(const DevToolsWindowTesting&) = delete;
+  DevToolsWindowTesting& operator=(const DevToolsWindowTesting&) = delete;
+
   virtual ~DevToolsWindowTesting();
 
   // The following methods block until DevToolsWindow is completely loaded.
@@ -59,13 +62,17 @@ class DevToolsWindowTesting {
 
   DevToolsWindow* devtools_window_;
   base::OnceClosure close_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsWindowTesting);
 };
 
 class DevToolsWindowCreationObserver {
  public:
   DevToolsWindowCreationObserver();
+
+  DevToolsWindowCreationObserver(const DevToolsWindowCreationObserver&) =
+      delete;
+  DevToolsWindowCreationObserver& operator=(
+      const DevToolsWindowCreationObserver&) = delete;
+
   ~DevToolsWindowCreationObserver();
 
   using DevToolsWindows = std::vector<DevToolsWindow*>;
@@ -84,8 +91,6 @@ class DevToolsWindowCreationObserver {
   base::RepeatingCallback<void(DevToolsWindow*)> creation_callback_;
   DevToolsWindows devtools_windows_;
   scoped_refptr<content::MessageLoopRunner> runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsWindowCreationObserver);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_WINDOW_TESTING_H_

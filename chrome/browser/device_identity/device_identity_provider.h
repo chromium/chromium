@@ -14,6 +14,10 @@ class DeviceOAuth2TokenService;
 class DeviceIdentityProvider : public invalidation::IdentityProvider {
  public:
   explicit DeviceIdentityProvider(DeviceOAuth2TokenService* token_service);
+
+  DeviceIdentityProvider(const DeviceIdentityProvider&) = delete;
+  DeviceIdentityProvider& operator=(const DeviceIdentityProvider&) = delete;
+
   ~DeviceIdentityProvider() override;
 
   // IdentityProvider:
@@ -31,8 +35,6 @@ class DeviceIdentityProvider : public invalidation::IdentityProvider {
   void OnRefreshTokenAvailable();
 
   DeviceOAuth2TokenService* token_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceIdentityProvider);
 };
 
 #endif  // CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_IDENTITY_PROVIDER_H_

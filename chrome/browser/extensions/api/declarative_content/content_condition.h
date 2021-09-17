@@ -32,12 +32,13 @@ struct ContentCondition {
  public:
   explicit ContentCondition(
       std::vector<std::unique_ptr<const ContentPredicate>> predicates);
+
+  ContentCondition(const ContentCondition&) = delete;
+  ContentCondition& operator=(const ContentCondition&) = delete;
+
   ~ContentCondition();
 
   std::vector<std::unique_ptr<const ContentPredicate>> predicates;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentCondition);
 };
 
 // Factory function that instantiates a ContentCondition according to the

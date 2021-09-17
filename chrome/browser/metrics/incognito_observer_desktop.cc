@@ -19,6 +19,9 @@ class IncognitoObserverDesktop : public IncognitoObserver,
     BrowserList::AddObserver(this);
   }
 
+  IncognitoObserverDesktop(const IncognitoObserverDesktop&) = delete;
+  IncognitoObserverDesktop& operator=(const IncognitoObserverDesktop&) = delete;
+
   ~IncognitoObserverDesktop() override { BrowserList::RemoveObserver(this); }
 
  private:
@@ -27,8 +30,6 @@ class IncognitoObserverDesktop : public IncognitoObserver,
   void OnBrowserRemoved(Browser* browser) override { update_closure_.Run(); }
 
   const base::RepeatingClosure update_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncognitoObserverDesktop);
 };
 
 }  // namespace

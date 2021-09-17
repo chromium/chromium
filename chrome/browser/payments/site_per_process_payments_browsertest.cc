@@ -29,6 +29,12 @@ namespace payments {
 class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
  public:
   SitePerProcessPaymentsBrowserTest() {}
+
+  SitePerProcessPaymentsBrowserTest(const SitePerProcessPaymentsBrowserTest&) =
+      delete;
+  SitePerProcessPaymentsBrowserTest& operator=(
+      const SitePerProcessPaymentsBrowserTest&) = delete;
+
   ~SitePerProcessPaymentsBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -52,9 +58,6 @@ class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessPaymentsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessPaymentsBrowserTest,

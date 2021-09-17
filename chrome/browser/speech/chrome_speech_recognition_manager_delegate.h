@@ -20,6 +20,12 @@ class ChromeSpeechRecognitionManagerDelegate
       public content::SpeechRecognitionEventListener {
  public:
   ChromeSpeechRecognitionManagerDelegate();
+
+  ChromeSpeechRecognitionManagerDelegate(
+      const ChromeSpeechRecognitionManagerDelegate&) = delete;
+  ChromeSpeechRecognitionManagerDelegate& operator=(
+      const ChromeSpeechRecognitionManagerDelegate&) = delete;
+
   ~ChromeSpeechRecognitionManagerDelegate() override;
 
  protected:
@@ -57,8 +63,6 @@ class ChromeSpeechRecognitionManagerDelegate
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
       int render_process_id,
       int render_frame_id);
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSpeechRecognitionManagerDelegate);
 };
 
 }  // namespace speech

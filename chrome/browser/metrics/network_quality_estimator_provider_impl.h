@@ -19,6 +19,12 @@ class NetworkQualityEstimatorProviderImpl
       public network::NetworkQualityTracker::EffectiveConnectionTypeObserver {
  public:
   NetworkQualityEstimatorProviderImpl();
+
+  NetworkQualityEstimatorProviderImpl(
+      const NetworkQualityEstimatorProviderImpl&) = delete;
+  NetworkQualityEstimatorProviderImpl& operator=(
+      const NetworkQualityEstimatorProviderImpl&) = delete;
+
   ~NetworkQualityEstimatorProviderImpl() override;
 
  private:
@@ -42,8 +48,6 @@ class NetworkQualityEstimatorProviderImpl
 
   base::WeakPtrFactory<NetworkQualityEstimatorProviderImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityEstimatorProviderImpl);
 };
 
 }  // namespace metrics

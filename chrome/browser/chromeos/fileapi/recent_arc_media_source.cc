@@ -95,6 +95,10 @@ const char RecentArcMediaSource::kLoadHistogramName[] =
 class RecentArcMediaSource::MediaRoot {
  public:
   MediaRoot(const std::string& root_id, Profile* profile);
+
+  MediaRoot(const MediaRoot&) = delete;
+  MediaRoot& operator=(const MediaRoot&) = delete;
+
   ~MediaRoot();
 
   void GetRecentFiles(Params params);
@@ -134,8 +138,6 @@ class RecentArcMediaSource::MediaRoot {
   std::map<std::string, absl::optional<RecentFile>> document_id_to_file_;
 
   base::WeakPtrFactory<MediaRoot> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRoot);
 };
 
 RecentArcMediaSource::MediaRoot::MediaRoot(const std::string& root_id,

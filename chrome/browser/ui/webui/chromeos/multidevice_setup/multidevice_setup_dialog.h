@@ -59,6 +59,10 @@ class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
 class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {
  public:
   explicit MultiDeviceSetupDialogUI(content::WebUI* web_ui);
+
+  MultiDeviceSetupDialogUI(const MultiDeviceSetupDialogUI&) = delete;
+  MultiDeviceSetupDialogUI& operator=(const MultiDeviceSetupDialogUI&) = delete;
+
   ~MultiDeviceSetupDialogUI() override;
 
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
@@ -69,8 +73,6 @@ class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupDialogUI);
 };
 
 }  // namespace multidevice_setup

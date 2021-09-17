@@ -131,6 +131,11 @@ class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
 class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
  public:
   NetworkConfigMessageHandler() {}
+
+  NetworkConfigMessageHandler(const NetworkConfigMessageHandler&) = delete;
+  NetworkConfigMessageHandler& operator=(const NetworkConfigMessageHandler&) =
+      delete;
+
   ~NetworkConfigMessageHandler() override {}
 
   // WebUIMessageHandler implementation.
@@ -385,8 +390,6 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   base::WeakPtrFactory<NetworkConfigMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConfigMessageHandler);
 };
 
 // static

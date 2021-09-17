@@ -127,6 +127,11 @@ class MultiProfileUserControllerTest
     }
   }
 
+  MultiProfileUserControllerTest(const MultiProfileUserControllerTest&) =
+      delete;
+  MultiProfileUserControllerTest& operator=(
+      const MultiProfileUserControllerTest&) = delete;
+
   ~MultiProfileUserControllerTest() override {}
 
   void SetUp() override {
@@ -216,9 +221,6 @@ class MultiProfileUserControllerTest
   int user_not_allowed_count_;
 
   std::vector<AccountId> test_users_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MultiProfileUserControllerTest);
 };
 
 // Tests that everyone is allowed before a session starts.

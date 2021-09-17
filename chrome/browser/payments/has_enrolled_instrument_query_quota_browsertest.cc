@@ -17,6 +17,11 @@ class HasEnrolledInstrumentQueryQuotaTest
  public:
   HasEnrolledInstrumentQueryQuotaTest() = default;
 
+  HasEnrolledInstrumentQueryQuotaTest(
+      const HasEnrolledInstrumentQueryQuotaTest&) = delete;
+  HasEnrolledInstrumentQueryQuotaTest& operator=(
+      const HasEnrolledInstrumentQueryQuotaTest&) = delete;
+
   ~HasEnrolledInstrumentQueryQuotaTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -25,9 +30,6 @@ class HasEnrolledInstrumentQueryQuotaTest
     // quota for localhost and file:/// scheme to ease web development.
     NavigateTo("a.com", "/has_enrolled_instrument.html");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HasEnrolledInstrumentQueryQuotaTest);
 };
 
 class HasEnrolledInstrumentQueryQuotaTestNoFlags

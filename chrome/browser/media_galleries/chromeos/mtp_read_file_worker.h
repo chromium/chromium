@@ -23,6 +23,10 @@ struct SnapshotRequestInfo;
 class MTPReadFileWorker {
  public:
   explicit MTPReadFileWorker(const std::string& device_handle);
+
+  MTPReadFileWorker(const MTPReadFileWorker&) = delete;
+  MTPReadFileWorker& operator=(const MTPReadFileWorker&) = delete;
+
   ~MTPReadFileWorker();
 
   // Dispatches the request to MediaTransferProtocolManager to get the media
@@ -80,8 +84,6 @@ class MTPReadFileWorker {
 
   // For callbacks that may run after destruction.
   base::WeakPtrFactory<MTPReadFileWorker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MTPReadFileWorker);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_READ_FILE_WORKER_H_

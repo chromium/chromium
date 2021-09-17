@@ -33,10 +33,11 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 class DictionarySyncPerfTest : public SyncTest {
  public:
   DictionarySyncPerfTest() : SyncTest(TWO_CLIENT) {}
-  ~DictionarySyncPerfTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DictionarySyncPerfTest);
+  DictionarySyncPerfTest(const DictionarySyncPerfTest&) = delete;
+  DictionarySyncPerfTest& operator=(const DictionarySyncPerfTest&) = delete;
+
+  ~DictionarySyncPerfTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(DictionarySyncPerfTest, P0) {

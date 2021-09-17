@@ -350,6 +350,12 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, NoOpener_NoTracker) {
 class SafeBrowsingPopupTrackerBrowserTest : public PopupTrackerBrowserTest {
  public:
   SafeBrowsingPopupTrackerBrowserTest() = default;
+
+  SafeBrowsingPopupTrackerBrowserTest(
+      const SafeBrowsingPopupTrackerBrowserTest&) = delete;
+  SafeBrowsingPopupTrackerBrowserTest& operator=(
+      const SafeBrowsingPopupTrackerBrowserTest&) = delete;
+
   ~SafeBrowsingPopupTrackerBrowserTest() override = default;
 
   void SetUp() override {
@@ -393,8 +399,6 @@ class SafeBrowsingPopupTrackerBrowserTest : public PopupTrackerBrowserTest {
 
  private:
   std::unique_ptr<TestSafeBrowsingDatabaseHelper> database_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingPopupTrackerBrowserTest);
 };
 
 // Pop-ups closed before navigation has finished will receive no safe browsing

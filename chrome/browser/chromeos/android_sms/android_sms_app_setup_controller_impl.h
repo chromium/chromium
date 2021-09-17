@@ -35,6 +35,12 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
       Profile* profile,
       web_app::ExternallyManagedAppManager* externally_managed_app_manager,
       HostContentSettingsMap* host_content_settings_map);
+
+  AndroidSmsAppSetupControllerImpl(const AndroidSmsAppSetupControllerImpl&) =
+      delete;
+  AndroidSmsAppSetupControllerImpl& operator=(
+      const AndroidSmsAppSetupControllerImpl&) = delete;
+
   ~AndroidSmsAppSetupControllerImpl() override;
 
  private:
@@ -116,8 +122,6 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
   std::unique_ptr<PwaDelegate> pwa_delegate_;
   base::WeakPtrFactory<AndroidSmsAppSetupControllerImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsAppSetupControllerImpl);
 };
 
 }  // namespace android_sms

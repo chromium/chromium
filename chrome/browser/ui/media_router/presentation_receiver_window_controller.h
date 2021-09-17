@@ -49,6 +49,11 @@ class PresentationReceiverWindowController final
                             base::OnceClosure termination_callback,
                             TitleChangeCallback title_change_callback);
 
+  PresentationReceiverWindowController(
+      const PresentationReceiverWindowController&) = delete;
+  PresentationReceiverWindowController& operator=(
+      const PresentationReceiverWindowController&) = delete;
+
   ~PresentationReceiverWindowController() final;
 
   // WiredDisplayPresentationReceiver overrides.
@@ -117,8 +122,6 @@ class PresentationReceiverWindowController final
   TitleChangeCallback title_change_callback_;
 
   media_router::PresentationNavigationPolicy navigation_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationReceiverWindowController);
 };
 
 #endif  // CHROME_BROWSER_UI_MEDIA_ROUTER_PRESENTATION_RECEIVER_WINDOW_CONTROLLER_H_

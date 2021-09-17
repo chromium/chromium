@@ -21,6 +21,11 @@ class ShippingOptionViewController : public PaymentRequestSheetController,
   ShippingOptionViewController(base::WeakPtr<PaymentRequestSpec> spec,
                                base::WeakPtr<PaymentRequestState> state,
                                base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  ShippingOptionViewController(const ShippingOptionViewController&) = delete;
+  ShippingOptionViewController& operator=(const ShippingOptionViewController&) =
+      delete;
+
   ~ShippingOptionViewController() override;
 
   // PaymentRequestSpec::Observer:
@@ -37,8 +42,6 @@ class ShippingOptionViewController : public PaymentRequestSheetController,
   PaymentRequestItemList shipping_option_list_;
 
   base::WeakPtrFactory<ShippingOptionViewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShippingOptionViewController);
 };
 
 }  // namespace payments

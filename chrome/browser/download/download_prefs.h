@@ -48,6 +48,10 @@ class DownloadPrefs {
     MALICIOUS_FILES = 4,
   };
   explicit DownloadPrefs(Profile* profile);
+
+  DownloadPrefs(const DownloadPrefs&) = delete;
+  DownloadPrefs& operator=(const DownloadPrefs&) = delete;
+
   ~DownloadPrefs();
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -184,8 +188,6 @@ class DownloadPrefs {
   // If this is true, SanitizeDownloadTargetPath will always return the passed
   // path verbatim.
   bool skip_sanitize_download_target_path_for_testing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadPrefs);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_PREFS_H_

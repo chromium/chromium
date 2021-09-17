@@ -19,6 +19,10 @@ class HttpsEngagementService : public KeyedService {
   enum PageScheme { HTTP, HTTPS, OTHER };
 
   HttpsEngagementService();
+
+  HttpsEngagementService(const HttpsEngagementService&) = delete;
+  HttpsEngagementService& operator=(const HttpsEngagementService&) = delete;
+
   ~HttpsEngagementService() override;
 
   // Save that the user spent |time| on either HTTPS or HTTP.
@@ -30,8 +34,6 @@ class HttpsEngagementService : public KeyedService {
  private:
   base::TimeDelta time_on_https_;
   base::TimeDelta time_on_http_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpsEngagementService);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_HTTPS_ENGAGEMENT_METRICS_HTTPS_ENGAGEMENT_SERVICE_H_

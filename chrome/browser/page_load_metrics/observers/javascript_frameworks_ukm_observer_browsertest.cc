@@ -65,6 +65,12 @@ std::string ToString(
 class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
  public:
   JavascriptFrameworksUkmObserverBrowserTest() = default;
+
+  JavascriptFrameworksUkmObserverBrowserTest(
+      const JavascriptFrameworksUkmObserverBrowserTest&) = delete;
+  JavascriptFrameworksUkmObserverBrowserTest& operator=(
+      const JavascriptFrameworksUkmObserverBrowserTest&) = delete;
+
   ~JavascriptFrameworksUkmObserverBrowserTest() override = default;
   void PreRunTestOnMainThread() override {
     InProcessBrowserTest::PreRunTestOnMainThread();
@@ -149,7 +155,6 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
   }
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-  DISALLOW_COPY_AND_ASSIGN(JavascriptFrameworksUkmObserverBrowserTest);
 };
 
 class ParametrizedJavascriptFrameworksUkmObserverBrowserTest

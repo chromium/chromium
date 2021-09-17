@@ -33,6 +33,10 @@ class HoverListModel {
   };
 
   HoverListModel() = default;
+
+  HoverListModel(const HoverListModel&) = delete;
+  HoverListModel& operator=(const HoverListModel&) = delete;
+
   virtual ~HoverListModel() = default;
 
   virtual bool ShouldShowPlaceholderForEmptyList() const = 0;
@@ -70,8 +74,6 @@ class HoverListModel {
 
  private:
   Observer* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(HoverListModel);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_HOVER_LIST_MODEL_H_

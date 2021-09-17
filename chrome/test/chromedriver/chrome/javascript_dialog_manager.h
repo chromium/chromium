@@ -26,6 +26,9 @@ class JavaScriptDialogManager : public DevToolsEventListener {
   explicit JavaScriptDialogManager(DevToolsClient* client,
                                    const BrowserInfo* browser_info);
 
+  JavaScriptDialogManager(const JavaScriptDialogManager&) = delete;
+  JavaScriptDialogManager& operator=(const JavaScriptDialogManager&) = delete;
+
   ~JavaScriptDialogManager() override;
 
   bool IsDialogOpen() const;
@@ -52,8 +55,6 @@ class JavaScriptDialogManager : public DevToolsEventListener {
   std::list<std::string> dialog_type_queue_;
 
   std::string prompt_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogManager);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_JAVASCRIPT_DIALOG_MANAGER_H_

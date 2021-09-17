@@ -278,6 +278,10 @@ bool ClickElement(const WebDocument& document,
 class FormAutofillTest : public ChromeRenderViewTest {
  public:
   FormAutofillTest() : ChromeRenderViewTest() {}
+
+  FormAutofillTest(const FormAutofillTest&) = delete;
+  FormAutofillTest& operator=(const FormAutofillTest&) = delete;
+
   ~FormAutofillTest() override {}
 
 #if defined(OS_WIN)
@@ -2294,7 +2298,6 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(FormAutofillTest);
 };
 
 // We should be able to extract a normal text field.

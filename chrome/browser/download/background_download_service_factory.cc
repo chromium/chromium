@@ -90,6 +90,12 @@ class DownloadBlobContextGetterFactory
   explicit DownloadBlobContextGetterFactory(SimpleFactoryKey* key) : key_(key) {
     DCHECK(key_);
   }
+
+  DownloadBlobContextGetterFactory(const DownloadBlobContextGetterFactory&) =
+      delete;
+  DownloadBlobContextGetterFactory& operator=(
+      const DownloadBlobContextGetterFactory&) = delete;
+
   ~DownloadBlobContextGetterFactory() override = default;
 
  private:
@@ -101,7 +107,6 @@ class DownloadBlobContextGetterFactory
   }
 
   SimpleFactoryKey* key_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadBlobContextGetterFactory);
 };
 
 }  // namespace

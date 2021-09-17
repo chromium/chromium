@@ -129,6 +129,11 @@ class SpeechRecognitionServiceTest
     scoped_feature_list_.InitWithFeatures(
         {media::kLiveCaption, media::kUseSodaForLiveCaption}, {});
   }
+
+  SpeechRecognitionServiceTest(const SpeechRecognitionServiceTest&) = delete;
+  SpeechRecognitionServiceTest& operator=(const SpeechRecognitionServiceTest&) =
+      delete;
+
   ~SpeechRecognitionServiceTest() override = default;
 
   // InProcessBrowserTest
@@ -177,8 +182,6 @@ class SpeechRecognitionServiceTest
   std::vector<std::string> recognition_results_;
 
   bool is_client_requesting_speech_recognition_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionServiceTest);
 };
 
 void SpeechRecognitionServiceTest::SetUp() {

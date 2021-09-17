@@ -13,6 +13,10 @@
 class VersionUI : public content::WebUIController {
  public:
   explicit VersionUI(content::WebUI* web_ui);
+
+  VersionUI(const VersionUI&) = delete;
+  VersionUI& operator=(const VersionUI&) = delete;
+
   ~VersionUI() override;
 
   // Returns the IDS_* string id for the variation of the processor.
@@ -21,9 +25,6 @@ class VersionUI : public content::WebUIController {
   // Loads a data source with many named details comprising version info.
   // The keys are from version_ui_constants.
   static void AddVersionDetailStrings(content::WebUIDataSource* html_source);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VersionUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_UI_H_

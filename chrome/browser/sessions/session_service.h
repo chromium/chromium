@@ -57,6 +57,10 @@ class SessionService : public SessionServiceBase {
  public:
   // Creates a SessionService for the specified profile.
   explicit SessionService(Profile* profile);
+
+  SessionService(const SessionService&) = delete;
+  SessionService& operator=(const SessionService&) = delete;
+
   ~SessionService() override;
 
   // Returns true if a new window opening should really be treated like the
@@ -251,8 +255,6 @@ class SessionService : public SessionServiceBase {
   bool did_schedule_command_ = false;
 
   base::WeakPtrFactory<SessionService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionService);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_SERVICE_H_

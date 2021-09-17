@@ -45,6 +45,10 @@ class AppLaunchPredictor {
 class MrfuAppLaunchPredictor : public AppLaunchPredictor {
  public:
   MrfuAppLaunchPredictor();
+
+  MrfuAppLaunchPredictor(const MrfuAppLaunchPredictor&) = delete;
+  MrfuAppLaunchPredictor& operator=(const MrfuAppLaunchPredictor&) = delete;
+
   ~MrfuAppLaunchPredictor() override;
 
   // AppLaunchPredictor:
@@ -83,8 +87,6 @@ class MrfuAppLaunchPredictor : public AppLaunchPredictor {
   // (1) Set a better initial value based on real user data.
   // (2) Dynamically change this coeff instead of setting it as constant.
   static constexpr float decay_coeff_ = 0.8f;
-
-  DISALLOW_COPY_AND_ASSIGN(MrfuAppLaunchPredictor);
 };
 
 // SerializedMrfuAppLaunchPredictor is MrfuAppLaunchPredictor with supporting of
@@ -92,6 +94,12 @@ class MrfuAppLaunchPredictor : public AppLaunchPredictor {
 class SerializedMrfuAppLaunchPredictor : public MrfuAppLaunchPredictor {
  public:
   SerializedMrfuAppLaunchPredictor();
+
+  SerializedMrfuAppLaunchPredictor(const SerializedMrfuAppLaunchPredictor&) =
+      delete;
+  SerializedMrfuAppLaunchPredictor& operator=(
+      const SerializedMrfuAppLaunchPredictor&) = delete;
+
   ~SerializedMrfuAppLaunchPredictor() override;
 
   // AppLaunchPredictor:
@@ -106,8 +114,6 @@ class SerializedMrfuAppLaunchPredictor : public MrfuAppLaunchPredictor {
  private:
   // Last time the predictor was saved.
   base::Time last_save_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerializedMrfuAppLaunchPredictor);
 };
 
 // HourAppLaunchPredictor is a AppLaunchPredictor that uses hour of the day as
@@ -122,6 +128,10 @@ class SerializedMrfuAppLaunchPredictor : public MrfuAppLaunchPredictor {
 class HourAppLaunchPredictor : public AppLaunchPredictor {
  public:
   HourAppLaunchPredictor();
+
+  HourAppLaunchPredictor(const HourAppLaunchPredictor&) = delete;
+  HourAppLaunchPredictor& operator=(const HourAppLaunchPredictor&) = delete;
+
   ~HourAppLaunchPredictor() override;
 
   // AppLaunchPredictor:
@@ -158,14 +168,16 @@ class HourAppLaunchPredictor : public AppLaunchPredictor {
   static constexpr float kWeeklyDecayCoeff = 0.8;
   // Weights that are used to combine adjacent bins.
   const std::vector<float> bin_weights_;
-
-  DISALLOW_COPY_AND_ASSIGN(HourAppLaunchPredictor);
 };
 
 // Predictor for testing AppSearchResultRanker only.
 class FakeAppLaunchPredictor : public AppLaunchPredictor {
  public:
   FakeAppLaunchPredictor() = default;
+
+  FakeAppLaunchPredictor(const FakeAppLaunchPredictor&) = delete;
+  FakeAppLaunchPredictor& operator=(const FakeAppLaunchPredictor&) = delete;
+
   ~FakeAppLaunchPredictor() override = default;
 
   // Manually set |should_save_|;
@@ -186,8 +198,6 @@ class FakeAppLaunchPredictor : public AppLaunchPredictor {
   bool should_save_ = false;
   // The proto for this predictor.
   AppLaunchPredictorProto proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAppLaunchPredictor);
 };
 
 }  // namespace app_list

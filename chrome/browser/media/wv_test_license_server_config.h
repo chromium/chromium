@@ -18,6 +18,11 @@ class FilePath;
 class WVTestLicenseServerConfig : public TestLicenseServerConfig {
  public:
   WVTestLicenseServerConfig();
+
+  WVTestLicenseServerConfig(const WVTestLicenseServerConfig&) = delete;
+  WVTestLicenseServerConfig& operator=(const WVTestLicenseServerConfig&) =
+      delete;
+
   ~WVTestLicenseServerConfig() override;
 
   std::string GetServerURL() override;
@@ -42,8 +47,6 @@ class WVTestLicenseServerConfig : public TestLicenseServerConfig {
 
   // Sets the server port to a randomly available port within a limited range.
   bool SelectServerPort();
-
-  DISALLOW_COPY_AND_ASSIGN(WVTestLicenseServerConfig);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WV_TEST_LICENSE_SERVER_CONFIG_H_

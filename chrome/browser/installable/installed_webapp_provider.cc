@@ -25,6 +25,10 @@ class InstalledWebappIterator : public content_settings::RuleIterator {
  public:
   explicit InstalledWebappIterator(InstalledWebappProvider::RuleList rules)
       : rules_(std::move(rules)) {}
+
+  InstalledWebappIterator(const InstalledWebappIterator&) = delete;
+  InstalledWebappIterator& operator=(const InstalledWebappIterator&) = delete;
+
   ~InstalledWebappIterator() override = default;
 
   bool HasNext() const override { return index_ < rules_.size(); }
@@ -44,8 +48,6 @@ class InstalledWebappIterator : public content_settings::RuleIterator {
  private:
   size_t index_ = 0;
   InstalledWebappProvider::RuleList rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstalledWebappIterator);
 };
 
 bool IsSupportedContentType(ContentSettingsType content_type) {

@@ -75,6 +75,10 @@ class ArcWallpaperService::DecodeRequest : public ImageDecoder::ImageRequest {
  public:
   DecodeRequest(ArcWallpaperService* service, int32_t android_id)
       : service_(service), android_id_(android_id) {}
+
+  DecodeRequest(const DecodeRequest&) = delete;
+  DecodeRequest& operator=(const DecodeRequest&) = delete;
+
   ~DecodeRequest() override = default;
 
   // ImageDecoder::ImageRequest overrides.
@@ -101,8 +105,6 @@ class ArcWallpaperService::DecodeRequest : public ImageDecoder::ImageRequest {
   // ArcWallpaperService owns DecodeRequest, so it will outlive this.
   ArcWallpaperService* const service_;
   const int32_t android_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecodeRequest);
 };
 
 ArcWallpaperService::DecodeRequestSender::~DecodeRequestSender() = default;

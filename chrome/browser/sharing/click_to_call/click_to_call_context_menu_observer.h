@@ -29,6 +29,10 @@ class ClickToCallContextMenuObserver : public RenderViewContextMenuObserver {
   class SubMenuDelegate : public ui::SimpleMenuModel::Delegate {
    public:
     explicit SubMenuDelegate(ClickToCallContextMenuObserver* parent);
+
+    SubMenuDelegate(const SubMenuDelegate&) = delete;
+    SubMenuDelegate& operator=(const SubMenuDelegate&) = delete;
+
     ~SubMenuDelegate() override;
 
     bool IsCommandIdEnabled(int command_id) const override;
@@ -36,8 +40,6 @@ class ClickToCallContextMenuObserver : public RenderViewContextMenuObserver {
 
    private:
     ClickToCallContextMenuObserver* const parent_;
-
-    DISALLOW_COPY_AND_ASSIGN(SubMenuDelegate);
   };
 
   explicit ClickToCallContextMenuObserver(RenderViewContextMenuProxy* proxy);

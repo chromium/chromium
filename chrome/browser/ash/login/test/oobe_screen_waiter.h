@@ -25,6 +25,10 @@ class OobeScreenWaiter : public OobeUI::Observer,
                          public aura::WindowObserver {
  public:
   explicit OobeScreenWaiter(OobeScreenId target_screen);
+
+  OobeScreenWaiter(const OobeScreenWaiter&) = delete;
+  OobeScreenWaiter& operator=(const OobeScreenWaiter&) = delete;
+
   ~OobeScreenWaiter() override;
 
   void set_no_assert_last_screen() { assert_last_screen_ = false; }
@@ -82,8 +86,6 @@ class OobeScreenWaiter : public OobeUI::Observer,
       native_window_observation_{this};
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeScreenWaiter);
 };
 
 }  // namespace ash

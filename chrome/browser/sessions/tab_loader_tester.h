@@ -18,6 +18,10 @@ class TabLoaderTester {
 
   TabLoaderTester();
   explicit TabLoaderTester(TabLoader* tab_loader);
+
+  TabLoaderTester(const TabLoaderTester&) = delete;
+  TabLoaderTester& operator=(const TabLoaderTester&) = delete;
+
   ~TabLoaderTester();
 
   void SetTabLoader(TabLoader*);
@@ -57,8 +61,6 @@ class TabLoaderTester {
 
  private:
   TabLoader* tab_loader_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TabLoaderTester);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_TAB_LOADER_TESTER_H_

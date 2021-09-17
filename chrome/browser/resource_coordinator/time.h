@@ -25,10 +25,12 @@ const base::TickClock* GetTickClock();
 class ScopedSetTickClockForTesting {
  public:
   explicit ScopedSetTickClockForTesting(const base::TickClock* tick_clock);
-  ~ScopedSetTickClockForTesting();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetTickClockForTesting);
+  ScopedSetTickClockForTesting(const ScopedSetTickClockForTesting&) = delete;
+  ScopedSetTickClockForTesting& operator=(const ScopedSetTickClockForTesting&) =
+      delete;
+
+  ~ScopedSetTickClockForTesting();
 };
 
 }  // namespace resource_coordinator

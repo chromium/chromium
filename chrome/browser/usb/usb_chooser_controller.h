@@ -32,6 +32,10 @@ class UsbChooserController : public permissions::ChooserController,
       content::RenderFrameHost* render_frame_host,
       std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
       blink::mojom::WebUsbService::GetPermissionCallback callback);
+
+  UsbChooserController(const UsbChooserController&) = delete;
+  UsbChooserController& operator=(const UsbChooserController&) = delete;
+
   ~UsbChooserController() override;
 
   // permissions::ChooserController:
@@ -71,8 +75,6 @@ class UsbChooserController : public permissions::ChooserController,
   // Maps from device name to number of devices.
   std::unordered_map<std::u16string, int> device_name_map_;
   base::WeakPtrFactory<UsbChooserController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbChooserController);
 };
 
 #endif  // CHROME_BROWSER_USB_USB_CHOOSER_CONTROLLER_H_

@@ -47,6 +47,10 @@ class ServerPrintersProviderImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
+  ServerPrintersProviderImpl(const ServerPrintersProviderImpl&) = delete;
+  ServerPrintersProviderImpl& operator=(const ServerPrintersProviderImpl&) =
+      delete;
+
   ~ServerPrintersProviderImpl() override = default;
 
   void RegisterPrintersFoundCallback(OnPrintersUpdateCallback cb) override {
@@ -168,7 +172,6 @@ class ServerPrintersProviderImpl
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ServerPrintersProviderImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ServerPrintersProviderImpl);
 };
 
 }  // namespace

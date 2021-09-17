@@ -36,6 +36,11 @@
 class MediaStreamPermissionTest : public WebRtcTestBase {
  public:
   MediaStreamPermissionTest() {}
+
+  MediaStreamPermissionTest(const MediaStreamPermissionTest&) = delete;
+  MediaStreamPermissionTest& operator=(const MediaStreamPermissionTest&) =
+      delete;
+
   ~MediaStreamPermissionTest() override {}
 
   // InProcessBrowserTest:
@@ -116,8 +121,6 @@ class MediaStreamPermissionTest : public WebRtcTestBase {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     return browser->tab_strip_model()->GetActiveWebContents();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamPermissionTest);
 };
 
 // Actual tests ---------------------------------------------------------------

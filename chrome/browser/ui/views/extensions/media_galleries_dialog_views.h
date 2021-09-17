@@ -31,6 +31,11 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
  public:
   explicit MediaGalleriesDialogViews(
       MediaGalleriesDialogController* controller);
+
+  MediaGalleriesDialogViews(const MediaGalleriesDialogViews&) = delete;
+  MediaGalleriesDialogViews& operator=(const MediaGalleriesDialogViews&) =
+      delete;
+
   ~MediaGalleriesDialogViews() override;
 
   // MediaGalleriesDialog:
@@ -103,8 +108,6 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   bool accepted_;
 
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesDialogViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_MEDIA_GALLERIES_DIALOG_VIEWS_H_

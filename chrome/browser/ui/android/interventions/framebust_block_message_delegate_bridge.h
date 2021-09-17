@@ -18,6 +18,12 @@ class FramebustBlockMessageDelegateBridge {
  public:
   explicit FramebustBlockMessageDelegateBridge(
       std::unique_ptr<FramebustBlockMessageDelegate> delegate);
+
+  FramebustBlockMessageDelegateBridge(
+      const FramebustBlockMessageDelegateBridge&) = delete;
+  FramebustBlockMessageDelegateBridge& operator=(
+      const FramebustBlockMessageDelegateBridge&) = delete;
+
   virtual ~FramebustBlockMessageDelegateBridge();
 
   // JNI accessors.
@@ -37,8 +43,6 @@ class FramebustBlockMessageDelegateBridge {
 
  private:
   std::unique_ptr<FramebustBlockMessageDelegate> message_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FramebustBlockMessageDelegateBridge);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INTERVENTIONS_FRAMEBUST_BLOCK_MESSAGE_DELEGATE_BRIDGE_H_

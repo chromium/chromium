@@ -46,6 +46,12 @@ base::FilePath GetTestFilePathForCacheGuid() {
 class SingleClientSecondaryAccountSyncTest : public SyncTest {
  public:
   SingleClientSecondaryAccountSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SingleClientSecondaryAccountSyncTest(
+      const SingleClientSecondaryAccountSyncTest&) = delete;
+  SingleClientSecondaryAccountSyncTest& operator=(
+      const SingleClientSecondaryAccountSyncTest&) = delete;
+
   ~SingleClientSecondaryAccountSyncTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -66,8 +72,6 @@ class SingleClientSecondaryAccountSyncTest : public SyncTest {
   base::test::ScopedFeatureList features_;
 
   base::CallbackListSubscription test_signin_client_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientSecondaryAccountSyncTest);
 };
 
 // The unconsented primary account (aka secondary account) isn't supported on

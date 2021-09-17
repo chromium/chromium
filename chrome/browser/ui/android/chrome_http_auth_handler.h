@@ -27,6 +27,10 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
   ChromeHttpAuthHandler(const std::u16string& authority,
                         const std::u16string& explanation,
                         LoginHandler::LoginModelData* login_model_data);
+
+  ChromeHttpAuthHandler(const ChromeHttpAuthHandler&) = delete;
+  ChromeHttpAuthHandler& operator=(const ChromeHttpAuthHandler&) = delete;
+
   ~ChromeHttpAuthHandler() override;
 
   // This must be called before using the object.
@@ -76,8 +80,6 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
   // If not null, points to a model we need to notify of our own destruction
   // so it doesn't try and access this when its too late.
   password_manager::HttpAuthManager* auth_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeHttpAuthHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_CHROME_HTTP_AUTH_HANDLER_H_

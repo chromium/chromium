@@ -31,6 +31,10 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
 
   SmsFetchRequestHandler(SharingDeviceSource* device_source,
                          content::SmsFetcher* fetcher);
+
+  SmsFetchRequestHandler(const SmsFetchRequestHandler&) = delete;
+  SmsFetchRequestHandler& operator=(const SmsFetchRequestHandler&) = delete;
+
   ~SmsFetchRequestHandler() override;
 
   // SharingMessageHandler
@@ -63,6 +67,10 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
             const std::vector<url::Origin>& origin_list,
             const std::string& client_name,
             SharingMessageHandler::DoneCallback respond_callback);
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request() override;
 
     void OnReceive(const content::OriginList&,
@@ -82,8 +90,6 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
     std::string one_time_code_;
     std::string client_name_;
     SharingMessageHandler::DoneCallback respond_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   void RemoveRequest(Request* Request);
@@ -100,8 +106,6 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
   base::flat_set<std::unique_ptr<Request>, base::UniquePtrComparator> requests_;
 
   base::WeakPtrFactory<SmsFetchRequestHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SmsFetchRequestHandler);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SMS_SMS_FETCH_REQUEST_HANDLER_H_

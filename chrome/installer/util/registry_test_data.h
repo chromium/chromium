@@ -18,6 +18,10 @@
 class RegistryTestData {
  public:
   RegistryTestData();
+
+  RegistryTestData(const RegistryTestData&) = delete;
+  RegistryTestData& operator=(const RegistryTestData&) = delete;
+
   // Invokes Reset() on its way out.
   ~RegistryTestData();
 
@@ -51,8 +55,6 @@ class RegistryTestData {
   std::wstring base_path_;
   std::wstring empty_key_path_;
   std::wstring non_empty_key_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryTestData);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_REGISTRY_TEST_DATA_H_

@@ -28,6 +28,10 @@ class WebContents;
 class KeyboardLockController : public ExclusiveAccessControllerBase {
  public:
   explicit KeyboardLockController(ExclusiveAccessManager* manager);
+
+  KeyboardLockController(const KeyboardLockController&) = delete;
+  KeyboardLockController& operator=(const KeyboardLockController&) = delete;
+
   ~KeyboardLockController() override;
 
   // Requests KeyboardLock for |web_contents|, request is allowed if
@@ -103,8 +107,6 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   const base::TickClock* esc_repeat_tick_clock_ = nullptr;
 
   base::circular_deque<base::TimeTicks> esc_keypress_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardLockController);
 };
 
 #endif  //  CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_KEYBOARD_LOCK_CONTROLLER_H_

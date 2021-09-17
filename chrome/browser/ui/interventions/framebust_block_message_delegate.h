@@ -38,6 +38,11 @@ class FramebustBlockMessageDelegate : public InterventionDelegate {
   FramebustBlockMessageDelegate(content::WebContents* web_contents,
                                 const GURL& blocked_url,
                                 OutcomeCallback intervention_callback);
+
+  FramebustBlockMessageDelegate(const FramebustBlockMessageDelegate&) = delete;
+  FramebustBlockMessageDelegate& operator=(
+      const FramebustBlockMessageDelegate&) = delete;
+
   ~FramebustBlockMessageDelegate() override;
 
   const GURL& GetBlockedUrl() const;
@@ -59,8 +64,6 @@ class FramebustBlockMessageDelegate : public InterventionDelegate {
 
   // The URL that was the redirection target in the blocked framebust attempt.
   const GURL blocked_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(FramebustBlockMessageDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_INTERVENTIONS_FRAMEBUST_BLOCK_MESSAGE_DELEGATE_H_

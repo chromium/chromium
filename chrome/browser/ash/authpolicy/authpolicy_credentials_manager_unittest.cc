@@ -50,6 +50,12 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   AuthPolicyCredentialsManagerTest()
       : user_manager_enabler_(std::make_unique<MockUserManager>()),
         local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  AuthPolicyCredentialsManagerTest(const AuthPolicyCredentialsManagerTest&) =
+      delete;
+  AuthPolicyCredentialsManagerTest& operator=(
+      const AuthPolicyCredentialsManagerTest&) = delete;
+
   ~AuthPolicyCredentialsManagerTest() override = default;
 
   void SetUp() override {
@@ -136,9 +142,6 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 
   ScopedTestingLocalState local_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthPolicyCredentialsManagerTest);
 };
 
 // Tests saving display and given name into user manager. No error means no

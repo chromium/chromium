@@ -42,6 +42,10 @@ class Dictation : public SpeechRecognizerDelegate,
   static const base::flat_map<std::string, bool> GetAllSupportedLocales();
 
   explicit Dictation(Profile* profile);
+
+  Dictation(const Dictation&) = delete;
+  Dictation& operator=(const Dictation&) = delete;
+
   ~Dictation() override;
 
   // User-initiated dictation.
@@ -96,8 +100,6 @@ class Dictation : public SpeechRecognizerDelegate,
   base::ElapsedTimer listening_duration_timer_;
 
   base::WeakPtrFactory<Dictation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Dictation);
 };
 
 }  // namespace ash

@@ -45,6 +45,12 @@ class PushMessagingNotificationManager {
       base::OnceCallback<void(bool did_show_generic_notification)>;
 
   explicit PushMessagingNotificationManager(Profile* profile);
+
+  PushMessagingNotificationManager(const PushMessagingNotificationManager&) =
+      delete;
+  PushMessagingNotificationManager& operator=(
+      const PushMessagingNotificationManager&) = delete;
+
   ~PushMessagingNotificationManager();
 
   // Enforces the requirements implied for push subscriptions which must display
@@ -111,8 +117,6 @@ class PushMessagingNotificationManager {
 #endif
 
   base::WeakPtrFactory<PushMessagingNotificationManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingNotificationManager);
 };
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_NOTIFICATION_MANAGER_H_

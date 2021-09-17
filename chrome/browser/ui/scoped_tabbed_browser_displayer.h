@@ -20,14 +20,17 @@ namespace chrome {
 class ScopedTabbedBrowserDisplayer {
  public:
   explicit ScopedTabbedBrowserDisplayer(Profile* profile);
+
+  ScopedTabbedBrowserDisplayer(const ScopedTabbedBrowserDisplayer&) = delete;
+  ScopedTabbedBrowserDisplayer& operator=(const ScopedTabbedBrowserDisplayer&) =
+      delete;
+
   ~ScopedTabbedBrowserDisplayer();
 
   Browser* browser() { return browser_; }
 
  private:
   Browser* browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTabbedBrowserDisplayer);
 };
 
 }  // namespace chrome

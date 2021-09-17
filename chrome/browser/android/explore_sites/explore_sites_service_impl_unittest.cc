@@ -41,6 +41,11 @@ using testing::Not;
 class ExploreSitesServiceImplTest : public testing::Test {
  public:
   ExploreSitesServiceImplTest();
+
+  ExploreSitesServiceImplTest(const ExploreSitesServiceImplTest&) = delete;
+  ExploreSitesServiceImplTest& operator=(const ExploreSitesServiceImplTest&) =
+      delete;
+
   ~ExploreSitesServiceImplTest() override = default;
 
   void SetUp() override {
@@ -154,8 +159,6 @@ class ExploreSitesServiceImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO,
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesServiceImplTest);
 };
 
 ExploreSitesServiceImplTest::ExploreSitesServiceImplTest()

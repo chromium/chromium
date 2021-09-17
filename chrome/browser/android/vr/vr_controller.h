@@ -39,6 +39,10 @@ class VrController : public PlatformController {
  public:
   // Controller API entry point.
   explicit VrController(gvr::GvrApi* gvr_api);
+
+  VrController(const VrController&) = delete;
+  VrController& operator=(const VrController&) = delete;
+
   ~VrController() override;
 
   // Must be called when the Activity gets OnResume().
@@ -122,8 +126,6 @@ class VrController : public PlatformController {
   int64_t last_timestamp_nanos_ = 0;
 
   float alpha_value_ = 1.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(VrController);
 };
 
 }  // namespace vr

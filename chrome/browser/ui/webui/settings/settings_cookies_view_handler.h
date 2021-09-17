@@ -24,6 +24,10 @@ class CookiesViewHandler : public SettingsPageUIHandler,
                            public CookiesTreeModel::Observer {
  public:
   CookiesViewHandler();
+
+  CookiesViewHandler(const CookiesViewHandler&) = delete;
+  CookiesViewHandler& operator=(const CookiesViewHandler&) = delete;
+
   ~CookiesViewHandler() override;
 
   // SettingsPageUIHandler:
@@ -181,8 +185,6 @@ class CookiesViewHandler : public SettingsPageUIHandler,
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<CookiesViewHandler> callback_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CookiesViewHandler);
 };
 
 }  // namespace settings

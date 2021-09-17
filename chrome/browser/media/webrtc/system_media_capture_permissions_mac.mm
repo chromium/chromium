@@ -40,6 +40,11 @@ MediaAuthorizationWrapper* g_media_authorization_wrapper_for_tests = nullptr;
 class MediaAuthorizationWrapperImpl final : public MediaAuthorizationWrapper {
  public:
   MediaAuthorizationWrapperImpl() = default;
+
+  MediaAuthorizationWrapperImpl(const MediaAuthorizationWrapperImpl&) = delete;
+  MediaAuthorizationWrapperImpl& operator=(
+      const MediaAuthorizationWrapperImpl&) = delete;
+
   ~MediaAuthorizationWrapperImpl() override = default;
 
   NSInteger AuthorizationStatusForMediaType(AVMediaType media_type) override {
@@ -66,9 +71,6 @@ class MediaAuthorizationWrapperImpl final : public MediaAuthorizationWrapper {
       base::PostTask(FROM_HERE, traits, std::move(callback));
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaAuthorizationWrapperImpl);
 };
 
 MediaAuthorizationWrapper& GetMediaAuthorizationWrapper() {

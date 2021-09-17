@@ -67,6 +67,12 @@ class TestQuietNotificationPermissionUiSelector
   explicit TestQuietNotificationPermissionUiSelector(
       QuietUiReason simulated_reason_for_quiet_ui)
       : simulated_reason_for_quiet_ui_(simulated_reason_for_quiet_ui) {}
+
+  TestQuietNotificationPermissionUiSelector(
+      const TestQuietNotificationPermissionUiSelector&) = delete;
+  TestQuietNotificationPermissionUiSelector& operator=(
+      const TestQuietNotificationPermissionUiSelector&) = delete;
+
   ~TestQuietNotificationPermissionUiSelector() override = default;
 
  protected:
@@ -84,8 +90,6 @@ class TestQuietNotificationPermissionUiSelector
 
  private:
   QuietUiReason simulated_reason_for_quiet_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestQuietNotificationPermissionUiSelector);
 };
 
 class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
@@ -93,6 +97,11 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
   ContentSettingImageModelTest()
       : request_(permissions::RequestType::kNotifications,
                  permissions::PermissionRequestGestureType::GESTURE) {}
+
+  ContentSettingImageModelTest(const ContentSettingImageModelTest&) = delete;
+  ContentSettingImageModelTest& operator=(const ContentSettingImageModelTest&) =
+      delete;
+
   ~ContentSettingImageModelTest() override {}
 
   content::WebContents* web_contents() {
@@ -138,9 +147,6 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
   permissions::MockPermissionRequest request_;
   permissions::PermissionRequestManager* manager_ = nullptr;
   content::NavigationController* controller_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingImageModelTest);
 };
 
 TEST_F(ContentSettingImageModelTest, Update) {

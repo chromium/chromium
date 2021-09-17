@@ -16,11 +16,19 @@ struct Model;
 class Laser : public UiElement {
  public:
   explicit Laser(Model* model);
+
+  Laser(const Laser&) = delete;
+  Laser& operator=(const Laser&) = delete;
+
   ~Laser() override;
 
   class Renderer : public BaseQuadRenderer {
    public:
     Renderer();
+
+    Renderer(const Renderer&) = delete;
+    Renderer& operator=(const Renderer&) = delete;
+
     ~Renderer() override;
 
     void Draw(float opacity, const gfx::Transform& view_proj_matrix);
@@ -33,8 +41,6 @@ class Laser : public UiElement {
     GLuint fade_point_handle_;
     GLuint fade_end_handle_;
     GLuint opacity_handle_;
-
-    DISALLOW_COPY_AND_ASSIGN(Renderer);
   };
 
  private:
@@ -47,8 +53,6 @@ class Laser : public UiElement {
   // changes, however, are not latency sensitive and are bound in the usual way
   // (they also do not update due to input).
   Model* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(Laser);
 };
 
 }  // namespace vr

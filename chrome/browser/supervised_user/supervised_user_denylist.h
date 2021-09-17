@@ -35,6 +35,10 @@ class SupervisedUserDenylist {
   };
 
   SupervisedUserDenylist();
+
+  SupervisedUserDenylist(const SupervisedUserDenylist&) = delete;
+  SupervisedUserDenylist& operator=(const SupervisedUserDenylist&) = delete;
+
   ~SupervisedUserDenylist();
 
   // Asynchronously read a denylist from the given file, replacing any previous
@@ -54,8 +58,6 @@ class SupervisedUserDenylist {
   std::vector<Hash> host_hashes_;
 
   base::WeakPtrFactory<SupervisedUserDenylist> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserDenylist);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_DENYLIST_H_

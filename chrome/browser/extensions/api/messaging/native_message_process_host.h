@@ -42,6 +42,9 @@ namespace extensions {
 // thread.
 class NativeMessageProcessHost : public NativeMessageHost {
  public:
+  NativeMessageProcessHost(const NativeMessageProcessHost&) = delete;
+  NativeMessageProcessHost& operator=(const NativeMessageProcessHost&) = delete;
+
   ~NativeMessageProcessHost() override;
 
   // Create using specified |launcher|. Used in tests.
@@ -135,8 +138,6 @@ class NativeMessageProcessHost : public NativeMessageHost {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<NativeMessageProcessHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessageProcessHost);
 };
 
 }  // namespace extensions

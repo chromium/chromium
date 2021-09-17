@@ -41,6 +41,11 @@ class ChromeKeyboardWebContents : public content::WebContentsObserver,
                             const GURL& url,
                             LoadCallback load_callback,
                             UnembedCallback unembed_callback);
+
+  ChromeKeyboardWebContents(const ChromeKeyboardWebContents&) = delete;
+  ChromeKeyboardWebContents& operator=(const ChromeKeyboardWebContents&) =
+      delete;
+
   ~ChromeKeyboardWebContents() override;
 
   // Updates the keyboard URL if |url| does not match the existing url.
@@ -82,8 +87,6 @@ class ChromeKeyboardWebContents : public content::WebContentsObserver,
   gfx::Size contents_size_;
 
   base::WeakPtrFactory<ChromeKeyboardWebContents> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardWebContents);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_KEYBOARD_CHROME_KEYBOARD_WEB_CONTENTS_H_

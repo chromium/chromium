@@ -20,6 +20,11 @@ namespace ash {
 class OobeWindowVisibilityWaiter : public aura::WindowObserver {
  public:
   explicit OobeWindowVisibilityWaiter(bool target_visibilty);
+
+  OobeWindowVisibilityWaiter(const OobeWindowVisibilityWaiter&) = delete;
+  OobeWindowVisibilityWaiter& operator=(const OobeWindowVisibilityWaiter&) =
+      delete;
+
   ~OobeWindowVisibilityWaiter() override;
 
   void Wait();
@@ -35,8 +40,6 @@ class OobeWindowVisibilityWaiter : public aura::WindowObserver {
   base::OnceClosure wait_stop_closure_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OobeWindowVisibilityWaiter);
 };
 
 }  // namespace ash

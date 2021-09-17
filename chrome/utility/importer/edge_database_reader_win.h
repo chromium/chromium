@@ -42,6 +42,10 @@ class EdgeDatabaseTableEnumerator : public EdgeErrorObject {
                               JET_SESID session_id,
                               JET_TABLEID table_id);
 
+  EdgeDatabaseTableEnumerator(const EdgeDatabaseTableEnumerator&) = delete;
+  EdgeDatabaseTableEnumerator& operator=(const EdgeDatabaseTableEnumerator&) =
+      delete;
+
   ~EdgeDatabaseTableEnumerator();
 
   const std::wstring& table_name() { return table_name_; }
@@ -63,8 +67,6 @@ class EdgeDatabaseTableEnumerator : public EdgeErrorObject {
   JET_TABLEID table_id_;
   std::wstring table_name_;
   JET_SESID session_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(EdgeDatabaseTableEnumerator);
 };
 
 class EdgeDatabaseReader : public EdgeErrorObject {
@@ -73,6 +75,9 @@ class EdgeDatabaseReader : public EdgeErrorObject {
       : db_id_(JET_dbidNil),
         instance_id_(JET_instanceNil),
         session_id_(JET_sesidNil) {}
+
+  EdgeDatabaseReader(const EdgeDatabaseReader&) = delete;
+  EdgeDatabaseReader& operator=(const EdgeDatabaseReader&) = delete;
 
   ~EdgeDatabaseReader();
 
@@ -98,8 +103,6 @@ class EdgeDatabaseReader : public EdgeErrorObject {
   JET_DBID db_id_;
   JET_INSTANCE instance_id_;
   JET_SESID session_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(EdgeDatabaseReader);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_EDGE_DATABASE_READER_WIN_H_

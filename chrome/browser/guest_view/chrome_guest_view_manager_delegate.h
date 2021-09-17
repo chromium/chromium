@@ -18,13 +18,16 @@ class ChromeGuestViewManagerDelegate
     : public ExtensionsGuestViewManagerDelegate {
  public:
   explicit ChromeGuestViewManagerDelegate(content::BrowserContext* context);
+
+  ChromeGuestViewManagerDelegate(const ChromeGuestViewManagerDelegate&) =
+      delete;
+  ChromeGuestViewManagerDelegate& operator=(
+      const ChromeGuestViewManagerDelegate&) = delete;
+
   ~ChromeGuestViewManagerDelegate() override;
 
   // GuestViewManagerDelegate:
   void OnGuestAdded(content::WebContents* guest_web_contents) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeGuestViewManagerDelegate);
 };
 
 }  // namespace extensions

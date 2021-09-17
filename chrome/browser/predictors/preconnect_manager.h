@@ -149,6 +149,10 @@ class PreconnectManager {
 
   PreconnectManager(base::WeakPtr<Delegate> delegate,
                     content::BrowserContext* browser_context);
+
+  PreconnectManager(const PreconnectManager&) = delete;
+  PreconnectManager& operator=(const PreconnectManager&) = delete;
+
   virtual ~PreconnectManager();
 
   // Starts preconnect and preresolve jobs keyed by |url|.
@@ -224,8 +228,6 @@ class PreconnectManager {
   Observer* observer_ = nullptr;
 
   base::WeakPtrFactory<PreconnectManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PreconnectManager);
 };
 
 }  // namespace predictors

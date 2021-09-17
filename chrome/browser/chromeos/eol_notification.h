@@ -29,6 +29,10 @@ class EolNotification final : public message_center::NotificationObserver {
   static bool ShouldShowEolNotification();
 
   explicit EolNotification(Profile* profile);
+
+  EolNotification(const EolNotification&) = delete;
+  EolNotification& operator=(const EolNotification&) = delete;
+
   ~EolNotification();
 
   // Check Eol info from update engine.
@@ -72,8 +76,6 @@ class EolNotification final : public message_center::NotificationObserver {
 
   // Factory of callbacks.
   base::WeakPtrFactory<EolNotification> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EolNotification);
 };
 
 }  // namespace chromeos

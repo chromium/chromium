@@ -36,6 +36,10 @@ class RootDeleteHelper {
                    LocalFileSyncStatus* sync_status,
                    const storage::FileSystemURL& url,
                    FileStatusCallback callback);
+
+  RootDeleteHelper(const RootDeleteHelper&) = delete;
+  RootDeleteHelper& operator=(const RootDeleteHelper&) = delete;
+
   ~RootDeleteHelper();
 
   void Run();
@@ -55,8 +59,6 @@ class RootDeleteHelper {
   LocalFileSyncStatus* sync_status_;
 
   base::WeakPtrFactory<RootDeleteHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RootDeleteHelper);
 };
 
 }  // namespace sync_file_system

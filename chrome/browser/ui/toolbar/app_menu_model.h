@@ -92,23 +92,27 @@ void LogWrenchMenuAction(AppMenuAction action_id);
 class ZoomMenuModel : public ui::SimpleMenuModel {
  public:
   explicit ZoomMenuModel(ui::SimpleMenuModel::Delegate* delegate);
+
+  ZoomMenuModel(const ZoomMenuModel&) = delete;
+  ZoomMenuModel& operator=(const ZoomMenuModel&) = delete;
+
   ~ZoomMenuModel() override;
 
  private:
   void Build();
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomMenuModel);
 };
 
 class ToolsMenuModel : public ui::SimpleMenuModel {
  public:
   ToolsMenuModel(ui::SimpleMenuModel::Delegate* delegate, Browser* browser);
+
+  ToolsMenuModel(const ToolsMenuModel&) = delete;
+  ToolsMenuModel& operator=(const ToolsMenuModel&) = delete;
+
   ~ToolsMenuModel() override;
 
  private:
   void Build(Browser* browser);
-
-  DISALLOW_COPY_AND_ASSIGN(ToolsMenuModel);
 };
 
 // A menu model that builds the contents of the app menu.
@@ -137,6 +141,10 @@ class AppMenuModel : public ui::SimpleMenuModel,
   AppMenuModel(ui::AcceleratorProvider* provider,
                Browser* browser,
                AppMenuIconController* app_menu_icon_controller = nullptr);
+
+  AppMenuModel(const AppMenuModel&) = delete;
+  AppMenuModel& operator=(const AppMenuModel&) = delete;
+
   ~AppMenuModel() override;
 
   // Runs Build() and registers observers.
@@ -242,8 +250,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   base::CallbackListSubscription browser_zoom_subscription_;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenuModel);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_APP_MENU_MODEL_H_

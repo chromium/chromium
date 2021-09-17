@@ -37,6 +37,11 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
       chromeos::SessionManagerClient* client,
       ash::DeviceSettingsService* device_settings_service,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+
+  DeviceLocalAccountPolicyStore(const DeviceLocalAccountPolicyStore&) = delete;
+  DeviceLocalAccountPolicyStore& operator=(
+      const DeviceLocalAccountPolicyStore&) = delete;
+
   ~DeviceLocalAccountPolicyStore() override;
 
   const std::string& account_id() const {
@@ -103,8 +108,6 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
   ash::DeviceSettingsService* device_settings_service_;
 
   base::WeakPtrFactory<DeviceLocalAccountPolicyStore> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyStore);
 };
 
 }  // namespace policy

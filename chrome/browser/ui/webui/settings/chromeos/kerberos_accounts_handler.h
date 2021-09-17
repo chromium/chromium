@@ -41,6 +41,9 @@ class KerberosAccountsHandler : public ::settings::SettingsPageUIHandler,
       content::WebUIDataSource* html_source,
       KerberosCredentialsManager* kerberos_credentials_manager);
 
+  KerberosAccountsHandler(const KerberosAccountsHandler&) = delete;
+  KerberosAccountsHandler& operator=(const KerberosAccountsHandler&) = delete;
+
   ~KerberosAccountsHandler() override;
 
   // WebUIMessageHandler:
@@ -100,8 +103,6 @@ class KerberosAccountsHandler : public ::settings::SettingsPageUIHandler,
   KerberosCredentialsManager* kerberos_credentials_manager_;
 
   base::WeakPtrFactory<KerberosAccountsHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KerberosAccountsHandler);
 };
 
 }  // namespace settings

@@ -26,6 +26,10 @@ class ArcAppShortcutsRequest {
       base::OnceCallback<void(std::unique_ptr<apps::AppShortcutItems>)>;
 
   explicit ArcAppShortcutsRequest(GetAppShortcutItemsCallback callback);
+
+  ArcAppShortcutsRequest(const ArcAppShortcutsRequest&) = delete;
+  ArcAppShortcutsRequest& operator=(const ArcAppShortcutsRequest&) = delete;
+
   ~ArcAppShortcutsRequest();
 
   // Starts querying app shortcuts for |package_name|. Results are retruned in
@@ -57,8 +61,6 @@ class ArcAppShortcutsRequest {
   std::vector<std::unique_ptr<IconDecodeRequest>> icon_decode_requests_;
 
   base::WeakPtrFactory<ArcAppShortcutsRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShortcutsRequest);
 };
 
 }  // namespace arc

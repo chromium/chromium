@@ -50,6 +50,10 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
                   std::unique_ptr<InputDelegate> input_delegate,
                   BrowserRendererBrowserInterface* browser,
                   size_t sliding_time_size);
+
+  BrowserRenderer(const BrowserRenderer&) = delete;
+  BrowserRenderer& operator=(const BrowserRenderer&) = delete;
+
   ~BrowserRenderer() override;
 
   void OnPause();
@@ -136,8 +140,6 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
   std::unique_ptr<UiInterface> ui_;
 
   base::WeakPtrFactory<BrowserRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserRenderer);
 };
 
 }  // namespace vr

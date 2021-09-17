@@ -31,6 +31,12 @@ class TestTabRestorePageLoadMetricsObserver
  public:
   explicit TestTabRestorePageLoadMetricsObserver(bool is_restore)
       : is_restore_(is_restore) {}
+
+  TestTabRestorePageLoadMetricsObserver(
+      const TestTabRestorePageLoadMetricsObserver&) = delete;
+  TestTabRestorePageLoadMetricsObserver& operator=(
+      const TestTabRestorePageLoadMetricsObserver&) = delete;
+
   ~TestTabRestorePageLoadMetricsObserver() override {}
 
  private:
@@ -39,8 +45,6 @@ class TestTabRestorePageLoadMetricsObserver
   }
 
   const bool is_restore_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTabRestorePageLoadMetricsObserver);
 };
 
 }  // namespace

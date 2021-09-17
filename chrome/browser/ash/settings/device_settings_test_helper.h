@@ -30,11 +30,16 @@ namespace ash {
 class ScopedDeviceSettingsTestHelper {
  public:
   ScopedDeviceSettingsTestHelper();
+
+  ScopedDeviceSettingsTestHelper(const ScopedDeviceSettingsTestHelper&) =
+      delete;
+  ScopedDeviceSettingsTestHelper& operator=(
+      const ScopedDeviceSettingsTestHelper&) = delete;
+
   ~ScopedDeviceSettingsTestHelper();
 
  private:
   FakeSessionManagerClient session_manager_client_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDeviceSettingsTestHelper);
 };
 
 // A convenience test base class that initializes a DeviceSettingsService

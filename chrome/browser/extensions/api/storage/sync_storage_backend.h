@@ -45,6 +45,9 @@ class SyncStorageBackend : public syncer::SyncableService {
       syncer::ModelType sync_type,
       const syncer::SyncableService::StartSyncFlare& flare);
 
+  SyncStorageBackend(const SyncStorageBackend&) = delete;
+  SyncStorageBackend& operator=(const SyncStorageBackend&) = delete;
+
   ~SyncStorageBackend() override;
 
   virtual value_store::ValueStore* GetStorage(const std::string& extension_id);
@@ -99,8 +102,6 @@ class SyncStorageBackend : public syncer::SyncableService {
   std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory_;
 
   syncer::SyncableService::StartSyncFlare flare_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncStorageBackend);
 };
 
 }  // namespace extensions

@@ -378,6 +378,10 @@ class IncidentReportingServiceTest : public testing::Test {
           FROM_HERE,
           base::BindOnce(&FakeUploader::FinishUpload, base::Unretained(this)));
     }
+
+    FakeUploader(const FakeUploader&) = delete;
+    FakeUploader& operator=(const FakeUploader&) = delete;
+
     ~FakeUploader() override { std::move(on_deleted_).Run(); }
 
    private:
@@ -390,8 +394,6 @@ class IncidentReportingServiceTest : public testing::Test {
 
     base::OnceClosure on_deleted_;
     safe_browsing::IncidentReportUploader::Result result_;
-
-    DISALLOW_COPY_AND_ASSIGN(FakeUploader);
   };
 
   class FakeDownloadFinder : public safe_browsing::LastDownloadFinder {
@@ -413,6 +415,9 @@ class IncidentReportingServiceTest : public testing::Test {
           new FakeDownloadFinder(std::move(on_deleted)));
     }
 
+    FakeDownloadFinder(const FakeDownloadFinder&) = delete;
+    FakeDownloadFinder& operator=(const FakeDownloadFinder&) = delete;
+
     ~FakeDownloadFinder() override { std::move(on_deleted_).Run(); }
 
    private:
@@ -420,8 +425,6 @@ class IncidentReportingServiceTest : public testing::Test {
         : on_deleted_(std::move(on_deleted)) {}
 
     base::OnceClosure on_deleted_;
-
-    DISALLOW_COPY_AND_ASSIGN(FakeDownloadFinder);
   };
 
   // Confirms that the test incident(s) was/were uploaded by the service, then

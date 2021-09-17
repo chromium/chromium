@@ -31,6 +31,12 @@ class ChromeWebContentsViewDelegateMac
       public ContextMenuDelegate {
  public:
   explicit ChromeWebContentsViewDelegateMac(content::WebContents* web_contents);
+
+  ChromeWebContentsViewDelegateMac(const ChromeWebContentsViewDelegateMac&) =
+      delete;
+  ChromeWebContentsViewDelegateMac& operator=(
+      const ChromeWebContentsViewDelegateMac&) = delete;
+
   ~ChromeWebContentsViewDelegateMac() override;
 
   // Overridden from WebContentsViewDelegate:
@@ -74,8 +80,6 @@ class ChromeWebContentsViewDelegateMac
 
   // The WebContents that owns the view.
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebContentsViewDelegateMac);
 };
 
 #endif  // __OBJC__

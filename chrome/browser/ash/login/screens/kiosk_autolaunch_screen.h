@@ -27,6 +27,10 @@ class KioskAutolaunchScreen : public BaseScreen {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   KioskAutolaunchScreen(KioskAutolaunchScreenView* view,
                         const ScreenExitCallback& exit_callback);
+
+  KioskAutolaunchScreen(const KioskAutolaunchScreen&) = delete;
+  KioskAutolaunchScreen& operator=(const KioskAutolaunchScreen&) = delete;
+
   ~KioskAutolaunchScreen() override;
 
   // Called when screen is exited.
@@ -44,8 +48,6 @@ class KioskAutolaunchScreen : public BaseScreen {
  private:
   KioskAutolaunchScreenView* view_;
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAutolaunchScreen);
 };
 
 }  // namespace ash

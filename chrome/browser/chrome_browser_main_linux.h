@@ -15,6 +15,11 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
  public:
   ChromeBrowserMainPartsLinux(const content::MainFunctionParams& parameters,
                               StartupData* startup_data);
+
+  ChromeBrowserMainPartsLinux(const ChromeBrowserMainPartsLinux&) = delete;
+  ChromeBrowserMainPartsLinux& operator=(const ChromeBrowserMainPartsLinux&) =
+      delete;
+
   ~ChromeBrowserMainPartsLinux() override;
 
   // ChromeBrowserMainParts overrides.
@@ -26,9 +31,6 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
   void PostBrowserStart() override;
 #endif
   void PostDestroyThreads() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainPartsLinux);
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_LINUX_H_

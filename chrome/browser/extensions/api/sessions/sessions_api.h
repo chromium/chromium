@@ -87,6 +87,10 @@ class SessionsRestoreFunction : public ExtensionFunction {
 class SessionsEventRouter : public sessions::TabRestoreServiceObserver {
  public:
   explicit SessionsEventRouter(Profile* profile);
+
+  SessionsEventRouter(const SessionsEventRouter&) = delete;
+  SessionsEventRouter& operator=(const SessionsEventRouter&) = delete;
+
   ~SessionsEventRouter() override;
 
   // Observer callback for TabRestoreServiceObserver. Sends data on
@@ -104,14 +108,16 @@ class SessionsEventRouter : public sessions::TabRestoreServiceObserver {
 
   // TabRestoreService that we are observing.
   sessions::TabRestoreService* tab_restore_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionsEventRouter);
 };
 
 class SessionsAPI : public BrowserContextKeyedAPI,
                     public extensions::EventRouter::Observer {
  public:
   explicit SessionsAPI(content::BrowserContext* context);
+
+  SessionsAPI(const SessionsAPI&) = delete;
+  SessionsAPI& operator=(const SessionsAPI&) = delete;
+
   ~SessionsAPI() override;
 
   // BrowserContextKeyedService implementation.
@@ -136,8 +142,6 @@ class SessionsAPI : public BrowserContextKeyedAPI,
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<SessionsEventRouter> sessions_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionsAPI);
 };
 
 }  // namespace extensions

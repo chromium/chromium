@@ -22,6 +22,11 @@ class MediaAuthorizationWrapperTest final
     : public system_media_permissions::MediaAuthorizationWrapper {
  public:
   MediaAuthorizationWrapperTest() = default;
+
+  MediaAuthorizationWrapperTest(const MediaAuthorizationWrapperTest&) = delete;
+  MediaAuthorizationWrapperTest& operator=(
+      const MediaAuthorizationWrapperTest&) = delete;
+
   ~MediaAuthorizationWrapperTest() override = default;
   void SetMockMediaPermissionStatus(AuthStatus status);
 
@@ -33,8 +38,6 @@ class MediaAuthorizationWrapperTest final
 
  private:
   AuthStatus permission_status_ = kNotDetermined;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaAuthorizationWrapperTest);
 };
 
 #endif  // CHROME_BROWSER_UI_CONTENT_SETTINGS_MEDIA_AUTHORIZATION_WRAPPER_TEST_H_

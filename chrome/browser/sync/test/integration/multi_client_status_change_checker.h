@@ -21,6 +21,12 @@ class MultiClientStatusChangeChecker : public StatusChangeChecker,
  public:
   explicit MultiClientStatusChangeChecker(
       std::vector<syncer::SyncServiceImpl*> services);
+
+  MultiClientStatusChangeChecker(const MultiClientStatusChangeChecker&) =
+      delete;
+  MultiClientStatusChangeChecker& operator=(
+      const MultiClientStatusChangeChecker&) = delete;
+
   ~MultiClientStatusChangeChecker() override;
 
  protected:
@@ -38,8 +44,6 @@ class MultiClientStatusChangeChecker : public StatusChangeChecker,
   base::ScopedMultiSourceObservation<syncer::SyncService,
                                      syncer::SyncServiceObserver>
       scoped_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MultiClientStatusChangeChecker);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_MULTI_CLIENT_STATUS_CHANGE_CHECKER_H_

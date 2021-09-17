@@ -28,6 +28,10 @@ class DemoSetupScreen : public BaseScreen {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   DemoSetupScreen(DemoSetupScreenView* view,
                   const ScreenExitCallback& exit_callback);
+
+  DemoSetupScreen(const DemoSetupScreen&) = delete;
+  DemoSetupScreen& operator=(const DemoSetupScreen&) = delete;
+
   ~DemoSetupScreen() override;
 
   // Called when view is being destroyed. If Screen is destroyed earlier
@@ -63,8 +67,6 @@ class DemoSetupScreen : public BaseScreen {
   ScreenExitCallback exit_callback_;
 
   base::WeakPtrFactory<DemoSetupScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupScreen);
 };
 
 }  // namespace ash

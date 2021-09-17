@@ -22,6 +22,10 @@ class WebContents;
 class PluginInstaller {
  public:
   PluginInstaller();
+
+  PluginInstaller(const PluginInstaller&) = delete;
+  PluginInstaller& operator=(const PluginInstaller&) = delete;
+
   ~PluginInstaller();
 
   void AddObserver(PluginInstallerObserver* observer);
@@ -43,7 +47,6 @@ class PluginInstaller {
   base::ObserverList<PluginInstallerObserver>::Unchecked observers_;
   int strong_observer_count_;
   base::ObserverList<WeakPluginInstallerObserver>::Unchecked weak_observers_;
-  DISALLOW_COPY_AND_ASSIGN(PluginInstaller);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_INSTALLER_H_

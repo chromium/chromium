@@ -52,6 +52,9 @@ class ChromeAppIconService : public KeyedService,
 
   explicit ChromeAppIconService(content::BrowserContext* context);
 
+  ChromeAppIconService(const ChromeAppIconService&) = delete;
+  ChromeAppIconService& operator=(const ChromeAppIconService&) = delete;
+
   ~ChromeAppIconService() override;
 
   // Convenience function to get the ChromeAppIconService for a
@@ -121,8 +124,6 @@ class ChromeAppIconService : public KeyedService,
       observation_{this};
 
   base::WeakPtrFactory<ChromeAppIconService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppIconService);
 };
 
 }  // namespace extensions

@@ -21,6 +21,12 @@ class AutofillCreditCardFillingInfoBarDelegateMobileTest
  public:
   AutofillCreditCardFillingInfoBarDelegateMobileTest()
       : infobar_callback_has_run_(false) {}
+
+  AutofillCreditCardFillingInfoBarDelegateMobileTest(
+      const AutofillCreditCardFillingInfoBarDelegateMobileTest&) = delete;
+  AutofillCreditCardFillingInfoBarDelegateMobileTest& operator=(
+      const AutofillCreditCardFillingInfoBarDelegateMobileTest&) = delete;
+
   ~AutofillCreditCardFillingInfoBarDelegateMobileTest() override {}
 
  protected:
@@ -30,9 +36,6 @@ class AutofillCreditCardFillingInfoBarDelegateMobileTest
   void AcceptInfoBarCallback() { infobar_callback_has_run_ = true; }
 
   bool infobar_callback_has_run_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillCreditCardFillingInfoBarDelegateMobileTest);
 };
 
 std::unique_ptr<AutofillCreditCardFillingInfoBarDelegateMobile>

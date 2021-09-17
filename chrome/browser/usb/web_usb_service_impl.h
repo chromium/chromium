@@ -40,6 +40,10 @@ class WebUsbServiceImpl
  public:
   WebUsbServiceImpl(content::RenderFrameHost* render_frame_host,
                     base::WeakPtr<WebUsbChooser> usb_chooser);
+
+  WebUsbServiceImpl(const WebUsbServiceImpl&) = delete;
+  WebUsbServiceImpl& operator=(const WebUsbServiceImpl&) = delete;
+
   ~WebUsbServiceImpl() override;
 
   void BindReceiver(
@@ -103,8 +107,6 @@ class WebUsbServiceImpl
       permission_observation_{this};
 
   base::WeakPtrFactory<WebUsbServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebUsbServiceImpl);
 };
 
 #endif  // CHROME_BROWSER_USB_WEB_USB_SERVICE_IMPL_H_

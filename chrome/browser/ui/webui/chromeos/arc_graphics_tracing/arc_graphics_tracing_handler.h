@@ -49,6 +49,11 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
                                               const std::string& title);
 
   explicit ArcGraphicsTracingHandler(ArcGraphicsTracingMode mode);
+
+  ArcGraphicsTracingHandler(const ArcGraphicsTracingHandler&) = delete;
+  ArcGraphicsTracingHandler& operator=(const ArcGraphicsTracingHandler&) =
+      delete;
+
   ~ArcGraphicsTracingHandler() override;
 
   // content::WebUIMessageHandler:
@@ -144,8 +149,6 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   base::Time timestamp_;
 
   base::WeakPtrFactory<ArcGraphicsTracingHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcGraphicsTracingHandler);
 };
 
 }  // namespace chromeos

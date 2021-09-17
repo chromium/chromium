@@ -75,6 +75,10 @@ bool Mixer::SortData::operator<(const SortData& other) const {
 class Mixer::Group {
  public:
   explicit Group(size_t max_results) : max_results_(max_results) {}
+
+  Group(const Group&) = delete;
+  Group& operator=(const Group&) = delete;
+
   ~Group() {}
 
   void AddProvider(SearchProvider* provider) {
@@ -110,8 +114,6 @@ class Mixer::Group {
 
   Providers providers_;  // Not owned.
   SortedResults results_;
-
-  DISALLOW_COPY_AND_ASSIGN(Group);
 };
 
 Mixer::Mixer(AppListModelUpdater* model_updater,

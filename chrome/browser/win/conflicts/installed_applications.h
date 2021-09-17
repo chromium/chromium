@@ -65,6 +65,9 @@ class InstalledApplications {
   // public method can be used without such restrictions.
   InstalledApplications();
 
+  InstalledApplications(const InstalledApplications&) = delete;
+  InstalledApplications& operator=(const InstalledApplications&) = delete;
+
   virtual ~InstalledApplications();
 
   // Given a |file|, checks if it matches an installed application on the user's
@@ -112,8 +115,6 @@ class InstalledApplications {
   // parent of the other as equal.
   // The second part of the pair is the index into |applications|.
   std::vector<std::pair<base::FilePath, size_t>> install_directories_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstalledApplications);
 };
 
 bool operator<(const InstalledApplications::ApplicationInfo& lhs,

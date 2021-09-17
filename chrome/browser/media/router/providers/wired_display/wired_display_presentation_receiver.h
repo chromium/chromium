@@ -19,6 +19,12 @@ namespace media_router {
 class WiredDisplayPresentationReceiver {
  public:
   WiredDisplayPresentationReceiver() = default;
+
+  WiredDisplayPresentationReceiver(const WiredDisplayPresentationReceiver&) =
+      delete;
+  WiredDisplayPresentationReceiver& operator=(
+      const WiredDisplayPresentationReceiver&) = delete;
+
   virtual ~WiredDisplayPresentationReceiver() = default;
 
   // Starts a presentation with the given ID and URL.
@@ -30,9 +36,6 @@ class WiredDisplayPresentationReceiver {
 
   // Exits fullscreen and shows the receiver in windowed mode.
   virtual void ExitFullscreen() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WiredDisplayPresentationReceiver);
 };
 
 }  // namespace media_router

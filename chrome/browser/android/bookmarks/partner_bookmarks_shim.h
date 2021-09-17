@@ -40,6 +40,9 @@ class PrefRegistrySyncable;
 // Note that node->GetTitle() returns an original (unmodified) title.
 class PartnerBookmarksShim : public base::SupportsUserData::Data {
  public:
+  PartnerBookmarksShim(const PartnerBookmarksShim&) = delete;
+  PartnerBookmarksShim& operator=(const PartnerBookmarksShim&) = delete;
+
   ~PartnerBookmarksShim() override;
 
   // Returns an instance of the shim for a given |browser_context|.
@@ -154,8 +157,6 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
 
   // The observers.
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartnerBookmarksShim);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_BOOKMARKS_PARTNER_BOOKMARKS_SHIM_H_

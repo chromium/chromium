@@ -15,6 +15,12 @@ class OneClickSigninLinksDelegateImpl : public OneClickSigninLinksDelegate {
  public:
   // |browser| must outlive the delegate.
   explicit OneClickSigninLinksDelegateImpl(Browser* browser);
+
+  OneClickSigninLinksDelegateImpl(const OneClickSigninLinksDelegateImpl&) =
+      delete;
+  OneClickSigninLinksDelegateImpl& operator=(
+      const OneClickSigninLinksDelegateImpl&) = delete;
+
   ~OneClickSigninLinksDelegateImpl() override;
 
  private:
@@ -23,8 +29,6 @@ class OneClickSigninLinksDelegateImpl : public OneClickSigninLinksDelegate {
 
   // Browser in which the links should be opened.
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneClickSigninLinksDelegateImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_SYNC_ONE_CLICK_SIGNIN_LINKS_DELEGATE_IMPL_H_

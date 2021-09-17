@@ -33,6 +33,11 @@ class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
  public:
   SchedulerConfigurationManager(DebugDaemonClient* debug_daemon_client,
                                 PrefService* local_state);
+
+  SchedulerConfigurationManager(const SchedulerConfigurationManager&) = delete;
+  SchedulerConfigurationManager& operator=(
+      const SchedulerConfigurationManager&) = delete;
+
   ~SchedulerConfigurationManager() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -51,8 +56,6 @@ class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
   absl::optional<std::pair<bool, size_t>> last_reply_;
 
   base::WeakPtrFactory<SchedulerConfigurationManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SchedulerConfigurationManager);
 };
 
 }  // namespace chromeos

@@ -465,6 +465,11 @@ class SafeBrowsingBlockingPageBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters({tag_and_attribute}, {});
   }
 
+  SafeBrowsingBlockingPageBrowserTest(
+      const SafeBrowsingBlockingPageBrowserTest&) = delete;
+  SafeBrowsingBlockingPageBrowserTest& operator=(
+      const SafeBrowsingBlockingPageBrowserTest&) = delete;
+
   ~SafeBrowsingBlockingPageBrowserTest() override {}
 
   void CreatedBrowserMainParts(
@@ -809,8 +814,6 @@ class SafeBrowsingBlockingPageBrowserTest
   TestSafeBrowsingServiceFactory factory_;
   TestSafeBrowsingBlockingPageFactory* raw_blocking_page_factory_;
   net::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPageBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, HardcodedUrls) {

@@ -1858,12 +1858,15 @@ class DeveloperPrivateApiSupervisedUserUnitTest
     : public DeveloperPrivateApiUnitTest {
  public:
   DeveloperPrivateApiSupervisedUserUnitTest() = default;
+
+  DeveloperPrivateApiSupervisedUserUnitTest(
+      const DeveloperPrivateApiSupervisedUserUnitTest&) = delete;
+  DeveloperPrivateApiSupervisedUserUnitTest& operator=(
+      const DeveloperPrivateApiSupervisedUserUnitTest&) = delete;
+
   ~DeveloperPrivateApiSupervisedUserUnitTest() override = default;
 
   bool ProfileIsSupervised() const override { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeveloperPrivateApiSupervisedUserUnitTest);
 };
 
 // Tests trying to call loadUnpacked when the profile shouldn't be allowed to.

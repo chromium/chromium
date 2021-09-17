@@ -27,6 +27,10 @@ namespace {
 class MockDelegate : public HeaderModificationDelegate {
  public:
   MockDelegate() = default;
+
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
+
   ~MockDelegate() override = default;
 
   MOCK_METHOD1(ShouldInterceptNavigation, bool(content::WebContents* contents));
@@ -36,9 +40,6 @@ class MockDelegate : public HeaderModificationDelegate {
   MOCK_METHOD2(ProcessResponse,
                void(ResponseAdapter* response_adapter,
                     const GURL& redirect_url));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDelegate);
 };
 
 content::WebContents::Getter NullWebContentsGetter() {

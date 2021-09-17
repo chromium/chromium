@@ -102,6 +102,11 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest,
 class TestProcessManagerObserver : public ProcessManagerObserver {
  public:
   TestProcessManagerObserver() = default;
+
+  TestProcessManagerObserver(const TestProcessManagerObserver&) = delete;
+  TestProcessManagerObserver& operator=(const TestProcessManagerObserver&) =
+      delete;
+
   ~TestProcessManagerObserver() override = default;
 
   void WaitForProcessShutdown(ProcessManager* process_manager,
@@ -129,8 +134,6 @@ class TestProcessManagerObserver : public ProcessManagerObserver {
   base::ScopedObservation<ProcessManager, ProcessManagerObserver> observation_{
       this};
   base::OnceClosure quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProcessManagerObserver);
 };
 
 base::CommandLine CreateNativeMessagingConnectCommandLine(

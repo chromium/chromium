@@ -44,6 +44,10 @@ constexpr gfx::Size kWindowSize = {1280, 720};
 class MockRect : public Rect {
  public:
   MockRect() = default;
+
+  MockRect(const MockRect&) = delete;
+  MockRect& operator=(const MockRect&) = delete;
+
   ~MockRect() override = default;
 
   MOCK_METHOD2(OnHoverEnter,
@@ -67,23 +71,21 @@ class MockRect : public Rect {
   MOCK_METHOD1(OnFocusChanged, void(bool));
   MOCK_METHOD1(OnInputEdited, void(const EditedText&));
   MOCK_METHOD1(OnInputCommitted, void(const EditedText&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockRect);
 };
 
 class MockTextInput : public TextInput {
  public:
   MockTextInput()
       : TextInput(1, base::RepeatingCallback<void(const EditedText&)>()) {}
+
+  MockTextInput(const MockTextInput&) = delete;
+  MockTextInput& operator=(const MockTextInput&) = delete;
+
   ~MockTextInput() override = default;
 
   MOCK_METHOD1(OnFocusChanged, void(bool));
   MOCK_METHOD1(OnInputEdited, void(const EditedText&));
   MOCK_METHOD1(OnInputCommitted, void(const EditedText&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTextInput);
 };
 
 class UiInputManagerTest : public testing::Test {

@@ -30,6 +30,11 @@ class RoundedCornersImageSource : public gfx::CanvasImageSource {
  public:
   explicit RoundedCornersImageSource(const gfx::ImageSkia& icon)
       : gfx::CanvasImageSource(icon.size()), icon_(icon) {}
+
+  RoundedCornersImageSource(const RoundedCornersImageSource&) = delete;
+  RoundedCornersImageSource& operator=(const RoundedCornersImageSource&) =
+      delete;
+
   ~RoundedCornersImageSource() override {}
 
  private:
@@ -56,8 +61,6 @@ class RoundedCornersImageSource : public gfx::CanvasImageSource {
   }
 
   gfx::ImageSkia icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundedCornersImageSource);
 };
 
 }  // namespace

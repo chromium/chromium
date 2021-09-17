@@ -35,6 +35,10 @@ class MoveEntry : public Operation {
             const base::FilePath& source_path,
             const base::FilePath& target_path,
             storage::AsyncFileUtil::StatusCallback callback);
+
+  MoveEntry(const MoveEntry&) = delete;
+  MoveEntry& operator=(const MoveEntry&) = delete;
+
   ~MoveEntry() override;
 
   // Operation overrides.
@@ -50,8 +54,6 @@ class MoveEntry : public Operation {
   base::FilePath source_path_;
   base::FilePath target_path_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MoveEntry);
 };
 
 }  // namespace operations

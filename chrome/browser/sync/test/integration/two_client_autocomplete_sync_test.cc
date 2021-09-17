@@ -21,12 +21,14 @@ using autofill_helper::RemoveKey;
 class TwoClientAutocompleteSyncTest : public SyncTest {
  public:
   TwoClientAutocompleteSyncTest() : SyncTest(TWO_CLIENT) {}
+
+  TwoClientAutocompleteSyncTest(const TwoClientAutocompleteSyncTest&) = delete;
+  TwoClientAutocompleteSyncTest& operator=(
+      const TwoClientAutocompleteSyncTest&) = delete;
+
   ~TwoClientAutocompleteSyncTest() override {}
 
   bool TestUsesSelfNotifications() override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientAutocompleteSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutocompleteSyncTest, WebDataServiceSanity) {

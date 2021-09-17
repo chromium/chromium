@@ -112,6 +112,12 @@ class TestSafeBrowsingService : public SafeBrowsingService,
 class TestSafeBrowsingServiceFactory : public SafeBrowsingServiceFactory {
  public:
   TestSafeBrowsingServiceFactory();
+
+  TestSafeBrowsingServiceFactory(const TestSafeBrowsingServiceFactory&) =
+      delete;
+  TestSafeBrowsingServiceFactory& operator=(
+      const TestSafeBrowsingServiceFactory&) = delete;
+
   ~TestSafeBrowsingServiceFactory() override;
 
   // Creates test safe browsing service, and configures test UI manager,
@@ -136,8 +142,6 @@ class TestSafeBrowsingServiceFactory : public SafeBrowsingServiceFactory {
   scoped_refptr<TestSafeBrowsingDatabaseManager> test_database_manager_;
   scoped_refptr<TestSafeBrowsingUIManager> test_ui_manager_;
   bool use_v4_local_db_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSafeBrowsingServiceFactory);
 };
 
 // This is an implemenation of SafeBrowsingUIManager without actually

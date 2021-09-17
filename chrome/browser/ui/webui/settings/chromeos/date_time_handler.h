@@ -25,6 +25,10 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
                         public SystemClockClient::Observer {
  public:
   DateTimeHandler();
+
+  DateTimeHandler(const DateTimeHandler&) = delete;
+  DateTimeHandler& operator=(const DateTimeHandler&) = delete;
+
   ~DateTimeHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -65,8 +69,6 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
   base::ScopedObservation<SystemClockClient, SystemClockClient::Observer>
       scoped_observation_{this};
   base::WeakPtrFactory<DateTimeHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeHandler);
 };
 
 }  // namespace settings

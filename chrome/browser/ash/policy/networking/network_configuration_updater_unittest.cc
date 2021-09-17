@@ -75,15 +75,16 @@ class FakeUser : public user_manager::User {
     set_display_email(kFakeUserEmail);
     set_username_hash(kFakeUsernameHash);
   }
+
+  FakeUser(const FakeUser&) = delete;
+  FakeUser& operator=(const FakeUser&) = delete;
+
   ~FakeUser() override {}
 
   // User overrides
   user_manager::UserType GetType() const override {
     return user_manager::USER_TYPE_REGULAR;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeUser);
 };
 
 class MockPolicyProvidedCertsObserver
@@ -125,6 +126,10 @@ class FakeCertificateImporter : public chromeos::onc::CertificateImporter {
   using OncParsedCertificates = chromeos::onc::OncParsedCertificates;
 
   FakeCertificateImporter() : call_count_(0) {}
+
+  FakeCertificateImporter(const FakeCertificateImporter&) = delete;
+  FakeCertificateImporter& operator=(const FakeCertificateImporter&) = delete;
+
   ~FakeCertificateImporter() override {}
 
   void SetExpectedONCClientCertificates(
@@ -167,8 +172,6 @@ class FakeCertificateImporter : public chromeos::onc::CertificateImporter {
       expected_client_certificates_;
   net::ScopedCERTCertificateList onc_trusted_certificates_;
   unsigned int call_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCertificateImporter);
 };
 
 // Note: HexSSID 737369642D6E6F6E65 maps to "ssid-none".

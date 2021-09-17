@@ -318,6 +318,12 @@ class FirstRunMasterPrefsVariationsSeedTest
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         variations::switches::kDisableFieldTrialTestingConfig);
   }
+
+  FirstRunMasterPrefsVariationsSeedTest(
+      const FirstRunMasterPrefsVariationsSeedTest&) = delete;
+  FirstRunMasterPrefsVariationsSeedTest& operator=(
+      const FirstRunMasterPrefsVariationsSeedTest&) = delete;
+
   ~FirstRunMasterPrefsVariationsSeedTest() override = default;
 
   void SetUp() override {
@@ -360,8 +366,6 @@ class FirstRunMasterPrefsVariationsSeedTest
     EXPECT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
     return user_data_dir.AppendASCII("FirstRunMasterPrefsVariationsSeedTest");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunMasterPrefsVariationsSeedTest);
 };
 
 IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {

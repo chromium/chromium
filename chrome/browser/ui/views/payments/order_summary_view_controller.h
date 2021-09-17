@@ -26,6 +26,11 @@ class OrderSummaryViewController : public PaymentRequestSheetController,
   OrderSummaryViewController(base::WeakPtr<PaymentRequestSpec> spec,
                              base::WeakPtr<PaymentRequestState> state,
                              base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  OrderSummaryViewController(const OrderSummaryViewController&) = delete;
+  OrderSummaryViewController& operator=(const OrderSummaryViewController&) =
+      delete;
+
   ~OrderSummaryViewController() override;
 
   // PaymentRequestSpec::Observer:
@@ -42,8 +47,6 @@ class OrderSummaryViewController : public PaymentRequestSheetController,
   void FillContentView(views::View* content_view) override;
 
   base::WeakPtrFactory<OrderSummaryViewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OrderSummaryViewController);
 };
 
 }  // namespace payments

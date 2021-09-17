@@ -24,6 +24,11 @@ namespace site_engagement {
 class ImportantSitesUtilBrowserTest : public AndroidBrowserTest {
  public:
   ImportantSitesUtilBrowserTest() = default;
+
+  ImportantSitesUtilBrowserTest(const ImportantSitesUtilBrowserTest&) = delete;
+  ImportantSitesUtilBrowserTest& operator=(
+      const ImportantSitesUtilBrowserTest&) = delete;
+
   ~ImportantSitesUtilBrowserTest() override = default;
 
  protected:
@@ -82,8 +87,6 @@ class ImportantSitesUtilBrowserTest : public AndroidBrowserTest {
  private:
   GURL default_search_url_;
   base::test::ScopedFeatureList features_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImportantSitesUtilBrowserTest);
 };
 
 // An origin with notification permission should be considered important, unless

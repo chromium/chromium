@@ -17,6 +17,12 @@ class Extension;
 class BrowserExtensionWindowController : public WindowController {
  public:
   explicit BrowserExtensionWindowController(Browser* browser);
+
+  BrowserExtensionWindowController(const BrowserExtensionWindowController&) =
+      delete;
+  BrowserExtensionWindowController& operator=(
+      const BrowserExtensionWindowController&) = delete;
+
   ~BrowserExtensionWindowController() override;
 
   // Sets the window's fullscreen state. |extension_url| provides the url
@@ -34,8 +40,6 @@ class BrowserExtensionWindowController : public WindowController {
 
  private:
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserExtensionWindowController);
 };
 
 }  // namespace extensions

@@ -44,6 +44,10 @@ class TestSearchResult : public ChromeSearchResult {
     SetTitle(base::UTF8ToUTF16(id));
     set_relevance(relevance);
   }
+
+  TestSearchResult(const TestSearchResult&) = delete;
+  TestSearchResult& operator=(const TestSearchResult&) = delete;
+
   ~TestSearchResult() override {}
 
   // ChromeSearchResult overrides:
@@ -60,8 +64,6 @@ class TestSearchResult : public ChromeSearchResult {
   static int instantiation_count;
 
   int instance_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSearchResult);
 };
 int TestSearchResult::instantiation_count = 0;
 
@@ -75,6 +77,10 @@ class TestSearchProvider : public SearchProvider {
         last_result_has_display_index_(false),
         display_type_(ash::SearchResultDisplayType::kList),
         result_type_(result_type) {}
+
+  TestSearchProvider(const TestSearchProvider&) = delete;
+  TestSearchProvider& operator=(const TestSearchProvider&) = delete;
+
   ~TestSearchProvider() override {}
 
   // SearchProvider overrides:
@@ -126,13 +132,15 @@ class TestSearchProvider : public SearchProvider {
   bool last_result_has_display_index_;
   ChromeSearchResult::DisplayType display_type_;
   SearchResultType result_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSearchProvider);
 };
 
 class MixerTest : public testing::Test {
  public:
   MixerTest() {}
+
+  MixerTest(const MixerTest&) = delete;
+  MixerTest& operator=(const MixerTest&) = delete;
+
   ~MixerTest() override {}
 
   // testing::Test overrides:
@@ -203,8 +211,6 @@ class MixerTest : public testing::Test {
   std::unique_ptr<SearchControllerImpl> search_controller_;
 
   std::vector<std::unique_ptr<TestSearchProvider>> providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MixerTest);
 };
 
 // Tests that results with display index defined, will be shown in the final

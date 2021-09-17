@@ -11,10 +11,11 @@ namespace smb_client {
 class MDnsHostLocatorTest : public testing::Test {
  public:
   MDnsHostLocatorTest() = default;
-  ~MDnsHostLocatorTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MDnsHostLocatorTest);
+  MDnsHostLocatorTest(const MDnsHostLocatorTest&) = delete;
+  MDnsHostLocatorTest& operator=(const MDnsHostLocatorTest&) = delete;
+
+  ~MDnsHostLocatorTest() override = default;
 };
 
 TEST_F(MDnsHostLocatorTest, RemoveLocal) {

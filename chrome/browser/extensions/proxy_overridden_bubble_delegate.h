@@ -18,6 +18,11 @@ class ProxyOverriddenBubbleDelegate
     : public ExtensionMessageBubbleController::Delegate {
  public:
   explicit ProxyOverriddenBubbleDelegate(Profile* profile);
+
+  ProxyOverriddenBubbleDelegate(const ProxyOverriddenBubbleDelegate&) = delete;
+  ProxyOverriddenBubbleDelegate& operator=(
+      const ProxyOverriddenBubbleDelegate&) = delete;
+
   ~ProxyOverriddenBubbleDelegate() override;
 
   // ExtensionMessageBubbleController::Delegate methods.
@@ -48,8 +53,6 @@ class ProxyOverriddenBubbleDelegate
 
   // The ID of the extension we are showing the bubble for.
   std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyOverriddenBubbleDelegate);
 };
 
 }  // namespace extensions

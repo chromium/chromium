@@ -13,13 +13,17 @@ class ChromeBrowserMainExtraPartsProfiling
     : public ChromeBrowserMainExtraParts {
  public:
   ChromeBrowserMainExtraPartsProfiling();
+
+  ChromeBrowserMainExtraPartsProfiling(
+      const ChromeBrowserMainExtraPartsProfiling&) = delete;
+  ChromeBrowserMainExtraPartsProfiling& operator=(
+      const ChromeBrowserMainExtraPartsProfiling&) = delete;
+
   ~ChromeBrowserMainExtraPartsProfiling() override;
 
  private:
   // ChromeBrowserMainExtraParts overrides.
   void PostCreateThreads() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsProfiling);
 };
 
 #endif  // CHROME_BROWSER_PROFILING_HOST_CHROME_BROWSER_MAIN_EXTRA_PARTS_PROFILING_H_

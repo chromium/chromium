@@ -183,6 +183,11 @@ class ScopedFakeAutoEnrollmentClientFactory {
         &fake_auto_enrollment_client_factory_);
   }
 
+  ScopedFakeAutoEnrollmentClientFactory(
+      const ScopedFakeAutoEnrollmentClientFactory&) = delete;
+  ScopedFakeAutoEnrollmentClientFactory& operator=(
+      const ScopedFakeAutoEnrollmentClientFactory&) = delete;
+
   ~ScopedFakeAutoEnrollmentClientFactory() {
     controller_->SetAutoEnrollmentClientFactoryForTesting(nullptr);
   }
@@ -229,8 +234,6 @@ class ScopedFakeAutoEnrollmentClientFactory {
 
   policy::FakeAutoEnrollmentClient* created_auto_enrollment_client_ = nullptr;
   base::OnceClosure run_on_auto_enrollment_client_created_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFakeAutoEnrollmentClientFactory);
 };
 
 struct SwitchLanguageTestData {

@@ -31,6 +31,10 @@ class MediaClientImpl : public ash::MediaClient,
                         public media::CameraActiveClientObserver {
  public:
   MediaClientImpl();
+
+  MediaClientImpl(const MediaClientImpl&) = delete;
+  MediaClientImpl& operator=(const MediaClientImpl&) = delete;
+
   ~MediaClientImpl() override;
 
   // Initializes and set as client for ash.
@@ -139,8 +143,6 @@ class MediaClientImpl : public ash::MediaClient,
   base::TimeTicks camera_switch_notification_shown_timestamp_;
 
   base::WeakPtrFactory<MediaClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaClientImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MEDIA_CLIENT_IMPL_H_

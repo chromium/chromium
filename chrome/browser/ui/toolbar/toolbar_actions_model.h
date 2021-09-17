@@ -52,6 +52,10 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   ToolbarActionsModel(Profile* profile,
                       extensions::ExtensionPrefs* extension_prefs);
+
+  ToolbarActionsModel(const ToolbarActionsModel&) = delete;
+  ToolbarActionsModel& operator=(const ToolbarActionsModel&) = delete;
+
   ~ToolbarActionsModel() override;
 
   // A class which is informed of changes to the model; represents the view of
@@ -240,8 +244,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   content::NotificationRegistrar notification_registrar_;
 
   base::WeakPtrFactory<ToolbarActionsModel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ToolbarActionsModel);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTIONS_MODEL_H_

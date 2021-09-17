@@ -17,6 +17,10 @@ namespace extensions {
 class MediaPlayerEventRouter {
  public:
   explicit MediaPlayerEventRouter(content::BrowserContext* context);
+
+  MediaPlayerEventRouter(const MediaPlayerEventRouter&) = delete;
+  MediaPlayerEventRouter& operator=(const MediaPlayerEventRouter&) = delete;
+
   virtual ~MediaPlayerEventRouter();
 
   // Send notification that next-track shortcut key was pressed.
@@ -30,8 +34,6 @@ class MediaPlayerEventRouter {
 
  private:
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerEventRouter);
 };
 
 }  // namespace extensions

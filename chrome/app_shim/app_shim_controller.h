@@ -47,6 +47,10 @@ class AppShimController : public chrome::mojom::AppShim {
   };
 
   explicit AppShimController(const Params& params);
+
+  AppShimController(const AppShimController&) = delete;
+  AppShimController& operator=(const AppShimController&) = delete;
+
   ~AppShimController() override;
 
   chrome::mojom::AppShimHost* host() const { return host_.get(); }
@@ -192,8 +196,6 @@ class AppShimController : public chrome::mojom::AppShim {
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items_;
 
   NSInteger attention_request_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AppShimController);
 };
 
 #endif  // CHROME_APP_SHIM_APP_SHIM_CONTROLLER_H_

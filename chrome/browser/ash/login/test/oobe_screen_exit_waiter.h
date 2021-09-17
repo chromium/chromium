@@ -23,6 +23,10 @@ class OobeScreenExitWaiter : public OobeUI::Observer,
                              public test::TestConditionWaiter {
  public:
   explicit OobeScreenExitWaiter(OobeScreenId target_screen);
+
+  OobeScreenExitWaiter(const OobeScreenExitWaiter&) = delete;
+  OobeScreenExitWaiter& operator=(const OobeScreenExitWaiter&) = delete;
+
   ~OobeScreenExitWaiter() override;
 
   // OobeUI::Observer implementation:
@@ -46,8 +50,6 @@ class OobeScreenExitWaiter : public OobeUI::Observer,
   base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observation_{this};
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeScreenExitWaiter);
 };
 
 }  // namespace ash

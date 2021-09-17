@@ -202,6 +202,10 @@ class TestWebUIProvider
 class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   PeopleHandlerTest() = default;
+
+  PeopleHandlerTest(const PeopleHandlerTest&) = delete;
+  PeopleHandlerTest& operator=(const PeopleHandlerTest&) = delete;
+
   ~PeopleHandlerTest() override = default;
 
   void SetUp() override {
@@ -368,8 +372,6 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
   TestWebUIProvider test_provider_;
   std::unique_ptr<TestChromeWebUIControllerFactory> test_factory_;
   std::unique_ptr<TestingPeopleHandler> handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(PeopleHandlerTest);
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -120,6 +120,10 @@ class DownloadPersistedObserver : public DownloadHistory::Observer {
         ->AddObserver(this);
   }
 
+  DownloadPersistedObserver(const DownloadPersistedObserver&) = delete;
+  DownloadPersistedObserver& operator=(const DownloadPersistedObserver&) =
+      delete;
+
   ~DownloadPersistedObserver() override {
     DownloadCoreService* service =
         DownloadCoreServiceFactory::GetForBrowserContext(profile_);
@@ -148,8 +152,6 @@ class DownloadPersistedObserver : public DownloadHistory::Observer {
   PersistedFilter filter_;
   base::OnceClosure quit_waiting_callback_;
   bool persisted_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadPersistedObserver);
 };
 
 // Waits for an item record to be removed from the downloads database.
@@ -159,6 +161,10 @@ class DownloadRemovedObserver : public DownloadPersistedObserver {
       : DownloadPersistedObserver(profile, PersistedFilter()),
         removed_(false),
         download_id_(download_id) {}
+
+  DownloadRemovedObserver(const DownloadRemovedObserver&) = delete;
+  DownloadRemovedObserver& operator=(const DownloadRemovedObserver&) = delete;
+
   ~DownloadRemovedObserver() override {}
 
   bool WaitForRemoved() {
@@ -183,8 +189,6 @@ class DownloadRemovedObserver : public DownloadPersistedObserver {
   bool removed_;
   base::OnceClosure quit_waiting_callback_;
   int32_t download_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadRemovedObserver);
 };
 
 bool DownloadStoredProperly(const GURL& expected_url,
@@ -231,6 +235,10 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
       : manager_(manager) {
     manager->AddObserver(this);
   }
+
+  DownloadItemCreatedObserver(const DownloadItemCreatedObserver&) = delete;
+  DownloadItemCreatedObserver& operator=(const DownloadItemCreatedObserver&) =
+      delete;
 
   ~DownloadItemCreatedObserver() override {
     if (manager_)
@@ -280,8 +288,6 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
   base::OnceClosure quit_waiting_callback_;
   DownloadManager* manager_;
   std::vector<DownloadItem*> items_seen_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemCreatedObserver);
 };
 
 class SavePageBrowserTest : public InProcessBrowserTest {
@@ -525,6 +531,12 @@ class DelayingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   explicit DelayingDownloadManagerDelegate(Profile* profile)
     : ChromeDownloadManagerDelegate(profile) {
   }
+
+  DelayingDownloadManagerDelegate(const DelayingDownloadManagerDelegate&) =
+      delete;
+  DelayingDownloadManagerDelegate& operator=(
+      const DelayingDownloadManagerDelegate&) = delete;
+
   ~DelayingDownloadManagerDelegate() override {}
 
   bool ShouldCompleteDownload(
@@ -532,9 +544,6 @@ class DelayingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
       base::OnceClosure user_complete_callback) override {
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DelayingDownloadManagerDelegate);
 };
 
 // Disabled on multiple platforms due to flakiness. crbug.com/580766

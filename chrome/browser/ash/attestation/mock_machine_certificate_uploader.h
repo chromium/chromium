@@ -15,14 +15,17 @@ namespace attestation {
 class MockMachineCertificateUploader : public MachineCertificateUploader {
  public:
   MockMachineCertificateUploader();
+
+  MockMachineCertificateUploader(const MockMachineCertificateUploader&) =
+      delete;
+  MockMachineCertificateUploader& operator=(
+      const MockMachineCertificateUploader&) = delete;
+
   ~MockMachineCertificateUploader();
 
   MOCK_METHOD1(UploadCertificateIfNeeded, void(UploadCallback));
   MOCK_METHOD1(RefreshAndUploadCertificate, void(UploadCallback));
   MOCK_METHOD1(WaitForUploadComplete, void(UploadCallback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockMachineCertificateUploader);
 };
 
 }  // namespace attestation

@@ -55,6 +55,9 @@ class FakeChooserView : public permissions::ChooserController::View {
     controller_->set_view(this);
   }
 
+  FakeChooserView(const FakeChooserView&) = delete;
+  FakeChooserView& operator=(const FakeChooserView&) = delete;
+
   ~FakeChooserView() override { controller_->set_view(nullptr); }
 
   void OnOptionsInitialized() override {
@@ -73,14 +76,15 @@ class FakeChooserView : public permissions::ChooserController::View {
 
  private:
   std::unique_ptr<permissions::ChooserController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeChooserView);
 };
 
 class FakeUsbChooser : public WebUsbChooser {
  public:
   explicit FakeUsbChooser(RenderFrameHost* render_frame_host)
       : WebUsbChooser(render_frame_host) {}
+
+  FakeUsbChooser(const FakeUsbChooser&) = delete;
+  FakeUsbChooser& operator=(const FakeUsbChooser&) = delete;
 
   ~FakeUsbChooser() override {}
 
@@ -100,13 +104,14 @@ class FakeUsbChooser : public WebUsbChooser {
 
  private:
   base::WeakPtrFactory<FakeUsbChooser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbChooser);
 };
 
 class TestContentBrowserClient : public ChromeContentBrowserClient {
  public:
   TestContentBrowserClient() {}
+
+  TestContentBrowserClient(const TestContentBrowserClient&) = delete;
+  TestContentBrowserClient& operator=(const TestContentBrowserClient&) = delete;
 
   ~TestContentBrowserClient() override {}
 
@@ -131,8 +136,6 @@ class TestContentBrowserClient : public ChromeContentBrowserClient {
   bool use_real_chooser_ = false;
   std::unique_ptr<WebUsbServiceImpl> web_usb_service_;
   std::unique_ptr<WebUsbChooser> usb_chooser_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContentBrowserClient);
 };
 
 class WebUsbTest : public InProcessBrowserTest {

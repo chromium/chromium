@@ -37,6 +37,10 @@ class DataObserver : public bookmarks::BookmarkModelObserver,
                UsageReportsBufferService* usage_reports_buffer_service,
                bookmarks::BookmarkModel* bookmark_model,
                history::HistoryService* history_service);
+
+  DataObserver(const DataObserver&) = delete;
+  DataObserver& operator=(const DataObserver&) = delete;
+
   ~DataObserver() override;
 
   // BookmarkModelObserver implementation.
@@ -94,8 +98,6 @@ class DataObserver : public bookmarks::BookmarkModelObserver,
   base::RepeatingCallback<void(void)> stop_reporting_callback_;
   DeltaFileService* delta_file_service_;
   UsageReportsBufferService* usage_reports_buffer_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataObserver);
 };
 
 }  // namespace history_report

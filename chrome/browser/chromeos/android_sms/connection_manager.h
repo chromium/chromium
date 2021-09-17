@@ -52,6 +52,10 @@ class ConnectionManager
       Profile* profile,
       AndroidSmsAppManager* android_sms_app_manager,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
+
+  ConnectionManager(const ConnectionManager&) = delete;
+  ConnectionManager& operator=(const ConnectionManager&) = delete;
+
   ~ConnectionManager() override;
 
   // Sends a start connection message to the service worker.
@@ -64,13 +68,14 @@ class ConnectionManager
   class ServiceWorkerProvider {
    public:
     ServiceWorkerProvider();
+
+    ServiceWorkerProvider(const ServiceWorkerProvider&) = delete;
+    ServiceWorkerProvider& operator=(const ServiceWorkerProvider&) = delete;
+
     virtual ~ServiceWorkerProvider();
 
     virtual content::ServiceWorkerContext* Get(const GURL& url,
                                                Profile* profile);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ServiceWorkerProvider);
   };
 
   ConnectionManager(
@@ -118,8 +123,6 @@ class ConnectionManager
   // The URL of the Android Messages PWA, if it is currently enabled. If the
   // feature is not currently enabled, this field is null.
   absl::optional<GURL> enabled_pwa_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionManager);
 };
 
 }  // namespace android_sms

@@ -48,6 +48,11 @@ class IncompatibleApplicationsObserver {
                             base::Unretained(this)));
   }
 
+  IncompatibleApplicationsObserver(const IncompatibleApplicationsObserver&) =
+      delete;
+  IncompatibleApplicationsObserver& operator=(
+      const IncompatibleApplicationsObserver&) = delete;
+
   ~IncompatibleApplicationsObserver() = default;
 
   // Wait until the kIncompatibleApplications preference is modified.
@@ -74,8 +79,6 @@ class IncompatibleApplicationsObserver {
   PrefChangeRegistrar pref_change_registrar_;
 
   base::RepeatingClosure run_loop_quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncompatibleApplicationsObserver);
 };
 
 class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {

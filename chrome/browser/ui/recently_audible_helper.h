@@ -33,6 +33,9 @@ class RecentlyAudibleHelper
       base::RepeatingCallbackList<void(bool was_recently_audible)>;
   using Callback = CallbackList::CallbackType;
 
+  RecentlyAudibleHelper(const RecentlyAudibleHelper&) = delete;
+  RecentlyAudibleHelper& operator=(const RecentlyAudibleHelper&) = delete;
+
   ~RecentlyAudibleHelper() override;
 
   // Returns true if the WebContents was ever audible over its lifetime.
@@ -95,8 +98,6 @@ class RecentlyAudibleHelper
   const base::TickClock* tick_clock_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(RecentlyAudibleHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_RECENTLY_AUDIBLE_HELPER_H_

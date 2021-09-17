@@ -60,6 +60,10 @@ class PrinterJobQueueHandler {
   };
 
   PrinterJobQueueHandler();
+
+  PrinterJobQueueHandler(const PrinterJobQueueHandler&) = delete;
+  PrinterJobQueueHandler& operator=(const PrinterJobQueueHandler&) = delete;
+
   ~PrinterJobQueueHandler();
 
   // Returns a vector with details of all jobs in the queue, sorted by time
@@ -92,8 +96,6 @@ class PrinterJobQueueHandler {
   using FailedJobPair = std::pair<std::string, FailedJobMetadata>;
 
   FailedJobMap failed_job_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterJobQueueHandler);
 };
 
 }  // namespace cloud_print

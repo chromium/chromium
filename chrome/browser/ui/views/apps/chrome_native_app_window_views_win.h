@@ -19,6 +19,11 @@ class GlassAppWindowFrameViewWin;
 class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
  public:
   ChromeNativeAppWindowViewsWin();
+
+  ChromeNativeAppWindowViewsWin(const ChromeNativeAppWindowViewsWin&) = delete;
+  ChromeNativeAppWindowViewsWin& operator=(
+      const ChromeNativeAppWindowViewsWin&) = delete;
+
   ~ChromeNativeAppWindowViewsWin() override;
 
   GlassAppWindowFrameViewWin* glass_frame_view() {
@@ -58,8 +63,6 @@ class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
   bool is_translucent_;
 
   base::WeakPtrFactory<ChromeNativeAppWindowViewsWin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNativeAppWindowViewsWin);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_WIN_H_

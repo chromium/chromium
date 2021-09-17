@@ -98,6 +98,9 @@ class InitialPreferences {
   // line switches with the distribution dictionary.
   explicit InitialPreferences(const base::DictionaryValue& prefs);
 
+  InitialPreferences(const InitialPreferences&) = delete;
+  InitialPreferences& operator=(const InitialPreferences&) = delete;
+
   ~InitialPreferences();
 
   // Each of the Get methods below returns true if the named value was found in
@@ -201,9 +204,6 @@ class InitialPreferences {
   std::unique_ptr<base::DictionaryValue> initial_dictionary_;
   base::DictionaryValue* distribution_ = nullptr;
   bool preferences_read_from_file_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InitialPreferences);
 };
 
 }  // namespace installer

@@ -16,15 +16,18 @@ class CrostiniActiveWindowThrottleObserver
     : public chromeos::WindowThrottleObserverBase {
  public:
   CrostiniActiveWindowThrottleObserver();
+
+  CrostiniActiveWindowThrottleObserver(
+      const CrostiniActiveWindowThrottleObserver&) = delete;
+  CrostiniActiveWindowThrottleObserver& operator=(
+      const CrostiniActiveWindowThrottleObserver&) = delete;
+
   ~CrostiniActiveWindowThrottleObserver() override = default;
 
   // WindowThrottleObserverBase:
   bool ProcessWindowActivation(ActivationReason reason,
                                aura::Window* gained_active,
                                aura::Window* lost_active) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniActiveWindowThrottleObserver);
 };
 
 }  // namespace crostini

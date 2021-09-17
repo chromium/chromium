@@ -35,6 +35,9 @@ class ConflictsDataFetcher : public ModuleDatabaseObserver {
   using OnConflictsDataFetchedCallback =
       base::OnceCallback<void(base::DictionaryValue results)>;
 
+  ConflictsDataFetcher(const ConflictsDataFetcher&) = delete;
+  ConflictsDataFetcher& operator=(const ConflictsDataFetcher&) = delete;
+
   ~ConflictsDataFetcher() override;
 
   // Creates the instance and initializes it on the ModuleDatabase task runner.
@@ -78,8 +81,6 @@ class ConflictsDataFetcher : public ModuleDatabaseObserver {
 
   base::WeakPtrFactory<ConflictsDataFetcher> weak_ptr_factory_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ConflictsDataFetcher);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CONFLICTS_CONFLICTS_DATA_FETCHER_H_

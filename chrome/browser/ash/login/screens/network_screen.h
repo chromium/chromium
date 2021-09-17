@@ -35,6 +35,10 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
 
   NetworkScreen(NetworkScreenView* view,
                 const ScreenExitCallback& exit_callback);
+
+  NetworkScreen(const NetworkScreen&) = delete;
+  NetworkScreen& operator=(const NetworkScreen&) = delete;
+
   ~NetworkScreen() override;
 
   // Called when `view` has been destroyed. If this instance is destroyed before
@@ -133,8 +137,6 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 
   base::WeakPtrFactory<NetworkScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkScreen);
 };
 
 }  // namespace ash

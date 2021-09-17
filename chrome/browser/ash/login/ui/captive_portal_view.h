@@ -14,6 +14,10 @@ class CaptivePortalWindowProxy;
 class CaptivePortalView : public SimpleWebViewDialog {
  public:
   CaptivePortalView(Profile* profile, CaptivePortalWindowProxy* proxy);
+
+  CaptivePortalView(const CaptivePortalView&) = delete;
+  CaptivePortalView& operator=(const CaptivePortalView&) = delete;
+
   ~CaptivePortalView() override;
 
   // Starts loading.
@@ -34,8 +38,6 @@ class CaptivePortalView : public SimpleWebViewDialog {
   CaptivePortalWindowProxy* proxy_;
 
   bool redirected_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalView);
 };
 
 }  // namespace ash

@@ -42,6 +42,9 @@ class Queue {
   // Creates a queue with a maximum number of tasks running in parallel.
   explicit Queue(size_t max_in_parallel);
 
+  Queue(const Queue&) = delete;
+  Queue& operator=(const Queue&) = delete;
+
   virtual ~Queue();
 
   // Creates a token for enqueuing (and later aborting) tasks.
@@ -88,7 +91,6 @@ class Queue {
   std::map<int, Task> executed_;
 
   base::WeakPtrFactory<Queue> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(Queue);
 };
 
 }  // namespace file_system_provider

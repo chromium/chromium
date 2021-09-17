@@ -52,10 +52,11 @@ constexpr base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(15);
 class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
  public:
   MockInstanceIDDriver() : InstanceIDDriver(/*gcm_driver=*/nullptr) {}
-  ~MockInstanceIDDriver() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInstanceIDDriver);
+  MockInstanceIDDriver(const MockInstanceIDDriver&) = delete;
+  MockInstanceIDDriver& operator=(const MockInstanceIDDriver&) = delete;
+
+  ~MockInstanceIDDriver() override = default;
 };
 
 class MockSharingHandlerRegistry : public SharingHandlerRegistry {

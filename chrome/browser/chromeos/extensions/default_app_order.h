@@ -26,6 +26,10 @@ class ExternalLoader {
   // Constructs an ExternalLoader and starts file loading. |async| is true to
   // load the file asynchronously on the blocking pool.
   explicit ExternalLoader(bool async);
+
+  ExternalLoader(const ExternalLoader&) = delete;
+  ExternalLoader& operator=(const ExternalLoader&) = delete;
+
   ~ExternalLoader();
 
   const std::vector<std::string>& GetAppIds();
@@ -40,8 +44,6 @@ class ExternalLoader {
   std::string oem_apps_folder_name_;
 
   base::WaitableEvent loaded_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalLoader);
 };
 
 // Gets the ordered list of app ids.

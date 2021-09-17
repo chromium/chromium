@@ -61,6 +61,10 @@ bool LoginScrollIntoViewEnabled();
 class NetworkStateHelper {
  public:
   NetworkStateHelper();
+
+  NetworkStateHelper(const NetworkStateHelper&) = delete;
+  NetworkStateHelper& operator=(const NetworkStateHelper&) = delete;
+
   virtual ~NetworkStateHelper();
 
   // Returns name of the currently connected network.
@@ -81,8 +85,6 @@ class NetworkStateHelper {
                              network_handler::ErrorCallback error_callback,
                              const std::string& service_path,
                              const std::string& guid) const;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateHelper);
 };
 
 //

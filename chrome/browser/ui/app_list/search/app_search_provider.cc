@@ -145,6 +145,10 @@ class AppSearchProvider::App {
         last_launch_time_(last_launch_time),
         install_time_(install_time),
         installed_internally_(installed_internally) {}
+
+  App(const App&) = delete;
+  App& operator=(const App&) = delete;
+
   ~App() = default;
 
   struct CompareByLastActivityTimeAndThenAppId {
@@ -251,14 +255,16 @@ class AppSearchProvider::App {
   // Set to true in case app was installed internally, by sync, policy or as a
   // default app.
   const bool installed_internally_;
-
-  DISALLOW_COPY_AND_ASSIGN(App);
 };
 
 class AppSearchProvider::DataSource {
  public:
   DataSource(Profile* profile, AppSearchProvider* owner)
       : profile_(profile), owner_(owner) {}
+
+  DataSource(const DataSource&) = delete;
+  DataSource& operator=(const DataSource&) = delete;
+
   virtual ~DataSource() {}
 
   virtual void AddApps(Apps* apps) = 0;
@@ -278,8 +284,6 @@ class AppSearchProvider::DataSource {
   // Unowned pointers.
   Profile* profile_;
   AppSearchProvider* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataSource);
 };
 
 namespace {
@@ -305,6 +309,9 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
             &AppSearchProvider::RefreshAppsAndUpdateResultsDeferred,
             base::Unretained(owner)));
   }
+
+  AppServiceDataSource(const AppServiceDataSource&) = delete;
+  AppServiceDataSource& operator=(const AppServiceDataSource&) = delete;
 
   ~AppServiceDataSource() override = default;
 
@@ -407,8 +414,6 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
   apps::IconCache icon_cache_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceDataSource);
 };
 
 }  // namespace

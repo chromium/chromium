@@ -30,6 +30,10 @@ class PrintersSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   PrintersSyncBridge(syncer::OnceModelTypeStoreFactory callback,
                      base::RepeatingClosure error_callback);
+
+  PrintersSyncBridge(const PrintersSyncBridge&) = delete;
+  PrintersSyncBridge& operator=(const PrintersSyncBridge&) = delete;
+
   ~PrintersSyncBridge() override;
 
   // ModelTypeSyncBridge implementation.
@@ -102,8 +106,6 @@ class PrintersSyncBridge : public syncer::ModelTypeSyncBridge {
   // In memory cache of printer information. Access to this is synchronized with
   // |data_lock_|.
   std::map<std::string, std::unique_ptr<sync_pb::PrinterSpecifics>> all_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintersSyncBridge);
 };
 
 }  // namespace ash

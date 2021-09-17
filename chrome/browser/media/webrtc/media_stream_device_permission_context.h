@@ -15,6 +15,12 @@ class MediaStreamDevicePermissionContext
  public:
   MediaStreamDevicePermissionContext(content::BrowserContext* browser_context,
                                      ContentSettingsType content_settings_type);
+
+  MediaStreamDevicePermissionContext(
+      const MediaStreamDevicePermissionContext&) = delete;
+  MediaStreamDevicePermissionContext& operator=(
+      const MediaStreamDevicePermissionContext&) = delete;
+
   ~MediaStreamDevicePermissionContext() override;
 
   // PermissionContextBase:
@@ -41,8 +47,6 @@ class MediaStreamDevicePermissionContext
   bool IsRestrictedToSecureOrigins() const override;
 
   ContentSettingsType content_settings_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamDevicePermissionContext);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_DEVICE_PERMISSION_CONTEXT_H_

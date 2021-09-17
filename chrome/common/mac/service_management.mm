@@ -30,6 +30,10 @@ class ScopedLaunchData {
       : data_(launch_data_alloc(type)) {}
   explicit ScopedLaunchData(launch_data_t data) : data_(data) {}
   ScopedLaunchData(ScopedLaunchData&& other) : data_(other.release()) {}
+
+  ScopedLaunchData(const ScopedLaunchData&) = delete;
+  ScopedLaunchData& operator=(const ScopedLaunchData&) = delete;
+
   ~ScopedLaunchData() { reset(); }
 
   void reset() {
@@ -50,8 +54,6 @@ class ScopedLaunchData {
 
  private:
   launch_data_t data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLaunchData);
 };
 
 ScopedLaunchData SendLaunchMessage(ScopedLaunchData&& msg) {

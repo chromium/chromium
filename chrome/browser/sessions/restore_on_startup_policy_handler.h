@@ -19,6 +19,11 @@ class PolicyMap;
 class RestoreOnStartupPolicyHandler : public TypeCheckingPolicyHandler {
  public:
   RestoreOnStartupPolicyHandler();
+
+  RestoreOnStartupPolicyHandler(const RestoreOnStartupPolicyHandler&) = delete;
+  RestoreOnStartupPolicyHandler& operator=(
+      const RestoreOnStartupPolicyHandler&) = delete;
+
   ~RestoreOnStartupPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -26,9 +31,6 @@ class RestoreOnStartupPolicyHandler : public TypeCheckingPolicyHandler {
                            PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RestoreOnStartupPolicyHandler);
 };
 
 }  // namespace policy

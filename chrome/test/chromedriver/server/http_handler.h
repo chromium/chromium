@@ -81,6 +81,10 @@ class HttpHandler {
               const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
               const std::string& url_base,
               int adb_port);
+
+  HttpHandler(const HttpHandler&) = delete;
+  HttpHandler& operator=(const HttpHandler&) = delete;
+
   ~HttpHandler();
 
   void Handle(const net::HttpServerRequestInfo& request,
@@ -158,8 +162,6 @@ class HttpHandler {
   std::unique_ptr<DeviceManager> device_manager_;
 
   base::WeakPtrFactory<HttpHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpHandler);
 };
 
 namespace internal {

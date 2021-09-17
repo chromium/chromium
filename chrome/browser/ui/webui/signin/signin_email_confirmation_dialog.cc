@@ -45,6 +45,11 @@ class SigninEmailConfirmationDialog::DialogWebContentsObserver
                             SigninEmailConfirmationDialog* dialog)
       : content::WebContentsObserver(web_contents),
         signin_email_confirmation_dialog_(dialog) {}
+
+  DialogWebContentsObserver(const DialogWebContentsObserver&) = delete;
+  DialogWebContentsObserver& operator=(const DialogWebContentsObserver&) =
+      delete;
+
   ~DialogWebContentsObserver() override {}
 
  private:
@@ -59,8 +64,6 @@ class SigninEmailConfirmationDialog::DialogWebContentsObserver
   }
 
   SigninEmailConfirmationDialog* const signin_email_confirmation_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogWebContentsObserver);
 };
 
 SigninEmailConfirmationDialog::SigninEmailConfirmationDialog(

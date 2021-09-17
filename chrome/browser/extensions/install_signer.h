@@ -72,6 +72,10 @@ class InstallSigner {
   InstallSigner(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const ExtensionIdSet& ids);
+
+  InstallSigner(const InstallSigner&) = delete;
+  InstallSigner& operator=(const InstallSigner&) = delete;
+
   ~InstallSigner();
 
   // Returns a set of ids that are forced to be considered not from webstore,
@@ -120,8 +124,6 @@ class InstallSigner {
 
   // The time the request to the server was started.
   base::Time request_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallSigner);
 };
 
 }  // namespace extensions

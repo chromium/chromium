@@ -55,10 +55,13 @@ enum ModelTypeEntityChange {
 class TwoClientAutofillProfileSyncTest : public SyncTest {
  public:
   TwoClientAutofillProfileSyncTest() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientAutofillProfileSyncTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientAutofillProfileSyncTest);
+  TwoClientAutofillProfileSyncTest(const TwoClientAutofillProfileSyncTest&) =
+      delete;
+  TwoClientAutofillProfileSyncTest& operator=(
+      const TwoClientAutofillProfileSyncTest&) = delete;
+
+  ~TwoClientAutofillProfileSyncTest() override {}
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,

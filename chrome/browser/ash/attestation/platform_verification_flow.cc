@@ -74,6 +74,10 @@ namespace attestation {
 class DefaultDelegate : public PlatformVerificationFlow::Delegate {
  public:
   DefaultDelegate() {}
+
+  DefaultDelegate(const DefaultDelegate&) = delete;
+  DefaultDelegate& operator=(const DefaultDelegate&) = delete;
+
   ~DefaultDelegate() override {}
 
   bool IsInSupportedMode() override {
@@ -81,9 +85,6 @@ class DefaultDelegate : public PlatformVerificationFlow::Delegate {
     return !command_line->HasSwitch(chromeos::switches::kSystemDevMode) ||
            command_line->HasSwitch(chromeos::switches::kAllowRAInDevMode);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultDelegate);
 };
 
 PlatformVerificationFlow::ChallengeContext::ChallengeContext(

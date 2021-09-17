@@ -40,6 +40,10 @@ constexpr char kFingerprint[] = "pinky";
 class ScreenLockerTest : public InProcessBrowserTest {
  public:
   ScreenLockerTest() = default;
+
+  ScreenLockerTest(const ScreenLockerTest&) = delete;
+  ScreenLockerTest& operator=(const ScreenLockerTest&) = delete;
+
   ~ScreenLockerTest() override = default;
 
   FakeSessionManagerClient* session_manager_client() {
@@ -83,8 +87,6 @@ class ScreenLockerTest : public InProcessBrowserTest {
   void OnStartSession(const dbus::ObjectPath& path) {}
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLockerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestBadThenGoodPassword) {

@@ -19,14 +19,17 @@ class Extension;
 class ExtensionTabUtilDelegateChromeOS : public ExtensionTabUtil::Delegate {
  public:
   ExtensionTabUtilDelegateChromeOS();
+
+  ExtensionTabUtilDelegateChromeOS(const ExtensionTabUtilDelegateChromeOS&) =
+      delete;
+  ExtensionTabUtilDelegateChromeOS& operator=(
+      const ExtensionTabUtilDelegateChromeOS&) = delete;
+
   ~ExtensionTabUtilDelegateChromeOS() override;
 
   // ExtensionTabUtil::Delegate
   ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehavior(
       const Extension* extension) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionTabUtilDelegateChromeOS);
 };
 
 }  // namespace extensions

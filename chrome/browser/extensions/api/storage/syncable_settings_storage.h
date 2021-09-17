@@ -40,6 +40,9 @@ class SyncableSettingsStorage : public value_store::ValueStore {
                           syncer::ModelType sync_type,
                           const syncer::SyncableService::StartSyncFlare& flare);
 
+  SyncableSettingsStorage(const SyncableSettingsStorage&) = delete;
+  SyncableSettingsStorage& operator=(const SyncableSettingsStorage&) = delete;
+
   ~SyncableSettingsStorage() override;
 
   // ValueStore implementation.
@@ -127,8 +130,6 @@ class SyncableSettingsStorage : public value_store::ValueStore {
 
   const syncer::ModelType sync_type_;
   const syncer::SyncableService::StartSyncFlare flare_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableSettingsStorage);
 };
 
 }  // namespace extensions

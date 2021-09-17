@@ -20,14 +20,16 @@ namespace ash {
 class EasyUnlockUserLoginFlow : public ExtendedUserFlow {
  public:
   explicit EasyUnlockUserLoginFlow(const AccountId& account_id);
+
+  EasyUnlockUserLoginFlow(const EasyUnlockUserLoginFlow&) = delete;
+  EasyUnlockUserLoginFlow& operator=(const EasyUnlockUserLoginFlow&) = delete;
+
   ~EasyUnlockUserLoginFlow() override;
 
  private:
   // ExtendedUserFlow implementation.
   bool HandleLoginFailure(const AuthFailure& failure) override;
   void HandleLoginSuccess(const UserContext& context) override;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockUserLoginFlow);
 };
 
 }  // namespace ash

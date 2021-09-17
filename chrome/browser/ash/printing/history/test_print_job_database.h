@@ -16,6 +16,10 @@ namespace ash {
 class TestPrintJobDatabase : public PrintJobDatabase {
  public:
   TestPrintJobDatabase();
+
+  TestPrintJobDatabase(const TestPrintJobDatabase&) = delete;
+  TestPrintJobDatabase& operator=(const TestPrintJobDatabase&) = delete;
+
   ~TestPrintJobDatabase() override;
 
   // PrintJobDatabase:
@@ -33,8 +37,6 @@ class TestPrintJobDatabase : public PrintJobDatabase {
   // In-memory database of PrintJobInfo.
   std::unordered_map<std::string, chromeos::printing::proto::PrintJobInfo>
       database_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPrintJobDatabase);
 };
 
 }  // namespace ash

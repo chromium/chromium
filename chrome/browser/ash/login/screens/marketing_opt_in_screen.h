@@ -54,6 +54,10 @@ class MarketingOptInScreen : public BaseScreen {
 
   MarketingOptInScreen(MarketingOptInScreenView* view,
                        const ScreenExitCallback& exit_callback);
+
+  MarketingOptInScreen(const MarketingOptInScreen&) = delete;
+  MarketingOptInScreen& operator=(const MarketingOptInScreen&) = delete;
+
   ~MarketingOptInScreen() override;
 
   // On "Get Started" button pressed.
@@ -138,7 +142,6 @@ class MarketingOptInScreen : public BaseScreen {
   const base::flat_set<base::StringPiece> countries_with_legal_footer{"ca"};
 
   base::WeakPtrFactory<MarketingOptInScreen> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MarketingOptInScreen);
 };
 
 }  // namespace ash

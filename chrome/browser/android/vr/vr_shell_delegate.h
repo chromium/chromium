@@ -26,6 +26,10 @@ class VrShell;
 class VrShellDelegate : public device::GvrDelegateProvider {
  public:
   VrShellDelegate(JNIEnv* env, jobject obj);
+
+  VrShellDelegate(const VrShellDelegate&) = delete;
+  VrShellDelegate& operator=(const VrShellDelegate&) = delete;
+
   ~VrShellDelegate() override;
 
   static device::GvrDelegateProvider* CreateVrShellDelegate();
@@ -85,8 +89,6 @@ class VrShellDelegate : public device::GvrDelegateProvider {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<VrShellDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VrShellDelegate);
 };
 
 }  // namespace vr

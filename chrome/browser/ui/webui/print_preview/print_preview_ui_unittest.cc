@@ -49,6 +49,10 @@ bool IsShowingWebContentsModalDialog(WebContents* tab) {
 class PrintPreviewUIUnitTest : public PrintPreviewTest {
  public:
   PrintPreviewUIUnitTest() {}
+
+  PrintPreviewUIUnitTest(const PrintPreviewUIUnitTest&) = delete;
+  PrintPreviewUIUnitTest& operator=(const PrintPreviewUIUnitTest&) = delete;
+
   ~PrintPreviewUIUnitTest() override {}
 
  protected:
@@ -57,9 +61,6 @@ class PrintPreviewUIUnitTest : public PrintPreviewTest {
 
     chrome::NewTab(browser());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewUIUnitTest);
 };
 
 // Create/Get a preview tab for initiator.

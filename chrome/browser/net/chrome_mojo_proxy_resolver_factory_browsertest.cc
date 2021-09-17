@@ -89,6 +89,10 @@ class ProxyResolverProcessObserver
     content::ServiceProcessHost::AddObserver(this);
   }
 
+  ProxyResolverProcessObserver(const ProxyResolverProcessObserver&) = delete;
+  ProxyResolverProcessObserver& operator=(const ProxyResolverProcessObserver&) =
+      delete;
+
   ~ProxyResolverProcessObserver() override {
     content::ServiceProcessHost::RemoveObserver(this);
   }
@@ -124,8 +128,6 @@ class ProxyResolverProcessObserver
   bool is_service_running_ = false;
   base::RunLoop launch_loop_;
   base::RunLoop death_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverProcessObserver);
 };
 
 // Ensures the proxy resolver service is started correctly and stopped when no

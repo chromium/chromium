@@ -224,6 +224,12 @@ class SingleClientPasswordsWithAccountStorageSyncTest : public SyncTest {
                                   kEnablePasswordsAccountStorage},
         /*disabled_features=*/{});
   }
+
+  SingleClientPasswordsWithAccountStorageSyncTest(
+      const SingleClientPasswordsWithAccountStorageSyncTest&) = delete;
+  SingleClientPasswordsWithAccountStorageSyncTest& operator=(
+      const SingleClientPasswordsWithAccountStorageSyncTest&) = delete;
+
   ~SingleClientPasswordsWithAccountStorageSyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -259,8 +265,6 @@ class SingleClientPasswordsWithAccountStorageSyncTest : public SyncTest {
   base::test::ScopedFeatureList feature_list_;
 
   base::CallbackListSubscription test_signin_client_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientPasswordsWithAccountStorageSyncTest);
 };
 
 // Sanity check: For Sync-the-feature, password data still ends up in the

@@ -39,6 +39,9 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
                  const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                  base::TimeDelta default_upload_frequency);
 
+  StatusUploader(const StatusUploader&) = delete;
+  StatusUploader& operator=(const StatusUploader&) = delete;
+
   ~StatusUploader() override;
 
   // Returns the time of the last successful upload, or Time(0) if no upload
@@ -113,8 +116,6 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<StatusUploader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusUploader);
 };
 
 }  // namespace policy

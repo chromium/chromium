@@ -40,6 +40,10 @@ namespace {
 class SafeDMG {
  public:
   SafeDMG();
+
+  SafeDMG(const SafeDMG&) = delete;
+  SafeDMG& operator=(const SafeDMG&) = delete;
+
   ~SafeDMG();
 
   int Main(int argc, const char* argv[]);
@@ -60,8 +64,6 @@ class SafeDMG {
   // If this is running an unpack, rather than just a list operation, this is
   // a directory FD under which all the contents are written.
   base::ScopedFD unpack_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeDMG);
 };
 
 SafeDMG::SafeDMG() : dmg_file_(), unpack_dir_() {}

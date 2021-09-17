@@ -501,14 +501,17 @@ class ServerBookmarksEqualityChecker : public SingleClientStatusChangeChecker {
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
+  ServerBookmarksEqualityChecker(const ServerBookmarksEqualityChecker&) =
+      delete;
+  ServerBookmarksEqualityChecker& operator=(
+      const ServerBookmarksEqualityChecker&) = delete;
+
   ~ServerBookmarksEqualityChecker() override;
 
  private:
   fake_server::FakeServer* fake_server_;
   syncer::Cryptographer* cryptographer_;
   const std::vector<ExpectedBookmark> expected_bookmarks_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServerBookmarksEqualityChecker);
 };
 
 // Checker used to block until the actual number of bookmarks with the given url

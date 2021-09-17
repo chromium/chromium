@@ -32,6 +32,10 @@ class SSLClientAuthObserver {
       const content::BrowserContext* browser_context,
       const scoped_refptr<net::SSLCertRequestInfo>& cert_request_info,
       std::unique_ptr<content::ClientCertificateDelegate> delegate);
+
+  SSLClientAuthObserver(const SSLClientAuthObserver&) = delete;
+  SSLClientAuthObserver& operator=(const SSLClientAuthObserver&) = delete;
+
   virtual ~SSLClientAuthObserver();
 
   // UI should implement this to close the dialog.
@@ -75,8 +79,6 @@ class SSLClientAuthObserver {
   const content::BrowserContext* browser_context_;
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;
   std::unique_ptr<content::ClientCertificateDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLClientAuthObserver);
 };
 
 #endif  // CHROME_BROWSER_SSL_SSL_CLIENT_AUTH_OBSERVER_H_

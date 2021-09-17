@@ -29,6 +29,10 @@ class UserPolicyTestHelper {
  public:
   UserPolicyTestHelper(const std::string& account_id,
                        ash::LocalPolicyTestServerMixin* local_policy_server);
+
+  UserPolicyTestHelper(const UserPolicyTestHelper&) = delete;
+  UserPolicyTestHelper& operator=(const UserPolicyTestHelper&) = delete;
+
   virtual ~UserPolicyTestHelper();
 
   void SetPolicy(const base::Value& mandatory, const base::Value& recommended);
@@ -50,8 +54,6 @@ class UserPolicyTestHelper {
  private:
   const std::string account_id_;
   ash::LocalPolicyTestServerMixin* local_policy_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserPolicyTestHelper);
 };
 
 }  // namespace policy

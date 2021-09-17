@@ -25,6 +25,9 @@ class IntentPickerTabHelper
       public content::WebContentsUserData<IntentPickerTabHelper>,
       public web_app::AppRegistrarObserver {
  public:
+  IntentPickerTabHelper(const IntentPickerTabHelper&) = delete;
+  IntentPickerTabHelper& operator=(const IntentPickerTabHelper&) = delete;
+
   ~IntentPickerTabHelper() override;
 
   static void SetShouldShowIcon(content::WebContents* web_contents,
@@ -71,8 +74,6 @@ class IntentPickerTabHelper
       registrar_observation_{this};
 
   base::WeakPtrFactory<IntentPickerTabHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IntentPickerTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_INTENT_PICKER_TAB_HELPER_H_

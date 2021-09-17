@@ -12,10 +12,11 @@
 class GCMInternalsUI : public content::WebUIController {
  public:
   explicit GCMInternalsUI(content::WebUI* web_ui);
-  ~GCMInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GCMInternalsUI);
+  GCMInternalsUI(const GCMInternalsUI&) = delete;
+  GCMInternalsUI& operator=(const GCMInternalsUI&) = delete;
+
+  ~GCMInternalsUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_GCM_INTERNALS_UI_H_

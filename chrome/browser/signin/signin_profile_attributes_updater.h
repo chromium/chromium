@@ -26,6 +26,11 @@ class SigninProfileAttributesUpdater
       const base::FilePath& profile_path,
       PrefService* prefs);
 
+  SigninProfileAttributesUpdater(const SigninProfileAttributesUpdater&) =
+      delete;
+  SigninProfileAttributesUpdater& operator=(
+      const SigninProfileAttributesUpdater&) = delete;
+
   ~SigninProfileAttributesUpdater() override;
 
  private:
@@ -46,8 +51,6 @@ class SigninProfileAttributesUpdater
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninProfileAttributesUpdater);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_H_

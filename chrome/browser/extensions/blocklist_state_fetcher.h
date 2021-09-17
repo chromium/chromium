@@ -30,6 +30,9 @@ class BlocklistStateFetcher {
 
   BlocklistStateFetcher();
 
+  BlocklistStateFetcher(const BlocklistStateFetcher&) = delete;
+  BlocklistStateFetcher& operator=(const BlocklistStateFetcher&) = delete;
+
   virtual ~BlocklistStateFetcher();
 
   virtual void Request(const std::string& id, RequestCallback callback);
@@ -66,8 +69,6 @@ class BlocklistStateFetcher {
   CallbackMultiMap callbacks_;
 
   base::WeakPtrFactory<BlocklistStateFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlocklistStateFetcher);
 };
 
 }  // namespace extensions

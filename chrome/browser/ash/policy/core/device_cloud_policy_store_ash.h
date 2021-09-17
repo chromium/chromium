@@ -39,6 +39,11 @@ class DeviceCloudPolicyStoreAsh : public CloudPolicyStore,
       ash::DeviceSettingsService* device_settings_service,
       chromeos::InstallAttributes* install_attributes,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+
+  DeviceCloudPolicyStoreAsh(const DeviceCloudPolicyStoreAsh&) = delete;
+  DeviceCloudPolicyStoreAsh& operator=(const DeviceCloudPolicyStoreAsh&) =
+      delete;
+
   ~DeviceCloudPolicyStoreAsh() override;
 
   // CloudPolicyStore:
@@ -95,8 +100,6 @@ class DeviceCloudPolicyStoreAsh : public CloudPolicyStore,
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   base::WeakPtrFactory<DeviceCloudPolicyStoreAsh> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStoreAsh);
 };
 
 }  // namespace policy

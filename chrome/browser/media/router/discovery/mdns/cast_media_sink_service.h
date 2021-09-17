@@ -34,6 +34,10 @@ namespace media_router {
 class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
  public:
   CastMediaSinkService();
+
+  CastMediaSinkService(const CastMediaSinkService&) = delete;
+  CastMediaSinkService& operator=(const CastMediaSinkService&) = delete;
+
   ~CastMediaSinkService() override;
 
   // Starts Cast sink discovery. No-ops if already started.
@@ -113,8 +117,6 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMediaSinkService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaSinkService);
 };
 
 }  // namespace media_router

@@ -34,6 +34,10 @@ class ExtensionDownloadsEventRouter;
 class DownloadCoreServiceImpl : public DownloadCoreService {
  public:
   explicit DownloadCoreServiceImpl(Profile* profile);
+
+  DownloadCoreServiceImpl(const DownloadCoreServiceImpl&) = delete;
+  DownloadCoreServiceImpl& operator=(const DownloadCoreServiceImpl&) = delete;
+
   ~DownloadCoreServiceImpl() override;
 
   // DownloadCoreService
@@ -90,8 +94,6 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
   std::unique_ptr<extensions::ExtensionDownloadsEventRouter>
       extension_event_router_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadCoreServiceImpl);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_CORE_SERVICE_IMPL_H_

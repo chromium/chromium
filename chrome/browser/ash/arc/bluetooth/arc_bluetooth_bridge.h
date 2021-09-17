@@ -74,6 +74,10 @@ class ArcBluetoothBridge
 
   ArcBluetoothBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
+
+  ArcBluetoothBridge(const ArcBluetoothBridge&) = delete;
+  ArcBluetoothBridge& operator=(const ArcBluetoothBridge&) = delete;
+
   ~ArcBluetoothBridge() override;
 
   void OnAdapterInitialized(scoped_refptr<device::BluetoothAdapter> adapter);
@@ -752,8 +756,6 @@ class ArcBluetoothBridge
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcBluetoothBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBluetoothBridge);
 };
 
 }  // namespace arc

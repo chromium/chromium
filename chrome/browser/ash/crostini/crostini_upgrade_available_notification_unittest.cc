@@ -43,6 +43,11 @@ class CrostiniUpgradeAvailableNotificationTest
             Browser::TYPE_NORMAL,
             content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
+  CrostiniUpgradeAvailableNotificationTest(
+      const CrostiniUpgradeAvailableNotificationTest&) = delete;
+  CrostiniUpgradeAvailableNotificationTest& operator=(
+      const CrostiniUpgradeAvailableNotificationTest&) = delete;
+
   ~CrostiniUpgradeAvailableNotificationTest() override {}
 
   void SetUp() override {
@@ -125,8 +130,6 @@ class CrostiniUpgradeAvailableNotificationTest
  private:
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   session_manager::SessionManager session_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUpgradeAvailableNotificationTest);
 };
 
 TEST_F(CrostiniUpgradeAvailableNotificationTest, ShowsWhenNotified) {

@@ -58,6 +58,9 @@ class OffscreenTab::WindowAdoptionAgent final : protected aura::WindowObserver {
     }
   }
 
+  WindowAdoptionAgent(const WindowAdoptionAgent&) = delete;
+  WindowAdoptionAgent& operator=(const WindowAdoptionAgent&) = delete;
+
   ~WindowAdoptionAgent() final {
     if (content_window_)
       content_window_->RemoveObserver(this);
@@ -116,8 +119,6 @@ class OffscreenTab::WindowAdoptionAgent final : protected aura::WindowObserver {
 
   aura::Window* content_window_;
   base::WeakPtrFactory<WindowAdoptionAgent> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowAdoptionAgent);
 };
 #endif  // defined(USE_AURA)
 

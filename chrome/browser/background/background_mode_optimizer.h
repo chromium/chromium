@@ -21,6 +21,9 @@ class Browser;
 class BackgroundModeOptimizer : public KeepAliveStateObserver,
                                 BrowserListObserver {
  public:
+  BackgroundModeOptimizer(const BackgroundModeOptimizer&) = delete;
+  BackgroundModeOptimizer& operator=(const BackgroundModeOptimizer&) = delete;
+
   ~BackgroundModeOptimizer() override;
 
   // Creates a new BackgroundModeOptimizer. Can return null if optimizations
@@ -51,8 +54,6 @@ class BackgroundModeOptimizer : public KeepAliveStateObserver,
   base::TimeTicks creation_time_;
 
   bool browser_was_added_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundModeOptimizer);
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_BACKGROUND_MODE_OPTIMIZER_H_

@@ -14,6 +14,10 @@ class SigninManager : public KeyedService,
                       public signin::IdentityManager::Observer {
  public:
   explicit SigninManager(signin::IdentityManager* identity_manger);
+
+  SigninManager(const SigninManager&) = delete;
+  SigninManager& operator=(const SigninManager&) = delete;
+
   ~SigninManager() override;
 
  private:
@@ -54,8 +58,6 @@ class SigninManager : public KeyedService,
   signin::IdentityManager* identity_manager_;
 
   base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninManager);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_

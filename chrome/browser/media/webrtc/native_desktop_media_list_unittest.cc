@@ -65,6 +65,10 @@ class MockObserver : public DesktopMediaListObserver {
 class FakeScreenCapturer : public webrtc::DesktopCapturer {
  public:
   FakeScreenCapturer() {}
+
+  FakeScreenCapturer(const FakeScreenCapturer&) = delete;
+  FakeScreenCapturer& operator=(const FakeScreenCapturer&) = delete;
+
   ~FakeScreenCapturer() override {}
 
   // webrtc::ScreenCapturer implementation.
@@ -90,13 +94,15 @@ class FakeScreenCapturer : public webrtc::DesktopCapturer {
 
  protected:
   Callback* callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeScreenCapturer);
 };
 
 class FakeWindowCapturer : public webrtc::DesktopCapturer {
  public:
   FakeWindowCapturer() : callback_(nullptr) {}
+
+  FakeWindowCapturer(const FakeWindowCapturer&) = delete;
+  FakeWindowCapturer& operator=(const FakeWindowCapturer&) = delete;
+
   ~FakeWindowCapturer() override {}
 
   void SetWindowList(const SourceList& list) {
@@ -151,8 +157,6 @@ class FakeWindowCapturer : public webrtc::DesktopCapturer {
   // Frames to be captured per window.
   std::map<SourceId, int8_t> frame_values_;
   base::Lock frame_values_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWindowCapturer);
 };
 
 }  // namespace

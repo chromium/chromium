@@ -39,6 +39,10 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   static bool ShouldShowResetProfileBanner(Profile* profile);
 
   explicit ResetSettingsHandler(Profile* profile);
+
+  ResetSettingsHandler(const ResetSettingsHandler&) = delete;
+  ResetSettingsHandler& operator=(const ResetSettingsHandler&) = delete;
+
   ~ResetSettingsHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -107,8 +111,6 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<ResetSettingsHandler> callback_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResetSettingsHandler);
 };
 
 }  // namespace settings

@@ -18,6 +18,10 @@ namespace settings {
 class BrowserLifetimeHandler : public SettingsPageUIHandler {
  public:
   BrowserLifetimeHandler();
+
+  BrowserLifetimeHandler(const BrowserLifetimeHandler&) = delete;
+  BrowserLifetimeHandler& operator=(const BrowserLifetimeHandler&) = delete;
+
   ~BrowserLifetimeHandler() override;
 
   // SettingsPageUIHandler:
@@ -32,8 +36,6 @@ class BrowserLifetimeHandler : public SettingsPageUIHandler {
   void HandleSignOutAndRestart(const base::ListValue* /*args*/);
   void HandleFactoryReset(const base::ListValue* /*args*/);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserLifetimeHandler);
 };
 
 }  // namespace settings

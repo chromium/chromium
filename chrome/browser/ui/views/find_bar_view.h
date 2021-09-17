@@ -49,6 +49,10 @@ class FindBarView : public views::BoxLayoutView,
   METADATA_HEADER(FindBarView);
 
   explicit FindBarView(FindBarHost* host = nullptr);
+
+  FindBarView(const FindBarView&) = delete;
+  FindBarView& operator=(const FindBarView&) = delete;
+
   ~FindBarView() override;
 
   void SetHost(FindBarHost* host);
@@ -119,8 +123,6 @@ class FindBarView : public views::BoxLayoutView,
   views::ImageButton* find_previous_button_;
   views::ImageButton* find_next_button_;
   views::ImageButton* close_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarView);
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, FindBarView, views::BoxLayoutView)

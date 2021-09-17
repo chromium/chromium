@@ -23,6 +23,12 @@ namespace chromeos {
 class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
  public:
   AddSupervisionMetricsRecorderTest() = default;
+
+  AddSupervisionMetricsRecorderTest(const AddSupervisionMetricsRecorderTest&) =
+      delete;
+  AddSupervisionMetricsRecorderTest& operator=(
+      const AddSupervisionMetricsRecorderTest&) = delete;
+
   ~AddSupervisionMetricsRecorderTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -62,9 +68,6 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
     LogOutHelper();
     CloseNowForTesting();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AddSupervisionMetricsRecorderTest);
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   content::TestWebUI test_web_ui_;

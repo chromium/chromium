@@ -15,13 +15,14 @@ namespace vr {
 class MockTextInputDelegate : public TextInputDelegate {
  public:
   MockTextInputDelegate();
+
+  MockTextInputDelegate(const MockTextInputDelegate&) = delete;
+  MockTextInputDelegate& operator=(const MockTextInputDelegate&) = delete;
+
   ~MockTextInputDelegate() override;
 
   MOCK_METHOD1(UpdateInput, void(const TextInputInfo& info));
   MOCK_METHOD1(RequestFocus, void(int));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTextInputDelegate);
 };
 
 }  // namespace vr

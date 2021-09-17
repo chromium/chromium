@@ -38,6 +38,11 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   // initialize the system token certificate database. Use
   // SystemTokenCertDbStorage to retrieve the database.
   SystemTokenCertDBInitializer();
+
+  SystemTokenCertDBInitializer(const SystemTokenCertDBInitializer&) = delete;
+  SystemTokenCertDBInitializer& operator=(const SystemTokenCertDBInitializer&) =
+      delete;
+
   ~SystemTokenCertDBInitializer() override;
 
   // TpmManagerClient::Observer overrides.
@@ -93,8 +98,6 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SystemTokenCertDBInitializer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTokenCertDBInitializer);
 };
 
 }  // namespace chromeos

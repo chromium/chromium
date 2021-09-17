@@ -36,6 +36,11 @@ class TetherNotificationPresenter : public NotificationPresenter {
   // instance.
   TetherNotificationPresenter(Profile* profile,
                               NetworkConnect* network_connect);
+
+  TetherNotificationPresenter(const TetherNotificationPresenter&) = delete;
+  TetherNotificationPresenter& operator=(const TetherNotificationPresenter&) =
+      delete;
+
   ~TetherNotificationPresenter() override;
 
   // NotificationPresenter:
@@ -117,8 +122,6 @@ class TetherNotificationPresenter : public NotificationPresenter {
   // in the "multiple hotspots available" mode, this pointer is null.
   std::unique_ptr<std::string> hotspot_nearby_device_id_;
   base::WeakPtrFactory<TetherNotificationPresenter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherNotificationPresenter);
 };
 
 }  // namespace tether

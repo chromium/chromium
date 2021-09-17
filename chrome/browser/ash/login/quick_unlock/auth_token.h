@@ -30,6 +30,10 @@ class AuthToken {
   static const int kTokenExpirationSeconds;
 
   explicit AuthToken(const chromeos::UserContext& user_context);
+
+  AuthToken(const AuthToken&) = delete;
+  AuthToken& operator=(const AuthToken&) = delete;
+
   ~AuthToken();
 
   // An unguessable identifier that can be passed to webui to verify the token
@@ -56,8 +60,6 @@ class AuthToken {
   std::unique_ptr<chromeos::UserContext> user_context_;
 
   base::WeakPtrFactory<AuthToken> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AuthToken);
 };
 
 }  // namespace quick_unlock

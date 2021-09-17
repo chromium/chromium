@@ -19,13 +19,14 @@ namespace ash {
 class GuestSessionMixin : public InProcessBrowserTestMixin {
  public:
   explicit GuestSessionMixin(InProcessBrowserTestMixinHost* mixin_host);
+
+  GuestSessionMixin(const GuestSessionMixin&) = delete;
+  GuestSessionMixin& operator=(const GuestSessionMixin&) = delete;
+
   ~GuestSessionMixin() override;
 
   // InProcessBrowserTestMixin:
   void SetUpCommandLine(base::CommandLine* command_line) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GuestSessionMixin);
 };
 
 }  // namespace ash

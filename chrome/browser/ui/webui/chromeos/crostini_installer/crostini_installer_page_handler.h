@@ -31,6 +31,11 @@ class CrostiniInstallerPageHandler
       mojo::PendingRemote<chromeos::crostini_installer::mojom::Page>
           pending_page,
       base::OnceClosure on_page_closed);
+
+  CrostiniInstallerPageHandler(const CrostiniInstallerPageHandler&) = delete;
+  CrostiniInstallerPageHandler& operator=(const CrostiniInstallerPageHandler&) =
+      delete;
+
   ~CrostiniInstallerPageHandler() override;
 
   // chromeos::crostini_installer::mojom::PageHandler:
@@ -56,8 +61,6 @@ class CrostiniInstallerPageHandler
   base::OnceClosure on_page_closed_;
 
   base::WeakPtrFactory<CrostiniInstallerPageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniInstallerPageHandler);
 };
 
 }  // namespace chromeos

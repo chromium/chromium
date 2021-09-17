@@ -40,6 +40,10 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   class Delegate {
    public:
     explicit Delegate(Profile* profile);
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     virtual bool ShouldIncludeExtension(const Extension* extension) = 0;
@@ -125,8 +129,6 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
     // Name for corresponding pref that keeps if the info the bubble contains
     // was acknowledged by user.
     std::string acknowledged_pref_name_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   ExtensionMessageBubbleController(Delegate* delegate, Browser* browser);

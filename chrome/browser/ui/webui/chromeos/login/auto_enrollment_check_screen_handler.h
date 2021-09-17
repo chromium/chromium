@@ -20,6 +20,12 @@ class AutoEnrollmentCheckScreenHandler : public AutoEnrollmentCheckScreenView,
 
   explicit AutoEnrollmentCheckScreenHandler(
       JSCallsContainer* js_calls_container);
+
+  AutoEnrollmentCheckScreenHandler(const AutoEnrollmentCheckScreenHandler&) =
+      delete;
+  AutoEnrollmentCheckScreenHandler& operator=(
+      const AutoEnrollmentCheckScreenHandler&) = delete;
+
   ~AutoEnrollmentCheckScreenHandler() override;
 
   // AutoEnrollmentCheckScreenActor implementation:
@@ -39,8 +45,6 @@ class AutoEnrollmentCheckScreenHandler : public AutoEnrollmentCheckScreenView,
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentCheckScreenHandler);
 };
 
 }  // namespace chromeos
@@ -52,4 +56,3 @@ using ::chromeos::AutoEnrollmentCheckScreenHandler;
 }
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_AUTO_ENROLLMENT_CHECK_SCREEN_HANDLER_H_
-

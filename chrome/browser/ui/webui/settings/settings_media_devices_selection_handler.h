@@ -19,6 +19,11 @@ class MediaDevicesSelectionHandler
       public SettingsPageUIHandler {
  public:
   explicit MediaDevicesSelectionHandler(Profile* profile);
+
+  MediaDevicesSelectionHandler(const MediaDevicesSelectionHandler&) = delete;
+  MediaDevicesSelectionHandler& operator=(const MediaDevicesSelectionHandler&) =
+      delete;
+
   ~MediaDevicesSelectionHandler() override;
 
   // SettingsPageUIHandler:
@@ -58,8 +63,6 @@ class MediaDevicesSelectionHandler
   base::ScopedObservation<MediaCaptureDevicesDispatcher,
                           MediaCaptureDevicesDispatcher::Observer>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDevicesSelectionHandler);
 };
 
 }  // namespace settings

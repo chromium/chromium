@@ -17,6 +17,11 @@ class MediaPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   MediaPageLoadMetricsObserver();
+
+  MediaPageLoadMetricsObserver(const MediaPageLoadMetricsObserver&) = delete;
+  MediaPageLoadMetricsObserver& operator=(const MediaPageLoadMetricsObserver&) =
+      delete;
+
   ~MediaPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -44,8 +49,6 @@ class MediaPageLoadMetricsObserver
 
   // Whether the page load played a media element.
   bool played_media_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_MEDIA_PAGE_LOAD_METRICS_OBSERVER_H_

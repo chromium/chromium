@@ -273,6 +273,9 @@ class ChromeNewWindowClient::TabRestoreHelper
     tab_restore_service_->AddObserver(this);
   }
 
+  TabRestoreHelper(const TabRestoreHelper&) = delete;
+  TabRestoreHelper& operator=(const TabRestoreHelper&) = delete;
+
   ~TabRestoreHelper() override { tab_restore_service_->RemoveObserver(this); }
 
   sessions::TabRestoreService* tab_restore_service() {
@@ -298,8 +301,6 @@ class ChromeNewWindowClient::TabRestoreHelper
   ChromeNewWindowClient* delegate_;
   Profile* profile_;
   sessions::TabRestoreService* tab_restore_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestoreHelper);
 };
 
 void ChromeNewWindowClient::NewTab() {

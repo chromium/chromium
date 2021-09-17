@@ -38,6 +38,10 @@ class DuplicateDownloadInfoBar : public infobars::ConfirmInfoBar {
  public:
   static std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<android::DuplicateDownloadInfoBarDelegate> delegate);
+
+  DuplicateDownloadInfoBar(const DuplicateDownloadInfoBar&) = delete;
+  DuplicateDownloadInfoBar& operator=(const DuplicateDownloadInfoBar&) = delete;
+
   ~DuplicateDownloadInfoBar() override;
 
   static void RecordDuplicateDownloadInfobarEvent(
@@ -54,8 +58,6 @@ class DuplicateDownloadInfoBar : public infobars::ConfirmInfoBar {
       const ResourceIdMapper& resource_id_mapper) override;
 
   android::DuplicateDownloadInfoBarDelegate* GetDelegate();
-
-  DISALLOW_COPY_AND_ASSIGN(DuplicateDownloadInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_DUPLICATE_DOWNLOAD_INFOBAR_H_

@@ -45,6 +45,10 @@ class DeviceStateMixin : public InProcessBrowserTestMixin,
   };
 
   DeviceStateMixin(InProcessBrowserTestMixinHost* host, State initial_state);
+
+  DeviceStateMixin(const DeviceStateMixin&) = delete;
+  DeviceStateMixin& operator=(const DeviceStateMixin&) = delete;
+
   ~DeviceStateMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -120,8 +124,6 @@ class DeviceStateMixin : public InProcessBrowserTestMixin,
   LocalStateMixin local_state_mixin_;
 
   base::WeakPtrFactory<DeviceStateMixin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceStateMixin);
 };
 
 }  // namespace ash

@@ -21,6 +21,11 @@ namespace browser_sync {
 class ExtensionsActivityMonitor : public content::NotificationObserver {
  public:
   ExtensionsActivityMonitor();
+
+  ExtensionsActivityMonitor(const ExtensionsActivityMonitor&) = delete;
+  ExtensionsActivityMonitor& operator=(const ExtensionsActivityMonitor&) =
+      delete;
+
   ~ExtensionsActivityMonitor() override;
 
   // content::NotificationObserver implementation.
@@ -37,8 +42,6 @@ class ExtensionsActivityMonitor : public content::NotificationObserver {
   // Used only on UI loop.
   content::NotificationRegistrar registrar_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsActivityMonitor);
 };
 
 }  // namespace browser_sync

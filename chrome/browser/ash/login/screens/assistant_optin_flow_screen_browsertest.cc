@@ -134,6 +134,9 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
 
   ScopedAssistantSettings() = default;
 
+  ScopedAssistantSettings(const ScopedAssistantSettings&) = delete;
+  ScopedAssistantSettings& operator=(const ScopedAssistantSettings&) = delete;
+
   ~ScopedAssistantSettings() override = default;
 
   void set_consent_ui_flags(int flags) { consent_ui_flags_ = flags; }
@@ -331,8 +334,6 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
 
   int setting_zippy_size_ = 1;
   bool is_minor_user_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAssistantSettings);
 };
 
 class AssistantOptInFlowTest : public OobeBaseTest {

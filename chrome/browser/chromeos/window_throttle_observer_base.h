@@ -25,6 +25,11 @@ class WindowThrottleObserverBase : public ThrottleObserver,
  public:
   WindowThrottleObserverBase(ThrottleObserver::PriorityLevel level,
                              std::string name);
+
+  WindowThrottleObserverBase(const WindowThrottleObserverBase&) = delete;
+  WindowThrottleObserverBase& operator=(const WindowThrottleObserverBase&) =
+      delete;
+
   ~WindowThrottleObserverBase() override = default;
 
   // ThrottleObserver:
@@ -43,9 +48,6 @@ class WindowThrottleObserverBase : public ThrottleObserver,
   virtual bool ProcessWindowActivation(ActivationReason reason,
                                        aura::Window* gained_active,
                                        aura::Window* lost_active) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowThrottleObserverBase);
 };
 
 }  // namespace chromeos

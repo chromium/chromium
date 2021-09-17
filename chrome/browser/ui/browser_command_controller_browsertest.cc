@@ -45,6 +45,12 @@ namespace chrome {
 class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
  public:
   BrowserCommandControllerBrowserTest() {}
+
+  BrowserCommandControllerBrowserTest(
+      const BrowserCommandControllerBrowserTest&) = delete;
+  BrowserCommandControllerBrowserTest& operator=(
+      const BrowserCommandControllerBrowserTest&) = delete;
+
   ~BrowserCommandControllerBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -53,9 +59,6 @@ class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
         chromeos::switches::kIgnoreUserProfileMappingForTests);
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserCommandControllerBrowserTest);
 };
 
 // Verify that showing a constrained window disables find.

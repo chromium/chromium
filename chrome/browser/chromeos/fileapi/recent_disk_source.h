@@ -38,6 +38,10 @@ class RecentDiskSource : public RecentSource {
                    bool ignore_dotfiles,
                    int max_depth,
                    std::string uma_histogram_name);
+
+  RecentDiskSource(const RecentDiskSource&) = delete;
+  RecentDiskSource& operator=(const RecentDiskSource&) = delete;
+
   ~RecentDiskSource() override;
 
   // RecentSource overrides:
@@ -80,8 +84,6 @@ class RecentDiskSource : public RecentSource {
       recent_files_;
 
   base::WeakPtrFactory<RecentDiskSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RecentDiskSource);
 };
 
 }  // namespace chromeos

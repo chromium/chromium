@@ -28,6 +28,10 @@ namespace mechanism {
 // should be used via the WorkingSetTrimmer::GetInstance() method.
 class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
  public:
+  WorkingSetTrimmerChromeOS(const WorkingSetTrimmerChromeOS&) = delete;
+  WorkingSetTrimmerChromeOS& operator=(const WorkingSetTrimmerChromeOS&) =
+      delete;
+
   ~WorkingSetTrimmerChromeOS() override;
 
   // WorkingSetTrimmer implementation:
@@ -61,8 +65,6 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
   content::BrowserContext* context_for_testing_ = nullptr;
 
   base::WeakPtrFactory<WorkingSetTrimmerChromeOS> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerChromeOS);
 };
 
 }  // namespace mechanism

@@ -64,6 +64,10 @@ class DnsSdRegistry : public DnsSdDelegate {
   class ServiceTypeData {
    public:
     explicit ServiceTypeData(std::unique_ptr<DnsSdDeviceLister> lister);
+
+    ServiceTypeData(const ServiceTypeData&) = delete;
+    ServiceTypeData& operator=(const ServiceTypeData&) = delete;
+
     virtual ~ServiceTypeData();
 
     // Notify the data class of listeners so that it can be reference counted.
@@ -90,7 +94,6 @@ class DnsSdRegistry : public DnsSdDelegate {
     int ref_count;
     std::unique_ptr<DnsSdDeviceLister> lister_;
     DnsSdRegistry::DnsSdServiceList service_list_;
-    DISALLOW_COPY_AND_ASSIGN(ServiceTypeData);
   };
 
   virtual DnsSdDeviceLister* CreateDnsSdDeviceLister(

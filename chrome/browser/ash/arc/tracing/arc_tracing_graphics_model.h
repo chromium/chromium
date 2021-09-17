@@ -121,6 +121,10 @@ class ArcTracingGraphicsModel {
   class EventsContainer {
    public:
     EventsContainer();
+
+    EventsContainer(const EventsContainer&) = delete;
+    EventsContainer& operator=(const EventsContainer&) = delete;
+
     ~EventsContainer();
 
     void Reset();
@@ -139,8 +143,6 @@ class ArcTracingGraphicsModel {
     std::vector<BufferEvents> buffer_events_;
     // Global events that do not belong to any graphics buffer.
     BufferEvents global_events_;
-
-    DISALLOW_COPY_AND_ASSIGN(EventsContainer);
   };
 
   using ViewMap = std::map<ViewId, EventsContainer>;

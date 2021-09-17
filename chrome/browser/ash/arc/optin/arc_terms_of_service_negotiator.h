@@ -14,6 +14,11 @@ namespace arc {
 class ArcTermsOfServiceNegotiator {
  public:
   ArcTermsOfServiceNegotiator();
+
+  ArcTermsOfServiceNegotiator(const ArcTermsOfServiceNegotiator&) = delete;
+  ArcTermsOfServiceNegotiator& operator=(const ArcTermsOfServiceNegotiator&) =
+      delete;
+
   virtual ~ArcTermsOfServiceNegotiator();
 
   // Invokes the|callback| asynchronously with "|accepted| = true" if user
@@ -33,8 +38,6 @@ class ArcTermsOfServiceNegotiator {
   virtual void StartNegotiationImpl() = 0;
 
   NegotiationCallback pending_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceNegotiator);
 };
 
 }  // namespace arc

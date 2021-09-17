@@ -171,6 +171,11 @@ class AutomaticUsbPrinterConfigurerTest : public testing::Test {
         auto_usb_printer_configurer_.get());
   }
 
+  AutomaticUsbPrinterConfigurerTest(const AutomaticUsbPrinterConfigurerTest&) =
+      delete;
+  AutomaticUsbPrinterConfigurerTest& operator=(
+      const AutomaticUsbPrinterConfigurerTest&) = delete;
+
   ~AutomaticUsbPrinterConfigurerTest() override = default;
 
  protected:
@@ -180,8 +185,6 @@ class AutomaticUsbPrinterConfigurerTest : public testing::Test {
   std::unique_ptr<FakeUsbPrinterNotificationController>
       fake_notification_controller_;
   std::unique_ptr<AutomaticUsbPrinterConfigurer> auto_usb_printer_configurer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomaticUsbPrinterConfigurerTest);
 };
 
 TEST_F(AutomaticUsbPrinterConfigurerTest,

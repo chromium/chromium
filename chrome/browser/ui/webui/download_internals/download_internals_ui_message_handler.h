@@ -21,6 +21,12 @@ class DownloadInternalsUIMessageHandler : public content::WebUIMessageHandler,
                                           public download::Logger::Observer {
  public:
   DownloadInternalsUIMessageHandler();
+
+  DownloadInternalsUIMessageHandler(const DownloadInternalsUIMessageHandler&) =
+      delete;
+  DownloadInternalsUIMessageHandler& operator=(
+      const DownloadInternalsUIMessageHandler&) = delete;
+
   ~DownloadInternalsUIMessageHandler() override;
 
   // content::WebUIMessageHandler implementation.
@@ -46,8 +52,6 @@ class DownloadInternalsUIMessageHandler : public content::WebUIMessageHandler,
 
   base::WeakPtrFactory<DownloadInternalsUIMessageHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadInternalsUIMessageHandler);
 };
 
 }  // namespace download_internals

@@ -40,6 +40,10 @@ namespace {
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() = default;
+
+  MockAutofillClient(const MockAutofillClient&) = delete;
+  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
+
   ~MockAutofillClient() override = default;
 
   PrefService* GetPrefs() override {
@@ -60,8 +64,6 @@ class MockAutofillClient : public TestAutofillClient {
 
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillClient);
 };
 
 }  // namespace

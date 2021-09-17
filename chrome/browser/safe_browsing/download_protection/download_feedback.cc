@@ -45,6 +45,10 @@ class DownloadFeedbackImpl : public DownloadFeedback {
       const base::FilePath& file_path,
       const std::string& ping_request,
       const std::string& ping_response);
+
+  DownloadFeedbackImpl(const DownloadFeedbackImpl&) = delete;
+  DownloadFeedbackImpl& operator=(const DownloadFeedbackImpl&) = delete;
+
   ~DownloadFeedbackImpl() override;
 
   void Start(base::OnceClosure finish_callback) override;
@@ -80,8 +84,6 @@ class DownloadFeedbackImpl : public DownloadFeedback {
 
   // The time at which we started uploading. Used for metrics.
   base::Time uploader_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFeedbackImpl);
 };
 
 DownloadFeedbackImpl::DownloadFeedbackImpl(

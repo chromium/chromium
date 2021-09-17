@@ -86,6 +86,11 @@ class ThirdPartyURLLoaderInterceptor {
             &ThirdPartyURLLoaderInterceptor::InterceptURLRequest,
             base::Unretained(this))) {}
 
+  ThirdPartyURLLoaderInterceptor(const ThirdPartyURLLoaderInterceptor&) =
+      delete;
+  ThirdPartyURLLoaderInterceptor& operator=(
+      const ThirdPartyURLLoaderInterceptor&) = delete;
+
   ~ThirdPartyURLLoaderInterceptor() = default;
 
   size_t request_count_seen() const { return request_count_seen_; }
@@ -113,8 +118,6 @@ class ThirdPartyURLLoaderInterceptor {
   size_t client_hints_count_seen_ = 0u;
 
   URLLoaderInterceptor interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyURLLoaderInterceptor);
 };
 
 // Returns true only if |header_value| satisfies ABNF: 1*DIGIT [ "." 1*DIGIT ]
@@ -270,6 +273,9 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
     http_equiv_accept_ch_merge_ =
         https_server_.GetURL("/http_equiv_accept_ch_merge.html");
   }
+
+  ClientHintsBrowserTest(const ClientHintsBrowserTest&) = delete;
+  ClientHintsBrowserTest& operator=(const ClientHintsBrowserTest&) = delete;
 
   ~ClientHintsBrowserTest() override {}
 
@@ -835,8 +841,6 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
 
   // Set to 2G in SetUpCommandLine().
   net::EffectiveConnectionType expected_ect = net::EFFECTIVE_CONNECTION_TYPE_2G;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientHintsBrowserTest);
 };
 
 // True if testing for http-equiv correctness. When set to true, the tests
@@ -2443,6 +2447,11 @@ class ClientHintsBrowserTestWithEmulatedMedia
     test_url_ = https_server_.GetURL("/accept_ch_without_lifetime.html");
   }
 
+  ClientHintsBrowserTestWithEmulatedMedia(
+      const ClientHintsBrowserTestWithEmulatedMedia&) = delete;
+  ClientHintsBrowserTestWithEmulatedMedia& operator=(
+      const ClientHintsBrowserTestWithEmulatedMedia&) = delete;
+
   ~ClientHintsBrowserTestWithEmulatedMedia() override = default;
 
   void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
@@ -2475,8 +2484,6 @@ class ClientHintsBrowserTestWithEmulatedMedia
   net::EmbeddedTestServer https_server_;
   GURL test_url_;
   std::string prefers_color_scheme_observed_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientHintsBrowserTestWithEmulatedMedia);
 };
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithEmulatedMedia,

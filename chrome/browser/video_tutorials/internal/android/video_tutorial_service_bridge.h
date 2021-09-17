@@ -27,6 +27,11 @@ class VideoTutorialServiceBridge : public base::SupportsUserData::Data {
 
   explicit VideoTutorialServiceBridge(
       VideoTutorialService* video_tutorial_service);
+
+  VideoTutorialServiceBridge(const VideoTutorialServiceBridge&) = delete;
+  VideoTutorialServiceBridge& operator=(const VideoTutorialServiceBridge&) =
+      delete;
+
   ~VideoTutorialServiceBridge() override;
 
   // Methods called from Java via JNI.
@@ -58,8 +63,6 @@ class VideoTutorialServiceBridge : public base::SupportsUserData::Data {
 
   // Not owned.
   VideoTutorialService* video_tutorial_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoTutorialServiceBridge);
 };
 
 }  // namespace video_tutorials

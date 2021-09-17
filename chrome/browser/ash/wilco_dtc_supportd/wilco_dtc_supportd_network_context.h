@@ -36,6 +36,12 @@ class WilcoDtcSupportdNetworkContextImpl
       public network::mojom::URLLoaderNetworkServiceObserver {
  public:
   WilcoDtcSupportdNetworkContextImpl();
+
+  WilcoDtcSupportdNetworkContextImpl(
+      const WilcoDtcSupportdNetworkContextImpl&) = delete;
+  WilcoDtcSupportdNetworkContextImpl& operator=(
+      const WilcoDtcSupportdNetworkContextImpl&) = delete;
+
   ~WilcoDtcSupportdNetworkContextImpl() override;
 
   // WilcoDtcSupportdNetworkContext overrides:
@@ -92,8 +98,6 @@ class WilcoDtcSupportdNetworkContextImpl
 
   mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver>
       cert_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdNetworkContextImpl);
 };
 
 }  // namespace ash

@@ -40,6 +40,10 @@ class Profile;
 class ArcAppTest {
  public:
   ArcAppTest();
+
+  ArcAppTest(const ArcAppTest&) = delete;
+  ArcAppTest& operator=(const ArcAppTest&) = delete;
+
   virtual ~ArcAppTest();
 
   void SetUp(Profile* profile);
@@ -145,8 +149,6 @@ class ArcAppTest {
   std::vector<arc::mojom::ShortcutInfo> fake_shortcuts_;
 
   bool dbus_thread_manager_initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppTest);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_TEST_H_

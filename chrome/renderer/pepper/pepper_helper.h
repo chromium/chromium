@@ -14,14 +14,15 @@
 class PepperHelper : public content::RenderFrameObserver {
  public:
   explicit PepperHelper(content::RenderFrame* render_frame);
+
+  PepperHelper(const PepperHelper&) = delete;
+  PepperHelper& operator=(const PepperHelper&) = delete;
+
   ~PepperHelper() override;
 
   // RenderFrameObserver.
   void DidCreatePepperPlugin(content::RendererPpapiHost* host) override;
   void OnDestruct() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PepperHelper);
 };
 
 #endif  // CHROME_RENDERER_PEPPER_PEPPER_HELPER_H_

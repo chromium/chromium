@@ -13,6 +13,12 @@
 class ChromeSerializedNavigationDriverTest : public ::testing::Test {
  public:
   ChromeSerializedNavigationDriverTest() {}
+
+  ChromeSerializedNavigationDriverTest(
+      const ChromeSerializedNavigationDriverTest&) = delete;
+  ChromeSerializedNavigationDriverTest& operator=(
+      const ChromeSerializedNavigationDriverTest&) = delete;
+
   ~ChromeSerializedNavigationDriverTest() override {}
 
   void SetUp() override {
@@ -23,9 +29,6 @@ class ChromeSerializedNavigationDriverTest : public ::testing::Test {
   void TearDown() override {
     sessions::ContentSerializedNavigationDriver::SetInstance(nullptr);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeSerializedNavigationDriverTest);
 };
 
 // Tests that the input data is left unsanitized when the referrer policy is

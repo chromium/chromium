@@ -49,6 +49,9 @@ class ScopedDevtoolsOpener {
       : ScopedDevtoolsOpener(
             content::DevToolsAgentHost::GetOrCreateFor(web_contents)) {}
 
+  ScopedDevtoolsOpener(const ScopedDevtoolsOpener&) = delete;
+  ScopedDevtoolsOpener& operator=(const ScopedDevtoolsOpener&) = delete;
+
   ~ScopedDevtoolsOpener() { agent_host_->DetachClient(&test_client_); }
 
   void EnableAdBlocking(bool enabled) {
@@ -69,7 +72,6 @@ class ScopedDevtoolsOpener {
  private:
   TestClient test_client_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDevtoolsOpener);
 };
 
 }  // namespace

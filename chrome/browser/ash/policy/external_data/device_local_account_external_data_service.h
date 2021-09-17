@@ -32,6 +32,12 @@ class DeviceLocalAccountExternalDataService
   DeviceLocalAccountExternalDataService(
       DeviceLocalAccountPolicyService* parent,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+
+  DeviceLocalAccountExternalDataService(
+      const DeviceLocalAccountExternalDataService&) = delete;
+  DeviceLocalAccountExternalDataService& operator=(
+      const DeviceLocalAccountExternalDataService&) = delete;
+
   ~DeviceLocalAccountExternalDataService() override;
 
   // DeviceLocalAccountPolicyService::Observer:
@@ -52,8 +58,6 @@ class DeviceLocalAccountExternalDataService
   std::unique_ptr<ResourceCache> resource_cache_;
 
   ExternalDataManagerMap external_data_managers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountExternalDataService);
 };
 
 }  // namespace policy

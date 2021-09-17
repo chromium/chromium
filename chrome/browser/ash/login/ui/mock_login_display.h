@@ -14,6 +14,10 @@ namespace ash {
 class MockLoginDisplay : public LoginDisplay {
  public:
   MockLoginDisplay();
+
+  MockLoginDisplay(const MockLoginDisplay&) = delete;
+  MockLoginDisplay& operator=(const MockLoginDisplay&) = delete;
+
   ~MockLoginDisplay();
 
   MOCK_METHOD0(ClearAndEnablePassword, void(void));
@@ -23,9 +27,6 @@ class MockLoginDisplay : public LoginDisplay {
   MOCK_METHOD1(SetUIEnabled, void(bool));
   MOCK_METHOD1(ShowSigninUI, void(const std::string&));
   MOCK_METHOD0(ShowAllowlistCheckFailedError, void(void));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLoginDisplay);
 };
 
 }  // namespace ash

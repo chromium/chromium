@@ -115,6 +115,9 @@ class SpinningEffectSource : public gfx::CanvasImageSource {
                                                             kInactiveHslShift),
             kInactiveTransparency)) {}
 
+  SpinningEffectSource(const SpinningEffectSource&) = delete;
+  SpinningEffectSource& operator=(const SpinningEffectSource&) = delete;
+
   ~SpinningEffectSource() override {}
 
   // gfx::CanvasImageSource override.
@@ -152,8 +155,6 @@ class SpinningEffectSource : public gfx::CanvasImageSource {
   ShelfSpinnerController::ShelfSpinnerData data_;
   const gfx::ImageSkia active_image_;
   const gfx::ImageSkia inactive_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpinningEffectSource);
 };
 
 }  // namespace

@@ -28,6 +28,9 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
  public:
   CryptohomeWebUIHandler();
 
+  CryptohomeWebUIHandler(const CryptohomeWebUIHandler&) = delete;
+  CryptohomeWebUIHandler& operator=(const CryptohomeWebUIHandler&) = delete;
+
   ~CryptohomeWebUIHandler() override;
 
   // WebUIMessageHandler override.
@@ -53,7 +56,6 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
                              const base::Value& value);
 
   base::WeakPtrFactory<CryptohomeWebUIHandler> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CryptohomeWebUIHandler);
 };
 
 }  // namespace chromeos

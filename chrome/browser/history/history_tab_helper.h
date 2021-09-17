@@ -19,6 +19,9 @@ class HistoryService;
 class HistoryTabHelper : public content::WebContentsObserver,
                          public content::WebContentsUserData<HistoryTabHelper> {
  public:
+  HistoryTabHelper(const HistoryTabHelper&) = delete;
+  HistoryTabHelper& operator=(const HistoryTabHelper&) = delete;
+
   ~HistoryTabHelper() override;
 
   // Updates history with the specified navigation. This is called by
@@ -91,8 +94,6 @@ class HistoryTabHelper : public content::WebContentsObserver,
   base::WeakPtr<content::WebContents> opener_web_contents_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryTabHelper);
 };
 
 #endif  // CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_

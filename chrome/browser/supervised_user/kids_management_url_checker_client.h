@@ -27,6 +27,12 @@ class KidsManagementURLCheckerClient
   // |country| should be a two-letter country code (ISO 3166-1 alpha-2), e.g.,
   // "us".
   explicit KidsManagementURLCheckerClient(const std::string& country);
+
+  KidsManagementURLCheckerClient(const KidsManagementURLCheckerClient&) =
+      delete;
+  KidsManagementURLCheckerClient& operator=(
+      const KidsManagementURLCheckerClient&) = delete;
+
   ~KidsManagementURLCheckerClient() override;
 
   // Checks whether an |url| is restricted according to KidsManagement
@@ -46,8 +52,6 @@ class KidsManagementURLCheckerClient
   const std::string country_;
 
   base::WeakPtrFactory<KidsManagementURLCheckerClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KidsManagementURLCheckerClient);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_KIDS_MANAGEMENT_URL_CHECKER_CLIENT_H_

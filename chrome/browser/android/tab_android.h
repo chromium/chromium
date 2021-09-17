@@ -65,6 +65,10 @@ class TabAndroid : public base::SupportsUserData {
   static void AttachTabHelpers(content::WebContents* web_contents);
 
   TabAndroid(JNIEnv* env, const base::android::JavaRef<jobject>& obj);
+
+  TabAndroid(const TabAndroid&) = delete;
+  TabAndroid& operator=(const TabAndroid&) = delete;
+
   ~TabAndroid() override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
@@ -165,8 +169,6 @@ class TabAndroid : public base::SupportsUserData {
   std::unique_ptr<browser_sync::SyncedTabDelegateAndroid> synced_tab_delegate_;
 
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabAndroid);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_ANDROID_H_

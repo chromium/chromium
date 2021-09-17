@@ -106,6 +106,10 @@ class FileSelectorImpl : public FileSelector,
                          public ui::SelectFileDialog::Listener {
  public:
   FileSelectorImpl();
+
+  FileSelectorImpl(const FileSelectorImpl&) = delete;
+  FileSelectorImpl& operator=(const FileSelectorImpl&) = delete;
+
   ~FileSelectorImpl() override;
 
  protected:
@@ -158,8 +162,6 @@ class FileSelectorImpl : public FileSelector,
 
   // Extension function that uses the selector.
   scoped_refptr<FileBrowserHandlerInternalSelectFileFunction> function_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSelectorImpl);
 };
 
 FileSelectorImpl::FileSelectorImpl() = default;
@@ -258,6 +260,10 @@ void FileSelectorImpl::SendResponse(bool success,
 class FileSelectorFactoryImpl : public FileSelectorFactory {
  public:
   FileSelectorFactoryImpl() = default;
+
+  FileSelectorFactoryImpl(const FileSelectorFactoryImpl&) = delete;
+  FileSelectorFactoryImpl& operator=(const FileSelectorFactoryImpl&) = delete;
+
   ~FileSelectorFactoryImpl() override = default;
 
   // FileSelectorFactory implementation.
@@ -265,9 +271,6 @@ class FileSelectorFactoryImpl : public FileSelectorFactory {
   FileSelector* CreateFileSelector() const override {
     return new FileSelectorImpl();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileSelectorFactoryImpl);
 };
 
 }  // namespace

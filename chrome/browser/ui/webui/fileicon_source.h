@@ -22,6 +22,10 @@ class Image;
 class FileIconSource : public content::URLDataSource {
  public:
   FileIconSource();
+
+  FileIconSource(const FileIconSource&) = delete;
+  FileIconSource& operator=(const FileIconSource&) = delete;
+
   ~FileIconSource() override;
 
   // content::URLDataSource implementation.
@@ -64,7 +68,5 @@ class FileIconSource : public content::URLDataSource {
 
   // Tracks tasks requesting file icons.
   base::CancelableTaskTracker cancelable_task_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileIconSource);
 };
 #endif  // CHROME_BROWSER_UI_WEBUI_FILEICON_SOURCE_H_

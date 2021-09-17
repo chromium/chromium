@@ -45,6 +45,12 @@ class FakeAppInstallEventLogCollectorDelegate
     : public ArcAppInstallEventLogCollector::Delegate {
  public:
   FakeAppInstallEventLogCollectorDelegate() = default;
+
+  FakeAppInstallEventLogCollectorDelegate(
+      const FakeAppInstallEventLogCollectorDelegate&) = delete;
+  FakeAppInstallEventLogCollectorDelegate& operator=(
+      const FakeAppInstallEventLogCollectorDelegate&) = delete;
+
   ~FakeAppInstallEventLogCollectorDelegate() override = default;
 
   struct Request {
@@ -92,8 +98,6 @@ class FakeAppInstallEventLogCollectorDelegate
   int add_for_all_count_ = 0;
   int add_count_ = 0;
   std::vector<Request> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAppInstallEventLogCollectorDelegate);
 };
 
 int64_t TimeToTimestamp(base::Time time) {

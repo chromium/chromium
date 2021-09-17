@@ -79,14 +79,16 @@ class MockUserCloudPolicyManagerAsh : public UserCloudPolicyManagerAsh {
             account_id,
             task_runner) {}
 
+  MockUserCloudPolicyManagerAsh(const MockUserCloudPolicyManagerAsh&) = delete;
+  MockUserCloudPolicyManagerAsh& operator=(
+      const MockUserCloudPolicyManagerAsh&) = delete;
+
   ~MockUserCloudPolicyManagerAsh() override = default;
 
   MOCK_METHOD1(OnAccessTokenAvailable, void(const std::string&));
 
  private:
   void OnFatalError() {}
-
-  DISALLOW_COPY_AND_ASSIGN(MockUserCloudPolicyManagerAsh);
 };
 
 class UserCloudPolicyTokenForwarderTest : public testing::Test {

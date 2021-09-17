@@ -30,6 +30,10 @@ class DownloadsListTracker
  public:
   DownloadsListTracker(content::DownloadManager* download_manager,
                        mojo::PendingRemote<downloads::mojom::Page> page);
+
+  DownloadsListTracker(const DownloadsListTracker&) = delete;
+  DownloadsListTracker& operator=(const DownloadsListTracker&) = delete;
+
   ~DownloadsListTracker() override;
 
   // Clears all downloads on the page if currently sending updates and resets
@@ -129,8 +133,6 @@ class DownloadsListTracker
 
   // Current search terms.
   std::vector<std::u16string> search_terms_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsListTracker);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DOWNLOADS_DOWNLOADS_LIST_TRACKER_H_

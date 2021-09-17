@@ -32,6 +32,10 @@ class IsolationContextMetrics : public FrameNode::ObserverDefaultImpl,
                                 public ProcessNode::ObserverDefaultImpl {
  public:
   IsolationContextMetrics();
+
+  IsolationContextMetrics(const IsolationContextMetrics&) = delete;
+  IsolationContextMetrics& operator=(const IsolationContextMetrics&) = delete;
+
   ~IsolationContextMetrics() override;
 
   // Starts the timer for periodic reporting.
@@ -153,9 +157,6 @@ class IsolationContextMetrics : public FrameNode::ObserverDefaultImpl,
   // TODO(chrisha): Migrate away if metrics team provides a convenient API.
   // https://crbug.com/961468
   base::RepeatingTimer reporting_timer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolationContextMetrics);
 };
 
 }  // namespace performance_manager

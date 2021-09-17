@@ -21,6 +21,10 @@ namespace vr {
 class VR_UI_EXPORT ScaledDepthAdjuster : public UiElement {
  public:
   explicit ScaledDepthAdjuster(float delta_z);
+
+  ScaledDepthAdjuster(const ScaledDepthAdjuster&) = delete;
+  ScaledDepthAdjuster& operator=(const ScaledDepthAdjuster&) = delete;
+
   ~ScaledDepthAdjuster() override;
 
  private:
@@ -40,8 +44,6 @@ class VR_UI_EXPORT ScaledDepthAdjuster : public UiElement {
   // if we use a delta_z_ of -0.1, this will cause our descendants to be
   // positioned at depth 2.4.
   float delta_z_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScaledDepthAdjuster);
 };
 
 }  // namespace vr

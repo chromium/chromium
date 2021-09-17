@@ -19,6 +19,10 @@ namespace android {
 class DistillerUIHandleAndroid : public DistillerUIHandle {
  public:
   DistillerUIHandleAndroid() {}
+
+  DistillerUIHandleAndroid(const DistillerUIHandleAndroid&) = delete;
+  DistillerUIHandleAndroid& operator=(const DistillerUIHandleAndroid&) = delete;
+
   ~DistillerUIHandleAndroid() override {}
 
   void set_render_frame_host(content::RenderFrameHost* host) {
@@ -28,7 +32,6 @@ class DistillerUIHandleAndroid : public DistillerUIHandle {
 
  private:
   content::RenderFrameHost* render_frame_host_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(DistillerUIHandleAndroid);
 };
 
 }  // namespace android

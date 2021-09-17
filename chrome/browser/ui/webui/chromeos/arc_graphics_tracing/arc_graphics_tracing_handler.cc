@@ -105,15 +105,16 @@ std::pair<base::Value, std::string> MaybeLoadLastGraphicsModel(
 class ProcessFilterPassAll : public base::ProcessFilter {
  public:
   ProcessFilterPassAll() = default;
+
+  ProcessFilterPassAll(const ProcessFilterPassAll&) = delete;
+  ProcessFilterPassAll& operator=(const ProcessFilterPassAll&) = delete;
+
   ~ProcessFilterPassAll() override = default;
 
   // base::ProcessFilter:
   bool Includes(const base::ProcessEntry& process) const override {
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessFilterPassAll);
 };
 
 // Reads name of thread from /proc/pid/task/tid/status.

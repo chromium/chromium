@@ -24,6 +24,11 @@ class ChromeDuplicateDownloadInfoBarDelegate
     : public DuplicateDownloadInfoBarDelegate,
       public download::DownloadItem::Observer {
  public:
+  ChromeDuplicateDownloadInfoBarDelegate(
+      const ChromeDuplicateDownloadInfoBarDelegate&) = delete;
+  ChromeDuplicateDownloadInfoBarDelegate& operator=(
+      const ChromeDuplicateDownloadInfoBarDelegate&) = delete;
+
   ~ChromeDuplicateDownloadInfoBarDelegate() override;
 
   static void Create(infobars::ContentInfoBarManager* infobar_manager,
@@ -61,8 +66,6 @@ class ChromeDuplicateDownloadInfoBarDelegate
   // is made (or cancelled).
   DownloadTargetDeterminerDelegate::ConfirmationCallback
       file_selected_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeDuplicateDownloadInfoBarDelegate);
 };
 
 }  // namespace android

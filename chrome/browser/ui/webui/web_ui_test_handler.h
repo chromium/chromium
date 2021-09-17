@@ -25,6 +25,10 @@ class RenderFrameHost;
 class WebUITestHandler {
  public:
   WebUITestHandler();
+
+  WebUITestHandler(const WebUITestHandler&) = delete;
+  WebUITestHandler& operator=(const WebUITestHandler&) = delete;
+
   virtual ~WebUITestHandler();
 
   // Sends a message through |preload_frame| with the |js_text| to preload at
@@ -76,8 +80,6 @@ class WebUITestHandler {
 
   // Quits the currently running RunLoop.
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUITestHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEB_UI_TEST_HANDLER_H_

@@ -52,6 +52,10 @@ class RemoteToLocalSyncerTest : public testing::Test {
 
   RemoteToLocalSyncerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+
+  RemoteToLocalSyncerTest(const RemoteToLocalSyncerTest&) = delete;
+  RemoteToLocalSyncerTest& operator=(const RemoteToLocalSyncerTest&) = delete;
+
   ~RemoteToLocalSyncerTest() override {}
 
   void SetUp() override {
@@ -236,8 +240,6 @@ class RemoteToLocalSyncerTest : public testing::Test {
   std::unique_ptr<SyncTaskManager> sync_task_manager_;
 
   URLToFileChangesMap expected_changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteToLocalSyncerTest);
 };
 
 TEST_F(RemoteToLocalSyncerTest, AddNewFile) {

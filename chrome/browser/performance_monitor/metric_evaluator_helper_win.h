@@ -14,6 +14,10 @@ namespace performance_monitor {
 
 class MetricEvaluatorsHelperWin : public MetricEvaluatorsHelper {
  public:
+  MetricEvaluatorsHelperWin(const MetricEvaluatorsHelperWin&) = delete;
+  MetricEvaluatorsHelperWin& operator=(const MetricEvaluatorsHelperWin&) =
+      delete;
+
   ~MetricEvaluatorsHelperWin() override;
 
   // MetricEvaluatorsHelper:
@@ -29,8 +33,6 @@ class MetricEvaluatorsHelperWin : public MetricEvaluatorsHelper {
   MetricEvaluatorsHelperWin();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MetricEvaluatorsHelperWin);
 };
 
 }  // namespace performance_monitor

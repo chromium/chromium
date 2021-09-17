@@ -22,6 +22,10 @@ class WrongHWIDScreen : public BaseScreen {
  public:
   WrongHWIDScreen(WrongHWIDScreenView* view,
                   const base::RepeatingClosure& exit_callback);
+
+  WrongHWIDScreen(const WrongHWIDScreen&) = delete;
+  WrongHWIDScreen& operator=(const WrongHWIDScreen&) = delete;
+
   ~WrongHWIDScreen() override;
 
   // This method is called, when view is being destroyed. Note, if Delegate
@@ -47,8 +51,6 @@ class WrongHWIDScreen : public BaseScreen {
 
   WrongHWIDScreenView* view_;
   base::RepeatingClosure exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrongHWIDScreen);
 };
 
 }  // namespace ash

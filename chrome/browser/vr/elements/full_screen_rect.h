@@ -15,14 +15,16 @@ namespace vr {
 class FullScreenRect : public Rect {
  public:
   FullScreenRect();
+
+  FullScreenRect(const FullScreenRect&) = delete;
+  FullScreenRect& operator=(const FullScreenRect&) = delete;
+
   ~FullScreenRect() override;
 
  private:
   void Render(UiElementRenderer* renderer,
               const CameraModel& model) const final;
   bool IsWorldPositioned() const final;
-
-  DISALLOW_COPY_AND_ASSIGN(FullScreenRect);
 };
 
 }  // namespace vr

@@ -46,6 +46,10 @@ struct ThemeInfo : public Extension::ManifestData {
 class ThemeHandler : public ManifestHandler {
  public:
   ThemeHandler();
+
+  ThemeHandler(const ThemeHandler&) = delete;
+  ThemeHandler& operator=(const ThemeHandler&) = delete;
+
   ~ThemeHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
@@ -55,8 +59,6 @@ class ThemeHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeHandler);
 };
 
 }  // namespace extensions

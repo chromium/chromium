@@ -41,6 +41,10 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
       mojo::PendingRemote<downloads::mojom::Page> page,
       content::DownloadManager* download_manager,
       content::WebUI* web_ui);
+
+  DownloadsDOMHandler(const DownloadsDOMHandler&) = delete;
+  DownloadsDOMHandler& operator=(const DownloadsDOMHandler&) = delete;
+
   ~DownloadsDOMHandler() override;
 
   // WebContentsObserver implementation.
@@ -130,8 +134,6 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   mojo::Receiver<downloads::mojom::PageHandler> receiver_;
 
   base::WeakPtrFactory<DownloadsDOMHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsDOMHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DOWNLOADS_DOWNLOADS_DOM_HANDLER_H_

@@ -35,11 +35,14 @@ class VrShellDelegateProviderFactory
     : public device::GvrDelegateProviderFactory {
  public:
   VrShellDelegateProviderFactory() = default;
+
+  VrShellDelegateProviderFactory(const VrShellDelegateProviderFactory&) =
+      delete;
+  VrShellDelegateProviderFactory& operator=(
+      const VrShellDelegateProviderFactory&) = delete;
+
   ~VrShellDelegateProviderFactory() override = default;
   device::GvrDelegateProvider* CreateGvrDelegateProvider() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VrShellDelegateProviderFactory);
 };
 
 device::GvrDelegateProvider*

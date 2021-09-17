@@ -116,10 +116,12 @@ class MockPasswordGenerationDialogView
                     PasswordGenerationType));
   MOCK_METHOD0(Destroy, void());
 
-  virtual ~MockPasswordGenerationDialogView() { Destroy(); }
+  MockPasswordGenerationDialogView(const MockPasswordGenerationDialogView&) =
+      delete;
+  MockPasswordGenerationDialogView& operator=(
+      const MockPasswordGenerationDialogView&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordGenerationDialogView);
+  virtual ~MockPasswordGenerationDialogView() { Destroy(); }
 };
 
 PasswordGenerationUIData GetTestGenerationUIData1() {

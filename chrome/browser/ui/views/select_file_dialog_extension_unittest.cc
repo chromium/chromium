@@ -60,6 +60,10 @@ class SelectFileDialogExtensionTest
 class TestListener : public ui::SelectFileDialog::Listener {
  public:
   TestListener() : selected_(false), file_index_(-1) {}
+
+  TestListener(const TestListener&) = delete;
+  TestListener& operator=(const TestListener&) = delete;
+
   ~TestListener() override {}
 
   bool selected() const { return selected_; }
@@ -76,8 +80,6 @@ class TestListener : public ui::SelectFileDialog::Listener {
  private:
   bool selected_;
   int file_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestListener);
 };
 
 // Client of a SelectFileDialog that deletes itself whenever the dialog

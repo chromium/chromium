@@ -43,6 +43,10 @@ std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
 class PrintingMetricsApiTest : public ExtensionApiTest {
  public:
   PrintingMetricsApiTest() {}
+
+  PrintingMetricsApiTest(const PrintingMetricsApiTest&) = delete;
+  PrintingMetricsApiTest& operator=(const PrintingMetricsApiTest&) = delete;
+
   ~PrintingMetricsApiTest() override = default;
 
  protected:
@@ -71,8 +75,6 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
   }
 
   base::CallbackListSubscription create_services_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintingMetricsApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {

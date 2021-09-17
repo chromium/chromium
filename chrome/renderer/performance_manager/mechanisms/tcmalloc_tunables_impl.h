@@ -14,6 +14,9 @@ namespace mechanism {
 
 class TcmallocTunablesImpl : public tcmalloc::mojom::TcmallocTunables {
  public:
+  TcmallocTunablesImpl(const TcmallocTunablesImpl&) = delete;
+  TcmallocTunablesImpl& operator=(const TcmallocTunablesImpl&) = delete;
+
   ~TcmallocTunablesImpl() override;
   TcmallocTunablesImpl();
 
@@ -23,9 +26,6 @@ class TcmallocTunablesImpl : public tcmalloc::mojom::TcmallocTunables {
  protected:
   // TcmallocTunables impl:
   void SetMaxTotalThreadCacheBytes(uint32_t size_bytes) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TcmallocTunablesImpl);
 };
 
 }  // namespace mechanism

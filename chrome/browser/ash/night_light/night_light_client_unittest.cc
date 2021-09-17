@@ -35,6 +35,10 @@ std::u16string GetTimezoneId(const icu::TimeZone& timezone) {
 class FakeNightLightController : public ash::NightLightController {
  public:
   FakeNightLightController() = default;
+
+  FakeNightLightController(const FakeNightLightController&) = delete;
+  FakeNightLightController& operator=(const FakeNightLightController&) = delete;
+
   ~FakeNightLightController() override = default;
 
   const SimpleGeoposition& position() const { return position_; }
@@ -59,8 +63,6 @@ class FakeNightLightController : public ash::NightLightController {
 
   // The number of times a new position is pushed to this controller.
   int position_pushes_num_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNightLightController);
 };
 
 // A fake implementation of NightLightClient that doesn't perform any actual
@@ -74,6 +76,10 @@ class FakeNightLightClient : public NightLightClient,
         std::make_unique<base::OneShotTimer>(this /* tick_clock */));
     SetClockForTesting(this);
   }
+
+  FakeNightLightClient(const FakeNightLightClient&) = delete;
+  FakeNightLightClient& operator=(const FakeNightLightClient&) = delete;
+
   ~FakeNightLightClient() override = default;
 
   // base::Clock:
@@ -109,14 +115,16 @@ class FakeNightLightClient : public NightLightClient,
 
   // The number of new geoposition requests that have been triggered.
   int geoposition_requests_num_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNightLightClient);
 };
 
 // Base test fixture.
 class NightLightClientTest : public testing::TestWithParam<ScheduleType> {
  public:
   NightLightClientTest() = default;
+
+  NightLightClientTest(const NightLightClientTest&) = delete;
+  NightLightClientTest& operator=(const NightLightClientTest&) = delete;
+
   ~NightLightClientTest() override = default;
 
   void SetUp() override {
@@ -131,9 +139,6 @@ class NightLightClientTest : public testing::TestWithParam<ScheduleType> {
 
   FakeNightLightController controller_;
   FakeNightLightClient client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NightLightClientTest);
 };
 
 // Test that the client is retrieving geoposition periodically only when the

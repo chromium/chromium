@@ -10,13 +10,14 @@
 class BookmarksBrowserTest : public WebUIBrowserTest {
  public:
   BookmarksBrowserTest();
+
+  BookmarksBrowserTest(const BookmarksBrowserTest&) = delete;
+  BookmarksBrowserTest& operator=(const BookmarksBrowserTest&) = delete;
+
   ~BookmarksBrowserTest() override;
 
   void SetupExtensionAPITest();
   void SetupExtensionAPIEditDisabledTest();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BookmarksBrowserTest);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BOOKMARKS_BOOKMARKS_BROWSERTEST_H_

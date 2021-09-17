@@ -391,6 +391,10 @@ class InputMethodAPI : public BrowserContextKeyedAPI,
                        public extensions::EventRouter::Observer {
  public:
   explicit InputMethodAPI(content::BrowserContext* context);
+
+  InputMethodAPI(const InputMethodAPI&) = delete;
+  InputMethodAPI& operator=(const InputMethodAPI&) = delete;
+
   ~InputMethodAPI() override;
 
   // Returns input method name for the given XKB (X keyboard extensions in X
@@ -423,8 +427,6 @@ class InputMethodAPI : public BrowserContextKeyedAPI,
   std::unique_ptr<chromeos::ExtensionDictionaryEventRouter>
       dictionary_event_router_;
   std::unique_ptr<chromeos::ExtensionImeMenuEventRouter> ime_menu_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodAPI);
 };
 
 }  // namespace extensions

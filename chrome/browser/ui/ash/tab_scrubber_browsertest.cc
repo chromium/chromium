@@ -44,6 +44,10 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
     immersive_controller_->AddObserver(this);
   }
 
+  ImmersiveRevealEndedWaiter(const ImmersiveRevealEndedWaiter&) = delete;
+  ImmersiveRevealEndedWaiter& operator=(const ImmersiveRevealEndedWaiter&) =
+      delete;
+
   ~ImmersiveRevealEndedWaiter() override {
     if (immersive_controller_)
       immersive_controller_->RemoveObserver(this);
@@ -75,8 +79,6 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
 
   ImmersiveModeController* immersive_controller_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveRevealEndedWaiter);
 };
 
 }  // namespace
@@ -278,6 +280,9 @@ class TabScrubberTest : public InProcessBrowserTest,
         TabScrubber::GetInstance()->FinishScrub(true);
     }
 
+    ScrollGenerator(const ScrollGenerator&) = delete;
+    ScrollGenerator& operator=(const ScrollGenerator&) = delete;
+
     ~ScrollGenerator() {
       ui::ScrollEvent fling_start(
           ui::ET_SCROLL_FLING_START, gfx::Point(), time_for_next_event_, 0,
@@ -302,8 +307,6 @@ class TabScrubberTest : public InProcessBrowserTest,
     ui::test::EventGenerator* event_generator_;
     base::TimeTicks time_for_next_event_ = ui::EventTimeForNow();
     int last_x_offset_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(ScrollGenerator);
   };
 
   std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(

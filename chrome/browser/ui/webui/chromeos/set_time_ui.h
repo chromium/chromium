@@ -14,10 +14,11 @@ namespace chromeos {
 class SetTimeUI : public ui::WebDialogUI {
  public:
   explicit SetTimeUI(content::WebUI* web_ui);
-  ~SetTimeUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SetTimeUI);
+  SetTimeUI(const SetTimeUI&) = delete;
+  SetTimeUI& operator=(const SetTimeUI&) = delete;
+
+  ~SetTimeUI() override;
 };
 
 }  // namespace chromeos

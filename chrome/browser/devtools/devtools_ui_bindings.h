@@ -75,6 +75,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   static bool IsValidRemoteFrontendURL(const GURL& url);
 
   explicit DevToolsUIBindings(content::WebContents* web_contents);
+
+  DevToolsUIBindings(const DevToolsUIBindings&) = delete;
+  DevToolsUIBindings& operator=(const DevToolsUIBindings&) = delete;
+
   ~DevToolsUIBindings() override;
 
   content::WebContents* web_contents() { return web_contents_; }
@@ -275,8 +279,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   DevToolsSettings settings_;
 
   base::WeakPtrFactory<DevToolsUIBindings> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsUIBindings);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_UI_BINDINGS_H_

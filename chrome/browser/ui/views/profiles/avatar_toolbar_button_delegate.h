@@ -31,6 +31,11 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
                                     public syncer::SyncServiceObserver {
  public:
   AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Profile* profile);
+
+  AvatarToolbarButtonDelegate(const AvatarToolbarButtonDelegate&) = delete;
+  AvatarToolbarButtonDelegate& operator=(const AvatarToolbarButtonDelegate&) =
+      delete;
+
   ~AvatarToolbarButtonDelegate() override;
 
   // Methods called by the AvatarToolbarButton to get profile information.
@@ -143,8 +148,6 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   absl::optional<AvatarSyncErrorType> last_avatar_error_;
 
   base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AvatarToolbarButtonDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_DELEGATE_H_

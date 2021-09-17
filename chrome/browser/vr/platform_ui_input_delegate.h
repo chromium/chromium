@@ -36,6 +36,10 @@ class VR_BASE_EXPORT PlatformUiInputDelegate {
  public:
   PlatformUiInputDelegate();
   explicit PlatformUiInputDelegate(PlatformInputHandler* input_handler);
+
+  PlatformUiInputDelegate(const PlatformUiInputDelegate&) = delete;
+  PlatformUiInputDelegate& operator=(const PlatformUiInputDelegate&) = delete;
+
   virtual ~PlatformUiInputDelegate();
 
   const gfx::Size& size() const { return size_; }
@@ -78,8 +82,6 @@ class VR_BASE_EXPORT PlatformUiInputDelegate {
   gfx::Size size_;
 
   PlatformInputHandler* input_handler_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformUiInputDelegate);
 };
 
 }  // namespace vr

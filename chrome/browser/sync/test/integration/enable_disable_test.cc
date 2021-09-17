@@ -67,6 +67,11 @@ ModelTypeSet MultiGroupTypes(const ModelTypeSet& registered_types) {
 class EnableDisableSingleClientTest : public SyncTest {
  public:
   EnableDisableSingleClientTest() : SyncTest(SINGLE_CLIENT) {}
+
+  EnableDisableSingleClientTest(const EnableDisableSingleClientTest&) = delete;
+  EnableDisableSingleClientTest& operator=(
+      const EnableDisableSingleClientTest&) = delete;
+
   ~EnableDisableSingleClientTest() override = default;
 
   // Don't use self-notifications as they can trigger additional sync cycles.
@@ -123,8 +128,6 @@ class EnableDisableSingleClientTest : public SyncTest {
 
  private:
   fake_server::EntityBuilderFactory entity_builder_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnableDisableSingleClientTest);
 };
 
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, EnableOneAtATime) {

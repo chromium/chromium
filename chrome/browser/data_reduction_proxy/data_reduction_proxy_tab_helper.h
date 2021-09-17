@@ -16,6 +16,10 @@ class DataReductionProxyTabHelper
     : public content::WebContentsUserData<DataReductionProxyTabHelper>,
       public data_reduction_proxy::DataReductionProxySettingsObserver {
  public:
+  DataReductionProxyTabHelper(const DataReductionProxyTabHelper&) = delete;
+  DataReductionProxyTabHelper& operator=(const DataReductionProxyTabHelper&) =
+      delete;
+
   ~DataReductionProxyTabHelper() override;
 
   // data_reduction_proxy::DataReductionProxySettingsObserver:
@@ -40,8 +44,6 @@ class DataReductionProxyTabHelper
   base::WeakPtrFactory<DataReductionProxyTabHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxyTabHelper);
 };
 
 #endif  // CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_TAB_HELPER_H_

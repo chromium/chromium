@@ -74,6 +74,10 @@ class TestObserver : public InputMethodManager::Observer,
         input_method_extension_removed_count_(0),
         input_method_menu_item_changed_count_(0),
         last_show_message_(false) {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   void InputMethodChanged(InputMethodManager* manager,
@@ -101,9 +105,6 @@ class TestObserver : public InputMethodManager::Observer,
   int input_method_extension_removed_count_;
   int input_method_menu_item_changed_count_;
   bool last_show_message_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class TestCandidateWindowObserver
@@ -113,6 +114,10 @@ class TestCandidateWindowObserver
       : candidate_window_opened_count_(0),
         candidate_window_closed_count_(0) {
   }
+
+  TestCandidateWindowObserver(const TestCandidateWindowObserver&) = delete;
+  TestCandidateWindowObserver& operator=(const TestCandidateWindowObserver&) =
+      delete;
 
   ~TestCandidateWindowObserver() override = default;
 
@@ -125,15 +130,17 @@ class TestCandidateWindowObserver
 
   int candidate_window_opened_count_;
   int candidate_window_closed_count_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestCandidateWindowObserver);
 };
 }  // namespace
 
 class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
  public:
   InputMethodManagerImplTest() = default;
+
+  InputMethodManagerImplTest(const InputMethodManagerImplTest&) = delete;
+  InputMethodManagerImplTest& operator=(const InputMethodManagerImplTest&) =
+      delete;
+
   ~InputMethodManagerImplTest() override = default;
 
   void SetUp() override {
@@ -375,9 +382,6 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
   std::unique_ptr<MockInputMethodEngine> mock_engine_handler_;
   FakeImeKeyboard* keyboard_ = nullptr;
   ui::ime::InputMethodMenuManager* menu_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputMethodManagerImplTest);
 };
 
 TEST_F(InputMethodManagerImplTest, TestGetImeKeyboard) {

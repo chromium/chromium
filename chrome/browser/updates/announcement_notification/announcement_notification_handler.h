@@ -16,6 +16,12 @@ class Profile;
 class AnnouncementNotificationHandler : public NotificationHandler {
  public:
   AnnouncementNotificationHandler();
+
+  AnnouncementNotificationHandler(const AnnouncementNotificationHandler&) =
+      delete;
+  AnnouncementNotificationHandler& operator=(
+      const AnnouncementNotificationHandler&) = delete;
+
   ~AnnouncementNotificationHandler() override;
 
  private:
@@ -33,8 +39,6 @@ class AnnouncementNotificationHandler : public NotificationHandler {
                base::OnceClosure completed_closure) override;
 
   void OpenAnnouncement(Profile* profile);
-
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationHandler);
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_HANDLER_H_

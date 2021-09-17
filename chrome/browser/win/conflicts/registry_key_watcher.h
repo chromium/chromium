@@ -24,6 +24,9 @@ class RegistryKeyWatcher {
       REGSAM wow64access,
       base::OnceClosure on_registry_key_deleted);
 
+  RegistryKeyWatcher(const RegistryKeyWatcher&) = delete;
+  RegistryKeyWatcher& operator=(const RegistryKeyWatcher&) = delete;
+
   ~RegistryKeyWatcher();
 
  private:
@@ -46,8 +49,6 @@ class RegistryKeyWatcher {
 
   // Invoked when the registry key is deleted.
   base::OnceClosure on_registry_key_deleted_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryKeyWatcher);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_REGISTRY_KEY_WATCHER_H_

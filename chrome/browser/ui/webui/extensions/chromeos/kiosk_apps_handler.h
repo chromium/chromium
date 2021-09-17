@@ -27,6 +27,10 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
                          public KioskAppManagerObserver {
  public:
   explicit KioskAppsHandler(OwnerSettingsServiceAsh* service);
+
+  KioskAppsHandler(const KioskAppsHandler&) = delete;
+  KioskAppsHandler& operator=(const KioskAppsHandler&) = delete;
+
   ~KioskAppsHandler() override;
 
   // content::WebUIMessageHandler overrides:
@@ -69,8 +73,6 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
   bool is_auto_launch_enabled_;
   OwnerSettingsServiceAsh* const owner_settings_service_;  // not owned
   base::WeakPtrFactory<KioskAppsHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppsHandler);
 };
 
 }  // namespace chromeos

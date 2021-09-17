@@ -42,6 +42,10 @@ class ArcKioskBridge : public KeyedService,
 
   ArcKioskBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);
+
+  ArcKioskBridge(const ArcKioskBridge&) = delete;
+  ArcKioskBridge& operator=(const ArcKioskBridge&) = delete;
+
   ~ArcKioskBridge() override;
 
   // mojom::KioskHost overrides.
@@ -58,8 +62,6 @@ class ArcKioskBridge : public KeyedService,
 
   // Tracks current maintenance session id.
   int32_t session_id_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskBridge);
 };
 
 }  // namespace arc

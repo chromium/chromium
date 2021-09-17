@@ -33,6 +33,9 @@ class SearchEngineTabHelper
           chrome::mojom::OpenSearchDescriptionDocumentHandler> receiver,
       content::RenderFrameHost* rfh);
 
+  SearchEngineTabHelper(const SearchEngineTabHelper&) = delete;
+  SearchEngineTabHelper& operator=(const SearchEngineTabHelper&) = delete;
+
   ~SearchEngineTabHelper() override;
 
   // content::WebContentsObserver overrides.
@@ -71,8 +74,6 @@ class SearchEngineTabHelper
       favicon_driver_observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEngineTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_SEARCH_ENGINE_TAB_HELPER_H_

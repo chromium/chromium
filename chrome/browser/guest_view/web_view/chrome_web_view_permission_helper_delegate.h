@@ -37,6 +37,12 @@ class ChromeWebViewPermissionHelperDelegate
 
   explicit ChromeWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper);
+
+  ChromeWebViewPermissionHelperDelegate(
+      const ChromeWebViewPermissionHelperDelegate&) = delete;
+  ChromeWebViewPermissionHelperDelegate& operator=(
+      const ChromeWebViewPermissionHelperDelegate&) = delete;
+
   ~ChromeWebViewPermissionHelperDelegate() override;
 
   // WebViewPermissionHelperDelegate implementation.
@@ -100,8 +106,6 @@ class ChromeWebViewPermissionHelperDelegate
 
   base::WeakPtrFactory<ChromeWebViewPermissionHelperDelegate> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebViewPermissionHelperDelegate);
 };
 
 }  // namespace extensions

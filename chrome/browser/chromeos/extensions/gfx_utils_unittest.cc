@@ -33,6 +33,10 @@ constexpr char kKeepExtensionId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
 class DualBadgeMapTest : public ExtensionServiceTestBase {
  public:
   DualBadgeMapTest() {}
+
+  DualBadgeMapTest(const DualBadgeMapTest&) = delete;
+  DualBadgeMapTest& operator=(const DualBadgeMapTest&) = delete;
+
   ~DualBadgeMapTest() override { profile_.reset(); }
 
   void SetUp() override {
@@ -95,8 +99,6 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
 
  private:
   ArcAppTest arc_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(DualBadgeMapTest);
 };
 
 TEST_F(DualBadgeMapTest, ExtensionToArcAppMapTest) {

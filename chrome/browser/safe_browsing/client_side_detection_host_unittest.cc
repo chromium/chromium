@@ -102,13 +102,15 @@ namespace {
 class MockSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
  public:
   MockSafeBrowsingTokenFetcher() = default;
+
+  MockSafeBrowsingTokenFetcher(const MockSafeBrowsingTokenFetcher&) = delete;
+  MockSafeBrowsingTokenFetcher& operator=(const MockSafeBrowsingTokenFetcher&) =
+      delete;
+
   ~MockSafeBrowsingTokenFetcher() override = default;
 
   MOCK_METHOD1(Start, void(Callback));
   MOCK_METHOD1(OnInvalidAccessToken, void(const std::string&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingTokenFetcher);
 };
 
 // This matcher verifies that the client computed verdict
@@ -130,6 +132,12 @@ MATCHER(CallbackIsNull, "") {
 class MockClientSideDetectionService : public ClientSideDetectionService {
  public:
   MockClientSideDetectionService() : ClientSideDetectionService(nullptr) {}
+
+  MockClientSideDetectionService(const MockClientSideDetectionService&) =
+      delete;
+  MockClientSideDetectionService& operator=(
+      const MockClientSideDetectionService&) = delete;
+
   ~MockClientSideDetectionService() override {}
 
   MOCK_METHOD3(SendClientReportPhishingRequest,
@@ -143,9 +151,6 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_METHOD0(GetModelStr, std::string&());
   MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
   MOCK_METHOD0(GetModelType, CSDModelType());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClientSideDetectionService);
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -198,6 +203,9 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 class FakePhishingDetector : public mojom::PhishingDetector {
  public:
   FakePhishingDetector() = default;
+
+  FakePhishingDetector(const FakePhishingDetector&) = delete;
+  FakePhishingDetector& operator=(const FakePhishingDetector&) = delete;
 
   ~FakePhishingDetector() override = default;
 
@@ -262,8 +270,6 @@ class FakePhishingDetector : public mojom::PhishingDetector {
   GURL url_;
   std::string model_ = "";
   base::ReadOnlySharedMemoryRegion region_ = base::ReadOnlySharedMemoryRegion();
-
-  DISALLOW_COPY_AND_ASSIGN(FakePhishingDetector);
 };
 
 class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {

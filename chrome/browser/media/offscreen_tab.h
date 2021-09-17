@@ -58,6 +58,10 @@ class OffscreenTab final : public ProfileObserver,
   };
 
   OffscreenTab(Owner* owner, content::BrowserContext* context);
+
+  OffscreenTab(const OffscreenTab&) = delete;
+  OffscreenTab& operator=(const OffscreenTab&) = delete;
+
   ~OffscreenTab() final;
 
   // The WebContents instance hosting the rendering engine for this
@@ -173,8 +177,6 @@ class OffscreenTab final : public ProfileObserver,
 #if defined(USE_AURA)
   std::unique_ptr<WindowAdoptionAgent> window_agent_;
 #endif  // defined(USE_AURA)
-
-  DISALLOW_COPY_AND_ASSIGN(OffscreenTab);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_OFFSCREEN_TAB_H_

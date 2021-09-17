@@ -28,6 +28,10 @@ class OnStartupHandler : public SettingsPageUIHandler,
   static const char kOnStartupNtpExtensionEventName[];
 
   explicit OnStartupHandler(Profile* profile);
+
+  OnStartupHandler(const OnStartupHandler&) = delete;
+  OnStartupHandler& operator=(const OnStartupHandler&) = delete;
+
   ~OnStartupHandler() override;
 
   // SettingsPageUIHandler:
@@ -65,8 +69,6 @@ class OnStartupHandler : public SettingsPageUIHandler,
       extension_registry_observation_{this};
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnStartupHandler);
 };
 
 }  // namespace settings

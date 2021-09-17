@@ -87,6 +87,9 @@ class TabLoader::ReentrancyHelper {
     tab_loader_->reentry_depth_++;
   }
 
+  ReentrancyHelper(const ReentrancyHelper&) = delete;
+  ReentrancyHelper& operator=(const ReentrancyHelper&) = delete;
+
   ~ReentrancyHelper() {
     if (--tab_loader_->reentry_depth_ != 0)
       return;
@@ -108,8 +111,6 @@ class TabLoader::ReentrancyHelper {
   void DestroyTabLoader() { tab_loader_->this_retainer_ = nullptr; }
 
   TabLoader* tab_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReentrancyHelper);
 };
 
 // static

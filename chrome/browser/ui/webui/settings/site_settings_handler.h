@@ -42,6 +42,10 @@ class SiteSettingsHandler
       public CookiesTreeModel::Observer {
  public:
   explicit SiteSettingsHandler(Profile* profile);
+
+  SiteSettingsHandler(const SiteSettingsHandler&) = delete;
+  SiteSettingsHandler& operator=(const SiteSettingsHandler&) = delete;
+
   ~SiteSettingsHandler() override;
 
   // SettingsPageUIHandler:
@@ -304,8 +308,6 @@ class SiteSettingsHandler
 
   // Whether to send site detail data on cookie tree model update.
   bool update_site_details_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteSettingsHandler);
 };
 
 }  // namespace settings

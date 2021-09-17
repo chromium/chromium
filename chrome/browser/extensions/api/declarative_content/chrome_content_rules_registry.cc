@@ -39,13 +39,15 @@ class ChromeContentRulesRegistry::EvaluationScope {
   explicit EvaluationScope(ChromeContentRulesRegistry* registry);
   EvaluationScope(ChromeContentRulesRegistry* registry,
                   EvaluationDisposition disposition);
+
+  EvaluationScope(const EvaluationScope&) = delete;
+  EvaluationScope& operator=(const EvaluationScope&) = delete;
+
   ~EvaluationScope();
 
  private:
   ChromeContentRulesRegistry* const registry_;
   const EvaluationDisposition previous_disposition_;
-
-  DISALLOW_COPY_AND_ASSIGN(EvaluationScope);
 };
 
 ChromeContentRulesRegistry::EvaluationScope::EvaluationScope(

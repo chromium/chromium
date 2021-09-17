@@ -21,6 +21,12 @@ class AppManagementPageHandlerFactory
     : public app_management::mojom::PageHandlerFactory {
  public:
   explicit AppManagementPageHandlerFactory(Profile* profile);
+
+  AppManagementPageHandlerFactory(const AppManagementPageHandlerFactory&) =
+      delete;
+  AppManagementPageHandlerFactory& operator=(
+      const AppManagementPageHandlerFactory&) = delete;
+
   ~AppManagementPageHandlerFactory() override;
 
   void Bind(mojo::PendingReceiver<app_management::mojom::PageHandlerFactory>
@@ -39,8 +45,6 @@ class AppManagementPageHandlerFactory
       page_factory_receiver_{this};
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppManagementPageHandlerFactory);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_FACTORY_H_

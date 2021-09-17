@@ -24,6 +24,10 @@ class SettingsOverridesAPI : public BrowserContextKeyedAPI,
                              public ExtensionRegistryObserver {
  public:
   explicit SettingsOverridesAPI(content::BrowserContext* context);
+
+  SettingsOverridesAPI(const SettingsOverridesAPI&) = delete;
+  SettingsOverridesAPI& operator=(const SettingsOverridesAPI&) = delete;
+
   ~SettingsOverridesAPI() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -57,8 +61,6 @@ class SettingsOverridesAPI : public BrowserContextKeyedAPI,
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsOverridesAPI);
 };
 
 template <>

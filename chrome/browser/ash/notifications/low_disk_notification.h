@@ -32,6 +32,9 @@ class LowDiskNotification : public chromeos::UserDataAuthClient::Observer {
   // Registers this class as the UserDataAuthClient LowDiskSpaceHandler.
   LowDiskNotification();
 
+  LowDiskNotification(const LowDiskNotification&) = delete;
+  LowDiskNotification& operator=(const LowDiskNotification&) = delete;
+
   // Resets UserDataAuthClient LowDiskSpaceHandler.
   ~LowDiskNotification() override;
 
@@ -64,8 +67,6 @@ class LowDiskNotification : public chromeos::UserDataAuthClient::Observer {
   base::TimeDelta notification_interval_;
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<LowDiskNotification> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LowDiskNotification);
 };
 
 }  // namespace ash

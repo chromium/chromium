@@ -43,6 +43,10 @@ class TabsEventRouter : public TabStripModelObserver,
                         public resource_coordinator::TabLifecycleObserver {
  public:
   explicit TabsEventRouter(Profile* profile);
+
+  TabsEventRouter(const TabsEventRouter&) = delete;
+  TabsEventRouter& operator=(const TabsEventRouter&) = delete;
+
   ~TabsEventRouter() override;
 
   // BrowserTabStripTrackerDelegate:
@@ -214,8 +218,6 @@ class TabsEventRouter : public TabStripModelObserver,
   base::ScopedObservation<resource_coordinator::TabManager,
                           resource_coordinator::TabLifecycleObserver>
       tab_manager_scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabsEventRouter);
 };
 
 }  // namespace extensions

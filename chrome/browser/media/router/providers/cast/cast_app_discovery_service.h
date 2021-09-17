@@ -80,6 +80,11 @@ class CastAppDiscoveryServiceImpl : public CastAppDiscoveryService,
                               cast_channel::CastSocketService* socket_service,
                               MediaSinkServiceBase* media_sink_service,
                               const base::TickClock* clock);
+
+  CastAppDiscoveryServiceImpl(const CastAppDiscoveryServiceImpl&) = delete;
+  CastAppDiscoveryServiceImpl& operator=(const CastAppDiscoveryServiceImpl&) =
+      delete;
+
   ~CastAppDiscoveryServiceImpl() override;
 
   // CastAppDiscoveryService implementation.
@@ -156,7 +161,6 @@ class CastAppDiscoveryServiceImpl : public CastAppDiscoveryService,
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastAppDiscoveryServiceImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CastAppDiscoveryServiceImpl);
 };
 
 }  // namespace media_router

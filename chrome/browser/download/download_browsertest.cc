@@ -221,6 +221,10 @@ class CreatedObserver : public content::DownloadManager::Observer {
         waiting_(false) {
     manager->AddObserver(this);
   }
+
+  CreatedObserver(const CreatedObserver&) = delete;
+  CreatedObserver& operator=(const CreatedObserver&) = delete;
+
   ~CreatedObserver() override {
     if (manager_)
       manager_->RemoveObserver(this);
@@ -246,8 +250,6 @@ class CreatedObserver : public content::DownloadManager::Observer {
 
   content::DownloadManager* manager_;
   bool waiting_;
-
-  DISALLOW_COPY_AND_ASSIGN(CreatedObserver);
 };
 
 class OnCanDownloadDecidedObserver {
@@ -293,6 +295,10 @@ class PercentWaiter : public download::DownloadItem::Observer {
   explicit PercentWaiter(DownloadItem* item) : item_(item) {
     item_->AddObserver(this);
   }
+
+  PercentWaiter(const PercentWaiter&) = delete;
+  PercentWaiter& operator=(const PercentWaiter&) = delete;
+
   ~PercentWaiter() override {
     if (item_)
       item_->RemoveObserver(this);
@@ -333,8 +339,6 @@ class PercentWaiter : public download::DownloadItem::Observer {
   bool waiting_ = false;
   bool error_ = false;
   int prev_percent_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(PercentWaiter);
 };
 
 // DownloadTestObserver subclass that observes one download until it transitions
@@ -352,6 +356,11 @@ class DownloadTestObserverResumable : public content::DownloadTestObserver {
         transitions_left_(transition_count) {
     Init();
   }
+
+  DownloadTestObserverResumable(const DownloadTestObserverResumable&) = delete;
+  DownloadTestObserverResumable& operator=(
+      const DownloadTestObserverResumable&) = delete;
+
   ~DownloadTestObserverResumable() override {}
 
  private:
@@ -365,8 +374,6 @@ class DownloadTestObserverResumable : public content::DownloadTestObserver {
 
   bool was_previously_resumable_;
   size_t transitions_left_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTestObserverResumable);
 };
 
 // IDs and paths of CRX files used in tests.
@@ -539,6 +546,9 @@ class HistoryObserver : public DownloadHistory::Observer {
         ->AddObserver(this);
   }
 
+  HistoryObserver(const HistoryObserver&) = delete;
+  HistoryObserver& operator=(const HistoryObserver&) = delete;
+
   ~HistoryObserver() override {
     DownloadCoreService* service =
         DownloadCoreServiceFactory::GetForBrowserContext(profile_);
@@ -571,8 +581,6 @@ class HistoryObserver : public DownloadHistory::Observer {
   Profile* profile_;
   bool waiting_ = false;
   bool seen_stored_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryObserver);
 };
 
 class DownloadTest : public InProcessBrowserTest {

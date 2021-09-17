@@ -162,6 +162,11 @@ class MockProfileDelegate : public Profile::Delegate {
 class ProfileDestructionWatcher : public ProfileObserver {
  public:
   ProfileDestructionWatcher() = default;
+
+  ProfileDestructionWatcher(const ProfileDestructionWatcher&) = delete;
+  ProfileDestructionWatcher& operator=(const ProfileDestructionWatcher&) =
+      delete;
+
   ~ProfileDestructionWatcher() override = default;
 
   void Watch(Profile* profile) { observed_profiles_.AddObservation(profile); }
@@ -183,8 +188,6 @@ class ProfileDestructionWatcher : public ProfileObserver {
   base::RunLoop run_loop_;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileDestructionWatcher);
 };
 
 // Creates a prefs file in the given directory.
@@ -235,6 +238,10 @@ class BrowserCloseObserver : public BrowserListObserver {
   explicit BrowserCloseObserver(Browser* browser) : browser_(browser) {
     BrowserList::AddObserver(this);
   }
+
+  BrowserCloseObserver(const BrowserCloseObserver&) = delete;
+  BrowserCloseObserver& operator=(const BrowserCloseObserver&) = delete;
+
   ~BrowserCloseObserver() override { BrowserList::RemoveObserver(this); }
 
   void Wait() { run_loop_.Run(); }
@@ -248,8 +255,6 @@ class BrowserCloseObserver : public BrowserListObserver {
  private:
   Browser* browser_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserCloseObserver);
 };
 
 }  // namespace

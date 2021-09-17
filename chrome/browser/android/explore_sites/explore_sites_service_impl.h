@@ -37,6 +37,10 @@ class ExploreSitesServiceImpl : public ExploreSitesService,
       std::unique_ptr<ExploreSitesStore> store,
       std::unique_ptr<URLLoaderFactoryGetter> url_loader_factory_getter,
       std::unique_ptr<HistoryStatisticsReporter> history_statistics_reporter);
+
+  ExploreSitesServiceImpl(const ExploreSitesServiceImpl&) = delete;
+  ExploreSitesServiceImpl& operator=(const ExploreSitesServiceImpl&) = delete;
+
   ~ExploreSitesServiceImpl() override;
 
   static bool IsExploreSitesEnabled();
@@ -101,8 +105,6 @@ class ExploreSitesServiceImpl : public ExploreSitesService,
   std::unique_ptr<HistoryStatisticsReporter> history_statistics_reporter_;
   std::vector<BooleanCallback> update_catalog_callbacks_;
   base::WeakPtrFactory<ExploreSitesServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesServiceImpl);
 };
 
 }  // namespace explore_sites

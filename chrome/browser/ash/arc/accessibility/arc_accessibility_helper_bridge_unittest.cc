@@ -76,6 +76,11 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
       event_router_->AddEventObserver(this);
     }
 
+    TestArcAccessibilityHelperBridge(const TestArcAccessibilityHelperBridge&) =
+        delete;
+    TestArcAccessibilityHelperBridge& operator=(
+        const TestArcAccessibilityHelperBridge&) = delete;
+
     ~TestArcAccessibilityHelperBridge() override = default;
 
     int GetEventCount(const std::string& event_name) const {
@@ -103,8 +108,6 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
     extensions::TestEventRouter* const event_router_;
     arc::mojom::AccessibilityFilterType filter_type_for_test_ =
         arc::mojom::AccessibilityFilterType::ALL;
-
-    DISALLOW_COPY_AND_ASSIGN(TestArcAccessibilityHelperBridge);
   };
 
   class ArcNotificationSurfaceManagerTest

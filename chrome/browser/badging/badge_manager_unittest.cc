@@ -55,6 +55,10 @@ namespace badging {
 class BadgeManagerUnittest : public ::testing::Test {
  public:
   BadgeManagerUnittest() = default;
+
+  BadgeManagerUnittest(const BadgeManagerUnittest&) = delete;
+  BadgeManagerUnittest& operator=(const BadgeManagerUnittest&) = delete;
+
   ~BadgeManagerUnittest() override = default;
 
   void SetUp() override {
@@ -94,8 +98,6 @@ class BadgeManagerUnittest : public ::testing::Test {
   std::unique_ptr<BadgeManager> badge_manager_;
   std::unique_ptr<web_app::FakeWebAppRegistryController>
       fake_registry_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(BadgeManagerUnittest);
 };
 
 TEST_F(BadgeManagerUnittest, SetFlagBadgeForApp) {

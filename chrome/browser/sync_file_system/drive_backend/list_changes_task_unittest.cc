@@ -44,6 +44,10 @@ class ListChangesTaskTest : public testing::Test {
  public:
   ListChangesTaskTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+
+  ListChangesTaskTest(const ListChangesTaskTest&) = delete;
+  ListChangesTaskTest& operator=(const ListChangesTaskTest&) = delete;
+
   ~ListChangesTaskTest() override {}
 
   void SetUp() override {
@@ -208,8 +212,6 @@ class ListChangesTaskTest : public testing::Test {
   std::unique_ptr<FakeDriveServiceHelper> fake_drive_service_helper_;
 
   std::unique_ptr<SyncTaskManager> sync_task_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListChangesTaskTest);
 };
 
 TEST_F(ListChangesTaskTest, NoChange) {

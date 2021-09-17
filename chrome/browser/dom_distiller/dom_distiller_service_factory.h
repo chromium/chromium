@@ -29,10 +29,13 @@ class DomDistillerContextKeyedService : public KeyedService,
       std::unique_ptr<DistillerPageFactory> distiller_page_factory,
       std::unique_ptr<DistilledPagePrefs> distilled_page_prefs,
       std::unique_ptr<DistillerUIHandle> distiller_ui_handle);
-  ~DomDistillerContextKeyedService() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomDistillerContextKeyedService);
+  DomDistillerContextKeyedService(const DomDistillerContextKeyedService&) =
+      delete;
+  DomDistillerContextKeyedService& operator=(
+      const DomDistillerContextKeyedService&) = delete;
+
+  ~DomDistillerContextKeyedService() override {}
 };
 
 class DomDistillerServiceFactory : public BrowserContextKeyedServiceFactory {

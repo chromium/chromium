@@ -88,6 +88,10 @@ GURL GetSafeBrowsingReportUrl(const std::string& default_url) {
 class NetworkCheckerImpl : public NetworkChecker {
  public:
   NetworkCheckerImpl() = default;
+
+  NetworkCheckerImpl(const NetworkCheckerImpl&) = delete;
+  NetworkCheckerImpl& operator=(const NetworkCheckerImpl&) = delete;
+
   ~NetworkCheckerImpl() override = default;
 
   // TODO(olivierli) Make upload_url a member variable
@@ -186,8 +190,6 @@ class NetworkCheckerImpl : public NetworkChecker {
   // Manual-reset event, which will remain set once set.
   base::win::ScopedHandle cancel_wait_event_;
   base::Lock cancel_wait_event_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkCheckerImpl);
 };
 
 NetworkChecker* current_network_checker{nullptr};
