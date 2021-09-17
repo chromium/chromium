@@ -310,10 +310,6 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_color:type1="readonly-storage-texture";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:unused_bindings_in_pipeline:* [ Failure ]
 
-# Dawn treats 0 and undefined as the same
-crbug.com/dawn/1026 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:mipLevelCount=0;* [ Failure ]
-crbug.com/dawn/1026 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:array_layers:arrayLayerCount=0;* [ Failure ]
-
 crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:source_image,crossOrigin:* [ Failure ]
 crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="premultiply";orientation="flipY";* [ Skip ]
 
