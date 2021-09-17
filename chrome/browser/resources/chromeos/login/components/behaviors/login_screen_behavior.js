@@ -158,4 +158,6 @@ LoginScreenBehavior.Proto;
    * @param {DisplayManagerScreenAttributes} attributes
    */
   initializeLoginScreen(screenName, attributes) {}
+
+  userActed(action_id) {}
 }

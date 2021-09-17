@@ -1,8 +1,13 @@
+// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import {loadTimeData} from './i18n_setup.js';
 import {DebuggerUI} from './debug/debug.m.js';
 import {Oobe} from './cr_ui.m.js';
 
 import 'chrome://oobe/screens/common/marketing_opt_in.m.js';
+import 'chrome://oobe/screens/oobe/hid_detection.m.js';
 
 function initializeDebugger() {
   if (document.readyState === 'loading')

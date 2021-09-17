@@ -56,3 +56,13 @@ const OobeI18nBehaviorImpl = {
 OobeI18nBehaviorImpl.Proto;
 /** @polymerBehavior */
 /* #export */ const OobeI18nBehavior = [I18nBehavior, OobeI18nBehaviorImpl];
+
+/** @interface */
+/* #export */ class OobeI18nBehaviorInterface {
+    /**
+   * @param {string} id The ID of the string to translate.
+   * @param {...string|number} var_args
+   * @return {string}
+   */
+  i18n(id, var_args) {}
+}
