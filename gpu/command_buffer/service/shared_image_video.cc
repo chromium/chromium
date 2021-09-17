@@ -96,7 +96,6 @@ absl::optional<VulkanYCbCrInfo> SharedImageVideo::GetYcbcrInfo(
 }
 
 std::unique_ptr<gles2::AbstractTexture> SharedImageVideo::GenAbstractTexture(
-    scoped_refptr<SharedContextState> context_state,
     const bool passthrough) {
   std::unique_ptr<gles2::AbstractTexture> texture;
   if (passthrough) {

@@ -9,7 +9,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
-#include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_backing_android.h"
@@ -26,7 +25,6 @@ struct Mailbox;
 // TextureOwner or overlay as needed in order to draw them.
 class GPU_GLES2_EXPORT SharedImageVideoImageReader
     : public SharedImageVideo,
-      public SharedContextState::ContextLostObserver,
       public RefCountedLockHelperDrDc {
  public:
   SharedImageVideoImageReader(
@@ -51,9 +49,6 @@ class GPU_GLES2_EXPORT SharedImageVideoImageReader
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer() override;
 
-  // SharedContextState::ContextLostObserver implementation.
-  void OnContextLost() override;
-
  protected:
   std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
       SharedImageManager* manager,
@@ -76,6 +71,28 @@ class GPU_GLES2_EXPORT SharedImageVideoImageReader
   // patch. Overlays are anyways using legacy mailbox for now.
 
  private:
+  // Helper class for observing SharedContext loss on gpu main thread and
+  // cleaning up resources accordingly.
+  class ContextLostObserverHelper
+      : public SharedContextState::ContextLostObserver,
+        public RefCountedLockHelperDrDc {
+   public:
+    ContextLostObserverHelper(
+        scoped_refptr<SharedContextState> context_state,
+        scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
+        scoped_refptr<base::SingleThreadTaskRunner> gpu_main_task_runner,
+        scoped_refptr<RefCountedLock> drdc_lock);
+    ~ContextLostObserverHelper() override;
+
+   private:
+    // SharedContextState::ContextLostObserver implementation.
+    void OnContextLost() override;
+
+    scoped_refptr<SharedContextState> context_state_;
+    scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii_;
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_main_task_runner_;
+  };
+
   class SharedImageRepresentationGLTextureVideo;
   class SharedImageRepresentationGLTexturePassthroughVideo;
   class SharedImageRepresentationVideoSkiaVk;
@@ -83,21 +100,8 @@ class GPU_GLES2_EXPORT SharedImageVideoImageReader
 
   void BeginGLReadAccess(const GLuint service_id);
 
-  // Creating representations on SharedImageVideoImageReader is already thread
-  // safe but SharedImageVideoImageReader backing can be destroyed on any thread
-  // when a backing is used by multiple threads like dr-dc. Hence backing is not
-  // guaranteed to be destroyed on the same thread on which it was created.
-  // This method ensures that all the member variables of this class are
-  // destroyed on the thread in which it was created.
-  static void CleanupOnCorrectThread(
-      scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
-      scoped_refptr<SharedContextState> context_state,
-      SharedImageVideoImageReader* backing,
-      base::WaitableEvent* event,
-      scoped_refptr<RefCountedLock> lock);
-
+  std::unique_ptr<ContextLostObserverHelper> context_lost_helper_;
   scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii_;
-  scoped_refptr<SharedContextState> context_state_;
 
   // Currently this object is created only from gpu main thread.
   scoped_refptr<base::SingleThreadTaskRunner> gpu_main_task_runner_;

@@ -9,6 +9,7 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
+#include "base/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -132,49 +133,28 @@ SharedImageVideoImageReader::SharedImageVideoImageReader(
                        !!drdc_lock),
       RefCountedLockHelperDrDc(std::move(drdc_lock)),
       stream_texture_sii_(std::move(stream_texture_sii)),
-      context_state_(std::move(context_state)),
       gpu_main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(stream_texture_sii_);
-  DCHECK(context_state_);
 
-  context_state_->AddContextLostObserver(this);
+  context_lost_helper_ = std::make_unique<ContextLostObserverHelper>(
+      std::move(context_state), stream_texture_sii_, gpu_main_task_runner_,
+      GetDrDcLock());
 }
 
 SharedImageVideoImageReader::~SharedImageVideoImageReader() {
-  if (gpu_main_task_runner_->RunsTasksInCurrentSequence()) {
-    CleanupOnCorrectThread(std::move(stream_texture_sii_),
-                           std::move(context_state_), this, /*event=*/nullptr,
-                           GetDrDcLock());
-  } else {
-    base::WaitableEvent event;
-    gpu_main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SharedImageVideoImageReader::CleanupOnCorrectThread,
-                       std::move(stream_texture_sii_),
-                       std::move(context_state_), base::Unretained(this),
-                       &event, GetDrDcLock()));
-    event.Wait();
+  // This backing is created on gpu main thread but can be destroyed on DrDc
+  // thread if the last representation was on DrDc thread.
+  // |context_lost_helper_| is destroyed here by posting task to the
+  // |gpu_main_thread_| to ensure that resources are cleaned up correvtly on
+  // the gpu main thread.
+  if (!gpu_main_task_runner_->RunsTasksInCurrentSequence()) {
+    auto helper_destruction_cb = base::BindPostTask(
+        gpu_main_task_runner_,
+        base::BindOnce(
+            [](std::unique_ptr<ContextLostObserverHelper> context_lost_helper) {
+            }));
+    std::move(helper_destruction_cb).Run(std::move(context_lost_helper_));
   }
-}
-
-void SharedImageVideoImageReader::CleanupOnCorrectThread(
-    scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
-    scoped_refptr<SharedContextState> context_state,
-    SharedImageVideoImageReader* backing,
-    base::WaitableEvent* event,
-    scoped_refptr<RefCountedLock> drdc_lock) {
-  if (context_state)
-    context_state->RemoveContextLostObserver(backing);
-  context_state.reset();
-
-  {
-    base::AutoLockMaybe auto_lock(drdc_lock ? drdc_lock->GetDrDcLockPtr()
-                                            : nullptr);
-    stream_texture_sii->ReleaseResources();
-    stream_texture_sii.reset();
-  }
-  if (event)
-    event->Signal();
 }
 
 size_t SharedImageVideoImageReader::EstimatedSizeForMemTracking() const {
@@ -191,17 +171,6 @@ SharedImageVideoImageReader::GetAHardwareBuffer() {
 
   DCHECK(stream_texture_sii_);
   return stream_texture_sii_->GetAHardwareBuffer();
-}
-
-void SharedImageVideoImageReader::OnContextLost() {
-  base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-
-  // We release codec buffers when shared image context is lost. This is
-  // because texture owner's texture was created on shared context. Once
-  // shared context is lost, no one should try to use that texture.
-  stream_texture_sii_->ReleaseResources();
-  context_state_->RemoveContextLostObserver(this);
-  context_state_ = nullptr;
 }
 
 // Representation of SharedImageVideoImageReader as a GL Texture.
@@ -451,7 +420,7 @@ SharedImageVideoImageReader::ProduceGLTexture(SharedImageManager* manager,
     return nullptr;
 
   // Generate an abstract texture.
-  auto texture = GenAbstractTexture(context_state_, /*passthrough=*/false);
+  auto texture = GenAbstractTexture(/*passthrough=*/false);
   if (!texture)
     return nullptr;
 
@@ -472,7 +441,7 @@ SharedImageVideoImageReader::ProduceGLTexturePassthrough(
     return nullptr;
 
   // Generate an abstract texture.
-  auto texture = GenAbstractTexture(context_state_, /*passthrough=*/true);
+  auto texture = GenAbstractTexture(/*passthrough=*/true);
   if (!texture)
     return nullptr;
 
@@ -506,7 +475,7 @@ SharedImageVideoImageReader::ProduceSkia(
   const bool passthrough =
       (texture_base->GetType() == gpu::TextureBase::Type::kPassthrough);
 
-  auto texture = GenAbstractTexture(context_state, passthrough);
+  auto texture = GenAbstractTexture(passthrough);
   if (!texture)
     return nullptr;
 
@@ -630,6 +599,47 @@ SharedImageVideoImageReader::ProduceOverlay(gpu::SharedImageManager* manager,
                                             gpu::MemoryTypeTracker* tracker) {
   return std::make_unique<SharedImageRepresentationOverlayVideo>(
       manager, this, tracker, GetDrDcLock());
+}
+
+SharedImageVideoImageReader::ContextLostObserverHelper::
+    ContextLostObserverHelper(
+        scoped_refptr<SharedContextState> context_state,
+        scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
+        scoped_refptr<base::SingleThreadTaskRunner> gpu_main_task_runner,
+        scoped_refptr<RefCountedLock> drdc_lock)
+    : RefCountedLockHelperDrDc(std::move(drdc_lock)),
+      context_state_(std::move(context_state)),
+      stream_texture_sii_(std::move(stream_texture_sii)),
+      gpu_main_task_runner_(std::move(gpu_main_task_runner)) {
+  DCHECK(context_state_);
+  DCHECK(stream_texture_sii_);
+
+  context_state_->AddContextLostObserver(this);
+}
+
+SharedImageVideoImageReader::ContextLostObserverHelper::
+    ~ContextLostObserverHelper() {
+  DCHECK(gpu_main_task_runner_->RunsTasksInCurrentSequence());
+
+  if (context_state_)
+    context_state_->RemoveContextLostObserver(this);
+  {
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+    stream_texture_sii_->ReleaseResources();
+  }
+}
+
+// SharedContextState::ContextLostObserver implementation.
+void SharedImageVideoImageReader::ContextLostObserverHelper::OnContextLost() {
+  DCHECK(gpu_main_task_runner_->RunsTasksInCurrentSequence());
+  base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+
+  // We release codec buffers when shared image context is lost. This is
+  // because texture owner's texture was created on shared context. Once
+  // shared context is lost, no one should try to use that texture.
+  stream_texture_sii_->ReleaseResources();
+  context_state_->RemoveContextLostObserver(this);
+  context_state_ = nullptr;
 }
 
 }  // namespace gpu

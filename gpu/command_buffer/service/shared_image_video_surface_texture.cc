@@ -181,7 +181,7 @@ SharedImageVideoSurfaceTexture::ProduceGLTexture(SharedImageManager* manager,
     return nullptr;
 
   // Generate an abstract texture.
-  auto texture = GenAbstractTexture(context_state_, /*passthrough=*/false);
+  auto texture = GenAbstractTexture(/*passthrough=*/false);
   if (!texture)
     return nullptr;
 
@@ -210,7 +210,7 @@ SharedImageVideoSurfaceTexture::ProduceGLTexturePassthrough(
     return nullptr;
 
   // Generate an abstract texture.
-  auto texture = GenAbstractTexture(context_state_, /*passthrough=*/true);
+  auto texture = GenAbstractTexture(/*passthrough=*/true);
   if (!texture)
     return nullptr;
 
@@ -251,7 +251,7 @@ SharedImageVideoSurfaceTexture::ProduceSkia(
   const bool passthrough =
       (texture_base->GetType() == gpu::TextureBase::Type::kPassthrough);
 
-  auto texture = GenAbstractTexture(context_state, passthrough);
+  auto texture = GenAbstractTexture(passthrough);
   if (!texture)
     return nullptr;
 

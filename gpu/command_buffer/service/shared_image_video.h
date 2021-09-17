@@ -65,7 +65,6 @@ class GPU_GLES2_EXPORT SharedImageVideo : public SharedImageBackingAndroid {
                    bool is_thread_safe);
 
   std::unique_ptr<gles2::AbstractTexture> GenAbstractTexture(
-      scoped_refptr<SharedContextState> context_state,
       const bool passthrough);
 };
 
