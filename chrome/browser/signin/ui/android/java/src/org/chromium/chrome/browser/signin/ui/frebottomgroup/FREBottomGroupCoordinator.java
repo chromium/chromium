@@ -54,11 +54,12 @@ public class FREBottomGroupCoordinator {
     }
 
     /**
-     * Notifies that native is initialized.
+     * Notifies that native is loaded, and if policies are available, that they are also available.
+     * @param hasPolicies whether policies are found on device.
      */
-    public void onNativeAndPolicyLoaded() {
+    public void onNativeAndPolicyLoaded(boolean hasPolicies) {
         ThreadUtils.assertOnUiThread();
-        mMediator.onNativeAndPolicyLoaded();
+        mMediator.onNativeAndPolicyLoaded(hasPolicies);
     }
 
     public void onAccountSelected(String accountName) {

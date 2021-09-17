@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.signin.ui.R;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.signin.ui.frebottomgroup.FREBottomGroupCoordinator.Listener;
+import org.chromium.chrome.browser.signin.ui.frebottomgroup.FREBottomGroupProperties.FrePolicy;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -64,8 +65,9 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
         mAccountManagerFacade.removeObserver(this);
     }
 
-    void onNativeAndPolicyLoaded() {
+    void onNativeAndPolicyLoaded(boolean hasPolicies) {
         mModel.set(FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED, true);
+        mModel.set(FREBottomGroupProperties.FRE_POLICY, hasPolicies ? new FrePolicy() : null);
     }
 
     /**

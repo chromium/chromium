@@ -60,8 +60,8 @@ public class SigninFirstRunFragment
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.signin_first_run_view, container, false);
-        mFREBottomGroupCoordinator = new FREBottomGroupCoordinator(requireContext(),
-                view.findViewById(R.id.signin_fre_bottom_group), mModalDialogManager, this);
+        mFREBottomGroupCoordinator =
+                new FREBottomGroupCoordinator(requireContext(), view, mModalDialogManager, this);
         final NoUnderlineClickableSpan footerLinkSpan =
                 new NoUnderlineClickableSpan(getResources(), this::onFooterLinkClicked);
         SpannableString footerString = SpanApplier.applySpans(getString(R.string.signin_fre_footer),
@@ -134,7 +134,8 @@ public class SigninFirstRunFragment
     private void notifyCoordinatorWhenNativeAndPolicyAreLoaded() {
         if (mFREBottomGroupCoordinator != null && mNativeInitialized
                 && getPageDelegate().getPolicyLoadListener().get() != null) {
-            mFREBottomGroupCoordinator.onNativeAndPolicyLoaded();
+            mFREBottomGroupCoordinator.onNativeAndPolicyLoaded(
+                    getPageDelegate().getPolicyLoadListener().get());
         }
     }
 

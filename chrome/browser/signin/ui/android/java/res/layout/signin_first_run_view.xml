@@ -27,8 +27,21 @@
         android:layout_below="@id/fre_logo"
         style="@style/FreWelcomePageTitle" />
 
+    <FrameLayout
+        android:id="@+id/fre_browser_managed_by_organization"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_marginTop="16dp" >
+
+        <include
+            layout="@layout/fre_tos_privacy_disclaimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
+    </FrameLayout>
+
     <LinearLayout
-        android:id="@+id/signin_fre_bottom_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

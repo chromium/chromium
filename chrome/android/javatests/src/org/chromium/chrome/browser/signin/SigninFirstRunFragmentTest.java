@@ -164,6 +164,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
+        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -179,6 +180,20 @@ public class SigninFirstRunFragmentTest {
         onView(withText(TEST_EMAIL2)).inRoot(isDialog()).perform(click());
 
         checkFragmentWithSelectedAccount(TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null);
+        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void testFragmentWithDefaultAccountWhenPolicyAvailableOnDevice() {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+
+        launchActivityWithFragment();
+
+        checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
+        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -199,6 +214,7 @@ public class SigninFirstRunFragmentTest {
                 mFragment.getString(R.string.signin_promo_continue_as, CHILD_FULL_NAME);
         onView(withText(continueAsText)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(not(isDisplayed())));
     }
 
     @Test

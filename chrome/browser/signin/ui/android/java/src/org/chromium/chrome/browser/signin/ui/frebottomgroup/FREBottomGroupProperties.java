@@ -14,6 +14,11 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 class FREBottomGroupProperties {
+    /** This class regroups the policies supported by FRE. */
+    static class FrePolicy {
+        // TODO(crbug/1246960): Support the policy |BrowserSignin|
+    }
+
     static final ReadableObjectPropertyKey<OnClickListener> ON_SELECTED_ACCOUNT_CLICKED =
             new ReadableObjectPropertyKey<>("on_selected_account_clicked");
     static final WritableObjectPropertyKey<DisplayableProfileData> SELECTED_ACCOUNT_DATA =
@@ -32,6 +37,9 @@ class FREBottomGroupProperties {
     static final WritableBooleanPropertyKey ARE_NATIVE_AND_POLICY_LOADED =
             new WritableBooleanPropertyKey("are_native_and_policy_loaded");
 
+    static final WritableObjectPropertyKey<FrePolicy> FRE_POLICY =
+            new WritableObjectPropertyKey<>("fre_policy");
+
     static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
             ON_SELECTED_ACCOUNT_CLICKED,
             SELECTED_ACCOUNT_DATA,
@@ -39,6 +47,7 @@ class FREBottomGroupProperties {
             ON_CONTINUE_AS_CLICKED,
             ON_DISMISS_CLICKED,
             ARE_NATIVE_AND_POLICY_LOADED,
+            FRE_POLICY,
     };
 
     /**
@@ -53,6 +62,7 @@ class FREBottomGroupProperties {
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
                 .with(ON_DISMISS_CLICKED, v -> onDismissClicked.run())
                 .with(ARE_NATIVE_AND_POLICY_LOADED, false)
+                .with(FRE_POLICY, null)
                 .build();
     }
 

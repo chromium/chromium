@@ -53,6 +53,11 @@ class FREBottomGroupViewBinder {
             updateVisibility(view, model);
         } else if (propertyKey == FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED) {
             updateVisibility(view, model);
+        } else if (propertyKey == FREBottomGroupProperties.FRE_POLICY) {
+            view.findViewById(R.id.fre_browser_managed_by_organization)
+                    .setVisibility(model.get(FREBottomGroupProperties.FRE_POLICY) != null
+                                    ? View.VISIBLE
+                                    : View.GONE);
         } else {
             throw new IllegalArgumentException("Unknown property key:" + propertyKey);
         }
