@@ -324,7 +324,6 @@ source_set("app_internal") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/app/application_delegate:url_opener_params",
-    "//ios/chrome/app/intents",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup",
     "//ios/chrome/app/startup:startup_basic",
@@ -392,6 +391,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:main_app",
+    "//ios/chrome/common/intents",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
@@ -534,6 +534,9 @@ ios_app_bundle("chrome") {
     if (ios_enable_widget_kit_extension) {
       deps += [ ":widget_kit_extension_bundle" ]
     }
+    if (ios_enable_intents_extension) {
+      deps += [ ":intents_extension_bundle" ]
+    }
   }
 
   extra_substitutions = [
@@ -615,6 +618,16 @@ if (current_toolchain == default_toolchain) {
       public_deps = [ _widget_extension_target ]
       sources = [ get_label_info(_widget_extension_target, "root_out_dir") +
                   "/widget_kit_extension.appex" ]
+      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+    }
+  }
+
+  if (ios_enable_intents_extension) {
+    bundle_data("intents_extension_bundle") {
+      _intents_extension_target = "//ios/chrome/intents_extension"
+      public_deps = [ _intents_extension_target ]
+      sources = [ get_label_info(_intents_extension_target, "root_out_dir") +
+                  "/intents_extension.appex" ]
       outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
     }
   }
