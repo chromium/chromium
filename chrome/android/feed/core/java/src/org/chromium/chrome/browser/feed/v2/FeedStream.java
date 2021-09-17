@@ -948,7 +948,7 @@ public class FeedStream implements Stream {
      */
     private boolean restoreScrollState(FeedSurfaceMediator.ScrollState state) {
         assert (mRecyclerView != null);
-        if (state == null) return true;
+        if (state == null || state.lastPosition < 0 || state.position < 0) return true;
 
         // If too few items exist, defer scrolling until later.
         if (mContentManager.getItemCount() <= state.lastPosition) return false;
