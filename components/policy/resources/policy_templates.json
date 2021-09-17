@@ -18755,7 +18755,7 @@
     },
     {
       'name': 'IsolateOrigins',
-      'owners': ['palmer@chromium.org', 'creis@chromium.org'],
+      'owners': ['alexmos@chromium.org', 'creis@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:63-', 'chrome_os:63-'],
@@ -18764,19 +18764,25 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
-      'example_value': 'https://example.com/,https://othersite.org/',
+      'example_value': 'https://a.example.com/,https://othersite.org/,https://[*.]corp.example.com',
       'id': 398,
       'caption': '''Enable Site Isolation for specified origins''',
       'tags': ['system-security'],
-      'desc': '''Setting the policy means each of the named origins in a comma-separated list runs in its own process, and it isolates origins named by subdomains. For example, specifying https://example.com/ isolates https://foo.example.com/ as part of the https://example.com/ site.
+      'desc': '''Setting the policy means each of the named origins in a comma-separated list runs in a dedicated process. Each named origin's process will only be allowed to contain documents from that origin and its subdomains. For example, specifying https://a1.example.com/ allows https://a2.a1.example.com/ in the same process, but not https://example.com or https://b.example.com.
 
-      Setting it to off or leaving it unset lets users change this setting.
+      Since <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 77, you can also specify a range of origins to isolate using a wildcard. For example, specifying https://[*.]corp.example.com will give every origin underneath https://corp.example.com its own dedicated process, including https://corp.example.com itself, https://a1.corp.example.com, and https://a2.a1.corp.example.com.
+
+      Note that all sites (i.e., scheme plus eTLD+1, such as https://example.com) are already isolated by default on Desktop platforms, as noted in the <ph name="SITE_PER_PROCESS_POLICY_NAME">SitePerProcess</ph> policy. This <ph name="ISOLATE_ORIGINS_POLICY_NAME">IsolateOrigins</ph> policy is useful to isolate specific origins at a finer granularity (e.g., https://a.example.com).
+
+      Also note that origins isolated by this policy will be unable to script other origins in the same site, which is otherwise possible if two same-site documents modify their document.domain values to match. Administrators should confirm this uncommon behavior is not used on an origin before isolating it.
+
+      Setting the policy to off or leaving it unset lets users change this setting.
 
       Note: For Android, use the <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME">IsolateOriginsAndroid</ph> policy instead.''',
     },
     {
       'name': 'SitePerProcess',
-      'owners': ['palmer@chromium.org', 'creis@chromium.org'],
+      'owners': ['alexmos@chromium.org', 'creis@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:63-', 'chrome_os:63-'],
@@ -18787,11 +18793,13 @@
       },
       'example_value': True,
       'id': 399,
-      'caption': '''Enable Site Isolation for every site''',
+      'caption': '''Require Site Isolation for every site''',
       'tags': ['system-security'],
-      'desc': '''Setting the policy to Enabled isolates all sites. (Each site runs in its own process.) Setting the policy to Disabled or leaving it unset doesn't turn off site isolation, but it lets users opt out (for example, by using Disable site isolation in chrome://flags).
+      'desc': '''Since <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 67, site isolation has been enabled by default on all Desktop platforms, causing every site to run in its own process. A site is a scheme plus eTLD+1 (e.g., https://example.com). Setting this policy to Enabled does not change that behavior; it only prevents users from opting out (for example, using Disable site isolation in chrome://flags). Since <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 76, setting the policy to Disabled or leaving it unset doesn't turn off site isolation, but instead allows users to opt out.
 
-      <ph name="ISOLATE_ORIGINS_POLICY_NAME">IsolateOrigins</ph> might also be useful for fine-tuning origins. On <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 76 and earlier, set the <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME">DeviceLoginScreenSitePerProcess</ph> device policy to the same value. (Because if the values don't match, a delay can occur when entering a user session.)
+      <ph name="ISOLATE_ORIGINS_POLICY_NAME">IsolateOrigins</ph> might also be useful for isolating specific origins at a finer granularity than site (e.g., https://a.example.com).
+
+      On <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> version 76 and earlier, set the <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME">DeviceLoginScreenSitePerProcess</ph> device policy to the same value. (If the values don't match, a delay can occur when entering a user session.)
 
       Note: For Android, use the <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME">SitePerProcessAndroid</ph> policy instead.''',
     },
@@ -18807,7 +18815,7 @@
         'per_profile': False,
       },
       'deprecated': True,
-      'example_value': 'https://example.com/,https://othersite.org/',
+      'example_value': 'https://a.example.com/,https://othersite.org/,https://[*.]corp.example.com',
       'id': 417,
       'caption': '''Enable Site Isolation for specified origins''',
       'tags': ['system-security'],
@@ -18841,7 +18849,7 @@
     },
     {
       'name': 'IsolateOriginsAndroid',
-      'owners': ['palmer@chromium.org', 'creis@chromium.org'],
+      'owners': ['alexmos@chromium.org', 'creis@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['android:68-'],
@@ -18850,11 +18858,15 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
-      'example_value': 'https://example.com/,https://othersite.org/',
+      'example_value': 'https://a.example.com/,https://othersite.org/,https://[*.]corp.example.com',
       'id': 445,
       'caption': '''Enable Site Isolation for specified origins on Android devices''',
       'tags': ['system-security'],
-      'desc': '''Setting the policy means each of the named origins in a comma-separated list runs in its own process, and it isolates origins named by subdomains. For example, specifying https://example.com/ isolates https://foo.example.com/ as part of the https://example.com/ site.  Note that Android isolates certain sensitive sites by default starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 77, and this policy extends that mode to isolate specific additional origins.
+      'desc': '''Setting the policy means each of the named origins in a comma-separated list runs in a dedicated process on Android. Each named origin's process will only be allowed to contain documents from that origin and its subdomains. For example, specifying https://a1.example.com/ allows https://a2.a1.example.com/ in the same process, but not https://example.com or https://b.example.com. Note that Android isolates certain sensitive sites by default starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 77, and this policy extends that mode to isolate specific additional origins.
+
+      Since <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 77, you can also specify a range of origins to isolate using a wildcard. For example, specifying https://[*.]corp.example.com will give every origin underneath https://corp.example.com its own dedicated process, including https://corp.example.com itself, https://a1.corp.example.com, and https://a2.a1.corp.example.com.
+
+      Note that origins isolated by this policy will be unable to script other origins in the same site, which is otherwise possible if two same-site documents modify their document.domain values to match. Administrators should confirm this uncommon behavior is not used on an origin before isolating it.
 
       Setting the policy to Disabled turns off any form of site isolation, including isolation of sensitive sites and field trials of IsolateOriginsAndroid, SitePerProcessAndroid, and other site isolation modes. Users can still turn on IsolateOrigins manually, through the command line flag.
 
@@ -18864,7 +18876,7 @@
     },
     {
       'name': 'SitePerProcessAndroid',
-      'owners': ['palmer@chromium.org', 'creis@chromium.org'],
+      'owners': ['alexmos@chromium.org', 'creis@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['android:68-'],
@@ -18877,11 +18889,13 @@
       'id': 446,
       'caption': '''Enable Site Isolation for every site''',
       'tags': ['system-security'],
-      'desc': '''Setting the policy to Enabled isolates all sites (each site runs in its own process). Note that Android isolates certain sensitive sites by default starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 77, and this policy extends that default site isolation mode to apply to all sites.
+      'desc': '''Setting the policy to Enabled isolates all sites on Android, such that each site runs in its own process, and it prevents users from opting out. A site is a scheme plus eTLD+1 (e.g., https://example.com). Note that Android isolates certain sensitive sites by default starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 77, and this policy extends that default site isolation mode to apply to all sites.
 
       Setting the policy to Disabled turns off any form of site isolation, including isolation of sensitive sites and field trials of IsolateOriginsAndroid, SitePerProcessAndroid, and other site isolation modes. Users can still turn the policy on manually.
 
       Leaving the policy unset means users can change this setting.
+
+      <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME">IsolateOriginsAndroid</ph> might also be useful for isolating specific origins at a finer granularity than site (e.g., https://a.example.com).
 
       Note: Support for isolating every site on Android will improve, but currently it may cause performance problems, especially on low-end devices. This policy applies only to Chrome on Android running on devices with strictly more than 1 GB of RAM. To isolate specific sites while limiting performance impact for users, use <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME">IsolateOriginsAndroid</ph> with a list of the sites you want to isolate.  To apply the policy on non-Android platforms, use <ph name="SITE_PER_PROCESS_POLICY_NAME">SitePerProcess</ph>.''',
     },
