@@ -6,7 +6,28 @@
 
 #include <utility>
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/exo/shell_surface_util.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/window_utility.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace apps {
+
+namespace {
+
+std::string GetWindowUniqueId(aura::Window* window) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const std::string* id = exo::GetShellApplicationId(window);
+  return id ? *id : "";
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return lacros_window_utility::GetRootWindowUniqueId(window);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+}  // namespace
 
 BrowserAppInstance::BrowserAppInstance(base::UnguessableToken id,
                                        Type type,
@@ -23,10 +44,17 @@ BrowserAppInstance::BrowserAppInstance(base::UnguessableToken id,
       is_browser_active(is_browser_active),
       is_web_contents_active(is_web_contents_active) {}
 
+BrowserAppInstance::BrowserAppInstance(BrowserAppInstanceUpdate update,
+                                       aura::Window* window)
+    : id(update.id),
+      type(update.type),
+      app_id(update.app_id),
+      window(window),
+      title(update.title),
+      is_browser_active(update.is_browser_active),
+      is_web_contents_active(update.is_web_contents_active) {}
+
 BrowserAppInstance::~BrowserAppInstance() = default;
-BrowserAppInstance::BrowserAppInstance(BrowserAppInstance&&) = default;
-BrowserAppInstance& BrowserAppInstance::operator=(BrowserAppInstance&&) =
-    default;
 
 bool BrowserAppInstance::MaybeUpdate(aura::Window* window,
                                      std::string title,
@@ -44,15 +72,28 @@ bool BrowserAppInstance::MaybeUpdate(aura::Window* window,
   return true;
 }
 
+BrowserAppInstanceUpdate BrowserAppInstance::ToUpdate() const {
+  BrowserAppInstanceUpdate update;
+  update.id = id;
+  update.type = type;
+  update.app_id = app_id;
+  update.window_id = GetWindowUniqueId(window);
+  update.title = title;
+  update.is_browser_active = is_browser_active;
+  update.is_web_contents_active = is_web_contents_active;
+  return update;
+}
+
 BrowserWindowInstance::BrowserWindowInstance(base::UnguessableToken id,
                                              aura::Window* window,
                                              bool is_active)
     : id(id), window(window), is_active(is_active) {}
 
+BrowserWindowInstance::BrowserWindowInstance(BrowserWindowInstanceUpdate update,
+                                             aura::Window* window)
+    : id(update.id), window(window), is_active(update.is_active) {}
+
 BrowserWindowInstance::~BrowserWindowInstance() = default;
-BrowserWindowInstance::BrowserWindowInstance(BrowserWindowInstance&&) = default;
-BrowserWindowInstance& BrowserWindowInstance::operator=(
-    BrowserWindowInstance&&) = default;
 
 bool BrowserWindowInstance::MaybeUpdate(bool is_active) {
   if (this->is_active == is_active) {
@@ -60,6 +101,10 @@ bool BrowserWindowInstance::MaybeUpdate(bool is_active) {
   }
   this->is_active = is_active;
   return true;
+}
+
+BrowserWindowInstanceUpdate BrowserWindowInstance::ToUpdate() const {
+  return BrowserWindowInstanceUpdate{id, GetWindowUniqueId(window), is_active};
 }
 
 }  // namespace apps

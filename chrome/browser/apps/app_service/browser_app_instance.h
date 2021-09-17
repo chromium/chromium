@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/unguessable_token.h"
+#include "components/services/app_service/public/cpp/browser_app_instance_update.h"
+#include "components/services/app_service/public/cpp/browser_window_instance_update.h"
 
 namespace aura {
 class Window;
@@ -22,10 +24,9 @@ namespace apps {
 // An instance of an app running in WebContents, either a tab or a window (PWA,
 // SWA, hosted app, packaged v1 app).
 struct BrowserAppInstance {
-  enum class Type {
-    kAppTab,
-    kAppWindow,
-  };
+  using Type = BrowserAppInstanceUpdate::Type;
+
+  // Update message from Lacros.
 
   BrowserAppInstance(base::UnguessableToken id,
                      Type type,
@@ -34,11 +35,10 @@ struct BrowserAppInstance {
                      std::string title,
                      bool is_browser_active,
                      bool is_web_contents_active);
+  BrowserAppInstance(BrowserAppInstanceUpdate update, aura::Window* window);
   ~BrowserAppInstance();
   BrowserAppInstance(const BrowserAppInstance&) = delete;
   BrowserAppInstance& operator=(const BrowserAppInstance&) = delete;
-  BrowserAppInstance(BrowserAppInstance&&);
-  BrowserAppInstance& operator=(BrowserAppInstance&&);
 
   // Updates mutable attributes and returns true if any were updated.
   bool MaybeUpdate(aura::Window* window,
@@ -46,12 +46,16 @@ struct BrowserAppInstance {
                    bool is_browser_active,
                    bool is_web_contents_active);
 
+  BrowserAppInstanceUpdate ToUpdate() const;
+
   // Immutable attributes.
-  base::UnguessableToken id;
-  Type type;
-  std::string app_id;
+  const base::UnguessableToken id;
+  const Type type;
+  const std::string app_id;
 
   // Mutable attributes.
+  // Window may change for an app tab when a window gets dragged, but stays the
+  // same for an app window.
   aura::Window* window;
   std::string title;
   bool is_browser_active;
@@ -63,17 +67,19 @@ struct BrowserWindowInstance {
   BrowserWindowInstance(base::UnguessableToken id,
                         aura::Window* window,
                         bool is_active);
+  BrowserWindowInstance(BrowserWindowInstanceUpdate update,
+                        aura::Window* window);
   ~BrowserWindowInstance();
   BrowserWindowInstance(const BrowserWindowInstance&) = delete;
   BrowserWindowInstance& operator=(const BrowserWindowInstance&) = delete;
-  BrowserWindowInstance(BrowserWindowInstance&&);
-  BrowserWindowInstance& operator=(BrowserWindowInstance&&);
 
   bool MaybeUpdate(bool is_active);
 
+  BrowserWindowInstanceUpdate ToUpdate() const;
+
   // Immutable attributes.
-  base::UnguessableToken id;
-  aura::Window* window;
+  const base::UnguessableToken id;
+  aura::Window* const window;
 
   // Mutable attributes.
   bool is_active;

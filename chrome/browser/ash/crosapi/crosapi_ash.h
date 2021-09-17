@@ -80,6 +80,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
   void BindAppServiceProxy(
       mojo::PendingReceiver<mojom::AppServiceProxy> receiver) override;
+  void BindBrowserAppInstanceRegistry(
+      mojo::PendingReceiver<mojom::BrowserAppInstanceRegistry> receiver)
+      override;
   void BindBrowserServiceHost(
       mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;

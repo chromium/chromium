@@ -202,6 +202,11 @@ void CrosapiAsh::BindAppServiceProxy(
   subscriber_crosapi->RegisterAppServiceProxyFromCrosapi(std::move(receiver));
 }
 
+void CrosapiAsh::BindBrowserAppInstanceRegistry(
+    mojo::PendingReceiver<mojom::BrowserAppInstanceRegistry> receiver) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 void CrosapiAsh::BindBrowserServiceHost(
     mojo::PendingReceiver<crosapi::mojom::BrowserServiceHost> receiver) {
   browser_service_host_ash_->BindReceiver(receiver_set_.current_context(),

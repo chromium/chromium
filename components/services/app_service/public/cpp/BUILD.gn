@@ -80,6 +80,18 @@ source_set("app_url_handling") {
   deps = [ "//url" ]
 }
 
+if (is_chromeos) {
+  source_set("browser_app_instance_registry_update") {
+    sources = [
+      "browser_app_instance_update.cc",
+      "browser_app_instance_update.h",
+      "browser_window_instance_update.h",
+    ]
+
+    deps = [ "//base" ]
+  }
+}
+
 if (is_chromeos_ash) {
   source_set("instance_update") {
     sources = [
