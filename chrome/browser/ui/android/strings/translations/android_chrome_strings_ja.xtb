@@ -62,6 +62,7 @@
 <translation id="1332501820983677155">Google Chrome 機能のショートカット</translation>
 <translation id="1344653310988386453">選択箇所へのリンクを含める</translation>
 <translation id="1347468774581902829">アクティビティを管理</translation>
+<translation id="1353372385686746892">アプリの改善に役立てるため、Chrome から Google に診断データを送信します。<ph name="BEGIN_LINK" />変更<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">ログアウトして同期をオフにしますか？</translation>
 <translation id="1373696734384179344">選択したコンテンツをダウンロードするにはメモリが不足しています。</translation>
 <translation id="1376578503827013741">計算中...</translation>
@@ -651,6 +652,7 @@
 <translation id="510275257476243843">残り 1 時間</translation>
 <translation id="5118713593561876160">興味 / 関心</translation>
 <translation id="5123685120097942451">シークレット タブ</translation>
+<translation id="5126510351761255129">カードの確認</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="5139940364318403933">Google ドライブの使い方を見る</translation>
 <translation id="5142281402488957685">新しい記事を表示するには、下にスワイプして更新します</translation>

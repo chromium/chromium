@@ -526,6 +526,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6189413832092199491">Olästa</translation>
 <translation id="6196207969502475924">Röstsökning</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Stäng {COUNT} flik}other{Stäng {COUNT} flikar}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Översätt aldrig</translation>
 <translation id="6223816392543092032">Använd bokmärken, historik och andra inställningar på alla dina enheter.</translation>
 <translation id="6232329973559504466">Inkognitosökning</translation>
@@ -724,6 +725,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 
 Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser.</translation>
 <translation id="7971521879845308059">Blockera popup-fönster</translation>
+<translation id="797413074872316787">Aktivera synkronisering om du vill synkronisera och anpassa alla dina enheter.</translation>
 <translation id="7982789257301363584">Nätverk</translation>
 <translation id="7993619969781047893">Funktioner kan sluta att fungera på vissa webbplatser</translation>
 <translation id="800361585186029508">Öppnar de angivna webbadresserna i Google Chrome.</translation>
@@ -740,6 +742,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8076014560081431679">Sparade webbplatsinställningar raderas inte och kan visa dina surfvanor. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Den här inställningen hanteras – tryck snabbt två gånger för mer information</translation>
 <translation id="8080028325999236607">Stäng alla flikar</translation>
+<translation id="8103864314410529527">Organisationen begränsar vad du kan synkronisera. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Inaktivera</translation>
 <translation id="8114753159095730575">En filnedladdning är tillgänglig. Alternativ visas nära skärmens nederkant.</translation>
 <translation id="8156478151976189188">Det går inte att synkronisera lösenord</translation>

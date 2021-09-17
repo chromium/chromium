@@ -526,6 +526,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6189413832092199491">Da leggere</translation>
 <translation id="6196207969502475924">Ricerca vocale</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Chiudi {COUNT} scheda}other{Chiudi {COUNT} schede}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Scopri cosa puoi sincronizzare<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Non tradurre mai</translation>
 <translation id="6223816392543092032">Trova i tuoi preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
 <translation id="6232329973559504466">Ricerca in incognito</translation>
@@ -724,6 +725,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 
 I siti possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti web, ad esempio per personalizzare gli annunci.</translation>
 <translation id="7971521879845308059">Blocca popup</translation>
+<translation id="797413074872316787">Attiva la sincronizzazione per sincronizzare e personalizzare tutti i dispositivi.</translation>
 <translation id="7982789257301363584">Rete</translation>
 <translation id="7993619969781047893">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="800361585186029508">Consente di aprire gli URL inseriti in Google Chrome.</translation>
@@ -740,6 +742,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8076014560081431679">Le impostazioni del sito salvate non verranno eliminate e potrebbero rispecchiare le tue abitudini di navigazione. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Questa impostazione è gestita, tocca due volte per ulteriori informazioni</translation>
 <translation id="8080028325999236607">Chiudi tutte le schede</translation>
+<translation id="8103864314410529527">La tua organizzazione limita ciò che puoi sincronizzare. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Disattiva</translation>
 <translation id="8114753159095730575">È possibile il download dei file. Le opzioni sono disponibili nella parte inferiore della schermata.</translation>
 <translation id="8156478151976189188">La sincronizzazione delle password non funziona</translation>

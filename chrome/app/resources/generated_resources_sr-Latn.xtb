@@ -269,6 +269,7 @@
 <translation id="1276994519141842946">Deinstaliranje aplikacije <ph name="APP_NAME" /> nije uspelo</translation>
 <translation id="1277020343994096713">Napravite novi PIN koji se razlikuje od aktuelnog PIN-a</translation>
 <translation id="1278859221870828664">Pregledajte Google Play aplikacije i usluge</translation>
+<translation id="1279024913354609713">Ne dozvoli</translation>
 <translation id="127946606521051357">Uređaj u blizini deli sadržaj</translation>
 <translation id="1280965841156951489">Izmeni datoteke</translation>
 <translation id="1282465000333679776">Deli zvuk sistema</translation>
@@ -2193,6 +2194,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="33022249435934718">GDI nadimci</translation>
 <translation id="3302388252085547855">Unesite obrazloženje...</translation>
 <translation id="3303260552072730022">Dodatak je aktivirao režim celog ekrana.</translation>
+<translation id="3303795387212510132">Želite li da dozvolite da aplikacija otvara <ph name="PROTOCOL_SCHEME" /> linkove?</translation>
 <translation id="3303818374450886607">Primeraka</translation>
 <translation id="3303855915957856445">Nisu pronađeni rezultati pretrage</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> popusta</translation>
@@ -2270,6 +2272,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="339178315942519818">Pregledajte obaveštenja iz aplikacija za ćaskanje na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Chrome analiza dokumenata</translation>
 <translation id="3394850431319394743">Dozvoljena upotreba identifikatora za puštanje zaštićenog sadržaja</translation>
+<translation id="3396744558790608201">Kliknite desnim tasterom i izaberite „Pretraži slike pomoću Google objektiva“ da biste pretražili bilo koji deo sajta i saznali više o vizuelnom sadržaju koji vidite dok pregledate i kupujte na vebu.</translation>
 <translation id="3396800784455899911">Ako kliknete na dugme „Prihvati i nastavi“, prihvatate gorenavedenu obradu za ove Google usluge.</translation>
 <translation id="339722927132407568">Zaustavlja se</translation>
 <translation id="3399432415385675819">Obaveštenja će biti onemogućena</translation>
@@ -3181,6 +3184,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deli prozor.</translation>
 <translation id="4364830672918311045">Prikazuj obaveštenja</translation>
 <translation id="4366138410738374926">Štampanje je započeto</translation>
+<translation id="4369121877634339065">Prevucite preko bilo koju sliku da biste pretražili</translation>
 <translation id="4370975561335139969">Imejl i lozinka koje ste uneli se ne podudaraju</translation>
 <translation id="4371452868325715552">Povezivanje sa serverom nije uspelo. Proverite mrežnu vezu i probajte ponovo. Ako i dalje imate problema, probajte ponovo da pokrenete Chromebook. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Prebacujemo radnu površinu</translation>
@@ -4959,7 +4963,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6318125393809743217">Uvrsti datoteku policies.json uz konfiguracije smernica.</translation>
 <translation id="6318407754858604988">Preuzimanje je započeto</translation>
 <translation id="6318944945640833942">Štampač nije otkriven. Ponovo unesite adresu štampača.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" /> se obrađuje lokalno i funkcioniše oflajn.</translation>
 <translation id="6321407676395378991">Uključite čuvar ekrana</translation>
 <translation id="6322370287306604163">Otključavajte brže pomoću otiska prsta</translation>
 <translation id="6322653941595359182">Šaljite i primajte SMS-ove pomoću Chromebook-a</translation>
@@ -5770,6 +5773,10 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7222204278952406003">Chrome je podrazumevani pregledač</translation>
 <translation id="7222232353993864120">Imejl adresa</translation>
 <translation id="7225179976675429563">Nedostaje tip mreže</translation>
+<translation id="7226485026248318204">Ovde se prikazuju vaše uspomene iz Google slika. One su vidljive samo kada ste prijavljeni.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Upravljajte sadržajem koji vidite u uspomenama na <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Upravljajte podešavanjima koja određuju da li veb-sajtovi mogu da koriste funkcije kao što su geolociranje, mikrofon, kamera itd.</translation>
 <translation id="7228523857728654909">Zaključavanje ekrana i prijavljivanje</translation>
 <translation id="7230222852462421043">&amp;Vrati prozor</translation>
@@ -6199,6 +6206,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="767147716926917172">Automatski šalje Google-u dijagnostiku i podatke o korišćenju</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, na stranici <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Deaktiviraj sve portove koji se prosleđuju u Linux-u</translation>
+<translation id="7674537509496907005">Aplikacija: <ph name="APP_COUNT" /></translation>
 <translation id="7674542105240814168">Odbijen je pristup lokaciji</translation>
 <translation id="7676119992609591770">Pronađenih kartica za „<ph name="SEARCH_TEXT" />“: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Šaljite podatke o glasu Google-u da bi se omogućilo diktiranje u svim poljima za tekst.</translation>
@@ -7655,7 +7663,6 @@ Ovoj radnji možete da dodelite više prekidača</translation>
 <translation id="9180380851667544951">Sajt može da deli ekran</translation>
 <translation id="9182556968660520230">Ne dozvoljavaj sajtovima da puštaju zaštićeni sadržaj</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacija}one{# aplikacija}few{# aplikacije}other{# aplikacija}}</translation>
-<translation id="9185567408827209876">Prikaži kandidate u režimu hangul</translation>
 <translation id="9186963452600581158">Prijavite se pomoću Google naloga deteta</translation>
 <translation id="9188732951356337132">Šaljite podatke o korišćenju i dijagnostičke podatke. Ovaj uređaj trenutno automatski šalje podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. Te informacije se neće koristiti za identifikaciju deteta i pomoći će u održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. Ako za dete uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu deteta. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Koristite Android telefon kao bezbednosni ključ</translation>
@@ -7701,7 +7708,6 @@ Ovoj radnji možete da dodelite više prekidača</translation>
 <translation id="939252827960237676">Čuvanje snimka ekrana nije uspelo</translation>
 <translation id="939598580284253335">Unesite pristupnu frazu</translation>
 <translation id="939736085109172342">Novi direktorijum</translation>
-<translation id="941070664607309480">Kliknite da biste postali vidljivi kako bi mogao da deli sadržaj sa vama</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deli Chrome karticu i zvuk.</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="947329552760389097">&amp;Proveri elemente</translation>

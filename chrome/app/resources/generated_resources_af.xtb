@@ -269,6 +269,7 @@
 <translation id="1276994519141842946">Kon nie <ph name="APP_NAME" /> deïnstalleer nie</translation>
 <translation id="1277020343994096713">Skep 'n nuwe PIN wat van jou huidige PIN verskil</translation>
 <translation id="1278859221870828664">Gaan Google Play-programme en -dienste na</translation>
+<translation id="1279024913354609713">Moenie toelaat nie</translation>
 <translation id="127946606521051357">Toestel naby aan jou deel tans</translation>
 <translation id="1280965841156951489">Wysig lêers</translation>
 <translation id="1282465000333679776">Deel stelseloudio</translation>
@@ -2209,6 +2210,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="33022249435934718">GDI-handvatsels</translation>
 <translation id="3302388252085547855">Voer regverdiging in …</translation>
 <translation id="3303260552072730022">'n Uitbreiding het volskerm veroorsaak.</translation>
+<translation id="3303795387212510132">Laat program toe om <ph name="PROTOCOL_SCHEME" />-skakels oop te maak?</translation>
 <translation id="3303818374450886607">Kopieë</translation>
 <translation id="3303855915957856445">Geen soekresultate gevind nie</translation>
 <translation id="3304212451103136496">Afslag van <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2286,6 +2288,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="339178315942519818">Bekyk kennisgewings vanaf jou kletsprogramme op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Chrome-dokumentontleding</translation>
 <translation id="3394850431319394743">Word toegelaat om identifiseerders te gebruik om beskermde inhoud te speel</translation>
+<translation id="3396744558790608201">Regsklik en kies “Deursoek prente met Google Lens” om enige deel van die werf te deursoek om meer te wete te kom oor die visuele inhoud wat jy sien terwyl jy op die web blaai en koop.</translation>
 <translation id="3396800784455899911">Deur die "Aanvaar en gaan voort"-knoppie te klik, stem jy in tot die verwerking wat hierbo vir hierdie Google-dienste beskryf word.</translation>
 <translation id="339722927132407568">Vries</translation>
 <translation id="3399432415385675819">Kennisgewings sal gedeaktiveer word</translation>
@@ -3197,6 +3200,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deel tans 'n venster.</translation>
 <translation id="4364830672918311045">Wys kennisgewings</translation>
 <translation id="4366138410738374926">Drukwerk het begin</translation>
+<translation id="4369121877634339065">Sleep oor enige prent om te soek</translation>
 <translation id="4370975561335139969">Die e-posadres en wagwoord wat jy ingevoer het, pas nie</translation>
 <translation id="4371452868325715552">Kon nie aan die bediener koppel nie. Gaan jou netwerkverbinding na en probeer weer. Probeer om jou Chromebook te herbegin as jy steeds sukkel. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Saai tans werkskerm uit</translation>
@@ -4976,7 +4980,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6318125393809743217">Sluit 'n policies.json-lêer met beleidopstellings in.</translation>
 <translation id="6318407754858604988">Aflaai het begin</translation>
 <translation id="6318944945640833942">Kon nie 'n drukker bespeur nie. Voer drukkeradres weer in.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" /> word plaaslik verwerk en werk vanlyn.</translation>
 <translation id="6321407676395378991">Skakel sluimerskerm aan</translation>
 <translation id="6322370287306604163">Ontsluit vinniger met vingerafdruk</translation>
 <translation id="6322653941595359182">Stuur en ontvang SMS'e van jou Chromebook af</translation>
@@ -5787,6 +5790,10 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7222204278952406003">Chrome is jou verstekblaaier</translation>
 <translation id="7222232353993864120">E-posadres</translation>
 <translation id="7225179976675429563">Netwerktipe ontbreek</translation>
+<translation id="7226485026248318204">Jou Herinneringe van Google Foto's af word hier gewys. Hulle is net sigbaar wanneer jy aangemeld is.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Bestuur wat jy in jou herinneringe sien by <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Manipuleer instellings wat spesifiseer of webwerwe kenmerke soos geoligging, mikrofoon, kamera, ens. kan gebruik.</translation>
 <translation id="7228523857728654909">Skermslot en aanmelding</translation>
 <translation id="7230222852462421043">&amp;Laai venster terug</translation>
@@ -6216,6 +6223,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="767147716926917172">Stuur diagnostiese en gebruiksdata outomaties na Google toe</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Deaktiveer alle poorte wat tans in Linux aangestuur word</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> programme</translation>
 <translation id="7674542105240814168">Liggingtoegang is geweier</translation>
 <translation id="7676119992609591770">Het <ph name="NUM" /> oortjie vir "<ph name="SEARCH_TEXT" />" gekry</translation>
 <translation id="7676867886086876795">Stuur jou stem na Google om diktee in enige teksveld moontlik te maak.</translation>
@@ -7670,7 +7678,6 @@ Jy kan verskeie skakelaars aan hierdie handeling toewys</translation>
 <translation id="9180380851667544951">Werf kan jou skerm deel</translation>
 <translation id="9182556968660520230">Moenie werwe toelaat om beskermde inhoud te speel nie</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Program}other{# programme}}</translation>
-<translation id="9185567408827209876">Wys kandidate in Hangul-modus</translation>
 <translation id="9186963452600581158">Meld met jou kind se Google-rekening aan</translation>
 <translation id="9188732951356337132">Stuur gebruik- en diagnostiese data. Hierdie toestel stuur tans diagnostiese, toestel- en programgebruikdata outomaties na Google toe. Dit sal nie gebruik word om jou kind te identifiseer nie en sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. As die bykomende Web- en Programaktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. <ph name="BEGIN_LINK2" />Kom meer te wete<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Gebruik jou Android-foon as 'n sekuriteitsleutel</translation>
@@ -7716,7 +7723,6 @@ Jy kan verskeie skakelaars aan hierdie handeling toewys</translation>
 <translation id="939252827960237676">Kon nie skermkiekie stoor nie</translation>
 <translation id="939598580284253335">Tik wagfrase in</translation>
 <translation id="939736085109172342">Nuwe vouer</translation>
-<translation id="941070664607309480">Klik om sigbaar te word sodat dit met jou kan deel</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deel tans 'n Chrome-oortjie en oudio.</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="947329552760389097">&amp;Ondersoek elemente</translation>

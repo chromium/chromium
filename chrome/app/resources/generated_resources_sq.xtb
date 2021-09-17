@@ -267,6 +267,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> nuk mund të çinstalohej</translation>
 <translation id="1277020343994096713">Krijo një kod të ri PIN që është i ndryshëm nga kodi yt aktual PIN</translation>
 <translation id="1278859221870828664">Shqyrto aplikacionet dhe shërbimet e Google Play</translation>
+<translation id="1279024913354609713">Mos lejo</translation>
 <translation id="127946606521051357">Pajisja në afërsi po ndan</translation>
 <translation id="1280965841156951489">Modifiko skedarët</translation>
 <translation id="1282465000333679776">Ndaj audion e sistemit</translation>
@@ -2191,6 +2192,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="33022249435934718">Profile GDI</translation>
 <translation id="3302388252085547855">Fut justifikimin...</translation>
 <translation id="3303260552072730022">Një shtesë aktivizoi ekranin e plotë.</translation>
+<translation id="3303795387212510132">Të lejohet aplikacioni të hapë lidhje <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Kopjet</translation>
 <translation id="3303855915957856445">Nuk u gjetën rezultate kërkimi</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> ulje</translation>
@@ -2268,6 +2270,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="339178315942519818">Shiko njoftimet nga aplikacionet e tua të bisedës në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Analiza e dokumentit e Chrome</translation>
 <translation id="3394850431319394743">Lejohen të përdorin identifikuesit për të luajtur përmbajtjet e mbrojtura</translation>
+<translation id="3396744558790608201">Kliko me butonin djathtas dhe zgjidh “Kërko imazhe me 'Lenten e Google'" për të kërkuar për zonat e sajtit për të mësuar më shumë për përmbajtjen vizuale që shikon kur shfleton dhe blen në ueb.</translation>
 <translation id="3396800784455899911">Duke klikuar butonin "Prano dhe vazhdo", bie njëherësh dakord me përpunimin e përshkruar më lart për këto shërbime të Google.</translation>
 <translation id="339722927132407568">Ngrin</translation>
 <translation id="3399432415385675819">Njoftimet do të çaktivizohen</translation>
@@ -3179,6 +3182,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4364567974334641491"><ph name="APP_NAME" /> po ndan një dritare.</translation>
 <translation id="4364830672918311045">Shfaq njoftimet</translation>
 <translation id="4366138410738374926">Filloi printimi</translation>
+<translation id="4369121877634339065">Zvarrit mbi cilindo imazh për të kërkuar</translation>
 <translation id="4370975561335139969">Mail-i dhe fjalëkalimi që ke futur nuk përputhen</translation>
 <translation id="4371452868325715552">Nuk mund të lidhej me serverin. Kontrollo lidhjen e rrjetit dhe provo përsëri. Nëse ende ke probleme, provo të rinisësh Chromebook. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Po transmeton desktopin</translation>
@@ -4956,7 +4960,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6318125393809743217">Përfshi një skedar policies.json me konfigurimet e politikës.</translation>
 <translation id="6318407754858604988">Shkarkimi filloi</translation>
 <translation id="6318944945640833942">Nuk mund të zbulohej asnjë printer. Fut përsëri adresën e printerit.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" /> përpunohet lokalisht dhe punon jashtë linje.</translation>
 <translation id="6321407676395378991">Aktivizo mbrojtësin e ekranit</translation>
 <translation id="6322370287306604163">Shkyç më shpejt me gjurmë gishti</translation>
 <translation id="6322653941595359182">Lexo e dërgo mesazhe me tekst nga Chromebook yt</translation>
@@ -5767,6 +5770,10 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7222204278952406003">Chrome është shfletuesi yt i parazgjedhur</translation>
 <translation id="7222232353993864120">Adresë mail-i</translation>
 <translation id="7225179976675429563">Mungon lloji i rrjetit</translation>
+<translation id="7226485026248318204">Kujtimet e tua nga "Fotografitë e Google" shfaqen këtu. Ato janë të dukshme vetëm kur je i identifikuar.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Menaxho atë që shikon në kujtimet e tua <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Manipulo cilësimet që specifikojnë nëse sajtet e uebit mund të përdorin funksione si vendndodhja gjeografike, mikrofoni, kamera etj.</translation>
 <translation id="7228523857728654909">Kyçja e ekranit dhe identifikimi</translation>
 <translation id="7230222852462421043">&amp;Restauro dritaren</translation>
@@ -6196,6 +6203,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="767147716926917172">Dërgon automatikisht të dhëna diagnostikuese dhe përdorimi te Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> në <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Çaktivizo të gjitha portat që transferohen në Linux</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> aplikacione</translation>
 <translation id="7674542105240814168">Qasja te vendndodhja u refuzua</translation>
 <translation id="7676119992609591770">U gjet <ph name="NUM" /> skedë për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Dërgoja zërin Google për të lejuar diktimin në çfarëdo fushe teksti.</translation>
@@ -7648,7 +7656,6 @@ Mund të caktosh disa çelësa te ky veprim</translation>
 <translation id="9180380851667544951">Sajti mund të ndajë ekranin tënd</translation>
 <translation id="9182556968660520230">Mos lejo që sajtet të luajnë përmbajtje të mbrojtura</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacion}other{# aplikacione}}</translation>
-<translation id="9185567408827209876">Shfaq kandidatët në modalitetin hangul</translation>
 <translation id="9186963452600581158">Identifikohu me "Llogarinë e Google" të fëmijës tënd</translation>
 <translation id="9188732951356337132">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Aktualisht kjo pajisje po dërgon automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës. <ph name="BEGIN_LINK2" />Mëso më shumë<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Përdore telefonin tënd Android si çelës sigurie</translation>
@@ -7694,7 +7701,6 @@ Mund të caktosh disa çelësa te ky veprim</translation>
 <translation id="939252827960237676">Ruajtja e pamjes së ekranit dështoi</translation>
 <translation id="939598580284253335">Fut frazën e kalimit</translation>
 <translation id="939736085109172342">Dosje e re</translation>
-<translation id="941070664607309480">Kliko për t'u bërë i dukshëm që ajo të mund të ndajë me ty</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> po ndan një skedë të Chrome dhe audion.</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="947329552760389097">&amp;Inspekto elementet</translation>

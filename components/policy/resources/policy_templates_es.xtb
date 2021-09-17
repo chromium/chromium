@@ -3416,7 +3416,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si esta política no se establece o no es válida, el comportamiento será el mismo que en el caso de "Esperar a que la versión actual iguale a la versión inferior objetivo".</translation>
 <translation id="5229339291699779956">Habilita la tunelización de PCIe desde dispositivos periféricos Thunderbolt/USB4, y los dispositivos periféricos funcionarán a plena capacidad</translation>
-<translation id="523505283826916779">Configuración de accesibilidad</translation>
+<translation id="523505283826916779">Ajustes de accesibilidad</translation>
 <translation id="52393120393725840">Si se habilita esta política, los usuarios deberán hacer que <ph name="PRODUCT_NAME" /> recuerde las contraseñas y se las proporcione la próxima vez que inicien sesión en un sitio web.
 
       Si se inhabilita, los usuarios no podrán guardar las nuevas contraseñas, pero las contraseñas guardadas anteriormente seguirán funcionando.
@@ -6128,6 +6128,20 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
           Si se asigna un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no se le asigna ningún valor, las combinaciones de teclas para las funciones de accesibilidad estarán habilitadas de forma predeterminada.</translation>
+<translation id="8519563483516917705">Este ajuste permite que los dispositivos seleccionen una versión concreta de <ph name="PRODUCT_OS_NAME" /> a la que actualizarse.
+
+      Si no se le asigna ningún valor, los dispositivos se actualizarán en función de otros ajustes o instalarán la última versión.
+
+      Si se le asigna un valor, los dispositivos se actualizarán a la versión seleccionada.
+
+      El formato exacto del valor de esta política se corresponde con la información de implementación del servicio de actualizaciones y podría cambiar. El valor de la política no se procesa en el dispositivo.
+
+      Si se combina con <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, el servicio de actualizaciones comprobará esta política primero.
+      A diferencia de <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (que podría permitir pequeñas actualizaciones), los dispositivos permanecerán en la versión seleccionada hasta que se modifique el valor de esta política.
+
+      Si se combina con <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, podrá restablecerse una versión anterior concreta del dispositivo.
+
+      Advertencia: No se recomienda configurar las restricciones de versiones, ya que podrían impedir que los usuarios reciban actualizaciones de software y correcciones de seguridad críticas. Limitar las actualizaciones a una versión concreta puede poner en riesgo a los usuarios.</translation>
 <translation id="8520064498689833152">Forzar el uso de Búsqueda Segura en la Búsqueda de Google y que el modo restringido de YouTube se aplique en la opción moderada como mínimo</translation>
 <translation id="8524334245528364388">URL de un archivo JSON con una lista de servidores de impresión.</translation>
 <translation id="8525526490824335042">Contenedor de Linux</translation>

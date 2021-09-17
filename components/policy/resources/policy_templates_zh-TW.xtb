@@ -5993,6 +5993,20 @@
           設好這項政策後，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，系統在預設狀態下會啟用無障礙功能快速鍵。</translation>
+<translation id="8519563483516917705">設定這項政策可讓裝置選取要更新的特定 <ph name="PRODUCT_OS_NAME" /> 目標版本。
+
+      如果不設定這項政策，裝置會根據其他設定進行更新，或更新至最新的可用版本。
+
+      如果設定這項政策，裝置則會更新至所選版本。
+
+      此政策值的確切格式代表更新服務的詳細執行情況，可能會有所變更。系統不會在裝置上處理政策值。
+
+      搭配 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 使用時，更新服務會先檢查本政策。
+      有別於 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 可能允許小幅更新，裝置會保持在所選版本，直到這項政策的值改變為止。
+
+      搭配 <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> 使用時，裝置版本可還原為較舊的特定版本。
+
+      警告：我們不建議設定版本限制，因為這可能導致使用者無法接收軟體更新和重大安全性修正項目。限制裝置更新至特定版本可能會讓使用者面臨風險。</translation>
 <translation id="8520064498689833152">強制啟用 Google 搜尋的安全搜尋功能和中度以上的 YouTube 嚴格篩選模式</translation>
 <translation id="8524334245528364388">含有列印伺服器清單的 JSON 檔案的網址。</translation>
 <translation id="8525526490824335042">Linux 容器</translation>

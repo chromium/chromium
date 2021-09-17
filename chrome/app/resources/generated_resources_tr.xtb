@@ -267,6 +267,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> kaldırılamadı</translation>
 <translation id="1277020343994096713">Şu anki PIN kodunuzdan farklı yeni bir PIN oluşturun</translation>
 <translation id="1278859221870828664">Google Play uygulama ve hizmetlerini inceleyin</translation>
+<translation id="1279024913354609713">İzin Verme</translation>
 <translation id="127946606521051357">Yakındaki bir cihaz içerik paylaşıyor</translation>
 <translation id="1280965841156951489">Dosyaları düzenle</translation>
 <translation id="1282465000333679776">Sistem sesini paylaş</translation>
@@ -2192,6 +2193,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="33022249435934718">GDI İşleyicileri</translation>
 <translation id="3302388252085547855">Gerekçe girin...</translation>
 <translation id="3303260552072730022">Bir uzantı tam ekranı etkinleştirdi.</translation>
+<translation id="3303795387212510132">Uygulamanın <ph name="PROTOCOL_SCHEME" /> bağlantılarını açmasına izin verilsin mi?</translation>
 <translation id="3303818374450886607">Kopya</translation>
 <translation id="3303855915957856445">Arama sonucu bulunamadı</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> indirim</translation>
@@ -2269,6 +2271,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="339178315942519818">Sohbet uygulamalarınızdaki bildirimleri <ph name="DEVICE_TYPE" /> cihazınızda görüntüleyin</translation>
 <translation id="3393554941209044235">Chrome Doküman Analizi</translation>
 <translation id="3394850431319394743">Korumalı içeriği oynatmak için tanımlayıcı kullanımına izin verildi</translation>
+<translation id="3396744558790608201">Web'de gezinip alışveriş yaparken sitenin herhangi bir yerinde gördüğünüz görsel içerikler hakkında daha fazla bilgi edinmek için sağ tıklayıp "Google Lens ile görsel arama"yı seçin.</translation>
 <translation id="3396800784455899911">"Kabul et ve devam et" düğmesini tıklayarak bu Google hizmetleri ile ilgili yukarıda açıklanan işlemleri kabul etmiş olursunuz.</translation>
 <translation id="339722927132407568">Donuyor</translation>
 <translation id="3399432415385675819">Bildirimler devre dışı bırakılacak</translation>
@@ -3180,6 +3183,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" />, bir pencereyi paylaşıyor.</translation>
 <translation id="4364830672918311045">Bildirimleri görüntüleme</translation>
 <translation id="4366138410738374926">Yazdırma başladı</translation>
+<translation id="4369121877634339065">Arama yapmak için herhangi bir görselin üzerine sürükleyin</translation>
 <translation id="4370975561335139969">Girdiğiniz e-posta ve şifre eşleşmiyor</translation>
 <translation id="4371452868325715552">Sunucuyla bağlantı kurulamadı. Lütfen ağ bağlantınızı kontrol edip tekrar deneyin. Sorun devam ederse Chromebook'unuzu yeniden başlatmayı deneyin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Masaüstü yayınlanıyor</translation>
@@ -4958,7 +4962,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6318125393809743217">Politika yapılandırmaları içeren bir policies.json dosyası dahil edin.</translation>
 <translation id="6318407754858604988">İndirme işlemi başladı</translation>
 <translation id="6318944945640833942">Yazıcı algılanamadı. Lütfen yazıcı adresini tekrar girin.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" />, yerel olarak işlenir ve çevrimdışı olarak çalışır.</translation>
 <translation id="6321407676395378991">Ekran koruyucuyu aç</translation>
 <translation id="6322370287306604163">Parmak iziyle kilidi daha hızlı açın</translation>
 <translation id="6322653941595359182">Chromebook'unuzdan kısa mesaj gönderin ve alın</translation>
@@ -5769,6 +5772,10 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7222204278952406003">Chrome varsayılan tarayıcınız</translation>
 <translation id="7222232353993864120">E-posta Adresi</translation>
 <translation id="7225179976675429563">Ağ türü eksik</translation>
+<translation id="7226485026248318204">Google Fotoğraflar'daki Anılarınız burada gösterilir. Anılarınız, yalnızca oturumunuz açık olduğunda görünür.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Anılarınızda nelerin görüneceğini <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> adresinde yönetin.</translation>
 <translation id="7228479291753472782">Web sitelerinin coğrafi konum, mikrofon, kamera vb. özellikleri kullanıp kullanamayacağını belirten ayarları kendi çıkarları için kullanma</translation>
 <translation id="7228523857728654909">Ekran kilidi ve oturum açma</translation>
 <translation id="7230222852462421043">&amp;Pencereyi Geri Yükle</translation>
@@ -6198,6 +6205,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="767147716926917172">Teşhis ve kullanım verilerini Google'a otomatik olarak gönderir</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> sayfasında.</translation>
 <translation id="7674416868315480713">Linux'ta yönlendirilen tüm bağlantı noktalarını devre dışı bırak</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> uygulama</translation>
 <translation id="7674542105240814168">Konum erişimi reddedildi</translation>
 <translation id="7676119992609591770">"<ph name="SEARCH_TEXT" />" İçin <ph name="NUM" /> Sekme Bulundu</translation>
 <translation id="7676867886086876795">Dikte özelliğiyle metin alanına herhangi bir şey yazabilmek için sesinizi Google'a gönderin.</translation>
@@ -7651,7 +7659,6 @@ Bu işleme birden fazla anahtar atayabilirsiniz</translation>
 <translation id="9180380851667544951">Site, ekranınızı paylaşabilir</translation>
 <translation id="9182556968660520230">Sitelerin korumalı içeriği oynatmasına izin verme</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Uygulama}other{# uygulama}}</translation>
-<translation id="9185567408827209876">Hangul modunda önerileri göster</translation>
 <translation id="9186963452600581158">Çocuğunuzun Google Hesabıyla oturum açın</translation>
 <translation id="9188732951356337132">Kullanım ve teşhis verilerini gönder. Bu cihaz şu anda teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a gönderiyor. Bu veriler, çocuğunuzun kimliğini tespit etmek için kullanılmaz; sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Çocuğunuz için ek Web ve Uygulama Etkinliği açıksa bu veriler çocuğunuzun Google Hesabına kaydedilebilir. <ph name="BEGIN_LINK2" />Daha Fazla Bilgi<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Android telefonunuzu bir güvenlik anahtarı olarak kullanın</translation>
@@ -7697,7 +7704,6 @@ Bu işleme birden fazla anahtar atayabilirsiniz</translation>
 <translation id="939252827960237676">Ekran görüntüsü kaydedilemedi</translation>
 <translation id="939598580284253335">Parolayı girin</translation>
 <translation id="939736085109172342">Yeni klasör</translation>
-<translation id="941070664607309480">Cihazın sizinle içerik paylaşabilmesi için tıklayarak görünür olun</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" />, bir Chrome sekmesini ve sesi paylaşıyor.</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="947329552760389097">Öğeleri &amp;İncele</translation>

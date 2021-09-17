@@ -51,6 +51,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">A cancelar a digitalização…</translation>
 <translation id="1851218745569890714">Videoconferências</translation>
+<translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisão de hardware</translation>
 <translation id="1905710495812624430">Foi excedido o número máximo de tentativas permitidas.</translation>
 <translation id="1908234395526491708">Falhas de pedidos de UDP.</translation>
@@ -78,6 +79,7 @@
 <translation id="2364498172489649528">Aprovado</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
+<translation id="240334320630038121">Touchpad <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">Estado de bloqueio do SIM</translation>
 <translation id="2418150275289244458">Abra nas Definições</translation>
 <translation id="2446553403094072641">Precisão da vírgula flutuante</translation>
@@ -101,6 +103,7 @@
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3056720590588772262">Ponto final</translation>
 <translation id="3069085583900247081">O teste falhou</translation>
 <translation id="3083667275341675831">Diagnóstico de conetividade</translation>
 <translation id="3091839911843451378">Falha – Parou</translation>
@@ -121,8 +124,10 @@
 <translation id="3328783797891415197">A executar teste…</translation>
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3369013195428705271">Tem a certeza de que pretende limpar todo o histórico de impressões? As suas tarefas de impressão em curso não serão limpas.</translation>
+<translation id="3412146654386081914">Ecrã tátil <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Segurança</translation>
+<translation id="3440478087746699229">Interno</translation>
 <translation id="3456078764689556234">Página <ph name="PRINTED_PAGES" /> impressa de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">A digitalizar a página <ph name="PAGE_NUM" />… <ph name="PERCENTAGE_VALUE" />% concluído.</translation>
 <translation id="3459509316159669723">Impressão</translation>
@@ -130,6 +135,7 @@
 <translation id="3527036260304016759">Falha – Erro desconhecido</translation>
 <translation id="3532980081107202182">Faltam cerca de <ph name="MIN_REMAINING" /> minutos.</translation>
 <translation id="3540383942695635079">Endereço MAC</translation>
+<translation id="3565064564551103223">IPs permitidos</translation>
 <translation id="357889014807611375">Wi-Fi com acesso limitado</translation>
 <translation id="3582041541988388905">Nenhuma ligação <ph name="NETWORK_NAME" /> detetada</translation>
 <translation id="3595596368722241419">Bateria carregada</translation>
@@ -309,6 +315,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6302401976930124515">O teste <ph name="TEST_NAME" /> foi cancelado.</translation>
 <translation id="6325525973963619867">Falhou</translation>
 <translation id="636850387210749493">Inscrição empresarial</translation>
+<translation id="6379086450106841622">Ecrã tátil</translation>
 <translation id="6388847657025262518">O alimentador de documentos do scanner está encravado. Verifique o alimentador e tente novamente.</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -343,6 +350,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6977381486153291903">Revisão de firmware</translation>
 <translation id="6982876849933694860">Para configurar uma nova ligação, aceda a <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gere este dispositivo e tem acesso a todas as atividades do utilizador, incluindo páginas Web visitadas, palavras-passe e emails.</translation>
+<translation id="7039041976777695848">Teclado <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7059230779847288458">A carregar, <ph name="TIME_VALUE" /> até ficar totalmente carregada</translation>
 <translation id="708426984172631313">PARADO</translation>
@@ -387,6 +395,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
+<translation id="7747039790905080783">Chave pré-partilhada</translation>
 <translation id="7762130827864645708">A alteração da sua palavra-passe foi efetuada com êxito. A partir de agora, utilize a nova palavra-passe.</translation>
 <translation id="7763470514545477072">Correspondência do sufixo do domínio</translation>
 <translation id="7769672763586021400">ID do modelo</translation>
@@ -396,8 +405,10 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
+<translation id="7882501334836096755">Chave pública</translation>
 <translation id="7895471513946376273">Descubra ferramentas de desenho e design</translation>
 <translation id="7936303884198020182">Não foram encontrados servidores de nomes.</translation>
+<translation id="7943235353293548836">Intervalo keep-alive persistente</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7994702968232966508">Método EAP</translation>
@@ -447,6 +458,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8726019395068607495">Parada – Porta aberta</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8747900814994928677">Confirme a alteração</translation>
+<translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predefinição</translation>
 <translation id="8798441408945964110">Nome do fornecedor</translation>
@@ -462,7 +474,9 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Falha – Tabuleiro em falta</translation>
 <translation id="8928727111548978589">Falha – Sem papel</translation>
+<translation id="8930521118335213258">Par</translation>
 <translation id="8930622219860340959">Sem fios</translation>
+<translation id="8936793075252196307">Endereço IP do cliente</translation>
 <translation id="8968751544471797276">Velocidade de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analisar}=1{Analisar página {NUMBER_OF_PAGES}}other{Analisar página {NUMBER_OF_PAGES}}}</translation>
@@ -478,6 +492,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="9137526406337347448">Serviços Google</translation>
 <translation id="9149391708638971077">Executar teste de memória</translation>
 <translation id="9173638680043580060">Falta menos de um minuto</translation>
+<translation id="917720651393141712">Testar</translation>
 <translation id="9190063653747922532">L2TP/IPSec + chave pré-partilhada</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="939519157834106403">SSID</translation>

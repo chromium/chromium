@@ -62,6 +62,7 @@
 <translation id="1332501820983677155">Google Chrome'i funktsioonide otseteed</translation>
 <translation id="1344653310988386453">Lisage esiletõstmiseks link</translation>
 <translation id="1347468774581902829">Tegevuste haldamine</translation>
+<translation id="1353372385686746892">Chrome saadab rakenduse täiustamiseks Google'ile diagnostikaandmeid. <ph name="BEGIN_LINK" />Muuda<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Login välja ja keelan sünkroonimise?</translation>
 <translation id="1373696734384179344">Valitud sisu allalaadimiseks pole piisavalt mäluruumi.</translation>
 <translation id="1376578503827013741">Arvutamine …</translation>
@@ -651,6 +652,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="510275257476243843">Jäänud on 1 tund</translation>
 <translation id="5118713593561876160">Huvid</translation>
 <translation id="5123685120097942451">Inkognito vaheleht</translation>
+<translation id="5126510351761255129">Kaardi kinnitamine</translation>
 <translation id="5132942445612118989">Teie paroolide, ajaloo ja muude andmete sünkroonimine kõigis seadmetes</translation>
 <translation id="5139940364318403933">Vaadake, kuidas Google Drive'i kasutada</translation>
 <translation id="5142281402488957685">Uute lugude nägemiseks tõmmake värskendamiseks alla</translation>

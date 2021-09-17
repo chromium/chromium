@@ -62,6 +62,7 @@
 <translation id="1332501820983677155">Raccourcis relatifs aux fonctionnalités Google Chrome</translation>
 <translation id="1344653310988386453">Inclure le lien vers l'élément en surbrillance</translation>
 <translation id="1347468774581902829">Gérer l'activité</translation>
+<translation id="1353372385686746892">Pour aider à améliorer l'application, Chrome envoie des données de diagnostic à Google. <ph name="BEGIN_LINK" />Modifier<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Se déconnecter et désactiver la synchro?</translation>
 <translation id="1373696734384179344">Mémoire insuffisante pour télécharger le contenu sélectionné.</translation>
 <translation id="1376578503827013741">Calcul en cours…</translation>
@@ -651,6 +652,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="510275257476243843">Il reste 1 heure</translation>
 <translation id="5118713593561876160">Centres d'intérêt</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
+<translation id="5126510351761255129">Vérifier votre carte</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
 <translation id="5139940364318403933">Apprenez à utiliser Google Disque</translation>
 <translation id="5142281402488957685">Pour obtenir de nouvelles histoires, tirez la page vers le bas pour l'actualiser</translation>

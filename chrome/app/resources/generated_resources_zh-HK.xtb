@@ -4978,7 +4978,6 @@
 <translation id="6318125393809743217">包括具有政策設定的 policies.json 檔案。</translation>
 <translation id="6318407754858604988">已開始下載</translation>
 <translation id="6318944945640833942">偵測不到打印機，請再次輸入打印機位址。</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" />處理程序會在裝置上進行，且可在離線時使用。</translation>
 <translation id="6321407676395378991">開啟螢幕保護程式</translation>
 <translation id="6322370287306604163">指紋加快解鎖速度</translation>
 <translation id="6322653941595359182">在 Chomebook 上發送和接收短訊</translation>
@@ -7678,7 +7677,6 @@
 <translation id="9180380851667544951">網站可以分享您的螢幕畫面</translation>
 <translation id="9182556968660520230">不允許網站播放受保護的內容</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{應用程式}other{# 個應用程式}}</translation>
-<translation id="9185567408827209876">在韓文模式顯示候選字詞</translation>
 <translation id="9186963452600581158">使用子女的 Google 帳戶登入</translation>
 <translation id="9188732951356337132">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">使用您的 Android 手機作為安全密鑰</translation>
@@ -7724,7 +7722,6 @@
 <translation id="939252827960237676">無法儲存螢幕擷圖</translation>
 <translation id="939598580284253335">請輸入複雜密碼</translation>
 <translation id="939736085109172342">新增資料夾</translation>
-<translation id="941070664607309480">按一下即可顯示您的裝置，以便接收分享</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共用 Chrome 分頁和音效。</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>

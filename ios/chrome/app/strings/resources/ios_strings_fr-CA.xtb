@@ -526,6 +526,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6189413832092199491">Non lu</translation>
 <translation id="6196207969502475924">Recherche vocale</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Voyez ce que vous pouvez synchroniser.<ph name="END_LINK" /></translation>
 <translation id="6219688215832490856">Ne jamais traduire</translation>
 <translation id="6223816392543092032">Synchronisez vos favoris, votre historique, vos mots de passe et autres paramètres sur tous vos appareils.</translation>
 <translation id="6232329973559504466">Rechercher en mode de navigation privée</translation>
@@ -724,6 +725,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 
 Les sites peuvent utiliser des témoins afin de voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces).</translation>
 <translation id="7971521879845308059">Bloq fen contex</translation>
+<translation id="797413074872316787">Pour profiter de la synchronisation et d'une expérience personnalisée sur tous vos appareils, activez la synchronisation.</translation>
 <translation id="7982789257301363584">Réseau</translation>
 <translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="800361585186029508">Ouvre les URL entrées dans Google Chrome.</translation>
@@ -740,6 +742,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8076014560081431679">Les paramètres de site sauvegardés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Ce paramètre est géré; touchez deux fois pour en savoir plus</translation>
 <translation id="8080028325999236607">Ferm ts onglets</translation>
+<translation id="8103864314410529527">Votre organisation impose une limite quant à ce que vous pouvez synchroniser. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Le téléchargement du fichier est disponible. Options présentées vers le bas de l’écran.</translation>
 <translation id="8156478151976189188">La synchronisation de mots de passe ne fonctionne pas</translation>

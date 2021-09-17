@@ -6118,6 +6118,20 @@ Kebijakan akan dihapus pada M75.</translation>
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, pintasan fitur aksesibilitas akan diaktifkan secara default.</translation>
+<translation id="8519563483516917705">Setelan ini memungkinkan perangkat memilih untuk mengupdate <ph name="PRODUCT_OS_NAME" /> ke versi target tertentu.
+
+      Jika kebijakan tidak disetel, perangkat akan mengupdate sesuai dengan setelan lainnya atau ke versi terbaru yang tersedia.
+
+      Jika kebijakan disetel, perangkat akan mengupdate ke versi yang dipilih.
+
+      Format yang tepat untuk nilai kebijakan ini merupakan detail implementasi layanan update dan dapat berubah. Nilai kebijakan tidak diproses di perangkat.
+
+      Jika digunakan bersama <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, kebijakan ini akan diperiksa terlebih dahulu oleh layanan update.
+      Tidak seperti <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (yang memungkinkan update minor), perangkat akan tetap menggunakan versi yang dipilih hingga nilai kebijakan ini diubah.
+
+      Jika digunakan bersama <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, versi perangkat dapat dikembalikan ke versi tertentu yang sebelumnya.
+
+      Peringatan: Sebaiknya jangan mengonfigurasi batasan versi karena dapat mencegah pengguna menerima update software dan perbaikan keamanan penting. Membatasi update ke versi tertentu dapat membahayakan pengguna.</translation>
 <translation id="8520064498689833152">Paksa penggunaan SafeSearch di Google Penelusuran dan paksa Mode Terbatas YouTube menjadi minimal Menengah</translation>
 <translation id="8524334245528364388">URL ke file JSON dengan daftar server cetak.</translation>
 <translation id="8525526490824335042">Container Linux</translation>

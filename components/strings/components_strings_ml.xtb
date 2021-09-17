@@ -1158,6 +1158,7 @@
           <ph name="LIST_ITEM" />തൊഴിലുടമകൾക്കോ സ്കൂളുകൾക്കോ ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി ട്രാക്ക് ചെയ്യാനാകും<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ഇന്റർനെറ്റ് സേവന ദാതാക്കൾ വെബ് ട്രാഫിക് നിരീക്ഷിച്ചേക്കാം<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">മുന്നറിയിപ്പുകൾ ഓണാക്കുക</translation>
 <translation id="4838327282952368871">മനോരാജ്യത്തിൽ മുഴുകിയത്</translation>
 <translation id="4840250757394056958">നിങ്ങളുടെ Chrome ചരിത്രം കാണുക</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
@@ -1785,6 +1786,7 @@
 <translation id="7086090958708083563">ഉപയോക്താവ് അഭ്യർത്ഥിച്ച അപ്‌ലോഡ്</translation>
 <translation id="7087282848513945231">രാജ്യം</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ സൈറ്റുകളിലുടനീളം സംഭരിച്ചിരിക്കുന്ന അനുമതികളും ഡാറ്റയും മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തിയ ശേഷം 'Enter' അമർത്തുക</translation>
+<translation id="7096937462164235847">ഈ വെബ്സൈറ്റിന്റെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ല.</translation>
 <translation id="7108338896283013870">മറയ്ക്കുക</translation>
 <translation id="7108634116785509031">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ <ph name="HOST" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="7108819624672055576">ഒരു വിപുലീകരണം മുഖേന അവദിച്ചിരിക്കുന്നു</translation>
@@ -2358,6 +2360,7 @@
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="9065745800631924235">ചരിത്രത്തിൽ നിന്നുള്ള <ph name="TEXT" /> തിരയൽ</translation>
 <translation id="9069693763241529744">ഒരു വിപുലീകരണം മുഖേന ബ്ലോക്ക് ചെയ്‌തു</translation>
+<translation id="9073799351042754113">ഈ സൈറ്റിനുള്ള സുരക്ഷാ മുന്നറിയിപ്പുകൾ ഓഫാക്കാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തു.</translation>
 <translation id="9078964945751709336">കൂടുതൽ വിവരങ്ങൾ ആവശ്യമാണ്</translation>
 <translation id="9080712759204168376">ഓർഡർ സംഗ്രഹം</translation>
 <translation id="9089260154716455634">ഓഫ് അവേഴ്‌സ് നയം:</translation>

@@ -51,6 +51,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Отказује се скенирање</translation>
 <translation id="1851218745569890714">Видео конференције</translation>
+<translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Ревизија хардвера</translation>
 <translation id="1905710495812624430">Премашен је максимални број покушаја.</translation>
 <translation id="1908234395526491708">Неуспели UDP захтеви</translation>
@@ -78,6 +79,7 @@
 <translation id="2364498172489649528">Прошло</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Пошаљи извештај са повратним информацијама</translation>
+<translation id="240334320630038121">Додирна табла <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">Статус закључавања SIM картице</translation>
 <translation id="2418150275289244458">Отвори у подешавањима</translation>
 <translation id="2446553403094072641">Прецизност покретног зареза</translation>
@@ -101,6 +103,7 @@
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3009958530611748826">Изаберите фолдер за чување</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3056720590588772262">Крајња тачка</translation>
 <translation id="3069085583900247081">Тест није успео</translation>
 <translation id="3083667275341675831">Дијагностика повезивости</translation>
 <translation id="3091839911843451378">Није успело – заустављено је</translation>
@@ -121,8 +124,10 @@
 <translation id="3328783797891415197">Тест је у току</translation>
 <translation id="3368922792935385530">Повезан</translation>
 <translation id="3369013195428705271">Желите ли стварно да обришете сву историју штампања? Задаци штампања који су у току се не бришу.</translation>
+<translation id="3412146654386081914">Додирни екран <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Безбедност</translation>
+<translation id="3440478087746699229">Интерна</translation>
 <translation id="3456078764689556234">Одштампаних страница: <ph name="PRINTED_PAGES" /> од <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Скенира се <ph name="PAGE_NUM" />. страница. Довршено је <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Штампање</translation>
@@ -130,6 +135,7 @@
 <translation id="3527036260304016759">Није успело – непозната грешка</translation>
 <translation id="3532980081107202182">Преостало је још око <ph name="MIN_REMAINING" /> минута</translation>
 <translation id="3540383942695635079">MAC адреса</translation>
+<translation id="3565064564551103223">Дозвољене IPа адресе</translation>
 <translation id="357889014807611375">WiFi са ограничењем</translation>
 <translation id="3582041541988388905">Није пронађена <ph name="NETWORK_NAME" /> веза</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
@@ -309,6 +315,7 @@
 <translation id="6302401976930124515">Тест <ph name="TEST_NAME" /> је отказан</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="636850387210749493">Пријављивање за издање за предузећа</translation>
+<translation id="6379086450106841622">Додирни екран</translation>
 <translation id="6388847657025262518">Механизам за увлачење докумената на скенеру је заглављен. Проверите механизам и пробајте поново.</translation>
 <translation id="641081527798843608">Подударање наслова</translation>
 <translation id="6423239382391657905">Отворена VPN</translation>
@@ -343,6 +350,7 @@
 <translation id="6977381486153291903">Ревизија фирмвера</translation>
 <translation id="6982876849933694860">Да бисте подесили нову везу, идите у <ph name="BEGIN_LINK" />Подешавања.<ph name="END_LINK" /></translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управља овим уређајем и има приступ свим активностима корисника, укључујући посећене веб-странице, лозинке и имејлове.</translation>
+<translation id="7039041976777695848">Тастатура <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Мобилни оператер</translation>
 <translation id="7059230779847288458">Пуни се. <ph name="TIME_VALUE" /> до краја пуњења</translation>
 <translation id="708426984172631313">ЗАУСТАВЉЕНО</translation>
@@ -387,6 +395,7 @@
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Број циклуса</translation>
+<translation id="7747039790905080783">Тајни кључ</translation>
 <translation id="7762130827864645708">Лозинка је промењена. Од сада користите нову лозинку.</translation>
 <translation id="7763470514545477072">Подударање суфикса домена</translation>
 <translation id="7769672763586021400">ИД модела</translation>
@@ -396,8 +405,10 @@
 <translation id="7846634333498149051">Тастатура</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип добављача</translation>
+<translation id="7882501334836096755">Јавни кључ</translation>
 <translation id="7895471513946376273">Откријте алатке за цртање и дизајн</translation>
 <translation id="7936303884198020182">Није пронађен ниједан сервер за имена</translation>
+<translation id="7943235353293548836">Трајни интервал одржавања линка</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7978412674231730200">Приватни кључ</translation>
 <translation id="7994702968232966508">EAP метод</translation>
@@ -447,6 +458,7 @@
 <translation id="8726019395068607495">Заустављено – врата су отворена</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8747900814994928677">Потврдите промену</translation>
+<translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
 <translation id="8798441408945964110">Назив добављача</translation>
@@ -462,7 +474,9 @@
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> корисника <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Није успело – недостаје фиока</translation>
 <translation id="8928727111548978589">Није успело – нема више папира</translation>
+<translation id="8930521118335213258">Релевантна апликација</translation>
 <translation id="8930622219860340959">Бежично</translation>
+<translation id="8936793075252196307">IP адреса клијента</translation>
 <translation id="8968751544471797276">Брзина пуњења</translation>
 <translation id="8970109610781093811">Поново покрени</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скенирај}=1{Скенирај {NUMBER_OF_PAGES}. страницу}one{Скенирај {NUMBER_OF_PAGES}. страницу}few{Скенирај {NUMBER_OF_PAGES}. страницу}other{Скенирај {NUMBER_OF_PAGES}. страницу}}</translation>
@@ -478,6 +492,7 @@
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9149391708638971077">Покрени тест меморије</translation>
 <translation id="9173638680043580060">Преостало је мање од минута</translation>
+<translation id="917720651393141712">Тестирај</translation>
 <translation id="9190063653747922532">L2TP/IPsec + тајни кључ</translation>
 <translation id="9211490828691860325">Све радне површине</translation>
 <translation id="939519157834106403">SSID</translation>

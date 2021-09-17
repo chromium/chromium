@@ -4979,7 +4979,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6318125393809743217">Include a policies.json file with policy configurations.</translation>
 <translation id="6318407754858604988">Download started</translation>
 <translation id="6318944945640833942">Couldn't detect a printer. Please enter printer address again.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" /> is processed locally and works offline.</translation>
 <translation id="6321407676395378991">Turn on screensaver</translation>
 <translation id="6322370287306604163">Unlock faster with fingerprint</translation>
 <translation id="6322653941595359182">Send and receive text messages from your Chromebook</translation>
@@ -7679,7 +7678,6 @@ You can assign multiple switches to this action</translation>
 <translation id="9180380851667544951">Site can share your screen</translation>
 <translation id="9182556968660520230">Don't allow sites to play protected content</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
-<translation id="9185567408827209876">Show candidates in Hangul mode</translation>
 <translation id="9186963452600581158">Sign in with a child's Google Account</translation>
 <translation id="9188732951356337132">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Use your Android phone as a security key</translation>
@@ -7725,7 +7723,6 @@ You can assign multiple switches to this action</translation>
 <translation id="939252827960237676">Failed to save screenshot</translation>
 <translation id="939598580284253335">Enter passphrase</translation>
 <translation id="939736085109172342">New folder</translation>
-<translation id="941070664607309480">Click to become visible so that it can share with you</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> is sharing a Chrome tab and audio.</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947329552760389097">&amp;Inspect Elements</translation>

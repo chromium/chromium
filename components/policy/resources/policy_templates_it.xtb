@@ -6065,6 +6065,20 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
           Se imposti questo criterio, gli utenti non potranno modificarlo o eseguirne l'override.
 
           Se questo criterio non viene impostato, le scorciatoie delle funzioni di accessibilità saranno attive per impostazione predefinita.</translation>
+<translation id="8519563483516917705">Questa impostazione consente ai dispositivi di selezionare una versione di destinazione specifica di <ph name="PRODUCT_OS_NAME" /> per l'aggiornamento.
+
+      Se non viene configurata, i dispositivi eseguiranno l'aggiornamento in base ad altre impostazioni o all'ultima versione disponibile.
+
+      Se viene configurata, l'aggiornamento verrà eseguito a una versione selezionata.
+
+      Il formato esatto di questo valore del criterio corrisponde ai dettagli di implementazione del servizio di aggiornamento e potrebbe variare. Il valore del criterio non viene elaborato sul dispositivo.
+
+      Se utilizzato insieme a <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, questo criterio verrà prima esaminato da un servizio di aggiornamento.
+      A differenza di<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (che potrebbe consentire aggiornamenti minori), i dispositivi manterranno la versione selezionata finché il valore di questo criterio non verrà modificato.
+
+      Se utilizzato insieme a <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, la versione del dispositivo può essere ripristinata a una versione precedente specifica.
+
+      Avviso: è sconsigliato configurare delle limitazioni della versione, poiché potrebbero impedire agli utenti di ricevere aggiornamenti software e correzioni critiche per la sicurezza. Gli aggiornamenti con limitazioni a una versione specifica potrebbero esporre gli utenti a dei rischi.</translation>
 <translation id="8520064498689833152">Viene forzato l'uso almeno del livello medio di SafeSearch nella Ricerca Google e nella Modalità con restrizioni di YouTube</translation>
 <translation id="8524334245528364388">URL per un file JSON con un elenco di server di stampa.</translation>
 <translation id="8525526490824335042">Container Linux</translation>

@@ -6016,6 +6016,20 @@
           如果您设置了此政策，用户便无法更改或覆盖它。
 
           如果未设置此政策，默认情况下，无障碍功能快捷方式会处于启用状态。</translation>
+<translation id="8519563483516917705">此设置允许设备选择要更新到的特定 <ph name="PRODUCT_OS_NAME" />目标版本。
+
+      如果此政策未设置，设备将会按照其他设置进行更新，或更新到最新的可用版本。
+
+      如果此政策已设置，设备将会更新到所选版本。
+
+      此政策的值的确切格式是相应更新服务的实现细节，未必会一成不变。此政策的值不是在设备上处理的。
+
+      如果此政策与 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 搭配使用，相应更新服务会先查看此政策。
+      与可能会允许进行次要更新的 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 不同，采用此政策的设备会保持在所选版本上，直到此政策的值改变为止。
+
+      如果此政策与 <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> 搭配使用，设备版本可还原到特定的旧版本。
+
+      警告：最好不要配置版本限制，因为这些限制可能会妨碍用户接收软件更新以及重要的安全性修补程序。将所能更新到的版本限制为特定版本可能会将用户置于风险之中。</translation>
 <translation id="8520064498689833152">强制在 Google 搜索中使用级别至少为“中等”的安全搜索功能，也强制使用级别至少为“中等”的 YouTube 受限模式</translation>
 <translation id="8524334245528364388">包含一系列打印服务器的 JSON 文件的网址。</translation>
 <translation id="8525526490824335042">Linux 容器</translation>

@@ -526,6 +526,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6189413832092199491">Não lidas</translation>
 <translation id="6196207969502475924">Pesquisa por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fechar {COUNT} guia}one{Fechar {COUNT} guia}other{Fechar {COUNT} guias}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Veja o que pode ser sincronizado<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Nunca traduzir</translation>
 <translation id="6223816392543092032">Tenha seus favoritos, seu histórico, suas senhas e outras configurações em todos os seus dispositivos.</translation>
 <translation id="6232329973559504466">Pesquisa anônima</translation>
@@ -724,6 +725,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 
 Eles também podem usar cookies para ver sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="7971521879845308059">Bloquear pop-ups</translation>
+<translation id="797413074872316787">Para sincronizar e personalizar vários dispositivos, ative a sincronização.</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7993619969781047893">Os recursos de alguns sites podem apresentar falhas</translation>
 <translation id="800361585186029508">Abre os URLs fornecidos no Google Chrome.</translation>
@@ -740,6 +742,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8076014560081431679">As configurações salvas em sites não são excluídas e podem refletir seus hábitos de navegação. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Esta configuração é gerenciada. Toque duas vezes para ver mais informações</translation>
 <translation id="8080028325999236607">Fechar todas as guias</translation>
+<translation id="8103864314410529527">Sua organização limita o que pode ser sincronizado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desativar</translation>
 <translation id="8114753159095730575">O download de arquivo está disponível. Opções disponíveis perto da parte inferior da tela.</translation>
 <translation id="8156478151976189188">O Password Sync não está funcionando</translation>

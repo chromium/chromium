@@ -19,7 +19,7 @@
 <translation id="1038842779957582377">알 수 없는 이름</translation>
 <translation id="1041998700806130099">작업 시트 메시지</translation>
 <translation id="1048785276086539861">주석을 수정하면 문서가 단일 페이지 뷰로 돌아갑니다.</translation>
-<translation id="1049743911850919806">시크릿</translation>
+<translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="1050038467049342496">다른 앱 닫기</translation>
 <translation id="1055184225775184556">추가 실행 취소(&amp;U)</translation>
 <translation id="1056898198331236512">경고</translation>
@@ -1149,7 +1149,7 @@
 <translation id="4825507807291741242">강력함</translation>
 <translation id="4827402517081186284">시크릿 모드를 사용해도 나의 온라인 활동이 완전히 비공개로 유지되지는 않습니다.
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />사이트에서 내가 언제 방문하는지 알 수 있습니다.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />사이트에서 내가 방문했는지 알 수 있습니다.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />직장 또는 학교에서 탐색 활동을 추적할 수 있습니다.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />인터넷 서비스 제공업체에서 웹 트래픽을 모니터링할 수 있습니다.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>

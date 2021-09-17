@@ -1153,6 +1153,7 @@
           <ph name="LIST_ITEM" />Votre employeur ou votre établissement scolaire peuvent suivre votre activité de navigation.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Les fournisseurs d'accès Internet peuvent surveiller le trafic Web.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4838327282952368871">Rêveur</translation>
 <translation id="4840250757394056958">Afficher votre historique de Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -1780,6 +1781,7 @@
 <translation id="7086090958708083563">Téléversement demandé par l'utilisateur</translation>
 <translation id="7087282848513945231">Comté</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée afin de gérer les autorisations et les données stockées pour les sites dans les paramètres de Chrome</translation>
+<translation id="7096937462164235847">L'identité de ce site Web n'est pas vérifiée.</translation>
 <translation id="7108338896283013870">Masquer</translation>
 <translation id="7108634116785509031">L'hôte <ph name="HOST" /> veut utiliser votre appareil photo</translation>
 <translation id="7108819624672055576">Autorisé par une extension</translation>
@@ -2355,6 +2357,7 @@ Détails supplémentaires :
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9065745800631924235">Recherche <ph name="TEXT" /> dans l'historique</translation>
 <translation id="9069693763241529744">Bloqué par une extension</translation>
+<translation id="9073799351042754113">Vous avez choisi de désactiver les avertissements de sécurité de ce site.</translation>
 <translation id="9078964945751709336">Plus de renseignements nécessaires</translation>
 <translation id="9080712759204168376">Résumé de la commande</translation>
 <translation id="9089260154716455634">Politique en dehors des heures normales :</translation>

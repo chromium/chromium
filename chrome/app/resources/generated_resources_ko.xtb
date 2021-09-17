@@ -47,7 +47,7 @@
 <translation id="1048286738600630630">디스플레이</translation>
 <translation id="1048986595386481879">동적으로 할당됨</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 중}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 중}}</translation>
-<translation id="1049743911850919806">시크릿</translation>
+<translation id="1049743911850919806">시크릿 모드</translation>
 <translation id="1049795001945932310">언어 설정(&amp;L)</translation>
 <translation id="1050693411695664090">나쁨</translation>
 <translation id="1054048317165655285">휴대전화에서 설정 완료</translation>
@@ -4976,7 +4976,6 @@
 <translation id="6318125393809743217">정책 구성이 있는 policies.json 파일을 포함합니다.</translation>
 <translation id="6318407754858604988">다운로드가 시작되었습니다</translation>
 <translation id="6318944945640833942">프린터를 찾을 수 없습니다. 프린터 주소를 다시 입력해 주세요.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" />는 로컬에서 처리되고 오프라인에서 작동합니다</translation>
 <translation id="6321407676395378991">화면 보호기 사용 설정</translation>
 <translation id="6322370287306604163">지문으로 신속하게 잠금 해제</translation>
 <translation id="6322653941595359182">Chromebook으로 SMS 보내고 받기</translation>
@@ -7676,7 +7675,6 @@
 <translation id="9180380851667544951">사이트에서 화면을 공유할 수 있습니다.</translation>
 <translation id="9182556968660520230">사이트에서 보호된 콘텐츠를 재생하도록 허용하지 않음</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{앱}other{앱 #개}}</translation>
-<translation id="9185567408827209876">한글 모드에서 추천 단어 표시</translation>
 <translation id="9186963452600581158">자녀의 Google 계정으로 로그인</translation>
 <translation id="9188732951356337132">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Android 휴대전화를 보안 키로 사용</translation>
@@ -7722,7 +7720,6 @@
 <translation id="939252827960237676">스크린샷을 저장할 수 없습니다.</translation>
 <translation id="939598580284253335">암호 입력</translation>
 <translation id="939736085109172342">새 폴더</translation>
-<translation id="941070664607309480">공유를 허용하려면 여기를 클릭해 내 기기가 표시되게 하세요.</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" />에서 Chrome 탭과 오디오를 공유 중입니다.</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="947329552760389097">요소 검사(&amp;I)</translation>

@@ -4979,7 +4979,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6318125393809743217">Sertakan file policies.json dengan konfigurasi kebijakan.</translation>
 <translation id="6318407754858604988">Download dimulai</translation>
 <translation id="6318944945640833942">Tidak dapat mendeteksi printer. Harap masukkan alamat printer lagi.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" /> diproses secara lokal dan berfungsi secara offline.</translation>
 <translation id="6321407676395378991">Nyalakan screen saver</translation>
 <translation id="6322370287306604163">Buka kunci lebih cepat dengan sidik jari</translation>
 <translation id="6322653941595359182">Mengirim dan menerima SMS dari Chromebook</translation>
@@ -7679,7 +7678,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini</translation>
 <translation id="9180380851667544951">Situs dapat membagikan layar Anda</translation>
 <translation id="9182556968660520230">Jangan izinkan situs memutar konten yang dilindungi</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikasi}other{# aplikasi}}</translation>
-<translation id="9185567408827209876">Tampilkan kandidat dalam mode Hangul</translation>
 <translation id="9186963452600581158">Login dengan Akun Google anak</translation>
 <translation id="9188732951356337132">Kirim data penggunaan dan diagnostik. Perangkat ini saat ini otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda serta akan membantu sistem dan stabilitas aplikasi serta peningkatan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini mungkin akan disimpan ke Akun Google miliknya. <ph name="BEGIN_LINK2" />Pelajari Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Gunakan ponsel Anda sebagai kunci keamanan</translation>
@@ -7725,7 +7723,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini</translation>
 <translation id="939252827960237676">Gagal menyimpan screenshot</translation>
 <translation id="939598580284253335">Masukkan frasa sandi</translation>
 <translation id="939736085109172342">Folder baru</translation>
-<translation id="941070664607309480">Klik agar terlihat sehingga perangkat dapat berbagi dengan Anda</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> membagikan audio dan tab Chrome.</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="947329552760389097">&amp;Periksa Elemen</translation>

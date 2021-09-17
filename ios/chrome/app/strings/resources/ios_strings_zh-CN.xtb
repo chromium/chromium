@@ -526,6 +526,7 @@
 <translation id="6189413832092199491">未读</translation>
 <translation id="6196207969502475924">语音搜索</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{关闭 {COUNT} 个标签页}other{关闭 {COUNT} 个标签页}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" />。</translation>
 <translation id="6219688215832490856">一律不翻译</translation>
 <translation id="6223816392543092032">获取您在自己的所有设备上保存的书签、历史记录、密码和其他设置。</translation>
 <translation id="6232329973559504466">无痕搜索</translation>
@@ -724,6 +725,7 @@
 
 网站还可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）。</translation>
 <translation id="7971521879845308059">拦截弹出式窗口</translation>
+<translation id="797413074872316787">若要在您的所有设备上保持同步并获享个性化体验，请开启同步功能。</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7993619969781047893">某些网站上的功能可能会无法正常运作</translation>
 <translation id="800361585186029508">在 Google Chrome 中打开输入的网址。</translation>
@@ -740,6 +742,7 @@
 <translation id="8076014560081431679">已保存的网站设置将不会遭到删除，并且可能会反映您的浏览习惯。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">此设置处于受管状态，点按两次可了解详情</translation>
 <translation id="8080028325999236607">关闭所有标签页</translation>
+<translation id="8103864314410529527">贵组织限制了您可同步的内容。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">关闭</translation>
 <translation id="8114753159095730575">已可下载文件。选项位于屏幕底部附近。</translation>
 <translation id="8156478151976189188">无法同步密码</translation>

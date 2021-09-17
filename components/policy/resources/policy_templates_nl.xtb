@@ -6029,6 +6029,20 @@ Dit beleid wordt verwijderd in M75.</translation>
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staan de snelkoppelingen voor toegankelijkheidsfuncties standaard aan.</translation>
+<translation id="8519563483516917705">Met deze instelling kunnen apparaten een specifieke doelversie van <ph name="PRODUCT_OS_NAME" /> selecteren waar ze naar worden geüpdatet.
+
+      Als je dit beleid niet instelt, worden apparaten geüpdatet op basis van andere instellingen of naar de nieuwste beschikbare versie.
+
+      Als je dit beleid instelt, worden apparaten geüpdatet naar een geselecteerde versie.
+
+      De exacte indeling van deze beleidswaarde is een implementatie van de updateservice en kan veranderen. De beleidswaarde wordt niet verwerkt op het apparaat.
+
+      Indien samen met <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> gebruikt, wordt dit beleid als eerste gecheckt door de updateservice.
+      In tegenstelling tot bij <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (waarmee kleine updates kunnen worden toegestaan) behouden apparaten de geselecteerde versie totdat de waarde van dit beleid wordt gewijzigd.
+
+      Indien samen met <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> gebruikt, kan de apparaatversie worden teruggezet naar een specifieke eerdere versie.
+
+      Waarschuwing: Het wordt niet aanbevolen om versiebeperkingen in te stellen omdat deze kunnen voorkomen dat gebruikers software-updates en essentiële beveiligingsoplossingen krijgen. Als je updates beperkt tot een specifieke versie, kan dit een risico opleveren voor gebruikers.</translation>
 <translation id="8520064498689833152">Het gebruik van SafeSearch afdwingen op Google Zoeken en afdwingen dat de beperkte modus van YouTube minimaal is ingesteld op Gematigd</translation>
 <translation id="8524334245528364388">URL naar een json-bestand met een lijst van afdrukservers.</translation>
 <translation id="8525526490824335042">Linux-container</translation>

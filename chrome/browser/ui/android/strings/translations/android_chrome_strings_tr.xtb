@@ -62,6 +62,7 @@
 <translation id="1332501820983677155">Google Chrome'un özellik kısayolları</translation>
 <translation id="1344653310988386453">Seçili metin bağlantısını ekle</translation>
 <translation id="1347468774581902829">Etkinliği yönet</translation>
+<translation id="1353372385686746892">Chrome, uygulamanın iyileştirilmesine yardımcı olmak üzere teşhis verilerini Google'a gönderir. <ph name="BEGIN_LINK" />Değiştir<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Oturum ve senkronizasyon kapatılsın mı?</translation>
 <translation id="1373696734384179344">Seçilen içeriği indirmek için bellek yetersiz.</translation>
 <translation id="1376578503827013741">Hesaplanıyor…</translation>
@@ -651,6 +652,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="510275257476243843">1 saat kaldı</translation>
 <translation id="5118713593561876160">İlgi alanları</translation>
 <translation id="5123685120097942451">Gizli sekme</translation>
+<translation id="5126510351761255129">Kartınızı doğrulayın</translation>
 <translation id="5132942445612118989">Tüm cihazlardaki şifreleriniz, geçmişiniz ve diğer öğelerinizi senkronize edin</translation>
 <translation id="5139940364318403933">Google Drive'ın nasıl kullanılacağını öğrenin</translation>
 <translation id="5142281402488957685">Yeni hikayeler için aşağıya çekerek feed içeriğini yenileyin</translation>

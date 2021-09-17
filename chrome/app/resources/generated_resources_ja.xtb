@@ -267,6 +267,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> をアンインストールできませんでした</translation>
 <translation id="1277020343994096713">現在の PIN とは異なる新しい PIN を作成してください</translation>
 <translation id="1278859221870828664">Google Play のアプリとサービスの確認</translation>
+<translation id="1279024913354609713">許可しない</translation>
 <translation id="127946606521051357">付近のデバイスが共有中です</translation>
 <translation id="1280965841156951489">ファイルを編集</translation>
 <translation id="1282465000333679776">システムの音声を共有</translation>
@@ -2193,6 +2194,7 @@
 <translation id="33022249435934718">GDI ハンドル</translation>
 <translation id="3302388252085547855">理由を入力してください...</translation>
 <translation id="3303260552072730022">拡張機能によって自動的に全画面表示になりました。</translation>
+<translation id="3303795387212510132">アプリに <ph name="PROTOCOL_SCHEME" /> リンクの表示を許可しますか？</translation>
 <translation id="3303818374450886607">部数</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> オフ</translation>
@@ -2270,6 +2272,7 @@
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" /> のチャットアプリの通知を表示します</translation>
 <translation id="3393554941209044235">Chrome ドキュメント解析</translation>
 <translation id="3394850431319394743">識別子の使用と保護されたコンテンツの再生を許可するサイト</translation>
+<translation id="3396744558790608201">ブラウジング中やショッピング中にサイトのビジュアル コンテンツを右クリックして、[Google レンズで画像を検索] を選択すると、その詳細を検索して確認できます。</translation>
 <translation id="3396800784455899911">[同意して続行] をクリックすると、これらの Google サービスに関する上記の処理内容に同意したことになります。</translation>
 <translation id="339722927132407568">固まる</translation>
 <translation id="3399432415385675819">通知が無効になります</translation>
@@ -3181,6 +3184,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> がウィンドウを共有しています。</translation>
 <translation id="4364830672918311045">通知を表示</translation>
 <translation id="4366138410738374926">印刷を開始しました</translation>
+<translation id="4369121877634339065">画像をドラッグして検索</translation>
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
 <translation id="4371452868325715552">サーバーに接続できませんでした。ネットワーク接続を確認してからもう一度お試しください。引き続き問題が解決しない場合は、Chromebook を再起動してみてください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="4373966964907728675">デスクトップをキャスト中</translation>
@@ -4958,7 +4962,6 @@
 <translation id="6318125393809743217">ポリシー設定の policies.json ファイルを含める。</translation>
 <translation id="6318407754858604988">ダウンロードを開始しました</translation>
 <translation id="6318944945640833942">プリンタを検出できませんでした。プリンタのアドレスをもう一度入力してください。</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" />はローカルで処理され、オフラインで使用できます。</translation>
 <translation id="6321407676395378991">スクリーン セーバーをオンにする</translation>
 <translation id="6322370287306604163">指紋を使ってロックをすばやく解除できます</translation>
 <translation id="6322653941595359182">Chromebook でテキスト メッセージを送受信します</translation>
@@ -5769,6 +5772,10 @@
 <translation id="7222204278952406003">Chrome をデフォルトのブラウザに設定しました</translation>
 <translation id="7222232353993864120">メール アドレス</translation>
 <translation id="7225179976675429563">ネットワークの種類が指定されていません</translation>
+<translation id="7226485026248318204">Google フォトの「思い出」の写真がここに表示されます。写真が表示されるのは、ログインしているときのみです。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        「思い出」に表示される写真は、<ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> で管理できます。</translation>
 <translation id="7228479291753472782">ウェブサイトが位置情報やマイク、カメラなどの機能を使用できるかどうかの設定の操作</translation>
 <translation id="7228523857728654909">画面ロックとログイン</translation>
 <translation id="7230222852462421043">ウィンドウを復元(&amp;R)</translation>
@@ -6198,6 +6205,7 @@
 <translation id="767147716926917172">診断と使用状況のデータを Google に自動送信します</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" /> 内の <ph name="HUNG_IFRAME_URL" /> が停止しています。</translation>
 <translation id="7674416868315480713">Linux で転送中のポートをすべて無効にする</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> 個のアプリ</translation>
 <translation id="7674542105240814168">位置情報へのアクセスは許可されていません</translation>
 <translation id="7676119992609591770">「<ph name="SEARCH_TEXT" />」に該当するタブが <ph name="NUM" /> 個見つかりました</translation>
 <translation id="7676867886086876795">テキスト欄で音声入力できるように Google に音声を送信します。</translation>
@@ -7652,7 +7660,6 @@
 <translation id="9180380851667544951">サイトに画面の共有が許可されています</translation>
 <translation id="9182556968660520230">サイトに保護されたコンテンツの再生を許可しない</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
-<translation id="9185567408827209876">候補をハングルモードで表示</translation>
 <translation id="9186963452600581158">お子様の Google アカウントでログインする</translation>
 <translation id="9188732951356337132">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />詳細<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Android スマートフォンをセキュリティ キーとして使用する</translation>
@@ -7698,7 +7705,6 @@
 <translation id="939252827960237676">スクリーンショットを保存できませんでした</translation>
 <translation id="939598580284253335">パスフレーズを入力</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
-<translation id="941070664607309480">クリックすると相手に表示され、共有できるようになります</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> が Chrome タブと音声を共有しています。</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="947329552760389097">要素の検証(&amp;I)</translation>

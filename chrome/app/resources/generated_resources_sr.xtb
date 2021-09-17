@@ -269,6 +269,7 @@
 <translation id="1276994519141842946">Деинсталирање апликације <ph name="APP_NAME" /> није успело</translation>
 <translation id="1277020343994096713">Направите нови PIN који се разликује од актуелног PIN-а</translation>
 <translation id="1278859221870828664">Прегледајте Google Play апликације и услуге</translation>
+<translation id="1279024913354609713">Не дозволи</translation>
 <translation id="127946606521051357">Уређај у близини дели садржај</translation>
 <translation id="1280965841156951489">Измени датотеке</translation>
 <translation id="1282465000333679776">Дели звук система</translation>
@@ -2193,6 +2194,7 @@
 <translation id="33022249435934718">GDI надимци</translation>
 <translation id="3302388252085547855">Унесите образложење...</translation>
 <translation id="3303260552072730022">Додатак је активирао режим целог екрана.</translation>
+<translation id="3303795387212510132">Желите ли да дозволите да апликација отвара <ph name="PROTOCOL_SCHEME" /> линкове?</translation>
 <translation id="3303818374450886607">Примерака</translation>
 <translation id="3303855915957856445">Нису пронађени резултати претраге</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> попуста</translation>
@@ -2270,6 +2272,7 @@
 <translation id="339178315942519818">Прегледајте обавештења из апликација за ћаскање на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Chrome анализа докумената</translation>
 <translation id="3394850431319394743">Дозвољена употреба идентификатора за пуштање заштићеног садржаја</translation>
+<translation id="3396744558790608201">Кликните десним тастером и изаберите „Претражи слике помоћу Google објектива“ да бисте претражили било који део сајта и сазнали више о визуелном садржају који видите док прегледате и купујте на вебу.</translation>
 <translation id="3396800784455899911">Ако кликнете на дугме „Прихвати и настави“, прихватате горенаведену обраду за ове Google услуге.</translation>
 <translation id="339722927132407568">Зауставља се</translation>
 <translation id="3399432415385675819">Обавештења ће бити онемогућена</translation>
@@ -3181,6 +3184,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> дели прозор.</translation>
 <translation id="4364830672918311045">Приказуј обавештења</translation>
 <translation id="4366138410738374926">Штампање је започето</translation>
+<translation id="4369121877634339065">Превуците преко било коју слику да бисте претражили</translation>
 <translation id="4370975561335139969">Имејл и лозинка које сте унели се не подударају</translation>
 <translation id="4371452868325715552">Повезивање са сервером није успело. Проверите мрежну везу и пробајте поново. Ако и даље имате проблема, пробајте поново да покренете Chromebook. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Пребацујемо радну површину</translation>
@@ -4959,7 +4963,6 @@
 <translation id="6318125393809743217">Уврсти датотеку policies.json уз конфигурације смерница.</translation>
 <translation id="6318407754858604988">Преузимање је започето</translation>
 <translation id="6318944945640833942">Штампач није откривен. Поново унесите адресу штампача.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" /> се обрађује локално и функционише офлајн.</translation>
 <translation id="6321407676395378991">Укључите чувар екрана</translation>
 <translation id="6322370287306604163">Откључавајте брже помоћу отиска прста</translation>
 <translation id="6322653941595359182">Шаљите и примајте SMS-ове помоћу Chromebook-а</translation>
@@ -5770,6 +5773,10 @@
 <translation id="7222204278952406003">Chrome је подразумевани прегледач</translation>
 <translation id="7222232353993864120">Имејл адреса</translation>
 <translation id="7225179976675429563">Недостаје тип мреже</translation>
+<translation id="7226485026248318204">Овде се приказују ваше успомене из Google слика. Оне су видљиве само када сте пријављени.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Управљајте садржајем који видите у успоменама на <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Управљајте подешавањима која одређују да ли веб-сајтови могу да користе функције као што су геолоцирање, микрофон, камера итд.</translation>
 <translation id="7228523857728654909">Закључавање екрана и пријављивање</translation>
 <translation id="7230222852462421043">&amp;Врати прозор</translation>
@@ -6199,6 +6206,7 @@
 <translation id="767147716926917172">Аутоматски шаље Google-у дијагностику и податке о коришћењу</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, на страници <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Деактивирај све портове који се прослеђују у Linux-у</translation>
+<translation id="7674537509496907005">Апликација: <ph name="APP_COUNT" /></translation>
 <translation id="7674542105240814168">Одбијен је приступ локацији</translation>
 <translation id="7676119992609591770">Пронађених картица за „<ph name="SEARCH_TEXT" />“: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Шаљите податке о гласу Google-у да би се омогућило диктирање у свим пољима за текст.</translation>
@@ -7655,7 +7663,6 @@
 <translation id="9180380851667544951">Сајт може да дели екран</translation>
 <translation id="9182556968660520230">Не дозвољавај сајтовима да пуштају заштићени садржај</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Апликација}one{# апликација}few{# апликације}other{# апликација}}</translation>
-<translation id="9185567408827209876">Прикажи кандидате у режиму хангул</translation>
 <translation id="9186963452600581158">Пријавите се помоћу Google налога детета</translation>
 <translation id="9188732951356337132">Шаљите податке о коришћењу и дијагностичке податке. Овај уређај тренутно аутоматски шаље податке о дијагностици, уређају и коришћењу апликација Google-у. Те информације се неће користити за идентификацију детета и помоћи ће у одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. Ако за дете укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета. <ph name="BEGIN_LINK2" />Сазнајте више<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Користите Android телефон као безбедносни кључ</translation>
@@ -7701,7 +7708,6 @@
 <translation id="939252827960237676">Чување снимка екрана није успело</translation>
 <translation id="939598580284253335">Унесите приступну фразу</translation>
 <translation id="939736085109172342">Нови директоријум</translation>
-<translation id="941070664607309480">Кликните да бисте постали видљиви како би могао да дели садржај са вама</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> дели Chrome картицу и звук.</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="947329552760389097">&amp;Провери елементе</translation>

@@ -270,6 +270,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> अनइंस्टॉल नहीं हो सका</translation>
 <translation id="1277020343994096713">ऐसा नया पिन बनाएं जो आपके मौजूदा पिन से अलग हो</translation>
 <translation id="1278859221870828664">Google Play पर मिलने वाले ऐप्लिकेशन और सेवाओं की समीक्षा करें</translation>
+<translation id="1279024913354609713">अनुमति न दें</translation>
 <translation id="127946606521051357">आस-पास मौजूद कोई डिवाइस, डेटा शेयर कर रहा है</translation>
 <translation id="1280965841156951489">फ़ाइलों में बदलाव करें</translation>
 <translation id="1282465000333679776">सिस्टम ऑडियो शेयर करें</translation>
@@ -2209,6 +2210,7 @@
 <translation id="33022249435934718">GDI हैंडल</translation>
 <translation id="3302388252085547855">वजह डालें...</translation>
 <translation id="3303260552072730022">किसी एक्‍सटेंशन ने फ़ुल स्‍क्रीन ट्रिगर किया है.</translation>
+<translation id="3303795387212510132">क्या आप <ph name="PROTOCOL_SCHEME" /> लिंक खोलने के लिए, ऐप्लिकेशन को अनुमति देना चाहते हैं?</translation>
 <translation id="3303818374450886607">प्रतियां</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> की छूट</translation>
@@ -2286,6 +2288,7 @@
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" /> पर अपने चैट ऐप्लिकेशन की सूचनाएं देखें</translation>
 <translation id="3393554941209044235">Chrome के दस्तावेज़ का विश्लेषण</translation>
 <translation id="3394850431319394743">सुरक्षित कॉन्टेंट दिखाने के लिए, पहचानकर्ताओं का इस्तेमाल किया जा सकता है</translation>
+<translation id="3396744558790608201">साइट के किसी भी हिस्से में खोजने के लिए, दायां क्लिक करें और “Google Lens की मदद से, इमेजों को खोजें” को चुनें. इससे आपको वेब पर खरीदारी और ब्राउज़ करते समय दिखने वाले विज़ुअल कॉन्टेंट के बारे में ज़्यादा जानने में मदद मिलेगी.</translation>
 <translation id="3396800784455899911">"स्वीकार करें और जारी रखें" बटन पर क्लिक करके, आप पुष्टि करते हैं कि इन Google सेवाओं के लिए ऊपर बताई गई प्रोसेसिंग से आप सहमत हैं.</translation>
 <translation id="339722927132407568">रुक जाना/हैंग हो जाना</translation>
 <translation id="3399432415385675819">नोटिफ़िकेशन अक्षम हो जाएंगे</translation>
@@ -3196,6 +3199,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> किसी विंडो को शेयर कर रहा है.</translation>
 <translation id="4364830672918311045">डिसप्ले नोटिफ़िकेशन</translation>
 <translation id="4366138410738374926">प्रिंट करने की प्रक्रिया शुरू हुई</translation>
+<translation id="4369121877634339065">खोजने के लिए, किसी भी इमेज पर खींचें और छोड़ें</translation>
 <translation id="4370975561335139969">  डाले गए ईमेल और पासवर्ड का मिलान नहीं हो रहा</translation>
 <translation id="4371452868325715552">सर्वर से कनेक्ट नहीं किया जा सका. कृपया अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें. अगर आपको अब भी समस्या हो रही है, तो Chromebook को रीस्टार्ट करके देखें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">डेस्कटॉप को कास्ट किया जा रहा है</translation>
@@ -4974,7 +4978,6 @@
 <translation id="6318125393809743217">नीति के कॉन्फ़िगरेशन के साथ एक policies.json फ़ाइल शामिल करें.</translation>
 <translation id="6318407754858604988">डाउनलोड शुरू हो गया</translation>
 <translation id="6318944945640833942">प्रिंटर नहीं मिला. कृपया प्रिंटर का पता फिर से डालें.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" /> को स्थानीय तौर पर प्रोसेस किया जाता है और यह ऑफ़लाइन काम करती है.</translation>
 <translation id="6321407676395378991">स्क्रीन सेवर चालू करें</translation>
 <translation id="6322370287306604163">फ़िंगरप्रिंट की मदद से ज़्यादा तेज़ी से अनलॉक करें</translation>
 <translation id="6322653941595359182">अपने Chromebook से मैसेज भेजें और पाएं</translation>
@@ -5785,6 +5788,10 @@
 <translation id="7222204278952406003">Chrome आपका डिफ़ॉल्ट ब्राउज़र है</translation>
 <translation id="7222232353993864120">ईमेल पता</translation>
 <translation id="7225179976675429563">नेटवर्क प्रकार गुम</translation>
+<translation id="7226485026248318204">Google Photos में सेव की गई आपकी मेमोरी, यहां दिखाई गई हैं. ये सिर्फ़ तभी दिखेंगी, जब आप साइन इन होंगे.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        आप अपनी मेमोरी में जो भी देखते हैं उन्हें <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> पर मैनेज करें.</translation>
 <translation id="7228479291753472782">ऐसी सेटिंग में बदलाव करें जो यह जानकारी देते हों कि क्‍या भौगोलिक स्‍थान, माइक्रोफ़ोन, कैमरा वगैरह जैसी सुविधाओं का इस्तेमाल वेबसाइट कर सकती हैं.</translation>
 <translation id="7228523857728654909">स्क्रीन लॉक और साइन इन करें</translation>
 <translation id="7230222852462421043">&amp;विंडो को पहले जैसा करना</translation>
@@ -6214,6 +6221,7 @@
 <translation id="767147716926917172">गड़बड़ी की जानकारी और इस्तेमाल से जुड़ा डेटा Google को अपने-आप भेजा जाता है</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> में.</translation>
 <translation id="7674416868315480713">Linux में फ़ॉरवर्ड किए जा रहे सभी पोर्ट बंद करें</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> ऐप्लिकेशन</translation>
 <translation id="7674542105240814168">जगह की जानकारी का ऐक्सेस नहीं मिला</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' के लिए, <ph name="NUM" /> टैब मिला</translation>
 <translation id="7676867886086876795">किसी भी लेख फ़ील्ड में बोलकर टाइप करने की सुविधा देने के लिए आपकी आवाज़ Google को भेजी जाती है.</translation>
@@ -7668,7 +7676,6 @@
 <translation id="9180380851667544951">साइट आपकी स्क्रीन शेयर कर सकती है</translation>
 <translation id="9182556968660520230">साइटों को सुरक्षित कॉन्टेंट चलाने की अनुमति न दें</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{ऐप्लिकेशन}one{# ऐप्लिकेशन}other{# ऐप्लिकेशन}}</translation>
-<translation id="9185567408827209876">हंगुल मोड में उम्मीदवारों को दिखाएं</translation>
 <translation id="9186963452600581158">अपने बच्चे के Google खाते से साइन इन करें</translation>
 <translation id="9188732951356337132">इस्तेमाल और निदान से जुड़ा डेटा भेजें. यह डिवाइस फ़िलहाल Google को निदान, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने आप भेज रहा है. इसका इस्तेमाल आपके बच्चे की पहचान करने के लिए नहीं किया जाएगा. यह सिस्टम और ऐप्लिकेशन की स्थिरता और दूसरे सुधारों में मदद करेगा. कुछ एग्रीगेट डेटा Google ऐप्लिकेशन और पार्टनर, जैसे कि Android डेवलपरों की भी मदद करेगा. अगर आपके बच्चे के लिए दूसरी 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा उसके Google खाते में सेव किया जा सकता है. <ph name="BEGIN_LINK2" />ज़्यादा जानें<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">अपने Android फ़ोन को सुरक्षा कुंजी के तौर पर इस्तेमाल करें</translation>
@@ -7714,7 +7721,6 @@
 <translation id="939252827960237676">स्क्रीनशॉट सेव नहीं हो सका</translation>
 <translation id="939598580284253335">'पासफ़्रेज़' दर्ज करें</translation>
 <translation id="939736085109172342">नया फ़ोल्डर</translation>
-<translation id="941070664607309480">आपका डिवाइस दिख जाए, इसके लिए क्लिक करें. ऐसा करने से आपके साथ डेटा शेयर किया जा सकेगा</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> एक Chrome टैब और ऑडियो शेयर कर रहा है.</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="947329552760389097">&amp;एलिमेंट जाँचें</translation>

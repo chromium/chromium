@@ -62,6 +62,7 @@
 <translation id="1332501820983677155">Συντομεύσεις λειτουργιών Google Chrome</translation>
 <translation id="1344653310988386453">Συμπερίληψη συνδέσμου προς την επισήμανση</translation>
 <translation id="1347468774581902829">Διαχείριση δραστηριότητας</translation>
+<translation id="1353372385686746892">Το Chrome στέλνει διαγνωστικά δεδομένα στην Google, στο πλαίσιο της βελτίωσης της εφαρμογής. <ph name="BEGIN_LINK" />Αλλαγή<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Αποσύνδεση και απενεργοπ. συγχρονισμού;</translation>
 <translation id="1373696734384179344">Ανεπαρκής μνήμη για τη λήψη του επιλεγμένου περιεχομένου.</translation>
 <translation id="1376578503827013741">Υπολογισμός…</translation>
@@ -651,6 +652,7 @@
 <translation id="510275257476243843">Απομένει 1 ώρα</translation>
 <translation id="5118713593561876160">Ενδιαφέροντα</translation>
 <translation id="5123685120097942451">Καρτέλα ανώνυμης περιήγησης</translation>
+<translation id="5126510351761255129">Επαλήθευση κάρτας</translation>
 <translation id="5132942445612118989">Συγχρονίστε κωδικούς πρόσβασης, ιστορικό και πολλά άλλα σε όλες τις συσκευές</translation>
 <translation id="5139940364318403933">Μάθετε πώς να χρησιμοποιείτε το Google Drive</translation>
 <translation id="5142281402488957685">Για νέες ειδήσεις, σύρετε προς τα κάτω για ανανέωση</translation>

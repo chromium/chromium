@@ -1163,6 +1163,7 @@
           <ph name="LIST_ITEM" />নিয়োগকর্তা বা স্কুল ব্রাউজিং অ্যাক্টিভিটি ট্র্যাক করতে পারে<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ইন্টারনেট পরিষেবা প্রদানকারী, ওয়েব ট্রাফিক মনিটর করতে পারে<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">সতর্কতা চালু করুন</translation>
 <translation id="4838327282952368871">স্বপ্নালু</translation>
 <translation id="4840250757394056958">আপনার Chrome ইতিহাস দেখুন</translation>
 <translation id="484462545196658690">অটো</translation>
@@ -1789,6 +1790,7 @@
 <translation id="7086090958708083563">ব্যবহারকারী আপলোড করার অনুরোধ জানিয়েছেন</translation>
 <translation id="7087282848513945231">দেশ</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে বিভিন্ন সাইটের স্টোর করা ডেটা ও অনুমতি ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
+<translation id="7096937462164235847">এই ওয়েবসাইটের পরিচয় যাচাই করা যায়নি।</translation>
 <translation id="7108338896283013870">লুকান</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> আপনার ক্যামেরা ব্যবহার করতে চায়</translation>
 <translation id="7108819624672055576">একটি এক্সটেনশন দ্বারা অনুমোদিত</translation>
@@ -2364,6 +2366,7 @@
 <translation id="9065203028668620118">সম্পাদনা</translation>
 <translation id="9065745800631924235">ইতিহাসে <ph name="TEXT" /> সার্চ</translation>
 <translation id="9069693763241529744">একটি এক্সটেনশন ব্লক করেছে</translation>
+<translation id="9073799351042754113">আপনি এই সাইটের জন্য নিরাপত্তা সম্পর্কিত সতর্কতা বন্ধ করার বিকল্প বেছে নিয়েছেন।</translation>
 <translation id="9078964945751709336">আরও তথ্য প্রয়োজন</translation>
 <translation id="9080712759204168376">অর্ডারের সারসংক্ষেপ</translation>
 <translation id="9089260154716455634">Off-Hours সংক্রান্ত নীতি:</translation>

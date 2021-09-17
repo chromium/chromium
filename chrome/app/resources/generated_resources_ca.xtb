@@ -30,7 +30,7 @@
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1031362278801463162">S'està carregant la previsualització</translation>
 <translation id="1032605640136438169">Revisa les condicions noves</translation>
-<translation id="103279545524624934">Allibera espai al disc per poder iniciar aplicacions d'Android.</translation>
+<translation id="103279545524624934">Allibera espai de disc per poder iniciar aplicacions d'Android.</translation>
 <translation id="1033780634303702874">Accedeix als dispositius en sèrie</translation>
 <translation id="1036348656032585052">Desactiva</translation>
 <translation id="1036511912703768636">Accedir a qualsevol d'aquests dispositius USB</translation>
@@ -267,6 +267,7 @@
 <translation id="1276994519141842946">No s'ha pogut instal·lar <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Crea un altre PIN que sigui diferent del teu PIN actual</translation>
 <translation id="1278859221870828664">Revisa les aplicacions i els serveis de Google Play</translation>
+<translation id="1279024913354609713">No permetis</translation>
 <translation id="127946606521051357">Hi ha un dispositiu a prop que està compartint</translation>
 <translation id="1280965841156951489">Edita els fitxers</translation>
 <translation id="1282465000333679776">Comparteix l'àudio del sistema</translation>
@@ -762,7 +763,7 @@
 <translation id="1782101999402987960">El teu administrador ha bloquejat les actualitzacions</translation>
 <translation id="1782196717298160133">S'està cercant el telèfon</translation>
 <translation id="1784707308176068866">Executa en segon pla quan una aplicació nativa col·laboradora ho sol·liciti</translation>
-<translation id="1784849162047402014">Queda poc espai al disc del dispositiu</translation>
+<translation id="1784849162047402014">Queda poc espai de disc del dispositiu</translation>
 <translation id="1787350673646245458">Imatge de l'usuari</translation>
 <translation id="1790194216133135334">Envia l'enllaç a <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Suprimeix l'accés</translation>
@@ -872,7 +873,7 @@
 <translation id="1887442540531652736">Error d'inici de sessió</translation>
 <translation id="1887597546629269384">Torna a dir "Ok Google"</translation>
 <translation id="1890674179660343635">&lt;span&gt;Identificador: &lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
-<translation id="1891362123137972260">Queda molt poc espai al disc. Allibera'n.</translation>
+<translation id="1891362123137972260">Queda molt poc espai de disc. Allibera'n.</translation>
 <translation id="189210018541388520">Obre en pantalla completa</translation>
 <translation id="1892341345406963517">Hola, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Altres idiomes</translation>
@@ -1976,7 +1977,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">De: <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Aquest lloc web ha baixat diversos fitxers automàticament</translation>
-<translation id="3046178388369461825">Queda molt poc espai al disc de Linux</translation>
+<translation id="3046178388369461825">Queda molt poc espai de disc de Linux</translation>
 <translation id="3046910703532196514">Pàgina web completa</translation>
 <translation id="304747341537320566">Motors de veu</translation>
 <translation id="3048917188684939573">Registres d'emissions i dispositius</translation>
@@ -2193,6 +2194,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="33022249435934718">Controls GDI</translation>
 <translation id="3302388252085547855">Introdueix una justificació...</translation>
 <translation id="3303260552072730022">Una extensió ha activat la pantalla completa.</translation>
+<translation id="3303795387212510132">Vols permetre que l'aplicació obri els enllaços <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Còpies</translation>
 <translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de descompte</translation>
@@ -2270,6 +2272,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="339178315942519818">Consulta les notificacions de les aplicacions de xat al teu dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Anàlisi de documents a Chrome</translation>
 <translation id="3394850431319394743">Es permet que utilitzin identificadors per reproduir contingut protegit</translation>
+<translation id="3396744558790608201">Fes clic amb el botó dret i selecciona Cerca imatges amb Google Lens per fer cerques en alguna zona del lloc web i obtenir més informació sobre el contingut visual que es mostra en navegar i comprar al web.</translation>
 <translation id="3396800784455899911">En fer clic al botó Accepta i continua, acceptes el processament descrit anteriorment per a aquests serveis de Google.</translation>
 <translation id="339722927132407568">Es bloqueja</translation>
 <translation id="3399432415385675819">Les notificacions es desactivaran</translation>
@@ -2410,7 +2413,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3519564332031442870">Servei d'impressió al processador dorsal</translation>
 <translation id="3519938335881974273">Desa la pàgina com a...</translation>
 <translation id="3521606918211282604">Canvia la mida del disc</translation>
-<translation id="3522088408596898827">Queda molt poc espai al disc. Allibera'n i torna-ho a provar.</translation>
+<translation id="3522088408596898827">Queda molt poc espai de disc. Allibera'n i torna-ho a provar.</translation>
 <translation id="3524965460886318643">Exporta les activitats</translation>
 <translation id="3526034519184079374">No es poden llegir o canviar les dades del lloc web</translation>
 <translation id="3527085408025491307">Carpeta</translation>
@@ -2749,7 +2752,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3870931306085184145">No hi ha cap contrasenya desada per a <ph name="DOMAIN" /></translation>
 <translation id="3871350334636688135">Passades 24 hores, l'administrador durà a terme una actualització amb què se suprimiran les teves dades locals quan reiniciïs el dispositiu. Desa les dades locals que necessitis a l'emmagatzematge en núvol abans que passin 24 hores.</translation>
 <translation id="3872220884670338524">Més accions, compte desat per a <ph name="USERNAME" /> a <ph name="DOMAIN" /></translation>
-<translation id="3872991219937722530">Allibera espai al disc o el dispositiu deixarà de respondre.</translation>
+<translation id="3872991219937722530">Allibera espai de disc o el dispositiu deixarà de respondre.</translation>
 <translation id="3873315167136380065">Si vols activar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronització<ph name="END_LINK" /> per suprimir la frase de contrasenya de sincronització</translation>
 <translation id="3873423927483480833">Mostra els PIN</translation>
 <translation id="3873915545594852654">S'ha produït un problema amb ARC++.</translation>
@@ -3180,6 +3183,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> està compartint una finestra.</translation>
 <translation id="4364830672918311045">Mostra les notificacions</translation>
 <translation id="4366138410738374926">La impressió ha començat</translation>
+<translation id="4369121877634339065">Arrossega qualsevol imatge per cercar</translation>
 <translation id="4370975561335139969">El correu electrònic i la contrasenya indicats no coincideixen</translation>
 <translation id="4371452868325715552">No s'ha pogut connectar amb el servidor. Comprova la connexió a la xarxa i torna-ho a provar. Si encara tens problemes, prova de reiniciar el Chromebook. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">S'està emetent l'escriptori</translation>
@@ -4959,7 +4963,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6318125393809743217">Inclou un fitxer policies.json amb les configuracions de la política.</translation>
 <translation id="6318407754858604988">S'ha iniciat la baixada</translation>
 <translation id="6318944945640833942">No es detecta cap impressora. Torna a introduir-ne l'adreça.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" />: es processa localment i funciona sense connexió.</translation>
 <translation id="6321407676395378991">Activa l'estalvi de pantalla</translation>
 <translation id="6322370287306604163">Desbloqueja el dispositiu més ràpidament amb l'empremta digital</translation>
 <translation id="6322653941595359182">Envia i rep missatges de text amb Chromebook</translation>
@@ -5770,6 +5773,10 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7222204278952406003">Chrome és el navegador predeterminat</translation>
 <translation id="7222232353993864120">Adreça electrònica</translation>
 <translation id="7225179976675429563">Falta el tipus de xarxa</translation>
+<translation id="7226485026248318204">Els teus records de Google Fotos es mostren aquí. Només són visibles quan tens la sessió iniciada.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Gestiona què veuràs als teus records a <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Manipula la configuració que determina si els llocs web poden utilitzar funcions com ara la geolocalització, el micròfon, la càmera, etc.</translation>
 <translation id="7228523857728654909">Bloqueig de pantalla i inici de sessió</translation>
 <translation id="7230222852462421043">&amp;Restaura la finestra</translation>
@@ -6082,7 +6089,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7556033326131260574">Smart Lock no ha pogut verificar el vostre compte. Escriviu la contrasenya per accedir-hi.</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" /> no pot recuperar la vostra configuració. Per solucionar l'error, <ph name="SHORT_PRODUCT_NAME" /> ha de restablir el dispositiu amb Powerwash.</translation>
 <translation id="7557194624273628371">Redirecció de ports de Linux</translation>
-<translation id="7557411183415085169">Queda poc espai al disc de Linux</translation>
+<translation id="7557411183415085169">Queda poc espai de disc de Linux</translation>
 <translation id="7559719679815339381">Espereu... L'aplicació Quiosc s'està actualitzant. No extraieu la memòria USB.</translation>
 <translation id="7560756177962144929">Sincronitza el teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Sempre</translation>
@@ -6199,6 +6206,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="767147716926917172">Envia automàticament dades de diagnòstic i d'ús a Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, a <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Desactiva tots els ports que es redirigeixen a Linux</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicacions</translation>
 <translation id="7674542105240814168">S'ha denegat l'accés a la ubicació</translation>
 <translation id="7676119992609591770">S'ha trobat <ph name="NUM" /> pestanya per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envia la teva veu a Google per permetre els dictats en qualsevol camp de text.</translation>
@@ -7655,7 +7663,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9180380851667544951">El lloc web pot compartir la pantalla</translation>
 <translation id="9182556968660520230">No permetis que els llocs web reprodueixin contingut protegit</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicació}other{# aplicacions}}</translation>
-<translation id="9185567408827209876">Mostra els candidats en mode hangul</translation>
 <translation id="9186963452600581158">Inicia la sessió amb el Compte de Google d'un nen</translation>
 <translation id="9188732951356337132">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si l'opció Activitat al web i en aplicacions addicional està activada per al teu fill, és possible que aquestes dades es desin al seu Compte de Google. <ph name="BEGIN_LINK2" />Més informació<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Fes servir el telèfon Android com a clau de seguretat</translation>
@@ -7701,7 +7708,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="939252827960237676">S'ha produït un error en desar la captura de pantalla.</translation>
 <translation id="939598580284253335">Introduïu la frase de contrasenya</translation>
 <translation id="939736085109172342">Carpeta nova</translation>
-<translation id="941070664607309480">Fes clic per ser visible i permetre que comparteixi amb tu</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> està compartint una pestanya de Chrome i l'àudio.</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="947329552760389097">&amp;Inspecciona els elements</translation>

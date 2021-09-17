@@ -267,6 +267,7 @@
 <translation id="1276994519141842946">No se pudo desinstalar <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Crea un nuevo PIN diferente al actual.</translation>
 <translation id="1278859221870828664">Revisa las apps y los servicios que se ofrecen a través de Google Play</translation>
+<translation id="1279024913354609713">No permitir</translation>
 <translation id="127946606521051357">Un dispositivo cercano intenta compartir contenido</translation>
 <translation id="1280965841156951489">Editar archivos</translation>
 <translation id="1282465000333679776">Compartir el audio del sistema</translation>
@@ -2191,6 +2192,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="33022249435934718">A cargo de GDI</translation>
 <translation id="3302388252085547855">Escribir justificación…</translation>
 <translation id="3303260552072730022">Una extensión activó la pantalla completa.</translation>
+<translation id="3303795387212510132">¿Deseas permitir que la app abra vínculos de <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Copias</translation>
 <translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de descuento</translation>
@@ -2268,6 +2270,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="339178315942519818">Mira las notificaciones de las apps de chat en tu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3393554941209044235">Análisis de documentos de Chrome</translation>
 <translation id="3394850431319394743">Puede usar identificadores para reproducir contenido protegido.</translation>
+<translation id="3396744558790608201">Haz clic con el botón derecho y selecciona "Buscar imágenes con Google Lens" para buscar cualquier parte del sitio y obtener más información sobre el contenido visual que ves mientras navegas y realizas compras en la Web.</translation>
 <translation id="3396800784455899911">Al hacer clic en el botón "Aceptar y continuar", confirmas el procesamiento descrito anteriormente para estos servicios de Google.</translation>
 <translation id="339722927132407568">Intermitente</translation>
 <translation id="3399432415385675819">Se inhabilitarán las notificaciones</translation>
@@ -3179,6 +3182,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> comparte una ventana.</translation>
 <translation id="4364830672918311045">Mostrar notificaciones</translation>
 <translation id="4366138410738374926">Se inició la impresión</translation>
+<translation id="4369121877634339065">Arrastra cualquier imagen para buscarla.</translation>
 <translation id="4370975561335139969">El correo electrónico y la contraseña que ingresaste no coinciden.</translation>
 <translation id="4371452868325715552">No se pudo establecer una conexión con el servidor. Comprueba la conexión de red y vuelve a intentarlo. Si los problemas persisten, reinicia tu Chromebook. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Transmitiendo el escritorio</translation>
@@ -4956,7 +4960,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6318125393809743217">Incluye un archivo policies.json con la configuración de las políticas.</translation>
 <translation id="6318407754858604988">Comenzó la descarga</translation>
 <translation id="6318944945640833942">No se detectó ninguna impresora. Vuelve a ingresar la dirección de una impresora.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" /> se procesa de manera local y funciona sin conexión.</translation>
 <translation id="6321407676395378991">Activar el protector de pantalla</translation>
 <translation id="6322370287306604163">Desbloquea más rápido con tu huella dactilar</translation>
 <translation id="6322653941595359182">Envía y recibe mensajes de texto en tu Chromebook.</translation>
@@ -5767,6 +5770,10 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7222204278952406003">Chrome es el navegador predeterminado</translation>
 <translation id="7222232353993864120">Dirección de correo electrónico</translation>
 <translation id="7225179976675429563">Falta el tipo de red.</translation>
+<translation id="7226485026248318204">Aquí se muestran tus recuerdos de Google Fotos. Para verlos, debes acceder a la cuenta.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Para administrar lo que se muestra en tus recuerdos, accede a <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Se manipularán las opciones de configuración que especifican si los sitios web pueden usar funciones, como la ubicación geográfica, el micrófono, la cámara, etc.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla y acceso</translation>
 <translation id="7230222852462421043">&amp;Restablecer ventana</translation>
@@ -6196,6 +6203,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="767147716926917172">Envía automáticamente datos de uso y diagnóstico a Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, en <ph name="PAGE_TITLE" /></translation>
 <translation id="7674416868315480713">Desactivar todos los puertos que se reenvían en Linux</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>
 <translation id="7674542105240814168">Se denegó el acceso a la ubicación</translation>
 <translation id="7676119992609591770">Se encontró <ph name="NUM" /> pestaña para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía tu voz a Google para habilitar el dictado en cualquier campo de texto.</translation>
@@ -7651,7 +7659,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="9180380851667544951">El sitio puede compartir la pantalla</translation>
 <translation id="9182556968660520230">No permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
-<translation id="9185567408827209876">Mostrar los candidatos en modo hangul</translation>
 <translation id="9186963452600581158">Acceder con la Cuenta de Google de un niño</translation>
 <translation id="9188732951356337132">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la "Actividad de web y de aplicaciones adicional" en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Usa tu teléfono Android como llave de seguridad</translation>
@@ -7697,7 +7704,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="939252827960237676">No se pudo guardar la captura de pantalla.</translation>
 <translation id="939598580284253335">Ingresar frase de contraseña</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>
-<translation id="941070664607309480">Haz clic para que te pueda ver y enviar contenido</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> comparte una pestaña de Chrome y audio.</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947329552760389097">Analizar elementos</translation>

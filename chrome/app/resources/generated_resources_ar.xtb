@@ -271,6 +271,7 @@
 <translation id="1276994519141842946">تعذّر إلغاء تثبيت <ph name="APP_NAME" />.</translation>
 <translation id="1277020343994096713">يجب إنشاء رقم تعريف شخصي جديد يختلف عن رقم التعريف الشخصي الحالي.</translation>
 <translation id="1278859221870828664">‏مراجعة التطبيقات والخدمات في Google Play</translation>
+<translation id="1279024913354609713">عدم السماح</translation>
 <translation id="127946606521051357">هناك جهاز قريب يشارك محتوى</translation>
 <translation id="1280965841156951489">تعديل الملفات</translation>
 <translation id="1282465000333679776">مشاركة صوت النظام</translation>
@@ -2200,6 +2201,7 @@
 <translation id="33022249435934718">معالجات واجهة الجهاز الرسومية</translation>
 <translation id="3302388252085547855">إدخال السبب...</translation>
 <translation id="3303260552072730022">تم تبديل إضافة إلى ملء الشاشة.</translation>
+<translation id="3303795387212510132">هل تريد السماح للتطبيق بفتح روابط <ph name="PROTOCOL_SCHEME" />؟</translation>
 <translation id="3303818374450886607">النسخ</translation>
 <translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>
 <translation id="3304212451103136496">خصم <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2277,6 +2279,7 @@
 <translation id="339178315942519818">عرض الإشعارات من تطبيقات المحادثات الخاصة بك على الجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3394850431319394743">المواقع الإلكترونية التي يُسمح لها باستخدام معرّفات لتشغيل المحتوى المحمي</translation>
+<translation id="3396744558790608201">‏انقر بزر الماوس الأيمن ثم اختَر "البحث عن الصور باستخدام عدسة Google" للبحث عن مزيد من المعلومات عن أي محتوى مرئي يظهر لك في أي صفحة من الموقع الإلكتروني أثناء التصفّح والتسوّق على الإنترنت.</translation>
 <translation id="3396800784455899911">‏بالنقر على الزر "قبول ومتابعة"، فأنت توافق على المعالجة الموضّحة أعلاه لخدمات Google هذه.</translation>
 <translation id="339722927132407568">يتوقف</translation>
 <translation id="3399432415385675819">سيتم إيقاف الإشعارات</translation>
@@ -3185,6 +3188,7 @@
 <translation id="4364567974334641491">يشارك <ph name="APP_NAME" /> نافذة.</translation>
 <translation id="4364830672918311045">عرض الإشعارات</translation>
 <translation id="4366138410738374926">بدأت عملية الطباعة</translation>
+<translation id="4369121877634339065">اسحب الماوس فوق أي صورة للبحث عنها.</translation>
 <translation id="4370975561335139969">البريد الإلكتروني وكلمة المرور اللذان أدخلتهما غير متطابقين</translation>
 <translation id="4371452868325715552">‏تعذَّر الاتصال بالخادم. يُرجى التحقّق من الاتصال بالشبكة وإعادة المحاولة. إذا كنت لا تزال تواجه مشكلة، يُرجى إعادة تشغيل جهاز Chromebook. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="4373966964907728675">يتم الآن إرسال سطح المكتب</translation>
@@ -4962,7 +4966,6 @@
 <translation id="6318125393809743217">‏إدراج ملف policies.json في إعدادات السياسة</translation>
 <translation id="6318407754858604988">بدأ التنزيل</translation>
 <translation id="6318944945640833942">تعذّر العثور على طابعة. يُرجى إدخال عنوان الطابعة مرة أخرى.</translation>
-<translation id="6319081871916332821">تتم معالجة اللغة <ph name="LANGUAGE" /> محليًّا وبلا اتصال بالإنترنت.</translation>
 <translation id="6321407676395378991">تفعيل شاشة التوقف</translation>
 <translation id="6322370287306604163">فتح القفل بشكل أسرع من خلال بصمة الإصبع</translation>
 <translation id="6322653941595359182">‏إرسال رسائل نصيّة واستلامها من جهاز Chromebook</translation>
@@ -5773,6 +5776,10 @@
 <translation id="7222204278952406003">‏Chrome هو متصفِّحك التلقائي</translation>
 <translation id="7222232353993864120">عنوان البريد الإلكتروني</translation>
 <translation id="7225179976675429563">نوع الشبكة مفقود</translation>
+<translation id="7226485026248318204">‏يتم عرض ذكرياتك من "صور Google" هنا. وستظهر فقط عندما تكون مسجّلاً للدخول.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        يمكنك إدارة الذكريات التي يتم عرضها من خلال <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">معالجة الإعدادات التي تحدد ما إذا كان بإمكان المواقع الإلكترونية استخدام ميزات مثل المواقع الجغرافية والميكروفون والكاميرا، وغيرها</translation>
 <translation id="7228523857728654909">قفل الشاشة وتسجيل الدخول</translation>
 <translation id="7230222852462421043">استعادة النافذة</translation>
@@ -6202,6 +6209,7 @@
 <translation id="767147716926917172">‏يمكنك إرسال بيانات التشخيص والاستخدام تلقائيًا إلى Google.</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />، في <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">‏إيقاف جميع المنافذ التي يتم إعادة توجيهها في نظام التشغيل Linux</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> تطبيق</translation>
 <translation id="7674542105240814168">تم رفض الوصول إلى الموقع الجغرافي</translation>
 <translation id="7676119992609591770">تم العثور على <ph name="NUM" /> علامة تبويب حول "<ph name="SEARCH_TEXT" />".</translation>
 <translation id="7676867886086876795">‏يمكنك إرسال صوتك إلى Google للسماح بالإملاء في أي حقل نصي.</translation>
@@ -7660,7 +7668,6 @@
 <translation id="9180380851667544951">يمكن للموقع الإلكتروني مشاركة شاشتك.</translation>
 <translation id="9182556968660520230">عدم السماح للمواقع الإلكترونية بتشغيل المحتوى المحمي</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{تطبيق واحد}zero{# تطبيق}two{تطبيقان}few{# تطبيقات}many{# تطبيقًا}other{# تطبيق}}</translation>
-<translation id="9185567408827209876">‏عرض الخيارات في وضع Hangul</translation>
 <translation id="9186963452600581158">‏تسجيل الدخول باستخدام حساب طفل على Google</translation>
 <translation id="9188732951356337132">‏يمكنك إرسال بيانات الاستخدام والتشخيص. يرسل هذا الجهاز حاليًا بيانات استخدام التطبيق والجهاز والتشخيص تلقائيًا إلى Google. لن يتم استخدام هذا لتعريف حسابك الفرعي وسيساعد في استقرار عمل النظام والتطبيقات، بالإضافة إلى التحسينات الأخرى. كما ستساعد بعض البيانات المجمّعة تطبيقات Google وشركائها، مثل مطوّري برامج نظام التشغيل Android. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لحسابك الفرعي، قد يتم حفظ هذه البيانات في حسابك على Google. <ph name="BEGIN_LINK2" />مزيد من المعلومات<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">‏استخدام هاتفك الذي يعمل بنظام التشغيل Android كمفتاح أمان</translation>
@@ -7706,7 +7713,6 @@
 <translation id="939252827960237676">تعذّر حفظ لقطة الشاشة</translation>
 <translation id="939598580284253335">إدخال عبارة المرور</translation>
 <translation id="939736085109172342">مجلد جديد</translation>
-<translation id="941070664607309480">انقر لإظهار جهازك حتى يتمكن الجهاز القريب من مشاركة المحتوى معك.</translation>
 <translation id="942532530371314860">‏يشارك <ph name="APP_NAME" /> علامة تبويب متصفح Chrome والصوت.</translation>
 <translation id="945522503751344254">إرسال تعليقات</translation>
 <translation id="947329552760389097">وعناصر الفحص</translation>

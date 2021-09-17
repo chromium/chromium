@@ -526,6 +526,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6189413832092199491">Ulæst</translation>
 <translation id="6196207969502475924">Talesøgning</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Luk {COUNT} fane}one{Luk {COUNT} fane}other{Luk {COUNT} faner}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Se, hvad du kan synkronisere<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Oversæt aldrig</translation>
 <translation id="6223816392543092032">Få dine bogmærker, din historik, dine adgangskoder og andre indstillinger på alle dine enheder.</translation>
 <translation id="6232329973559504466">Søgning i inkognitotilstand</translation>
@@ -724,6 +725,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 
 Websites kan bruge cookies til at se din browseraktivitet på forskellige websites for f.eks. at tilpasse annoncer.</translation>
 <translation id="7971521879845308059">Bloker pop op-vinduer</translation>
+<translation id="797413074872316787">Aktivér synkronisering for at synkronisere og tilpasse på alle dine enheder.</translation>
 <translation id="7982789257301363584">Netværk</translation>
 <translation id="7993619969781047893">Funktioner på visse websites fungerer muligvis ikke</translation>
 <translation id="800361585186029508">Åbner de angivne webadresser i Google Chrome.</translation>
@@ -740,6 +742,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8076014560081431679">Gemte websiteindstillinger slettes ikke og kan afspejle dine søgevaner. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Denne indstilling er administreret. Tryk to gange for at få flere oplysninger.</translation>
 <translation id="8080028325999236607">Luk alle faner</translation>
+<translation id="8103864314410529527">Din organisation begrænser, hvad du kan synkronisere. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Deaktiver</translation>
 <translation id="8114753159095730575">Filer kan downloades. Se valgmulighederne nederst på skærmen.</translation>
 <translation id="8156478151976189188">Password Sync fungerer ikke</translation>

@@ -51,6 +51,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Membatalkan pengimbasan</translation>
 <translation id="1851218745569890714">Persidangan Video</translation>
+<translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Semakan perkakasan</translation>
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
@@ -78,6 +79,7 @@
 <translation id="2364498172489649528">Lulus</translation>
 <translation id="2380886658946992094">Perundangan</translation>
 <translation id="2391082728065870591">Hantar Laporan Maklum balas</translation>
+<translation id="240334320630038121">Pad sentuh <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
 <translation id="2418150275289244458">Buka dalam tetapan</translation>
 <translation id="2446553403094072641">Ketepatan titik terapung</translation>
@@ -101,6 +103,7 @@
 <translation id="3008341117444806826">MUAT SEMULA</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3056720590588772262">Titik akhir</translation>
 <translation id="3069085583900247081">Ujian gagal</translation>
 <translation id="3083667275341675831">Diagnostik Ketersambungan</translation>
 <translation id="3091839911843451378">Gagal - Dihentikan</translation>
@@ -121,8 +124,10 @@
 <translation id="3328783797891415197">Ujian sedang berjalan</translation>
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369013195428705271">Adakah anda pasti anda ingin mengosongkan semua sejarah cetak? Tugas cetak anda yang masih dijalankan tidak akan dipadamkan.</translation>
+<translation id="3412146654386081914">Skrin sentuh <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
+<translation id="3440478087746699229">Dalaman</translation>
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> daripada <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Mengimbas halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Mencetak</translation>
@@ -130,6 +135,7 @@
 <translation id="3527036260304016759">Gagal - Ralat tidak diketahui</translation>
 <translation id="3532980081107202182">Kira-kira <ph name="MIN_REMAINING" /> minit lagi</translation>
 <translation id="3540383942695635079">Alamat MAC</translation>
+<translation id="3565064564551103223">IP dibenarkan</translation>
 <translation id="357889014807611375">Wi-Fi bermeter</translation>
 <translation id="3582041541988388905">Tiada sambungan <ph name="NETWORK_NAME" /> dikesan</translation>
 <translation id="3595596368722241419">Bateri penuh</translation>
@@ -309,6 +315,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6302401976930124515">Ujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="6325525973963619867">Gagal</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
+<translation id="6379086450106841622">Skrin sentuh</translation>
 <translation id="6388847657025262518">Penyuap dokumen pengimbas tersekat. Semak penyuap dan cuba lagi.</translation>
 <translation id="641081527798843608">Padanan subjek</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -343,6 +350,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6977381486153291903">Semakan perisian tegar</translation>
 <translation id="6982876849933694860">Untuk menyediakan sambungan baharu, pergi ke <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> mengurus peranti ini dan mempunyai akses kepada semua aktiviti pengguna, termasuk halaman web yang dilawati, kata laluan dan e-mel.</translation>
+<translation id="7039041976777695848">Papan kekunci <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Pengendali</translation>
 <translation id="7059230779847288458">Mengecas, <ph name="TIME_VALUE" /> sehingga penuh</translation>
 <translation id="708426984172631313">DIHENTIKAN</translation>
@@ -387,6 +395,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7701040980221191251">Tiada</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Kiraan kitaran</translation>
+<translation id="7747039790905080783">Kunci prakongsi</translation>
 <translation id="7762130827864645708">Penukaran kata laluan anda berjaya. Sila gunakan kata laluan baharu mulai sekarang.</translation>
 <translation id="7763470514545477072">Padanan akhiran domain</translation>
 <translation id="7769672763586021400">ID Model</translation>
@@ -396,8 +405,10 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7846634333498149051">Papan kekunci</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
+<translation id="7882501334836096755">Kunci awam</translation>
 <translation id="7895471513946376273">Temukan alatan lukisan dan reka bentuk</translation>
 <translation id="7936303884198020182">Pelayan tanpa nama ditemukan</translation>
+<translation id="7943235353293548836">Selang pengekal berterusan</translation>
 <translation id="7960831585769876809">Suhu</translation>
 <translation id="7978412674231730200">Kunci persendirian</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
@@ -447,6 +458,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8726019395068607495">Dihentikan - Pintu terbuka</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8747900814994928677">Sahkan penukaran</translation>
+<translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Lalai</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>
@@ -462,7 +474,9 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Gagal - Dulang tiada</translation>
 <translation id="8928727111548978589">Gagal - Kehabisan kertas</translation>
+<translation id="8930521118335213258">Setara</translation>
 <translation id="8930622219860340959">Wayarles</translation>
+<translation id="8936793075252196307">Alamat IP klien</translation>
 <translation id="8968751544471797276">Kadar pengecasan</translation>
 <translation id="8970109610781093811">Jalankan sekali lagi</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Imbas}=1{Imbas halaman {NUMBER_OF_PAGES}}other{Imbas halaman {NUMBER_OF_PAGES}}}</translation>
@@ -478,6 +492,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="9137526406337347448">Perkhidmatan Google</translation>
 <translation id="9149391708638971077">Jalankan Ujian memori</translation>
 <translation id="9173638680043580060">Kurang seminit lagi</translation>
+<translation id="917720651393141712">Ujian</translation>
 <translation id="9190063653747922532">L2TP/IPsec + kekunci praperkongsian</translation>
 <translation id="9211490828691860325">Semua meja</translation>
 <translation id="939519157834106403">SSID</translation>

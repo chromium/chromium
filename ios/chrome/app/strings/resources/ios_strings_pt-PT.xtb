@@ -526,6 +526,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6189413832092199491">Não lidas</translation>
 <translation id="6196207969502475924">Pesquisa por Voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fechar {COUNT} separador}other{Fechar {COUNT} separadores}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Veja o que pode sincronizar<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Nunca traduzir</translation>
 <translation id="6223816392543092032">Obtenha os seus marcadores, histórico, palavras-passe e outras definições em todos os dispositivos.</translation>
 <translation id="6232329973559504466">Pesquisa na Navegação anónima</translation>
@@ -724,6 +725,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 
 Os sites podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="7971521879845308059">Bloquear Pop-ups</translation>
+<translation id="797413074872316787">Para sincronizar e personalizar dados entre dispositivos, ative a sincronização.</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7993619969781047893">As funcionalidades em alguns sites podem falhar.</translation>
 <translation id="800361585186029508">Abre os URLs introduzidos no Google Chrome.</translation>
@@ -740,6 +742,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8076014560081431679">As definições de sites guardadas não são eliminadas e podem refletir os seus hábitos de navegação. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Esta definição é gerida. Toque duas vezes para obter mais informações.</translation>
 <translation id="8080028325999236607">Fechar Todos os Separadores</translation>
+<translation id="8103864314410529527">A sua entidade limita o que pode sincronizar. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desativar</translation>
 <translation id="8114753159095730575">A transferência de ficheiros está disponível. Opções disponíveis junto à parte inferior do ecrã.</translation>
 <translation id="8156478151976189188">A Sincronização de palavras-passe não está a funcionar</translation>

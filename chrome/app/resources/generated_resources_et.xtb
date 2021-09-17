@@ -269,6 +269,7 @@
 <translation id="1276994519141842946">Rakendust <ph name="APP_NAME" /> ei saanud installida</translation>
 <translation id="1277020343994096713">Looge uus PIN-kood, mis erineb teie praegusest PIN-koodist</translation>
 <translation id="1278859221870828664">Vaadake üle Google Play rakendused ja teenused</translation>
+<translation id="1279024913354609713">Ära luba</translation>
 <translation id="127946606521051357">Läheduses asuv seade jagab</translation>
 <translation id="1280965841156951489">Muuda faile</translation>
 <translation id="1282465000333679776">Jaga süsteemi heli</translation>
@@ -2200,6 +2201,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="33022249435934718">GDI pidemed</translation>
 <translation id="3302388252085547855">Sisestage põhjendus …</translation>
 <translation id="3303260552072730022">Laiendus aktiveeris täisekraanrežiimi.</translation>
+<translation id="3303795387212510132">Kas lubada rakendusel <ph name="PROTOCOL_SCHEME" />-linke avada?</translation>
 <translation id="3303818374450886607">Koopiad</translation>
 <translation id="3303855915957856445">Otsingutulemusi ei leitud</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> odavam</translation>
@@ -2277,6 +2279,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="339178315942519818">Vaadake märguandeid oma seadme <ph name="DEVICE_TYPE" /> vestlusrakendustes</translation>
 <translation id="3393554941209044235">Chrome'i dokumendi analüüs</translation>
 <translation id="3394850431319394743">Lubatud identifikaatorite alusel kaitstud sisu esitada</translation>
+<translation id="3396744558790608201">Tehke paremklikk ning valige käsk „Otsi Google'i Lensiga pilte“, et otsida saidi konkreetset piirkonda ja saada lisateavet visuaalse sisu kohta, mida sirvimisel ja veebis osteldes näete.</translation>
 <translation id="3396800784455899911">Kui klõpsate nupul „Nõustu ja jätka”, nõustute nende Google'i teenuste puhul andmete ülalkirjeldatud töötlemisega.</translation>
 <translation id="339722927132407568">Hangub</translation>
 <translation id="3399432415385675819">Märguanded keelatakse</translation>
@@ -3188,6 +3191,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4364567974334641491"><ph name="APP_NAME" /> jagab akent.</translation>
 <translation id="4364830672918311045">Kuva märguanded</translation>
 <translation id="4366138410738374926">Alustati printimist</translation>
+<translation id="4369121877634339065">Otsimiseks lohistage ükskõik millise pildi kohal</translation>
 <translation id="4370975561335139969">Sisestatud e-posti aadress ja parool ei ühildu</translation>
 <translation id="4371452868325715552">Ei õnnestunud serveriga ühendust luua. Kontrollige võrguühendust ja proovige uuesti. Kui teil on endiselt probleeme, proovige Chromebook taaskäivitada. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Töölaua ülekandmine</translation>
@@ -4965,7 +4969,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6318125393809743217">Kaasake reegli seadistusse fail policies.json.</translation>
 <translation id="6318407754858604988">Allalaadimist alustati</translation>
 <translation id="6318944945640833942">Printerit ei õnnestunud tuvastada. Sisestage printeri aadress uuesti.</translation>
-<translation id="6319081871916332821"><ph name="LANGUAGE" /> keel töödeldakse kohalikult ja see töötab võrguühenduseta.</translation>
 <translation id="6321407676395378991">Ekraanisäästja sisselülitamine</translation>
 <translation id="6322370287306604163">Avage sõrmejälje abil kiiremini</translation>
 <translation id="6322653941595359182">Saatke ja võtke oma Chromebookis vastu tekstisõnumeid</translation>
@@ -5776,6 +5779,10 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7222204278952406003">Chrome on teie vaikebrauser</translation>
 <translation id="7222232353993864120">E-posti aadress</translation>
 <translation id="7225179976675429563">Võrgu tüüp puudub</translation>
+<translation id="7226485026248318204">Teenuse Google Photos mälestused kuvatakse siin. Need on nähtavad ainult siis, kui olete sisse logitud.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Hallake mälestustes nähtavat aadressil <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Muutke seadeid, mis määravad, kas veebisaidid saavad kasutada selliseid funktsioone nagu asukoha määramine, mikrofon, kaamera jne.</translation>
 <translation id="7228523857728654909">Ekraanilukk ja sisselogimine</translation>
 <translation id="7230222852462421043">&amp;Taasta aken</translation>
@@ -6205,6 +6212,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="767147716926917172">Saada Google'ile automaatselt kasutusstatistikat</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> lehel <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Inaktiveeri kõik pordid, mis Linuxis on edasi suunatud</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> rakendust</translation>
 <translation id="7674542105240814168">Asukohale juurdepääsu luba ei antud</translation>
 <translation id="7676119992609591770">Päringule „<ph name="SEARCH_TEXT" />” leiti <ph name="NUM" /> vaheleht</translation>
 <translation id="7676867886086876795">Saatke oma hääl Google'ile, et lubada dikteerimine kõigil tekstiväljadel.</translation>
@@ -7660,7 +7668,6 @@ Sellele toimingule saab määrata mitu lülitit</translation>
 <translation id="9180380851667544951">Sait saab jagada teie ekraanikuva</translation>
 <translation id="9182556968660520230">Ära luba saitidel kaitstud sisu esitada</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Rakendus}other{# rakendust}}</translation>
-<translation id="9185567408827209876">Kuva kandidaadid hanguli režiimis</translation>
 <translation id="9186963452600581158">Logige sisse oma lapse Google'i kontoga</translation>
 <translation id="9188732951356337132">Saada kasutus- ja diagnostikaandmeid. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja  diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Kasutage oma Android-telefoni turvavõtmena</translation>
@@ -7706,7 +7713,6 @@ Sellele toimingule saab määrata mitu lülitit</translation>
 <translation id="939252827960237676">Ekraanipilti ei õnnestunud salvestada</translation>
 <translation id="939598580284253335">Sisesta parool</translation>
 <translation id="939736085109172342">Uus kaust</translation>
-<translation id="941070664607309480">Klõpsake nähtavaks muutmiseks, et teiega saaks jagada</translation>
 <translation id="942532530371314860">Rakendus <ph name="APP_NAME" /> jagab Chrome'i vahelehte ja heli.</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="947329552760389097">&amp;Elementide uurimine</translation>

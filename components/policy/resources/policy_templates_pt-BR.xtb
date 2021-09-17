@@ -6094,6 +6094,20 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
           Se você definir esta política, o usuário não poderá mudá-la ou substituí-la.
 
           Se esta política não for definida, os atalhos de recursos de acessibilidade serão ativados por padrão.</translation>
+<translation id="8519563483516917705">Esta configuração permite que dispositivos selecionem uma versão de atualização específica do <ph name="PRODUCT_OS_NAME" />.
+
+      Se ela não for definida, os dispositivos serão atualizados de acordo com outras configurações ou para a versão mais recente disponível.
+
+      Se ela for definida, os dispositivos serão atualizados para a versão selecionada.
+
+      O formato exato do valor desta política é uma implementação do serviço de atualização e pode mudar no futuro. O valor da política não é processado no dispositivo.
+
+      Se usada com <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, esta política será priorizada pelo serviço de atualização.
+      Ao contrário da <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, que permite atualizações secundárias, os dispositivos continuarão na versão selecionada até que o valor desta política seja mudado.
+
+      Se usada com <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, o dispositivo poderá ser revertido para uma versão anterior específica.
+
+      Aviso: não recomendamos configurar as restrições de versão, já que elas podem impedir atualizações de software e correções de segurança importantes. Restringir as atualizações para uma versão específica pode colocar os usuários em risco.</translation>
 <translation id="8520064498689833152">Forçar o uso do SafeSearch na Pesquisa Google e o Modo restrito do YouTube pelo menos no nível moderado</translation>
 <translation id="8524334245528364388">URL para um arquivo JSON com uma lista de servidores de impressão.</translation>
 <translation id="8525526490824335042">Contêiner Linux</translation>

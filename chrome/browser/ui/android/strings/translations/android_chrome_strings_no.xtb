@@ -62,6 +62,7 @@
 <translation id="1332501820983677155">Hurtigtaster for funksjoner i Google Chrome.</translation>
 <translation id="1344653310988386453">Inkluder link til markert tekst</translation>
 <translation id="1347468774581902829">Administrer aktivitet</translation>
+<translation id="1353372385686746892">For å bidra til å gjøre appen bedre sender Chrome diagnostikkdata til Google. <ph name="BEGIN_LINK" />Endre<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Vil du logge av og slå av synkronisering?</translation>
 <translation id="1373696734384179344">Det er ikke nok ledig minne til å laste ned det valgte innholdet.</translation>
 <translation id="1376578503827013741">Beregner …</translation>
@@ -651,6 +652,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="510275257476243843">1 time igjen</translation>
 <translation id="5118713593561876160">Interesser</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
+<translation id="5126510351761255129">Bekreft kortet ditt</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
 <translation id="5139940364318403933">Finn ut hvordan du bruker Google Disk</translation>
 <translation id="5142281402488957685">For å se nye artikler, dra ned for å laste inn feeden på nytt</translation>

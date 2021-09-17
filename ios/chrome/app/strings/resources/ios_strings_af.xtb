@@ -526,6 +526,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6189413832092199491">Nie gelees nie</translation>
 <translation id="6196207969502475924">Stemsoektog</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Maak {COUNT} oortjie toe}other{Maak {COUNT} oortjies toe}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Sien wat jy kan sinkroniseer<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Moet nooit vertaal nie</translation>
 <translation id="6223816392543092032">Kry jou boekmerke, geskiedenis, wagwoorde en ander instellings op al jou toestelle.</translation>
 <translation id="6232329973559504466">Incognito-soektog</translation>
@@ -724,6 +725,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 
 Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien, byvoorbeeld, om advertensies te personaliseer.</translation>
 <translation id="7971521879845308059">Blokkeer opspringers</translation>
+<translation id="797413074872316787">Skakel sinkronisering aan om oor toestelle heen te sinkroniseer en te personaliseer.</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="7993619969781047893">Kenmerke op sommige werwe kan breek</translation>
 <translation id="800361585186029508">Maak die URL'e wat ingevoer is in Google Chrome oop.</translation>
@@ -740,6 +742,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8076014560081431679">Gestoorde werfinstellings sal nie uitgevee word nie en sal dalk jou blaaigewoontes weerspieël. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Hierdie instelling word bestuur. Dubbeltik vir meer inligting.</translation>
 <translation id="8080028325999236607">Maak alle oortjies toe</translation>
+<translation id="8103864314410529527">Jou organisasie beperk wat jy kan sinkroniseer. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Skakel af</translation>
 <translation id="8114753159095730575">Lêer kan afgelaai word. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="8156478151976189188">Wagwoordsinkronisering werk nie</translation>
