@@ -97,6 +97,9 @@ public class PriceAlertsMessageCardTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
+    @Rule
+    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
+
     @Before
     public void setUp() {
         Intents.init();
