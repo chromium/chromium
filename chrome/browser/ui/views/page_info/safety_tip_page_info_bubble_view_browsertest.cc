@@ -1661,18 +1661,19 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  content::WebContents* web_contents() { return web_contents_; }
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
   content::test::PrerenderTestHelper* prerender_helper() {
     return &prerender_helper_;
   }
 
  private:
-  content::WebContents* web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
@@ -1724,4 +1725,28 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
   // Make sure that the prerender was activated when the main frame was
   // navigated to the prerender_url.
   ASSERT_TRUE(host_observer.was_activated());
+}
+
+// Ensure prerender navigations don't close the Safety Tip.
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
+                       StillShowAfterPrerenderNavigation) {
+  GURL url = embedded_test_server()->GetURL("site1.com", "/title1.html");
+  reputation::SetSafetyTipBadRepPatterns({"site1.com/"});
+
+  base::HistogramTester histograms;
+  const char kHistogramName[] = "Security.SafetyTips.SafetyTipShown";
+
+  // Generate a Safety Tip.
+  NavigateToURL(browser(), url, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(IsUIShowing());
+  histograms.ExpectTotalCount(kHistogramName, 1);
+
+  // Start a prerender.
+  prerender_helper()->AddPrerender(
+      embedded_test_server()->GetURL("site1.com", "/title2.html"));
+
+  // Ensure the tip isn't closed by prerender navigation and isn't from the
+  // prerendered page.
+  EXPECT_TRUE(IsUIShowing());
+  histograms.ExpectTotalCount(kHistogramName, 1);
 }
