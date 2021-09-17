@@ -40,6 +40,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 using base::test::IsJson;
 using base::test::ParseJson;
@@ -149,7 +150,9 @@ class CastActivityManagerTest : public testing::Test,
  public:
   CastActivityManagerTest()
       : socket_service_(content::GetUIThreadTaskRunner({})),
-        message_handler_(&socket_service_) {
+        message_handler_(&socket_service_),
+        cast_streaming_app_id_(
+            openscreen::cast::GetCastStreamingAudioVideoAppId()) {
     media_sink_service_.AddOrUpdateSink(sink_);
     socket_.set_id(kChannelId);
   }
@@ -349,7 +352,7 @@ class CastActivityManagerTest : public testing::Test,
   }
 
   void LaunchNonSdkMirroringSession() {
-    CallLaunchSessionSuccess(kCastStreamingAppId, /* app_params */ "",
+    CallLaunchSessionSuccess(cast_streaming_app_id_, /* app_params */ "",
                              /* client_id */ "");
     mirroring_activity_callback_ =
         base::BindLambdaForTesting([this](MockMirroringActivity* activity) {
@@ -363,7 +366,7 @@ class CastActivityManagerTest : public testing::Test,
   }
 
   void LaunchCastSdkMirroringSession() {
-    CallLaunchSessionSuccess(kCastStreamingAppId, kAppParams, kClientId);
+    CallLaunchSessionSuccess(cast_streaming_app_id_, kAppParams, kClientId);
     mirroring_activity_callback_ =
         base::BindLambdaForTesting([this](MockMirroringActivity* activity) {
           EXPECT_CALL(*activity, OnSessionSet).WillOnce([this]() {
@@ -397,7 +400,7 @@ class CastActivityManagerTest : public testing::Test,
 
   void AddRemoteMirroringSession() {
     auto session =
-        CastSession::From(sink2_, MakeReceiverStatus(kCastStreamingAppId));
+        CastSession::From(sink2_, MakeReceiverStatus(cast_streaming_app_id_));
     manager_->OnSessionAddedOrUpdated(sink2_, *session);
     SetSessionForTest(sink2_.id(), std::move(session));
     DCHECK(mirroring_activity_);
@@ -503,6 +506,7 @@ class CastActivityManagerTest : public testing::Test,
   cast_channel::Result stop_session_callback_arg_ = cast_channel::Result::kOk;
   NiceMock<MockLogger> logger_;
   mojom::RoutePresentationConnectionPtr presentation_connections_;
+  const std::string cast_streaming_app_id_;
 };
 
 TEST_F(CastActivityManagerTest, LaunchAppSession) {
@@ -528,9 +532,9 @@ TEST_F(CastActivityManagerTest, LaunchMirroringSessionViaCastSdk) {
 TEST_F(CastActivityManagerTest, LaunchSiteInitiatedMirroringSession) {
   // For a session initiated by a website with the mirroring source we should be
   // establishing a presentation connection, even if the client ID isn't set.
-  CallLaunchSessionSuccess(kCastStreamingAppId, /*app_params*/ "",
+  CallLaunchSessionSuccess(cast_streaming_app_id_, /*app_params*/ "",
                            /*client_id*/ "");
-  ReceiveLaunchSuccessResponseFromReceiver(kCastStreamingAppId);
+  ReceiveLaunchSuccessResponseFromReceiver(cast_streaming_app_id_);
   EXPECT_FALSE(presentation_connections_.is_null());
   EXPECT_EQ(RouteControllerType::kMirroring, route_->controller_type());
 }
@@ -684,7 +688,7 @@ TEST_F(CastActivityManagerTest, UpdateNewlyCreatedMirroringSession) {
   LaunchCastSdkMirroringSession();
 
   ASSERT_TRUE(mirroring_activity_);
-  auto session = MakeSession(kCastStreamingAppId);
+  auto session = MakeSession(cast_streaming_app_id_);
   ExpectSingleRouteUpdate();
   manager_->OnSessionAddedOrUpdated(sink_, *session);
   RunUntilIdle();

@@ -17,7 +17,7 @@
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
 #include "third_party/grpc/src/include/grpcpp/server_builder.h"
 #include "third_party/openscreen/src/cast/cast_core/api/common/application_config.pb.h"
-#include "third_party/openscreen/src/cast/streaming/constants.h"
+#include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace chromecast {
 namespace {
@@ -125,10 +125,7 @@ void RuntimeApplicationDispatcher::LoadApplication(
     GrpcMethod* callback) {
   const std::string& app_id = request.application_config().app_id();
 
-  // TODO(issuetracker.google.com/issues/199543768): Use an openscreen-defined
-  // function instead of constants.
-  if (app_id == openscreen::cast::kMirroringAppId ||
-      app_id == openscreen::cast::kMirroringAudioOnlyAppId) {
+  if (openscreen::cast::IsCastStreamingAppId(app_id)) {
     // Deliberately copy |network_context_getter_|.
     app_ = std::make_unique<StreamingRuntimeApplication>(
         web_service_.get(), task_runner_, network_context_getter_);
