@@ -399,7 +399,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2288422996159078444">Tudo o que é digitado, as páginas que são acessadas e qualquer outra atividade na Web está sendo monitorado, e o conteúdo dos sites pode mudar sem que você saiba.</translation>
 <translation id="2289385804009217824">Cortar</translation>
 <translation id="2292556288342944218">O seu acesso à Internet está bloqueado</translation>
-<translation id="2293443924986248631">Quando ativado, os sites não podem usar cookies que rastreiem você pela Web. Os recursos de alguns sites podem falhar.</translation>
+<translation id="2293443924986248631">Com esse recurso ativado, os sites não podem usar cookies que rastreiem você pela Internet. Algumas funções dos sites podem não funcionar.</translation>
 <translation id="2295290966866883927">Os URLs das páginas que você acessa são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados para detectar sites perigosos.</translation>
 <translation id="2297722699537546652">B5 (Envelope)</translation>
 <translation id="2297822946037605517">Compartilhar esta página</translation>
@@ -1152,11 +1152,11 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4819347708020428563">Editar anotações na visualização padrão?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Planilhas Google</translation>
 <translation id="4825507807291741242">Intenso</translation>
-<translation id="4827402517081186284">A navegação anônima não torna você invisível na Web:
+<translation id="4827402517081186284">Com a navegação anônima, você não fica invisível on-line.
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Os sites sabem quando você os acessa.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Empregadores ou escolas podem monitorar a atividade de navegação.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Provedores de acesso à Internet podem monitorar o tráfego da Web.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Sites sabem quando você os acessa<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Empregadores ou escolas podem rastrear a navegação<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Provedores de acesso à Internet podem monitorar o tráfego na Internet<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Sonho</translation>
 <translation id="4840250757394056958">Ver seu histórico do Chrome</translation>
@@ -2169,9 +2169,9 @@ Mais detalhes:
 <translation id="8321476692217554900">notificações</translation>
 <translation id="8328484624016508118">Após o fechamento de todas as guias anônimas, o Chrome apaga:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />sua atividade de navegação no dispositivo;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />seu histórico de pesquisa no dispositivo;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />as informações digitadas em formulários.<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Sua atividade de navegação no dispositivo<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Seu histórico de pesquisa no dispositivo<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />As informações digitadas em formulários<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">O acesso a <ph name="HOST_NAME" /> foi negado</translation>
 <translation id="833262891116910667">Destacar</translation>
