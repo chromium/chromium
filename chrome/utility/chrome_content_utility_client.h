@@ -34,7 +34,6 @@ class ChromeContentUtilityClient : public content::ContentUtilityClient {
   void UtilityThreadStarted() override;
   void RegisterMainThreadServices(mojo::ServiceFactory& services) override;
   void RegisterIOThreadServices(mojo::ServiceFactory& services) override;
-  bool GetDefaultUserDataDirectory(base::FilePath* path) override;
 
   // See NetworkBinderProvider above.
   static void SetNetworkBinderCreationCallback(

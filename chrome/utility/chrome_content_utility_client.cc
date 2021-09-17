@@ -101,11 +101,6 @@ void ChromeContentUtilityClient::RegisterIOThreadServices(
   return ::RegisterIOThreadServices(services);
 }
 
-bool ChromeContentUtilityClient::GetDefaultUserDataDirectory(
-    base::FilePath* path) {
-  return base::PathService::Get(chrome::DIR_USER_DATA, path);
-}
-
 // static
 void ChromeContentUtilityClient::SetNetworkBinderCreationCallback(
     NetworkBinderCreationCallback callback) {
