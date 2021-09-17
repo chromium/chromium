@@ -5,12 +5,17 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.ViewGroup;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -25,6 +30,7 @@ import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -38,6 +44,9 @@ public class MerchantTrustBottomSheetMediator {
     private final WindowAndroid mWindowAndroid;
     private final MerchantTrustMetrics mMetrics;
     private final int mTopControlsHeightDp;
+    private final FaviconHelper mFaviconHelper;
+    private final int mFaviconSize;
+    private final ObservableSupplier<Profile> mProfileSupplier;
 
     private PropertyModel mToolbarModel;
     private WebContents mWebContents;
@@ -45,16 +54,22 @@ public class MerchantTrustBottomSheetMediator {
     private WebContentsDelegateAndroid mWebContentsDelegate;
     private WebContentsObserver mWebContentsObserver;
     private WebContents mWebContentsForTesting;
+    private Drawable mFaviconDrawableForTesting;
 
     /** Creates a new instance. */
-    MerchantTrustBottomSheetMediator(
-            Context context, WindowAndroid windowAndroid, MerchantTrustMetrics metrics) {
+    MerchantTrustBottomSheetMediator(Context context, WindowAndroid windowAndroid,
+            MerchantTrustMetrics metrics, ObservableSupplier<Profile> profileSupplier,
+            FaviconHelper faviconHelper) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mMetrics = metrics;
         mTopControlsHeightDp = (int) (mContext.getResources().getDimensionPixelSize(
                                               R.dimen.toolbar_height_no_shadow)
                 / mWindowAndroid.getDisplay().getDipScale());
+        mFaviconHelper = faviconHelper;
+        mFaviconSize =
+                mContext.getResources().getDimensionPixelSize(R.dimen.preview_tab_favicon_size);
+        mProfileSupplier = profileSupplier;
     }
 
     void setupSheetWebContents(ThinWebView thinWebView, PropertyModel toolbarModel) {
@@ -65,6 +80,8 @@ public class MerchantTrustBottomSheetMediator {
         createWebContents();
 
         mWebContentsObserver = new WebContentsObserver(mWebContents) {
+            private GURL mCurrentUrl;
+
             @Override
             public void loadProgressChanged(float progress) {
                 if (mToolbarModel != null) {
@@ -75,6 +92,13 @@ public class MerchantTrustBottomSheetMediator {
             @Override
             public void didStartNavigation(NavigationHandle navigation) {
                 mMetrics.recordNavigateLinkOnBottomSheet();
+                if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()
+                        && (navigation.getUrl() != null)) {
+                    GURL url = navigation.getUrl();
+                    if (url.equals(mCurrentUrl)) return;
+                    mCurrentUrl = url;
+                    loadFavicon(url);
+                }
             }
 
             @Override
@@ -214,5 +238,31 @@ public class MerchantTrustBottomSheetMediator {
     @VisibleForTesting
     void setWebContentsForTesting(WebContents webContents) {
         mWebContentsForTesting = webContents;
+    }
+
+    /**
+     * Generates a favicon for a given URL. If no favicon could be found or generated from
+     * the URL, a default favicon will be shown.
+     */
+    private void loadFavicon(GURL url) {
+        mFaviconHelper.getLocalFaviconImageForURL(
+                mProfileSupplier.get(), url, mFaviconSize, (bitmap, iconUrl) -> {
+                    Drawable drawable;
+                    if (mFaviconDrawableForTesting != null) {
+                        drawable = mFaviconDrawableForTesting;
+                    } else if (bitmap != null) {
+                        drawable = FaviconUtils.createRoundedBitmapDrawable(
+                                mContext.getResources(), bitmap);
+                    } else {
+                        drawable = UiUtils.getTintedDrawable(mContext, R.drawable.ic_globe_24dp,
+                                R.color.default_icon_color_tint_list);
+                    }
+                    mToolbarModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE, drawable);
+                });
+    }
+
+    @VisibleForTesting
+    void setFaviconDrawableForTesting(Drawable drawableForTesting) {
+        mFaviconDrawableForTesting = drawableForTesting;
     }
 }

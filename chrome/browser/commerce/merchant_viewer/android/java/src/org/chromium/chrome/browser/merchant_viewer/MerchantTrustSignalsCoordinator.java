@@ -54,7 +54,7 @@ public class MerchantTrustSignalsCoordinator {
                 new MerchantTrustSignalsDataProvider(), profileSupplier, metrics,
                 new MerchantTrustBottomSheetCoordinator(context, windowAndroid,
                         bottomSheetController, tabSupplier, layoutView, metrics,
-                        intentRequestTracker),
+                        intentRequestTracker, profileSupplier),
                 new MerchantTrustSignalsStorageFactory(profileSupplier));
     }
 

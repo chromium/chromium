@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.merchant_viewer;
 
 import static org.junit.Assert.assertEquals;
 
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
@@ -56,8 +58,6 @@ public class BottomSheetToolbarViewBinderTest extends DummyUiChromeActivityTestC
 
             mItemViewModel =
                     new PropertyModel.Builder(BottomSheetToolbarProperties.ALL_KEYS)
-                            .with(BottomSheetToolbarProperties.FAVICON_ICON,
-                                    R.drawable.ic_logo_googleg_24dp)
                             .with(BottomSheetToolbarProperties.FAVICON_ICON_VISIBLE, true)
                             .with(BottomSheetToolbarProperties.OPEN_IN_NEW_TAB_VISIBLE, false)
                             .build();
@@ -149,6 +149,19 @@ public class BottomSheetToolbarViewBinderTest extends DummyUiChromeActivityTestC
 
         mItemViewModel.set(BottomSheetToolbarProperties.PROGRESS_VISIBLE, true);
         assertEquals(View.VISIBLE, progressBar.getVisibility());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetFaviconIconDrawable() {
+        ImageView faviconIcon = mItemView.getView().findViewById(R.id.favicon);
+        assertEquals(null, faviconIcon.getDrawable());
+
+        Drawable iconDrawable =
+                AppCompatResources.getDrawable(getActivity(), R.drawable.ic_globe_24dp);
+        mItemViewModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE, iconDrawable);
+        assertEquals(iconDrawable, faviconIcon.getDrawable());
     }
 
     @Test
