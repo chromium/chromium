@@ -109,7 +109,7 @@ function createPrinterEntry(printerType) {
   };
 }
 
-suite('CupsPrintersEntry', function() {
+suite('CupsPrinterEntry', function() {
   /** A printer list entry created before each test. */
   let printerEntryTestElement = null;
 
