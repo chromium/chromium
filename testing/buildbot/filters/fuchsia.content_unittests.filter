@@ -3,10 +3,6 @@
 # https://crbug.com/780317 - Flakily timeout under QEMU s/w emulation of ARM64.
 -WebBluetoothDeviceIdTest.DefaultConstructor
 
-# https://crbug.com/761214
--RendererAudioOutputStreamFactoryIntegrationTest.StreamIntegrationTest
--WebContentsAudioInputStreamTest.MirroringNothingWithTargetChange/0
-
 # Flaky: https://crbug.com/759653.
 -RenderWidgetHostViewAuraTest.Resize
 
