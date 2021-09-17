@@ -30,6 +30,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedSurfaceMediator;
@@ -866,6 +867,11 @@ public class FeedStream implements Stream {
             // If the placeholder is shown, spinner is not needed.
             if (mIsPlaceholderShown) {
                 return null;
+            }
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
+                    && slice.getLoadingSpinnerSlice().getIsAtTop()) {
+                return new NtpListContentManager.NativeViewContent(
+                        sliceId, R.layout.feed_placeholder_layout);
             }
             return new NtpListContentManager.NativeViewContent(
                     sliceId, org.chromium.chrome.R.layout.feed_spinner);

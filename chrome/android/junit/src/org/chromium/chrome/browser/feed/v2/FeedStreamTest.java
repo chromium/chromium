@@ -4,9 +4,14 @@
 
 package org.chromium.chrome.browser.feed.v2;
 
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -18,7 +23,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.util.ArrayMap;
 import android.util.TypedValue;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,16 +49,19 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MetricsUtils;
+import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.NtpListContentManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -136,6 +146,13 @@ public class FeedStreamTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
+    private void setFeatureOverrides(boolean feedLoadingPlaceholderOn) {
+        Map<String, Boolean> overrides = new ArrayMap<>();
+        overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
+        overrides.put(ChromeFeatureList.INTEREST_FEED_SPINNER_ALWAYS_ANIMATE, false);
+        FeatureList.setTestFeatures(overrides);
+    }
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -160,6 +177,8 @@ public class FeedStreamTest {
         mContentManager = new NtpListContentManager();
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        setFeatureOverrides(true);
 
         // Print logs to stdout.
         ShadowLog.stream = System.out;
@@ -717,6 +736,55 @@ public class FeedStreamTest {
         verify(mFeedStreamJniMock).reportStreamScrolled(anyLong(), any(FeedStream.class), eq(100));
     }
 
+    @Test
+    @SmallTest
+    public void testShowPlaceholder() {
+        createHeaderContent(1);
+        bindToView();
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForLoadingSpinnerSlice("a", true))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(2, mContentManager.getItemCount());
+        assertEquals("a", mContentManager.getContent(1).getKey());
+        NtpListContentManager.FeedContent content = mContentManager.getContent(1);
+        assertThat(mContentManager.getContent(1),
+                instanceOf(NtpListContentManager.NativeViewContent.class));
+        NtpListContentManager.NativeViewContent nativeViewContent =
+                (NtpListContentManager.NativeViewContent) mContentManager.getContent(1);
+
+        FrameLayout layout = new FrameLayout(mActivity);
+
+        assertThat(nativeViewContent.getNativeView(layout),
+                hasDescendant(instanceOf(FeedPlaceholderLayout.class)));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowSpinner_PlaceholderDisabled() {
+        setFeatureOverrides(false);
+        createHeaderContent(1);
+        bindToView();
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForLoadingSpinnerSlice("a", true))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        assertEquals(2, mContentManager.getItemCount());
+        assertEquals("a", mContentManager.getContent(1).getKey());
+        NtpListContentManager.FeedContent content = mContentManager.getContent(1);
+        assertThat(mContentManager.getContent(1),
+                instanceOf(NtpListContentManager.NativeViewContent.class));
+        NtpListContentManager.NativeViewContent nativeViewContent =
+                (NtpListContentManager.NativeViewContent) mContentManager.getContent(1);
+
+        FrameLayout layout = new FrameLayout(mActivity);
+
+        assertThat(nativeViewContent.getNativeView(layout),
+                not(hasDescendant(instanceOf(FeedPlaceholderLayout.class))));
+    }
+
     private int getLoadMoreTriggerScrollDistance() {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP,
@@ -740,6 +808,21 @@ public class FeedStreamTest {
                 .setXsurfaceSlice(FeedUiProto.XSurfaceSlice.newBuilder()
                                           .setXsurfaceFrame(ByteString.copyFromUtf8(TEST_DATA))
                                           .build())
+                .build();
+    }
+
+    private FeedUiProto.StreamUpdate.SliceUpdate createSliceUpdateForLoadingSpinnerSlice(
+            String sliceId, boolean isAtTop) {
+        return FeedUiProto.StreamUpdate.SliceUpdate.newBuilder()
+                .setSlice(createLoadingSpinnerSlice(sliceId, isAtTop))
+                .build();
+    }
+
+    private FeedUiProto.Slice createLoadingSpinnerSlice(String sliceId, boolean isAtTop) {
+        return FeedUiProto.Slice.newBuilder()
+                .setSliceId(sliceId)
+                .setLoadingSpinnerSlice(
+                        FeedUiProto.LoadingSpinnerSlice.newBuilder().setIsAtTop(isAtTop).build())
                 .build();
     }
 

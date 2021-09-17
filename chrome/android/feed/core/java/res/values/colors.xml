@@ -10,4 +10,5 @@
   <color name="feed_default_text_color_secondary">@color/modern_grey_700</color>
   <color name="feed_default_text_color_dark">@android:color/white</color>
   <color name="feed_default_text_color_secondary_dark">@color/modern_grey_500</color>
+  <color name="feed_placeholder_color">@color/default_bg_color_secondary_light</color>
 </resources>

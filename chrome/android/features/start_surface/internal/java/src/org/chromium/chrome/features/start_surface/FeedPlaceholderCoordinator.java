@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.start_surface.R;
 
 /** The coordinator to control the feed placeholder view. */
@@ -34,6 +35,10 @@ public class FeedPlaceholderCoordinator {
     public void setUpPlaceholderView() {
         mFeedPlaceholderView = (FeedPlaceholderLayout) LayoutInflater.from(mContext).inflate(
                 R.layout.feed_placeholder_layout, null, false);
+        // Header blank size should be consistent with
+        // R.layout.new_tab_page_snippets_expandable_header_with_menu.
+        mFeedPlaceholderView.setBlankHeaderHeight(mContext.getResources().getDimensionPixelSize(
+                R.dimen.snippets_article_header_menu_size));
         mParentView.addView(mFeedPlaceholderView);
     }
 

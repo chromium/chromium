@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.features.start_surface;
+package org.chromium.chrome.browser.feed;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -17,8 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
-import org.chromium.chrome.start_surface.R;
+import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
@@ -68,18 +66,14 @@ public class FeedPlaceholderLayout extends LinearLayout {
      * Set the header blank for the placeholder.The header blank should be consistent with the
      * sectionHeaderView of {@link ExploreSurfaceCoordinator.FeedSurfaceController#}
      */
-    @SuppressLint("InflateParams")
-    private void setHeader() {
+    public void setBlankHeaderHeight(int headerHeight) {
         LinearLayout headerView = findViewById(R.id.feed_placeholder_header);
         ViewGroup.LayoutParams lp = headerView.getLayoutParams();
-        // Header blank size should be consistent with
-        // R.layout.new_tab_page_snippets_expandable_header_with_menu.
-        lp.height = getResources().getDimensionPixelSize(R.dimen.snippets_article_header_menu_size);
+        lp.height = headerHeight;
         headerView.setLayoutParams(lp);
     }
 
     private void setPlaceholders() {
-        setHeader();
         setPadding();
         LinearLayout cardsParentView = findViewById(R.id.placeholders_layout);
         cardsParentView.removeAllViews();
@@ -225,7 +219,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
         ViewResizer.createAndAttach(this, mUiConfig, defaultPadding, widePadding);
     }
 
-    long getLayoutInflationCompleteMs() {
+    public long getLayoutInflationCompleteMs() {
         return mLayoutInflationCompleteMs;
     }
 }
