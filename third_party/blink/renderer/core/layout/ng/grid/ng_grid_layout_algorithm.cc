@@ -2499,9 +2499,6 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
     sets_to_grow.Shrink(0);
     sets_to_grow_beyond_limit.Shrink(0);
 
-    // TODO(ansollan): If the grid is auto-sized and has a calc or percent row
-    // gap, then the gap can't be calculated on the first pass as we wouldn't
-    // know our block size.
     LayoutUnit spanned_tracks_size =
         GridGap(track_direction) * (grid_item->SpanSize(track_direction) - 1);
 
@@ -3141,8 +3138,6 @@ LayoutUnit NGGridLayoutAlgorithm::GridGap(
   if (!gap)
     return LayoutUnit();
 
-  // TODO(ansollan): Update behavior based on outcome of working group
-  // discussions. See https://github.com/w3c/csswg-drafts/issues/5566.
   LayoutUnit available_size =
       ((track_direction == kForColumns) ? grid_available_size_.inline_size
                                         : grid_available_size_.block_size)
