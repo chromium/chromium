@@ -68,6 +68,10 @@ void LensSidePanelController::OpenWithURL(
 
 void LensSidePanelController::Close() {
   lens_web_params_ = nullptr;
+  // Loading an empty URL on close prevents old results from being displayed in
+  // the side panel if the side panel is reopened.
+  side_panel_view_->GetWebContents()->GetController().LoadURL(
+      GURL(), content::Referrer(), ui::PAGE_TRANSITION_FROM_API, std::string());
   side_panel_->SetVisible(false);
 }
 

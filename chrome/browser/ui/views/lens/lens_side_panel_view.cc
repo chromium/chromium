@@ -90,6 +90,12 @@ void LensSidePanelView::OnThemeChanged() {
   separator_->SetColor(GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_MenuSeparatorColor));
 
+  // Set background of webview to the same background as the header. This is to
+  // prevent personal color themes from showing in the side panel when
+  // navigating to a new Lens results panel.
+  web_view_->SetBackground(views::CreateThemedSolidBackground(
+      this, ui::NativeTheme::kColorId_WindowBackground));
+
   const SkColor color = GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_DefaultIconColor);
   // kGoogleLensFullLogoIcon is rectangular. We should create a tiled image so

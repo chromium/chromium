@@ -8,6 +8,7 @@
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/lens/metrics/lens_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/views/widget/widget.h"
 
 class Browser;
 
@@ -35,7 +36,13 @@ class LensRegionSearchController : public content::WebContentsObserver {
   void Start();
 
   // Closes the UI overlay and user education bubble if currently being shown.
+  // The closed reason for this method is defaulted to the close button being
+  // clicked.
   void Close();
+
+  // Closes the UI overlay and user education bubble if shown with the specified
+  // closed reason.
+  void CloseWithReason(views::Widget::ClosedReason reason);
 
   // Calculates the percentage that the image area takes up in the screen area.
   // This value is calculated as double and then floored to the nearest integer.
