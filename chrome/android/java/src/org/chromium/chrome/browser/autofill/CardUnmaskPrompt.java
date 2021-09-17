@@ -296,7 +296,7 @@ public class CardUnmaskPrompt
     }
 
     private void updateTitleForCustomView(String title, Context context) {
-        Drawable mInlineTitleIcon = context.getResources().getDrawable(mGooglePayDrawableId);
+        Drawable mInlineTitleIcon = context.getDrawable(mGooglePayDrawableId);
         // The first character will be replaced by the logo, and the consecutive spaces after
         // are used as padding.
         SpannableString titleWithLogo = new SpannableString("   " + title);
