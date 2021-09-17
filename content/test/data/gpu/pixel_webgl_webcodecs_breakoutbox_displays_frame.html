@@ -14,8 +14,6 @@ that the baseline images are regenerated on the next run.
   margin: 0px auto;
 }
 </style>
-
-<script src="pixel_video_test.js"></script>
 <script src="pixel_webgl_util.js"></script>
 
 <script>
@@ -42,7 +40,7 @@ function runTest() {
   let frame = new VideoFrame(canvas);
   let video = document.querySelector('video');
   video.requestVideoFrameCallback(_ => {
-    waitForSwapsToComplete();
+    domAutomationController.send("SUCCESS");
   });
 
   generator = new MediaStreamTrackGenerator({kind: 'video'});
