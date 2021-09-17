@@ -597,13 +597,7 @@ void xdg_surface_get_popup(wl_client* client,
   // Try layout using parent's flip state.
   WaylandPositioner* positioner =
       GetUserDataAs<WaylandPositioner>(positioner_resource);
-  WaylandPositioner::Result position = positioner->CalculateBounds(
-      work_area, parent_data->shell_surface->x_flipped(),
-      parent_data->shell_surface->y_flipped());
-
-  // Remember the new flip state for its child popups.
-  shell_surface_data->shell_surface->set_x_flipped(position.x_flipped);
-  shell_surface_data->shell_surface->set_y_flipped(position.y_flipped);
+  WaylandPositioner::Result position = positioner->CalculateBounds(work_area);
 
   // |position| is relative to the parent's contents view origin, and |origin|
   // is in screen coordinates.
