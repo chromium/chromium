@@ -91,6 +91,7 @@
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #include "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
+#import "ios/chrome/browser/ui/context_menu/image_preview_view_controller.h"
 #import "ios/chrome/browser/ui/context_menu/link_no_preview_view_controller.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
@@ -3669,10 +3670,10 @@ const CGFloat kFaviconWidthHeight = 24;
         base::RecordAction(
             base::UserMetricsAction("MobileWebContextMenuSearchByImage"));
         Record(ACTION_SEARCH_BY_IMAGE, isImage, isLink);
-        ImageFetchTabHelper* image_fetcher =
+        ImageFetchTabHelper* imageFetcher =
             ImageFetchTabHelper::FromWebState(self.currentWebState);
-        DCHECK(image_fetcher);
-        image_fetcher->GetImageData(imageUrl, referrer, ^(NSData* data) {
+        DCHECK(imageFetcher);
+        imageFetcher->GetImageData(imageUrl, referrer, ^(NSData* data) {
           [weakSelf searchByImageData:data atURL:imageUrl];
         });
       };
@@ -3875,11 +3876,11 @@ const CGFloat kFaviconWidthHeight = 24;
       UIAction* searchByImage = [actionFactory
           actionSearchImageWithTitle:title
                                Block:^{
-                                 ImageFetchTabHelper* image_fetcher =
+                                 ImageFetchTabHelper* imageFetcher =
                                      ImageFetchTabHelper::FromWebState(
                                          self.currentWebState);
-                                 DCHECK(image_fetcher);
-                                 image_fetcher->GetImageData(
+                                 DCHECK(imageFetcher);
+                                 imageFetcher->GetImageData(
                                      imageUrl, referrer, ^(NSData* data) {
                                        [weakSelf searchByImageData:data
                                                              atURL:imageUrl];
@@ -3932,7 +3933,19 @@ const CGFloat kFaviconWidthHeight = 24;
           });
       return previewViewController;
     }
-    return nil;
+    DCHECK(isImage);
+    ImagePreviewViewController* preview =
+        [[ImagePreviewViewController alloc] init];
+    __weak ImagePreviewViewController* weakPreview = preview;
+
+    ImageFetchTabHelper* imageFetcher =
+        ImageFetchTabHelper::FromWebState(self.currentWebState);
+    DCHECK(imageFetcher);
+    imageFetcher->GetImageData(imageUrl, referrer, ^(NSData* data) {
+      [weakPreview updateImageData:data];
+    });
+
+    return preview;
   };
   UIContextMenuConfiguration* configuration =
       [UIContextMenuConfiguration configurationWithIdentifier:nil

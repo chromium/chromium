@@ -7,6 +7,8 @@ source_set("context_menu") {
   sources = [
     "context_menu_utils.h",
     "context_menu_utils.mm",
+    "image_preview_view_controller.h",
+    "image_preview_view_controller.mm",
     "link_no_preview_view.h",
     "link_no_preview_view.mm",
     "link_no_preview_view_controller.h",
