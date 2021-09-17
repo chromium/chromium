@@ -177,16 +177,6 @@ TYPED_TEST(ClipboardTest, MAYBE_TextTest) {
 
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
               Contains(ASCIIToUTF16(kMimeTypeText)));
-#if defined(USE_OZONE) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !defined(OS_FUCHSIA) && !BUILDFLAG(IS_CHROMECAST) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(https://crbug.com/1096425): remove this if condition once Ozone is the
-  // only path in Linux builds.
-  if (features::IsUsingOzonePlatform()) {
-    EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
-                Contains(ASCIIToUTF16(kMimeTypeTextUtf8)));
-  }
-#endif
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
