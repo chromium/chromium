@@ -724,6 +724,15 @@ mojom("mojom_platform") {
       traits_headers = [ "//third_party/blink/renderer/platform/mojo/fetch_api_request_headers_mojom_traits.h" ]
       traits_public_deps = [ "//third_party/blink/renderer/platform/wtf" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.StorageKey"
+          cpp = "::blink::BlinkStorageKey"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h" ]
+    },
   ]
   cpp_typemaps += shared_cpp_typemaps
   blink_cpp_typemaps += shared_cpp_typemaps
