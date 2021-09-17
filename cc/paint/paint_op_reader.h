@@ -139,7 +139,9 @@ class CC_PAINT_EXPORT PaintOpReader {
   void ReadFlattenable(sk_sp<T>* val, Factory<T> factory);
 
   template <typename Enum, Enum kMaxValue = Enum::kMaxValue>
-  void ReadEnum(Enum* enum_value) {
+  NOINLINE  // TODO(crbug.com/1245368): Remove when done investigating.
+      void
+      ReadEnum(Enum* enum_value) {
     static_assert(static_cast<unsigned>(kMaxValue) <= 255,
                   "Max value must fit in uint8_t");
     uint8_t value = 0u;
