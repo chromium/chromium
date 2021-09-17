@@ -29,7 +29,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/common/chrome_features.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -463,8 +462,6 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
 void OsIntegrationManager::RegisterRunOnOsLogin(
     const AppId& app_id,
     RegisterRunOnOsLoginCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   GetShortcutInfoForApp(
       app_id,
       base::BindOnce(
@@ -649,11 +646,7 @@ void OsIntegrationManager::UpdateProtocolHandlers(const AppId& app_id) {
       },
       weak_ptr_factory_.GetWeakPtr(), app_id);
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OsIntegrationManager::UnregisterProtocolHandlers,
-                     weak_ptr_factory_.GetWeakPtr(), app_id,
-                     std::move(callback)));
+  UnregisterProtocolHandlers(app_id, std::move(callback));
 }
 
 std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
