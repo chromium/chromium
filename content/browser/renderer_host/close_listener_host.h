@@ -18,6 +18,8 @@ class CONTENT_EXPORT CloseListenerHost
     : public RenderDocumentHostUserData<CloseListenerHost> {
  public:
   ~CloseListenerHost() override;
+  CloseListenerHost(const CloseListenerHost&) = delete;
+  CloseListenerHost& operator=(const CloseListenerHost&) = delete;
 
   void SetListener(mojo::PendingRemote<blink::mojom::CloseListener> listener);
   bool SignalIfActive();
@@ -28,7 +30,6 @@ class CONTENT_EXPORT CloseListenerHost
 
   mojo::Remote<blink::mojom::CloseListener> close_listener_;
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
-  DISALLOW_COPY_AND_ASSIGN(CloseListenerHost);
 };
 
 }  // namespace content
