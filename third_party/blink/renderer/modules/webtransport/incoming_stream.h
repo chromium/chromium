@@ -23,7 +23,6 @@
 namespace blink {
 
 class ScriptState;
-class StreamAbortInfo;
 class ReadableStream;
 class ReadableStreamDefaultControllerWithScriptScope;
 
@@ -59,10 +58,6 @@ class MODULES_EXPORT IncomingStream final
 
     return readable_;
   }
-
-  ScriptPromise ReadingAborted() const { return reading_aborted_; }
-
-  void AbortReading(StreamAbortInfo*);
 
   // Called from WebTransport via a WebTransportStream class. May execute
   // JavaScript.
@@ -111,14 +106,14 @@ class MODULES_EXPORT IncomingStream final
   // otherwise it will indicate a server--initiated abort.
   ScriptValue CreateAbortException(IsLocalAbort);
 
-  // Closes |readable_|, resolves |reading_aborted_| and resets |data_pipe_|.
+  // Closes |readable_|, and resets |data_pipe_|.
   void CloseAbortAndReset();
 
-  // Errors |readable_|, resolves |reading_aborted_| and resets |data_pipe_|.
+  // Errors |readable_|, and resets |data_pipe_|.
   // |exception| will be set as the error on |readable_|.
   void ErrorStreamAbortAndReset(ScriptValue exception);
 
-  // Resolves the |reading_aborted_| promise and resets the |data_pipe_|.
+  // Resets the |data_pipe_|.
   void AbortAndReset();
 
   // Resets |data_pipe_| and clears the watchers.
@@ -142,10 +137,6 @@ class MODULES_EXPORT IncomingStream final
 
   Member<ReadableStream> readable_;
   Member<ReadableStreamDefaultControllerWithScriptScope> controller_;
-
-  // Promise returned by the |readingAborted| attribute.
-  ScriptPromise reading_aborted_;
-  Member<ScriptPromiseResolver> reading_aborted_resolver_;
 
   State state_ = State::kOpen;
 

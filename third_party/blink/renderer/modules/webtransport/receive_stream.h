@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webtransport/incoming_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_stream.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -26,8 +25,6 @@ class WebTransport;
 
 class MODULES_EXPORT ReceiveStream final : public ReadableStream,
                                            public WebTransportStream {
-  DEFINE_WRAPPERTYPEINFO();
-
  public:
   // ReceiveStream doesn't have a JavaScript constructor. It is only
   // constructed from C++.
@@ -38,18 +35,6 @@ class MODULES_EXPORT ReceiveStream final : public ReadableStream,
 
   void Init(ExceptionState& exception_state) {
     incoming_stream_->InitWithExistingReadableStream(this, exception_state);
-  }
-
-  // Implementation of receive_stream.idl. As noted in the IDL file, these
-  // properties are implemented on IncomingStream in the standard.
-  ReceiveStream* readable() { return this; }
-
-  ScriptPromise readingAborted() const {
-    return incoming_stream_->ReadingAborted();
-  }
-
-  void abortReading(StreamAbortInfo* info) {
-    incoming_stream_->AbortReading(info);
   }
 
   // Implementation of WebTransportStream.

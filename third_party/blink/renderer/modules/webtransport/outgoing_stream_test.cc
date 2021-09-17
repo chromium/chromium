@@ -123,36 +123,6 @@ TEST(OutgoingStreamTest, Create) {
   EXPECT_CALL(stream_creator.GetMockClient(), OnOutgoingStreamAbort());
 }
 
-TEST(OutgoingStreamTest, AbortWriting) {
-  V8TestingScope scope;
-  StreamCreator stream_creator;
-
-  auto* outgoing_stream = stream_creator.Create(scope);
-  auto* script_state = scope.GetScriptState();
-  auto* writer =
-      outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise closed_promise = writer->closed(script_state);
-
-  ScriptPromise writing_aborted = outgoing_stream->WritingAborted();
-
-  EXPECT_CALL(stream_creator.GetMockClient(), OnOutgoingStreamAbort());
-
-  outgoing_stream->AbortWriting(nullptr);
-
-  ScriptPromiseTester abort_tester(script_state, writing_aborted);
-  abort_tester.WaitUntilSettled();
-  EXPECT_TRUE(abort_tester.IsFulfilled());
-
-  ScriptPromiseTester closed_tester(script_state, closed_promise);
-  closed_tester.WaitUntilSettled();
-  EXPECT_TRUE(closed_tester.IsRejected());
-  DOMException* closed_exception = V8DOMException::ToImplWithTypeCheck(
-      scope.GetIsolate(), closed_tester.Value().V8Value());
-  ASSERT_TRUE(closed_exception);
-  EXPECT_EQ(closed_exception->name(), "AbortError");
-  EXPECT_EQ(closed_exception->message(), "The stream was aborted locally");
-}
-
 TEST(OutgoingStreamTest, WriteArrayBuffer) {
   V8TestingScope scope;
   StreamCreator stream_creator;
@@ -295,9 +265,6 @@ TEST(OutgoingStreamTest, DataPipeClosed) {
   auto* outgoing_stream = stream_creator.Create(scope);
   auto* script_state = scope.GetScriptState();
 
-  ScriptPromise writing_aborted = outgoing_stream->WritingAborted();
-  ScriptPromiseTester writing_aborted_tester(script_state, writing_aborted);
-
   auto* writer =
       outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromise closed = writer->closed(script_state);
@@ -307,9 +274,6 @@ TEST(OutgoingStreamTest, DataPipeClosed) {
 
   // Close the other end of the pipe.
   stream_creator.Reset();
-
-  writing_aborted_tester.WaitUntilSettled();
-  EXPECT_TRUE(writing_aborted_tester.IsFulfilled());
 
   closed_tester.WaitUntilSettled();
   EXPECT_TRUE(closed_tester.IsRejected());
@@ -346,9 +310,6 @@ TEST(OutgoingStreamTest, DataPipeClosedDuringAsyncWrite) {
   auto* outgoing_stream = stream_creator.Create(scope, kPipeCapacity);
 
   auto* script_state = scope.GetScriptState();
-
-  ScriptPromise writing_aborted = outgoing_stream->WritingAborted();
-  ScriptPromiseTester writing_aborted_tester(script_state, writing_aborted);
 
   auto* writer =
       outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
@@ -389,10 +350,6 @@ TEST(OutgoingStreamTest, DataPipeClosedDuringAsyncWrite) {
   EXPECT_EQ(closed_exception->name(), "NetworkError");
   EXPECT_EQ(closed_exception->message(),
             "The stream was aborted by the remote server");
-
-  writing_aborted_tester.WaitUntilSettled();
-
-  EXPECT_TRUE(writing_aborted_tester.IsFulfilled());
 }
 
 }  // namespace

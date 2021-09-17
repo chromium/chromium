@@ -5,8 +5,9 @@
 // https://w3c.github.io/webtransport/#duplex-stream
 [
     Exposed=(Window,Worker),
-    RuntimeEnabled=WebTransport
-] interface DatagramDuplexStream {
+    RuntimeEnabled=WebTransport,
+    ImplementedAs=DatagramDuplexStream
+] interface WebTransportDatagramDuplexStream {
   readonly attribute ReadableStream readable;
   readonly attribute WritableStream writable;
 
