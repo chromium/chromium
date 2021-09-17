@@ -30,6 +30,7 @@ _IGNORE_WARNINGS = (
     r'Type `libcore.io.Memory` was not found',
     # Caused by flogger supporting these as fallbacks. Not needed at runtime.
     r'Type `dalvik.system.VMStack` was not found',
+    r'Type `sun.misc.JavaLangAccess` was not found',
     r'Type `sun.misc.SharedSecrets` was not found',
     # Caused by jacoco code coverage:
     r'Type `java.lang.management.ManagementFactory` was not found',
