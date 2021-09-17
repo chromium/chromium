@@ -91,6 +91,67 @@ class WebSocketEncoderTest : public testing::Test {
     client_ = WebSocketEncoder::CreateClient("");
   }
 
+  // Generate deflated and continuous frames from original text.
+  // The length of `original_text` must be longer than 4*partitions.
+  std::vector<std::string> GenerateFragmentedFrames(std::string original_text,
+                                                    int mask,
+                                                    int partitions,
+                                                    bool compressed) {
+    typedef int OpCode;
+    constexpr OpCode kOpCodeContinuation = 0x0;
+    constexpr OpCode kOpCodeText = 0x1;
+    constexpr uint8_t kFinalBit = 0x80;
+    constexpr uint8_t kReserved1Bit = 0x40;
+    constexpr uint8_t kMaskBit = 0x80;
+
+    // A frame consists of 3 or 2 parts: header, (mask) and payload.
+    // The first two bytes of `encoded` are the header of the frame.
+    // If there is a mask, the four bytes of the mask is inserted after the
+    // header. Finally, message contents come.
+    std::string encoded;
+    int num_mask_header;
+    char mask_key_bit;
+    std::string mask_bytes;
+
+    if (mask == 0) {
+      server_->EncodeFrame(original_text, mask, &encoded);
+      num_mask_header = 0;
+      mask_key_bit = 0;
+    } else {
+      client_->EncodeFrame(original_text, mask, &encoded);
+      num_mask_header = 4;
+      mask_key_bit = kMaskBit;
+      mask_bytes = encoded.substr(2, 4);
+    }
+    int divide_length =
+        (static_cast<int>(encoded.length()) - 2 - num_mask_header) / partitions;
+    divide_length -= divide_length % 4;
+    std::vector<std::string> encoded_frames(partitions);
+    std::string payload;
+    std::string header;
+
+    for (int i = 0; i < partitions; ++i) {
+      char first_byte = 0;
+      if (i == 0)
+        first_byte |= kOpCodeText;
+      else
+        first_byte |= kOpCodeContinuation;
+      if (i == partitions - 1)
+        first_byte |= kFinalBit;
+      if (compressed)
+        first_byte |= kReserved1Bit;
+
+      const int position = 2 + num_mask_header + i * divide_length;
+      const int length =
+          i < partitions - 1 ? divide_length : encoded.length() - position;
+      payload = encoded.substr(position, length);
+      header = {first_byte, static_cast<char>(payload.length() | mask_key_bit)};
+      encoded_frames[i] += header + mask_bytes + payload;
+    }
+
+    return encoded_frames;
+  }
+
  protected:
   std::unique_ptr<WebSocketEncoder> server_;
   std::unique_ptr<WebSocketEncoder> client_;
@@ -131,7 +192,7 @@ TEST_F(WebSocketEncoderTest, ClientToServer) {
   std::string decoded;
 
   client_->EncodeFrame(frame, mask, &encoded);
-  EXPECT_EQ(WebSocket::FRAME_OK,
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             server_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ("ClientToServer", decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
@@ -141,7 +202,7 @@ TEST_F(WebSocketEncoderTest, ClientToServer) {
             server_->DecodeFrame(partial, &bytes_consumed, &decoded));
 
   std::string extra = encoded + "more stuff";
-  EXPECT_EQ(WebSocket::FRAME_OK,
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             server_->DecodeFrame(extra, &bytes_consumed, &decoded));
   EXPECT_EQ("ClientToServer", decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
@@ -159,7 +220,7 @@ TEST_F(WebSocketEncoderTest, ServerToClient) {
   std::string decoded;
 
   server_->EncodeFrame(frame, mask, &encoded);
-  EXPECT_EQ(WebSocket::FRAME_OK,
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             client_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ("ServerToClient", decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
@@ -169,7 +230,7 @@ TEST_F(WebSocketEncoderTest, ServerToClient) {
             client_->DecodeFrame(partial, &bytes_consumed, &decoded));
 
   std::string extra = encoded + "more stuff";
-  EXPECT_EQ(WebSocket::FRAME_OK,
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             client_->DecodeFrame(extra, &bytes_consumed, &decoded));
   EXPECT_EQ("ServerToClient", decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
@@ -177,6 +238,132 @@ TEST_F(WebSocketEncoderTest, ServerToClient) {
   EXPECT_EQ(
       WebSocket::FRAME_ERROR,
       client_->DecodeFrame(std::string("abcde"), &bytes_consumed, &decoded));
+}
+
+TEST_F(WebSocketEncoderTest, DecodeFragmentedMessageClientToServerDivided2) {
+  const std::string kOriginalText = "abcdefghijklmnop";
+  constexpr int kMask = 123456;
+  constexpr bool kCompressed = false;
+  constexpr int kPartitions = 2;
+  ASSERT_GT(static_cast<int>(kOriginalText.length()), 4 * kPartitions);
+  std::vector<std::string> encoded_frames =
+      GenerateFragmentedFrames(kOriginalText, kMask, kPartitions, kCompressed);
+  ASSERT_EQ(kPartitions, static_cast<int>(encoded_frames.size()));
+
+  const std::string& kEncodedFirstFrame = encoded_frames[0];
+  const std::string& kEncodedLastFrame = encoded_frames[1];
+
+  int bytes_consumed;
+  std::string decoded;
+
+  // kEncodedFirstFrame -> kEncodedLastFrame
+  EXPECT_EQ(
+      WebSocket::FRAME_OK_MIDDLE,
+      server_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+            server_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("abcdefghijklmnop", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
+}
+
+TEST_F(WebSocketEncoderTest, DecodeFragmentedMessageClientToServerDivided3) {
+  const std::string kOriginalText = "abcdefghijklmnop";
+  constexpr int kMask = 123456;
+  constexpr bool kCompressed = false;
+  constexpr int kPartitions = 3;
+  ASSERT_GT(static_cast<int>(kOriginalText.length()), 4 * kPartitions);
+  std::vector<std::string> encoded_frames =
+      GenerateFragmentedFrames(kOriginalText, kMask, kPartitions, kCompressed);
+  ASSERT_EQ(kPartitions, static_cast<int>(encoded_frames.size()));
+
+  const std::string& kEncodedFirstFrame = encoded_frames[0];
+  const std::string& kEncodedSecondFrame = encoded_frames[1];
+  const std::string& kEncodedLastFrame = encoded_frames[2];
+
+  int bytes_consumed;
+  std::string decoded;
+
+  // kEncodedFirstFrame -> kEncodedSecondFrame -> kEncodedLastFrame
+  EXPECT_EQ(
+      WebSocket::FRAME_OK_MIDDLE,
+      server_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
+  EXPECT_EQ(
+      WebSocket::FRAME_OK_MIDDLE,
+      server_->DecodeFrame(kEncodedSecondFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedSecondFrame.length()), bytes_consumed);
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+            server_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("abcdefghijklmnop", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
+}
+
+TEST_F(WebSocketEncoderTest, DecodeFragmentedMessageServerToClientDivided2) {
+  const std::string kOriginalText = "abcdefghijklmnop";
+  constexpr int kMask = 0;
+  constexpr bool kCompressed = false;
+
+  constexpr int kPartitions = 2;
+  ASSERT_GT(static_cast<int>(kOriginalText.length()), 4 * kPartitions);
+  std::vector<std::string> encoded_frames =
+      GenerateFragmentedFrames(kOriginalText, kMask, kPartitions, kCompressed);
+  ASSERT_EQ(kPartitions, static_cast<int>(encoded_frames.size()));
+
+  const std::string& kEncodedFirstFrame = encoded_frames[0];
+  const std::string& kEncodedLastFrame = encoded_frames[1];
+
+  int bytes_consumed;
+  std::string decoded;
+
+  // kEncodedFirstFrame -> kEncodedLastFrame
+  EXPECT_EQ(
+      WebSocket::FRAME_OK_MIDDLE,
+      client_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+            client_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("abcdefghijklmnop", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
+}
+
+TEST_F(WebSocketEncoderTest, DecodeFragmentedMessageServerToClientDivided3) {
+  const std::string kOriginalText = "abcdefghijklmnop";
+  constexpr int kMask = 0;
+  constexpr bool kCompressed = false;
+
+  constexpr int kPartitions = 3;
+  ASSERT_GT(static_cast<int>(kOriginalText.length()), 4 * kPartitions);
+  std::vector<std::string> encoded_frames =
+      GenerateFragmentedFrames(kOriginalText, kMask, kPartitions, kCompressed);
+  ASSERT_EQ(kPartitions, static_cast<int>(encoded_frames.size()));
+
+  const std::string& kEncodedFirstFrame = encoded_frames[0];
+  const std::string& kEncodedSecondFrame = encoded_frames[1];
+  const std::string& kEncodedLastFrame = encoded_frames[2];
+
+  int bytes_consumed;
+  std::string decoded;
+
+  // kEncodedFirstFrame -> kEncodedSecondFrame -> kEncodedLastFrame
+  EXPECT_EQ(
+      WebSocket::FRAME_OK_MIDDLE,
+      client_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
+  EXPECT_EQ(
+      WebSocket::FRAME_OK_MIDDLE,
+      client_->DecodeFrame(kEncodedSecondFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedSecondFrame.length()), bytes_consumed);
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+            client_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("abcdefghijklmnop", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
 }
 
 TEST_F(WebSocketEncoderCompressionTest, ClientToServer) {
@@ -188,7 +375,7 @@ TEST_F(WebSocketEncoderCompressionTest, ClientToServer) {
 
   client_->EncodeFrame(frame, mask, &encoded);
   EXPECT_LT(encoded.length(), frame.length());
-  EXPECT_EQ(WebSocket::FRAME_OK,
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             server_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ(frame, decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
@@ -203,7 +390,7 @@ TEST_F(WebSocketEncoderCompressionTest, ServerToClient) {
 
   server_->EncodeFrame(frame, mask, &encoded);
   EXPECT_LT(encoded.length(), frame.length());
-  EXPECT_EQ(WebSocket::FRAME_OK,
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             client_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ(frame, decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
@@ -230,10 +417,81 @@ TEST_F(WebSocketEncoderCompressionTest, LongFrame) {
 
   server_->EncodeFrame(frame, mask, &encoded);
   EXPECT_LT(encoded.length(), frame.length());
-  EXPECT_EQ(WebSocket::FRAME_OK,
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
             client_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ(frame, decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
+}
+
+TEST_F(WebSocketEncoderCompressionTest, DecodeFragmentedMessageClientToServer) {
+  const std::string kOriginalText = "abcdefghijklmnop";
+  constexpr int kMask = 123456;
+
+  constexpr int kPartitions = 3;
+  constexpr bool kCompressed = true;
+  ASSERT_GT(static_cast<int>(kOriginalText.length()), 4 * kPartitions);
+  std::vector<std::string> encoded_frames =
+      GenerateFragmentedFrames(kOriginalText, kMask, kPartitions, kCompressed);
+  ASSERT_EQ(kPartitions, static_cast<int>(encoded_frames.size()));
+
+  const std::string& kEncodedFirstFrame = encoded_frames[0];
+  const std::string& kEncodedSecondFrame = encoded_frames[1];
+  const std::string& kEncodedLastFrame = encoded_frames[2];
+
+  int bytes_consumed;
+  std::string decoded;
+
+  // kEncodedFirstFrame -> kEncodedSecondFrame -> kEncodedLastFrame
+  EXPECT_EQ(
+      WebSocket::FRAME_OK_MIDDLE,
+      server_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
+  EXPECT_EQ(
+      WebSocket::FRAME_OK_MIDDLE,
+      server_->DecodeFrame(kEncodedSecondFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedSecondFrame.length()), bytes_consumed);
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+            server_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("abcdefghijklmnop", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
+}
+
+TEST_F(WebSocketEncoderCompressionTest, DecodeFragmentedMessageServerToClient) {
+  const std::string kOriginalText = "abcdefghijklmnop";
+  constexpr int kMask = 0;
+
+  constexpr int kPartitions = 3;
+  constexpr bool kCompressed = true;
+  ASSERT_GT(static_cast<int>(kOriginalText.length()), 4 * kPartitions);
+  std::vector<std::string> encoded_frames =
+      GenerateFragmentedFrames(kOriginalText, kMask, kPartitions, kCompressed);
+  ASSERT_EQ(kPartitions, static_cast<int>(encoded_frames.size()));
+
+  const std::string& kEncodedFirstFrame = encoded_frames[0];
+  const std::string& kEncodedSecondFrame = encoded_frames[1];
+  const std::string& kEncodedLastFrame = encoded_frames[2];
+
+  int bytes_consumed;
+  std::string decoded;
+
+  // kEncodedFirstFrame -> kEncodedSecondFrame -> kEncodedLastFrame
+  decoded.clear();
+  EXPECT_EQ(
+      WebSocket::FRAME_OK_MIDDLE,
+      client_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
+  EXPECT_EQ(
+      WebSocket::FRAME_OK_MIDDLE,
+      client_->DecodeFrame(kEncodedSecondFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedSecondFrame.length()), bytes_consumed);
+  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+            client_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
+  EXPECT_EQ("abcdefghijklmnop", decoded);
+  EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
 }
 
 }  // namespace server

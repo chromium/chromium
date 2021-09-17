@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/macros.h"
@@ -59,6 +60,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) WebSocketEncoder final {
   WebSocketEncoder(Type type,
                    std::unique_ptr<net::WebSocketDeflater> deflater,
                    std::unique_ptr<net::WebSocketInflater> inflater);
+
+  std::vector<std::string> continuation_message_frames_;
+  bool is_current_message_compressed_ = false;
 
   bool Inflate(std::string* message);
   bool Deflate(base::StringPiece message, std::string* output);
