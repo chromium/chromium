@@ -329,15 +329,9 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
 
   ASSERT_TRUE(data_device_manager_->data_source());
   auto mime_types = data_device_manager_->data_source()->mime_types();
-  EXPECT_EQ(2u, mime_types.size());
+  EXPECT_EQ(3u, mime_types.size());
 
   for (auto format : kCustomFormats) {
-    // TODO(crbug.com/1247063): Double-check whether offering custom format name
-    // is not enough here. For now, for webui tab drag, format is extracted from
-    // the pickled data and used as mime type at Wayland protocol level.
-    if (format == ClipboardFormatType::WebCustomDataType())
-      continue;
-
     EXPECT_TRUE(base::Contains(mime_types, format.GetName()))
         << "Format '" << format.GetName() << "' should be offered.";
   }
