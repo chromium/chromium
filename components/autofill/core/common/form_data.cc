@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/base64.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -174,6 +175,18 @@ bool FormData::IdentityComparator::operator()(const FormData& a,
       a.fields, b.fields, FormFieldData::IdentityComparator());
 }
 
+// Used for `Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality`
+// metric. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+// TODO(crbug/1215333): Remove after the `AutofillUseNewFormExtraction`
+// feature is deleted.
+enum class FormDataEquality {
+  kShallowCompEnough = 0,
+  kDeepCompNeeded = 1,
+  kEqualForms = 2,
+  kMaxValue = kEqualForms,
+};
+
 // static
 bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   // We compare all unique identifiers first, including the field renderer IDs,
@@ -183,6 +196,9 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
       !base::ranges::equal(a.fields, b.fields, {},
                            &FormFieldData::unique_renderer_id,
                            &FormFieldData::unique_renderer_id)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality",
+        FormDataEquality::kShallowCompEnough);
     return false;
   }
 
@@ -190,8 +206,14 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
       a.name_attribute != b.name_attribute || a.url != b.url ||
       a.action != b.action || a.is_form_tag != b.is_form_tag ||
       !base::ranges::equal(a.fields, b.fields, &FormFieldData::DeepEqual)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality",
+        FormDataEquality::kDeepCompNeeded);
     return false;
   }
+  UMA_HISTOGRAM_ENUMERATION(
+      "Autofill.ExtractNewForms.ShallowEqualityDiffersFromDeepEquality",
+      FormDataEquality::kEqualForms);
   return true;
 }
 

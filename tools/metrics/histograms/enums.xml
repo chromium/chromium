@@ -36586,6 +36586,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="GNOME failure"/>
 </enum>
 
+<enum name="FormDataEquality">
+  <int value="0" label="Shallow comparison is enough to find difference"/>
+  <int value="1" label="Deep comparison is needed to find difference"/>
+  <int value="2" label="Equal forms"/>
+</enum>
+
 <enum name="FormInputAccessoryAction">
   <int value="0" label="PreviousElement"/>
   <int value="1" label="NextElement"/>
