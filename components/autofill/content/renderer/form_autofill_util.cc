@@ -1755,25 +1755,6 @@ bool ExtractFormData(const WebFormElement& form_element,
       data, nullptr);
 }
 
-bool IsFormVisible(blink::WebLocalFrame* frame,
-                   FormRendererId form_renderer_id) {
-  WebDocument doc = frame->GetDocument();
-  if (doc.IsNull())
-    return false;
-  WebFormElement form = FindFormByUniqueRendererId(doc, form_renderer_id);
-  return form.IsNull() ? false : AreFormContentsVisible(form);
-}
-
-bool IsFormControlVisible(blink::WebLocalFrame* frame,
-                          FieldRendererId field_renderer_id) {
-  WebDocument doc = frame->GetDocument();
-  if (doc.IsNull())
-    return false;
-  WebFormControlElement field =
-      FindFormControlElementByUniqueRendererId(doc, field_renderer_id);
-  return field.IsNull() ? false : IsWebElementVisible(field);
-}
-
 bool IsSomeControlElementVisible(
     const WebVector<WebFormControlElement>& control_elements) {
   for (const WebFormControlElement& control_element : control_elements) {
@@ -1815,8 +1796,7 @@ bool IsSomeControlElementVisible(
            ContainsVisibleField(doc.UnassociatedFormControls());
   } else {
     // This is basically a set intersection of |control_elements| and the form
-    // controls on the website. We don't call IsFormControlVisible() on each
-    // element in |control_elements| as that would be O(|DOM| + N * M).
+    // controls on the website.
     // Iterating over all form controls on the website and checking their
     // existence in control_elements makes this O(|DOM| + N log M), where N is
     // the number of form controls on the website and M the number of elements
@@ -2493,7 +2473,7 @@ bool InferLabelForElementForTesting(const WebFormControlElement& element,
   return InferLabelForElement(element, label, label_source);
 }
 
-WebFormElement FindFormByUniqueRendererId(WebDocument doc,
+WebFormElement FindFormByUniqueRendererId(const WebDocument& doc,
                                           FormRendererId form_renderer_id) {
   for (const auto& form : doc.Forms()) {
     if (FormRendererId(form.UniqueRendererFormId()) == form_renderer_id)
@@ -2503,7 +2483,7 @@ WebFormElement FindFormByUniqueRendererId(WebDocument doc,
 }
 
 WebFormControlElement FindFormControlElementByUniqueRendererId(
-    WebDocument doc,
+    const WebDocument& doc,
     FieldRendererId queried_form_control) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FindFormControlElementByUniqueRendererIdDuration");
@@ -2531,15 +2511,32 @@ WebFormControlElement FindFormControlElementByUniqueRendererId(
         continue;
       WebFormControlElement control = element.To<WebFormControlElement>();
       if (queried_form_control ==
-          FieldRendererId(control.UniqueRendererFormControlId()))
+          FieldRendererId(control.UniqueRendererFormControlId())) {
         return control;
+      }
     }
     return WebFormControlElement();
   }
 }
 
+WebFormControlElement FindUnownedFormControlElementByUniqueRendererId(
+    const WebDocument& doc,
+    FieldRendererId queried_form_control) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUseUnassociatedListedElements)) {
+    return FindFormControlElementByUniqueRendererId(doc, queried_form_control);
+  }
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Autofill.FindFormControlElementByUniqueRendererIdDuration");
+  const WebVector<WebFormControlElement>& fields =
+      doc.UnassociatedFormControls();
+  auto it =
+      base::ranges::find(fields, queried_form_control, GetFieldRendererId);
+  return it != fields.end() ? *it : WebFormControlElement();
+}
+
 std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
-    WebDocument doc,
+    const WebDocument& doc,
     const std::vector<FieldRendererId>& queried_form_controls) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FindFormControlElementsByUniqueRendererIdDuration");
@@ -2582,7 +2579,7 @@ std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
 }
 
 std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
-    WebDocument doc,
+    const WebDocument& doc,
     FormRendererId form_renderer_id,
     const std::vector<FieldRendererId>& queried_form_controls) {
   std::vector<WebFormControlElement> result(queried_form_controls.size());

@@ -598,6 +598,28 @@ TEST_F(FormAutofillUtilsTest, FindFormControlByUniqueId) {
       FindFormControlElementByUniqueRendererId(doc, non_existing_id).IsNull());
 }
 
+// Tests FindUnownedFormControlElementByUniqueRendererId().
+TEST_F(FormAutofillUtilsTest, FindUnownedFormControlElementByUniqueRendererId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillUseUnassociatedListedElements);
+  LoadHTML(
+      "<body><form id='form1'><input id='i1'></form><input id='i2'></body>");
+  WebDocument doc = GetMainFrame()->GetDocument();
+  auto input1 = doc.GetElementById("i1").To<WebInputElement>();
+  auto input2 = doc.GetElementById("i2").To<WebInputElement>();
+  FieldRendererId non_existing_id(input2.UniqueRendererFormControlId() + 1000);
+
+  EXPECT_TRUE(FindUnownedFormControlElementByUniqueRendererId(
+                  doc, GetFieldRendererId(input1))
+                  .IsNull());
+  EXPECT_EQ(input2, FindUnownedFormControlElementByUniqueRendererId(
+                        doc, GetFieldRendererId(input2)));
+  EXPECT_TRUE(
+      FindUnownedFormControlElementByUniqueRendererId(doc, non_existing_id)
+          .IsNull());
+}
+
 TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdNoForm) {
   LoadHTML("<body><input id='i1'><input id='i2'><input id='i3'></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
@@ -801,33 +823,6 @@ TEST_F(FormAutofillUtilsTestWithIframesEnabled, IsOwnedByFrame) {
   ExecuteJavaScriptForTests(R"(document.getElementById('div').remove();)");
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(IsOwnedByFrame(div, main_frame));
-}
-
-TEST_F(FormAutofillUtilsTest, IsFormVisible) {
-  LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
-  WebDocument doc = GetMainFrame()->GetDocument();
-  auto form = doc.GetElementById("form1").To<WebFormElement>();
-  FormRendererId form_id(form.UniqueRendererFormId());
-
-  EXPECT_TRUE(autofill::form_util::IsFormVisible(GetMainFrame(), form_id));
-
-  // Hide a form.
-  form.SetAttribute("style", "display:none");
-  EXPECT_FALSE(autofill::form_util::IsFormVisible(GetMainFrame(), form_id));
-}
-
-TEST_F(FormAutofillUtilsTest, IsFormControlVisible) {
-  LoadHTML("<body><input id='input1'></body>");
-  WebDocument doc = GetMainFrame()->GetDocument();
-  auto input = doc.GetElementById("input1").To<WebFormControlElement>();
-  FieldRendererId input_id(input.UniqueRendererFormControlId());
-
-  EXPECT_TRUE(IsFormControlVisible(GetMainFrame(), input_id));
-
-  // Hide a field.
-  input.SetAttribute("style", "display:none");
-  EXPECT_FALSE(
-      autofill::form_util::IsFormControlVisible(GetMainFrame(), input_id));
 }
 
 TEST_F(FormAutofillUtilsTest, IsActionEmptyFalse) {

@@ -78,10 +78,11 @@ using blink::WebView;
 
 namespace autofill {
 
+using form_util::FindFormByUniqueRendererId;
 using form_util::FindFormControlElementByUniqueRendererId;
 using form_util::FindFormControlElementsByUniqueRendererId;
-using form_util::IsFormControlVisible;
-using form_util::IsFormVisible;
+using form_util::FindUnownedFormControlElementByUniqueRendererId;
+using form_util::IsWebElementVisible;
 
 using mojom::FocusedFieldType;
 using mojom::SubmissionIndicatorEvent;
@@ -356,7 +357,7 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
     --iter;
     const WebInputElement* input = ToWebInputElement(&*iter);
     if (input && input->IsTextField() && !input->IsPasswordFieldForAutofill() &&
-        IsElementEditable(*input) && form_util::IsWebElementVisible(*input)) {
+        IsElementEditable(*input) && IsWebElementVisible(*input)) {
       return *input;
     }
   }
@@ -1081,22 +1082,25 @@ void PasswordAutofillAgent::FireSubmissionIfFormDisappear(
 
   // Prompt to save only if the form is now gone, either invisible or
   // removed from the DOM.
-  WebLocalFrame* frame = render_frame()->GetWebFrame();
   // TODO(crbug.com/720347): This method could be called often and checking form
   // visibility could be expensive. Add performance metrics for this.
   if (event != SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR) {
-    bool is_last_updated_field_in_form =
-        !last_updated_form_renderer_id_.is_null();
-    // Check whether the form which is the candidate for submission disappeared.
-    // If yes this form is considered to be successfully submitted.
-    if (is_last_updated_field_in_form) {
-      // A form is inside <form> tag. Check the visibility of the whole form.
-      if (IsFormVisible(frame, last_updated_form_renderer_id_))
-        return;
-    } else {
-      // A form is without <form> tag. Check the visibility of the last updated
-      // field.
-      if (IsFormControlVisible(frame, last_updated_field_renderer_id_))
+    WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
+    if (!doc.IsNull()) {
+      std::vector<WebFormControlElement> fields;
+      WebFormElement form;
+      WebFormControlElement field;
+      if (last_updated_form_renderer_id_ &&
+          !(form =
+                FindFormByUniqueRendererId(doc, last_updated_form_renderer_id_))
+               .IsNull()) {
+        fields = form.GetFormControlElements().ReleaseVector();
+      } else if (!(field = FindUnownedFormControlElementByUniqueRendererId(
+                       doc, last_updated_field_renderer_id_))
+                      .IsNull()) {
+        fields = {field};
+      }
+      if (base::ranges::any_of(fields, IsWebElementVisible))
         return;
     }
   }
@@ -1904,10 +1908,9 @@ PasswordAutofillAgent::FindUsernamePasswordElements(
   bool wrapped_in_form_tag = !form_data.form_renderer_id.is_null();
   std::vector<WebFormControlElement> elements =
       wrapped_in_form_tag
-          ? form_util::FindFormControlElementsByUniqueRendererId(
+          ? FindFormControlElementsByUniqueRendererId(
                 doc, form_data.form_renderer_id, element_ids)
-          : form_util::FindFormControlElementsByUniqueRendererId(doc,
-                                                                 element_ids);
+          : FindFormControlElementsByUniqueRendererId(doc, element_ids);
 
   // Set password element.
   WebInputElement password_field;

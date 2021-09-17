@@ -89,6 +89,7 @@ namespace autofill {
 
 using form_util::ExtractMask;
 using form_util::FindFormAndFieldForFormControlElement;
+using form_util::FindUnownedFormControlElementByUniqueRendererId;
 using form_util::IsOwnedByFrame;
 using mojom::SubmissionSource;
 using ShowAll = PasswordAutofillAgent::ShowAll;
@@ -1159,14 +1160,18 @@ void AutofillAgent::OnProvisionallySaveForm(
     if (!element.Form().IsNull()) {
       UpdateLastInteractedForm(element.Form());
     } else {
-      // Remove invisible elements
-      WebLocalFrame* frame = render_frame()->GetWebFrame();
-      for (auto it = formless_elements_user_edited_.begin();
-           it != formless_elements_user_edited_.end();) {
-        if (form_util::IsFormControlVisible(frame, *it)) {
-          it = formless_elements_user_edited_.erase(it);
-        } else {
-          ++it;
+      // Remove visible elements.
+      WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
+      if (!doc.IsNull()) {
+        for (auto it = formless_elements_user_edited_.begin();
+             it != formless_elements_user_edited_.end();) {
+          WebFormControlElement field =
+              FindUnownedFormControlElementByUniqueRendererId(doc, *it);
+          if (!field.IsNull() && form_util::IsWebElementVisible(field)) {
+            it = formless_elements_user_edited_.erase(it);
+          } else {
+            ++it;
+          }
         }
       }
       formless_elements_user_edited_.insert(

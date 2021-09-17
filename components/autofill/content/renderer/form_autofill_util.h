@@ -121,16 +121,6 @@ bool ExtractFormData(const blink::WebFormElement& form_element,
                      const FieldDataManager& field_data_manager,
                      FormData* data);
 
-// Helper function to check if a form with renderer id |form_renderer_id| exists
-// in |frame| and is visible.
-bool IsFormVisible(blink::WebLocalFrame* frame,
-                   FormRendererId form_renderer_id);
-
-// Helper function to check if a field with renderer id |field_renderer_id|
-// exists in |frame| and is visible.
-bool IsFormControlVisible(blink::WebLocalFrame* frame,
-                          FieldRendererId field_renderer_id);
-
 // Returns true if at least one element from |control_elements| is visible.
 bool IsSomeControlElementVisible(
     const blink::WebVector<blink::WebFormControlElement>& control_elements);
@@ -353,17 +343,24 @@ bool InferLabelForElementForTesting(const blink::WebFormControlElement& element,
                                     std::u16string* label,
                                     FormFieldData::LabelSource* label_source);
 
-// Returns form by unique renderer id. Return null element if there is no form
-// with given form renderer id.
+// Returns the form element by unique renderer id. Returns the null element if
+// there is no form with the |form_renderer_id|.
 blink::WebFormElement FindFormByUniqueRendererId(
-    blink::WebDocument doc,
+    const blink::WebDocument& doc,
     FormRendererId form_renderer_id);
 
-// Returns form control element by unique renderer id. Return null element if
-// there is no element with given renderer id.
+// Returns the form control element by unique renderer id. Returns the null
+// element if there is no element with the |queried_form_control| renderer id.
 blink::WebFormControlElement FindFormControlElementByUniqueRendererId(
-    blink::WebDocument doc,
-    FieldRendererId form_control_renderer_id);
+    const blink::WebDocument& doc,
+    FieldRendererId queried_form_control);
+
+// Returns the unowned form control element by unique renderer id. Returns the
+// null element if there is no element with the |queried_form_control| renderer
+// id.
+blink::WebFormControlElement FindUnownedFormControlElementByUniqueRendererId(
+    const blink::WebDocument& doc,
+    FieldRendererId queried_form_control);
 
 // Note: The vector-based API of the following two functions is a tax for
 // limiting the frequency and duration of retrieving a lot of DOM elements.
@@ -376,7 +373,7 @@ blink::WebFormControlElement FindFormControlElementByUniqueRendererId(
 // expensive, because it retrieves all DOM elements.
 std::vector<blink::WebFormControlElement>
 FindFormControlElementsByUniqueRendererId(
-    blink::WebDocument doc,
+    const blink::WebDocument& doc,
     const std::vector<FieldRendererId>& queried_form_controls);
 
 // Returns form control elements by unique renderer id from the form with
@@ -387,7 +384,7 @@ FindFormControlElementsByUniqueRendererId(
 // single form.
 std::vector<blink::WebFormControlElement>
 FindFormControlElementsByUniqueRendererId(
-    blink::WebDocument doc,
+    const blink::WebDocument& doc,
     FormRendererId form_renderer_id,
     const std::vector<FieldRendererId>& queried_form_controls);
 
