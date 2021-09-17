@@ -23,6 +23,9 @@ extern const base::Feature kPageInfoHistory;
 extern const base::Feature kPageInfoV2Desktop;
 #endif
 
+// Enables the "About this site" section in Page Info.
+extern const base::Feature kPageInfoAboutThisSite;
+
 }  // namespace page_info
 
 #endif  // COMPONENTS_PAGE_INFO_FEATURES_H_

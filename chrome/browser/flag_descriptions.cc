@@ -1981,6 +1981,11 @@ const char kOverviewButtonName[] = "Overview button at the status area";
 const char kOverviewButtonDescription[] =
     "If enabled, always show the overview button at the status area.";
 
+const char kPageInfoAboutThisSiteName[] =
+    "'About this site' section in page info";
+const char kPageInfoAboutThisSiteDescription[] =
+    "Enable the 'About this site' section in the page info.";
+
 const char kPageInfoV2DesktopName[] = "Page info version two desktop";
 const char kPageInfoV2DesktopDescription[] =
     "Enable the second version of the page info menu on desktop.";

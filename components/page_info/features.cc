@@ -19,4 +19,7 @@ const base::Feature kPageInfoV2Desktop{"PageInfoV2Desktop",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+const base::Feature kPageInfoAboutThisSite{"PageInfoAboutThisSite",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace page_info
