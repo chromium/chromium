@@ -58,9 +58,9 @@ void BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() {
 
 const extensions::Extension*
 BaseTelemetryExtensionBrowserTest::LoadExtensionWithManifestAndServiceWorker(
+    extensions::TestExtensionDir& test_dir,
     const std::string& manifest_content,
     const std::string& service_worker_content) {
-  extensions::TestExtensionDir test_dir;
   test_dir.WriteManifest(manifest_content);
   test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), service_worker_content);
 
@@ -69,18 +69,23 @@ BaseTelemetryExtensionBrowserTest::LoadExtensionWithManifestAndServiceWorker(
 
 const extensions::Extension*
 BaseTelemetryExtensionBrowserTest::LoadExtensionWithServiceWorker(
+    extensions::TestExtensionDir& test_dir,
     const std::string& service_worker_content) {
-  return LoadExtensionWithManifestAndServiceWorker(kManifest,
+  return LoadExtensionWithManifestAndServiceWorker(test_dir, kManifest,
                                                    service_worker_content);
 }
 
 void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
     const std::string& service_worker_content) {
+  // Must be outlive the extension.
+  extensions::TestExtensionDir test_dir;
+
   // Must be initialised before loading extension.
   extensions::ResultCatcher result_catcher;
 
-  ASSERT_TRUE(LoadExtensionWithManifestAndServiceWorker(
-      kManifest, service_worker_content));
+  const auto* extension = LoadExtensionWithManifestAndServiceWorker(
+      test_dir, kManifest, service_worker_content);
+  ASSERT_TRUE(extension);
 
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }

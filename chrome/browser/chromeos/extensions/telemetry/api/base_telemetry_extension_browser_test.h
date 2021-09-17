@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
 class Extension;
@@ -31,9 +32,11 @@ class BaseTelemetryExtensionBrowserTest
 
  protected:
   const extensions::Extension* LoadExtensionWithManifestAndServiceWorker(
+      extensions::TestExtensionDir& test_dir,
       const std::string& manifest_content,
       const std::string& service_worker_content);
   const extensions::Extension* LoadExtensionWithServiceWorker(
+      extensions::TestExtensionDir& test_dir,
       const std::string& service_worker_content);
   void CreateExtensionAndRunServiceWorker(
       const std::string& service_worker_content);

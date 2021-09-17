@@ -16,9 +16,8 @@ namespace chromeos {
 using TelemetryExtensionDiagnosticsApiBrowserTest =
     BaseTelemetryExtensionApiAllowedBrowserTest;
 
-// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_GetAvailableRoutinesSuccess) {
+                       GetAvailableRoutinesSuccess) {
   cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting({
       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
@@ -52,9 +51,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
 }
 
-// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_GetRoutineUpdateNonInteractiveSuccess) {
+                       GetRoutineUpdateNonInteractiveSuccess) {
   // Configure FakeCrosHealthd to return noninteractive response for
   // GetRoutineUpdate().
   auto nonInteractiveRoutineUpdate =
@@ -107,9 +105,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
             update_params->command);
 }
 
-// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_GetRoutineUpdateInteractiveSuccess) {
+                       GetRoutineUpdateInteractiveSuccess) {
   // Configure FakeCrosHealthd to return interactive response for
   // GetRoutineUpdate().
   auto interactiveRoutineUpdate =
@@ -165,9 +162,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
             update_params->command);
 }
 
-// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_RunBatteryCapacityRoutineSuccess) {
+                       RunBatteryCapacityRoutineSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function runBatteryCapacityRoutine() {
@@ -182,9 +178,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity);
 }
 
-// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_RunBatteryChargeRoutineSuccess) {
+                       RunBatteryChargeRoutineSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function runBatteryChargeRoutine() {
@@ -204,9 +199,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge);
 }
 
-// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_RunBatteryDischargeRoutineSuccess) {
+                       RunBatteryDischargeRoutineSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function runBatteryDischargeRoutine() {
@@ -226,9 +220,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge);
 }
 
-// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_RunBatteryHealthRoutineSuccess) {
+                       RunBatteryHealthRoutineSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function runBatteryHealthRoutine() {
@@ -243,9 +236,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth);
 }
 
-// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_RunCpuCacheRoutineSuccess) {
+                       RunCpuCacheRoutineSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function runCpuCacheRoutine() {
@@ -264,9 +256,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
             cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache);
 }
 
-// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_RunCpuStressRoutineSuccess) {
+                       RunCpuStressRoutineSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function runCpuStressRoutine() {
@@ -285,9 +276,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
             cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress);
 }
 
-// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       DISABLED_RunMemoryRoutineSuccess) {
+                       RunMemoryRoutineSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function runMemoryRoutine() {
