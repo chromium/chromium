@@ -68,24 +68,34 @@ struct MatchGURLHash {
 size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
 #if (defined(OS_ANDROID))
   constexpr size_t kDefaultMaxAutocompleteMatches = 5;
+  constexpr size_t kDefaultMaxZeroSuggestMatches = 15;
 #elif defined(OS_IOS)  // !defined(OS_ANDROID)
   constexpr size_t kDefaultMaxAutocompleteMatches = 6;
+  constexpr size_t kDefaultMaxZeroSuggestMatches = 6;
 #else                  // !defined(OS_ANDROID) && !defined(OS_IOS)
   constexpr size_t kDefaultMaxAutocompleteMatches = 8;
+  constexpr size_t kDefaultMaxZeroSuggestMatches = 8;
 #endif
   static_assert(kMaxAutocompletePositionValue > kDefaultMaxAutocompleteMatches,
                 "kMaxAutocompletePositionValue must be larger than the largest "
                 "possible autocomplete result size.");
+  static_assert(kMaxAutocompletePositionValue > kDefaultMaxZeroSuggestMatches,
+                "kMaxAutocompletePositionValue must be larger than the largest "
+                "possible zero suggest autocomplete result size.");
+  static_assert(kDefaultMaxAutocompleteMatches != 0,
+                "Default number of suggestions must be non-zero");
+  static_assert(kDefaultMaxZeroSuggestMatches != 0,
+                "Default number of zero-prefix suggestions must be non-zero");
 
   // If we're interested in the zero suggest match limit, and one has been
   // specified, return it.
   if (is_zero_suggest) {
     size_t field_trial_value = base::GetFieldTrialParamByFeatureAsInt(
         omnibox::kMaxZeroSuggestMatches,
-        OmniboxFieldTrial::kMaxZeroSuggestMatchesParam, 0);
+        OmniboxFieldTrial::kMaxZeroSuggestMatchesParam,
+        kDefaultMaxZeroSuggestMatches);
     DCHECK(kMaxAutocompletePositionValue > field_trial_value);
-    if (field_trial_value > 0)
-      return field_trial_value;
+    return field_trial_value;
   }
 
   //  Otherwise, i.e. if no zero suggest specific limit has been specified or
