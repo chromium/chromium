@@ -18,8 +18,9 @@ namespace chromeos {
 using TelemetryExtensionTelemetryApiBrowserTest =
     BaseTelemetryExtensionApiAllowedBrowserTest;
 
+// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
-                       GetVpdInfoError) {
+                       DISABLED_GetVpdInfoError) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getVpdInfo() {
@@ -33,8 +34,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
+// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
-                       GetVpdInfoSuccess) {
+                       DISABLED_GetVpdInfoSuccess) {
   // Configure fake cros_healthd response.
   {
     auto telemetry_info = cros_healthd::mojom::TelemetryInfo::New();
@@ -90,8 +92,9 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
 
 }  // namespace
 
+// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
-                       GetOemDataError) {
+                       DISABLED_GetOemDataError) {
   DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
       std::make_unique<TestDebugDaemonClient>());
 
@@ -108,8 +111,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
+// TODO(b/200256254): Re-enable when flakiness is resolved.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
-                       GetOemDataSuccess) {
+                       DISABLED_GetOemDataSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getOemData() {
