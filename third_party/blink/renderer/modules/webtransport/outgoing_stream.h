@@ -23,7 +23,6 @@ namespace blink {
 
 class ExceptionState;
 class ScriptState;
-class StreamAbortInfo;
 class WritableStream;
 class WritableStreamDefaultController;
 
@@ -73,11 +72,7 @@ class MODULES_EXPORT OutgoingStream final
     return writable_;
   }
 
-  ScriptPromise WritingAborted() const { return writing_aborted_; }
-
   ScriptState* GetScriptState() { return script_state_; }
-
-  void AbortWriting(StreamAbortInfo*);
 
   // Called from WebTransport via a WebTransportStream. Expects a JavaScript
   // scope to be entered.
@@ -125,12 +120,12 @@ class MODULES_EXPORT OutgoingStream final
   // otherwise it will indicate a remote-initiated abort.
   ScriptValue CreateAbortException(IsLocalAbort);
 
-  // Errors |writable_|, resolves |writing_aborted_| and resets |data_pipe_|.
+  // Errors |writable_|, and resets |data_pipe_|.
   // The error message used to error |writable_| depends on whether IsLocalAbort
   // is true or not.
   void ErrorStreamAbortAndReset(IsLocalAbort);
 
-  // Resolve the |writing_aborted_| promise and reset the |data_pipe_|.
+  // Reset the |data_pipe_|.
   void AbortAndReset();
 
   // Resets |data_pipe_| and clears the watchers. Also discards |cached_data_|.
@@ -181,10 +176,6 @@ class MODULES_EXPORT OutgoingStream final
 
   Member<WritableStream> writable_;
   Member<WritableStreamDefaultController> controller_;
-
-  // Promise returned by the |writingAborted| attribute.
-  ScriptPromise writing_aborted_;
-  Member<ScriptPromiseResolver> writing_aborted_resolver_;
 
   // If an asynchronous write() on the underlying sink object is pending, this
   // will be non-null.

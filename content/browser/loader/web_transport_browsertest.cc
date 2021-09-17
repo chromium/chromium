@@ -72,8 +72,8 @@ IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, Echo) {
     async function run() {
       const transport = new WebTransport('https://localhost:%d/echo');
 
-      const writer = transport.datagramWritable.getWriter();
-      const reader = transport.datagramReadable.getReader();
+      const writer = transport.datagrams.writable.getWriter();
+      const reader = transport.datagrams.readable.getReader();
 
       const data = new Uint8Array([65, 66, 67]);
       const id = setInterval(() => {
@@ -111,8 +111,8 @@ IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, EchoViaWebTransport) {
     async function run() {
       const transport = new WebTransport('https://localhost:%d/echo');
 
-      const writer = transport.datagramWritable.getWriter();
-      const reader = transport.datagramReadable.getReader();
+      const writer = transport.datagrams.writable.getWriter();
+      const reader = transport.datagrams.readable.getReader();
 
       const data = new Uint8Array([65, 66, 67]);
       const id = setInterval(() => {
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, CreateSendStream) {
       await transport.ready;
 
       const sendStream = await transport.createUnidirectionalStream();
-      const writer = sendStream.writable.getWriter();
+      const writer = sendStream.getWriter();
       await writer.write(new Uint8Array([65, 66, 67]));
       await writer.close();
     }
