@@ -229,7 +229,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     // and ideally we'd do this at the same time when transferring the proxies
     // from the StoredPage into RenderFrameHostManager. However, this is a
     // temporary solution until we move this into BrowsingInstanceFrameState,
-    // along with RenderFrameHostProxy.
+    // along with RenderFrameProxyHost.
     page->render_frame_host->frame_tree_node()->set_frame_name_for_activation(
         frame_tree_->root()->unique_name(), frame_tree_->root()->frame_name());
     for (auto& it : page->proxy_hosts) {
