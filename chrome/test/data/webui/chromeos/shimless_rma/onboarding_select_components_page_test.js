@@ -58,8 +58,19 @@ export function onboardingSelectComponentsPageTest() {
   function clickComponentCameraToggle() {
     const cameraComponent =
         component.shadowRoot.querySelector('#componentCamera');
+    assertTrue(!!cameraComponent);
     assertFalse(cameraComponent.disabled);
     cameraComponent.click();
+    return flushTasks();
+  }
+
+  /**
+   * @return {!Promise}
+   */
+  function clickReworkButton() {
+    const reworkFlowLink = component.shadowRoot.querySelector('#reworkFlow');
+    assertTrue(!!reworkFlowLink);
+    reworkFlowLink.click();
     return flushTasks();
   }
 
@@ -83,13 +94,13 @@ export function onboardingSelectComponentsPageTest() {
     const touchpadComponent =
         component.shadowRoot.querySelector('#componentTouchpad');
     assertFalse(reworkFlowLink.hidden);
-    assertEquals(cameraComponent.componentName, 'Camera');
+    assertEquals('Camera', cameraComponent.componentName);
     assertFalse(cameraComponent.disabled);
     assertFalse(cameraComponent.checked);
-    assertEquals(batteryComponent.componentName, 'Battery');
+    assertEquals('Battery', batteryComponent.componentName);
     assertTrue(batteryComponent.disabled);
     assertFalse(batteryComponent.checked);
-    assertEquals(touchpadComponent.componentName, 'Touchpad');
+    assertEquals('Touchpad', touchpadComponent.componentName);
     assertFalse(touchpadComponent.disabled);
     assertTrue(touchpadComponent.checked);
   });
@@ -99,19 +110,31 @@ export function onboardingSelectComponentsPageTest() {
     await clickComponentCameraToggle();
 
     let components = getComponentRepairStateList();
-    assertNotEquals(components, fakeComponentsForRepairStateTest);
+    assertNotEquals(fakeComponentsForRepairStateTest, components);
     fakeComponentsForRepairStateTest[0].state = ComponentRepairStatus.kReplaced;
-    assertDeepEquals(components, fakeComponentsForRepairStateTest);
+    assertDeepEquals(fakeComponentsForRepairStateTest, components);
   });
 
-  // TODO(gavindodd): Add test of rework flow link when it does something.
+  test('SelectComponentsPageReworkCallsReworkMainboard', async () => {
+    const resolver = new PromiseResolver();
+    await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
+    let callCounter = 0;
+    service.reworkMainboard = () => {
+      callCounter++;
+      return resolver.promise;
+    };
+
+    await clickReworkButton();
+
+    assertEquals(1, callCounter);
+  });
 
   test('SelectComponentsPageOnNextCallsSetComponentList', async () => {
     const resolver = new PromiseResolver();
     await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
     let callCounter = 0;
     service.setComponentList = (components) => {
-      assertDeepEquals(components, fakeComponentsForRepairStateTest);
+      assertDeepEquals(fakeComponentsForRepairStateTest, components);
       callCounter++;
       return resolver.promise;
     };
@@ -123,7 +146,7 @@ export function onboardingSelectComponentsPageTest() {
     resolver.resolve(expectedResult);
     await flushTasks();
 
-    assertEquals(callCounter, 1);
-    assertDeepEquals(savedResult, expectedResult);
+    assertEquals(1, callCounter);
+    assertDeepEquals(expectedResult, savedResult);
   });
 }

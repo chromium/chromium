@@ -158,9 +158,11 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
   onReworkFlowButtonClicked_(e) {
     e.preventDefault();
     console.log('Rework flow clicked');
-    // TODO(gavindodd): call
-    // this.shimlessRmaService_.reworkMainboard().then((state)
-    //     => shimlessRma.loadNextState_(state));
+    this.shimlessRmaService_.reworkMainboard().then(
+        (state) => this.dispatchEvent(new CustomEvent(
+            'load-next-state',
+            {bubbles: true, composed: true, detail: state},
+            )));
   }
 
   /** @return {!Promise<!StateResult>} */
