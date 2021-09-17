@@ -134,6 +134,51 @@ TEST_F(IncomingStreamTest, Create) {
   EXPECT_TRUE(incoming_stream->Readable());
 }
 
+TEST_F(IncomingStreamTest, AbortReading) {
+  V8TestingScope scope;
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+  auto* script_state = scope.GetScriptState();
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise reading_aborted = incoming_stream->ReadingAborted();
+
+  EXPECT_CALL(mock_on_abort_, Run());
+
+  incoming_stream->AbortReading(nullptr);
+
+  // Allow the close signal to propagate down the pipe.
+  test::RunPendingTasks();
+
+  // Check that the pipe was closed.
+  const char data[] = "foo";
+  uint32_t num_bytes = 3;
+  EXPECT_EQ(data_pipe_producer_->WriteData(data, &num_bytes,
+                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE),
+            MOJO_RESULT_FAILED_PRECONDITION);
+
+  ScriptPromiseTester abort_tester(script_state, reading_aborted);
+  abort_tester.WaitUntilSettled();
+  EXPECT_TRUE(abort_tester.IsFulfilled());
+
+  // Calling AbortReading() does not error the stream, it simply closes it.
+  Iterator result = Read(scope, reader);
+  EXPECT_TRUE(result.done);
+}
+
+TEST_F(IncomingStreamTest, AbortReadingTwice) {
+  V8TestingScope scope;
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run());
+
+  incoming_stream->AbortReading(nullptr);
+
+  // The second call to AbortReading should be a no-op.
+  incoming_stream->AbortReading(nullptr);
+}
+
 TEST_F(IncomingStreamTest, ReadArrayBuffer) {
   V8TestingScope scope;
 

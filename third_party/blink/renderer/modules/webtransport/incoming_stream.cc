@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_stream_abort_info.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -92,6 +93,13 @@ void IncomingStream::InitWithExistingReadableStream(
                        WTF::BindRepeating(&IncomingStream::OnPeerClosed,
                                           WrapWeakPersistent(this)));
 
+  // This object cannot be garbage collected as long as
+  // |reading_aborted_resolver_| is set and the ExecutionContext has not been
+  // destroyed, so it is guaranteed that that conditions in the
+  // ScriptPromiseResolver destructor will be satisfied.
+  reading_aborted_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  reading_aborted_ = reading_aborted_resolver_->Promise();
   stream->InitWithCountQueueingStrategy(
       script_state_,
       MakeGarbageCollected<UnderlyingSource>(script_state_, this), 1,
@@ -114,8 +122,17 @@ void IncomingStream::OnIncomingStreamClosed(bool fin_received) {
   // Wait until HandlePipeClosed() has also been called before processing the
   // close.
   if (is_pipe_closed_) {
+    // We need a JavaScript scope to be entered in order to resolve the
+    // |reading_aborted_| promise.
+    ScriptState::Scope scope(script_state_);
     ProcessClose();
   }
+}
+
+void IncomingStream::AbortReading(StreamAbortInfo*) {
+  DVLOG(1) << "IncomingStream::abortReading() this=" << this;
+
+  CloseAbortAndReset();
 }
 
 void IncomingStream::Reset() {
@@ -137,6 +154,8 @@ void IncomingStream::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(readable_);
   visitor->Trace(controller_);
+  visitor->Trace(reading_aborted_);
+  visitor->Trace(reading_aborted_resolver_);
 }
 
 void IncomingStream::OnHandleReady(MojoResult result,
@@ -298,6 +317,12 @@ void IncomingStream::ErrorStreamAbortAndReset(ScriptValue exception) {
 
 void IncomingStream::AbortAndReset() {
   DVLOG(1) << "IncomingStream::AbortAndReset() this=" << this;
+
+  if (reading_aborted_resolver_) {
+    // TODO(ricea): Set errorCode on the StreamAbortInfo.
+    reading_aborted_resolver_->Resolve(StreamAbortInfo::Create());
+    reading_aborted_resolver_ = nullptr;
+  }
 
   state_ = State::kAborted;
 

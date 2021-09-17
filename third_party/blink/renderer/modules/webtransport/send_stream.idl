@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/web-transport/#send-stream
+
+[ Exposed=(Window,Worker),
+  RuntimeEnabled=WebTransport ]
+interface SendStream : WritableStream {
+  // These attributes and method are for backwards compatibility.
+  // TODO(ricea): Remove them once the origin trial is over.
+  readonly attribute SendStream writable;
+  readonly attribute Promise<StreamAbortInfo> writingAborted;
+  void abortWriting(optional StreamAbortInfo abortInfo = {});
+};

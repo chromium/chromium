@@ -26,10 +26,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_bidirectional_stream.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_receive_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_fingerprint.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_bidirectional_stream.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_send_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -255,10 +255,10 @@ class WebTransportTest : public ::testing::Test {
     tester.WaitUntilSettled();
 
     EXPECT_TRUE(tester.IsFulfilled());
-    auto* writable = V8WritableStream::ToImplWithTypeCheck(
+    auto* send_stream = V8SendStream::ToImplWithTypeCheck(
         scope.GetIsolate(), tester.Value().V8Value());
-    EXPECT_TRUE(writable);
-    return static_cast<SendStream*>(writable);
+    EXPECT_TRUE(send_stream);
+    return send_stream;
   }
 
   mojo::ScopedDataPipeProducerHandle DoAcceptUnidirectionalStream() {
@@ -282,11 +282,11 @@ class WebTransportTest : public ::testing::Test {
 
     v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
 
-    ReadableStream* readable =
-        V8ReadableStream::ToImplWithTypeCheck(scope.GetIsolate(), v8value);
-    EXPECT_TRUE(readable);
+    ReceiveStream* receive_stream =
+        V8ReceiveStream::ToImplWithTypeCheck(scope.GetIsolate(), v8value);
+    EXPECT_TRUE(receive_stream);
 
-    return static_cast<ReceiveStream*>(readable);
+    return receive_stream;
   }
 
   void BindConnector(mojo::ScopedMessagePipeHandle handle) {
@@ -1205,9 +1205,9 @@ TEST_F(WebTransportTest, CreateSendStream) {
   tester.WaitUntilSettled();
 
   EXPECT_TRUE(tester.IsFulfilled());
-  auto* writable = V8WritableStream::ToImplWithTypeCheck(
+  auto* send_stream = V8SendStream::ToImplWithTypeCheck(
       scope.GetIsolate(), tester.Value().V8Value());
-  EXPECT_TRUE(writable);
+  EXPECT_TRUE(send_stream);
 }
 
 TEST_F(WebTransportTest, CreateSendStreamBeforeConnect) {
@@ -1321,7 +1321,8 @@ TEST_F(WebTransportTest, SendStreamGarbageCollectionLocalClose) {
     // SendStream via the base class.
     v8::HandleScope handle_scope(scope.GetIsolate());
 
-    close_promise = send_stream->close(script_state, ASSERT_NO_EXCEPTION);
+    close_promise =
+        send_stream->writable()->close(script_state, ASSERT_NO_EXCEPTION);
   }
 
   ScriptPromiseTester tester(script_state, close_promise);
@@ -1394,7 +1395,8 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionCancel) {
     // Cancelling also creates v8 handles, so we need a new handle scope as
     // above.
     v8::HandleScope handle_scope(scope.GetIsolate());
-    cancel_promise = receive_stream->cancel(script_state, ASSERT_NO_EXCEPTION);
+    cancel_promise =
+        receive_stream->readable()->cancel(script_state, ASSERT_NO_EXCEPTION);
   }
 
   ScriptPromiseTester tester(script_state, cancel_promise);
@@ -1536,7 +1538,7 @@ TEST_F(WebTransportTest, CreateReceiveStream) {
   producer.reset();
   web_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);
 
-  auto* reader = receive_stream->GetDefaultReaderForTesting(
+  auto* reader = receive_stream->readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
   ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester read_tester(script_state, read_promise);
@@ -1569,7 +1571,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenClose) {
 
   ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
 
-  auto* reader = receive_stream->GetDefaultReaderForTesting(
+  auto* reader = receive_stream->readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
   ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester read_tester(script_state, read_promise);
@@ -1600,7 +1602,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
 
   ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
 
-  auto* reader = receive_stream->GetDefaultReaderForTesting(
+  auto* reader = receive_stream->readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
   ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester read_tester(script_state, read_promise);
@@ -1644,9 +1646,8 @@ TEST_F(WebTransportTest, CreateBidirectionalStream) {
   tester.WaitUntilSettled();
 
   EXPECT_TRUE(tester.IsFulfilled());
-  auto* bidirectional_stream =
-      V8WebTransportBidirectionalStream::ToImplWithTypeCheck(
-          scope.GetIsolate(), tester.Value().V8Value());
+  auto* bidirectional_stream = V8BidirectionalStream::ToImplWithTypeCheck(
+      scope.GetIsolate(), tester.Value().V8Value());
   EXPECT_TRUE(bidirectional_stream);
 }
 
@@ -1675,8 +1676,7 @@ TEST_F(WebTransportTest, ReceiveBidirectionalStream) {
   v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
 
   BidirectionalStream* bidirectional_stream =
-      V8WebTransportBidirectionalStream::ToImplWithTypeCheck(scope.GetIsolate(),
-                                                             v8value);
+      V8BidirectionalStream::ToImplWithTypeCheck(scope.GetIsolate(), v8value);
   EXPECT_TRUE(bidirectional_stream);
 }
 

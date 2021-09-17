@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/web-transport/#bidirectionalstream
+
+[ Exposed=(Window,Worker),
+  RuntimeEnabled=WebTransport ]
+interface BidirectionalStream {
+  // Attributes from the OutgoingStream mixin. OutgoingStream and IncomingStream
+  // are not real mixins in this implementation because it would lead to diamond
+  // inheritance.
+  readonly attribute WritableStream writable;
+  readonly attribute Promise<StreamAbortInfo> writingAborted;
+  void abortWriting(optional StreamAbortInfo abortInfo = {});
+
+  // Attributes from the IncomingStream mixin.
+  readonly attribute ReadableStream readable;
+  readonly attribute Promise<StreamAbortInfo> readingAborted;
+  void abortReading(optional StreamAbortInfo abortInfo = {});
+};

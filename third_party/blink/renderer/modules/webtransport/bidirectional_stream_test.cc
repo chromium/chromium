@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_bidirectional_stream.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_bidirectional_stream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -202,9 +202,8 @@ class ScopedWebTransport {
     tester.WaitUntilSettled();
 
     EXPECT_TRUE(tester.IsFulfilled());
-    auto* bidirectional_stream =
-        V8WebTransportBidirectionalStream::ToImplWithTypeCheck(
-            scope.GetIsolate(), tester.Value().V8Value());
+    auto* bidirectional_stream = V8BidirectionalStream::ToImplWithTypeCheck(
+        scope.GetIsolate(), tester.Value().V8Value());
     EXPECT_TRUE(bidirectional_stream);
     return bidirectional_stream;
   }
@@ -217,8 +216,7 @@ class ScopedWebTransport {
     v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
 
     BidirectionalStream* bidirectional_stream =
-        V8WebTransportBidirectionalStream::ToImplWithTypeCheck(
-            scope.GetIsolate(), v8value);
+        V8BidirectionalStream::ToImplWithTypeCheck(scope.GetIsolate(), v8value);
     EXPECT_TRUE(bidirectional_stream);
 
     return bidirectional_stream;
@@ -363,6 +361,45 @@ TEST(BidirectionalStreamTest, IncomingStreamCleanClose) {
       V8UnpackIteratorResult(script_state, result.As<v8::Object>(), &done)
           .ToLocal(&v8value));
   EXPECT_TRUE(done);
+
+  ScriptPromiseTester tester(scope.GetScriptState(),
+                             bidirectional_stream->writingAborted());
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+}
+
+TEST(BidirectionalStreamTest, IncomingStreamAbort) {
+  V8TestingScope scope;
+  ScopedWebTransport scoped_web_transport(scope);
+  auto* bidirectional_stream =
+      scoped_web_transport.CreateBidirectionalStream(scope);
+  ASSERT_TRUE(bidirectional_stream);
+
+  bidirectional_stream->abortReading(nullptr);
+
+  ScriptPromiseTester tester(scope.GetScriptState(),
+                             bidirectional_stream->writingAborted());
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+}
+
+TEST(BidirectionalStreamTest, OutgoingStreamAbort) {
+  V8TestingScope scope;
+  ScopedWebTransport scoped_web_transport(scope);
+  auto* bidirectional_stream =
+      scoped_web_transport.CreateBidirectionalStream(scope);
+  ASSERT_TRUE(bidirectional_stream);
+
+  bidirectional_stream->abortWriting(nullptr);
+
+  ScriptPromiseTester tester(scope.GetScriptState(),
+                             bidirectional_stream->readingAborted());
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
+  const auto* const stub = scoped_web_transport.Stub();
+  EXPECT_FALSE(stub->WasSendFinCalled());
+  EXPECT_TRUE(stub->WasAbortStreamCalled());
 }
 
 TEST(BidirectionalStreamTest, OutgoingStreamCleanClose) {
@@ -384,9 +421,110 @@ TEST(BidirectionalStreamTest, OutgoingStreamCleanClose) {
       kDefaultStreamId, false);
   scoped_web_transport.Stub()->InputProducer().reset();
 
+  ScriptPromiseTester tester(script_state,
+                             bidirectional_stream->readingAborted());
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+
   const auto* const stub = scoped_web_transport.Stub();
   EXPECT_TRUE(stub->WasSendFinCalled());
   EXPECT_FALSE(stub->WasAbortStreamCalled());
+}
+
+TEST(BidirectionalStreamTest, AbortBothOutgoingFirst) {
+  V8TestingScope scope;
+  ScopedWebTransport scoped_web_transport(scope);
+  auto* bidirectional_stream =
+      scoped_web_transport.CreateBidirectionalStream(scope);
+  ASSERT_TRUE(bidirectional_stream);
+
+  bidirectional_stream->abortWriting(nullptr);
+  bidirectional_stream->abortReading(nullptr);
+
+  ScriptPromiseTester reading_tester(scope.GetScriptState(),
+                                     bidirectional_stream->readingAborted());
+  reading_tester.WaitUntilSettled();
+  EXPECT_TRUE(reading_tester.IsFulfilled());
+
+  ScriptPromiseTester writing_tester(scope.GetScriptState(),
+                                     bidirectional_stream->writingAborted());
+  writing_tester.WaitUntilSettled();
+  EXPECT_TRUE(writing_tester.IsFulfilled());
+}
+
+TEST(BidirectionalStreamTest, AbortBothIncomingFirst) {
+  V8TestingScope scope;
+  ScopedWebTransport scoped_web_transport(scope);
+  auto* bidirectional_stream =
+      scoped_web_transport.CreateBidirectionalStream(scope);
+  ASSERT_TRUE(bidirectional_stream);
+
+  bidirectional_stream->abortReading(nullptr);
+  bidirectional_stream->abortWriting(nullptr);
+
+  ScriptPromiseTester reading_tester(scope.GetScriptState(),
+                                     bidirectional_stream->readingAborted());
+  reading_tester.WaitUntilSettled();
+  EXPECT_TRUE(reading_tester.IsFulfilled());
+
+  ScriptPromiseTester writing_tester(scope.GetScriptState(),
+                                     bidirectional_stream->writingAborted());
+  writing_tester.WaitUntilSettled();
+  EXPECT_TRUE(writing_tester.IsFulfilled());
+}
+
+TEST(BidirectionalStreamTest, CloseOutgoingThenAbortIncoming) {
+  V8TestingScope scope;
+  ScopedWebTransport scoped_web_transport(scope);
+  auto* bidirectional_stream =
+      scoped_web_transport.CreateBidirectionalStream(scope);
+  ASSERT_TRUE(bidirectional_stream);
+
+  // 1. Close outgoing.
+  auto* script_state = scope.GetScriptState();
+  ScriptPromise close_promise = bidirectional_stream->writable()->close(
+      script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester close_tester(script_state, close_promise);
+  close_tester.WaitUntilSettled();
+  EXPECT_TRUE(close_tester.IsFulfilled());
+
+  // 2. Abort incoming.
+  bidirectional_stream->abortReading(nullptr);
+
+  // 3. The network service closes the incoming data pipe as a result of 1.
+  scoped_web_transport.GetWebTransport()->OnIncomingStreamClosed(
+      kDefaultStreamId, false);
+  scoped_web_transport.Stub()->InputProducer().reset();
+
+  ScriptPromiseTester tester(script_state,
+                             bidirectional_stream->readingAborted());
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+}
+
+TEST(BidirectionalStreamTest, AbortIncomingThenCloseOutgoing) {
+  V8TestingScope scope;
+  ScopedWebTransport scoped_web_transport(scope);
+  auto* bidirectional_stream =
+      scoped_web_transport.CreateBidirectionalStream(scope);
+  ASSERT_TRUE(bidirectional_stream);
+
+  // 1. Abort incoming.
+  bidirectional_stream->abortReading(nullptr);
+
+  // 2. Close outgoing. It should already have been closed when we aborted
+  // reading, so this should be a no-op.
+  auto* script_state = scope.GetScriptState();
+  ScriptPromise close_promise = bidirectional_stream->writable()->close(
+      script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester close_tester(script_state, close_promise);
+  close_tester.WaitUntilSettled();
+  EXPECT_TRUE(close_tester.IsRejected());
+
+  ScriptPromiseTester tester(script_state,
+                             bidirectional_stream->writingAborted());
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
 }
 
 TEST(BidirectionalStreamTest, CloseWebTransport) {
@@ -398,8 +536,15 @@ TEST(BidirectionalStreamTest, CloseWebTransport) {
 
   scoped_web_transport.GetWebTransport()->close(nullptr);
 
-  EXPECT_TRUE(bidirectional_stream->readable()->IsErrored());
-  EXPECT_TRUE(bidirectional_stream->writable()->IsErrored());
+  ScriptPromiseTester reading_tester(scope.GetScriptState(),
+                                     bidirectional_stream->readingAborted());
+  reading_tester.WaitUntilSettled();
+  EXPECT_TRUE(reading_tester.IsFulfilled());
+
+  ScriptPromiseTester writing_tester(scope.GetScriptState(),
+                                     bidirectional_stream->writingAborted());
+  writing_tester.WaitUntilSettled();
+  EXPECT_TRUE(writing_tester.IsFulfilled());
 }
 
 TEST(BidirectionalStreamTest, RemoteDropWebTransport) {
@@ -411,10 +556,15 @@ TEST(BidirectionalStreamTest, RemoteDropWebTransport) {
 
   scoped_web_transport.ResetStub();
 
-  test::RunPendingTasks();
+  ScriptPromiseTester reading_tester(scope.GetScriptState(),
+                                     bidirectional_stream->readingAborted());
+  reading_tester.WaitUntilSettled();
+  EXPECT_TRUE(reading_tester.IsFulfilled());
 
-  EXPECT_TRUE(bidirectional_stream->readable()->IsErrored());
-  EXPECT_TRUE(bidirectional_stream->writable()->IsErrored());
+  ScriptPromiseTester writing_tester(scope.GetScriptState(),
+                                     bidirectional_stream->writingAborted());
+  writing_tester.WaitUntilSettled();
+  EXPECT_TRUE(writing_tester.IsFulfilled());
 }
 
 }  // namespace

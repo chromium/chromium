@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_stream_abort_info.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
@@ -149,10 +150,21 @@ void OutgoingStream::InitWithExistingWritableStream(
                        WTF::BindRepeating(&OutgoingStream::OnPeerClosed,
                                           WrapWeakPersistent(this)));
 
+  // TODO(ricea): How do we make sure this promise is settled or detached before
+  // it is destroyed?
+  writing_aborted_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  writing_aborted_ = writing_aborted_resolver_->Promise();
   writable_ = stream;
   stream->InitWithCountQueueingStrategy(
       script_state_, MakeGarbageCollected<UnderlyingSink>(this), 1,
       /*optimizer=*/nullptr, exception_state);
+}
+
+void OutgoingStream::AbortWriting(StreamAbortInfo* stream_abort_info) {
+  DVLOG(1) << "OutgoingStream::abortWriting() this=" << this;
+
+  ErrorStreamAbortAndReset(IsLocalAbort(true));
 }
 
 void OutgoingStream::Reset() {
@@ -172,6 +184,8 @@ void OutgoingStream::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(writable_);
   visitor->Trace(controller_);
+  visitor->Trace(writing_aborted_);
+  visitor->Trace(writing_aborted_resolver_);
   visitor->Trace(write_promise_resolver_);
 }
 
@@ -361,6 +375,12 @@ void OutgoingStream::ErrorStreamAbortAndReset(IsLocalAbort is_local_abort) {
 
 void OutgoingStream::AbortAndReset() {
   DVLOG(1) << "OutgoingStream::AbortAndReset() this=" << this;
+
+  if (writing_aborted_resolver_) {
+    // TODO(ricea): Set errorCode on the StreamAbortInfo.
+    writing_aborted_resolver_->Resolve(StreamAbortInfo::Create());
+    writing_aborted_resolver_ = nullptr;
+  }
 
   if (client_) {
     DCHECK_EQ(state_, State::kOpen);

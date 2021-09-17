@@ -41,7 +41,23 @@ class MODULES_EXPORT BidirectionalStream final : public ScriptWrappable,
   // standard.
   WritableStream* writable() const { return outgoing_stream_->Writable(); }
 
+  ScriptPromise writingAborted() const {
+    return outgoing_stream_->WritingAborted();
+  }
+
+  void abortWriting(StreamAbortInfo* abort_info) {
+    outgoing_stream_->AbortWriting(abort_info);
+  }
+
   ReadableStream* readable() const { return incoming_stream_->Readable(); }
+
+  ScriptPromise readingAborted() const {
+    return incoming_stream_->ReadingAborted();
+  }
+
+  void abortReading(StreamAbortInfo* info) {
+    incoming_stream_->AbortReading(info);
+  }
 
   // Implementation of WebTransportStream.
   void OnIncomingStreamClosed(bool fin_received) override;
