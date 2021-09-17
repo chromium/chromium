@@ -167,4 +167,61 @@ Polymer({
 
     return this.i18n('multideviceNotificationAccessProhibitedTooltip');
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isPhoneHubAppsSetupRequired_() {
+    return !this.pageContentData.isPhoneHubAppsAccessGranted;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isPhoneHubNotificationsSetupRequired_() {
+    return this.pageContentData.notificationAccessStatus ===
+        settings.PhoneHubNotificationAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowPhoneHubNotificationsItem_() {
+    return this.isFeatureSupported(
+               settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS) &&
+        !this.shouldShowPhoneHubCombinedSetupItem_();
+  },
+
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowPhoneHubAppsItem_() {
+    return this.isFeatureSupported(settings.MultiDeviceFeature.ECHE) &&
+        !this.shouldShowPhoneHubCombinedSetupItem_();
+  },
+
+  /**
+   * @return {boolean} True if both Phone Hub Notifications and Apps need to
+   *     complete the setup process, we will display a combined setup item.
+   * @private
+   */
+  shouldShowPhoneHubCombinedSetupItem_() {
+    return this.isPhoneHubAppsSetupRequired_() &&
+        this.isPhoneHubNotificationsSetupRequired_();
+  },
+
+  /** @private */
+  handlePhoneHubAppsSetupClick_() {
+    // TODO: Fire event to show a setup dialog.
+  },
+
+  /** @private */
+  handlePhoneHubCombinedSetupClick_() {
+    // TODO: Fire event to show a setup dialog.
+  },
 });

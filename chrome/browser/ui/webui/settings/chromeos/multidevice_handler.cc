@@ -51,6 +51,7 @@ const char kNotificationAccessStatus[] = "notificationAccessStatus";
 const char kIsAndroidSmsPairingComplete[] = "isAndroidSmsPairingComplete";
 const char kIsNearbyShareDisallowedByPolicy[] =
     "isNearbyShareDisallowedByPolicy";
+const char kIsPhoneHubAppsAccessGranted[] = "isPhoneHubAppsAccessGranted";
 
 constexpr char kAndroidSmsInfoOriginKey[] = "origin";
 constexpr char kAndroidSmsInfoEnabledKey[] = "enabled";
@@ -505,6 +506,9 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
     access_status = notification_access_manager_->GetAccessStatus();
   page_content_dictionary->SetInteger(kNotificationAccessStatus,
                                       static_cast<int32_t>(access_status));
+  // TODO: Temporary solution, set to true means no need to process apps setup
+  // flow.
+  page_content_dictionary->SetBoolean(kIsPhoneHubAppsAccessGranted, true);
 
   bool is_nearby_share_disallowed_by_policy =
       NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(

@@ -366,6 +366,8 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_FORGET_THIS_DEVICE_DISCONNECT},
       {"multidevicePhoneHubAppsItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE},
+      {"multidevicePhoneHubAppsAndNotificationsItemTitle",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SECTION_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -466,6 +468,10 @@ void MultiDeviceSection::AddLoadTimeData(
   html_source->AddString("multidevicePhoneHubAppsItemSummary",
                          ui::SubstituteChromeOSDeviceType(
                              IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SUMMARY));
+  html_source->AddString(
+      "multidevicePhoneHubAppsAndNotificationsItemSummary",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SUMMARY));
 
   AddEasyUnlockStrings(html_source);
 

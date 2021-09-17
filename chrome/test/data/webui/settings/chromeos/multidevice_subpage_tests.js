@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {PhoneHubNotificationAccessStatus, MultiDeviceSettingsMode, MultiDeviceFeature, MultiDeviceFeatureState, MultiDeviceBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.m.js';
@@ -325,6 +325,9 @@ suite('Multidevice', function() {
   });
 
   test('Deep link to phone hub apps on/off', async () => {
+    multideviceSubpage.pageContentData = Object.assign(
+        {}, multideviceSubpage.pageContentData,
+        {isPhoneHubAppsAccessGranted: true});
     const params = new URLSearchParams;
     params.append('settingId', '218');
     settings.Router.getInstance().navigateTo(
@@ -340,4 +343,82 @@ suite('Multidevice', function() {
         deepLinkElement, getDeepActiveElement(),
         'Phone hub apps on/off toggle should be focused for settingId=218.');
   });
+
+  test(
+      'Phone Hub Notifications, Apps and Combined items are shown/hidden correctly',
+      function() {
+        setSupportedFeatures([
+          settings.MultiDeviceFeature.PHONE_HUB,
+          settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+        ]);
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+
+        setSupportedFeatures([
+          settings.MultiDeviceFeature.PHONE_HUB,
+          settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+          settings.MultiDeviceFeature.ECHE,
+        ]);
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              phoneHubNotificationsState:
+                  settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              phoneHubAppsState:
+                  settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              isPhoneHubAppsAccessGranted: true,
+              notificationAccessStatus:
+                  settings.PhoneHubNotificationAccessStatus.ACCESS_GRANTED
+            });
+        Polymer.dom.flush();
+
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              phoneHubNotificationsState:
+                  settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              phoneHubAppsState:
+                  settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              isPhoneHubAppsAccessGranted: false,
+              notificationAccessStatus:
+                  settings.PhoneHubNotificationAccessStatus.ACCESS_GRANTED
+            });
+
+        Polymer.dom.flush();
+
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+        const controllerSelector =
+            '#phoneHubAppsItem > [slot=feature-controller]';
+        assertTrue(!!multideviceSubpage.$$(controllerSelector));
+        assertTrue(multideviceSubpage.$$(controllerSelector)
+                       .tagName.includes('BUTTON'));
+
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              phoneHubNotificationsState:
+                  settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              phoneHubAppsState:
+                  settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              isPhoneHubAppsAccessGranted: false,
+              notificationAccessStatus:
+                  settings.PhoneHubNotificationAccessStatus
+                      .AVAILABLE_BUT_NOT_GRANTED
+            });
+
+        Polymer.dom.flush();
+
+        assertTrue(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+      });
+
 });

@@ -161,6 +161,11 @@ void VerifyPageContentDict(
                                     &is_nearby_share_disallowed_by_policy));
   EXPECT_EQ(expected_is_nearby_share_disallowed_by_policy_,
             is_nearby_share_disallowed_by_policy);
+
+  bool is_phone_hub_apps_access_granted;
+  EXPECT_TRUE(
+      page_content_dict->GetBoolean("isPhoneHubAppsAccessGranted",
+                                    &is_phone_hub_apps_access_granted));
 }
 
 }  // namespace

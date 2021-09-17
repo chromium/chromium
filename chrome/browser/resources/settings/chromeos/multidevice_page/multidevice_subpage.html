@@ -120,8 +120,7 @@
           </settings-multidevice-feature-item>
         </template>
         <template is="dom-if"
-            if="[[isFeatureSupported(
-                MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, pageContentData)]]"
+            if="[[shouldShowPhoneHubNotificationsItem_(pageContentData)]]"
             restamp>
           <settings-multidevice-feature-item id="phoneHubNotificationsItem"
               feature="[[MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS]]"
@@ -142,15 +141,43 @@
           </settings-multidevice-task-continuation-item>
         </template>
         <template is="dom-if"
-            if="[[isFeatureSupported(
-                MultiDeviceFeature.ECHE, pageContentData)]]"
+            if="[[shouldShowPhoneHubAppsItem_(pageContentData)]]"
             restamp>
           <settings-multidevice-feature-item id="phoneHubAppsItem"
               feature="[[MultiDeviceFeature.ECHE]]"
               page-content-data="[[pageContentData]]" is-sub-feature
               deep-link-focus-id$="[[Setting.kPhoneHubAppsOnOff]]">
+            <template is="dom-if"
+                if="[[isPhoneHubAppsSetupRequired_(pageContentData)]]"
+                restamp>
+              <cr-button on-click="handlePhoneHubAppsSetupClick_"
+                  slot="feature-controller">
+                $i18n{multideviceSetupButton}
+              </cr-button>
+            </template>
           </settings-multidevice-feature-item>
         </template>
+        <div id="feature-items-container">
+          <template is="dom-if"
+              if="[[shouldShowPhoneHubCombinedSetupItem_(pageContentData)]]"
+              restamp>
+            <div id="phoneHubCombinedSetupItem" class="settings-box two-line">
+              <div id="phoneHubAppsAndNotificationsSetupLabel"
+                  class="start" aria-hidden="true">
+                $i18n{multidevicePhoneHubAppsAndNotificationsItemTitle}
+                <div id="phoneHubAppsAndNotificationsSetupSummary"
+                    class="secondary" aria-hidden="true">
+                  $i18n{multidevicePhoneHubAppsAndNotificationsItemSummary}
+                </div>
+              </div>
+              <cr-button on-click="handlePhoneHubCombinedSetupClick_"
+                  aria-labelledby="phoneHubAppsAndNotificationsSetupLabel"
+                  aria-describedby="phoneHubAppsAndNotificationsSetupSummary">
+                $i18n{multideviceSetupButton}
+              </cr-button>
+            </div>
+          </template>
+        </div>
         <template is="dom-if"
             if="[[isFeatureSupported(
                 MultiDeviceFeature.WIFI_SYNC, pageContentData)]]"
