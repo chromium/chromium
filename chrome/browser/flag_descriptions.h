@@ -663,6 +663,9 @@ extern const char kEnableSRPIsolatedPrerendersNSPDescription[];
 extern const char kReduceHorizontalFlingVelocityName[];
 extern const char kReduceHorizontalFlingVelocityDescription[];
 
+extern const char kRetailCouponsName[];
+extern const char kRetailCouponsDescription[];
+
 extern const char kEnableResamplingInputEventsName[];
 extern const char kEnableResamplingInputEventsDescription[];
 extern const char kEnableResamplingScrollEventsName[];

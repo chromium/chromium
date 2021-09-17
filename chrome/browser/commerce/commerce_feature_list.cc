@@ -20,4 +20,7 @@ const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory{
 
 const base::Feature kShoppingList{"ShoppingList",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kRetailCoupons{"RetailCoupons",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace commerce
