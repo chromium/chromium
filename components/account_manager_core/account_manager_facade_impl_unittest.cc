@@ -20,6 +20,7 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_test_util.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/mock_account_manager_facade.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -249,17 +250,6 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   mojo::RemoteSet<crosapi::mojom::AccountManagerObserver> observers_;
 };
 
-class MockObserver : public AccountManagerFacade::Observer {
- public:
-  MockObserver() = default;
-  MockObserver(const MockObserver&) = delete;
-  MockObserver& operator=(const MockObserver&) = delete;
-  ~MockObserver() override = default;
-
-  MOCK_METHOD(void, OnAccountUpserted, (const Account& account), (override));
-  MOCK_METHOD(void, OnAccountRemoved, (const Account& account), (override));
-};
-
 MATCHER_P(AccountEq, expected_account, "") {
   return testing::ExplainMatchResult(
              testing::Field(&Account::key, testing::Eq(expected_account.key)),
@@ -308,7 +298,7 @@ TEST_F(AccountManagerFacadeImplTest, InitializationStatusIsCorrectlySet) {
 TEST_F(AccountManagerFacadeImplTest, OnTokenUpsertedIsPropagatedToObservers) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  testing::StrictMock<MockObserver> observer;
+  testing::StrictMock<MockAccountManagerFacadeObserver> observer;
   account_manager_facade->AddObserver(&observer);
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
@@ -322,7 +312,7 @@ TEST_F(AccountManagerFacadeImplTest, OnTokenUpsertedIsPropagatedToObservers) {
 TEST_F(AccountManagerFacadeImplTest, OnAccountRemovedIsPropagatedToObservers) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  testing::StrictMock<MockObserver> observer;
+  testing::StrictMock<MockAccountManagerFacadeObserver> observer;
   account_manager_facade->AddObserver(&observer);
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);

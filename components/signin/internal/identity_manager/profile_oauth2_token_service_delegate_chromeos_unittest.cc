@@ -22,6 +22,7 @@
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "components/account_manager_core/mock_account_manager_facade.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -184,25 +185,6 @@ class MockProfileOAuth2TokenServiceObserver
   ProfileOAuth2TokenServiceDelegate* const delegate_;
 };
 
-class MockAccountManagerFacadeObserver : public AccountManagerFacade::Observer {
- public:
-  MockAccountManagerFacadeObserver() = default;
-  MockAccountManagerFacadeObserver(const MockAccountManagerFacadeObserver&) =
-      delete;
-  MockAccountManagerFacadeObserver& operator=(
-      const MockAccountManagerFacadeObserver&) = delete;
-  ~MockAccountManagerFacadeObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnAccountUpserted,
-              (const account_manager::Account& account),
-              (override));
-  MOCK_METHOD(void,
-              OnAccountRemoved,
-              (const account_manager::Account& account),
-              (override));
-};
-
 }  // namespace
 
 class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
@@ -317,7 +299,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
       const std::string& token) {
     ASSERT_EQ(account_key.account_type,
               account_manager::AccountType::kActiveDirectory);
-    MockAccountManagerFacadeObserver observer;
+    account_manager::MockAccountManagerFacadeObserver observer;
     account_manager_facade_->AddObserver(&observer);
 
     base::RunLoop run_loop;
@@ -333,7 +315,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
       const ::account_manager::AccountKey& account_key) {
     ASSERT_EQ(account_key.account_type,
               account_manager::AccountType::kActiveDirectory);
-    MockAccountManagerFacadeObserver observer;
+    account_manager::MockAccountManagerFacadeObserver observer;
     account_manager_facade_->AddObserver(&observer);
 
     base::RunLoop run_loop;

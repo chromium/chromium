@@ -187,6 +187,7 @@ source_set("unit_tests") {
     deps += [
       "//ash/components/account_manager",
       "//ash/constants",
+      "//components/account_manager_core:test_support",
     ]
   } else {
     sources += [ "primary_account_policy_manager_impl_unittest.cc" ]
