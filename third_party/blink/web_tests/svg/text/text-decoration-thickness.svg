@@ -4,10 +4,12 @@
 #t1, #g1 {
   font-size: 40px;
   text-decoration: underline;
+  text-decoration-thickness: 5px;
 }
 #t2 {
   font-size: 20px;
   text-decoration: underline;
+  text-decoration-thickness: 5px;
 }
 </style>
 <text id="t1" x="20" y="40">Not scaled</text>
