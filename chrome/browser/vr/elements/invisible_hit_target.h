@@ -28,6 +28,8 @@ class InvisibleHitTarget : public UiElement {
   void OnHoverLeave(base::TimeTicks timestamp) override;
 
   bool hovered() const { return hovered_; }
+
+ private:
   bool hovered_ = false;
 };
 

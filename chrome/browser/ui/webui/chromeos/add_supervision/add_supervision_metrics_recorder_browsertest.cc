@@ -69,6 +69,7 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
     CloseNowForTesting();
   }
 
+ private:
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   content::TestWebUI test_web_ui_;
 };
