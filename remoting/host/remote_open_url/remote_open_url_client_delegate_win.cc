@@ -77,7 +77,13 @@ void RemoteOpenUrlClientDelegateWin::OpenUrlOnFallbackBrowser(const GURL& url) {
       base::UTF8ToWide(UserSettings::GetInstance()->GetString(
           kWinPreviousDefaultWebBrowserProgId));
   if (fallback_browser_prog_id.empty() ||
-      fallback_browser_prog_id == kUrlForwarderProgId) {
+      fallback_browser_prog_id == kUrlForwarderProgId ||
+      // "Undecided" pops up a browser chooser for opening the URL, but it
+      // doesn't remember the user's choice, and we don't know what browser has
+      // been chosen either, so it'd be more usable to just treat it as an
+      // incorrect configuration and let the user choose a different browser
+      // from the Settings app.
+      fallback_browser_prog_id == kUndecidedProgId) {
     ShowIncorrectConfigurationPrompt();
     return;
   }

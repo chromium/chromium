@@ -19,6 +19,9 @@ const mojo::NamedPlatformChannel::ServerName& GetRemoteOpenUrlIpcChannelName();
 // The ProgID of the URL forwarder.
 extern const wchar_t kUrlForwarderProgId[];
 
+// The ProgID for undecided default browser, which launches OpenWith.exe.
+extern const wchar_t kUndecidedProgId[];
+
 #endif  // defined (OS_WIN)
 
 }  // namespace remoting

@@ -44,6 +44,8 @@ const wchar_t kUrlForwarderProgId[] = L"ChromeRemoteDesktopUrlForwarder";
 const wchar_t kUrlForwarderProgId[] = L"ChromotingUrlForwarder";
 #endif
 
+const wchar_t kUndecidedProgId[] = L"Undecided";
+
 #endif  // defined (OS_WIN)
 
 }  // namespace remoting
