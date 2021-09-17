@@ -30,6 +30,7 @@ class TerminalSystemAppDelegate : public web_app::SystemWebAppDelegate {
       ui::SimpleMenuModel::Delegate* delegate) const override;
   bool ShouldShowTabContextMenuShortcut(Profile* profile,
                                         int command_id) const override;
+  bool IsUrlInSystemAppScope(const GURL& url) const override;
 };
 
 // Returns a WebApplicationInfo used to install the app.

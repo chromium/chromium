@@ -39,7 +39,8 @@ void TerminalSystemAppMenuModel::ExecuteCommand(int command_id,
     chrome::NewTab(browser());
   } else if (command_id == IDC_TERMINAL_SSH) {
     chrome::AddTabAt(browser(),
-                     GURL("chrome-untrusted://terminal/html/nassh.html"),
+                     GURL("chrome-extension://iodihamcpbpeioajjeobimgagajmlibd/"
+                          "html/nassh.html"),
                      /*idx=*/-1,
                      /*foreground=*/true);
   } else if (command_id == IDC_OPTIONS) {
