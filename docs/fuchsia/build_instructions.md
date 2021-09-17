@@ -1,11 +1,11 @@
 # Checking out and building on Fuchsia
 
-***Note that the Fuchsia port is in the early stages, and things are likely to
-frequently be broken. Try #cr-fuchsia on Freenode or Slack if something seems
-awry.***
+***If you have followed the instructions below and things still having trouble,
+try `#cr-fuchsia` on [Chromium Slack](https://www.chromium.org/developers/slack)
+if something seems awry.***
 
 There are instructions for other platforms linked from the
-[get the code](get_the_code.md) page.
+[get the code](../get_the_code.md) page.
 
 [TOC]
 
