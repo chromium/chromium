@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -42,32 +43,36 @@ namespace {
 // "0x1.0x2.0x3.0x4", since GURL will map that to 1.2.3.4. Can potentially
 // incorrectly return true cases with extra 0's (e.g., "*.2.3.00").
 bool PatternCanMatchIpV4Host(const std::string& hostname_pattern) {
-  int num_dots =
-      std::count(hostname_pattern.begin(), hostname_pattern.end(), '.');
-  // If there are more than 3 dots, it can't match an IPv4 IP.
-  if (num_dots > 3)
+  // This method doesn't expect to receive empty strings, since
+  // IsValidWildcardPattern() ensures there is at least one '*'.
+  DCHECK(!hostname_pattern.empty());
+
+  std::vector<base::StringPiece> components = base::SplitStringPiece(
+      hostname_pattern, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  // If there are more than 4, it can't match an IPv4 IP.
+  if (components.size() > 4)
     return false;
 
-  // If anything but a dot is after a wildcard, remove it. Otherwise, replace it
-  // with a "0". Fail if anything that's not a number is found.
+  // Create a copy of the original string, with components exactly matching "*"
+  // replaced with 0. Leave components with *'s and non-*'s alone. They'll be
+  // rejected when trying to parse the resulting string as an IPv4 IP.
   std::string wildcards_replaced;
-  wildcards_replaced.reserve(hostname_pattern.size());
-  for (size_t i = 0; i < hostname_pattern.size(); ++i) {
-    if (hostname_pattern[i] == '*') {
-      // Current wildcard has a non-wildcard before it, so skip it.
-      if (wildcards_replaced.size() > 0 && wildcards_replaced.back() != '.')
-        continue;
-      // Current wildcard has a non-wildcard after it, so skip it.
-      if (i + 1 < hostname_pattern.size() && hostname_pattern[i + 1] != '.')
-        continue;
-      wildcards_replaced.push_back('0');
-      continue;
+  for (const auto& component : components) {
+    if (!wildcards_replaced.empty())
+      wildcards_replaced += ".";
+
+    if (component == "*") {
+      wildcards_replaced += "0";
+    } else {
+      wildcards_replaced =
+          wildcards_replaced.append(component.begin(), component.end());
     }
-    wildcards_replaced.push_back(hostname_pattern[i]);
   }
-  while (num_dots < 3) {
-    wildcards_replaced.append(".0");
-    ++num_dots;
+
+  // If there are fewer than 4 components, add components until there are, as a
+  // wildcard can match multiple components.
+  for (size_t i = components.size(); i < 4; ++i) {
+    wildcards_replaced += ".0";
   }
 
   net::IPAddress ip_address;

@@ -78,6 +78,9 @@ TEST_F(SecureOriginAllowlistTest, HostnamePatterns) {
   } kTestCases[] = {
       {"*.foo.com", "http://bar.foo.com", true},
       {"*.foo.*.bar.com", "http://a.foo.b.bar.com:8000", true},
+      // Wildcards can match multiple components.
+      {"*.foo.com", "http://a.b.c.foo.com", true},
+      {"a.*.foo.com", "http://a.b.c.foo.com", true},
       // For parsing/canonicalization simplicity, wildcard patterns can be
       // hostnames only, not full origins.
       {"http://*.foo.com", "http://bar.foo.com", false},
@@ -103,6 +106,9 @@ TEST_F(SecureOriginAllowlistTest, HostnamePatterns) {
       // With Hostname pattern, all schemes are allowed.
       {"*.foo.com", "ws://bar.foo.com", true},
       {"*.foo.com", "blob:http://bar.foo.com/guid-goes-here", true},
+      // Adjacent wildcards are not allowed.
+      {"**.foo.com", "http://bar.foo.com", false},
+      {"bar.**.foo.com", "http://bar.baz.foo.com", false},
       // Hostname pattern works on IP addresses, but wildcards must be before
       // the last two components.
       {"*.20.30.40", "http://10.20.30.40", true},
@@ -111,6 +117,15 @@ TEST_F(SecureOriginAllowlistTest, HostnamePatterns) {
       {"10.*.30.40", "http://10.20.30.40", true},
       {"*.*.30.40", "http://10.20.30.40", true},
       {"10.20.*.40", "http://10.20.30.40", false},
+      // Adjacent wildcards are not allowed.
+      {"**.40", "http://10.20.30.40", false},
+      {"10.**.40", "http://10.20.30.40", false},
+      // Extra components in IPv4 patterns shouldn't match anything, but also
+      // shouldn't crash. URLs with 5+ numeric components aren't considered
+      // valid, so can't have URLs that actually match the patterns in these
+      // test cases.
+      {"*.2.3.4.5", "http://2.3.4.5", false},
+      {"*.1.2.3.4.5", "http://2.3.4.5", false},
       // These are likely bugs.
       {"10.20.30.*", "http://10.20.30.40", true},
       {"foo.*", "http://foo.com", true},
