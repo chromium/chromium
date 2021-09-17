@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -51,11 +52,13 @@ class PLATFORM_EXPORT ForeignLayerDisplayItem : public DisplayItem {
 // When a foreign layer's debug name is a literal string, define a instance of
 // LiteralDebugNameClient with DEFINE_STATIC_LOCAL() and pass the instance as
 // client to RecordForeignLayer().
-class LiteralDebugNameClient : public DisplayItemClient {
+class LiteralDebugNameClient : public GarbageCollected<LiteralDebugNameClient>,
+                               public DisplayItemClient {
  public:
   LiteralDebugNameClient(const char* name) : name_(name) {}
 
   String DebugName() const override { return name_; }
+  void Trace(Visitor* visitor) const {}
 
  private:
   const char* name_;
