@@ -170,6 +170,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   result->preconnect_to_search_url =
       dict.FindBoolKey(DefaultSearchManager::kPreconnectToSearchUrl)
           .value_or(result->preconnect_to_search_url);
+  result->is_active = static_cast<TemplateURLData::ActiveStatus>(
+      dict.FindIntKey(DefaultSearchManager::kIsActive)
+          .value_or(static_cast<int>(result->is_active)));
   return result;
 }
 
@@ -238,6 +241,8 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
                        data.created_from_play_api);
   url_dict->SetBoolKey(DefaultSearchManager::kPreconnectToSearchUrl,
                        data.preconnect_to_search_url);
+  url_dict->SetIntKey(DefaultSearchManager::kIsActive,
+                      static_cast<int>(data.is_active));
   return url_dict;
 }
 

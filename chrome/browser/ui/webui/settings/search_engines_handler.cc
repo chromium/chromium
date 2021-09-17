@@ -268,6 +268,7 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
   if (index < 0 || index >= list_controller_.table_model()->RowCount())
     return;
 
+  list_controller_.SetIsActiveTemplateURL(index, true);
   list_controller_.MakeDefaultTemplateURL(index);
 
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
