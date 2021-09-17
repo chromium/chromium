@@ -1249,11 +1249,8 @@ export function scanningAppTest() {
         .then(() => {
           // Verify the dialog shows we are rescanning the correct page number.
           assertEquals(
-              'Rescan page ' + pageNumberToRescan,
+              'Rescan page?',
               scanPreview.$$('#dialogTitle').textContent.trim());
-          assertEquals(
-              'Rescan page ' + pageNumberToRescan,
-              scanPreview.$$('#actionButton').textContent.trim());
 
           scanPreview.$$('#actionButton').click();
           return fakeMultiPageScanController_.whenCalled('rescanPage');
@@ -1350,11 +1347,8 @@ export function scanningAppTest() {
         .then(() => {
           // Verify the dialog shows we are rescanning the correct page number.
           assertEquals(
-              'Rescan page ' + pageNumberToRescan,
+              'Rescan page 1?',
               scanPreview.$$('#dialogTitle').textContent.trim());
-          assertEquals(
-              'Rescan page ' + pageNumberToRescan,
-              scanPreview.$$('#actionButton').textContent.trim());
 
           scanPreview.$$('#actionButton').click();
           return fakeMultiPageScanController_.whenCalled('rescanPage');

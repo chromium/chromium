@@ -708,20 +708,26 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_ACTION_TOOLBAR_PAGE_COUNT_TEXT" desc="The text in the action toolbar that shows the current page number and the total number of pages scanned.">
         <ph name="CURRENT_PAGE">$1<ex>2</ex></ph> of <ph name="TOTAL_PAGES">$2<ex>4</ex></ph>
       </message>
-      <message name="IDS_SCANNING_APP_REMOVE_PAGE_BUTTON_LABEL" desc="The label for the button that lets the user delete a page from their scan job.">
+      <message name="IDS_SCANNING_APP_REMOVE_PAGE_DIALOG_TITLE" desc="The text used as the title for the dialog that lets the user delete a page from their scan job.">
         {PAGE_NUMBER, plural,
-        =0 {Remove page}
-        =1 {Remove page {PAGE_NUMBER}}
-        other {Remove page {PAGE_NUMBER}}}
+        =0 {Remove page?}
+        =1 {Remove page {PAGE_NUMBER}?}
+        other {Remove page {PAGE_NUMBER}?}}
+      </message>
+      <message name="IDS_SCANNING_APP_REMOVE_PAGE_BUTTON_LABEL" desc="The label for the button that lets the user delete a page from their scan job.">
+        Remove
+      </message>
+      <message name="IDS_SCANNING_APP_RESCAN_PAGE_DIALOG_TITLE" desc="The text used as the title for the dialog that lets the user rescan a page from their scan job.">
+        {PAGE_NUMBER, plural,
+        =0 {Rescan page?}
+        =1 {Rescan page {PAGE_NUMBER}?}
+        other {Rescan page {PAGE_NUMBER}?}}
       </message>
       <message name="IDS_SCANNING_APP_RESCAN_PAGE_BUTTON_LABEL" desc="The label for the button that lets the user replace a page from their scan job by scanning a new page from their scanner.">
-        {PAGE_NUMBER, plural,
-        =0 {Rescan page}
-        =1 {Rescan page {PAGE_NUMBER}}
-        other {Rescan page {PAGE_NUMBER}}}
+        Rescan
       </message>
-      <message name="IDS_SCANNING_APP_REMOVE_PAGE_CONFIRMATION_TEXT" desc="The text to confirm to the user they want to remove a page from their current multi-page scan session.">
-        Are you sure you want to remove page <ph name="CURRENT_PAGE">$1<ex>2</ex></ph>?
+      <message name="IDS_SCANNING_APP_REMOVE_PAGE_CONFIRMATION_TEXT" desc="The text to confirm to the user they want to remove the last page from their current multi-page scan session.">
+        This is the only page. This will take you to the scanning start screen.
       </message>
       <message name="IDS_SCANNING_APP_RESCAN_PAGE_CONFIRMATION_TEXT" desc="The text to confirm to the user they want to rescan a page from their current multi-page scan session.">
         Place your document on the scanner

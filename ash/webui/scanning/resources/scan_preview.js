@@ -143,10 +143,13 @@ Polymer({
     },
 
     /** @private {string} */
-    dialogText_: String,
+    dialogTitleText_: String,
 
     /** @private {string} */
     dialogConfirmationText_: String,
+
+    /** @private {string} */
+    dialogButtonText_: String,
 
     /**
      * True when |appState| is MULTI_PAGE_SCANNING.
@@ -474,17 +477,25 @@ Polymer({
         .addEventListener('click', this.onDialogActionClick_, {once: true});
 
     // Configure the dialog strings for the requested mode (Remove or Rescan).
-    const buttonLabelKey =
-        isRemovePageDialog ? 'removePageButtonLabel' : 'rescanPageButtonLabel';
-    const confirmationTextKey = isRemovePageDialog ?
-        'removePageConfirmationText' :
-        'rescanPageConfirmationText';
-    this.browserProxy_.getPluralString(buttonLabelKey, pageNumber)
+    this.dialogButtonText_ = this.i18n(
+        isRemovePageDialog ? 'removePageButtonLabel' : 'rescanPageButtonLabel');
+
+    // Leave the confirmation text blank if removing a single page from a set of
+    // multiple pages.
+    const isRemoveSinglePage = isRemovePageDialog && this.objectUrls.length > 1;
+    this.dialogConfirmationText_ = isRemoveSinglePage ?
+        '' :
+        this.i18n(
+            isRemovePageDialog ? 'removePageConfirmationText' :
+                                 'rescanPageConfirmationText');
+    this.browserProxy_
+        .getPluralString(
+            isRemovePageDialog ? 'removePageDialogTitle' :
+                                 'rescanPageDialogTitle',
+            this.objectUrls.length === 1 ? 0 : pageNumber)
         .then(
             /* @type {string} */ (pluralString) => {
-              this.dialogText_ = pluralString;
-              this.dialogConfirmationText_ =
-                  this.i18n(confirmationTextKey, pageNumber);
+              this.dialogTitleText_ = pluralString;
 
               // Once strings are loaded, open the dialog.
               this.$$('#scanPreviewDialog').showModal();

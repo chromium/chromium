@@ -9,8 +9,6 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
-
 /**
  * @fileoverview
  * 'action-toolbar' is a floating toolbar that contains post-scan page options.
@@ -34,27 +32,6 @@ Polymer({
       type: String,
       computed: 'computePageNumberText_(currentPageInView, numTotalPages)',
     },
-
-    /** @private {string} */
-    removeButtonTooltip_: String,
-
-    /** @private {string} */
-    rescanButtonTooltip_: String,
-  },
-
-  /** @override */
-  ready() {
-    /** @type {!ScanningBrowserProxy} */
-    const browserProxy = ScanningBrowserProxyImpl.getInstance();
-    browserProxy.getPluralString('removePageButtonLabel', 0)
-        .then(/* @type {string} */ (pluralString) => {
-          this.removeButtonTooltip_ = pluralString;
-        });
-    browserProxy.getPluralString('rescanPageButtonLabel', 0)
-        .then(
-            /* @type {string} */ (pluralString) => {
-              this.rescanButtonTooltip_ = pluralString;
-            });
   },
 
   /**

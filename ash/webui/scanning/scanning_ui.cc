@@ -92,8 +92,10 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"pdfOptionText", IDS_SCANNING_APP_PDF_OPTION_TEXT},
       {"pngOptionText", IDS_SCANNING_APP_PNG_OPTION_TEXT},
       {"pageSizeDropdownLabel", IDS_SCANNING_APP_PAGE_SIZE_DROPDOWN_LABEL},
+      {"removePageButtonLabel", IDS_SCANNING_APP_REMOVE_PAGE_BUTTON_LABEL},
       {"removePageConfirmationText",
        IDS_SCANNING_APP_REMOVE_PAGE_CONFIRMATION_TEXT},
+      {"rescanPageButtonLabel", IDS_SCANNING_APP_RESCAN_PAGE_BUTTON_LABEL},
       {"rescanPageConfirmationText",
        IDS_SCANNING_APP_RESCAN_PAGE_CONFIRMATION_TEXT},
       {"resolutionDropdownLabel", IDS_SCANNING_APP_RESOLUTION_DROPDOWN_LABEL},
@@ -138,8 +140,8 @@ void AddScanningAppPluralStrings(ScanningHandler* handler) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"editButtonLabel", IDS_SCANNING_APP_EDIT_BUTTON_LABEL},
       {"fileSavedText", IDS_SCANNING_APP_FILE_SAVED_TEXT},
-      {"removePageButtonLabel", IDS_SCANNING_APP_REMOVE_PAGE_BUTTON_LABEL},
-      {"rescanPageButtonLabel", IDS_SCANNING_APP_RESCAN_PAGE_BUTTON_LABEL},
+      {"removePageDialogTitle", IDS_SCANNING_APP_REMOVE_PAGE_DIALOG_TITLE},
+      {"rescanPageDialogTitle", IDS_SCANNING_APP_RESCAN_PAGE_DIALOG_TITLE},
       {"scanButtonText", IDS_SCANNING_APP_SCAN_BUTTON_TEXT},
       {"scannedImagesAriaLabel", IDS_SCANNING_APP_SCANNED_IMAGES_ARIA_LABEL}};
 

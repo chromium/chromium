@@ -233,11 +233,9 @@ export function scanPreviewTest() {
     return flushTasks().then(() => {
       assertTrue(scanPreview.$$('#scanPreviewDialog').open);
       assertEquals(
-          'Remove page ' + pageNumberToRemove,
-          scanPreview.$$('#dialogTitle').textContent.trim());
+          'Remove page?', scanPreview.$$('#dialogTitle').textContent.trim());
       assertEquals(
-          'Remove page ' + pageNumberToRemove,
-          scanPreview.$$('#actionButton').textContent.trim());
+          'Remove', scanPreview.$$('#actionButton').textContent.trim());
       assertEquals(
           loadTimeData.getStringF(
               'removePageConfirmationText', pageNumberToRemove),
@@ -251,6 +249,7 @@ export function scanPreviewTest() {
 
   // Tests that clicking the cancel button closes the remove page dialog.
   test('cancelRemovePageDialog', () => {
+    scanPreview.objectUrls = [];
     assertFalse(scanPreview.$$('#scanPreviewDialog').open);
     scanPreview.$$('action-toolbar')
         .dispatchEvent(new CustomEvent('show-remove-page-dialog'));
@@ -266,6 +265,7 @@ export function scanPreviewTest() {
   // Tests that the rescan page dialog opens and shows the correct page number.
   test('rescanPageDialog', () => {
     const pageNum = 6;
+    scanPreview.objectUrls = ['image1', 'image2'];
     assertFalse(scanPreview.$$('#scanPreviewDialog').open);
     scanPreview.$$('action-toolbar')
         .dispatchEvent(
@@ -274,11 +274,8 @@ export function scanPreviewTest() {
     return flushTasks().then(() => {
       assertTrue(scanPreview.$$('#scanPreviewDialog').open);
       assertEquals(
-          'Rescan page ' + pageNum,
+          'Rescan page ' + pageNum + '?',
           scanPreview.$$('#dialogTitle').textContent.trim());
-      assertEquals(
-          'Rescan page ' + pageNum,
-          scanPreview.$$('#actionButton').textContent.trim());
       assertEquals(
           loadTimeData.getStringF('rescanPageConfirmationText', pageNum),
           scanPreview.$$('#dialogConfirmationText').textContent.trim());
@@ -293,6 +290,7 @@ export function scanPreviewTest() {
     const scannedImagesDiv =
         /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
 
+    scanPreview.objectUrls = [];
     scanPreview.multiPageScanChecked = true;
     return flushTasks()
         .then(() => {
