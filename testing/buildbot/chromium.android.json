@@ -37857,6 +37857,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -37929,6 +37930,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -37999,6 +38001,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38069,6 +38072,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38141,6 +38145,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38212,6 +38217,7 @@
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.cc_unittests.filter"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38283,6 +38289,7 @@
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
           "--git-revision=${got_revision}"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38358,6 +38365,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38428,6 +38436,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38498,6 +38507,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38571,6 +38581,7 @@
           "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.chrome_public_test_apk.filter"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38648,6 +38659,7 @@
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
           "--git-revision=${got_revision}"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38724,6 +38736,7 @@
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_shell_test_apk.filter"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38795,6 +38808,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38865,6 +38879,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -38935,6 +38950,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -39007,6 +39023,7 @@
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.gl_tests.filter"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -39078,6 +39095,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -39148,6 +39166,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -39219,6 +39238,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -39290,6 +39310,7 @@
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.sandbox_linux_unittests.filter"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -39360,6 +39381,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -39430,6 +39452,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -39502,6 +39525,7 @@
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.viz_unittests.filter"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -39572,6 +39596,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -39644,6 +39669,7 @@
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
         "isolate_name": "monochrome_public_apk_checker",
+        "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
