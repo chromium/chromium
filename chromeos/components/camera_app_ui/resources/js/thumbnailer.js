@@ -6,6 +6,7 @@ import * as dom from './dom.js';
 import {
   EmptyThumbnailError,
   LoadError,
+  MimeType,
   PlayError,
   PlayMalformedError,
 } from './type.js';
@@ -114,7 +115,7 @@ async function loadImageBlob(blob) {
  * @param {number=} height Target height. Preserve the aspect ratio if not set.
  * @return {!Promise<!Blob>} Promise of the thumbnail as a jpeg blob.
  */
-export async function scaleVideo(blob, width, height = undefined) {
+async function scaleVideo(blob, width, height = undefined) {
   const el = await loadVideoBlob(blob);
   if (height === undefined) {
     height = Math.round(width * el.videoHeight / el.videoWidth);
@@ -129,7 +130,7 @@ export async function scaleVideo(blob, width, height = undefined) {
  * @param {number=} height Target height. Preserve the aspect ratio if not set.
  * @return {!Promise<!Blob>} Promise of the thumbnail as a jpeg blob.
  */
-export async function scaleImage(blob, width, height = undefined) {
+async function scaleImage(blob, width, height = undefined) {
   const el = await loadImageBlob(blob);
   if (height === undefined) {
     height = Math.round(width * el.naturalHeight / el.naturalWidth);
@@ -220,7 +221,43 @@ async function getImageFromPdf(blob) {
  * @param {number=} height Target height. Preserve the aspect ratio if not set.
  * @return {!Promise<!Blob>} Promise of the thumbnail as a jpeg blob.
  */
-export async function scalePdfImage(blob, width, height = undefined) {
+async function scalePdfImage(blob, width, height = undefined) {
   blob = await getImageFromPdf(blob);
   return scaleImage(blob, width, height);
+}
+
+/**
+ * Throws when the input blob type is not supported by thumbnailer.
+ */
+class InvalidBlobTypeError extends Error {
+  /**
+   * @param {string} type
+   * @public
+   */
+  constructor(type) {
+    super(`Invalid thumbnailer blob input type: ${type}`);
+    this.name = this.constructor.name;
+  }
+}
+
+/**
+ * Creates a thumbnail from specific format blob by scaling it to the target
+ * size.
+ * @param {!Blob} blob
+ * @param {number} width Target width.
+ * @param {number=} height Target height. Preserve the aspect ratio if not set.
+ * @return {!Promise<!Blob>} Promise of the thumbnail as a jpeg blob.
+ */
+export function scale(blob, width, height = undefined) {
+  switch (blob.type) {
+    case MimeType.GIF:
+    case MimeType.JPEG:
+      return scaleImage(blob, width, height);
+    case MimeType.MP4:
+      return scaleVideo(blob, width, height);
+    case MimeType.PDF:
+      return scalePdfImage(blob, width, height);
+    default:
+      throw new InvalidBlobTypeError(blob.type);
+  }
 }

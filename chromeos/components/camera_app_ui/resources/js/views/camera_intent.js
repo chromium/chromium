@@ -22,7 +22,7 @@ import {VideoSaver} from '../models/video_saver.js';
 // eslint-disable-next-line no-unused-vars
 import {PerfLogger} from '../perf.js';
 import * as state from '../state.js';
-import {scaleImage} from '../thumbnailer.js';
+import {scale} from '../thumbnailer.js';
 import * as toast from '../toast.js';
 // eslint-disable-next-line no-unused-vars
 import {Mode} from '../type.js';
@@ -61,7 +61,7 @@ export class CameraIntent extends Camera {
           const image = await util.blobToImage(blob);
           const ratio = Math.sqrt(
               DOWNSCALE_INTENT_MAX_PIXEL_NUM / (image.width * image.height));
-          blob = await scaleImage(
+          blob = await scale(
               blob, Math.floor(image.width * ratio),
               Math.floor(image.height * ratio));
         }

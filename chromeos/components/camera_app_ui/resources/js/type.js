@@ -82,7 +82,9 @@ export class Resolution {
  * @enum {string}
  */
 export const MimeType = {
+  GIF: 'image/gif',
   JPEG: 'image/jpeg',
+  MP4: 'video/mp4',
   PDF: 'application/pdf',
 };
 
