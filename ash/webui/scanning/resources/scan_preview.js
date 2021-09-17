@@ -164,7 +164,7 @@ Polymer({
 
   observers: [
     'setPreviewAriaLabel_(showScannedImages_, showCancelingProgress_,' +
-        ' showHelperText_)',
+        ' showHelperText_, objectUrls.length)',
     'setScanProgressTimer_(showScanProgress_, progressPercent)',
   ],
 
