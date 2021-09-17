@@ -19,7 +19,6 @@
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/page_switcher.h"
-#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/top_icon_animation_view.h"
@@ -552,7 +551,8 @@ void AppListFolderView::InitWithPagedAppsGrid(ContentsView* contents_view) {
   DCHECK(contents_view);
   items_grid_view_ =
       contents_container_->AddChildView(std::make_unique<PagedAppsGridView>(
-          contents_view, a11y_announcer_, this, /*folder_controller=*/nullptr));
+          contents_view, a11y_announcer_, this, /*folder_controller=*/nullptr,
+          /*container_delegate=*/this));
   items_grid_view_->SetFixedTilePadding(kTileSpacingInFolder / 2,
                                         kTileSpacingInFolder / 2);
   items_grid_view_->Init();
@@ -1028,6 +1028,21 @@ void AppListFolderView::HandleKeyboardReparent(AppListItemView* reparented_view,
   folder_controller_->ReparentFolderItemTransit(folder_item_);
   root_apps_grid_view_->HandleKeyboardReparent(reparented_view,
                                                folder_item_view_, key_code);
+}
+
+bool AppListFolderView::IsPointWithinPageFlipBuffer(
+    const gfx::Point& point) const {
+  // The page flip buffer is anywhere within the bounds of the
+  // |contents_container_|.
+  gfx::Point point_in_parent = point;
+  ConvertPointToTarget(items_grid_view_, contents_container_, &point_in_parent);
+  return GetContentsBounds().Contains(point_in_parent);
+}
+
+bool AppListFolderView::IsPointWithinBottomDragBuffer(
+    const gfx::Point& point) const {
+  // Folders page horizontally and do not have a bottom drag buffer.
+  return false;
 }
 
 void AppListFolderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

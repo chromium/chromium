@@ -14,6 +14,7 @@
 #include "ash/app_list/views/apps_grid_view_folder_delegate.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/folder_header_view_delegate.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -36,11 +37,13 @@ class PageSwitcher;
 
 // Displays folder contents via an AppsGridView. App items can be dragged out
 // of the folder to the main apps grid.
-class ASH_EXPORT AppListFolderView : public views::View,
-                                     public FolderHeaderViewDelegate,
-                                     public AppListModelObserver,
-                                     public views::ViewObserver,
-                                     public AppsGridViewFolderDelegate {
+class ASH_EXPORT AppListFolderView
+    : public views::View,
+      public FolderHeaderViewDelegate,
+      public AppListModelObserver,
+      public views::ViewObserver,
+      public AppsGridViewFolderDelegate,
+      public PagedAppsGridView::ContainerDelegate {
  public:
   METADATA_HEADER(AppListFolderView);
 
@@ -158,6 +161,10 @@ class ASH_EXPORT AppListFolderView : public views::View,
   bool IsOEMFolder() const override;
   void HandleKeyboardReparent(AppListItemView* reparented_view,
                               ui::KeyboardCode key_code) override;
+
+  // PagedAppsGridView::ContainerDelegate:
+  bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const override;
+  bool IsPointWithinBottomDragBuffer(const gfx::Point& point) const override;
 
   const AppListConfig& GetAppListConfig() const;
 

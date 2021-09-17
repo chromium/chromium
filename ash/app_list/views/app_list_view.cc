@@ -1683,15 +1683,19 @@ bool AppListView::HandleScroll(const gfx::Point& location,
   AppsGridView* apps_grid_view = GetAppsContainerView()->IsInFolderView()
                                      ? GetFolderAppsGridView()
                                      : GetRootAppsGridView();
-  gfx::Point apps_grid_location(location);
-  views::View::ConvertPointToTarget(this, apps_grid_view, &apps_grid_location);
+
+  gfx::Point root_apps_grid_location(location);
+  views::View::ConvertPointToTarget(this, GetRootAppsGridView(),
+                                    &root_apps_grid_location);
 
   // For the purposes of whether or not to dismiss the AppList, we treat any
   // scroll to the left or the right of the apps grid as though it was in the
   // apps grid, as long as it is within the vertical bounds of the apps grid.
   bool is_in_vertical_bounds =
-      location.y() > GetRootAppsGridView()->bounds().y() &&
-      location.y() < GetRootAppsGridView()->bounds().bottom();
+      root_apps_grid_location.y() >
+          GetRootAppsGridView()->GetLocalBounds().y() &&
+      root_apps_grid_location.y() <
+          GetRootAppsGridView()->GetLocalBounds().bottom();
 
   // First see if we need to collapse the app list from this scroll when in a
   // side shelf alignment. We do this first because if this happens anywhere on
@@ -1717,8 +1721,11 @@ bool AppListView::HandleScroll(const gfx::Point& location,
   // Now if we haven't dismissed or expanded we pass the event on to
   // `apps_grid_view`.
   if (app_list_state_ == AppListViewState::kFullscreenAllApps) {
+    gfx::Point apps_grid_location(location);
+    views::View::ConvertPointToTarget(this, apps_grid_view,
+                                      &apps_grid_location);
     bool is_in_active_apps_grid =
-        apps_grid_view->bounds().Contains(apps_grid_location);
+        apps_grid_view->GetLocalBounds().Contains(apps_grid_location);
     // If we are not in a folder, the event just need to be within the vertical
     // bounds of the apps grid. If we are in a folder, it must be inside that
     // folder's view.

@@ -10,7 +10,9 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_page.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -23,15 +25,17 @@ class AppListFolderView;
 class AppListModel;
 class ContentsView;
 class FolderBackgroundView;
-class PagedAppsGridView;
 class PageSwitcher;
 class SuggestionChipContainerView;
 
 // AppsContainerView contains a root level AppsGridView to render the root level
 // app items, and a AppListFolderView to render the app items inside the
 // active folder.
-class ASH_EXPORT AppsContainerView : public AppListPage,
-                                     public AppListFolderController {
+class ASH_EXPORT AppsContainerView
+    : public AppListPage,
+      public AppListFolderController,
+      public PaginationModelObserver,
+      public PagedAppsGridView::ContainerDelegate {
  public:
   AppsContainerView(ContentsView* contents_view, AppListModel* model);
 
@@ -115,12 +119,22 @@ class ASH_EXPORT AppsContainerView : public AppListPage,
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;
 
+  // PaginationModelObserver:
+  void SelectedPageChanged(int old_selected, int new_selected) override;
+  void TransitionChanged() override;
+
+  // PagedAppsGridView::ContainerDelegate:
+  bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const override;
+  bool IsPointWithinBottomDragBuffer(const gfx::Point& point) const override;
+
   PagedAppsGridView* apps_grid_view() { return apps_grid_view_; }
   FolderBackgroundView* folder_background_view() {
     return folder_background_view_;
   }
   AppListFolderView* app_list_folder_view() { return app_list_folder_view_; }
   PageSwitcher* page_switcher() { return page_switcher_; }
+
+  views::View* scrollable_container_for_test() { return scrollable_container_; }
 
   views::View* sort_button_container_for_test() {
     return sort_button_container_;
@@ -192,8 +206,13 @@ class ASH_EXPORT AppsContainerView : public AppListPage,
   // The number of active requests to disable blur.
   size_t suggestion_chips_blur_disabler_count_ = 0;
 
+  // Contains the |continue_section_| and the |apps_grid_view_|, which are views
+  // that are affected by paging. Owned by views hierarchy.
+  views::View* scrollable_container_ = nullptr;
+
   // The views below are owned by views hierarchy.
   SuggestionChipContainerView* suggestion_chip_container_view_ = nullptr;
+  views::View* continue_section_ = nullptr;
   PagedAppsGridView* apps_grid_view_ = nullptr;
   AppListFolderView* app_list_folder_view_ = nullptr;
   PageSwitcher* page_switcher_ = nullptr;

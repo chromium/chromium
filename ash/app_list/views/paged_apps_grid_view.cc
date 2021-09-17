@@ -183,13 +183,15 @@ PagedAppsGridView::PagedAppsGridView(
     ContentsView* contents_view,
     AppListA11yAnnouncer* a11y_announcer,
     AppsGridViewFolderDelegate* folder_delegate,
-    AppListFolderController* folder_controller)
+    AppListFolderController* folder_controller,
+    ContainerDelegate* container_delegate)
     : AppsGridView(contents_view,
                    a11y_announcer,
                    contents_view->GetAppListMainView()->view_delegate(),
                    folder_delegate,
                    folder_controller),
       contents_view_(contents_view),
+      container_delegate_(container_delegate),
       page_flip_delay_(kPageFlipDelay),
       is_app_list_bubble_enabled_(features::IsAppListBubbleEnabled()) {
   DCHECK(contents_view_);
@@ -896,28 +898,6 @@ bool PagedAppsGridView::IsValidPageFlipTarget(int page) const {
          !extra_page_opened_ && pagination_model_.total_pages() == page;
 }
 
-bool PagedAppsGridView::IsPointWithinPageFlipBuffer(
-    const gfx::Point& point) const {
-  // The page flip buffer is the work area bounds excluding shelf bounds, which
-  // is the same as AppsContainerView's bounds.
-  gfx::Point point_in_parent = point;
-  ConvertPointToTarget(this, parent(), &point_in_parent);
-  return parent()->GetContentsBounds().Contains(point_in_parent);
-}
-
-bool PagedAppsGridView::IsPointWithinBottomDragBuffer(
-    const gfx::Point& point) const {
-  // The bottom drag buffer is between the bottom of apps grid and top of shelf.
-  gfx::Point point_in_parent = point;
-  ConvertPointToTarget(this, parent(), &point_in_parent);
-  gfx::Rect parent_rect = parent()->GetContentsBounds();
-  const int kBottomDragBufferMax = parent_rect.bottom();
-  const int kBottomDragBufferMin = bounds().bottom() - GetInsets().bottom() -
-                                   GetAppListConfig().page_flip_zone_size();
-  return point_in_parent.y() > kBottomDragBufferMin &&
-         point_in_parent.y() < kBottomDragBufferMax;
-}
-
 int PagedAppsGridView::GetPageFlipTargetForDrag(const gfx::Point& drag_point) {
   int new_page_flip_target = -1;
 
@@ -926,7 +906,7 @@ int PagedAppsGridView::GetPageFlipTargetForDrag(const gfx::Point& drag_point) {
     if (drag_point.y() <
         GetAppListConfig().page_flip_zone_size() + GetInsets().top()) {
       new_page_flip_target = pagination_model_.selected_page() - 1;
-    } else if (IsPointWithinBottomDragBuffer(drag_point)) {
+    } else if (container_delegate_->IsPointWithinBottomDragBuffer(drag_point)) {
       // If the drag point is within the drag buffer, but not over the shelf.
       new_page_flip_target = pagination_model_.selected_page() + 1;
     }
@@ -945,7 +925,7 @@ int PagedAppsGridView::GetPageFlipTargetForDrag(const gfx::Point& drag_point) {
 }
 
 void PagedAppsGridView::MaybeStartPageFlipTimer(const gfx::Point& drag_point) {
-  if (!IsPointWithinPageFlipBuffer(drag_point))
+  if (!container_delegate_->IsPointWithinPageFlipBuffer(drag_point))
     StopPageFlipTimer();
   int new_page_flip_target = GetPageFlipTargetForDrag(drag_point);
 

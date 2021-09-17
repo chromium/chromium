@@ -296,6 +296,12 @@ class AppListViewTest : public views::ViewsTestBase,
     return view_->app_list_main_view()->contents_view();
   }
 
+  views::View* scrollable_container() {
+    return contents_view()
+        ->apps_container_view()
+        ->scrollable_container_for_test();
+  }
+
   PagedAppsGridView* apps_grid_view() {
     return contents_view()->apps_container_view()->apps_grid_view();
   }
@@ -346,9 +352,11 @@ class AppListViewTest : public views::ViewsTestBase,
         container_size.height() - kExpectedGridTop -
         (expected_vertical_margin - kGridVerticalInset) - ShelfSize();
 
+    EXPECT_EQ(gfx::Rect(0, 0, kExpectedGridWidth, kExpectedGridHeight),
+              apps_grid_view()->bounds());
     EXPECT_EQ(gfx::Rect(expected_horizontal_margin, kExpectedGridTop,
                         kExpectedGridWidth, kExpectedGridHeight),
-              apps_grid_view()->bounds());
+              scrollable_container()->bounds());
     EXPECT_EQ(gfx::Rect(kExpectedGridWidth + expected_horizontal_margin +
                             kPageSwitcherSpacing,
                         kExpectedGridTop,
@@ -3006,7 +3014,7 @@ TEST_F(AppListViewScalableLayoutTest,
 
 // Tests fullscreen apps grid sizing and layout gets updated to correct bounds
 // when app list config changes.
-TEST_F(AppListViewScalableLayoutTest, AppListViewLayoutAfterConfigChage) {
+TEST_F(AppListViewScalableLayoutTest, AppListViewLayoutAfterConfigChange) {
   const gfx::Size window_size = gfx::Size(500, 800);
   gfx::NativeView parent = GetContext();
   parent->SetBounds(gfx::Rect(window_size));

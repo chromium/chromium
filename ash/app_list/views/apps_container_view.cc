@@ -17,7 +17,6 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/page_switcher.h"
-#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/constants/ash_features.h"
@@ -193,20 +192,35 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
     : contents_view_(contents_view) {
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
-  if (!features::IsAppListBubbleEnabled()) {
-    suggestion_chip_container_view_ = AddChildView(
-        std::make_unique<SuggestionChipContainerView>(contents_view));
+  scrollable_container_ = AddChildView(std::make_unique<views::View>());
+  scrollable_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  if (features::IsAppListBubbleEnabled()) {
+    // The bounds of the |scrollable_container_| will visually clip the
+    // |continue_section_| layer during page changes.
+    scrollable_container_->layer()->SetMasksToBounds(true);
+
+    // TODO(anasalazar): Add the actual continue section view.
+    continue_section_ =
+        scrollable_container_->AddChildView(std::make_unique<views::View>());
+    continue_section_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+    continue_section_->layer()->SetColor(SK_ColorTRANSPARENT);
+  } else {
+    suggestion_chip_container_view_ = AddChildViewAt(
+        std::make_unique<SuggestionChipContainerView>(contents_view), 0);
   }
 
   AppListViewDelegate* view_delegate =
       contents_view_->GetAppListMainView()->view_delegate();
   AppListA11yAnnouncer* a11y_announcer =
       contents_view->app_list_view()->a11y_announcer();
-  apps_grid_view_ = AddChildView(
+  apps_grid_view_ = scrollable_container_->AddChildView(
       std::make_unique<PagedAppsGridView>(contents_view, a11y_announcer,
                                           /*folder_delegate=*/nullptr,
-                                          /*folder_controller=*/this));
+                                          /*folder_controller=*/this,
+                                          /*container_delegate=*/this));
   apps_grid_view_->Init();
+  if (features::IsAppListBubbleEnabled())
+    apps_grid_view_->pagination_model()->AddObserver(this);
 
   // Page switcher should be initialized after AppsGridView.
   auto page_switcher = std::make_unique<PageSwitcher>(
@@ -235,6 +249,9 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
 }
 
 AppsContainerView::~AppsContainerView() {
+  if (features::IsAppListBubbleEnabled())
+    apps_grid_view_->pagination_model()->RemoveObserver(this);
+
   // Make sure |page_switcher_| is deleted before |apps_grid_view_| because
   // |page_switcher_| uses the PaginationModel owned by |apps_grid_view_|.
   delete page_switcher_;
@@ -321,6 +338,69 @@ void AppsContainerView::ReparentDragEnded() {
   show_state_ = AppsContainerView::SHOW_APPS;
 }
 
+// PaginationModelObserver:
+void AppsContainerView::SelectedPageChanged(int old_selected,
+                                            int new_selected) {
+  // |continue_section_| is hidden above the grid when not on the first page.
+  gfx::Transform transform;
+  gfx::Vector2dF translate;
+  translate.set_y(-scrollable_container_->bounds().height() * new_selected);
+  transform.Translate(translate);
+  continue_section_->layer()->SetTransform(transform);
+}
+
+void AppsContainerView::TransitionChanged() {
+  auto* pagination_model = apps_grid_view_->pagination_model();
+  const PaginationModel::Transition& transition =
+      pagination_model->transition();
+  if (!pagination_model->is_valid_page(transition.target_page))
+    return;
+
+  // Because |continue_section_| only shows on the first page, only update its
+  // transform if its page is involved in the transition. Otherwise, there is
+  // no need to transform the |continue_section_| because it will remain hidden
+  // throughout the transition.
+  if (transition.target_page == 0 || pagination_model->selected_page() == 0) {
+    const int page_height = scrollable_container_->bounds().height();
+    gfx::Vector2dF translate;
+
+    if (transition.target_page == 0) {
+      // Scroll the continue section down from above.
+      translate.set_y(-page_height + page_height * transition.progress);
+    } else {
+      // Scroll the continue section upwards
+      translate.set_y(-page_height * transition.progress);
+    }
+    gfx::Transform transform;
+    transform.Translate(translate);
+    continue_section_->layer()->SetTransform(transform);
+  }
+}
+
+// PagedAppsGridView::ContainerDelegate:
+bool AppsContainerView::IsPointWithinPageFlipBuffer(
+    const gfx::Point& point_in_apps_grid) const {
+  // The page flip buffer is the work area bounds excluding shelf bounds, which
+  // is the same as AppsContainerView's bounds.
+  gfx::Point point = point_in_apps_grid;
+  ConvertPointToTarget(apps_grid_view_, this, &point);
+  return this->GetContentsBounds().Contains(point);
+}
+
+bool AppsContainerView::IsPointWithinBottomDragBuffer(
+    const gfx::Point& point) const {
+  // The bottom drag buffer is between the bottom of apps grid and top of shelf.
+  gfx::Point point_in_parent = point;
+  ConvertPointToTarget(apps_grid_view_, this, &point_in_parent);
+  gfx::Rect parent_rect = this->GetContentsBounds();
+  const int kBottomDragBufferMax = parent_rect.bottom();
+  const int kBottomDragBufferMin = scrollable_container_->bounds().bottom() -
+                                   apps_grid_view_->GetInsets().bottom() -
+                                   GetAppListConfig().page_flip_zone_size();
+  return point_in_parent.y() > kBottomDragBufferMin &&
+         point_in_parent.y() < kBottomDragBufferMax;
+}
+
 void AppsContainerView::UpdateControlVisibility(AppListViewState app_list_state,
                                                 bool is_in_drag) {
   if (app_list_state == AppListViewState::kClosed)
@@ -369,7 +449,6 @@ void AppsContainerView::AnimateOpacity(float current_progress,
       target_view_state == AppListViewState::kFullscreenAllApps ||
       target_view_state == AppListViewState::kFullscreenSearch;
   animator.Run(apps_grid_view_, target_grid_visibility);
-
   animator.Run(page_switcher_, target_grid_visibility);
 }
 
@@ -392,17 +471,17 @@ void AppsContainerView::AnimateYPosition(AppListViewState target_view_state,
   if (suggestion_chip_container_view_) {
     suggestion_chip_container_view_->SetY(target_suggestion_chip_y);
     animator.Run(offset, suggestion_chip_container_view_->layer());
+    scrollable_container_->SetY(target_suggestion_chip_y +
+                                chip_grid_y_distance_);
+    animator.Run(offset, scrollable_container_->layer());
+    page_switcher_->SetY(target_suggestion_chip_y + chip_grid_y_distance_);
+    animator.Run(offset, page_switcher_->layer());
   }
 
   if (features::IsLauncherAppSortEnabled()) {
     sort_button_container_->SetY(target_suggestion_chip_y);
     animator.Run(offset, sort_button_container_->layer());
   }
-
-  apps_grid_view_->SetY(target_suggestion_chip_y + chip_grid_y_distance_);
-  animator.Run(offset, apps_grid_view_->layer());
-  page_switcher_->SetY(target_suggestion_chip_y + chip_grid_y_distance_);
-  animator.Run(offset, page_switcher_->layer());
 }
 
 void AppsContainerView::OnTabletModeChanged(bool started) {
@@ -466,14 +545,22 @@ void AppsContainerView::Layout() {
   // added margins.
   grid_rect.Inset(-grid_insets.left(), 0, -grid_insets.right(),
                   -grid_insets.bottom());
-  apps_grid_view_->SetBoundsRect(grid_rect);
+  scrollable_container_->SetBoundsRect(grid_rect);
+  // TODO(crbug.com/1234061): Make it so that the |continue_section| and the
+  // |apps_grid_view_| do not overlap visually. The first row of apps should
+  // appear below the continue section.
+  apps_grid_view_->SetBoundsRect(
+      gfx::Rect(0, 0, grid_rect.width(), grid_rect.height()));
+
+  if (features::IsAppListBubbleEnabled())
+    continue_section_->SetBoundsRect(gfx::Rect(0, 0, grid_rect.width(), 200));
 
   // Record the distance of y position between suggestion chip container
   // and apps grid view to avoid duplicate calculation of apps grid view's
   // y position during dragging.
   if (suggestion_chip_container_view_) {
     chip_grid_y_distance_ =
-        apps_grid_view_->y() - suggestion_chip_container_view_->y();
+        scrollable_container_->y() - suggestion_chip_container_view_->y();
   }
 
   // Layout page switcher.
@@ -852,17 +939,19 @@ void AppsContainerView::UpdateContentsOpacity(float progress,
 
 void AppsContainerView::UpdateContentsYPosition(float progress) {
   const int current_suggestion_chip_y = GetExpectedSuggestionChipY(progress);
-  if (suggestion_chip_container_view_)
+  if (suggestion_chip_container_view_) {
     suggestion_chip_container_view_->SetY(current_suggestion_chip_y);
-  apps_grid_view_->SetY(current_suggestion_chip_y + chip_grid_y_distance_);
-  page_switcher_->SetY(current_suggestion_chip_y + chip_grid_y_distance_);
+    scrollable_container_->SetY(current_suggestion_chip_y +
+                                chip_grid_y_distance_);
+    page_switcher_->SetY(current_suggestion_chip_y + chip_grid_y_distance_);
+  }
 
   // If app list is in drag, reset transforms that might started animating in
   // AnimateYPosition().
   if (contents_view_->app_list_view()->is_in_drag()) {
     if (suggestion_chip_container_view_)
       suggestion_chip_container_view_->layer()->SetTransform(gfx::Transform());
-    apps_grid_view_->layer()->SetTransform(gfx::Transform());
+    scrollable_container_->layer()->SetTransform(gfx::Transform());
     page_switcher_->layer()->SetTransform(gfx::Transform());
   }
 }

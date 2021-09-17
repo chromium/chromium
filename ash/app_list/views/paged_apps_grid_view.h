@@ -42,10 +42,25 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
                                      public PaginationModelObserver,
                                      public ui::ImplicitAnimationObserver {
  public:
+  class ContainerDelegate {
+   public:
+    virtual ~ContainerDelegate() = default;
+
+    // Returns true if |point| lies within the bounds of this grid view plus a
+    // buffer area surrounding it that can trigger page flip.
+    virtual bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const = 0;
+
+    // Returns whether |point| is in the bottom drag buffer, and not over the
+    // shelf.
+    virtual bool IsPointWithinBottomDragBuffer(
+        const gfx::Point& point) const = 0;
+  };
+
   PagedAppsGridView(ContentsView* contents_view,
                     AppListA11yAnnouncer* a11y_announcer,
                     AppsGridViewFolderDelegate* folder_delegate,
-                    AppListFolderController* folder_controller);
+                    AppListFolderController* folder_controller,
+                    ContainerDelegate* container_delegate);
   PagedAppsGridView(const PagedAppsGridView&) = delete;
   PagedAppsGridView& operator=(const PagedAppsGridView&) = delete;
   ~PagedAppsGridView() override;
@@ -140,14 +155,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Returns true if the page is the right target to flip to.
   bool IsValidPageFlipTarget(int page) const;
 
-  // Returns true if |point| lies within the bounds of this grid view plus a
-  // buffer area surrounding it that can trigger page flip.
-  bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const;
-
-  // Returns whether |point| is in the bottom drag buffer, and not over the
-  // shelf.
-  bool IsPointWithinBottomDragBuffer(const gfx::Point& point) const;
-
   // Obtains the target page to flip for |drag_point|.
   int GetPageFlipTargetForDrag(const gfx::Point& drag_point);
 
@@ -193,6 +200,10 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // Created by AppListMainView, owned by views hierarchy.
   ContentsView* const contents_view_;
+
+  // Used to get information about whether a point is within the page flip drag
+  // buffer area around this view.
+  ContainerDelegate* const container_delegate_;
 
   // Depends on |pagination_model_|.
   std::unique_ptr<PaginationController> pagination_controller_;
