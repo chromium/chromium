@@ -246,7 +246,7 @@ class CONTENT_EXPORT WebContentsObserver {
   // close the UI), especially given that a renderer process can easily start a
   // navigation which is guaranteed not to commit (e.g. by navigating to
   // a URL returning a response with HTTP status code of 204 or a download).
-  // Consider listening to PrimaryPageChange or DidFinishNavigation instead.
+  // Consider listening to PrimaryPageChanged or DidFinishNavigation instead.
   //
   // - This notification is fired by navigations in any frame of the
   // WebContents, not just the primary main frame.
