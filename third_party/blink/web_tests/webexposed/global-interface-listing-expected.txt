@@ -2161,7 +2161,7 @@ interface EditContext : EventTarget
     getter selectionStart
     getter text
     method constructor
-    method updateLayout
+    method updateBounds
     method updateSelection
     method updateText
     setter enterKeyHint

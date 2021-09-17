@@ -526,7 +526,7 @@ test(function() {
   assert_equals(editContext.selectionEnd, 1);
   editContext.selectionStart = 1;
   assert_equals(editContext.selectionStart, 1);
-  editContext.updateLayout(viewRect, caretRect);
+  editContext.updateBounds(viewRect, caretRect);
 }, 'Testing EditContext update text, selection and layout');
 
 test(function() {

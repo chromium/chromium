@@ -224,7 +224,7 @@ void EditContext::updateSelection(uint32_t start,
   }
 }
 
-void EditContext::updateLayout(DOMRect* control_bounds,
+void EditContext::updateBounds(DOMRect* control_bounds,
                                DOMRect* selection_bounds) {
   // Return the IntRect containing the given DOMRect.
   const DoubleRect control_bounds_double_rect(

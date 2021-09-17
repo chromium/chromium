@@ -12611,7 +12611,7 @@ TEST_F(WebFrameSimTest, ScrollEditContextIntoView) {
         target.focus();
         let controlBound = new DOMRect(500, 850, 1, 20);
         let dummySelectionBound = new DOMRect(0, 0, 0, 0);
-        editContext.updateLayout(controlBound, dummySelectionBound);
+        editContext.updateBounds(controlBound, dummySelectionBound);
       </script>
   )HTML");
 

@@ -75,7 +75,7 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   // contents changes in response to other updates to the view. The arguments to
   // this method describe a bounding box in client coordinates for both the
   // editable region and also the current selection.
-  void updateLayout(DOMRect* control_bounds, DOMRect* selection_bounds);
+  void updateBounds(DOMRect* control_bounds, DOMRect* selection_bounds);
 
   // Updates to the text driven by the webpage/javascript are performed
   // by calling this API on the EditContext. It accepts a range (start and end

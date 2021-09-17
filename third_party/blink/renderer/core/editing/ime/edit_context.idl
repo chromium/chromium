@@ -5,7 +5,7 @@
 // The goal of the EditContext is to expose the lower-level APIs provided by
 // modern operating systems to facilitate various input modalities to unlock
 // advanced editing scenarios. For more information please refer
-// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/EditContext/explainer.md
+// https://github.com/w3c/editing/blob/gh-pages/docs/EditContext/explainer.md
 [
     Exposed=Window,
     ActiveScriptWrappable,
@@ -13,7 +13,7 @@
 ] interface EditContext : EventTarget {
     [CallWith=ScriptState] constructor(optional EditContextInit options = {});
     [RaisesException] void updateSelection(unsigned long start, unsigned long end);
-    void updateLayout(DOMRect controlBounds, DOMRect selectionBounds);
+    void updateBounds(DOMRect controlBounds, DOMRect selectionBounds);
     [RaisesException] void updateText(unsigned long start, unsigned long end, DOMString newText);
 
     attribute DOMString text;
