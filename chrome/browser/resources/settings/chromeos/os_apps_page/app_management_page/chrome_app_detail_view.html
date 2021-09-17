@@ -1,4 +1,12 @@
-<style include="app-management-shared-css"></style>
+<style include="app-management-shared-css">
+  .permission-text-row:first-of-type {
+    border-top: none;
+  }
+
+  #no-permissions {
+    border-top: none;
+  }
+</style>
 <div>
   <div class="permission-list">
     <app-management-pin-to-shelf-item
@@ -33,10 +41,11 @@
             $i18n{appManagementNoPermissions}
           </div>
         </template>
-        <app-management-more-permissions-item id="more-settings"
-            class="subpermission-row" app="[[app_]]"
-            hidden$="[[app_.hideMoreSettings]]">
-        </app-management-more-permissions-item>
       </div>
     </div>
+
+    <app-management-more-permissions-item id="more-settings"
+        class="permission-card-row separated-row header-text" app="[[app_]]"
+        hidden$="[[app_.hideMoreSettings]]">
+    </app-management-more-permissions-item>
 </div>

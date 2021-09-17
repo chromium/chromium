@@ -52,9 +52,6 @@
           $i18n{appManagementNoPermissions}
         </div>
       </template>
-      <app-management-more-permissions-item id="more-settings"
-          class="subpermission-row" app="[[app_]]">
-      </app-management-more-permissions-item>
     </div>
   </div>
   <app-management-resize-lock-item
@@ -62,6 +59,9 @@
       class="permission-card-row separated-row row-with-description"
       app="[[app_]]">
   </app-management-resize-lock-item>
+  <app-management-more-permissions-item id="more-settings"
+      class="permission-card-row separated-row header-text" app="[[app_]]">
+  </app-management-more-permissions-item>
   <app-management-supported-links-item
       id="supportedLinksSetting"
       class="permission-card-row"
