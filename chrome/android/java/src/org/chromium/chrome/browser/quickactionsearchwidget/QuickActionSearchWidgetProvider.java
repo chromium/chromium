@@ -10,6 +10,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -17,16 +18,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
  * {@link AppWidgetProvider} for a widget that provides an entry point for users to quickly perform
@@ -119,17 +124,40 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      */
     protected QuickActionSearchWidgetProviderDelegate createDelegate(@LayoutRes int layout) {
         Context context = ContextUtils.getApplicationContext();
-        ComponentName widgetReceiverComponent =
-                new ComponentName(context, QuickActionSearchWidgetReceiver.class);
         ComponentName searchActivityComponent = new ComponentName(context, SearchActivity.class);
         Intent trustedIncognitoIntent =
                 IntentHandler.createTrustedOpenNewTabIntent(context, /*incognito=*/true);
         trustedIncognitoIntent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, true);
         trustedIncognitoIntent.addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        Intent dinoIntent = createDinoIntent(context);
 
         return new QuickActionSearchWidgetProviderDelegate(
-                layout, widgetReceiverComponent, searchActivityComponent, trustedIncognitoIntent);
+                layout, searchActivityComponent, trustedIncognitoIntent, dinoIntent);
+    }
+
+    /**
+     * Creates an intent to launch a new tab with chrome://dino/ URL.
+     *
+     * @param context The context from which the intent is being created.
+     * @return An intent to launch a tab with a new tab with chrome://dino/ URL.
+     */
+    private static Intent createDinoIntent(final Context context) {
+        // We concatenate the forward slash to the URL since if a Dino tab already exists, we would
+        // like to reuse it. In order to determine if there is an existing Dino tab,
+        // ChromeTabbedActivity will check by comparing URLs of existing tabs to the URL of our
+        // intent. If there is an existing Dino tab, it would have a forward slash appended to the
+        // end of its URL, so our URL must have a forward slash to match.
+        String chromeDinoUrl = UrlConstants.CHROME_DINO_URL + "/";
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(chromeDinoUrl));
+        intent.setComponent(new ComponentName(context, ChromeLauncherActivity.class));
+        intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+        intent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        return intent;
     }
 
     /**

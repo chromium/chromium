@@ -5,10 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegate.java",
-    "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetReceiverDelegate.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegate.java" ]
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -29,7 +26,6 @@ android_library("javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegateTest.java",
-    "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetReceiverDelegateTest.java",
     "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetTestUtils.java",
   ]
   deps = [
@@ -39,6 +35,7 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
+    "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",

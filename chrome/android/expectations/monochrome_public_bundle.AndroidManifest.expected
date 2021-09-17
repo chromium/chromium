@@ -1067,13 +1067,6 @@
       </intent-filter>  # DIFF-ANCHOR: 4ed161a4
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/quick_action_search_widget_small_info"/>
     </receiver>  # DIFF-ANCHOR: 5fe9b78b
-    <receiver  # DIFF-ANCHOR: 585b7cc1
-        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetReceiver"
-        android:exported="false">
-      <intent-filter>  # DIFF-ANCHOR: d3e4f3ee
-        <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_DINO_GAME"/>
-      </intent-filter>  # DIFF-ANCHOR: d3e4f3ee
-    </receiver>  # DIFF-ANCHOR: 585b7cc1
     <receiver  # DIFF-ANCHOR: a0d83ae5
         android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
         android:exported="true"

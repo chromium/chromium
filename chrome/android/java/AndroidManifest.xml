@@ -967,14 +967,6 @@ by a child template that "extends" this file.
                 android:resource="@xml/quick_action_search_widget_dino_info" />
         </receiver>
 
-        <receiver
-            android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="org.chromium.chrome.browser.ui.quickactionsearchwidget.START_DINO_GAME" />
-            </intent-filter>
-        </receiver>
-
         <!-- Bookmarks widget -->
         <receiver android:name="com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider"
             android:label="@string/bookmark_widget_title"
