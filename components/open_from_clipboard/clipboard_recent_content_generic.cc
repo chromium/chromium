@@ -29,14 +29,13 @@ const char* kAuthorizedSchemes[] = {
 
 void OnGetRecentImageFromClipboard(
     ClipboardRecentContent::GetRecentImageCallback callback,
-    const std::vector<uint8_t>& png_data) {
-  if (png_data.empty()) {
+    const SkBitmap& sk_bitmap) {
+  if (sk_bitmap.empty()) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
 
-  std::move(callback).Run(
-      gfx::Image::CreateFrom1xPNGBytes(png_data.data(), png_data.size()));
+  std::move(callback).Run(gfx::Image::CreateFrom1xBitmap(sk_bitmap));
 }
 
 bool HasRecentURLFromClipboard() {
@@ -137,7 +136,7 @@ void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
 
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
-  ui::Clipboard::GetForCurrentThread()->ReadPng(
+  ui::Clipboard::GetForCurrentThread()->ReadImage(
       ui::ClipboardBuffer::kCopyPaste, &data_dst,
       base::BindOnce(&OnGetRecentImageFromClipboard, std::move(callback)));
 }
