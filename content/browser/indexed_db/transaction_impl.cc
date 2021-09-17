@@ -295,8 +295,8 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
     return;
 
   if (!transaction_->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "Commit was called after committing or aborting the transaction");
+    // This really shouldn't be happening, but seems to be happening anyway. So
+    // rather than killing the renderer, simply ignore the request.
     return;
   }
 
