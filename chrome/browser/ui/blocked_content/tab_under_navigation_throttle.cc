@@ -129,12 +129,15 @@ TabUnderNavigationThrottle::TabUnderNavigationThrottle(
                              content::Visibility::VISIBLE) {}
 
 bool TabUnderNavigationThrottle::IsSuspiciousClientRedirect() const {
+  // This throttle is only created for primary main frame navigations. See
+  // MaybeCreate().
+  DCHECK(navigation_handle()->IsInPrimaryMainFrame());
   DCHECK(!navigation_handle()->HasCommitted());
+
   // Some browser initiated navigations have HasUserGesture set to false. This
   // should eventually be fixed in crbug.com/617904. In the meantime, just dont
   // block browser initiated ones.
-  if (started_in_foreground_ || !navigation_handle()->IsInMainFrame() ||
-      navigation_handle()->HasUserGesture() ||
+  if (started_in_foreground_ || navigation_handle()->HasUserGesture() ||
       !navigation_handle()->IsRendererInitiated()) {
     return false;
   }
