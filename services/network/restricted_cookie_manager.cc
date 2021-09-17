@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"  // for FALLTHROUGH;
+#include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
@@ -624,6 +625,31 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
   UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.TopFrameOriginOK",
                         top_frame_origin_ok);
 
+  if (!top_frame_origin_ok || !site_for_cookies_ok) {
+    base::debug::Alias(&top_frame_origin_ok);
+    base::debug::Alias(&site_for_cookies_ok);
+    static bool reported = false;
+    if (!reported) {
+      reported = true;
+      SCOPED_CRASH_KEY_STRING256("RCM", "rcm-site_for_cookies",
+                                 BoundSiteForCookies().ToDebugString());
+      SCOPED_CRASH_KEY_STRING256("RCM", "render-site_for_cookies",
+                                 site_for_cookies.ToDebugString());
+
+      SCOPED_CRASH_KEY_STRING256("RCM", "rcm-top_frame_origin",
+                                 BoundTopFrameOrigin().GetDebugString());
+      SCOPED_CRASH_KEY_STRING256("RCM", "render-top_frame_origin",
+                                 top_frame_origin.GetDebugString());
+
+      SCOPED_CRASH_KEY_STRING256("RCM", "rcm-origin", origin_.GetDebugString());
+      // Only origin here, since url is probably way too sensitive.
+      SCOPED_CRASH_KEY_STRING256("RCM", "render-origin",
+                                 url::Origin::Create(url).GetDebugString());
+      base::debug::DumpWithoutCrashing();
+    }
+    return false;
+  }
+
   // Don't allow setting cookies on other domains. See crbug.com/996786.
   if (cookie_being_set && !cookie_being_set->IsDomainMatch(url.host())) {
     mojo::ReportBadMessage("Setting cookies on other domains is disallowed.");
@@ -632,28 +658,6 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
   if (origin_.IsSameOriginWith(url::Origin::Create(url)))
     return true;
-
-  if (url.IsAboutBlank() || url.IsAboutSrcdoc()) {
-    // Temporary mitigation for 983090, classification improvement for parts of
-    // 992587.
-    static base::debug::CrashKeyString* bound_origin =
-        base::debug::AllocateCrashKeyString(
-            "restricted_cookie_manager_bound_origin",
-            base::debug::CrashKeySize::Size256);
-    base::debug::ScopedCrashKeyString scoped_key_string_bound(
-        bound_origin, origin_.GetDebugString());
-
-    static base::debug::CrashKeyString* url_origin =
-        base::debug::AllocateCrashKeyString(
-            "restricted_cookie_manager_url_origin",
-            base::debug::CrashKeySize::Size256);
-    base::debug::ScopedCrashKeyString scoped_key_string_url(
-        url_origin, url::Origin::Create(url).GetDebugString());
-
-    NOTREACHED();
-    base::debug::DumpWithoutCrashing();
-    return false;
-  }
 
   mojo::ReportBadMessage("Incorrect url origin");
   return false;
