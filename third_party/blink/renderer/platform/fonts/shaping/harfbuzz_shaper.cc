@@ -790,9 +790,11 @@ void HarfBuzzShaper::ShapeSegment(
     SmallCapsIterator::SmallCapsBehavior small_caps_behavior =
         SmallCapsIterator::kSmallCapsSameCase;
     if (needs_caps_handling) {
-      caps_support = OpenTypeCapsSupport(
-          font_data->PlatformData().GetHarfBuzzFace(),
-          font_description.VariantCaps(), ICUScriptToHBScript(segment.script));
+      caps_support =
+          OpenTypeCapsSupport(font_data->PlatformData().GetHarfBuzzFace(),
+                              font_description.VariantCaps(),
+                              font_description.GetFontSynthesisSmallCaps(),
+                              ICUScriptToHBScript(segment.script));
       if (caps_support.NeedsRunCaseSplitting()) {
         SplitUntilNextCaseChange(text_, &range_data->reshape_queue,
                                  current_queue_item, small_caps_behavior);

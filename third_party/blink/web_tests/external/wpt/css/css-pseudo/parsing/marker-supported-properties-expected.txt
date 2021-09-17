@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 58 tests; 52 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 61 tests; 55 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property font value 'italic small-caps 900 expanded 25px / 50px Ahem' in ::marker
 PASS Property font-family value 'Ahem' in ::marker
 PASS Property font-feature-settings value '"smcp"' in ::marker
@@ -9,6 +9,9 @@ PASS Property font-size-adjust value '1' in ::marker
 PASS Property font-stretch value 'expanded' in ::marker
 PASS Property font-style value 'italic' in ::marker
 PASS Property font-synthesis value 'none' in ::marker
+PASS Property font-synthesis-small-caps value 'none' in ::marker
+PASS Property font-synthesis-style value 'none' in ::marker
+PASS Property font-synthesis-weight value 'none' in ::marker
 PASS Property font-variant value 'small-caps' in ::marker
 PASS Property font-variant-caps value 'small-caps' in ::marker
 PASS Property font-variant-east-asian value 'full-width' in ::marker

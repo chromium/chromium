@@ -40,7 +40,6 @@ bool activationSelectorPresent(
 
 OpenTypeCapsSupport::OpenTypeCapsSupport()
     : harfbuzz_face_(nullptr),
-      requested_caps_(FontDescription::kCapsNormal),
       font_support_(FontSupport::kFull),
       caps_synthesis_(CapsSynthesis::kNone),
       font_format_(FontFormat::kUndetermined) {}
@@ -48,9 +47,11 @@ OpenTypeCapsSupport::OpenTypeCapsSupport()
 OpenTypeCapsSupport::OpenTypeCapsSupport(
     const HarfBuzzFace* harfbuzz_face,
     FontDescription::FontVariantCaps requested_caps,
+    FontDescription::FontSynthesisSmallCaps font_synthesis_small_caps,
     hb_script_t script)
     : harfbuzz_face_(harfbuzz_face),
       requested_caps_(requested_caps),
+      font_synthesis_small_caps_(font_synthesis_small_caps),
       font_support_(FontSupport::kFull),
       caps_synthesis_(CapsSynthesis::kNone),
       font_format_(FontFormat::kUndetermined) {
@@ -79,7 +80,8 @@ FontDescription::FontVariantCaps OpenTypeCapsSupport::FontFeatureToUse(
 bool OpenTypeCapsSupport::NeedsRunCaseSplitting() {
   // Lack of titling case support is ignored, titling case is not synthesized.
   return font_support_ != FontSupport::kFull &&
-         requested_caps_ != FontDescription::kTitlingCaps;
+         requested_caps_ != FontDescription::kTitlingCaps &&
+         SyntheticSmallCapsAllowed();
 }
 
 bool OpenTypeCapsSupport::NeedsSyntheticFont(
@@ -88,6 +90,9 @@ bool OpenTypeCapsSupport::NeedsSyntheticFont(
     return false;
 
   if (requested_caps_ == FontDescription::kTitlingCaps)
+    return false;
+
+  if (!SyntheticSmallCapsAllowed())
     return false;
 
   if (font_support_ == FontSupport::kNone) {
@@ -110,7 +115,7 @@ CaseMapIntend OpenTypeCapsSupport::NeedsCaseChange(
     SmallCapsIterator::SmallCapsBehavior run_case) {
   CaseMapIntend case_map_intend = CaseMapIntend::kKeepSameCase;
 
-  if (font_support_ == FontSupport::kFull)
+  if (font_support_ == FontSupport::kFull || !SyntheticSmallCapsAllowed())
     return case_map_intend;
 
   switch (run_case) {
@@ -278,6 +283,11 @@ void OpenTypeCapsSupport::DetermineFontSupport(hb_script_t script) {
     default:
       NOTREACHED();
   }
+}
+
+bool OpenTypeCapsSupport::SyntheticSmallCapsAllowed() const {
+  return font_synthesis_small_caps_ ==
+         FontDescription::kAutoFontSynthesisSmallCaps;
 }
 
 }  // namespace blink
