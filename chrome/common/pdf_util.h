@@ -30,6 +30,9 @@ void ReportPDFLoadStatus(PDFLoadStatus status);
 // Returns the HTML contents of the placeholder.
 std::string GetPDFPlaceholderHTML(const GURL& pdf_url);
 
+// Returns `true` if `url` is for the built-in PDF extension.
+bool IsPdfExtensionUrl(const GURL& url);
+
 // Returns `true` if the origin is allowed to create the internal PDF plugin.
 // Note that for the Pepper-free plugin, this applies to the origin of the
 // parent of the frame that contains the in-process plugin.

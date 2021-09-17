@@ -157,6 +157,7 @@
 #include "chrome/common/env_vars.h"
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/logging_chrome.h"
+#include "chrome/common/pdf_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/renderer_configuration.mojom.h"
@@ -519,7 +520,6 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/chrome_pdf_stream_delegate.h"
-#include "chrome/common/pdf_util.h"
 #include "components/pdf/browser/pdf_navigation_throttle.h"
 #include "components/pdf/browser/pdf_url_loader_request_interceptor.h"
 #include "components/pdf/common/internal_plugin_helpers.h"
@@ -2883,17 +2883,15 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
   // disabled; some of the UI is not yet correctly themed.
   if (!base::FeatureList::IsEnabled(features::kWebUIDarkMode)) {
     // Update based on last committed url.
-    force_light |= url.SchemeIs(content::kChromeUIScheme);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    force_light |= url.SchemeIs(extensions::kExtensionScheme) &&
-                   url.host_piece() == extension_misc::kPdfExtensionId;
-#endif
+    force_light = force_light || url.SchemeIs(content::kChromeUIScheme);
+    force_light = force_light || IsPdfExtensionUrl(url);
   }
 
   // Reauth WebUI doesn't support dark mode yet because it shares the dialog
   // with GAIA web contents that is not correctly themed.
-  force_light |= url.SchemeIs(content::kChromeUIScheme) &&
-                 url.host_piece() == chrome::kChromeUISigninReauthHost;
+  force_light =
+      force_light || (url.SchemeIs(content::kChromeUIScheme) &&
+                      url.host_piece() == chrome::kChromeUISigninReauthHost);
 
   if (force_light) {
     web_prefs->preferred_color_scheme =

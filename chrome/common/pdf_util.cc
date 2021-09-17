@@ -39,6 +39,15 @@ std::string GetPDFPlaceholderHTML(const GURL& pdf_url) {
   return webui::GetI18nTemplateHtml(template_html, &values);
 }
 
+bool IsPdfExtensionUrl(const GURL& url) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return url.SchemeIs(extensions::kExtensionScheme) &&
+         url.host_piece() == extension_misc::kPdfExtensionId;
+#else
+  return false;
+#endif
+}
+
 bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Allow embedding the internal PDF plugin in the built-in PDF extension.

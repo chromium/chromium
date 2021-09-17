@@ -19,8 +19,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/common/extensions/extension_constants.h"
-#include "extensions/common/constants.h"
+#include "chrome/common/pdf_util.h"
 #include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -35,11 +34,7 @@ blink::WebElement ChromePrintRenderFrameHelperDelegate::GetPdfElement(
     blink::WebLocalFrame* frame) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   GURL url = frame->GetDocument().Url();
-  bool inside_print_preview = url.GetOrigin() == chrome::kChromeUIPrintURL;
-  bool inside_pdf_extension =
-      url.SchemeIs(extensions::kExtensionScheme) &&
-      url.host_piece() == extension_misc::kPdfExtensionId;
-  if (inside_print_preview || inside_pdf_extension) {
+  if (url.GetOrigin() == chrome::kChromeUIPrintURL || IsPdfExtensionUrl(url)) {
     // <object> with id="plugin" is created in
     // chrome/browser/resources/pdf/pdf_viewer_base.js.
     auto viewer_element = frame->GetDocument().GetElementById("viewer");

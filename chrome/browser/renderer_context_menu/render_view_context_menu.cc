@@ -98,6 +98,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/content_restriction.h"
+#include "chrome/common/pdf_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -200,10 +201,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "extensions/common/constants.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -601,13 +598,6 @@ bool DoesInputFieldTypeSupportEmoji(
       return true;
   }
 }
-
-#if BUILDFLAG(ENABLE_PDF)
-bool IsPdfPluginURL(const GURL& url) {
-  return url.SchemeIs(extensions::kExtensionScheme) &&
-         url.host_piece() == extension_misc::kPdfExtensionId;
-}
-#endif
 
 // If the link points to a system web app (in |profile|), return its type.
 // Otherwise nullopt.
@@ -2266,7 +2256,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       // Rotate commands should be disabled when in PDF Viewer's Presentation
       // mode.
       is_pdf_viewer_fullscreen =
-          IsPdfPluginURL(GetDocumentURL(params_)) && IsHTML5Fullscreen();
+          IsPdfExtensionUrl(GetDocumentURL(params_)) && IsHTML5Fullscreen();
 #endif
       return !is_pdf_viewer_fullscreen &&
              (params_.media_flags & ContextMenuData::kMediaCanRotate) != 0;
@@ -3067,7 +3057,7 @@ bool RenderViewContextMenu::IsLensRegionSearchEnabled() const {
 // Build flag for enable_pdf is needed here because the function used does not
 // build without this flag.
 #if BUILDFLAG(ENABLE_PDF)
-         !IsPdfPluginURL(GetDocumentURL(params_)) &&
+         !IsPdfExtensionUrl(GetDocumentURL(params_)) &&
 #endif
          !GetDocumentURL(params_).SchemeIs(content::kChromeUIScheme) &&
          GetPrefs(browser_context_)
