@@ -112,10 +112,8 @@ void FillGaps(std::vector<std::string>& ranking,
               const std::vector<std::string>& available,
               unsigned int length) {
   // Take the tail of the ranking (the part that won't be shown on the screen),
-  // remove items that aren't available on the system, and slot the rest into
-  // the empty slots. Note that this means that apps available on the system but
-  // not present in the current ranking can never be shown as options, which is
-  // desirable - that keeps things like the Android CTS Shim from showing up.
+  // remove items that aren't available on the system. These will be the first
+  // apps used for empty slots.
   std::vector<std::string> unused_available(ranking.begin() + length,
                                             ranking.end());
 
@@ -124,6 +122,16 @@ void FillGaps(std::vector<std::string>& ranking,
           unused_available.begin(), unused_available.end(),
           [&](const std::string& e) { return !RankingContains(available, e); }),
       unused_available.end());
+
+  // Now, append the rest of the system apps (those not already included) to
+  // unused_available. These will be the apps that can handle the share type and
+  // that are available on the system but not included in the old ranking at
+  // all, so these are the lowest priority targets, because they are likely to
+  // be things like "Bluetooth" which users almost never share to.
+  for (const auto& app : available) {
+    if (!RankingContains(unused_available, app))
+      unused_available.push_back(app);
+  }
 
   auto next_unused = unused_available.begin();
 
