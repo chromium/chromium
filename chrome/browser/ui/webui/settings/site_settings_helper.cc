@@ -185,6 +185,7 @@ const SiteSettingSourceStringMapping kSiteSettingSourceStringMapping[] = {
     {SiteSettingSource::kDefault, "default"},
     {SiteSettingSource::kEmbargo, "embargo"},
     {SiteSettingSource::kExtension, "extension"},
+    {SiteSettingSource::kHostedApp, "HostedApp"},
     {SiteSettingSource::kInsecureOrigin, "insecure-origin"},
     {SiteSettingSource::kKillSwitch, "kill-switch"},
     {SiteSettingSource::kPolicy, "policy"},
@@ -525,7 +526,8 @@ void AddExceptionForHostedApp(const std::string& url_pattern,
   exception->SetString(kOrigin, url_pattern);
   exception->SetString(kDisplayName, url_pattern);
   exception->SetString(kEmbeddingOrigin, url_pattern);
-  exception->SetString(kSource, "HostedApp");
+  exception->SetString(
+      kSource, SiteSettingSourceToString(SiteSettingSource::kHostedApp));
   exception->SetBoolean(kIncognito, false);
   exception->SetString(kAppName, app.name());
   exception->SetString(kAppId, app.id());

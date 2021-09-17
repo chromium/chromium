@@ -8,7 +8,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AddSiteDialogElement, ContentSetting, ContentSettingsTypes, kControlledByLookup, SettingsEditExceptionDialogElement, SITE_EXCEPTION_WILDCARD, SiteException, SiteListElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {AddSiteDialogElement, ContentSetting, ContentSettingsTypes, SettingsEditExceptionDialogElement, SITE_EXCEPTION_WILDCARD, SiteException, SiteListElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs,Router} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
@@ -550,26 +550,28 @@ suite('SiteList', function() {
         });
   });
 
-  test('exceptions are not reordered in non-ALL_SITES', function() {
+  test('exceptions are not reordered in non-ALL_SITES', async function() {
     setUpCategory(
         ContentSettingsTypes.GEOLOCATION, ContentSetting.BLOCK,
         prefsMixedProvider);
-    return browserProxy.whenCalled('getExceptionList')
-        .then(function(contentType) {
-          assertEquals(ContentSettingsTypes.GEOLOCATION, contentType);
-          assertEquals(3, testElement.sites.length);
-          for (let i = 0; i < testElement.sites.length; ++i) {
-            assertEquals(
-                prefsMixedProvider.exceptions[contentType][i].origin,
-                testElement.sites[i].origin);
-            assertEquals(
-                kControlledByLookup[prefsMixedProvider
-                                        .exceptions[contentType][i]
-                                        .source] ||
-                    chrome.settingsPrivate.ControlledBy.PRIMARY_USER,
-                testElement.sites[i].controlledBy);
-          }
-        });
+    const contentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(ContentSettingsTypes.GEOLOCATION, contentType);
+    assertEquals(3, testElement.sites.length);
+    for (let i = 0; i < testElement.sites.length; ++i) {
+      const exception = prefsMixedProvider.exceptions[contentType][i];
+      assertEquals(exception.origin, testElement.sites[i].origin);
+
+      let expectedControlledBy =
+          chrome.settingsPrivate.ControlledBy.PRIMARY_USER;
+      if (exception.source === SiteSettingSource.EXTENSION ||
+          exception.source === SiteSettingSource.HOSTED_APP) {
+        expectedControlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
+      } else if (exception.source === SiteSettingSource.POLICY) {
+        expectedControlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
+      }
+
+      assertEquals(expectedControlledBy, testElement.sites[i].controlledBy);
+    }
   });
 
   test('initial BLOCK state is correct', function() {

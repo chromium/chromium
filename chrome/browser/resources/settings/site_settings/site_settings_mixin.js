@@ -9,23 +9,9 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting,ContentSettingsTypes} from './constants.js';
+import {ContentSetting,ContentSettingsTypes, SiteSettingSource} from './constants.js';
 import {RawSiteException,SiteException,SiteSettingsPrefsBrowserProxy,SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 // clang-format on
-
-/**
- * The source information on site exceptions doesn't exactly match the
- * controlledBy values.
- * TODO(dschuyler): Can they be unified (and this dictionary removed)?
- * @type {!Object}
- */
-export const kControlledByLookup = {
-  'extension': chrome.settingsPrivate.ControlledBy.EXTENSION,
-  'HostedApp': chrome.settingsPrivate.ControlledBy.EXTENSION,
-  'platform_app': chrome.settingsPrivate.ControlledBy.EXTENSION,
-  'policy': chrome.settingsPrivate.ControlledBy.USER_POLICY,
-};
-
 
 /**
  * @polymer
@@ -169,15 +155,17 @@ export const SiteSettingsMixin = dedupingMixin(superClass => {
       let enforcement =
           /** @type {?chrome.settingsPrivate.Enforcement} */ (null);
       if (exception.source === 'extension' ||
-          exception.source === 'HostedApp' ||
-          exception.source === 'platform_app' ||
           exception.source === 'policy') {
         enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
       }
 
-      const controlledBy = /** @type {!chrome.settingsPrivate.ControlledBy} */ (
-          kControlledByLookup[exception.source] ||
-          chrome.settingsPrivate.ControlledBy.PRIMARY_USER);
+      let controlledBy = chrome.settingsPrivate.ControlledBy.PRIMARY_USER;
+      if (exception.source === SiteSettingSource.EXTENSION ||
+          exception.source === SiteSettingSource.HOSTED_APP) {
+        controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
+      } else if (exception.source === SiteSettingSource.POLICY) {
+        controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
+      }
 
       return {
         category: this.category,

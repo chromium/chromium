@@ -107,7 +107,6 @@ export {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from '.
 export {HandlerEntry, ProtocolEntry} from './site_settings/protocol_handlers.js';
 export {SettingsCategoryDefaultRadioGroupElement} from './site_settings/settings_category_default_radio_group.js';
 export {SiteListElement} from './site_settings/site_list.js';
-export {kControlledByLookup} from './site_settings/site_settings_mixin.js';
 export {ContentSettingProvider, DefaultContentSetting, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
 export {WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';

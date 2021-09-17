@@ -93,11 +93,12 @@ export const CookieControlsMode = {
  * @enum {string}
  */
 export const SiteSettingSource = {
-  ALLOWLIST: 'allowlist',
   ADS_FILTER_BLACKLIST: 'ads-filter-blacklist',
+  ALLOWLIST: 'allowlist',
   DEFAULT: 'default',
   EMBARGO: 'embargo',
   EXTENSION: 'extension',
+  HOSTED_APP: 'HostedApp',
   INSECURE_ORIGIN: 'insecure-origin',
   KILL_SWITCH: 'kill-switch',
   POLICY: 'policy',
