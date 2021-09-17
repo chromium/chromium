@@ -1315,8 +1315,12 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
 #if DCHECK_IS_ON()
     has_this_fragment = has_this_fragment || current.BoxFragment() == this;
 #endif
-    if (!current.Size().IsZero() && !current.GetLayoutObject()->IsSVG())
-      rects->push_back(current.RectInContainerFragment());
+    if (!current.Size().IsZero()) {
+      const NGPhysicalBoxFragment* fragment = current.BoxFragment();
+      DCHECK(fragment);
+      if (!fragment->IsOpaque() && !fragment->IsSvg())
+        rects->push_back(current.RectInContainerFragment());
+    }
 
     // Add descendants if any, in the container-relative coordinate.
     if (!current.HasChildren())

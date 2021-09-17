@@ -185,6 +185,7 @@ class CORE_EXPORT NGPhysicalFragment
            layout_object_->IsRubyBase();
   }
 
+  bool IsSvg() const { return layout_object_->IsSVG(); }
   bool IsSvgText() const { return layout_object_->IsNGSVGText(); }
 
   bool IsTableNGPart() const { return is_table_ng_part_; }

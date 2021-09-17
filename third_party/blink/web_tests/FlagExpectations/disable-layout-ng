@@ -414,6 +414,7 @@ crbug.com/591099 external/wpt/css/css-ui/text-overflow-010.html [ Failure ]
 crbug.com/1063319 external/wpt/css/css-ui/text-overflow-028.html [ Failure ]
 crbug.com/1078539 external/wpt/css/css-ui/outline-025.html [ Failure ]
 crbug.com/1078539 external/wpt/css/css-ui/outline-026.html [ Failure ]
+crbug.com/1250194 wpt_internal/css/css-ui/outline-block-in-inline.html [ Failure ]
 
 ### external/wpt/css/css-writing-modes/
 crbug.com/591099 external/wpt/css/css-writing-modes/abs-pos-non-replaced-icb-vlr-003.xht [ Failure ]
