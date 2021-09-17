@@ -1180,16 +1180,25 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb: {
       std::string publisher_id;
-      app_registry_cache_.ForOneApp(
-          app_id, [&publisher_id](const apps::AppUpdate& update) {
-            publisher_id = update.PublisherId();
-          });
+      apps::mojom::InstallSource install_source;
+      app_registry_cache_.ForOneApp(app_id, [&publisher_id, &install_source](
+                                                const apps::AppUpdate& update) {
+        publisher_id = update.PublisherId();
+        install_source = update.InstallSource();
+      });
       if (publisher_id.empty()) {
         return ukm::kInvalidSourceId;
       }
       if (app_type == apps::mojom::AppType::kArc) {
         source_id = ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(
             publisher_id);
+        break;
+      }
+      if (app_type == apps::mojom::AppType::kSystemWeb ||
+          install_source == apps::mojom::InstallSource::kSystem) {
+        // For system web apps, call GetSourceIdForChromeApp to record the app
+        // id because the url could be filtered by the server side.
+        source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
         break;
       }
       source_id =

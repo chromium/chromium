@@ -1391,7 +1391,7 @@ TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   VerifyInstalledAppsUkm("app://bu", AppTypeName::kBuiltIn,
                          apps::mojom::InstallSource::kSystem,
                          InstallTime::kInit);
-  VerifyInstalledAppsUkm("https://os-settings", AppTypeName::kSystemWeb,
+  VerifyInstalledAppsUkm("app://s", AppTypeName::kSystemWeb,
                          apps::mojom::InstallSource::kSystem,
                          InstallTime::kInit);
   VerifyInstalledAppsUkm("https://foo.com", AppTypeName::kWeb,
@@ -1435,7 +1435,7 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchAppsUkm) {
       "s", apps::mojom::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       apps::mojom::AppLaunchSource::kSourceTest));
-  VerifyAppsLaunchUkm("https://os-settings", AppTypeName::kSystemWeb,
+  VerifyAppsLaunchUkm("app://s", AppTypeName::kSystemWeb,
                       apps::mojom::LaunchSource::kFromTest);
 }
 
