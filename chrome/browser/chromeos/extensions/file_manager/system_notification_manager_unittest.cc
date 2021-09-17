@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/disks/disk.h"
+#include "components/arc/arc_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -403,6 +404,81 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
   EXPECT_EQ(notification_strings.message,
             u"Explore the device's content in the Files app. The content is "
             u"restricted by an admin and can\x2019t be modified.");
+}
+
+// Test for notification generated when ARC++ is enabled on the device.
+// Condition that triggers that is a mount event for a removable device
+// when the removable access for ARC++ is disabled.
+TEST_F(SystemNotificationManagerTest, DeviceNavigationAllowAppAccess) {
+  // Set the ARC++ enbled preference on the testing profile.
+  PrefService* const service = GetProfile()->GetPrefs();
+  service->SetBoolean(arc::prefs::kArcEnabled, true);
+  std::unique_ptr<Volume> volume(Volume::CreateForTesting(
+      base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
+      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
+      kDeviceLabel, "FAT32"));
+  file_manager_private::MountCompletedEvent event;
+  event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  event.should_notify = true;
+  event.status = file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS;
+  GetSystemNotificationManager()->HandleMountCompletedEvent(event,
+                                                            *volume.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings;
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-removable-device-id");
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
+  EXPECT_EQ(notification_strings.message,
+            u"Explore the device\x2019s content in the Files app. For device "
+            u"preferences, go to Settings.");
+}
+
+// Test for notification generated when ARC++ is enabled on the device.
+// Condition that triggers that is a mount event for a removable device
+// when the removable access for ARC++ is enabled.
+TEST_F(SystemNotificationManagerTest, DeviceNavigationAppsHaveAccess) {
+  // Set the ARC++ enbled preference on the testing profile.
+  PrefService* const service = GetProfile()->GetPrefs();
+  service->SetBoolean(arc::prefs::kArcEnabled, true);
+  service->SetBoolean(arc::prefs::kArcHasAccessToRemovableMedia, true);
+  std::unique_ptr<Volume> volume(Volume::CreateForTesting(
+      base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
+      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
+      kDeviceLabel, "FAT32"));
+  file_manager_private::MountCompletedEvent event;
+  event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  event.should_notify = true;
+  event.status = file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS;
+  GetSystemNotificationManager()->HandleMountCompletedEvent(event,
+                                                            *volume.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings;
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-removable-device-id");
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
+  EXPECT_EQ(notification_strings.message,
+            u"Explore the device\x2019s content in the Files app. Play Store "
+            u"applications have access to this device.");
 }
 
 constexpr char kDeviceFailNotificationId[] = "swa-device-fail-id";
