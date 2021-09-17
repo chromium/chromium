@@ -29,10 +29,22 @@ CopyingTexture2DWrapper::CopyingTexture2DWrapper(
 
 CopyingTexture2DWrapper::~CopyingTexture2DWrapper() = default;
 
+// Copy path doesn't need to acquire keyed mutex until calling
+// VideoProcessorBlt.
+Status CopyingTexture2DWrapper::AcquireKeyedMutexIfNeeded() {
+  return OkStatus();
+}
+
 Status CopyingTexture2DWrapper::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
     MailboxHolderArray* mailbox_dest,
     gfx::ColorSpace* output_color_space) {
+  // Acquire keyed mutex for VideoProcessorBlt ops.
+  Status status = output_texture_wrapper_->AcquireKeyedMutexIfNeeded();
+  if (!status.is_ok()) {
+    return status;
+  }
+
   D3D11_VIDEO_PROCESSOR_OUTPUT_VIEW_DESC output_view_desc = {
       D3D11_VPOV_DIMENSION_TEXTURE2D};
   output_view_desc.Texture2D.MipSlice = 0;
@@ -101,9 +113,9 @@ Status CopyingTexture2DWrapper::Init(
   texture_ = texture;
   array_slice_ = array_slice;
 
-  return output_texture_wrapper_->Init(std::move(gpu_task_runner),
-                                       std::move(get_helper_cb),
-                                       output_texture_, /*array_slice=*/0);
+  return output_texture_wrapper_->Init(
+      std::move(gpu_task_runner), std::move(get_helper_cb), output_texture_,
+      /*array_slice=*/0);
 }
 
 void CopyingTexture2DWrapper::SetStreamHDRMetadata(

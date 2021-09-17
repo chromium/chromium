@@ -67,6 +67,7 @@ class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
   bool SubmitDecoderBuffer(const DXVA_PicParams_VP9& pic_params,
                            const D3D11VP9Picture& pic);
 
+  void RecordFailure(const std::string& fail_type, media::Status error);
   void RecordFailure(const std::string& fail_type,
                      const std::string& reason,
                      StatusCode code);

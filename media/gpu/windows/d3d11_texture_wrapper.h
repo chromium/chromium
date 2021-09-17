@@ -51,6 +51,14 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
       ComD3D11Texture2D texture,
       size_t array_size) = 0;
 
+  // If the |texture| has key mutex, it is important to acquire the key mutex
+  // before any usage or you'll get an error. This API is required to be called:
+  // - Before reading or writing to the texture via views on the texture or
+  // other means.
+  // - Before calling ProcessTexture.
+  // And need to call ProcessTexture() to release the key mutex.
+  virtual Status AcquireKeyedMutexIfNeeded() = 0;
+
   // Import |texture|, |array_slice| and return the mailbox(es) that can be
   // used to refer to it.
   virtual Status ProcessTexture(const gfx::ColorSpace& input_color_space,
@@ -81,6 +89,8 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
               GetCommandBufferHelperCB get_helper_cb,
               ComD3D11Texture2D in_texture,
               size_t array_slice) override;
+
+  Status AcquireKeyedMutexIfNeeded() override;
 
   Status ProcessTexture(const gfx::ColorSpace& input_color_space,
                         MailboxHolderArray* mailbox_dest,
@@ -125,6 +135,9 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   base::SequenceBound<GpuResources> gpu_resources_;
   MailboxHolderArray mailbox_holders_;
   DXGI_FORMAT dxgi_format_;
+
+  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex_;
+  bool keyed_mutex_acquired_ = false;
 
   base::WeakPtrFactory<DefaultTexture2DWrapper> weak_factory_{this};
 };

@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "media/base/media_log.h"
@@ -52,11 +53,12 @@ Status D3D11PictureBuffer::Init(
   view_desc.ViewDimension = D3D11_VDOV_DIMENSION_TEXTURE2D;
   view_desc.Texture2D.ArraySlice = array_slice_;
 
+  media_log_ = std::move(media_log);
   Status result =
       texture_wrapper_->Init(std::move(gpu_task_runner),
                              std::move(get_helper_cb), texture_, array_slice_);
   if (!result.is_ok()) {
-    MEDIA_LOG(ERROR, media_log) << "Failed to Initialize the wrapper";
+    MEDIA_LOG(ERROR, media_log_) << "Failed to Initialize the wrapper";
     return result;
   }
 
@@ -64,7 +66,7 @@ Status D3D11PictureBuffer::Init(
       Texture().Get(), &view_desc, &output_view_);
 
   if (!SUCCEEDED(hr)) {
-    MEDIA_LOG(ERROR, media_log) << "Failed to CreateVideoDecoderOutputView";
+    MEDIA_LOG(ERROR, media_log_) << "Failed to CreateVideoDecoderOutputView";
     return Status(StatusCode::kCreateDecoderOutputViewFailed)
         .AddCause(HresultToStatus(hr));
   }
@@ -82,6 +84,20 @@ Status D3D11PictureBuffer::ProcessTexture(
 
 ComD3D11Texture2D D3D11PictureBuffer::Texture() const {
   return texture_;
+}
+
+StatusOr<ID3D11VideoDecoderOutputView*> D3D11PictureBuffer::AcquireOutputView()
+    const {
+  Status result = texture_wrapper_->AcquireKeyedMutexIfNeeded();
+  if (!result.is_ok()) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "Failed to acquired key mutex for native texture resource";
+    base::UmaHistogramSparse("Media.D3D11.PictureBuffer",
+                             static_cast<int>(result.code()));
+    return result;
+  }
+
+  return output_view_.Get();
 }
 
 }  // namespace media

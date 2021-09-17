@@ -37,14 +37,16 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
       const gpu::GpuDriverBugWorkarounds& workarounds,
       const VideoDecoderConfig& config,
       uint8_t bit_depth,
-      MediaLog* media_log);
+      MediaLog* media_log,
+      bool use_shared_handle);
 
   bool SupportsDevice(ComD3D11VideoDevice video_device);
 
   // Create the decoder's output texture.
   StatusOr<ComD3D11Texture2D> CreateOutputTexture(ComD3D11Device device,
                                                   gfx::Size size,
-                                                  uint32_t array_size);
+                                                  uint32_t array_size,
+                                                  bool use_shared_handle);
 
   const D3D11_VIDEO_DECODER_DESC* DecoderDescriptor() const {
     return &decoder_desc_;
@@ -57,13 +59,16 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
  private:
   // Set up instances of the parameter structs for D3D11 Functions
   void SetUpDecoderDescriptor(const gfx::Size& coded_size);
-  void SetUpTextureDescriptor(bool supports_swap_chain, bool is_encrypted);
+  void SetUpTextureDescriptor();
 
   D3D11_TEXTURE2D_DESC output_texture_desc_;
   D3D11_VIDEO_DECODER_DESC decoder_desc_;
 
   const DXGI_FORMAT dxgi_format_;
   const GUID decoder_guid_;
+
+  const bool supports_swap_chain_;
+  const bool is_encrypted_;
 };
 
 }  // namespace media

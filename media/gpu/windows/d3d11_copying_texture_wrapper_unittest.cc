@@ -106,7 +106,12 @@ class MockTexture2DWrapper : public Texture2DWrapper {
     return MockInit();
   }
 
+  Status AcquireKeyedMutexIfNeeded() override {
+    return MockAcquireKeyedMutexIfNeeded();
+  }
+
   MOCK_METHOD0(MockInit, Status());
+  MOCK_METHOD0(MockAcquireKeyedMutexIfNeeded, Status());
   MOCK_METHOD0(MockProcessTexture, Status());
   MOCK_METHOD1(SetStreamHDRMetadata,
                void(const gfx::HDRMetadata& stream_metadata));
@@ -122,7 +127,7 @@ CommandBufferHelperPtr UselessHelper() {
 
 class D3D11CopyingTexture2DWrapperTest
     : public ::testing::TestWithParam<
-          std::tuple<HRESULT, HRESULT, HRESULT, bool, bool, bool, bool>> {
+          std::tuple<HRESULT, HRESULT, HRESULT, bool, bool, bool, bool, bool>> {
  public:
 #define FIELD(TYPE, NAME, INDEX) \
   TYPE Get##NAME() { return std::get<INDEX>(GetParam()); }
@@ -133,6 +138,7 @@ class D3D11CopyingTexture2DWrapperTest
   FIELD(bool, TextureWrapperInit, 4)
   FIELD(bool, ProcessTexture, 5)
   FIELD(bool, PassthroughColorSpace, 6)
+  FIELD(bool, AcquireKeyedMutexIfNeeded, 7)
 #undef FIELD
 
   void SetUp() override {
@@ -166,6 +172,11 @@ class D3D11CopyingTexture2DWrapperTest
                                   ? StatusCode::kOk
                                   : StatusCode::kCodeOnlyForTesting));
 
+    ON_CALL(*result.get(), MockAcquireKeyedMutexIfNeeded())
+        .WillByDefault(Return(GetAcquireKeyedMutexIfNeeded()
+                                  ? StatusCode::kOk
+                                  : StatusCode::kCodeOnlyForTesting));
+
     ON_CALL(*result.get(), MockProcessTexture())
         .WillByDefault(Return(GetProcessTexture()
                                   ? StatusCode::kOk
@@ -183,7 +194,7 @@ class D3D11CopyingTexture2DWrapperTest
   }
 
   bool ProcessTextureSucceeds() {
-    return GetProcessTexture() &&
+    return GetAcquireKeyedMutexIfNeeded() && GetProcessTexture() &&
            SUCCEEDED(GetCreateVideoProcessorOutputView()) &&
            SUCCEEDED(GetCreateVideoProcessorInputView()) &&
            SUCCEEDED(GetVideoProcessorBlt());
@@ -198,6 +209,7 @@ INSTANTIATE_TEST_CASE_P(CopyingTexture2DWrapperTest,
                         Combine(Values(S_OK, E_FAIL),
                                 Values(S_OK, E_FAIL),
                                 Values(S_OK, E_FAIL),
+                                Bool(),
                                 Bool(),
                                 Bool(),
                                 Bool(),

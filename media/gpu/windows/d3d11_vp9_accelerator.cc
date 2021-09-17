@@ -56,6 +56,11 @@ D3D11VP9Accelerator::D3D11VP9Accelerator(
 D3D11VP9Accelerator::~D3D11VP9Accelerator() {}
 
 void D3D11VP9Accelerator::RecordFailure(const std::string& fail_type,
+                                        media::Status error) {
+  RecordFailure(fail_type, error.message(), error.code());
+}
+
+void D3D11VP9Accelerator::RecordFailure(const std::string& fail_type,
                                         const std::string& reason,
                                         StatusCode code) {
   MEDIA_LOG(ERROR, media_log_)
@@ -81,9 +86,18 @@ bool D3D11VP9Accelerator::BeginFrame(const D3D11VP9Picture& pic) {
 
   HRESULT hr;
   do {
-    hr = video_context_->DecoderBeginFrame(
-        video_decoder_.Get(), pic.picture_buffer()->output_view().Get(), 0,
-        nullptr);
+    ID3D11VideoDecoderOutputView* output_view = nullptr;
+    auto result = pic.picture_buffer()->AcquireOutputView();
+    if (result.has_value()) {
+      output_view = std::move(result).value();
+    } else {
+      media::Status error = std::move(result).error();
+      RecordFailure("AcquireOutputView", error.message(), error.code());
+      return false;
+    }
+
+    hr = video_context_->DecoderBeginFrame(video_decoder_.Get(), output_view, 0,
+                                           nullptr);
   } while (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING);
 
   if (FAILED(hr)) {

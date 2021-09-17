@@ -206,11 +206,16 @@ StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
                  ? 10
                  : 8);
 
-  // TODO: supported check?
+  // OS prevent read any content from encrypted video frame. No need to support
+  // shared handle and keyed_mutex system for the encrypted frame.
+  const bool use_shared_handle =
+      base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) &&
+      !config_.is_encrypted();
 
-  decoder_configurator_ =
-      D3D11DecoderConfigurator::Create(gpu_preferences_, gpu_workarounds_,
-                                       config_, bit_depth_, media_log_.get());
+  // TODO: supported check?
+  decoder_configurator_ = D3D11DecoderConfigurator::Create(
+      gpu_preferences_, gpu_workarounds_, config_, bit_depth_, media_log_.get(),
+      use_shared_handle);
   if (!decoder_configurator_)
     return StatusCode::kDecoderUnsupportedProfile;
 
@@ -231,7 +236,8 @@ StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
       decoder_configurator_->TextureFormat(),
       is_hdr_supported_ ? TextureSelector::HDRMode::kSDROrHDR
                         : TextureSelector::HDRMode::kSDROnly,
-      &format_checker, video_device_, device_context_, media_log_.get());
+      &format_checker, video_device_, device_context_, media_log_.get(),
+      use_shared_handle);
   if (!texture_selector_)
     return StatusCode::kCreateTextureSelectorFailed;
 
@@ -289,8 +295,13 @@ StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   // For more information, please see:
   // https://download.microsoft.com/download/9/2/A/92A4E198-67E0-4ABD-9DB7-635D711C2752/DXVA_VPx.pdf
   // https://download.microsoft.com/download/5/f/c/5fc4ec5c-bd8c-4624-8034-319c1bab7671/DXVA_H264.pdf
+  //
+  // When creating output texture with shared handle supports, we can't use a
+  // texture array. Because the keyed mutex applies on the entire texture array
+  // causing a deadlock when multiple threads try to use different slots of the
+  // array. More info here: https://crbug.com/1238943
   use_single_video_decoder_texture_ =
-      !!(dec_config.ConfigDecoderSpecific & (1 << 14));
+      !!(dec_config.ConfigDecoderSpecific & (1 << 14)) || use_shared_handle;
   if (use_single_video_decoder_texture_)
     MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using single textures";
   else
@@ -738,7 +749,8 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
           device_, size,
           use_single_video_decoder_texture_
               ? 1
-              : D3D11DecoderConfigurator::BUFFER_COUNT);
+              : D3D11DecoderConfigurator::BUFFER_COUNT,
+          texture_selector_->DoesDecoderOutputUseSharedHandle());
       if (result.has_value()) {
         in_texture = std::move(result).value();
       } else {

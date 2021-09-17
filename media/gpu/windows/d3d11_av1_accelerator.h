@@ -49,6 +49,8 @@ class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
   bool SubmitDecoderBuffer(
       const DXVA_PicParams_AV1& pic_params,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);
+
+  void RecordFailure(const std::string& fail_type, media::Status error);
   void RecordFailure(const std::string& fail_type,
                      const std::string& message,
                      StatusCode reason);

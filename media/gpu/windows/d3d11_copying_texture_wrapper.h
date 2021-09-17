@@ -31,6 +31,8 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
                           absl::optional<gfx::ColorSpace> output_color_space);
   ~CopyingTexture2DWrapper() override;
 
+  Status AcquireKeyedMutexIfNeeded() override;
+
   Status ProcessTexture(const gfx::ColorSpace& input_color_space,
                         MailboxHolderArray* mailbox_dest,
                         gfx::ColorSpace* output_color_space) override;

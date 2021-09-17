@@ -397,6 +397,11 @@ D3D11AV1Accelerator::D3D11AV1Accelerator(
 D3D11AV1Accelerator::~D3D11AV1Accelerator() {}
 
 void D3D11AV1Accelerator::RecordFailure(const std::string& fail_type,
+                                        media::Status error) {
+  RecordFailure(fail_type, error.message(), error.code());
+}
+
+void D3D11AV1Accelerator::RecordFailure(const std::string& fail_type,
                                         const std::string& message,
                                         StatusCode reason) {
   MEDIA_LOG(ERROR, media_log_)
@@ -502,9 +507,16 @@ DecodeStatus D3D11AV1Accelerator::SubmitDecode(
     base::span<const uint8_t> data) {
   const D3D11AV1Picture* pic_ptr = static_cast<const D3D11AV1Picture*>(&pic);
   do {
-    const auto hr = video_context_->DecoderBeginFrame(
-        video_decoder_.Get(), pic_ptr->picture_buffer()->output_view().Get(), 0,
-        nullptr);
+    ID3D11VideoDecoderOutputView* output_view = nullptr;
+    auto result = pic_ptr->picture_buffer()->AcquireOutputView();
+    if (result.has_value()) {
+      output_view = std::move(result).value();
+    } else {
+      RecordFailure("AcquireOutputView", std::move(result).error());
+      return DecodeStatus::kFail;
+    }
+    const auto hr = video_context_->DecoderBeginFrame(video_decoder_.Get(),
+                                                      output_view, 0, nullptr);
     if (SUCCEEDED(hr)) {
       break;
     } else if (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING) {

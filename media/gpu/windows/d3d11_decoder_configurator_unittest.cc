@@ -45,7 +45,8 @@ class D3D11DecoderConfiguratorUnittest : public ::testing::Test {
     workarounds.disable_dxgi_zero_copy_video = false;
     auto media_log = std::make_unique<NullMediaLog>();
     return D3D11DecoderConfigurator::Create(prefs, workarounds, config,
-                                            bit_depth, media_log.get());
+                                            bit_depth, media_log.get(),
+                                            false /*use_shared_handle*/);
   }
 };
 

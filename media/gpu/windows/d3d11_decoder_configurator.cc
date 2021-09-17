@@ -27,9 +27,12 @@ D3D11DecoderConfigurator::D3D11DecoderConfigurator(
     gfx::Size coded_size,
     bool is_encrypted,
     bool supports_swap_chain)
-    : dxgi_format_(decoder_output_dxgifmt), decoder_guid_(decoder_guid) {
+    : dxgi_format_(decoder_output_dxgifmt),
+      decoder_guid_(decoder_guid),
+      supports_swap_chain_(supports_swap_chain),
+      is_encrypted_(is_encrypted) {
   SetUpDecoderDescriptor(coded_size);
-  SetUpTextureDescriptor(supports_swap_chain, is_encrypted);
+  SetUpTextureDescriptor();
 }
 
 // static
@@ -38,9 +41,14 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
     const gpu::GpuDriverBugWorkarounds& workarounds,
     const VideoDecoderConfig& config,
     uint8_t bit_depth,
-    MediaLog* media_log) {
+    MediaLog* media_log,
+    bool use_shared_handle) {
+  // Decoder swap chains do not support shared resources. More info in
+  // https://crbug.com/911847. To enable Kaby Lake+ systems for using shared
+  // handle, we disable decode swap chain support if shared handle is enabled.
   const bool supports_nv12_decode_swap_chain =
-      gl::DirectCompositionSurfaceWin::IsDecodeSwapChainSupported();
+      gl::DirectCompositionSurfaceWin::IsDecodeSwapChainSupported() &&
+      !use_shared_handle;
   const auto decoder_dxgi_format =
       bit_depth == 8 ? DXGI_FORMAT_NV12 : DXGI_FORMAT_P010;
   GUID decoder_guid = {};
@@ -86,10 +94,36 @@ bool D3D11DecoderConfigurator::SupportsDevice(
 StatusOr<ComD3D11Texture2D> D3D11DecoderConfigurator::CreateOutputTexture(
     ComD3D11Device device,
     gfx::Size size,
-    uint32_t array_size) {
+    uint32_t array_size,
+    bool use_shared_handle) {
   output_texture_desc_.Width = size.width();
   output_texture_desc_.Height = size.height();
   output_texture_desc_.ArraySize = array_size;
+
+  if (use_shared_handle) {
+    // Update the decoder output texture usage to support shared handle and
+    // keyed_mutex if required. SwapChain should be disabled and the frame
+    // shouldn't be encrypted.
+    DCHECK(!supports_swap_chain_);
+    DCHECK(!is_encrypted_);
+    output_texture_desc_.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
+                                     D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+  } else if (supports_swap_chain_) {
+    // Decode swap chains do not support shared resources.
+    // TODO(sunnyps): Find a workaround for when the decoder moves to its own
+    // thread and D3D device.  See https://crbug.com/911847
+    // TODO(liberato): This depends on the configuration of the TextureSelector,
+    // to some degree. We should unset the flag only if it's binding and the
+    // decode swap chain is supported, as Intel driver is buggy on Gen9 and
+    // older devices without the flag. See https://crbug.com/1107403
+    output_texture_desc_.MiscFlags = 0;
+  } else {
+    // Create non-shareable texture for d3d11 video decoder.
+    output_texture_desc_.MiscFlags = D3D11_RESOURCE_MISC_SHARED;
+  }
+
+  if (is_encrypted_)
+    output_texture_desc_.MiscFlags |= D3D11_RESOURCE_MISC_HW_PROTECTED;
 
   ComD3D11Texture2D texture;
   HRESULT hr =
@@ -117,8 +151,7 @@ void D3D11DecoderConfigurator::SetUpDecoderDescriptor(
 }
 
 // private
-void D3D11DecoderConfigurator::SetUpTextureDescriptor(bool supports_swap_chain,
-                                                      bool is_encrypted) {
+void D3D11DecoderConfigurator::SetUpTextureDescriptor() {
   output_texture_desc_ = {};
   output_texture_desc_.MipLevels = 1;
   output_texture_desc_.Format = dxgi_format_;
@@ -126,19 +159,6 @@ void D3D11DecoderConfigurator::SetUpTextureDescriptor(bool supports_swap_chain,
   output_texture_desc_.Usage = D3D11_USAGE_DEFAULT;
   output_texture_desc_.BindFlags =
       D3D11_BIND_DECODER | D3D11_BIND_SHADER_RESOURCE;
-
-  // Decode swap chains do not support shared resources.
-  // TODO(sunnyps): Find a workaround for when the decoder moves to its own
-  // thread and D3D device.  See https://crbug.com/911847
-  // TODO(liberato): This depends on the configuration of the TextureSelector,
-  // to some degree. We should unset the flag only if it's binding and the
-  // decode swap chain is supported, as Intel driver is buggy on Gen9 and older
-  // devices without the flag. See https://crbug.com/1107403
-  output_texture_desc_.MiscFlags =
-      supports_swap_chain ? 0 : D3D11_RESOURCE_MISC_SHARED;
-
-  if (is_encrypted)
-    output_texture_desc_.MiscFlags |= D3D11_RESOURCE_MISC_HW_PROTECTED;
 }
 
 }  // namespace media

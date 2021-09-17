@@ -75,6 +75,7 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
                         MailboxHolderArray* mailbox_dest,
                         gfx::ColorSpace* output_color_space);
   ComD3D11Texture2D Texture() const;
+  StatusOr<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
 
   const gfx::Size& size() const { return size_; }
   size_t picture_index() const { return picture_index_; }
@@ -95,10 +96,6 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   }
   void set_in_picture_use(bool use) { in_picture_use_ = use; }
 
-  const ComD3D11VideoDecoderOutputView& output_view() const {
-    return output_view_;
-  }
-
   Texture2DWrapper* texture_wrapper() const { return texture_wrapper_.get(); }
 
   // Shouldn't be here, but simpler for now.
@@ -112,6 +109,7 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   ComD3D11Texture2D texture_;
   uint32_t array_slice_;
 
+  std::unique_ptr<MediaLog> media_log_;
   std::unique_ptr<Texture2DWrapper> texture_wrapper_;
   gfx::Size size_;
   bool in_picture_use_ = false;

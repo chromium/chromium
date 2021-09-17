@@ -33,7 +33,8 @@ class MEDIA_GPU_EXPORT TextureSelector {
   TextureSelector(VideoPixelFormat pixfmt,
                   DXGI_FORMAT output_dxgifmt,
                   ComD3D11VideoDevice video_device,
-                  ComD3D11DeviceContext d3d11_device_context);
+                  ComD3D11DeviceContext d3d11_device_context,
+                  bool use_shared_handle);
   virtual ~TextureSelector();
 
   static std::unique_ptr<TextureSelector> Create(
@@ -44,14 +45,20 @@ class MEDIA_GPU_EXPORT TextureSelector {
       const FormatSupportChecker* format_checker,
       ComD3D11VideoDevice video_device,
       ComD3D11DeviceContext device_context,
-      MediaLog* media_log);
+      MediaLog* media_log,
+      bool shared_image_use_shared_handle = false);
 
   virtual std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
       ComD3D11Device device,
       gfx::Size size);
 
+  virtual bool DoesDecoderOutputUseSharedHandle() const;
+
   VideoPixelFormat PixelFormat() const { return pixel_format_; }
   DXGI_FORMAT OutputDXGIFormat() const { return output_dxgifmt_; }
+  bool DoesSharedImageUseSharedHandle() const {
+    return shared_image_use_shared_handle_;
+  }
 
   virtual bool WillCopyForTesting() const;
 
@@ -70,6 +77,8 @@ class MEDIA_GPU_EXPORT TextureSelector {
 
   ComD3D11VideoDevice video_device_;
   ComD3D11DeviceContext device_context_;
+
+  bool shared_image_use_shared_handle_;
 };
 
 class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
@@ -80,12 +89,15 @@ class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
                       DXGI_FORMAT output_dxgifmt,
                       absl::optional<gfx::ColorSpace> output_color_space,
                       ComD3D11VideoDevice video_device,
-                      ComD3D11DeviceContext d3d11_device_context);
+                      ComD3D11DeviceContext d3d11_device_context,
+                      bool use_shared_handle);
   ~CopyTextureSelector() override;
 
   std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
       ComD3D11Device device,
       gfx::Size size) override;
+
+  bool DoesDecoderOutputUseSharedHandle() const override;
 
   bool WillCopyForTesting() const override;
 

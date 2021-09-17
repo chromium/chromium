@@ -109,9 +109,18 @@ DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
     D3D11H264Picture* d3d11_pic = pic->AsD3D11H264Picture();
     if (!d3d11_pic)
       return DecoderStatus::kFail;
-    hr = video_context_->DecoderBeginFrame(
-        video_decoder_.Get(), d3d11_pic->picture->output_view().Get(), 0,
-        nullptr);
+
+    ID3D11VideoDecoderOutputView* output_view = nullptr;
+    auto result = d3d11_pic->picture->AcquireOutputView();
+    if (result.has_value()) {
+      output_view = std::move(result).value();
+    } else {
+      RecordFailure(std::move(result).error());
+      return DecoderStatus::kFail;
+    }
+
+    hr = video_context_->DecoderBeginFrame(video_decoder_.Get(), output_view, 0,
+                                           nullptr);
 
     if (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING) {
       // Hardware is busy.  We should make the call again.
@@ -614,6 +623,10 @@ void D3D11H264Accelerator::RecordFailure(const std::string& reason,
   DLOG(ERROR) << reason << hr_string;
   MEDIA_LOG(ERROR, media_log_) << hr_string << ": " << reason;
   base::UmaHistogramSparse("Media.D3D11.H264Status", static_cast<int>(code));
+}
+
+void D3D11H264Accelerator::RecordFailure(media::Status error) const {
+  RecordFailure(error.message(), error.code());
 }
 
 void D3D11H264Accelerator::SetVideoDecoder(ComD3D11VideoDecoder video_decoder) {
