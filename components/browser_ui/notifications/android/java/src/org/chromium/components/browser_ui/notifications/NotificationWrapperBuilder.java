@@ -67,7 +67,8 @@ public interface NotificationWrapperBuilder {
     /**
      * @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}.
      */
-    NotificationWrapperBuilder addAction(Notification.Action action, int flags, int actionType);
+    NotificationWrapperBuilder addAction(
+            Notification.Action action, int flags, int actionType, int requestCode);
 
     @Deprecated
     NotificationWrapperBuilder addAction(NotificationCompat.Action action);
@@ -76,7 +77,7 @@ public interface NotificationWrapperBuilder {
      * @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}.
      */
     NotificationWrapperBuilder addAction(
-            NotificationCompat.Action action, int flags, int actionType);
+            NotificationCompat.Action action, int flags, int actionType, int requestCode);
 
     @Deprecated
     NotificationWrapperBuilder setDeleteIntent(PendingIntent intent);

@@ -562,8 +562,8 @@ public abstract class NotificationBuilderBase {
         if (action.umaActionType == NotificationUmaTracker.ActionType.UNKNOWN) {
             builder.addAction(actionBuilder.build());
         } else {
-            builder.addAction(
-                    actionBuilder.build(), action.intent.getFlags(), action.umaActionType);
+            builder.addAction(actionBuilder.build(), action.intent.getFlags(), action.umaActionType,
+                    /*requestCode=*/0);
         }
     }
 
