@@ -29,10 +29,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
+#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -76,8 +76,8 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -97,7 +97,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/switches.h"
@@ -463,8 +462,7 @@ void TimeoutCallback(const std::string& timeout_message) {
 
 // Base class for DevTools tests that test devtools functionality for
 // extensions and content scripts.
-class DevToolsExtensionTest : public DevToolsTest,
-                              public content::NotificationObserver {
+class DevToolsExtensionTest : public DevToolsTest {
  public:
   DevToolsExtensionTest()
       : test_extensions_dir_(
@@ -489,8 +487,9 @@ class DevToolsExtensionTest : public DevToolsTest,
     extensions::UnpackedInstaller::Create(service)->Load(path);
     observer.WaitForExtensionLoaded();
 
-    if (!WaitForExtensionViewsToLoad())
-      return nullptr;
+    // Wait for any additional extension views to load.
+    extensions::ChromeExtensionTestNotificationObserver(browser())
+        .WaitForExtensionViewsToLoad();
 
     return GetExtensionByPath(registry->enabled_extensions(), path);
   }
@@ -598,42 +597,6 @@ class DevToolsExtensionTest : public DevToolsTest,
       }
     }
     return nullptr;
-  }
-
-  bool WaitForExtensionViewsToLoad() {
-    // Wait for all the extension render views that exist to finish loading.
-    // NOTE: This assumes that the extension views list is not changing while
-    // this method is running.
-
-    content::NotificationRegistrar registrar;
-    registrar.Add(this,
-                  extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-                  content::NotificationService::AllSources());
-    base::CancelableOnceClosure timeout(
-        base::BindOnce(&TimeoutCallback, "Extension host load timed out."));
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, timeout.callback(), TestTimeouts::action_timeout());
-
-    extensions::ProcessManager* manager =
-        extensions::ProcessManager::Get(browser()->profile());
-    extensions::ProcessManager::FrameSet all_frames = manager->GetAllFrames();
-    for (auto iter = all_frames.begin(); iter != all_frames.end();) {
-      if (!content::WebContents::FromRenderFrameHost(*iter)->IsLoading())
-        ++iter;
-      else
-        content::RunMessageLoop();
-    }
-
-    timeout.Cancel();
-    return true;
-  }
-
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-              type);
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 
   std::vector<std::unique_ptr<extensions::TestExtensionDir>>
