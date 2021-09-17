@@ -1205,6 +1205,11 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
       delegate_->DidChangeScreenOrientation();
   }
 
+  if (ShouldUseZoomForDSF()) {
+    input_router_->SetDeviceScaleFactor(
+        visual_properties->screen_infos.current().device_scale_factor);
+  }
+
   // If we do not have a valid viz::LocalSurfaceId then we are a child frame
   // waiting on the id to be propagated from our parent. We cannot create a hash
   // for tracing of an invalid id.
@@ -1879,11 +1884,6 @@ void RenderWidgetHostImpl::GetScreenInfo(display::ScreenInfo* result) {
     result->display_color_spaces = gfx::DisplayColorSpaces(
         display::Display::GetForcedRasterColorProfile());
   }
-
-  // TODO(sievers): find a way to make this done another way so the method
-  // can be const.
-  if (ShouldUseZoomForDSF())
-    input_router_->SetDeviceScaleFactor(result->device_scale_factor);
 }
 
 float RenderWidgetHostImpl::GetDeviceScaleFactor() {
