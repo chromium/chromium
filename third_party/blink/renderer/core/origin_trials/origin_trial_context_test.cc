@@ -546,9 +546,7 @@ TEST_F(OriginTrialContextTest, ImpliedFeatureExpiryTimesAreUpdated) {
 
 class OriginTrialContextDevtoolsTest : public OriginTrialContextTest {
  public:
-  OriginTrialContextDevtoolsTest() {
-    UpdateSecurityOrigin(kFrobulateEnabledOrigin);
-  }
+  OriginTrialContextDevtoolsTest() = default;
 
   const HashMap<String, OriginTrialResult> GetOriginTrialResultsForDevtools()
       const {
@@ -591,6 +589,8 @@ class OriginTrialContextDevtoolsTest : public OriginTrialContextTest {
 };
 
 TEST_F(OriginTrialContextDevtoolsTest, DependentFeatureNotEnabled) {
+  UpdateSecurityOrigin(kFrobulateEnabledOrigin);
+
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndDisableFeature(blink::features::kPortals);
 
@@ -606,7 +606,27 @@ TEST_F(OriginTrialContextDevtoolsTest, DependentFeatureNotEnabled) {
       {{OriginTrialTokenStatus::kSuccess, /* token_parsable */ true}});
 }
 
+TEST_F(OriginTrialContextDevtoolsTest, TrialNameNotRecognized) {
+  UpdateSecurityOrigin(kFrobulateEnabledOrigin);
+
+  TokenValidator()->SetResponse(OriginTrialTokenStatus::kSuccess,
+                                "UnknownTrial");
+
+  EXPECT_FALSE(IsFeatureEnabled(OriginTrialFeature::kOriginTrialsSampleAPI));
+
+  HashMap<String, OriginTrialResult> origin_trial_results =
+      GetOriginTrialResultsForDevtools();
+
+  EXPECT_EQ(origin_trial_results.size(), 1u);
+  ExpectTrialResultContains(
+      origin_trial_results,
+      /* trial_name */ "UNKNOWN", OriginTrialStatus::kValidTokenNotProvided,
+      {{OriginTrialTokenStatus::kUnknownTrial, /* token_parsable */ true}});
+}
+
 TEST_F(OriginTrialContextDevtoolsTest, NoValidToken) {
+  UpdateSecurityOrigin(kFrobulateEnabledOrigin);
+
   TokenValidator()->SetResponse(OriginTrialTokenStatus::kExpired,
                                 kFrobulateTrialName);
 
@@ -641,6 +661,8 @@ TEST_F(OriginTrialContextDevtoolsTest, NoValidToken) {
 }
 
 TEST_F(OriginTrialContextDevtoolsTest, Enabled) {
+  UpdateSecurityOrigin(kFrobulateEnabledOrigin);
+
   TokenValidator()->SetResponse(OriginTrialTokenStatus::kSuccess,
                                 kFrobulateTrialName);
 
@@ -673,6 +695,8 @@ TEST_F(OriginTrialContextDevtoolsTest, Enabled) {
 }
 
 TEST_F(OriginTrialContextDevtoolsTest, UnparsableToken) {
+  UpdateSecurityOrigin(kFrobulateEnabledOrigin);
+
   TokenValidator()->SetResponse(OriginTrialTokenStatus::kMalformed,
                                 kFrobulateTrialName);
   EXPECT_FALSE(IsFeatureEnabled(OriginTrialFeature::kOriginTrialsSampleAPI));
@@ -683,6 +707,24 @@ TEST_F(OriginTrialContextDevtoolsTest, UnparsableToken) {
       origin_trial_results,
       /* trial_name */ "UNKNOWN", OriginTrialStatus::kValidTokenNotProvided,
       {{OriginTrialTokenStatus::kMalformed, /* token_parsable */ false}});
+}
+
+TEST_F(OriginTrialContextDevtoolsTest, InsecureOrigin) {
+  TokenValidator()->SetResponse(OriginTrialTokenStatus::kSuccess,
+                                kFrobulateTrialName);
+
+  EXPECT_FALSE(IsFeatureEnabled(kFrobulateEnabledOriginUnsecure,
+                                OriginTrialFeature::kOriginTrialsSampleAPI));
+
+  HashMap<String, OriginTrialResult> origin_trial_results =
+      GetOriginTrialResultsForDevtools();
+
+  EXPECT_EQ(origin_trial_results.size(), 1u);
+  ExpectTrialResultContains(
+      origin_trial_results,
+      /* trial_name */ kFrobulateTrialName,
+      OriginTrialStatus::kValidTokenNotProvided,
+      {{OriginTrialTokenStatus::kInsecure, /* token_parsable */ true}});
 }
 
 }  // namespace blink

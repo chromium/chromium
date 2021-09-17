@@ -125,6 +125,8 @@ std::ostream& operator<<(std::ostream& stream, OriginTrialTokenStatus status) {
       return stream << "kTokenDisabled";
     case OriginTrialTokenStatus::kFeatureDisabledForUser:
       return stream << "kFeatureDisabledForUser";
+    case OriginTrialTokenStatus::kUnknownTrial:
+      return stream << "kUnknownTrial";
   }
   NOTREACHED();
   return stream;
@@ -494,16 +496,27 @@ OriginTrialStatus OriginTrialContext::EnableTrialFromName(
                             : OriginTrialStatus::kOSNotSupported;
 }
 
-OriginTrialTokenStatus OriginTrialContext::ValidateTokenResult(
-    const String& trial_name,
-    bool is_origin_secure,
-    bool is_script_origin_secure,
-    bool is_third_party) {
+void OriginTrialContext::ValidateTokenResult(bool is_origin_secure,
+                                             bool is_script_origin_secure,
+                                             String& trial_name,
+                                             TrialTokenResult& token_result) {
+  DCHECK_EQ(token_result.Status(), OriginTrialTokenStatus::kSuccess);
+
+  const TrialToken& parsed_token = *token_result.ParsedToken();
+  trial_name = String::FromUTF8(parsed_token.feature_name().data(),
+                                parsed_token.feature_name().size());
+
+  if (!origin_trials::IsTrialValid(trial_name)) {
+    token_result.SetStatus(OriginTrialTokenStatus::kUnknownTrial);
+    return;
+  }
+
   bool is_secure = is_origin_secure;
-  if (is_third_party) {
+  if (parsed_token.is_third_party()) {
     if (!origin_trials::IsTrialEnabledForThirdPartyOrigins(trial_name)) {
       DVLOG(1) << "ValidateTokenResult: feature disabled for third party trial";
-      return OriginTrialTokenStatus::kFeatureDisabled;
+      token_result.SetStatus(OriginTrialTokenStatus::kFeatureDisabled);
+      return;
     }
     // For third-party tokens, both the current origin and the the script origin
     // must be secure.
@@ -515,9 +528,8 @@ OriginTrialTokenStatus OriginTrialContext::ValidateTokenResult(
   if (!is_secure &&
       !origin_trials::IsTrialEnabledForInsecureContext(trial_name)) {
     DVLOG(1) << "ValidateTokenResult: not secure";
-    return OriginTrialTokenStatus::kInsecure;
+    token_result.SetStatus(OriginTrialTokenStatus::kInsecure);
   }
-  return OriginTrialTokenStatus::kSuccess;
 }
 
 bool OriginTrialContext::EnableTrialFromToken(const SecurityOrigin* origin,
@@ -543,22 +555,19 @@ bool OriginTrialContext::EnableTrialFromToken(
       script_origin ? &script_url_origin : nullptr, base::Time::Now());
   DVLOG(1) << "EnableTrialFromToken: token_result = " << token_result.Status()
            << ", token = " << token;
-  OriginTrialTokenStatus status = token_result.Status();
-  if (status == OriginTrialTokenStatus::kSuccess) {
-    const TrialToken& parsed_token = *token_result.ParsedToken();
-    String trial_name = String::FromUTF8(parsed_token.feature_name().data(),
-                                         parsed_token.feature_name().size());
-    if (origin_trials::IsTrialValid(trial_name)) {
-      status = ValidateTokenResult(trial_name, is_origin_secure,
-                                   is_script_origin_secure,
-                                   parsed_token.is_third_party());
-      if (status == OriginTrialTokenStatus::kSuccess) {
-        trial_status =
-            EnableTrialFromName(trial_name, parsed_token.expiry_time());
-      }
+
+  if (token_result.Status() == OriginTrialTokenStatus::kSuccess) {
+    String trial_name;
+    ValidateTokenResult(is_origin_secure, is_script_origin_secure, trial_name,
+                        token_result);
+
+    if (token_result.Status() == OriginTrialTokenStatus::kSuccess) {
+      trial_status = EnableTrialFromName(
+          trial_name, token_result.ParsedToken()->expiry_time());
     }
   }
-  RecordTokenValidationResultHistogram(status);
+
+  RecordTokenValidationResultHistogram(token_result.Status());
   CacheToken(token, token_result, trial_status);
   return trial_status == OriginTrialStatus::kEnabled;
 }
@@ -566,9 +575,12 @@ bool OriginTrialContext::EnableTrialFromToken(
 void OriginTrialContext::CacheToken(const String& raw_token,
                                     const TrialTokenResult& token_result,
                                     OriginTrialStatus trial_status) {
-  String trial_name = token_result.ParsedToken()
-                          ? token_result.ParsedToken()->feature_name().c_str()
-                          : kDefaultTrialName;
+  String trial_name =
+      token_result.ParsedToken() &&
+              token_result.Status() != OriginTrialTokenStatus::kUnknownTrial
+          ? String::FromUTF8(token_result.ParsedToken()->feature_name().data(),
+                             token_result.ParsedToken()->feature_name().size())
+          : kDefaultTrialName;
 
   // Does nothing if key already exists.
   auto& trial_result =

@@ -22,6 +22,7 @@ namespace blink {
 class ExecutionContext;
 class ScriptState;
 class TrialToken;
+class TrialTokenResult;
 
 enum class OriginTrialStatus {
   kEnabled = 0,
@@ -193,10 +194,14 @@ class CORE_EXPORT OriginTrialContext final
                             const String& token);
 
   // Validate the token result returned from token validator.
-  OriginTrialTokenStatus ValidateTokenResult(const String& trial_name,
-                                             bool is_secure,
-                                             bool is_secure_script_origin,
-                                             bool is_third_party);
+  // `trial_name` is returned to avoid multiple conversions from `std::string`
+  // to `WTF::String`.
+  // `token_result` is modified in place to reflect the `OriginTrialTokenStatus`
+  // change.
+  void ValidateTokenResult(bool is_secure,
+                           bool is_secure_script_origin,
+                           String& trial_name,
+                           TrialTokenResult& token_result);
 
   // Installs JavaScript bindings on the relevant objects for the specified
   // OriginTrialFeature. Returns true if the feature was not already added

@@ -6800,6 +6800,7 @@ domain Page
       FeatureDisabled
       TokenDisabled
       FeatureDisabledForUser
+      UnknownTrial
 
   # Status for an Origin Trial.
   experimental type OriginTrialStatus extends string
