@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/check_op.h"
 #include "base/debug/proc_maps_linux.h"
@@ -236,9 +237,10 @@ class ThreadCacheInspector {
     size_t size = 0;
   };
 
-  ThreadCacheInspector(uintptr_t registry_addr, base::ScopedFD mem_fd);
+  ThreadCacheInspector(uintptr_t registry_addr, int mem_fd, pid_t pid);
   bool GetAllThreadCaches();
   size_t CachedMemory() const;
+  uintptr_t GetRootAddress();
 
   const std::vector<RawBuffer<ThreadCache>>& thread_caches() const {
     return thread_caches_;
@@ -255,22 +257,52 @@ class ThreadCacheInspector {
 
  private:
   uintptr_t registry_addr_;
-  base::ScopedFD mem_fd_;
+  int mem_fd_;
+  pid_t pid_;
   RawBuffer<ThreadCacheRegistry> registry_;
   std::vector<RawBuffer<ThreadCache>> thread_caches_;
 };
 
+class PartitionRootInspector {
+ public:
+  struct BucketStats {
+    size_t slot_size = 0;
+    size_t allocated_slots = 0;
+    size_t freelist_size = 0;
+    size_t active_slot_spans = 0;
+  };
+
+  PartitionRootInspector(uintptr_t root_addr, int mem_fd, pid_t pid)
+      : root_addr_(root_addr), mem_fd_(mem_fd), pid_(pid) {}
+  // Returns true for success.
+  bool GatherStatistics();
+  const std::vector<BucketStats>& bucket_stats() const { return bucket_stats_; }
+
+ private:
+  void Update();
+
+  uintptr_t root_addr_;
+  int mem_fd_;
+  pid_t pid_;
+  RawBuffer<PartitionRoot<ThreadSafe>> root_;
+  std::vector<BucketStats> bucket_stats_;
+};
+
 ThreadCacheInspector::ThreadCacheInspector(uintptr_t registry_addr,
-                                           base::ScopedFD mem_fd)
-    : registry_addr_(registry_addr), mem_fd_(std::move(mem_fd)) {}
+                                           int mem_fd,
+                                           pid_t pid)
+    : registry_addr_(registry_addr), mem_fd_(mem_fd), pid_(pid) {}
 
 // NO_THREAD_SAFETY_ANALYSIS: Well, reading a running process' memory is not
 // really thread-safe.
 bool ThreadCacheInspector::GetAllThreadCaches() NO_THREAD_SAFETY_ANALYSIS {
   thread_caches_.clear();
 
-  auto registry = RawBuffer<ThreadCacheRegistry>::ReadFromMemFd(mem_fd_.get(),
-                                                                registry_addr_);
+  // This is going to take a while, make sure that the metadata don't change.
+  ScopedSigStopper stopper{pid_};
+
+  auto registry =
+      RawBuffer<ThreadCacheRegistry>::ReadFromMemFd(mem_fd_, registry_addr_);
   if (!registry.has_value())
     return false;
 
@@ -278,7 +310,7 @@ bool ThreadCacheInspector::GetAllThreadCaches() NO_THREAD_SAFETY_ANALYSIS {
   ThreadCache* head = registry_.get()->list_head_;
   while (head) {
     auto tcache = RawBuffer<ThreadCache>::ReadFromMemFd(
-        mem_fd_.get(), reinterpret_cast<uintptr_t>(head));
+        mem_fd_, reinterpret_cast<uintptr_t>(head));
     if (!tcache.has_value()) {
       LOG(WARNING) << "Failed to read a ThreadCache";
       return false;
@@ -300,6 +332,11 @@ size_t ThreadCacheInspector::CachedMemory() const {
   return total_memory;
 }
 
+uintptr_t ThreadCacheInspector::GetRootAddress() {
+  CHECK(!thread_caches_.empty());
+  return reinterpret_cast<uintptr_t>(thread_caches_[0].get()->root_);
+}
+
 std::vector<ThreadCacheInspector::BucketStats>
 ThreadCacheInspector::AccumulateThreadCacheBuckets() {
   std::vector<BucketStats> result(ThreadCache::kBucketCount);
@@ -315,6 +352,150 @@ ThreadCacheInspector::AccumulateThreadCacheBuckets() {
     result[i].size = lookup.bucket_sizes()[i];
   }
   return result;
+}
+
+void PartitionRootInspector::Update() {
+  auto root =
+      RawBuffer<PartitionRoot<ThreadSafe>>::ReadFromMemFd(mem_fd_, root_addr_);
+  if (root.has_value())
+    root_ = *root;
+}
+
+bool PartitionRootInspector::GatherStatistics() {
+  // This is going to take a while, make sure that the metadata don't change.
+  ScopedSigStopper stopper{pid_};
+
+  Update();
+  bucket_stats_.clear();
+
+  for (auto& bucket : root_.get()->buckets) {
+    BucketStats stats;
+    stats.slot_size = bucket.slot_size;
+
+    // Only look at the small buckets.
+    if (bucket.slot_size > 1024)
+      return true;
+
+    absl::optional<RawBuffer<SlotSpanMetadata<ThreadSafe>>> metadata;
+    for (auto* active_slot_span = bucket.active_slot_spans_head;
+         active_slot_span; active_slot_span = metadata->get()->next_slot_span) {
+      metadata = RawBuffer<SlotSpanMetadata<ThreadSafe>>::ReadFromMemFd(
+          mem_fd_, reinterpret_cast<uintptr_t>(active_slot_span));
+      if (!metadata.has_value())
+        return false;
+
+      int16_t allocated_slots = metadata->get()->num_allocated_slots;
+      // Negative number for a full slot span.
+      if (allocated_slots < 0)
+        allocated_slots = -allocated_slots;
+
+      stats.allocated_slots += allocated_slots;
+      size_t allocated_unprovisioned = metadata->get()->num_allocated_slots +
+                                       metadata->get()->num_unprovisioned_slots;
+      // Inconsistent data. This can happen since we stopped the process at an
+      // arbitrary point.
+      if (allocated_unprovisioned > bucket.get_slots_per_span())
+        return false;
+
+      size_t freelist_size =
+          bucket.get_slots_per_span() - allocated_unprovisioned;
+
+      stats.freelist_size += freelist_size;
+      stats.active_slot_spans++;
+    }
+    bucket_stats_.push_back(stats);
+  }
+
+  // We should have found at least one bucket too large, and returned earlier.
+  return false;
+}
+
+void DisplayPerThreadData(
+    ThreadCacheInspector& inspector,
+    std::map<base::PlatformThreadId, std::string>& tid_to_name) {
+  std::cout << "Found " << inspector.thread_caches().size()
+            << " caches, total cached memory = "
+            << inspector.CachedMemory() / 1024 << "kiB"
+            << "\n";
+
+  std::cout << "Per thread:\n"
+            << "Thread Name         Size\tPurge\n"
+            << std::string(80, '-') << "\n";
+  base::ThreadCacheStats all_threads_stats = {0};
+  for (const auto& tcache : inspector.thread_caches()) {
+    base::ThreadCacheStats stats = {0};
+    // No alloc stats, they reach into tcache->root_, which is not valid.
+    tcache.get()->AccumulateStats(&stats);
+    tcache.get()->AccumulateStats(&all_threads_stats);
+    uint64_t count = stats.alloc_count;
+    uint64_t hit_rate = (100 * stats.alloc_hits) / count;
+    uint64_t too_large = (100 * stats.alloc_miss_too_large) / count;
+    uint64_t empty = (100 * stats.alloc_miss_empty) / count;
+
+    std::string thread_name = tid_to_name[tcache.get()->thread_id()];
+    std::string padding(20 - thread_name.size(), ' ');
+    std::cout << thread_name << padding << tcache.get()->CachedMemory() / 1024
+              << "kiB\t" << (inspector.should_purge(tcache) ? 'X' : ' ')
+              << "\tHit Rate = " << hit_rate << "%"
+              << "\tToo Large = " << too_large << "%"
+              << "\tEmpty = " << empty << "%"
+              << "\t Count = " << count / 1000 << "k"
+              << "\n";
+  }
+
+  uint64_t count = all_threads_stats.alloc_count;
+  uint64_t hit_rate = (100 * all_threads_stats.alloc_hits) / count;
+  uint64_t too_large = (100 * all_threads_stats.alloc_miss_too_large) / count;
+  uint64_t empty = (100 * all_threads_stats.alloc_miss_empty) / count;
+  std::cout << "\nALL THREADS:        "
+            << all_threads_stats.bucket_total_memory / 1024 << "kiB"
+            << "\t\tHit Rate = " << hit_rate << "%"
+            << "\tToo Large = " << too_large << "%"
+            << "\tEmpty = " << empty << "%"
+            << "\t Count = " << count / 1000 << "k"
+            << "\n";
+}
+
+void DisplayPerBucketData(ThreadCacheInspector& inspector) {
+  std::cout << "Per-bucket stats (All Threads):"
+            << "\nBucket Size\tPer-thread Limit\tCount\tTotal Memory\n"
+            << std::string(80, '-') << "\n";
+
+  size_t total_memory = 0;
+  auto bucket_stats = inspector.AccumulateThreadCacheBuckets();
+  for (size_t index = 0; index < bucket_stats.size(); index++) {
+    const auto& bucket = bucket_stats[index];
+    size_t bucket_memory = bucket.size * bucket.count;
+
+    std::cout << bucket.size << "\t\t" << bucket.per_thread_limit << "\t\t\t"
+              << bucket.count << "\t" << bucket_memory / 1024 << "kiB";
+    if (inspector.largest_active_bucket_index() == index)
+      std::cout << "  <---- Limit";
+    std::cout << "\n";
+
+    total_memory += bucket_memory;
+  }
+  std::cout << "\nALL THREADS TOTAL: " << total_memory / 1024 << "kiB\n";
+}
+
+void DisplayBucketAllocData(PartitionRootInspector& root_inspector) {
+  std::cout << "Per-bucket size / allocated slots / free slots / slot span "
+               "count:\n";
+  for (size_t i = 0; i < root_inspector.bucket_stats().size(); i++) {
+    const auto& bucket_stats = root_inspector.bucket_stats()[i];
+
+    std::string line = base::StringPrintf(
+        "|% 5d % 6d % 6d % 4d|", static_cast<int>(bucket_stats.slot_size),
+        static_cast<int>(bucket_stats.allocated_slots),
+        static_cast<int>(bucket_stats.freelist_size),
+        static_cast<int>(bucket_stats.active_slot_spans));
+
+    std::cout << line;
+    if (i % 4 == 3)
+      std::cout << "\n";
+    else
+      std::cout << "\t";
+  }
 }
 
 }  // namespace tools
@@ -352,17 +533,20 @@ int main(int argc, char** argv) {
   CHECK(registry_address);
 
   LOG(INFO) << "Getting the thread cache registry";
-  base::internal::tools::ThreadCacheInspector inspector{registry_address,
-                                                        std::move(mem_fd)};
-
+  base::internal::tools::ThreadCacheInspector thread_cache_inspector{
+      registry_address, mem_fd.get(), pid};
   std::map<base::PlatformThreadId, std::string> tid_to_name;
 
   while (true) {
-    bool ok = inspector.GetAllThreadCaches();
+    bool ok = thread_cache_inspector.GetAllThreadCaches();
     if (!ok)
       continue;
 
-    for (const auto& tcache : inspector.thread_caches()) {
+    base::internal::tools::PartitionRootInspector root_inspector{
+        thread_cache_inspector.GetRootAddress(), mem_fd.get(), pid};
+    bool has_bucket_stats = root_inspector.GatherStatistics();
+
+    for (const auto& tcache : thread_cache_inspector.thread_caches()) {
       // Note: this is not robust when TIDs are reused, but here this is fine,
       // as at worst we would display wrong data, and TID reuse is very unlikely
       // in normal scenarios.
@@ -373,70 +557,18 @@ int main(int argc, char** argv) {
     }
 
     constexpr const char* kClearScreen = "\033[2J\033[1;1H";
-    std::cout << kClearScreen << "Found " << inspector.thread_caches().size()
-              << " caches, total cached memory = "
-              << inspector.CachedMemory() / 1024 << "kiB"
-              << "\n";
+    std::cout << kClearScreen;
+    DisplayPerThreadData(thread_cache_inspector, tid_to_name);
 
-    std::cout << "Per thread:\n"
-              << "Thread Name         Size\tPurge\n"
-              << std::string(80, '-') << "\n";
-    base::ThreadCacheStats all_threads_stats = {0};
-    for (const auto& tcache : inspector.thread_caches()) {
-      base::ThreadCacheStats stats = {0};
-      // No alloc stats, they reach into tcache->root_, which is not valid.
-      tcache.get()->AccumulateStats(&stats);
-      tcache.get()->AccumulateStats(&all_threads_stats);
-      uint64_t count = stats.alloc_count;
-      uint64_t hit_rate = (100 * stats.alloc_hits) / count;
-      uint64_t too_large = (100 * stats.alloc_miss_too_large) / count;
-      uint64_t empty = (100 * stats.alloc_miss_empty) / count;
+    std::cout << "\n\n";
+    DisplayPerBucketData(thread_cache_inspector);
 
-      std::string thread_name = tid_to_name[tcache.get()->thread_id()];
-      std::string padding(20 - thread_name.size(), ' ');
-      std::cout << thread_name << padding << tcache.get()->CachedMemory() / 1024
-                << "kiB\t" << (inspector.should_purge(tcache) ? 'X' : ' ')
-                << "\tHit Rate = " << hit_rate << "%"
-                << "\tToo Large = " << too_large << "%"
-                << "\tEmpty = " << empty << "%"
-                << "\t Count = " << count / 1000 << "k"
-                << "\n";
+    if (has_bucket_stats) {
+      std::cout << "\n\n";
+      DisplayBucketAllocData(root_inspector);
     }
-
-    uint64_t count = all_threads_stats.alloc_count;
-    uint64_t hit_rate = (100 * all_threads_stats.alloc_hits) / count;
-    uint64_t too_large = (100 * all_threads_stats.alloc_miss_too_large) / count;
-    uint64_t empty = (100 * all_threads_stats.alloc_miss_empty) / count;
-    std::cout << "\nALL THREADS:        "
-              << all_threads_stats.bucket_total_memory / 1024 << "kiB"
-              << "\t\tHit Rate = " << hit_rate << "%"
-              << "\tToo Large = " << too_large << "%"
-              << "\tEmpty = " << empty << "%"
-              << "\t Count = " << count / 1000 << "k"
-              << "\n";
-
-    // Per-bucket stats.
-    std::cout << "\n\n\nPer-bucket stats (All Threads):"
-              << "\nBucket Size\tPer-thread Limit\tCount\tTotal Memory\n"
-              << std::string(80, '-') << "\n";
-
-    size_t total_memory = 0;
-    auto bucket_stats = inspector.AccumulateThreadCacheBuckets();
-    for (size_t index = 0; index < bucket_stats.size(); index++) {
-      const auto& bucket = bucket_stats[index];
-      size_t bucket_memory = bucket.size * bucket.count;
-
-      std::cout << bucket.size << "\t\t" << bucket.per_thread_limit << "\t\t\t"
-                << bucket.count << "\t" << bucket_memory / 1024 << "kiB";
-      if (inspector.largest_active_bucket_index() == index)
-        std::cout << "  <---- Limit";
-      std::cout << "\n";
-
-      total_memory += bucket_memory;
-    }
-    std::cout << "\nALL THREADS TOTAL: " << total_memory / 1024 << "kiB";
 
     std::cout << std::endl;
-    usleep(100000);
+    usleep(200000);
   }
 }
