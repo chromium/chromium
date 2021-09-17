@@ -952,6 +952,9 @@ public class FeedStream implements Stream {
 
         // If too few items exist, defer scrolling until later.
         if (mContentManager.getItemCount() <= state.lastPosition) return false;
+        // Don't try to resume scrolling to a native view. This avoids scroll resume to the refresh
+        // spinner.
+        if (mContentManager.getContent(state.lastPosition).isNativeView()) return false;
 
         LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
         if (layoutManager != null) {
