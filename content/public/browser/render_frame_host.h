@@ -249,10 +249,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns the document owning the frame this RenderFrameHost is located
   // in, which will either be a parent (for <iframe>s) or outer document (for
-  // <fencedframe> and <portal>). Note that the returned RenderFrameHost may
-  // not be considered a descendant (`IsDescendantOf`). This will return the
-  // outer document in cases of fenced frames and portals but will not cross
-  // a browsing session boundary (ie. it will not escape a GuestView). See
+  // <fencedframe> and <portal>). This will return the outer document in cases
+  // of fenced frames and portals but will not cross a browsing session boundary
+  // (ie. it will not escape a GuestView). See
   // `RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder` for the
   // version of this API that will cross a browsing session boundary.
   // This method typically will be used for permissions and policy decisions
@@ -279,14 +278,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // This function (RenderFrameHost::GetMainFrame) is the preferred API in
   // almost all of the cases. See RenderFrameHost::IsActive for the details.
   virtual RenderFrameHost* GetMainFrame() = 0;
-
-  // Returns whether or not this RenderFrameHost is a descendant of |ancestor|.
-  // This is equivalent to check that |ancestor| is reached by iterating on
-  // GetParent().
-  // This is a strict relationship, a RenderFrameHost is never an ancestor of
-  // itself.
-  // This does not consider inner frame trees.
-  virtual bool IsDescendantOf(RenderFrameHost* ancestor) = 0;
 
   // Fenced frames (meta-bug https://crbug.com/1111084):
   // Returns true if this document is the root of a fenced frame tree.

@@ -316,7 +316,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderFrameHostImpl* GetParentOrOuterDocument() override;
   RenderFrameHostImpl* GetMainFrame() override;
   PageImpl& GetPage() override;
-  bool IsDescendantOf(RenderFrameHost*) override;
   bool IsFencedFrameRoot() override;
   void ForEachRenderFrameHost(FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(
@@ -2319,13 +2318,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Returns the document owning the frame this RenderFrameHost is located
   // in, which will either be a parent (for <iframe>s) or outer document (for
-  // <fencedframe>, <portal> or an embedder (e.g. GuestViews)). Note that the
-  // returned RenderFrameHost may not be considered a descendant
-  // (`IsDescendantOf`). See `RenderFrameHost::GetParentOrOuterDocument` for the
-  // version of this API that does not cross a browsing session boundary (ie.
-  // Not escaping a GuestView). This method typically will be used for input,
-  // compositing, and focus related functionality where the physical arrangement
-  // of frames, as opposed to their semantics is required. Example:
+  // <fencedframe>, <portal> or an embedder (e.g. GuestViews)). See
+  // `RenderFrameHost::GetParentOrOuterDocument` for the version of this API
+  // that does not cross a browsing session boundary (ie. Not escaping a
+  // GuestView). This method typically will be used for input, compositing, and
+  // focus related functionality where the physical arrangement of frames, as
+  // opposed to their semantics is required. Example:
   //  A (GuestView embedder)
   //   B (<webview> - placeholder frame)
   //    B* (embedded document main frame)
@@ -2525,6 +2523,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Helper for GetParentOrOuterDocument/GetParentOrOuterDocumentOrEmbedder.
   // Do not use directly.
   RenderFrameHostImpl* GetParentOrOuterDocumentHelper(bool escape_guest_view);
+
+  // Returns whether or not this RenderFrameHost is a descendant of |ancestor|.
+  // This is equivalent to check that |ancestor| is reached by iterating on
+  // GetParent().
+  // This is a strict relationship, a RenderFrameHost is never an ancestor of
+  // itself.
+  // This does not consider inner frame trees (i.e. not accounting for fenced
+  // frames, portals or GuestView).
+  bool IsDescendantOfWithinFrameTree(RenderFrameHostImpl* ancestor);
 
   // mojom::FrameHost:
   void CreateNewWindow(mojom::CreateNewWindowParamsPtr params,
