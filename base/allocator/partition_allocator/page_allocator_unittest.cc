@@ -215,27 +215,29 @@ TEST(PartitionAllocPageAllocatorTest,
   }
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
   // Next, map some read-write memory and copy the BTI-enabled function there.
-  void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
-                            PageAllocationGranularity(), PageReadWrite,
-                            PageTag::kChromium);
+  char* const buffer = reinterpret_cast<char*>(AllocPages(
+      nullptr, PageAllocationGranularity(), PageAllocationGranularity(),
+      PageReadWrite, PageTag::kChromium));
   ptrdiff_t function_range =
-      reinterpret_cast<ptrdiff_t>(arm_bti_test_function_end) -
-      reinterpret_cast<ptrdiff_t>(arm_bti_test_function);
+      reinterpret_cast<char*>(arm_bti_test_function_end) -
+      reinterpret_cast<char*>(arm_bti_test_function);
   ptrdiff_t invalid_offset =
-      reinterpret_cast<ptrdiff_t>(arm_bti_test_function_invalid_offset) -
-      reinterpret_cast<ptrdiff_t>(arm_bti_test_function);
+      reinterpret_cast<char*>(arm_bti_test_function_invalid_offset) -
+      reinterpret_cast<char*>(arm_bti_test_function);
   memcpy(buffer, reinterpret_cast<void*>(arm_bti_test_function),
          function_range);
-  uint32_t* bufferi = reinterpret_cast<uint32_t*>(buffer);
+
   // Next re-protect the page.
   SetSystemPagesAccess(buffer, PageAllocationGranularity(),
                        PageReadExecuteProtected);
+
+  using BTITestFunction = int64_t (*)(int64_t);
+
   // Attempt to call the function through the BTI-enabled entrypoint. Confirm
   // that it works.
-  int64_t (*bti_enabled_fn)(int64_t) =
-      reinterpret_cast<int64_t (*)(int64_t)>(bufferi);
-  int64_t (*bti_invalid_fn)(int64_t) =
-      reinterpret_cast<int64_t (*)(int64_t)>(bufferi + invalid_offset);
+  BTITestFunction bti_enabled_fn = reinterpret_cast<BTITestFunction>(buffer);
+  BTITestFunction bti_invalid_fn =
+      reinterpret_cast<BTITestFunction>(buffer + invalid_offset);
   EXPECT_EQ(bti_enabled_fn(15), 18);
   // Next, attempt to call the function without the entrypoint.
   EXPECT_EXIT({ bti_invalid_fn(15); }, testing::KilledBySignal(SIGILL),
