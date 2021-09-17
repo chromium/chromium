@@ -796,6 +796,12 @@ struct TpmInfo {
   TpmDictionaryAttack dictionary_attack;
   // TPM attestation related information.
   TpmAttestation attestation;
+  // TPM supported features information.
+  TpmSupportedFeatures supported_features;
+  // [Do NOT use] TPM did_vid file. This field is only used in Cloudready
+  // project. It is going to drop the support in few milestone.
+  // TODO(b/199686982): Remove this.
+  string? did_vid;
 };
 
 // The version of Google security chip(GSC).
@@ -857,6 +863,18 @@ struct TpmAttestation {
   bool prepared_for_enrollment;
   // Is enrolled (AIK certificate created)? True if enrolled with *any* CA.
   bool enrolled;
+};
+
+// TPM supported features information.
+struct TpmSupportedFeatures {
+  // Whether the u2f is supported or not.
+  bool support_u2f;
+  // Whether the pinweaver is supported or not.
+  bool support_pinweaver;
+  // Whether the platform supports runtime TPM selection or not.
+  bool support_runtime_selection;
+  // Whether the TPM is allowed to use or not.
+  bool is_allowed;
 };
 
 // A collection of all the device's telemetry information that cros_healthd is
