@@ -204,7 +204,10 @@ void ElementRuleCollector::AddElementStyleProperties(
     return;
   auto link_match_type = static_cast<unsigned>(CSSSelector::kMatchAll);
   result_.AddMatchedProperties(
-      property_set, AdjustLinkMatchType(inside_link_, link_match_type));
+      property_set,
+      AddMatchedPropertiesOptions::Builder()
+          .SetLinkMatchType(AdjustLinkMatchType(inside_link_, link_match_type))
+          .Build());
   if (!is_cacheable)
     result_.SetIsCacheable(false);
 }
@@ -481,9 +484,13 @@ void ElementRuleCollector::SortAndTransferMatchedRules() {
     const RuleData* rule_data = matched_rule.GetRuleData();
     result_.AddMatchedProperties(
         &rule_data->Rule()->Properties(),
-        AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()),
-        rule_data->GetValidPropertyFilter(matching_ua_rules_),
-        matched_rule.LayerOrder());
+        AddMatchedPropertiesOptions::Builder()
+            .SetLinkMatchType(
+                AdjustLinkMatchType(inside_link_, rule_data->LinkMatchType()))
+            .SetValidPropertyFilter(
+                rule_data->GetValidPropertyFilter(matching_ua_rules_))
+            .SetLayerOrder(matched_rule.LayerOrder())
+            .Build());
   }
 }
 

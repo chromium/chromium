@@ -118,7 +118,10 @@ class TestCascade {
     DCHECK_LE(origin, CascadeOrigin::kAuthor) << "Animations not supported";
     DCHECK_LE(current_origin_, origin) << "Please add declarations in order";
     EnsureAtLeast(origin);
-    cascade_.MutableMatchResult().AddMatchedProperties(set, link_match_type);
+    cascade_.MutableMatchResult().AddMatchedProperties(
+        set, AddMatchedPropertiesOptions::Builder()
+                 .SetLinkMatchType(link_match_type)
+                 .Build());
   }
 
   void Apply(CascadeFilter filter = CascadeFilter()) {

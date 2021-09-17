@@ -127,6 +127,53 @@ class MatchedExpansionsRange {
   MatchedExpansionsIterator end_;
 };
 
+class AddMatchedPropertiesOptions {
+  STACK_ALLOCATED();
+
+ public:
+  class Builder;
+
+  unsigned GetLinkMatchType() const { return link_match_type_; }
+  ValidPropertyFilter GetValidPropertyFilter() const {
+    return valid_property_filter_;
+  }
+  unsigned GetLayerOrder() const { return layer_order_; }
+
+  // TODO(crbug.com/1095765): Add a flag for whether it's inline style.
+
+ private:
+  unsigned link_match_type_ = CSSSelector::kMatchAll;
+  ValidPropertyFilter valid_property_filter_ = ValidPropertyFilter::kNoFilter;
+  unsigned layer_order_ = CascadeLayerMap::kImplicitOuterLayerOrder;
+
+  friend class Builder;
+};
+
+class AddMatchedPropertiesOptions::Builder {
+  STACK_ALLOCATED();
+
+ public:
+  AddMatchedPropertiesOptions Build() { return options_; }
+
+  Builder& SetLinkMatchType(unsigned type) {
+    options_.link_match_type_ = type;
+    return *this;
+  }
+
+  Builder& SetValidPropertyFilter(ValidPropertyFilter filter) {
+    options_.valid_property_filter_ = filter;
+    return *this;
+  }
+
+  Builder& SetLayerOrder(unsigned layer_order) {
+    options_.layer_order_ = layer_order;
+    return *this;
+  }
+
+ private:
+  AddMatchedPropertiesOptions options_;
+};
+
 class CORE_EXPORT MatchResult {
   STACK_ALLOCATED();
 
@@ -137,9 +184,7 @@ class CORE_EXPORT MatchResult {
 
   void AddMatchedProperties(
       const CSSPropertyValueSet* properties,
-      unsigned link_match_type = CSSSelector::kMatchAll,
-      ValidPropertyFilter = ValidPropertyFilter::kNoFilter,
-      unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder);
+      const AddMatchedPropertiesOptions& = AddMatchedPropertiesOptions());
   bool HasMatchedProperties() const { return matched_properties_.size(); }
 
   void FinishAddingUARules();
