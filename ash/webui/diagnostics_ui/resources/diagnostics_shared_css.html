@@ -37,7 +37,6 @@
 
     data-point[orientation=horizontal] {
       margin: 9px 0;
-      width: 300px;
     }
 
     data-point[orientation=horizontal]:first-of-type {
@@ -107,11 +106,11 @@
     .horizontal-data-point-container {
       display: grid;
       margin: 20px 0;
-      grid-template-columns: 300px 40px 300px;
+      grid-template-columns: 1fr 40px 1fr;
     }
 
     .horizontal-data-point-container .data-point-container {
-      width: fit-content;
+      width: max-content;
     }
 
     .link-text {

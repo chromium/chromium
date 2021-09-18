@@ -24,7 +24,8 @@
 
   :host([orientation=horizontal]) .header {
     margin-right: 16px;
-    width: 96px;
+    min-width: 90px;
+    max-width: 96px;
   }
 
   :host([orientation=horizontal]) #headerText::after {
@@ -44,7 +45,8 @@
   }
 
   :host([orientation=horizontal]) .value {
-    width: 168px;
+    min-width: 108px;
+    max-width: 150px;
   }
 
   .text-red {
