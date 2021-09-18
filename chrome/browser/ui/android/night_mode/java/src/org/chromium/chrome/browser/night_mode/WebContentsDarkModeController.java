@@ -12,8 +12,10 @@ import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.url.GURL;
 
 /**
  * A controller class could enable or disable web content dark mode feature based on the night mode
@@ -47,6 +49,29 @@ public class WebContentsDarkModeController implements ApplicationStateListener {
             sController = new WebContentsDarkModeController();
         }
         return sController;
+    }
+
+    public static boolean isEnabledForUrl(Profile profile, GURL url) {
+        @ContentSettingValues
+        int contentSetting = WebsitePreferenceBridge.getContentSetting(
+                profile, ContentSettingsType.AUTO_DARK_WEB_CONTENT, url, url);
+        return contentSetting != ContentSettingValues.BLOCK;
+    }
+
+    public static void setEnabledForUrl(Profile profile, GURL url, boolean enabled) {
+        // This is only called when a user disables/enables the feature for a site from the app
+        // menu. The app menu item should only be visible (and thus clickable) if Auto Dark is
+        // enabled. If it is enabled, the default content setting should be ALLOW.
+        assert WebsitePreferenceBridge.getDefaultContentSetting(
+                profile, ContentSettingsType.AUTO_DARK_WEB_CONTENT)
+                == ContentSettingValues.ALLOW;
+
+        @ContentSettingValues
+        int contentSettingValue =
+                enabled ? ContentSettingValues.DEFAULT : ContentSettingValues.BLOCK;
+
+        WebsitePreferenceBridge.setContentSettingDefaultScope(
+                profile, ContentSettingsType.AUTO_DARK_WEB_CONTENT, url, url, contentSettingValue);
     }
 
     /**
