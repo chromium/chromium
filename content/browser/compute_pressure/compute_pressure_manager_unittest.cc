@@ -99,7 +99,7 @@ TEST_F(ComputePressureManagerTest, MAYBE_OneObserver) {
 }
 
 // Disabled on Fuchsia arm64 debug builds: https://crbug.com/1250654
-#if defined(OS_FUCHSIA) && defined(_DEBUG)
+#if defined(OS_FUCHSIA) && defined(_DEBUG) && defined(ARCH_CPU_ARM64)
 #define MAYBE_ThreeObservers DISABLED_ThreeObservers
 #else
 #define MAYBE_ThreeObservers ThreeObservers
