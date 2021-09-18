@@ -11,6 +11,12 @@ export const questionnaireBegin = 'To help us diagnose and fix the issue, ' +
 /**
  * @type {string}
  */
+export const questionnaireNotification = 'Some questions have been added' +
+    ' to the description box, please answer them before submitting.';
+
+/**
+ * @type {string}
+ */
 const questionGeneralTimestamp =
     '[General] What is the timestamp of the issue? ' +
     '(e.g. "2:45 pm" or "2 minutes ago")';

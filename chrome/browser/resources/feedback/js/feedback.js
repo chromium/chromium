@@ -256,6 +256,7 @@ function checkForShowQuestionnaire(inputEvent) {
   const savedCursor = $('description-text').selectionStart;
   if (Object.keys(appendedQuestions).length === 0) {
     $('description-text').value += '\n\n' + questionnaireBegin + '\n';
+    $('questionnaire-notification').value = questionnaireNotification;
   }
 
   for (const question of toAppend) {

@@ -9,6 +9,7 @@ import {$} from 'chrome://resources/js/util.m.js';
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './feedback_util.js';
 import {domainQuestions} from './questionnaire.js';
 import {questionnaireBegin} from './questionnaire.js';
+import {questionnaireNotification} from './questionnaire.js';
 import {takeScreenshot} from './take_screenshot.js';
 
 /** @type {!number} */
@@ -369,6 +370,7 @@ function checkForShowQuestionnaire(inputEvent) {
   const savedCursor = $('description-text').selectionStart;
   if (Object.keys(appendedQuestions).length === 0) {
     $('description-text').value += '\n\n' + questionnaireBegin + '\n';
+    $('questionnaire-notification').value = questionnaireNotification;
   }
 
   for (const question of toAppend) {
