@@ -154,6 +154,7 @@ LoginFetchDataForNextLoginAttemptFunction::Run() {
   DCHECK(local_state);
   std::string data_for_next_login_attempt =
       local_state->GetString(prefs::kLoginExtensionApiDataForNextLoginAttempt);
+  local_state->ClearPref(prefs::kLoginExtensionApiDataForNextLoginAttempt);
 
   return RespondNow(OneArgument(base::Value(data_for_next_login_attempt)));
 }

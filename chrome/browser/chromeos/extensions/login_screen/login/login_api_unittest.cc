@@ -303,8 +303,9 @@ TEST_F(LoginApiUnittest, ExitCurrentSessionWithNoData) {
 }
 
 // Test that calling `login.fetchDataForNextLoginAttempt()` returns the value
-// stored in the `kLoginExtensionsApiDataForNextLoginAttempt` pref.
-TEST_F(LoginApiUnittest, FetchDataForNextLoginAttempt) {
+// stored in the `kLoginExtensionsApiDataForNextLoginAttempt` pref and
+// clears the pref.
+TEST_F(LoginApiUnittest, FetchDataForNextLoginAttemptClearsPref) {
   const std::string data_for_next_login_attempt = "hello world";
 
   PrefService* local_state = g_browser_process->local_state();
@@ -314,6 +315,9 @@ TEST_F(LoginApiUnittest, FetchDataForNextLoginAttempt) {
   std::unique_ptr<base::Value> value(RunFunctionAndReturnValue(
       new LoginFetchDataForNextLoginAttemptFunction(), "[]"));
   ASSERT_EQ(data_for_next_login_attempt, value->GetString());
+
+  ASSERT_EQ("", local_state->GetString(
+                    prefs::kLoginExtensionApiDataForNextLoginAttempt));
 }
 
 // Test that calling `login.setDataForNextLoginAttempt()` sets the

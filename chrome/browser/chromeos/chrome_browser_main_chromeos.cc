@@ -87,7 +87,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ash/login/login_api_data_for_next_login_attempt_pref_cleaner.h"
 #include "chrome/browser/ash/login/login_screen_extensions_lifetime_manager.h"
 #include "chrome/browser/ash/login/login_screen_extensions_storage_cleaner.h"
 #include "chrome/browser/ash/login/login_wizard.h"
@@ -1087,9 +1086,6 @@ void ChromeBrowserMainPartsChromeos::PostProfileInit() {
   login_screen_extensions_storage_cleaner_ =
       std::make_unique<LoginScreenExtensionsStorageCleaner>();
 
-  login_api_data_for_next_login_attempt_pref_cleaner_ =
-      std::make_unique<LoginApiDataForNextLoginAttemptPrefCleaner>();
-
   ChromeBrowserMainPartsLinux::PostProfileInit();
 }
 
@@ -1274,7 +1270,6 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   login_screen_extensions_lifetime_manager_.reset();
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
-  login_api_data_for_next_login_attempt_pref_cleaner_.reset();
 
   // Detach D-Bus clients before DBusThreadManager is shut down.
   idle_action_warning_observer_.reset();
