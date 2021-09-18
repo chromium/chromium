@@ -202,15 +202,13 @@ class AllSitesElement extends AllSitesElementBase {
     super.ready();
 
     this.addWebUIListener(
-        'onStorageListFetched',
-        (list: Array<SiteGroup>) => this.onStorageListFetched(list));
+        'onStorageListFetched', this.onStorageListFetched.bind(this));
     this.addEventListener(
         'site-entry-selected', (e: CustomEvent<SelectedItem>) => {
           this.selectedItem_ = e.detail;
         });
 
-    this.addEventListener(
-        'open-menu', (e: OpenMenuEvent) => this.onOpenMenu_(e));
+    this.addEventListener('open-menu', this.onOpenMenu_.bind(this));
 
     const sortParam = Router.getInstance().getQueryParameters().get('sort');
     if (sortParam !== null && Object.values(SortMethod).includes(sortParam)) {
