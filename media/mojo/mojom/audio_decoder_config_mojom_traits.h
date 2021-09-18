@@ -65,6 +65,11 @@ struct StructTraits<media::mojom::AudioDecoderConfigDataView,
     return input.should_discard_decoder_delay();
   }
 
+  static const std::vector<uint8_t>& aac_extra_data(
+      const media::AudioDecoderConfig& input) {
+    return input.aac_extra_data();
+  }
+
   static bool Read(media::mojom::AudioDecoderConfigDataView input,
                    media::AudioDecoderConfig* output);
 };

@@ -346,12 +346,17 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       }
 
       AudioCodec codec = AudioCodec::kUnknown;
-      AudioCodecProfile profile = AudioCodecProfile::kUnknown;
       ChannelLayout channel_layout = CHANNEL_LAYOUT_NONE;
       int sample_per_second = 0;
       int codec_delay_in_frames = 0;
       base::TimeDelta seek_preroll;
       std::vector<uint8_t> extra_data;
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      AudioCodecProfile profile = AudioCodecProfile::kUnknown;
+      std::vector<uint8_t> aac_extra_data;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
       if (audio_format == FOURCC_OPUS) {
         codec = AudioCodec::kOpus;
         channel_layout = GuessChannelLayout(entry.dops.channel_count);
@@ -408,7 +413,13 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           profile = aac.GetProfile();
           channel_layout = aac.GetChannelLayout(has_sbr_);
           sample_per_second = aac.GetOutputSamplesPerSecond(has_sbr_);
+          // Set `aac_extra_data` on all platforms but only set `extra_data` on
+          // Android. This is for backward compatibility until we have a better
+          // solution. See crbug.com/1245123 for details.
+          aac_extra_data = aac.codec_specific_data();
+#if defined(OS_ANDROID)
           extra_data = aac.codec_specific_data();
+#endif  // defined(OS_ANDROID)
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
         } else if (audio_type == kAC3) {
           codec = AudioCodec::kAC3;
@@ -456,13 +467,18 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         if (scheme == EncryptionScheme::kUnencrypted)
           return false;
       }
+
       audio_config.Initialize(codec, sample_format, channel_layout,
                               sample_per_second, extra_data, scheme,
                               seek_preroll, codec_delay_in_frames);
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
       if (codec == AudioCodec::kAAC) {
         audio_config.disable_discard_decoder_delay();
         audio_config.set_profile(profile);
+        audio_config.set_aac_extra_data(std::move(aac_extra_data));
       }
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
       DVLOG(1) << "audio_track_id=" << audio_track_id
                << " config=" << audio_config.AsHumanReadableString();
