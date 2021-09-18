@@ -1430,6 +1430,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return back_forward_cache_disabled_reasons_;
   }
 
+  bool was_restored_from_back_forward_cache_for_debugging() {
+    return was_restored_from_back_forward_cache_for_debugging_;
+  }
+
   // Prevents this frame to do a proactive BrowsingInstance swap (for all
   // navigations on this frame - cross-site and same-site).
   void DisableProactiveBrowsingInstanceSwapForTesting();
@@ -3695,6 +3699,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // breakdown of NotRestoredReason::kDisableForRenderFrameHostCalled.
   std::set<BackForwardCache::DisabledReason>
       back_forward_cache_disabled_reasons_;
+
+  // Tracks whether the RenderFrameHost had ever been restored from back/forward
+  // cache. Should only be used for debugging purposes for crbug.com/1243541.
+  // TODO(https://crbug.com/1243541): Remove this once the bug is fixed.
+  bool was_restored_from_back_forward_cache_for_debugging_ = false;
 
   // Whether proactive BrowsingInstance swap is disabled for this frame or not.
   // Note that even if this is false, proactive BrowsingInstance swap still

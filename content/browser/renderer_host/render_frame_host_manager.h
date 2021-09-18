@@ -565,7 +565,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // subframe. This is only used for temporary debugging to figure out how this
   // case can happen.
   // TODO(https://crbug.com/1243541): Remove this once the bug is fixed.
-  RenderFrameProxyHost* GetProxyHostWithoutRenderViewHost();
+  RenderFrameProxyHost* GetProxyHostWithoutRenderViewHostForDebugging();
 
  private:
   friend class NavigatorTest;
