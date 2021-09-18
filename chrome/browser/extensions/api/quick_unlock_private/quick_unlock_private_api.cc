@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/quick_unlock_private/quick_unlock_private_api.h"
+#include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 
 #include <algorithm>
 #include <string>

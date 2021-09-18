@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_QUICK_UNLOCK_PRIVATE_QUICK_UNLOCK_PRIVATE_API_H_
-#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_QUICK_UNLOCK_PRIVATE_QUICK_UNLOCK_PRIVATE_API_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_QUICK_UNLOCK_PRIVATE_QUICK_UNLOCK_PRIVATE_API_H_
+#define CHROME_BROWSER_EXTENSIONS_API_QUICK_UNLOCK_PRIVATE_QUICK_UNLOCK_PRIVATE_API_H_
 
 #include <memory>
 #include <vector>
@@ -30,12 +30,15 @@ class QuickUnlockPrivateGetAuthTokenFunction
           chromeos::AuthStatusConsumer* auth_status_consumer)>;
 
   QuickUnlockPrivateGetAuthTokenFunction();
+  QuickUnlockPrivateGetAuthTokenFunction(
+      const QuickUnlockPrivateGetAuthTokenFunction&) = delete;
+  const QuickUnlockPrivateGetAuthTokenFunction& operator=(
+      const QuickUnlockPrivateGetAuthTokenFunction&) = delete;
 
   // Use the given |allocator| to create an ExtendedAuthenticator instance. This
   // lets tests intercept authentication calls.
   void SetAuthenticatorAllocatorForTesting(
       const AuthenticatorAllocator& allocator);
-
 
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getAuthToken",
                              QUICKUNLOCKPRIVATE_GETAUTHTOKEN)
@@ -54,14 +57,17 @@ class QuickUnlockPrivateGetAuthTokenFunction
   ChromeExtensionFunctionDetails chrome_details_;
   scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator_;
   AuthenticatorAllocator authenticator_allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateGetAuthTokenFunction);
 };
 
 class QuickUnlockPrivateSetLockScreenEnabledFunction
     : public ExtensionFunction {
  public:
   QuickUnlockPrivateSetLockScreenEnabledFunction();
+  QuickUnlockPrivateSetLockScreenEnabledFunction(
+      const QuickUnlockPrivateSetLockScreenEnabledFunction&) = delete;
+  const QuickUnlockPrivateSetLockScreenEnabledFunction& operator=(
+      const QuickUnlockPrivateSetLockScreenEnabledFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.setLockScreenEnabled",
                              QUICKUNLOCKPRIVATE_SETLOCKSCREENENABLED)
 
@@ -73,14 +79,17 @@ class QuickUnlockPrivateSetLockScreenEnabledFunction
 
  private:
   ChromeExtensionFunctionDetails chrome_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateSetLockScreenEnabledFunction);
 };
 
 class QuickUnlockPrivateSetPinAutosubmitEnabledFunction
     : public ExtensionFunction {
  public:
   QuickUnlockPrivateSetPinAutosubmitEnabledFunction();
+  QuickUnlockPrivateSetPinAutosubmitEnabledFunction(
+      const QuickUnlockPrivateSetPinAutosubmitEnabledFunction&) = delete;
+  const QuickUnlockPrivateSetPinAutosubmitEnabledFunction& operator=(
+      const QuickUnlockPrivateSetPinAutosubmitEnabledFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.setPinAutosubmitEnabled",
                              QUICKUNLOCKPRIVATE_SETPINAUTOSUBMITENABLED)
 
@@ -94,13 +103,16 @@ class QuickUnlockPrivateSetPinAutosubmitEnabledFunction
   void HandleSetPinAutoSubmitResult(bool result);
 
   ChromeExtensionFunctionDetails chrome_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateSetPinAutosubmitEnabledFunction);
 };
 
 class QuickUnlockPrivateCanAuthenticatePinFunction : public ExtensionFunction {
  public:
   QuickUnlockPrivateCanAuthenticatePinFunction();
+  QuickUnlockPrivateCanAuthenticatePinFunction(
+      const QuickUnlockPrivateCanAuthenticatePinFunction&) = delete;
+  const QuickUnlockPrivateCanAuthenticatePinFunction& operator=(
+      const QuickUnlockPrivateCanAuthenticatePinFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.canAuthenticatePin",
                              QUICKUNLOCKPRIVATE_CANAUTHENTICATEPIN)
 
@@ -114,13 +126,16 @@ class QuickUnlockPrivateCanAuthenticatePinFunction : public ExtensionFunction {
   void HandleCanAuthenticateResult(bool result);
 
   ChromeExtensionFunctionDetails chrome_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateCanAuthenticatePinFunction);
 };
 
 class QuickUnlockPrivateGetAvailableModesFunction : public ExtensionFunction {
  public:
   QuickUnlockPrivateGetAvailableModesFunction();
+  QuickUnlockPrivateGetAvailableModesFunction(
+      const QuickUnlockPrivateGetAvailableModesFunction&) = delete;
+  const QuickUnlockPrivateGetAvailableModesFunction& operator=(
+      const QuickUnlockPrivateGetAvailableModesFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getAvailableModes",
                              QUICKUNLOCKPRIVATE_GETAVAILABLEMODES)
 
@@ -132,13 +147,16 @@ class QuickUnlockPrivateGetAvailableModesFunction : public ExtensionFunction {
 
  private:
   ChromeExtensionFunctionDetails chrome_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateGetAvailableModesFunction);
 };
 
 class QuickUnlockPrivateGetActiveModesFunction : public ExtensionFunction {
  public:
   QuickUnlockPrivateGetActiveModesFunction();
+  QuickUnlockPrivateGetActiveModesFunction(
+      const QuickUnlockPrivateGetActiveModesFunction&) = delete;
+  const QuickUnlockPrivateGetActiveModesFunction& operator=(
+      const QuickUnlockPrivateGetActiveModesFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getActiveModes",
                              QUICKUNLOCKPRIVATE_GETACTIVEMODES)
 
@@ -153,13 +171,16 @@ class QuickUnlockPrivateGetActiveModesFunction : public ExtensionFunction {
       const std::vector<api::quick_unlock_private::QuickUnlockMode>& modes);
 
   ChromeExtensionFunctionDetails chrome_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateGetActiveModesFunction);
 };
 
 class QuickUnlockPrivateCheckCredentialFunction : public ExtensionFunction {
  public:
   QuickUnlockPrivateCheckCredentialFunction();
+  QuickUnlockPrivateCheckCredentialFunction(
+      const QuickUnlockPrivateCheckCredentialFunction&) = delete;
+  const QuickUnlockPrivateCheckCredentialFunction& operator=(
+      const QuickUnlockPrivateCheckCredentialFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.checkCredential",
                              QUICKUNLOCKPRIVATE_CHECKCREDENTIAL)
 
@@ -168,15 +189,17 @@ class QuickUnlockPrivateCheckCredentialFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateCheckCredentialFunction);
 };
 
 class QuickUnlockPrivateGetCredentialRequirementsFunction
     : public ExtensionFunction {
  public:
   QuickUnlockPrivateGetCredentialRequirementsFunction();
+  QuickUnlockPrivateGetCredentialRequirementsFunction(
+      const QuickUnlockPrivateGetCredentialRequirementsFunction&) = delete;
+  const QuickUnlockPrivateGetCredentialRequirementsFunction& operator=(
+      const QuickUnlockPrivateGetCredentialRequirementsFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("quickUnlockPrivate.getCredentialRequirements",
                              QUICKUNLOCKPRIVATE_GETCREDENTIALREQUIREMENTS)
 
@@ -185,9 +208,6 @@ class QuickUnlockPrivateGetCredentialRequirementsFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateGetCredentialRequirementsFunction);
 };
 
 class QuickUnlockPrivateSetModesFunction : public ExtensionFunction {
@@ -198,6 +218,10 @@ class QuickUnlockPrivateSetModesFunction : public ExtensionFunction {
       base::RepeatingCallback<void(const std::vector<QuickUnlockMode>&)>;
 
   QuickUnlockPrivateSetModesFunction();
+  QuickUnlockPrivateSetModesFunction(
+      const QuickUnlockPrivateSetModesFunction&) = delete;
+  const QuickUnlockPrivateSetModesFunction& operator=(
+      const QuickUnlockPrivateSetModesFunction&) = delete;
 
   // The given event handler will be called whenever a
   // quickUnlockPrivate.onActiveModesChanged event is raised instead of the
@@ -232,10 +256,8 @@ class QuickUnlockPrivateSetModesFunction : public ExtensionFunction {
   std::vector<QuickUnlockMode> initial_modes_;
 
   ModesChangedEventHandler modes_changed_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockPrivateSetModesFunction);
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_QUICK_UNLOCK_PRIVATE_QUICK_UNLOCK_PRIVATE_API_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_QUICK_UNLOCK_PRIVATE_QUICK_UNLOCK_PRIVATE_API_H_

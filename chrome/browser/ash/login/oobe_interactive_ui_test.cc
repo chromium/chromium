@@ -42,7 +42,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "chrome/browser/chromeos/extensions/quick_unlock_private/quick_unlock_private_api.h"
+#include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_downloading_screen_handler.h"

@@ -6974,6 +6974,7 @@ test("unit_tests") {
         "../browser/chromeos/extensions/telemetry/chromeos_permission_messages_unittest.cc",
         "../browser/extensions/api/file_system/consent_provider_unittest.cc",
         "../browser/extensions/api/image_writer_private/removable_storage_provider_chromeos_unittest.cc",
+        "../browser/extensions/api/quick_unlock_private/quick_unlock_private_api_unittest.cc",
         "../browser/extensions/extension_garbage_collector_chromeos_unittest.cc",
         "../browser/extensions/external_pref_loader_unittest.cc",
         "../browser/extensions/external_provider_impl_chromeos_unittest.cc",

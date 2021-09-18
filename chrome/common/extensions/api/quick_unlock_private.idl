@@ -10,8 +10,7 @@
 // used for all lock screen settings.
 // Note: This API can not be used to actually unlock the device.
 
-[platforms=("chromeos"),
- implemented_in="chrome/browser/chromeos/extensions/quick_unlock_private/quick_unlock_private_api.h"]
+[platforms=("chromeos")]
 namespace quickUnlockPrivate {
   dictionary TokenInfo {
     // The authentication token that can be passed to $(ref:setModes) calls.

@@ -4,7 +4,7 @@
 
 // This file tests the chromeos.quickUnlockPrivate extension API.
 
-#include "chrome/browser/chromeos/extensions/quick_unlock_private/quick_unlock_private_api.h"
+#include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 
 #include <memory>
 

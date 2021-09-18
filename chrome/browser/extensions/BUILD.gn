@@ -1058,6 +1058,8 @@ static_library("extensions") {
       "api/media_perception_private/media_perception_api_delegate_chromeos.h",
       "api/networking_private/networking_private_ui_delegate_chromeos.cc",
       "api/networking_private/networking_private_ui_delegate_chromeos.h",
+      "api/quick_unlock_private/quick_unlock_private_api.cc",
+      "api/quick_unlock_private/quick_unlock_private_api.h",
       "api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.cc",
       "api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.h",
       "api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.cc",
