@@ -227,13 +227,14 @@ public final class AwBrowserProcess {
 
             PlatformServiceBridge.getInstance().queryMetricsSetting(enabled -> {
                 ThreadUtils.assertOnUiThread();
+                boolean userApproved = Boolean.TRUE.equals(enabled);
                 if (updateMetricsConsent) {
                     AwMetricsServiceClient.setConsentSetting(
-                            ContextUtils.getApplicationContext(), enabled);
+                            ContextUtils.getApplicationContext(), userApproved);
                 }
 
                 if (!enableMinidumpUploadingForTesting) {
-                    handleMinidumps(enabled);
+                    handleMinidumps(userApproved);
                 }
             });
         }

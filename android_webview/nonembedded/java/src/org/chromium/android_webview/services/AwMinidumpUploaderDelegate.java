@@ -117,7 +117,7 @@ public class AwMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
     public void prepareToUploadMinidumps(final Runnable startUploads) {
         PlatformServiceBridge.getInstance().queryMetricsSetting(enabled -> {
             ThreadUtils.assertOnUiThread();
-            mPermittedByUser = enabled;
+            mPermittedByUser = Boolean.TRUE.equals(enabled);
             startUploads.run();
         });
     }
