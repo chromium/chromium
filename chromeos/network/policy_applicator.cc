@@ -71,6 +71,36 @@ const std::string* GetSMDPAddressFromONC(
   return smdp_address;
 }
 
+void CopyStringKey(const base::DictionaryValue* old_shill_properties,
+                   base::Value* new_shill_properties,
+                   const std::string& property_key_name) {
+  const std::string* value_in_old_entry =
+      old_shill_properties->FindStringKey(property_key_name);
+  const std::string* value_in_new_entry =
+      new_shill_properties->FindStringKey(property_key_name);
+  if (value_in_old_entry &&
+      (!value_in_new_entry || value_in_new_entry->empty())) {
+    NET_LOG(EVENT) << "Copying " << property_key_name
+                   << " over to the new Shill entry, value: "
+                   << *value_in_old_entry;
+    new_shill_properties->SetStringKey(property_key_name, *value_in_old_entry);
+  }
+}
+
+void CopyRequiredCellularProperies(
+    const base::DictionaryValue* old_shill_properties,
+    base::Value* new_shill_properties) {
+  const std::string* type =
+      old_shill_properties->FindStringKey(shill::kTypeProperty);
+  if (!type || *type != shill::kTypeCellular)
+    return;
+
+  CopyStringKey(old_shill_properties, new_shill_properties,
+                shill::kIccidProperty);
+  CopyStringKey(old_shill_properties, new_shill_properties,
+                shill::kEidProperty);
+}
+
 // Special service name in shill remembering settings across ethernet services.
 // Chrome should not attempt to configure / delete this.
 const char kEthernetAnyService[] = "ethernet_any";
@@ -271,6 +301,11 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry,
   base::Value new_shill_properties = policy_util::CreateShillConfiguration(
       profile_, new_guid, &global_network_config_, new_policy_as_dict,
       user_settings);
+  // Copy over the value of ICCID and EID property from old entry to new shill
+  // properties since Shill requires ICCID and EID to create or update the
+  // existing service.
+  CopyRequiredCellularProperies(entry_properties_as_dict,
+                                &new_shill_properties);
   // A new policy has to be applied to this profile entry. In order to keep
   // implicit state of Shill like "connected successfully before", keep the
   // entry if a policy is reapplied (e.g. after reboot) or is updated.

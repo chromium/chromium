@@ -264,9 +264,6 @@ bool CopyIdentifyingProperties(const base::Value& service_properties,
         CopyStringFromDictionary(service_properties, shill::kWifiHexSsid, dest);
     success &= CopyStringFromDictionary(
         service_properties, shill::kModeProperty, dest);
-  } else if (type == shill::kTypeCellular) {
-    success &= CopyStringFromDictionary(
-        service_properties, shill::kNetworkTechnologyProperty, dest);
   } else if (type == shill::kTypeVPN) {
     success &= CopyStringFromDictionary(
         service_properties, shill::kNameProperty, dest);
@@ -307,8 +304,9 @@ bool CopyIdentifyingProperties(const base::Value& service_properties,
 
     success &= !vpn_provider_host.empty();
     dest->SetKey(shill::kProviderHostProperty, base::Value(vpn_provider_host));
-  } else if (type == shill::kTypeEthernet || type == shill::kTypeEthernetEap) {
-    // Ethernet and EthernetEAP don't have any additional identifying
+  } else if (type == shill::kTypeEthernet || type == shill::kTypeEthernetEap ||
+             type == shill::kTypeCellular) {
+    // Ethernet, EthernetEAP and Cellular don't have any additional identifying
     // properties.
   } else {
     NET_LOG(ERROR) << "Unsupported network type " << type;
