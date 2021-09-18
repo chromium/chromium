@@ -7,16 +7,24 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
+#include "content/public/browser/focused_node_details.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/focus_changed_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "url/gurl.h"
 
 #if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 #include "ui/events/base_event_utils.h"
@@ -28,9 +36,9 @@
 #endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 
 namespace {
+
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
 using ::pdf_extension_test_util::EnsurePDFHasLoaded;
-}  // namespace
 
 class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
                                       public extensions::ExtensionApiTest {
@@ -72,7 +80,51 @@ class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
   content::WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
+
+  content::FocusedNodeDetails TabAndWait(content::WebContents* guest_contents,
+                                         bool forward) {
+    content::FocusChangedObserver focus_observer(guest_contents);
+    if (!ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB,
+                                         /*control=*/false,
+                                         /*shift=*/!forward,
+                                         /*alt=*/false,
+                                         /*command=*/false)) {
+      ADD_FAILURE() << "Failed to send key press";
+      return {};
+    }
+    return focus_observer.Wait();
+  }
 };
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
+  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
+
+  // Tab in.
+  content::FocusedNodeDetails details =
+      TabAndWait(guest_contents, /*forward=*/true);
+  EXPECT_EQ(blink::mojom::FocusType::kForward, details.focus_type);
+
+  // Tab out.
+  details = TabAndWait(guest_contents, /*forward=*/true);
+  EXPECT_EQ(blink::mojom::FocusType::kNone, details.focus_type);
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
+  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
+
+  // Tab in.
+  content::FocusedNodeDetails details =
+      TabAndWait(guest_contents, /*forward=*/false);
+  EXPECT_EQ(blink::mojom::FocusType::kBackward, details.focus_type);
+
+  // Tab out.
+  details = TabAndWait(guest_contents, /*forward=*/false);
+  EXPECT_EQ(blink::mojom::FocusType::kNone, details.focus_type);
+}
 
 #if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 // On text selection, a touch selection menu should pop up. On clicking ellipsis
@@ -126,6 +178,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
            IDC_PRINT, IDC_CONTENT_CONTEXT_ROTATECW,
            IDC_CONTENT_CONTEXT_ROTATECCW, IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
+#endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInteractiveUITest);
-#endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)
