@@ -185,6 +185,7 @@ public class WebXrVrTransitionTest {
     @Restriction({RESTRICTION_TYPE_DEVICE_DAYDREAM, RESTRICTION_TYPE_VR_DON_ENABLED})
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    @DisabledTest(message = "https://crbug.com/1246405")
     public void testPresentationPromiseRejectedIfDonCanceled_WebXr() {
         presentationPromiseRejectedIfDonCanceledImpl(
 
