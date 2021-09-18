@@ -430,8 +430,7 @@ int32_t CommandBufferProxyImpl::CreateImage(ClientBuffer buffer,
       gpu_memory_buffer->GetFormat(), capabilities_))
       << gfx::BufferFormatToString(gpu_memory_buffer->GetFormat());
   DCHECK(gpu::IsImageSizeValidForGpuMemoryBufferFormat(
-      gfx::Size(width, height), gpu_memory_buffer->GetFormat(),
-      gfx::BufferPlane::DEFAULT))
+      gfx::Size(width, height), gpu_memory_buffer->GetFormat()))
       << gfx::BufferFormatToString(gpu_memory_buffer->GetFormat());
 
   auto params = mojom::CreateImageParams::New();

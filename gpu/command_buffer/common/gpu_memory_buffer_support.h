@@ -49,8 +49,7 @@ GPU_EXPORT bool IsImageFromGpuMemoryBufferFormatSupported(
 // Returns true if |size| is valid for plane |plane| of |format|.
 GPU_EXPORT bool IsImageSizeValidForGpuMemoryBufferFormat(
     const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferPlane plane);
+    gfx::BufferFormat format);
 
 // Returns true if |plane| is a valid plane index for |format|.
 GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,

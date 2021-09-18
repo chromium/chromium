@@ -463,8 +463,7 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
     uint32_t usage) {
   DCHECK_EQ(handle.type, gfx::SHARED_MEMORY_BUFFER);
 
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format,
-                                                     plane)) {
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
     DLOG(ERROR) << "Invalid image size for format.";
     return nullptr;
   }

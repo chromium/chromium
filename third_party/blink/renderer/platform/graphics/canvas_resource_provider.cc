@@ -73,8 +73,7 @@ bool IsGMBAllowed(IntSize size,
                   const CanvasResourceParams& params,
                   const gpu::Capabilities& caps) {
   return gpu::IsImageSizeValidForGpuMemoryBufferFormat(
-             gfx::Size(size), params.GetBufferFormat(),
-             gfx::BufferPlane::DEFAULT) &&
+             gfx::Size(size), params.GetBufferFormat()) &&
          gpu::IsImageFromGpuMemoryBufferFormatSupported(
              params.GetBufferFormat(), caps);
 }

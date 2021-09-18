@@ -186,8 +186,8 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   params->alpha_type = alpha_type;
 
   // TODO(piman): DCHECK GMB format support.
-  DCHECK(gpu::IsImageSizeValidForGpuMemoryBufferFormat(
-      params->size, params->format, params->plane));
+  DCHECK(gpu::IsImageSizeValidForGpuMemoryBufferFormat(params->size,
+                                                       params->format));
 
   bool requires_sync_token =
 #if defined(OS_FUCHSIA)

@@ -150,8 +150,7 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
     return nullptr;
   }
 
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format,
-                                                     plane)) {
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
     LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
                << gfx::BufferFormatToString(buffer_format);
     return nullptr;

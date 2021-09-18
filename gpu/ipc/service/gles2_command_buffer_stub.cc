@@ -528,7 +528,7 @@ void GLES2CommandBufferStub::CreateImage(mojom::CreateImageParamsPtr params) {
     return;
   }
 
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format, plane)) {
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format)) {
     LOG(ERROR) << "Invalid image size for format.";
     return;
   }
