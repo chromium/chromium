@@ -513,7 +513,7 @@
 <translation id="1545177026077493356">Mode quiosc automàtic</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
 <translation id="1545775234664667895">S'ha instal·lat el tema "<ph name="THEME_NAME" />"</translation>
-<translation id="1546280085599573572">Aquesta extensió ha canviat la pàgina que es mostra quan feu clic al botó Pàgina d'inici.</translation>
+<translation id="1546280085599573572">Aquesta extensió ha canviat la pàgina que es mostra quan feu clic al botó d'inici.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> vol instal·lar una extensió de tipus <ph name="EXTENSION_TYPE" /> que pot:</translation>
 <translation id="1547808936554660006">Entenc que els perfils eSIM instal·lats no se suprimiran en fer un executar la funció Powerwash</translation>
 <translation id="1549275686094429035">L'ARC està activat</translation>
@@ -3883,7 +3883,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5139955368427980650">&amp;Obre</translation>
 <translation id="5141421572306659464">Compte principal</translation>
 <translation id="5142793792982256885">Velocitat de desplaçament del ratolí tàctil</translation>
-<translation id="5143374789336132547">L'extensió <ph name="EXTENSION_NAME" /> ha canviat la pàgina que es mostra quan feu clic al botó Pàgina d'inici.</translation>
+<translation id="5143374789336132547">L'extensió <ph name="EXTENSION_NAME" /> ha canviat la pàgina que es mostra quan feu clic al botó d'inici.</translation>
 <translation id="5143612243342258355">Aquest fitxer és perillós</translation>
 <translation id="5143712164865402236">Passa a pantalla completa</translation>
 <translation id="514575469079499857">Utilitza l'adreça IP per determinar la ubicació (opció predeterminada)</translation>
@@ -4327,7 +4327,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5623842676595125836">Registre</translation>
 <translation id="5624120631404540903">Gestiona les contrasenyes</translation>
 <translation id="5626134646977739690">Nom:</translation>
-<translation id="5627086634964711283">També controla la pàgina que es mostra quan feu clic al botó Pàgina d'inici.</translation>
+<translation id="5627086634964711283">També controla la pàgina que es mostra quan feu clic al botó d'inici.</translation>
 <translation id="5627676517703583263">Navega de manera intel·ligent amb Chrome</translation>
 <translation id="5627832140542566187">Orientació de la pantalla</translation>
 <translation id="562935524653278697">L'administrador ha desactivat la sincronització de les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració.</translation>
@@ -4619,7 +4619,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5963117322306686970">Per agrupar les pestanyes, fes clic amb el botó dret en una pestanya</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> màxim)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Obre-les totes en una finestra &amp;nova}=1{Obre en una finestra &amp;nova}other{Obre-les totes ({COUNT}) en una finestra &amp;nova}}</translation>
-<translation id="5965661248935608907">També controla la pàgina que es mostra quan feu clic al botó Pàgina d'inici o quan feu una cerca des de l'omnibox.</translation>
+<translation id="5965661248935608907">També controla la pàgina que es mostra quan feu clic al botó d'inici o quan feu una cerca des de l'omnibox.</translation>
 <translation id="5968022600320704045">No hi ha cap resultat de la cerca</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> pot veure els fitxers que conté la carpeta <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">S'ha ignorat l'avís sobre les tecles de drecera</translation>
@@ -5089,7 +5089,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> fitxers</translation>
 <translation id="6469557521904094793">Activa la xarxa mòbil</translation>
 <translation id="6470823736074966819">Silencia les notificacions</translation>
-<translation id="6472893788822429178">Mostra el botó Pàgina d'inici</translation>
+<translation id="6472893788822429178">Mostra el botó d'inici</translation>
 <translation id="6474498546677193336">No s'ha pogut deixar de compartir perquè una aplicació està utilitzant aquesta carpeta. La carpeta es deixarà de compartir la propera vegada que Linux s'apagui.</translation>
 <translation id="6474884162850599008">Desconnecta el compte de Google Drive</translation>
 <translation id="6475294023568239942">Allibera espai de disc o canvia la mida del disc de Linux a Configuració</translation>
@@ -6807,7 +6807,7 @@ Prem un interruptor assignat per suprimir l'assignació</translation>
     <ph name="BEGIN_PARAGRAPH4" />Si el teu fill té activada l'opció addicional Activitat al web i en aplicacions, és possible que aquestes dades es desin al seu Compte de Google. Obtén més informació sobre aquestes opcions de configuració i sobre com pots ajustar-les a families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificat de client no vàlid</translation>
 <translation id="8270242299912238708">Documents PDF</translation>
-<translation id="827097179112817503">Mostra el botó Pàgina d'inici</translation>
+<translation id="827097179112817503">Mostra el botó d'inici</translation>
 <translation id="8271268254812352141">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret. Personalitza els idiomes de traducció a <ph name="LINK_BEGIN" />Idiomes del lloc web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Els passos següents estan destinats als pares. Poden tornar el dispositiu <ph name="DEVICE_TYPE" /> al nen quan s'acabi de configurar el compte.</translation>
 <translation id="8272443605911821513">Per gestionar les extensions, feu clic a Extensions al menú Més eines.</translation>
