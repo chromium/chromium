@@ -73,9 +73,15 @@ static aaudio_data_callback_result_t OnAudioDataRequestedCallback(
 static void OnStreamErrorCallback(AAudioStream* stream,
                                   void* user_data,
                                   aaudio_result_t error) {
-  AAudioOutputStream* output_stream =
-      reinterpret_cast<AAudioOutputStream*>(user_data);
-  output_stream->OnStreamError(error);
+  AAudioDestructionHelper* destruction_helper =
+      reinterpret_cast<AAudioDestructionHelper*>(user_data);
+
+  AAudioOutputStream* output_stream = destruction_helper->GetAndLockStream();
+
+  if (output_stream)
+    output_stream->OnStreamError(error);
+
+  destruction_helper->UnlockStream();
 }
 
 AAudioOutputStream::AAudioOutputStream(AudioManagerAndroid* manager,
@@ -160,7 +166,8 @@ bool AAudioOutputStream::Open() {
   // Callbacks
   AAudioStreamBuilder_setDataCallback(builder, OnAudioDataRequestedCallback,
                                       destruction_helper_.get());
-  AAudioStreamBuilder_setErrorCallback(builder, OnStreamErrorCallback, this);
+  AAudioStreamBuilder_setErrorCallback(builder, OnStreamErrorCallback,
+                                       destruction_helper_.get());
 
   result = AAudioStreamBuilder_openStream(builder, &aaudio_stream_);
 
