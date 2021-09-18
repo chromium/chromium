@@ -2287,7 +2287,7 @@
 <translation id="339178315942519818">在 <ph name="DEVICE_TYPE" /> 上查看即時通訊應用程式的通知</translation>
 <translation id="3393554941209044235">Chrome 文件分析</translation>
 <translation id="3394850431319394743">已允許使用識別碼來播放受保護的內容</translation>
-<translation id="3396744558790608201">在網站上瀏覽及購物時，先按一下滑鼠右鍵再選取 [使用 Google 智慧鏡頭搜尋圖片] 即可搜尋網站的任意區域，進一步瞭解你看到的圖像內容。</translation>
+<translation id="3396744558790608201">在網站上瀏覽及購物時，先按一下右鍵再選取 [使用「Google 智能鏡頭」搜尋圖片] 即可搜尋網站的任何區域，進一步瞭解您看到的影像內容。</translation>
 <translation id="3396800784455899911">按一下 [接受並繼續] 按鈕，即表示您同意上述的 Google 服務處理程序。.</translation>
 <translation id="339722927132407568">畫面凍結</translation>
 <translation id="3399432415385675819">通知將會停用</translation>
@@ -2298,7 +2298,6 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />，<ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">此網站沒有可供儲存的密碼</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
-<translation id="3404805962764077228">暫時由 <ph name="DEVICE_TYPE" /> 直接串流使用手機應用程式</translation>
 <translation id="3405664148539009465">自訂字型</translation>
 <translation id="3405763860805964263">…</translation>
 <translation id="3406290648907941085">已允許使用虛擬實境﻿裝置和資料</translation>
@@ -3199,7 +3198,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4366138410738374926">列印已開始</translation>
-<translation id="4369121877634339065">在任一圖片上拖曳游標即可搜尋</translation>
+<translation id="4369121877634339065">在任何圖片上拖曳即可搜尋</translation>
 <translation id="4370975561335139969">您所輸入的電郵與密碼不符</translation>
 <translation id="4371452868325715552">無法連線至伺服器。請檢查網絡連線，然後再試一次。如果問題仍未解決，請嘗試重新啟動 Chromebook。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="4373966964907728675">投放桌面</translation>
@@ -5788,10 +5787,10 @@
 <translation id="7222204278952406003">Chrome 是您的預設瀏覽器</translation>
 <translation id="7222232353993864120">電郵地址</translation>
 <translation id="7225179976675429563">找不到網絡類型</translation>
-<translation id="7226485026248318204">這裡會顯示 Google 相簿的回憶集錦。你必須登入才能看到這些內容。
+<translation id="7226485026248318204">您的「Google 相片回憶」會在此顯示。您必須登入才能看到這些內容。
         <ph name="BREAK" />
         <ph name="BREAK" />
-        歡迎前往 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 管理回憶集錦中顯示的內容。</translation>
+        請在 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 管理在回憶中顯示的內容。</translation>
 <translation id="7228479291753472782">控制各種設定，包括指定網站能否使用地理位置、麥克風和相機等功能。</translation>
 <translation id="7228523857728654909">螢幕鎖定和登入</translation>
 <translation id="7230222852462421043">還原視窗</translation>

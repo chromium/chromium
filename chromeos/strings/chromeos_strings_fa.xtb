@@ -35,7 +35,6 @@
 <translation id="150962533380566081">‏PUK نامعتبر.</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
 <translation id="155865706765934889">صفحه لمسی</translation>
-<translation id="1600964289716072707">صفحه دیگری را روی اسکنر قرار دهید و «اسکن» را انتخاب کنید تا صفحه اضافه شود.</translation>
 <translation id="1621067168122174824">اجرای آزمایش شارژ</translation>
 <translation id="1639239467298939599">بارگیری</translation>
 <translation id="1641857168437328880">تغذیه‌کننده سند (یک‌رو)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، نسخه <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> گیگابایت از مجموع <ph name="TOTAL_MEMORY" /> گیگابایت دردسترس است</translation>
-<translation id="2129264932216073062">‏زمان اجرای برنامه ویژه Chrome در HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />٪</translation>
 <translation id="2157959690810728433">در صف</translation>
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">موفق</translation>
 <translation id="2789486458103222910">تأیید</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
-<translation id="2862104018715411648">برای شروع به کار، سندتان را روی اسکنر قرار دهید و «اسکن» را انتخاب کنید</translation>
 <translation id="2872961005593481000">خاموش کردن</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> در <ph name="NUM_SECONDS" /> ثانیه تخلیه شد.</translation>
 <translation id="3008341117444806826">بازخوانی</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">کارهای چاپ قدیمی‌تر از <ph name="NUMBER_OF_DAYS" /> روز برداشته می‌شوند</translation>
 <translation id="4003384961948020559">انجام نشد - خروجی پُر است</translation>
 <translation id="4034824040120875894">چاپگر</translation>
-<translation id="4050980775484079270">‏حل‌وفصل ساناد درون ARC</translation>
 <translation id="409427325554347132">ذخیره کردن جزئیات آزمایش</translation>
 <translation id="4131410914670010031">سیاه و سفید</translation>
 <translation id="4145784616224233563">‏دیوار آتش HTTPS</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">استرس</translation>
 <translation id="4917385247580444890">قوی</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
-<translation id="491836528011451486">سندتان را روی اسکنر قرار دهید و «اسکن مجدد» را انتخاب کنید تا سند جدید اسکن و جایگزین صفحه <ph name="CURRENT_PAGE" /> شود.</translation>
 <translation id="4921665434385737356">در <ph name="NUM_SECONDS" /> ثانیه <ph name="RATE" /> شارژ شد.</translation>
 <translation id="4932733599132424254">تاریخ</translation>
 <translation id="498186245079027698">اسکنر را بررسی کنید و دوباره امتحان کنید. مطمئن شوید فضای کافی برای ذخیره کردن فایل‌های اسکن‌شده در دستگاه وجود داشته باشد.</translation>
@@ -385,7 +380,6 @@
 <translation id="7550715992156305117">روال‌های عیب‌یابی</translation>
 <translation id="7561454561030345039">سرپرست شما این اقدام را مدیریت می‌کند</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی مانده است</translation>
 <translation id="7620771111601174153">اطلاعات بیشتر در «مرکز راهنمایی»</translation>
 <translation id="763165478673169849">آخرین زمان بازنشانی</translation>
@@ -421,7 +415,6 @@
 <translation id="8132480444149501833">درخواست شمارش‌گرهای ترافیک</translation>
 <translation id="8206859287963243715">سلولی</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
-<translation id="8214184102975786227">‏چند صفحه را در یک PDF اسکن کنید</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
 <translation id="8286154143153872371">لطفاً برای مشاهده کاغذدیواری، به شبکه متصل شوید و صفحه را تازه‌سازی کنید.</translation>

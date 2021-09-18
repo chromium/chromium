@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK si sahihi.</translation>
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="155865706765934889">Touchpad</translation>
-<translation id="1600964289716072707">Weka ukurasa mwingine kwenye kichanganuzi kisha uchague "Changanua" ili uongeze ukurasa.</translation>
 <translation id="1621067168122174824">Tekeleza jaribio la Kuchaji</translation>
 <translation id="1639239467298939599">Inapakia</translation>
 <translation id="1641857168437328880">Mashine ya kuingiza hati (Upande mmoja)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Mipangilio zaidi</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, toleo la <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Una GB <ph name="AVAILABLE_MEMORY" /> kati ya GB <ph name="TOTAL_MEMORY" /></translation>
-<translation id="2129264932216073062">Maombi ya HTTP kwenye ARC</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">IMEWEKWA KWENYE FOLENI</translation>
 <translation id="2161394479394250669">Ghairi kazi ya kuchapisha</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">LIMEFAULU</translation>
 <translation id="2789486458103222910">Sawa</translation>
 <translation id="2805756323405976993">Programu</translation>
-<translation id="2862104018715411648">Weka hati yako kwenye kichanganuzi kisha uchague 'Changanua' ili uanze</translation>
 <translation id="2872961005593481000">Zima</translation>
 <translation id="2878387241690264070">Imetumia <ph name="RATE" /> ya chaji ndani ya sekunde <ph name="NUM_SECONDS" />.</translation>
 <translation id="3008341117444806826">ONYESHA UPYA</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku <ph name="NUMBER_OF_DAYS" /> zitaondolewa</translation>
 <translation id="4003384961948020559">Haijakamilika - Sehemu ya kutoa karatasi imejaa</translation>
 <translation id="4034824040120875894">Printa</translation>
-<translation id="4050980775484079270">Usuluhishaji wa DNS kwenye ARC</translation>
 <translation id="409427325554347132">Hifadhi maelezo ya jaribio</translation>
 <translation id="4131410914670010031">Nyeusi na nyeupe</translation>
 <translation id="4145784616224233563">Kinga mtandao ya HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Shinikizo</translation>
 <translation id="4917385247580444890">Thabiti</translation>
 <translation id="4917889632206600977">Imesimama - Karatasi zimeisha</translation>
-<translation id="491836528011451486">Weka hati yako kwenye kichanganuzi kisha uchague "Changanua tena" ili uchanganue na ubadilishe ukurasa wa <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Imechaji <ph name="RATE" /> baada ya sekunde <ph name="NUM_SECONDS" />.</translation>
 <translation id="4932733599132424254">Tarehe</translation>
 <translation id="498186245079027698">Kagua kichanganuzi kisha ujaribu tena. Hakikisha kuna nafasi ya kutosha kwenye kompyuta yako ya kuhifadhi faili zilizochanganuliwa.</translation>
@@ -384,7 +379,6 @@
 <translation id="7550715992156305117">Ratiba za Uchunguzi</translation>
 <translation id="7561454561030345039">Kitendo hiki kinadhibitiwa na msimamizi wako</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">Mwito wa ARC</translation>
 <translation id="7595982850646262331">Zimesalia <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Pata maelezo zaidi katika Kituo cha Usaidizi</translation>
 <translation id="763165478673169849">Wakati wa Mwisho Zilipobadilishwa</translation>
@@ -420,7 +414,6 @@
 <translation id="8132480444149501833">Omba Hesabu za Trafiki</translation>
 <translation id="8206859287963243715">Simu ya Mkononi</translation>
 <translation id="8208861521865154048">Manufaa</translation>
-<translation id="8214184102975786227">Changanua kurasa nyingi kwenye PDF moja</translation>
 <translation id="8230672074305416752">Imeshindwa kuita lango la mtandao chaguomsingi</translation>
 <translation id="8246209727385807362">Mtoa huduma asiyejulikana</translation>
 <translation id="8286154143153872371">Tafadhali unganisha kwenye mtandao kisha upakie ukurasa upya ili uangalie mandhari.</translation>

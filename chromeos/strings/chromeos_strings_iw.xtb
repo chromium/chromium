@@ -35,7 +35,6 @@
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="155865706765934889">לוח מגע</translation>
-<translation id="1600964289716072707">כדי להוסיף דף, ממקמים מסמך נוסף על הסורק ובוחרים באפשרות 'סריקה'.</translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
@@ -64,7 +63,6 @@
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">‏הנפח הזמין: GB<ph name="AVAILABLE_MEMORY" /> מתוך GB<ph name="TOTAL_MEMORY" /></translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895">‎<ph name="PERCENTAGE_VALUE" />%‎</translation>
 <translation id="2157959690810728433">נמצאת בתור</translation>
 <translation id="2161394479394250669">ביטול משימת ההדפסה</translation>
@@ -95,7 +93,6 @@
 <translation id="2783010256799387990">ציון 'עובר'</translation>
 <translation id="2789486458103222910">אישור</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
-<translation id="2862104018715411648">כדי להתחיל, יש למקם את המסמך על הסורק וללחוץ על 'סריקה'</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="3008341117444806826">רענון</translation>
@@ -154,7 +151,6 @@
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
 <translation id="4003384961948020559">נכשלה – מגש הפלט מלא</translation>
 <translation id="4034824040120875894">מדפסת</translation>
-<translation id="4050980775484079270">‏רזולוציית DNS של ARC</translation>
 <translation id="409427325554347132">שמירה של פרטי הבדיקה</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
@@ -217,7 +213,6 @@
 <translation id="4891842000192098784">בדיקת עומסים</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
-<translation id="491836528011451486">מציבים את המסמך על הסורק ולוחצים על 'סריקה מחדש' כדי לסרוק ולהחליף את דף <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="498186245079027698">יש לבדוק את הסורק ולנסות שוב. חשוב לוודא שיש במכשיר מספיק מקום לשמור את הקבצים הסרוקים.</translation>
@@ -377,7 +372,6 @@
 <translation id="7550715992156305117">תרחישי אבחון</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">‏פינג ARC</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
 <translation id="763165478673169849">זמן האיפוס האחרון</translation>
@@ -410,7 +404,6 @@
 <translation id="8132480444149501833">בקשה למוני תנועה</translation>
 <translation id="8206859287963243715">סלולארי</translation>
 <translation id="8208861521865154048">הטבות</translation>
-<translation id="8214184102975786227">‏סריקה של כמה דפים בקובץ PDF אחד</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8246209727385807362">ספק לא ידוע</translation>
 <translation id="8286154143153872371">כדי לצפות בטפט, מתחברים לרשת וטוענים מחדש את הדף.</translation>

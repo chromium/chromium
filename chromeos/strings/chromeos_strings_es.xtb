@@ -35,7 +35,6 @@
 <translation id="150962533380566081">El PUK no es válido.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="155865706765934889">Panel táctil</translation>
-<translation id="1600964289716072707">Coloca otra página en el escáner y selecciona Escanear para añadirla.</translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (una cara)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponibles.</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">SUPERADA</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
-<translation id="2862104018715411648">Coloca el documento en el escáner y selecciona Escanear para comenzar</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2878387241690264070">Se ha descargado un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="3008341117444806826">RENOVAR</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Los trabajos de impresión con más de <ph name="NUMBER_OF_DAYS" /> días de antigüedad se eliminarán</translation>
 <translation id="4003384961948020559">No se ha podido imprimir - Salida llena</translation>
 <translation id="4034824040120875894">Impresora</translation>
-<translation id="4050980775484079270">Resolución de DNS de ARC</translation>
 <translation id="409427325554347132">Guardar detalles de la prueba</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
 <translation id="4145784616224233563">Cortafuegos de HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Esfuerzo</translation>
 <translation id="4917385247580444890">Buena</translation>
 <translation id="4917889632206600977">Detenido: sin papel</translation>
-<translation id="491836528011451486">Coloca el documento en el escáner y selecciona Volver a escanear para escanear y reemplazar la página <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Se ha cargado un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="498186245079027698">Revisa el escáner e inténtalo de nuevo. Comprueba que tienes suficiente espacio local para guardar los archivos escaneados.</translation>
@@ -384,7 +379,6 @@
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7561454561030345039">Esta acción la gestiona tu administrador</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">Ping ARC</translation>
 <translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Más información en el Centro de Ayuda</translation>
 <translation id="763165478673169849">Hora a la que se restableció por última vez</translation>
@@ -420,7 +414,6 @@
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8208861521865154048">Ventajas</translation>
-<translation id="8214184102975786227">Escanear varias páginas en un PDF</translation>
 <translation id="8230672074305416752">Se ha producido un error al hacer ping en la puerta de enlace de red predeterminada</translation>
 <translation id="8246209727385807362">Operador desconocido</translation>
 <translation id="8286154143153872371">Conéctate a una red y vuelve a cargar la página para ver el fondo de pantalla.</translation>

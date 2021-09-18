@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Érvénytelen PUK-kód.</translation>
 <translation id="1510238584712386396">Indító</translation>
 <translation id="155865706765934889">Érintőpad</translation>
-<translation id="1600964289716072707">Oldal felvételéhez helyezzen másik dokumentumot a szkennerre, és válassza a Scan (Beolvasás) gombot.</translation>
 <translation id="1621067168122174824">Töltési teszt futtatása</translation>
 <translation id="1639239467298939599">Betöltés</translation>
 <translation id="1641857168437328880">Dokumentumadagoló (egyoldalas)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">További beállítások</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />/<ph name="AVAILABLE_MEMORY" /> GB áll rendelkezésre.</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">VÁRAKOZIK</translation>
 <translation id="2161394479394250669">Nyomtatási feladat megszakítása</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">SIKERES ELLENŐRZÉS</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
-<translation id="2862104018715411648">A kezdéshez helyezze a dokumentumot a szkennerre, és válassza a Scan (Beolvasás) gombot.</translation>
 <translation id="2872961005593481000">Leállítás</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> lemerítve <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="3008341117444806826">FRISSÍTÉS</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">A(z) <ph name="NUMBER_OF_DAYS" /> napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="4003384961948020559">Sikertelen – Megtelt a kimenet</translation>
 <translation id="4034824040120875894">Nyomtató</translation>
-<translation id="4050980775484079270">ARC DNS-felbontás</translation>
 <translation id="409427325554347132">Tesztadatok mentése</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
 <translation id="4145784616224233563">HTTP-tűzfal</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Stressz</translation>
 <translation id="4917385247580444890">Erős</translation>
 <translation id="4917889632206600977">Leállt – Kifogyott a papír</translation>
-<translation id="491836528011451486">Helyezze a dokumentumot a szkennerre, és válassza a Beolvasás újra lehetőséget a(z) <ph name="CURRENT_PAGE" />. oldal beolvasásához és cseréjéhez.</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> töltöttség <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="4932733599132424254">Dátum</translation>
 <translation id="498186245079027698">Ellenőrizze a szkennert, majd próbálja újra. Győződjön meg arról, hogy van elég helyi tárhely a beolvasott fájlok mentéséhez.</translation>
@@ -385,7 +380,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7550715992156305117">Diagnosztikai rutinok</translation>
 <translation id="7561454561030345039">Ezt a műveletet a rendszergazdája kezeli.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> van hátra</translation>
 <translation id="7620771111601174153">További információ a Súgóban</translation>
 <translation id="763165478673169849">Utolsó visszaállítás ideje</translation>
@@ -421,7 +415,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8132480444149501833">Forgalomszámlálók kérése</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Előnyök</translation>
-<translation id="8214184102975786227">Több oldal szkennelése egyetlen PDF-fájlba</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="8246209727385807362">Ismeretlen szolgáltató</translation>
 <translation id="8286154143153872371">A háttérkép megtekintése érdekében csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>

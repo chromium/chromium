@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK nav derīgs.</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="155865706765934889">Skārienpaliktnis</translation>
-<translation id="1600964289716072707">Lai pievienotu lapu, novietojiet vēl vienu lapu uz skenera un atlasiet Skenēt.</translation>
 <translation id="1621067168122174824">Veikt uzlādes pārbaudi</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
 <translation id="1641857168437328880">Dokumentu padevējs (vienpusēji)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Pieejamais apjoms: <ph name="AVAILABLE_MEMORY" /> GB no <ph name="TOTAL_MEMORY" /> GB</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">IEVIETOTS RINDĀ</translation>
 <translation id="2161394479394250669">Atcelt drukas uzdevumu</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">NOKĀRTOTS</translation>
 <translation id="2789486458103222910">Labi</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
-<translation id="2862104018715411648">Lai sāktu darbu, novietojiet dokumentu uz skenera un atlasiet Skenēt.</translation>
 <translation id="2872961005593481000">Beidzēt</translation>
 <translation id="2878387241690264070">Izlādes apjoms <ph name="NUM_SECONDS" /> s laikā: <ph name="RATE" />.</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Drukas uzdevumi, kas ir vecāki par <ph name="NUMBER_OF_DAYS" /> dienām, tiks noņemti</translation>
 <translation id="4003384961948020559">Neizdevās — izvades paliktnis pilns</translation>
 <translation id="4034824040120875894">Printeris</translation>
-<translation id="4050980775484079270">ARC DNS atrise</translation>
 <translation id="409427325554347132">Saglabāt testa informāciju</translation>
 <translation id="4131410914670010031">Melnbaltā</translation>
 <translation id="4145784616224233563">HTTP ugunsmūris</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Izturība</translation>
 <translation id="4917385247580444890">Spēcīgs</translation>
 <translation id="4917889632206600977">Apturēts — beidzies papīrs</translation>
-<translation id="491836528011451486">Novietojiet dokumentu uz skenera un atlasiet “Skenēt vēlreiz”, lai skenētu un aizstātu <ph name="CURRENT_PAGE" />. lapu.</translation>
 <translation id="4921665434385737356">Uzlādes apjoms: <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundēs.</translation>
 <translation id="4932733599132424254">Datums</translation>
 <translation id="498186245079027698">Pārbaudiet skeneri un mēģiniet vēlreiz. Vietējā krātuvē jābūt pietiekami daudz vietas skenēto failu saglabāšanai.</translation>
@@ -385,7 +380,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7550715992156305117">Diagnostikas pārbaudes</translation>
 <translation id="7561454561030345039">Šo darbību pārvalda administrators</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC ehotestēšana</translation>
 <translation id="7595982850646262331">Atlikušais laiks: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Uzzināt vairāk palīdzības centrā</translation>
 <translation id="763165478673169849">Pēdējās atiestatīšanas laiks</translation>
@@ -421,7 +415,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8132480444149501833">Pieprasīt datplūsmas skaitītājus</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
-<translation id="8214184102975786227">Skenēt vairākas lapas vienā PDF failā</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
 <translation id="8246209727385807362">Nezināms operators</translation>
 <translation id="8286154143153872371">Izveidojiet savienojumu ar tīklu un atkārtoti ielādējiet lapu, lai skatītu fona tapeti.</translation>

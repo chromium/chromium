@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Невалиден PUK код.</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
 <translation id="155865706765934889">Сензорен панел</translation>
-<translation id="1600964289716072707">Поставете друга страница върху скенера и изберете „Сканиране“, за да добавите страница.</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Още настройки</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Налице: <ph name="AVAILABLE_MEMORY" /> ГБ от <ph name="TOTAL_MEMORY" /> ГБ</translation>
-<translation id="2129264932216073062">HTTP в СИПC (среда на изпълнение на приложенията в Chrome)</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">В ОПАШКАТА</translation>
 <translation id="2161394479394250669">Анулиране на заданието за отпечатване</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">УСПЕШНО</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Приложения</translation>
-<translation id="2862104018715411648">За да започнете, поставете документа върху скенера и изберете „Сканиране във“</translation>
 <translation id="2872961005593481000">Изключване</translation>
 <translation id="2878387241690264070">За <ph name="NUM_SECONDS" /> секунди батерията се разреди с(ъс) <ph name="RATE" />.</translation>
 <translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Заданията за отпечатване, по-стари от <ph name="NUMBER_OF_DAYS" /> дни, ще бъдат премахнати</translation>
 <translation id="4003384961948020559">Неуспешно – изходният контейнер е пълен</translation>
 <translation id="4034824040120875894">Принтер</translation>
-<translation id="4050980775484079270">Преобразуване от DNS на СИПC (среда на изпълнение на приложенията в Chrome)</translation>
 <translation id="409427325554347132">Запазване на подробностите за теста</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
 <translation id="4145784616224233563">Защитна стена за HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
-<translation id="491836528011451486">За да сканирате и замените страница <ph name="CURRENT_PAGE" />, поставете документа върху скенера и изберете „Повторно сканиране“.</translation>
 <translation id="4921665434385737356">За <ph name="NUM_SECONDS" /> секунди се заредиха <ph name="RATE" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="498186245079027698">Проверете скенера и опитайте отново. Уверете се, че на устройството ви има достатъчно място за запазване на сканираните файлове.</translation>
@@ -385,7 +380,6 @@
 <translation id="7550715992156305117">Диагностични процедури</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">Команда ping към СИПС</translation>
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
 <translation id="763165478673169849">Последен час на нулиране</translation>
@@ -421,7 +415,6 @@
 <translation id="8132480444149501833">Заявяване на броячи за трафика</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8208861521865154048">Предимства</translation>
-<translation id="8214184102975786227">Сканиране на няколко страници в един PDF файл</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
 <translation id="8246209727385807362">Неизвестен оператор</translation>
 <translation id="8286154143153872371">Моля, свържете се с мрежа и презаредете страницата, за да прегледате тапета.</translation>

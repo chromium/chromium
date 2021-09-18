@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
-<translation id="1600964289716072707">Placez une autre page sur le numériseur et sélectionnez Numériser pour ajouter une page.</translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Espace disponible : <ph name="AVAILABLE_MEMORY" /> Go sur <ph name="TOTAL_MEMORY" /> Go</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">PLACÉ EN FILE D'ATTENTE</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">TEST RÉUSSI</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
-<translation id="2862104018715411648">Placez votre document sur le numériseur, puis sélectionnez Numériser pour commencer</translation>
 <translation id="2872961005593481000">Arrêter</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Les tâches d'impression datant de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
 <translation id="4003384961948020559">Échec : bac de sortie plein</translation>
 <translation id="4034824040120875894">Imprimante</translation>
-<translation id="4050980775484079270">Résolution DNS ARC</translation>
 <translation id="409427325554347132">Enregistrer les détails du test</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917385247580444890">Fort</translation>
 <translation id="4917889632206600977">Tâche arrêtée : à court de papier</translation>
-<translation id="491836528011451486">Placez votre document sur le numériseur, puis sélectionnez Numériser de nouveau pour numériser la page <ph name="CURRENT_PAGE" /> et la remplacer.</translation>
 <translation id="4921665434385737356">L'appareil s'est rechargé de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="498186245079027698">Vérifiez le numériseur et réessayez. Assurez-vous qu'il y a suffisamment d'espace local pour enregistrer les fichiers numérisés.</translation>
@@ -385,7 +380,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7550715992156305117">Routines de diagnostic</translation>
 <translation id="7561454561030345039">C'est votre administrateur qui gère cette action</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">Ping ARC</translation>
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">En savoir plus dans le centre d'aide</translation>
 <translation id="763165478673169849">Heure de la dernière réinitialisation</translation>
@@ -421,7 +415,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8132480444149501833">Demander des compteurs de trafic</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
-<translation id="8214184102975786227">Numérisez plusieurs pages et enregistrez-les en un seul PDF</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
 <translation id="8286154143153872371">Veuillez vous connecter au réseau et actualiser la page pour afficher le fond d'écran.</translation>

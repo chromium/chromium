@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Ungültiger PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="155865706765934889">Touchpad</translation>
-<translation id="1600964289716072707">Legen Sie eine andere Seite in den Scanner und wählen Sie „Scannen“ aus, um die Seite hinzuzufügen.</translation>
 <translation id="1621067168122174824">Ladetest ausführen</translation>
 <translation id="1639239467298939599">Wird geladen...</translation>
 <translation id="1641857168437328880">Dokumenteneinzug (einseitig)</translation>
@@ -51,6 +50,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Scannen wird abgebrochen</translation>
 <translation id="1851218745569890714">Videokonferenz</translation>
+<translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardware-Version</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
@@ -64,7 +64,6 @@
 <translation id="2080070583977670716">Weitere Einstellungen</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, Version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB von <ph name="TOTAL_MEMORY" /> GB sind verfügbar</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">IN WARTESCHLANGE</translation>
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
@@ -78,6 +77,7 @@
 <translation id="2364498172489649528">Bestanden</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Feedbackbericht senden</translation>
+<translation id="240334320630038121">Touchpad (<ph name="CONNECTION_TYPE" />)</translation>
 <translation id="2407209115954268704">SIM-Lock-Status</translation>
 <translation id="2418150275289244458">In den Einstellungen öffnen</translation>
 <translation id="2446553403094072641">Gleitkommagenauigkeit</translation>
@@ -95,12 +95,12 @@
 <translation id="2783010256799387990">BESTANDEN</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
-<translation id="2862104018715411648">Legen Sie das Dokument in den Scanner und wählen Sie „Scannen“ aus</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
 <translation id="3009958530611748826">Ordner als Speicherort auswählen</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3056720590588772262">Endpunkt</translation>
 <translation id="3069085583900247081">Fehler beim Test</translation>
 <translation id="3083667275341675831">Connectivity Diagnostics</translation>
 <translation id="3091839911843451378">Fehlgeschlagen – Angehalten</translation>
@@ -121,8 +121,10 @@
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3369013195428705271">Möchten Sie den gesamten Druckverlauf wirklich löschen? Ihre laufenden Druckaufträge werden nicht gelöscht.</translation>
+<translation id="3412146654386081914">Touchscreen (<ph name="CONNECTION_TYPE" />)</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
+<translation id="3440478087746699229">Intern</translation>
 <translation id="3456078764689556234">Seite <ph name="PRINTED_PAGES" /> von <ph name="TOTAL_PAGES" /> wird gedruckt.</translation>
 <translation id="345898999683440380">Seite <ph name="PAGE_NUM" /> wird gescannt. <ph name="PERCENTAGE_VALUE" /> % sind abgeschlossen.</translation>
 <translation id="3459509316159669723">Drucken</translation>
@@ -130,6 +132,7 @@
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
 <translation id="3540383942695635079">MAC-Adresse</translation>
+<translation id="3565064564551103223">Zugelassene IPs</translation>
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
 <translation id="3582041541988388905">Keine <ph name="NETWORK_NAME" />-Verbindung erkannt</translation>
 <translation id="3595596368722241419">Akku voll</translation>
@@ -154,7 +157,6 @@
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
 <translation id="4003384961948020559">Fehlgeschlagen – Ausgabefach ist voll</translation>
 <translation id="4034824040120875894">Drucker</translation>
-<translation id="4050980775484079270">ARC-DNS-Auflösung</translation>
 <translation id="409427325554347132">Testdetails speichern</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
 <translation id="4145784616224233563">HTTP-Firewall</translation>
@@ -217,7 +219,6 @@
 <translation id="4891842000192098784">Belastung</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4917889632206600977">Angehalten – Kein Papier</translation>
-<translation id="491836528011451486">Legen Sie das Dokument in den Scanner und wählen Sie „Noch einmal scannen“ aus, um die Seite <ph name="CURRENT_PAGE" /> zu scannen und zu ersetzen.</translation>
 <translation id="4921665434385737356"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden aufgeladen.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Prüfe den Scanner und versuche es noch einmal. Sieh nach, ob ausreichend lokaler Speicherplatz vorhanden ist, um die gescannten Dateien zu speichern.</translation>
@@ -309,6 +310,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6302401976930124515">Test „<ph name="TEST_NAME" />“ wurde abgebrochen</translation>
 <translation id="6325525973963619867">Fehlgeschlagen</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
+<translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrollieren Sie den Einzug und versuchen Sie es noch einmal.</translation>
 <translation id="641081527798843608">subject-match</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -343,6 +345,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6977381486153291903">Firmware-Version</translation>
 <translation id="6982876849933694860">Wenn Sie eine neue Verbindung einrichten möchten, <ph name="BEGIN_LINK" />gehen Sie zu den Einstellungen<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
+<translation id="7039041976777695848">Tastatur (<ph name="CONNECTION_TYPE" />)</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7059230779847288458">Vollständig geladen in <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ABGEBROCHEN</translation>
@@ -377,7 +380,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7550715992156305117">Diagnoseroutinen</translation>
 <translation id="7561454561030345039">Diese Aktion wird von Ihrem Administrator verwaltet</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC-Ping</translation>
 <translation id="7595982850646262331">Noch <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Weitere Informationen in der Hilfe</translation>
 <translation id="763165478673169849">Zuletzt zurückgesetzt</translation>
@@ -387,6 +389,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Anzahl der Ladezyklen</translation>
+<translation id="7747039790905080783">Vorinstallierter Schlüssel</translation>
 <translation id="7762130827864645708">Sie haben Ihr Passwort geändert. Bitte verwenden Sie ab jetzt das neue Passwort.</translation>
 <translation id="7763470514545477072">Domain-Suffix stimmt überein</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
@@ -396,8 +399,10 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Providertyp</translation>
+<translation id="7882501334836096755">Öffentlicher Schlüssel</translation>
 <translation id="7895471513946376273">Zeichen- und Designtools entdecken</translation>
 <translation id="7936303884198020182">Es wurden keine Nameserver gefunden</translation>
+<translation id="7943235353293548836">Persistentes Keepalive-Intervall</translation>
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="7978412674231730200">Privater Schlüssel</translation>
 <translation id="7994702968232966508">EAP-Methode</translation>
@@ -410,7 +415,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8132480444149501833">Traffic-Zähler anfordern</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Vorteile</translation>
-<translation id="8214184102975786227">Mehrere Seiten in eine PDF scannen</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>
 <translation id="8286154143153872371">Stellen Sie bitte eine Verbindung zu einem Netzwerk her und laden Sie die Seite neu, um den Hintergrund anzusehen.</translation>
@@ -447,6 +451,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8726019395068607495">Angehalten – Druckerklappe offen</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8747900814994928677">Änderung bestätigen</translation>
+<translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Name des Anbieters</translation>
@@ -462,7 +467,9 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> von <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
 <translation id="8928727111548978589">Fehlgeschlagen – Kein Papier</translation>
+<translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Drahtlos</translation>
+<translation id="8936793075252196307">IP-Adresse des Clients</translation>
 <translation id="8968751544471797276">Ladestrom</translation>
 <translation id="8970109610781093811">Erneut ausführen</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scannen}=1{Seite {NUMBER_OF_PAGES} scannen}other{Seite {NUMBER_OF_PAGES} scannen}}</translation>
@@ -478,6 +485,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>
 <translation id="9149391708638971077">Speichertest ausführen</translation>
 <translation id="9173638680043580060">Nur noch wenige Sekunden</translation>
+<translation id="917720651393141712">Testen</translation>
 <translation id="9190063653747922532">L2TP/IPSec + vorinstallierter Schlüssel</translation>
 <translation id="9211490828691860325">Alle Desktops</translation>
 <translation id="939519157834106403">SSID</translation>

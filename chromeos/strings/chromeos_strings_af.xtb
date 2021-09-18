@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Ongeldige PUK.</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
 <translation id="155865706765934889">Raakpaneel</translation>
-<translation id="1600964289716072707">Plaas 'n ander bladsy op die skandeerder en kies Skandeer om bladsy by te voeg.</translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
 <translation id="1639239467298939599">Laai tans</translation>
 <translation id="1641857168437328880">Dokumentvoerder (een kant)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Nog instellings</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, weergawe <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beskibaar</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">OP WAGLYS</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">GESLAAG</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Programme</translation>
-<translation id="2862104018715411648">Plaas jou dokument op die skandeerder en kies Skandeer om te begin</translation>
 <translation id="2872961005593481000">Skakel af</translation>
 <translation id="2878387241690264070">Het <ph name="RATE" /> ontlaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="3008341117444806826">HERLAAI</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Druktake ouer as <ph name="NUMBER_OF_DAYS" /> dae sal verwyder word</translation>
 <translation id="4003384961948020559">Misluk – Uitvoer is vol</translation>
 <translation id="4034824040120875894">Drukker</translation>
-<translation id="4050980775484079270">ARC DNS-resolusie</translation>
 <translation id="409427325554347132">Stoor toetsbesonderhede</translation>
 <translation id="4131410914670010031">Swart en wit</translation>
 <translation id="4145784616224233563">HTTP-brandmuur</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestop – papier is op</translation>
-<translation id="491836528011451486">Plaas jou dokument op die skandeerder en kies Herskandeer om bladsy <ph name="CURRENT_PAGE" /> te skandeer en te vervang.</translation>
 <translation id="4921665434385737356">Het <ph name="RATE" /> gelaai binne <ph name="NUM_SECONDS" /> sekondes.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Gaan die skandeerder na en probeer weer. Maak seker daar is genoeg plaaslike spasie om lêers wat geskandeer is, te stoor.</translation>
@@ -385,7 +380,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7550715992156305117">Diagnostiese roetines</translation>
 <translation id="7561454561030345039">Jou administrateur bestuur hierdie handeling</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC-pieng</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> oor</translation>
 <translation id="7620771111601174153">Kom meer te wete in Hulpsentrum</translation>
 <translation id="763165478673169849">Laas teruggestel</translation>
@@ -421,7 +415,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8132480444149501833">Versoek verkeertellers</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
-<translation id="8214184102975786227">Skandeer veelvuldige bladsye na een PDF</translation>
 <translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>
 <translation id="8246209727385807362">Onbekende diensverskaffer</translation>
 <translation id="8286154143153872371">Koppel asseblief aan 'n netwerk en herlaai die bladsy om muurpapier te bekyk.</translation>

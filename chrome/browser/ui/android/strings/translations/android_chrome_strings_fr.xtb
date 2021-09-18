@@ -62,6 +62,7 @@
 <translation id="1332501820983677155">Raccourcis liés aux fonctionnalités de Google Chrome</translation>
 <translation id="1344653310988386453">Inclure le lien vers le texte en surbrillance</translation>
 <translation id="1347468774581902829">Gérer l'activité</translation>
+<translation id="1353372385686746892">Chrome envoie à Google des données de diagnostic qui sont ensuite utilisées pour améliorer l'application. <ph name="BEGIN_LINK" />Modifier<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Se déconnecter et arrêter la synchro. ?</translation>
 <translation id="1373696734384179344">Mémoire insuffisante pour télécharger le contenu sélectionné.</translation>
 <translation id="1376578503827013741">Calcul…</translation>
@@ -969,7 +970,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
-<translation id="6924672435311694692">Afficher de meilleurs résultats</translation>
+<translation id="6924672435311694692">Voir de meilleurs résultats</translation>
 <translation id="6929699136511445623">Activer la synchronisation du système Android</translation>
 <translation id="6942665639005891494">Modifier à tout moment l'emplacement de téléchargement par défaut à l'aide de l'option de menu "Paramètres"</translation>
 <translation id="694267552845942083">Vous personnalisez actuellement vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, appuyez sur le bouton "Confirmer" en bas de l'écran. Revenir en haut de la page</translation>

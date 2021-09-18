@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK kod xato.</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
 <translation id="155865706765934889">Sensorli panel</translation>
-<translation id="1600964289716072707">Sahifa kiritish uchun boshqa sahifani skanerga joylash va Skanerlash tugmasini bosing.</translation>
 <translation id="1621067168122174824">Quvvatlanishini tekshirish</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
 <translation id="1641857168437328880">Hujjat tasmasi (bir tomonlama)</translation>
@@ -57,6 +56,7 @@
 <translation id="1908234395526491708">Bajarilmagan UDP soʻrovlari</translation>
 <translation id="1930797645656624981">Chrome OS matn kiritish xizmati</translation>
 <translation id="1947737735496445907">Chop etildi</translation>
+<translation id="197386857804679933">Qayta ulash uchun Sozlamalarni oching</translation>
 <translation id="1979103255016296513">Parolni almashtirish muddati tugadi</translation>
 <translation id="1999615961760456652">Kirish portali</translation>
 <translation id="2006864819935886708">Ulanish</translation>
@@ -65,7 +65,6 @@
 <translation id="2080070583977670716">Kengaytirilgan sozlamalar</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB joy bor</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">NAVBATDA</translation>
 <translation id="2161394479394250669">Chop etish vazifasini bekor qilish</translation>
@@ -97,7 +96,7 @@
 <translation id="2783010256799387990">TUGADI</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Ilovalar</translation>
-<translation id="2862104018715411648">Hujjatni skanerga joylang va boshlash uchun Skanerlash tugmasini bosing</translation>
+<translation id="2860473693272905224">Skanerga boshqa sahifani joylang</translation>
 <translation id="2872961005593481000">Ishni tamomlash</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat sarflandi.</translation>
 <translation id="3008341117444806826">YANGILASH</translation>
@@ -112,6 +111,7 @@
 <translation id="315116470104423982">Mobil internet</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi...</translation>
 <translation id="315738237743207937">Kirish portali aniqlandi</translation>
+<translation id="3170673040743561620">Hujjatni skanerga joylang</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
 <translation id="3199982728237701504">Hujjat tasmasi (Ikki tomonlama)</translation>
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
@@ -160,7 +160,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="4003384961948020559">Bajarilmadi - Boʻsh joy qolmadi</translation>
 <translation id="4034824040120875894">Printer</translation>
-<translation id="4050980775484079270">ARC DNS parametrlari</translation>
 <translation id="409427325554347132">Test tafsilotlarini saqlash</translation>
 <translation id="4131410914670010031">Oq-qora</translation>
 <translation id="4145784616224233563">HTTP Fayrvol</translation>
@@ -215,6 +214,7 @@
 <translation id="4813345808229079766">Ulanish</translation>
 <translation id="4832079907277790330">Fayllar ilovasida jild tanlang...</translation>
 <translation id="4835901797422965222">Faol tarmoq topilmadi</translation>
+<translation id="484790837831576105">(Android) DNS parametrlari</translation>
 <translation id="4848429997038228357">BAJARILMOQDA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}other{<ph name="ERROR_MESSAGE" /> {0} ta urinish qoldi}}</translation>
 <translation id="4880328057631981605">Internetga ulanish nuqtasi (APN)</translation>
@@ -223,7 +223,6 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917385247580444890">Kuchli</translation>
 <translation id="4917889632206600977">Toʻxtatildi – Qogʻoz tugadi</translation>
-<translation id="491836528011451486">Hujjatni skanerga joylang va <ph name="CURRENT_PAGE" /> sahifasini qayta skanerlash uchun Qayta skanerlash tugmasini bosing.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> soniyada <ph name="RATE" /> quvvat oldi.</translation>
 <translation id="4932733599132424254">Sana</translation>
 <translation id="498186245079027698">Skanerni tekshiring va qayta urining. Skanerlangan fayllarni saqlash uchun joy yetarli ekanini tekshiring.</translation>
@@ -296,6 +295,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6050189528197190982">Kulrang tuslari</translation>
 <translation id="6058625436358447366">Yakunlash uchun eski va yangi parollarni kiriting</translation>
 <translation id="6061772781719867950">HTTP soʻrovlari yuborilmadi</translation>
+<translation id="6075872808778243331">(Android) HTTP kechikichi</translation>
 <translation id="6104112872696127344">Skanlash amali bekor qilindi</translation>
 <translation id="6106186594183574873">Yakunlash uchun eski parolni kiriting</translation>
 <translation id="6108689792487843350">Shlyuz bilan aloqa yoʻq</translation>
@@ -338,6 +338,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6704062477274546131">DNS parametrlari</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" /> faolsizlantirildi</translation>
 <translation id="6747215703636344499">Toʻxtatildi – Boʻsh joy qolmadi</translation>
 <translation id="6756731097889387912">Skanerlash bekor qilinmadi</translation>
 <translation id="6766275201586212568">DNS manzil ajratilmadi</translation>
@@ -347,11 +348,13 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6910312834584889076">Skaner qopqogʻi yopilmagan. Qopqogʻini toping va qaytadan urining.</translation>
 <translation id="6911383237894364323">Media serverlarga ulana olmadi</translation>
 <translation id="6957231940976260713">Xizmat nomi</translation>
+<translation id="6961170852793647506">Boshlash uchun hujjatni skanerga joylang</translation>
 <translation id="6977381486153291903">Mikrodastur versiyasi</translation>
 <translation id="6982876849933694860">Yangi ulanishni sozlash uchun <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> sahifasini oching.</translation>
 <translation id="7028979494427204405">Bu qurilma va uning foydalanuvchilari harakatlari, ochilgan sahifalar, parollar va emaillar <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> klaviaturasi</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7058278511608979688">Tugatish va saqlash</translation>
 <translation id="7059230779847288458">Quvvat olmoqda (<ph name="TIME_VALUE" /> qoldi)</translation>
 <translation id="708426984172631313">TOʻXTATILDI</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -385,7 +388,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7550715992156305117">Diagnostika dasturlari</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> qoldi</translation>
 <translation id="7620771111601174153">Yordam markazi orqali batafsil</translation>
 <translation id="763165478673169849">Oxirgi tiklangan vaqti</translation>
@@ -417,11 +419,11 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
 <translation id="8075838845814659848">Batareya quvvati</translation>
 <translation id="808894953321890993">Parolni almashtirish</translation>
+<translation id="811820734797650957">(Android) Shlyuzni tekshirish mumkin</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Traffik hisoblagichlarini chaqirish</translation>
 <translation id="8206859287963243715">Uyali</translation>
 <translation id="8208861521865154048">Imtiyozlar</translation>
-<translation id="8214184102975786227">Bir nechta sahifani bitta PDF qilib skanerlash</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="8246209727385807362">Noma’lum provayder</translation>
 <translation id="8286154143153872371">Fon rasmini koʻrish uchun tarmoqqa ulaning va sahifani yangilang.</translation>
@@ -489,6 +491,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> uchun chiptani yangilash</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi</translation>
 <translation id="9111102763498581341">Qulfdan yechish</translation>
+<translation id="9126720536733509015">Bir nechta sahifani bitta PDFga saqlash</translation>
 <translation id="9137526406337347448">Google xizmatlari</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
 <translation id="9173638680043580060">Bir daqiqadan kamroq vaqt qoldi</translation>

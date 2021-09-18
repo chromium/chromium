@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK không hợp lệ.</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
 <translation id="155865706765934889">Ô di chuột</translation>
-<translation id="1600964289716072707">Đặt một trang khác lên máy quét và chọn Quét để thêm trang.</translation>
 <translation id="1621067168122174824">Chạy quá trình Kiểm tra sạc</translation>
 <translation id="1639239467298939599">Đang tải</translation>
 <translation id="1641857168437328880">Khay nạp tài liệu (1 mặt)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Cài đặt khác</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, phiên bản <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Còn <ph name="AVAILABLE_MEMORY" /> GB/<ph name="TOTAL_MEMORY" /> GB</translation>
-<translation id="2129264932216073062">HTTP ARC</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ĐÃ XẾP VÀO HÀNG ĐỢI</translation>
 <translation id="2161394479394250669">Hủy lệnh in</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">ĐÃ ĐẠT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
-<translation id="2862104018715411648">Đặt tài liệu lên máy quét rồi chọn Quét để bắt đầu</translation>
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="2878387241690264070">Đã xả <ph name="RATE" /> pin sau <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Các lệnh in quá <ph name="NUMBER_OF_DAYS" /> ngày sẽ bị xóa</translation>
 <translation id="4003384961948020559">Không thành công – Khay đầu ra đã đầy</translation>
 <translation id="4034824040120875894">Máy in</translation>
-<translation id="4050980775484079270">Quá trình phân giải DNS ARC</translation>
 <translation id="409427325554347132">Lưu thông tin chi tiết của quá trình kiểm tra</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
 <translation id="4145784616224233563">Tường lửa HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Độ ổn định</translation>
 <translation id="4917385247580444890">Mạnh</translation>
 <translation id="4917889632206600977">Đã dừng – Hết giấy</translation>
-<translation id="491836528011451486">Đặt tài liệu của bạn lên máy quét và chọn Quét lại để quét và thay thế trang <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Đã sạc <ph name="RATE" /> trong <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="4932733599132424254">Ngày Tháng</translation>
 <translation id="498186245079027698">Hãy kiểm tra trình quét rồi thử lại. Đảm bảo máy có đủ dung lượng để lưu các tệp đã quét.</translation>
@@ -385,7 +380,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7550715992156305117">Quy trình chẩn đoán</translation>
 <translation id="7561454561030345039">Quản trị viên của bạn quản lý thao tác này</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">Ping ARC</translation>
 <translation id="7595982850646262331">Còn <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Tìm hiểu thêm trong Trung tâm trợ giúp</translation>
 <translation id="763165478673169849">Lần đặt lại cuối</translation>
@@ -421,7 +415,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8132480444149501833">Yêu cầu Bộ đếm lưu lượng truy cập</translation>
 <translation id="8206859287963243715">Di động</translation>
 <translation id="8208861521865154048">Đặc quyền</translation>
-<translation id="8214184102975786227">Quét nhiều trang thành một tệp PDF</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>
 <translation id="8246209727385807362">Nhà cung cấp dịch vụ không xác định</translation>
 <translation id="8286154143153872371">Vui lòng kết nối mạng và tải lại trang để xem hình nền.</translation>

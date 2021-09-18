@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Ugyldig PUK-kode.</translation>
 <translation id="1510238584712386396">Appliste</translation>
 <translation id="155865706765934889">Touchplade</translation>
-<translation id="1600964289716072707">Placer en anden side på scanneren, og vælg Scan for at tilføje siden.</translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
 <translation id="1639239467298939599">Indlæser...</translation>
 <translation id="1641857168437328880">Dokumentindføring (én side)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB ledig hukommelse ud af <ph name="TOTAL_MEMORY" /> GB</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">SAT I KØ</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">GENNEMFØRT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
-<translation id="2862104018715411648">Placer dit dokument i scanneren, og vælg Scan for at komme i gang</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="2878387241690264070">Batteriet blev afladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="3008341117444806826">OPDATER</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Udskriftsjobs, der er ældre end <ph name="NUMBER_OF_DAYS" /> dage, fjernes</translation>
 <translation id="4003384961948020559">Handlingen mislykkedes – Fuld udskriftsbakke</translation>
 <translation id="4034824040120875894">Printer</translation>
-<translation id="4050980775484079270">ARC DNS-oversættelse</translation>
 <translation id="409427325554347132">Gem testoplysninger</translation>
 <translation id="4131410914670010031">Sort/hvid</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917385247580444890">Stærk</translation>
 <translation id="4917889632206600977">Stoppet – Papirbakken er tom</translation>
-<translation id="491836528011451486">Placer dit dokument i scanneren, og vælg Scan igen for at scanne og udskifte siden <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Opladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="498186245079027698">Tjek scanneren, og prøv igen. Sørg for, at der er nok lokal lagerplads til at gemme de scannede filer.</translation>
@@ -384,7 +379,6 @@
 <translation id="7550715992156305117">Diagnostikrutiner</translation>
 <translation id="7561454561030345039">Denne handling administreres af din administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> tilbage</translation>
 <translation id="7620771111601174153">Få flere oplysninger i Hjælp</translation>
 <translation id="763165478673169849">Tidspunkt for seneste nulstilling</translation>
@@ -420,7 +414,6 @@
 <translation id="8132480444149501833">Anmod om trafiktællere</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
-<translation id="8214184102975786227">Scan flere sider til én PDF-fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
 <translation id="8246209727385807362">Ukendt mobilselskab</translation>
 <translation id="8286154143153872371">Opret forbindelse til et netværk, og genindlæs siden for at se baggrunden.</translation>

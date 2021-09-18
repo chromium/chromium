@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Nieprawidłowy PUK.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="155865706765934889">Touchpad</translation>
-<translation id="1600964289716072707">Umieść następną stronę na skanerze i kliknij Skanuj, aby ją dodać.</translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1641857168437328880">Podajnik dokumentów (jednostronny)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostępne: <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">W KOLEJCE</translation>
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">ZALICZONY</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
-<translation id="2862104018715411648">Na początek umieść dokument na skanerze i wybierz Skanuj</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="2878387241690264070">Rozładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
 <translation id="4034824040120875894">Drukarka</translation>
-<translation id="4050980775484079270">Rozpoznawanie nazw DNS ARC</translation>
 <translation id="409427325554347132">Zapisz szczegóły testu</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
 <translation id="4145784616224233563">Zapora sieciowa HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Obciążenie</translation>
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4917889632206600977">Zatrzymano – brak papieru</translation>
-<translation id="491836528011451486">Umieść dokument na skanerze i wybierz Zeskanuj ponownie, aby zeskanować i zastąpić stronę <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Naładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Sprawdź skaner i spróbuj ponownie. Upewnij się, że na urządzeniu masz miejsce na zapisanie zeskanowanych plików.</translation>
@@ -385,7 +380,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7550715992156305117">Procedury diagnostyczne</translation>
 <translation id="7561454561030345039">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">Ping ARC</translation>
 <translation id="7595982850646262331">Pozostało: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Dowiedz się więcej w Centrum pomocy</translation>
 <translation id="763165478673169849">Czas ostatniego resetu</translation>
@@ -421,7 +415,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8132480444149501833">Poproś o liczniki natężenia ruchu</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8208861521865154048">Korzyści</translation>
-<translation id="8214184102975786227">Zeskanuj kilka stron do 1 pliku PDF</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
 <translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>

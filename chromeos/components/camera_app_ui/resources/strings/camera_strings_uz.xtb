@@ -9,6 +9,7 @@
 <translation id="1467231725790366244"><ph name="CAMERA" /> kabeli uzildi.</translation>
 <translation id="1473110567575736769">3 soniyalik taymer</translation>
 <translation id="1545749641540134597">QR kodni skanerlash</translation>
+<translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -71,6 +72,7 @@ Xotiraga kirishga ruxsati bor ilovalar surat va videolaringiz bilan ishlay oladi
 <translation id="520537883758714667">Endi hujjatlarni skanerlash mumkin</translation>
 <translation id="5268823927180092501">Barcha kameralarda hujjat rejimini yoqish</translation>
 <translation id="5444515100983837161">Hujjat chetlarini hoshiyaga moslab joylang. Hujjat uning rangi foni bilan farqli boʻlganda yaxshi skanerlanadi.</translation>
+<translation id="5588258280684580073">GIF yozib olishni yoqish</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5746169159649715125">PDF sifatida saqlash</translation>
 <translation id="5753488212459587150">Ekspert rejimini yoqish</translation>
@@ -98,12 +100,14 @@ Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni bi
 <translation id="7243947652761655814">Video tiniqligi</translation>
 <translation id="7337660886763914220">Fayllar tizimiga oid xatoliklar.</translation>
 <translation id="7450541714075000668">Matn nusxalandi</translation>
+<translation id="7488619942230388918">GIF video yozib olish</translation>
 <translation id="7557677699350329807">Keyingi kameraga almashtirish</translation>
 <translation id="7607002721634913082">Vaqtincha to‘xtatildi</translation>
 <translation id="7608223098072244877">4 ga 4</translation>
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7670511624014457267">60 kadr/s</translation>
+<translation id="7726641833034062494">Normal video yozib olish</translation>
 <translation id="7983668134180549431">Matn aniqlandi.</translation>
 <translation id="8067883171444229417">Videoni ijro qilish</translation>
 <translation id="8120146556401698679">Panorama qiyalash zum</translation>

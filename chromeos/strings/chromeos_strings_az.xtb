@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Yanlış PUK.</translation>
 <translation id="1510238584712386396">Başladıcı</translation>
 <translation id="155865706765934889">Taçped</translation>
-<translation id="1600964289716072707">Skanerə başqa bir səhifə qoyun və səhifəni əlavə etmək üçün Skan seçiminə toxunun.</translation>
 <translation id="1621067168122174824">Şarj testini icra edin</translation>
 <translation id="1639239467298939599">Yüklənir</translation>
 <translation id="1641857168437328880">Sənəd Bəsləyici (Bir tərəfli)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Digər ayarlar</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB əlçatandır</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">NÖVBƏDƏDİR</translation>
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">KEÇDİ</translation>
 <translation id="2789486458103222910">Oldu</translation>
 <translation id="2805756323405976993">Tətbiq</translation>
-<translation id="2862104018715411648">Sənədinizi skanerin üzərinə qoyun və başlamaq üçün "Skanlayın" seçin</translation>
 <translation id="2872961005593481000">Qapadın</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> deşarj edilib.</translation>
 <translation id="3008341117444806826">YENİLƏYİN</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> gündən köhnə çap işləri silinəcək</translation>
 <translation id="4003384961948020559">Alınmadı - Çap xidməti doludur</translation>
 <translation id="4034824040120875894">Printer</translation>
-<translation id="4050980775484079270">ARC DNS ayırdetmə dəqiqliyi</translation>
 <translation id="409427325554347132">Test məlumatlarını yadda saxlayın</translation>
 <translation id="4131410914670010031">Ağ və qara</translation>
 <translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Gərginlik</translation>
 <translation id="4917385247580444890">Güclü</translation>
 <translation id="4917889632206600977">Dayanıb - Kağız yoxdur</translation>
-<translation id="491836528011451486">Sənədinizi skanerin üzərinə qoyun və skanlamaq və <ph name="CURRENT_PAGE" /> səhifəsini əvəzləmək üçün "Yenidən skanlayın" seçin.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> şarj edilib.</translation>
 <translation id="4932733599132424254">Tarix</translation>
 <translation id="498186245079027698">Skaneri yoxlayın və yenidən cəhd edin. Skan edilmiş faylları saxlamaq üçün diskdə kifayət qədər yer olduğuna əmin olun.</translation>
@@ -384,7 +379,6 @@
 <translation id="7550715992156305117">Diaqnostika Rejimləri</translation>
 <translation id="7561454561030345039">Bu əməliyyat admininiz tərəfindən idarə olunur</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> qalıb</translation>
 <translation id="7620771111601174153">Yardım Mərkəzində ətraflı məlumat əldə edin</translation>
 <translation id="763165478673169849">Son Sıfırlama Vaxtı</translation>
@@ -420,7 +414,6 @@
 <translation id="8132480444149501833">Nəqliyyat Sayğacları Sorğulayın</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
-<translation id="8214184102975786227">Birdən çox səhifəni bir PDF-ə skan edin</translation>
 <translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="8246209727385807362">Naməlum operator</translation>
 <translation id="8286154143153872371">Divar kağızı görmək üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>

@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Неверный PUK-код.</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
 <translation id="155865706765934889">Сенсорная панель</translation>
-<translation id="1600964289716072707">Положите другую страницу в сканер и нажмите "Сканировать".</translation>
 <translation id="1621067168122174824">Запустить проверку зарядки</translation>
 <translation id="1639239467298939599">Загрузка</translation>
 <translation id="1641857168437328880">Автоподатчик документов (односторонний)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Доступно <ph name="AVAILABLE_MEMORY" /> из <ph name="TOTAL_MEMORY" /> ГБ.</translation>
-<translation id="2129264932216073062">HTTP-запросы в ARC</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">В ОЧЕРЕДИ</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">ПРОЙДЕНО</translation>
 <translation id="2789486458103222910">ОК</translation>
 <translation id="2805756323405976993">Сервисы</translation>
-<translation id="2862104018715411648">Положите документ в сканер и нажмите "Сканировать".</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
 <translation id="2878387241690264070">Батарея разрядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Задания печати, хранящиеся дольше <ph name="NUMBER_OF_DAYS" /> дн., будут удалены</translation>
 <translation id="4003384961948020559">Сбой: выходной лоток заполнен</translation>
 <translation id="4034824040120875894">Принтер</translation>
-<translation id="4050980775484079270">DNS-преобразование ARC</translation>
 <translation id="409427325554347132">Сохранить данные</translation>
 <translation id="4131410914670010031">Черно-белая печать</translation>
 <translation id="4145784616224233563">Брандмауэр HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Стресс-тестирование</translation>
 <translation id="4917385247580444890">Сильный</translation>
 <translation id="4917889632206600977">Печать прервана: нет бумаги</translation>
-<translation id="491836528011451486">Положите документ в сканер и нажмите "Сканировать снова". Страница <ph name="CURRENT_PAGE" /> будет заменена.</translation>
 <translation id="4921665434385737356">Батарея зарядилась на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> сек.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
@@ -385,7 +380,6 @@
 <translation id="7550715992156305117">Программы диагностики</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">Проверка ping для ARC</translation>
 <translation id="7595982850646262331">Ещё <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>
 <translation id="763165478673169849">Время последнего сброса</translation>
@@ -421,7 +415,6 @@
 <translation id="8132480444149501833">Запросить счетчики трафика</translation>
 <translation id="8206859287963243715">Сотовый</translation>
 <translation id="8208861521865154048">Преимущества</translation>
-<translation id="8214184102975786227">Сканировать несколько страниц в один PDF-файл</translation>
 <translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
 <translation id="8246209727385807362">Неизвестный оператор</translation>
 <translation id="8286154143153872371">Чтобы посмотреть обои, подключитесь к сети и обновите страницу.</translation>

@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK inválido.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="155865706765934889">Touchpad</translation>
-<translation id="1600964289716072707">Coloque outra página no scanner e selecione Digitalizar para adicionar a página.</translation>
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
 <translation id="1639239467298939599">A carregar</translation>
 <translation id="1641857168437328880">Alimentador de documentos (um lado)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponíveis.</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">EM LISTA DE ESPERA</translation>
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">APROVADO</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
-<translation id="2862104018715411648">Coloque o documento no scanner e selecione Digitalizar para começar.</translation>
 <translation id="2872961005593481000">Encerrar</translation>
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">As tarefas de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidas.</translation>
 <translation id="4003384961948020559">Falha – Saída cheia</translation>
 <translation id="4034824040120875894">Impressora</translation>
-<translation id="4050980775484079270">Resolução de DNS ARC</translation>
 <translation id="409427325554347132">Guardar detalhes do teste</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Tensão</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Parada – Sem papel</translation>
-<translation id="491836528011451486">Coloque o documento no scanner e selecione Digitalizar novamente para digitalizar e substituir a página <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Carregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Verifique o scanner e tente novamente. Certifique-se de que existe espaço local suficiente para guardar os ficheiros digitalizados.</translation>
@@ -385,7 +380,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7550715992156305117">Rotinas de diagnóstico</translation>
 <translation id="7561454561030345039">Esta ação é gerida pelo seu administrador.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331">Falta(m) <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Saber mais no Centro de Ajuda</translation>
 <translation id="763165478673169849">Hora da última reposição</translation>
@@ -421,7 +415,6 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
 <translation id="8208861521865154048">Benefícios</translation>
-<translation id="8214184102975786227">Digitalizar várias páginas para um PDF</translation>
 <translation id="8230672074305416752">Falha ao enviar ping ao gateway da rede predefinida.</translation>
 <translation id="8246209727385807362">Operador desconhecido</translation>
 <translation id="8286154143153872371">Estabeleça ligação a uma rede e atualize a página para ver a imagem de fundo.</translation>

@@ -35,7 +35,6 @@
 <translation id="150962533380566081">অমান্য PUK।</translation>
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
 <translation id="155865706765934889">টাচ্চ্‌পেড</translation>
-<translation id="1600964289716072707">অন্য এখন পৃষ্ঠা স্কেনাৰটোত ৰাখক আৰু পৃষ্ঠা যোগ কৰিবৰ বাবে স্কেন কৰক বাছনি কৰক।</translation>
 <translation id="1621067168122174824">চাৰ্জ পৰীক্ষা চলাওক</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
 <translation id="1641857168437328880">নথি ফীডাৰ (এফাল থকা)</translation>
@@ -64,7 +63,6 @@
 <translation id="2080070583977670716">অধিক ছেটিং</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, সংস্কৰণ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> জিবিৰ <ph name="AVAILABLE_MEMORY" /> জিবি উপলব্ধ আছে</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">শাৰীত ৰখা হৈছে</translation>
 <translation id="2161394479394250669">প্ৰিণ্টিঙৰ কাৰ্য বাতিল কৰক</translation>
@@ -95,7 +93,6 @@
 <translation id="2783010256799387990">পাছ কৰিছে</translation>
 <translation id="2789486458103222910">ঠিক আছে</translation>
 <translation id="2805756323405976993">এপ্</translation>
-<translation id="2862104018715411648">আপোনাৰ নথিখন স্কেনাৰটোত ৰাখক আৰু আৰম্ভ কৰিবলৈ স্কেন কৰক বাছনি কৰক</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
@@ -154,7 +151,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনতকৈ পুৰণি প্ৰিণ্টৰ কামসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="4003384961948020559">বিফল হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
 <translation id="4034824040120875894">প্ৰিণ্টাৰ</translation>
-<translation id="4050980775484079270">ARC DNS ৰিজ’লিউশ্বন</translation>
 <translation id="409427325554347132">পৰীক্ষাৰ সবিশেষ ছেভ কৰক</translation>
 <translation id="4131410914670010031">ক’লা আৰু বগা</translation>
 <translation id="4145784616224233563">HTTPৰ ফায়াৰৱাল</translation>
@@ -217,7 +213,6 @@
 <translation id="4891842000192098784">চাপ</translation>
 <translation id="4917385247580444890">শক্তিশালী</translation>
 <translation id="4917889632206600977">বন্ধ হৈছে - কাগজ শেষ হৈছে</translation>
-<translation id="491836528011451486">আপোনাৰ নথিখন স্কেনাৰটোত ৰাখক আৰু পৃষ্ঠাখন <ph name="CURRENT_PAGE" /> স্কেন আৰু সলনি কৰিবলৈ আৰু পুনৰ স্কেন কৰক বাছনি কৰক।</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ হৈছে।</translation>
 <translation id="4932733599132424254">তাৰিখ</translation>
 <translation id="498186245079027698">স্কেনাৰটো পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক। স্কেন কৰা ফাইল ছেভ কৰিবলৈ পৰ্যাপ্ত পৰিমাণে স্থানীয় খালী ঠাই থকাটো নিশ্চিত কৰক।</translation>
@@ -377,7 +372,6 @@
 <translation id="7550715992156305117">ডায়গন’ষ্টিক ৰুটিন</translation>
 <translation id="7561454561030345039">এই কাৰ্যটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">এআৰচি পিং</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকী</translation>
 <translation id="7620771111601174153">সহায় কেন্দ্ৰত অধিক জানক</translation>
 <translation id="763165478673169849">অন্তিমবাৰ ৰিছেট কৰাৰ সময়</translation>
@@ -410,7 +404,6 @@
 <translation id="8132480444149501833">ট্ৰেফিক কাউণ্টাৰৰ অনুৰোধ কৰক</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
-<translation id="8214184102975786227">একাধিক পৃষ্ঠা স্কেন কৰি এটা PDF সৃষ্টি কৰক</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
 <translation id="8246209727385807362">অজ্ঞাত বাহক</translation>
 <translation id="8286154143153872371">অনুগ্ৰহ কৰি এটা নেটৱৰ্কৰ সৈতে সংযোগ কৰক আৰু ৱালপেপাৰ চাবলৈ পৃষ্ঠাখন পুনৰ ল’ড কৰক।</translation>

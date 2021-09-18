@@ -6066,6 +6066,20 @@ Die Richtlinie wird in M75 entfernt.</translation>
           Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, sind die Tastenkombinationen für Bedienungshilfen standardmäßig aktiviert.</translation>
+<translation id="8519563483516917705">Mit dieser Einstellung können Sie für Geräteupdates eine bestimmte Zielversion von <ph name="PRODUCT_OS_NAME" /> festlegen.
+
+      Wenn sie nicht aktiviert ist, werden Updates entsprechend sonstigen vorgenommenen Einstellungen durchgeführt oder die Geräte werden auf die neueste verfügbare Version aktualisiert.
+
+      Ist die Einstellung aktiviert, wird auf die ausgewählte Version aktualisiert.
+
+      Das genaue Format des Richtlinienwerts ist abhängig vom Updatedienst und kann sich ändern. Der Wert wird nicht auf dem Gerät verarbeitet.
+
+      Durch Kombination mit <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> prüft der Updatedienst zuerst die Richtlinie für die Versionsauswahl.
+      Die Geräte bleiben so lange auf der festgelegten Version, bis diese Richtlinie geändert wird. Wenn <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> allein verwendet wird, sind je nach festgelegtem Wert kleinere Updates möglich.
+
+      Durch Kombination mit <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> können die Geräte auf eine frühere Version zurückgesetzt werden.
+
+      Warnung: Google rät von Versionsbeschränkungen ab, da die Geräte dann möglicherweise weder Softwareupdates noch kritische Sicherheitskorrekturen erhalten. Updatebeschränkungen auf eine bestimmte Version können ein Risiko für die Nutzer sein.</translation>
 <translation id="8520064498689833152">Erzwingen, dass in der Google Suche SafeSearch verwendet wird und der eingeschränkte Modus für YouTube mindestens auf „Moderat“ festgelegt ist</translation>
 <translation id="8524334245528364388">URL einer JSON-Datei mit einer Liste von Druckservern.</translation>
 <translation id="8525526490824335042">Linux-Container</translation>

@@ -269,6 +269,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> ஆப்ஸை நிறுவல் நீக்க முடியவில்லை</translation>
 <translation id="1277020343994096713">உங்களின் தற்போதைய பின்னிலிருந்து (PIN) மாறுபட்ட புதிய பின்னை (PIN) உருவாக்கவும்</translation>
 <translation id="1278859221870828664">Google Play ஆப்ஸ் &amp; சேவைகள் குறித்து அறிந்துகொள்ளுங்கள்</translation>
+<translation id="1279024913354609713">வேண்டாம்</translation>
 <translation id="127946606521051357">அருகிலுள்ள சாதனம் பகிர்கிறது</translation>
 <translation id="1280965841156951489">ஃபைல்களைத் திருத்து</translation>
 <translation id="1282465000333679776">சிஸ்டத்தின் ஆடியோவைப் பகிர்</translation>
@@ -2209,6 +2210,7 @@
 <translation id="33022249435934718">GDI ஹேண்டில்ஸ்</translation>
 <translation id="3302388252085547855">காரணத்தை உள்ளிடுக...</translation>
 <translation id="3303260552072730022">நீட்டிப்பு முழுத்திரையில் தூண்டப்பட்டுள்ளது.</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> இணைப்புகளைத் திறக்க ஆப்ஸை அனுமதிக்கவா?</translation>
 <translation id="3303818374450886607">பிரதிகள்</translation>
 <translation id="3303855915957856445">தேடல் முடிவுகள் எதுவுமில்லை</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> தள்ளுபடி</translation>
@@ -2286,6 +2288,7 @@
 <translation id="339178315942519818">உங்கள் அரட்டை ஆப்ஸின் அறிவிப்புகளை <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்</translation>
 <translation id="3393554941209044235">Chrome ஆவணப் பகுப்பாய்வு</translation>
 <translation id="3394850431319394743">பாதுகாக்கப்பட்ட உள்ளடக்கத்தைப் பிளே செய்ய அடையாளங்காட்டிகளைப் பயன்படுத்த அனுமதியுள்ளவை</translation>
+<translation id="3396744558790608201">இணையத்தில் தேடும்போதும் ஷாப்பிங் செய்யும்போதும் நீங்கள் பார்க்கும் உள்ளடக்கம் குறித்து மேலும் அறிய தளத்தின் எந்தவொரு பகுதியிலும் தேட, அதன் மீது வலது கிளிக் செய்து “Google Lens மூலம் படங்களைத் தேடு” என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="3396800784455899911">"ஏற்றுக்கொண்டு, தொடர்க" பட்டனைக் கிளிக் செய்வதன் மூலம், இந்த Google சேவைகளுக்காக மேலே விவரிக்கப்பட்டுள்ள செயலாக்க நடைமுறைகளை ஏற்கிறீர்கள்.</translation>
 <translation id="339722927132407568">பிளே ஆகாமல் நிற்கிறது</translation>
 <translation id="3399432415385675819">அறிவிப்புகள் முடக்கப்படும்</translation>
@@ -2296,7 +2299,6 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">இந்தத் தளத்திற்குக் கடவுச்சொற்கள் எதுவும் சேமிக்கப்படவில்லை</translation>
 <translation id="3404249063913988450">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
-<translation id="3404805962764077228">உங்கள் மொபைல் ஆப்ஸை <ph name="DEVICE_TYPE" /> சாதனத்தில் தற்காலிகமாப் பயன்படுத்தலாம்</translation>
 <translation id="3405664148539009465">எழுத்துருக்களைப் பிரத்தியேகமாக்கு</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">விர்ச்சுவல் ரியாலிட்டியையும் தரவையும் பயன்படுத்த அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
@@ -3197,6 +3199,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> சாளரத்தைப் பகிர்கிறது.</translation>
 <translation id="4364830672918311045">அறிவிப்புகளைக் காட்டலாம்</translation>
 <translation id="4366138410738374926">அச்சிடுதல் தொடங்கப்பட்டது</translation>
+<translation id="4369121877634339065">தேட, ஏதேனும் படத்தின் மீது கிளிக் செய்து இழுக்கவும்</translation>
 <translation id="4370975561335139969">உள்ளிட்ட மின்னஞ்சலும், கடவுச்சொல்லும் பொருந்தவில்லை.</translation>
 <translation id="4371452868325715552">சர்வருடன் இணைக்க முடியவில்லை. நெட்வொர்க் இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும். இன்னமும் சிக்கல் இருந்தால் Chromebookகை மீண்டும் தொடங்கவும். பிழைக் குறியீடு: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">டெஸ்க்டாப்பை அனுப்புகிறது</translation>
@@ -5786,6 +5789,10 @@
 <translation id="7222204278952406003">Chrome உங்களது இயல்பான உலாவியாகும்</translation>
 <translation id="7222232353993864120">மின்னஞ்சல் முகவரி</translation>
 <translation id="7225179976675429563">நெட்வொர்க் வகை இல்லை</translation>
+<translation id="7226485026248318204">Google Photosஸில் உள்ள உங்கள் நினைவுகள் இங்கே காட்டப்படும். உள்நுழைந்திருக்கும்போது மட்டுமே அவற்றைப் பார்க்க முடியும்.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        எந்தெந்த நினைவுகளைப் பார்க்கலாம் என்பதை <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> தளத்திற்குச் சென்று நிர்வகியுங்கள்.</translation>
 <translation id="7228479291753472782">புவி இருப்பிடம், மைக்ரோஃபோன், கேமரா போன்ற அம்சங்களை, இணையதளங்கள் பயன்படுத்தலாமா வேண்டாமா என்பதைக் குறிக்கும் அமைப்புகளை மாற்றலாம்.</translation>
 <translation id="7228523857728654909">திரைப் பூட்டு மற்றும் உள்நுழைவு</translation>
 <translation id="7230222852462421043">&amp;சாளரத்தை மீட்டெடு</translation>
@@ -6215,6 +6222,7 @@
 <translation id="767147716926917172">பிழை அறிக்கைகளையும் உபயோகத் தரவையும் Googleளுக்குத் தானாக அனுப்பும்</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" /> இல் <ph name="HUNG_IFRAME_URL" />.</translation>
 <translation id="7674416868315480713">Linuxஸில் திருப்பிவிடப்படுகின்ற அனைத்துப் போர்ட்டுகளையும் முடக்கு</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> ஆப்ஸ்</translation>
 <translation id="7674542105240814168">இருப்பிட அணுகல் மறுக்கப்பட்டது</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' உடன் பொருந்தும் <ph name="NUM" /> தாவல் உள்ளது</translation>
 <translation id="7676867886086876795">உரை புலங்களில் நீங்கள் சொல்வதை எழுதும் வசதியை அனுமதிக்க, Googleளுக்கு உங்கள் குரலை அனுப்பும்.</translation>

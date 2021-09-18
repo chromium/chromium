@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Жараксыз PUK.</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
 <translation id="155865706765934889">Тийме такта</translation>
-<translation id="1600964289716072707">Кийинки баракты сканерге коюп, аны кошуу үчүн "Скандоо" баскычын басыңыз.</translation>
 <translation id="1621067168122174824">Кубатталышын сыноо</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
 <translation id="1641857168437328880">Документтерди берүүчү түзмөк (бир тараптуу)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Дагы жөндөөлөр</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> версиясы</translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> Гб ичинен <ph name="AVAILABLE_MEMORY" /> Гб жеткиликтүү</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">КЕЗЕККЕ КОЮЛДУ</translation>
 <translation id="2161394479394250669">Басып чыгарууну токтотуу</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">ТЕКШЕРҮҮДӨН ӨТТҮ</translation>
 <translation id="2789486458103222910">Жарайт</translation>
 <translation id="2805756323405976993">Колдонмолор</translation>
-<translation id="2862104018715411648">Документиңизди сканерге коюп, Скандоо баскычын басыңыз</translation>
 <translation id="2872961005593481000">Жабуу</translation>
 <translation id="2878387241690264070">Батареянын кубаты <ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> түгөндү.</translation>
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
 <translation id="4034824040120875894">Принтер</translation>
-<translation id="4050980775484079270">ARC DNS дааналыгы</translation>
 <translation id="409427325554347132">Сыноонун чоо-жайын сактоо</translation>
 <translation id="4131410914670010031">Ак-кара</translation>
 <translation id="4145784616224233563">HTTP тармактык коргоосу</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4917385247580444890">Күчтүү</translation>
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
-<translation id="491836528011451486">Документиңизди сканерге коюп, <ph name="CURRENT_PAGE" />-баракты скандап, алмаштыруу үчүн «Кайра скандоо» баскычын басыңыз.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> кубатталды.</translation>
 <translation id="4932733599132424254">Күнү</translation>
 <translation id="498186245079027698">Сканерди текшерип, кайра аракет кылыңыз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
@@ -385,7 +380,6 @@
 <translation id="7550715992156305117">Мүчүлүштүктөрдү аныктоо программалары</translation>
 <translation id="7561454561030345039">Бул аракетти администраторуңуз башкарат</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC Ping сурамы</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> калды</translation>
 <translation id="7620771111601174153">Жардам борборуна өтүп, кененирээк маалымат алыңыз</translation>
 <translation id="763165478673169849">Акыркы жолу баштапкы абалга келтирилген убакыт</translation>
@@ -421,7 +415,6 @@
 <translation id="8132480444149501833">Трафикти эсептегичтерди сурануу</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
-<translation id="8214184102975786227">Бир нече бетти бир PDF файлына скандоо</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
 <translation id="8246209727385807362">Белгисиз байланыш оператору</translation>
 <translation id="8286154143153872371">Тушкагазды көрүү үчүн тармакка туташып, баракты кайра жүктөңүз.</translation>

@@ -268,6 +268,7 @@
 <translation id="1276994519141842946">Impossible de désinstaller <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Créez un code différent de l'actuel</translation>
 <translation id="1278859221870828664">Examiner les applis et services Google Play</translation>
+<translation id="1279024913354609713">Ne pas autoriser</translation>
 <translation id="127946606521051357">Un appareil à proximité essaie de partager un contenu</translation>
 <translation id="1280965841156951489">Modifier les fichiers</translation>
 <translation id="1282465000333679776">Partager l'audio du système</translation>
@@ -2195,6 +2196,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="33022249435934718">Handles GDI</translation>
 <translation id="3302388252085547855">Saisissez une justification…</translation>
 <translation id="3303260552072730022">Une extension a déclenché le mode plein écran.</translation>
+<translation id="3303795387212510132">Autoriser l'appli à ouvrir des liens <ph name="PROTOCOL_SCHEME" /> ?</translation>
 <translation id="3303818374450886607">Copies</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
 <translation id="3304212451103136496">- <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2272,6 +2274,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="339178315942519818">Afficher sur votre <ph name="DEVICE_TYPE" /> les notifications de vos applications de chat</translation>
 <translation id="3393554941209044235">Analyse de documents Chrome</translation>
 <translation id="3394850431319394743">Sites autorisés à utiliser des ID pour lire du contenu protégé</translation>
+<translation id="3396744558790608201">Effectuez un clic droit et sélectionnez "Rechercher à l'aide d'images avec Google Lens" pour faire une recherche sur une zone du site afin d'en savoir plus sur le contenu visuel qui s'affiche lorsque vous surfez ou faites des achats sur le Web.</translation>
 <translation id="3396800784455899911">En cliquant sur le bouton "Accepter et continuer", vous acceptez le processus décrit ci-dessus pour ces services Google.</translation>
 <translation id="339722927132407568">Se fige</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
@@ -2282,7 +2285,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Aucun mot de passe enregistré pour ce site</translation>
 <translation id="3404249063913988450">Activer l'économiseur d'écran</translation>
-<translation id="3404805962764077228">Lisez temporairement en streaming les applis de votre téléphone directement depuis votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Personnaliser les polices</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Autorisé à utiliser des données et des appareils de réalité virtuelle</translation>
@@ -3183,6 +3185,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> partage une fenêtre.</translation>
 <translation id="4364830672918311045">Afficher les notifications</translation>
 <translation id="4366138410738374926">L'impression a commencé</translation>
+<translation id="4369121877634339065">Faites glisser une image pour rechercher</translation>
 <translation id="4370975561335139969">L'adresse e-mail et le mot de passe saisis ne correspondent pas.</translation>
 <translation id="4371452868325715552">Impossible de se connecter au serveur. Veuillez vérifier votre connexion réseau, puis réessayer. Si le problème persiste, essayez de redémarrer votre Chromebook. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Diffusion du Bureau en cours…</translation>
@@ -5771,6 +5774,10 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7222204278952406003">Chrome est votre navigateur par défaut</translation>
 <translation id="7222232353993864120">Adresse e-mail</translation>
 <translation id="7225179976675429563">Type de réseau manquant.</translation>
+<translation id="7226485026248318204">Vos souvenirs Google Photos s'affichent ici. Ils ne sont visibles que lorsque vous êtes connecté.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Gérez les éléments affichés dans les souvenirs sur <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Manipule des paramètres qui déterminent si les sites Web peuvent utiliser des fonctionnalités telles que la géolocalisation, le microphone, l'appareil photo, etc.</translation>
 <translation id="7228523857728654909">Verrouillage de l'écran et connexion</translation>
 <translation id="7230222852462421043">&amp;Restaurer la fenêtre</translation>
@@ -6200,6 +6207,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="767147716926917172">Envoyer automatiquement des données de diagnostic et d'utilisation à Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> sur <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Désactiver tous les ports transférés dans Linux</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> applis</translation>
 <translation id="7674542105240814168">Accès à la position refusé</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> onglet trouvé pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Transmettez votre voix à Google pour pouvoir dicter ce que vous voulez dans n'importe quelle zone de texte.</translation>
@@ -6985,7 +6993,7 @@ Appuyez sur un contacteur attribué pour supprimer l'association</translation>
 <translation id="8492822722330266509">Les sites peuvent afficher des pop-ups et utiliser des redirections</translation>
 <translation id="8492960370534528742">Commentaires à propos de Google Cast</translation>
 <translation id="8493236660459102203">Micro :</translation>
-<translation id="84959976576210191">Dans la barre d'adresse, saisissez le raccourci associé au site Web où vous souhaitez effectuer une recherche, par exemple "@gmail". Ensuite, utilisez le raccourci clavier de votre choix, puis saisissez votre terme de recherche.</translation>
+<translation id="84959976576210191">Dans la barre d'adresse, saisissez le raccourci du site Web où vous souhaitez effectuer une recherche, par exemple "@gmail". Ensuite, utilisez le raccourci clavier de votre choix, puis saisissez votre terme de recherche.</translation>
 <translation id="8496717697661868878">Exécuter ce plug-in</translation>
 <translation id="8497219075884839166">Utilitaires Windows</translation>
 <translation id="8498214519255567734">Facilite la lecture à l'écran lorsque l'éclairage est faible</translation>

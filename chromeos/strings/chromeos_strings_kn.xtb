@@ -35,7 +35,6 @@
 <translation id="150962533380566081">ಅಮಾನ್ಯ PUK.</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
 <translation id="155865706765934889">ಟಚ್‌ಪ್ಯಾಡ್</translation>
-<translation id="1600964289716072707">ಸ್ಕ್ಯಾನರ್‌ನಲ್ಲಿ ಇನ್ನೊಂದು ಪುಟವನ್ನು ಇರಿಸಿ ಮತ್ತು ಪುಟವನ್ನು ಸೇರಿಸಲು ಸ್ಕ್ಯಾನ್ ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="1621067168122174824">ಚಾರ್ಜ್‌ ಪರೀಕ್ಷೆಯನ್ನು ರನ್‌ ಮಾಡಿ</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1641857168437328880">ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ (ಒಂದು-ಬದಿಯದ್ದು)</translation>
@@ -64,7 +63,6 @@
 <translation id="2080070583977670716">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB ಯಲ್ಲಿನ <ph name="AVAILABLE_MEMORY" /> GB ಲಭ್ಯವಿದೆ</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ಸರದಿಯಲ್ಲಿರಿಸಲಾಗಿದೆ</translation>
 <translation id="2161394479394250669">ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಿ</translation>
@@ -95,7 +93,6 @@
 <translation id="2783010256799387990">ಪರಿಶೀಲನೆ ಸಫಲವಾಗಿದೆ</translation>
 <translation id="2789486458103222910">ಸರಿ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
-<translation id="2862104018715411648">ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನರ್‌ನಲ್ಲಿ ಇರಿಸಿ ಮತ್ತು ಸ್ಕ್ಯಾನಿಂಗ್ ಪ್ರಾರಂಭಿಸಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2872961005593481000">ಮುಚ್ಚಿಬಿಡಿ </translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗಿದೆ.</translation>
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
@@ -154,7 +151,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ದಿನಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="4003384961948020559">ವಿಫಲವಾಗಿದೆ - ಔಟ್‌ಪುಟ್ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="4034824040120875894">ಪ್ರಿಂಟರ್</translation>
-<translation id="4050980775484079270">ARC DNS ರೆಸಲ್ಯೂಷನ್‌‌</translation>
 <translation id="409427325554347132">ಪರೀಕ್ಷಾ ವಿವರಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
 <translation id="4145784616224233563">HTTP ಫೈರ್‌ವಾಲ್</translation>
@@ -217,7 +213,6 @@
 <translation id="4891842000192098784">ಒತ್ತಡ</translation>
 <translation id="4917385247580444890">ಪ್ರಬಲ</translation>
 <translation id="4917889632206600977">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಪೇಪರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
-<translation id="491836528011451486">ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನರ್‌ನಲ್ಲಿ ಇರಿಸಿ ಮತ್ತು ಪುಟ <ph name="CURRENT_PAGE" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಮತ್ತು ಬದಲಿಸಲು ಮರುಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಶುಲ್ಕವನ್ನು ವಿಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
 <translation id="498186245079027698">ಸ್ಕ್ಯಾನರ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಸ್ಕ್ಯಾನ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಕಷ್ಟು ಸ್ಥಳೀಯ ಸ್ಥಳವಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
@@ -376,7 +371,6 @@
 <translation id="7550715992156305117">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ದಿನಚರಿಗಳು</translation>
 <translation id="7561454561030345039">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC ಪಿಂಗ್</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="7620771111601174153">ಸಹಾಯ ಕೇಂದ್ರದಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="763165478673169849">ಕೊನೆಯದಾಗಿ ರೀಸೆಟ್ ಮಾಡಿದ ಸಮಯ</translation>
@@ -409,7 +403,6 @@
 <translation id="8132480444149501833">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="8206859287963243715">ಸೆಲ್ಯುಲಾರ್</translation>
 <translation id="8208861521865154048">ಪರ್ಕ್‌ಗಳು</translation>
-<translation id="8214184102975786227">ಒಂದೇ PDF ಗೆ ಹಲವಾರು ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="8230672074305416752">ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8246209727385807362">ಅಪರಿಚಿತ ವಾಹಕ</translation>
 <translation id="8286154143153872371">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಹಾಗೂ ವಾಲ್‌ಪೇಪರ್ ವೀಕ್ಷಿಸಲು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ.</translation>

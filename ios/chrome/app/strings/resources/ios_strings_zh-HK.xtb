@@ -526,7 +526,7 @@
 <translation id="6189413832092199491">未讀</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
-<translation id="6207754106943147310"><ph name="BEGIN_LINK" />查看你能同步處理哪些內容<ph name="END_LINK" />。</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />查看您可同步的內容<ph name="END_LINK" />。</translation>
 <translation id="6219688215832490856">永不翻譯</translation>
 <translation id="6223816392543092032">您可從任何裝置取得自己的書籤、記錄、密碼和其他設定。</translation>
 <translation id="6232329973559504466">無痕搜尋</translation>
@@ -723,7 +723,7 @@
 
 網站可使用 Cookie 來查看您在各網站的瀏覽活動，例如放送個人化廣告。</translation>
 <translation id="7971521879845308059">封鎖彈出式視窗</translation>
-<translation id="797413074872316787">如要在所有裝置上保持同步並享有個人化體驗，請開啟同步功能。</translation>
+<translation id="797413074872316787">如要在不同裝置上同步並享受個人化體驗，請開啟同步處理功能。</translation>
 <translation id="7982789257301363584">網絡</translation>
 <translation id="7993619969781047893">部分網站的功能可能會無法正常運作</translation>
 <translation id="800361585186029508">在 Google Chrome 中開啟已輸入的網址。</translation>
@@ -740,7 +740,7 @@
 <translation id="8076014560081431679">系統不會刪除已儲存的網站設定，這可能會反映您的瀏覽習慣。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">呢個設定已經受管理，㩒兩下就可以了解詳情</translation>
 <translation id="8080028325999236607">關閉所有分頁</translation>
-<translation id="8103864314410529527">貴機構對你能同步處理的內容設有限制。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="8103864314410529527">您的機構已限制您可同步的內容。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">關閉</translation>
 <translation id="8114753159095730575">您可以下載檔案。可用選項喺螢幕底部附近。</translation>
 <translation id="8156478151976189188">密碼同步功能無法正常運作</translation>

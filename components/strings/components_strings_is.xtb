@@ -1159,7 +1159,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4827402517081186284">Huliðsstilling gerir þig ekki ósýnilega(n) á netinu:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Vefsvæði vita þegar þú opnar þau<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Starfsfólk eða skólar geta rakið vafranotkun<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Vinnuveitendur eða skólar geta rakið vafranotkun<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Netþjónustur kunna að fylgjast með netumferð<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">Kveikja á viðvörunum</translation>
@@ -2188,7 +2188,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8368476060205742148">Þjónusta Google Play</translation>
 <translation id="8371889962595521444">Sérsniðin rótarvottorð</translation>
 <translation id="8374636051559112948">Breytileg</translation>
-<translation id="8380167699614421159">Þetta vefsvæði sýnir ágengar eða villandi auglýsingar</translation>
 <translation id="8380941800586852976">Hættulegt</translation>
 <translation id="8381674639488873545">Greiðslur gætu verið stakar eða endurteknar og hugsanlega er ekki greinilegt að borga þurfi. <ph name="BEGIN_LINK" />Sýna samt<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Regla stjórnanda lokar á að hægt sé að deila frá <ph name="ORIGIN_NAME" /> í <ph name="VM_NAME" /></translation>

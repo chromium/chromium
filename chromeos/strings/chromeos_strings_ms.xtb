@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK tidak sah.</translation>
 <translation id="1510238584712386396">Pelancar</translation>
 <translation id="155865706765934889">Pad sentuh</translation>
-<translation id="1600964289716072707">Letakkan halaman lain di atas pengimbas dan pilih Imbas untuk menambah halaman.</translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
 <translation id="1641857168437328880">Penyuap Dokumen (Satu sisi)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Lagi tetapan</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB daripada <ph name="TOTAL_MEMORY" /> GB tersedia</translation>
-<translation id="2129264932216073062">HTTP ARC</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">BERBARIS GILIR</translation>
 <translation id="2161394479394250669">Batalkan tugas cetak</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">LULUS</translation>
 <translation id="2789486458103222910">Okey</translation>
 <translation id="2805756323405976993">Apl</translation>
-<translation id="2862104018715411648">Letakkan dokumen anda di atas pengimbas dan pilih Imbas untuk bermula</translation>
 <translation id="2872961005593481000">Mematikan</translation>
 <translation id="2878387241690264070">Dinyahcas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Tugas cetak yang melebihi <ph name="NUMBER_OF_DAYS" /> hari akan dialih keluar</translation>
 <translation id="4003384961948020559">Gagal - Output penuh</translation>
 <translation id="4034824040120875894">Pencetak</translation>
-<translation id="4050980775484079270">Peleraian DNS ARC</translation>
 <translation id="409427325554347132">Simpan butiran ujian</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
 <translation id="4145784616224233563">Tembok Api HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Tekanan</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kehabisan kertas</translation>
-<translation id="491836528011451486">Letakkan dokumen anda di atas pengimbas dan pilih Imbas semula untuk mengimbas dan menggantikan halaman <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Dicas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="4932733599132424254">Tarikh</translation>
 <translation id="498186245079027698">Periksa pengimbas dan cuba lagi. Pastikan terdapat ruang setempat yang mencukupi untuk menyimpan fail yang diimbas.</translation>
@@ -385,7 +380,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7550715992156305117">Rutin Diagnostik</translation>
 <translation id="7561454561030345039">Tindakan ini diurus oleh pentadbir anda</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">Ping ARC</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
 <translation id="7620771111601174153">Ketahui lebih lanjut dalam Pusat Bantuan</translation>
 <translation id="763165478673169849">Masa Terakhir Ditetapkan Semula</translation>
@@ -421,7 +415,6 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8208861521865154048">Manfaat</translation>
-<translation id="8214184102975786227">Imbas berbilang halaman menjadi satu PDF</translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
 <translation id="8246209727385807362">Pembawa tidak diketahui</translation>
 <translation id="8286154143153872371">Sila sambung kepada rangkaian dan muatkan semula halaman untuk melihat kertas dinding.</translation>

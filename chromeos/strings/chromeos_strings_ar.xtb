@@ -35,7 +35,6 @@
 <translation id="150962533380566081">‏PUK غير صالح.</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="155865706765934889">لوحة اللمس</translation>
-<translation id="1600964289716072707">يُرجى وضع صفحة أخرى على الماسح الضوئي واختيار "المسح ضوئيًا" لإضافة الصفحة.</translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
 <translation id="1639239467298939599">جارٍ التحميل.</translation>
 <translation id="1641857168437328880">وحدة تغذية المستندات (وجه واحد)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، الإصدار <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">يتبقّى <ph name="AVAILABLE_MEMORY" /> غيغابايت من إجمالي <ph name="TOTAL_MEMORY" /> غيغابايت.</translation>
-<translation id="2129264932216073062">‏اختبار بروتوكول HTTP لوقت تشغيل التطبيقات في Chrome‏ (ARC)</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">تم وضع الاختبار في قائمة الانتظار.</translation>
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">تم الاجتياز</translation>
 <translation id="2789486458103222910">حسنًا</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
-<translation id="2862104018715411648">للبدء، يُرجى وضع المستند على الماسح الضوئي واختيار "المسح ضوئيًا".</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من <ph name="NUMBER_OF_DAYS" /> يوم.</translation>
 <translation id="4003384961948020559">تعذّرت الطباعة - المخرجات ممتلئة</translation>
 <translation id="4034824040120875894">الطابعة</translation>
-<translation id="4050980775484079270">‏اختبار التحويل باستخدام نظام أسماء النطاقات (DNS) لوقت تشغيل التطبيقات في Chrome</translation>
 <translation id="409427325554347132">حفظ تفاصيل الاختبار</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
 <translation id="4145784616224233563">‏الجدار الناري لبروتوكل HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">الإجهاد</translation>
 <translation id="4917385247580444890">قوية</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
-<translation id="491836528011451486">يُرجى وضع المستند على الماسح الضوئي واختيار "إعادة المسح الضوئي" لمسح صفحة <ph name="CURRENT_PAGE" /> واستبدالها.</translation>
 <translation id="4921665434385737356">تم شحن <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
@@ -385,7 +380,6 @@
 <translation id="7550715992156305117">سلسلة إجراءات بيانات التشخيص</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">‏اختبار فحص الاتصال لوقت تشغيل التطبيقات في Chrome</translation>
 <translation id="7595982850646262331">الوقت المتبقّي: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">مزيد من المعلومات في "مركز المساعدة"</translation>
 <translation id="763165478673169849">وقت آخر عملية إعادة ضبط</translation>
@@ -421,7 +415,6 @@
 <translation id="8132480444149501833">طلب عدّادات حركة بيانات الشبكة</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
-<translation id="8214184102975786227">‏مسح صفحات متعدّدة ضوئيًا وتحويلها إلى ملف PDF واحد</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
 <translation id="8246209727385807362">مشغل شبكة جوّال غير معروف</translation>
 <translation id="8286154143153872371">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الخلفية.</translation>

@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK nevalid.</translation>
 <translation id="1510238584712386396">Lansator</translation>
 <translation id="155865706765934889">Touchpad</translation>
-<translation id="1600964289716072707">Așază altă pagină pe scaner și selectează Scanează ca să o adaugi.</translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1641857168437328880">Alimentator de documente (o singură față)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Mai multe setări</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiunea <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB din <ph name="TOTAL_MEMORY" /> GB disponibili</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">ÎN COADĂ</translation>
 <translation id="2161394479394250669">Anulează sarcina de printare</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">REUȘIT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplicații</translation>
-<translation id="2862104018715411648">Așază documentul pe scaner și selectează Scanează pentru a începe</translation>
 <translation id="2872961005593481000">Închide</translation>
 <translation id="2878387241690264070">S-a descărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Sarcinile de printare mai vechi de <ph name="NUMBER_OF_DAYS" /> zile vor fi eliminate</translation>
 <translation id="4003384961948020559">Nereușită – Tavă de ieșire plină</translation>
 <translation id="4034824040120875894">Imprimantă</translation>
-<translation id="4050980775484079270">Rezolvare DNS ARC</translation>
 <translation id="409427325554347132">Salvează detaliile testului</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
-<translation id="491836528011451486">Așază documentul pe scaner și selectează Scanează din nou pentru a scana și a înlocui pagina <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">S-a încărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
@@ -385,7 +380,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7550715992156305117">Rutine de diagnosticare</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">Ping către ARC</translation>
 <translation id="7595982850646262331">Timp rămas: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Află mai multe din Centrul de ajutor</translation>
 <translation id="763165478673169849">Data ultimei resetări</translation>
@@ -421,7 +415,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8132480444149501833">Solicită contoare de trafic</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Avantaje</translation>
-<translation id="8214184102975786227">Scanează mai multe pagini într-un fișier PDF</translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
 <translation id="8246209727385807362">Operator necunoscut</translation>
 <translation id="8286154143153872371">Conectează-te la o rețea și reîncarcă pagina pentru a vedea imaginea de fundal.</translation>

@@ -2283,7 +2283,6 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Ниједна лозинка није сачувана за овај сајт</translation>
 <translation id="3404249063913988450">Омогућите чувар екрана</translation>
-<translation id="3404805962764077228">Привремени стриминг апликација на телефону директно са уређаја <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Прилагоди фонтове</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Дозвољено им је да користе уређаје и податке виртуелне реалности</translation>
@@ -3184,7 +3183,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> дели прозор.</translation>
 <translation id="4364830672918311045">Приказуј обавештења</translation>
 <translation id="4366138410738374926">Штампање је започето</translation>
-<translation id="4369121877634339065">Превуците преко било коју слику да бисте претражили</translation>
+<translation id="4369121877634339065">Превуците било коју слику да бисте претражили</translation>
 <translation id="4370975561335139969">Имејл и лозинка које сте унели се не подударају</translation>
 <translation id="4371452868325715552">Повезивање са сервером није успело. Проверите мрежну везу и пробајте поново. Ако и даље имате проблема, пробајте поново да покренете Chromebook. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Пребацујемо радну површину</translation>

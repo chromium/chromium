@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK 无效。</translation>
 <translation id="1510238584712386396">启动器</translation>
 <translation id="155865706765934889">触控板</translation>
-<translation id="1600964289716072707">将另一个网页放置在扫描仪上，然后选择“扫描”即可添加网页。</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1641857168437328880">文件馈送器（单面）</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">可用内存为 <ph name="AVAILABLE_MEMORY" /> GB，总共 <ph name="TOTAL_MEMORY" /> GB</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">已加入队列</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">通过</translation>
 <translation id="2789486458103222910">确定</translation>
 <translation id="2805756323405976993">应用</translation>
-<translation id="2862104018715411648">将您的文件放置在扫描仪上，然后选择“扫描”即可开始扫描</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
 <translation id="3008341117444806826">刷新</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
 <translation id="4034824040120875894">打印机</translation>
-<translation id="4050980775484079270">ARC DNS 解析</translation>
 <translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">压力</translation>
 <translation id="4917385247580444890">强</translation>
 <translation id="4917889632206600977">已停止 - 纸张已用完</translation>
-<translation id="491836528011451486">将您的文件放置在扫描仪上，然后选择“重新扫描”即可扫描并替换第 <ph name="CURRENT_PAGE" /> 页。</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒内充了 <ph name="RATE" /> 的电量。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="498186245079027698">请检查扫描仪，然后重试。另请确保有足够的本地空间来保存扫描版文件。</translation>
@@ -385,7 +380,6 @@
 <translation id="7550715992156305117">诊断例程</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331">电池续航时间还剩 <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>
 <translation id="763165478673169849">上次重置时间</translation>
@@ -421,7 +415,6 @@
 <translation id="8132480444149501833">请求流量计数器</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
-<translation id="8214184102975786227">将多个页面扫描成 1 个 PDF 文件</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8246209727385807362">未知运营商</translation>
 <translation id="8286154143153872371">若要查看壁纸，请连接到网络并重新加载这个页面。</translation>

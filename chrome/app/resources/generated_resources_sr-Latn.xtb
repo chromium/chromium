@@ -2283,7 +2283,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Nijedna lozinka nije sačuvana za ovaj sajt</translation>
 <translation id="3404249063913988450">Omogućite čuvar ekrana</translation>
-<translation id="3404805962764077228">Privremeni striming aplikacija na telefonu direktno sa uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Prilagodi fontove</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Dozvoljeno im je da koriste uređaje i podatke virtuelne realnosti</translation>
@@ -3184,7 +3183,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deli prozor.</translation>
 <translation id="4364830672918311045">Prikazuj obaveštenja</translation>
 <translation id="4366138410738374926">Štampanje je započeto</translation>
-<translation id="4369121877634339065">Prevucite preko bilo koju sliku da biste pretražili</translation>
+<translation id="4369121877634339065">Prevucite bilo koju sliku da biste pretražili</translation>
 <translation id="4370975561335139969">Imejl i lozinka koje ste uneli se ne podudaraju</translation>
 <translation id="4371452868325715552">Povezivanje sa serverom nije uspelo. Proverite mrežnu vezu i probajte ponovo. Ako i dalje imate problema, probajte ponovo da pokrenete Chromebook. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Prebacujemo radnu površinu</translation>

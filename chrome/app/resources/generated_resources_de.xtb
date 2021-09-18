@@ -267,6 +267,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> konnte nicht deinstalliert werden</translation>
 <translation id="1277020343994096713">Legen Sie eine neue PIN fest, die sich von Ihrer aktuellen PIN unterscheidet</translation>
 <translation id="1278859221870828664">Google Play-Apps und -Dienste überprüfen</translation>
+<translation id="1279024913354609713">Nicht zulassen</translation>
 <translation id="127946606521051357">Gerät in der Nähe möchte Inhalte teilen</translation>
 <translation id="1280965841156951489">Dateien bearbeiten</translation>
 <translation id="1282465000333679776">Audio des Systems teilen</translation>
@@ -2191,6 +2192,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="33022249435934718">GDI-Handles</translation>
 <translation id="3302388252085547855">Bitte geben Sie einen Grund ein…</translation>
 <translation id="3303260552072730022">Eine Erweiterung hat den Vollbildmodus ausgelöst.</translation>
+<translation id="3303795387212510132">App erlauben, Links vom Typ <ph name="PROTOCOL_SCHEME" /> zu öffnen?</translation>
 <translation id="3303818374450886607">Kopien</translation>
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> Rabatt</translation>
@@ -2268,6 +2270,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="339178315942519818">Benachrichtigungen von Ihren Chat-Apps auf Ihrem <ph name="DEVICE_TYPE" /> sehen</translation>
 <translation id="3393554941209044235">Chrome-Dokumentenanalyse</translation>
 <translation id="3394850431319394743">Darf Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
+<translation id="3396744558790608201">Klicken Sie mit der rechten Maustaste und wählen Sie „Mit Google Lens in Bildern suchen“ aus, um in einem beliebigen Bereich der Website zu suchen und mehr über die visuellen Inhalte zu erfahren, die Sie beim Surfen und Einkaufen im Internet sehen.</translation>
 <translation id="3396800784455899911">Wenn Sie auf die Schaltfläche "Akzeptieren und fortfahren" klicken, willigen Sie damit in die oben für diese Google-Dienste beschriebene Verarbeitung Ihrer Daten ein.</translation>
 <translation id="339722927132407568">Hängenbleiben</translation>
 <translation id="3399432415385675819">Benachrichtigungen werden deaktiviert</translation>
@@ -2278,7 +2281,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Für diese Website sind keine Passwörter gespeichert</translation>
 <translation id="3404249063913988450">Bildschirmschoner aktivieren</translation>
-<translation id="3404805962764077228">Smartphone-Apps vorübergehend direkt von Ihrem Gerät (<ph name="DEVICE_TYPE" />) verwenden</translation>
 <translation id="3405664148539009465">Schriftart anpassen</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Dürfen Virtual-Reality-Geräte und ‑Daten verwenden</translation>
@@ -3179,6 +3181,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> hat ein Fenster freigegeben.</translation>
 <translation id="4364830672918311045">Benachrichtigungen einblenden</translation>
 <translation id="4366138410738374926">Druckvorgang gestartet</translation>
+<translation id="4369121877634339065">Zum Suchen über Bildbereich ziehen</translation>
 <translation id="4370975561335139969">Die E-Mail-Adresse und das Passwort, die Sie eingegeben haben, stimmen nicht überein.</translation>
 <translation id="4371452868325715552">Keine Verbindung mit dem Server möglich. Prüfen Sie Ihre Netzwerkverbindung und versuchen Sie es noch einmal. Falls weiterhin Probleme auftreten, versuchen Sie, Ihr Chromebook neu zu starten. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Desktop wird übertragen</translation>
@@ -5764,6 +5767,10 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7222204278952406003">Chrome ist Ihr Standardbrowser</translation>
 <translation id="7222232353993864120">E-Mail-Adresse</translation>
 <translation id="7225179976675429563">Netzwerktyp fehlt.</translation>
+<translation id="7226485026248318204">Ihre Erinnerungen in Google Fotos werden hier angezeigt. Dazu müssen Sie angemeldet sein.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> können Sie festlegen, was Sie in Ihren Erinnerungen sehen.</translation>
 <translation id="7228479291753472782">Einstellungen bearbeiten, die festlegen, ob Websites Funktionen wie die Standortbestimmung, das Mikrofon, die Kamera usw. verwenden dürfen</translation>
 <translation id="7228523857728654909">Bildschirmsperre und Anmeldung</translation>
 <translation id="7230222852462421043">Fenster wiederherstellen</translation>
@@ -6193,6 +6200,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="767147716926917172">Diagnose- und Nutzungsdaten werden automatisch an Google gesendet</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> auf <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Portweiterleitung in Linux für alle Ports deaktivieren</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> Apps</translation>
 <translation id="7674542105240814168">Standortzugriff verweigert</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> Tab für "<ph name="SEARCH_TEXT" />" gefunden</translation>
 <translation id="7676867886086876795">Ihre Spracheingaben werden an Google gesendet, damit sie in das entsprechende Textfeld eingetragen werden können.</translation>

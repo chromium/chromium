@@ -2168,7 +2168,7 @@ Dodatne podrobnosti:
 <translation id="831207732689920588">Ta stran je sumljiva (označil jo je Chrome).</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">obvestila</translation>
-<translation id="8328484624016508118">Po zaprtju vseh anonimnih zavihkov Chrome izbriše to:
+<translation id="8328484624016508118">Po zaprtju vseh anonimnih zavihkov Chrome počisti:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />vaše brskanje v tej napravi;<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />vašo zgodovino iskanja v tej napravi;<ph name="END_LIST_ITEM" />
@@ -2188,7 +2188,6 @@ Dodatne podrobnosti:
 <translation id="8368476060205742148">Storitve Google Play</translation>
 <translation id="8371889962595521444">Korenska potrdila po meri</translation>
 <translation id="8374636051559112948">Se razlikuje</translation>
-<translation id="8380167699614421159">To spletno mesto prikazuje vsiljive ali zavajajoče oglase</translation>
 <translation id="8380941800586852976">Nevarno</translation>
 <translation id="8381674639488873545">Te bremenitve so lahko enkratne ali ponavljajoče se in morda niso očitne. <ph name="BEGIN_LINK" />Vseeno pokaži<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Deljenje iz vira <ph name="ORIGIN_NAME" /> v navidezni računalnik <ph name="VM_NAME" /> je blokiral pravilnik skrbnika.</translation>

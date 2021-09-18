@@ -265,6 +265,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> अनइन्स्टल गर्न सकिएन</translation>
 <translation id="1277020343994096713">तपाईंले हाल प्रयोग गरिराख्नुभएको भन्दा फरक PIN सिर्जना गर्नुहोस्</translation>
 <translation id="1278859221870828664">Google Play का एप तथा सेवाहरूको समीक्षा गर्नुहोस्</translation>
+<translation id="1279024913354609713">अनुमति नदिनुहोस्</translation>
 <translation id="127946606521051357">नजिकैको यन्त्रले डेटा सेयर गर्ने प्रयास गर्दै छ।</translation>
 <translation id="1280965841156951489">फाइलहरू सम्पादन गर्नुहोस्</translation>
 <translation id="1282465000333679776">सिस्टममा बजिरहेको अडियो प्ले गर्नुहोस्</translation>
@@ -2192,6 +2193,7 @@
 <translation id="33022249435934718">GDI ह्यान्डलहरू</translation>
 <translation id="3302388252085547855">कारण हाल्नुहोस्...</translation>
 <translation id="3303260552072730022">एक विस्तारले पूर्ण स्क्रिनलाई ट्रिगर गर्‍यो।</translation>
+<translation id="3303795387212510132">एपलाई <ph name="PROTOCOL_SCHEME" /> लिंकहरू खोल्ने अनुमति दिनुहोस्?</translation>
 <translation id="3303818374450886607">प्रतिहरू</translation>
 <translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> छुट</translation>
@@ -2269,6 +2271,7 @@
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" /> मा आफ्ना च्याट एपका सूचनाहरू हेर्नुहोस्</translation>
 <translation id="3393554941209044235">Chrome को डकुमेन्ट विश्लेषण</translation>
 <translation id="3394850431319394743">संरक्षित सामग्री प्ले गर्न आइडेन्टिफायर प्रयोग गर्ने अनुमति दिइएको छ</translation>
+<translation id="3396744558790608201">तपाईं वेब ब्राउज गर्दा र वेबमा किनमेल गर्दा तपाईंलाई देखाइने भिजुअल सामग्रीका बारेमा थप जानकारी प्राप्त गर्नका निम्ति साइटको कुनै पनि क्षेत्र खोज्न चाहनुहुन्छ भने उक्त क्षेत्रमा गई दायाँ क्लिक गर्नुहोस् र "Google लेन्स प्रयोग गरी फोटो खोज्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="3396800784455899911">"स्वीकार गरी जारी राख्नुहोस् " नामक बटनमा क्लिक गरेर तपाईं Google का यी सेवाहरूका लागि माथि वर्णन गरिएको प्रक्रियामा सहमति जनाउनु हुन्छ।</translation>
 <translation id="339722927132407568">भिडियो अड्किन्छ</translation>
 <translation id="3399432415385675819">सूचनाहरू प्राप्त गर्ने सुविधालाई असक्षम पारिनेछ</translation>
@@ -2279,7 +2282,6 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">यो साइटका लागि कुनै पनि पासवर्ड सुरक्षित गरिएको छैन</translation>
 <translation id="3404249063913988450">स्क्रिन सेभर सक्षम पार्नुहोस्</translation>
-<translation id="3404805962764077228"><ph name="DEVICE_TYPE" /> प्रयोग गरेर आफ्नो फोनमा भएका एपहरू केही समयका लागि चलाउनुहोस्</translation>
 <translation id="3405664148539009465">फन्टहरूलाई आफू अनुकूल गर्नुहोस्</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">भर्चुअल रियालिटी चल्ने यन्त्र र तिनमा भएका डेटा प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
@@ -3179,6 +3181,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> एउटा विन्डोलाई साझेदारी गर्दैछ</translation>
 <translation id="4364830672918311045">सूचनाहरू देखाउनुहोस्</translation>
 <translation id="4366138410738374926">प्रिन्ट गर्ने कार्य सुरु भयो</translation>
+<translation id="4369121877634339065">खोज्नका लागि फोटोमा ड्र्याग गर्नुहोस्</translation>
 <translation id="4370975561335139969">तपाईँले प्रविष्टि गर्नुभएको इमेल र पासवर्ड मेल खाँदैनन्</translation>
 <translation id="4371452868325715552">सर्भरमा कनेक्ट गर्न सकिएन। कृपया इन्टरनेट जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। तपाईंलाई अझै पनि साइन इन गर्न समस्या भइरहेको छ भने आफ्नो Chromebook रिस्टार्ट गरी हेर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="4373966964907728675">डेस्कटप Cast गर्दै</translation>
@@ -5765,6 +5768,10 @@
 <translation id="7222204278952406003">Chrome तपाईंको डिफल्ट ब्राउजर हो</translation>
 <translation id="7222232353993864120">इमेल ठेगाना</translation>
 <translation id="7225179976675429563">नेटवर्क प्रकार छैन</translation>
+<translation id="7226485026248318204">Google Photos मा भएका तपाईंका स्मरणीय क्षणहरू यहाँ देखाइन्छ। तपाईं साइन इन भएका बेला मात्र ती क्षणहरू देखिन्छन्।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तपाईंका स्मरणीय क्षणहरूमा देखाइने फोटो तथा भिडियोहरू व्यवस्थापन गर्न <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="7228479291753472782">वेबसाइटहरूले भूस्थान, माइक्रोफोन, क्यामेरा जस्ता सुविधाहरूको प्रयोग गर्न सक्छन् वा सक्दैनन् भन्ने कुरा निर्दिष्ट गर्ने सेटिङहरूलाई फेरबदल गर्नुहोस्।</translation>
 <translation id="7228523857728654909">स्क्रिन लक तथा साइन इन</translation>
 <translation id="7230222852462421043">&amp;विन्डो रिस्टोर गर्नुहोस्</translation>
@@ -6194,6 +6201,7 @@
 <translation id="767147716926917172">Google लाई निदान र प्रयोगसम्बन्धी डेटा स्वतः पठाउँछ</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> मा।</translation>
 <translation id="7674416868315480713">Linux मा फरवार्ड भइराखेका सबै पोर्टहरू निष्क्रिय पार्नुहोस्</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> वटा एप</translation>
 <translation id="7674542105240814168">यो साइटलाई स्थानसम्बन्धी जानकारी प्रयोग गर्न दिइएन</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' खोज्दा <ph name="NUM" /> ट्याब भेटियो</translation>
 <translation id="7676867886086876795">कुनै पनि पाठ क्षेत्रमा श्रुतिलेखन गर्ने सुविधा सक्षम पार्न आफ्नो आवाज Google मा पठाउनुहोस्।</translation>

@@ -35,7 +35,6 @@
 <translation id="150962533380566081">El PUK no és vàlid.</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
 <translation id="155865706765934889">Ratolí tàctil</translation>
-<translation id="1600964289716072707">Col·loca una altra pàgina a l'escàner i selecciona Escaneja per afegir la pàgina.</translation>
 <translation id="1621067168122174824">Executa la prova de càrrega</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
 <translation id="1641857168437328880">Alimentador de documents (a una cara)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Més opcions de configuració</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponibles</translation>
-<translation id="2129264932216073062">HTTP a ARC</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">S'HA POSAT A LA CUA</translation>
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">SUPERADA</translation>
 <translation id="2789486458103222910">D'acord</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
-<translation id="2862104018715411648">Col·loca el document a l'escàner i selecciona Escaneja per començar</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="2878387241690264070">S'ha descarregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
 <translation id="4034824040120875894">Impressora</translation>
-<translation id="4050980775484079270">Resolució de DNS d'ARC</translation>
 <translation id="409427325554347132">Desa els detalls de la prova</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="4145784616224233563">Tallafoc HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Estrès</translation>
 <translation id="4917385247580444890">Forta</translation>
 <translation id="4917889632206600977">S'ha aturat: no hi ha paper</translation>
-<translation id="491836528011451486">Col·loca el document a l'escàner i selecciona Torna a escanejar i substitueix la pàgina <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
@@ -385,7 +380,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7550715992156305117">Rutines de diagnòstic</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">Ping d'ARC</translation>
 <translation id="7595982850646262331">Temps restant: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Més informació al Centre d'ajuda</translation>
 <translation id="763165478673169849">Hora del darrer restabliment</translation>
@@ -421,7 +415,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8132480444149501833">Sol·licita els comptadors de trànsit</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>
-<translation id="8214184102975786227">Escaneja múltiples pàgines en un PDF</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8246209727385807362">Operador de telefonia mòbil desconegut</translation>
 <translation id="8286154143153872371">Connecta't a una xarxa i torna a carregar la pàgina per veure el fons de pantalla.</translation>

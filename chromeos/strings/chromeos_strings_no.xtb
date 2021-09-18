@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Ugyldig PUK.</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
 <translation id="155865706765934889">Styreflate</translation>
-<translation id="1600964289716072707">Legg en ny side på skanneren, og trykk på Skann for å legge til siden.</translation>
 <translation id="1621067168122174824">Kjør ladetest</translation>
 <translation id="1639239467298939599">Laster inn</translation>
 <translation id="1641857168437328880">Dokumentmater (ensidig)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Flere innstillinger</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versjon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB av <ph name="TOTAL_MEMORY" /> GB er tilgjengelig</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">I KØ</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobben</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">BESTÅTT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apper</translation>
-<translation id="2862104018715411648">Legg dokumentet på skanneren, og velg Skann for å komme i gang</translation>
 <translation id="2872961005593481000">Slå av</translation>
 <translation id="2878387241690264070">Ladet ut <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Utskriftsjobber som er eldre enn <ph name="NUMBER_OF_DAYS" /> dager, blir fjernet</translation>
 <translation id="4003384961948020559">Mislykket – utskriftsmottaket er fullt</translation>
 <translation id="4034824040120875894">Skriver</translation>
-<translation id="4050980775484079270">ARC DNS-oppslag</translation>
 <translation id="409427325554347132">Lagre testdetaljer</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
 <translation id="4145784616224233563">HTTP-brannmur</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4917889632206600977">Stoppet – tom for papir</translation>
-<translation id="491836528011451486">Legg dokumentet på skanneren, og velg Skann på nytt for å skanne og erstatte side <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Ladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
@@ -385,7 +380,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7550715992156305117">Diagnostikkrutiner</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC-ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> igjen</translation>
 <translation id="7620771111601174153">Finn ut mer i Brukerstøtte</translation>
 <translation id="763165478673169849">Forrige tidspunkt for tilbakestilling</translation>
@@ -421,7 +415,6 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8132480444149501833">Be om trafikktellere</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
-<translation id="8214184102975786227">Skann flere sider til én PDF-fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
 <translation id="8246209727385807362">Ukjent operatør</translation>
 <translation id="8286154143153872371">Koble til et nettverk og last inn siden på nytt for å se bakgrunnsbildet.</translation>

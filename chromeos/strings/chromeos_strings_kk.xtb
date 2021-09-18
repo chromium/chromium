@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK коды жарамсыз.</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="155865706765934889">Сенсорлық тақта</translation>
-<translation id="1600964289716072707">Сканерге басқа бетті қойып, "Сканерлеу" түймесін бассаңыз, бет қосылады.</translation>
 <translation id="1621067168122174824">Заряд тексерісін іске қосу</translation>
 <translation id="1639239467298939599">Жүктелуде</translation>
 <translation id="1641857168437328880">Құжат беруші (бір жақты)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Қосымша параметрлер</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-нұсқа</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> ГБ қолжетімді.</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">КЕЗЕКТЕ</translation>
 <translation id="2161394479394250669">Баспа жұмысынан бас тарту</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">ӨТТІ</translation>
 <translation id="2789486458103222910">Жарайды</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
-<translation id="2862104018715411648">Құжатты сканерге қойып, "Сканерлеу" опциясын таңдаңыз.</translation>
 <translation id="2872961005593481000">Өшіру</translation>
 <translation id="2878387241690264070">Заряд <ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> азайды.</translation>
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="4003384961948020559">Сәтсіз: шығыс науа толып кеткен</translation>
 <translation id="4034824040120875894">Принтер</translation>
-<translation id="4050980775484079270">ARC ішіндегі DNS шешімі</translation>
 <translation id="409427325554347132">Сынақ мәліметтерін сақтау</translation>
 <translation id="4131410914670010031">Қара мен ақ</translation>
 <translation id="4145784616224233563">HTTP брандмауэрі</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="4917889632206600977">Тоқтатылды: қағаз бітіп қалды</translation>
-<translation id="491836528011451486"><ph name="CURRENT_PAGE" />-бетті қайтадан сканерлеу үшін (ескісінің үстіне жазылады) құжатты сканерге қойып, "Қайта сканерлеу" түймесін басыңыз.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундта <ph name="RATE" /> зарядталды.</translation>
 <translation id="4932733599132424254">Күні</translation>
 <translation id="498186245079027698">Сканерді тексеріп, әрекетті қайталаңыз. Сканерленген файлдарды сақтайтын орынның жеткілікті екенін тексеріңіз.</translation>
@@ -384,7 +379,6 @@
 <translation id="7550715992156305117">Диагностикалық режим</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC байланысын тексеру</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> қалды</translation>
 <translation id="7620771111601174153">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
 <translation id="763165478673169849">Соңғы рет нөлденген уақыт</translation>
@@ -420,7 +414,6 @@
 <translation id="8132480444149501833">Трафик есептегіштерін сұрау</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208861521865154048">Бонустар</translation>
-<translation id="8214184102975786227">Бірнеше бетті бір PDF файлы түрінде сканерлеу</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
 <translation id="8246209727385807362">Белгісіз оператор</translation>
 <translation id="8286154143153872371">Тұсқағазды көру үшін желіге қосылып, бетті қайта жүктеңіз.</translation>

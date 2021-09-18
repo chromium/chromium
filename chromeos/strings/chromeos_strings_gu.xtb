@@ -35,7 +35,6 @@
 <translation id="150962533380566081">અમાન્ય PUK.</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
 <translation id="155865706765934889">Touchpad</translation>
-<translation id="1600964289716072707">અન્ય પેજને સ્કૅનર પર મૂકો અને પેજ ઉમેરવા માટે 'સ્કૅન કરો' પસંદ કરો.</translation>
 <translation id="1621067168122174824">ચાર્જિંગનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="1639239467298939599">લોડ કરી રહ્યું છે</translation>
 <translation id="1641857168437328880">દસ્તાવેજનું ફીડર (એક બાજુથી)</translation>
@@ -64,7 +63,6 @@
 <translation id="2080070583977670716">વધુ સેટિંગ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, વર્ઝન <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBમાંથી <ph name="AVAILABLE_MEMORY" /> GB ઉપલબ્ધ છે</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">કતારમાં</translation>
 <translation id="2161394479394250669">પ્રિન્ટ જોબ રદ કરો</translation>
@@ -95,7 +93,6 @@
 <translation id="2783010256799387990">પરીક્ષણ પાસ કર્યુ</translation>
 <translation id="2789486458103222910">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2805756323405976993">ઍપ</translation>
-<translation id="2862104018715411648">તમારા દસ્તાવેજને સ્કૅનર પર મૂકો અને શરૂ કરવા માટે સ્કૅન કરો પસંદ કરો</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ડિસ્ચાર્જ.</translation>
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
@@ -154,7 +151,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="4003384961948020559">નિષ્ફળ થયું - પ્રિન્ટરનું આઉટપુટ ભરાઈ ગયું છે</translation>
 <translation id="4034824040120875894">પ્રિન્ટર</translation>
-<translation id="4050980775484079270">ARC DNS રિઝોલ્યુશન</translation>
 <translation id="409427325554347132">પરીક્ષણની વિગતો સાચવો</translation>
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
 <translation id="4145784616224233563">HTTP ફાયરવૉલ</translation>
@@ -217,7 +213,6 @@
 <translation id="4891842000192098784">તાણ</translation>
 <translation id="4917385247580444890">સશક્ત</translation>
 <translation id="4917889632206600977">બંધ - કાગળ ખલાસ થઈ ગયા</translation>
-<translation id="491836528011451486">પેજ <ph name="CURRENT_PAGE" /> સ્કૅન કરવા અને બદલવા માટે, તમારા દસ્તાવેજને સ્કૅનર પર મૂકો અને ફરી સ્કૅન કરો પસંદ કરો.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ચાર્જ કરી.</translation>
 <translation id="4932733599132424254">તારીખ</translation>
 <translation id="498186245079027698">તમારું સ્કૅનર ચેક કરો અને ફરી પ્રયાસ કરો. ખાતરી કરો કે સ્કૅન કરેલી ફાઇલોને સાચવવા માટે પૂરતી સ્થાનિક સ્પેસ હોય.</translation>
@@ -376,7 +371,6 @@
 <translation id="7550715992156305117">નિદાન માટેના રૂટિન</translation>
 <translation id="7561454561030345039">આ ક્રિયાને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARCને પિંગ કરો</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> બાકી</translation>
 <translation id="7620771111601174153">સહાયતા કેન્દ્રમાં વધુ જાણો</translation>
 <translation id="763165478673169849">છેલ્લે રીસેટ કર્યાનો સમય</translation>
@@ -409,7 +403,6 @@
 <translation id="8132480444149501833">ટ્રાફિક કાઉન્ટરની વિનંતી કરો</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8208861521865154048">લાભ</translation>
-<translation id="8214184102975786227">એક PDFમાં એકથી વધુ પેજ સ્કૅન કરો</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="8246209727385807362">અજાણ કૅરિઅર</translation>
 <translation id="8286154143153872371">કૃપા કરીને નેટવર્ક સાથે કનેક્ટ કરો અને વૉલપેપર જોવા માટે પેજને ફરીથી લોડ કરો.</translation>

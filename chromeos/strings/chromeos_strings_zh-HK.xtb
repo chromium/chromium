@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK 無效。</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="155865706765934889">觸控板</translation>
-<translation id="1600964289716072707">將其他頁面放到掃瞄器上，並選取 [掃瞄] 即可新增頁面。</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
@@ -51,7 +50,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">取消掃瞄中</translation>
 <translation id="1851218745569890714">視像會議</translation>
-<translation id="1874612839560830905">最大傳輸單元</translation>
+<translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="1905710495812624430">允許的嘗試次數超過上限。</translation>
 <translation id="1908234395526491708">UDP 要求失敗</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">可用空間：<ph name="AVAILABLE_MEMORY" /> GB (共 <ph name="TOTAL_MEMORY" /> GB)</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">已排入序列</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">已通過</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2805756323405976993">應用程式</translation>
-<translation id="2862104018715411648">將文件放到掃瞄器上，並選取 [掃瞄] 以開始掃瞄</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878387241690264070">已在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
 <translation id="3008341117444806826">更新</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">超過 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作將被移除</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
 <translation id="4034824040120875894">打印機</translation>
-<translation id="4050980775484079270">ARC DNS 解析</translation>
 <translation id="409427325554347132">儲存測試詳細資料</translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">壓力</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4917889632206600977">已停止 - 紙張已用完</translation>
-<translation id="491836528011451486">將文件放到掃瞄器上並選取 [重新掃瞄]，即可掃瞄並取代第 <ph name="CURRENT_PAGE" /> 頁。</translation>
 <translation id="4921665434385737356">已在 <ph name="NUM_SECONDS" /> 秒內充電 <ph name="RATE" />。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="498186245079027698">請檢查掃瞄器，然後再試一次。請確保本機有足夠空間儲存已掃瞄的檔案。</translation>
@@ -385,7 +380,6 @@
 <translation id="7550715992156305117">日常診斷安排</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC 連線偵測</translation>
 <translation id="7595982850646262331">剩餘 <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
 <translation id="763165478673169849">上次重設時間</translation>
@@ -395,7 +389,7 @@
 <translation id="7701040980221191251">沒有</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">週期數</translation>
-<translation id="7747039790905080783">預先共用金鑰</translation>
+<translation id="7747039790905080783">預先共用密鑰</translation>
 <translation id="7762130827864645708">已成功變更您的密碼。請從現在開始改用新的密碼。</translation>
 <translation id="7763470514545477072">域名尾碼相符</translation>
 <translation id="7769672763586021400">型號識別碼</translation>
@@ -408,7 +402,7 @@
 <translation id="7882501334836096755">公開金鑰</translation>
 <translation id="7895471513946376273">探索繪圖和設計工具</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
-<translation id="7943235353293548836">持續保持運作時間間隔</translation>
+<translation id="7943235353293548836">持續 keepalive 間隔</translation>
 <translation id="7960831585769876809">溫度</translation>
 <translation id="7978412674231730200">私密金鑰</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
@@ -421,7 +415,6 @@
 <translation id="8132480444149501833">要求流量計數器</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208861521865154048">獎賞</translation>
-<translation id="8214184102975786227">掃瞄多個頁面，並儲存為單一 PDF 檔案</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網絡閘道</translation>
 <translation id="8246209727385807362">不明流動網絡供應商</translation>
 <translation id="8286154143153872371">如要查看桌布，請連線至網絡，然後重新整理頁面。</translation>
@@ -474,7 +467,7 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">失敗 - 沒有紙匣</translation>
 <translation id="8928727111548978589">失敗 - 紙張已用完</translation>
-<translation id="8930521118335213258">對等節點</translation>
+<translation id="8930521118335213258">對等</translation>
 <translation id="8930622219860340959">無線</translation>
 <translation id="8936793075252196307">用戶端 IP 位址</translation>
 <translation id="8968751544471797276">充電率</translation>

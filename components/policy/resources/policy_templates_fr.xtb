@@ -3972,7 +3972,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5890063326284543943">Contrôler l'utilisation de l'API Serial</translation>
 <translation id="5893303508158298667">Si la règle <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> est activée ou qu'elle n'est pas configurée, et que la règle <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> est activée, les clients distants peuvent utiliser des serveurs relais pour se connecter à cet ordinateur quand aucune connexion directe n'est disponible (par exemple, en raison de restrictions du pare-feu).
 
-      Si cette règle est désactivée, l'accès à distance n'est pas désactivé, et seules les connexions à partir du même réseau sont autorisées (pas de relais ni de parcours de traduction d'adresses réseau).</translation>
+      Si cette règle est désactivée, l'accès à distance n'est pas désactivé, et seules les connexions à partir du même réseau sont autorisées (pas de relais ni de Traversée NAT).</translation>
 <translation id="5897913798715600338">Recharge de la batterie à l'aide d'une technologie de recharge rapide.</translation>
 <translation id="5898486742390981550">Lorsque plusieurs personnes sont connectées, l'utilisateur principal est le seul à pouvoir se servir des applications Android.</translation>
 <translation id="5899751601113377553">Empêcher les utilisateurs de se servir de <ph name="LACROS_NAME" /></translation>
@@ -5290,7 +5290,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.
 
       Remarque : Sous Android, utilisez la règle <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> à la place.</translation>
-<translation id="7507553960917214561">Désactiver la protection de l'hôte d'accès à distance</translation>
+<translation id="7507553960917214561">Désactiver le mode Rideau de l'hôte d'accès à distance</translation>
 <translation id="7508067364927180229">Ce paramètre offre plusieurs options de disponibilité pour le navigateur <ph name="LACROS_NAME" />.
 
       Si la règle est définie sur "<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />", l'utilisateur peut activer <ph name="LACROS_NAME" /> et en faire le navigateur principal.
@@ -5358,7 +5358,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 
       Si elle est définie sur "Désactiver la connexion au navigateur", l'utilisateur ne peut pas se connecter au navigateur ni utiliser les services associés au compte. Dans ce cas, les fonctionnalités du navigateur, comme la synchronisation <ph name="PRODUCT_NAME" />, sont indisponibles. Sur <ph name="IOS_NAME" />, si l'utilisateur est connecté au moment où la règle est désactivée, il sera déconnecté immédiatement. Sur d'autres plates-formes, il sera déconnecté la prochaine fois qu'il lancera <ph name="PRODUCT_NAME" />. En revanche, quelle que soit la plate-forme, ses données de profil locales (favoris, mots de passe, etc.) seront conservées et resteront utilisables. Il pourra toujours se connecter aux services Web Google, comme Gmail, et s'en servir.
 
-      Si la règle est définie sur "Activer la connexion au navigateur", l'utilisateur peut se connecter au navigateur. Sur toutes les plates-formes sauf <ph name="IOS_NAME" />, la connexion se fait automatiquement lorsque l'utilisateur accède à des services Web Google, comme Gmail. Lorsque l'utilisateur est connecté au navigateur, ses informations de compte sont conservées par le navigateur. Cependant, cela ne signifie pas que la synchronisation <ph name="PRODUCT_NAME" /> est activée par défaut : l'utilisateur doit explicitement accepter d'utiliser cette fonctionnalité. En activant cette règle, vous empêchez l'utilisateur de désactiver le paramètre qui autorise la connexion au navigateur. Pour contrôler la disponibilité de la synchronisation <ph name="PRODUCT_NAME" />, utilisez la règle <ph name="SYNC_POLICY_NAME" />.
+      Si la règle est définie sur "Activer la connexion au navigateur", l'utilisateur peut se connecter au navigateur. Sur toutes les plates-formes sauf <ph name="IOS_NAME" />, la connexion se fait automatiquement lorsque l'utilisateur est connecté à des services Web Google, comme Gmail. Lorsque l'utilisateur est connecté au navigateur, ses informations de compte sont conservées par le navigateur. Cependant, cela ne signifie pas que la synchronisation <ph name="PRODUCT_NAME" /> est activée par défaut : l'utilisateur doit explicitement accepter d'utiliser cette fonctionnalité. En activant cette règle, vous empêchez l'utilisateur de désactiver le paramètre qui autorise la connexion au navigateur. Pour contrôler la disponibilité de la synchronisation <ph name="PRODUCT_NAME" />, utilisez la règle <ph name="SYNC_POLICY_NAME" />.
 
       Si la règle est définie sur "Obliger la connexion au navigateur", une boîte de dialogue s'affiche pour demander à l'utilisateur de choisir un compte auquel se connecter pour utiliser le navigateur. Cette mesure permet de s'assurer que dans le cas de comptes gérés, les règles qui les régissent sont bien appliquées. La règle <ph name="GUEST_MODE_POLICY_NAME" /> est désactivée par défaut. Sachez que les profils existants non connectés seront verrouillés et inaccessibles une fois cette règle activée. Pour en savoir plus, consultez cet article du centre d'aide : https://support.google.com/chrome/a/answer/7572556. Cette option n'est pas compatible avec <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> ni<ph name="IOS_NAME" />. L'option "Activer la connexion au navigateur" est alors utilisée.
 
@@ -6105,6 +6105,20 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
           Si vous configurez cette règle, les utilisateurs ne peuvent ni la modifier, ni l'ignorer.
 
           Si elle n'est pas configurée, les raccourcis des fonctionnalités d'accessibilité sont activés par défaut.</translation>
+<translation id="8519563483516917705">Ce paramètre permet aux appareils de sélectionner une version cible spécifique de <ph name="PRODUCT_OS_NAME" /> vers laquelle ils seront mis à jour.
+
+      S'il n'est pas défini, la mise à jour se fera selon d'autres paramètres ou vers la dernière version disponible.
+
+      S'il est défini, les appareils seront mis à jour vers la version sélectionnée.
+
+      Le format exact de la valeur de cette règle peut varier selon les détails d'implémentation du service de mise à jour. La valeur de la règle n'est pas traitée sur l'appareil.
+
+      Utilisée avec <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, cette règle sera vérifiée la première par le service de mise à jour.
+      Contrairement à <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (qui peut autoriser des mises à jour mineures), elle applique aux appareils la version sélectionnée tant que sa valeur n'a pas été modifiée.
+
+      Utilisée avec <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, elle peut rétablir l'appareil vers une version antérieure spécifique.
+
+      Avertissement : Il est déconseillé de configurer des restrictions de version, car cela pourrait empêcher les utilisateurs de recevoir des mises à jour logicielles et des correctifs de sécurité essentiels. Limiter les mises à jour à une version spécifique pourrait constituer un risque pour les utilisateurs.</translation>
 <translation id="8520064498689833152">Forcez l'utilisation de SafeSearch dans la recherche Google et le mode restreint à être au moins modéré sur YouTube</translation>
 <translation id="8524334245528364388">URL vers un fichier JSON contenant une liste de serveurs d'impression.</translation>
 <translation id="8525526490824335042">Conteneur Linux</translation>

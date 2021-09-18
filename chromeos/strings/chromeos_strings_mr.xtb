@@ -35,7 +35,6 @@
 <translation id="150962533380566081">चुकीची PUK.</translation>
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="155865706765934889">Touchpad</translation>
-<translation id="1600964289716072707">स्कॅनरवर दुसरे पेज ठेवा आणि पेज जोडण्यासाठी स्कॅन करा हे निवडा.</translation>
 <translation id="1621067168122174824">चार्ज चाचणी रन करा</translation>
 <translation id="1639239467298939599">लोड करीत आहे</translation>
 <translation id="1641857168437328880">दस्तऐवज फीडर (एक बाजू असलेले)</translation>
@@ -64,7 +63,6 @@
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB पैकी <ph name="AVAILABLE_MEMORY" /> उपलब्ध आहे</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">क्‍यूमध्ये आहे</translation>
 <translation id="2161394479394250669">प्रिंट कार्य रद्द करा</translation>
@@ -95,7 +93,6 @@
 <translation id="2783010256799387990">पास झाले</translation>
 <translation id="2789486458103222910">ठीक आहे</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
-<translation id="2862104018715411648">सुरुवात करण्यासाठी तुमचा दस्तऐवज स्कॅनरवर ठेवा आणि स्कॅन करा निवडा</translation>
 <translation id="2872961005593481000">बंद करा</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंदामध्ये <ph name="RATE" /> डिस्चार्ज झाले.</translation>
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
@@ -154,7 +151,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिवसांपेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="4003384961948020559">अयशस्वी झाले - आउटपुट भरले आहे</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
-<translation id="4050980775484079270">ARC DNS रिझोल्यूशन</translation>
 <translation id="409427325554347132">चाचणीचे तपशील सेव्ह करा</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
 <translation id="4145784616224233563">HTTP फायरवॉल</translation>
@@ -217,7 +213,6 @@
 <translation id="4891842000192098784">ताण</translation>
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
-<translation id="491836528011451486">पेज <ph name="CURRENT_PAGE" /> स्कॅन करण्यासाठी आणि बदलण्यासाठी तुमचा दस्तऐवज स्कॅनरवर ठेवा व पुन्हा स्कॅन करा निवडा.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंदांत <ph name="RATE" /> शुल्क आकारले.</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="498186245079027698">स्कॅनर तपासा आणि पुन्हा प्रयत्न करा. स्कॅन केलेल्या फाइल सेव्ह करण्यासाठी पुरेशी स्थानिक जागा उपलब्ध असल्याची खात्री करा.</translation>
@@ -377,7 +372,6 @@
 <translation id="7550715992156305117">निदानाशी संबंधित रूटीन</translation>
 <translation id="7561454561030345039">ही कृती तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केली जाते</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC पिंग</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> शिल्लक</translation>
 <translation id="7620771111601174153">मदत केंद्र मध्ये अधिक जाणून घ्या</translation>
 <translation id="763165478673169849">अंतिम रीसेट केल्याची वेळ</translation>
@@ -410,7 +404,6 @@
 <translation id="8132480444149501833">ट्रॅफिक काउंटरची विनंती करा</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>
 <translation id="8208861521865154048">लाभ</translation>
-<translation id="8214184102975786227">एका PDF मध्ये एकाहून अधिक पेज स्कॅन करा</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="8246209727385807362">माहीत नसलेला वाहक</translation>
 <translation id="8286154143153872371">कृपया वॉलपेपर पाहण्यासाठी नेटवर्कशी कनेक्ट करा आणि पेज रीलोड करा.</translation>

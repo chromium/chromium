@@ -2285,7 +2285,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Pro tento web nejsou uložena žádná hesla</translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
-<translation id="3404805962764077228">Dočasně zobrazit aplikace z telefonu přímo v zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Personalizovat písma</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Povolení používat zařízení a data pro virtuální realitu</translation>

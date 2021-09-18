@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK చెల్లదు.</translation>
 <translation id="1510238584712386396">లాంచర్</translation>
 <translation id="155865706765934889">టచ్‌ప్యాడ్</translation>
-<translation id="1600964289716072707">పేజీని జోడించడానికి, స్కానర్‌పై మరొక పేజీని పెట్టి, 'స్కాన్ చేయండి' ఆప్షన్‌ను ఎంచుకోండి.</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
 <translation id="1639239467298939599">లోడ్ అవుతోంది</translation>
 <translation id="1641857168437328880">డాక్యుమెంట్ ఫీడర్ (ఒక వైపున)</translation>
@@ -64,7 +63,6 @@
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, వెర్షన్ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBలో <ph name="AVAILABLE_MEMORY" /> GB అందుబాటులో ఉంది</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">క్రమవరుసలో ఉంచబడింది</translation>
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయి</translation>
@@ -95,7 +93,6 @@
 <translation id="2783010256799387990">ఉత్తీర్ణత సాధించాయి</translation>
 <translation id="2789486458103222910">సరే</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
-<translation id="2862104018715411648">ప్రారంభించడానికి మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టి, స్కాన్ చేయిని ఎంచుకోండి</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చేయండి</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయి</translation>
@@ -154,7 +151,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> రోజులకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="4003384961948020559">విఫలమైంది - అవుట్‌పుట్, ప్రింటింగ్ జాబ్‌లతో నిండి ఉంది</translation>
 <translation id="4034824040120875894">ప్రింటర్</translation>
-<translation id="4050980775484079270">ARC DNS రిజల్యూషన్</translation>
 <translation id="409427325554347132">టెస్ట్ వివరాలను సేవ్ చేయండి</translation>
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
 <translation id="4145784616224233563">HTTP ఫైర్‌వాల్</translation>
@@ -217,7 +213,6 @@
 <translation id="4891842000192098784">ఒత్తిడి</translation>
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
-<translation id="491836528011451486">మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టి, స్కాన్ చేయడానికి "మళ్లీ స్కాన్ చేయండి"ని ఎంచుకుని, ఆ తర్వాత <ph name="CURRENT_PAGE" /> పేజీని రీప్లేస్ చేయండి.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> ఛార్జ్ అయ్యింది.</translation>
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="498186245079027698">స్కానర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. స్కాన్ చేయబడిన ఫైల్స్‌ను సేవ్ చేయడానికి తగినంత స్థానిక స్పేస్ ఉందని నిర్దారించుకోండి.</translation>
@@ -376,7 +371,6 @@
 <translation id="7550715992156305117">సమస్య విశ్లేషణ రొటీన్‌లు</translation>
 <translation id="7561454561030345039">ఈ చర్య మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC పింగ్ టెస్ట్</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> మిగిలి ఉంది</translation>
 <translation id="7620771111601174153">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
 <translation id="763165478673169849">చివరిగా రీసెట్ చేసిన సమయం</translation>
@@ -409,7 +403,6 @@
 <translation id="8132480444149501833">ట్రాఫిక్ కౌంటర్‌ల కోసం రిక్వెస్ట్ చేయండి</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
-<translation id="8214184102975786227">పలు పేజీలను ఒక PDFగా స్కాన్ చేయండి</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="8246209727385807362">తెలియని క్యారియర్</translation>
 <translation id="8286154143153872371">వాల్‌పేపర్‌ను చూడటానికి, దయచేసి నెట‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>

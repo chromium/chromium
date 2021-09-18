@@ -35,7 +35,6 @@
 <translation id="150962533380566081">ଅବୈଧ PUK।</translation>
 <translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
 <translation id="155865706765934889">ଟଚ୍‌ପ୍ୟାଡ୍</translation>
-<translation id="1600964289716072707">ପୃଷ୍ଠା ଯୋଗ କରିବା ପାଇଁ ଅନ୍ୟ ଏକ ପୃଷ୍ଠାକୁ ସ୍କାନରରେ ରଖି 'ସ୍କାନ୍ କରନ୍ତୁ'କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="1621067168122174824">ବ୍ୟାଟେରୀ ଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1641857168437328880">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଗୋଟିଏ-ପାର୍ଶ୍ୱ)</translation>
@@ -64,7 +63,6 @@
 <translation id="2080070583977670716">ଅଧିକ ସେଟିଂ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBରୁ <ph name="AVAILABLE_MEMORY" /> GB ଉପଲବ୍ଧ ଅଛି</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ଧାଡ଼ିରେ ରଖାଯାଇଛି</translation>
 <translation id="2161394479394250669">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
@@ -95,7 +93,6 @@
 <translation id="2783010256799387990">ପାସ୍ ହୋଇଛି</translation>
 <translation id="2789486458103222910">ଠିକ୍ ଅଛି</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
-<translation id="2862104018715411648">ଆରମ୍ଭ କରିବା ପାଇଁ ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନରରେ ରଖି 'ସ୍କାନ୍ କରନ୍ତୁ'କୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2872961005593481000">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଡିସଚାର୍ଜ ହୋଇଛି।</translation>
 <translation id="3008341117444806826">ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
@@ -154,7 +151,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="4003384961948020559">ବିଫଳ ହୋଇଛି - ଆଉଟପୁଟ୍ ଟ୍ରେ ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="4034824040120875894">ପ୍ରିଣ୍ଟର୍‌</translation>
-<translation id="4050980775484079270">ARC DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="409427325554347132">ଟେଷ୍ଟ ବିବରଣୀ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="4145784616224233563">HTTP ଫାୟାରୱାଲ୍</translation>
@@ -217,7 +213,6 @@
 <translation id="4891842000192098784">ଷ୍ଟ୍ରେସ୍</translation>
 <translation id="4917385247580444890">ଦୃଢ଼</translation>
 <translation id="4917889632206600977">ବନ୍ଦ ହୋଇଯାଇଛି - କାଗଜ ସରିଯାଇଛି</translation>
-<translation id="491836528011451486"><ph name="CURRENT_PAGE" /> ନମ୍ବର ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରି ବଦଳାଇବା ପାଇଁ ଆପଣଙ୍କ ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନରରେ ରଖି "ପୁଣି ସ୍କାନ୍ କରନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଚାର୍ଜ ହୋଇଛି</translation>
 <translation id="4932733599132424254">ତାରିଖ</translation>
 <translation id="498186245079027698">ସ୍କାନର୍ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଯଥେଷ୍ଟ ଲୋକାଲ୍ ସ୍ଥାନ ଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
@@ -377,7 +372,6 @@
 <translation id="7550715992156305117">ଡାଇଗ୍ନୋଷ୍ଟିକ୍ ରୁଟିନ୍</translation>
 <translation id="7561454561030345039">ଏହି କାର୍ଯ୍ୟ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC ପିଙ୍ଗ୍</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ବାକି ଅଛି</translation>
 <translation id="7620771111601174153">ସହାୟତା କେନ୍ଦ୍ରରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="763165478673169849">ଗତଥର ରିସେଟ୍ କରାଯାଇଥିବା ସମୟ</translation>
@@ -410,7 +404,6 @@
 <translation id="8132480444149501833">ଟ୍ରାଫିକ୍ କାଉଣ୍ଟରର ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
-<translation id="8214184102975786227">ଗୋଟିଏ PDFରେ ଏକାଧିକ ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8246209727385807362">ଅଜଣା ବାହକ</translation>
 <translation id="8286154143153872371">ୱାଲପେପର୍ ଦେଖିବାକୁ ଦୟାକରି ଏକ ନେଟୱାର୍କରେ ସଂଯୋଗ କରି ପୃଷ୍ଠାଟିକୁ ପୁଣି ଲୋଡ୍ କରନ୍ତୁ।</translation>

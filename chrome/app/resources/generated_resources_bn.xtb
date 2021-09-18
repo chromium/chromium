@@ -270,6 +270,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> আনইনস্টল করা যায়নি</translation>
 <translation id="1277020343994096713">আপনার বর্তমান পিন থেকে আলাদা একটি নতুন পিন তৈরি করুন</translation>
 <translation id="1278859221870828664">Google Play অ্যাপ এবং পরিষেবার পর্যালোচনা করুন</translation>
+<translation id="1279024913354609713">অনুমতি দেবেন না</translation>
 <translation id="127946606521051357">আশেপাশে থাকা ডিভাইস ডেটা শেয়ার করছে</translation>
 <translation id="1280965841156951489">ফাইল এডিট করতে পারবে</translation>
 <translation id="1282465000333679776">সিস্টেম অডিও শেয়ার করুন</translation>
@@ -2209,6 +2210,7 @@
 <translation id="33022249435934718">GDI হ্যান্ডলগুলি</translation>
 <translation id="3302388252085547855">কারণ লিখুন...</translation>
 <translation id="3303260552072730022">একটি এক্সটেনশন ফুল-স্ক্রিন ট্রিগার করেছে৷</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> লিঙ্ক খুলতে অ্যাপকে অনুমতি দেবেন?</translation>
 <translation id="3303818374450886607">প্রতিলিপি</translation>
 <translation id="3303855915957856445">কোনো সার্চ ফলাফল পাওয়া যায়নি</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> ছাড়</translation>
@@ -2286,6 +2288,7 @@
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" />-এ আপনার চ্যাট অ্যাপের বিজ্ঞপ্তি দেখুন</translation>
 <translation id="3393554941209044235">Chrome ডকুমেন্টের বিশ্লেষণ</translation>
 <translation id="3394850431319394743">সুরক্ষিত কন্টেন্ট চালানোর জন্য শনাক্তকারী ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
+<translation id="3396744558790608201">আপনি ওয়েবে ব্রাউজ এবং কেনাকাটা করার সময় যে ভিজ্যুয়াল কন্টেন্ট দেখেন সেই সম্পর্কে আরও জানার জন্য সাইটের যেকোনও অংশে সার্চ করতে, ডানদিকের বোতামে ক্লিক করে "Google Lens ব্যবহার করে ছবি সার্চ করুন" বিকল্প বেছে নিন।</translation>
 <translation id="3396800784455899911">'স্বীকার করে চালিয়ে যান' বোতামে ক্লিক করার অর্থ এই Google পরিষেবাগুলির জন্য উপরোক্ত বর্ণিত প্রক্রিয়াগুলিতে আপনি সম্মতি দেন।</translation>
 <translation id="339722927132407568">আটকে যায়</translation>
 <translation id="3399432415385675819">বিজ্ঞপ্তি অক্ষম করা হবে</translation>
@@ -2296,7 +2299,6 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">এই সাইটের জন্য কোনও পাসওয়ার্ড সেভ করা হয়নি</translation>
 <translation id="3404249063913988450">স্ক্রিন সেভার চালু করুন</translation>
-<translation id="3404805962764077228">আপনার <ph name="DEVICE_TYPE" /> থেকে সাময়িকভাবে আপনার ফোন অ্যাপ</translation>
 <translation id="3405664148539009465">হরফগুলি কাস্টমাইজ করুন</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
@@ -3196,6 +3198,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> একটি উইন্ডো শেয়ার করছে।</translation>
 <translation id="4364830672918311045">বিজ্ঞপ্তিগুলি প্রদর্শন করুন</translation>
 <translation id="4366138410738374926">প্রিন্ট করার প্রক্রিয়া শুরু করা হয়েছে</translation>
+<translation id="4369121877634339065">সার্চ করতে যেকোনও ছবির উপরে টেনে আনুন</translation>
 <translation id="4370975561335139969">আপনার লেখা ইমেল আইডি এবং পাসওয়ার্ড মিলছে না</translation>
 <translation id="4371452868325715552">সার্ভারে কানেক্ট করা যায়নি। আপনার নেটওয়ার্ক কানেকশন চেক করে আবার চেষ্টা করে দেখুন। এখনও সমস্যা হলে আপনার Chromebook রিস্টার্ট করে দেখুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="4373966964907728675">ডেস্কটপ কাস্ট করা হচ্ছে</translation>
@@ -5785,6 +5788,10 @@
 <translation id="7222204278952406003">আপনার ডিফল্ট ব্রাউজার হল Chrome</translation>
 <translation id="7222232353993864120">ইমেল আইডি</translation>
 <translation id="7225179976675429563">নেটওয়ার্কের প্রকার হারিয়ে গেছে</translation>
+<translation id="7226485026248318204">Google Photos-এ থাকা আপনার স্মৃতি এখানে দেখানো হয়েছে। আপনি সাইন-ইন করলেই শুধুমাত্র এগুলি দেখা যাবে।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> লিঙ্ক থেকে আপনার স্মৃতিতে যা দেখেন তা ম্যানেজ করুন।</translation>
 <translation id="7228479291753472782">ভৌগোলিক লোকেশন, মাইক্রোফোন, ক্যামেরা, ইত্যাদির মতো বৈশিষ্ট্যগুলিকে ওয়েবসাইটগুলি ব্যবহার করতে পারবে কিনা তা নির্দিষ্ট করতে সেটিংস নিয়ন্ত্রণ করে।</translation>
 <translation id="7228523857728654909">স্ক্রিন লক এবং সাইন-ইন করুন</translation>
 <translation id="7230222852462421043">&amp;উইন্ডো আবার আগের অবস্থায় ফিরিয়ে আনুন</translation>
@@ -6214,6 +6221,7 @@
 <translation id="767147716926917172">এই সেটিং ডায়াগনস্টিক ও ব্যবহারের ডেটা অটোমেটিক Google-এ পাঠায়</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> এ।</translation>
 <translation id="7674416868315480713">ডিঅ্যাক্টিভেট করা সমস্ত পোস্ট Linux-এ ফরওয়ার্ড করা হয়</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" />টি অ্যাপ</translation>
 <translation id="7674542105240814168">লোকেশন অ্যাক্সেস দেওয়া হয়নি</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />'-এর জন্য <ph name="NUM" />টি ট্যাব পাওয়া গেছে</translation>
 <translation id="7676867886086876795">যেকোনও টেক্সট ক্ষেত্রে ডিকটেশনের অনুমতি দেওয়ার জন্য Google-কে আপনার ভয়েস পাঠান।</translation>

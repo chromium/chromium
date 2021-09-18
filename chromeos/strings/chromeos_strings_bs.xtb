@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Nevažeći PUK.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="155865706765934889">Dodirna podloga</translation>
-<translation id="1600964289716072707">Postavite drugu stranicu na skener i odaberite Skeniraj da je dodate.</translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1641857168437328880">Ulagač za dokumente (jednostrano skeniranje)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Više postavki</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostupno je <ph name="AVAILABLE_MEMORY" /> GB od <ph name="TOTAL_MEMORY" /> GB</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">NA ČEKANJU</translation>
 <translation id="2161394479394250669">Otkaži zadatak štampanja</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">USPJEŠNO</translation>
 <translation id="2789486458103222910">Uredu</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
-<translation id="2862104018715411648">Postavite dokument na skener i odaberite Skeniraj da započnete</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Zadaci za štampanje stariji od <ph name="NUMBER_OF_DAYS" /> dana će se ukloniti</translation>
 <translation id="4003384961948020559">Nije uspjelo – izlaz je pun</translation>
 <translation id="4034824040120875894">Štampač</translation>
-<translation id="4050980775484079270">Razrješavanje ARC DNS-a</translation>
 <translation id="409427325554347132">Sačuvaj detalje testa</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
 <translation id="4145784616224233563">HTTP zaštitni zid</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Opterećenje</translation>
 <translation id="4917385247580444890">Jako</translation>
 <translation id="4917889632206600977">Zaustavljeno – nestalo je papira</translation>
-<translation id="491836528011451486">Postavite dokument na skener i odaberite Ponovo skeniraj da skenirate i zamijenite stranicu <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="498186245079027698">Provjerite skener i pokušajte ponovo. Vodite računa da ima dovoljno prostora na uređaju da sačuvate skenirane fajlove.</translation>
@@ -385,7 +380,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7550715992156305117">Rutine dijagnostike</translation>
 <translation id="7561454561030345039">Ovom radnjom upravlja vaš administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC ping</translation>
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="763165478673169849">Vrijeme posljednjeg poništavanja</translation>
@@ -421,7 +415,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>
 <translation id="8206859287963243715">Mobitel</translation>
 <translation id="8208861521865154048">Privilegije</translation>
-<translation id="8214184102975786227">Skeniraj više stranica na jedan PDF fajl</translation>
 <translation id="8230672074305416752">Provjera pingom zadanog mrežnog pristupnika nije uspjela</translation>
 <translation id="8246209727385807362">Nepoznat mobilni operater</translation>
 <translation id="8286154143153872371">Povežite se s mrežom i ponovo učitajte stranicu da vidite pozadinsku sliku.</translation>

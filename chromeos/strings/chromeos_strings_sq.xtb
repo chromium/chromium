@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
 <translation id="155865706765934889">Blloku me prekje</translation>
-<translation id="1600964289716072707">Vendos një faqe tjetër në skaner dhe zgjidh "Skano" për të shtuar faqen.</translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1641857168437328880">Furnizuesi i dokumentit (një anë)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioni <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB nga <ph name="TOTAL_MEMORY" /> GB të disponueshme</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">NË RADHË</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">KALOI</translation>
 <translation id="2789486458103222910">Në rregull</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
-<translation id="2862104018715411648">Vendose dokumentin tënd në skaner dhe zgjidh "Skano" për të filluar</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="2878387241690264070">U shkarkua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567">Printimet më të vjetra se <ph name="NUMBER_OF_DAYS" /> ditë do të hiqen</translation>
 <translation id="4003384961948020559">Dështoi - Dalja është plot</translation>
 <translation id="4034824040120875894">Printeri</translation>
-<translation id="4050980775484079270">Zgjidhja e ARC DNS</translation>
 <translation id="409427325554347132">Ruaj detajet e testit</translation>
 <translation id="4131410914670010031">Bardhezi</translation>
 <translation id="4145784616224233563">Mur mbrojtës HTTP</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Tensioni</translation>
 <translation id="4917385247580444890">I fortë</translation>
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
-<translation id="491836528011451486">Vendose dokumentin tënd në skaner dhe zgjidh "Riskano" për të skanuar dhe rivendosur faqen <ph name="CURRENT_PAGE" />.</translation>
 <translation id="4921665434385737356">U karikua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
@@ -384,7 +379,6 @@
 <translation id="7550715992156305117">Rutinat diagnostikuese</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> të mbetura</translation>
 <translation id="7620771111601174153">Mëso më shumë në "Qendrën e ndihmës"</translation>
 <translation id="763165478673169849">Koha e rivendosjes së fundit</translation>
@@ -420,7 +414,6 @@
 <translation id="8132480444149501833">Kërko matësit e trafikut</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
 <translation id="8208861521865154048">Avantazhet</translation>
-<translation id="8214184102975786227">Skano shumë faqe në një skedar PDF</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
 <translation id="8246209727385807362">Operator celular i panjohur</translation>
 <translation id="8286154143153872371">Lidhu në një rrjet dhe ringarko faqen për të parë imazhin e sfondit.</translation>

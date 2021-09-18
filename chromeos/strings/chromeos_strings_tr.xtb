@@ -35,7 +35,6 @@
 <translation id="150962533380566081">Geçersiz PUK.</translation>
 <translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="155865706765934889">Dokunmatik Tuş Takımı</translation>
-<translation id="1600964289716072707">Başka bir sayfayı tarayıcıya yerleştirin ve sayfa eklemek için Tara'yı seçin.</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
 <translation id="1641857168437328880">Doküman Besleyici (Tek taraflı)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Daha fazla ayar</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, sürüm <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB kullanılabilir</translation>
-<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="2157959690810728433">SIRAYA ALINDI</translation>
 <translation id="2161394479394250669">Yazdırma işini iptal et</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">BAŞARILI OLDU</translation>
 <translation id="2789486458103222910">Tamam</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
-<translation id="2862104018715411648">Dokümanınızı tarayıcıya yerleştirin ve başlamak için Tara'yı seçin</translation>
 <translation id="2872961005593481000">Kapat</translation>
 <translation id="2878387241690264070">Şarj, <ph name="NUM_SECONDS" /> saniye içinde <ph name="RATE" /> boşaldı.</translation>
 <translation id="3008341117444806826">YENİLE</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> günden eski yazdırma işleri silinir</translation>
 <translation id="4003384961948020559">İşlem başarısız - Çıkış dolu</translation>
 <translation id="4034824040120875894">Yazıcı</translation>
-<translation id="4050980775484079270">ARC DNS çözümleme</translation>
 <translation id="409427325554347132">Test ayrıntılarını kaydet</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4917385247580444890">Güçlü</translation>
 <translation id="4917889632206600977">Durduruldu - Kağıt bitti</translation>
-<translation id="491836528011451486">Dokümanınızı tarayıcıya yerleştirin ve <ph name="CURRENT_PAGE" />. sayfayı tarayıp değiştirmek için Yeniden Tara'yı seçin.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> saniyede <ph name="RATE" /> şarj oldu</translation>
 <translation id="4932733599132424254">Tarih</translation>
 <translation id="498186245079027698">Tarayıcıyı kontrol edip tekrar deneyin. Taranan dosyaların kaydedilmesi için yeterli yerel alan bulunduğundan emin olun.</translation>
@@ -385,7 +380,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7550715992156305117">Teşhis Rutinleri</translation>
 <translation id="7561454561030345039">Bu işlem, yöneticiniz tarafından yönetilir.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> kaldı</translation>
 <translation id="7620771111601174153">Yardım Merkezi'nde daha fazla bilgi edinin</translation>
 <translation id="763165478673169849">Son Sıfırlanma Zamanı</translation>
@@ -421,7 +415,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8132480444149501833">Trafik Sayaçlarını İste</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
 <translation id="8208861521865154048">Avantajlar</translation>
-<translation id="8214184102975786227">Birden fazla sayfayı tek bir PDF olarak tarayın</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
 <translation id="8246209727385807362">Bilinmeyen operatör</translation>
 <translation id="8286154143153872371">Duvar kağıdını görmek için lütfen bir ağa bağlanıp sayfayı yeniden yükleyin.</translation>

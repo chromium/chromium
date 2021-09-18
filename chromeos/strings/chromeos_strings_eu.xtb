@@ -35,7 +35,6 @@
 <translation id="150962533380566081">PUK kodeak ez du balio.</translation>
 <translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="155865706765934889">Ukipen-teklatua</translation>
-<translation id="1600964289716072707">Kokatu beste orri bat eskanerrean eta hautatu "Eskaneatu" orri hori gehitzeko.</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1641857168437328880">Dokumentu-elikatzailea (alde bakarrekoa)</translation>
@@ -65,7 +64,6 @@
 <translation id="2080070583977670716">Ezarpen gehiago</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> bertsioa</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB daude erabilgarri</translation>
-<translation id="2129264932216073062">ARCeko HTTP eskaerak</translation>
 <translation id="2141644705054017895">% <ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="2157959690810728433">ILARAN</translation>
 <translation id="2161394479394250669">Utzi bertan behera inprimatze-lana</translation>
@@ -97,7 +95,6 @@
 <translation id="2783010256799387990">GAINDITUTA</translation>
 <translation id="2789486458103222910">Ados</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
-<translation id="2862104018715411648">Hasteko, kokatu dokumentua eskanerrean eta hautatu Eskaneatu</translation>
 <translation id="2872961005593481000">Itzali</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> deskargatu da <ph name="NUM_SECONDS" /> segundoan.</translation>
 <translation id="3008341117444806826">FRESKATU</translation>
@@ -160,7 +157,6 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> egun baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
-<translation id="4050980775484079270">ARCko DNS bidezko ebazpena</translation>
 <translation id="409427325554347132">Gorde probaren xehetasunak</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
 <translation id="4145784616224233563">HTTP protokolorako suebakia</translation>
@@ -223,7 +219,6 @@
 <translation id="4891842000192098784">Estresa</translation>
 <translation id="4917385247580444890">Sendoa</translation>
 <translation id="4917889632206600977">Geldituta: ez dago paperik</translation>
-<translation id="491836528011451486">Jarri dokumentua eskanerrean eta hautatu Eskaneatu berriro, <ph name="CURRENT_PAGE" /> orria eskaneatu eta ordezteko.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> segundo behar izan dira <ph name="RATE" /> kargatzeko.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="498186245079027698">Eman begirada bat eskanerrari eta saiatu berriro. Ziurtatu eskaneatutako fitxategiak gordetzeko behar beste toki dagoela gailuan.</translation>
@@ -385,7 +380,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7550715992156305117">Diagnostiko-errutinak</translation>
 <translation id="7561454561030345039">Administratzaileak kudeatzen du ekintza hau</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARCko ping-a</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> geratzen dira</translation>
 <translation id="7620771111601174153">Lortu informazio gehiago laguntza-zentroan</translation>
 <translation id="763165478673169849">Azken berrezartzearen ordua</translation>
@@ -421,7 +415,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8132480444149501833">Eskatu trafiko-kontagailuak</translation>
 <translation id="8206859287963243715">Konexio mugikorra</translation>
 <translation id="8208861521865154048">Abantailak</translation>
-<translation id="8214184102975786227">Eskaneatu hainbat orri PDF bakar batean</translation>
 <translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>
 <translation id="8246209727385807362">Operadore ezezaguna</translation>
 <translation id="8286154143153872371">Konektatu sare batera eta kargatu orria berriro horma-papera ikusteko.</translation>

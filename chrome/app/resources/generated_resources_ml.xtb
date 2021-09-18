@@ -269,6 +269,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> അൺഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല.</translation>
 <translation id="1277020343994096713">നിങ്ങളുടെ നിലവിലെ പിൻ നമ്പറിൽ നിന്ന് വ്യത്യസ്തമായ ഒരു പുതിയ പിൻ സൃഷ്ടിക്കുക</translation>
 <translation id="1278859221870828664">Google Play ആപ്പുകളും സേവനങ്ങളും അവലോകനം ചെയ്യുക</translation>
+<translation id="1279024913354609713">അനുവദിക്കരുത്</translation>
 <translation id="127946606521051357">സമീപത്തുള്ള ഉപകരണം പങ്കിടുന്നു</translation>
 <translation id="1280965841156951489">ഫയലുകൾ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="1282465000333679776">സിസ്റ്റം ഓഡിയോ പങ്കിടുക</translation>
@@ -2193,6 +2194,7 @@
 <translation id="33022249435934718">GDI കൈകാര്യംചെയ്യുന്നവ</translation>
 <translation id="3302388252085547855">ന്യായീകരണം നൽകുക...</translation>
 <translation id="3303260552072730022">ഒരു വിപുലീകരണം പൂർണ്ണസ്‌ക്രീനിൽ പ്രവർത്തനക്ഷമമാക്കി.</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> ലിങ്കുകൾ തുറക്കാൻ ആപ്പിനെ അനുവദിക്കണോ?</translation>
 <translation id="3303818374450886607">പകര്‍പ്പുകള്‍</translation>
 <translation id="3303855915957856445">തിരയൽ ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> കിഴിവ്</translation>
@@ -2270,6 +2272,7 @@
 <translation id="339178315942519818">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിങ്ങളുടെ ചാറ്റ് ആപ്പിൽ നിന്നുള്ള അറിയിപ്പുകൾ കാണുക</translation>
 <translation id="3393554941209044235">Chrome ഡോക്യുമെന്റ് അനാലിസിസ്</translation>
 <translation id="3394850431319394743">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യുന്നതിന് ഐഡന്റിഫയറുകൾ ഉപയോഗിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
+<translation id="3396744558790608201">വെബിൽ ബ്രൗസ് ചെയ്യുമ്പോഴും ഷോപ്പ് ചെയ്യുമ്പോഴും നിങ്ങൾ കാണുന്ന വിഷ്വൽ ഉള്ളടക്കത്തെക്കുറിച്ച് കൂടുതലറിയാൻ സൈറ്റിന്റെ ഏതെങ്കിലും ഭാഗം തിരയുന്നതിന്, വലത്-ക്ലിക്ക് ചെയ്ത ശേഷം “Google Lens ഉപയോഗിച്ച് ചിത്രങ്ങൾ തിരയുക” തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="3396800784455899911">"അംഗീകരിച്ച് തുടരുക" ബട്ടൺ ക്ലിക്ക് ചെയ്യുക വഴി, ഈ Google സേവനങ്ങൾക്കായി മുകളിൽ വിവരിച്ചിട്ടുള്ള പ്രോസസിംഗിന് നിങ്ങൾ സമ്മതിക്കുകയാണ്.</translation>
 <translation id="339722927132407568">നിശ്ചലമായത്</translation>
 <translation id="3399432415385675819">അറിയിപ്പുകൾ പ്രവർത്തനരഹിതമാകും</translation>
@@ -2280,7 +2283,6 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">ഈ സൈറ്റിനായി പാസ്‍വേഡുകളൊന്നും സംരക്ഷിച്ചിട്ടില്ല</translation>
 <translation id="3404249063913988450">സ്ക്രീൻ സേവർ പ്രവർത്തനക്ഷമമാക്കുക</translation>
-<translation id="3404805962764077228"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോൺ ആപ്പുകൾ താൽക്കാലികമായി ഉപയോഗിക്കുക</translation>
 <translation id="3405664148539009465">ഫോണ്ടുകള്‍ ഇച്ഛാനുസൃതമാക്കുക</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും ഉപയോഗിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
@@ -3000,7 +3002,7 @@
 <translation id="413121957363593859">ഘടകങ്ങൾ</translation>
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
 <translation id="413193092008917129">നെറ്റ്‌വർക്ക് പ്രശ്‌നനിർണ്ണയ ദിനചര്യകൾ</translation>
-<translation id="4132183752438206707">Google Play സ്‌റ്റോറിൽ ആപ്പുകൾ കണ്ടെത്തുക</translation>
+<translation id="4132183752438206707">Google Play Store-ൽ ആപ്പുകൾ കണ്ടെത്തുക</translation>
 <translation id="4132364317545104286">ഇ-സിം പ്രൊഫൈലിന്റെ പേര് മാറ്റുക</translation>
 <translation id="4133076602192971179">നിങ്ങളുടെ പാസ്‌വേഡ് മാറ്റാൻ ആപ്പ് തുറക്കുക</translation>
 <translation id="4136203100490971508">സൂര്യോദയ സമയത്ത് നൈറ്റ് ലൈറ്റ് സ്വമേധയാ ഓഫാകും</translation>
@@ -3180,6 +3182,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" />, ഒരു വിൻഡോ പങ്കിടുന്നു.</translation>
 <translation id="4364830672918311045">അറിയിപ്പുകൾ പ്രദർശിപ്പിക്കുക</translation>
 <translation id="4366138410738374926">പ്രിന്റ് ചെയ്യൽ ആരംഭിച്ചു</translation>
+<translation id="4369121877634339065">തിരയാൻ ഏതെങ്കിലും ചിത്രം വലിച്ചിടുക</translation>
 <translation id="4370975561335139969">നിങ്ങൾ നൽകിയ ഇമെയിലും പാസ്‌വേഡും പൊരുത്തപ്പെടുന്നില്ല</translation>
 <translation id="4371452868325715552">സെർവറുമായി കണക്റ്റ് ചെയ്യാനായില്ല. നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക. നിങ്ങൾ ഇപ്പോഴും പ്രശ്നം നേരിടുന്നുണ്ടെങ്കിൽ, Chromebook റീസ്‌റ്റാർട്ട് ചെയ്‌ത് ശ്രമിക്കുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">ഡെസ്‌ക്‌ടോപ്പ് കാസ്റ്റുചെയ്യുന്നു</translation>
@@ -5769,6 +5772,10 @@
 <translation id="7222204278952406003">Chrome ആണ് നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ</translation>
 <translation id="7222232353993864120">ഇമെയില്‍ വിലാസം</translation>
 <translation id="7225179976675429563">നെറ്റ്‌വർക്ക് തരം നഷ്‌ടമായി</translation>
+<translation id="7226485026248318204">Google Photos-ൽ നിന്നുള്ള നിങ്ങളുടെ മനോഹര ഓർമ്മകൾ ഇവിടെ കാണിക്കും. നിങ്ങൾ സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ മാത്രമേ അവ ദൃശ്യമാകൂ.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        നിങ്ങളുടെ മനോഹര ഓർമ്മകളിൽ കാണുന്നവ <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> -ൽ മാനേജ് ചെയ്യുക.</translation>
 <translation id="7228479291753472782">വെബ്‌സൈറ്റിന് ജിയോലൊക്കേഷൻ, മൈക്രോഫോൺ, ക്യാമറ എന്നിവ പോലുള്ള ഫീച്ചറുകൾ ഉപയോഗിക്കാൻ കഴിയുമോ എന്ന് വ്യക്തമാക്കുന്ന ക്രമീകരണം കൈകാര്യം ചെയ്യുക.</translation>
 <translation id="7228523857728654909">സ്‌ക്രീൻ ലോക്കും സൈൻ-ഇന്നും</translation>
 <translation id="7230222852462421043">&amp;വിൻഡോ പുനഃസ്ഥാപിക്കുക</translation>
@@ -6198,6 +6205,7 @@
 <translation id="767147716926917172">പ്രശ്‍നനിർണ്ണയ, ഉപയോഗ വിവരങ്ങൾ സ്വയമേവ Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />-ൽ <ph name="HUNG_IFRAME_URL" />.</translation>
 <translation id="7674416868315480713">Linux-ൽ കൈമാറുന്ന എല്ലാ പോർട്ടുകളും നിഷ്‌ക്രിയമാക്കുക</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> ആപ്പുകൾ</translation>
 <translation id="7674542105240814168">ലൊക്കേഷൻ ആക്‌സസ് നിരസിച്ചു</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' എന്നതിന് <ph name="NUM" /> ടാബ് കണ്ടെത്തി</translation>
 <translation id="7676867886086876795">ഏതെങ്കിലും ടെക്‌സ്‌റ്റ് ഫീൽഡിലേക്ക് കേട്ടെഴുതുന്നത് അനുവദിക്കാൻ നിങ്ങളുടെ വോയ്‌സ് Google-ലേക്ക് അയയ്‌ക്കുക.</translation>
