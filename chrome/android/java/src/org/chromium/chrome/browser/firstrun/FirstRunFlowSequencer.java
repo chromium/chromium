@@ -128,6 +128,15 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     @VisibleForTesting
+    protected boolean shoulShowSignInPage() {
+        // We show the sign-in page if sync is allowed, and not signed in, and
+        // - "skip the first use hints" is not set, or
+        // - "skip the first use hints" is set, but there is at least one account.
+        return isSyncAllowed() && !isSignedIn()
+                && (!shouldSkipFirstUseHints() || !mGoogleAccounts.isEmpty());
+    }
+
+    @VisibleForTesting
     protected void setFirstRunFlowSignInComplete() {
         FirstRunSignInProcessor.setFirstRunFlowSignInComplete(true);
     }
@@ -155,12 +164,7 @@ public abstract class FirstRunFlowSequencer  {
      * @param freProperties Resulting FRE properties bundle.
      */
     public void onNativeAndPoliciesInitialized(Bundle freProperties) {
-        // We show the sign-in page if sync is allowed, and not signed in, and
-        // - no "skip the first use hints" is set, or
-        // - "skip the first use hints" is set, but there is at least one account.
-        boolean offerSignInOk = isSyncAllowed() && !isSignedIn()
-                && (!shouldSkipFirstUseHints() || !mGoogleAccounts.isEmpty());
-        freProperties.putBoolean(FirstRunActivity.SHOW_SIGNIN_PAGE, offerSignInOk);
+        freProperties.putBoolean(FirstRunActivity.SHOW_SIGNIN_PAGE, shoulShowSignInPage());
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_DATA_REDUCTION_PAGE, shouldShowDataReductionPage());
         freProperties.putBoolean(
