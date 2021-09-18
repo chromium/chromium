@@ -149,22 +149,27 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
 
   /** Override chromeos.settings.appNotification.onNotificationAppChanged */
   onNotificationAppChanged(updatedApp) {
+    // Using Polymer mutation methods do not properly handle splice updates with
+    // object that have deep properties. Create and assign a copy list instead.
+    const appList = Array.from(this.appList_);
     const foundIdx = this.appList_.findIndex(app => {
       return app.id === updatedApp.id;
     });
     if (isAppInstalled(updatedApp)) {
       if (foundIdx !== -1) {
-        this.splice('appList_', foundIdx, updatedApp);
-        return;
+        appList[foundIdx] = updatedApp;
+      } else {
+        appList.push(updatedApp);
       }
-      this.push('appList_', updatedApp);
+      this.appList_ = appList;
       return;
     }
 
     // Cannot have an app that is uninstalled prior to being installed.
     assert(foundIdx !== -1);
     // Uninstalled app found, remove it from the list.
-    this.splice('appList_', foundIdx, 1);
+    appList.splice(foundIdx, 1);
+    this.appList_ = appList;
   }
 
   /** @private */
