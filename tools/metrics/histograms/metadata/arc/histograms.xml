@@ -264,13 +264,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.AppsInstalledAtStartup" units="App Count"
-    expires_after="M92">
+    expires_after="M99">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>
     Total number of ARC apps installed on a device measured at startup. Note:
     This includes launchable apps that are installed by default, such as Play
     Store and Settings, as well as any vendor specific apps.
+
+    Warning: this histogram was expired after M92 and brought back 2021-09-17;
+    data may be missing.
   </summary>
 </histogram>
 
@@ -617,7 +620,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.CumulativeUseTime" units="seconds"
-    expires_after="2020-02-02">
+    expires_after="2022-03-02">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>
@@ -625,16 +628,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     container is active. Reported at most once a day, at which point accumulated
     time is reset (which means that sum of reported times for a OS version would
     give an estimate of ARC usage time per OS version).
+
+    Warning: this histogram was expired after 2021-03-12 and brought back
+    2021-09-17; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.CupsPrinting.PageCount" units="units"
-    expires_after="2020-10-04">
+    expires_after="2022-03-04">
   <owner>skau@chromium.org</owner>
   <owner>vkuzkokov@google.com</owner>
   <summary>
     The number of pages sent to a native printer by ARC. Reported for every
     print job originating in ARC container and sent to a CUPS printer.
+
+    Warning: this histogram was expired after 2020-10-04 and brought back
+    2021-09-17; data may be missing.
   </summary>
 </histogram>
 
@@ -1037,7 +1046,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OptInAction" enum="ArcOptInAction"
-    expires_after="2021-10-17">
+    expires_after="2022-03-17">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <summary>Arc OptIn action taken by user.</summary>
@@ -1062,14 +1071,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.OptInResult" enum="ArcOptInResult"
-    expires_after="2021-12-26">
+    expires_after="2022-01-26">
   <owner>elijahtaylor@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>Arc OptIn flow result.</summary>
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode" enum="ArcOptInSilentAuthCode"
-    expires_after="2022-01-02">
+    expires_after="2022-03-02">
   <owner>elijahtaylor@google.com</owner>
   <summary>
     Arc Silent Auth Code status. This status is set during the ARC OptIn flow.
@@ -1611,7 +1620,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.StateByUserType{ArcUserTypes}" enum="ArcEnableState"
-    expires_after="2021-10-25">
+    expires_after="2022-03-25">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
   <owner>khmel@google.com</owner>
