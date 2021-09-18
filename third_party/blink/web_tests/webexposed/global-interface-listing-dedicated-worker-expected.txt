@@ -530,6 +530,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createSyncAccessHandle
 [Worker]     method createWritable
 [Worker]     method getFile
+[Worker]     method move
+[Worker]     method rename
 [Worker] interface FileSystemHandle
 [Worker]     attribute @@toStringTag
 [Worker]     getter kind

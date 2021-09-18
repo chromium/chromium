@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS move(dir, name) to rename a file
+PASS move(dir, name) to rename a file the same name
+FAIL move(dir, name) to rename an empty directory promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+FAIL move(dir, name) to rename a non-empty directory promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+PASS move(dir) to move a file to a new directory
+PASS move(dir, "") to move a file to a new directory
+PASS move(dir, name) to move a file to a new directory
+FAIL move(dir) to move an empty directory to a new directory promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+FAIL move(dir, "") to move an empty directory to a new directory promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+FAIL move(dir, name) to move an empty directory to a new directory promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+FAIL move(dir, "") to move a non-empty directory to a new directory promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+FAIL move(dir, name) to move a non-empty directory to a new directory promise_test: Unhandled rejection with value: object "AbortError: The user aborted a request."
+PASS move(dir) can be called multiple times
+PASS move(dir, "") can be called multiple times
+PASS move(dir, name) can be called multiple times
+PASS move(dir, name) with a name with invalid characters should fail
+FAIL move(dir, name) to move a directory within itself fails promise_rejects_dom: function "function() { throw e }" threw object "AbortError: The user aborted a request." that is not a DOMException InvalidModificationError: property "code" is equal to 20, expected 13
+FAIL move(dir, name) to move a directory within itself and rename fails promise_rejects_dom: function "function() { throw e }" threw object "AbortError: The user aborted a request." that is not a DOMException InvalidModificationError: property "code" is equal to 20, expected 13
+FAIL move(dir) to move a directory within a descendent fails promise_rejects_dom: function "function() { throw e }" threw object "AbortError: The user aborted a request." that is not a DOMException InvalidModificationError: property "code" is equal to 20, expected 13
+FAIL move(dir, name) to move a directory within a descendent fails promise_rejects_dom: function "function() { throw e }" threw object "AbortError: The user aborted a request." that is not a DOMException InvalidModificationError: property "code" is equal to 20, expected 13
+Harness: the test ran to completion.
+

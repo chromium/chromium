@@ -542,6 +542,8 @@ interface FileSystemFileHandle : FileSystemHandle
     method constructor
     method createWritable
     method getFile
+    method move
+    method rename
 interface FileSystemHandle
     attribute @@toStringTag
     getter kind

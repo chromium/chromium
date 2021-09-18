@@ -181,15 +181,9 @@ void FileSystemAccessDirectoryHandleImpl::Move(
     MoveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunWithWritePermission(
-      base::BindOnce(&FileSystemAccessHandleBase::DoMove,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(destination_directory), new_entry_name),
-      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
-                        MoveCallback callback) {
-        std::move(callback).Run(std::move(result));
-      }),
-      std::move(callback));
+  // TODO(crbug.com/1250534): Implement move for directory handles.
+  std::move(callback).Run(file_system_access_error::FromStatus(
+      blink::mojom::FileSystemAccessStatus::kOperationAborted));
 }
 
 void FileSystemAccessDirectoryHandleImpl::Rename(
@@ -197,14 +191,9 @@ void FileSystemAccessDirectoryHandleImpl::Rename(
     RenameCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunWithWritePermission(
-      base::BindOnce(&FileSystemAccessHandleBase::DoRename,
-                     weak_factory_.GetWeakPtr(), new_entry_name),
-      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
-                        RenameCallback callback) {
-        std::move(callback).Run(std::move(result));
-      }),
-      std::move(callback));
+  // TODO(crbug.com/1250534): Implement rename for directory handles.
+  std::move(callback).Run(file_system_access_error::FromStatus(
+      blink::mojom::FileSystemAccessStatus::kOperationAborted));
 }
 
 void FileSystemAccessDirectoryHandleImpl::Remove(bool recurse,
