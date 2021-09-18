@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <objc/runtime.h>
+
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/ios/ios_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,6 +43,9 @@ const char kGoPositiveDeltaLink[] = "go-positive-delta";
 const char kPage1Link[] = "page-1";
 const char kPage2Link[] = "page-2";
 const char kPage3Link[] = "page-3";
+
+// Suffix used to disable kRestoreSessionFromCache.
+NSString* const kDisableCacheRestoreSuffix = @"WithCacheRestoreDisabled";
 
 id<GREYMatcher> ContextMenuMatcherForText(NSString* text) {
   return grey_allOf(
@@ -117,12 +123,44 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 @implementation VisibleURLTestCase
 
++ (NSArray*)testInvocations {
+  NSMutableArray* testInvocations = [[super testInvocations] mutableCopy];
+
+  // VisibleURLTestCase tests a lot of ios/web session restore logic. iOS 15
+  // supports a more efficient session restore flow, but there are plenty of
+  // edge case reasons for a session restore to fall back to legacy restore.
+  // To ensure each test below ios/web restore path, duplicate each test with a
+  // version that runs with kRestoreSessionFromCache enabled and disabled.
+  if (@available(iOS 15, *)) {
+    unsigned int count = 0;
+    Method* methods = class_copyMethodList(self, &count);
+    for (unsigned i = 0; i < count; i++) {
+      SEL selector = method_getName(methods[i]);
+      NSString* name = NSStringFromSelector(selector);
+      if ([name hasPrefix:@"test"]) {
+        // Add disabled selector to test invocations.
+        SEL disabled_selector = NSSelectorFromString([NSString
+            stringWithFormat:@"%@%@", name, kDisableCacheRestoreSuffix]);
+        NSInvocation* invocation = [NSInvocation
+            invocationWithMethodSignature:
+                [self instanceMethodSignatureForSelector:selector]];
+        [invocation setSelector:disabled_selector];
+        [testInvocations addObject:invocation];
+
+        // Link method to disabled selector.
+        Method instanceMethod = class_getInstanceMethod(self, selector);
+        const char* typeEncoding = method_getTypeEncoding(instanceMethod);
+        class_addMethod(self, disabled_selector,
+                        method_getImplementation(instanceMethod), typeEncoding);
+      }
+    }
+  }
+  return [testInvocations copy];
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // TOOD(crbug.com/1221250): Re-enable this test when iOS 15 native session
-  // restore is fixed. Many of the assumptions made in VisibuleURLTestCase may
-  // not be correct with native session restore.
-  if (@available(iOS 15, *)) {
+  if ([self.name containsString:kDisableCacheRestoreSuffix]) {
     config.features_disabled.push_back(web::kRestoreSessionFromCache);
   }
   return config;
@@ -190,9 +228,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
         performAction:grey_tap()];
     GREYAssert([self waitForServerToReceiveRequestWithURL:_testURL1],
                @"Last request URL: %@", self.lastRequestURLSpec);
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL1.GetContent())]
-        assertWithMatcher:grey_notNil()];
-
     // Make server respond so URL1 becomes committed.
     [self setServerPaused:NO];
   }
@@ -215,9 +250,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
         performAction:grey_tap()];
     GREYAssert([self waitForServerToReceiveRequestWithURL:_testURL2],
                @"Last request URL: %@", self.lastRequestURLSpec);
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL2.GetContent())]
-        assertWithMatcher:grey_notNil()];
-
     // Make server respond so URL2 becomes committed.
     [self setServerPaused:NO];
   }
@@ -254,8 +286,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
     ScopedSynchronizationDisabler disabler;
     GREYAssert([self waitForServerToReceiveRequestWithURL:_testURL1],
                @"Last request URL: %@", self.lastRequestURLSpec);
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL1.GetContent())]
-        assertWithMatcher:grey_notNil()];
 
     // Make server respond so URL1 becomes committed.
     [self setServerPaused:NO];
@@ -271,7 +301,7 @@ class PausableResponseProvider : public HtmlResponseProvider {
   // With iPhone, Stop and Reload are in the tool menu. There's no easy way to
   // track some animations (opening a popop) and not others (load progress bar)
   // which makes this test fail.
-  if (![ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPhone (sync issues)");
   }
   // Purge web view caches and pause the server to make sure that tests can
@@ -296,10 +326,21 @@ class PausableResponseProvider : public HtmlResponseProvider {
     // Makes server respond.
     [self setServerPaused:NO];
   }
-  // Verifies that page1 was reloaded, not page2.
-  [ChromeEarlGrey waitForWebStateContainingText:kTestPage1];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL1.GetContent())]
-      assertWithMatcher:grey_notNil()];
+
+  if ([self.name containsString:kDisableCacheRestoreSuffix] ||
+      !base::ios::IsRunningOnIOS15OrLater()) {
+    // In this case, legacy restore will commit page1 with the pushState
+    // empty page (see restore_session.html). With legacy restore check that
+    // page1 was reloaded, not page2.
+    [ChromeEarlGrey waitForWebStateContainingText:kTestPage1];
+    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL1.GetContent())]
+        assertWithMatcher:grey_notNil()];
+  } else {
+    // Verifies that page2 was reloaded.
+    [ChromeEarlGrey waitForWebStateContainingText:kTestPage2];
+    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL2.GetContent())]
+        assertWithMatcher:grey_notNil()];
+  }
 }
 
 // Tests that visible URL is always the same as last pending URL during
@@ -321,8 +362,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
         tapWebStateElementWithID:base::SysUTF8ToNSString(kGoBackLink)];
     GREYAssert([self waitForServerToReceiveRequestWithURL:_testURL1],
                @"Last request URL: %@", self.lastRequestURLSpec);
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL1.GetContent())]
-        assertWithMatcher:grey_notNil()];
 
     // Make server respond so URL1 becomes committed.
     [self setServerPaused:NO];
@@ -347,8 +386,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
         tapWebStateElementWithID:base::SysUTF8ToNSString(kGoForwardLink)];
     GREYAssert([self waitForServerToReceiveRequestWithURL:_testURL2],
                @"Last request URL: %@", self.lastRequestURLSpec);
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL2.GetContent())]
-        assertWithMatcher:grey_notNil()];
 
     // Make server respond so URL2 becomes committed.
     [self setServerPaused:NO];
@@ -377,8 +414,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
         tapWebStateElementWithID:base::SysUTF8ToNSString(kGoNegativeDeltaLink)];
     GREYAssert([self waitForServerToReceiveRequestWithURL:_testURL1],
                @"Last request URL: %@", self.lastRequestURLSpec);
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL1.GetContent())]
-        assertWithMatcher:grey_notNil()];
 
     // Make server respond so URL1 becomes committed.
     [self setServerPaused:NO];
@@ -403,8 +438,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
         tapWebStateElementWithID:base::SysUTF8ToNSString(kGoPositiveDeltaLink)];
     GREYAssert([self waitForServerToReceiveRequestWithURL:_testURL2],
                @"Last request URL: %@", self.lastRequestURLSpec);
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL2.GetContent())]
-        assertWithMatcher:grey_notNil()];
 
     // Make server respond so URL2 becomes committed.
     [self setServerPaused:NO];
@@ -464,16 +497,11 @@ class PausableResponseProvider : public HtmlResponseProvider {
         tapWebStateElementWithID:base::SysUTF8ToNSString(kGoBackLink)];
     [ChromeEarlGrey
         tapWebStateElementWithID:base::SysUTF8ToNSString(kGoBackLink)];
-    // Server will receive only one request either for |_testURL2| or for
-    // |_testURL1| depending on load timing and then will pause. So there is no
-    // need to wait for particular request.
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL2.GetContent())]
-        assertWithMatcher:grey_notNil()];
 
     // Make server respond so URL1 becomes committed.
     [self setServerPaused:NO];
   }
-  // TODO(crbug.com/866406): fix the test to have documented behavior.
+
   [ChromeEarlGrey waitForWebStateContainingText:kTestPage1];
   [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL1.GetContent())]
       assertWithMatcher:grey_notNil()];

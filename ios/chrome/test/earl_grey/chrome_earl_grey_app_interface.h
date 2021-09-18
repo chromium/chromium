@@ -301,7 +301,7 @@
 // navigation will not use a cached page. Browsers don't have to use a fresh
 // version for back/forward navigation for HTTP pages and may serve a version
 // from the cache even if the Cache-Control response header says otherwise.
-+ (void)purgeCachedWebViewPages;
++ (NSError*)purgeCachedWebViewPages;
 
 // Returns YES if the current WebState's navigation manager is currently
 // restoring session state.

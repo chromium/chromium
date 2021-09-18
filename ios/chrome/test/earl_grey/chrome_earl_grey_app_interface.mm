@@ -660,11 +660,12 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
       chrome_test_util::GetCurrentWebState()->GetLastCommittedURL().spec());
 }
 
-+ (void)purgeCachedWebViewPages {
-  web::WebState* web_state = chrome_test_util::GetCurrentWebState();
-  web_state->SetWebUsageEnabled(false);
-  web_state->SetWebUsageEnabled(true);
-  web_state->GetNavigationManager()->LoadIfNecessary();
++ (NSError*)purgeCachedWebViewPages {
+  if (!chrome_test_util::ClearAllBrowsingData(false)) {
+    return testing::NSErrorWithLocalizedDescription(
+        @"Fail to purge cached web view pages.");
+  }
+  return nil;
 }
 
 + (BOOL)isRestoreSessionInProgress {
