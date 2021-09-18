@@ -202,8 +202,10 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
   void UninstallPolicyApp(const std::string& site_mode);
 
   // State Check Actions
-  void CheckAppInListNotLocallyInstalled(const std::string& site_mode);
   void CheckAppListEmpty();
+  void CheckAppInListNotLocallyInstalled(const std::string& site_mode);
+  void CheckAppInListWindowed(const std::string& site_mode);
+  void CheckAppInListTabbed(const std::string& site_mode);
   void CheckAppNotInList(const std::string& site_mode);
   void CheckInstallable();
   void CheckInstallIconShown();

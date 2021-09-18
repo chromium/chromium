@@ -46,7 +46,7 @@ class TestPlatform(Enum):
     MAC = ("defined(OS_MAC)", "M", "mac")
     WINDOWS = ("defined(OS_WIN)", "W", "win")
     LINUX = ("defined(OS_LINUX)", "L", "linux")
-    CHROME_OS = ("BUILDFLAG(IS_CHROMEOS_ASH)", "C", "cros")
+    CHROME_OS = ("defined(OS_CHROMEOS)", "C", "cros")
 
     def __init__(self, macro: str, char: str, suffix: str):
         self.macro: str = macro

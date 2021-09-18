@@ -37,7 +37,17 @@ The list of testing actions are maintained in
 `chrome/test/webapps/data/framework_supported_actions.csv`. To add a new testing
 action, add the action into that csv. Use the emojis to indicate which platforms
 the action is supported on (at the time of your CL landing, rather than in the
-future).
+future).  Use the following emojis to specify coverage for an action on a given
+platform:
+
+* 🌕 - Full coverage - This means that the testing framework implements this
+  action in a way that completely matches (or almost matches) the code paths
+  that are used when the user triggers this action.
+* 🌓 - Partial coverage - This means that the testing framework implements this
+  action in a way that accomplishes the state change or check, but does not
+  fully match the code path that is used when the user triggers this action.
+* 🌑 - No coverage - This means the action is not supported.
+
 
 ### Managing State
 

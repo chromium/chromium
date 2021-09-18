@@ -661,6 +661,13 @@ void WebAppIntegrationBrowserTestBase::ManifestUpdateDisplayMinimal(
       GetAppURLForManifest(site_mode, blink::mojom::DisplayMode::kMinimalUi));
 }
 
+void WebAppIntegrationBrowserTestBase::CheckAppListEmpty() {
+  absl::optional<ProfileState> state =
+      GetStateForProfile(after_state_change_action_state_.get(), profile());
+  ASSERT_TRUE(state.has_value());
+  EXPECT_TRUE(state->apps.empty());
+}
+
 void WebAppIntegrationBrowserTestBase::CheckAppInListNotLocallyInstalled(
     const std::string& site_mode) {
   // Note: This is a partially supported action.
@@ -670,11 +677,23 @@ void WebAppIntegrationBrowserTestBase::CheckAppInListNotLocallyInstalled(
   EXPECT_FALSE(app_state->is_installed_locally);
 }
 
-void WebAppIntegrationBrowserTestBase::CheckAppListEmpty() {
-  absl::optional<ProfileState> state =
-      GetStateForProfile(after_state_change_action_state_.get(), profile());
-  ASSERT_TRUE(state.has_value());
-  EXPECT_TRUE(state->apps.empty());
+void WebAppIntegrationBrowserTestBase::CheckAppInListTabbed(
+    const std::string& site_mode) {
+  // Note: This is a partially supported action.
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value());
+  EXPECT_EQ(app_state->user_display_mode, blink::mojom::DisplayMode::kBrowser);
+}
+
+void WebAppIntegrationBrowserTestBase::CheckAppInListWindowed(
+    const std::string& site_mode) {
+  // Note: This is a partially supported action.
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value());
+  EXPECT_EQ(app_state->user_display_mode,
+            blink::mojom::DisplayMode::kStandalone);
 }
 
 void WebAppIntegrationBrowserTestBase::CheckAppNotInList(
