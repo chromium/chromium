@@ -79,38 +79,6 @@ class BaseTestServer {
       CERT_BAD_VALIDITY,
     };
 
-    // Bitmask of key exchange algorithms that the test server supports and that
-    // can be selectively enabled or disabled.
-    enum KeyExchange {
-      // Special value used to indicate that any algorithm the server supports
-      // is acceptable. Preferred over explicitly OR-ing all key exchange
-      // algorithms.
-      KEY_EXCHANGE_ANY = 0,
-
-      KEY_EXCHANGE_RSA = (1 << 0),
-      KEY_EXCHANGE_DHE_RSA = (1 << 1),
-      KEY_EXCHANGE_ECDHE_RSA = (1 << 2),
-    };
-
-    // Bitmask of bulk encryption algorithms that the test server supports
-    // and that can be selectively enabled or disabled.
-    enum BulkCipher {
-      // Special value used to indicate that any algorithm the server supports
-      // is acceptable. Preferred over explicitly OR-ing all ciphers.
-      BULK_CIPHER_ANY = 0,
-
-      BULK_CIPHER_RC4 = (1 << 0),
-      BULK_CIPHER_AES128 = (1 << 1),
-      BULK_CIPHER_AES256 = (1 << 2),
-
-      // NOTE: 3DES support in the Python test server has external
-      // dependencies and not be available on all machines. Clients may not
-      // be able to connect if only 3DES is specified.
-      BULK_CIPHER_3DES = (1 << 3),
-
-      BULK_CIPHER_AES128GCM = (1 << 4),
-    };
-
     // NOTE: the values of these enumerators are passed to the the Python test
     // server. Do not change them.
     enum TLSIntolerantLevel {
@@ -168,16 +136,6 @@ class BaseTestServer {
     // CertificateRequest.
     std::vector<SSLClientCertType> client_cert_types;
 
-    // A bitwise-OR of KeyExchnage that should be used by the
-    // HTTPS server, or KEY_EXCHANGE_ANY to indicate that all implemented
-    // key exchange algorithms are acceptable.
-    int key_exchanges = KEY_EXCHANGE_ANY;
-
-    // A bitwise-OR of BulkCipher that should be used by the
-    // HTTPS server, or BULK_CIPHER_ANY to indicate that all implemented
-    // ciphers are acceptable.
-    int bulk_ciphers = BULK_CIPHER_ANY;
-
     // If not TLS_INTOLERANT_NONE, the server will abort any handshake that
     // negotiates an intolerant TLS version in order to test version fallback.
     TLSIntolerantLevel tls_intolerant = TLS_INTOLERANT_NONE;
@@ -189,13 +147,6 @@ class BaseTestServer {
     // The maximum TLS version to support.
     TLSMaxVersion tls_max_version = TLS_MAX_VERSION_DEFAULT;
 
-    // fallback_scsv_enabled, if true, causes the server to process the
-    // TLS_FALLBACK_SCSV cipher suite. This cipher suite is sent by Chrome
-    // when performing TLS version fallback in response to an SSL handshake
-    // failure. If this option is enabled then the server will reject fallback
-    // connections.
-    bool fallback_scsv_enabled = false;
-
     // Temporary glue for testing: validation of SCTs is application-controlled
     // and can be appropriately mocked out, so sending fake data here does not
     // affect handshaking behaviour.
@@ -204,22 +155,8 @@ class BaseTestServer {
     // a TLS extension.
     std::string signed_cert_timestamps_tls_ext;
 
-    // List of protocols to advertise in NPN extension.  NPN is not supported if
-    // list is empty.  Note that regardless of what protocol is negotiated, the
-    // test server will continue to speak HTTP/1.1.
-    std::vector<std::string> npn_protocols;
-
-    // List of supported ALPN protocols.
-    std::vector<std::string> alpn_protocols;
-
     // Whether to send a fatal alert immediately after completing the handshake.
     bool alert_after_handshake = false;
-
-    // If true, disables channel ID on the server.
-    bool disable_channel_id = false;
-
-    // If true, disables extended master secret tls extension.
-    bool disable_extended_master_secret = false;
 
     // If true, sends the TLS 1.3 to TLS 1.2 downgrade signal in the ServerHello
     // random.

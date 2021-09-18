@@ -3483,19 +3483,6 @@ TEST_P(SSLClientSocketVersionTest, CertificateErrorNoResume) {
   EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
 }
 
-// Test that DHE is removed.
-TEST_F(SSLClientSocketTest, NoDHE) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.key_exchanges =
-      SpawnedTestServer::SSLOptions::KEY_EXCHANGE_DHE_RSA;
-  ASSERT_TRUE(StartTestServer(ssl_options));
-
-  SSLConfig ssl_config;
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
-}
-
 TEST_F(SSLClientSocketTest, RequireECDHE) {
   // Run test server without ECDHE.
   SSLServerConfig server_config;

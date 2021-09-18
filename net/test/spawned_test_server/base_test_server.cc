@@ -66,28 +66,6 @@ std::string GetClientCertType(SSLClientCertType type) {
   }
 }
 
-void GetKeyExchangesList(int key_exchange, std::vector<base::Value>* values) {
-  if (key_exchange & BaseTestServer::SSLOptions::KEY_EXCHANGE_RSA)
-    values->emplace_back("rsa");
-  if (key_exchange & BaseTestServer::SSLOptions::KEY_EXCHANGE_DHE_RSA)
-    values->emplace_back("dhe_rsa");
-  if (key_exchange & BaseTestServer::SSLOptions::KEY_EXCHANGE_ECDHE_RSA)
-    values->emplace_back("ecdhe_rsa");
-}
-
-void GetCiphersList(int cipher, std::vector<base::Value>* values) {
-  if (cipher & BaseTestServer::SSLOptions::BULK_CIPHER_RC4)
-    values->emplace_back("rc4");
-  if (cipher & BaseTestServer::SSLOptions::BULK_CIPHER_AES128)
-    values->emplace_back("aes128");
-  if (cipher & BaseTestServer::SSLOptions::BULK_CIPHER_AES256)
-    values->emplace_back("aes256");
-  if (cipher & BaseTestServer::SSLOptions::BULK_CIPHER_3DES)
-    values->emplace_back("3des");
-  if (cipher & BaseTestServer::SSLOptions::BULK_CIPHER_AES128GCM)
-    values->emplace_back("aes128gcm");
-}
-
 base::Value GetTLSIntoleranceType(
     BaseTestServer::SSLOptions::TLSIntoleranceType type) {
   switch (type) {
@@ -487,20 +465,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
   if (type_ == TYPE_HTTPS) {
     arguments->SetKey("https", base::Value());
 
-    // Check key exchange argument.
-    std::vector<base::Value> key_exchange_values;
-    GetKeyExchangesList(ssl_options_.key_exchanges, &key_exchange_values);
-    if (key_exchange_values.size()) {
-      arguments->SetKey("ssl-key-exchange",
-                        base::Value(std::move(key_exchange_values)));
-    }
-    // Check bulk cipher argument.
-    std::vector<base::Value> bulk_cipher_values;
-    GetCiphersList(ssl_options_.bulk_ciphers, &bulk_cipher_values);
-    if (bulk_cipher_values.size()) {
-      arguments->SetKey("ssl-bulk-cipher",
-                        base::Value(std::move(bulk_cipher_values)));
-    }
     if (ssl_options_.tls_intolerant != SSLOptions::TLS_INTOLERANT_NONE) {
       arguments->SetIntKey("tls-intolerant", ssl_options_.tls_intolerant);
       arguments->SetKey(
@@ -510,8 +474,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
     if (ssl_options_.tls_max_version != SSLOptions::TLS_MAX_VERSION_DEFAULT) {
       arguments->SetIntKey("tls-max-version", ssl_options_.tls_max_version);
     }
-    if (ssl_options_.fallback_scsv_enabled)
-      arguments->SetKey("fallback-scsv", base::Value());
     if (!ssl_options_.signed_cert_timestamps_tls_ext.empty()) {
       std::string b64_scts_tls_ext;
       base::Base64Encode(ssl_options_.signed_cert_timestamps_tls_ext,
@@ -519,29 +481,9 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
       arguments->SetStringKey("signed-cert-timestamps-tls-ext",
                               b64_scts_tls_ext);
     }
-    if (!ssl_options_.alpn_protocols.empty()) {
-      std::vector<base::Value> alpn_protocols;
-      for (const std::string& proto : ssl_options_.alpn_protocols) {
-        alpn_protocols.emplace_back(proto);
-      }
-      arguments->SetKey("alpn-protocols",
-                        base::Value(std::move(alpn_protocols)));
-    }
-    if (!ssl_options_.npn_protocols.empty()) {
-      std::vector<base::Value> npn_protocols;
-      for (const std::string& proto : ssl_options_.npn_protocols) {
-        npn_protocols.emplace_back(proto);
-      }
-      arguments->SetKey("npn-protocols", base::Value(std::move(npn_protocols)));
-    }
     if (ssl_options_.alert_after_handshake)
       arguments->SetKey("alert-after-handshake", base::Value());
 
-    if (ssl_options_.disable_channel_id)
-      arguments->SetKey("disable-channel-id", base::Value());
-    if (ssl_options_.disable_extended_master_secret) {
-      arguments->SetKey("disable-extended-master-secret", base::Value());
-    }
     if (ssl_options_.simulate_tls13_downgrade) {
       arguments->SetKey("simulate-tls13-downgrade", base::Value());
     }

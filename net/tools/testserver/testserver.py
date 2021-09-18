@@ -102,12 +102,9 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
 
   def __init__(self, server_address, request_hander_class, pem_cert_and_key,
                ssl_client_auth, ssl_client_cas, ssl_client_cert_types,
-               ssl_bulk_ciphers, ssl_key_exchanges, alpn_protocols,
-               npn_protocols, tls_intolerant, tls_intolerance_type,
-               signed_cert_timestamps, fallback_scsv_enabled, ocsp_response,
-               alert_after_handshake, disable_channel_id, disable_ems,
-               simulate_tls13_downgrade, simulate_tls12_downgrade,
-               tls_max_version):
+               tls_intolerant, tls_intolerance_type, signed_cert_timestamps,
+               alert_after_handshake, simulate_tls13_downgrade,
+               simulate_tls12_downgrade, tls_max_version):
     self.cert_chain = tlslite.api.X509CertChain()
     self.cert_chain.parsePemList(pem_cert_and_key)
     # Force using only python implementation - otherwise behavior is different
@@ -120,10 +117,7 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
     self.ssl_client_auth = ssl_client_auth
     self.ssl_client_cas = []
     self.ssl_client_cert_types = []
-    self.npn_protocols = npn_protocols
     self.signed_cert_timestamps = signed_cert_timestamps
-    self.fallback_scsv_enabled = fallback_scsv_enabled
-    self.ocsp_response = ocsp_response
 
     if ssl_client_auth:
       for ca_file in ssl_client_cas:
@@ -141,26 +135,17 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
     self.ssl_handshake_settings = tlslite.api.HandshakeSettings()
     # Enable SSLv3 for testing purposes.
     self.ssl_handshake_settings.minVersion = (3, 0)
-    if ssl_bulk_ciphers is not None:
-      self.ssl_handshake_settings.cipherNames = ssl_bulk_ciphers
-    if ssl_key_exchanges is not None:
-      self.ssl_handshake_settings.keyExchangeNames = ssl_key_exchanges
     if tls_intolerant != 0:
       self.ssl_handshake_settings.tlsIntolerant = (3, tls_intolerant)
       self.ssl_handshake_settings.tlsIntoleranceType = tls_intolerance_type
     if alert_after_handshake:
       self.ssl_handshake_settings.alertAfterHandshake = True
-    if disable_channel_id:
-      self.ssl_handshake_settings.enableChannelID = False
-    if disable_ems:
-      self.ssl_handshake_settings.enableExtendedMasterSecret = False
     if simulate_tls13_downgrade:
       self.ssl_handshake_settings.simulateTLS13Downgrade = True
     if simulate_tls12_downgrade:
       self.ssl_handshake_settings.simulateTLS12Downgrade = True
     if tls_max_version != 0:
       self.ssl_handshake_settings.maxVersion = (3, tls_max_version)
-    self.ssl_handshake_settings.alpnProtos=alpn_protocols;
 
     self.session_cache = tlslite.api.SessionCache()
     testserver_base.StoppableHTTPServer.__init__(self,
@@ -172,18 +157,15 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
 
     try:
       self.tlsConnection = tlsConnection
-      tlsConnection.handshakeServer(certChain=self.cert_chain,
-                                    privateKey=self.private_key,
-                                    sessionCache=self.session_cache,
-                                    reqCert=self.ssl_client_auth,
-                                    settings=self.ssl_handshake_settings,
-                                    reqCAs=self.ssl_client_cas,
-                                    reqCertTypes=self.ssl_client_cert_types,
-                                    nextProtos=self.npn_protocols,
-                                    signedCertTimestamps=
-                                    self.signed_cert_timestamps,
-                                    fallbackSCSV=self.fallback_scsv_enabled,
-                                    ocspResponse = self.ocsp_response)
+      tlsConnection.handshakeServer(
+          certChain=self.cert_chain,
+          privateKey=self.private_key,
+          sessionCache=self.session_cache,
+          reqCert=self.ssl_client_auth,
+          settings=self.ssl_handshake_settings,
+          reqCAs=self.ssl_client_cas,
+          reqCertTypes=self.ssl_client_cert_types,
+          signedCertTimestamps=self.signed_cert_timestamps)
       tlsConnection.ignoreAbruptClose = True
       return True
     except tlslite.api.TLSAbruptCloseError:
@@ -430,18 +412,13 @@ class ServerRunner(testserver_base.TestServerRunner):
                 'specified trusted client CA file not found: ' + ca_cert +
                 ' exiting...')
 
-        stapled_ocsp_response = None
         server = HTTPSServer(
             (host, port), TestPageHandler, pem_cert_and_key,
             self.options.ssl_client_auth, self.options.ssl_client_ca,
-            self.options.ssl_client_cert_type, self.options.ssl_bulk_cipher,
-            self.options.ssl_key_exchange, self.options.alpn_protocols,
-            self.options.npn_protocols, self.options.tls_intolerant,
+            self.options.ssl_client_cert_type, self.options.tls_intolerant,
             self.options.tls_intolerance_type,
             base64.b64decode(self.options.signed_cert_timestamps_tls_ext),
-            self.options.fallback_scsv, stapled_ocsp_response,
-            self.options.alert_after_handshake, self.options.disable_channel_id,
-            self.options.disable_extended_master_secret,
+            self.options.alert_after_handshake,
             self.options.simulate_tls13_downgrade,
             self.options.simulate_tls12_downgrade, self.options.tls_max_version)
         print('HTTPS server started on https://%s:%d...' %
@@ -552,13 +529,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   'server will respond with a '
                                   'signed_certificate_timestamp TLS extension '
                                   'whenever the client supports it.')
-    self.option_parser.add_option('--fallback-scsv', dest='fallback_scsv',
-                                  default=False, const=True,
-                                  action='store_const',
-                                  help='If given, TLS_FALLBACK_SCSV support '
-                                  'will be enabled. This causes the server to '
-                                  'reject fallback connections from compatible '
-                                  'clients (e.g. Chrome).')
     self.option_parser.add_option('--ssl-client-auth', action='store_true',
                                   help='Require SSL client auth on every '
                                   'connection.')
@@ -579,32 +549,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   'in the request. Valid values are '
                                   '"rsa_sign", "dss_sign", and "ecdsa_sign". '
                                   'If omitted, "rsa_sign" will be used.')
-    self.option_parser.add_option('--ssl-bulk-cipher', action='append',
-                                  help='Specify the bulk encryption '
-                                  'algorithm(s) that will be accepted by the '
-                                  'SSL server. Valid values are "aes128gcm", '
-                                  '"aes256", "aes128", "3des", "rc4". If '
-                                  'omitted, all algorithms will be used. This '
-                                  'option may appear multiple times, '
-                                  'indicating multiple algorithms should be '
-                                  'enabled.');
-    self.option_parser.add_option('--ssl-key-exchange', action='append',
-                                  help='Specify the key exchange algorithm(s)'
-                                  'that will be accepted by the SSL server. '
-                                  'Valid values are "rsa", "dhe_rsa", '
-                                  '"ecdhe_rsa". If omitted, all algorithms '
-                                  'will be used. This option may appear '
-                                  'multiple times, indicating multiple '
-                                  'algorithms should be enabled.');
-    self.option_parser.add_option('--alpn-protocols', action='append',
-                                  help='Specify the list of ALPN protocols.  '
-                                  'The server will not send an ALPN response '
-                                  'if this list does not overlap with the '
-                                  'list of protocols the client advertises.')
-    self.option_parser.add_option('--npn-protocols', action='append',
-                                  help='Specify the list of protocols sent in '
-                                  'an NPN response.  The server will not'
-                                  'support NPN if the list is empty.')
     self.option_parser.add_option('--file-root-url', default='/files/',
                                   help='Specify a root URL for files served.')
     # TODO(ricea): Generalize this to support basic auth for HTTP too.
@@ -616,9 +560,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   default=False, action='store_true',
                                   help='If set, the server will send a fatal '
                                   'alert immediately after the handshake.')
-    self.option_parser.add_option('--disable-channel-id', action='store_true')
-    self.option_parser.add_option('--disable-extended-master-secret',
-                                  action='store_true')
     self.option_parser.add_option('--simulate-tls13-downgrade',
                                   action='store_true')
     self.option_parser.add_option('--simulate-tls12-downgrade',
