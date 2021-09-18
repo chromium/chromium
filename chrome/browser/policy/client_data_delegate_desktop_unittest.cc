@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/features.h"
@@ -17,12 +19,14 @@ namespace policy {
 
 TEST(ClientDataDelegateDesktopTest,
      FillRegisterBrowserRequest_BrowserDeviceIdentifier) {
+  base::test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list(
       features::kUploadBrowserDeviceIdentifier);
 
   ClientDataDelegateDesktop client_data_delegate;
   enterprise_management::RegisterBrowserRequest request;
-  client_data_delegate.FillRegisterBrowserRequest(&request);
+  client_data_delegate.FillRegisterBrowserRequest(&request, base::DoNothing());
+  task_environment.RunUntilIdle();
 
   EXPECT_EQ(request.machine_name(), GetMachineName());
   std::unique_ptr<enterprise_management::BrowserDeviceIdentifier>
@@ -35,13 +39,15 @@ TEST(ClientDataDelegateDesktopTest,
 
 TEST(ClientDataDelegateDesktopTest,
      FillRegisterBrowserRequest_NoBrowserDeviceIdentifier) {
+  base::test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kUploadBrowserDeviceIdentifier);
 
   ClientDataDelegateDesktop client_data_delegate;
   enterprise_management::RegisterBrowserRequest request;
-  client_data_delegate.FillRegisterBrowserRequest(&request);
+  client_data_delegate.FillRegisterBrowserRequest(&request, base::DoNothing());
+  task_environment.RunUntilIdle();
 
   EXPECT_EQ(request.machine_name(), GetMachineName());
   EXPECT_TRUE(request.browser_device_identifier().computer_name().empty());

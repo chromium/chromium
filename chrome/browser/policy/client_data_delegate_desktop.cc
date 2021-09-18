@@ -4,6 +4,9 @@
 
 #include "chrome/browser/policy/client_data_delegate_desktop.h"
 
+#include <utility>
+
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/features.h"
@@ -12,7 +15,8 @@
 namespace policy {
 
 void ClientDataDelegateDesktop::FillRegisterBrowserRequest(
-    enterprise_management::RegisterBrowserRequest* request) const {
+    enterprise_management::RegisterBrowserRequest* request,
+    base::OnceClosure callback) const {
   request->set_os_platform(GetOSPlatform());
   request->set_os_version(GetOSVersion());
   request->set_machine_name(GetMachineName());
@@ -21,6 +25,8 @@ void ClientDataDelegateDesktop::FillRegisterBrowserRequest(
     request->set_allocated_browser_device_identifier(
         GetBrowserDeviceIdentifier().release());
   }
+
+  std::move(callback).Run();
 }
 
 }  // namespace policy
