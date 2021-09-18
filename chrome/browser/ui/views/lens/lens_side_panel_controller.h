@@ -46,6 +46,9 @@ class LensSidePanelController : public content::WebContentsObserver {
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
 
+  // Handles the close button being clicked.
+  void CloseButtonClicked();
+
   std::unique_ptr<content::OpenURLParams> lens_web_params_;
   SidePanel* side_panel_;
   BrowserView* browser_view_;

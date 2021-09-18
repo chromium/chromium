@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
 
 #include "base/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/lens/lens_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel.h"
@@ -45,7 +47,7 @@ LensSidePanelController::LensSidePanelController(SidePanel* side_panel,
       side_panel_view_(
           side_panel_->AddChildView(std::make_unique<lens::LensSidePanelView>(
               browser_view_->GetProfile(),
-              base::BindRepeating(&LensSidePanelController::Close,
+              base::BindRepeating(&LensSidePanelController::CloseButtonClicked,
                                   base::Unretained(this)),
               base::BindRepeating(&LensSidePanelController::LoadResultsInNewTab,
                                   base::Unretained(this))))) {
@@ -57,22 +59,37 @@ LensSidePanelController::~LensSidePanelController() = default;
 
 void LensSidePanelController::OpenWithURL(
     const content::OpenURLParams& params) {
-  // Check if read later is enabled, before hiding side panel.
-  if (browser_view_->toolbar()->read_later_button())
+  // Hide Chrome side panel (Reading List/Bookmarks) if enabled and showing.
+  if (browser_view_->toolbar()->read_later_button() &&
+      browser_view_->right_aligned_side_panel()->GetVisible()) {
+    base::RecordAction(
+        base::UserMetricsAction("LensSidePanel.HideChromeSidePanel"));
     browser_view_->toolbar()->read_later_button()->HideSidePanel();
+  }
   side_panel_view_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
   lens_web_params_ = CreateOpenNewTabURLParamsForNewTab(params);
-  side_panel_->SetVisible(true);
+  if (side_panel_->GetVisible()) {
+    // The user issued a follow-up Lens query.
+    base::RecordAction(
+        base::UserMetricsAction("LensSidePanel.LensQueryWhileShowing"));
+  } else {
+    side_panel_->SetVisible(true);
+    base::RecordAction(base::UserMetricsAction("LensSidePanel.Show"));
+  }
 }
 
 void LensSidePanelController::Close() {
-  lens_web_params_ = nullptr;
-  // Loading an empty URL on close prevents old results from being displayed in
-  // the side panel if the side panel is reopened.
-  side_panel_view_->GetWebContents()->GetController().LoadURL(
-      GURL(), content::Referrer(), ui::PAGE_TRANSITION_FROM_API, std::string());
-  side_panel_->SetVisible(false);
+  if (side_panel_->GetVisible()) {
+    lens_web_params_ = nullptr;
+    // Loading an empty URL on close prevents old results from being displayed
+    // in the side panel if the side panel is reopened.
+    side_panel_view_->GetWebContents()->GetController().LoadURL(
+        GURL(), content::Referrer(), ui::PAGE_TRANSITION_FROM_API,
+        std::string());
+    side_panel_->SetVisible(false);
+    base::RecordAction(base::UserMetricsAction("LensSidePanel.Hide"));
+  }
 }
 
 void LensSidePanelController::LoadResultsInNewTab() {
@@ -81,6 +98,8 @@ void LensSidePanelController::LoadResultsInNewTab() {
         ->tab_strip_model()
         ->GetActiveWebContents()
         ->OpenURL(*lens_web_params_);
+    base::RecordAction(
+        base::UserMetricsAction("LensSidePanel.LoadResultsInNewTab"));
   }
   Close();
 }
@@ -99,6 +118,12 @@ void LensSidePanelController::DidOpenRequestedURL(
       ->GetActiveWebContents()
       ->GetController()
       .LoadURLWithParams(content::NavigationController::LoadURLParams(url));
+  base::RecordAction(base::UserMetricsAction("LensSidePanel.ResultLinkClick"));
+}
+
+void LensSidePanelController::CloseButtonClicked() {
+  base::RecordAction(base::UserMetricsAction("LensSidePanel.CloseButtonClick"));
+  Close();
 }
 
 }  // namespace lens
