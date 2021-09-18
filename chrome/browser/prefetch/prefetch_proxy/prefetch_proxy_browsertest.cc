@@ -524,7 +524,6 @@ class PrefetchProxyBrowserTest
     cmd->AppendSwitch("prefetch-proxy-never-send-decoy-requests-for-testing");
     // For the proxy.
     cmd->AppendSwitch("ignore-certificate-errors");
-    cmd->AppendSwitch("force-enable-metrics-reporting");
     cmd->AppendSwitchASCII("isolated-prerender-tunnel-proxy",
                            GetProxyURL().spec());
     cmd->AppendSwitchASCII(switches::kEnableBlinkFeatures,

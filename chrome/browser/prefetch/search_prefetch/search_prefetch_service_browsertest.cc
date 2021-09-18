@@ -304,7 +304,6 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
     cmd->AppendSwitch("ignore-certificate-errors");
-    cmd->AppendSwitch("force-enable-metrics-reporting");
 
     mock_cert_verifier_.SetUpCommandLine(cmd);
   }
