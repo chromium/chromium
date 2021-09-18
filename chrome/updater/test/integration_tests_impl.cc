@@ -229,9 +229,11 @@ void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
 void ExpectAppVersion(UpdaterScope scope,
                       const std::string& app_id,
                       const base::Version& version) {
-  EXPECT_EQ(version, base::MakeRefCounted<PersistedData>(
-                         CreateGlobalPrefs(scope)->GetPrefService())
-                         ->GetProductVersion(app_id));
+  const base::Version app_version =
+      base::MakeRefCounted<PersistedData>(
+          CreateGlobalPrefs(scope)->GetPrefService())
+          ->GetProductVersion(app_id);
+  EXPECT_TRUE(app_version.IsValid() && version == app_version);
 }
 
 bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
