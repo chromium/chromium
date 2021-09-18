@@ -511,6 +511,7 @@ target(link_target_type, "gles2_sources") {
       "shared_image_representation_d3d.cc",
       "shared_image_representation_d3d.h",
     ]
+    libs = [ "dxguid.lib" ]
   }
 }
 

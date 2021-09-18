@@ -333,6 +333,11 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
     return nullptr;
   }
 
+  const std::string debug_label =
+      "SharedImage_Texture2D" + CreateLabelForSharedImageUsage(usage);
+  d3d11_device_->SetPrivateData(WKPDID_D3DDebugObjectName, debug_label.length(),
+                                debug_label.c_str());
+
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
   hr = d3d11_texture.As(&dxgi_resource);
   if (FAILED(hr)) {
