@@ -93,6 +93,20 @@ def RunGsutil(args):
   return subprocess.call([sys.executable, GetGsutilPath()] + args)
 
 
+def PackageInArchive(directory_path, archive_path):
+  bin_dir_path = os.path.join(directory_path, 'bin')
+  if sys.platform != 'win32' and os.path.exists(bin_dir_path):
+    for f in os.listdir(bin_dir_path):
+      file_path = os.path.join(bin_dir_path, f)
+      if not os.path.islink(file_path):
+        subprocess.call(['strip', file_path])
+
+  with tarfile.open(archive_path, 'w:gz') as tar:
+    for f in os.listdir(directory_path):
+      tar.add(os.path.join(directory_path, f),
+              arcname=f, filter=PrintTarProgress)
+
+
 def MaybeUpload(do_upload, filename, gcs_platform, extra_gsutil_args=[]):
   gsutil_args = ['cp'] + extra_gsutil_args + [
       '-a', 'public-read', filename,
@@ -416,26 +430,6 @@ def main():
             os.path.splitext(f)[1] in ['.so', '.a']):
         subprocess.call([EU_STRIP, '-g', dest])
 
-  stripped_binaries = ['clang',
-                       'clang-tidy',
-                       'lld',
-                       'llvm-ar',
-                       'llvm-bcanalyzer',
-                       'llvm-cov',
-                       'llvm-cxxfilt',
-                       'llvm-nm',
-                       'llvm-objcopy',
-                       'llvm-objdump',
-                       'llvm-pdbutil',
-                       'llvm-profdata',
-                       'llvm-readobj',
-                       'llvm-symbolizer',
-                       'llvm-undname',
-                       ]
-  for f in stripped_binaries:
-    if sys.platform != 'win32':
-      subprocess.call(['strip', os.path.join(pdir, 'bin', f)])
-
   # Set up symlinks.
   if sys.platform != 'win32':
     os.symlink('clang', os.path.join(pdir, 'bin', 'clang++'))
@@ -454,12 +448,7 @@ def main():
                     os.path.join(pdir, 'include', 'c++'))
 
   # Create main archive.
-  tar_entries = ['bin', 'lib' ]
-  if sys.platform == 'darwin':
-    tar_entries += ['include']
-  with tarfile.open(pdir + '.tgz', 'w:gz') as tar:
-    for entry in tar_entries:
-      tar.add(os.path.join(pdir, entry), arcname=entry, filter=PrintTarProgress)
+  PackageInArchive(pdir, pdir + '.tgz')
   MaybeUpload(args.upload, pdir + '.tgz', gcs_platform)
 
   # Upload build log next to it.
@@ -477,9 +466,7 @@ def main():
   for filename in ['llvm-cov', 'llvm-profdata']:
     shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', filename + exe_ext),
                 os.path.join(code_coverage_dir, 'bin'))
-  with tarfile.open(code_coverage_dir + '.tgz', 'w:gz') as tar:
-    tar.add(os.path.join(code_coverage_dir, 'bin'), arcname='bin',
-            filter=PrintTarProgress)
+  PackageInArchive(code_coverage_dir, code_coverage_dir + '.tgz')
   MaybeUpload(args.upload, code_coverage_dir + '.tgz', gcs_platform)
 
   # Zip up llvm-objdump and related tools for sanitizer coverage and Supersize.
@@ -500,11 +487,7 @@ def main():
   if sys.platform != 'win32':
     os.symlink('llvm-objdump', os.path.join(objdumpdir, 'bin', 'llvm-otool'))
     os.symlink('llvm-readobj', os.path.join(objdumpdir, 'bin', 'llvm-readelf'))
-  with tarfile.open(objdumpdir + '.tgz', 'w:gz') as tar:
-    tar.add(os.path.join(objdumpdir, 'bin'), arcname='bin',
-            filter=PrintTarProgress)
-    tar.add(llvmobjdump_stamp_file, arcname=llvmobjdump_stamp_file_base,
-            filter=PrintTarProgress)
+  PackageInArchive(objdumpdir, objdumpdir + '.tgz')
   MaybeUpload(args.upload, objdumpdir + '.tgz', gcs_platform)
 
   # Zip up clang-tidy for users who opt into it, and Tricium.
@@ -513,9 +496,7 @@ def main():
   os.makedirs(os.path.join(clang_tidy_dir, 'bin'))
   shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'clang-tidy' + exe_ext),
               os.path.join(clang_tidy_dir, 'bin'))
-  with tarfile.open(clang_tidy_dir + '.tgz', 'w:gz') as tar:
-    tar.add(os.path.join(clang_tidy_dir, 'bin'), arcname='bin',
-            filter=PrintTarProgress)
+  PackageInArchive(clang_tidy_dir, clang_tidy_dir + '.tgz')
   MaybeUpload(args.upload, clang_tidy_dir + '.tgz', gcs_platform)
 
   if sys.platform == 'darwin':
@@ -527,9 +508,7 @@ def main():
     os.makedirs(os.path.join(dsymdir, 'bin'))
     shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'dsymutil'),
                 os.path.join(dsymdir, 'bin'))
-    with tarfile.open(dsymdir + '.tgz', 'w:gz') as tar:
-      tar.add(os.path.join(dsymdir, 'bin'), arcname='bin',
-              filter=PrintTarProgress)
+    PackageInArchive(dsymdir, dsymdir + '.tgz')
     MaybeUpload(args.upload, dsymdir + '.tgz', gcs_platform)
 
   # Zip up the translation_unit tool.
@@ -539,9 +518,7 @@ def main():
   shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'translation_unit' +
                            exe_ext),
               os.path.join(translation_unit_dir, 'bin'))
-  with tarfile.open(translation_unit_dir + '.tgz', 'w:gz') as tar:
-    tar.add(os.path.join(translation_unit_dir, 'bin'), arcname='bin',
-            filter=PrintTarProgress)
+  PackageInArchive(translation_unit_dir, translation_unit_dir + '.tgz')
   MaybeUpload(args.upload, translation_unit_dir + '.tgz', gcs_platform)
 
   # Zip up the libclang binaries.
@@ -556,11 +533,7 @@ def main():
     shutil.copy(os.path.join(LLVM_DIR, 'clang', 'bindings', 'python', 'clang',
                              filename),
                 os.path.join(libclang_dir, 'bindings', 'python', 'clang'))
-  tar_entries = ['bin', 'bindings' ]
-  with tarfile.open(libclang_dir + '.tgz', 'w:gz') as tar:
-    for entry in tar_entries:
-      tar.add(os.path.join(libclang_dir, entry), arcname=entry,
-              filter=PrintTarProgress)
+  PackageInArchive(libclang_dir, libclang_dir + '.tgz')
   MaybeUpload(args.upload, libclang_dir + '.tgz', gcs_platform)
 
   if sys.platform == 'win32' and args.upload:
