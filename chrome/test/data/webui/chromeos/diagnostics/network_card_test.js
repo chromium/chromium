@@ -70,7 +70,8 @@ export function networkCardTestSuite() {
   test('CardTitleWiFiConnectedInitializedCorrectly', () => {
     return initializeNetworkCard('wifiGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'Wi-Fi (Connected)');
+          networkCardElement.$$('#cardTitle'),
+          'Wi-Fi [84:C5:A6:30:3F:31] (Connected)');
       assertFalse(isVisible(getTroubleConnectingElement()));
     });
   });
@@ -78,7 +79,8 @@ export function networkCardTestSuite() {
   test('CardTitleWiFiDisabledInitializedCorrectly', () => {
     return initializeNetworkCard('wifiGuidDisabled').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'Wi-Fi (Disabled)');
+          networkCardElement.$$('#cardTitle'),
+          'Wi-Fi [84:C5:A6:30:3F:31] (Disabled)');
       assertTrue(isVisible(getTroubleConnectingElement()));
     });
   });
@@ -86,7 +88,8 @@ export function networkCardTestSuite() {
   test('WifiDisconnectedShowTroubleShooting', () => {
     return initializeNetworkCard('wifiDisconnectedGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'Wi-Fi (Not Connected)');
+          networkCardElement.$$('#cardTitle'),
+          'Wi-Fi [84:C5:A6:30:3F:31] (Not Connected)');
       assertTrue(isVisible(getTroubleConnectingElement()));
     });
   });
@@ -94,7 +97,8 @@ export function networkCardTestSuite() {
   test('CardTitleEthernetOnlineInitializedCorrectly', () => {
     return initializeNetworkCard('ethernetGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'Ethernet (Online)');
+          networkCardElement.$$('#cardTitle'),
+          'Ethernet [81:C5:A6:30:3F:31] (Online)');
       assertFalse(isVisible(getTroubleConnectingElement()));
     });
   });
@@ -102,7 +106,8 @@ export function networkCardTestSuite() {
   test('EthernetDisconnectedShowTroubleShooting', () => {
     return initializeNetworkCard('ethernetDisconnectedGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'Ethernet (Not Connected)');
+          networkCardElement.$$('#cardTitle'),
+          'Ethernet [81:C5:A6:30:3F:32] (Not Connected)');
       assertTrue(isVisible(getTroubleConnectingElement()));
     });
   });

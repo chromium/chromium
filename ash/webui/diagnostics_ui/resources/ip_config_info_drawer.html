@@ -8,17 +8,6 @@
 <template is="dom-if" if="[[expanded_]]">
   <div id="ipConfigInfoElement" class="horizontal-data-point-container">
     <div class="data-point-container">
-      <data-point id="macAddress"
-          header="[[i18n('ipConfigInfoDrawerMacAddress')]]"
-          value="[[macAddress_]]" orientation="horizontal">
-      </data-point>
-      <data-point id="nameServers"
-          header="[[nameServersHeader_]]"
-          value="[[nameServers_]]" orientation="horizontal">
-      </data-point>
-    </div>
-    <div class="divider-horizontal"></div>
-    <div class="data-point-container">
       <data-point id="gateway"
           header="[[i18n('ipConfigInfoDrawerGateway')]]"
           value="[[gateway_]]" orientation="horizontal">
@@ -26,6 +15,13 @@
       <data-point id="subnetMask"
           header="[[i18n('ipConfigInfoDrawerSubnetMask')]]"
           value="[[subnetMask_]]" orientation="horizontal">
+      </data-point>
+    </div>
+    <div class="divider-horizontal"></div>
+    <div class="data-point-container">
+      <data-point id="nameServers"
+          header="[[nameServersHeader_]]"
+          value="[[nameServers_]]" orientation="horizontal">
       </data-point>
     </div>
   </div>

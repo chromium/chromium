@@ -53,15 +53,6 @@ Polymer({
      * @protected
      * @type {string}
      */
-    macAddress_: {
-      type: String,
-      computed: 'computeMacAddress_(network.macAddress)',
-    },
-
-    /**
-     * @protected
-     * @type {string}
-     */
     nameServers_: {
       type: String,
       computed: 'computeNameServers_(network.ipConfig.nameServers)',
@@ -104,14 +95,6 @@ Polymer({
       return this.network.ipConfig.gateway;
     }
     return '';
-  },
-
-  /**
-   * @protected
-   * @return {string}
-   */
-  computeMacAddress_() {
-    return this.network.macAddress || '';
   },
 
   /**

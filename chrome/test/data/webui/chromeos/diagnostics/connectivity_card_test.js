@@ -140,7 +140,8 @@ export function connectivityCardTestSuite() {
   test('CardTitleEthernetOnlineInitializedCorrectly', () => {
     return initializeConnectivityCard('ethernetGuid').then(() => {
       dx_utils.assertElementContainsText(
-          connectivityCardElement.$$('#cardTitle'), 'Ethernet (Online)');
+          connectivityCardElement.$$('#cardTitle'),
+          'Ethernet [81:C5:A6:30:3F:31] (Online)');
     });
   });
 

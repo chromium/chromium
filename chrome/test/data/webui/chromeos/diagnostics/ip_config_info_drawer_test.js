@@ -96,18 +96,6 @@ export function ipConfigInfoDrawerTestSuite() {
         });
   });
 
-  test('ConfigDrawerOpenDisplaysMacAddressBasedOnNetwork', () => {
-    return initializeIpConfigInfoDrawerElement()
-        // Opening drawer to test visibility and content of data points.
-        .then(() => getDrawerToggle().click())
-        .then(() => {
-          dx_utils.assertDataPointHasExpectedHeaderAndValue(
-              ipConfigInfoDrawerElement, '#macAddress',
-              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerMacAddress'),
-              `${fakeEthernetNetwork.macAddress}`);
-        });
-  });
-
   test('ConfigDrawerOpenDisplaysGatewayBasedOnNetwork', () => {
     return initializeIpConfigInfoDrawerElement(fakeWifiNetwork)
         // Opening drawer to test visibility and content of data points.

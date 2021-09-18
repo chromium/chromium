@@ -83,6 +83,12 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @protected {string} */
+    macAddress_: {
+      type: String,
+      value: '',
+    },
   },
 
   /** @override */
@@ -129,6 +135,7 @@ Polymer({
   onNetworkStateChanged(network) {
     this.networkType_ = getNetworkType(network.type);
     this.networkState_ = getNetworkState(network.state);
+    this.macAddress_ = network.macAddress || '';
 
     if (this.testSuiteStatus === TestSuiteStatus.kNotRunning) {
       this.routines_ = getRoutinesByNetworkType(network.type);
@@ -146,12 +153,7 @@ Polymer({
 
   /** @protected */
   getNetworkCardTitle_() {
-    var title = this.networkType_;
-    if (this.networkState_) {
-      title = title + ' (' + this.networkState_ + ')';
-    }
-
-    return title;
+    return `${this.networkType_} [${this.macAddress_}] (${this.networkState_})`;
   },
 
   /**

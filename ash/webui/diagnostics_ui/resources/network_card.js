@@ -67,6 +67,12 @@ Polymer({
       type: Boolean,
       computed: 'computeShouldShowTroubleConnecting_(network.state)',
     },
+
+    /** @protected {string} */
+    macAddress_: {
+      type: String,
+      value: '',
+    },
   },
 
   observers: ['observeNetwork_(guid)'],
@@ -105,6 +111,7 @@ Polymer({
   onNetworkStateChanged(network) {
     this.networkType_ = getNetworkType(network.type);
     this.networkState_ = getNetworkState(network.state);
+    this.macAddress_ = network.macAddress || '';
     this.set('network', network);
   },
 
@@ -119,7 +126,7 @@ Polymer({
    * @return {string}
    */
   getNetworkCardTitle_() {
-    return `${this.networkType_} (${this.networkState_})`;
+    return `${this.networkType_} [${this.macAddress_}] (${this.networkState_})`;
   },
 
   /** @protected */
