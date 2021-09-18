@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -48,7 +49,8 @@ namespace blink {
 HTMLDetailsElement::HTMLDetailsElement(Document& document)
     : HTMLElement(html_names::kDetailsTag, document), is_open_(false) {
   UseCounter::Count(document, WebFeature::kDetailsElement);
-  EnsureUserAgentShadowRoot();
+  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
+      SlotAssignmentMode::kManual);
 }
 
 HTMLDetailsElement::~HTMLDetailsElement() = default;
@@ -77,6 +79,11 @@ LayoutObject* HTMLDetailsElement::CreateLayoutObject(const ComputedStyle& style,
   return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
 }
 
+// Creates shadow DOM
+// <SLOT id="details-summary">
+//   <SUMMARY>#text "Details"</SUMMARY>
+// <SLOT id="details-content" style="display: none;">
+// <STYLE>...
 void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   auto* default_summary =
       MakeGarbageCollected<HTMLSummaryElement>(GetDocument());
@@ -133,6 +140,36 @@ Element* HTMLDetailsElement::FindMainSummary() const {
   DCHECK(slot->firstChild());
   CHECK(IsA<HTMLSummaryElement>(*slot->firstChild()));
   return To<Element>(slot->firstChild());
+}
+
+void HTMLDetailsElement::ManuallyAssignSlots() {
+  ShadowRoot* shadow_root = UserAgentShadowRoot();
+  DCHECK(shadow_root);
+
+  HTMLSlotElement* summary_slot =
+      To<HTMLSlotElement>(shadow_root->firstChild());
+  HTMLSlotElement* content_slot =
+      To<HTMLSlotElement>(summary_slot->nextSibling());
+  DCHECK_EQ(summary_slot->GetIdAttribute(),
+            shadow_element_names::kIdDetailsSummary);
+  DCHECK_EQ(content_slot->GetIdAttribute(),
+            shadow_element_names::kIdDetailsContent);
+
+  HeapVector<Member<Node>> summary_nodes;
+  HeapVector<Member<Node>> content_nodes;
+  for (Node& child : NodeTraversal::ChildrenOf(*this)) {
+    if (!child.IsSlotable())
+      continue;
+    if (IsFirstSummary(child)) {
+      summary_nodes.push_back(child);
+    } else {
+      content_nodes.push_back(child);
+    }
+  }
+  summary_slot->ClearAssignedNodes();
+  summary_slot->Assign(summary_nodes);
+  content_slot->ClearAssignedNodes();
+  content_slot->Assign(content_nodes);
 }
 
 void HTMLDetailsElement::ParseAttribute(

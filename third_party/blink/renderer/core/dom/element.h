@@ -575,6 +575,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   ShadowRoot& EnsureUserAgentShadowRoot();
 
+  // Implements manual slot assignment for user agent shadow roots.
+  virtual void ManuallyAssignSlots() { DCHECK(false); }
+
   bool IsInDescendantTreeOf(const Element* shadow_host) const;
 
   // Returns the Element’s ComputedStyle. If the ComputedStyle is not already

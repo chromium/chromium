@@ -37,6 +37,8 @@ class HTMLDetailsElement final : public HTMLElement {
 
   Element* FindMainSummary() const;
 
+  void ManuallyAssignSlots() override;
+
   // Used for slot assignment.
   static bool IsFirstSummary(const Node&);
 

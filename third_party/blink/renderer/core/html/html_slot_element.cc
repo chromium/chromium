@@ -169,16 +169,14 @@ const HeapVector<Member<Element>> HTMLSlotElement::AssignedElementsForBinding(
   return elements;
 }
 
-void HTMLSlotElement::assign(HeapVector<Member<V8UnionElementOrText>> nodes,
-                             ExceptionState& exception_state) {
+void HTMLSlotElement::assign(HeapVector<Member<V8UnionElementOrText>> js_nodes,
+                             ExceptionState&) {
   UseCounter::Count(GetDocument(), WebFeature::kSlotAssignNode);
-  if (nodes.IsEmpty() && manually_assigned_nodes_.IsEmpty())
+  if (js_nodes.IsEmpty() && manually_assigned_nodes_.IsEmpty())
     return;
-  HeapLinkedHashSet<WeakMember<Node>> old_manually_assigned_nodes(
-      manually_assigned_nodes_);
-  HeapLinkedHashSet<WeakMember<Node>> nodes_set;
-  bool updated = false;
-  for (V8UnionElementOrText* union_node : nodes) {
+
+  HeapVector<Member<Node>> nodes;
+  for (V8UnionElementOrText* union_node : js_nodes) {
     Node* node = nullptr;
     switch (union_node->GetContentType()) {
       case V8UnionElementOrText::ContentType::kText:
@@ -188,6 +186,19 @@ void HTMLSlotElement::assign(HeapVector<Member<V8UnionElementOrText>> nodes,
         node = union_node->GetAsElement();
         break;
     }
+    nodes.push_back(*node);
+  }
+  Assign(nodes);
+}
+
+void HTMLSlotElement::Assign(const HeapVector<Member<Node>> nodes) {
+  if (nodes.IsEmpty() && manually_assigned_nodes_.IsEmpty())
+    return;
+  HeapLinkedHashSet<WeakMember<Node>> old_manually_assigned_nodes(
+      manually_assigned_nodes_);
+  HeapLinkedHashSet<WeakMember<Node>> nodes_set;
+  bool updated = false;
+  for (Node* node : nodes) {
     nodes_set.insert(node);
     old_manually_assigned_nodes.erase(node);
     if (auto* previous_slot = node->ManuallyAssignedSlot()) {

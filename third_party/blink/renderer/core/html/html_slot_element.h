@@ -114,7 +114,11 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   static const AtomicString& UserAgentDefaultSlotName();
 
   // For imperative Shadow DOM distribution APIs
+  // IDL assign() implementation.
   void assign(HeapVector<Member<V8UnionElementOrText>> nodes, ExceptionState&);
+  // assign() c++ implementation.
+  void Assign(const HeapVector<Member<Node>> nodes);
+
   const HeapLinkedHashSet<WeakMember<Node>>& ManuallyAssignedNodes() const {
     return manually_assigned_nodes_;
   }
