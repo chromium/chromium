@@ -33,7 +33,6 @@
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
-#include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/root_window_controller.h"
 #include "ash/services/recording/recording_service_test_api.h"
@@ -4393,6 +4392,8 @@ class ProjectorCaptureModeIntegrationTests
     auto* projector_session = ProjectorSession::Get();
     EXPECT_FALSE(projector_session->is_active());
     auto* projector_controller = ProjectorController::Get();
+    EXPECT_CALL(projector_client_, IsDriveFsMounted())
+        .WillRepeatedly(testing::Return(true));
     projector_controller->StartProjectorSession("projector_data");
     EXPECT_TRUE(projector_session->is_active());
   }
@@ -4504,6 +4505,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
   SendKey(ui::VKEY_RETURN, GetEventGenerator());
   EXPECT_CALL(projector_client_, StartSpeechRecognition());
   WaitForCountDownToFinish();
+
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
   EXPECT_TRUE(controller->video_recording_watcher_for_testing()

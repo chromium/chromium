@@ -26,6 +26,14 @@ class ProjectorMetadataController;
 // A controller to handle projector functionalities.
 class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
  public:
+  // Callback that should be executed when the screencast container directory is
+  // created. `screencast_file_path_no_extension` is the path of screencast file
+  // without extension. `screencast_file_path_no_extension` will be empty if
+  // fail in creating the directory. The path will be used for generating the
+  // screencast media file by appending the media file extension.
+  using CreateScreencastContainerFolderCallback = base::OnceCallback<void(
+      const base::FilePath& screencast_file_path_no_extension)>;
+
   ProjectorControllerImpl();
   ProjectorControllerImpl(const ProjectorControllerImpl&) = delete;
   ProjectorControllerImpl& operator=(const ProjectorControllerImpl&) = delete;
@@ -42,6 +50,15 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   bool IsEligible() const override;
   bool CanStartNewSession() const override;
 
+  // Create the screencast container directory. If there is an error, the
+  // callback will be triggered with an empty FilePath.
+  //
+  // For now, Projector Screencasts are all uploaded to Drive. This method will
+  // create the folder in DriveFS mounted path. Files saved in this path will
+  // then be synced to Drive by DriveFS. DriveFS only supports primary account.
+  void CreateScreencastContainerFolder(
+      CreateScreencastContainerFolderCallback callback);
+
   // Sets Caption bubble state to become opened/closed.
   void SetCaptionBubbleState(bool is_on);
 
@@ -55,9 +72,6 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   // video recording.
   void OnRecordingStarted();
   void OnRecordingEnded();
-
-  // Saves the screencast including metadata.
-  void SaveScreencast(const base::FilePath& saved_video_path);
 
   // Invoked when laser pointer button is pressed.
   void OnLaserPointerPressed();
@@ -87,6 +101,23 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   void StartSpeechRecognition();
   void StopSpeechRecognition();
 
+  // Triggered when finish creating the screencast container folder. This method
+  // caches the the container folder path in `ProjectorSession` and triggers the
+  // `CreateScreencastContainerFolderCallback' with the screencast file path
+  // without file extension. This path will be used by screen capture to save
+  // screencast media file after appending the media file extension.
+  void OnContainerFolderCreated(
+      const base::FilePath& path,
+      CreateScreencastContainerFolderCallback callback,
+      bool success);
+
+  // Saves the screencast including metadata.
+  void SaveScreencast();
+
+  // Get the screencast file path without file extension. This will be used
+  // to construct media and metadata file path.
+  base::FilePath GetScreencastFilePathNoExtension() const;
+
   ProjectorClient* client_ = nullptr;
   std::unique_ptr<ProjectorSessionImpl> projector_session_;
   std::unique_ptr<ProjectorUiController> ui_controller_;
@@ -100,6 +131,8 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
 
   // Whether speech recognition is taking place or not.
   bool is_speech_recognition_on_ = false;
+
+  base::WeakPtrFactory<ProjectorControllerImpl> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -17,6 +17,7 @@
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -62,7 +63,8 @@ void NotifyControllerForPartialSpeechResult(
 
 class ProjectorControllerTest : public AshTestBase {
  public:
-  ProjectorControllerTest() {
+  ProjectorControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(features::kProjector);
   }
 
@@ -100,15 +102,6 @@ class ProjectorControllerTest : public AshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-TEST_F(ProjectorControllerTest, SaveScreencast) {
-  controller_->projector_session()->Start("projector_data");
-
-  base::FilePath saved_path;
-  // Verify that |SaveMetadata| in |ProjectorMetadataController| is called.
-  EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(saved_path)).Times(1);
-  controller_->SaveScreencast(saved_path);
-}
 
 TEST_F(ProjectorControllerTest, OnTranscription) {
   // Verify that |RecordTranscription| in |ProjectorMetadataController| is
@@ -228,16 +221,49 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
 }
 
 TEST_F(ProjectorControllerTest, RecordingEnded) {
+  base::ScopedTempDir screencast_container_path;
+  ASSERT_TRUE(screencast_container_path.CreateUniqueTempDir());
+
   mock_client_.SetSelfieCamVisible(/*visible=*/true);
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
   EXPECT_CALL(mock_client_, CloseSelfieCam()).Times(1);
+  EXPECT_CALL(mock_client_, GetDriveFsMountPointPath(testing::_))
+      .WillOnce(testing::DoAll(
+          testing::SetArgPointee<0>(screencast_container_path.GetPath()),
+          testing::Return(true)));
 
+  // Advance clock to 20:02:10.
+  const auto expected_datetime =
+      base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(20) +
+      base::TimeDelta::FromMinutes(2) + base::TimeDelta::FromSeconds(10);
+  task_environment()->AdvanceClock(expected_datetime - base::Time::Now());
   controller_->projector_session()->Start("projector_data");
   controller_->OnRecordingStarted();
+  controller_->CreateScreencastContainerFolder(base::BindOnce(
+      [](ProjectorControllerImpl* controller,
+         const base::FilePath& screencast_file_path_no_extension) {
+        controller->OnRecordingEnded();
+      },
+      controller_));
+
   EXPECT_CALL(mock_client_, StopSpeechRecognition());
   EXPECT_CALL(*mock_ui_controller_, OnRecordingStateChanged(/*started=*/false));
-  controller_->OnRecordingEnded();
-}
 
+  // Verify that |SaveMetadata| in |ProjectorMetadataController| is called with
+  // the expected path.
+  base::Time::Exploded exploded;
+  expected_datetime.LocalExplode(&exploded);
+  const std::string expected_screencast_name =
+      base::StringPrintf("Screencast %d-%02d-%02d 20.02.10", exploded.year,
+                         exploded.month, exploded.day_of_month);
+  EXPECT_CALL(*mock_metadata_controller_,
+              SaveMetadata(screencast_container_path.GetPath()
+                               .Append("root")
+                               .Append("projector_data")
+                               // Screencast container folder.
+                               .Append(expected_screencast_name)
+                               // Screencast file name without extension.
+                               .Append(expected_screencast_name)));
+}
 }  // namespace ash

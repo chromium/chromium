@@ -6,8 +6,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -108,4 +111,24 @@ void ProjectorClientImpl::OnSodaInstalled() {
   DCHECK(OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
       kEnglishLanguageCode));
   controller_->OnSpeechRecognitionAvailable(true);
+}
+
+bool ProjectorClientImpl::GetDriveFsMountPointPath(
+    base::FilePath* result) const {
+  if (!IsDriveFsMounted())
+    return false;
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          ProfileManager::GetActiveUserProfile());
+  *result = integration_service->GetMountPointPath();
+  return true;
+}
+
+bool ProjectorClientImpl::IsDriveFsMounted() const {
+  if (!chromeos::LoginState::Get()->IsUserLoggedIn())
+    return false;
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  return integration_service && integration_service->IsMounted();
 }

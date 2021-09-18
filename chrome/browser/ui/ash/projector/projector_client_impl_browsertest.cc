@@ -11,6 +11,8 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
@@ -49,6 +51,15 @@ class ProjectorClientTest : public InProcessBrowserTest {
   ProjectorClientTest& operator=(const ProjectorClientTest&) = delete;
 
   // InProcessBrowserTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    create_drive_integration_service_ =
+        base::BindRepeating(&ProjectorClientTest::CreateDriveIntegrationService,
+                            base::Unretained(this));
+    service_factory_for_test_ = std::make_unique<
+        drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
+        &create_drive_integration_service_);
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
@@ -107,12 +118,30 @@ class ProjectorClientTest : public InProcessBrowserTest {
               content::PAGE_TYPE_NORMAL);
   }
 
+  drive::DriveIntegrationService* CreateDriveIntegrationService(
+      Profile* profile) {
+    base::FilePath mount_path = profile->GetPath().Append("drivefs");
+    fake_drivefs_helpers_[profile] =
+        std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
+    // The integration service is owned by `KeyedServiceFactory`.
+    auto* integration_service = new drive::DriveIntegrationService(
+        profile, /*test_mount_point_name=*/std::string(), mount_path,
+        fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
+    return integration_service;
+  }
+
  protected:
   std::unique_ptr<ProjectorController::ScopedInstanceResetterForTest>
       scoped_resetter_;
   std::unique_ptr<ash::MockProjectorController> controller_;
   std::unique_ptr<ProjectorClient> client_;
   speech::FakeSpeechRecognitionService* fake_service_;
+  drive::DriveIntegrationServiceFactory::FactoryCallback
+      create_drive_integration_service_;
+  std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
+      service_factory_for_test_;
+  std::map<Profile*, std::unique_ptr<drive::FakeDriveFsHelper>>
+      fake_drivefs_helpers_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -156,6 +185,14 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SpeechRecognitionResults) {
 
   EXPECT_CALL(*controller_, OnTranscriptionError());
   SendTranscriptionError();
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {
+  ASSERT_TRUE(client_->IsDriveFsMounted());
+
+  base::FilePath mounted_path;
+  ASSERT_TRUE(client_->GetDriveFsMountPointPath(&mounted_path));
+  ASSERT_EQ(browser()->profile()->GetPath().Append("drivefs"), mounted_path);
 }
 
 }  // namespace ash
