@@ -2176,7 +2176,7 @@ Dodatne podrobnosti:
 <translation id="831207732689920588">Ta stran je sumljiva (označil jo je Chrome).</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">obvestila</translation>
-<translation id="8328484624016508118">Po zaprtju vseh anonimnih zavihkov Chrome izbriše to:
+<translation id="8328484624016508118">Po zaprtju vseh anonimnih zavihkov Chrome počisti:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />vaše brskanje v tej napravi;<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />vašo zgodovino iskanja v tej napravi;<ph name="END_LIST_ITEM" />

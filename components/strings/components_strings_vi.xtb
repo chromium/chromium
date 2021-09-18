@@ -286,7 +286,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
 <translation id="1839551713262164453">Không xác thực được các giá trị của chính sách do xảy ra lỗi</translation>
 <translation id="1842969606798536927">Thanh toán</translation>
-<translation id="1856713167556118146">Chế độ ẩn danh không có chức năng gì</translation>
+<translation id="1856713167556118146">Những điều Chế độ ẩn danh không làm</translation>
 <translation id="1871208020102129563">Proxy được đặt để sử dụng máy chủ proxy cố định chứ không phải URL tập lệnh .pac.</translation>
 <translation id="1871284979644508959">Trường bắt buộc</translation>
 <translation id="1875512691959384712">Google Biểu mẫu</translation>
@@ -1057,7 +1057,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4465818729556336129">Đây là tài liệu bảo mật và quản trị viên không khuyến khích in tài liệu này.</translation>
 <translation id="4476953670630786061">Biểu mẫu này không an toàn. Do đó, tính năng tự động điền đã bị tắt.</translation>
 <translation id="4477350412780666475">Bản nhạc tiếp theo</translation>
-<translation id="4481251927743463293">Chế độ ẩn danh có chức năng gì</translation>
+<translation id="4481251927743463293">Những điều Chế độ ẩn danh sẽ làm</translation>
 <translation id="4481394504112738036">Tệp bảo mật</translation>
 <translation id="4482953324121162758">Trang web này sẽ không được dịch.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1709,7 +1709,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6757797048963528358">Thiết bị của bạn đã chuyển sang chế độ ngủ.</translation>
 <translation id="6767985426384634228">Cập nhật địa chỉ?</translation>
 <translation id="6768213884286397650">Hagaki (Bưu thiếp)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về chế độ Ẩn danh</translation>
+<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về Chế độ ẩn danh</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Tím vi-ô-lét</translation>
 <translation id="6786747875388722282">Tiện ích</translation>
@@ -2176,11 +2176,11 @@ Thông tin chi tiết bổ sung:
 <translation id="831207732689920588">Đây là trang đáng ngờ (do Chrome gắn cờ).</translation>
 <translation id="831997045666694187">Buổi tối</translation>
 <translation id="8321476692217554900">thông báo</translation>
-<translation id="8328484624016508118">Sau khi đóng tất cả thẻ Ẩn danh, Chrome sẽ xóa:
+<translation id="8328484624016508118">Sau khi bạn đóng tất cả thẻ Ẩn danh, Chrome sẽ xóa:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Hoạt động duyệt web của bạn trên thiết bị này<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Nhật ký tìm kiếm của bạn trên thiết bị này<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Thông tin đã nhập vào các biểu mẫu<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Thông tin bạn đã nhập vào các biểu mẫu<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Quyền truy cập <ph name="HOST_NAME" /> bị từ chối</translation>
 <translation id="833262891116910667">Đánh dấu</translation>
