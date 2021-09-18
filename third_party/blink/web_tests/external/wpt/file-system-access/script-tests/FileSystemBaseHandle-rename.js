@@ -99,3 +99,33 @@ directory_test(async (t, root) => {
   assert_equals(await getFileContents(handle), 'foo');
   assert_equals(await getFileSize(handle), 3);
 }, 'rename(name) with a name with invalid characters should fail');
+
+directory_test(async (t, root) => {
+  const handle = await createFileWithContents(t, 'file-before', 'abc', root);
+
+  // Cannot rename handle with an active writable.
+  const stream = await handle.createWritable();
+  await promise_rejects_dom(
+      t, 'InvalidStateError', handle.rename('file-after'));
+
+  // Can move handle once the writable is closed.
+  await stream.close();
+  await handle.rename('file-after');
+  assert_array_equals(await getSortedDirectoryEntries(root), ['file-after']);
+}, 'rename(name) while the file has an open writable fails');
+
+directory_test(async (t, root) => {
+  const handle = await createFileWithContents(t, 'file-before', 'abc', root);
+  const handle_dest =
+      await createFileWithContents(t, 'file-after', '123', root);
+
+  // Cannot overwrite a handle with an active writable.
+  const stream = await handle_dest.createWritable();
+  await promise_rejects_dom(
+      t, 'InvalidStateError', handle.rename('file-after'));
+
+  // Can move handle once the writable is closed.
+  await stream.close();
+  await handle.rename('file-after');
+  assert_array_equals(await getSortedDirectoryEntries(root), ['file-after']);
+}, 'rename(name) while the destination file has an open writable fails');

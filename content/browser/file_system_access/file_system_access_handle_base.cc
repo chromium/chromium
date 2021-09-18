@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
+
 #include <memory>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/task/post_task.h"
@@ -298,11 +300,38 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     return;
   }
 
+  // The file can only be moved if we can acquire exclusive write locks to
+  // both the source or destination URLs.
+  std::vector<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>> locks;
+  auto source_write_lock = manager()->TakeWriteLock(
+      url(), FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  if (!source_write_lock.has_value()) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kInvalidState));
+    return;
+  }
+  locks.emplace_back(std::move(source_write_lock.value()));
+
+  // Since we're using exclusive locks, we should only acquire the
+  // lock of the destination URL if it is different from the source URL.
+  if (url() != dest_url) {
+    auto dest_write_lock = manager()->TakeWriteLock(
+        dest_url, FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+    if (!dest_write_lock.has_value()) {
+      std::move(callback).Run(file_system_access_error::FromStatus(
+          blink::mojom::FileSystemAccessStatus::kInvalidState));
+      return;
+    }
+    locks.emplace_back(std::move(dest_write_lock.value()));
+  }
+
   DoFileSystemOperation(
       FROM_HERE, &storage::FileSystemOperationRunner::Move,
       base::BindOnce(
           [](base::WeakPtr<FileSystemAccessHandleBase> handle,
              storage::FileSystemURL new_url,
+             std::vector<scoped_refptr<
+                 FileSystemAccessWriteLockManager::WriteLock>> /*write_locks*/,
              base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                  callback,
              base::File::Error result) {
@@ -312,7 +341,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
             std::move(callback).Run(
                 file_system_access_error::FromFileError(result));
           },
-          AsWeakPtr(), dest_url, std::move(callback)),
+          AsWeakPtr(), dest_url, std::move(locks), std::move(callback)),
       url(), dest_url,
       storage::FileSystemOperationRunner::CopyOrMoveOption::OPTION_NONE,
       storage::FileSystemOperationRunner::ErrorBehavior::ERROR_BEHAVIOR_ABORT,

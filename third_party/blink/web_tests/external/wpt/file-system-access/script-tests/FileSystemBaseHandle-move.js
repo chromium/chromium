@@ -302,3 +302,104 @@ directory_test(async (t, root) => {
       await getSortedDirectoryEntries(parent_dir), ['child-dir/']);
   assert_array_equals(await getSortedDirectoryEntries(child_dir), []);
 }, 'move(dir, name) to move a directory within a descendent fails');
+
+directory_test(async (t, root) => {
+  const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
+  const dir_dest = await root.getDirectoryHandle('dir-dest', {create: true});
+  const file = await createFileWithContents(t, 'file', 'abc', dir_src);
+
+  // Cannot move handle with an active writable.
+  const stream = await file.createWritable();
+  await promise_rejects_dom(t, 'InvalidStateError', file.move(dir_dest));
+
+  assert_array_equals(
+      await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
+  // Assert the file hasn't been moved to the destination directory.
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), []);
+
+  // Can move handle once the writable is closed.
+  await stream.close();
+  await file.move(dir_dest);
+  assert_array_equals(
+      await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
+  assert_array_equals(await getSortedDirectoryEntries(dir_src), []);
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file']);
+}, 'move(dir) while the file has an open writable fails');
+
+directory_test(async (t, root) => {
+  const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
+  const dir_dest = await root.getDirectoryHandle('dir-dest', {create: true});
+  const file = await createFileWithContents(t, 'file-before', 'abc', dir_src);
+
+  // Cannot move handle with an active writable.
+  const stream = await file.createWritable();
+  await promise_rejects_dom(t, 'InvalidStateError', file.move(dir_dest));
+
+  assert_array_equals(
+      await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
+  // Assert the file hasn't been moved to the destination directory.
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), []);
+
+  // Can move handle once the writable is closed.
+  await stream.close();
+  await file.move(dir_dest, 'file-after');
+  assert_array_equals(
+      await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
+  assert_array_equals(await getSortedDirectoryEntries(dir_src), []);
+  assert_array_equals(
+      await getSortedDirectoryEntries(dir_dest), ['file-after']);
+}, 'move(dir, name) while the file has an open writable fails');
+
+directory_test(async (t, root) => {
+  const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
+  const dir_dest = await root.getDirectoryHandle('dir-dest', {create: true});
+  const file = await createFileWithContents(t, 'file', 'abc', dir_src);
+  const file_dest = await createFileWithContents(t, 'file', '123', dir_dest);
+
+  // Cannot overwrite handle with an active writable.
+  const stream = await file_dest.createWritable();
+  await promise_rejects_dom(t, 'InvalidStateError', file.move(dir_dest));
+
+  assert_array_equals(
+      await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
+  // Assert the file is still in the source directory.
+  assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file']);
+
+  // Can move handle once the writable is closed.
+  await stream.close();
+  await file.move(dir_dest);
+  assert_array_equals(
+      await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
+  assert_array_equals(await getSortedDirectoryEntries(dir_src), []);
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file']);
+  assert_equals(await getFileContents(file), 'abc');
+  assert_equals(await getFileSize(file), 3);
+}, 'move(dir) while the destination file has an open writable fails');
+
+directory_test(async (t, root) => {
+  const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
+  const dir_dest = await root.getDirectoryHandle('dir-dest', {create: true});
+  const file = await createFileWithContents(t, 'file-src', 'abc', dir_src);
+  const file_dest =
+      await createFileWithContents(t, 'file-dest', '123', dir_dest);
+
+  // Cannot overwrite handle with an active writable.
+  const stream = await file_dest.createWritable();
+  await promise_rejects_dom(
+      t, 'InvalidStateError', file.move(dir_dest, 'file-dest'));
+
+  assert_array_equals(
+      await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
+  // Assert the file is still in the source directory.
+  assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file-src']);
+
+  // Can move handle once the writable is closed.
+  await stream.close();
+  await file.move(dir_dest, 'file-dest');
+  assert_array_equals(
+      await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
+  assert_array_equals(await getSortedDirectoryEntries(dir_src), []);
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file-dest']);
+  assert_equals(await getFileContents(file), 'abc');
+  assert_equals(await getFileSize(file), 3);
+}, 'move(dir, name) while the destination file has an open writable fails');
