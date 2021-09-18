@@ -155,9 +155,9 @@ export function scanPreviewTest() {
   test('showActionToolbarForMultiPageScans', () => {
     scanPreview.objectUrls = ['image'];
     scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
-    scanPreview.multiPageScanChecked = false;
+    scanPreview.isMultiPageScan = false;
     assertTrue(scanPreview.$$('action-toolbar').hidden);
-    scanPreview.multiPageScanChecked = true;
+    scanPreview.isMultiPageScan = true;
     flush();
     assertFalse(scanPreview.$$('action-toolbar').hidden);
   });
@@ -167,7 +167,7 @@ export function scanPreviewTest() {
     const scannedImagesDiv =
         /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
     scanPreview.objectUrls = ['image'];
-    scanPreview.multiPageScanChecked = true;
+    scanPreview.isMultiPageScan = true;
     scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
     return flushTasks()
         .then(() => {
@@ -291,7 +291,7 @@ export function scanPreviewTest() {
         /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
 
     scanPreview.objectUrls = [];
-    scanPreview.multiPageScanChecked = true;
+    scanPreview.isMultiPageScan = true;
     return flushTasks()
         .then(() => {
           scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
@@ -352,7 +352,7 @@ export function scanPreviewTest() {
     const scannedImagesDiv =
         /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
     scanPreview.objectUrls = ['image'];
-    scanPreview.multiPageScanChecked = true;
+    scanPreview.isMultiPageScan = true;
     scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
     return flushTasks()
         .then(() => {
@@ -383,7 +383,7 @@ export function scanPreviewTest() {
           // Now test that unchecking the multi-page scan checkbox removes the
           // window listener.
           scanPreview.objectUrls = [];
-          scanPreview.multiPageScanChecked = false;
+          scanPreview.isMultiPageScan = false;
           scanPreview.appState = AppState.SCANNING;
           return flushTasks();
         })

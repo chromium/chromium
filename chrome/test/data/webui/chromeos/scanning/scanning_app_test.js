@@ -2447,4 +2447,37 @@ export function scanningAppTest() {
                   scanningApp.$$('#multiPageCheckbox').$$('#checkboxDiv'))));
         });
   });
+
+  // Verify a normal scan is started when the multi-page checkbox is checked
+  // while a non-PDF file type is selected.
+  test('OnlyMultiPageScanWhenPDFIsSelected', () => {
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          scanningApp.selectedSource = PLATEN;
+          scanningApp.selectedFileType = FileType.PDF.toString();
+          return flushTasks();
+        })
+        .then(() => {
+          scanningApp.multiPageScanChecked = true;
+        })
+        .then(() => {
+          assertEquals(
+              'Scan page 1', scanningApp.$$('#scanButton').textContent.trim());
+
+          // Leave the multi-page checkbox checked but switch the file type.
+          scanningApp.selectedFileType = FileType.PNG.toString();
+          return flushTasks();
+        })
+        .then(() => {
+          const scanButton = scanningApp.$$('#scanButton');
+          assertEquals('Scan', scanButton.textContent.trim());
+
+          // When scan button is clicked expect a normal scan to start.
+          scanButton.click();
+          return fakeScanService_.whenCalled('startScan');
+        });
+  });
 }

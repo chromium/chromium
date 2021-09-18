@@ -114,9 +114,9 @@ Polymer({
     },
 
     /** @type {boolean} */
-    multiPageScanChecked: {
+    isMultiPageScan: {
       type: Boolean,
-      observer: 'onMultiPageScanCheckedChange_',
+      observer: 'onIsMultiPageScanChange_',
     },
 
     /** @private {number} */
@@ -139,7 +139,7 @@ Polymer({
     /** @private {boolean} */
     showActionToolbar_: {
       type: Boolean,
-      computed: 'computeShowActionToolbar_(appState, multiPageScanChecked)',
+      computed: 'computeShowActionToolbar_(appState, isMultiPageScan)',
     },
 
     /** @private {string} */
@@ -186,7 +186,7 @@ Polymer({
 
   /** @override */
   detached() {
-    if (this.multiPageScanChecked) {
+    if (this.isMultiPageScan) {
       window.removeEventListener('resize', this.onWindowResized_);
     }
   },
@@ -294,7 +294,7 @@ Polymer({
    * @private
    */
   onScannedImagesScroll_() {
-    if (!this.multiPageScanChecked ||
+    if (!this.isMultiPageScan ||
         this.appState != AppState.MULTI_PAGE_NEXT_ACTION) {
       return;
     }
@@ -324,7 +324,7 @@ Polymer({
    * @private
    */
   getCurrentPageInView_(scannedImages) {
-    assert(this.multiPageScanChecked);
+    assert(this.isMultiPageScan);
 
     const imageHeight = scannedImages[0].height;
     const scrollTop = this.$$('#previewDiv').scrollTop - (imageHeight * .5);
@@ -347,7 +347,7 @@ Polymer({
    * @private
    */
   setFocusedScannedImage_(scannedImages, pageInView) {
-    assert(this.multiPageScanChecked);
+    assert(this.isMultiPageScan);
 
     this.removeFocusFromScannedImage_(scannedImages);
 
@@ -387,7 +387,7 @@ Polymer({
    * @private
    */
   onScannedImageLoaded_(e) {
-    if (!this.multiPageScanChecked) {
+    if (!this.isMultiPageScan) {
       return;
     }
 
@@ -416,7 +416,7 @@ Polymer({
    * @private
    */
   setActionToolbarPosition_() {
-    assert(this.multiPageScanChecked);
+    assert(this.isMultiPageScan);
 
     const scannedImage = this.$$('.scanned-image');
     if (!scannedImage) {
@@ -437,7 +437,7 @@ Polymer({
    * @private
    */
   computeShowActionToolbar_() {
-    return this.multiPageScanChecked &&
+    return this.isMultiPageScan &&
         this.appState == AppState.MULTI_PAGE_NEXT_ACTION;
   },
 
@@ -531,7 +531,7 @@ Polymer({
    * @private
    */
   scrollToPage_(pageIndex) {
-    assert(this.multiPageScanChecked);
+    assert(this.isMultiPageScan);
 
     const scannedImages =
         this.$$('#scannedImages').getElementsByClassName('scanned-image');
@@ -549,10 +549,10 @@ Polymer({
   },
 
   /** @private */
-  onMultiPageScanCheckedChange_() {
+  onIsMultiPageScanChange_() {
     // Only listen for window size changes during multi-page scan sessions so
     // the position of the action toolbar can be updated.
-    if (this.multiPageScanChecked) {
+    if (this.isMultiPageScan) {
       window.addEventListener('resize', this.onWindowResized_);
     } else {
       window.removeEventListener('resize', this.onWindowResized_);
@@ -571,7 +571,7 @@ Polymer({
 
   /** @private */
   onObjectUrlsChange_() {
-    if (!this.multiPageScanChecked) {
+    if (!this.isMultiPageScan) {
       return;
     }
 
