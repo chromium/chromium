@@ -847,20 +847,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       baseline = layout_parent_style.CssDominantBaseline();
     }
     style.SetCssDominantBaseline(baseline);
-
-    // Disable some of text decoration properties.
-    style.ResetTextDecorationSkipInk();
-    style.ResetTextDecorationStyle();  // crbug.com/1246719
-    style.ResetTextDecorationThickness();
-    style.ResetTextEmphasisMark();
-    style.ResetTextUnderlineOffset();  // crbug.com/1247912
-    style.ResetTextUnderlinePosition();
-    style.ClearAppliedTextDecorations();
-    if (!StopPropagateTextDecorations(style, element))
-      style.RestoreParentTextDecorations(parent_style);
-    style.ApplyTextDecorations(
-        parent_style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
-        OverridesTextDecorationColors(element));
   } else if (element && element->IsMathMLElement()) {
     if (style.Display() == EDisplay::kContents) {
       // https://drafts.csswg.org/css-display/#unbox-mathml
