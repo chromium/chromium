@@ -5510,6 +5510,11 @@
     "expiry_milestone": 91
   },
   {
+    "name": "u2f-security-key-api",
+    "owners": [ "//device/fido/OWNERS" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "ui-debug-tools",
     "owners": [ "//ui/views/OWNERS" ],
     "expiry_milestone": -1

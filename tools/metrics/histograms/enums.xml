@@ -47567,6 +47567,7 @@ from previous Chrome versions.
   <int value="-1894054576" label="FontAccess:enabled"/>
   <int value="-1893668420"
       label="AutofillSaveCreditCardUsesStrikeSystem:enabled"/>
+  <int value="-1893119399" label="U2FSecurityKeyAPI:enabled"/>
   <int value="-1893019071" label="CSSOMViewScrollCoordinates:disabled"/>
   <int value="-1892758622" label="SendTabToSelfV2:disabled"/>
   <int value="-1892555086" label="disable-compositor-animation-timelines"/>
@@ -52597,6 +52598,7 @@ from previous Chrome versions.
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
   <int value="2032558514"
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:enabled"/>
+  <int value="2032880973" label="U2FSecurityKeyAPI:disabled"/>
   <int value="2034198538" label="TabHoverCards:enabled"/>
   <int value="2037562553" label="OmniboxBubbleUrlSuggestions:disabled"/>
   <int value="2037756154" label="enable-impl-side-painting"/>
