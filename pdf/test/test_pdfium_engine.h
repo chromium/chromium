@@ -41,6 +41,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   ~TestPDFiumEngine() override;
 
+  MOCK_METHOD(void, ZoomUpdated, (double), (override));
+
   MOCK_METHOD(gfx::Size,
               ApplyDocumentLayout,
               (const DocumentLayout::Options&),

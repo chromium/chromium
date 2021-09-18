@@ -276,11 +276,15 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
 
   void TestUpdateGeometrySetsPluginRect(float device_scale,
                                         const gfx::Rect& window_rect,
+                                        float expected_device_scale,
                                         const gfx::Rect& expected_plugin_rect) {
     UpdatePluginGeometry(device_scale, window_rect);
+    EXPECT_EQ(expected_device_scale, plugin_->GetDeviceScaleForTesting())
+        << "Device scale comparison failure at device scale of "
+        << device_scale;
     EXPECT_EQ(expected_plugin_rect, plugin_->GetPluginRectForTesting())
-        << "Failure at device scale of " << device_scale << ", window rect of "
-        << window_rect.ToString();
+        << "Plugin rect comparison failure at device scale of " << device_scale
+        << ", window rect of " << window_rect.ToString();
   }
 
   void TestPaintEmptySnapshots(float device_scale,
@@ -354,8 +358,10 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRectUseZoomForDSFEnabled) {
   EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
       .WillRepeatedly(Return(true));
+  EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
   TestUpdateGeometrySetsPluginRect(
       /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(4, 4, 12, 12),
+      /*expected_device_scale=*/2.0f,
       /*expected_plugin_rect=*/gfx::Rect(4, 4, 12, 12));
 }
 
@@ -363,8 +369,10 @@ TEST_F(PdfViewWebPluginTest,
        UpdateGeometrySetsPluginRectUseZoomForDSFDisabled) {
   EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
       .WillRepeatedly(Return(false));
+  EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
   TestUpdateGeometrySetsPluginRect(
       /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(4, 4, 12, 12),
+      /*expected_device_scale=*/2.0f,
       /*expected_plugin_rect=*/gfx::Rect(8, 8, 24, 24));
 }
 
@@ -374,8 +382,11 @@ TEST_F(PdfViewWebPluginTest,
     // The plugin container's device scale.
     float device_scale;
 
-    //  The window rect in device pixels.
+    //  The window rect in CSS pixels.
     gfx::Rect window_rect;
+
+    // The expected plugin device scale.
+    float expected_device_scale;
 
     // The expected plugin rect in device pixels.
     gfx::Rect expected_plugin_rect;
@@ -386,13 +397,13 @@ TEST_F(PdfViewWebPluginTest,
       .WillRepeatedly(Return(true));
 
   static constexpr UpdateGeometryParams kUpdateGeometryParams[] = {
-      {1.0f, gfx::Rect(3, 4, 5, 6), gfx::Rect(3, 4, 5, 6)},
-      {2.0f, gfx::Rect(4, 4, 12, 12), gfx::Rect(4, 4, 12, 12)},
-      {2.0f, gfx::Rect(5, 6, 7, 8), gfx::Rect(5, 6, 7, 8)},
+      {1.0f, gfx::Rect(3, 4, 5, 6), 1.0f, gfx::Rect(3, 4, 5, 6)},
+      {2.0f, gfx::Rect(3, 4, 5, 6), 2.0f, gfx::Rect(3, 4, 5, 6)},
   };
 
   for (const auto& params : kUpdateGeometryParams) {
     TestUpdateGeometrySetsPluginRect(params.device_scale, params.window_rect,
+                                     params.expected_device_scale,
                                      params.expected_plugin_rect);
   }
 }
@@ -407,6 +418,14 @@ class PdfViewWebPluginTestUseZoomForDSF
         .WillByDefault(Return(GetParam()));
   }
 };
+
+TEST_P(PdfViewWebPluginTestUseZoomForDSF,
+       UpdateGeometrySetsPluginRectWithEmptyWindow) {
+  EXPECT_CALL(*engine_ptr_, ZoomUpdated).Times(0);
+  TestUpdateGeometrySetsPluginRect(
+      /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(2, 2, 0, 0),
+      /*expected_device_scale=*/1.0f, /*expected_plugin_rect=*/gfx::Rect());
+}
 
 TEST_P(PdfViewWebPluginTestUseZoomForDSF, PaintEmptySnapshots) {
   TestPaintEmptySnapshots(/*device_scale=*/4.0f,

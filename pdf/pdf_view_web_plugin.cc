@@ -385,6 +385,18 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
                                       const gfx::Rect& clip_rect,
                                       const gfx::Rect& unobscured_rect,
                                       bool is_visible) {
+  // An empty `window_rect` can be received here in the following cases:
+  // - If the embedded plugin size is 0.
+  // - If the embedded plugin size is not 0, it can come from re-layouts during
+  //   the plugin initialization.
+  // For either case, there is no need to create a graphic device to display
+  // a PDF in an empty window. Since an empty `window_rect` can cause failure
+  // to create the graphic device, avoid all updates on the geometries and the
+  // device scales used by the plugin, the PaintManager and the PDFiumEngine
+  // unless a non-empty `window_rect` is received.
+  if (window_rect.IsEmpty())
+    return;
+
   OnViewportChanged(window_rect, container_wrapper_->DeviceScaleFactor());
 }
 

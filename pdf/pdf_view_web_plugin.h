@@ -249,6 +249,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   const gfx::Rect& GetPluginRectForTesting() const { return plugin_rect(); }
 
+  float GetDeviceScaleForTesting() const { return device_scale(); }
+
  protected:
   // PdfViewPluginBase:
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
