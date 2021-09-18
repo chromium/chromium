@@ -132,6 +132,7 @@ MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderVP9Profile2;
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderAV1;
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderUseSharedHandle;
 MEDIA_EXPORT extern const base::Feature kEnableMediaInternals;
+MEDIA_EXPORT extern const base::Feature kEnableTabMuting;
 MEDIA_EXPORT extern const base::Feature kExposeSwDecodersToWebRTC;
 MEDIA_EXPORT extern const base::Feature kExternalClearKeyForTesting;
 MEDIA_EXPORT extern const base::Feature kFFmpegDecodeOpaqueVP8;
