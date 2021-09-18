@@ -163,6 +163,10 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   void StartDragForAttachedWindows();
   void EndDragForAttachedWindows(bool revert_drag);
 
+  // Updates phantom window to maximize phantom window and hides maximize cue
+  // widget.
+  void ShowMaximizePhantom();
+
   // Gets the display associated with GetTarget() if touch dragging. Gets the
   // display associated with the cursor if mouse dragging.
   display::Display GetDisplay() const;

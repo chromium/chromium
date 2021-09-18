@@ -36,6 +36,8 @@ class ASH_EXPORT PhantomWindowController {
 
   // Shows the phantom window and animates shrinking it to |bounds_in_screen|.
   void Show(const gfx::Rect& bounds_in_screen);
+  void HideMaximizeCue();
+  void ShowMaximizeCue();
 
   aura::Window* window() { return window_; }
 
@@ -50,6 +52,10 @@ class ASH_EXPORT PhantomWindowController {
       aura::Window* root_window,
       const gfx::Rect& bounds_in_screen);
 
+  // Creates and returns a maximize cue widget in
+  // |kShellWindowId_OverlayContainer| in a given |root_window|.
+  std::unique_ptr<views::Widget> CreateMaximizeCue(aura::Window* root_window);
+
   // Window that the phantom window is stacked above.
   aura::Window* window_;
 
@@ -59,6 +65,10 @@ class ASH_EXPORT PhantomWindowController {
 
   // Phantom representation of the window.
   std::unique_ptr<views::Widget> phantom_widget_;
+
+  // Maximize cue on top-snap phantom to inform users to hold longer if they
+  // want to maximize instead of snap top.
+  std::unique_ptr<views::Widget> maximize_cue_widget_;
 };
 
 }  // namespace ash

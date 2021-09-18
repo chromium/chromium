@@ -8,11 +8,21 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
+#include "ash/style/default_colors.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -34,6 +44,26 @@ const float kStartBoundsRatio = 0.85f;
 // ui/compositor_extra/shadow.cc
 constexpr int kMinWidthWithShadow = 2 * ::wm::kShadowElevationActiveWindow;
 constexpr int kMinHeightWithShadow = 4 * ::wm::kShadowElevationActiveWindow;
+
+// The top margin of the cue from the top of work area.
+constexpr int kMaximizeCueTopMargin = 32;
+constexpr int kMaximizeCueHeight = 36;
+constexpr int kMaximizeCueHorizontalInsets = 16;
+constexpr int kMaximizeCueVerticalInsets = 8;
+constexpr int kMaximizeCueBackgroundBlur = 80;
+
+// The move down factor of y-position for entrance animation of maximize cue.
+constexpr float kMaximizeCueEntraceAnimationYPositionMoveDownFactor = 1.5f;
+
+// The duration of the maximize cue entrance animation.
+constexpr base::TimeDelta kMaximizeCueEntranceAnimationDurationMs =
+    base::TimeDelta::FromMilliseconds(200);
+// The duration of the maximize cue exit animation.
+constexpr base::TimeDelta kMaximizeCueExitAnimationDurationMs =
+    base::TimeDelta::FromMilliseconds(100);
+// The delay of the maximize cue entrance and exit animation.
+constexpr base::TimeDelta kMaximizeCueAnimationDelayMs =
+    base::TimeDelta::FromMilliseconds(100);
 
 }  // namespace
 
@@ -62,6 +92,55 @@ void PhantomWindowController::Show(const gfx::Rect& bounds_in_screen) {
   phantom_widget_ = CreatePhantomWidget(
       window_util::GetRootWindowMatching(target_bounds_in_screen_),
       start_bounds_in_screen);
+}
+
+void PhantomWindowController::HideMaximizeCue() {
+  // `WorkspaceWindowResizer::ShowMaximizePhantom()` calls this function once
+  // the dwell timer completes, but maximize phantom shown for landscape
+  // display does not have |maximize_cue_widget_|.
+  if (!maximize_cue_widget_)
+    return;
+  ui::Layer* widget_layer = maximize_cue_widget_->GetLayer();
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kMaximizeCueAnimationDelayMs)
+      .Then()
+      .SetDuration(kMaximizeCueExitAnimationDurationMs)
+      .SetOpacity(widget_layer, 0, gfx::Tween::LINEAR);
+}
+
+void PhantomWindowController::ShowMaximizeCue() {
+  if (!maximize_cue_widget_) {
+    maximize_cue_widget_ = CreateMaximizeCue(
+        window_util::GetRootWindowMatching(target_bounds_in_screen_));
+    maximize_cue_widget_->Show();
+  }
+  maximize_cue_widget_->SetOpacity(0);
+
+  // Starts entrance animation with fade in and moving the cue from 50%
+  // lower y position to the actual y position.
+  const gfx::Rect target_bounds =
+      maximize_cue_widget_->GetNativeView()->bounds();
+  const gfx::Rect starting_bounds = gfx::Rect(
+      target_bounds.x(),
+      target_bounds.y() * kMaximizeCueEntraceAnimationYPositionMoveDownFactor,
+      target_bounds.width(), target_bounds.height());
+  maximize_cue_widget_->SetBounds(starting_bounds);
+
+  ui::Layer* widget_layer = maximize_cue_widget_->GetLayer();
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kMaximizeCueAnimationDelayMs)
+      .Then()
+      .SetDuration(kMaximizeCueEntranceAnimationDurationMs)
+      .SetBounds(widget_layer, target_bounds, gfx::Tween::ACCEL_LIN_DECEL_100)
+      .SetOpacity(widget_layer, 1, gfx::Tween::LINEAR);
 }
 
 std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
@@ -111,6 +190,75 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
   phantom_widget->SetBounds(target_bounds_in_screen_);
 
   return phantom_widget;
+}
+
+std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
+    aura::Window* root_window) {
+  DCHECK(phantom_widget_);
+
+  std::unique_ptr<views::Widget> maximize_cue_widget(new views::Widget);
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  // Put the maximize cue in the same window as the floating UI.
+  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.name = "MaximizeCueWidget";
+  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+  params.parent = root_window->GetChildById(kShellWindowId_OverlayContainer);
+  maximize_cue_widget->set_focus_on_creation(false);
+  maximize_cue_widget->Init(std::move(params));
+
+  aura::Window* maximize_cue_widget_window =
+      maximize_cue_widget->GetNativeWindow();
+  maximize_cue_widget_window->parent()->StackChildAtTop(
+      maximize_cue_widget_window);
+
+  views::View* maximize_cue =
+      maximize_cue_widget->SetContentsView(std::make_unique<views::View>());
+  maximize_cue->SetPaintToLayer();
+  maximize_cue->layer()->SetFillsBoundsOpaquely(false);
+
+  auto* color_provider = AshColorProvider::Get();
+  maximize_cue->SetBackground(views::CreateRoundedRectBackground(
+      color_provider->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kOpaque),
+      kMaximizeCueHeight / 2));
+  maximize_cue->layer()->SetBackgroundBlur(
+      static_cast<float>(kMaximizeCueBackgroundBlur));
+  const gfx::RoundedCornersF radii(kMaximizeCueHeight / 2);
+  maximize_cue->layer()->SetRoundedCornerRadius(radii);
+
+  // TODO(crbug/1249666): Add border highlight that supports dark/light mode.
+
+  // Set layout of cue view and add a label to the view.
+  maximize_cue->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets(kMaximizeCueVerticalInsets, kMaximizeCueHorizontalInsets)));
+  views::Label* maximize_cue_label =
+      maximize_cue->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_HOLD_TO_MAXIMIZE)));
+  maximize_cue_label->SetPaintToLayer();
+  maximize_cue_label->layer()->SetFillsBoundsOpaquely(false);
+  maximize_cue_label->SetEnabledColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  maximize_cue_label->SetVisible(true);
+
+  maximize_cue_label->SetAutoColorReadabilityEnabled(false);
+  maximize_cue_label->SetFontList(views::Label::GetDefaultFontList().Derive(
+      2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+  const gfx::Rect work_area = display.work_area();
+  const int maximize_cue_width = maximize_cue->GetPreferredSize().width();
+  const int maximize_cue_y = work_area.y() + kMaximizeCueTopMargin;
+  const gfx::Rect phantom_bounds = phantom_widget_->GetNativeView()->bounds();
+  const gfx::Rect maximize_cue_bounds =
+      gfx::Rect(phantom_bounds.CenterPoint().x() - maximize_cue_width / 2,
+                maximize_cue_y, maximize_cue_width, kMaximizeCueHeight);
+
+  maximize_cue_widget->SetBounds(maximize_cue_bounds);
+  return maximize_cue_widget;
 }
 
 }  // namespace ash

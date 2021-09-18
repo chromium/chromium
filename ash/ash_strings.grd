@@ -2414,6 +2414,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SPLIT_VIEW_CANNOT_SNAP" desc="Message that shows up on overview mode telling users the window they are trying to drag cannot be snapped and thus cannot be used in split view mode. Also shows up on a toast when a user tries to enter split view mode with an application that cannot be used in split view mode.">
         App does not support split-screen.
       </message>
+      <message name="IDS_ASH_SPLIT_VIEW_HOLD_TO_MAXIMIZE" desc="Message that shows up when users drag window to snap top or maximize in portrait display.">
+        Hold to maximize
+      </message>
 
       <!-- Login screen strings -->
       <message name="IDS_ASH_LOGIN_SCREEN_ACCESSIBLE_NAME" desc="Text that is spoken when requesting the login screen name.">
