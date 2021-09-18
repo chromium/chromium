@@ -271,6 +271,9 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
   if (flags & kConfig_HasActiveTab)
     permissions.push_back("activeTab");
 
+  if (flags & kConfig_HasDelarativeNetRequestWithHostAccessPermission)
+    permissions.push_back("declarativeNetRequestWithHostAccess");
+
   std::vector<std::string> background_scripts;
   if (flags & kConfig_HasBackgroundScript)
     background_scripts.push_back("background.js");

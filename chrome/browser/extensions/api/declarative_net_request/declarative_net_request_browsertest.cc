@@ -1652,17 +1652,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RedirectPriority) {
 // Test that upgradeScheme rules will change the scheme of matching requests to
 // https.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, UpgradeRules) {
-  auto get_url_for_host = [this](std::string hostname, const char* scheme) {
-    GURL url = embedded_test_server()->GetURL(hostname,
-                                              "/pages_with_script/index.html");
-
-    url::Replacements<char> replacements;
-    replacements.SetScheme(scheme, url::Component(0, strlen(scheme)));
-
-    return url.ReplaceComponents(replacements);
+  auto get_url_for_host = [this](std::string hostname) {
+    return embedded_test_server()->GetURL(hostname,
+                                          "/pages_with_script/index.html");
   };
 
-  GURL google_url = get_url_for_host("google.com", url::kHttpScheme);
+  GURL google_url = get_url_for_host("google.com");
   struct {
     std::string url_filter;
     int id;
@@ -1712,23 +1707,22 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, UpgradeRules) {
 
   struct {
     std::string hostname;
-    const char* scheme;
     // |expected_final_url| is null if the request is expected to be blocked.
     absl::optional<GURL> expected_final_url;
   } test_cases[] = {
-      {"exact.com", url::kHttpScheme, absl::nullopt},
+      {"exact.com", absl::nullopt},
       // http://example.com -> https://example.com/ -> http://google.com
-      {"example.com", url::kHttpScheme, google_url},
+      {"example.com", google_url},
       // test_extension_2 should upgrade the scheme for http://yahoo.com
       // despite having no host permissions. Note that this request is not
       // matched with test_extension_1's ruleset as test_extension_2 is
       // installed more recently.
       // http://yahoo.com -> https://yahoo.com/ -> http://google.com
-      {"yahoo.com", url::kHttpScheme, google_url},
+      {"yahoo.com", google_url},
   };
 
   for (const auto& test_case : test_cases) {
-    GURL url = get_url_for_host(test_case.hostname, test_case.scheme);
+    GURL url = get_url_for_host(test_case.hostname);
     SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1803,6 +1797,94 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     WaitForExtensionsWithRulesetsCount(0);
     WaitForExtensionsWithRulesetsCount(1);
     test_enabled_in_incognito(false);
+  }
+}
+
+// Tests the declarativeNetRequestWithHostAccess permission.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, HostAccessPermission) {
+  std::vector<TestRule> rules;
+  int rule_id = kMinValidID;
+
+  auto get_url = [this](const std::string& host, const std::string& query) {
+    std::string path = "/pages_with_script/index.html?q=" + query;
+
+    return embedded_test_server()->GetURL(host, path);
+  };
+
+  {
+    TestRule rule = CreateMainFrameBlockRule("block");
+    rule.id = rule_id++;
+    rules.push_back(rule);
+  }
+
+  {
+    TestRule rule = CreateGenericRule(rule_id++);
+    rule.condition->url_filter = "redirect";
+    rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+    rule.action->type = "redirect";
+    rule.action->redirect.emplace();
+    rule.action->redirect->url = get_url("final.com", "final").spec();
+    rules.push_back(rule);
+  }
+
+  {
+    TestRule rule = CreateGenericRule(rule_id++);
+    rule.condition->url_filter = "|http://*upgrade";
+    rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+    rule.action->type = "upgradeScheme";
+    rules.push_back(rule);
+  }
+
+  {
+    // Have a rule which redirects upgraded https requests to a special url. It
+    // might seem that this can be avoided by using a HTTPS test server but it
+    // doesn't seem trivial to listen to the same port on both http and https.
+    TestRule rule = CreateGenericRule(rule_id++);
+    rule.condition->url_filter = "|https://*upgrade";
+    rule.condition->resource_types = std::vector<std::string>({"main_frame"});
+    rule.action->type = "redirect";
+    rule.action->redirect.emplace();
+    rule.action->redirect->url = get_url("https.com", "https").spec();
+    rules.push_back(rule);
+  }
+
+  set_config_flags(
+      ConfigFlag::kConfig_HasDelarativeNetRequestWithHostAccessPermission |
+      ConfigFlag::kConfig_OmitDeclarativeNetRequestPermission);
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRules(rules, "directory", {"*://allowed.com:*/*"}));
+
+  struct {
+    GURL url;
+    // nullopt if expected to be blocked.
+    absl::optional<GURL> expected_final_url;
+  } cases[] = {
+      {get_url("allowed.com", "block"), absl::nullopt},
+      {get_url("notallowed.com", "block"), get_url("notallowed.com", "block")},
+      {get_url("allowed.com", "redirect"), get_url("final.com", "final")},
+      {get_url("notallowed.com", "redirect"),
+       get_url("notallowed.com", "redirect")},
+
+      // This should be upgraded first and then match the https->http rule.
+      {get_url("allowed.com", "upgrade"), get_url("https.com", "https")},
+
+      {get_url("notallowed.com", "upgrade"),
+       get_url("notallowed.com", "upgrade")},
+  };
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(
+        base::StringPrintf("Testing %s", test_case.url.spec().c_str()));
+
+    if (!test_case.expected_final_url) {
+      EXPECT_TRUE(IsNavigationBlocked(test_case.url));
+      continue;
+    }
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_case.url));
+    EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
+    EXPECT_EQ(*test_case.expected_final_url,
+              web_contents()->GetLastCommittedURL());
   }
 }
 

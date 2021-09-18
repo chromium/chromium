@@ -129,6 +129,17 @@ enum class LoadRulesetResult {
   kMaxValue = kErrorChecksumNotFound,
 };
 
+// Specifies whether and how extensions require host permissions to modify the
+// request.
+enum class HostPermissionsAlwaysRequired {
+  // In this case, all actions require host permissions to the request url and
+  // initiator.
+  kTrue,
+  // In this case, only redirecting (excluding upgrading) requests and modifying
+  // headers require host permissions to the request url and initiator.
+  kFalse
+};
+
 // Schemes which can be used as part of url transforms.
 extern const char* const kAllowedTransformSchemes[4];
 

@@ -75,11 +75,11 @@ class RulesetManager {
   const CompositeMatcher* GetMatcherForExtension(
       const ExtensionId& extension_id) const;
 
-  // Returns the action to take for the given request; does not return an
-  // |ALLOW| action. Note: the returned action is owned by |request|.
-  // Precedence order: Allow > Blocking > Redirect rules.
-  // For redirect rules, most recently installed extensions are given
-  // preference.
+  // Returns the action to take for the given request.
+  // Note: this can return an `ALLOW` or `ALLOW_ALL_REQUESTS` rule which is
+  // effectively a no-op. We do this to ensure that matched allow rules are
+  // correctly tracked by the `getMatchedRules` and `OnRuleMatchedDebug` APIs.
+  // Note: the returned action is owned by |request|.
   const std::vector<RequestAction>& EvaluateRequest(
       const WebRequestInfo& request,
       bool is_incognito_context) const;
@@ -145,11 +145,13 @@ class RulesetManager {
   // blocking/redirection.
   bool ShouldEvaluateRequest(const WebRequestInfo& request) const;
 
-  // Returns whether |ruleset| should be evaluated for the given |request|.
-  // Note: this does not take the extension's host permissions into account.
-  bool ShouldEvaluateRulesetForRequest(const ExtensionRulesetData& ruleset,
-                                       const WebRequestInfo& request,
-                                       bool is_incognito_context) const;
+  // Returns whether `ruleset` should be evaluated for the given `request`.
+  // Returns true if it should and populates `host_permission_access`.
+  bool ShouldEvaluateRulesetForRequest(
+      const ExtensionRulesetData& ruleset,
+      const WebRequestInfo& request,
+      bool is_incognito_context,
+      PermissionsData::PageAccess& host_permission_access) const;
 
   // Sorted in decreasing order of |extension_install_time|.
   // Use a flat_set instead of std::set/map. This makes [Add/Remove]Ruleset

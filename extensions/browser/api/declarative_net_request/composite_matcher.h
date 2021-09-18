@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -30,7 +31,11 @@ struct RequestAction;
 class CompositeMatcher {
  public:
   struct ActionInfo {
-    ActionInfo(absl::optional<RequestAction> action, bool notify);
+    // Constructs a no-op ActionInfo object.
+    ActionInfo();
+
+    ActionInfo(absl::optional<RequestAction> action,
+               bool notify_request_withheld);
     ~ActionInfo();
     ActionInfo(ActionInfo&& other);
     ActionInfo& operator=(ActionInfo&& other);
@@ -49,10 +54,14 @@ class CompositeMatcher {
   using MatcherList = std::vector<std::unique_ptr<RulesetMatcher>>;
 
   // Each RulesetMatcher should have a distinct RulesetID.
-  explicit CompositeMatcher(MatcherList matchers);
+  CompositeMatcher(MatcherList matchers, HostPermissionsAlwaysRequired mode);
   ~CompositeMatcher();
 
   const MatcherList& matchers() const { return matchers_; }
+
+  HostPermissionsAlwaysRequired host_permissions_always_required() const {
+    return host_permissions_always_required_;
+  }
 
   // Returns a pointer to RulesetMatcher with the given |id| if one is present.
   const RulesetMatcher* GetMatcherWithID(RulesetID id) const;
@@ -102,6 +111,8 @@ class CompositeMatcher {
   // Denotes the cached return value for |HasAnyExtraHeadersMatcher|. Care must
   // be taken to reset this as this object is modified.
   mutable absl::optional<bool> has_any_extra_headers_matcher_;
+
+  const HostPermissionsAlwaysRequired host_permissions_always_required_;
 
   DISALLOW_COPY_AND_ASSIGN(CompositeMatcher);
 };

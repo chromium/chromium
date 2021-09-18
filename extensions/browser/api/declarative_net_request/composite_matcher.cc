@@ -58,6 +58,7 @@ class ScopedGetBeforeRequestActionTimer {
 
 }  // namespace
 
+ActionInfo::ActionInfo() = default;
 ActionInfo::ActionInfo(absl::optional<RequestAction> action,
                        bool notify_request_withheld)
     : action(std::move(action)),
@@ -68,8 +69,9 @@ ActionInfo::~ActionInfo() = default;
 ActionInfo::ActionInfo(ActionInfo&&) = default;
 ActionInfo& ActionInfo::operator=(ActionInfo&& other) = default;
 
-CompositeMatcher::CompositeMatcher(MatcherList matchers)
-    : matchers_(std::move(matchers)) {
+CompositeMatcher::CompositeMatcher(MatcherList matchers,
+                                   HostPermissionsAlwaysRequired mode)
+    : matchers_(std::move(matchers)), host_permissions_always_required_(mode) {
   DCHECK(AreIDsUnique(matchers_));
 }
 
@@ -128,6 +130,15 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
     PageAccess page_access) const {
   ScopedGetBeforeRequestActionTimer timer;
 
+  bool always_require_host_permissions =
+      host_permissions_always_required_ == HostPermissionsAlwaysRequired::kTrue;
+  if (always_require_host_permissions) {
+    // We shouldn't be evaluating this ruleset if host permissions are always
+    // required but this extension doesn't have access to the request.
+    DCHECK(page_access == PermissionsData::PageAccess::kAllowed ||
+           page_access == PermissionsData::PageAccess::kWithheld);
+  }
+
   absl::optional<RequestAction> final_action;
 
   // The priority of the highest priority matching allow or allowAllRequests
@@ -137,12 +148,12 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
   for (const auto& matcher : matchers_) {
     absl::optional<RequestAction> action =
         matcher->GetBeforeRequestAction(params);
+    if (!action)
+      continue;
 
-    if (action && action->IsAllowOrAllowAllRequests()) {
+    if (action->IsAllowOrAllowAllRequests()) {
       max_allow_rule_priority =
-          max_allow_rule_priority
-              ? std::max(*max_allow_rule_priority, action->index_priority)
-              : action->index_priority;
+          std::max(max_allow_rule_priority.value_or(0), action->index_priority);
     }
 
     final_action =
@@ -152,19 +163,19 @@ ActionInfo CompositeMatcher::GetBeforeRequestAction(
   params.allow_rule_max_priority[this] = max_allow_rule_priority;
 
   if (!final_action)
-    return ActionInfo(absl::nullopt, false /* notify_request_withheld */);
+    return ActionInfo();
 
-  // The redirect action needs host permissions.
-  if (final_action->type != RequestAction::Type::REDIRECT ||
-      page_access == PageAccess::kAllowed) {
+  bool requires_host_permission =
+      always_require_host_permissions ||
+      final_action->type == RequestAction::Type::REDIRECT;
+  if (!requires_host_permission || page_access == PageAccess::kAllowed) {
     return ActionInfo(std::move(final_action),
                       false /* notify_request_withheld */);
   }
 
-  DCHECK_EQ(RequestAction::Type::REDIRECT, final_action->type);
-  DCHECK(page_access == PageAccess::kDenied ||
-         page_access == PageAccess::kWithheld);
-  bool notify_request_withheld = page_access == PageAccess::kWithheld;
+  // `requires_host_permission` is true and `page_access` is withheld or denied.
+  bool notify_request_withheld = page_access == PageAccess::kWithheld &&
+                                 !final_action->IsAllowOrAllowAllRequests();
   return ActionInfo(absl::nullopt, notify_request_withheld);
 }
 

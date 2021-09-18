@@ -181,6 +181,10 @@ enum ConfigFlag {
 
   // Whether the "declarativeNetRequest" permission should be omitted.
   kConfig_OmitDeclarativeNetRequestPermission = 1 << 4,
+
+  // Whether the "declarativeNetRequestWithHostAccess" permission should be
+  // included.
+  kConfig_HasDelarativeNetRequestWithHostAccessPermission = 1 << 5,
 };
 
 // Describes a single extension ruleset.
