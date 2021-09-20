@@ -617,6 +617,8 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   if (TakeNewLocalSurfaceIdRequest())
     target_tree->RequestNewLocalSurfaceId();
   target_tree->SetLocalSurfaceIdFromParent(local_surface_id_from_parent());
+  target_tree->SetVisualPropertiesUpdateDuration(
+      visual_properties_update_duration());
 
   target_tree->pending_page_scale_animation_ =
       std::move(pending_page_scale_animation_);
@@ -1190,6 +1192,11 @@ bool LayerTreeImpl::TakeNewLocalSurfaceIdRequest() {
   bool new_local_surface_id_request = new_local_surface_id_request_;
   new_local_surface_id_request_ = false;
   return new_local_surface_id_request;
+}
+
+void LayerTreeImpl::SetVisualPropertiesUpdateDuration(
+    base::TimeDelta visual_properties_update_duration) {
+  visual_properties_update_duration_ = visual_properties_update_duration;
 }
 
 void LayerTreeImpl::SetDeviceViewportRect(

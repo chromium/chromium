@@ -507,6 +507,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return new_local_surface_id_request_;
   }
 
+  // Records the amount of time spent performing an update in response to new
+  // blink::VisualProperties.
+  void SetVisualPropertiesUpdateDuration(
+      base::TimeDelta visual_properties_update_duration);
+
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& display_color_spaces);
   const gfx::DisplayColorSpaces& display_color_spaces() const {
@@ -901,6 +906,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool clear_caches_on_next_commit_ = false;
   viz::LocalSurfaceId local_surface_id_from_parent_;
   bool new_local_surface_id_request_ = false;
+  base::TimeDelta visual_properties_update_duration_;
   uint32_t defer_main_frame_update_count_ = 0;
 
   SkColor background_color_ = SK_ColorWHITE;

@@ -404,7 +404,10 @@ void WidgetBase::UpdateVisualProperties(
       gfx::ScaleToCeiledSize(visual_properties.visible_viewport_size,
                              screen_info.device_scale_factor));
 
+  base::TimeTicks update_start = base::TimeTicks::Now();
   client_->UpdateVisualProperties(visual_properties);
+  base::TimeDelta update_duration = base::TimeTicks::Now() - update_start;
+  LayerTreeHost()->SetVisualPropertiesUpdateDuration(update_duration);
 }
 
 void WidgetBase::UpdateScreenRects(const gfx::Rect& widget_screen_rect,

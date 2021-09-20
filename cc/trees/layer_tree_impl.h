@@ -388,6 +388,12 @@ class CC_EXPORT LayerTreeImpl {
     return new_local_surface_id_request_;
   }
 
+  void SetVisualPropertiesUpdateDuration(
+      base::TimeDelta visual_properties_update_duration);
+  base::TimeDelta visual_properties_update_duration() const {
+    return visual_properties_update_duration_;
+  }
+
   void SetDeviceViewportRect(const gfx::Rect& device_viewport_rect);
 
   // TODO(fsamuel): The reason this is not a trivial accessor is because it
@@ -823,6 +829,7 @@ class CC_EXPORT LayerTreeImpl {
 
   viz::LocalSurfaceId local_surface_id_from_parent_;
   bool new_local_surface_id_request_ = false;
+  base::TimeDelta visual_properties_update_duration_;
   // Contains the physical rect of the device viewport, to be used in
   // determining what needs to be drawn.
   bool device_viewport_rect_changed_ = false;
