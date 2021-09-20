@@ -33,6 +33,44 @@ Polymer({
   },
 
   /**
+   * Get correct display text for known cellular network technology.
+   * @protected
+   * @return {string}
+   */
+  computeNetworkTechnologyText_() {
+    if (!this.network.typeProperties) {
+      return '';
+    }
+
+    const technology = this.network.typeProperties.cellular.networkTechnology;
+    switch (technology) {
+      case 'CDMA1XRTT':
+        return this.i18n('networkTechnologyCdma1xrttLabel');
+      case 'EDGE':
+        return this.i18n('networkTechnologyEdgeLabel');
+      case 'EVDO':
+        return this.i18n('networkTechnologyEvdoLabel');
+      case 'GPRS':
+        return this.i18n('networkTechnologyGprsLabel');
+      case 'GSM':
+        return this.i18n('networkTechnologyGsmLabel');
+      case 'HSPA':
+        return this.i18n('networkTechnologyHspaLabel');
+      case 'HSPAPlus':
+        return this.i18n('networkTechnologyHspaPlusLabel');
+      case 'LTE':
+        return this.i18n('networkTechnologyLteLabel');
+      case 'LTEAdvanced':
+        return this.i18n('networkTechnologyLteAdvancedLabel');
+      case 'UMTS':
+        return this.i18n('networkTechnologyUmtsLabel');
+      default:
+        assertNotReached();
+        return ''
+    }
+  },
+
+  /**
    * @protected
    * @return {string}
    */

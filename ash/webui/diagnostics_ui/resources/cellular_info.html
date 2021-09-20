@@ -8,7 +8,8 @@
         orientation="horizontal">
       </data-point>
       <data-point id="technology" header="[[i18n('networkTechnologyLabel')]]"
-          value="[[network.typeProperties.cellular.networkTechnology]]"
+          value="[[computeNetworkTechnologyText_(
+            network.typeProperties.cellular.networkTechnology)]]"
           orientation="horizontal">
       </data-point>
       <data-point id="roaming" header="[[i18n('networkRoamingStateLabel')]]"
