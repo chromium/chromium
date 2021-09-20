@@ -58,7 +58,7 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
   ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
-    this.addEventListener('auxclick', this.onClick_);
+    this.addEventListener('auxclick', e => this.onAuxClick_(e));
     this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
   }
@@ -67,9 +67,28 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
    * @param {!Event} e
    * @private
    */
+  onAuxClick_(e) {
+    if (e.button !== 1) {
+      // Not a middle click.
+      return;
+    }
+
+    this.apiProxy_.openURL(this.data.url, true, {
+      middleButton: true,
+      altKey: e.altKey,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+      shiftKey: e.shiftKey,
+    });
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
   onClick_(e) {
     this.apiProxy_.openURL(this.data.url, true, {
-      middleButton: e.type === 'auxclick',
+      middleButton: false,
       altKey: e.altKey,
       ctrlKey: e.ctrlKey,
       metaKey: e.metaKey,
