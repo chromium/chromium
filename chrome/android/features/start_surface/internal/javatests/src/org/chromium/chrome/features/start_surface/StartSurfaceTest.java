@@ -1958,6 +1958,34 @@ public class StartSurfaceTest {
         ReturnToChromeExperimentsUtil.setSyncForTesting(false);
     }
 
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testNotShowIncognitoHomepage() {
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { cta.getTabModelSelector().getModel(false).closeAllTabs(); });
+        TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
+        assertTrue(cta.getLayoutManager().overviewVisible());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> cta.getTabCreator(true /*incognito*/).launchNTP());
+        TabUiTestHelper.verifyTabModelTabCount(cta, 0, 1);
+
+        // Simulates pressing the home button. Incognito tab should stay and homepage shouldn't
+        // show.
+        onView(withId(R.id.home_button)).perform(click());
+        assertFalse(cta.getLayoutManager().overviewVisible());
+        onViewWaiting(withId(R.id.new_tab_incognito_container)).check(matches(isDisplayed()));
+    }
+
     private void backActionDeleteBlankTabForOmniboxFocusedOnNewTabSingleSurface(
             Runnable backAction) {
         if (!mImmediateReturn) {

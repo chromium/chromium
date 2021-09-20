@@ -778,8 +778,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             OnClickListener bookmarkClickHandler = v -> addOrEditBookmark(getActivityTab());
 
             Supplier<Boolean> showStartSurfaceSupplier = () -> {
+                // If incognito is selected, tapping the home button stays on the current incognito
+                // tab.
                 if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageOnPhone(
-                            this, isTablet())) {
+                            this, isTablet())
+                        && !mTabModelSelector.isIncognitoSelected()) {
                     StartSurfaceUserData.setKeepTab(getActivityTab(), true);
                     showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
                     return true;
