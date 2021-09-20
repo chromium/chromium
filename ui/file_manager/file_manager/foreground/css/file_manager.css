@@ -2982,9 +2982,9 @@ files-tooltip:not(:defined) {
 }
 
 #banners > *:not([hidden]) {
-  border: 1px solid var(--cros-separator-color);
   border-radius: 8px;
-  box-shadow: 0 1px 1px var(--cros-separator-color);
+  box-shadow: 0 1px 2px 0 rgba(var(--google-grey-800-rgb), 0.3),
+              0 1px 3px 1px rgba(var(--google-grey-800-rgb), 0.15);
   height: auto;
   margin-bottom: 4px;
   margin-inline-end: 16px;
