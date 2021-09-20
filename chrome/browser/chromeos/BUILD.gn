@@ -260,6 +260,7 @@ source_set("chromeos") {
     "//chromeos/geolocation",
     "//chromeos/ime:gencode",
     "//chromeos/language/language_packs",
+    "//chromeos/language/public/mojom",
     "//chromeos/login/auth",
     "//chromeos/login/login_state",
     "//chromeos/login/session",

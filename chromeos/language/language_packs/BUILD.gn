@@ -8,11 +8,14 @@ static_library("language_packs") {
   sources = [
     "language_pack_manager.cc",
     "language_pack_manager.h",
+    "language_packs_impl.cc",
+    "language_packs_impl.h",
   ]
   deps = [
     "//base",
     "//chromeos/dbus/dlcservice:dlcservice",
     "//chromeos/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/language/public/mojom",
   ]
 }
 

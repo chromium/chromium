@@ -36,6 +36,7 @@ grit("resources") {
 
   deps = [
     "//chromeos/components/multidevice/mojom:mojom_js",
+    "//chromeos/language/public/mojom:mojom_js",
     "//chromeos/services/bluetooth_config/public/mojom:mojom_js",
     "//chromeos/services/cellular_setup/public/mojom:mojom_js",
     "//chromeos/services/device_sync/public/mojom:mojom_js",
