@@ -89,7 +89,6 @@ class SessionStorageNamespaceImplTest
     // Put some data in one of the maps.
     base::RunLoop put_loop;
     database_->database().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           ASSERT_TRUE(db.Put(StdStringToUint8Vector("map-0-key1"),
                              StdStringToUint8Vector("data1"))

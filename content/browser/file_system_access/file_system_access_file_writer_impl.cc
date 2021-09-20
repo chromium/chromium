@@ -551,9 +551,9 @@ void FileSystemAccessFileWriterImpl::ComputeHashForSwapFile(
       base::SequencedTaskRunnerHandle::Get(), std::move(callback));
 
   manager()->operation_runner().PostTaskWithThisObject(
-      FROM_HERE, base::BindOnce(&HashCalculator::CreateAndStart,
-                                base::WrapRefCounted(file_system_context()),
-                                std::move(wrapped_callback), swap_url()));
+      base::BindOnce(&HashCalculator::CreateAndStart,
+                     base::WrapRefCounted(file_system_context()),
+                     std::move(wrapped_callback), swap_url()));
 }
 
 base::WeakPtr<FileSystemAccessHandleBase>

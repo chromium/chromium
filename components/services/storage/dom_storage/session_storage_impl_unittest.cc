@@ -663,7 +663,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
 
   // Ensure that the first opened database always fails to write data.
   session_storage_impl()->GetDatabaseForTesting().PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+      base::BindLambdaForTesting([&](DomStorageDatabase* db) {
         db->MakeAllCommitsFailForTesting();
         db->SetDestructionCallbackForTesting(
             base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));
@@ -783,7 +783,7 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
 
   // Ensure that this database always fails to write data.
   session_storage_impl()->GetDatabaseForTesting().PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+      base::BindLambdaForTesting([&](DomStorageDatabase* db) {
         db->MakeAllCommitsFailForTesting();
         db->SetDestructionCallbackForTesting(
             base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));

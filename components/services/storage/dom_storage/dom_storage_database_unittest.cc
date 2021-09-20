@@ -128,7 +128,6 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
                      Func operation) {
     base::RunLoop loop;
     database.PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& database) {
           operation(database);
           loop.Quit();

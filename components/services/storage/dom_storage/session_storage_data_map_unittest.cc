@@ -82,7 +82,7 @@ class SessionStorageDataMapTest : public testing::Test {
     loop.Run();
 
     database_->database().PostTaskWithThisObject(
-        FROM_HERE, base::BindOnce([](const DomStorageDatabase& db) {
+        base::BindOnce([](const DomStorageDatabase& db) {
           // Should show up in first map.
           leveldb::Status status =
               db.Put(MakeBytes("map-1-key1"), MakeBytes("data1"));
@@ -100,7 +100,6 @@ class SessionStorageDataMapTest : public testing::Test {
     std::vector<DomStorageDatabase::KeyValuePair> entries;
     base::RunLoop loop;
     database_->database().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           leveldb::Status status = db.GetPrefixed({}, &entries);
           ASSERT_TRUE(status.ok());

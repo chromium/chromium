@@ -99,7 +99,7 @@ class AsyncDomStorageDatabase {
         std::move(task), std::move(callback),
         base::SequencedTaskRunnerHandle::Get());
     if (database_) {
-      database_.PostTaskWithThisObject(FROM_HERE, std::move(wrapped_task));
+      database_.PostTaskWithThisObject(std::move(wrapped_task));
     } else {
       tasks_to_run_on_open_.push_back(std::move(wrapped_task));
     }

@@ -1226,7 +1226,6 @@ void FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess(
         CreateFileSystemURLFromPath(entries.front().type, entries.front().path);
 
     operation_runner().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindOnce(
             &CreateAndTruncateFile, fs_url,
             base::BindOnce(

@@ -287,26 +287,28 @@ class SequenceBound {
   // tasks in current sequence, and using "plain" binds and task posting (here
   // and other places that `CrossThreadBindTraits::PostTask`).
   using ConstPostTaskCallback = CrossThreadTask<void(const T&)>;
-  void PostTaskWithThisObject(const Location& from_here,
-                              ConstPostTaskCallback callback) const {
+  void PostTaskWithThisObject(
+      ConstPostTaskCallback callback,
+      const Location& location = Location::Current()) const {
     DCHECK(!is_null());
     // Even though the lifetime of the object pointed to by `t_` may not have
     // begun yet, the storage has been allocated. Per [basic.life/6] and
     // [basic.life/7], "Indirection through such a pointer is permitted but the
     // resulting lvalue may only be used in limited ways, as described below."
     CrossThreadBindTraits::PostTask(
-        *impl_task_runner_, from_here,
+        *impl_task_runner_, location,
         CrossThreadBindTraits::BindOnce(std::move(callback), std::cref(*t_)));
   }
 
   // Same as above, but for non-const operations. The callback takes a pointer
   // to the wrapped object rather than a const ref.
   using PostTaskCallback = CrossThreadTask<void(T*)>;
-  void PostTaskWithThisObject(const Location& from_here,
-                              PostTaskCallback callback) const {
+  void PostTaskWithThisObject(
+      PostTaskCallback callback,
+      const Location& location = Location::Current()) const {
     DCHECK(!is_null());
     CrossThreadBindTraits::PostTask(
-        *impl_task_runner_, from_here,
+        *impl_task_runner_, location,
         CrossThreadBindTraits::BindOnce(std::move(callback),
                                         CrossThreadBindTraits::Unretained(t_)));
   }

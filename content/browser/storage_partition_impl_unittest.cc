@@ -299,7 +299,6 @@ class RemoveLocalStorageTester {
 
     base::RunLoop populate_loop;
     database->database().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const storage::DomStorageDatabase& db) {
           PopulateDatabase(db, origin1, origin2, origin3);
           populate_loop.Quit();

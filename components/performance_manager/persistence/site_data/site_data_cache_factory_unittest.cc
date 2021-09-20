@@ -37,7 +37,6 @@ TEST(SiteDataCacheFactoryTest, EndToEnd) {
   {
     base::RunLoop run_loop;
     cache_factory.PostTaskWithThisObject(
-        FROM_HERE,
         base::BindOnce(
             [](const std::string& browser_context_id,
                base::OnceClosure quit_closure, SiteDataCacheFactory* factory) {
@@ -57,7 +56,6 @@ TEST(SiteDataCacheFactoryTest, EndToEnd) {
   {
     base::RunLoop run_loop;
     cache_factory.PostTaskWithThisObject(
-        FROM_HERE,
         base::BindOnce(
             [](const std::string& browser_context_id,
                base::OnceClosure quit_closure, SiteDataCacheFactory* factory) {

@@ -371,15 +371,12 @@ TEST_F(SequenceBoundTest, PostTaskWithThisObject) {
   constexpr int kTestValue2 = 42;
   base::SequenceBound<BoxedValue> value(task_runner_, kTestValue1);
   base::RunLoop loop;
+  value.PostTaskWithThisObject(base::BindLambdaForTesting(
+      [&](const BoxedValue& v) { EXPECT_EQ(kTestValue1, v.value()); }));
+  value.PostTaskWithThisObject(base::BindLambdaForTesting(
+      [&](BoxedValue* v) { v->set_value(kTestValue2); }));
   value.PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting([&](const BoxedValue& v) {
-        EXPECT_EQ(kTestValue1, v.value());
-      }));
-  value.PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting(
-                     [&](BoxedValue* v) { v->set_value(kTestValue2); }));
-  value.PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting([&](const BoxedValue& v) {
+      base::BindLambdaForTesting([&](const BoxedValue& v) {
         EXPECT_EQ(kTestValue2, v.value());
         loop.Quit();
       }));

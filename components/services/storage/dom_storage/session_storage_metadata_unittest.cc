@@ -83,7 +83,6 @@ class SessionStorageMetadataTest : public testing::Test {
 
     base::RunLoop loop;
     database_->database().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           EXPECT_TRUE(db.Get(database_version_key_, &version_value).ok());
           EXPECT_TRUE(db.Get(next_map_id_key_, &next_map_id_value).ok());
@@ -119,7 +118,6 @@ class SessionStorageMetadataTest : public testing::Test {
     // | version                                | 1                  |
     base::RunLoop loop;
     database_->database().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           db.Put(StdStringToUint8Vector(std::string("namespace-") +
                                         test_namespace1_id_ + "-" +
@@ -157,7 +155,6 @@ class SessionStorageMetadataTest : public testing::Test {
     std::vector<DomStorageDatabase::KeyValuePair> entries;
     base::RunLoop loop;
     database_->database().PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
           leveldb::Status status = db.GetPrefixed({}, &entries);
           ASSERT_TRUE(status.ok());
