@@ -56,7 +56,7 @@ TEST_F(UpdateClientSettingsActionTest, NoStringsNoLocaleIsValid) {
 TEST_F(UpdateClientSettingsActionTest,
        CompleteStringsSetWithNoLocaleAreInvalid) {
   UpdateClientSettingsProto proto;
-  for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX; i++) {
+  for (int i = 0; i <= ClientSettingsProto::DisplayStringId_MAX; i++) {
     ClientSettingsProto::DisplayString* display_string =
         proto.mutable_client_settings()->add_display_strings();
     display_string->set_id(
@@ -82,6 +82,7 @@ TEST_F(UpdateClientSettingsActionTest, LocaleWithNoStringsIsInvalid) {
 
 TEST_F(UpdateClientSettingsActionTest, LocaleWithOneLessStringIsInvalid) {
   UpdateClientSettingsProto proto;
+  // Including UNSPECIFIED enum value as well, and should be ignored.
   for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX; i++) {
     ClientSettingsProto::DisplayString* display_string =
         proto.mutable_client_settings()->add_display_strings();
@@ -99,7 +100,8 @@ TEST_F(UpdateClientSettingsActionTest, LocaleWithOneLessStringIsInvalid) {
 
 TEST_F(UpdateClientSettingsActionTest, LocaleWithCompleteStringsSetIsValid) {
   UpdateClientSettingsProto proto;
-  for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX + 1; i++) {
+  // Skipping UNSPECIFIED enum value.
+  for (int i = 1; i <= ClientSettingsProto::DisplayStringId_MAX; i++) {
     ClientSettingsProto::DisplayString* display_string =
         proto.mutable_client_settings()->add_display_strings();
     display_string->set_id(

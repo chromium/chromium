@@ -22,6 +22,12 @@ TEST(DisplayStringsUtilTest, FallbackToChromeStringsByDefault) {
   ClientSettings client_settings;
   for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX + 1; i++) {
     switch (static_cast<ClientSettingsProto::DisplayStringId>(i)) {
+      case ClientSettingsProto::UNSPECIFIED:
+        EXPECT_EQ(
+            GetDisplayStringUTF8(ClientSettingsProto::UNSPECIFIED,
+                                 client_settings),
+            l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR));
+        break;
       case ClientSettingsProto::GIVE_UP:
         EXPECT_EQ(
             GetDisplayStringUTF8(ClientSettingsProto::GIVE_UP, client_settings),
