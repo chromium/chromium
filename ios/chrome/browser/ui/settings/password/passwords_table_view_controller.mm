@@ -1496,6 +1496,20 @@ void RemoveFormsToBeDeleted(
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
                            action:nil];
+
+  if (_browserState->GetPrefs()->IsManagedPreference(
+          password_manager::prefs::kCredentialsEnableService) &&
+      ![_passwordManagerEnabled value]) {
+    // Add functionality is not available.
+    if (!editing) {
+      [self setToolbarItems:@[
+        flexibleSpace, [self editOrDoneButtonWithEditing:editing], flexibleSpace
+      ]
+                   animated:YES];
+      return;
+    }
+  }
+
   UIBarButtonItem* toolbarLeftButton =
       editing ? self.deleteButton : self.addPasswordButton;
   [self setToolbarItems:@[
