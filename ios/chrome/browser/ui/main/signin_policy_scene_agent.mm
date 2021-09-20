@@ -216,7 +216,7 @@ bool IsSigninForcedByPolicy() {
     // TODO(crbug.com/1241451): Use the command for forced sign-in when
     // available.
     [handler showSignin:command
-        baseViewController:self.sceneState.interfaceProvider.mainInterface
+        baseViewController:self.sceneState.interfaceProvider.currentInterface
                                .viewController];
   }
 }
