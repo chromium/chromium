@@ -4,6 +4,8 @@
 
 #include "ui/base/ui_base_features.h"
 
+#include <stdlib.h>
+
 #include "build/chromeos_buildflags.h"
 
 #if defined(OS_WIN)
@@ -310,7 +312,11 @@ bool IsSwipeToMoveCursorEnabled() {
 
 bool ShouldApplyNativeOcclusionToCompositor() {
 #if defined(OS_WIN)
-  return base::FeatureList::IsEnabled(kCalculateNativeWinOcclusion) &&
+  // chromedriver uses the environment variable CHROME_HEADLESS. In this case
+  // it expected that native occlusion is not applied.
+  static bool is_headless = getenv("CHROME_HEADLESS") != nullptr;
+  return !is_headless &&
+         base::FeatureList::IsEnabled(kCalculateNativeWinOcclusion) &&
          base::FeatureList::IsEnabled(kApplyNativeOcclusionToCompositor);
 #else
   return false;

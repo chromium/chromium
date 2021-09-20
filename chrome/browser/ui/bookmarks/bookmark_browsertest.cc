@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -41,6 +42,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
 
 using bookmarks::BookmarkModel;
@@ -82,7 +84,13 @@ class TestBookmarkTabHelperObserver : public BookmarkTabHelperObserver {
 
 class BookmarkBrowsertest : public InProcessBrowserTest {
  public:
-  BookmarkBrowsertest() {}
+  BookmarkBrowsertest() {
+    // This needs to be disabled so that animations are guaranteed to work.
+#if defined(OS_WIN)
+    feature_list_.InitWithFeatures(
+        {}, {features::kApplyNativeOcclusionToCompositor});
+#endif
+  }
 
   bool IsVisible() {
     return browser()->bookmark_bar_state() == BookmarkBar::SHOW;
@@ -115,6 +123,10 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
+#if defined(OS_WIN)
+  base::test::ScopedFeatureList feature_list_;
+#endif
+
   // We make the histogram tester a member field to make sure it starts
   // recording as early as possible.
   base::HistogramTester histogram_tester_;
