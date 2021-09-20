@@ -82,6 +82,7 @@ include_rules = [
     "+ui/base/prediction",
     "+ui/base/resource/resource_scale_factor.h",
     "+ui/display/mojom",
+    "+ui/display/display.h",
     "+ui/display/screen_info.h",
     "+ui/display/screen_infos.h",
     "+ui/gfx",

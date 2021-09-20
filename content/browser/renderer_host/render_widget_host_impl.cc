@@ -1879,11 +1879,6 @@ void RenderWidgetHostImpl::GetScreenInfo(display::ScreenInfo* result) {
     view_->GetScreenInfo(result);
   else
     display::DisplayUtil::GetDefaultScreenInfo(result);
-
-  if (display::Display::HasForceRasterColorProfile()) {
-    result->display_color_spaces = gfx::DisplayColorSpaces(
-        display::Display::GetForcedRasterColorProfile());
-  }
 }
 
 float RenderWidgetHostImpl::GetDeviceScaleFactor() {
@@ -2145,10 +2140,6 @@ display::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
     }
     display::ScreenInfo screen_info;
     display::DisplayUtil::DisplayToScreenInfo(&screen_info, display);
-    if (display::Display::HasForceRasterColorProfile()) {
-      screen_info.display_color_spaces = gfx::DisplayColorSpaces(
-          display::Display::GetForcedRasterColorProfile());
-    }
     result.screen_infos.push_back(screen_info);
   }
 

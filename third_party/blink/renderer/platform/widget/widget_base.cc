@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
+#include "ui/display/display.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -1405,8 +1406,13 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
   // viewport size, which is set above.
   LayerTreeHost()->SetVisualDeviceViewportIntersectionRect(
       client_->ViewportVisibleRect());
-  LayerTreeHost()->SetDisplayColorSpaces(
-      screen_infos_.current().display_color_spaces);
+  if (display::Display::HasForceRasterColorProfile()) {
+    LayerTreeHost()->SetDisplayColorSpaces(gfx::DisplayColorSpaces(
+        display::Display::GetForcedRasterColorProfile()));
+  } else {
+    LayerTreeHost()->SetDisplayColorSpaces(
+        screen_infos_.current().display_color_spaces);
+  }
 
   if (orientation_changed)
     client_->OrientationChanged();
