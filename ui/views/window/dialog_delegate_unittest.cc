@@ -161,7 +161,15 @@ TEST_F(DialogTest, OkButtonAccepts) {
   EXPECT_TRUE(accepted_);
 }
 
-TEST_F(DialogTest, EscButtonCancels) {
+TEST_F(DialogTest, EscButtonClosesWithCloseButton) {
+  dialog()->set_show_close_button(true);
+  EXPECT_FALSE(closed_);
+  SimulateKeyPress(ui::VKEY_ESCAPE);
+  EXPECT_TRUE(closed_);
+}
+
+TEST_F(DialogTest, EscButtonCancelsWithoutCloseButton) {
+  dialog()->set_show_close_button(false);
   EXPECT_FALSE(cancelled_);
   SimulateKeyPress(ui::VKEY_ESCAPE);
   EXPECT_TRUE(cancelled_);

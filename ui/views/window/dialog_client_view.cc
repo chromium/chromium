@@ -165,8 +165,16 @@ void DialogClientView::Layout() {
 bool DialogClientView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
 
-  if (DialogDelegate* delegate = GetDialogDelegate())
+  // If there's no close-x (typically the case for modal dialogs) then Cancel
+  // the dialog instead of closing the widget as the delegate may likely expect
+  // either Accept or Cancel to be called as a result of user action.
+  DialogDelegate* const delegate = GetDialogDelegate();
+  if (delegate && !delegate->ShouldShowCloseButton()) {
     delegate->CancelDialog();
+    return true;
+  }
+
+  GetWidget()->CloseWithReason(Widget::ClosedReason::kEscKeyPressed);
 
   return true;
 }
