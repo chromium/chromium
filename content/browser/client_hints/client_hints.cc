@@ -279,11 +279,25 @@ void AddViewportHeightHeader(net::HttpRequestHeaders* headers,
   DCHECK(headers);
   DCHECK(context);
 
+  double overall_scale_factor =
+      GetZoomFactor(context, url) * GetDeviceScaleFactor();
   double viewport_height = (display::Screen::GetScreen()
                                 ->GetPrimaryDisplay()
                                 .GetSizeInPixel()
                                 .height()) /
-                           GetZoomFactor(context, url) / GetDeviceScaleFactor();
+                           overall_scale_factor;
+#if defined(OS_ANDROID)
+  // On Android, the viewport is scaled so the width is 980 and the height
+  // maintains the same ratio.
+  // TODO(1246208): Improve the usefulness of the viewport client hints for
+  // navigation requests.
+  double viewport_width = (display::Screen::GetScreen()
+                               ->GetPrimaryDisplay()
+                               .GetSizeInPixel()
+                               .width()) /
+                          overall_scale_factor;
+  viewport_height *= 980.0 / viewport_width;
+#endif  // OS_ANDROID
 
   DCHECK_LT(0, viewport_height);
 
