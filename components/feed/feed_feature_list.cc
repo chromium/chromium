@@ -68,6 +68,8 @@ const base::Feature kFeedLoadingPlaceholder{"FeedLoadingPlaceholder",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFeedImageMemoryCacheSizePercentage{
     "FeedImageMemoryCacheSizePercentage", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kFeedClearImageMemoryCache{
+    "FeedClearImageMemoryCache", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFeedBackToTop{"FeedBackToTop",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFeedStamp{"FeedStamp", base::FEATURE_DISABLED_BY_DEFAULT};
