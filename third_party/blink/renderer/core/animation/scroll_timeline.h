@@ -17,7 +17,6 @@
 namespace blink {
 
 class ScrollTimelineOptions;
-class V8UnionDoubleOrScrollTimelineAutoKeyword;
 class WorkletAnimationBase;
 
 // Implements the ScrollTimeline concept from the Scroll-linked Animations spec.
@@ -47,14 +46,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   ScrollTimeline(Document*,
                  absl::optional<Element*> scroll_source,
                  ScrollDirection,
-                 HeapVector<Member<ScrollTimelineOffset>>,
-                 absl::optional<double>);
+                 HeapVector<Member<ScrollTimelineOffset>>);
 
   bool IsScrollTimeline() const override { return true; }
-  // TODO (crbug.com/1216655): Time range should be removed from ScrollTimeline
-  // at which point this function becomes redundant as all scroll timelines will
-  // then be progress based timelines.
-  bool IsProgressBasedTimeline() const override { return !time_range_; }
   // ScrollTimeline is not active if scrollSource is null, does not currently
   // have a CSS layout box, or if its layout box is not a scroll container.
   // https://github.com/WICG/scroll-animations/issues/31
@@ -74,7 +68,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
   V8CSSNumberish* currentTime() override;
   V8CSSNumberish* duration() override;
-  V8UnionDoubleOrScrollTimelineAutoKeyword* timeRange() const;
   V8CSSNumberish* ConvertTimeToProgress(AnimationTimeDelta time) const;
 
   // Returns the Node that should actually have the ScrollableArea (if one
@@ -133,10 +126,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // Duration is the maximum value a timeline may generate for current time.
   // Used to convert time values to proportional values.
   absl::optional<AnimationTimeDelta> GetDuration() const override {
-    return time_range_
-               ? absl::nullopt
-               // Any arbitrary value should be able to be used here.
-               : absl::make_optional(AnimationTimeDelta::FromSecondsD(100));
+    // Any arbitrary value should be able to be used here.
+    return absl::make_optional(AnimationTimeDelta::FromSecondsD(100));
   }
 
  protected:
@@ -188,11 +179,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   Member<Node> resolved_scroll_source_;
   ScrollDirection orientation_;
   HeapVector<Member<ScrollTimelineOffset>> scroll_offsets_;
-
-  // TODO (crbug.com/1216655): Time range should be removed from ScrollTimeline.
-  // Currently still left in for the sake of backwards compatibility with
-  // existing tests.
-  absl::optional<double> time_range_;
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;

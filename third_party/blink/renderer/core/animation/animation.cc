@@ -37,7 +37,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -200,7 +199,7 @@ Animation* Animation::Create(AnimationEffect* effect,
   }
   DCHECK(IsA<DocumentTimeline>(timeline) || timeline->IsScrollTimeline());
 
-  if (effect && timeline->IsProgressBasedTimeline()) {
+  if (effect && timeline->IsScrollTimeline()) {
     if (effect->timing_.iteration_duration) {
       if (effect->timing_.iteration_duration->is_inf()) {
         exception_state.ThrowTypeError(
@@ -364,7 +363,7 @@ bool Animation::ConvertCSSNumberishToTime(
     return true;
   }
 
-  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
+  if (timeline_ && timeline_->IsScrollTimeline()) {
     // Progress based timeline
     if (numberish->IsCSSNumericValue()) {
       CSSUnitValue* numberish_as_percentage =
@@ -522,7 +521,7 @@ V8CSSNumberish* Animation::startTime() const {
 
 V8CSSNumberish* Animation::ConvertTimeToCSSNumberish(
     AnimationTimeDelta time) const {
-  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
+  if (timeline_ && timeline_->IsScrollTimeline()) {
     return To<ScrollTimeline>(*timeline_).ConvertTimeToProgress(time);
   }
   return MakeGarbageCollected<V8CSSNumberish>(time.InMillisecondsF());

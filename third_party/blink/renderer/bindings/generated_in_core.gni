@@ -1565,8 +1565,6 @@ generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_doubleornullsequence_null.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_doublesequence.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_doublesequence.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_string.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_double_string_stringsequence.cc",

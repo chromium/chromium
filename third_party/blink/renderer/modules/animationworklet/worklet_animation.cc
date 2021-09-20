@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_animationeffect_animationeffectsequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_documenttimeline_scrolltimeline.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
@@ -106,12 +105,10 @@ bool ValidateTimeline(const V8UnionDocumentTimelineOrScrollTimeline* timeline,
   if (!timeline)
     return true;
   if (timeline->IsScrollTimeline()) {
-    V8UnionDoubleOrScrollTimelineAutoKeyword* time_range =
-        timeline->GetAsScrollTimeline()->timeRange();
-    if (time_range->IsScrollTimelineAutoKeyword()) {
-      error_string = "ScrollTimeline timeRange must have non-auto value";
-      return false;
-    }
+    // crbug.com/1238130 Add support for progress based timelines to worklet
+    // animations
+    error_string = "ScrollTimeline is not yet supported for worklet animations";
+    return false;
   }
   return true;
 }

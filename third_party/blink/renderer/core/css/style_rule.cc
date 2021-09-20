@@ -446,7 +446,6 @@ void StyleRuleScrollTimeline::TraceAfterDispatch(
   visitor->Trace(orientation_);
   visitor->Trace(start_);
   visitor->Trace(end_);
-  visitor->Trace(time_range_);
   visitor->Trace(layer_);
 
   StyleRuleBase::TraceAfterDispatch(visitor);
