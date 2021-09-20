@@ -12,6 +12,7 @@
 #include "services/tracing/perfetto/system_test_utils.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/system_tracing_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tracing {
 
@@ -73,13 +74,20 @@ TEST_F(SystemTracingServiceTest, OpenProducerSocket) {
     run_loop.Quit();
   });
 
-  sts->OpenProducerSocket(std::move(callback));
+  absl::optional<bool> socket_connected;
+  auto on_connect_callback = base::BindLambdaForTesting(
+      [&](bool connected) { socket_connected = connected; });
+
+  sts->OpenProducerSocketForTesting(std::move(callback),
+                                    std::move(on_connect_callback));
   ASSERT_FALSE(callback_called);
   run_loop.Run();
   ASSERT_TRUE(callback_called);
+  ASSERT_TRUE(socket_connected.has_value());
+  ASSERT_TRUE(*socket_connected);
 }
 
-// Test the OpenProducerSocket implementation with an nonexistent socket. Expect
+// Test the OpenProducerSocket implementation with a nonexistent socket. Expect
 // an invalid socket file descriptor returned in the callback.
 TEST_F(SystemTracingServiceTest, OpenProducerSocket_Nonexistent) {
   auto sts = std::make_unique<SystemTracingService>();
@@ -97,10 +105,17 @@ TEST_F(SystemTracingServiceTest, OpenProducerSocket_Nonexistent) {
     run_loop.Quit();
   });
 
-  sts->OpenProducerSocket(std::move(callback));
+  absl::optional<bool> socket_connected;
+  auto on_connect_callback = base::BindLambdaForTesting(
+      [&](bool connected) { socket_connected = connected; });
+  sts->OpenProducerSocketForTesting(std::move(callback),
+                                    std::move(on_connect_callback));
+
   ASSERT_FALSE(callback_called);
   run_loop.Run();
   ASSERT_TRUE(callback_called);
+  ASSERT_TRUE(socket_connected.has_value());
+  ASSERT_FALSE(*socket_connected);
 }
 
 // Test the OpenProducerSocket implementation through mojo. Expect that the
@@ -117,6 +132,33 @@ TEST_F(SystemTracingServiceTest, BindAndPassPendingRemote) {
   auto callback = base::BindLambdaForTesting([&](base::File file) {
     callback_called = true;
     ASSERT_TRUE(file.IsValid());
+    run_loop.Quit();
+  });
+
+  remote->OpenProducerSocket(std::move(callback));
+  ASSERT_FALSE(callback_called);
+  run_loop.Run();
+  ASSERT_TRUE(callback_called);
+}
+
+// Test the OpenProducerSocket implementation through mojo with a nonexistent
+// socket. Expect that the callback runs with an invalid socket file descriptor
+TEST_F(SystemTracingServiceTest, BindAndPassPendingRemote_Nonexistent) {
+  auto sts = std::make_unique<SystemTracingService>();
+  bool callback_called = false;
+
+  // Set the producer socket name to a nonexistent path.
+  saved_producer_sock_env_ = getenv(kProducerSockEnvName);
+  ASSERT_EQ(0, setenv(kProducerSockEnvName, "nonexistent_socket", 1));
+
+  // Bind the pending remote on the current thread.
+  mojo::Remote<mojom::SystemTracingService> remote;
+  remote.Bind(sts->BindAndPassPendingRemote(), nullptr);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting([&](base::File file) {
+    callback_called = true;
+    ASSERT_FALSE(file.IsValid());
     run_loop.Quit();
   });
 
