@@ -398,6 +398,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "autofill-enable-offer-notification-for-promo-codes",
+    "owners": [ "jsaul@google.com", "siyua" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua", "siashah@google.com" ],
     "expiry_milestone": 95

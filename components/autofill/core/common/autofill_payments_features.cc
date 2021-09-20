@@ -75,6 +75,12 @@ const base::Feature kAutofillEnableOfferNotificationCrossTabTracking{
     "AutofillEnableOfferNotificationCrossTabTracking",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, a notification will be displayed on page navigation if the
+// domain has an eligible merchant promo code offer or reward.
+const base::Feature kAutofillEnableOfferNotificationForPromoCodes{
+    "AutofillEnableOfferNotificationForPromoCodes",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, offers will be displayed in the Clank keyboard accessory during
 // downstream.
 const base::Feature kAutofillEnableOffersInClankKeyboardAccessory{

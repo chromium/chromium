@@ -7742,6 +7742,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceMajorVersion100InUserAgentName,
      flag_descriptions::kForceMajorVersion100InUserAgentDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kForceMajorVersion100InUserAgent)},
+    {"autofill-enable-offer-notification-for-promo-codes",
+     flag_descriptions::kAutofillEnableOfferNotificationForPromoCodesName,
+     flag_descriptions::
+         kAutofillEnableOfferNotificationForPromoCodesDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableOfferNotificationForPromoCodes)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -299,6 +299,12 @@ const char kAutofillEnableOfferNotificationCrossTabTrackingDescription[] =
     "When enabled, the offer notification showing will be tracked cross-tab, "
     "and on one merchant, the notification will only be shown once.";
 
+const char kAutofillEnableOfferNotificationForPromoCodesName[] =
+    "Extend Autofill offers and rewards notification to promo code offers";
+const char kAutofillEnableOfferNotificationForPromoCodesDescription[] =
+    "When enabled, a notification will be displayed on page navigation if the "
+    "domain has an eligible merchant promo code offer or reward.";
+
 const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =

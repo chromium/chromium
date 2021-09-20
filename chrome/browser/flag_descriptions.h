@@ -181,6 +181,9 @@ extern const char kAutofillEnableOfferNotificationDescription[];
 extern const char kAutofillEnableOfferNotificationCrossTabTrackingName[];
 extern const char kAutofillEnableOfferNotificationCrossTabTrackingDescription[];
 
+extern const char kAutofillEnableOfferNotificationForPromoCodesName[];
+extern const char kAutofillEnableOfferNotificationForPromoCodesDescription[];
+
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
