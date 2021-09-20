@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -129,10 +130,12 @@ class MODULES_EXPORT MediaDevices final
 #if !defined(OS_ANDROID)
   // Manage the window of opportunity that occurs immediately after
   // display-capture starts. The application can call MediaStreamTrack.focus()
-  // on the microtask where the Promise<MediaStream> was resolved.
-  void EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
-      MediaStream* media_stream);
-  void CloseFocusWindowOfOpportunity(MediaStream* media_stream);
+  // on the microtask where the Promise<MediaStream> was resolved; later calls
+  // raise an exception.
+  // |id| identifies the source, and therefore the track, on the browser-side.
+  void EnqueueMicrotaskToCloseFocusWindowOfOpportunity(const String&,
+                                                       MediaStreamTrack*);
+  void CloseFocusWindowOfOpportunity(const String&, MediaStreamTrack*);
 #endif
 
   bool stopped_;

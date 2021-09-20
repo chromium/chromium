@@ -57,19 +57,33 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
  public:
   PromiseResolverCallbacks(
       ScriptPromiseResolver* resolver,
-      base::OnceCallback<void(MediaStream*)> on_success_follow_up)
+      base::OnceCallback<void(const String&, MediaStreamTrack*)>
+          on_success_follow_up)
       : resolver_(resolver),
         on_success_follow_up_(std::move(on_success_follow_up)) {}
   ~PromiseResolverCallbacks() override = default;
 
   void OnSuccess(ScriptWrappable* callback_this_value,
                  MediaStream* stream) override {
+    DCHECK(stream);
+
+    MediaStreamTrack* video_track = nullptr;
+
+    if (on_success_follow_up_) {
+      // Only getDisplayMedia() calls set |on_success_follow_up_|.
+      // Successful invocations of getDisplayMedia() always have exactly
+      // one video track.
+      MediaStreamTrackVector video_tracks = stream->getVideoTracks();
+      DCHECK_EQ(video_tracks.size(), 1u);
+      video_track = video_tracks[0];
+    }
+
     // Resolve Promise<MediaStream> on a microtask.
     resolver_->Resolve(stream);
 
     // Enqueue the follow-up microtask, if any is intended.
-    if (on_success_follow_up_) {
-      std::move(on_success_follow_up_).Run(stream);
+    if (on_success_follow_up_ && video_track) {
+      std::move(on_success_follow_up_).Run(stream->id(), video_track);
     }
   }
   void OnError(ScriptWrappable* callback_this_value,
@@ -84,7 +98,8 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
 
  private:
   Member<ScriptPromiseResolver> resolver_;
-  base::OnceCallback<void(MediaStream*)> on_success_follow_up_;
+  base::OnceCallback<void(const String&, MediaStreamTrack*)>
+      on_success_follow_up_;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -166,11 +181,14 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
-  base::OnceCallback<void(MediaStream*)> on_success_follow_up;
+  base::OnceCallback<void(const String&, MediaStreamTrack*)>
+      on_success_follow_up;
 #if !defined(OS_ANDROID)
-  on_success_follow_up =
-      WTF::Bind(&MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
-                WrapWeakPersistent(this));
+  if (media_type == UserMediaRequest::MediaType::kDisplayMedia) {
+    on_success_follow_up = WTF::Bind(
+        &MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
+        WrapWeakPersistent(this));
+  }
 #endif
 
   auto* callbacks = MakeGarbageCollected<PromiseResolverCallbacks>(
@@ -565,14 +583,16 @@ void MediaDevices::Trace(Visitor* visitor) const {
 
 #if !defined(OS_ANDROID)
 void MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
-    MediaStream* media_stream) {
+    const String& id,
+    MediaStreamTrack* track) {
   Microtask::EnqueueMicrotask(
       WTF::Bind(&MediaDevices::CloseFocusWindowOfOpportunity,
-                WrapWeakPersistent(this), WrapWeakPersistent(media_stream)));
+                WrapWeakPersistent(this), id, WrapWeakPersistent(track)));
 }
 
-void MediaDevices::CloseFocusWindowOfOpportunity(MediaStream* media_stream) {
-  if (!media_stream) {
+void MediaDevices::CloseFocusWindowOfOpportunity(const String& id,
+                                                 MediaStreamTrack* track) {
+  if (!track) {
     return;
   }
 
@@ -586,8 +606,7 @@ void MediaDevices::CloseFocusWindowOfOpportunity(MediaStream* media_stream) {
     return;
   }
 
-  GetDispatcherHost(window->GetFrame())
-      ->CloseFocusWindowOfOpportunity(media_stream->id());
+  GetDispatcherHost(window->GetFrame())->CloseFocusWindowOfOpportunity(id);
 }
 #endif
 
