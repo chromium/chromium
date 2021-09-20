@@ -651,21 +651,6 @@
             ]
         }
     ],
-    "AndroidThemeRefactor": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210714",
-                    "enable_features": [
-                        "ThemeRefactorAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "AppListLaunchRecorder": [
         {
             "platforms": [
