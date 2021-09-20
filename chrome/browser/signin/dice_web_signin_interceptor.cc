@@ -30,6 +30,7 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -356,26 +357,20 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
     const AccountInfo& intercepted_account_info) const {
   DCHECK(intercepted_account_info.IsValid());
 
+  if (!signin_util::ProfileSeparationEnforcedByPolicy(profile_))
+    return false;
+  if (new_account_interception_)
+    return intercepted_account_info.IsManaged();
+
   CoreAccountInfo primary_core_account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   // In case of re-auth, do not show the enterprise separation dialog if the
   // user already consented to enterprise management.
   if (!new_account_interception_ && primary_core_account_info.account_id ==
                                         intercepted_account_info.account_id) {
-    return base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
-           !chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+    return !chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
   }
 
-  std::string account_restriction =
-      profile_->GetPrefs()->GetString(prefs::kManagedAccountsSigninRestriction);
-  if ((!account_restriction.empty() &&
-       profile_->GetPrefs()->GetBoolean(
-           prefs::kManagedAccountsSigninRestrictionScopeMachine)) ||
-      account_restriction == "primary_account_strict") {
-    return intercepted_account_info.IsManaged();
-  }
-
-  // TODO(crbug/1163117) Look for the policy value for the intercepted account.
   return false;
 }
 
@@ -641,6 +636,8 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
         signin_metrics::SourceForRefreshTokenOperation::
             kDiceTurnOnSyncHelper_Abort);
   }
+  signin_util::RecordEnterpriseProfileCreationUserChoice(
+      profile_, create == SigninInterceptionResult::kAccepted);
 }
 
 void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
