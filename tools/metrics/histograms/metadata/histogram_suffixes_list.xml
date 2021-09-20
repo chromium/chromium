@@ -17444,7 +17444,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="ABORTED" label="When configuration gets aborted."/>
   <suffix name="OK" label="When configuration is successful"/>
   <suffix name="UNRECOVERABLE_ERROR"
-      label="When configuration encounters an unrecoverable error"/>
+      label="When configuration encounters an unrecoverable error">
+    <obsolete>
+      Removed 06/2020, no longer used.
+    </obsolete>
+  </suffix>
   <affected-histogram name="Sync.ConfigureTime_Initial"/>
   <affected-histogram name="Sync.ConfigureTime_Subsequent"/>
 </histogram_suffixes>
