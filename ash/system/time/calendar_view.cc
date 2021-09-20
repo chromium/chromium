@@ -67,6 +67,7 @@ class CalendarLabel : public views::Label {
  public:
   explicit CalendarLabel(const std::u16string& text) : views::Label(text) {
     views::Label::SetEnabledColor(calendar_utils::GetPrimaryTextColor());
+    views::Label::SetAutoColorReadabilityEnabled(false);
   }
   CalendarLabel(const CalendarLabel&) = delete;
   CalendarLabel& operator=(const CalendarLabel&) = delete;
@@ -111,6 +112,77 @@ class MonthHeaderView : public views::View {
 
 }  // namespace
 
+// The label for each month.
+class CalendarView::MonthYearHeaderView : public views::View {
+ public:
+  MonthYearHeaderView(LabelType type,
+                      CalendarViewController* calendar_view_controller)
+      : month_label_(AddChildView(std::make_unique<views::Label>())) {
+    switch (type) {
+      case PREVIOUS:
+        date_ = calendar_view_controller->GetPreviousMonthFirstDay();
+        month_name_ = calendar_view_controller->GetPreviousMonthName();
+        break;
+      case CURRENT:
+        date_ = calendar_view_controller->GetOnScreenMonthFirstDay();
+        month_name_ = calendar_view_controller->GetOnScreenMonthName();
+        break;
+      case NEXT:
+        date_ = calendar_view_controller->GetNextMonthFirstDay();
+        month_name_ = calendar_view_controller->GetNextMonthName();
+        break;
+    }
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal));
+
+    month_label_->SetText(month_name_);
+    SetupLabel(month_label_);
+    month_label_->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets(kLabelVerticalPadding, 0)));
+
+    if (calendar_utils::GetExploded(date_).year !=
+        calendar_utils::GetExploded(base::Time::Now()).year) {
+      year_label_ = AddChildView(std::make_unique<views::Label>());
+      year_label_->SetText(base::UTF8ToUTF16(
+          base::NumberToString(calendar_utils::GetExploded(date_).year)));
+      SetupLabel(year_label_);
+      year_label_->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets(kLabelVerticalPadding, kLabelTextInBetweenPadding)));
+    }
+  }
+  MonthYearHeaderView(const MonthYearHeaderView&) = delete;
+  MonthYearHeaderView& operator=(const MonthYearHeaderView&) = delete;
+  ~MonthYearHeaderView() override = default;
+
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+
+    month_label_->SetEnabledColor(calendar_utils::GetPrimaryTextColor());
+    if (year_label_)
+      year_label_->SetEnabledColor(calendar_utils::GetSecondaryTextColor());
+  }
+
+  void SetupLabel(views::Label* label) {
+    label->SetTextContext(CONTEXT_CALENDAR_LABEL);
+    label->SetAutoColorReadabilityEnabled(false);
+    label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  }
+
+ private:
+  // This `date_`'s month and year is used to create this view.
+  base::Time date_;
+
+  // The name of the `date_` month.
+  std::u16string month_name_;
+
+  // The month label in the view.
+  views::Label* const month_label_ = nullptr;
+
+  // The year label in the view.
+  views::Label* year_label_ = nullptr;
+};
+
 CalendarView::CalendarView(DetailedViewDelegate* delegate,
                            UnifiedSystemTrayController* controller,
                            CalendarViewController* calendar_view_controller)
@@ -123,6 +195,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   header_ = TrayPopupUtils::CreateDefaultLabel();
   header_->SetText(calendar_view_controller_->GetOnScreenMonthName());
   header_->SetTextContext(CONTEXT_CALENDAR_LABEL);
+  header_->SetAutoColorReadabilityEnabled(false);
   header_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
 
   header_year_ = TrayPopupUtils::CreateDefaultLabel();
@@ -130,9 +203,10 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
       calendar_utils::GetExploded(
           calendar_view_controller_->GetOnScreenMonthFirstDay())
           .year)));
-  header_year_->SetBorder(
-      views::CreateEmptyBorder(0, kLabelTextInBetweenPadding, 0, 0));
+  header_year_->SetBorder(views::CreateEmptyBorder(
+      0, kLabelTextInBetweenPadding, 0, kLabelTextInBetweenPadding));
   header_year_->SetTextContext(CONTEXT_CALENDAR_LABEL);
+  header_->SetAutoColorReadabilityEnabled(false);
   header_year_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
 
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
@@ -213,17 +287,15 @@ views::Button* CalendarView::CreateInfoButton(
 }
 
 void CalendarView::SetMonthViews() {
-  previous_label_ =
-      AddLabelWithId(calendar_view_controller_->GetPreviousMonthName());
+  previous_label_ = AddLabelWithId(LabelType::PREVIOUS);
   previous_month_ =
       AddMonth(calendar_view_controller_->GetPreviousMonthFirstDay());
 
-  current_label_ =
-      AddLabelWithId(calendar_view_controller_->GetOnScreenMonthName());
+  current_label_ = AddLabelWithId(LabelType::CURRENT);
   current_month_ =
       AddMonth(calendar_view_controller_->GetOnScreenMonthFirstDay());
 
-  next_label_ = AddLabelWithId(calendar_view_controller_->GetNextMonthName());
+  next_label_ = AddLabelWithId(LabelType::NEXT);
   next_month_ = AddMonth(calendar_view_controller_->GetNextMonthFirstDay());
 }
 
@@ -299,13 +371,9 @@ void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
   ScrollToToday();
 }
 
-views::Label* CalendarView::AddLabelWithId(std::u16string label_string,
-                                           bool add_at_front) {
-  auto label = std::make_unique<CalendarLabel>(label_string);
-  label->SetBorder(views::CreateEmptyBorder(kLabelVerticalPadding, 0,
-                                            kLabelVerticalPadding, 0));
-  label->SetTextContext(CONTEXT_CALENDAR_LABEL);
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+views::View* CalendarView::AddLabelWithId(LabelType type, bool add_at_front) {
+  auto label =
+      std::make_unique<MonthYearHeaderView>(type, calendar_view_controller_);
   if (add_at_front)
     return content_view_->AddChildViewAt(std::move(label), 0);
   return content_view_->AddChildView(std::move(label));
@@ -365,9 +433,8 @@ void CalendarView::ScrollUpOneMonth() {
   previous_month_ =
       AddMonth(calendar_view_controller_->GetPreviousMonthFirstDay(),
                /*add_at_front=*/true);
-  previous_label_ =
-      AddLabelWithId(calendar_view_controller_->GetPreviousMonthName(),
-                     /*add_at_front=*/true);
+  previous_label_ = AddLabelWithId(LabelType::PREVIOUS,
+                                   /*add_at_front=*/true);
 
   // After adding a new month in the content, the current position stays the
   // same but below the added view the each view's position has changed to
@@ -399,7 +466,7 @@ void CalendarView::ScrollDownOneMonth() {
   current_label_ = next_label_;
   current_month_ = next_month_;
 
-  next_label_ = AddLabelWithId(calendar_view_controller_->GetNextMonthName());
+  next_label_ = AddLabelWithId(LabelType::NEXT);
   next_month_ = AddMonth(calendar_view_controller_->GetNextMonthFirstDay());
 
   // Same as adding previous views. We need to remove the height of the

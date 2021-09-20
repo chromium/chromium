@@ -56,9 +56,37 @@ class CalendarViewTest : public AshTestBase {
   CalendarView* calendar_view() { return calendar_view_.get(); }
   views::ScrollView* scroll_view_() { return calendar_view_->scroll_view_; }
 
-  views::Label* previous_label() { return calendar_view_->previous_label_; }
-  views::Label* current_label() { return calendar_view_->current_label_; }
-  views::Label* next_label() { return calendar_view_->next_label_; }
+  views::View* previous_label() { return calendar_view_->previous_label_; }
+  views::View* current_label() { return calendar_view_->current_label_; }
+  views::View* next_label() { return calendar_view_->next_label_; }
+
+  std::u16string GetPreviousLabelText() {
+    std::u16string month_text =
+        static_cast<views::Label*>(previous_label()->children()[0])->GetText();
+    if (previous_label()->children().size() > 1) {
+      month_text += static_cast<views::Label*>(previous_label()->children()[1])
+                        ->GetText();
+    }
+    return month_text;
+  }
+  std::u16string GetCurrentLabelText() {
+    std::u16string month_text =
+        static_cast<views::Label*>(current_label()->children()[0])->GetText();
+    if (current_label()->children().size() > 1) {
+      month_text +=
+          static_cast<views::Label*>(current_label()->children()[1])->GetText();
+    }
+    return month_text;
+  }
+  std::u16string GetNextLabelText() {
+    std::u16string month_text =
+        static_cast<views::Label*>(next_label()->children()[0])->GetText();
+    if (next_label()->children().size() > 1) {
+      month_text +=
+          static_cast<views::Label*>(next_label()->children()[1])->GetText();
+    }
+    return month_text;
+  }
   CalendarMonthView* previous_month() {
     return calendar_view_->previous_month_;
   }
@@ -94,9 +122,9 @@ TEST_F(CalendarViewTest, Init) {
   ASSERT_TRUE(base::Time::FromString("24 Aug 2021 10:00 GMT", &date));
   CreateCalendarView(date);
 
-  EXPECT_EQ(u"July", previous_label()->GetText());
-  EXPECT_EQ(u"August", current_label()->GetText());
-  EXPECT_EQ(u"September", next_label()->GetText());
+  EXPECT_EQ(u"July", GetPreviousLabelText());
+  EXPECT_EQ(u"August", GetCurrentLabelText());
+  EXPECT_EQ(u"September", GetNextLabelText());
   EXPECT_EQ(u"August", header_()->GetText());
   EXPECT_EQ(u"2021", header_year_()->GetText());
 
@@ -115,9 +143,9 @@ TEST_F(CalendarViewTest, Init) {
   ASSERT_TRUE(base::Time::FromString("24 Dec 2021 10:00 GMT", &dec_date));
   CreateCalendarView(dec_date);
 
-  EXPECT_EQ(u"November", previous_label()->GetText());
-  EXPECT_EQ(u"December", current_label()->GetText());
-  EXPECT_EQ(u"January", next_label()->GetText());
+  EXPECT_EQ(u"November", GetPreviousLabelText());
+  EXPECT_EQ(u"December", GetCurrentLabelText());
+  EXPECT_EQ(u"January2022", GetNextLabelText());
   EXPECT_EQ(u"December", header_()->GetText());
   EXPECT_EQ(u"2021", header_year_()->GetText());
 
@@ -138,9 +166,9 @@ TEST_F(CalendarViewTest, Scroll) {
 
   CreateCalendarView(date);
 
-  EXPECT_EQ(u"September", previous_label()->GetText());
-  EXPECT_EQ(u"October", current_label()->GetText());
-  EXPECT_EQ(u"November", next_label()->GetText());
+  EXPECT_EQ(u"September", GetPreviousLabelText());
+  EXPECT_EQ(u"October", GetCurrentLabelText());
+  EXPECT_EQ(u"November", GetNextLabelText());
   EXPECT_EQ(u"October", header_()->GetText());
   EXPECT_EQ(u"2021", header_year_()->GetText());
 
@@ -149,25 +177,25 @@ TEST_F(CalendarViewTest, Scroll) {
   // the target position.
   scroll_view_()->ScrollToPosition(scroll_view_()->vertical_scroll_bar(), 400);
 
-  EXPECT_EQ(u"October", previous_label()->GetText());
-  EXPECT_EQ(u"November", current_label()->GetText());
-  EXPECT_EQ(u"December", next_label()->GetText());
+  EXPECT_EQ(u"October", GetPreviousLabelText());
+  EXPECT_EQ(u"November", GetCurrentLabelText());
+  EXPECT_EQ(u"December", GetNextLabelText());
   EXPECT_EQ(u"November", header_()->GetText());
   EXPECT_EQ(u"2021", header_year_()->GetText());
 
   scroll_view_()->ScrollToPosition(scroll_view_()->vertical_scroll_bar(), 400);
 
-  EXPECT_EQ(u"November", previous_label()->GetText());
-  EXPECT_EQ(u"December", current_label()->GetText());
-  EXPECT_EQ(u"January", next_label()->GetText());
+  EXPECT_EQ(u"November", GetPreviousLabelText());
+  EXPECT_EQ(u"December", GetCurrentLabelText());
+  EXPECT_EQ(u"January2022", GetNextLabelText());
   EXPECT_EQ(u"December", header_()->GetText());
   EXPECT_EQ(u"2021", header_year_()->GetText());
 
   scroll_view_()->ScrollToPosition(scroll_view_()->vertical_scroll_bar(), 400);
 
-  EXPECT_EQ(u"December", previous_label()->GetText());
-  EXPECT_EQ(u"January", current_label()->GetText());
-  EXPECT_EQ(u"February", next_label()->GetText());
+  EXPECT_EQ(u"December", GetPreviousLabelText());
+  EXPECT_EQ(u"January2022", GetCurrentLabelText());
+  EXPECT_EQ(u"February2022", GetNextLabelText());
   EXPECT_EQ(u"January", header_()->GetText());
   EXPECT_EQ(u"2022", header_year_()->GetText());
 }
@@ -185,58 +213,58 @@ TEST_F(CalendarViewTest, ButtonFunctions) {
 
   CreateCalendarView(date);
 
-  EXPECT_EQ(u"September", previous_label()->GetText());
-  EXPECT_EQ(u"October", current_label()->GetText());
-  EXPECT_EQ(u"November", next_label()->GetText());
+  EXPECT_EQ(u"September", GetPreviousLabelText());
+  EXPECT_EQ(u"October", GetCurrentLabelText());
+  EXPECT_EQ(u"November", GetNextLabelText());
   EXPECT_EQ(u"October", header_()->GetText());
   EXPECT_EQ(u"2021", header_year_()->GetText());
 
   ScrollDownOneMonth();
 
-  EXPECT_EQ(u"October", previous_label()->GetText());
-  EXPECT_EQ(u"November", current_label()->GetText());
-  EXPECT_EQ(u"December", next_label()->GetText());
+  EXPECT_EQ(u"October", GetPreviousLabelText());
+  EXPECT_EQ(u"November", GetCurrentLabelText());
+  EXPECT_EQ(u"December", GetNextLabelText());
   EXPECT_EQ(u"November", header_()->GetText());
   EXPECT_EQ(u"2021", header_year_()->GetText());
 
   ScrollDownOneMonth();
 
-  EXPECT_EQ(u"November", previous_label()->GetText());
-  EXPECT_EQ(u"December", current_label()->GetText());
-  EXPECT_EQ(u"January", next_label()->GetText());
+  EXPECT_EQ(u"November", GetPreviousLabelText());
+  EXPECT_EQ(u"December", GetCurrentLabelText());
+  EXPECT_EQ(u"January2022", GetNextLabelText());
   EXPECT_EQ(u"December", header_()->GetText());
   EXPECT_EQ(u"2021", header_year_()->GetText());
 
   ScrollDownOneMonth();
 
-  EXPECT_EQ(u"December", previous_label()->GetText());
-  EXPECT_EQ(u"January", current_label()->GetText());
-  EXPECT_EQ(u"February", next_label()->GetText());
+  EXPECT_EQ(u"December", GetPreviousLabelText());
+  EXPECT_EQ(u"January2022", GetCurrentLabelText());
+  EXPECT_EQ(u"February2022", GetNextLabelText());
   EXPECT_EQ(u"January", header_()->GetText());
   EXPECT_EQ(u"2022", header_year_()->GetText());
 
   ScrollUpOneMonth();
 
-  EXPECT_EQ(u"November", previous_label()->GetText());
-  EXPECT_EQ(u"December", current_label()->GetText());
-  EXPECT_EQ(u"January", next_label()->GetText());
+  EXPECT_EQ(u"November", GetPreviousLabelText());
+  EXPECT_EQ(u"December", GetCurrentLabelText());
+  EXPECT_EQ(u"January2022", GetNextLabelText());
   EXPECT_EQ(u"December", header_()->GetText());
   EXPECT_EQ(u"2021", header_year_()->GetText());
 
   ScrollDownOneMonth();
 
-  EXPECT_EQ(u"December", previous_label()->GetText());
-  EXPECT_EQ(u"January", current_label()->GetText());
-  EXPECT_EQ(u"February", next_label()->GetText());
+  EXPECT_EQ(u"December", GetPreviousLabelText());
+  EXPECT_EQ(u"January2022", GetCurrentLabelText());
+  EXPECT_EQ(u"February2022", GetNextLabelText());
   EXPECT_EQ(u"January", header_()->GetText());
   EXPECT_EQ(u"2022", header_year_()->GetText());
 
   // Goes back to the landing view.
   ResetToToday();
 
-  EXPECT_EQ(u"September", previous_label()->GetText());
-  EXPECT_EQ(u"October", current_label()->GetText());
-  EXPECT_EQ(u"November", next_label()->GetText());
+  EXPECT_EQ(u"September", GetPreviousLabelText());
+  EXPECT_EQ(u"October", GetCurrentLabelText());
+  EXPECT_EQ(u"November", GetNextLabelText());
   EXPECT_EQ(u"October", header_()->GetText());
   EXPECT_EQ(u"2021", header_year_()->GetText());
 }
