@@ -157,6 +157,20 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    public void testFragmentWhenAddingChildAccountDynamically() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+        onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+
+        mAccountManagerTestRule.addAccount(
+                CHILD_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+
+        checkFragmentWithChildAccount();
+    }
+
+    @Test
+    @MediumTest
     public void testFragmentWithDefaultAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
@@ -198,23 +212,14 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    public void testFragmentWithSupervisedAccount() {
+    public void testFragmentWithChildAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(
                 CHILD_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
 
         launchActivityWithFragment();
 
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        Assert.assertFalse(
-                mFragment.getView().findViewById(R.id.signin_fre_selected_account).isEnabled());
-        onView(withText(CHILD_EMAIL)).check(matches(isDisplayed()));
-        onView(withText(CHILD_FULL_NAME)).check(matches(isDisplayed()));
-        final String continueAsText =
-                mFragment.getString(R.string.signin_promo_continue_as, CHILD_FULL_NAME);
-        onView(withText(continueAsText)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(not(isDisplayed())));
+        checkFragmentWithChildAccount();
     }
 
     @Test
@@ -299,7 +304,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    public void testContinueButtonWithSupervisedAccount() {
+    public void testContinueButtonWithChildAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(
                 CHILD_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
@@ -419,6 +424,22 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.signin_fre_footer)).check(matches(not(isDisplayed())));
         verify(mPolicyLoadListenerMock).onAvailable(notNull());
+    }
+
+    private void checkFragmentWithChildAccount() {
+        CriteriaHelper.pollUiThread(
+                mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
+        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
+        Assert.assertFalse(
+                mFragment.getView().findViewById(R.id.signin_fre_selected_account).isEnabled());
+        onView(withText(CHILD_EMAIL)).check(matches(isDisplayed()));
+        onView(withText(CHILD_FULL_NAME)).check(matches(isDisplayed()));
+        final String continueAsText =
+                mFragment.getString(R.string.signin_promo_continue_as, CHILD_FULL_NAME);
+        onView(withText(continueAsText)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(not(isDisplayed())));
     }
 
     private void launchActivityWithFragment() {
