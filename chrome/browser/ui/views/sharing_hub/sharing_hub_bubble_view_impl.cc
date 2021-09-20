@@ -88,6 +88,14 @@ void SharingHubBubbleViewImpl::OnPaint(gfx::Canvas* canvas) {
   views::BubbleDialogDelegateView::OnPaint(canvas);
 }
 
+void SharingHubBubbleViewImpl::OnThemeChanged() {
+  LocationBarBubbleDelegateView::OnThemeChanged();
+  if (GetWidget() && GetNativeTheme()) {
+    set_color(GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_MenuBackgroundColor));
+  }
+}
+
 void SharingHubBubbleViewImpl::Show(DisplayReason reason) {
   ShowForReason(reason);
 }
@@ -116,6 +124,7 @@ void SharingHubBubbleViewImpl::Init() {
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->ClipHeightTo(0, kActionButtonHeight * kMaximumButtons);
+  scroll_view_->SetBackgroundThemeColorId(ui::kColorMenuBackground);
 
   PopulateScrollView(controller_->GetFirstPartyActions(),
                      controller_->GetThirdPartyActions());

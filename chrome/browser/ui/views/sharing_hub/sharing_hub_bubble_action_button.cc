@@ -63,20 +63,9 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
       action_name_for_metrics_(action_info.feature_name_for_metrics) {
   SetEnabled(true);
 
-  // This class wants to pretend to be a menu item visually, so it does its own
-  // hover effects by overriding LabelButton::UpdateBackgroundColor (below). It
-  // isn't sufficient to simply swap out the ink drop color - menu backgrounds
-  // are drawn below the text/icon but the ink drop would be drawn above them,
-  // which looks wrong.
-  // TODO(ellyjones): This removes ~all the benefit of being a HoverButton -
-  // should this class instead subclass LabelButton?
-
-  // TODO(crbug.com/1248181): Reverted to restore keyboard navigation showing
-  // background color highlights, but results in high-contrast mode using
-  // normal colors.
-  // views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
-
   title()->SetTextContext(views::style::CONTEXT_MENU);
+  SetBackground(views::CreateThemedSolidBackground(
+      this, ui::NativeTheme::kColorId_MenuBackgroundColor));
 }
 
 SharingHubBubbleActionButton::~SharingHubBubbleActionButton() = default;
