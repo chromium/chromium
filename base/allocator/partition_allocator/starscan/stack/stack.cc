@@ -44,7 +44,7 @@ void* GetStackTop() {
 #endif
 }
 
-#elif defined(OS_MAC)
+#elif defined(OS_APPLE)
 
 void* GetStackTop() {
   return pthread_get_stackaddr_np(pthread_self());

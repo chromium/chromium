@@ -5,6 +5,10 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
+if (is_ios) {
+  import("//build/config/ios/ios_sdk.gni")
+}
+
 # Sanitizers replace the allocator, don't use our own.
 _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 
@@ -53,7 +57,8 @@ declare_args() {
   # not, and redesign or remove the flag accordingly.  We may want to assert a
   # possible conflict between |use_allocator = "partition"| and
   # |use_partition_alloc = true| rather than prioritizing use_partition_alloc.
-  use_partition_alloc = !is_ios  # Never use PartitionAlloc on iOS.
+  # TODO(crbug.com/1250788): Enable use_partition_alloc on iOS device builds.
+  use_partition_alloc = !is_ios || target_environment == "simulator"
 
   # Set use_backup_ref_ptr true to use BackupRefPtr (BRP) as the implementation
   # of raw_ptr<T>, and enable PartitionAlloc support for it. The _fake option
