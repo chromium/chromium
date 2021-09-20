@@ -442,10 +442,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   // See crbug/1013732 for details.
   if (app_list::AppListSyncableServiceFactory::GetForProfile(profile_) &&
       !chromeos::switches::IsTabletFormFactor()) {
-    // TODO(https://crbug.com/1227417): Remove SplitSettingsSync after migrating
-    // the affected tests.
-    if (chromeos::features::IsSplitSettingsSyncEnabled() ||
-        chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+    if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
       // Runs in sync transport-mode and full-sync mode.
       controllers.push_back(
           std::make_unique<OsSyncableServiceModelTypeController>(
@@ -483,8 +480,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         GetSyncableServiceForType(syncer::ARC_PACKAGE), dump_stack,
         sync_service, profile_));
   }
-  if (chromeos::features::IsSplitSettingsSyncEnabled() ||
-      chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     if (!disabled_types.Has(syncer::OS_PREFERENCES)) {
       controllers.push_back(
           std::make_unique<OsSyncableServiceModelTypeController>(
@@ -538,7 +534,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
           profile_->GetPrefs(), sync_service));
     }
   } else {
-    // SplitSettingsSync and SyncSettingsCategorization are disabled.
+    // SyncSettingsCategorization is disabled.
     if (!disabled_types.Has(syncer::WIFI_CONFIGURATIONS) &&
         base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
         WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
