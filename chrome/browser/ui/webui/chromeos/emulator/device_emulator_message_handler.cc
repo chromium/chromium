@@ -633,9 +633,7 @@ void DeviceEmulatorMessageHandler::ConnectToBluetoothDevice(
   }
   if (!device->IsPaired() && device->IsPairable()) {
     // Show pairing dialog for the unpaired device.
-    chromeos::BluetoothPairingDialog::ShowDialog(
-        device->GetAddress(), device->GetNameForDisplay(), device->IsPaired(),
-        device->IsConnected());
+    BluetoothPairingDialog::ShowDialog(device->GetAddress());
   } else {
     // Attempt to connect to the device.
     device->Connect(nullptr, base::DoNothing());

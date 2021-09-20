@@ -8,29 +8,34 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace chromeos {
 
 class BluetoothPairingDialog : public SystemWebDialogDelegate {
  public:
-  // Shows a bluetooth pairing dialog. The dialog is returned for testing.
+  // Show the Bluetooth pairing dialog. When provided, |device_address| is the
+  // unique device address that the dialog should attempt to pair with and
+  // should be in the form "XX:XX:XX:XX:XX:XX". When |device_address| is not
+  // provided the dialog will show the device list instead. The returned object
+  // manages its own lifetime, for more information see
+  // chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h.
   static SystemWebDialogDelegate* ShowDialog(
-      const std::string& address,
-      const std::u16string& name_for_display,
-      bool paired,
-      bool connected);
+      absl::optional<base::StringPiece> device_address = absl::nullopt);
 
- protected:
-  BluetoothPairingDialog(const std::string& address,
-                         const std::u16string& name_for_display,
-                         bool paired,
-                         bool connected);
   ~BluetoothPairingDialog() override;
 
+ protected:
+  BluetoothPairingDialog(
+      const std::string& dialog_id,
+      absl::optional<base::StringPiece> canonical_device_address);
+
+ private:
   // SystemWebDialogDelegate
   const std::string& Id() override;
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
@@ -39,14 +44,16 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   void GetDialogSize(gfx::Size* size) const override;
   std::string GetDialogArgs() const override;
 
- private:
-  std::string address_;
+  // The canonical Bluetooth address of a device when pairing a specific device,
+  // otherwise |kChromeUIBluetoothPairingURL|.
+  std::string dialog_id_;
+
   base::DictionaryValue device_data_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothPairingDialog);
 };
 
-// A WebUI to host bluetooth device pairing web ui.
+// A WebUI to host the Bluetooth device pairing web UI.
 class BluetoothPairingDialogUI : public ui::MojoWebDialogUI {
  public:
   explicit BluetoothPairingDialogUI(content::WebUI* web_ui);

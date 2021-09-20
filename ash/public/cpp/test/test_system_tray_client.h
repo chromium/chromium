@@ -8,6 +8,8 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -24,10 +26,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   // SystemTrayClient:
   void ShowSettings(int64_t display_id) override;
   void ShowBluetoothSettings() override;
-  void ShowBluetoothPairingDialog(const std::string& address,
-                                  const std::u16string& name_for_display,
-                                  bool paired,
-                                  bool connected) override;
+  void ShowBluetoothPairingDialog(
+      absl::optional<base::StringPiece> device_address) override;
   void ShowDateSettings() override;
   void ShowSetTimeDialog() override;
   void ShowDisplaySettings() override;

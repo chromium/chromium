@@ -286,8 +286,7 @@ void TrayBluetoothHelperLegacy::ConnectToBluetoothDevice(
 
   // Show pairing dialog for the unpaired device; this kicks off pairing.
   Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
-      device->GetAddress(), device->GetNameForDisplay(), device->IsPaired(),
-      device->IsConnected());
+      device->GetAddress());
 }
 
 BluetoothSystem::State TrayBluetoothHelperLegacy::GetBluetoothState() {

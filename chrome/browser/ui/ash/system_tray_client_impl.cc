@@ -301,12 +301,8 @@ void SystemTrayClientImpl::ShowBluetoothSettings() {
 }
 
 void SystemTrayClientImpl::ShowBluetoothPairingDialog(
-    const std::string& address,
-    const std::u16string& name_for_display,
-    bool paired,
-    bool connected) {
-  if (chromeos::BluetoothPairingDialog::ShowDialog(address, name_for_display,
-                                                   paired, connected)) {
+    absl::optional<base::StringPiece> device_address) {
+  if (chromeos::BluetoothPairingDialog::ShowDialog(device_address)) {
     base::RecordAction(
         base::UserMetricsAction("StatusArea_Bluetooth_Connect_Unknown"));
   }
