@@ -2702,6 +2702,21 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_FRE_FOOTER" desc="Text for asking the user to allow sending diagnostic reports">
         To help improve the app, Chrome sends diagnostic data to Google. <ph name="BEGIN_LINK">&lt;LINK&gt;</ph>Change<ph name="END_LINK">&lt;/LINK&gt;</ph>
       </message>
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_TITLE" desc="Title for the FRE footer dialog">
+        Make Chrome better
+      </message>
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_FIRST_SECTION_HEADER" desc="Header for the first section in FRE uma dialog">
+        What you get
+      </message>
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_FIRST_SECTION_BODY" desc="Body of the first section in FRE uma dialog">
+        New features and improved performance
+      </message>
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_HEADER" desc="Header for the second section in FRE uma dialog">
+        What you share with Google
+      </message>
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_BODY" desc="Body of the second section in FRE uma dialog">
+        Info about your Chrome usage that can\u2019t be tied to you\n\nRelevant data from rare Chrome crashes, which may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs you visit
+      </message>
 
       <!-- Account Signin Strings -->
       <message name="IDS_SIGNIN_ADD_ACCOUNT" desc="Text for adding another Google Account">

@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
 import org.chromium.chrome.browser.signin.ui.SigninUtils;
+import org.chromium.chrome.browser.signin.ui.fre.FreUMADialogCoordinator;
 import org.chromium.chrome.browser.signin.ui.frebottomgroup.FREBottomGroupCoordinator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -44,6 +45,7 @@ public class SigninFirstRunFragment
     private ModalDialogManager mModalDialogManager;
     // TODO(crbug/1186595): Rename the class FREBottomGroupCoordinator to FreBottomGroupCoordinator
     private @Nullable FREBottomGroupCoordinator mFREBottomGroupCoordinator;
+    private @Nullable FreUMADialogCoordinator mFreUMADialogCoordinator;
     private boolean mNativeInitialized;
 
     public SigninFirstRunFragment() {}
@@ -64,7 +66,8 @@ public class SigninFirstRunFragment
                 new FREBottomGroupCoordinator(requireContext(), view, mModalDialogManager, this);
         final NoUnderlineClickableSpan footerLinkSpan =
                 new NoUnderlineClickableSpan(getResources(), this::onFooterLinkClicked);
-        SpannableString footerString = SpanApplier.applySpans(getString(R.string.signin_fre_footer),
+        final SpannableString footerString = SpanApplier.applySpans(
+                getString(R.string.signin_fre_footer),
                 new SpanApplier.SpanInfo(FOOTER_LINK_OPEN, FOOTER_LINK_CLOSE, footerLinkSpan));
         TextViewWithClickableSpans footerView = view.findViewById(R.id.signin_fre_footer);
         footerView.setText(footerString);
@@ -139,5 +142,8 @@ public class SigninFirstRunFragment
         }
     }
 
-    private void onFooterLinkClicked(View view) {}
+    private void onFooterLinkClicked(View view) {
+        mFreUMADialogCoordinator =
+                new FreUMADialogCoordinator(requireContext(), mModalDialogManager);
+    }
 }

@@ -25,10 +25,18 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.test.runner.lifecycle.Stage;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
+import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,6 +52,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
@@ -321,6 +330,26 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    public void testFragmentWhenClickingOnFooter() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+
+        onView(withId(R.id.signin_fre_footer)).perform(clickOnClickableSpan());
+
+        onView(withText(R.string.signin_fre_uma_dialog_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_uma_dialog_first_section_header))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_uma_dialog_first_section_body))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_uma_dialog_second_section_header))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_uma_dialog_second_section_body))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.done)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
     public void testFragmentWhenAddingAnotherAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
@@ -452,5 +481,35 @@ public class SigninFirstRunFragmentTest {
         });
         ApplicationTestUtils.waitForActivityState(
                 mChromeActivityTestRule.getActivity(), Stage.RESUMED);
+    }
+
+    private ViewAction clickOnClickableSpan() {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return Matchers.instanceOf(TextView.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "Clicks on the one and only clickable span in the view";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                TextView textView = (TextView) view;
+                Spanned spannedString = (Spanned) textView.getText();
+                ClickableSpan[] spans =
+                        spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
+                if (spans.length == 0) {
+                    throw new NoMatchingViewException.Builder()
+                            .includeViewHierarchy(true)
+                            .withRootView(textView)
+                            .build();
+                }
+                Assert.assertEquals("There should be only one clickable link", 1, spans.length);
+                spans[0].onClick(view);
+            }
+        };
     }
 }

@@ -65,6 +65,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerProperties.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/ExistingAccountRowViewBinder.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/OnClickListenerViewBinder.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/fre/FreUMADialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupCoordinator.java",
     "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupMediator.java",
     "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupProperties.java",
@@ -100,6 +101,7 @@ android_resources("java_resources") {
     "java/res/layout/account_picker_state_signin_in_progress.xml",
     "java/res/layout/account_row.xml",
     "java/res/layout/confirm_import_sync_data.xml",
+    "java/res/layout/fre_uma_dialog.xml",
     "java/res/layout/personalized_signin_promo_view_body.xml",
     "java/res/layout/personalized_signin_promo_view_bookmarks.xml",
     "java/res/layout/personalized_signin_promo_view_header.xml",
@@ -174,6 +176,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerBottomSheetTest.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerDialogTest.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/fre/FreUMADialogRenderTest.java",
   ]
   deps = [
     ":java",
