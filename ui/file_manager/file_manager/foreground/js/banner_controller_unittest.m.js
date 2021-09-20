@@ -369,7 +369,7 @@ export function setUp() {
   });
   const crostini = /** @type {!Crostini} */ ({});
   controller = new BannerController(directoryModel, volumeManager, crostini);
-  controller.disableBannersForTesting();
+  controller.disableBannerLoadingForTesting();
 
   mockDate = mockDateNow();
 

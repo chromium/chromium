@@ -1284,3 +1284,23 @@ test.util.async.isolateBannerForTesting =
   }
   callback(false);
 };
+
+/**
+ * Disable banners from attaching themselves to the DOM.
+ *
+ * @param {Window} contentWindow Window the banner controller exists.
+ * @param {function(boolean)} callback Callback function to be called with a
+ *    boolean indicating success or failure.
+ * @suppress {missingProperties} banners is only defined for foreground
+ *    Window so it isn't visible in the background.
+ */
+test.util.async.disableBannersForTesting = async (contentWindow, callback) => {
+  try {
+    await contentWindow.fileManager.ui_.banners.disableBannersForTesting();
+    callback(true);
+    return;
+  } catch (e) {
+    console.error(`Error disabling banners for testing: ${e}`);
+  }
+  callback(false);
+};

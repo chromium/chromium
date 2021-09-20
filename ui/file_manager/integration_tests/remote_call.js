@@ -803,4 +803,14 @@ export class RemoteCallFilesApp extends RemoteCall {
     chrome.test.assertTrue(await this.callRemoteTestUtil(
         'isolateBannerForTesting', appId, [bannerTagName]));
   }
+
+  /**
+   * Disables banners from attaching to the DOM.
+   * @param {string} appId App window Id
+   */
+  async disableBannersForTesting(appId) {
+    await this.waitFor('isFileManagerLoaded', appId, true);
+    chrome.test.assertTrue(
+        await this.callRemoteTestUtil('disableBannersForTesting', appId, []));
+  }
 }

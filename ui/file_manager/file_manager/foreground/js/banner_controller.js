@@ -169,6 +169,13 @@ export class BannerController extends EventTarget {
      * Whether banners should be loaded or not during for unit tests.
      * @private {boolean}
      */
+    this.disableBannerLoading_ = false;
+
+    /**
+     * Whether banners should be completely disable, useful to remove banners
+     * during integration tests or tast tests.
+     * @private {boolean}
+     */
     this.disableBanners_ = false;
 
     /**
@@ -206,10 +213,14 @@ export class BannerController extends EventTarget {
     this.onDirectorySizeChangedBound_ = async event =>
         this.onDirectorySizeChanged_(event);
 
-    xfm.storage.onChanged.addListener(
-        (changes, areaName) => this.onStorageChanged_(changes, areaName));
-    this.directoryModel_.addEventListener(
-        'directory-changed', event => this.onDirectoryChanged_(event));
+    // Only attach event listeners if the controller is enabled. Used to disable
+    // all banners from being loaded.
+    if (!this.disableBanners_) {
+      xfm.storage.onChanged.addListener(
+          (changes, areaName) => this.onStorageChanged_(changes, areaName));
+      this.directoryModel_.addEventListener(
+          'directory-changed', event => this.onDirectoryChanged_(event));
+    }
   }
 
   /**
@@ -218,7 +229,7 @@ export class BannerController extends EventTarget {
    * @return {Promise<void>}
    */
   async initialize() {
-    if (!this.disableBanners_) {
+    if (!this.disableBannerLoading_) {
       // Banners are initialized in their priority order. The order of the array
       // denotes the priority of the banner, 0th index is highest priority.
       this.setWarningBannersInOrder([LocalDiskLowSpaceBannerTagName]);
@@ -552,11 +563,18 @@ export class BannerController extends EventTarget {
   }
 
   /**
-   * Disable the banners from being loaded for testing. This is used to override
-   * the loading of actual banners to load fake banners in unit tests.
+   * Disable the banners entirely from executing
    */
   disableBannersForTesting() {
     this.disableBanners_ = true;
+  }
+
+  /**
+   * Disable the banners from being loaded for testing. This is used to override
+   * the loading of actual banners to load fake banners in unit tests.
+   */
+  disableBannerLoadingForTesting() {
+    this.disableBannerLoading_ = true;
   }
 
   /**
