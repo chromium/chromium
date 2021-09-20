@@ -37,7 +37,6 @@ import java.util.UUID;
 @Features.EnableFeatures(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)
 @Features.DisableFeatures(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)
 @Batch(Batch.PER_CLASS)
-@Batch.SplitByFeature
 public class DownloadInfoBarControllerTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();

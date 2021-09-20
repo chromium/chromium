@@ -43,7 +43,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Batch.SplitByFeature
 public class PersonalDataManagerTest {
     private static final Bitmap TEST_CARD_ART_IMAGE =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);

@@ -29,16 +29,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Batch {
-    /**
-     * This annotation can be added in addition to @Batch to split batches based on @Features
-     * annotation. This will ensure that native features are configured correctly.
-     *
-     * @deprecated crbug.com/1187705: SplitByFeature is always assumed to be added now.
-     */
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Deprecated
-    public @interface SplitByFeature {}
 
     public String value();
 

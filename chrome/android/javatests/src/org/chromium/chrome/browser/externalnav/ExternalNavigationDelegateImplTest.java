@@ -40,7 +40,6 @@ import org.chromium.url.Origin;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Batch.SplitByFeature
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.DisableFeatures(
         {ChromeFeatureList.AUTOFILL_ASSISTANT, ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})

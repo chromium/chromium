@@ -45,7 +45,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(TranslateAssistContentTest.TRANSLATE_BATCH_NAME)
-@Batch.SplitByFeature
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TranslateIntentTest {
     @ClassRule

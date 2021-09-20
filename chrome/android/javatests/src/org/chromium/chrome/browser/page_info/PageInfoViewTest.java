@@ -108,7 +108,6 @@ import java.util.concurrent.TimeoutException;
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
 @Batch(PER_CLASS)
-@Batch.SplitByFeature
 public class PageInfoViewTest {
     private static final String TAG = "PageInfoViewTest";
 

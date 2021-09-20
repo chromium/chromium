@@ -65,7 +65,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@Batch.SplitByFeature
 public class AttributionIntentIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =

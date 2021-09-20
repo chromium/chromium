@@ -40,7 +40,6 @@ import java.util.List;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Batch.SplitByFeature
 public class BookmarkBridgeTest {
     @Rule
     public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();

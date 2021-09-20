@@ -67,7 +67,6 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(PER_CLASS)
-@Batch.SplitByFeature
 public class PageInfoDiscoverabilityTest {
     @ClassRule
     public static final PermissionTestRule sPermissionTestRule = new PermissionTestRule();

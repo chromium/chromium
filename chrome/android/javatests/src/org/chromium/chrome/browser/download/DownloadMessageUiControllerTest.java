@@ -39,7 +39,6 @@ import java.util.UUID;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)
 @Batch(Batch.PER_CLASS)
-@Batch.SplitByFeature
 public class DownloadMessageUiControllerTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();

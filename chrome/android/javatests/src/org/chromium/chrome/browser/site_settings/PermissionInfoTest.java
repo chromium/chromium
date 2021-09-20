@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Batch.SplitByFeature;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -45,7 +44,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
 @DisableFeatures({ChromeFeatureList.REVERT_DSE_AUTOMATIC_PERMISSIONS})
-@SplitByFeature
 public class PermissionInfoTest {
     private static final String DSE_ORIGIN = "https://www.google.com";
     private static final String OTHER_ORIGIN = "https://www.other.com";
