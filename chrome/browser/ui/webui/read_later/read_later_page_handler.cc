@@ -102,7 +102,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
     switch (command_id) {
       case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: {
         content::OpenURLParams params(url_, content::Referrer(),
-                                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                      WindowOpenDisposition::NEW_BACKGROUND_TAB,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
         browser_->OpenURL(params);
         break;
