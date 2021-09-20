@@ -21,6 +21,8 @@ namespace chrome {
 
 const char kChromeUIAboutHost[] = "about";
 const char kChromeUIAboutURL[] = "chrome://about/";
+const char kChromeUIActivateSafetyCheckSettingsURL[] =
+    "chrome://settings/safetyCheck?activateSafetyCheck";
 const char kChromeUIAccessibilityHost[] = "accessibility";
 const char kChromeUIAllSitesPath[] = "/content/all";
 const char kChromeUIAppIconHost[] = "app-icon";

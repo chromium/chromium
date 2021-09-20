@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -35,16 +37,25 @@
 
 namespace {
 
-// The URL to be used to re-install Chrome when auto-update failed for too long.
-constexpr char kDownloadChromeUrl[] =
-    "https://www.google.com/chrome/?&brand=CHWL"
-    "&utm_campaign=en&utm_source=en-et-na-us-chrome-bubble&utm_medium=et";
-
 // The maximum number of ignored bubble we track in the NumLaterPerReinstall
 // histogram.
 constexpr int kMaxIgnored = 50;
 // The number of buckets we want the NumLaterPerReinstall histogram to use.
 constexpr int kNumIgnoredBuckets = 5;
+
+// For ChromeOS Lacros, browser updates are done via system services, thus
+// we redirect to the safetyCheck page that interacts with these. On other
+// platforms it may be possible to download an updated browser via a site.
+const char* kUpdateBrowserRedirectUrl =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // The URL to be used to update Lacros-Chrome when auto-update failed
+    // for too long.
+    chrome::kChromeUIActivateSafetyCheckSettingsURL;
+#else
+    // The URL to be used to re-install Chrome when auto-update failed for
+    // too long.
+    "https://www.google.com/chrome";
+#endif
 
 bool g_upgrade_bubble_is_showing = false;
 
@@ -62,7 +73,8 @@ void OnWindowClosing() {
 }
 
 void OnDialogAccepted(content::PageNavigator* navigator,
-                      bool auto_update_enabled) {
+                      bool auto_update_enabled,
+                      const char* update_browser_redirect_url) {
   // Offset the +1 in OnWindowClosing().
   --g_num_ignored_bubbles;
   if (auto_update_enabled) {
@@ -72,10 +84,11 @@ void OnDialogAccepted(content::PageNavigator* navigator,
                                 kNumIgnoredBuckets);
     base::RecordAction(
         base::UserMetricsAction("OutdatedUpgradeBubble.Reinstall"));
-    navigator->OpenURL(
-        content::OpenURLParams(GURL(kDownloadChromeUrl), content::Referrer(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PAGE_TRANSITION_LINK, false));
+
+    navigator->OpenURL(content::OpenURLParams(
+        GURL(update_browser_redirect_url), content::Referrer(),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+        false));
 #if defined(OS_WIN)
   } else {
     DCHECK(UpgradeDetector::GetInstance()->is_outdated_install_no_au());
@@ -117,7 +130,8 @@ void OutdatedUpgradeBubbleView::ShowBubble(views::View* anchor_view,
       ui::DialogModel::Builder()
           .SetTitle(l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_TITLE))
           .AddOkButton(
-              base::BindOnce(&OnDialogAccepted, navigator, auto_update_enabled),
+              base::BindOnce(&OnDialogAccepted, navigator, auto_update_enabled,
+                             kUpdateBrowserRedirectUrl),
               l10n_util::GetStringUTF16(auto_update_enabled
                                             ? IDS_REINSTALL_APP
                                             : IDS_REENABLE_UPDATES))
