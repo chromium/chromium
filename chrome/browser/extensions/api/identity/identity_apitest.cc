@@ -3256,14 +3256,7 @@ class LaunchWebAuthFlowFunctionTest : public AsyncExtensionBrowserTest {
   }
 };
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-// This test times out on Linux MSan Tests.
-// See https://crbug.com/831848 .
-#define MAYBE_UserCloseWindow DISABLED_UserCloseWindow
-#else
-#define MAYBE_UserCloseWindow UserCloseWindow
-#endif
-IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, MAYBE_UserCloseWindow) {
+IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.ServeFilesFromSourceDirectory(
       "chrome/test/data/extensions/api_test/identity");
