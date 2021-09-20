@@ -141,6 +141,13 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     private void setBookmarks(List<BookmarkId> bookmarks) {
         clearHighlight();
         mElements.clear();
+
+        // Show the tag chiplist only for the shopping folder.
+        // TODO(crbug.com/1247825): Clarify how the tag list should interact with promo headers.
+        if (mCurrentFolder.getType() == ViewType.SHOPPING_POWER_BOOKMARK) {
+            mElements.add(BookmarkListEntry.createChipList());
+        }
+
         // Restore the header, if it exists, then update it.
         if (hasPromoHeader()) {
             mElements.add(BookmarkListEntry.createSyncPromoHeader(mPromoHeaderType));
@@ -187,6 +194,14 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         return holder;
     }
 
+    private ViewHolder createTagChipListViewHolder(ViewGroup parent) {
+        ViewGroup row = (ViewGroup) LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.power_bookmark_tag_chip_list, parent, false);
+        ViewHolder vh = new ViewHolder(row) {};
+        ((PowerBookmarkTagChipList) row).init(mDelegate.getModel());
+        return vh;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, @ViewType int viewType) {
         assert mDelegate != null;
@@ -213,6 +228,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 return new ViewHolder(
                         LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.horizontal_divider, parent, false)) {};
+            case ViewType.TAG_CHIP_LIST:
+                return createTagChipListViewHolder(parent);
             default:
                 assert false;
                 return null;
@@ -250,6 +267,9 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 // We need this in case we are change state during a pulse.
                 ViewHighlighter.turnOffHighlight(holder.itemView);
             }
+        } else if (holder.getItemViewType() == ViewType.TAG_CHIP_LIST) {
+            PowerBookmarkTagChipList tagChipList = ((PowerBookmarkTagChipList) holder.itemView);
+            tagChipList.setBookmarkFolder(mCurrentFolder);
         }
     }
 
