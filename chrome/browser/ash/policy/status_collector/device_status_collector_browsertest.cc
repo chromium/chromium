@@ -2444,6 +2444,8 @@ TEST_F(DeviceStatusCollectorTest, TpmStatusReporting) {
             device_status_.tpm_status_info()
                 .dictionary_attack_lockout_seconds_remaining());
   EXPECT_EQ(false, device_status_.tpm_status_info().boot_lockbox_finalized());
+  EXPECT_EQ(tpm_status_reply->is_owner_password_present(),
+            device_status_.tpm_status_info().owner_password_is_present());
 }
 
 // Checks if tpm status is partially reported even if any error happens

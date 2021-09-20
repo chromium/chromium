@@ -3011,6 +3011,7 @@ message TpmStatusInfo {
   optional bool dictionary_attack_lockout_in_effect = 8;
   optional int32 dictionary_attack_lockout_seconds_remaining = 9;
   optional bool boot_lockbox_finalized = 10;
+  optional bool owner_password_is_present = 11;
 }
 
 // System state included with some log events.

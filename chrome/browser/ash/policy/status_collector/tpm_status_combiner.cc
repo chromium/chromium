@@ -28,6 +28,8 @@ void TpmStatusCombiner::OnGetTpmStatus(
     // further operations needed.
     tpm_status_info_.initialized =
         reply.is_owned() && !reply.is_owner_password_present();
+    tpm_status_info_.owner_password_is_present =
+        reply.is_owner_password_present();
   } else {
     LOG(WARNING) << "Failed to get tpm status.";
   }

@@ -1462,7 +1462,8 @@ TpmStatusInfo::TpmStatusInfo(
     int32_t dictionary_attack_threshold,
     bool dictionary_attack_lockout_in_effect,
     int32_t dictionary_attack_lockout_seconds_remaining,
-    bool boot_lockbox_finalized)
+    bool boot_lockbox_finalized,
+    bool owner_password_is_present)
     : enabled(enabled),
       owned(owned),
       initialized(initialized),
@@ -1473,7 +1474,8 @@ TpmStatusInfo::TpmStatusInfo(
       dictionary_attack_lockout_in_effect(dictionary_attack_lockout_in_effect),
       dictionary_attack_lockout_seconds_remaining(
           dictionary_attack_lockout_seconds_remaining),
-      boot_lockbox_finalized(boot_lockbox_finalized) {}
+      boot_lockbox_finalized(boot_lockbox_finalized),
+      owner_password_is_present(owner_password_is_present) {}
 TpmStatusInfo::~TpmStatusInfo() = default;
 
 SampledData::SampledData() = default;

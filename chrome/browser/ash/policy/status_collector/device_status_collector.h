@@ -78,7 +78,8 @@ struct TpmStatusInfo {
                 int32_t dictionary_attack_threshold,
                 bool dictionary_attack_lockout_in_effect,
                 int32_t dictionary_attack_lockout_seconds_remaining,
-                bool boot_lockbox_finalized);
+                bool boot_lockbox_finalized,
+                bool owner_password_is_present);
   ~TpmStatusInfo();
 
   bool enabled = false;
@@ -91,6 +92,7 @@ struct TpmStatusInfo {
   bool dictionary_attack_lockout_in_effect = false;
   int32_t dictionary_attack_lockout_seconds_remaining = 0;
   bool boot_lockbox_finalized = false;
+  bool owner_password_is_present = false;
 };
 
 // Sampled hardware measurement data for single time point.
