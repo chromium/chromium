@@ -32,6 +32,11 @@
       "infra/recipes/.*"
     ]
   },
+  "chromeos": {
+    "exclusions": [
+      "chromeos/CHROMEOS_LKGM"
+    ]
+  },
   "chromium": {
     "exclusions": [
       "buildtools/checkdeps/.*",
