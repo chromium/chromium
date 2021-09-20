@@ -509,21 +509,6 @@ void ClipboardNonBacked::ReadAvailableTypes(
   }
 }
 
-std::vector<std::u16string>
-ClipboardNonBacked::ReadAvailablePlatformSpecificFormatNames(
-    ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  DCHECK(CalledOnValidThread());
-
-  std::vector<std::u16string> types;
-
-  if (!clipboard_internal_->IsReadAllowed(data_dst))
-    return types;
-
-  // Includes all non-pickled AvailableTypes.
-  return GetStandardFormats(buffer, data_dst);
-}
-
 void ClipboardNonBacked::ReadText(ClipboardBuffer buffer,
                                   const DataTransferEndpoint* data_dst,
                                   std::u16string* result) const {

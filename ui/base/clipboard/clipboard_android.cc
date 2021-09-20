@@ -585,23 +585,6 @@ void ClipboardAndroid::ReadAvailableTypes(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<std::u16string>
-ClipboardAndroid::ReadAvailablePlatformSpecificFormatNames(
-    ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  std::vector<ClipboardFormatType> formats = g_map.Get().GetFormats();
-
-  std::vector<std::u16string> types;
-  types.reserve(formats.size());
-  for (const ClipboardFormatType& format : formats)
-    types.push_back(base::UTF8ToUTF16(format.GetName()));
-
-  return types;
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
 void ClipboardAndroid::ReadText(ClipboardBuffer buffer,
                                 const DataTransferEndpoint* data_dst,
                                 std::u16string* result) const {

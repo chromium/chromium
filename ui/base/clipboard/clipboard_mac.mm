@@ -208,24 +208,6 @@ void ClipboardMac::ReadAvailableTypes(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<std::u16string>
-ClipboardMac::ReadAvailablePlatformSpecificFormatNames(
-    ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-
-  NSArray* types = [GetPasteboard() types];
-
-  std::vector<std::u16string> type_names;
-  type_names.reserve([types count]);
-  for (NSString* type in types)
-    type_names.push_back(base::SysNSStringToUTF16(type));
-  return type_names;
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
 void ClipboardMac::ReadText(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
                             std::u16string* result) const {

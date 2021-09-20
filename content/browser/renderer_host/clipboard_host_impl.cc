@@ -510,7 +510,7 @@ void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(
     return;
   std::vector<std::u16string> format_types =
       ui::Clipboard::GetForCurrentThread()
-          ->ReadAvailablePlatformSpecificFormatNames(
+          ->ReadAvailableStandardAndCustomFormatNames(
               ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get());
   std::move(callback).Run(format_types);
 }

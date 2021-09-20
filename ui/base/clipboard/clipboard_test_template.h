@@ -806,8 +806,8 @@ TYPED_TEST(ClipboardTest, MultiplePickleTest) {
   EXPECT_EQ(payload1, unpickled_string1);
 }
 
-// TODO(crbug.com/106449): Implement custom formats on other platforms.
-#if defined(OS_WIN)
+// TODO(crbug.com/106449): Implement multiple custom format write on Chrome OS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TYPED_TEST(ClipboardTest, DataTest) {
   const std::string kFormatString = "chromium/x-test-format";
   const std::u16string kFormatString16 = u"chromium/x-test-format";
@@ -857,7 +857,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   }
 
   // Check format 1.
-  EXPECT_THAT(this->clipboard().ReadAvailablePlatformSpecificFormatNames(
+  EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
               Contains(kFormatString116));
   std::string custom_format_json;
@@ -875,7 +875,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
   EXPECT_EQ(payload1, output1);
 
   // Check format 2.
-  EXPECT_THAT(this->clipboard().ReadAvailablePlatformSpecificFormatNames(
+  EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
               Contains(kFormatString216));
   EXPECT_TRUE(custom_format_names.find(kFormatString2) !=
@@ -910,7 +910,7 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
   }
 
   // Check format 1.
-  EXPECT_THAT(this->clipboard().ReadAvailablePlatformSpecificFormatNames(
+  EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
               Contains(kFormatString116));
   std::string custom_format_json;
@@ -928,7 +928,7 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
   EXPECT_EQ(payload1, output1);
 
   // Check format 2.
-  EXPECT_THAT(this->clipboard().ReadAvailablePlatformSpecificFormatNames(
+  EXPECT_THAT(this->clipboard().ReadAvailableStandardAndCustomFormatNames(
                   ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr),
               Contains(kFormatString216));
   EXPECT_TRUE(custom_format_names.find(kFormatString2) !=
@@ -939,75 +939,11 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
                              /* data_dst = */ nullptr, &output2);
   EXPECT_EQ(payload2, output2);
 }
-#endif
-
-// crbug.com/1224904: Flaky on Mac.
-#if defined(OS_MAC)
-#define MAYBE_ReadAvailablePlatformSpecificFormatNamesTest \
-  DISABLED_ReadAvailablePlatformSpecificFormatNamesTest
-#else
-#define MAYBE_ReadAvailablePlatformSpecificFormatNamesTest \
-  ReadAvailablePlatformSpecificFormatNamesTest
-#endif
-TYPED_TEST(ClipboardTest, MAYBE_ReadAvailablePlatformSpecificFormatNamesTest) {
-  // We're testing platform-specific behavior, so use PlatformClipboardTest.
-  // TODO(https://crbug.com/1083050): The template shouldn't know about its
-  // instantiations. Move this information up using a flag, virtual method, or
-  // creating separate test files for different platforms.
-  std::string test_suite_name = ::testing::UnitTest::GetInstance()
-                                    ->current_test_info()
-                                    ->test_suite_name();
-  // TODO(crbug.com/106449): Update other platforms to support custom formats.
-  if (test_suite_name != std::string("ClipboardTest/PlatformClipboardTest"))
-    return;
-
-  std::u16string text = u"Test String";
-  std::string ascii_text;
-  {
-    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    // `WriteText` uses `ClipboardFormatType::PlainTextType` format.
-    clipboard_writer.WriteText(text);
-  }
-
-  const std::vector<std::u16string> raw_types =
-      this->clipboard().ReadAvailablePlatformSpecificFormatNames(
-          ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
-#if defined(OS_APPLE)
-  EXPECT_THAT(raw_types, Contains(u"public.utf8-plain-text"));
-  EXPECT_THAT(raw_types, Contains(u"NSStringPboardType"));
-  EXPECT_EQ(raw_types.size(), 2u);
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMECAST) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeText)));
-  EXPECT_THAT(raw_types, Contains(u"TEXT"));
-  EXPECT_THAT(raw_types, Contains(u"STRING"));
-  EXPECT_THAT(raw_types, Contains(u"UTF8_STRING"));
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeTextUtf8)));
-    EXPECT_EQ(raw_types.size(), 5u);
-    return;
-  }
-#endif  // USE_OZONE
-#if defined(USE_X11)
-  EXPECT_FALSE(features::IsUsingOzonePlatform());
-  EXPECT_EQ(raw_types.size(), 4u);
-#endif  // USE_X11
-#elif defined(USE_AURA) || defined(OS_ANDROID) || defined(OS_WIN)
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeText)));
-  EXPECT_EQ(raw_types.size(), 1u);
-#else
-#error Unsupported platform
-#endif
-}
 
 // Test that platform-specific functionality works, with a predefined format in
 // On X11 Linux, this test uses a simple MIME type, text/plain.
 // On Windows, this test uses a pre-defined ANSI format, CF_TEXT, and tests that
 // the Windows implicitly converts this to UNICODE as expected.
-#if defined(OS_WIN) || defined(USE_X11)
 TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
   // We're testing platform-specific behavior, so use PlatformClipboardTest.
   // TODO(https://crbug.com/1083050): The template shouldn't know about its
@@ -1024,7 +960,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
 #if defined(OS_WIN)
   // Windows requires an extra '\0' at the end for a raw write.
   const std::string kPlatformSpecificText = text + '\0';
-#elif defined(USE_X11)
+#else
   const std::string kPlatformSpecificText = text;
 #endif
   base::span<const uint8_t> text_span(
@@ -1052,7 +988,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
                              &platform_specific_result);
   EXPECT_EQ(platform_specific_result, kPlatformSpecificText);
 }
-#endif  // defined(OS_WIN) || defined(USE_X11)
+#endif
 
 #if !defined(OS_APPLE) && !defined(OS_ANDROID)
 TYPED_TEST(ClipboardTest, HyperlinkTest) {

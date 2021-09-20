@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -164,6 +165,34 @@ std::map<std::string, std::string> Clipboard::ExtractCustomPlatformNames(
   return custom_format_names;
 }
 
+std::vector<std::u16string>
+Clipboard::ReadAvailableStandardAndCustomFormatNames(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst) const {
+  DCHECK(CalledOnValidThread());
+  std::vector<std::u16string> format_names;
+  // Native applications generally read formats in order of
+  // fidelity/specificity, reading only the most specific format they support
+  // when possible to save resources. For example, if an image/tiff and
+  // image/jpg were both available on the clipboard, an image editing
+  // application with sophisticated needs may choose the image/tiff payload, due
+  // to it providing an uncompressed image, and only fall back to image/jpg when
+  // the image/tiff is not available. To allow other native applications to read
+  // these most specific formats first, clipboard formats will be ordered as
+  // follows:
+  // 1. Pickled formats, in order of definition in the ClipboardItem.
+  // 2. Sanitized standard formats, ordered as determined by the browser.
+
+  std::map<std::string, std::string> custom_format_names =
+      ExtractCustomPlatformNames(buffer, data_dst);
+  for (const auto& items : custom_format_names)
+    format_names.push_back(base::ASCIIToUTF16(items.first));
+  for (const auto& item : GetStandardFormats(buffer, data_dst)) {
+    format_names.push_back(item);
+  }
+  return format_names;
+}
+
 Clipboard::Clipboard() = default;
 Clipboard::~Clipboard() = default;
 
@@ -294,14 +323,6 @@ void Clipboard::ReadAvailableTypes(ClipboardBuffer buffer,
   std::vector<std::u16string> types;
   ReadAvailableTypes(buffer, data_dst, &types);
   std::move(callback).Run(std::move(types));
-}
-
-void Clipboard::ReadAvailablePlatformSpecificFormatNames(
-    ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst,
-    ReadAvailablePlatformSpecificFormatNamesCallback callback) const {
-  std::move(callback).Run(
-      ReadAvailablePlatformSpecificFormatNames(buffer, data_dst));
 }
 
 void Clipboard::ReadText(ClipboardBuffer buffer,

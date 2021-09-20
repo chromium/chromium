@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
+  std::vector<std::u16string> GetStandardFormats(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst) const override;
@@ -54,9 +57,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
-  std::vector<std::u16string> ReadAvailablePlatformSpecificFormatNames(
-      ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const override;
   void ReadText(ClipboardBuffer buffer,
                 const DataTransferEndpoint* data_dst,
                 std::u16string* result) const override;
@@ -121,14 +121,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
                                        NSPasteboard* pasteboard) const;
   SkBitmap ReadImageInternal(ClipboardBuffer buffer,
                              NSPasteboard* pasteboard) const;
-
-  // Returns all the standard MIME types if it's present in the clipboard.
-  // The standard MIME types are the formats that are well defined by the OS.
-  // Currently we support text/html, text/plain, text/rtf, image/png &
-  // text/uri-list.
-  std::vector<std::u16string> GetStandardFormats(
-      ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const;
 
   // Mapping of OS-provided sequence number to a unique token.
   mutable struct {

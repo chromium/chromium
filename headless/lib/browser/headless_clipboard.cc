@@ -79,26 +79,6 @@ void HeadlessClipboard::ReadAvailableTypes(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<std::u16string>
-HeadlessClipboard::ReadAvailablePlatformSpecificFormatNames(
-    ui::ClipboardBuffer buffer,
-    const ui::DataTransferEndpoint* data_dst) const {
-  const auto& data = GetStore(buffer).data;
-  std::vector<std::u16string> types;
-  types.reserve(data.size());
-  std::map<std::string, std::string> custom_format_names =
-      ExtractCustomPlatformNames(buffer, data_dst);
-  for (const auto& item : custom_format_names)
-    types.push_back(base::UTF8ToUTF16(item.first));
-  for (const auto& item : GetStandardFormats(buffer, data_dst)) {
-    types.push_back(item);
-  }
-
-  return types;
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
 void HeadlessClipboard::ReadText(ui::ClipboardBuffer buffer,
                                  const ui::DataTransferEndpoint* data_dst,
                                  std::u16string* result) const {

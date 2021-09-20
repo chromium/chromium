@@ -400,22 +400,6 @@ void ClipboardOzone::ReadAvailableTypes(
 }
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.
-std::vector<std::u16string>
-ClipboardOzone::ReadAvailablePlatformSpecificFormatNames(
-    ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  DCHECK(CalledOnValidThread());
-
-  std::vector<std::string> mime_types =
-      async_clipboard_ozone_->RequestMimeTypes(buffer);
-  std::vector<std::u16string> types;
-  types.reserve(mime_types.size());
-  for (auto& mime_type : mime_types)
-    types.push_back(base::UTF8ToUTF16(mime_type));
-  return types;
-}
-
-// TODO(crbug.com/1103194): |data_dst| should be supported.
 void ClipboardOzone::ReadText(ClipboardBuffer buffer,
                               const DataTransferEndpoint* data_dst,
                               std::u16string* result) const {

@@ -129,19 +129,6 @@ void ClipboardX11::ReadAvailableTypes(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<std::u16string>
-ClipboardX11::ReadAvailablePlatformSpecificFormatNames(
-    ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  DCHECK(CalledOnValidThread());
-  std::vector<std::u16string> format_names;
-  for (const auto& name : x_clipboard_helper_->GetAvailableAtomNames(buffer))
-    format_names.push_back(base::UTF8ToUTF16(name));
-  return format_names;
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
 void ClipboardX11::ReadText(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
                             std::u16string* result) const {

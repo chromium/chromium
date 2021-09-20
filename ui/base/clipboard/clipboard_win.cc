@@ -332,29 +332,6 @@ void ClipboardWin::ReadAvailableTypes(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<std::u16string>
-ClipboardWin::ReadAvailablePlatformSpecificFormatNames(
-    ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  int count = ::CountClipboardFormats();
-  if (!count)
-    return {};
-
-  std::vector<std::u16string> types;
-  types.reserve(count);
-
-  // Check if we have any custom formats in the clipboard.
-  std::map<std::string, std::string> custom_format_names =
-      ExtractCustomPlatformNames(buffer, data_dst);
-  for (const auto& item : custom_format_names)
-    types.push_back(base::ASCIIToUTF16(item.first));
-  for (const auto& item : GetStandardFormats(buffer, data_dst))
-    types.push_back(item);
-  return types;
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
 void ClipboardWin::ReadText(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
                             std::u16string* result) const {
