@@ -126,8 +126,10 @@
     <message name="IDS_MANAGEMENT_REPORT_PRINT_JOBS" desc="Message stating that administrators can see printing history associated with user, device, and printer.">
       Printing history
     </message>
-    <message name="IDS_MANAGEMENT_REPORT_DLP_EVENTS" desc="Message show the users of DLP reporting enabled devices that events are being reported.">
-      Actions taken with data flagged as confidential
+    <message name="IDS_MANAGEMENT_REPORT_DLP_EVENTS" desc="Message stating that administrators can see attempts at prohibited actions on restricted data. Also shows the number of actions reported since login, and provides a 'Learn more' link.">
+      {COUNT, plural,
+      =1 {Actions taken with data flagged as confidential (1 action reported since login). <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chromebook/?p=is_chrome_managed"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>}
+      other {Actions taken with data flagged as confidential (# actions reported since login). <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chromebook/?p=is_chrome_managed"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>}}
     </message>
     <message name="IDS_MANAGEMENT_REPORT_LOGIN_LOGOUT" desc="Message stating that administrators can see device Login and Logout events.">
       Device login/logout history, including timestamps and failed attempts

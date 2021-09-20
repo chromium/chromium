@@ -41,7 +41,7 @@ const base::TimeDelta kPrivacyScreenOffDelay =
 void ReportEvent(GURL url,
                  DlpRulesManager::Restriction restriction,
                  DlpRulesManager::Level level,
-                 const DlpReportingManager* reporting_manager) {
+                 DlpReportingManager* reporting_manager) {
   DCHECK(reporting_manager);
 
   DlpRulesManager* rules_manager =

@@ -150,7 +150,7 @@ void DlpReportingManager::SetReportQueue(
 
 void DlpReportingManager::ReportEvent(const std::string& src_pattern,
                                       DlpRulesManager::Restriction restriction,
-                                      DlpRulesManager::Level level) const {
+                                      DlpRulesManager::Level level) {
   auto event = CreateDlpPolicyEvent(src_pattern, restriction, level);
   ReportEvent(std::move(event));
 }
@@ -158,7 +158,7 @@ void DlpReportingManager::ReportEvent(const std::string& src_pattern,
 void DlpReportingManager::ReportEvent(const std::string& src_pattern,
                                       const std::string& dst_pattern,
                                       DlpRulesManager::Restriction restriction,
-                                      DlpRulesManager::Level level) const {
+                                      DlpRulesManager::Level level) {
   auto event =
       CreateDlpPolicyEvent(src_pattern, dst_pattern, restriction, level);
   ReportEvent(std::move(event));
@@ -168,23 +168,24 @@ void DlpReportingManager::ReportEvent(
     const std::string& src_pattern,
     const DlpRulesManager::Component dst_component,
     DlpRulesManager::Restriction restriction,
-    DlpRulesManager::Level level) const {
+    DlpRulesManager::Level level) {
   auto event =
       CreateDlpPolicyEvent(src_pattern, dst_component, restriction, level);
   ReportEvent(std::move(event));
 }
 
-void DlpReportingManager::OnEventEnqueued(reporting::Status status) const {
+void DlpReportingManager::OnEventEnqueued(reporting::Status status) {
   if (!status.ok()) {
     VLOG(1) << "Could not enqueue event to DLP reporting queue because of "
             << status;
   }
+  events_reported_++;
   base::UmaHistogramEnumeration(
       GetDlpHistogramPrefix() + dlp::kReportedEventStatus, status.code(),
       reporting::error::Code::MAX_VALUE);
 }
 
-void DlpReportingManager::ReportEvent(DlpPolicyEvent event) const {
+void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   // TODO(1187506, marcgrimme) Refactor to handle gracefully with user
   // interaction when queue is not ready.
   if (!report_queue_.get()) {
