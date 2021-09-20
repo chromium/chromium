@@ -406,7 +406,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
 #else
 #define MAYBE_Uma Uma
 #endif
-IN_PROC_BROWSER_TEST_P(UserTypeByDeviceTypeMetricsProviderTest, Uma) {
+IN_PROC_BROWSER_TEST_P(UserTypeByDeviceTypeMetricsProviderTest, MAYBE_Uma) {
   base::HistogramTester histogram_tester;
 
   SetDevicePolicy();
