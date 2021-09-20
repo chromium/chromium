@@ -42,9 +42,6 @@ CallWith=ExecutionContext|Isolate|ScriptState|ThisValue
 CheckSecurity=Receiver|ReturnValue
 Clamp
 Constructor
-# FIXME: remove [ConstructorCallWith=Document], as can instead use
-# [ConstructorCallWith=ExecutionContext] + toDocument(executionContext)
-ConstructorCallWith=ExecutionContext|ScriptState|Document
 ContextEnabled=*
 CrossOrigin=|Getter|Setter
 CrossOriginIsolated

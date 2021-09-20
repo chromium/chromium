@@ -376,7 +376,7 @@ The semantics are the same as `[Constructor]`, except that the name changes: Jav
 
 Whether you should allow an interface to have a named constructor or not depends on the spec of each interface.
 
-### [NamedConstructor_CallWith] _(i)_
+### [NamedConstructor_CallWith=Document] _(i)_
 
 Summary: The same as `[CallWith]` but applied to the named constructors.
 
@@ -651,7 +651,7 @@ Usage:
 
 For methods all calls are logged, and by default for attributes all access (calls to getter or setter) are logged, but this can be restricted to just read (getter) or just write (setter).
 
-### [CallWith] _(m, a)_, [GetterCallWith] _(a)_, [SetterCallWith] _(a)_, [ConstructorCallWith] _(i)_
+### [CallWith] _(m, a)_, [GetterCallWith] _(a)_, [SetterCallWith] _(a)
 
 Summary: `[CallWith]` indicates that the bindings code calls the Blink implementation with additional information.
 
@@ -756,37 +756,6 @@ bool Example::func(ScriptValue thisValue, bool a, bool b);
 *** note
 `[CallWith=...]` arguments are added at the _head_ of `XXX::Create(...)'s` arguments, and ` [RaisesException]`'s `ExceptionState` argument is added at the _tail_ of `XXX::Create(...)`'s arguments.
 ***
-
-#### [ConstructorCallWith] _(i)_
-
-Analogous to `[CallWith]`, but applied to interfaces with constructors, and takes different values.
-
-If `[Constructor]` is specified on an interface, `[ConstructorCallWith]` can be also specified to refine the arguments passed to the callback:
-
-```webidl
-[
-    Constructor(float x, float y, DOMString str),
-    ConstructorCallWith=ExecutionContext
-]
-interface XXX {
-    ...
-};
-```
-
-Then XXX::Create(...) can have the following signature
-
-```c++
-XXX* XXX::Create(ExecutionContext* context, float x, float y, const String& str) {
-  ...;
-}
-```
-
-Be careful when you use `[ConstructorCallWith=ScriptState]`.
-You should not store the passed-in ScriptState on a DOM object.
-This is because if the stored ScriptState is used by some method called by a different
-world (note that the DOM object is shared among multiple worlds), it leaks the ScriptState
-to the world. ScriptState must be carefully maintained in a way that doesn't leak
-to another world.
 
 ### [ContextEnabled] _(i)_
 
