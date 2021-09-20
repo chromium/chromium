@@ -124,6 +124,8 @@ std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
   }
   // Erase current time from the calendar.
   cal_tz->clear();
+  // Use Time::ToJavaTime() to get ms since epoch in int64_t format. int64_t
+  // has the same size on both x86 and arm boards.
   cal_tz->setTime(cur_time.ToJavaTime(), status);
   if (U_FAILURE(status)) {
     LOG(ERROR) << "Couldn't create calendar";
