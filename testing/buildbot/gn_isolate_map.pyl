@@ -696,6 +696,10 @@
     "label": "//content/test:content_unittests",
     "type": "windowed_test_launcher",
   },
+  "core_runtime_simple": {
+    "label": "//chromecast/cast_core:core_runtime_simple",
+    "type": "additional_compile_target",
+  },
   "courgette_unittests": {
     "label": "//courgette:courgette_unittests",
     "type": "console_test_launcher",

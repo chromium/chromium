@@ -4834,6 +4834,7 @@
         'additional_compile_targets': [
           'cast_shell',
           'cast_test_lists',
+          'core_runtime_simple',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_cast_video_gtests',
@@ -4846,6 +4847,7 @@
         'additional_compile_targets': [
           'cast_shell',
           'cast_test_lists',
+          'core_runtime_simple',
         ],
       },
       'Cast Linux Debug': {
@@ -4855,6 +4857,7 @@
         'additional_compile_targets': [
           'cast_shell',
           'cast_test_lists',
+          'core_runtime_simple',
         ],
       },
       'Fuchsia ARM64': {

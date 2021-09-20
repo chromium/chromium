@@ -891,7 +891,8 @@
   "Cast Linux": {
     "additional_compile_targets": [
       "cast_shell",
-      "cast_test_lists"
+      "cast_test_lists",
+      "core_runtime_simple"
     ],
     "gtest_tests": [
       {
@@ -1865,13 +1866,15 @@
   "Cast Linux ARM64": {
     "additional_compile_targets": [
       "cast_shell",
-      "cast_test_lists"
+      "cast_test_lists",
+      "core_runtime_simple"
     ]
   },
   "Cast Linux Debug": {
     "additional_compile_targets": [
       "cast_shell",
-      "cast_test_lists"
+      "cast_test_lists",
+      "core_runtime_simple"
     ]
   },
   "Fuchsia ARM64": {
