@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://connectivity-diagnostics/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_mojo.m.js'
-// #import {Routine, Icons} from 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_types.m.js'
-// #import 'chrome://resources/cr_components/chromeos/network_health/routine_group.m.js'
-// #import {assertTrue, assertFalse, assertEquals} from '../../../chai_assert.js';
+import 'chrome://connectivity-diagnostics/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_mojo.m.js';
+import 'chrome://resources/cr_components/chromeos/network_health/routine_group.m.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {Icons, Routine} from 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics_types.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+
+import {createResult, getIconFromSrc} from './network_health_test_utils.js';
 
 /**
  * Creates baseline routines.
@@ -25,9 +26,8 @@ function createRoutines() {
       resultMsg: 'Passed',
       group: 0,
       type: 0,
-      result: {
-        verdict: chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem
-      },
+      result: createResult(
+          chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem),
       ariaDescription: '',
     },
     {
@@ -36,23 +36,11 @@ function createRoutines() {
       resultMsg: 'Passed',
       group: 0,
       type: 1,
-      result: {
-        verdict: chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem
-      },
+      result: createResult(
+          chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem),
       ariaDescription: '',
     }
   ];
-}
-
-/**
- * Removes any prefixed URL from a icon image path
- * @param {string}
- * @return {string}
- * @private
- */
-function getIconFromSrc(src) {
-  const values = src.split('/');
-  return values[values.length - 1];
 }
 
 /**
@@ -69,7 +57,7 @@ suite('RoutineGroupTest', function routineGroupTest() {
     routineGroup.name = 'Group';
     routineGroup.expanded = false;
     document.body.appendChild(routineGroup);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -84,18 +72,17 @@ suite('RoutineGroupTest', function routineGroupTest() {
    */
   function setRoutines(routines) {
     routineGroup.routines = routines;
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
    * Clicks the routine group container to toggle the expanded state.
-   * @param {boolean} expanded
    */
   function clickRoutineGroup() {
     const container = routineGroup.$$('network-health-container');
     assertTrue(!!container);
     container.click();
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
@@ -158,7 +145,7 @@ suite('RoutineGroupTest', function routineGroupTest() {
    */
   test('RunningNone', () => {
     routineGroup.routines = createRoutines();
-    Polymer.dom.flush();
+    flush();
 
     checkResult(Icons.TEST_PASSED);
     clickRoutineGroup();
@@ -170,9 +157,8 @@ suite('RoutineGroupTest', function routineGroupTest() {
   test('FailedOne', () => {
     let routines = createRoutines();
     routines[0].resultMsg = 'Failed';
-    routines[0].result = {
-      'verdict': chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem
-    };
+    routines[0].result =
+        createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem);
     setRoutines(routines);
     checkResult(Icons.TEST_FAILED);
     clickRoutineGroup();
@@ -184,9 +170,8 @@ suite('RoutineGroupTest', function routineGroupTest() {
   test('NotRunOne', () => {
     let routines = createRoutines();
     routines[0].resultMsg = 'Not Run';
-    routines[0].result = {
-      'verdict': chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun
-    };
+    routines[0].result =
+        createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun);
     setRoutines(routines);
     checkResult(Icons.TEST_NOT_RUN);
     clickRoutineGroup();
@@ -198,13 +183,11 @@ suite('RoutineGroupTest', function routineGroupTest() {
   test('NotRunAndFailed', () => {
     let routines = createRoutines();
     routines[0].resultMsg = 'Not Run';
-    routines[0].result = {
-      'verdict': chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun
-    };
+    routines[0].result =
+        createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun);
     routines[1].resultMsg = 'Failed';
-    routines[1].result = {
-      'verdict': chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem
-    };
+    routines[1].result =
+        createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem);
     setRoutines(routines);
     checkResult(Icons.TEST_FAILED);
     clickRoutineGroup();

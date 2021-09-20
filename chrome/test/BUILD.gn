@@ -3488,7 +3488,6 @@ if (!is_android && !is_fuchsia) {
         "//ash/keyboard/ui:resources",
         "//chrome",
         "//chrome/test/data/webui/cr_components/chromeos/cellular_setup:modulize_runtime_data",
-        "//chrome/test/data/webui/cr_components/chromeos/network_health:modulize_runtime_data",
         "//chrome/test/data/webui/nearby_share/shared:modulize_runtime_data",
         "//chrome/test/data/webui/settings/chromeos:modulize_runtime_data",
         "//testing/buildbot/filters:chromeos_filters",

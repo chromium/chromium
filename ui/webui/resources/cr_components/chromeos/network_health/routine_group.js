@@ -16,7 +16,7 @@ Polymer({
   properties: {
     /**
      * List of routines to display in the group.
-     * @private {!Array<!Routine>}
+     * @type {!Array<!Routine>}
      */
     routines: {
       type: Array,
@@ -25,11 +25,20 @@ Polymer({
 
     /**
      * Localized name for the group of routines.
-     * @private {String}
+     * @type {string}
      */
     name: {
       type: String,
       value: '',
+    },
+
+    /**
+     * Boolean flag if the container is expanded.
+     * @type {boolean}
+     */
+    expanded: {
+      type: Boolean,
+      value: false,
     },
 
     /**
@@ -39,15 +48,6 @@ Polymer({
     running: {
       type: Boolean,
       computed: 'routinesRunning_(routines.*)',
-    },
-
-    /**
-     * Boolean flag if the container is expanded.
-     * @private {Boolean}
-     */
-    expanded: {
-      type: Boolean,
-      value: false,
     },
 
     /**

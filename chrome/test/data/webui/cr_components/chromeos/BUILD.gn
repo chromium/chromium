@@ -11,11 +11,13 @@ group("modulize") {
     "cellular_setup:modulize",
     "multidevice_setup:modulize",
     "network:modulize",
-    "network_health:modulize",
     "//chrome/test/data/webui/chromeos:modulize",
   ]
 }
 
 group("closure_compile") {
-  deps = [ "bluetooth:closure_compile" ]
+  deps = [
+    "bluetooth:closure_compile",
+    "network_health:closure_compile",
+  ]
 }
