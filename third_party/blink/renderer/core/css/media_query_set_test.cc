@@ -200,12 +200,14 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
   MediaQuerySetTestCase test_cases[] = {
       {"(forced-colors)", "not all"},
       {"(navigation-controls)", "not all"},
-      {"(screen-spanning)", "not all"},
+      {"(horizontal-viewport-segments)", "not all"},
+      {"(vertical-viewport-segments)", "not all"},
       {"(device-posture)", "not all"},
       {"(shape: rect)", "not all"},
       {"(forced-colors: none)", "not all"},
       {"(navigation-controls: none)", "not all"},
-      {"(screen-spanning:none)", "not all"},
+      {"(horizontal-viewport-segments: 1)", "not all"},
+      {"(vertical-viewport-segments: 1)", "not all"},
       {"(device-posture:none)", "not all"},
       {nullptr, nullptr}  // Do not remove the terminator line.
   };

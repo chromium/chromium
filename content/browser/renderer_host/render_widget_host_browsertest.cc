@@ -723,13 +723,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
           width: env(fold-width, 1px);
           height: env(fold-height, 1px);
         }
-        @media (screen-spanning: none) {
+        @media (horizontal-viewport-segments: 1) and
+               (vertical-viewport-segments: 1) {
           div { opacity: 0.1; }
         }
-        @media (screen-spanning: single-fold-vertical) {
+        @media (horizontal-viewport-segments: 2) and
+               (vertical-viewport-segments: 1) {
           div { opacity: 0.2; }
         }
-        @media (screen-spanning: single-fold-horizontal) {
+        @media (horizontal-viewport-segments: 1) and
+               (vertical-viewport-segments: 2) {
           div { opacity: 0.3; }
         }
       </style>
@@ -852,7 +855,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   const char kTestPageURL[] =
       R"HTML(data:text/html,<!DOCTYPE html>
       <style>
-        @media (screen-spanning: single-fold-vertical) {
+        @media (horizontal-viewport-segments: 2) and
+               (vertical-viewport-segments: 1) {
           div { margin-left: env(fold-left, 10px); }
         }
       </style>

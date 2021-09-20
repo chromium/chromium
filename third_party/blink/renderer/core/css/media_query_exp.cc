@@ -112,14 +112,6 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     }
   }
 
-  if (RuntimeEnabledFeatures::CSSFoldablesEnabled()) {
-    if (media_feature == media_feature_names::kScreenSpanningMediaFeature) {
-      return ident == CSSValueID::kNone ||
-             ident == CSSValueID::kSingleFoldVertical ||
-             ident == CSSValueID::kSingleFoldHorizontal;
-    }
-  }
-
   if (RuntimeEnabledFeatures::DevicePostureEnabled()) {
     if (media_feature == media_feature_names::kDevicePostureMediaFeature) {
       return ident == CSSValueID::kContinuous || ident == CSSValueID::kFolded ||
@@ -163,16 +155,29 @@ static inline bool FeatureWithValidDensity(const String& media_feature,
 
 static inline bool FeatureExpectingPositiveInteger(
     const String& media_feature) {
-  return media_feature == media_feature_names::kColorMediaFeature ||
-         media_feature == media_feature_names::kMaxColorMediaFeature ||
-         media_feature == media_feature_names::kMinColorMediaFeature ||
-         media_feature == media_feature_names::kColorIndexMediaFeature ||
-         media_feature == media_feature_names::kMaxColorIndexMediaFeature ||
-         media_feature == media_feature_names::kMinColorIndexMediaFeature ||
-         media_feature == media_feature_names::kMonochromeMediaFeature ||
-         media_feature == media_feature_names::kMaxMonochromeMediaFeature ||
-         media_feature == media_feature_names::kMinMonochromeMediaFeature ||
-         media_feature == media_feature_names::kImmersiveMediaFeature;
+  if (media_feature == media_feature_names::kColorMediaFeature ||
+      media_feature == media_feature_names::kMaxColorMediaFeature ||
+      media_feature == media_feature_names::kMinColorMediaFeature ||
+      media_feature == media_feature_names::kColorIndexMediaFeature ||
+      media_feature == media_feature_names::kMaxColorIndexMediaFeature ||
+      media_feature == media_feature_names::kMinColorIndexMediaFeature ||
+      media_feature == media_feature_names::kMonochromeMediaFeature ||
+      media_feature == media_feature_names::kMaxMonochromeMediaFeature ||
+      media_feature == media_feature_names::kMinMonochromeMediaFeature ||
+      media_feature == media_feature_names::kImmersiveMediaFeature) {
+    return true;
+  }
+
+  if (RuntimeEnabledFeatures::CSSFoldablesEnabled()) {
+    if (media_feature ==
+            media_feature_names::kHorizontalViewportSegmentsMediaFeature ||
+        media_feature ==
+            media_feature_names::kVerticalViewportSegmentsMediaFeature) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 static inline bool FeatureWithPositiveInteger(const String& media_feature,
@@ -254,7 +259,11 @@ static inline bool FeatureWithoutValue(
          (media_feature == media_feature_names::kOriginTrialTestMediaFeature &&
           RuntimeEnabledFeatures::OriginTrialsSampleAPIEnabled(
               execution_context)) ||
-         (media_feature == media_feature_names::kScreenSpanningMediaFeature &&
+         (media_feature ==
+              media_feature_names::kHorizontalViewportSegmentsMediaFeature &&
+          RuntimeEnabledFeatures::CSSFoldablesEnabled()) ||
+         (media_feature ==
+              media_feature_names::kVerticalViewportSegmentsMediaFeature &&
           RuntimeEnabledFeatures::CSSFoldablesEnabled()) ||
          (media_feature == media_feature_names::kDevicePostureMediaFeature &&
           RuntimeEnabledFeatures::DevicePostureEnabled());

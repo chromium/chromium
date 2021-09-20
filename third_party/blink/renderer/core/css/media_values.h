@@ -24,7 +24,6 @@ enum class CSSValueID;
 enum class ColorSpaceGamut;
 enum class ForcedColors;
 enum class NavigationControls;
-enum class ScreenSpanning { kNone, kSingleFoldHorizontal, kSingleFoldVertical };
 
 mojom::blink::PreferredColorScheme CSSValueIDToPreferredColorScheme(
     CSSValueID id);
@@ -93,7 +92,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual bool PrefersReducedData() const = 0;
   virtual ForcedColors GetForcedColors() const = 0;
   virtual NavigationControls GetNavigationControls() const = 0;
-  virtual ScreenSpanning GetScreenSpanning() const = 0;
+  virtual int GetHorizontalViewportSegments() const = 0;
+  virtual int GetVerticalViewportSegments() const = 0;
   virtual device::mojom::blink::DevicePostureType GetDevicePosture() const = 0;
 
  protected:
@@ -124,7 +124,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   static bool CalculatePrefersReducedData(LocalFrame*);
   static ForcedColors CalculateForcedColors(LocalFrame*);
   static NavigationControls CalculateNavigationControls(LocalFrame*);
-  static ScreenSpanning CalculateScreenSpanning(LocalFrame*);
+  static int CalculateHorizontalViewportSegments(LocalFrame*);
+  static int CalculateVerticalViewportSegments(LocalFrame*);
   static device::mojom::blink::DevicePostureType CalculateDevicePosture(
       LocalFrame*);
 };

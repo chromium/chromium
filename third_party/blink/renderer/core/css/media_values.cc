@@ -305,27 +305,34 @@ NavigationControls MediaValues::CalculateNavigationControls(LocalFrame* frame) {
   return frame->GetSettings()->GetNavigationControls();
 }
 
-ScreenSpanning MediaValues::CalculateScreenSpanning(LocalFrame* frame) {
+int MediaValues::CalculateHorizontalViewportSegments(LocalFrame* frame) {
   if (!frame->GetWidgetForLocalRoot())
-    return ScreenSpanning::kNone;
+    return 1;
 
   WebVector<gfx::Rect> window_segments =
       frame->GetWidgetForLocalRoot()->WindowSegments();
-
-  if (window_segments.size() == 2) {
-    // If there are two segments and the y value of the segments is the same,
-    // we have side-by-side segments which are represented as a single vertical
-    // fold.
-    if (window_segments[0].y() == window_segments[1].y())
-      return ScreenSpanning::kSingleFoldVertical;
-
-    // If the x value of the segments is the same, we have stacked segments
-    // which are represented as a single horizontal fold.
-    if (window_segments[0].x() == window_segments[1].x())
-      return ScreenSpanning::kSingleFoldHorizontal;
+  WTF::HashSet<int> unique_x;
+  for (const auto& segment : window_segments) {
+    // HashSet can't have 0 as a key, so add 1 to all the values we see.
+    unique_x.insert(segment.x() + 1);
   }
 
-  return ScreenSpanning::kNone;
+  return static_cast<int>(unique_x.size());
+}
+
+int MediaValues::CalculateVerticalViewportSegments(LocalFrame* frame) {
+  if (!frame->GetWidgetForLocalRoot())
+    return 1;
+
+  WebVector<gfx::Rect> window_segments =
+      frame->GetWidgetForLocalRoot()->WindowSegments();
+  WTF::HashSet<int> unique_y;
+  for (const auto& segment : window_segments) {
+    // HashSet can't have 0 as a key, so add 1 to all the values we see.
+    unique_y.insert(segment.y() + 1);
+  }
+
+  return static_cast<int>(unique_y.size());
 }
 
 device::mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(

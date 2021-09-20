@@ -54,7 +54,10 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     prefers_reduced_data = MediaValues::CalculatePrefersReducedData(frame);
     forced_colors = MediaValues::CalculateForcedColors(frame);
     navigation_controls = MediaValues::CalculateNavigationControls(frame);
-    screen_spanning = MediaValues::CalculateScreenSpanning(frame);
+    horizontal_viewport_segments =
+        MediaValues::CalculateHorizontalViewportSegments(frame);
+    vertical_viewport_segments =
+        MediaValues::CalculateVerticalViewportSegments(frame);
     device_posture = MediaValues::CalculateDevicePosture(frame);
   }
 }
@@ -196,8 +199,12 @@ NavigationControls MediaValuesCached::GetNavigationControls() const {
   return data_.navigation_controls;
 }
 
-ScreenSpanning MediaValuesCached::GetScreenSpanning() const {
-  return data_.screen_spanning;
+int MediaValuesCached::GetHorizontalViewportSegments() const {
+  return data_.horizontal_viewport_segments;
+}
+
+int MediaValuesCached::GetVerticalViewportSegments() const {
+  return data_.vertical_viewport_segments;
 }
 
 device::mojom::blink::DevicePostureType MediaValuesCached::GetDevicePosture()

@@ -54,7 +54,8 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   bool PrefersReducedData() const override;
   ForcedColors GetForcedColors() const override;
   NavigationControls GetNavigationControls() const override;
-  ScreenSpanning GetScreenSpanning() const override;
+  int GetHorizontalViewportSegments() const override;
+  int GetVerticalViewportSegments() const override;
   device::mojom::blink::DevicePostureType GetDevicePosture() const override;
   Document* GetDocument() const override;
   bool HasValues() const override;

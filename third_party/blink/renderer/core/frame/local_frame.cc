@@ -1287,8 +1287,8 @@ void LocalFrame::WindowSegmentsChanged(
   DCHECK(IsLocalRoot());
 
   // A change in the window segments requires re-evaluation of media queries
-  // for the local frame subtree (the segments affect the "screen-spanning"
-  // feature).
+  // for the local frame subtree (the segments affect the
+  // "horizontal-viewport-segments" and "vertical-viewport-segments" features).
   MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange::kOther);
 
   // Also need to update the environment variables related to window segments.

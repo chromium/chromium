@@ -59,7 +59,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     bool prefers_reduced_data = false;
     ForcedColors forced_colors = ForcedColors::kNone;
     NavigationControls navigation_controls = NavigationControls::kNone;
-    ScreenSpanning screen_spanning = ScreenSpanning::kNone;
+    int horizontal_viewport_segments = 0;
+    int vertical_viewport_segments = 0;
     device::mojom::blink::DevicePostureType device_posture =
         device::mojom::blink::DevicePostureType::kContinuous;
 
@@ -93,7 +94,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.prefers_reduced_data = prefers_reduced_data;
       data.forced_colors = forced_colors;
       data.navigation_controls = navigation_controls;
-      data.screen_spanning = screen_spanning;
+      data.horizontal_viewport_segments = horizontal_viewport_segments;
+      data.vertical_viewport_segments = vertical_viewport_segments;
       data.device_posture = device_posture;
       return data;
     }
@@ -137,7 +139,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   bool PrefersReducedData() const override;
   ForcedColors GetForcedColors() const override;
   NavigationControls GetNavigationControls() const override;
-  ScreenSpanning GetScreenSpanning() const override;
+  int GetHorizontalViewportSegments() const override;
+  int GetVerticalViewportSegments() const override;
   device::mojom::blink::DevicePostureType GetDevicePosture() const override;
 
   void OverrideViewportDimensions(double width, double height) override;

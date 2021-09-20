@@ -169,8 +169,12 @@ NavigationControls MediaValuesDynamic::GetNavigationControls() const {
   return CalculateNavigationControls(frame_);
 }
 
-ScreenSpanning MediaValuesDynamic::GetScreenSpanning() const {
-  return CalculateScreenSpanning(frame_);
+int MediaValuesDynamic::GetHorizontalViewportSegments() const {
+  return CalculateHorizontalViewportSegments(frame_);
+}
+
+int MediaValuesDynamic::GetVerticalViewportSegments() const {
+  return CalculateVerticalViewportSegments(frame_);
 }
 
 device::mojom::blink::DevicePostureType MediaValuesDynamic::GetDevicePosture()

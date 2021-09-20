@@ -972,24 +972,32 @@ static bool NavigationControlsMediaFeatureEval(
           value.id == CSSValueID::kBackButton);
 }
 
-static bool ScreenSpanningMediaFeatureEval(const MediaQueryExpValue& value,
-                                           MediaFeaturePrefix,
-                                           const MediaValues& media_values) {
-  ScreenSpanning screen_spanning_mode = media_values.GetScreenSpanning();
-
+static bool HorizontalViewportSegmentsMediaFeatureEval(
+    const MediaQueryExpValue& value,
+    MediaFeaturePrefix op,
+    const MediaValues& media_values) {
+  int horizontal_viewport_segments =
+      media_values.GetHorizontalViewportSegments();
   if (!value.IsValid())
-    return screen_spanning_mode != ScreenSpanning::kNone;
+    return true;
 
-  // We should not have parsed a valid MediaQueryExpValue if the value is not
-  // an identifier.
-  DCHECK(value.is_id);
+  float number;
+  return NumberValue(value, number) &&
+         CompareValue(horizontal_viewport_segments, static_cast<int>(number),
+                      op);
+}
 
-  return (screen_spanning_mode == ScreenSpanning::kNone &&
-          value.id == CSSValueID::kNone) ||
-         (screen_spanning_mode == ScreenSpanning::kSingleFoldVertical &&
-          value.id == CSSValueID::kSingleFoldVertical) ||
-         (screen_spanning_mode == ScreenSpanning::kSingleFoldHorizontal &&
-          value.id == CSSValueID::kSingleFoldHorizontal);
+static bool VerticalViewportSegmentsMediaFeatureEval(
+    const MediaQueryExpValue& value,
+    MediaFeaturePrefix op,
+    const MediaValues& media_values) {
+  int vertical_viewport_segments = media_values.GetVerticalViewportSegments();
+  if (!value.IsValid())
+    return true;
+
+  float number;
+  return NumberValue(value, number) &&
+         CompareValue(vertical_viewport_segments, static_cast<int>(number), op);
 }
 
 static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,

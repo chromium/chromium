@@ -234,29 +234,40 @@ MediaQueryEvaluatorTestCase g_navigationcontrols_none_cases[] = {
     {nullptr, false}  // Do not remove the terminator line.
 };
 
-MediaQueryEvaluatorTestCase g_screen_spanning_none_cases[] = {
-    {"(screen-spanning)", false},
-    {"(screen-spanning: single-fold-vertical)", false},
-    {"(screen-spanning: single-fold-horizontal)", false},
-    {"(screen-spanning: none)", true},
-    {"(screen-spanning: 1px)", false},
-    {"(screen-spanning: 16/9)", false},
+MediaQueryEvaluatorTestCase g_single_horizontal_viewport_segment_cases[] = {
+    {"(horizontal-viewport-segments)", true},
+    {"(horizontal-viewport-segments: 1)", true},
+    {"(horizontal-viewport-segments > 1)", false},
+    {"(horizontal-viewport-segments: 2)", false},
+    {"(horizontal-viewport-segments: none)", false},
+    {"(horizontal-viewport-segments: 1px)", false},
+    {"(horizontal-viewport-segments: 16/9)", false},
     {nullptr, false}  // Do not remove the terminator line.
 };
 
-MediaQueryEvaluatorTestCase g_screen_spanning_single_fold_vertical_cases[] = {
-    {"(screen-spanning)", true},
-    {"(screen-spanning: single-fold-vertical)", true},
-    {"(screen-spanning: single-fold-horizontal)", false},
-    {"(screen-spanning: none)", false},
+MediaQueryEvaluatorTestCase g_double_horizontal_viewport_segment_cases[] = {
+    {"(horizontal-viewport-segments)", true},
+    {"(horizontal-viewport-segments: 1)", false},
+    {"(horizontal-viewport-segments: 2)", true},
+    {"(horizontal-viewport-segments: 3)", false},
     {nullptr, false}  // Do not remove the terminator line.
 };
 
-MediaQueryEvaluatorTestCase g_screen_spanning_single_fold_horizontal_cases[] = {
-    {"(screen-spanning)", true},
-    {"(screen-spanning: single-fold-vertical)", false},
-    {"(screen-spanning: single-fold-horizontal)", true},
-    {"(screen-spanning: none)", false},
+MediaQueryEvaluatorTestCase g_single_vertical_viewport_segment_cases[] = {
+    {"(vertical-viewport-segments)", true},
+    {"(vertical-viewport-segments: 1)", true},
+    {"(vertical-viewport-segments: 2)", false},
+    {"(vertical-viewport-segments: none)", false},
+    {"(vertical-viewport-segments: 1px)", false},
+    {"(vertical-viewport-segments: 16/9)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_double_vertical_viewport_segment_cases[] = {
+    {"(vertical-viewport-segments)", true},
+    {"(vertical-viewport-segments: 1)", false},
+    {"(vertical-viewport-segments: 2)", true},
+    {"(vertical-viewport-segments: 3)", false},
     {nullptr, false}  // Do not remove the terminator line.
 };
 
@@ -531,31 +542,41 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
   }
 }
 
-TEST(MediaQueryEvaluatorTest, CachedScreenSpanning) {
+TEST(MediaQueryEvaluatorTest, CachedViewportSegments) {
   ScopedCSSFoldablesForTest scoped_feature(true);
 
   MediaValuesCached::MediaValuesCachedData data;
   {
-    data.screen_spanning = ScreenSpanning::kNone;
+    data.horizontal_viewport_segments = 1;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
     MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_screen_spanning_none_cases, media_query_evaluator);
-  }
-
-  {
-    data.screen_spanning = ScreenSpanning::kSingleFoldVertical;
-    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_screen_spanning_single_fold_vertical_cases,
+    TestMQEvaluator(g_single_horizontal_viewport_segment_cases,
                     media_query_evaluator);
   }
 
   {
-    data.screen_spanning = ScreenSpanning::kSingleFoldHorizontal;
+    data.horizontal_viewport_segments = 2;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_screen_spanning_single_fold_horizontal_cases,
+    TestMQEvaluator(g_double_horizontal_viewport_segment_cases,
+                    media_query_evaluator);
+  }
+
+  {
+    data.vertical_viewport_segments = 1;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_single_vertical_viewport_segment_cases,
+                    media_query_evaluator);
+  }
+
+  {
+    data.vertical_viewport_segments = 2;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_double_vertical_viewport_segment_cases,
                     media_query_evaluator);
   }
 }

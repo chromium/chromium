@@ -62,6 +62,7 @@
     "-webkit-transform-3d",
     "scan",
     "device-posture",
-    "screen-spanning",
+    "horizontal-viewport-segments",
+    "vertical-viewport-segments",
   ],
 }

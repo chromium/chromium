@@ -1398,11 +1398,6 @@
     // https://drafts.csswg.org/css-conditional-4/#typedef-supports-selector-fn
     "selector",
 
-    // (screen-spanning) media feature
-    // none
-    "single-fold-vertical",
-    "single-fold-horizontal",
-
     // (device-posture) media feature
     "continuous",
     "folded",
