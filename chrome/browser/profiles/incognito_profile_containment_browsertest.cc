@@ -32,7 +32,7 @@ namespace {
 // Incognito session.
 // TODO(http://crbug.com/1234755): Add audit message (or fix the issue) for all
 // paths that do not have a comment.
-constexpr std::array<const char*, 10> kAllowListPrefixesForAllPlatforms = {
+constexpr std::array<const char*, 11> kAllowListPrefixesForAllPlatforms = {
     "/Default/data_reduction_proxy_leveldb",
     "/Default/Extension State",
     "/Default/GCM Store/",
@@ -42,12 +42,14 @@ constexpr std::array<const char*, 10> kAllowListPrefixesForAllPlatforms = {
     "/Default/Reporting and NEL",
     "/Default/shared_proto_db",
     "/Default/Trust Tokens",
-    "/GrShaderCache/GPUCache"};
+    "/GrShaderCache/GPUCache",
+    "/Local State"};
 #if defined(OS_MAC)
 constexpr std::array<const char*, 2> kAllowListPrefixesForPlatform = {
     "/Default/Shortcuts", "/Default/Visited Links"};
 #elif defined(OS_WIN)
-constexpr std::array<const char*, 5> kAllowListPrefixesForPlatform = {
+constexpr std::array<const char*, 6> kAllowListPrefixesForPlatform = {
+    "/Default/databases-off-the-record",
     "/Default/heavy_ad_intervention_opt_out.db", "/Default/Shortcuts",
     "/Default/Top Sites", "/GrShaderCache/old_GPUCache",
 
@@ -129,7 +131,7 @@ bool IsFileModified(FileData& before, FileData& after) {
     if (!ComputeFileHash(after.full_path, &hash_code))
       return false;
 
-    return hash_code == before.file_hash;
+    return hash_code != before.file_hash;
   }
 
   return false;
@@ -161,7 +163,7 @@ bool IsDiskStateModified(Snapshot& snapshot_before,
         continue;
 
       // If data content is not changed, it can be ignored.
-      if (IsFileModified(before->second, fd.second))
+      if (!is_new && !IsFileModified(before->second, fd.second))
         continue;
 
       modified = true;
