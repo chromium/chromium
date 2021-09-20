@@ -1,0 +1,9 @@
+specific_include_rules = {
+  # TODO(crbug/1251346): Remove.
+  "fast_pair_enabled_provider_unittest.cc": [
+    "+components/user_manager",
+  ],
+  "logged_in_user_enabled_provider.h": [
+    "+components/user_manager/user_manager.h",
+  ],
+}

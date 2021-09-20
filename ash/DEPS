@@ -14,12 +14,10 @@ include_rules = [
   "+components/prefs",
   "+components/quirks",
   "+components/services/app_service/public",
-  "+components/session_manager",
   "+components/soda",
   "+components/strings",
   "+components/sync",
   "+components/ui_devtools",
-  "+components/user_manager",
   "+components/vector_icons",
   "+components/viz/common",
   "+components/viz/host",
@@ -87,10 +85,21 @@ include_rules = [
   "+chromeos/ui",
 
   # ui/base/idle depends on SessionManagerClient so disallow it.
-  "-ui/base/idle"
+  "-ui/base/idle",
 
-  # InputMethodManager lives in the browser process. Use ImeController.
-  "-ui/base/ime/ash/input_method_manager.h"
+  # user_manager::UserManager and session_manager::SessionManager lives in the
+  # browser process. Use SessionController to access user or user session info
+  # so that ash code depends on a single source of truth. If the info is not
+  # available, add new interface to SessionControllerClient and friends to
+  # bridge data from user_manager::UserManager or
+  # session_manager::SessionManager.
+  "-components/session_manager",
+  "+components/session_manager/session_manager_types.h",
+  "-components/user_manager",
+  "+components/user_manager/known_user.h",
+  "+components/user_manager/user_names.h",
+  "+components/user_manager/user_type.h",
+  "+components/user_manager/user.h",
 ]
 
 specific_include_rules = {
@@ -107,9 +116,6 @@ specific_include_rules = {
     "+ash/host/ash_window_tree_host_init_params.h"
   ],
   "window_manager.cc": [
-    "+ash/host/ash_window_tree_host.h"
-  ],
-  "window_service_delegate_impl.cc": [
     "+ash/host/ash_window_tree_host.h"
   ],
 }
