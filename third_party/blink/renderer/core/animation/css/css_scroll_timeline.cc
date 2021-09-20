@@ -213,7 +213,8 @@ CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
     : ScrollTimeline(document,
                      options.source_,
                      options.direction_,
-                     std::move(options.offsets_)),
+                     std::move(options.offsets_),
+                     absl::nullopt),
       rule_(options.rule_) {
   DCHECK(rule_);
 }

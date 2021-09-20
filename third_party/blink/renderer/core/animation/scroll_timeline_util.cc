@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_double_scrolltimelineautokeyword.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/dom/node.h"

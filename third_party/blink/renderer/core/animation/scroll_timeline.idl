@@ -14,4 +14,5 @@ typedef (ScrollTimelineContainerBasedOffset or ScrollTimelineElementBasedOffset)
     readonly attribute Element? scrollSource;
     readonly attribute ScrollDirection orientation;
     readonly attribute FrozenArray<ScrollTimelineOffset> scrollOffsets;
+    readonly attribute (double or ScrollTimelineAutoKeyword) timeRange;
 };

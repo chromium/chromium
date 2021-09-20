@@ -1377,7 +1377,8 @@ class ScrollTimelineForTest : public ScrollTimeline {
       : ScrollTimeline(document,
                        scroll_source,
                        ScrollTimeline::Vertical,
-                       std::move(scroll_offsets)),
+                       std::move(scroll_offsets),
+                       100.0),
         invalidated_(false) {}
   void Invalidate() override {
     ScrollTimeline::Invalidate();
