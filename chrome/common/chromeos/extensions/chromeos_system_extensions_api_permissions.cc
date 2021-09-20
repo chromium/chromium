@@ -21,7 +21,8 @@ using extensions::mojom::APIPermissionID;
 // add the corresponding permission message rule to
 // ChromePermissionMessageProvider::GetPermissionMessages as well.
 constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
-    // Telemetry System Extension Permissions
+    // Telemetry System Extension permissions.
+    {APIPermissionID::kChromeOSDiagnostics, "os.diagnostics"},
     {APIPermissionID::kChromeOSTelemetry, "os.telemetry"},
 };
 

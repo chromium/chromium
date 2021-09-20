@@ -29910,6 +29910,7 @@ Called by update_extension_permission.py.-->
   <int value="233" label="kDeclarativeNetRequestWithHostAccess"/>
   <int value="234" label="kChromeOSTelemetry"/>
   <int value="235" label="kSpeechRecognitionPrivate"/>
+  <int value="236" label="kChromeOSDiagnostics"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

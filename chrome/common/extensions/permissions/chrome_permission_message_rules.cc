@@ -4,9 +4,12 @@
 
 #include "chrome/common/extensions/permissions/chrome_permission_message_rules.h"
 
+#include <initializer_list>
 #include <iterator>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/stl_util.h"
@@ -271,6 +274,43 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_LIST),
         permissions, submessages);
   }
+};
+
+// Concatenates a set of permission message ids into one string by adding a
+// space between them. Useful to define a common message text once and use
+// it in different combinations. See usages.
+class ConcatenateMessageFormatter : public ChromePermissionMessageFormatter {
+ public:
+  ConcatenateMessageFormatter(
+      const std::initializer_list<int>& permission_messages)
+      : message_(ConcatenateMessagesWithIds(permission_messages)) {}
+  ConcatenateMessageFormatter(const ConcatenateMessageFormatter&) = delete;
+  ConcatenateMessageFormatter& operator=(const ConcatenateMessageFormatter&) =
+      delete;
+  ~ConcatenateMessageFormatter() override = default;
+
+  PermissionMessage GetPermissionMessage(
+      const PermissionIDSet& permissions) const override {
+    DCHECK(permissions.size() > 0);
+    return PermissionMessage(message_, permissions);
+  }
+
+ private:
+  static std::u16string ConcatenateMessagesWithIds(
+      const std::initializer_list<int>& message_ids) {
+    std::vector<std::u16string> message_strings;
+    message_strings.reserve(message_ids.size());
+
+    std::transform(message_ids.begin(), message_ids.end(),
+                   std::back_inserter(message_strings),
+                   [](int message_id) -> std::u16string {
+                     return l10n_util::GetStringUTF16(message_id);
+                   });
+
+    return base::JoinString(message_strings, u" ");
+  }
+
+  const std::u16string message_;
 };
 
 }  // namespace
@@ -722,8 +762,32 @@ ChromePermissionMessageRule::GetAllRules() {
        {APIPermissionID::kTransientBackground},
        {}},
 
-      // Telemetry System Extension permissions.
-      {IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY,
+      // Telemetry System Extension permission messages.
+      //
+      // The permission messages for both os.diagnostics and os.telemetry differ
+      // based on which permissions are requested:
+      //   1. os.diagnostics permission only.
+      //   2. os.telemetry permission only.
+      //   3. Both os.diagnostics and os.telemetry permissions.
+      // That's why 3 permission messages are defined, respectively.
+      // In all of the above cases, a common text (for privacy and legal
+      // purposes) should appear. The common text is defined as a separate
+      // permission message and the ConcatenateMessageFormatter is used to
+      // construct the complete message.
+      {std::make_unique<ConcatenateMessageFormatter>(std::initializer_list<int>{
+           IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_AND_DIAGNOSTICS,
+           IDS_EXTENSION_PROMPT_WARNING_DEVICE_INFO_MAYBE_SHARED_WITH_MANUFACTURER}),
+       {APIPermissionID::kChromeOSTelemetry,
+        APIPermissionID::kChromeOSDiagnostics},
+       {}},
+      {std::make_unique<ConcatenateMessageFormatter>(std::initializer_list<int>{
+           IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS,
+           IDS_EXTENSION_PROMPT_WARNING_DEVICE_INFO_MAYBE_SHARED_WITH_MANUFACTURER}),
+       {APIPermissionID::kChromeOSDiagnostics},
+       {}},
+      {std::make_unique<ConcatenateMessageFormatter>(std::initializer_list<int>{
+           IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY,
+           IDS_EXTENSION_PROMPT_WARNING_DEVICE_INFO_MAYBE_SHARED_WITH_MANUFACTURER}),
        {APIPermissionID::kChromeOSTelemetry},
        {}},
   };
