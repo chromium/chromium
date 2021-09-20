@@ -561,6 +561,7 @@ source_set("unit_tests") {
     "push_messaging/push_message_data_test.cc",
     "push_messaging/push_subscription_test.cc",
     "remoteplayback/remote_playback_test.cc",
+    "scheduler/dom_scheduler_test.cc",
     "screen_orientation/screen_orientation_controller_test.cc",
     "sensor/ambient_light_sensor_test.cc",
     "sensor/sensor_test_utils.cc",
