@@ -16692,6 +16692,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="Signin_Reconciler" separator=".">
+  <obsolete>
+    No longer used after 2021-05 and the switch to OAuthMultilogin.
+  </obsolete>
   <suffix name="FirstRun"
       label="First execution of the reconciler after the profile was loaded
              or the new_profile_management flag was toggled."/>

@@ -961,8 +961,9 @@ should be kept to monitor/debug signin Multilogin issues-->
 
 <histogram name="Signin.Reconciler.AddedToCookieJar" units="accounts"
     expires_after="never">
-<!-- expires-never: used to detect and debug signin issues -->
-
+  <obsolete>
+    No longer emitted after 2021-05 and the switch to OAuthMultilogin.
+  </obsolete>
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -986,8 +987,9 @@ should be kept to monitor/debug signin Multilogin issues-->
 
 <histogram name="Signin.Reconciler.DifferentPrimaryAccounts"
     enum="DifferentPrimaryAccounts" expires_after="never">
-<!-- expires-never: used to detect and debug signin issues -->
-
+  <obsolete>
+    No longer emitted after 2021-05 and the switch to OAuthMultilogin.
+  </obsolete>
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -1066,8 +1068,9 @@ should be kept to monitor/debug signin Multilogin issues-->
 
 <histogram name="Signin.Reconciler.RemovedFromCookieJar" units="accounts"
     expires_after="never">
-<!-- expires-never: used to detect and debug signin issues -->
-
+  <obsolete>
+    No longer emitted after 2021-05 and the switch to OAuthMultilogin.
+  </obsolete>
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>

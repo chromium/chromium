@@ -522,16 +522,6 @@ void RecordSigninNewAccountExistingAccountUserActionForAccessPoint(
       break;                                                                   \
   }
 
-// Helper method to determine which |DifferentPrimaryAccounts| applies.
-DifferentPrimaryAccounts ComparePrimaryAccounts(bool primary_accounts_same,
-                                                int pre_count_gaia_cookies) {
-  if (primary_accounts_same)
-    return ACCOUNTS_SAME;
-  if (pre_count_gaia_cookies == 0)
-    return NO_COOKIE_PRESENT;
-  return COOKIE_AND_TOKEN_PRIMARIES_DIFFERENT;
-}
-
 void LogSigninAccessPointStarted(AccessPoint access_point,
                                  PromoAction promo_action) {
   UMA_HISTOGRAM_ENUMERATION("Signin.SigninStartedAccessPoint",
@@ -604,37 +594,6 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
 
 void LogSigninReason(Reason reason) {
   UMA_HISTOGRAM_ENUMERATION("Signin.SigninReason", reason);
-}
-
-void LogSigninAccountReconciliation(int total_number_accounts,
-                                    int count_added_to_cookie_jar,
-                                    int count_removed_from_cookie_jar,
-                                    bool primary_accounts_same,
-                                    bool is_first_reconcile,
-                                    int pre_count_gaia_cookies) {
-  RecordAccountsPerProfile(total_number_accounts);
-  // We want to include zeroes in the counts of added or removed accounts to
-  // easily capture _relatively_ how often we merge accounts.
-  if (is_first_reconcile) {
-    UMA_HISTOGRAM_COUNTS_100("Signin.Reconciler.AddedToCookieJar.FirstRun",
-                             count_added_to_cookie_jar);
-    UMA_HISTOGRAM_COUNTS_100("Signin.Reconciler.RemovedFromCookieJar.FirstRun",
-                             count_removed_from_cookie_jar);
-    UMA_HISTOGRAM_ENUMERATION(
-        "Signin.Reconciler.DifferentPrimaryAccounts.FirstRun",
-        ComparePrimaryAccounts(primary_accounts_same, pre_count_gaia_cookies),
-        NUM_DIFFERENT_PRIMARY_ACCOUNT_METRICS);
-  } else {
-    UMA_HISTOGRAM_COUNTS_100("Signin.Reconciler.AddedToCookieJar.SubsequentRun",
-                             count_added_to_cookie_jar);
-    UMA_HISTOGRAM_COUNTS_100(
-        "Signin.Reconciler.RemovedFromCookieJar.SubsequentRun",
-        count_removed_from_cookie_jar);
-    UMA_HISTOGRAM_ENUMERATION(
-        "Signin.Reconciler.DifferentPrimaryAccounts.SubsequentRun",
-        ComparePrimaryAccounts(primary_accounts_same, pre_count_gaia_cookies),
-        NUM_DIFFERENT_PRIMARY_ACCOUNT_METRICS);
-  }
 }
 
 void RecordAccountsPerProfile(int total_number_accounts) {

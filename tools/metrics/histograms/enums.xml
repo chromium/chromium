@@ -20487,6 +20487,9 @@ Called by update_debug_scenarios.py.-->
 </enum>
 
 <enum name="DifferentPrimaryAccounts">
+  <obsolete>
+    No longer used after 2021-05 and the switch to OAuthMultilogin.
+  </obsolete>
   <int value="0" label="Primary Accounts the same"/>
   <int value="1" label="(obsolete) Primary Accounts different"/>
   <int value="2" label="No GAIA account in cookie jar"/>
