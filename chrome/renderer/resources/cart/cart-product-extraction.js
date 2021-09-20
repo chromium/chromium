@@ -19,8 +19,9 @@ var priceCleanupRegex = new RegExp(
 var cartItemHTMLRegex = new RegExp(
     '(cart|basket|bundle)[-_]?((\\w+)[-_])?(item|product)', 'i');
 var cartItemTextRegex = new RegExp(
-    '(remove|delete|save for later|move to (favo(u?)rite|list|wish( ?)list)s?)'+
-    '|(qty)', 'i');
+    'remove|delete|save for later|move to (favo(u?)rite|list|wish( ?)list)s?',
+    'i');
+var cartItemQtyRegex = new RegExp('qty', 'i');
 var moveToCartTextRegex = new RegExp('move to (cart|bag)', 'i');
 var addToCartTextRegex = new RegExp('add to cart', 'i');
 var cartPriceTextRegex = new RegExp('estimated (sales )?tax', 'i');
@@ -104,7 +105,8 @@ function multipleImagesSupported() {
   // large and are picked up. Adding in hostname.endsWith('target.com') is a
   // workaround for this problem. In target we only get one image per product.
   return hostname.endsWith('craigslist.org') || hostname.endsWith('target.com')
-      || hostname.endsWith('zazzle.com');
+      || hostname.endsWith('zazzle.com')
+      || hostname.endsWith("ashleyfurniture.com");
 }
 
 function extractImage(item) {
@@ -493,7 +495,8 @@ function extractPrice(item) {
   }
   // Generic heuristic to search for price elements.
   let captured_prices = [];
-  for (const price of item.querySelectorAll('span, b, p, div, h3, td, li')) {
+  for (const price of item.querySelectorAll(
+    'span, b, p, div, h3, td, li, em')) {
     const candidate = price.innerText.trim();
     if (!candidate.match(priceRegexFull))
       continue;
@@ -654,7 +657,11 @@ function isCartItem(item) {
   if ((document.URL.includes("ashleyfurniture.com")
       || document.URL.includes("gnc.com"))
       && matchPattern(item, minicartHTMLRegex, false)) return false;
+  if (document.URL.includes("ashleyfurniture.com")
+      && matchPattern(item, cartItemQtyRegex, true) === null)
+    return false;
   return matchPattern(item, cartItemTextRegex, true) ||
+    matchPattern(item, cartItemQtyRegex, true) ||
     matchPattern(item, cartItemHTMLRegex, false);
 }
 
