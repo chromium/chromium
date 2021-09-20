@@ -27,12 +27,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -84,9 +82,6 @@ public class MerchantTrustBottomSheetCoordinatorTest {
     @Mock
     private MerchantTrustBottomSheetMediator mMockMediator;
 
-    @Mock
-    private ObservableSupplier<Profile> mMockProfileSupplier;
-
     @Captor
     private ArgumentCaptor<EmptyBottomSheetObserver> mBottomSheetObserverCaptor;
 
@@ -106,7 +101,7 @@ public class MerchantTrustBottomSheetCoordinatorTest {
                 () -> { mWindowAndroid = new WindowAndroid(mActivity); });
         mDetailsTabCoordinator = new MerchantTrustBottomSheetCoordinator(mActivity, mWindowAndroid,
                 mMockBottomSheetController, mMockTabProvider, mMockDecorView, mMockMetrics,
-                IntentRequestTracker.createFromActivity(mActivity), mMockProfileSupplier);
+                IntentRequestTracker.createFromActivity(mActivity));
         mDetailsTabCoordinator.setMediatorForTesting(mMockMediator);
         requestOpenSheetAndVerify();
     }
