@@ -71,7 +71,7 @@ void AdsBlockedMessageDelegate::ShowMessage() {
   // activity is being recreated or destroyed, ads blocked message will not be
   // displayed.
   message_dispatcher_bridge->EnqueueMessage(
-      message.get(), web_contents(), messages::MessageScopeType::WEB_CONTENTS,
+      message.get(), web_contents(), messages::MessageScopeType::NAVIGATION,
       messages::MessagePriority::kNormal);
 
   message_ = std::move(message);
