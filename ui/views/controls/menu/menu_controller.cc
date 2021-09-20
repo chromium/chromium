@@ -1502,7 +1502,7 @@ void MenuController::StartDrag(SubmenuView* source,
 
   float raster_scale = ScaleFactorForDragFromWidget(source->GetWidget());
   gfx::Canvas canvas(item->size(), raster_scale, false /* opaque */);
-  item->PaintButton(&canvas, MenuItemView::PaintButtonMode::kForDrag);
+  item->PaintForDrag(&canvas);
   gfx::ImageSkia image =
       gfx::ImageSkia::CreateFromBitmap(canvas.GetBitmap(), raster_scale);
 

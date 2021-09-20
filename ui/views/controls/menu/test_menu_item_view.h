@@ -28,6 +28,10 @@ class TestMenuItemView : public MenuItemView {
   void set_has_mnemonics(bool has_mnemonics) { has_mnemonics_ = has_mnemonics; }
 
   bool show_mnemonics() { return show_mnemonics_; }
+
+  static ImageView* submenu_arrow_image_view(MenuItemView* view) {
+    return view->submenu_arrow_image_view_;
+  }
 };
 
 }  // namespace views
