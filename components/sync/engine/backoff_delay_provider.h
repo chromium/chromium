@@ -28,6 +28,9 @@ class BackoffDelayProvider {
   // was passed to command line.
   static std::unique_ptr<BackoffDelayProvider> WithShortInitialRetryOverride();
 
+  BackoffDelayProvider(const BackoffDelayProvider&) = delete;
+  BackoffDelayProvider& operator=(const BackoffDelayProvider&) = delete;
+
   virtual ~BackoffDelayProvider();
 
   // DDOS avoidance function.  Calculates how long we should wait before trying
@@ -52,8 +55,6 @@ class BackoffDelayProvider {
  private:
   const base::TimeDelta default_initial_backoff_;
   const base::TimeDelta short_initial_backoff_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackoffDelayProvider);
 };
 
 }  // namespace syncer

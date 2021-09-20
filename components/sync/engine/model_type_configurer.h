@@ -24,6 +24,10 @@ class ModelTypeConfigurer {
   struct ConfigureParams {
     ConfigureParams();
     ConfigureParams(ConfigureParams&& other);
+
+    ConfigureParams(const ConfigureParams&) = delete;
+    ConfigureParams& operator=(const ConfigureParams&) = delete;
+
     ~ConfigureParams();
     ConfigureParams& operator=(ConfigureParams&& other);
 
@@ -36,9 +40,6 @@ class ModelTypeConfigurer {
 
     // Whether full sync (or sync the feature) is enabled;
     bool is_sync_feature_enabled;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ConfigureParams);
   };
 
   ModelTypeConfigurer();

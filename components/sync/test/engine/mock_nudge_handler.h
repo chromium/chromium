@@ -15,6 +15,10 @@ namespace syncer {
 class MockNudgeHandler : public NudgeHandler {
  public:
   MockNudgeHandler();
+
+  MockNudgeHandler(const MockNudgeHandler&) = delete;
+  MockNudgeHandler& operator=(const MockNudgeHandler&) = delete;
+
   ~MockNudgeHandler() override;
 
   void NudgeForInitialDownload(ModelType type) override;
@@ -28,8 +32,6 @@ class MockNudgeHandler : public NudgeHandler {
  private:
   int num_initial_nudges_;
   int num_commit_nudges_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNudgeHandler);
 };
 
 }  // namespace syncer

@@ -78,6 +78,10 @@ class SyncServiceImpl : public SyncService,
   struct InitParams {
     InitParams();
     InitParams(InitParams&& other);
+
+    InitParams(const InitParams&) = delete;
+    InitParams& operator=(const InitParams&) = delete;
+
     ~InitParams();
 
     std::unique_ptr<SyncClient> sync_client;
@@ -90,12 +94,12 @@ class SyncServiceImpl : public SyncService,
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
     policy::PolicyService* policy_service = nullptr;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(InitParams);
   };
 
   explicit SyncServiceImpl(InitParams init_params);
+
+  SyncServiceImpl(const SyncServiceImpl&) = delete;
+  SyncServiceImpl& operator=(const SyncServiceImpl&) = delete;
 
   ~SyncServiceImpl() override;
 
@@ -463,8 +467,6 @@ class SyncServiceImpl : public SyncService,
   base::WeakPtrFactory<SyncServiceImpl> sync_enabled_weak_factory_{this};
 
   base::WeakPtrFactory<SyncServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncServiceImpl);
 };
 
 }  // namespace syncer

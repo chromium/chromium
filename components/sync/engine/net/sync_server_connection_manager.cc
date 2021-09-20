@@ -26,6 +26,10 @@ class Connection : public CancelationSignal::Observer {
   // All pointers must not be null and must outlive this object.
   Connection(HttpPostProviderFactory* factory,
              CancelationSignal* cancelation_signal);
+
+  Connection(const Connection&) = delete;
+  Connection& operator=(const Connection&) = delete;
+
   ~Connection() override;
 
   HttpResponse Init(const GURL& connection_url,
@@ -51,8 +55,6 @@ class Connection : public CancelationSignal::Observer {
   scoped_refptr<HttpPostProviderInterface> const post_provider_;
 
   std::string buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Connection);
 };
 
 Connection::Connection(HttpPostProviderFactory* factory,

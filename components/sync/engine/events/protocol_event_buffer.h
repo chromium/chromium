@@ -25,6 +25,10 @@ class ProtocolEventBuffer {
   static const size_t kBufferSize;
 
   ProtocolEventBuffer();
+
+  ProtocolEventBuffer(const ProtocolEventBuffer&) = delete;
+  ProtocolEventBuffer& operator=(const ProtocolEventBuffer&) = delete;
+
   ~ProtocolEventBuffer();
 
   // Records an event.  May cause the oldest event to be dropped.
@@ -35,8 +39,6 @@ class ProtocolEventBuffer {
 
  private:
   base::circular_deque<std::unique_ptr<ProtocolEvent>> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolEventBuffer);
 };
 
 }  // namespace syncer

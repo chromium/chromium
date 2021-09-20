@@ -15,6 +15,10 @@ namespace syncer {
 class NigoriStorage {
  public:
   NigoriStorage() = default;
+
+  NigoriStorage(const NigoriStorage&) = delete;
+  NigoriStorage& operator=(const NigoriStorage&) = delete;
+
   virtual ~NigoriStorage() = default;
 
   // Should atomically persist |data|.
@@ -26,9 +30,6 @@ class NigoriStorage {
 
   // Removes all previously stored data.
   virtual void ClearData() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NigoriStorage);
 };
 
 }  // namespace syncer

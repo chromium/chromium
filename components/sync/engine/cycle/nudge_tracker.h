@@ -30,6 +30,10 @@ namespace syncer {
 class NudgeTracker {
  public:
   NudgeTracker();
+
+  NudgeTracker(const NudgeTracker&) = delete;
+  NudgeTracker& operator=(const NudgeTracker&) = delete;
+
   ~NudgeTracker();
 
   // Returns true if there is a good reason for performing a sync cycle.
@@ -203,8 +207,6 @@ class NudgeTracker {
   // SetSyncCycleStartTime().  This may contain a stale value if we're not
   // currently in a sync cycle.
   base::TimeTicks sync_cycle_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(NudgeTracker);
 };
 
 }  // namespace syncer

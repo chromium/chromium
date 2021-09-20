@@ -43,6 +43,9 @@ class Commit {
          const sync_pb::ClientToServerMessage& message,
          ExtensionsActivity::Records extensions_activity_buffer);
 
+  Commit(const Commit&) = delete;
+  Commit& operator=(const Commit&) = delete;
+
   ~Commit();
 
   // |extensions_activity| may be null.
@@ -73,8 +76,6 @@ class Commit {
 
   sync_pb::ClientToServerMessage message_;
   ExtensionsActivity::Records extensions_activity_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Commit);
 };
 
 }  // namespace syncer

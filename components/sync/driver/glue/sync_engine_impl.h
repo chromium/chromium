@@ -60,6 +60,10 @@ class SyncEngineImpl : public SyncEngine,
                  const base::FilePath& sync_data_folder,
                  scoped_refptr<base::SequencedTaskRunner> sync_task_runner,
                  const base::RepeatingClosure& sync_transport_data_cleared_cb);
+
+  SyncEngineImpl(const SyncEngineImpl&) = delete;
+  SyncEngineImpl& operator=(const SyncEngineImpl&) = delete;
+
   ~SyncEngineImpl() override;
 
   // SyncEngine implementation.
@@ -219,8 +223,6 @@ class SyncEngineImpl : public SyncEngine,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncEngineImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineImpl);
 };
 
 }  // namespace syncer

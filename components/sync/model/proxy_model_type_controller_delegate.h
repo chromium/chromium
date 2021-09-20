@@ -25,6 +25,12 @@ class ProxyModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   ProxyModelTypeControllerDelegate(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const DelegateProvider& delegate_provider);
+
+  ProxyModelTypeControllerDelegate(const ProxyModelTypeControllerDelegate&) =
+      delete;
+  ProxyModelTypeControllerDelegate& operator=(
+      const ProxyModelTypeControllerDelegate&) = delete;
+
   ~ProxyModelTypeControllerDelegate() override;
 
   // ModelTypeControllerDelegate implementation.
@@ -47,8 +53,6 @@ class ProxyModelTypeControllerDelegate : public ModelTypeControllerDelegate {
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const DelegateProvider delegate_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyModelTypeControllerDelegate);
 };
 
 }  // namespace syncer

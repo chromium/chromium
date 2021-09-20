@@ -49,6 +49,10 @@ class SyncEngine : public ModelTypeConfigurer {
   struct InitParams {
     InitParams();
     InitParams(InitParams&& other);
+
+    InitParams(const InitParams&) = delete;
+    InitParams& operator=(const InitParams&) = delete;
+
     ~InitParams();
 
     SyncEngineHost* host = nullptr;
@@ -63,12 +67,13 @@ class SyncEngine : public ModelTypeConfigurer {
     base::FilePath local_sync_backend_folder;
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
     std::string encryption_bootstrap_token;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(InitParams);
   };
 
   SyncEngine();
+
+  SyncEngine(const SyncEngine&) = delete;
+  SyncEngine& operator=(const SyncEngine&) = delete;
+
   ~SyncEngine() override;
 
   // Kicks off asynchronous initialization. Optionally deletes sync data during
@@ -174,9 +179,6 @@ class SyncEngine : public ModelTypeConfigurer {
 
   // Returns a ListValue representing Nigori node.
   virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncEngine);
 };
 
 }  // namespace syncer

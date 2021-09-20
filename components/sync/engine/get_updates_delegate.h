@@ -28,6 +28,10 @@ namespace syncer {
 class GetUpdatesDelegate {
  public:
   GetUpdatesDelegate() = default;
+
+  GetUpdatesDelegate(const GetUpdatesDelegate&) = delete;
+  GetUpdatesDelegate& operator=(const GetUpdatesDelegate&) = delete;
+
   virtual ~GetUpdatesDelegate() = default;
 
   // Populates GetUpdate message fields that depend on GetUpdates request type.
@@ -37,15 +41,16 @@ class GetUpdatesDelegate {
   virtual std::unique_ptr<ProtocolEvent> GetNetworkRequestEvent(
       base::Time timestamp,
       const sync_pb::ClientToServerMessage& request) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GetUpdatesDelegate);
 };
 
 // Functionality specific to the normal GetUpdate request.
 class NormalGetUpdatesDelegate : public GetUpdatesDelegate {
  public:
   explicit NormalGetUpdatesDelegate(const NudgeTracker& nudge_tracker);
+
+  NormalGetUpdatesDelegate(const NormalGetUpdatesDelegate&) = delete;
+  NormalGetUpdatesDelegate& operator=(const NormalGetUpdatesDelegate&) = delete;
+
   ~NormalGetUpdatesDelegate() override;
 
   // Uses the member NudgeTracker to populate some fields of this GU message.
@@ -58,8 +63,6 @@ class NormalGetUpdatesDelegate : public GetUpdatesDelegate {
 
  private:
   const NudgeTracker& nudge_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalGetUpdatesDelegate);
 };
 
 // Functionality specific to the configure GetUpdate request.
@@ -67,6 +70,11 @@ class ConfigureGetUpdatesDelegate : public GetUpdatesDelegate {
  public:
   explicit ConfigureGetUpdatesDelegate(
       sync_pb::SyncEnums::GetUpdatesOrigin origin);
+
+  ConfigureGetUpdatesDelegate(const ConfigureGetUpdatesDelegate&) = delete;
+  ConfigureGetUpdatesDelegate& operator=(const ConfigureGetUpdatesDelegate&) =
+      delete;
+
   ~ConfigureGetUpdatesDelegate() override;
 
   // Sets the 'source' and 'origin' fields for this request.
@@ -79,14 +87,16 @@ class ConfigureGetUpdatesDelegate : public GetUpdatesDelegate {
 
  private:
   const sync_pb::SyncEnums::GetUpdatesOrigin origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigureGetUpdatesDelegate);
 };
 
 // Functionality specific to the poll GetUpdate request.
 class PollGetUpdatesDelegate : public GetUpdatesDelegate {
  public:
   PollGetUpdatesDelegate();
+
+  PollGetUpdatesDelegate(const PollGetUpdatesDelegate&) = delete;
+  PollGetUpdatesDelegate& operator=(const PollGetUpdatesDelegate&) = delete;
+
   ~PollGetUpdatesDelegate() override;
 
   // Sets the 'source' and 'origin' to indicate this is a poll request.
@@ -96,9 +106,6 @@ class PollGetUpdatesDelegate : public GetUpdatesDelegate {
   std::unique_ptr<ProtocolEvent> GetNetworkRequestEvent(
       base::Time timestamp,
       const sync_pb::ClientToServerMessage& request) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PollGetUpdatesDelegate);
 };
 
 }  // namespace syncer

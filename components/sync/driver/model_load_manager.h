@@ -44,6 +44,10 @@ class ModelLoadManager {
  public:
   ModelLoadManager(const DataTypeController::TypeMap* controllers,
                    ModelLoadManagerDelegate* delegate);
+
+  ModelLoadManager(const ModelLoadManager&) = delete;
+  ModelLoadManager& operator=(const ModelLoadManager&) = delete;
+
   virtual ~ModelLoadManager();
 
   // Stops any data types that are *not* in |desired_types|, then kicks off
@@ -99,8 +103,6 @@ class ModelLoadManager {
   bool notified_about_ready_for_configure_ = false;
 
   base::WeakPtrFactory<ModelLoadManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModelLoadManager);
 };
 
 }  // namespace syncer

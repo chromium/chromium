@@ -23,6 +23,10 @@ class SyncManagerFactory {
  public:
   SyncManagerFactory(
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  SyncManagerFactory(const SyncManagerFactory&) = delete;
+  SyncManagerFactory& operator=(const SyncManagerFactory&) = delete;
+
   virtual ~SyncManagerFactory();
 
   virtual std::unique_ptr<SyncManager> CreateSyncManager(
@@ -30,8 +34,6 @@ class SyncManagerFactory {
 
  private:
   network::NetworkConnectionTracker* network_connection_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncManagerFactory);
 };
 
 }  // namespace syncer

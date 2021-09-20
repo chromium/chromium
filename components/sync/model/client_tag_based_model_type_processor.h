@@ -54,6 +54,12 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   ClientTagBasedModelTypeProcessor(ModelType type,
                                    const base::RepeatingClosure& dump_stack,
                                    bool commit_only);
+
+  ClientTagBasedModelTypeProcessor(const ClientTagBasedModelTypeProcessor&) =
+      delete;
+  ClientTagBasedModelTypeProcessor& operator=(
+      const ClientTagBasedModelTypeProcessor&) = delete;
+
   ~ClientTagBasedModelTypeProcessor() override;
 
   // Returns true if the handshake with sync thread is complete.
@@ -299,8 +305,6 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // WeakPtrFactory for this processor which will be sent to sync thread.
   base::WeakPtrFactory<ClientTagBasedModelTypeProcessor>
       weak_ptr_factory_for_worker_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientTagBasedModelTypeProcessor);
 };
 
 }  // namespace syncer

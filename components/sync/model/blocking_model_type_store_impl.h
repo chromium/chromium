@@ -22,6 +22,11 @@ class BlockingModelTypeStoreImpl : public BlockingModelTypeStore {
   // |backend| must not be null.
   BlockingModelTypeStoreImpl(ModelType type,
                              scoped_refptr<ModelTypeStoreBackend> backend);
+
+  BlockingModelTypeStoreImpl(const BlockingModelTypeStoreImpl&) = delete;
+  BlockingModelTypeStoreImpl& operator=(const BlockingModelTypeStoreImpl&) =
+      delete;
+
   ~BlockingModelTypeStoreImpl() override;
 
   // BlockingModelTypeStore implementation.
@@ -52,8 +57,6 @@ class BlockingModelTypeStoreImpl : public BlockingModelTypeStore {
   const std::string global_metadata_key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingModelTypeStoreImpl);
 };
 
 }  // namespace syncer

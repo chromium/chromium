@@ -18,6 +18,11 @@ namespace syncer {
 class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
  public:
   MockModelTypeChangeProcessor();
+
+  MockModelTypeChangeProcessor(const MockModelTypeChangeProcessor&) = delete;
+  MockModelTypeChangeProcessor& operator=(const MockModelTypeChangeProcessor&) =
+      delete;
+
   ~MockModelTypeChangeProcessor() override;
   MOCK_METHOD(void,
               Put,
@@ -81,9 +86,6 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
   // Delegates all calls to another instance. |delegate| must not be null and
   // must outlive this object.
   void DelegateCallsByDefaultTo(ModelTypeChangeProcessor* delegate);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockModelTypeChangeProcessor);
 };
 
 }  //  namespace syncer

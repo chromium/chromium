@@ -36,6 +36,10 @@ class TrustedVaultClient {
   };
 
   TrustedVaultClient() = default;
+
+  TrustedVaultClient(const TrustedVaultClient&) = delete;
+  TrustedVaultClient& operator=(const TrustedVaultClient&) = delete;
+
   virtual ~TrustedVaultClient() = default;
 
   // Adds/removes an observer.
@@ -87,9 +91,6 @@ class TrustedVaultClient {
                                         const std::vector<uint8_t>& public_key,
                                         int method_type_hint,
                                         base::OnceClosure cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TrustedVaultClient);
 };
 
 }  // namespace syncer
