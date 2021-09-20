@@ -45,8 +45,10 @@ import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsControlle
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -63,6 +65,7 @@ import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
@@ -356,6 +359,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         updateRequestDesktopSiteMenuItem(menu, currentTab, true /* can show */);
 
+        updateAutoDarkMenuItem(menu, currentTab);
+
         // Only display reader mode settings menu option if the current page is in reader mode.
         menu.findItem(R.id.reader_mode_prefs_id).setVisible(shouldShowReaderModePrefs(currentTab));
 
@@ -533,6 +538,16 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public boolean isNewWindowMenuFeatureEnabled() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.NEW_WINDOW_APP_MENU);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean isAutoDarkWebContentsEnabled() {
+        boolean isFlagEnabled = ChromeFeatureList.isEnabled(
+                ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING);
+
+        return isFlagEnabled
+                && UserPrefs.get(mTabModelSelector.getCurrentModel().getProfile())
+                           .getBoolean(Pref.WEB_KIT_FORCE_DARK_MODE_ENABLED);
     }
 
     /**
@@ -883,6 +898,27 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                             ? mContext.getString(R.string.menu_request_desktop_site_on)
                             : mContext.getString(R.string.menu_request_desktop_site_off));
         }
+    }
+
+    /**
+     * Updates the auto dark menu item's state.
+     *
+     * @param menu {@link Menu} for auto dark.
+     * @param currentTab      Current tab being displayed.
+     */
+    protected void updateAutoDarkMenuItem(Menu menu, Tab currentTab) {
+        MenuItem autoDarkMenuItem = menu.findItem(R.id.auto_dark_web_contents_id);
+
+        // Show app menu item if auto dark enabled.
+        boolean autoDarkEnabled = isAutoDarkWebContentsEnabled();
+        autoDarkMenuItem.setVisible(autoDarkEnabled);
+        if (!autoDarkEnabled) return;
+
+        // Set text based on if site is blocked or not.
+        boolean isEnabled = WebContentsDarkModeController.isEnabledForUrl(
+                mTabModelSelector.getCurrentModel().getProfile(), currentTab.getUrl());
+        autoDarkMenuItem.setTitle(isEnabled ? R.string.menu_auto_dark_web_contents_on
+                                            : R.string.menu_auto_dark_web_contents_off);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

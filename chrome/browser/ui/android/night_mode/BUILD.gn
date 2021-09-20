@@ -38,6 +38,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_utils_java",
+    "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.night_mode"
 }
