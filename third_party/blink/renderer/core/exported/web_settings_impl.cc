@@ -814,4 +814,8 @@ void WebSettingsImpl::SetLitePageSubresourceRedirectOrigin(
   settings_->SetLitePageSubresourceRedirectOrigin(origin);
 }
 
+void WebSettingsImpl::SetNeedsMinPreferredLogicalWidth(bool enabled) {
+  settings_->SetNeedsMinPreferredLogicalWidth(enabled);
+}
+
 }  // namespace blink

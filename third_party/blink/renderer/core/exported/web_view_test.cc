@@ -4585,6 +4585,7 @@ TEST_F(WebViewTest, PreferredSize) {
   url_test_helpers::RegisterMockedURLLoad(
       ToKURL(url), test::CoreTestDataPath("specify_size.html"));
   WebView* web_view = web_view_helper_.InitializeAndLoad(url);
+  web_view->EnablePreferredSizeChangedMode();
 
   gfx::Size size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(100, size.width());
@@ -4614,6 +4615,7 @@ TEST_F(WebViewTest, PreferredSize) {
   url_test_helpers::RegisterMockedURLLoad(
       ToKURL(url), test::CoreTestDataPath("specify_size.html"));
   web_view = web_view_helper_.InitializeAndLoad(url);
+  web_view->EnablePreferredSizeChangedMode();
 
   web_view->SetZoomLevel(PageZoomFactorToZoomLevel(1));
   UpdateAllLifecyclePhases();
@@ -4633,6 +4635,7 @@ TEST_F(WebViewTest, PreferredMinimumSizeQuirksMode) {
         </body>
       </html>)HTML",
       url_test_helpers::ToKURL("http://example.com/"));
+  web_view->EnablePreferredSizeChangedMode();
 
   gfx::Size size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(99, size.width());
@@ -4656,18 +4659,17 @@ TEST_F(WebViewTest, PreferredSizeWithGrid) {
     </div>
                                    )HTML",
                                      base_url);
+  web_view->EnablePreferredSizeChangedMode();
 
   gfx::Size size = web_view->ContentsPreferredMinimumSize();
-  if (RuntimeEnabledFeatures::LayoutNGEnabled())
-    EXPECT_EQ(0, size.width());
-  else
-    EXPECT_EQ(100, size.width());
-
+  EXPECT_EQ(100, size.width());
   EXPECT_EQ(100, size.height());
 }
 
 TEST_F(WebViewTest, PreferredSizeWithNGGridSkipped) {
   WebViewImpl* web_view = web_view_helper_.Initialize();
+  web_view->GetSettings()->SetNeedsMinPreferredLogicalWidth(true);
+
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
                                      R"HTML(<!DOCTYPE html>
@@ -4712,6 +4714,7 @@ TEST_F(WebViewTest, PreferredSizeWithGridMinWidth) {
     </body>
                                    )HTML",
                                      base_url);
+  web_view->EnablePreferredSizeChangedMode();
 
   gfx::Size size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(200, size.width());
@@ -4729,6 +4732,7 @@ TEST_F(WebViewTest, PreferredSizeWithGridMinWidthFlexibleTracks) {
     </body>
                                    )HTML",
                                      base_url);
+  web_view->EnablePreferredSizeChangedMode();
 
   gfx::Size size = web_view->ContentsPreferredMinimumSize();
   EXPECT_EQ(200, size.width());

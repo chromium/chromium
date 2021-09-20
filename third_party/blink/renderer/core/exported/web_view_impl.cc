@@ -2745,7 +2745,7 @@ gfx::Size WebViewImpl::ContentsPreferredMinimumSize() {
 
   auto* main_local_frame = DynamicTo<LocalFrame>(page_->MainFrame());
   Document* document = main_local_frame->GetDocument();
-  if (!document || !document->GetLayoutView() || !document->documentElement() ||
+  if (!document || !document->documentElement() ||
       !document->documentElement()->GetLayoutBox())
     return gfx::Size();
 
@@ -2753,11 +2753,10 @@ gfx::Size WebViewImpl::ContentsPreferredMinimumSize() {
   DCHECK(!document->NeedsLayoutTreeUpdate() &&
          !document->View()->NeedsLayout());
 
-  // Needed for computing MinPreferredWidth.
-  FontCachePurgePreventer fontCachePurgePreventer;
-  int width_scaled = document->GetLayoutView()
-                         ->PreferredLogicalWidths()
-                         .min_size.Round();  // Already accounts for zoom.
+  int width_scaled = document->View()
+                         ->MinPreferredLogicalWidth()
+                         .Round();  // Already accounts for zoom.
+
   int height_scaled =
       document->documentElement()->GetLayoutBox()->ScrollHeight().Round();
   return gfx::Size(width_scaled, height_scaled);
@@ -2787,6 +2786,9 @@ void WebViewImpl::UpdatePreferredSize() {
 void WebViewImpl::EnablePreferredSizeChangedMode() {
   if (send_preferred_size_changes_)
     return;
+
+  page_->GetSettings().SetNeedsMinPreferredLogicalWidth(true);
+
   send_preferred_size_changes_ = true;
   needs_preferred_size_update_ = true;
 

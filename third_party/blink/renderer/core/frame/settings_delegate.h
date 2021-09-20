@@ -73,6 +73,7 @@ class CORE_EXPORT SettingsDelegate {
     kSpatialNavigation,
     kUniversalAccess,
     kVisionDeficiency,
+    kNeedsMinPreferredLogicalWidth,
   };
 
   virtual void SettingsChanged(ChangeType) = 0;

@@ -821,6 +821,14 @@ void Page::SettingsChanged(ChangeType change_type) {
         main_local_frame->GetDocument()->VisionDeficiencyChanged();
       break;
     }
+    case ChangeType::kNeedsMinPreferredLogicalWidth:
+      if (auto* local_frame = DynamicTo<LocalFrame>(MainFrame())) {
+        if (LocalFrameView* view = local_frame->View()) {
+          view->SetNeedsLayout();
+          view->ScheduleRelayout();
+        }
+      }
+      break;
   }
 }
 

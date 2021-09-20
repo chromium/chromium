@@ -209,6 +209,10 @@ class CORE_EXPORT LocalFrameView final
 
   void UpdateStyleAndLayout();
 
+  LayoutUnit MinPreferredLogicalWidth() const {
+    return min_preferred_logical_width_;
+  }
+
   // Marks this frame, and ancestor frames, as needing one intersection
   // observervation. This overrides throttling for one frame, up to
   // kLayoutClean. The order of these enums is important - they must proceed
@@ -425,6 +429,7 @@ class CORE_EXPORT LocalFrameView final
   void IncrementVisuallyNonEmptyPixelCount(const IntSize&);
   bool IsVisuallyNonEmpty() const { return is_visually_non_empty_; }
   void SetIsVisuallyNonEmpty() { is_visually_non_empty_ = true; }
+
   void EnableAutoSizeMode(const IntSize& min_size, const IntSize& max_size);
   void DisableAutoSizeMode();
 
@@ -1064,6 +1069,8 @@ class CORE_EXPORT LocalFrameView final
   bool layout_size_fixed_to_frame_size_;
 
   bool needs_update_geometries_;
+
+  LayoutUnit min_preferred_logical_width_;
 
 #if DCHECK_IS_ON()
   // Verified when finalizing.
