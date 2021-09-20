@@ -24,7 +24,8 @@ bool StructTraits<crosapi::mojom::BrowserAppInstanceUpdateDataView,
     Read(crosapi::mojom::BrowserAppInstanceUpdateDataView input,
          apps::BrowserAppInstanceUpdate* output) {
   apps::BrowserAppInstanceUpdate update;
-  if (input.ReadId(&update.id) && input.ReadAppId(&update.app_id) &&
+  if (input.ReadId(&update.id) && input.ReadType(&update.type) &&
+      input.ReadAppId(&update.app_id) &&
       input.ReadWindowId(&update.window_id) && input.ReadTitle(&update.title)) {
     update.is_browser_active = input.is_browser_active();
     update.is_web_contents_active = input.is_web_contents_active();

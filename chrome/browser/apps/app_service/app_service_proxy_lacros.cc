@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_forwarder.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
@@ -95,8 +96,9 @@ AppServiceProxyLacros::AppServiceProxyLacros(Profile* profile)
                          apps::IconCache::GarbageCollectionPolicy::kEager),
       profile_(profile),
       browser_app_instance_tracker_(
-          apps::BrowserAppInstanceTracker::Create(profile_,
-                                                  app_registry_cache_)) {
+          BrowserAppInstanceTracker::Create(profile_, app_registry_cache_)),
+      browser_app_instance_forwarder_(BrowserAppInstanceForwarder::Create(
+          browser_app_instance_tracker_.get())) {
   Initialize();
 }
 

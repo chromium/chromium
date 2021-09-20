@@ -23,13 +23,15 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 
 class Browser;
 class Profile;
+
+namespace aura {
+class Window;
+}
 
 namespace apps {
 
@@ -64,6 +66,9 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   // Get all instances by app ID. Returns a set of unowned pointers.
   std::set<const BrowserAppInstance*> GetAppInstancesByAppId(
       const std::string& app_id) const;
+
+  // Get the currently active app instance for a window.
+  const BrowserAppInstance* GetActiveAppInstanceForWindow(aura::Window* window);
 
   // Get all instances by app ID. Returns a set of unowned pointers.
   std::set<const BrowserWindowInstance*> GetBrowserWindowInstances() const;

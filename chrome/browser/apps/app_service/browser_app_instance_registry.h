@@ -1,0 +1,150 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_REGISTRY_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_REGISTRY_H_
+
+#include <map>
+#include <memory>
+#include <set>
+#include <string>
+
+#include "base/callback.h"
+#include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_service/browser_app_instance.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_map.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
+#include "chrome/browser/ash/crosapi/crosapi_id.h"
+#include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
+
+namespace aura {
+class Window;
+}
+
+namespace apps {
+
+// Hosted in ash-chrome. Aggregates app events received from two
+// |BrowserAppInstanceTracker| objects: one in ash-chrome for SWAs, one in
+// lacros-chrome for PWAs (via |BrowserAppInstanceForwarder|).
+class BrowserAppInstanceRegistry
+    : public BrowserAppInstanceObserver,
+      public crosapi::mojom::BrowserAppInstanceRegistry {
+ public:
+  explicit BrowserAppInstanceRegistry(
+      BrowserAppInstanceTracker& ash_instance_tracker);
+  ~BrowserAppInstanceRegistry() override;
+
+  // A factory method to make the creation of the registry optional to keep it
+  // behind a flag.
+  // TODO(crbug.com/1203992): Remove this when the |kBrowserAppInstanceTracking|
+  // flag is removed.
+  static std::unique_ptr<BrowserAppInstanceRegistry> Create(
+      BrowserAppInstanceTracker* ash_instance_tracker);
+
+  // Get all instances by app ID. Returns a set of unowned pointers.
+  std::set<const BrowserAppInstance*> GetAppInstancesByAppId(
+      const std::string& app_id) const;
+
+  // Get the currently active app instance for a window.
+  const BrowserAppInstance* GetActiveAppInstanceForWindow(aura::Window* window);
+
+  // Checks if an app with |app_id| is running (in Ash or Lacros).
+  bool IsAppRunning(const std::string& app_id) const;
+
+  // Checks if any Ash tabbed browser window are opens.
+  bool IsAshBrowserRunnig() const {
+    return ash_instance_tracker_.IsBrowserRunning();
+  }
+
+  // Checks if any Lacros tabbed browser window are opens.
+  bool IsLacrosBrowserRunnig() const {
+    return lacros_window_instances_.size() > 0;
+  }
+
+  void AddObserver(BrowserAppInstanceObserver* observer) {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(BrowserAppInstanceObserver* observer) {
+    observers_.RemoveObserver(observer);
+  }
+
+  void BindReceiver(
+      crosapi::CrosapiId id,
+      mojo::PendingReceiver<crosapi::mojom::BrowserAppInstanceRegistry>
+          receiver);
+
+  // BrowserAppInstanceObserver overrides (events from Ash):
+  void OnBrowserWindowAdded(
+      const apps::BrowserWindowInstance& instance) override;
+  void OnBrowserWindowUpdated(
+      const apps::BrowserWindowInstance& instance) override;
+  void OnBrowserWindowRemoved(
+      const apps::BrowserWindowInstance& instance) override;
+  void OnBrowserAppAdded(const apps::BrowserAppInstance& instance) override;
+  void OnBrowserAppUpdated(const apps::BrowserAppInstance& instance) override;
+  void OnBrowserAppRemoved(const apps::BrowserAppInstance& instance) override;
+
+  // crosapi::mojom::BrowserAppInstanceRegistry overrides (events from Lacros):
+  void OnBrowserWindowAdded(apps::BrowserWindowInstanceUpdate update) override;
+  void OnBrowserWindowUpdated(
+      apps::BrowserWindowInstanceUpdate update) override;
+  void OnBrowserWindowRemoved(
+      apps::BrowserWindowInstanceUpdate update) override;
+  void OnBrowserAppAdded(apps::BrowserAppInstanceUpdate update) override;
+  void OnBrowserAppUpdated(apps::BrowserAppInstanceUpdate update) override;
+  void OnBrowserAppRemoved(apps::BrowserAppInstanceUpdate update) override;
+
+ private:
+  class LacrosWindowObserver;
+
+  // Helpers processing of buffered lacros instance events.
+  void LacrosWindowInstanceAdded(apps::BrowserWindowInstanceUpdate update,
+                                 aura::Window* window);
+  void LacrosWindowInstanceUpdated(apps::BrowserWindowInstanceUpdate update,
+                                   aura::Window* window);
+  void LacrosWindowInstanceRemoved(apps::BrowserWindowInstanceUpdate update,
+                                   aura::Window* window);
+  void LacrosAppInstanceAdded(apps::BrowserAppInstanceUpdate update,
+                              aura::Window* window);
+  void LacrosAppInstanceUpdated(apps::BrowserAppInstanceUpdate update,
+                                aura::Window* window);
+  void LacrosAppInstanceRemoved(apps::BrowserAppInstanceUpdate update,
+                                aura::Window* window);
+
+  BrowserAppInstanceTracker& ash_instance_tracker_;
+
+  // Lacros app instances.
+  BrowserAppInstanceMap<base::UnguessableToken, BrowserAppInstance>
+      lacros_app_instances_;
+
+  // Lacros browser window instances.
+  BrowserAppInstanceMap<base::UnguessableToken, BrowserWindowInstance>
+      lacros_window_instances_;
+
+  std::unique_ptr<LacrosWindowObserver> lacros_window_observer_;
+
+  mojo::ReceiverSet<crosapi::mojom::BrowserAppInstanceRegistry,
+                    crosapi::CrosapiId>
+      receiver_set_;
+
+  base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
+
+  base::ScopedObservation<BrowserAppInstanceTracker, BrowserAppInstanceObserver>
+      tracker_observation_{this};
+
+  base::WeakPtrFactory<BrowserAppInstanceRegistry> weak_ptr_factory_{this};
+};
+
+}  // namespace apps
+
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_REGISTRY_H_

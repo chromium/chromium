@@ -9,6 +9,7 @@
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/publishers/borealis_apps.h"
 #include "chrome/browser/apps/app_service/publishers/built_in_chromeos_apps.h"
@@ -49,8 +50,9 @@ bool g_omit_plugin_vm_apps_for_testing_ = false;
 AppServiceProxyChromeOs::AppServiceProxyChromeOs(Profile* profile)
     : AppServiceProxyBase(profile),
       browser_app_instance_tracker_(
-          apps::BrowserAppInstanceTracker::Create(profile_,
-                                                  app_registry_cache_)) {
+          BrowserAppInstanceTracker::Create(profile_, app_registry_cache_)),
+      browser_app_instance_registry_(BrowserAppInstanceRegistry::Create(
+          browser_app_instance_tracker_.get())) {
   Initialize();
 }
 
@@ -154,6 +156,11 @@ apps::InstanceRegistry& AppServiceProxyChromeOs::InstanceRegistry() {
 apps::BrowserAppInstanceTracker*
 AppServiceProxyChromeOs::BrowserAppInstanceTracker() {
   return browser_app_instance_tracker_.get();
+}
+
+apps::BrowserAppInstanceRegistry*
+AppServiceProxyChromeOs::BrowserAppInstanceRegistry() {
+  return browser_app_instance_registry_.get();
 }
 
 apps::AppPlatformMetrics* AppServiceProxyChromeOs::AppPlatformMetrics() {

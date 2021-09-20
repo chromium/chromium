@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_map.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -31,6 +32,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "ui/aura/window.h"
 
 namespace apps {
 
@@ -151,34 +153,34 @@ std::unique_ptr<BrowserAppInstanceTracker> BrowserAppInstanceTracker::Create(
 std::set<const BrowserAppInstance*>
 BrowserAppInstanceTracker::GetAppInstancesByAppId(
     const std::string& app_id) const {
-  std::set<const BrowserAppInstance*> result;
-  for (const auto& pair : app_instances_) {
-    const BrowserAppInstance& instance = *pair.second;
-    if (instance.app_id == app_id) {
-      result.insert(&instance);
-    }
-  }
-  return result;
+  return SelectInstances(app_instances_,
+                         [&app_id](const BrowserAppInstance& instance) {
+                           return instance.app_id == app_id;
+                         });
+}
+
+const BrowserAppInstance*
+BrowserAppInstanceTracker::GetActiveAppInstanceForWindow(aura::Window* window) {
+  return FindInstanceIf(
+      app_instances_, [window](const BrowserAppInstance& instance) {
+        return instance.window == window && instance.is_web_contents_active;
+      });
 }
 
 std::set<const BrowserWindowInstance*>
 BrowserAppInstanceTracker::GetBrowserWindowInstances() const {
   std::set<const BrowserWindowInstance*> result;
   for (const auto& pair : window_instances_) {
-    const BrowserWindowInstance& instance = *pair.second;
-    result.insert(&instance);
+    result.insert(pair.second.get());
   }
   return result;
 }
 
 bool BrowserAppInstanceTracker::IsAppRunning(const std::string& app_id) const {
-  for (const auto& pair : app_instances_) {
-    const BrowserAppInstance& instance = *pair.second;
-    if (instance.app_id == app_id) {
-      return true;
-    }
-  }
-  return false;
+  return FindInstanceIf(app_instances_,
+                        [&app_id](const BrowserAppInstance& instance) {
+                          return instance.app_id == app_id;
+                        }) != nullptr;
 }
 
 bool BrowserAppInstanceTracker::IsBrowserRunning() const {
@@ -192,13 +194,9 @@ const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstance(
 
 const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstanceById(
     base::UnguessableToken id) const {
-  for (const auto& pair : app_instances_) {
-    const BrowserAppInstance& instance = *pair.second;
-    if (instance.id == id) {
-      return &instance;
-    }
-  }
-  return nullptr;
+  return FindInstanceIf(
+      app_instances_,
+      [&id](const BrowserAppInstance& instance) { return instance.id == id; });
 }
 
 const BrowserWindowInstance* BrowserAppInstanceTracker::GetWindowInstance(

@@ -18,6 +18,7 @@
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/automation.mojom.h"
+#include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
 #include "chromeos/crosapi/mojom/browser_version.mojom.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/clipboard.mojom.h"
@@ -198,6 +199,10 @@ LacrosService::LacrosService()
   ConstructRemote<
       crosapi::mojom::AppWindowTracker, &Crosapi::BindChromeAppWindowTracker,
       Crosapi::MethodMinVersions::kBindChromeAppWindowTrackerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::BrowserAppInstanceRegistry,
+      &Crosapi::BindBrowserAppInstanceRegistry,
+      Crosapi::MethodMinVersions::kBindBrowserAppInstanceRegistryMinVersion>();
   ConstructRemote<
       crosapi::mojom::BrowserServiceHost, &Crosapi::BindBrowserServiceHost,
       Crosapi::MethodMinVersions::kBindBrowserServiceHostMinVersion>();

@@ -10,6 +10,9 @@
 
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "base/dcheck_is_on.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
@@ -62,6 +65,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
@@ -204,7 +208,14 @@ void CrosapiAsh::BindAppServiceProxy(
 
 void CrosapiAsh::BindBrowserAppInstanceRegistry(
     mojo::PendingReceiver<mojom::BrowserAppInstanceRegistry> receiver) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (!base::FeatureList::IsEnabled(features::kBrowserAppInstanceTracking)) {
+    return;
+  }
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  app_service_proxy->BrowserAppInstanceRegistry()->BindReceiver(
+      receiver_set_.current_context(), std::move(receiver));
 }
 
 void CrosapiAsh::BindBrowserServiceHost(

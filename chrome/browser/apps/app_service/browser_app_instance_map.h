@@ -7,10 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/identity.h"
+#include "base/ranges/algorithm.h"
 
 namespace apps {
 
@@ -44,6 +47,33 @@ ValueT* GetInstance(const BrowserAppInstanceMap<KeyT, ValueT>& instances,
                     const KeyT& key) {
   auto it = instances.find(key);
   return (it == instances.end()) ? nullptr : it->second.get();
+}
+
+template <typename KeyT, typename ValueT, typename PredicateT = base::identity>
+std::set<const ValueT*> SelectInstances(
+    const BrowserAppInstanceMap<KeyT, ValueT>& instances,
+    PredicateT predicate = {}) {
+  std::set<const ValueT*> result;
+  for (const auto& pair : instances) {
+    const ValueT& instance = *pair.second;
+    if (predicate(instance)) {
+      result.insert(&instance);
+    }
+  }
+  return result;
+}
+
+template <typename KeyT, typename ValueT, typename PredicateT>
+const ValueT* FindInstanceIf(
+    const BrowserAppInstanceMap<KeyT, ValueT>& instances,
+    PredicateT predicate) {
+  auto it = base::ranges::find_if(
+      instances, predicate,
+      [](const auto& pair) -> const ValueT& { return *pair.second; });
+  if (it == instances.end()) {
+    return nullptr;
+  }
+  return it->second.get();
 }
 
 }  // namespace apps

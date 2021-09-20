@@ -1,0 +1,67 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/apps/app_service/browser_app_instance_forwarder.h"
+
+#include <utility>
+
+#include "chrome/browser/apps/app_service/browser_app_instance.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
+#include "chrome/browser/lacros/window_utility.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_features.h"
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+
+namespace apps {
+
+BrowserAppInstanceForwarder::BrowserAppInstanceForwarder(
+    BrowserAppInstanceTracker& tracker)
+    : registry_(chromeos::LacrosService::Get()
+                    ->GetRemote<crosapi::mojom::BrowserAppInstanceRegistry>()) {
+  tracker_observation_.Observe(&tracker);
+}
+BrowserAppInstanceForwarder::~BrowserAppInstanceForwarder() = default;
+
+std::unique_ptr<BrowserAppInstanceForwarder>
+BrowserAppInstanceForwarder::Create(BrowserAppInstanceTracker* tracker) {
+  if (!base::FeatureList::IsEnabled(features::kBrowserAppInstanceTracking)) {
+    return nullptr;
+  }
+  return std::make_unique<BrowserAppInstanceForwarder>(*tracker);
+}
+
+void BrowserAppInstanceForwarder::OnBrowserWindowAdded(
+    const apps::BrowserWindowInstance& instance) {
+  registry_->OnBrowserWindowAdded(instance.ToUpdate());
+}
+
+void BrowserAppInstanceForwarder::OnBrowserWindowUpdated(
+    const apps::BrowserWindowInstance& instance) {
+  registry_->OnBrowserWindowUpdated(instance.ToUpdate());
+}
+
+void BrowserAppInstanceForwarder::OnBrowserWindowRemoved(
+    const apps::BrowserWindowInstance& instance) {
+  registry_->OnBrowserWindowRemoved(instance.ToUpdate());
+}
+
+void BrowserAppInstanceForwarder::OnBrowserAppAdded(
+    const apps::BrowserAppInstance& instance) {
+  registry_->OnBrowserAppAdded(instance.ToUpdate());
+}
+
+void BrowserAppInstanceForwarder::OnBrowserAppUpdated(
+    const apps::BrowserAppInstance& instance) {
+  registry_->OnBrowserAppUpdated(instance.ToUpdate());
+}
+
+void BrowserAppInstanceForwarder::OnBrowserAppRemoved(
+    const apps::BrowserAppInstance& instance) {
+  registry_->OnBrowserAppRemoved(instance.ToUpdate());
+}
+
+}  // namespace apps

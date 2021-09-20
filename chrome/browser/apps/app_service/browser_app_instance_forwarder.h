@@ -1,0 +1,59 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_FORWARDER_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_FORWARDER_H_
+
+#include <memory>
+
+#include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
+#include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+namespace apps {
+
+class BrowserAppInstanceTracker;
+
+// Observers the Lacros browser apps tracker and forwards events to Ash.
+class BrowserAppInstanceForwarder : public apps::BrowserAppInstanceObserver {
+ public:
+  // A factory method to make the creation of the forwarder optional to keep it
+  // behind a flag.
+  // TODO(crbug.com/1203992): Remove this when the |kBrowserAppInstanceTracking|
+  // flag is removed.
+  static std::unique_ptr<BrowserAppInstanceForwarder> Create(
+      BrowserAppInstanceTracker* tracker);
+
+  explicit BrowserAppInstanceForwarder(BrowserAppInstanceTracker& tracker);
+  ~BrowserAppInstanceForwarder() override;
+
+  BrowserAppInstanceForwarder(const BrowserAppInstanceForwarder&) = delete;
+  BrowserAppInstanceForwarder(BrowserAppInstanceForwarder&&) = delete;
+  BrowserAppInstanceForwarder& operator=(const BrowserAppInstanceForwarder&) =
+      delete;
+  BrowserAppInstanceForwarder& operator=(BrowserAppInstanceForwarder&&) =
+      delete;
+
+  void OnBrowserWindowAdded(
+      const apps::BrowserWindowInstance& instance) override;
+  void OnBrowserWindowUpdated(
+      const apps::BrowserWindowInstance& instance) override;
+  void OnBrowserWindowRemoved(
+      const apps::BrowserWindowInstance& instance) override;
+  void OnBrowserAppAdded(const apps::BrowserAppInstance& instance) override;
+  void OnBrowserAppUpdated(const apps::BrowserAppInstance& instance) override;
+  void OnBrowserAppRemoved(const apps::BrowserAppInstance& instance) override;
+
+ private:
+  mojo::Remote<crosapi::mojom::BrowserAppInstanceRegistry>& registry_;
+
+  base::ScopedObservation<BrowserAppInstanceTracker, BrowserAppInstanceObserver>
+      tracker_observation_{this};
+};
+
+}  // namespace apps
+
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_FORWARDER_H_

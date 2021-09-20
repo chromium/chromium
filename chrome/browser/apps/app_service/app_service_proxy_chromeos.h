@@ -35,6 +35,7 @@ namespace apps {
 class AppPlatformMetrics;
 class AppPlatformMetricsService;
 class BorealisApps;
+class BrowserAppInstanceRegistry;
 class BrowserAppInstanceTracker;
 class BuiltInChromeOsApps;
 class CrostiniApps;
@@ -66,6 +67,7 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   apps::AppPlatformMetrics* AppPlatformMetrics();
 
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
+  apps::BrowserAppInstanceRegistry* BrowserAppInstanceRegistry();
 
   // apps::AppServiceProxyBase overrides:
   void Uninstall(const std::string& app_id,
@@ -197,6 +199,8 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
 
   std::unique_ptr<apps::BrowserAppInstanceTracker>
       browser_app_instance_tracker_;
+  std::unique_ptr<apps::BrowserAppInstanceRegistry>
+      browser_app_instance_registry_;
 
   // When PauseApps is called, the app is added to |pending_pause_requests|.
   // When the user clicks the OK from the pause app dialog, the pause status is

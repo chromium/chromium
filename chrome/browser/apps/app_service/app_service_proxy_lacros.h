@@ -35,6 +35,7 @@ class WebAppsPublisherHost;
 
 namespace apps {
 
+class BrowserAppInstanceForwarder;
 class BrowserAppInstanceTracker;
 
 struct IntentLaunchInfo {
@@ -327,8 +328,11 @@ class AppServiceProxyLacros : public KeyedService,
   // on Chrome.
   std::unique_ptr<apps::BrowserAppLauncher> browser_app_launcher_;
 
+  // Keeps track of local browser apps.
   std::unique_ptr<apps::BrowserAppInstanceTracker>
       browser_app_instance_tracker_;
+  // Sends browser app status events to Ash.
+  std::unique_ptr<BrowserAppInstanceForwarder> browser_app_instance_forwarder_;
 
   bool is_using_testing_profile_ = false;
   base::OnceClosure dialog_created_callback_;
