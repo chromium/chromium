@@ -225,14 +225,8 @@ if (is_fuchsia) {
     visibility = [ ":*" ]
   }
 
-  if (is_chrome_branded) {
-    _fuchsia_package_name = "google_chrome"
-  } else {
-    _fuchsia_package_name = "chromium"
-  }
-
   fuchsia_package("chrome_pkg") {
-    package_name = _fuchsia_package_name
+    package_name = "chrome"
     deps = [
       ":chrome_component",
       ":chrome_component_v1",
@@ -241,6 +235,6 @@ if (is_fuchsia) {
 
   fuchsia_package_runner("chrome_fuchsia") {
     package = ":chrome_pkg"
-    package_name_override = _fuchsia_package_name
+    package_name_override = "chrome"
   }
 }
