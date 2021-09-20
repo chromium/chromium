@@ -34,15 +34,32 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   Browser* browser = chrome::FindBrowserWithProfile(profile_);
   if (platform_util::IsWindowActive(browser->window()->GetNativeWindow())) {
     ShowToolbarButton(*new_entries.at(0));
-  } else {
-    entry_ = std::make_unique<SendTabToSelfEntry>(
-        new_entries.at(0)->GetGUID(), new_entries.at(0)->GetURL(),
-        new_entries.at(0)->GetTitle(), new_entries.at(0)->GetSharedTime(),
-        new_entries.at(0)->GetOriginalNavigationTime(),
-        new_entries.at(0)->GetDeviceName(),
-        new_entries.at(0)->GetTargetDeviceSyncCacheGuid());
-    BrowserList::AddObserver(this);
+    return;
   }
+
+  const bool had_entry_pending_notification = entry_ != nullptr;
+
+  // Select semi-randomly the first new entry from the list because there is no
+  // UI to show multiple entries.
+  const SendTabToSelfEntry* new_entry_pending_notification =
+      new_entries.front();
+
+  // |entry_| might already be set, but it's better to overwrite it with a
+  // fresher value.
+  entry_ = std::make_unique<SendTabToSelfEntry>(
+      new_entry_pending_notification->GetGUID(),
+      new_entry_pending_notification->GetURL(),
+      new_entry_pending_notification->GetTitle(),
+      new_entry_pending_notification->GetSharedTime(),
+      new_entry_pending_notification->GetOriginalNavigationTime(),
+      new_entry_pending_notification->GetDeviceName(),
+      new_entry_pending_notification->GetTargetDeviceSyncCacheGuid());
+
+  // Prevent adding the observer several times. This might happen when the
+  // window is inactive and this method is called more than once (i.e. the
+  // server sends multiple entry batches).
+  if (!had_entry_pending_notification)
+    BrowserList::AddObserver(this);
 }
 
 void SendTabToSelfToolbarIconController::DismissEntries(
@@ -58,12 +75,14 @@ void SendTabToSelfToolbarIconController::OnBrowserSetLastActive(
     Browser* browser) {
   BrowserList::RemoveObserver(this);
 
-  if (!profile_ || !entry_)
+  // Reset |entry_| because it's used to determine if the BrowserListObserver is
+  // added in DisplayNewEntries().
+  std::unique_ptr<SendTabToSelfEntry> entry = std::move(entry_);
+
+  if (!profile_ || !entry)
     return;
-  if (browser == chrome::FindBrowserWithProfile(profile_)) {
-    ShowToolbarButton(*entry_);
-    entry_ = nullptr;
-  }
+  if (browser == chrome::FindBrowserWithProfile(profile_))
+    ShowToolbarButton(*entry);
 }
 
 void SendTabToSelfToolbarIconController::ShowToolbarButton(
