@@ -194,7 +194,7 @@
     "extension_types": ["extension"]
   },
   "declarativeNetRequestWithHostAccess": {
-    "channel": "trunk",
+    "channel": "stable",
     "extension_types": ["extension"]
   },
   "declarativeNetRequestFeedback": {
