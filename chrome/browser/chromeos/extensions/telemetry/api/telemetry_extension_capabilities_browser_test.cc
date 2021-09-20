@@ -32,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest,
   ExtensionTestMessageListener listener(/*will_reply=*/false);
   listener.set_extension_id(kChromeOSSystemExtensionId);
 
-  // Must be outlive the extension.
+  // Must outlive the extension.
   extensions::TestExtensionDir test_dir_receiver;
 
   // Load and run the receiving extenion (chromeos_system_extension).
@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest,
   listener.Reset();
   listener.set_extension_id(kNormalExtensionId);
 
-  // Must be outlive the extension.
+  // Must outlive the extension.
   extensions::TestExtensionDir test_dir_sender;
 
   // Load and run the sending extension (normal extension).

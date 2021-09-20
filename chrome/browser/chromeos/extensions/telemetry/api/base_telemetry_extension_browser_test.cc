@@ -77,7 +77,7 @@ BaseTelemetryExtensionBrowserTest::LoadExtensionWithServiceWorker(
 
 void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
     const std::string& service_worker_content) {
-  // Must be outlive the extension.
+  // Must outlive the extension.
   extensions::TestExtensionDir test_dir;
 
   // Must be initialised before loading extension.
