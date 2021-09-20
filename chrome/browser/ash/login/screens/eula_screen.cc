@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/eula_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -91,6 +92,8 @@ std::string EulaScreen::GetResultString(Result result) {
       return "AcceptedWithoutStats";
     case Result::BACK:
       return "Back";
+    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR:
+    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO:
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
@@ -123,6 +126,17 @@ bool EulaScreen::MaybeSkip(WizardContext* context) {
   // TODO(https://crbug.com/1190897): Refactor to use `context` instead.
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    const auto* const demo_setup_controller =
+        WizardController::default_controller()->demo_setup_controller();
+    if (demo_setup_controller) {
+      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO);
+    } else {
+      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR);
+    }
     return true;
   }
 

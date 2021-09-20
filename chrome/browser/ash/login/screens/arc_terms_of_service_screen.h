@@ -19,7 +19,14 @@ namespace ash {
 class ArcTermsOfServiceScreen : public BaseScreen,
                                 public ArcTermsOfServiceScreenViewObserver {
  public:
-  enum class Result { ACCEPTED, BACK, NOT_APPLICABLE };
+  enum class Result {
+    ACCEPTED,
+    BACK,
+    NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO_ONLINE,
+    NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO_OFFLINE,
+    NOT_APPLICABLE_CONSOLIDATED_CONSENT_ARC_ENABLED,
+    NOT_APPLICABLE,
+  };
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/enums.xml, and should always reflect it (do not

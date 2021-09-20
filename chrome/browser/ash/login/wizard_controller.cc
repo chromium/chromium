@@ -1240,12 +1240,6 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
   if (ShowEulaOrArcTosAfterNetworkScreen())
     return;
 
-  // TODO(crbug.com/1247998): Investigate if we can call PerformPostEulaActions
-  // from here before enabling OobeConsolidatedConsent flag. If it's allowed,
-  // update the name of the method.
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
-    PerformPostEulaActions();
-
   switch (result) {
     case NetworkScreen::Result::CONNECTED:
       InitiateOOBEUpdate();
@@ -1255,11 +1249,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       // and attempt system update. It is possible to initiate offline demo
       // setup on the device that is connected, although it is probably not
       // common.
-      if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-        ShowConsolidatedConsentScreen();
-      } else {
-        ShowDemoModeSetupScreen();
-      }
+      ShowDemoModeSetupScreen();
       break;
     case NetworkScreen::Result::BACK:
       NOTREACHED();
@@ -1267,9 +1257,6 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
 }
 
 bool WizardController::ShowEulaOrArcTosAfterNetworkScreen() {
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
-    return false;
-
   if (!is_branded_build_)
     return false;
 
@@ -1299,6 +1286,20 @@ void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
     case EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING:
     case EulaScreen::Result::NOT_APPLICABLE:
       OnEulaAccepted(false /*usage_statistics_reporting_enabled*/);
+      break;
+    case EulaScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO:
+      // TODO(crbug.com/1247998): Investigate if we can call
+      // PerformPostEulaActions from here before enabling
+      // OobeConsolidatedConsent flag. If it's allowed, update the name of the
+      // method.
+      DCHECK(demo_setup_controller_);
+      PerformPostEulaActions();
+      ShowArcTermsOfServiceScreen();
+      break;
+    case EulaScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR:
+      DCHECK(!demo_setup_controller_);
+      PerformPostEulaActions();
+      InitiateOOBEUpdate();
       break;
     case EulaScreen::Result::BACK:
       ShowNetworkScreen();
@@ -1577,6 +1578,22 @@ void WizardController::OnArcTermsOfServiceScreenExit(
       break;
     case ArcTermsOfServiceScreen::Result::NOT_APPLICABLE:
       ShowAssistantOptInFlowScreen();
+      break;
+    case ArcTermsOfServiceScreen::Result::
+        NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO_ONLINE:
+      DCHECK(demo_setup_controller_);
+      InitiateOOBEUpdate();
+      break;
+    case ArcTermsOfServiceScreen::Result::
+        NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO_OFFLINE:
+      DCHECK(demo_setup_controller_);
+      ShowDemoModeSetupScreen();
+      break;
+    case ArcTermsOfServiceScreen::Result::
+        NOT_APPLICABLE_CONSOLIDATED_CONSENT_ARC_ENABLED:
+      // Consolidated Consent had already been accepted and ARC is enabled.
+      DCHECK(!demo_setup_controller_);
+      ShowRecommendAppsScreen();
       break;
     case ArcTermsOfServiceScreen::Result::BACK:
       DCHECK(demo_setup_controller_);
