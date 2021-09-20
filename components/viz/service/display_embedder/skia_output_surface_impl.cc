@@ -924,7 +924,9 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
         capabilities_.uses_default_gl_framebuffer, false /* isTextureable */,
         GrProtected::kNo, false /* vkRTSupportsInputAttachment */,
         capabilities_.root_is_vulkan_secondary_command_buffer);
+#if BUILDFLAG(ENABLE_VULKAN)
     VkFormat vk_format = VK_FORMAT_UNDEFINED;
+#endif
     LOG_IF(DFATAL, !characterization.isValid())
         << "\n  surface_size=" << surface_size.ToString()
         << "\n  format=" << static_cast<int>(format)
@@ -934,10 +936,12 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
         << static_cast<int>(backend_format.backend())
         << "\n  backend_format.asGLFormat()="
         << static_cast<int>(backend_format.asGLFormat())
+#if BUILDFLAG(ENABLE_VULKAN)
         << "\n  backend_format.asVkFormat()="
         << static_cast<int>(backend_format.asVkFormat(&vk_format))
         << "\n  backend_format.asVkFormat() vk_format="
         << static_cast<int>(vk_format)
+#endif
         << "\n  surface_origin=" << static_cast<int>(surface_origin)
         << "\n  willGlFBO0=" << capabilities_.uses_default_gl_framebuffer;
     return characterization;
