@@ -1164,7 +1164,7 @@
 <translation id="4825507807291741242">Хүчирхэг</translation>
 <translation id="4827402517081186284">Нууцлалтай горим таныг онлайн үед үл харагддаг болгохгүй:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Сайт таныг үүнд зочилж байгаа мэднэ<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Сайт таныг үүнд зочилж байгааг мэднэ<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Ажил олгогч эсвэл сургууль хөтчийн үйл ажиллагааг хянах боломжтой<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Интернэт үйлчилгээ нийлүүлэгч вебийн ачааллыг хянаж магадгүй<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>

@@ -286,7 +286,7 @@
 <translation id="1838374766361614909">Изделип жаткан нерсени өчүрүү</translation>
 <translation id="1839551713262164453">Саясатта коюлган маанилерди ырастоодо ката кетип, ырастоо аткарылбай калды.</translation>
 <translation id="1842969606798536927">Төлөө</translation>
-<translation id="1856713167556118146">Жашыруун режим төмөнкүлөрдү аткарбайт:</translation>
+<translation id="1856713167556118146">Жашыруун режимде эмнелер сакталат:</translation>
 <translation id="1871208020102129563">Прокси .pac скрипт URL дарегин эмес, туруктуу прокси серверлерин колдонот деп коюлган.</translation>
 <translation id="1871284979644508959">Милдеттүү талаа</translation>
 <translation id="1875512691959384712">Google Формалар</translation>
@@ -1056,7 +1056,7 @@
 <translation id="4465818729556336129">Бул документ купуя болгондуктан, администратор аны басып чыгарууну сунуштабайт.</translation>
 <translation id="4476953670630786061">Бул форма кооптуу. Автоматтык түрдө толтуруу функциясы өчүрүлдү.</translation>
 <translation id="4477350412780666475">Кийинки трек</translation>
-<translation id="4481251927743463293">Жашыруун режим төмөнкүлөрдү аткарат:</translation>
+<translation id="4481251927743463293">Жашыруун режимде эмнелер сакталбайт:</translation>
 <translation id="4481394504112738036">Купуя файл</translation>
 <translation id="4482953324121162758">Бул сайт которулбайт.</translation>
 <translation id="4490717597759821841">A7</translation>
@@ -1160,11 +1160,11 @@
 <translation id="4819347708020428563">Ананнотацияларды демейки көрүнүштө түзөтөсүзбү?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңы Google таблицасын тез түзүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="4825507807291741242">Күчтүү</translation>
-<translation id="4827402517081186284">Жашыруун режимде Интернетте көрүнө бересиз:
+<translation id="4827402517081186284">Жашыруун режимде айрым аракеттериңиз көрүнөт:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Сайттар киргениңизди билип турат<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Жумуш берүүчүлөр же мектептер көрүлгөн вебсайттарга көз сала алат<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Интернет кызматын жабдуучулар веб трафикти көзөмөлдөй алат<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Сайттар киргениңизди билип турушат<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Жумуш берүүчүлөр же окуу жайлар колдонуучулардын серепчидеги аракеттерине көз сала алышат<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Интернет кызматын жабдуучулар веб трафикти көзөмөлдөй алышат<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="4838327282952368871">Кыялкеч</translation>
 <translation id="4840250757394056958">Chrome'до көрүлгөн вебсайттарды көрүү</translation>
@@ -2177,9 +2177,9 @@
 <translation id="8321476692217554900">билдирмелер</translation>
 <translation id="8328484624016508118">Жашыруун өтмөктөрдүн баары жабылгандан кийин, Chrome төмөнкүлөрдү тазалайт:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Ушул түзмөктө көрүлгөн вебсайттар<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Ушул түзмөктөгү издөө таржымалыңыз<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Формаларга киргизилген маалымат<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Ушул түзмөктөгү вебсайтта жасаган аракеттериңизди<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Ушул түзмөктө издеген нерселериңизди<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />Формаларга киргизилген маалыматтарды<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> сайтына кирүү мүмкүнчүлүгү четке кагылды</translation>
 <translation id="833262891116910667">Бөлүп көрсөтүү</translation>
