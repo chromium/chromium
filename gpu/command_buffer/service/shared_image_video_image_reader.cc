@@ -151,9 +151,16 @@ SharedImageVideoImageReader::~SharedImageVideoImageReader() {
     auto helper_destruction_cb = base::BindPostTask(
         gpu_main_task_runner_,
         base::BindOnce(
-            [](std::unique_ptr<ContextLostObserverHelper> context_lost_helper) {
+            [](std::unique_ptr<ContextLostObserverHelper> context_lost_helper,
+               scoped_refptr<StreamTextureSharedImageInterface>
+                   stream_texture_sii) {
+              // Reset the |stream_texture_sii| first so that its ref in the
+              // |context_lost_helper| gets reset under the DrDc lock.
+              stream_texture_sii.reset();
+              context_lost_helper.reset();
             }));
-    std::move(helper_destruction_cb).Run(std::move(context_lost_helper_));
+    std::move(helper_destruction_cb)
+        .Run(std::move(context_lost_helper_), std::move(stream_texture_sii_));
   }
 }
 
@@ -626,6 +633,7 @@ SharedImageVideoImageReader::ContextLostObserverHelper::
   {
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     stream_texture_sii_->ReleaseResources();
+    stream_texture_sii_.reset();
   }
 }
 
