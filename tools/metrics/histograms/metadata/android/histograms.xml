@@ -2215,7 +2215,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Omnibox.UsedSuggestionFromCache" enum="Boolean"
-    expires_after="2021-10-04">
+    expires_after="2022-09-04">
   <owner>ender@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
