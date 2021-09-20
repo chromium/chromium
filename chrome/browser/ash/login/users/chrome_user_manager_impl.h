@@ -283,7 +283,7 @@ class ChromeUserManagerImpl
   std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
       removed_user_cache_;
 
-  bool user_added_removed_reporter_intialized_;
+  bool user_added_removed_reporter_intialized_ = false;
 
   base::WeakPtrFactory<ChromeUserManagerImpl> weak_factory_{this};
 };

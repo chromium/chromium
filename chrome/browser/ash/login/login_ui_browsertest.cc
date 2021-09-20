@@ -117,13 +117,7 @@ class LoginUIConsumerTest : public LoginUITestBase {
 };
 
 // Verifies basic login UI properties.
-// TODO(crbug.com/1249768): Test crashes on Chrome OS MSan Test.
-#if defined(OS_CHROMEOS)
-#define MAYBE_LoginUIVisible DISABLED_LoginUIVisible
-#else
-#define MAYBE_LoginUIVisible LoginUIVisible
-#endif
-IN_PROC_BROWSER_TEST_F(LoginUIConsumerTest, MAYBE_LoginUIVisible) {
+IN_PROC_BROWSER_TEST_F(LoginUIConsumerTest, LoginUIVisible) {
   const auto& test_users = login_manager_mixin_.users();
   const int users_count = test_users.size();
   EXPECT_EQ(users_count, LoginScreenTestApi::GetUsersCount());
