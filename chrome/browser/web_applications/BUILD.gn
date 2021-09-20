@@ -294,7 +294,7 @@ source_set("web_applications") {
       "preinstalled_web_apps/youtube.h",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "preinstalled_web_apps/calculator.cc",
         "preinstalled_web_apps/calculator.h",
