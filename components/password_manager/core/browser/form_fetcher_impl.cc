@@ -57,12 +57,7 @@ std::unique_ptr<FormFetcherImpl> FormFetcherImpl::CreateFormFetcherImpl(
     PasswordFormDigest form_digest,
     const PasswordManagerClient* client,
     bool should_migrate_http_passwords) {
-  return base::FeatureList::IsEnabled(
-             password_manager::features::kEnablePasswordsAccountStorage)
-             ? std::make_unique<MultiStoreFormFetcher>(
-                   std::move(form_digest), client,
-                   should_migrate_http_passwords)
-             : std::make_unique<FormFetcherImpl>(std::move(form_digest), client,
+  return std::make_unique<MultiStoreFormFetcher>(std::move(form_digest), client,
                                                  should_migrate_http_passwords);
 }
 

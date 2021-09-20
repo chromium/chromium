@@ -135,12 +135,13 @@ class WebsiteLoginManagerImplTest : public testing::Test {
           .WillByDefault(Return(account_store_.get()));
     }
     ON_CALL(*store(), GetLogins(_, _))
-        .WillByDefault(
-            WithArg<1>([](password_manager::PasswordStoreConsumer* consumer) {
+        .WillByDefault(WithArg<1>(
+            [this](password_manager::PasswordStoreConsumer* consumer) {
               std::vector<std::unique_ptr<PasswordForm>> result;
               result.push_back(
                   std::make_unique<PasswordForm>(MakeSimplePasswordForm()));
-              consumer->OnGetPasswordStoreResults(std::move(result));
+              consumer->OnGetPasswordStoreResultsFrom(store(),
+                                                      std::move(result));
             }));
 
     manager_ = std::make_unique<WebsiteLoginManagerImpl>(&client_,
