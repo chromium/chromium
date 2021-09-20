@@ -212,8 +212,8 @@ declare_args() {
   # Tentatively used on iOS, except in cronet builds (cronet still supports 32-bit builds, which
   # lld doesn't support).
   # The default linker everywhere else.
-  use_lld =
-      is_clang && !(is_ios && is_cronet_build) && !(is_mac && is_gpu_fyi_bot)
+  use_lld = is_clang && !(is_ios && is_cronet_build) &&
+            !(is_mac && is_gpu_fyi_bot) && !use_xcode_clang
 }
 
 declare_args() {
