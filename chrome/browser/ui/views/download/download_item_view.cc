@@ -1117,6 +1117,7 @@ ui::ImageModel DownloadItemView::GetIcon() const {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
       return kError;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
       return kWarning;
@@ -1129,7 +1130,6 @@ ui::ImageModel DownloadItemView::GetIcon() const {
           ui::NativeTheme::kColorId_DefaultIconColor, non_error_icon_size);
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
-    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
