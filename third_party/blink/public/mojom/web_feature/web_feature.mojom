@@ -3345,6 +3345,10 @@ enum WebFeature {
   kCanvasRenderingContext2DHasOverdraw = 4035,
   kDigitalGoodsConsume = 4036,
   kDigitalGoodsListPurchaseHistory = 4037,
+  kWebShareContainingFiles = 4038,
+  kWebShareContainingTitle = 4039,
+  kWebShareContainingText = 4040,
+  kWebShareContainingUrl = 4041,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -34588,6 +34588,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4035" label="CanvasRenderingContext2DHasOverdraw"/>
   <int value="4036" label="DigitalGoodsConsume"/>
   <int value="4037" label="DigitalGoodsListPurchaseHistory"/>
+  <int value="4038" label="WebShareContainingFiles"/>
+  <int value="4039" label="WebShareContainingTitle"/>
+  <int value="4040" label="WebShareContainingText"/>
+  <int value="4041" label="WebShareContainingUrl"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
