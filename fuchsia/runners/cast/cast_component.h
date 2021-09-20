@@ -10,12 +10,14 @@
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
+
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/fuchsia/startup_context.h"
+#include "base/gtest_prod_util.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_fuchsia.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
