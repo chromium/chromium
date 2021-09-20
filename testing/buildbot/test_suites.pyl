@@ -3883,7 +3883,7 @@
           'shards': 12,
         },
         'chromeos_swarming': {
-          'shards': 18,
+          'shards': 20,
         },
       },
     },
