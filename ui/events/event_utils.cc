@@ -16,6 +16,8 @@
 #include "ui/events/base_event_utils.h"
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include "ui/events/win/events_win_utils.h"
 #endif
 

@@ -23,7 +23,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #endif
 
 namespace gfx {

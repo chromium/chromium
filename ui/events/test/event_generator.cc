@@ -30,6 +30,8 @@
 #endif
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #endif
 

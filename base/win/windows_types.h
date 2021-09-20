@@ -31,6 +31,7 @@ typedef long LONG;
 typedef int INT;
 typedef unsigned int UINT;
 typedef unsigned int* PUINT;
+typedef unsigned __int64 UINT64;
 typedef void* LPVOID;
 typedef void* PVOID;
 typedef void* HANDLE;
@@ -103,6 +104,8 @@ typedef PVOID HDEVINFO;
 
 typedef struct _OVERLAPPED OVERLAPPED;
 typedef struct tagMSG MSG, *PMSG, *NPMSG, *LPMSG;
+typedef struct tagTOUCHINPUT TOUCHINPUT;
+typedef struct tagPOINTER_INFO POINTER_INFO;
 
 typedef struct _RTL_SRWLOCK RTL_SRWLOCK;
 typedef RTL_SRWLOCK SRWLOCK, *PSRWLOCK;
