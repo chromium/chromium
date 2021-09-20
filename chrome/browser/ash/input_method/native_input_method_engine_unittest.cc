@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/input_method/stub_input_method_engine_observer.h"
@@ -93,8 +94,13 @@ void SetPhysicalTypingAutocorrectEnabled(Profile& profile, bool enabled) {
   input_method_setting.SetPath(
       std::string(kEngineIdUs) + ".physicalKeyboardAutoCorrectionLevel",
       base::Value(enabled ? 1 : 0));
-  profile.GetPrefs()->Set(prefs::kLanguageInputMethodSpecificSettings,
+  profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
                           input_method_setting);
+}
+
+void SetPhysicalTypingPredictiveWritingEnabled(Profile& profile, bool enabled) {
+  profile.GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
+                                 enabled);
 }
 
 class TestInputEngineManager : public ime::mojom::InputEngineManager {
@@ -146,6 +152,7 @@ class TestInputMethodManager : public MockInputMethodManager {
 // TODO(crbug.com/1148157): Refactor NativeInputMethodEngine etc. to avoid
 // hidden dependencies on globals such as ImeBridge.
 class NativeInputMethodEngineTest : public ::testing::Test {
+ public:
   void SetUp() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAssistPersonalInfo,
@@ -166,6 +173,19 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+  }
+
+  void EnableMultiWordFeatureFlag() {
+    feature_list_.Reset();
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAssistPersonalInfo,
+                              features::kAssistPersonalInfoEmail,
+                              features::kAssistPersonalInfoName,
+                              features::kEmojiSuggestAddition,
+                              features::kImeMojoDecoder,
+                              features::kSystemLatinPhysicalTyping,
+                              features::kAssistMultiWord},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -274,7 +294,52 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
               EXPECT_EQ(*settings,
                         *ime::mojom::InputMethodSettings::NewLatinSettings(
                             ime::mojom::LatinSettings::New(
-                                /*autocorrect=*/true)));
+                                /*autocorrect=*/true,
+                                /*predictive_writing=*/false)));
+            }));
+  }
+
+  ui::IMEEngineHandlerInterface::InputContext input_context(
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
+      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
+      /*should_do_learning=*/true);
+  engine.Enable(kEngineIdUs);
+  engine.FocusIn(input_context);
+  engine.FlushForTesting();
+
+  InputMethodManager::Shutdown();
+}
+
+TEST_F(NativeInputMethodEngineTest,
+       FocusCallsPassPredictiveWritingPrefWhenEnabled) {
+  TestingProfile testing_profile;
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
+  SetPhysicalTypingPredictiveWritingEnabled(testing_profile, true);
+  EnableMultiWordFeatureFlag();
+
+  testing::StrictMock<MockInputMethod> mock_input_method;
+  InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_method));
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_input_method,
+                OnFocus(MojoEq(ime::mojom::InputFieldInfo(
+                            ime::mojom::InputFieldType::kText,
+                            ime::mojom::AutocorrectMode::kEnabled,
+                            ime::mojom::PersonalizationMode::kEnabled)),
+                        _))
+        .WillOnce(
+            ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
+                                 ime::mojom::InputMethodSettingsPtr settings) {
+              EXPECT_EQ(*settings,
+                        *ime::mojom::InputMethodSettings::NewLatinSettings(
+                            ime::mojom::LatinSettings::New(
+                                /*autocorrect=*/true,
+                                /*predictive_writing=*/true)));
             }));
   }
 

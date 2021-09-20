@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 module chromeos.ime.mojom;
 
@@ -280,11 +280,14 @@ struct KoreanSettings {
   KoreanLayout layout@1;
 };
 
-// Next ordinal: 1
+// Next ordinal: 2
 [Stable]
 struct LatinSettings {
   // Whether to enable autocorrect as the user is typing.
   bool autocorrect@0;
+
+  // Whether to enable predictive writing as the user is typing.
+  [MinVersion=5] bool predictive_writing@1;
 };
 
 // Next ordinal: 0

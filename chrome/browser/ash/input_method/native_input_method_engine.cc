@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/i18n/i18n_constants.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -93,6 +94,10 @@ bool IsChineseEngine(const std::string& engine_id) {
          engine_id == "zh-hant-t-i0-und";
 }
 
+bool IsUsEnglishEngine(const std::string& engine_id) {
+  return engine_id == "xkb:us::eng";
+}
+
 bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) {
   // To avoid handling tricky cases where the user types with both the virtual
   // and the physical keyboard, only run the native code path if the virtual
@@ -112,16 +117,19 @@ bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) {
 
 bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
                                           const std::string& engine_id) {
-  if (!prefs) {
-    return false;
-  }
-
   // The FST Mojo engine is only needed if autocorrect is enabled.
   const base::DictionaryValue* input_method_settings =
-      prefs->GetDictionary(prefs::kLanguageInputMethodSpecificSettings);
+      prefs->GetDictionary(::prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* autocorrect_setting = input_method_settings->FindPath(
       engine_id + ".physicalKeyboardAutoCorrectionLevel");
   return autocorrect_setting && autocorrect_setting->GetIfInt().value_or(0) > 0;
+}
+
+bool IsPredictiveWritingEnabled(PrefService* pref_service,
+                                const std::string& engine_id) {
+  return (features::IsAssistiveMultiWordEnabled() &&
+          pref_service->GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
+          IsUsEnglishEngine(engine_id));
 }
 
 std::string NormalizeRuleBasedEngineId(const std::string engine_id) {
@@ -461,7 +469,7 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   }
 
   const base::DictionaryValue* prefs_settings =
-      prefs->GetDictionary(prefs::kLanguageInputMethodSpecificSettings);
+      prefs->GetDictionary(::prefs::kLanguageInputMethodSpecificSettings);
 
   // TODO(b/151884011): Extend this to other input methods like Pinyin.
   if (IsFstEngine(engine_id)) {
@@ -470,6 +478,8 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
         prefs_settings
             ->FindIntPath(engine_id + ".physicalKeyboardAutoCorrectionLevel")
             .value_or(0) > 0;
+    latin_settings->predictive_writing =
+        IsPredictiveWritingEnabled(prefs, engine_id);
     return mojom::InputMethodSettings::NewLatinSettings(
         std::move(latin_settings));
   } else if (IsKoreanEngine(engine_id)) {
