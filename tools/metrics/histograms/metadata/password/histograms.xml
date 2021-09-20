@@ -721,7 +721,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AllPasswordsBottomSheet.UserAction"
-    enum="AllPasswordsBottomSheetActions" expires_after="2021-10-25">
+    enum="AllPasswordsBottomSheetActions" expires_after="M96">
+  <obsolete>
+    Obsolete since M96.
+  </obsolete>
   <owner>redatawfik@google.com</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
