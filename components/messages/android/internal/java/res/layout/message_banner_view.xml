@@ -61,11 +61,12 @@
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/message_secondary_button"
         app:tint="@color/default_icon_color_secondary"
+        app:menuVerticalOverlapAnchor="false"
         android:visibility="gone"
         android:contentDescription="@null"
+        android:background="?actionBarItemBackground"
         android:layout_width="@dimen/message_banner_button_width"
-        android:layout_height="match_parent"
-        android:background="@null" />
+        android:layout_height="@dimen/min_touch_target_size" />
 
     <ImageView
         android:id="@+id/message_divider"
