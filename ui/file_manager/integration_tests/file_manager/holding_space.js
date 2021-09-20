@@ -160,7 +160,6 @@ testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
   let text = '.holding-space-welcome-text:not(.tablet-mode-enabled)';
   let textInTabletMode = '.holding-space-welcome-text.tablet-mode-enabled';
   let expectedTextDisplayValue = 'block';
-  let expectedTextInTabletModeDisplayValue = 'block';
   if (isBannersFrameworkEnabled) {
     await remoteCall.isolateBannerForTesting(
         appId, 'holding-space-welcome-banner');
@@ -173,7 +172,6 @@ testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
       'educational-banner > span[slot="subtitle"].tablet-mode-enabled'
     ];
     expectedTextDisplayValue = 'inline';
-    expectedTextInTabletModeDisplayValue = 'flex';
   }
   // Check: `text` should be displayed but `textInTabletMode` should not.
   await waitForElementWithDisplay(text, expectedTextDisplayValue);
@@ -186,8 +184,7 @@ testcase.holdingSpaceWelcomeBannerOnTabletModeChanged = async () => {
 
   // Check: `textInTabletMode` should be displayed but `text` should not.
   await waitForElementWithDisplay(text, 'none');
-  await waitForElementWithDisplay(
-      textInTabletMode, expectedTextInTabletModeDisplayValue);
+  await waitForElementWithDisplay(textInTabletMode, 'block');
 
   // Perform and check: disable tablet mode.
   await sendTestMessage({name: 'disableTabletMode'}).then((result) => {
