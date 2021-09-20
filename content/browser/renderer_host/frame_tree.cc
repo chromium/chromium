@@ -435,6 +435,8 @@ FrameTreeNode* FrameTree::AddFrame(
       parent->AddChild(std::move(new_node), process_id, new_routing_id,
                        std::move(frame_remote), frame_token);
 
+  added_node->SetFencedFrameNonceIfNeeded();
+
   DCHECK(browser_interface_broker_receiver.is_valid());
   added_node->current_frame_host()->BindBrowserInterfaceBrokerReceiver(
       std::move(browser_interface_broker_receiver));
@@ -789,6 +791,7 @@ void FrameTree::Init(SiteInstance* main_frame_site_instance,
   root_->SetFrameName(main_frame_name, unique_name);
   root_->render_manager()->InitRoot(main_frame_site_instance,
                                     renderer_initiated_creation);
+  root_->SetFencedFrameNonceIfNeeded();
 }
 
 void FrameTree::DidAccessInitialMainDocument() {

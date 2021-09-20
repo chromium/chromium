@@ -1175,6 +1175,136 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckIsFencedFrame) {
   EXPECT_TRUE(nested_fenced_frame_root_node->IsInFencedFrameTree());
 }
 
+// Tests a nonce is correctly set in the isolation info for a fenced frame tree.
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckIsolationInfoNonce) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root->child_count());
+
+  auto* fenced_frame = GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
+
+  // Before we check the isolation info on the fenced frame, we must navigate it
+  // once. This is because the root of a FrameTree does not call
+  // RenderFrameHostImpl::RenderFrameCreated() on its owned RFHI.
+  {
+    // Navigate the fenced frame.
+    GURL fenced_frame_url(https_server()->GetURL("a.test", "/title1.html"));
+    std::string navigate_script =
+        JsReplace("f.src = $1;", fenced_frame_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame, fenced_frame_url, navigate_script);
+  }
+
+  // There should be a nonce in the IsolationInfo.
+  const net::IsolationInfo& isolation_info =
+      fenced_frame->current_frame_host()->GetIsolationInfoForSubresources();
+  EXPECT_TRUE(isolation_info.nonce().has_value());
+  absl::optional<base::UnguessableToken> fenced_frame_nonce =
+      fenced_frame->fenced_frame_nonce();
+  EXPECT_TRUE(fenced_frame_nonce.has_value());
+  EXPECT_EQ(fenced_frame_nonce.value(), isolation_info.nonce().value());
+
+  // Add an iframe.
+  EXPECT_TRUE(ExecJs(root,
+                     "var subframe = document.createElement('iframe');"
+                     "document.body.appendChild(subframe);"));
+  EXPECT_EQ(2U, root->child_count());
+  auto* iframe = root->child_at(1);
+  EXPECT_FALSE(iframe->IsFencedFrameRoot());
+  EXPECT_FALSE(iframe->IsInFencedFrameTree());
+  const net::IsolationInfo& iframe_isolation_info =
+      iframe->current_frame_host()->GetIsolationInfoForSubresources();
+  EXPECT_FALSE(iframe_isolation_info.nonce().has_value());
+
+  // Navigate the iframe. It should still not have a nonce.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      iframe, https_server()->GetURL("b.test", "/title1.html")));
+  const net::IsolationInfo& iframe_new_isolation_info =
+      iframe->current_frame_host()->GetIsolationInfoForSubresources();
+  EXPECT_FALSE(iframe_new_isolation_info.nonce().has_value());
+
+  // Add a nested iframe inside the fenced frame.
+  EXPECT_TRUE(ExecJs(fenced_frame,
+                     "var iframe_within_ff = document.createElement('iframe');"
+                     "document.body.appendChild(iframe_within_ff);"));
+  EXPECT_EQ(1U, fenced_frame->child_count());
+  EXPECT_FALSE(fenced_frame->child_at(0)->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame->child_at(0)->IsInFencedFrameTree());
+  const net::IsolationInfo& nested_iframe_isolation_info =
+      fenced_frame->child_at(0)
+          ->current_frame_host()
+          ->GetIsolationInfoForSubresources();
+  EXPECT_TRUE(nested_iframe_isolation_info.nonce().has_value());
+
+  // Check that a nested iframe in the fenced frame tree has the same nonce
+  // value as its parent.
+  EXPECT_EQ(fenced_frame_nonce.value(),
+            nested_iframe_isolation_info.nonce().value());
+  absl::optional<base::UnguessableToken> nested_iframe_nonce =
+      fenced_frame->child_at(0)->fenced_frame_nonce();
+  EXPECT_EQ(nested_iframe_isolation_info.nonce().value(),
+            nested_iframe_nonce.value());
+
+  // Navigate the iframe. It should still have the same nonce.
+  {
+    GURL https_url(https_server()->GetURL("foo.test", "/title2.html"));
+    std::string navigate_script =
+        JsReplace("iframe_within_ff.src = $1;", https_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame->child_at(0), https_url, navigate_script);
+  }
+  const net::IsolationInfo& nested_iframe_new_isolation_info =
+      fenced_frame->child_at(0)
+          ->current_frame_host()
+          ->GetIsolationInfoForSubresources();
+  EXPECT_EQ(nested_iframe_new_isolation_info.nonce().value(),
+            nested_iframe_nonce.value());
+
+  // Add a nested fenced frame.
+  EXPECT_TRUE(
+      ExecJs(fenced_frame,
+             "var nested_fenced_frame = document.createElement('fencedframe');"
+             "document.body.appendChild(nested_fenced_frame);"));
+  EXPECT_EQ(2U, fenced_frame->child_count());
+  auto* nested_fenced_frame = GetFencedFrameRootNode(fenced_frame->child_at(1));
+  EXPECT_TRUE(nested_fenced_frame->IsFencedFrameRoot());
+  EXPECT_TRUE(nested_fenced_frame->IsInFencedFrameTree());
+  absl::optional<base::UnguessableToken> nested_fframe_nonce =
+      nested_fenced_frame->fenced_frame_nonce();
+  EXPECT_TRUE(nested_fframe_nonce.has_value());
+
+  // Check that a nested fenced frame has a different value than its parent
+  // fenced frame.
+  EXPECT_NE(fenced_frame_nonce.value(), nested_fframe_nonce.value());
+
+  // Check that the nonce does not change when there is a cross-document
+  // navigation.
+  {
+    // Navigate the fenced frame.
+    GURL fenced_frame_url(https_server()->GetURL("b.test", "/title1.html"));
+    std::string navigate_script =
+        JsReplace("f.src = $1;", fenced_frame_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame, fenced_frame_url, navigate_script);
+  }
+
+  absl::optional<base::UnguessableToken> new_fenced_frame_nonce =
+      fenced_frame->fenced_frame_nonce();
+  EXPECT_NE(absl::nullopt, new_fenced_frame_nonce);
+  EXPECT_EQ(new_fenced_frame_nonce.value(), fenced_frame_nonce.value());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     FencedFrameTreeBrowserTest,

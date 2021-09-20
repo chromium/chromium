@@ -3713,8 +3713,24 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     candidate_site_for_cookies = net::SiteForCookies(top_frame_site);
   }
 
-  const base::UnguessableToken* nonce =
-      anonymous ? &GetPage().anonymous_iframes_nonce() : nullptr;
+  const base::UnguessableToken* nonce = nullptr;
+
+  absl::optional<base::UnguessableToken> fenced_frame_nonce =
+      frame_tree_node_->fenced_frame_nonce();
+
+  // If it's an anonymous frame tree, use its nonce even if it's within a fenced
+  // frame tree to maintain the guarantee that an anonymous frame tree has
+  // a unique nonce. Otherwise, use the fenced frame nonce for fenced frames.
+  // Note that MPArch will ensure that fenced frame tree within an anonymous
+  // iframe does not have `anonymous` set to true. The ShadowDOM architecture
+  // cannot make the same guarantee that MPArch will, and therefore the shadow
+  // DOM version and will lead to the anonymous iframe nonce being used
+  // (crbug.com/1249865).
+  if (anonymous) {
+    nonce = &GetPage().anonymous_iframes_nonce();
+  } else if (fenced_frame_nonce.has_value()) {
+    nonce = &(fenced_frame_nonce.value());
+  }
 
   return net::IsolationInfo::Create(request_type, top_frame_origin,
                                     frame_origin, candidate_site_for_cookies,
@@ -12666,6 +12682,7 @@ RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
   }
   reporting_source = base::UnguessableToken::Create();
 }
+
 RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() =
     default;
 
