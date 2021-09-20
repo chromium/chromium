@@ -157,8 +157,8 @@ public class TabGroupUiToolbarView extends FrameLayout {
         setPrimaryColor(primaryColor);
 
         @ColorRes
-        int tintListRes =
-                isIncognito ? R.color.toolbar_icon_tint_dark : R.color.default_icon_color_tint_list;
+        int tintListRes = isIncognito ? R.color.default_icon_color_light_tint_list
+                                      : R.color.default_icon_color_tint_list;
         ColorStateList tintList = ContextCompat.getColorStateList(getContext(), tintListRes);
         setTint(tintList);
     }
