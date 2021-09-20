@@ -769,83 +769,6 @@ bool PictureLayerTiling::IsTileOccludedOnCurrentTree(const Tile* tile) const {
   return current_occlusion_in_layer_space_.IsOccluded(tile_query_rect);
 }
 
-bool PictureLayerTiling::IsTileRequiredForActivation(const Tile* tile) const {
-  if (tree_ == PENDING_TREE) {
-    if (!can_require_tiles_for_activation_)
-      return false;
-
-    if (resolution_ != HIGH_RESOLUTION)
-      return false;
-
-    if (IsTileOccluded(tile))
-      return false;
-
-    // We may be checking the active tree tile here (since this function is also
-    // called for active trees below, ensure that this is at all a valid tile on
-    // the pending tree.
-    if (tile->tiling_i_index() >= tiling_data_.num_tiles_x() ||
-        tile->tiling_j_index() >= tiling_data_.num_tiles_y()) {
-      return false;
-    }
-
-    gfx::Rect tile_bounds =
-        tiling_data_.TileBounds(tile->tiling_i_index(), tile->tiling_j_index());
-    bool tile_is_visible = tile_bounds.Intersects(current_visible_rect_);
-    if (!tile_is_visible)
-      return false;
-
-    if (client_->RequiresHighResToDraw())
-      return true;
-
-    const PictureLayerTiling* active_twin =
-        client_->GetPendingOrActiveTwinTiling(this);
-    if (!active_twin || !TilingMatchesTileIndices(active_twin))
-      return true;
-
-    if (active_twin->raster_source()->GetSize() != raster_source()->GetSize())
-      return true;
-
-    if (active_twin->current_visible_rect_ != current_visible_rect_)
-      return true;
-
-    Tile* twin_tile =
-        active_twin->TileAt(tile->tiling_i_index(), tile->tiling_j_index());
-    if (!twin_tile)
-      return false;
-    return true;
-  }
-
-  DCHECK_EQ(tree_, ACTIVE_TREE);
-  const PictureLayerTiling* pending_twin =
-      client_->GetPendingOrActiveTwinTiling(this);
-  // If we don't have a pending tree, or the pending tree will overwrite the
-  // given tile, then it is not required for activation.
-  if (!pending_twin || !TilingMatchesTileIndices(pending_twin) ||
-      pending_twin->TileAt(tile->tiling_i_index(), tile->tiling_j_index())) {
-    return false;
-  }
-  // Otherwise, ask the pending twin if this tile is required for activation.
-  return pending_twin->IsTileRequiredForActivation(tile);
-}
-
-bool PictureLayerTiling::IsTileRequiredForDraw(const Tile* tile) const {
-  if (tree_ == PENDING_TREE)
-    return false;
-
-  if (resolution_ != HIGH_RESOLUTION)
-    return false;
-
-  gfx::Rect tile_bounds =
-      tiling_data_.TileBounds(tile->tiling_i_index(), tile->tiling_j_index());
-  bool tile_is_visible = current_visible_rect_.Intersects(tile_bounds);
-  if (!tile_is_visible)
-    return false;
-
-  if (IsTileOccludedOnCurrentTree(tile))
-    return false;
-  return true;
-}
-
 bool PictureLayerTiling::ShouldDecodeCheckeredImagesForTile(
     const Tile* tile) const {
   // If this is the pending tree and the tile is not occluded, any checkered
@@ -880,8 +803,10 @@ bool PictureLayerTiling::ShouldDecodeCheckeredImagesForTile(
 }
 
 void PictureLayerTiling::UpdateRequiredStatesOnTile(Tile* tile) const {
-  tile->set_required_for_activation(IsTileRequiredForActivation(tile));
-  tile->set_required_for_draw(IsTileRequiredForDraw(tile));
+  tile->set_required_for_activation(IsTileRequiredForActivation(
+      tile, [this](const Tile* tile) { return IsTileVisible(tile); }));
+  tile->set_required_for_draw(IsTileRequiredForDraw(
+      tile, [this](const Tile* tile) { return IsTileVisible(tile); }));
 }
 
 PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
@@ -893,7 +818,15 @@ PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
       << "Recording rect: "
       << EnclosingLayerRectFromContentsRect(tile->content_rect()).ToString();
 
-  UpdateRequiredStatesOnTile(tile);
+  tile->set_required_for_activation(
+      IsTileRequiredForActivation(tile, [priority_rect_type](const Tile*) {
+        return priority_rect_type == VISIBLE_RECT;
+      }));
+  tile->set_required_for_draw(
+      IsTileRequiredForDraw(tile, [priority_rect_type](const Tile*) {
+        return priority_rect_type == VISIBLE_RECT;
+      }));
+
   const auto& tile_priority = ComputePriorityForTile(tile, priority_rect_type);
   DCHECK((!tile->required_for_activation() && !tile->required_for_draw()) ||
          tile_priority.priority_bin == TilePriority::NOW ||

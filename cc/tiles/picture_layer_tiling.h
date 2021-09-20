@@ -19,6 +19,7 @@
 #include "cc/base/tiling_data.h"
 #include "cc/cc_export.h"
 #include "cc/paint/paint_worklet_input.h"
+#include "cc/raster/raster_source.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/trees/occlusion.h"
@@ -33,7 +34,6 @@ class TracedValue;
 
 namespace cc {
 
-class RasterSource;
 class PictureLayerTiling;
 class PrioritizedTile;
 
@@ -113,8 +113,15 @@ class CC_EXPORT PictureLayerTiling {
   void TakeTilesAndPropertiesFrom(PictureLayerTiling* pending_twin,
                                   const Region& layer_invalidation);
 
-  bool IsTileRequiredForActivation(const Tile* tile) const;
-  bool IsTileRequiredForDraw(const Tile* tile) const;
+  bool IsTileRequiredForActivation(const Tile* tile) const {
+    return IsTileRequiredForActivation(
+        tile, [this](const Tile* tile) { return IsTileVisible(tile); });
+  }
+
+  bool IsTileRequiredForDraw(const Tile* tile) const {
+    return IsTileRequiredForDraw(
+        tile, [this](const Tile* tile) { return IsTileVisible(tile); });
+  }
 
   // Returns true if the tile should be processed for decoding images skipped
   // during rasterization.
@@ -311,6 +318,73 @@ class CC_EXPORT PictureLayerTiling {
     SOON_BORDER_RECT,
     EVENTUALLY_RECT
   };
+
+  bool IsTileVisible(const Tile* tile) const {
+    gfx::Rect tile_bounds =
+        tiling_data_.TileBounds(tile->tiling_i_index(), tile->tiling_j_index());
+    return tile_bounds.Intersects(current_visible_rect_);
+  }
+
+  template <typename VisibilityChecker>
+  bool IsTileRequiredForActivation(const Tile* tile,
+                                   VisibilityChecker is_visible) const {
+    if (tree_ == PENDING_TREE) {
+      if (!can_require_tiles_for_activation_ ||
+          resolution_ != HIGH_RESOLUTION || IsTileOccluded(tile)) {
+        return false;
+      }
+
+      // We may be checking the active tree tile here (since this function is
+      // also called for active trees below, ensure that this is at all a valid
+      // tile on the pending tree.
+      if (tile->tiling_i_index() >= tiling_data_.num_tiles_x() ||
+          tile->tiling_j_index() >= tiling_data_.num_tiles_y()) {
+        return false;
+      }
+
+      if (!is_visible(tile))
+        return false;
+
+      if (client_->RequiresHighResToDraw())
+        return true;
+
+      const PictureLayerTiling* active_twin =
+          client_->GetPendingOrActiveTwinTiling(this);
+      if (!active_twin || !TilingMatchesTileIndices(active_twin))
+        return true;
+
+      if (active_twin->raster_source()->GetSize() != raster_source()->GetSize())
+        return true;
+
+      if (active_twin->current_visible_rect_ != current_visible_rect_)
+        return true;
+
+      Tile* twin_tile =
+          active_twin->TileAt(tile->tiling_i_index(), tile->tiling_j_index());
+      if (!twin_tile)
+        return false;
+      return true;
+    }
+
+    DCHECK_EQ(tree_, ACTIVE_TREE);
+    const PictureLayerTiling* pending_twin =
+        client_->GetPendingOrActiveTwinTiling(this);
+    // If we don't have a pending tree, or the pending tree will overwrite the
+    // given tile, then it is not required for activation.
+    if (!pending_twin || !TilingMatchesTileIndices(pending_twin) ||
+        pending_twin->TileAt(tile->tiling_i_index(), tile->tiling_j_index())) {
+      return false;
+    }
+    // Otherwise, ask the pending twin if this tile is required for activation.
+    return pending_twin->IsTileRequiredForActivation(tile);
+  }
+
+  template <typename VisibilityChecker>
+  bool IsTileRequiredForDraw(const Tile* tile,
+                             VisibilityChecker is_visible) const {
+    return tree_ == ACTIVE_TREE && resolution_ == HIGH_RESOLUTION &&
+           is_visible(tile) && !IsTileOccludedOnCurrentTree(tile);
+  }
 
   using TileMap =
       std::unordered_map<TileMapKey, std::unique_ptr<Tile>, TileMapKeyHash>;
