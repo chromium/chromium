@@ -203,8 +203,12 @@ public class WebApkIconNameUpdateDialogTest {
             boolean clickAccept, String shortAppName, String expectedTitle) throws Exception {
         int callCount = mOnActionCallback.getCallCount();
 
+        // Applying a theme overlay because the context is used to show the dialog, which needs some
+        // color attributes to inflate the views.
+        Context context = new ContextThemeWrapper(
+                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay_ChromiumAndroid);
         WebApkUpdateReportAbuseDialog dialog =
-                new WebApkUpdateReportAbuseDialog(mDialogManager, /* packageName= */ "",
+                new WebApkUpdateReportAbuseDialog(context, mDialogManager, /* packageName= */ "",
                         shortAppName, /* showAbuseCheckbox= */ true, this::onAbuseDialogResult);
         dialog.show();
 

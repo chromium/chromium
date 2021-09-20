@@ -26,6 +26,9 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
 
     private static final String TAG = "IconNameUpdateDlg";
 
+    // The Activity context to use.
+    private Context mActivityContext;
+
     // The modal dialog manager to use.
     private ModalDialogManager mModalDialogManager;
 
@@ -45,7 +48,7 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
 
     /**
      * Shows the dialog.
-     * @param context The context used to inflate views.
+     * @param activityContext The activity context used to inflate views.
      * @param manager The {@ModalDialogManager} to use.
      * @param packageName The package name for this app.
      * @param iconChanging Whether an icon change has been detected.
@@ -61,12 +64,13 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
      * @param newIconAdaptive Whether the updated icon is adaptive.
      * @param callback The callback to use to communicate the results.
      */
-    public void show(Context context, ModalDialogManager manager, String packageName,
+    public void show(Context activityContext, ModalDialogManager manager, String packageName,
             boolean iconChanging, boolean shortNameChanging, boolean nameChanging,
             String oldAppShortName, String newAppShortName, String oldAppName, String newAppName,
             Bitmap currentAppIcon, Bitmap updatedAppIcon, boolean oldIconAdaptive,
             boolean newIconAdaptive, Callback<Integer> callback) {
-        Resources resources = context.getResources();
+        Resources resources = activityContext.getResources();
+        mActivityContext = activityContext;
         mOldAppShortName = oldAppShortName;
         mPackageName = packageName;
         mDialogResultCallback = callback;
@@ -93,7 +97,7 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
 
         WebApkIconNameUpdateCustomView dialogCustomView =
                 (WebApkIconNameUpdateCustomView) LayoutInflaterUtils.inflate(
-                        context, R.layout.webapk_icon_name_update_dialog, null);
+                        activityContext, R.layout.webapk_icon_name_update_dialog, null);
         // Always show the icon, because the dialog looks weird if only WebappInfo#shortname or
         // WebappInfo#name is changing.
         dialogCustomView.configureIcons(
@@ -136,7 +140,7 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
                 break;
             case ModalDialogProperties.ButtonType.NEGATIVE:
                 WebApkUpdateReportAbuseDialog reportAbuseDialog = new WebApkUpdateReportAbuseDialog(
-                        mModalDialogManager, mPackageName, mOldAppShortName,
+                        mActivityContext, mModalDialogManager, mPackageName, mOldAppShortName,
                         /* showAbuseCheckbox= */ false, this::onUninstall);
                 reportAbuseDialog.show();
                 break;
