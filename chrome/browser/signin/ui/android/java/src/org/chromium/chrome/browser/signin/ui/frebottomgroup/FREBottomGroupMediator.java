@@ -23,6 +23,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -120,6 +121,12 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
         }
         assert mModel.get(FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED)
             : "The continue button shouldn't be visible before the native is not initialize!";
+        if (IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+            mListener.advanceToNextPage();
+            return;
+        }
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         signinManager.onFirstRunCheckDone();

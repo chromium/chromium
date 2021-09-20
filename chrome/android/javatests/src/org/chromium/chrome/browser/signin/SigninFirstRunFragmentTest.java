@@ -240,6 +240,31 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    public void testContinueButtonWhenUserIsSignedIn() {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        final CoreAccountInfo primaryAccount = mAccountManagerTestRule.addTestAccountThenSignin();
+        Assert.assertNotEquals("The primary account should be a different account!", TEST_EMAIL1,
+                primaryAccount.getEmail());
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+        final String continueAsText = mChromeActivityTestRule.getActivity().getString(
+                R.string.signin_promo_continue_as, GIVEN_NAME1);
+
+        onView(withText(continueAsText)).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> mFragment.mIsAdvanceToNextPageCalled);
+        final CoreAccountInfo currentPrimaryAccount =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+                });
+        Assert.assertEquals(primaryAccount, currentPrimaryAccount);
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+    }
+
+    @Test
+    @MediumTest
     public void testContinueButtonWithSupervisedAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(
