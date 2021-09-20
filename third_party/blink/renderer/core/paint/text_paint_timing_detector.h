@@ -22,7 +22,7 @@ class PropertyTreeStateOrAlias;
 class TextElementTiming;
 class TracedValue;
 
-class TextRecord : public GarbageCollected<TextRecord> {
+class TextRecord final : public GarbageCollected<TextRecord> {
  public:
   TextRecord(Node& node,
              uint64_t new_first_size,
