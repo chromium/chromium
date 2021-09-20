@@ -12,6 +12,7 @@
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -97,10 +98,12 @@ void SetMemoryInfoWithProbeError(healthd::TelemetryInfoPtr& telemetry_info) {
 }
 
 void SetSystemInfoV2(healthd::TelemetryInfoPtr& telemetry_info,
+                     healthd::OsInfoPtr os_info,
                      healthd::DmiInfoPtr dmi_info) {
   auto system_info2 = healthd::SystemInfoV2::New();
-  system_info2->os_info = healthd::OsInfo::New();
-  system_info2->os_info->os_version = healthd::OsVersion::New();
+  if (os_info) {
+    system_info2->os_info = std::move(os_info);
+  }
 
   if (dmi_info) {
     system_info2->dmi_info = std::move(dmi_info);
@@ -109,12 +112,20 @@ void SetSystemInfoV2(healthd::TelemetryInfoPtr& telemetry_info,
       healthd::SystemResultV2::NewSystemInfoV2(std::move(system_info2));
 }
 
+healthd::OsInfoPtr CreateOsInfo(healthd::BootMode boot_mode) {
+  healthd::OsInfoPtr os_info = healthd::OsInfo::New();
+  os_info->os_version = healthd::OsVersion::New();
+  os_info->boot_mode = boot_mode;
+  return os_info;
+}
+
 healthd::DmiInfoPtr CreateDmiInfo() {
   healthd::DmiInfoPtr dmi_info = healthd::DmiInfo::New();
   dmi_info->sys_vendor = absl::optional<std::string>("LENOVO");
   dmi_info->product_name = absl::optional<std::string>("20U9001PUS");
   dmi_info->product_version =
       absl::optional<std::string>("ThinkPad X1 Carbon Gen 8");
+  dmi_info->bios_version = absl::optional<std::string>("N2WET26W (1.16 )");
   return dmi_info;
 }
 
@@ -147,6 +158,24 @@ class RevenLogSourceTest : public ::testing::Test {
     run_loop.Run();
 
     return result;
+  }
+
+  void VerifyBiosBootMode(healthd::BootMode boot_mode,
+                          const std::string& expected) {
+    auto info = healthd::TelemetryInfo::New();
+    auto os_info = CreateOsInfo(boot_mode);
+    auto dmi_info = healthd::DmiInfo::New();
+    SetSystemInfoV2(info, std::move(os_info), std::move(dmi_info));
+    ash::cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(info);
+
+    std::unique_ptr<SystemLogsResponse> response = Fetch();
+    ASSERT_NE(response, nullptr);
+    const auto revenlog_iter = response->find(kRevenLogKey);
+    ASSERT_NE(revenlog_iter, response->end());
+
+    EXPECT_THAT(revenlog_iter->second, HasSubstr("biosinfo:\n"));
+    EXPECT_THAT(revenlog_iter->second, HasSubstr(expected));
   }
 
  protected:
@@ -182,9 +211,10 @@ TEST_F(RevenLogSourceTest, FetchBluetoothAdapterInfoSuccessPowerOff) {
   const auto revenlog_iter = response->find(kRevenLogKey);
   ASSERT_NE(revenlog_iter, response->end());
 
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("bluetoothinfo:\n"));
   EXPECT_THAT(revenlog_iter->second,
-              HasSubstr("bluetooth_adapter_name: BlueZ 5.54"));
-  EXPECT_THAT(revenlog_iter->second, HasSubstr("powered: off"));
+              HasSubstr("\n  bluetooth_adapter_name: BlueZ 5.54"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  powered: off"));
 }
 
 TEST_F(RevenLogSourceTest, FetchBluetoothAdapterInfoFailure) {
@@ -214,8 +244,10 @@ TEST_F(RevenLogSourceTest, FetchCpuInfoSuccess) {
   const auto revenlog_iter = response->find(kRevenLogKey);
   ASSERT_NE(revenlog_iter, response->end());
 
-  EXPECT_THAT(revenlog_iter->second,
-              HasSubstr("cpu_name: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("cpuinfo:\n"));
+  EXPECT_THAT(
+      revenlog_iter->second,
+      HasSubstr("\n  cpu_name: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz"));
 }
 
 TEST_F(RevenLogSourceTest, FetchCpuInfoFailure) {
@@ -243,9 +275,11 @@ TEST_F(RevenLogSourceTest, FetchMemoryInfoSuccess) {
   const auto revenlog_iter = response->find(kRevenLogKey);
   ASSERT_NE(revenlog_iter, response->end());
 
-  EXPECT_THAT(revenlog_iter->second, HasSubstr("total_memory_kib: 2048"));
-  EXPECT_THAT(revenlog_iter->second, HasSubstr("free_memory_kib: 1024"));
-  EXPECT_THAT(revenlog_iter->second, HasSubstr("available_memory_kib: 512"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("meminfo:\n"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  total_memory_kib: 2048"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  free_memory_kib: 1024"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  available_memory_kib: 512"));
 }
 
 TEST_F(RevenLogSourceTest, FetchMemoryInfoFailure) {
@@ -266,8 +300,9 @@ TEST_F(RevenLogSourceTest, FetchMemoryInfoFailure) {
 
 TEST_F(RevenLogSourceTest, FetchDmiInfoWithValues) {
   auto info = healthd::TelemetryInfo::New();
+  auto os_info = CreateOsInfo(healthd::BootMode::kUnknown);
   auto dmi_info = CreateDmiInfo();
-  SetSystemInfoV2(info, std::move(dmi_info));
+  SetSystemInfoV2(info, std::move(os_info), std::move(dmi_info));
   ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
@@ -280,12 +315,17 @@ TEST_F(RevenLogSourceTest, FetchDmiInfoWithValues) {
   EXPECT_THAT(revenlog_iter->second, HasSubstr("product_name: 20U9001PUS"));
   EXPECT_THAT(revenlog_iter->second,
               HasSubstr("product_version: ThinkPad X1 Carbon Gen 8"));
+
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("biosinfo:\n"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("\n  bios_version: N2WET26W (1.16 )"));
 }
 
 TEST_F(RevenLogSourceTest, FetchDmiInfoWithoutValues) {
   auto info = healthd::TelemetryInfo::New();
+  auto os_info = CreateOsInfo(healthd::BootMode::kCrosEfi);
   auto dmi_info = healthd::DmiInfo::New();
-  SetSystemInfoV2(info, std::move(dmi_info));
+  SetSystemInfoV2(info, std::move(os_info), std::move(dmi_info));
   ash::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
@@ -297,6 +337,25 @@ TEST_F(RevenLogSourceTest, FetchDmiInfoWithoutValues) {
   EXPECT_THAT(revenlog_iter->second, HasSubstr("product_vendor: \n"));
   EXPECT_THAT(revenlog_iter->second, HasSubstr("product_name: \n"));
   EXPECT_THAT(revenlog_iter->second, HasSubstr("product_version: \n"));
+
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("biosinfo:\n"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("\n  bios_version: \n"));
+}
+
+TEST_F(RevenLogSourceTest, BiosBootMode_kCrosEfi) {
+  VerifyBiosBootMode(healthd::BootMode::kCrosEfi, "\n  uefi: true");
+}
+
+TEST_F(RevenLogSourceTest, BiosBootMode_kUnknown) {
+  VerifyBiosBootMode(healthd::BootMode::kUnknown, "\n  uefi: false");
+}
+
+TEST_F(RevenLogSourceTest, BiosBootMode_kCrosSecure) {
+  VerifyBiosBootMode(healthd::BootMode::kCrosSecure, "\n  uefi: false");
+}
+
+TEST_F(RevenLogSourceTest, BiosBootMode_kCrosLegacy) {
+  VerifyBiosBootMode(healthd::BootMode::kCrosLegacy, "\n  uefi: false");
 }
 
 }  // namespace system_logs

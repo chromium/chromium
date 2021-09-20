@@ -25,12 +25,18 @@ constexpr char kRevenLogKey[] = "CLOUDREADY_HARDWARE_INFO";
 constexpr char kNewlineWithIndent[] = "\n  ";
 constexpr char kKeyValueDelimiter[] = ": ";
 
+// Format for nested log entry:
+// {label}:
+//   {key1}: {value1}
+//   {key2}: {value2}
 void AddIndentedLogEntry(std::string* log,
                          const std::string& key,
                          const std::string& value) {
   base::StrAppend(log, {kNewlineWithIndent, key, kKeyValueDelimiter, value});
 }
 
+// Format for regular log entry:
+// {key1}: {value1}
 void AddLogEntry(std::string* log,
                  const std::string& key,
                  const std::string& value) {
@@ -44,7 +50,7 @@ void PopulateBluetoothInfo(std::string* log, const TelemetryInfoPtr& info) {
   }
   std::vector<healthd::BluetoothAdapterInfoPtr>& adapters =
       info->bluetooth_result->get_bluetooth_adapter_info();
-  base::StrAppend(log, {"bluetoothinfo"});
+  base::StrAppend(log, {"bluetoothinfo:"});
   for (const auto& adapter : adapters) {
     AddIndentedLogEntry(log, "bluetooth_adapter_name", adapter->name);
     AddIndentedLogEntry(log, "powered", (adapter->powered ? "on" : "off"));
@@ -61,7 +67,7 @@ void PopulateCpuInfo(std::string* log, const TelemetryInfoPtr& info) {
       info->cpu_result->get_cpu_info()->physical_cpus;
   DCHECK_GE(physical_cpus.size(), 1u);
 
-  base::StrAppend(log, {"cpuinfo"});
+  base::StrAppend(log, {"cpuinfo:"});
   for (const auto& cpu : physical_cpus) {
     AddIndentedLogEntry(log, "cpu_name", cpu->model_name.value_or(""));
   }
@@ -74,7 +80,7 @@ void PopulateMemoryInfo(std::string* log, const TelemetryInfoPtr& info) {
     return;
   }
   healthd::MemoryInfoPtr& memory_info = info->memory_result->get_memory_info();
-  base::StrAppend(log, {"meminfo"});
+  base::StrAppend(log, {"meminfo:"});
   AddIndentedLogEntry(log, "total_memory_kib",
                       base::NumberToString(memory_info->total_memory_kib));
   AddIndentedLogEntry(log, "free_memory_kib",
@@ -97,6 +103,20 @@ void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
     AddLogEntry(log, "product_name", dmi_info->product_name.value_or(""));
     AddLogEntry(log, "product_version", dmi_info->product_version.value_or(""));
   }
+
+  base::StrAppend(log, {"biosinfo:"});
+  if (!dmi_info.is_null()) {
+    AddIndentedLogEntry(log, "bios_version",
+                        dmi_info->bios_version.value_or(""));
+  }
+  healthd::OsInfoPtr& os_info =
+      info->system_result_v2->get_system_info_v2()->os_info;
+  if (!os_info.is_null()) {
+    AddIndentedLogEntry(
+        log, "uefi",
+        (os_info->boot_mode == healthd::BootMode::kCrosEfi) ? "true" : "false");
+  }
+  base::StrAppend(log, {"\n"});
 }
 
 }  // namespace
