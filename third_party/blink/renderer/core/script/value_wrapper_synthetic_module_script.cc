@@ -39,13 +39,8 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   UseCounter::Count(execution_context, WebFeature::kCreateCSSModuleScript);
   auto* context_window = DynamicTo<LocalDOMWindow>(execution_context);
-  if (!context_window) {
-    v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
-        isolate, "Cannot create CSS Module in non-document context");
-    return ValueWrapperSyntheticModuleScript::CreateWithError(
-        v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
-        ScriptFetchOptions(), error);
-  }
+  DCHECK(context_window)
+      << "Attempted to create a CSS Module in non-document context";
   CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
   // The base URL used to construct the CSSStyleSheet is also used for
   // DevTools as the CSS source URL. This is fine since these two values

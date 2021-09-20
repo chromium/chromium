@@ -209,23 +209,26 @@ ModuleType ModulatorImplBase::ModuleTypeFromRequest(
     const ModuleRequest& module_request) const {
   String module_type_string = module_request.GetModuleTypeString();
   if (module_type_string.IsNull()) {
-    // Per https://github.com/whatwg/html/pull/5883, if no type assertion is
-    // provided then the import should be treated as a JavaScript module.
+    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
+    // step="1">Let module type be "javascript".</spec> If no type assertion is
+    // provided, the import is treated as a JavaScript module.
     return ModuleType::kJavaScript;
   } else if (base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
              module_type_string == "json") {
-    // Per https://github.com/whatwg/html/pull/5658, a "json" type assertion
-    // indicates that the import should be treated as a JSON module script.
+    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
+    // step="17"> If...module type is "json", then set module script to the
+    // result of creating a JSON module script...</spec>
     return ModuleType::kJSON;
   } else if (RuntimeEnabledFeatures::CSSModulesEnabled() &&
-             module_type_string == "css") {
-    // Per https://github.com/whatwg/html/pull/4898, a "css" type assertion
-    // indicates that the import should be treated as a CSS module script.
+             module_type_string == "css" && GetExecutionContext()->IsWindow()) {
+    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
+    // step="16"> If...module type is "css", then set module script to the
+    // result of creating a CSS module script...</spec>
     return ModuleType::kCSS;
   } else {
-    // Per https://github.com/whatwg/html/pull/5883, if an unsupported type
-    // assertion is provided then the import should be treated as an error
-    // similar to an invalid module specifier.
+    // Per https://github.com/whatwg/html/pull/7066, unrecognized type
+    // assertions or "css" type assertions in a non-document context should be
+    // treated as an error similar to an invalid module specifier.
     return ModuleType::kInvalid;
   }
 }
