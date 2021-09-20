@@ -54,8 +54,6 @@ class ASH_EXPORT PrivacyScreenController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Whether or not the privacy screen feature is supported by the device.
-  bool IsSupported() const;
   // Whether or not the privacy screen feature is enforced by policy.
   bool IsManaged() const;
   // Get the PrivacyScreen settings stored in the current active user prefs.
@@ -67,6 +65,7 @@ class ASH_EXPORT PrivacyScreenController
   void RemoveObserver(Observer* observer);
 
   // PrivacyScreenDlpHelper:
+  bool IsSupported() const override;
   void SetEnforced(bool enforced) override;
 
   // SessionObserver:

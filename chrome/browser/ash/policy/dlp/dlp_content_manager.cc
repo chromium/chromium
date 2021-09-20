@@ -376,20 +376,29 @@ void DlpContentManager::OnScreenRestrictionsChanged(
            removed_restrictions.GetRestrictionLevel(
                DlpContentRestriction::kPrivacyScreen) ==
                DlpRulesManager::Level::kBlock));
+  ash::PrivacyScreenDlpHelper* privacy_screen_helper =
+      ash::PrivacyScreenDlpHelper::Get();
+
+  if (!privacy_screen_helper->IsSupported())
+    return;
+
   RestrictionLevelAndUrl added_restriction_info =
       added_restrictions.GetRestrictionLevelAndUrl(
           DlpContentRestriction::kPrivacyScreen);
+
   if (added_restriction_info.level == DlpRulesManager::Level::kBlock) {
     SYSLOG(INFO) << "DLP enforced privacy screen";
     DlpBooleanHistogram(dlp::kPrivacyScreenEnforcedUMA, true);
-    ash::PrivacyScreenDlpHelper::Get()->SetEnforced(true);
+    privacy_screen_helper->SetEnforced(true);
   }
+
   if (added_restriction_info.level == DlpRulesManager::Level::kBlock ||
       added_restriction_info.level == DlpRulesManager::Level::kReport) {
-    if (reporting_manager_)
+    if (reporting_manager_) {
       ReportEvent(added_restriction_info.url,
                   DlpRulesManager::Restriction::kPrivacyScreen,
                   added_restriction_info.level, reporting_manager_);
+    }
   }
 
   if (removed_restrictions.GetRestrictionLevel(

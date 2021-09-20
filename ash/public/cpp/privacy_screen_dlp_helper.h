@@ -15,6 +15,9 @@ class ASH_PUBLIC_EXPORT PrivacyScreenDlpHelper {
  public:
   static PrivacyScreenDlpHelper* Get();
 
+  // Check if privacy screen is supported by the device.
+  virtual bool IsSupported() const = 0;
+
   // Set PrivacyScreen enforcement because of Data Leak Protection.
   virtual void SetEnforced(bool enforced) = 0;
 
