@@ -1412,6 +1412,13 @@ void BrowserView::EnterFullscreen(const GURL& url,
     return;
   }
 
+  if (right_aligned_side_panel_ && right_aligned_side_panel_->GetVisible() &&
+      GetExclusiveAccessManager()
+          ->fullscreen_controller()
+          ->IsWindowFullscreenForTabOrPending()) {
+    toolbar_button_provider_->GetSidePanelButton()->HideSidePanel();
+  }
+
   ProcessFullscreen(true, url, bubble_type, display_id);
 }
 
