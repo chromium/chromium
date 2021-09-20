@@ -23,6 +23,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
 #include "sql/sql_features.h"
 #include "sql/statement_id.h"
@@ -571,10 +572,14 @@ class COMPONENT_EXPORT(SQL) Database {
   sqlite3* db(InternalApiToken) const { return db_; }
   bool poisoned(InternalApiToken) const { return poisoned_; }
 
- private:
-  // Allow test-support code to set/reset error expecter.
-  friend class test::ScopedErrorExpecter;
+  // Interface with sql::test::ScopedErrorExpecter.
+  using ScopedErrorExpecterCallback = base::RepeatingCallback<bool(int)>;
+  static void SetScopedErrorExpecter(ScopedErrorExpecterCallback* expecter,
+                                     base::PassKey<test::ScopedErrorExpecter>);
+  static void ResetScopedErrorExpecter(
+      base::PassKey<test::ScopedErrorExpecter>);
 
+ private:
   // Statement accesses StatementRef which we don't want to expose to everybody
   // (they should go through Statement).
   friend class Statement;
@@ -613,12 +618,8 @@ class COMPONENT_EXPORT(SQL) Database {
   // Internal helper for Does*Exist() functions.
   bool DoesSchemaItemExist(base::StringPiece name, base::StringPiece type);
 
-  // Accessors for global error-expecter, for injecting behavior during tests.
-  // See test/scoped_error_expecter.h.
-  using ErrorExpecterCallback = base::RepeatingCallback<bool(int)>;
-  static ErrorExpecterCallback* current_expecter_cb_;
-  static void SetErrorExpecter(ErrorExpecterCallback* expecter);
-  static void ResetErrorExpecter();
+  // Used to implement the interface with sql::test::ScopedErrorExpecter.
+  static ScopedErrorExpecterCallback* current_expecter_cb_;
 
   // A StatementRef is a refcounted wrapper around a sqlite statement pointer.
   // Refcounting allows us to give these statements out to sql::Statement

@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "sql/database.h"
 
 // This is not strictly necessary for the operation of ScopedErrorExpecter, but
@@ -53,7 +54,7 @@ class ScopedErrorExpecter {
   bool ErrorSeen(int err);
 
   // Callback passed to Database::SetErrorExpecter().
-  Database::ErrorExpecterCallback callback_;
+  Database::ScopedErrorExpecterCallback callback_;
 
   // Record whether SawExpectedErrors() has been called.
   bool checked_;

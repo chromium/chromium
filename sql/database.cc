@@ -34,6 +34,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "sql/database_memory_dump_provider.h"
 #include "sql/initialization.h"
@@ -162,7 +163,7 @@ std::string AsUTF8ForSQL(const base::FilePath& path) {
 namespace sql {
 
 // static
-Database::ErrorExpecterCallback* Database::current_expecter_cb_ = nullptr;
+Database::ScopedErrorExpecterCallback* Database::current_expecter_cb_ = nullptr;
 
 // static
 bool Database::IsExpectedSqliteError(int error) {
@@ -172,13 +173,16 @@ bool Database::IsExpectedSqliteError(int error) {
 }
 
 // static
-void Database::SetErrorExpecter(Database::ErrorExpecterCallback* cb) {
+void Database::SetScopedErrorExpecter(
+    Database::ScopedErrorExpecterCallback* cb,
+    base::PassKey<test::ScopedErrorExpecter>) {
   CHECK(!current_expecter_cb_);
   current_expecter_cb_ = cb;
 }
 
 // static
-void Database::ResetErrorExpecter() {
+void Database::ResetScopedErrorExpecter(
+    base::PassKey<test::ScopedErrorExpecter>) {
   CHECK(current_expecter_cb_);
   current_expecter_cb_ = nullptr;
 }
