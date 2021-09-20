@@ -124,12 +124,12 @@ class TestServerThread(threading.Thread):
     """Waits for the Python test server to start and gets the port it is using.
 
     The port information is passed by the Python test server with a pipe given
-    by self.pipe_out. It is written as a result to |self.host_port|.
+    by self.pipe_in. It is written as a result to |self.host_port|.
 
     Returns:
       Whether the port used by the test server was successfully fetched.
     """
-    assert self.host_port == 0 and self.pipe_out and self.pipe_in
+    assert self.host_port == 0 and self.pipe_in
     (in_fds, _, _) = select.select([self.pipe_in, ], [], [],
                                    _TEST_SERVER_STARTUP_TIMEOUT)
     if len(in_fds) == 0:
@@ -265,10 +265,15 @@ class TestServerThread(threading.Thread):
           stdout=None,
           stderr=None,
           cwd=_DIR_SOURCE_ROOT)
+    # Close self.pipe_out early. If self.process crashes, this will be visible
+    # in _WaitToStartAndGetPortFromTestServer's select loop.
+    if self.pipe_out:
+      os.close(self.pipe_out)
+      self.pipe_out = None
     if unbuf:
       os.environ['PYTHONUNBUFFERED'] = unbuf
     if self.process:
-      if self.pipe_out:
+      if self.pipe_in:
         self.is_ready = self._WaitToStartAndGetPortFromTestServer()
       else:
         self.is_ready = self.port_forwarder.WaitPortNotAvailable(self.host_port)
@@ -302,11 +307,9 @@ class TestServerThread(threading.Thread):
     self.port_forwarder.Unmap(self.forwarder_device_port)
     self.process = None
     self.is_ready = False
-    if self.pipe_out:
+    if self.pipe_in:
       os.close(self.pipe_in)
-      os.close(self.pipe_out)
       self.pipe_in = None
-      self.pipe_out = None
     _logger.info('Test-server has died.')
     self.wait_event.set()
 
