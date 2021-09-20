@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
 
   // Test.
   CallFocusAndExpectError(
-      "NotSupportedError: Failed to execute 'focus' on "
+      "InvalidStateError: Failed to execute 'focus' on "
       "'FocusableMediaStreamTrack': Method may only be called once.");
 }
 

@@ -42,12 +42,12 @@ void FocusableMediaStreamTrack::focus(
     return;
   }
 
-  if (called_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+  if (focus_called_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Method may only be called once.");
     return;
   }
-  called_ = true;
+  focus_called_ = true;
 
   client->FocusCapturedSurface(
       descriptor_id_,

@@ -34,7 +34,7 @@ class FocusableMediaStreamTrack final : public MediaStreamTrack {
 
 #if !defined(OS_ANDROID)
   // First call to focus() is allowed. Subsequent calls produce an error.
-  bool called_ = false;
+  bool focus_called_ = false;
 #endif
 };
 
