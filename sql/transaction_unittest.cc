@@ -42,14 +42,14 @@ class SQLTransactionTest : public testing::Test {
 TEST_F(SQLTransactionTest, Commit) {
   {
     Transaction t(&db_);
-    EXPECT_FALSE(t.is_open());
+    EXPECT_FALSE(t.IsActiveForTesting());
     EXPECT_TRUE(t.Begin());
-    EXPECT_TRUE(t.is_open());
+    EXPECT_TRUE(t.IsActiveForTesting());
 
     EXPECT_TRUE(db_.Execute("INSERT INTO foo (a, b) VALUES (1, 2)"));
 
     t.Commit();
-    EXPECT_FALSE(t.is_open());
+    EXPECT_FALSE(t.IsActiveForTesting());
   }
 
   EXPECT_EQ(1, CountFoo());
@@ -60,9 +60,9 @@ TEST_F(SQLTransactionTest, Rollback) {
   // scope.
   {
     Transaction t(&db_);
-    EXPECT_FALSE(t.is_open());
+    EXPECT_FALSE(t.IsActiveForTesting());
     EXPECT_TRUE(t.Begin());
-    EXPECT_TRUE(t.is_open());
+    EXPECT_TRUE(t.IsActiveForTesting());
 
     EXPECT_TRUE(db_.Execute("INSERT INTO foo (a, b) VALUES (1, 2)"));
   }
@@ -72,12 +72,12 @@ TEST_F(SQLTransactionTest, Rollback) {
 
   // Test explicit rollback.
   Transaction t2(&db_);
-  EXPECT_FALSE(t2.is_open());
+  EXPECT_FALSE(t2.IsActiveForTesting());
   EXPECT_TRUE(t2.Begin());
 
   EXPECT_TRUE(db_.Execute("INSERT INTO foo (a, b) VALUES (1, 2)"));
   t2.Rollback();
-  EXPECT_FALSE(t2.is_open());
+  EXPECT_FALSE(t2.IsActiveForTesting());
 
   // Nothing should have been committed since it was explicitly rolled back.
   EXPECT_EQ(0, CountFoo());

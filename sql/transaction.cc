@@ -10,35 +10,37 @@
 
 namespace sql {
 
-Transaction::Transaction(Database* database) : database_(database) {}
+Transaction::Transaction(Database* database) : database_(*database) {
+  DCHECK(database);
+}
 
 Transaction::~Transaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_open_)
-    database_->RollbackTransaction();
+  if (is_active_)
+    database_.RollbackTransaction();
 }
 
 bool Transaction::Begin() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!is_open_) << "Beginning a transaction twice!";
-  is_open_ = database_->BeginTransaction();
-  return is_open_;
+  DCHECK(!is_active_) << "Beginning a transaction twice!";
+  is_active_ = database_.BeginTransaction();
+  return is_active_;
 }
 
 void Transaction::Rollback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(is_open_) << "Attempting to roll back a nonexistent transaction. "
-                   << "Did you remember to call Begin() and check its return?";
-  is_open_ = false;
-  database_->RollbackTransaction();
+  DCHECK(is_active_) << "Attempting to roll back a nonexistent transaction. "
+                     << "Did you call Begin() and check its return?";
+  is_active_ = false;
+  database_.RollbackTransaction();
 }
 
 bool Transaction::Commit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(is_open_) << "Attempting to commit a nonexistent transaction. "
-                   << "Did you remember to call Begin() and check its return?";
-  is_open_ = false;
-  return database_->CommitTransaction();
+  DCHECK(is_active_) << "Attempting to commit a nonexistent transaction. "
+                     << "Did you call Begin() and check its return?";
+  is_active_ = false;
+  return database_.CommitTransaction();
 }
 
 }  // namespace sql
