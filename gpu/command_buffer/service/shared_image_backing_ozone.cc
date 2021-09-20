@@ -341,8 +341,7 @@ void SharedImageBackingOzone::BeginAccess(
 
 void SharedImageBackingOzone::EndAccess(bool readonly,
                                         gfx::GpuFenceHandle fence) {
-  if (NeedsSynchronization()) {
-    DCHECK(!fence.is_null());
+  if (NeedsSynchronization() && !fence.is_null()) {
     if (readonly) {
       read_fences_.push_back(std::move(fence));
     } else {
