@@ -44,6 +44,8 @@ static_library("events") {
     "enums.h",
     "event.cc",
     "event.h",
+    "structured_metrics_client.cc",
+    "structured_metrics_client.h",
   ]
   deps = [
     "//base",

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 
 namespace metrics {
 namespace structured {
@@ -44,6 +45,10 @@ Event& Event::operator=(Event&& other) {
   metric_values_.insert(std::make_move_iterator(other.metric_values_.begin()),
                         std::make_move_iterator(other.metric_values_.end()));
   return *this;
+}
+
+void Event::Record() {
+  StructuredMetricsClient::Get()->Record(std::move(*this));
 }
 
 const std::string& Event::project_name() const {

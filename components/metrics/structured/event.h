@@ -61,6 +61,10 @@ class Event {
 
   virtual ~Event();
 
+  // Records |this|. Once this method is called, |this| will be unsafe to
+  // access.
+  void Record();
+
   // Returns true if the value was added successfully. |type| and type of
   // |value| must be consistent and will be enforced. If the data in |value| and
   // |type| do match, then |value| will be moved into |this| when called.
