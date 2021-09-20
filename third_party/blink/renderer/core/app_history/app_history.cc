@@ -10,7 +10,6 @@
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_options.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_transition.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_update_current_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/app_history/app_history_api_navigation.h"
 #include "third_party/blink/renderer/core/app_history/app_history_destination.h"
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
@@ -37,114 +37,6 @@
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
-
-class AppHistoryApiNavigation final
-    : public GarbageCollected<AppHistoryApiNavigation> {
- public:
-  AppHistoryApiNavigation(ScriptState* script_state,
-                          AppHistory* app_history,
-                          AppHistoryNavigationOptions* options,
-                          const String& key,
-                          scoped_refptr<SerializedScriptValue> state = nullptr)
-      : info(options->getInfoOr(
-            ScriptValue(script_state->GetIsolate(),
-                        v8::Undefined(script_state->GetIsolate())))),
-        serialized_state(std::move(state)),
-        key(key),
-        app_history_(app_history),
-        committed_resolver_(
-            MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-        finished_resolver_(
-            MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-        result_(AppHistoryResult::Create()) {
-    result_->setCommitted(committed_resolver_->Promise());
-    result_->setFinished(finished_resolver_->Promise());
-  }
-
-  ScriptValue info;
-  scoped_refptr<SerializedScriptValue> serialized_state;
-  String key;
-
-  void NotifyAboutTheCommittedToEntry(AppHistoryEntry* entry) {
-    DCHECK_EQ(committed_to_entry_, nullptr);
-    committed_to_entry_ = entry;
-
-    committed_resolver_->Resolve(committed_to_entry_);
-
-    if (did_finish_before_commit_) {
-      ResolveFinishedPromise();
-    }
-  }
-
-  void ResolveFinishedPromise() {
-    if (!app_history_)
-      return;
-
-    if (!committed_to_entry_) {
-      did_finish_before_commit_ = true;
-      return;
-    }
-
-    finished_resolver_->Resolve(committed_to_entry_);
-
-    app_history_->CleanupApiNavigation(*this);
-    app_history_ = nullptr;
-  }
-
-  void RejectFinishedPromise(const ScriptValue& value) {
-    if (!app_history_)
-      return;
-
-    finished_resolver_->Reject(value);
-
-    if (committed_resolver_) {
-      // We never hit NotifyAboutTheCommittedToEntry(), so we should reject that
-      // too.
-      committed_resolver_->Reject(value);
-    }
-
-    app_history_->CleanupApiNavigation(*this);
-    app_history_ = nullptr;
-  }
-
-  void CleanupForCrossDocument() {
-    committed_resolver_->Detach();
-    finished_resolver_->Detach();
-
-    DCHECK_EQ(committed_to_entry_, nullptr);
-
-    serialized_state.reset();
-
-    app_history_->CleanupApiNavigation(*this);
-    app_history_ = nullptr;
-  }
-
-  // Note: even though this returns the same AppHistoryResult every time, the
-  // bindings layer will create a new JS object for each distinct AppHistory
-  // method call, so we still match the specified semantics.
-  AppHistoryResult* GetAppHistoryResult() { return result_; }
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(info);
-    visitor->Trace(app_history_);
-    visitor->Trace(committed_to_entry_);
-    visitor->Trace(committed_resolver_);
-    visitor->Trace(finished_resolver_);
-    visitor->Trace(result_);
-  }
-
- private:
-  Member<AppHistory> app_history_;
-  Member<AppHistoryEntry> committed_to_entry_;
-  Member<ScriptPromiseResolver> committed_resolver_;
-  Member<ScriptPromiseResolver> finished_resolver_;
-  Member<AppHistoryResult> result_;
-
-  // In same-document traversal cases ResolveFinishedPromise() can be called
-  // before NotifyAboutTheCommittedToEntry(). This tracks that, to let us ensure
-  // NotifyAboutTheCommittedToEntry() can also resolve the finished promise.
-  bool did_finish_before_commit_ = false;
-};
 
 class NavigateReaction final : public ScriptFunction {
  public:
@@ -511,9 +403,8 @@ AppHistoryResult* AppHistory::PerformNonTraverseNavigation(
                             "Navigation was aborted");
   }
 
-  if (navigation->serialized_state) {
-    current()->GetItem()->SetAppHistoryState(
-        std::move(navigation->serialized_state));
+  if (SerializedScriptValue* state = navigation->TakeSerializedState()) {
+    current()->GetItem()->SetAppHistoryState(state);
   }
   return navigation->GetAppHistoryResult();
 }
@@ -690,8 +581,8 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   SerializedScriptValue* destination_state = nullptr;
   if (destination_item)
     destination_state = destination_item->GetAppHistoryState();
-  else if (ongoing_navigation_ && ongoing_navigation_->serialized_state)
-    destination_state = ongoing_navigation_->serialized_state.get();
+  else if (ongoing_navigation_)
+    destination_state = ongoing_navigation_->GetSerializedState();
   AppHistoryDestination* destination =
       MakeGarbageCollected<AppHistoryDestination>(
           url, event_type != NavigateEventType::kCrossDocument,
@@ -720,7 +611,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     init->setFormData(FormData::Create(form, ASSERT_NO_EXCEPTION));
   }
   if (ongoing_navigation_)
-    init->setInfo(ongoing_navigation_->info);
+    init->setInfo(ongoing_navigation_->GetInfo());
   init->setSignal(MakeGarbageCollected<AbortSignal>(GetSupplementable()));
   auto* navigate_event = AppHistoryNavigateEvent::Create(
       GetSupplementable(), event_type_names::kNavigate, init);
@@ -803,9 +694,9 @@ void AppHistory::InformAboutCanceledNavigation() {
 void AppHistory::RejectPromiseAndFireNavigateErrorEvent(
     AppHistoryApiNavigation* navigation,
     ScriptValue value) {
-  if (navigation) {
+  if (navigation)
     navigation->RejectFinishedPromise(value);
-  }
+
   auto* isolate = GetSupplementable()->GetIsolate();
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate, value.V8Value());
@@ -822,9 +713,9 @@ void AppHistory::CleanupApiNavigation(AppHistoryApiNavigation& navigation) {
   if (&navigation == ongoing_navigation_) {
     ongoing_navigation_ = nullptr;
   } else {
-    DCHECK(!navigation.key.IsNull());
-    DCHECK(upcoming_traversals_.Contains(navigation.key));
-    upcoming_traversals_.erase(navigation.key);
+    DCHECK(!navigation.GetKey().IsNull());
+    DCHECK(upcoming_traversals_.Contains(navigation.GetKey()));
+    upcoming_traversals_.erase(navigation.GetKey());
   }
 }
 
@@ -840,8 +731,6 @@ void AppHistory::FinalizeWithAbortedNavigationError(
     ongoing_navigation_signal_ = nullptr;
   }
 
-  if (navigation)
-    navigation->serialized_state.reset();
   RejectPromiseAndFireNavigateErrorEvent(
       navigation,
       ScriptValue::From(script_state, MakeGarbageCollected<DOMException>(
