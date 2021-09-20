@@ -196,16 +196,6 @@ static_library("test_support") {
       "base/process_inspector_win.h",
       "base/process_lineage_win.cc",
       "base/process_lineage_win.h",
-      "logging/win/file_logger.cc",
-      "logging/win/file_logger.h",
-      "logging/win/log_file_printer.cc",
-      "logging/win/log_file_printer.h",
-      "logging/win/log_file_reader.cc",
-      "logging/win/log_file_reader.h",
-      "logging/win/mof_data_parser.cc",
-      "logging/win/mof_data_parser.h",
-      "logging/win/test_log_collector.cc",
-      "logging/win/test_log_collector.h",
     ]
   }
 
@@ -4905,7 +4895,6 @@ test("unit_tests") {
       "../common/chrome_constants_win_unittest.cc",
       "../common/conflicts/module_watcher_win_unittest.cc",
       "../common/conflicts/remote_module_watcher_win_unittest.cc",
-      "../test/logging/win/mof_data_parser_unittest.cc",
     ]
   }
 
