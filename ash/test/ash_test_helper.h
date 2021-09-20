@@ -51,6 +51,7 @@ class AppListTestHelper;
 class AmbientAshTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegateProvider;
+class TestWallpaperControllerClient;
 
 // A helper class that does common initialization required for Ash. Creates a
 // root window and an ash::Shell instance with a test delegate.
@@ -161,6 +162,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<TestKeyboardControllerObserver>
       test_keyboard_controller_observer_;
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
+  std::unique_ptr<TestWallpaperControllerClient> wallpaper_controller_client_;
 
   // InputMethodManager is not owned by this class. It is stored in a
   // global that is registered via InputMethodManager::Initialize().

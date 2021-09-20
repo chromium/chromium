@@ -30,6 +30,7 @@
 #include "ash/test/ash_test_views_delegate.h"
 #include "ash/test/toplevel_window.h"
 #include "ash/test_shell_delegate.h"
+#include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -269,6 +270,13 @@ void AshTestHelper::SetUp(InitParams init_params) {
       std::make_unique<TestKeyboardUIFactory>();
   Shell::CreateInstance(std::move(shell_init_params));
   Shell* shell = Shell::Get();
+
+  // Set up a test wallpaper controller client before signing in any users. At
+  // the time a user logs in, Wallpaper controller relies on
+  // WallpaperControllerClient to check if user data should be synced.
+  wallpaper_controller_client_ =
+      std::make_unique<TestWallpaperControllerClient>();
+  shell->wallpaper_controller()->SetClient(wallpaper_controller_client_.get());
 
   // Disable the notification delay timer used to prevent non system
   // notifications from showing up right after login. This needs to be done

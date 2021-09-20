@@ -366,7 +366,7 @@ class ASH_EXPORT WallpaperControllerImpl
   FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest, BasicReparenting);
   FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest,
                            WallpaperMovementDuringUnlock);
-  friend class WallpaperControllerTest;
+  friend class WallpaperControllerTestBase;
   friend class WallpaperControllerTestApi;
 
   enum WallpaperMode { WALLPAPER_NONE, WALLPAPER_IMAGE };
