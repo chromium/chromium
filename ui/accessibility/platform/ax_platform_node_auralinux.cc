@@ -2039,7 +2039,7 @@ const gchar* GetName(AtkObject* atk_object) {
   if (!obj->IsNameExposed())
     return nullptr;
 
-  ax::mojom::NameFrom name_from = obj->GetData().GetNameFrom();
+  ax::mojom::NameFrom name_from = obj->GetNameFrom();
   if (obj->GetName().empty() &&
       name_from != ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
     return nullptr;

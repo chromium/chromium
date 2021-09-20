@@ -7,12 +7,15 @@
 
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/macros.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
@@ -125,6 +128,8 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
                          float* value) const;
 
+  const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+  GetIntAttributes() const;
   bool HasIntAttribute(ax::mojom::IntAttribute attribute) const;
   int GetIntAttribute(ax::mojom::IntAttribute attribute) const;
   bool GetIntAttribute(ax::mojom::IntAttribute attribute, int* value) const;
@@ -149,6 +154,9 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   bool GetInheritedString16Attribute(ax::mojom::StringAttribute attribute,
                                      std::u16string* value) const;
 
+  const std::vector<
+      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+  GetIntListAttributes() const;
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   const std::vector<int32_t>& GetIntListAttribute(
       ax::mojom::IntListAttribute attribute) const;
@@ -161,10 +169,20 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
 
+  const base::StringPairs& GetHtmlAttributes() const;
   bool GetHtmlAttribute(const char* attribute, std::string* value) const;
   bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
 
+  AXTextAttributes GetTextAttributes() const;
+
   bool HasState(ax::mojom::State state) const;
+  ax::mojom::State GetState() const;
+
+  bool HasAction(ax::mojom::Action action) const;
+
+  bool HasTextStyle(ax::mojom::TextStyle text_style) const;
+
+  ax::mojom::NameFrom GetNameFrom() const;
 
   // Returns the selection container if inside one.
   AXPlatformNodeBase* GetSelectionContainer() const;

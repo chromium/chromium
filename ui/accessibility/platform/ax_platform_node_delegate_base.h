@@ -10,8 +10,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/strings/string_split.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
@@ -38,6 +40,8 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   float GetFloatAttribute(ax::mojom::FloatAttribute attribute) const override;
   bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
                          float* value) const override;
+  const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+  GetIntAttributes() const override;
   bool HasIntAttribute(ax::mojom::IntAttribute attribute) const override;
   int GetIntAttribute(ax::mojom::IntAttribute attribute) const override;
   bool GetIntAttribute(ax::mojom::IntAttribute attribute,
@@ -55,6 +59,9 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
       ax::mojom::StringAttribute attribute) const override;
   std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const override;
+  const std::vector<
+      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+  GetIntListAttributes() const override;
   bool HasIntListAttribute(
       ax::mojom::IntListAttribute attribute) const override;
   const std::vector<int32_t>& GetIntListAttribute(
@@ -67,11 +74,17 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
       ax::mojom::StringListAttribute attribute) const override;
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const override;
+  const base::StringPairs& GetHtmlAttributes() const override;
   bool GetHtmlAttribute(const char* attribute,
                         std::string* value) const override;
   bool GetHtmlAttribute(const char* attribute,
                         std::u16string* value) const override;
+  AXTextAttributes GetTextAttributes() const override;
   bool HasState(ax::mojom::State state) const override;
+  ax::mojom::State GetState() const override;
+  bool HasAction(ax::mojom::Action action) const override;
+  bool HasTextStyle(ax::mojom::TextStyle text_style) const override;
+  ax::mojom::NameFrom GetNameFrom() const override;
   std::u16string GetInnerText() const override;
   std::u16string GetValueForControl() const override;
   const AXTree::Selection GetUnignoredSelection() const override;

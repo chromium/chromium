@@ -1098,8 +1098,8 @@ TEST(AXTreeTest, MultipleIgnoredChangesDoesNotBreakCache) {
 
   EXPECT_TRUE(tree.Unserialize(update)) << tree.error();
   EXPECT_EQ(0u, tree.GetFromId(2)->GetUnignoredChildCount());
-  EXPECT_FALSE(tree.GetFromId(2)->data().HasState(ax::mojom::State::kIgnored));
-  EXPECT_TRUE(tree.GetFromId(3)->data().HasState(ax::mojom::State::kIgnored));
+  EXPECT_FALSE(tree.GetFromId(2)->HasState(ax::mojom::State::kIgnored));
+  EXPECT_TRUE(tree.GetFromId(3)->HasState(ax::mojom::State::kIgnored));
 }
 
 TEST(AXTreeTest, NodeToClearUpdatesParentUnignoredCount) {

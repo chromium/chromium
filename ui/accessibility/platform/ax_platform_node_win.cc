@@ -4300,8 +4300,8 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
         V_VT(result) = VT_BSTR;
         GetStringAttributeAsBstr(ax::mojom::StringAttribute::kPlaceholder,
                                  &V_BSTR(result));
-      } else if (GetData().GetNameFrom() == ax::mojom::NameFrom::kPlaceholder ||
-                 GetData().GetNameFrom() == ax::mojom::NameFrom::kTitle) {
+      } else if (GetNameFrom() == ax::mojom::NameFrom::kPlaceholder ||
+                 GetNameFrom() == ax::mojom::NameFrom::kTitle) {
         V_VT(result) = VT_BSTR;
         GetNameAsBstr(&V_BSTR(result));
       } else if (HasStringAttribute(ax::mojom::StringAttribute::kTooltip)) {
@@ -4844,8 +4844,7 @@ HRESULT AXPlatformNodeWin::GetTextAttributeValue(
       result->Insert<VT_BOOL>(IsInvisibleOrIgnored());
       break;
     case UIA_IsItalicAttributeId:
-      result->Insert<VT_BOOL>(
-          GetData().HasTextStyle(ax::mojom::TextStyle::kItalic));
+      result->Insert<VT_BOOL>(HasTextStyle(ax::mojom::TextStyle::kItalic));
       break;
     case UIA_IsReadOnlyAttributeId: {
       // If inside a text field, the text field's readonly state rules.
@@ -7363,8 +7362,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       // If the author provides an explicitly empty alt text attribute then
       // the image is decorational and should not be considered as a control.
       if (GetRole() == ax::mojom::Role::kImage &&
-          GetData().GetNameFrom() ==
-              ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
+          GetNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
         return false;
       }
       return true;

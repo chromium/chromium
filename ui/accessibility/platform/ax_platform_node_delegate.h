@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_split.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
@@ -25,6 +26,7 @@
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_offscreen_result.h"
 #include "ui/accessibility/ax_position.h"
+#include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -111,6 +113,8 @@ class AX_EXPORT AXPlatformNodeDelegate {
       ax::mojom::FloatAttribute attribute) const = 0;
   virtual bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
                                  float* value) const = 0;
+  virtual const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+  GetIntAttributes() const = 0;
   virtual bool HasIntAttribute(ax::mojom::IntAttribute attribute) const = 0;
   virtual int GetIntAttribute(ax::mojom::IntAttribute attribute) const = 0;
   virtual bool GetIntAttribute(ax::mojom::IntAttribute attribute,
@@ -129,6 +133,9 @@ class AX_EXPORT AXPlatformNodeDelegate {
       ax::mojom::StringAttribute attribute) const = 0;
   virtual std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const = 0;
+  virtual const std::vector<
+      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+  GetIntListAttributes() const = 0;
   virtual bool HasIntListAttribute(
       ax::mojom::IntListAttribute attribute) const = 0;
   virtual const std::vector<int32_t>& GetIntListAttribute(
@@ -142,11 +149,17 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual bool GetStringListAttribute(
       ax::mojom::StringListAttribute attribute,
       std::vector<std::string>* value) const = 0;
+  virtual const base::StringPairs& GetHtmlAttributes() const = 0;
   virtual bool GetHtmlAttribute(const char* attribute,
                                 std::string* value) const = 0;
   virtual bool GetHtmlAttribute(const char* attribute,
                                 std::u16string* value) const = 0;
+  virtual AXTextAttributes GetTextAttributes() const = 0;
   virtual bool HasState(ax::mojom::State state) const = 0;
+  virtual ax::mojom::State GetState() const = 0;
+  virtual bool HasAction(ax::mojom::Action action) const = 0;
+  virtual bool HasTextStyle(ax::mojom::TextStyle text_style) const = 0;
+  virtual ax::mojom::NameFrom GetNameFrom() const = 0;
 
   // Returns the text of this node and all descendant nodes; including text
   // found in embedded objects.

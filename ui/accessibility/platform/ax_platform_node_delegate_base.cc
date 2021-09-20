@@ -67,6 +67,11 @@ bool AXPlatformNodeDelegateBase::GetFloatAttribute(
   return GetData().GetFloatAttribute(attribute, value);
 }
 
+const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+AXPlatformNodeDelegateBase::GetIntAttributes() const {
+  return GetData().int_attributes;
+}
+
 bool AXPlatformNodeDelegateBase::HasIntAttribute(
     ax::mojom::IntAttribute attribute) const {
   return GetData().HasIntAttribute(attribute);
@@ -122,6 +127,11 @@ std::u16string AXPlatformNodeDelegateBase::GetInheritedString16Attribute(
   return GetData().GetString16Attribute(attribute);
 }
 
+const std::vector<std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+AXPlatformNodeDelegateBase::GetIntListAttributes() const {
+  return GetData().intlist_attributes;
+}
+
 bool AXPlatformNodeDelegateBase::HasIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
   return GetData().HasIntListAttribute(attribute);
@@ -155,6 +165,10 @@ bool AXPlatformNodeDelegateBase::GetStringListAttribute(
   return GetData().GetStringListAttribute(attribute, value);
 }
 
+const base::StringPairs& AXPlatformNodeDelegateBase::GetHtmlAttributes() const {
+  return GetData().html_attributes;
+}
+
 bool AXPlatformNodeDelegateBase::GetHtmlAttribute(const char* attribute,
                                                   std::string* value) const {
   return GetData().GetHtmlAttribute(attribute, value);
@@ -165,8 +179,29 @@ bool AXPlatformNodeDelegateBase::GetHtmlAttribute(const char* attribute,
   return GetData().GetHtmlAttribute(attribute, value);
 }
 
+AXTextAttributes AXPlatformNodeDelegateBase::GetTextAttributes() const {
+  return GetData().GetTextAttributes();
+}
+
 bool AXPlatformNodeDelegateBase::HasState(ax::mojom::State state) const {
   return GetData().HasState(state);
+}
+
+ax::mojom::State AXPlatformNodeDelegateBase::GetState() const {
+  return static_cast<ax::mojom::State>(GetData().state);
+}
+
+bool AXPlatformNodeDelegateBase::HasAction(ax::mojom::Action action) const {
+  return GetData().HasAction(action);
+}
+
+bool AXPlatformNodeDelegateBase::HasTextStyle(
+    ax::mojom::TextStyle text_style) const {
+  return GetData().HasTextStyle(text_style);
+}
+
+ax::mojom::NameFrom AXPlatformNodeDelegateBase::GetNameFrom() const {
+  return GetData().GetNameFrom();
 }
 
 std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {

@@ -108,7 +108,7 @@ void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& pairs1,
 }
 
 bool IsCollapsed(const AXNode* node) {
-  return node && node->data().HasState(ax::mojom::State::kCollapsed);
+  return node && node->HasState(ax::mojom::State::kCollapsed);
 }
 
 }  // namespace
@@ -779,10 +779,10 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
 
     int scroll_x = 0;
     int scroll_y = 0;
-    if (container->data().GetIntAttribute(ax::mojom::IntAttribute::kScrollX,
-                                          &scroll_x) &&
-        container->data().GetIntAttribute(ax::mojom::IntAttribute::kScrollY,
-                                          &scroll_y)) {
+    if (container->GetIntAttribute(ax::mojom::IntAttribute::kScrollX,
+                                   &scroll_x) &&
+        container->GetIntAttribute(ax::mojom::IntAttribute::kScrollY,
+                                   &scroll_y)) {
       bounds.Offset(-scroll_x, -scroll_y);
     }
 
@@ -793,8 +793,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     // Calculate the clipped bounds to determine offscreen state.
     gfx::RectF clipped = bounds;
     // If this node has the kClipsChildren attribute set, clip the rect to fit.
-    if (container->data().GetBoolAttribute(
-            ax::mojom::BoolAttribute::kClipsChildren)) {
+    if (container->GetBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren)) {
       if (!intersection.IsEmpty()) {
         // We can simply clip it to the container.
         clipped = intersection;
@@ -821,8 +820,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     if (clip_bounds)
       bounds = clipped;
 
-    if (container->data().GetBoolAttribute(
-            ax::mojom::BoolAttribute::kClipsChildren) &&
+    if (container->GetBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren) &&
         intersection.IsEmpty() && !clipped.IsEmpty()) {
       // If it is offscreen with respect to its parent, and the node itself is
       // not empty, label it offscreen.
@@ -2376,8 +2374,8 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
   // For popup buttons that control a single element, inherit the controlled
   // item's SetSize. Skip this block if the popup button controls itself.
   if (node.GetRole() == ax::mojom::Role::kPopUpButton) {
-    const auto& controls_ids = node.data().GetIntListAttribute(
-        ax::mojom::IntListAttribute::kControlsIds);
+    const auto& controls_ids =
+        node.GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
     if (controls_ids.size() == 1 && GetFromId(controls_ids[0]) &&
         controls_ids[0] != node.id()) {
       const AXNode& controlled_item = *GetFromId(controls_ids[0]);

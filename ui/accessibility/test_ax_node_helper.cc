@@ -152,13 +152,13 @@ TestAXNodeHelper* TestAXNodeHelper::InternalGetChild(int index) const {
 gfx::RectF TestAXNodeHelper::GetInlineTextRect(const int start_offset,
                                                const int end_offset) const {
   DCHECK(start_offset >= 0 && end_offset >= 0 && start_offset <= end_offset);
-  const std::vector<int32_t>& character_offsets = GetData().GetIntListAttribute(
+  const std::vector<int32_t>& character_offsets = node_->GetIntListAttribute(
       ax::mojom::IntListAttribute::kCharacterOffsets);
   gfx::RectF location = GetLocation();
   gfx::RectF bounds;
 
   switch (static_cast<ax::mojom::WritingDirection>(
-      GetData().GetIntAttribute(ax::mojom::IntAttribute::kTextDirection))) {
+      node_->GetIntAttribute(ax::mojom::IntAttribute::kTextDirection))) {
     // Currently only kNone and kLtr are supported text direction.
     case ax::mojom::WritingDirection::kNone:
     case ax::mojom::WritingDirection::kLtr: {

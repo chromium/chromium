@@ -782,7 +782,7 @@ void AXEventGenerator::OnAtomicUpdateFinished(
 
     if ((change.type == NODE_CREATED || change.type == SUBTREE_CREATED ||
          change.type == NODE_REPARENTED || change.type == SUBTREE_REPARENTED)) {
-      if (change.node->data().HasStringAttribute(
+      if (change.node->HasStringAttribute(
               ax::mojom::StringAttribute::kContainerLiveStatus)) {
         live_region_tracker_->UpdateCachedLiveRootForNode(*change.node);
       }
@@ -926,9 +926,8 @@ bool AXEventGenerator::ShouldFireLoadEvents(AXNode* node) {
   if (always_fire_load_complete_)
     return true;
 
-  const AXNodeData& data = node->data();
-  return data.relative_bounds.bounds.width() ||
-         data.relative_bounds.bounds.height();
+  return node->data().relative_bounds.bounds.width() ||
+         node->data().relative_bounds.bounds.height();
 }
 
 void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(

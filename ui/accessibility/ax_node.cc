@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include <algorithm>
-#include <utility>
 
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -627,7 +626,7 @@ bool AXNode::IsText() const {
   // non-ignored descendants, which happens only when:
   // - The list marker itself is ignored but the descendants are not
   // - Or the list marker contains images
-  if (data().role == ax::mojom::Role::kListMarker)
+  if (GetRole() == ax::mojom::Role::kListMarker)
     return !GetUnignoredChildCount();
   return ui::IsText(GetRole());
 }
@@ -1164,7 +1163,7 @@ std::vector<AXNodeID> AXNode::GetTableRowNodeIds() const {
     return row_node_ids;
 
   for (AXNode* node : table_info->row_nodes)
-    row_node_ids.push_back(node->data().id);
+    row_node_ids.push_back(node->id());
 
   return row_node_ids;
 }
@@ -1585,8 +1584,7 @@ bool AXNode::IsIgnoredForTextNavigation() const {
   // for screen readers to land on, since no text will be announced and no
   // action is possible.
   if (GetRole() == ax::mojom::Role::kGenericContainer &&
-      !GetUnignoredChildCount() &&
-      !data().HasState(ax::mojom::State::kEditable)) {
+      !GetUnignoredChildCount() && !HasState(ax::mojom::State::kEditable)) {
     return true;
   }
 
@@ -1759,7 +1757,7 @@ bool AXNode::IsInListMarker() const {
 
 bool AXNode::IsCollapsedMenuListPopUpButton() const {
   if (GetRole() != ax::mojom::Role::kPopUpButton ||
-      !data().HasState(ax::mojom::State::kCollapsed)) {
+      !HasState(ax::mojom::State::kCollapsed)) {
     return false;
   }
 
@@ -1828,7 +1826,7 @@ AXNode* AXNode::GetTextFieldAncestor() const {
   // State::kEditable. Same with inline text boxes and placeholder text.
   // TODO(nektar): Fix all such inconsistencies in Blink.
   for (AXNode* ancestor = const_cast<AXNode*>(this);
-       ancestor && (ancestor->data().HasState(ax::mojom::State::kEditable) ||
+       ancestor && (ancestor->HasState(ax::mojom::State::kEditable) ||
                     ancestor->GetRole() == ax::mojom::Role::kGenericContainer ||
                     ancestor->IsText());
        ancestor = ancestor->GetUnignoredParent()) {

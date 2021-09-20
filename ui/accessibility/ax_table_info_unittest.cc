@@ -157,8 +157,8 @@ TEST_F(AXTableInfoTest, SimpleTable) {
   EXPECT_EQ(3u, table_info->cell_id_to_index[7]);
 
   EXPECT_EQ(2u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
-  EXPECT_EQ(3, table_info->row_nodes[1]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(3, table_info->row_nodes[1]->id());
 
 #if defined(OS_MAC)
   EXPECT_EQ(3U, table_info->extra_mac_nodes.size());
@@ -272,8 +272,8 @@ TEST_F(AXTableInfoTest, ComputedTableSizeIncludesSpans) {
   EXPECT_EQ(6u, table_info->col_count);
 
   EXPECT_EQ(2u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
-  EXPECT_EQ(3, table_info->row_nodes[1]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(3, table_info->row_nodes[1]->id());
 }
 
 TEST_F(AXTableInfoTest, AuthorRowAndColumnCountsAreRespected) {
@@ -294,7 +294,7 @@ TEST_F(AXTableInfoTest, AuthorRowAndColumnCountsAreRespected) {
   EXPECT_EQ(9u, table_info->col_count);
 
   EXPECT_EQ(1u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
 }
 
 TEST_F(AXTableInfoTest, TableInfoRecomputedOnlyWhenTableChanges) {
@@ -327,7 +327,7 @@ TEST_F(AXTableInfoTest, TableInfoRecomputedOnlyWhenTableChanges) {
   EXPECT_EQ(2u, table_info_3->col_count);
 
   EXPECT_EQ(1u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
 }
 
 TEST_F(AXTableInfoTest, CellIdsHandlesSpansAndMissingCells) {
@@ -370,8 +370,8 @@ TEST_F(AXTableInfoTest, CellIdsHandlesSpansAndMissingCells) {
   EXPECT_EQ(2u, table_info->cell_id_to_index[6]);
 
   EXPECT_EQ(2u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
-  EXPECT_EQ(3, table_info->row_nodes[1]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(3, table_info->row_nodes[1]->id());
 }
 
 TEST_F(AXTableInfoTest, SkipsGenericAndIgnoredNodes) {
@@ -428,8 +428,8 @@ TEST_F(AXTableInfoTest, SkipsGenericAndIgnoredNodes) {
   EXPECT_EQ(10, table_info->cell_ids[1][1]);
 
   EXPECT_EQ(2u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
-  EXPECT_EQ(8, table_info->row_nodes[1]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(8, table_info->row_nodes[1]->id());
 }
 
 TEST_F(AXTableInfoTest, HeadersWithSpans) {
@@ -491,9 +491,9 @@ TEST_F(AXTableInfoTest, HeadersWithSpans) {
   EXPECT_EQ(8, table_info->cell_ids[2][2]);
 
   EXPECT_EQ(3u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
-  EXPECT_EQ(3, table_info->row_nodes[1]->data().id);
-  EXPECT_EQ(4, table_info->row_nodes[2]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(3, table_info->row_nodes[1]->id());
+  EXPECT_EQ(4, table_info->row_nodes[2]->id());
 }
 
 #if defined(OS_MAC)

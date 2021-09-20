@@ -11,6 +11,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/stack.h"
@@ -21,6 +22,7 @@
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_hypertext.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace ui {
@@ -330,6 +332,10 @@ class AX_EXPORT AXNode final {
     return data().GetFloatAttribute(attribute, value);
   }
 
+  const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+  GetIntAttributes() const {
+    return data().int_attributes;
+  }
   bool HasIntAttribute(ax::mojom::IntAttribute attribute) const {
     return data().HasIntAttribute(attribute);
   }
@@ -356,6 +362,11 @@ class AX_EXPORT AXNode final {
   std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const;
 
+  const std::vector<
+      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+  GetIntListAttributes() const {
+    return data().intlist_attributes;
+  }
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const {
     return data().HasIntListAttribute(attribute);
   }
@@ -380,6 +391,9 @@ class AX_EXPORT AXNode final {
     return data().GetStringListAttribute(attribute, value);
   }
 
+  const base::StringPairs& GetHtmlAttributes() const {
+    return data().html_attributes;
+  }
   bool GetHtmlAttribute(const char* attribute, std::string* value) const {
     return data().GetHtmlAttribute(attribute, value);
   }
@@ -387,7 +401,22 @@ class AX_EXPORT AXNode final {
     return data().GetHtmlAttribute(attribute, value);
   }
 
+  AXTextAttributes GetTextAttributes() const {
+    return data().GetTextAttributes();
+  }
+
   bool HasState(ax::mojom::State state) const { return data().HasState(state); }
+  ax::mojom::State GetState() const {
+    return static_cast<ax::mojom::State>(data().state);
+  }
+
+  bool HasAction(ax::mojom::Action action) const {
+    return data().HasAction(action);
+  }
+
+  bool HasTextStyle(ax::mojom::TextStyle text_style) const {
+    return data().HasTextStyle(text_style);
+  }
 
   ax::mojom::NameFrom GetNameFrom() const { return data().GetNameFrom(); }
 

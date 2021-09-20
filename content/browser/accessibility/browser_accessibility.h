@@ -26,6 +26,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_range.h"
+#include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/buildflags.h"
@@ -353,15 +354,9 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   ui::AXNodeID GetId() const;
   gfx::RectF GetLocation() const;
-  ax::mojom::State GetState() const;
-
-  typedef base::StringPairs HtmlAttributes;
-  const HtmlAttributes& GetHtmlAttributes() const;
 
   // TODO(nektar): Move this method to AXNode.
   bool HasInheritedStringAttribute(ax::mojom::StringAttribute attribute) const;
-  // Returns true if the bit corresponding to the given enum is 1.
-  bool HasAction(ax::mojom::Action action_enum) const;
 
   // True if this is a web area, and its grandparent is a presentational iframe.
   bool IsWebAreaForPresentationalIframe() const;
@@ -412,6 +407,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   float GetFloatAttribute(ax::mojom::FloatAttribute attribute) const override;
   bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
                          float* value) const override;
+  const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+  GetIntAttributes() const override;
   bool HasIntAttribute(ax::mojom::IntAttribute attribute) const override;
   int GetIntAttribute(ax::mojom::IntAttribute attribute) const override;
   bool GetIntAttribute(ax::mojom::IntAttribute attribute,
@@ -429,6 +426,9 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       ax::mojom::StringAttribute attribute) const override;
   std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const override;
+  const std::vector<
+      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+  GetIntListAttributes() const override;
   bool HasIntListAttribute(
       ax::mojom::IntListAttribute attribute) const override;
   const std::vector<int32_t>& GetIntListAttribute(
@@ -441,11 +441,18 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       ax::mojom::StringListAttribute attribute) const override;
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const override;
+  typedef base::StringPairs HtmlAttributes;
+  const HtmlAttributes& GetHtmlAttributes() const override;
   bool GetHtmlAttribute(const char* attribute,
                         std::string* value) const override;
   bool GetHtmlAttribute(const char* attribute,
                         std::u16string* value) const override;
+  ui::AXTextAttributes GetTextAttributes() const override;
   bool HasState(ax::mojom::State state) const override;
+  ax::mojom::State GetState() const override;
+  bool HasAction(ax::mojom::Action action) const override;
+  bool HasTextStyle(ax::mojom::TextStyle text_style) const override;
+  ax::mojom::NameFrom GetNameFrom() const override;
   const ui::AXTree::Selection GetUnignoredSelection() const override;
   AXPosition CreatePositionAt(
       int offset,

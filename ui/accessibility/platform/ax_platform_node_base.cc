@@ -11,8 +11,6 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
-#include <utility>
-#include <vector>
 
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -430,6 +428,16 @@ bool AXPlatformNodeBase::GetFloatAttribute(ax::mojom::FloatAttribute attribute,
   return delegate_->GetFloatAttribute(attribute, value);
 }
 
+const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+AXPlatformNodeBase::GetIntAttributes() const {
+  static const base::NoDestructor<
+      const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>>
+      empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetIntAttributes();
+}
+
 bool AXPlatformNodeBase::HasIntAttribute(
     ax::mojom::IntAttribute attribute) const {
   if (!delegate_)
@@ -569,6 +577,16 @@ bool AXPlatformNodeBase::GetInheritedString16Attribute(
   return true;
 }
 
+const std::vector<std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+AXPlatformNodeBase::GetIntListAttributes() const {
+  static const base::NoDestructor<const std::vector<
+      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>>
+      empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetIntListAttributes();
+}
+
 bool AXPlatformNodeBase::HasIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
   if (!delegate_)
@@ -615,6 +633,13 @@ bool AXPlatformNodeBase::GetStringListAttribute(
   return delegate_->GetStringListAttribute(attribute, value);
 }
 
+const base::StringPairs& AXPlatformNodeBase::GetHtmlAttributes() const {
+  static const base::NoDestructor<base::StringPairs> empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetHtmlAttributes();
+}
+
 bool AXPlatformNodeBase::GetHtmlAttribute(const char* attribute,
                                           std::string* value) const {
   if (!delegate_)
@@ -629,10 +654,40 @@ bool AXPlatformNodeBase::GetHtmlAttribute(const char* attribute,
   return delegate_->GetHtmlAttribute(attribute, value);
 }
 
+AXTextAttributes AXPlatformNodeBase::GetTextAttributes() const {
+  if (!delegate_)
+    return AXTextAttributes();
+  return delegate_->GetTextAttributes();
+}
+
 bool AXPlatformNodeBase::HasState(ax::mojom::State state) const {
   if (!delegate_)
     return false;
   return delegate_->HasState(state);
+}
+
+ax::mojom::State AXPlatformNodeBase::GetState() const {
+  if (!delegate_)
+    return ax::mojom::State::kNone;
+  return delegate_->GetState();
+}
+
+bool AXPlatformNodeBase::HasAction(ax::mojom::Action action) const {
+  if (!delegate_)
+    return false;
+  return delegate_->HasAction(action);
+}
+
+bool AXPlatformNodeBase::HasTextStyle(ax::mojom::TextStyle text_style) const {
+  if (!delegate_)
+    return false;
+  return delegate_->HasTextStyle(text_style);
+}
+
+ax::mojom::NameFrom AXPlatformNodeBase::GetNameFrom() const {
+  if (!delegate_)
+    return ax::mojom::NameFrom::kNone;
+  return delegate_->GetNameFrom();
 }
 
 // static
@@ -1248,9 +1303,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     // Experimental: expose aria-rowtext / aria-coltext. Not standardized
     // yet, but obscure enough that it's safe to expose.
     // http://crbug.com/791634
-    for (size_t i = 0; i < GetData().html_attributes.size(); ++i) {
-      const std::string& attr = GetData().html_attributes[i].first;
-      const std::string& value = GetData().html_attributes[i].second;
+    for (const auto& attribute_value : GetHtmlAttributes()) {
+      const std::string& attr = attribute_value.first;
+      const std::string& value = attribute_value.second;
       if (attr == "aria-coltext") {
         AddAttributeToList("coltext", value, attributes);
       }
@@ -2162,15 +2217,15 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
 
   int32_t text_style = GetIntAttribute(ax::mojom::IntAttribute::kTextStyle);
   if (text_style) {
-    if (GetData().HasTextStyle(ax::mojom::TextStyle::kBold))
+    if (HasTextStyle(ax::mojom::TextStyle::kBold))
       attributes.push_back(std::make_pair("font-weight", "bold"));
-    if (GetData().HasTextStyle(ax::mojom::TextStyle::kItalic))
+    if (HasTextStyle(ax::mojom::TextStyle::kItalic))
       attributes.push_back(std::make_pair("font-style", "italic"));
-    if (GetData().HasTextStyle(ax::mojom::TextStyle::kLineThrough)) {
+    if (HasTextStyle(ax::mojom::TextStyle::kLineThrough)) {
       // TODO(nektar): Figure out a more specific value.
       attributes.push_back(std::make_pair("text-line-through-style", "solid"));
     }
-    if (GetData().HasTextStyle(ax::mojom::TextStyle::kUnderline)) {
+    if (HasTextStyle(ax::mojom::TextStyle::kUnderline)) {
       // TODO(nektar): Figure out a more specific value.
       attributes.push_back(std::make_pair("text-underline-style", "solid"));
     }

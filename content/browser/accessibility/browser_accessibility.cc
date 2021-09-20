@@ -456,15 +456,6 @@ gfx::RectF BrowserAccessibility::GetLocation() const {
   return GetData().relative_bounds.bounds;
 }
 
-ax::mojom::State BrowserAccessibility::GetState() const {
-  return static_cast<ax::mojom::State>(GetData().state);
-}
-
-const BrowserAccessibility::HtmlAttributes&
-BrowserAccessibility::GetHtmlAttributes() const {
-  return GetData().html_attributes;
-}
-
 gfx::Rect BrowserAccessibility::GetClippedScreenBoundsRect(
     ui::AXOffscreenResult* offscreen_result) const {
   return GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
@@ -924,10 +915,6 @@ bool BrowserAccessibility::HasInheritedStringAttribute(
          PlatformGetParent()->HasInheritedStringAttribute(attribute);
 }
 
-bool BrowserAccessibility::HasAction(ax::mojom::Action action_enum) const {
-  return GetData().HasAction(action_enum);
-}
-
 bool BrowserAccessibility::IsWebAreaForPresentationalIframe() const {
   if (!IsPlatformDocument())
     return false;
@@ -1346,6 +1333,11 @@ bool BrowserAccessibility::GetFloatAttribute(
   return node_->GetFloatAttribute(attribute, value);
 }
 
+const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+BrowserAccessibility::GetIntAttributes() const {
+  return node()->GetIntAttributes();
+}
+
 bool BrowserAccessibility::HasIntAttribute(
     ax::mojom::IntAttribute attribute) const {
   return node_->HasIntAttribute(attribute);
@@ -1398,6 +1390,11 @@ std::u16string BrowserAccessibility::GetInheritedString16Attribute(
   return node_->GetInheritedString16Attribute(attribute);
 }
 
+const std::vector<std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+BrowserAccessibility::GetIntListAttributes() const {
+  return node()->GetIntListAttributes();
+}
+
 bool BrowserAccessibility::HasIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
   return node_->HasIntListAttribute(attribute);
@@ -1430,6 +1427,11 @@ bool BrowserAccessibility::GetStringListAttribute(
   return node_->GetStringListAttribute(attribute, value);
 }
 
+const BrowserAccessibility::HtmlAttributes&
+BrowserAccessibility::GetHtmlAttributes() const {
+  return node()->GetHtmlAttributes();
+}
+
 bool BrowserAccessibility::GetHtmlAttribute(const char* attribute,
                                             std::string* value) const {
   return node_->GetHtmlAttribute(attribute, value);
@@ -1440,8 +1442,28 @@ bool BrowserAccessibility::GetHtmlAttribute(const char* attribute,
   return node_->GetHtmlAttribute(attribute, value);
 }
 
+ui::AXTextAttributes BrowserAccessibility::GetTextAttributes() const {
+  return node_->GetTextAttributes();
+}
+
 bool BrowserAccessibility::HasState(ax::mojom::State state) const {
   return node_->HasState(state);
+}
+
+ax::mojom::State BrowserAccessibility::GetState() const {
+  return node_->GetState();
+}
+
+bool BrowserAccessibility::HasAction(ax::mojom::Action action) const {
+  return node_->HasAction(action);
+}
+
+bool BrowserAccessibility::HasTextStyle(ax::mojom::TextStyle text_style) const {
+  return node_->HasTextStyle(text_style);
+}
+
+ax::mojom::NameFrom BrowserAccessibility::GetNameFrom() const {
+  return node_->GetNameFrom();
 }
 
 const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()

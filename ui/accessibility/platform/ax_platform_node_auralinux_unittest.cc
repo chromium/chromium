@@ -148,7 +148,7 @@ static void SetStringAttributeOnNode(
     absl::optional<ax::mojom::Role> role = absl::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
-  new_data.id = ax_node->data().id;
+  new_data.id = ax_node->id();
   new_data.AddStringAttribute(attribute, attribute_value);
   ax_node->SetData(new_data);
 }
@@ -161,7 +161,7 @@ static void TestAtkObjectIntAttribute(
     absl::optional<ax::mojom::Role> role = absl::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
-  new_data.id = ax_node->data().id;
+  new_data.id = ax_node->id();
   ax_node->SetData(new_data);
   EnsureAtkObjectDoesNotHaveAttribute(atk_object, attribute_name);
 
@@ -174,7 +174,7 @@ static void TestAtkObjectIntAttribute(
   for (const auto& test : tests) {
     AXNodeData new_data = AXNodeData();
     new_data.role = role.value_or(ax::mojom::Role::kApplication);
-    new_data.id = ax_node->data().id;
+    new_data.id = ax_node->id();
     new_data.AddIntAttribute(mojom_attribute, test.first);
     ax_node->SetData(new_data);
     EnsureAtkObjectHasAttributeWithValue(atk_object, attribute_name,
@@ -190,7 +190,7 @@ static void TestAtkObjectStringAttribute(
     absl::optional<ax::mojom::Role> role = absl::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
-  new_data.id = ax_node->data().id;
+  new_data.id = ax_node->id();
   ax_node->SetData(new_data);
   EnsureAtkObjectDoesNotHaveAttribute(atk_object, attribute_name);
 
@@ -213,20 +213,20 @@ static void TestAtkObjectBoolAttribute(
     absl::optional<ax::mojom::Role> role = absl::nullopt) {
   AXNodeData new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
-  new_data.id = ax_node->data().id;
+  new_data.id = ax_node->id();
   ax_node->SetData(new_data);
   EnsureAtkObjectDoesNotHaveAttribute(atk_object, attribute_name);
 
   new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
-  new_data.id = ax_node->data().id;
+  new_data.id = ax_node->id();
   new_data.AddBoolAttribute(mojom_attribute, true);
   ax_node->SetData(new_data);
   EnsureAtkObjectHasAttributeWithValue(atk_object, attribute_name, "true");
 
   new_data = AXNodeData();
   new_data.role = role.value_or(ax::mojom::Role::kApplication);
-  new_data.id = ax_node->data().id;
+  new_data.id = ax_node->id();
   new_data.AddBoolAttribute(mojom_attribute, false);
   ax_node->SetData(new_data);
   EnsureAtkObjectHasAttributeWithValue(atk_object, attribute_name, "false");

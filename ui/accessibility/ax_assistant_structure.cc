@@ -24,15 +24,14 @@ namespace ui {
 namespace {
 
 // TODO(muyuanli): share with BrowserAccessibility.
-bool IsTextField(const AXNode* node, uint32_t state) {
+bool IsTextField(const AXNode* node) {
   return node->data().IsTextField();
 }
 
 bool IsRichTextEditable(const AXNode* node) {
   const AXNode* parent = node->GetUnignoredParent();
-  return node->data().HasState(ax::mojom::State::kRichlyEditable) &&
-         (!parent ||
-          !parent->data().HasState(ax::mojom::State::kRichlyEditable));
+  return node->HasState(ax::mojom::State::kRichlyEditable) &&
+         (!parent || !parent->HasState(ax::mojom::State::kRichlyEditable));
 }
 
 bool IsAtomicTextField(const AXNode* node) {
@@ -90,14 +89,13 @@ std::u16string GetValue(const AXNode* node) {
   std::u16string value =
       node->GetString16Attribute(ax::mojom::StringAttribute::kValue);
 
-  if (value.empty() &&
-      (IsTextField(node, node->data().state) || IsRichTextEditable(node)) &&
+  if (value.empty() && (IsTextField(node) || IsRichTextEditable(node)) &&
       !IsAtomicTextField(node)) {
     value = GetInnerText(node);
   }
 
   // Always obscure passwords.
-  if (node->data().HasState(ax::mojom::State::kProtected))
+  if (node->HasState(ax::mojom::State::kProtected))
     value = std::u16string(value.size(), kSecurePasswordBullet);
 
   return value;
@@ -110,7 +108,7 @@ std::u16string GetText(const AXNode* node) {
     return std::u16string();
   }
 
-  ax::mojom::NameFrom name_from = node->data().GetNameFrom();
+  ax::mojom::NameFrom name_from = node->GetNameFrom();
 
   if (!ui::IsLeaf(node) && name_from == ax::mojom::NameFrom::kContents) {
     return std::u16string();
@@ -119,7 +117,7 @@ std::u16string GetText(const AXNode* node) {
   std::u16string value = GetValue(node);
 
   if (!value.empty()) {
-    if (node->data().HasState(ax::mojom::State::kEditable))
+    if (node->HasState(ax::mojom::State::kEditable))
       return value;
 
     switch (node->GetRole()) {
@@ -262,12 +260,11 @@ void WalkAXTreeDepthFirst(const AXNode* node,
     result->color = node->GetIntAttribute(ax::mojom::IntAttribute::kColor);
     result->bgcolor =
         node->GetIntAttribute(ax::mojom::IntAttribute::kBackgroundColor);
-    result->bold = node->data().HasTextStyle(ax::mojom::TextStyle::kBold);
-    result->italic = node->data().HasTextStyle(ax::mojom::TextStyle::kItalic);
+    result->bold = node->HasTextStyle(ax::mojom::TextStyle::kBold);
+    result->italic = node->HasTextStyle(ax::mojom::TextStyle::kItalic);
     result->line_through =
-        node->data().HasTextStyle(ax::mojom::TextStyle::kLineThrough);
-    result->underline =
-        node->data().HasTextStyle(ax::mojom::TextStyle::kUnderline);
+        node->HasTextStyle(ax::mojom::TextStyle::kLineThrough);
+    result->underline = node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
   }
 
   const gfx::Rect& absolute_rect =
@@ -306,7 +303,7 @@ void WalkAXTreeDepthFirst(const AXNode* node,
       node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
   result->css_display =
       node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
-  result->html_attributes = node->data().html_attributes;
+  result->html_attributes = node->GetHtmlAttributes();
 
   std::string class_name =
       node->GetStringAttribute(ax::mojom::StringAttribute::kClassName);

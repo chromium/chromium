@@ -339,17 +339,19 @@ void PostAnnouncementNotification(NSString* announcement,
 }
 
 // Returns true if |action| should be added implicitly for |data|.
-bool HasImplicitAction(const ui::AXNodeData& data, ax::mojom::Action action) {
-  return action == ax::mojom::Action::kDoDefault && data.IsClickable();
+bool HasImplicitAction(const ui::AXPlatformNodeBase& node,
+                       ax::mojom::Action action) {
+  return action == ax::mojom::Action::kDoDefault &&
+         node.GetData().IsClickable();
 }
 
 // For roles that show a menu for the default action, ensure "show menu" also
 // appears in available actions, but only if that's not already used for a
 // context menu. It will be mapped back to the default action when performed.
-bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
-  return HasImplicitAction(data, ax::mojom::Action::kDoDefault) &&
-         !data.HasAction(ax::mojom::Action::kShowContextMenu) &&
-         data.role == ax::mojom::Role::kPopUpButton;
+bool AlsoUseShowMenuActionForDefaultAction(const ui::AXPlatformNodeBase& node) {
+  return HasImplicitAction(node, ax::mojom::Action::kDoDefault) &&
+         !node.HasAction(ax::mojom::Action::kShowContextMenu) &&
+         node.GetRole() == ax::mojom::Role::kPopUpButton;
 }
 
 // Check whether |selector| is an accessibility setter. This is a heuristic but
@@ -530,19 +532,17 @@ bool IsAXSetter(SEL selector) {
 
   base::scoped_nsobject<NSMutableArray> axActions(
       [[NSMutableArray alloc] init]);
-
-  const ui::AXNodeData& data = _node->GetData();
   const ActionList& action_list = GetActionList();
 
   // VoiceOver expects the "press" action to be first. Note that some roles
   // should be given a press action implicitly.
   DCHECK([action_list[0].second isEqualToString:NSAccessibilityPressAction]);
   for (const auto& item : action_list) {
-    if (data.HasAction(item.first) || HasImplicitAction(data, item.first))
+    if (_node->HasAction(item.first) || HasImplicitAction(*_node, item.first))
       [axActions addObject:item.second];
   }
 
-  if (AlsoUseShowMenuActionForDefaultAction(data))
+  if (AlsoUseShowMenuActionForDefaultAction(*_node))
     [axActions addObject:NSAccessibilityShowMenuAction];
 
   return axActions.autorelease();
@@ -556,7 +556,7 @@ bool IsAXSetter(SEL selector) {
 
   ui::AXActionData data;
   if ([action isEqualToString:NSAccessibilityShowMenuAction] &&
-      AlsoUseShowMenuActionForDefaultAction(_node->GetData())) {
+      AlsoUseShowMenuActionForDefaultAction(*_node)) {
     data.action = ax::mojom::Action::kDoDefault;
   } else {
     for (const ActionList::value_type& entry : GetActionList()) {
