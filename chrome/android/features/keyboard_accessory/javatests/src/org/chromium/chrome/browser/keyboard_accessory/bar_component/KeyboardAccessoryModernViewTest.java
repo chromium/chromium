@@ -525,8 +525,8 @@ public class KeyboardAccessoryModernViewTest {
         CriteriaHelper.pollUiThread(() -> {
             ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
             ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
-            Drawable expectedIcon = mActivityTestRule.getActivity().getResources().getDrawable(
-                    R.drawable.visa_card);
+            Drawable expectedIcon =
+                    mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
             return getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable()));
         });
     }
@@ -549,8 +549,8 @@ public class KeyboardAccessoryModernViewTest {
         CriteriaHelper.pollUiThread(() -> {
             ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
             ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
-            Drawable expectedIcon = mActivityTestRule.getActivity().getResources().getDrawable(
-                    R.drawable.visa_card);
+            Drawable expectedIcon =
+                    mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
             return getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable()));
         });
     }

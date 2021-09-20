@@ -46,8 +46,7 @@ public class KeyboardAccessoryTabLayoutViewTest extends DummyUiChromeActivityTes
 
     private KeyboardAccessoryData.Tab createTestTab(String contentDescription) {
         return new KeyboardAccessoryData.Tab("Passwords",
-                getActivity().getResources().getDrawable(android.R.drawable.ic_lock_lock),
-                contentDescription,
+                getActivity().getDrawable(android.R.drawable.ic_lock_lock), contentDescription,
                 R.layout.empty_accessory_sheet, // Unused.
                 AccessoryTabType.ALL,
                 null); // Unused.
