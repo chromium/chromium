@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/lacros/lacros_resource_sizes.gni")
+import("//chromeos/tast_control.gni")
 
 if (is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
@@ -70,6 +71,11 @@ if (is_chromeos_device) {
     # below for more details:
     # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md
     tast_attr_expr = "\"group:mainline\" && \"dep:lacros\" && !informational"
+
+    # To disable a specific test, add it to the
+    # tast_disabled_tests_from_lacros_all list in "tast_control.gni" and cite
+    # a bug.
+    tast_disabled_tests = tast_disabled_tests_from_lacros_all
   }
 
   lacros_tast_tests("lacros_fyi_tast_tests") {
