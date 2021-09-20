@@ -4680,11 +4680,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxDynamicMaxAutocompleteVariations,
                                     "OmniboxBundledExperimentV1")},
 
-    {"omnibox-webui-omnibox-popup",
-     flag_descriptions::kOmniboxWebUIOmniboxPopupName,
-     flag_descriptions::kOmniboxWebUIOmniboxPopupDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},
-
     {"memories", flag_descriptions::kMemoriesName,
      flag_descriptions::kMemoriesDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::kMemories,

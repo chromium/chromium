@@ -4369,11 +4369,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "omnibox-webui-omnibox-popup",
-    "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "optimization-guide-model-downloading",
     "owners": [ "mcrouse", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 95
