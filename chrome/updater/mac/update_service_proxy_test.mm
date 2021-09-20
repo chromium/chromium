@@ -444,8 +444,8 @@ StateChangeTestEngine::StatePair UpdatedStates(const std::string& app_id,
 }
 
 #pragma mark Test cases
-
-TEST_F(MacUpdateServiceProxyTest, NoProductsUpdateAll) {
+// TODO(crbug.com/1247504): Flaky on macOS 10.12.6.
+TEST_F(MacUpdateServiceProxyTest, DISABLED_NoProductsUpdateAll) {
   ScopedXPCServiceMock::ConnectionMockRecord* conn_rec =
       mock_driver_.PrepareNewMockConnection();
   ScopedXPCServiceMock::RemoteObjectMockRecord* mock_rec =
