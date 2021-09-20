@@ -119,6 +119,10 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   // For a table row or column.
   AXObject* HeaderObject() const override;
 
+  // For a list marker.
+  void GetWordBoundaries(Vector<int>& word_starts,
+                         Vector<int>& word_ends) const override;
+
   //
   // Layout object specific methods.
   //

@@ -58,6 +58,8 @@ class CORE_EXPORT AbstractInlineTextBox
 
   enum Direction { kLeftToRight, kRightToLeft, kTopToBottom, kBottomToTop };
 
+  static void GetWordBoundariesForText(Vector<WordBoundaries>&, const String&);
+
   virtual ~AbstractInlineTextBox();
 
   LineLayoutText GetLineLayoutItem() const { return line_layout_item_; }

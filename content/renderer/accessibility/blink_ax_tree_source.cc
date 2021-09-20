@@ -631,6 +631,20 @@ void BlinkAXTreeSource::SerializeInlineTextBoxAttributes(
                            src_word_ends.ReleaseVector());
 }
 
+void BlinkAXTreeSource::SerializeListMarkerAttributes(
+    WebAXObject src,
+    ui::AXNodeData* dst) const {
+  DCHECK_EQ(ax::mojom::Role::kListMarker, dst->role);
+
+  WebVector<int> src_word_starts;
+  WebVector<int> src_word_ends;
+  src.GetWordBoundaries(src_word_starts, src_word_ends);
+  dst->AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                           src_word_starts.ReleaseVector());
+  dst->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                           src_word_ends.ReleaseVector());
+}
+
 void BlinkAXTreeSource::SerializeLiveRegionAttributes(
     WebAXObject src,
     ui::AXNodeData* dst) const {
@@ -704,6 +718,10 @@ void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
 
   if (dst->role == ax::mojom::Role::kInlineTextBox) {
     SerializeInlineTextBoxAttributes(src, dst);
+  }
+
+  if (dst->role == ax::mojom::Role::kListMarker) {
+    SerializeListMarkerAttributes(src, dst);
   }
 
   if (src.AccessKey().length()) {
