@@ -2,14 +2,15 @@
 <lint>
   <!-- Ignore all lint errors in chrome code. -->
   <issue id="all">
-    <ignore regexp="../../base/"/>
-    <ignore regexp="../../components/"/>
-    <ignore regexp="../../content/"/>
-    <ignore regexp="../../device/"/>
-    <ignore regexp="../../media/"/>
-    <ignore regexp="../../net/"/>
-    <ignore regexp="../../services/"/>
-    <ignore regexp="../../ui/"/>
+    <ignore regexp="\.\./\.\./base/"/>
+    <ignore regexp="\.\./\.\./components/"/>
+    <ignore regexp="\.\./\.\./content/"/>
+    <ignore regexp="\.\./\.\./device/"/>
+    <ignore regexp="\.\./\.\./media/"/>
+    <ignore regexp="\.\./\.\./net/"/>
+    <ignore regexp="\.\./\.\./services/"/>
+    <ignore regexp="\.\./\.\./third_party/"/>
+    <ignore regexp="\.\./\.\./ui/"/>
   </issue>
   <!-- The following cast-specific suppressions have been migrated from
        //build/android/lint/suppressions.xml -->
