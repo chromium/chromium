@@ -1056,6 +1056,12 @@ void SSLServerContextImpl::Init() {
                               ssl_server_config_.ocsp_response.size());
   }
 
+  if (!ssl_server_config_.signed_cert_timestamp_list.empty()) {
+    SSL_CTX_set_signed_cert_timestamp_list(
+        ssl_ctx_.get(), ssl_server_config_.signed_cert_timestamp_list.data(),
+        ssl_server_config_.signed_cert_timestamp_list.size());
+  }
+
   if (ssl_server_config_.ech_keys) {
     CHECK(SSL_CTX_set1_ech_keys(ssl_ctx_.get(),
                                 ssl_server_config_.ech_keys.get()));

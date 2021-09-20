@@ -147,14 +147,6 @@ class BaseTestServer {
     // The maximum TLS version to support.
     TLSMaxVersion tls_max_version = TLS_MAX_VERSION_DEFAULT;
 
-    // Temporary glue for testing: validation of SCTs is application-controlled
-    // and can be appropriately mocked out, so sending fake data here does not
-    // affect handshaking behaviour.
-    // TODO(ekasper): replace with valid SCT files for test certs.
-    // (Fake) SignedCertificateTimestampList (as a raw binary string) to send in
-    // a TLS extension.
-    std::string signed_cert_timestamps_tls_ext;
-
     // Whether to send a fatal alert immediately after completing the handshake.
     bool alert_after_handshake = false;
 

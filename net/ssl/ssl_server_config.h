@@ -114,6 +114,10 @@ struct NET_EXPORT SSLServerConfig {
   // If non-empty, the DER-encoded OCSP response to staple.
   std::vector<uint8_t> ocsp_response;
 
+  // If non-empty, the serialized SignedCertificateTimestampList to send in the
+  // handshake.
+  std::vector<uint8_t> signed_cert_timestamp_list;
+
   // This is a workaround for BoringSSL's scopers not being copyable. See
   // https://crbug.com/boringssl/431.
   class NET_EXPORT ECHKeysContainer {

@@ -474,13 +474,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
     if (ssl_options_.tls_max_version != SSLOptions::TLS_MAX_VERSION_DEFAULT) {
       arguments->SetIntKey("tls-max-version", ssl_options_.tls_max_version);
     }
-    if (!ssl_options_.signed_cert_timestamps_tls_ext.empty()) {
-      std::string b64_scts_tls_ext;
-      base::Base64Encode(ssl_options_.signed_cert_timestamps_tls_ext,
-                         &b64_scts_tls_ext);
-      arguments->SetStringKey("signed-cert-timestamps-tls-ext",
-                              b64_scts_tls_ext);
-    }
     if (ssl_options_.alert_after_handshake)
       arguments->SetKey("alert-after-handshake", base::Value());
 

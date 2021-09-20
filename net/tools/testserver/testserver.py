@@ -102,9 +102,9 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
 
   def __init__(self, server_address, request_hander_class, pem_cert_and_key,
                ssl_client_auth, ssl_client_cas, ssl_client_cert_types,
-               tls_intolerant, tls_intolerance_type, signed_cert_timestamps,
-               alert_after_handshake, simulate_tls13_downgrade,
-               simulate_tls12_downgrade, tls_max_version):
+               tls_intolerant, tls_intolerance_type, alert_after_handshake,
+               simulate_tls13_downgrade, simulate_tls12_downgrade,
+               tls_max_version):
     self.cert_chain = tlslite.api.X509CertChain()
     self.cert_chain.parsePemList(pem_cert_and_key)
     # Force using only python implementation - otherwise behavior is different
@@ -117,7 +117,6 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
     self.ssl_client_auth = ssl_client_auth
     self.ssl_client_cas = []
     self.ssl_client_cert_types = []
-    self.signed_cert_timestamps = signed_cert_timestamps
 
     if ssl_client_auth:
       for ca_file in ssl_client_cas:
@@ -157,15 +156,13 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
 
     try:
       self.tlsConnection = tlsConnection
-      tlsConnection.handshakeServer(
-          certChain=self.cert_chain,
-          privateKey=self.private_key,
-          sessionCache=self.session_cache,
-          reqCert=self.ssl_client_auth,
-          settings=self.ssl_handshake_settings,
-          reqCAs=self.ssl_client_cas,
-          reqCertTypes=self.ssl_client_cert_types,
-          signedCertTimestamps=self.signed_cert_timestamps)
+      tlsConnection.handshakeServer(certChain=self.cert_chain,
+                                    privateKey=self.private_key,
+                                    sessionCache=self.session_cache,
+                                    reqCert=self.ssl_client_auth,
+                                    settings=self.ssl_handshake_settings,
+                                    reqCAs=self.ssl_client_cas,
+                                    reqCertTypes=self.ssl_client_cert_types)
       tlsConnection.ignoreAbruptClose = True
       return True
     except tlslite.api.TLSAbruptCloseError:
@@ -417,7 +414,6 @@ class ServerRunner(testserver_base.TestServerRunner):
             self.options.ssl_client_auth, self.options.ssl_client_ca,
             self.options.ssl_client_cert_type, self.options.tls_intolerant,
             self.options.tls_intolerance_type,
-            base64.b64decode(self.options.signed_cert_timestamps_tls_ext),
             self.options.alert_after_handshake,
             self.options.simulate_tls13_downgrade,
             self.options.simulate_tls12_downgrade, self.options.tls_max_version)
@@ -522,13 +518,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   help='Controls how the server reacts to a '
                                   'TLS version it is intolerant to. Valid '
                                   'values are "alert", "close", and "reset".')
-    self.option_parser.add_option('--signed-cert-timestamps-tls-ext',
-                                  dest='signed_cert_timestamps_tls_ext',
-                                  default='',
-                                  help='Base64 encoded SCT list. If set, '
-                                  'server will respond with a '
-                                  'signed_certificate_timestamp TLS extension '
-                                  'whenever the client supports it.')
     self.option_parser.add_option('--ssl-client-auth', action='store_true',
                                   help='Require SSL client auth on every '
                                   'connection.')
