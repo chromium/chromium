@@ -50,6 +50,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -77,9 +78,7 @@ namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
 
-content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
-    Profile* profile,
-    const base::Time& navigation_start_time) {
+content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUINewTabPageHost);
 
@@ -92,7 +91,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
                              ->search_terms_data()
                              .GoogleBaseURLValue())
                         .spec());
-  source->AddDouble("navigationStartTime", navigation_start_time.ToJsTime());
 
   source->AddBoolean(
       "handleMostVisitedNavigationExplicitly",
@@ -109,8 +107,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
   source->AddBoolean(
       "middleSlotPromoEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo));
-  source->AddBoolean("modulesEnabled",
-                     base::FeatureList::IsEnabled(ntp_features::kModules));
   source->AddBoolean(
       "modulesDragAndDropEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop));
@@ -288,8 +284,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
   source->AddBoolean(
       "chromeCartModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule));
-  source->AddBoolean("driveModuleEnabled",
-                     NewTabPageUI::IsDriveModuleEnabled(profile));
   source->AddBoolean(
       "photosModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpPhotosModule));
@@ -347,7 +341,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       // for the unlikely case where the NewTabPageHandler is created before we
       // received the DidStartNavigation event.
       navigation_start_time_(base::Time::Now()) {
-  auto* source = CreateNewTabPageUiHtmlSource(profile_, navigation_start_time_);
+  auto* source = CreateNewTabPageUiHtmlSource(profile_);
   source->AddBoolean(
       "customBackgroundDisabledByPolicy",
       ntp_custom_background_service_->IsCustomBackgroundDisabledByPolicy());
@@ -390,9 +384,10 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_);
 
-  // Populates the load time data with basic theme info.
+  // Populates the load time data with basic info.
   OnThemeChanged();
   OnCustomBackgroundImageUpdated();
+  OnLoad();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
@@ -431,9 +426,10 @@ bool NewTabPageUI::IsDriveModuleEnabled(Profile* profile) {
   // TODO(https://crbug.com/1213351): Stop calling the private method
   // FindExtendedPrimaryAccountInfo().
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  return identity_manager
-      ->FindExtendedPrimaryAccountInfo(signin::ConsentLevel::kSync)
-      .IsManaged();
+  return /* Can be null if Chrome signin is disabled. */ identity_manager &&
+         identity_manager
+             ->FindExtendedPrimaryAccountInfo(signin::ConsentLevel::kSync)
+             .IsManaged();
 }
 
 void NewTabPageUI::BindInterface(
@@ -613,11 +609,7 @@ void NewTabPageUI::DidStartNavigation(
   if (navigation_handle->IsInPrimaryMainFrame() &&
       navigation_handle->GetURL() == GURL(chrome::kChromeUINewTabPageURL)) {
     navigation_start_time_ = base::Time::Now();
-    std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
-    update->SetDoubleKey("navigationStartTime",
-                         navigation_start_time_.ToJsTime());
-    content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
-                                     std::move(update));
+    OnLoad();
     auto prev_navigation_time =
         profile_->GetPrefs()->GetTime(kPrevNavigationTimePrefName);
     if (!prev_navigation_time.is_null()) {
@@ -649,6 +641,25 @@ void NewTabPageUI::OnTilesVisibilityPrefChanged() {
   if (most_visited_page_handler_) {
     most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
   }
+}
+
+void NewTabPageUI::OnLoad() {
+  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  update->SetDoubleKey("navigationStartTime",
+                       navigation_start_time_.ToJsTime());
+  // Only enable modules if account credentials are available as most modules
+  // won't have data to render otherwise.
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
+  bool has_credentials =
+      /* Can be null if Chrome signin is disabled. */ identity_manager &&
+      identity_manager->GetAccountsInCookieJar().signed_in_accounts.size() > 0;
+  update->SetBoolKey(
+      "modulesEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kModules) && has_credentials);
+  update->SetBoolKey("driveModuleEnabled",
+                     NewTabPageUI::IsDriveModuleEnabled(profile_));
+  content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
+                                   std::move(update));
 }
 
 // static
