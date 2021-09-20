@@ -18,24 +18,6 @@
 
 namespace variations {
 
-// As of the time of this writing, January 2018, users at the 99.5th percentile,
-// across all platforms, tend to experience fewer than 3 consecutive crashes:
-// [1], [2], [3], [4]. Note, however, that this is less true for the less-stable
-// channels on some platforms.
-// [1] All platforms, stable channel (consistently stable):
-//     https://uma.googleplex.com/timeline_v2?sid=90ac80f4573249fb341a8e49501bfcfd
-// [2] Most platforms, all channels (consistently stable other than occasional
-//     spikes on Canary):
-//     https://uma.googleplex.com/timeline_v2?sid=7af5ba1969db76689a401f982a1db539
-// [3] A less stable platform, all channels:
-//     https://uma.googleplex.com/timeline_v2?sid=07dbc8e4fa9f08e332fb609309a21882
-// [4] Another less stable platform, all channels:
-//     https://uma.googleplex.com/timeline_v2?sid=a7b529ef5d52863fae2d216e963c4cbc
-// Overall, the only {platform, channel} combinations that spike above 3
-// consecutive crashes are ones with very few users, plus Canary. It's probably
-// not realistic to avoid false positives for these less-stable configurations.
-constexpr int kCrashStreakThreshold = 3;
-
 // Consecutive seed fetch failures are, unfortunately, a bit more common. As of
 // January 2018, users at the 99.5th percentile tend to see fewer than 4
 // consecutive fetch failures on mobile platforms; and users at the 99th

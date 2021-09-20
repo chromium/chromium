@@ -1304,6 +1304,7 @@ if (!is_android && !is_fuchsia) {
       "//components/unified_consent",
       "//components/user_manager",
       "//components/variations/service",
+      "//components/variations/service:constants",
       "//components/webapps/browser",
       "//components/webrtc",
       "//components/webrtc_logging/browser",
