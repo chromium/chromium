@@ -115,7 +115,7 @@ def ci_builder(
     experiments = dict(experiments or {})
 
     # TODO(crbug.com/1249938) Promote out of experiment for all builders
-    experiments.setdefault("chromium.chromium_tests.use_gitiles_trigger", 10)
+    experiments.setdefault("chromium.chromium_tests.use_gitiles_trigger", 50)
 
     # TODO(crbug.com/1135718): Promote out of experiment for all builders.
     experiments.setdefault("chromium.chromium_tests.use_rdb_results", 100)
