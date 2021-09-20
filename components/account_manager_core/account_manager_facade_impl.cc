@@ -282,7 +282,7 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
                  << RemoteMinVersions::kShowAddAccountDialogMinVersion
                  << " for ShowAddAccountDialog.";
     FinishAddAccount(std::move(callback),
-                     account_manager::AccountAdditionResult(
+                     account_manager::AccountAdditionResult::FromStatus(
                          account_manager::AccountAdditionResult::Status::
                              kUnexpectedResponse));
     return;
@@ -372,7 +372,7 @@ void AccountManagerFacadeImpl::OnShowAddAccountDialogFinished(
       account_manager::FromMojoAccountAdditionResult(mojo_result);
   if (!result.has_value()) {
     FinishAddAccount(std::move(callback),
-                     account_manager::AccountAdditionResult(
+                     account_manager::AccountAdditionResult::FromStatus(
                          account_manager::AccountAdditionResult::Status::
                              kUnexpectedResponse));
     return;
@@ -384,7 +384,7 @@ void AccountManagerFacadeImpl::FinishAddAccount(
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback,
     const account_manager::AccountAdditionResult& result) {
-  base::UmaHistogramEnumeration(kAccountAdditionResultStatus, result.status);
+  base::UmaHistogramEnumeration(kAccountAdditionResultStatus, result.status());
   std::move(callback).Run(result);
 }
 

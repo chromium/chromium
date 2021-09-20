@@ -463,8 +463,8 @@ TEST_F(AccountManagerMojoServiceTest,
   mojom::AccountAdditionResultPtr account_addition_result =
       ShowAddAccountDialog(run_loop.QuitClosure());
   // Simulate account addition.
-  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
-      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  CallAccountAdditionFinished(
+      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   run_loop.Run();
@@ -500,8 +500,8 @@ TEST_F(AccountManagerMojoServiceTest,
             account_addition_result_2->status);
 
   // Simulate account addition.
-  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
-      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  CallAccountAdditionFinished(
+      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   run_loop.Run();
@@ -527,8 +527,8 @@ TEST_F(AccountManagerMojoServiceTest,
   mojom::AccountAdditionResultPtr account_addition_result =
       ShowAddAccountDialog(run_loop.QuitClosure());
   // Simulate account addition.
-  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
-      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  CallAccountAdditionFinished(
+      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   run_loop.Run();
@@ -545,8 +545,8 @@ TEST_F(AccountManagerMojoServiceTest,
   mojom::AccountAdditionResultPtr account_addition_result_2 =
       ShowAddAccountDialog(run_loop_2.QuitClosure());
   // Simulate account addition.
-  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
-      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  CallAccountAdditionFinished(
+      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   run_loop_2.Run();

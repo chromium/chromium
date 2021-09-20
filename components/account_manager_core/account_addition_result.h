@@ -12,7 +12,8 @@
 namespace account_manager {
 
 // The result of account addition request.
-struct COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
+class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
+ public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class Status {
@@ -29,17 +30,37 @@ struct COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
     kMaxValue = kUnexpectedResponse,
   };
 
-  Status status;
-  // The account that was added.
-  absl::optional<Account> account;
-  // The error is set only if `status` is set to `kNetworkError`.
-  absl::optional<GoogleServiceAuthError> error;
+  // Creates result with `status` different from `kSuccess` and `kNetworkError`.
+  // `account` is nullopt and `error` is NONE. To create a result with
+  // `kSuccess` or `kNetworkError`, use the other constructors.
+  static AccountAdditionResult FromStatus(Status status);
 
-  explicit AccountAdditionResult(Status status);
-  AccountAdditionResult(Status status, Account account);
-  AccountAdditionResult(Status status, GoogleServiceAuthError error);
+  // Creates result with `status` set to `kSuccess`. `error` is NONE.
+  static AccountAdditionResult FromAccount(const Account& account);
+
+  // Creates result with `status` set to `kNetworkError`. `account` is nullopt,
+  // error state must not be NONE.
+  static AccountAdditionResult FromError(const GoogleServiceAuthError& error);
+
+  Status status() const { return status_; }
+
+  // The account that was added. Set iff `status` is set to `kSuccess`.
+  const absl::optional<Account>& account() const { return account_; }
+
+  // The error state is NONE unless `status` is set to `kNetworkError`.
+  const GoogleServiceAuthError& error() const { return error_; }
+
   AccountAdditionResult(const AccountAdditionResult&);
   ~AccountAdditionResult();
+
+ private:
+  AccountAdditionResult(Status status,
+                        const absl::optional<Account>& account,
+                        const GoogleServiceAuthError& error);
+
+  const Status status_;
+  const absl::optional<Account> account_;
+  const GoogleServiceAuthError error_;
 };
 
 }  // namespace account_manager
