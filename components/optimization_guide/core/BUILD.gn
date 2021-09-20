@@ -18,16 +18,25 @@ static_library("bloomfilter") {
   ]
 }
 
-static_library("core") {
+static_library("entities") {
   sources = [
     "batch_entity_metadata_task.cc",
     "batch_entity_metadata_task.h",
+    "entity_metadata.h",
+    "entity_metadata_provider.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+static_library("core") {
+  sources = [
     "command_line_top_host_provider.cc",
     "command_line_top_host_provider.h",
     "decision_tree_prediction_model.cc",
     "decision_tree_prediction_model.h",
-    "entity_metadata.h",
-    "entity_metadata_provider.h",
     "hint_cache.cc",
     "hint_cache.h",
     "hints_component_info.h",
@@ -106,6 +115,7 @@ static_library("core") {
   ]
   if (build_with_tflite_lib) {
     public_deps += [
+      ":entities",
       "//components/optimization_guide/core:machine_learning",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
@@ -209,6 +219,7 @@ source_set("unit_tests") {
   deps = [
     ":bloomfilter",
     ":core",
+    ":entities",
     ":test_support",
     "//base",
     "//base/test:test_support",
