@@ -273,6 +273,7 @@ void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
       syncer::UserSelectableTypeSet empty_set;
       sync_settings->SetSelectedTypes(/*sync_everything=*/false, empty_set);
     }
+    // TODO(crbug.com/1229582) Revisit the logic in case !enable_sync.
     sync_settings->SetSyncRequested(true);
     sync_settings->SetFirstSetupComplete(
         syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
