@@ -1244,7 +1244,7 @@
     },
     {
       name: "LayoutNGBlockFragmentation",
-      implied_by: ["LayoutNGFlexFragmentation", "LayoutNGPrinting"],
+      implied_by: ["LayoutNGFlexFragmentation", "LayoutNGGridFragmentation", "LayoutNGPrinting"],
     },
     {
       name: "LayoutNGBlockInInline",
@@ -1279,6 +1279,12 @@
       name: "LayoutNGGridCaching",
       depends_on: ["LayoutNGGrid"],
       status: "stable"
+    },
+    {
+      // Block fragmentation support in the grid layout algorithm.
+      // https://drafts.csswg.org/css-grid-1/#pagination
+      name: "LayoutNGGridFragmentation",
+      depends_on: ["LayoutNG"],
     },
     {
       name: "LayoutNGLayoutOverflowRecalc",
