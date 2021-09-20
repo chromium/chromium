@@ -839,6 +839,9 @@ class BrowserView : public BrowserWindow,
   // whenever the touch mode changes.
   void MaybeShowReadingListInSidePanelIPH();
 
+  // Called when the widget's paint-as-active status changes.
+  void PaintAsActiveChanged();
+
   // The BrowserFrame that hosts this view.
   BrowserFrame* frame_ = nullptr;
 
@@ -1050,6 +1053,8 @@ class BrowserView : public BrowserWindow,
   // tab loading animation.
   absl::optional<ui::ThroughputTracker> loading_animation_tracker_;
 #endif
+
+  base::CallbackListSubscription paint_as_active_subscription_;
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
 };

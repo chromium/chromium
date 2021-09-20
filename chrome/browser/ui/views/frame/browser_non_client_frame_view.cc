@@ -157,9 +157,14 @@ SkColor BrowserNonClientFrameView::GetCaptionColor(
 SkColor BrowserNonClientFrameView::GetFrameColor(
     BrowserFrameActiveState active_state) const {
   return GetFrameThemeProvider()->GetColor(
-      ShouldPaintAsActive(active_state)
-          ? ThemeProperties::COLOR_FRAME_ACTIVE
-          : ThemeProperties::COLOR_FRAME_INACTIVE);
+      GetTabStripBackgroundColorId(active_state));
+}
+
+int BrowserNonClientFrameView::GetTabStripBackgroundColorId(
+    BrowserFrameActiveState active_state) const {
+  return ShouldPaintAsActive(active_state)
+             ? ThemeProperties::COLOR_FRAME_ACTIVE
+             : ThemeProperties::COLOR_FRAME_INACTIVE;
 }
 
 void BrowserNonClientFrameView::UpdateFrameColor() {

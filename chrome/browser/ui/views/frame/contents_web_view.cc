@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/background.h"
@@ -19,10 +22,11 @@
 #include "ui/wm/core/window_util.h"
 #endif
 
-ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
+ContentsWebView::ContentsWebView(content::BrowserContext* browser_context,
+                                 const BrowserView* browser_view)
     : views::WebView(browser_context),
-      status_bubble_(nullptr) {
-}
+      status_bubble_(nullptr),
+      browser_view_(browser_view) {}
 
 ContentsWebView::~ContentsWebView() {
 }
@@ -64,13 +68,21 @@ void ContentsWebView::OnLetterboxingChanged() {
   UpdateBackgroundColor();
 }
 
+void ContentsWebView::PaintAsActiveChanged() {
+  UpdateBackgroundColor();
+}
+
 void ContentsWebView::UpdateBackgroundColor() {
   const ui::ThemeProvider* const theme = GetThemeProvider();
   if (!theme)
     return;
 
-  const SkColor ntp_background = color_utils::GetResultingPaintColor(
-      theme->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND), SK_ColorWHITE);
+  const SkColor background = color_utils::GetResultingPaintColor(
+      theme->GetColor(web_contents() ? browser_view_->frame()
+                                           ->GetFrameView()
+                                           ->GetTabStripBackgroundColorId()
+                                     : ThemeProperties::COLOR_NTP_BACKGROUND),
+      SK_ColorWHITE);
   if (is_letterboxing()) {
     // Set the background color to a dark tint of the new tab page's background
     // color.  This is the color filled within the WebView's bounds when its
@@ -78,14 +90,14 @@ void ContentsWebView::UpdateBackgroundColor() {
     // header file comments for more details.
     const int kBackgroundBrightness = 0x33;  // 20%
     // Make sure the background is opaque.
-    const SkColor dimmed_ntp_background = SkColorSetARGB(
-        SkColorGetA(ntp_background),
-        SkColorGetR(ntp_background) * kBackgroundBrightness / 0xFF,
-        SkColorGetG(ntp_background) * kBackgroundBrightness / 0xFF,
-        SkColorGetB(ntp_background) * kBackgroundBrightness / 0xFF);
-    SetBackground(views::CreateSolidBackground(dimmed_ntp_background));
+    const SkColor dimmed_background =
+        SkColorSetARGB(SkColorGetA(background),
+                       SkColorGetR(background) * kBackgroundBrightness / 0xFF,
+                       SkColorGetG(background) * kBackgroundBrightness / 0xFF,
+                       SkColorGetB(background) * kBackgroundBrightness / 0xFF);
+    SetBackground(views::CreateSolidBackground(dimmed_background));
   } else {
-    SetBackground(views::CreateSolidBackground(ntp_background));
+    SetBackground(views::CreateSolidBackground(background));
   }
   // Changing a view's background does not necessarily schedule the view to be
   // redrawn.
@@ -95,7 +107,7 @@ void ContentsWebView::UpdateBackgroundColor() {
     content::RenderWidgetHostView* rwhv =
         web_contents()->GetRenderWidgetHostView();
     if (rwhv)
-      rwhv->SetBackgroundColor(ntp_background);
+      rwhv->SetBackgroundColor(background);
   }
 }
 

@@ -13,6 +13,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
 
+class BrowserView;
 class StatusBubbleViews;
 
 namespace ui {
@@ -25,7 +26,8 @@ class ContentsWebView
       public WebContentsCloseHandlerDelegate {
  public:
   METADATA_HEADER(ContentsWebView);
-  explicit ContentsWebView(content::BrowserContext* browser_context);
+  ContentsWebView(content::BrowserContext* browser_context,
+                  const BrowserView* browser_view);
   ContentsWebView(const ContentsWebView&) = delete;
   ContentsWebView& operator=(const ContentsWebView&) = delete;
   ~ContentsWebView() override;
@@ -51,9 +53,13 @@ class ContentsWebView
   void CloneWebContentsLayer() override;
   void DestroyClonedLayer() override;
 
+  // Called from BrowserView when its widget's paint-as-active status changes.
+  void PaintAsActiveChanged();
+
  private:
   void UpdateBackgroundColor();
   StatusBubbleViews* status_bubble_;
+  const BrowserView* const browser_view_;
 
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 };
