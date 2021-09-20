@@ -84,6 +84,7 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
   }
 
   dawn_desc.depthStoreOp = AsDawnEnum<WGPUStoreOp>(webgpu_desc->depthStoreOp());
+  dawn_desc.depthReadOnly = webgpu_desc->depthReadOnly();
 
   switch (webgpu_desc->stencilLoadValue()->GetContentType()) {
     case V8UnionGPULoadOpOrGPUStencilValue::ContentType::kGPULoadOp:
@@ -100,6 +101,7 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
 
   dawn_desc.stencilStoreOp =
       AsDawnEnum<WGPUStoreOp>(webgpu_desc->stencilStoreOp());
+  dawn_desc.stencilReadOnly = webgpu_desc->stencilReadOnly();
 
   return dawn_desc;
 }
