@@ -76077,6 +76077,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Failure"/>
 </enum>
 
+<enum name="ShoppingDataProviderFallback">
+  <summary>
+    The different kinds of fallback data used by the ShoppingDataProvider.
+  </summary>
+  <int value="0" label="Title"/>
+  <int value="1" label="Lead Image"/>
+  <int value="2" label="Fallback Image"/>
+  <int value="3" label="Price"/>
+</enum>
+
 <enum name="ShortcutsCreationResult">
   <summary>Result of creating shortcuts for PWA.</summary>
   <int value="0" label="Success"/>

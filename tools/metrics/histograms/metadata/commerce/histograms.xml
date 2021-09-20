@@ -67,6 +67,41 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram
+    name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataContent"
+    enum="ShoppingDataProviderFallback" expires_after="M100">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records whick type of fallback data (javascript on-page heuristics) was used
+    when filling in gaps from Optimization Guide. This does not track whether
+    the page was actually bookmarked, it only indicates what information might
+    be missing or how often we get supplementary images when on a product page.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed"
+    enum="Boolean" expires_after="M100">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records whether fallback data (javascript on-page heuristics) was used to
+    supplement the data provided by Optimization Guide. This does not track
+    whether the page was actually bookmarked.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PowerBookmarks.ShoppingDataProvider.IsProductPage"
+    enum="Boolean" expires_after="M100">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records whether a particular navigation was determined to be a product page
+    by Optimization Guide. This doesn not track whether the page was actually
+    bookmarked.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
     expires_after="M97">
   <owner>zhiyuancai@chromium.org</owner>

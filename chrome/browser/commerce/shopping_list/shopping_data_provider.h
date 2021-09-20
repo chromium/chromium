@@ -36,6 +36,15 @@ extern const char kOgPriceAmount[];
 // micro-currency units.
 extern const long kToMicroCurrency;
 
+// The type of fallback data can be used when generating shopping meta.
+enum class ShoppingDataProviderFallback {
+  kTitle = 0,
+  kLeadImage = 1,
+  kFallbackImage = 2,
+  kPrice = 3,
+  kMaxValue = kPrice,
+};
+
 class ShoppingDataProvider
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ShoppingDataProvider> {

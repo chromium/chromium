@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -64,6 +65,10 @@ void ShoppingDataProvider::DidFinishNavigation(
 void ShoppingDataProvider::OnOptimizationGuideDecision(
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
+  base::UmaHistogramBoolean(
+      "Commerce.PowerBookmarks.ShoppingDataProvider.IsProductPage",
+      decision == optimization_guide::OptimizationGuideDecision::kTrue);
+
   // If the page was determined to be shopping related, run the on-page
   // extractor.
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue)
@@ -136,12 +141,22 @@ void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
   if (!meta)
     return;
 
+  // This will be true if any of the data found in |on_page_data_map| is used to
+  // populate fields in |meta|.
+  bool data_was_merged = false;
+
   commerce::BuyableProduct* product_data = meta->mutable_shopping_specifics();
 
   for (auto it : on_page_data_map.DictItems()) {
     if (base::CompareCaseInsensitiveASCII(it.first, kOgTitle) == 0) {
-      if (!product_data->has_title())
+      if (!product_data->has_title()) {
         product_data->set_title(it.second.GetString());
+        base::UmaHistogramEnumeration(
+            "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed",
+            ShoppingDataProviderFallback::kTitle,
+            ShoppingDataProviderFallback::kMaxValue);
+        data_was_merged = true;
+      }
     } else if (base::CompareCaseInsensitiveASCII(it.first, kOgImage) == 0) {
       // If the product already has an image, add the one found on the page as
       // a fallback. The original image, if it exists, should have been
@@ -149,9 +164,18 @@ void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
       // callback runs.
       if (!meta->has_lead_image()) {
         meta->mutable_lead_image()->set_url(it.second.GetString());
+        base::UmaHistogramEnumeration(
+            "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed",
+            ShoppingDataProviderFallback::kLeadImage,
+            ShoppingDataProviderFallback::kMaxValue);
       } else {
         meta->add_fallback_images()->set_url(it.second.GetString());
+        base::UmaHistogramEnumeration(
+            "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed",
+            ShoppingDataProviderFallback::kFallbackImage,
+            ShoppingDataProviderFallback::kMaxValue);
       }
+      data_was_merged = true;
     } else if (base::CompareCaseInsensitiveASCII(it.first, kOgPriceCurrency) ==
                0) {
       if (!product_data->has_current_price()) {
@@ -164,10 +188,19 @@ void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
           // need to convert (open graph provides standard units).
           price_proto->set_amount_micros(amount * kToMicroCurrency);
           price_proto->set_currency_code(it.second.GetString());
+          base::UmaHistogramEnumeration(
+              "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed",
+              ShoppingDataProviderFallback::kPrice,
+              ShoppingDataProviderFallback::kMaxValue);
+          data_was_merged = true;
         }
       }
     }
   }
+
+  base::UmaHistogramBoolean(
+      "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed",
+      data_was_merged);
 }
 
 }  // namespace shopping_list
