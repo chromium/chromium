@@ -13,7 +13,6 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
-#include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
@@ -144,6 +143,7 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
 struct SupportedFormats {
   bool unknown = true;
   std::vector<media::VideoCodecProfile> profiles;
+  std::vector<std::vector<media::SVCScalabilityMode>> scalability_modes;
   std::vector<webrtc::SdpVideoFormat> sdp_formats;
 };
 
@@ -161,6 +161,7 @@ SupportedFormats GetSupportedFormatsInternal(
     absl::optional<webrtc::SdpVideoFormat> format = VEAToWebRTCFormat(profile);
     if (format) {
       supported_formats.profiles.push_back(profile.profile);
+      supported_formats.scalability_modes.push_back(profile.scalability_modes);
       supported_formats.sdp_formats.push_back(std::move(*format));
     }
   }
@@ -182,6 +183,18 @@ bool IsConstrainedH264(const webrtc::SdpVideoFormat& format) {
   }
 
   return is_constrained_h264;
+}
+
+bool IsScalabiltiyModeSupported(
+    const std::string& scalability_mode,
+    const std::vector<media::SVCScalabilityMode>& supported_scalability_modes) {
+  for (const auto& supported_scalability_mode : supported_scalability_modes) {
+    if (scalability_mode ==
+        media::GetScalabilityModeName(supported_scalability_mode)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // anonymous namespace
@@ -240,38 +253,21 @@ webrtc::VideoEncoderFactory::CodecSupport
 RTCVideoEncoderFactory::QueryCodecSupport(
     const webrtc::SdpVideoFormat& format,
     absl::optional<std::string> scalability_mode) const {
-  media::VideoCodec codec =
-      WebRtcToMediaVideoCodec(webrtc::PayloadStringToCodecType(format.name));
-  if (scalability_mode) {
-    absl::optional<int> spatial_layers =
-        WebRtcScalabilityModeSpatialLayers(*scalability_mode);
+  CheckAndWaitEncoderSupportStatusIfNeeded();
+  SupportedFormats supported_formats =
+      GetSupportedFormatsInternal(gpu_factories_);
 
-    // Check that the scalability mode was correctly parsed and that the
-    // configuration is valid (e.g., H264 doesn't support SVC at all and VP8
-    // doesn't support spatial layers).
-    if (!spatial_layers ||
-        (codec != media::VideoCodec::kVP8 && codec != media::VideoCodec::kVP9 &&
-         codec != media::VideoCodec::kAV1) ||
-        (codec == media::VideoCodec::kVP8 && *spatial_layers > 1)) {
-      // Ivalid scalability_mode, return unsupported.
-      return {false, false};
-    }
-    DCHECK(spatial_layers);
-    // Most HW encoders cannot handle spatial layers, so return false if the
-    // configuration contains spatial layers and spatial layers are not
-    // supported.
-    if (codec == media::VideoCodec::kVP9 && *spatial_layers > 1 &&
-        !RTCVideoEncoder::Vp9HwSupportForSpatialLayers()) {
-      return {false, false};
+  for (size_t i = 0; i < supported_formats.sdp_formats.size(); ++i) {
+    if (format.IsSameCodec(supported_formats.sdp_formats[i])) {
+      if (!scalability_mode ||
+          IsScalabiltiyModeSupported(*scalability_mode,
+                                     supported_formats.scalability_modes[i])) {
+        return {/*is_supported=*/true, /*is_power_efficient=*/true};
+      }
+      break;
     }
   }
-
-  if (format.IsCodecInList(GetSupportedFormats())) {
-    // Supported and power efficient.
-    return {true, true};
-  }
-  // Unsupported.
-  return {false, false};
+  return {/*is_supported=*/false, /*is_power_efficient=*/false};
 }
 
 }  // namespace blink
