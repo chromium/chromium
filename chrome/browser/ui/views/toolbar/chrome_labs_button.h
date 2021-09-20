@@ -29,7 +29,6 @@ class ChromeLabsButton : public ToolbarButton {
 
   // ToolbarButton:
   void Layout() override;
-  void OnThemeChanged() override;
 
   void HideDotIndicator();
 
