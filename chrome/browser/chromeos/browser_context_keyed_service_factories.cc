@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/browser_context_keyed_service_factories.h"
 
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_credentials_manager.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/crostini/crostini_engagement_metrics_service.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
-#include "chrome/browser/ash/full_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"

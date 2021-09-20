@@ -25,7 +25,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/full_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {

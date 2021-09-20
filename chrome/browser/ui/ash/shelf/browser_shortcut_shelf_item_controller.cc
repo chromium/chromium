@@ -13,7 +13,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/ash/full_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
