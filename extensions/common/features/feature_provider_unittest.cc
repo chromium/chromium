@@ -97,14 +97,7 @@ TEST(FeatureProviderTest, PermissionFeatureTypes) {
 }
 
 // Tests that real permission features have the correct availability for an app.
-// TODO(https://crbug.com/1243780): Define a platform for extensions on Fuchsia.
-#if defined(OS_FUCHSIA)
-#define MAYBE_PermissionFeatureAvailability \
-  DISABLED_PermissionFeatureAvailability
-#else
-#define MAYBE_PermissionFeatureAvailability PermissionFeatureAvailability
-#endif
-TEST(FeatureProviderTest, MAYBE_PermissionFeatureAvailability) {
+TEST(FeatureProviderTest, PermissionFeatureAvailability) {
   const FeatureProvider* provider = FeatureProvider::GetByName("permission");
 
   scoped_refptr<const Extension> app =
@@ -123,6 +116,9 @@ TEST(FeatureProviderTest, MAYBE_PermissionFeatureAvailability) {
 
   // A permission only available to whitelisted extensions returns availability
   // NOT_FOUND_IN_WHITELIST.
+  // TODO(https://crbug.com/1251347): Port //device/bluetooth to Fuchsia to
+  // enable bluetooth extensions.
+#if !defined(OS_FUCHSIA)
   feature = provider->GetFeature("bluetoothPrivate");
   ASSERT_TRUE(feature);
   EXPECT_EQ(Feature::NOT_FOUND_IN_WHITELIST,
@@ -130,6 +126,7 @@ TEST(FeatureProviderTest, MAYBE_PermissionFeatureAvailability) {
                 ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
                                        GURL())
                 .result());
+#endif  // !defined(OS_FUCHSIA)
 
   // A permission that isn't part of the manifest returns NOT_PRESENT.
   feature = provider->GetFeature("serial");

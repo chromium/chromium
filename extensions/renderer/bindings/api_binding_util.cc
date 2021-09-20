@@ -136,6 +136,8 @@ std::string GetPlatformString() {
   return "mac";
 #elif defined(OS_WIN)
   return "win";
+#elif defined(OS_FUCHSIA)
+  return "fuchsia";
 #else
   NOTREACHED();
   return std::string();

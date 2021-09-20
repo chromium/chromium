@@ -685,13 +685,7 @@ TEST_F(APIBindingUnittest, TestEventCreation) {
   EXPECT_FALSE(has_nonexistent_event.FromJust());
 }
 
-// TODO(https://crbug.com/1243780): Define a platform for extensions on Fuchsia.
-#if defined(OS_FUCHSIA)
-#define MAYBE_TestProperties DISABLED_TestProperties
-#else
-#define MAYBE_TestProperties TestProperties
-#endif
-TEST_F(APIBindingUnittest, MAYBE_TestProperties) {
+TEST_F(APIBindingUnittest, TestProperties) {
   SetProperties(
       "{"
       "  'prop1': { 'value': 17, 'type': 'integer' },"
@@ -715,7 +709,7 @@ TEST_F(APIBindingUnittest, MAYBE_TestProperties) {
       "  'notLinuxOrLacros': {"
       "    'value': 'nonlinux',"
       "    'type': 'string',"
-      "    'platforms': ['win', 'mac', 'chromeos']"
+      "    'platforms': ['win', 'mac', 'chromeos', 'fuchsia']"
       "  }"
       "}");
   InitializeBinding();
