@@ -25,6 +25,10 @@ class VIZ_COMMON_EXPORT ChildLocalSurfaceIdAllocator {
  public:
   ChildLocalSurfaceIdAllocator();
 
+  ChildLocalSurfaceIdAllocator(const ChildLocalSurfaceIdAllocator&) = delete;
+  ChildLocalSurfaceIdAllocator& operator=(const ChildLocalSurfaceIdAllocator&) =
+      delete;
+
   ~ChildLocalSurfaceIdAllocator() = default;
 
   // When a parent-allocated LocalSurfaceId arrives in the child, the child
@@ -41,8 +45,6 @@ class VIZ_COMMON_EXPORT ChildLocalSurfaceIdAllocator {
 
  private:
   LocalSurfaceId current_local_surface_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildLocalSurfaceIdAllocator);
 };
 
 }  // namespace viz

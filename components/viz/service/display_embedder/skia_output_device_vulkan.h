@@ -33,6 +33,10 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
       gpu::SurfaceHandle surface_handle,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceVulkan(const SkiaOutputDeviceVulkan&) = delete;
+  SkiaOutputDeviceVulkan& operator=(const SkiaOutputDeviceVulkan&) = delete;
+
   ~SkiaOutputDeviceVulkan() override;
 
   static std::unique_ptr<SkiaOutputDeviceVulkan> Create(
@@ -101,8 +105,6 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
   std::vector<gfx::Rect> damage_of_images_;
 
   base::WeakPtrFactory<SkiaOutputDeviceVulkan> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputDeviceVulkan);
 };
 
 }  // namespace viz

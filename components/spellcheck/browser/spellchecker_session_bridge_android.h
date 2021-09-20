@@ -21,6 +21,11 @@
 class SpellCheckerSessionBridge {
  public:
   SpellCheckerSessionBridge();
+
+  SpellCheckerSessionBridge(const SpellCheckerSessionBridge&) = delete;
+  SpellCheckerSessionBridge& operator=(const SpellCheckerSessionBridge&) =
+      delete;
+
   ~SpellCheckerSessionBridge();
 
   using RequestTextCheckCallback =
@@ -48,13 +53,14 @@ class SpellCheckerSessionBridge {
    public:
     SpellingRequest(const std::u16string& text,
                     RequestTextCheckCallback callback);
+
+    SpellingRequest(const SpellingRequest&) = delete;
+    SpellingRequest& operator=(const SpellingRequest&) = delete;
+
     ~SpellingRequest();
 
     std::u16string text_;
     RequestTextCheckCallback callback_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SpellingRequest);
   };
 
   std::unique_ptr<SpellingRequest> active_request_;
@@ -63,8 +69,6 @@ class SpellCheckerSessionBridge {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   bool java_object_initialization_failed_;
   bool active_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckerSessionBridge);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_BROWSER_SPELLCHECKER_SESSION_BRIDGE_ANDROID_H_

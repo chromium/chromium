@@ -63,6 +63,10 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Creates UserManagerBase with |task_runner| for UI thread.
   explicit UserManagerBase(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  UserManagerBase(const UserManagerBase&) = delete;
+  UserManagerBase& operator=(const UserManagerBase&) = delete;
+
   ~UserManagerBase() override;
 
   // Histogram for tracking the number of deprecated legacy supervised user
@@ -405,8 +409,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<UserManagerBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserManagerBase);
 };
 
 }  // namespace user_manager

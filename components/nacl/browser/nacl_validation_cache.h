@@ -21,6 +21,10 @@ namespace nacl {
 class NaClValidationCache {
  public:
   NaClValidationCache();
+
+  NaClValidationCache(const NaClValidationCache&) = delete;
+  NaClValidationCache& operator=(const NaClValidationCache&) = delete;
+
   ~NaClValidationCache();
 
   // Get the key used for HMACing validation signatures.  This should be a
@@ -64,8 +68,6 @@ class NaClValidationCache {
   ValidationCacheType validation_cache_;
 
   std::string validation_cache_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClValidationCache);
 };
 
 } // namespace nacl

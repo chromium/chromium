@@ -132,6 +132,10 @@ class FaviconHandler {
   FaviconHandler(CoreFaviconService* service,
                  Delegate* delegate,
                  FaviconDriverObserver::NotificationIconType handler_type);
+
+  FaviconHandler(const FaviconHandler&) = delete;
+  FaviconHandler& operator=(const FaviconHandler&) = delete;
+
   ~FaviconHandler();
 
   // Initiates loading the favicon for the specified url. |is_same_document| is
@@ -376,8 +380,6 @@ class FaviconHandler {
   // UpdateFaviconCandidate()), the favicon service and the delegate are
   // notified.
   DownloadedFavicon best_favicon_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconHandler);
 };
 
 }  // namespace favicon

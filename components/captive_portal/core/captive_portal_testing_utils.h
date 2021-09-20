@@ -18,6 +18,11 @@ namespace captive_portal {
 class CaptivePortalDetectorTestBase {
  public:
   CaptivePortalDetectorTestBase();
+
+  CaptivePortalDetectorTestBase(const CaptivePortalDetectorTestBase&) = delete;
+  CaptivePortalDetectorTestBase& operator=(
+      const CaptivePortalDetectorTestBase&) = delete;
+
   virtual ~CaptivePortalDetectorTestBase();
 
   // Sets test time for captive portal detector.
@@ -46,8 +51,6 @@ class CaptivePortalDetectorTestBase {
  protected:
   CaptivePortalDetector* detector_;
   network::TestURLLoaderFactory test_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalDetectorTestBase);
 };
 
 }  // namespace captive_portal

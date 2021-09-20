@@ -63,6 +63,9 @@ class MetricsStateManager final {
   typedef base::RepeatingCallback<std::unique_ptr<ClientInfo>(void)>
       LoadClientInfoCallback;
 
+  MetricsStateManager(const MetricsStateManager&) = delete;
+  MetricsStateManager& operator=(const MetricsStateManager&) = delete;
+
   ~MetricsStateManager();
 
   std::unique_ptr<MetricsProvider> GetProvider();
@@ -348,8 +351,6 @@ class MetricsStateManager final {
   // used only during startup. On Android WebLayer, Android WebView, and iOS,
   // the visibility is unknown at this point in startup.
   const StartupVisibility startup_visibility_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsStateManager);
 };
 
 }  // namespace metrics

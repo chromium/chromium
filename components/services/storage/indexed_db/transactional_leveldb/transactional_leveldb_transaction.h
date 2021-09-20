@@ -146,6 +146,9 @@ class TransactionalLevelDBTransaction
 // WriteBatch.
 class LevelDBDirectTransaction {
  public:
+  LevelDBDirectTransaction(const LevelDBDirectTransaction&) = delete;
+  LevelDBDirectTransaction& operator=(const LevelDBDirectTransaction&) = delete;
+
   virtual ~LevelDBDirectTransaction();
 
   leveldb::Status Put(const base::StringPiece& key, const std::string* value);
@@ -166,8 +169,6 @@ class LevelDBDirectTransaction {
 
   TransactionalLevelDBDatabase* const db_;
   std::unique_ptr<LevelDBWriteBatch> write_batch_;
-
-  DISALLOW_COPY_AND_ASSIGN(LevelDBDirectTransaction);
 };
 
 }  // namespace content

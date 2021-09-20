@@ -108,6 +108,10 @@ class HttpPasswordStoreMigratorTest : public testing::Test {
  public:
   HttpPasswordStoreMigratorTest() = default;
 
+  HttpPasswordStoreMigratorTest(const HttpPasswordStoreMigratorTest&) = delete;
+  HttpPasswordStoreMigratorTest& operator=(
+      const HttpPasswordStoreMigratorTest&) = delete;
+
   ~HttpPasswordStoreMigratorTest() override = default;
 
   MockConsumer& consumer() { return consumer_; }
@@ -130,8 +134,6 @@ class HttpPasswordStoreMigratorTest : public testing::Test {
       base::MakeRefCounted<testing::StrictMock<MockPasswordStoreInterface>>();
   testing::NiceMock<MockNetworkContext> mock_network_context_;
   testing::NiceMock<MockSmartBubbleStatsStore> mock_smart_bubble_stats_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpPasswordStoreMigratorTest);
 };
 
 void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {

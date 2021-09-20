@@ -44,6 +44,10 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
       scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceGL(const SkiaOutputDeviceGL&) = delete;
+  SkiaOutputDeviceGL& operator=(const SkiaOutputDeviceGL&) = delete;
+
   ~SkiaOutputDeviceGL() override;
 
   // SkiaOutputDevice implementation:
@@ -106,8 +110,6 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   uint64_t backbuffer_estimated_size_ = 0;
 
   base::WeakPtrFactory<SkiaOutputDeviceGL> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputDeviceGL);
 };
 
 }  // namespace viz

@@ -35,6 +35,10 @@ class OptOutStoreSQL : public OptOutStore {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const base::FilePath& database_dir);
+
+  OptOutStoreSQL(const OptOutStoreSQL&) = delete;
+  OptOutStoreSQL& operator=(const OptOutStoreSQL&) = delete;
+
   ~OptOutStoreSQL() override;
 
   // OptOutStore implementation:
@@ -58,8 +62,6 @@ class OptOutStoreSQL : public OptOutStore {
 
   // SQL connection to the SQLite database.
   std::unique_ptr<sql::Database> db_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptOutStoreSQL);
 };
 
 }  // namespace blocklist

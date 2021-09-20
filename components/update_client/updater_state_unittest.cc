@@ -16,10 +16,11 @@ namespace update_client {
 class UpdaterStateTest : public testing::Test {
  public:
   UpdaterStateTest() = default;
-  ~UpdaterStateTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdaterStateTest);
+  UpdaterStateTest(const UpdaterStateTest&) = delete;
+  UpdaterStateTest& operator=(const UpdaterStateTest&) = delete;
+
+  ~UpdaterStateTest() override = default;
 };
 
 TEST_F(UpdaterStateTest, Serialize) {

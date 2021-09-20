@@ -70,6 +70,9 @@ class WebsiteLoginManagerImpl::PendingRequest
         notify_finished_callback_(std::move(notify_finished_callback)),
         weak_ptr_factory_(this) {}
 
+  PendingRequest(const PendingRequest&) = delete;
+  PendingRequest& operator=(const PendingRequest&) = delete;
+
   ~PendingRequest() override = default;
   void Start() {
     // Note: Currently, |FormFetcherImpl| has the default state NOT_WAITING.
@@ -105,7 +108,6 @@ class WebsiteLoginManagerImpl::PendingRequest
 
   base::OnceCallback<void(const PendingRequest*)> notify_finished_callback_;
   base::WeakPtrFactory<PendingRequest> weak_ptr_factory_;
-  DISALLOW_COPY_AND_ASSIGN(PendingRequest);
 };
 
 // A pending request to fetch all logins that match the specified |form_digest|.

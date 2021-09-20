@@ -31,6 +31,9 @@ class FileMonitorTest : public testing::Test {
         handle_(task_runner_),
         completion_callback_called_(false) {}
 
+  FileMonitorTest(const FileMonitorTest&) = delete;
+  FileMonitorTest& operator=(const FileMonitorTest&) = delete;
+
   ~FileMonitorTest() override = default;
 
   void HardRecoveryResponse(bool result);
@@ -55,9 +58,6 @@ class FileMonitorTest : public testing::Test {
   std::unique_ptr<FileMonitor> monitor_;
 
   absl::optional<bool> hard_recovery_result_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileMonitorTest);
 };
 
 base::FilePath FileMonitorTest::CreateTemporaryFile(std::string file_name) {

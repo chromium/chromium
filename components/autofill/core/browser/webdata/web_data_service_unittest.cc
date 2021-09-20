@@ -54,6 +54,12 @@ template <class T>
 class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
  public:
   AutofillWebDataServiceConsumer() : handle_(0) {}
+
+  AutofillWebDataServiceConsumer(const AutofillWebDataServiceConsumer&) =
+      delete;
+  AutofillWebDataServiceConsumer& operator=(
+      const AutofillWebDataServiceConsumer&) = delete;
+
   virtual ~AutofillWebDataServiceConsumer() {}
 
   virtual void OnWebDataServiceRequestDone(
@@ -69,7 +75,6 @@ class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
  private:
   WebDataServiceBase::Handle handle_;
   T result_;
-  DISALLOW_COPY_AND_ASSIGN(AutofillWebDataServiceConsumer);
 };
 
 const int kWebDataServiceTimeoutSeconds = 8;

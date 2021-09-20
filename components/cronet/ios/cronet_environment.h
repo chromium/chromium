@@ -51,6 +51,10 @@ class CronetEnvironment {
   // |user_agent_partial| is true, or will be used as the complete user-agent
   // otherwise.
   CronetEnvironment(const std::string& user_agent, bool user_agent_partial);
+
+  CronetEnvironment(const CronetEnvironment&) = delete;
+  CronetEnvironment& operator=(const CronetEnvironment&) = delete;
+
   ~CronetEnvironment();
 
   // Starts this instance of Cronet environment.
@@ -206,8 +210,6 @@ class CronetEnvironment {
   bool enable_pkp_bypass_for_local_trust_anchors_;
   double network_thread_priority_;
   std::unique_ptr<CronetPrefsManager> cronet_prefs_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetEnvironment);
 };
 
 }  // namespace cronet

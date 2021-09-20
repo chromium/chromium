@@ -16,6 +16,10 @@ namespace autofill {
 class StubLogManager : public LogManager {
  public:
   StubLogManager() = default;
+
+  StubLogManager(const StubLogManager&) = delete;
+  StubLogManager& operator=(const StubLogManager&) = delete;
+
   ~StubLogManager() override = default;
 
  private:
@@ -26,8 +30,6 @@ class StubLogManager : public LogManager {
   void LogEntry(base::Value&& entry) const override;
   bool IsLoggingActive() const override;
   LogBufferSubmitter Log() override;
-
-  DISALLOW_COPY_AND_ASSIGN(StubLogManager);
 };
 
 }  // namespace autofill

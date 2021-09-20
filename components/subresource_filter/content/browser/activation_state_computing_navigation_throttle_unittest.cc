@@ -46,6 +46,12 @@ class ActivationStateComputingNavigationThrottleTest
   ActivationStateComputingNavigationThrottleTest()
       : simple_task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
         dryrun_speculation_(GetParam()) {}
+
+  ActivationStateComputingNavigationThrottleTest(
+      const ActivationStateComputingNavigationThrottleTest&) = delete;
+  ActivationStateComputingNavigationThrottleTest& operator=(
+      const ActivationStateComputingNavigationThrottleTest&) = delete;
+
   ~ActivationStateComputingNavigationThrottleTest() override {}
 
   void SetUp() override {
@@ -245,8 +251,6 @@ class ActivationStateComputingNavigationThrottleTest
   content::RenderFrameHost* last_committed_frame_host_ = nullptr;
 
   bool dryrun_speculation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivationStateComputingNavigationThrottleTest);
 };
 
 typedef ActivationStateComputingNavigationThrottleTest

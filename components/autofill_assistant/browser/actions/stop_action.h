@@ -13,13 +13,15 @@ namespace autofill_assistant {
 class StopAction : public Action {
  public:
   explicit StopAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  StopAction(const StopAction&) = delete;
+  StopAction& operator=(const StopAction&) = delete;
+
   ~StopAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(StopAction);
 };
 
 }  // namespace autofill_assistant

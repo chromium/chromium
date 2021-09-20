@@ -36,6 +36,12 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
       network::NetworkConnectionTracker* network_connection_tracker,
       account_manager::AccountManagerFacade* account_manager_facade,
       bool is_regular_profile);
+
+  ProfileOAuth2TokenServiceDelegateChromeOS(
+      const ProfileOAuth2TokenServiceDelegateChromeOS&) = delete;
+  ProfileOAuth2TokenServiceDelegateChromeOS& operator=(
+      const ProfileOAuth2TokenServiceDelegateChromeOS&) = delete;
+
   ~ProfileOAuth2TokenServiceDelegateChromeOS() override;
 
   // ProfileOAuth2TokenServiceDelegate overrides.
@@ -120,8 +126,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ProfileOAuth2TokenServiceDelegateChromeOS> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileOAuth2TokenServiceDelegateChromeOS);
 };
 
 }  // namespace signin

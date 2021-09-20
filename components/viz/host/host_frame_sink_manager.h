@@ -52,6 +52,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       base::flat_map<FrameSinkId, std::unique_ptr<HitTestQuery>>;
 
   HostFrameSinkManager();
+
+  HostFrameSinkManager(const HostFrameSinkManager&) = delete;
+  HostFrameSinkManager& operator=(const HostFrameSinkManager&) = delete;
+
   ~HostFrameSinkManager() override;
 
   const DisplayHitTestQueryMap& display_hit_test_query() const {
@@ -318,8 +322,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   DebugRendererSettings debug_renderer_settings_;
 
   base::WeakPtrFactory<HostFrameSinkManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostFrameSinkManager);
 };
 
 }  // namespace viz

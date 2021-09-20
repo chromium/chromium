@@ -17,6 +17,12 @@ namespace web_modal {
 class TestWebContentsModalDialogHost : public WebContentsModalDialogHost {
  public:
   explicit TestWebContentsModalDialogHost(gfx::NativeView host_view);
+
+  TestWebContentsModalDialogHost(const TestWebContentsModalDialogHost&) =
+      delete;
+  TestWebContentsModalDialogHost& operator=(
+      const TestWebContentsModalDialogHost&) = delete;
+
   ~TestWebContentsModalDialogHost() override;
 
   // WebContentsModalDialogHost:
@@ -33,8 +39,6 @@ class TestWebContentsModalDialogHost : public WebContentsModalDialogHost {
  private:
   gfx::NativeView host_view_;
   gfx::Size max_dialog_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsModalDialogHost);
 };
 
 }  // namespace web_modal

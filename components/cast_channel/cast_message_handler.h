@@ -142,6 +142,10 @@ class CastMessageHandler : public CastSocket::Observer {
                      const std::string& user_agent,
                      const std::string& browser_version,
                      const std::string& locale);
+
+  CastMessageHandler(const CastMessageHandler&) = delete;
+  CastMessageHandler& operator=(const CastMessageHandler&) = delete;
+
   ~CastMessageHandler() override;
 
   // Ensures a virtual connection exists for (|source_id|, |destination_id|) on
@@ -347,8 +351,6 @@ class CastMessageHandler : public CastSocket::Observer {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMessageHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastMessageHandler);
 };
 
 }  // namespace cast_channel

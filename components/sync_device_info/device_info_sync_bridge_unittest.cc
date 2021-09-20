@@ -346,6 +346,11 @@ std::map<std::string, sync_pb::EntitySpecifics> DataBatchToSpecificsMap(
 class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
  public:
   TestLocalDeviceInfoProvider() = default;
+
+  TestLocalDeviceInfoProvider(const TestLocalDeviceInfoProvider&) = delete;
+  TestLocalDeviceInfoProvider& operator=(const TestLocalDeviceInfoProvider&) =
+      delete;
+
   ~TestLocalDeviceInfoProvider() override = default;
 
   // MutableLocalDeviceInfoProvider implementation.
@@ -441,8 +446,6 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   absl::optional<std::string> fcm_registration_token_;
   absl::optional<ModelTypeSet> interested_data_types_;
   absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLocalDeviceInfoProvider);
 };  // namespace
 
 class DeviceInfoSyncBridgeTest : public testing::Test,

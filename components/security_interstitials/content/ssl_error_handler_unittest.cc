@@ -308,6 +308,12 @@ class SSLErrorHandlerNameMismatchTest
     : public content::RenderViewHostTestHarness {
  public:
   SSLErrorHandlerNameMismatchTest() {}
+
+  SSLErrorHandlerNameMismatchTest(const SSLErrorHandlerNameMismatchTest&) =
+      delete;
+  SSLErrorHandlerNameMismatchTest& operator=(
+      const SSLErrorHandlerNameMismatchTest&) = delete;
+
   ~SSLErrorHandlerNameMismatchTest() override {}
 
   void SetUp() override {
@@ -361,8 +367,6 @@ class SSLErrorHandlerNameMismatchTest
   std::unique_ptr<captive_portal::CaptivePortalService> captive_portal_service_;
   std::unique_ptr<TestSSLErrorHandler> error_handler_;
   TestSSLErrorHandlerDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorHandlerNameMismatchTest);
 };
 
 // A class to test name mismatch errors, where the certificate lacks a

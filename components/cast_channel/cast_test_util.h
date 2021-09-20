@@ -30,6 +30,10 @@ namespace cast_channel {
 class MockCastTransport : public CastTransport {
  public:
   MockCastTransport();
+
+  MockCastTransport(const MockCastTransport&) = delete;
+  MockCastTransport& operator=(const MockCastTransport&) = delete;
+
   ~MockCastTransport() override;
 
   void SetReadDelegate(
@@ -53,21 +57,21 @@ class MockCastTransport : public CastTransport {
 
  private:
   std::unique_ptr<CastTransport::Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCastTransport);
 };
 
 class MockCastTransportDelegate : public CastTransport::Delegate {
  public:
   MockCastTransportDelegate();
+
+  MockCastTransportDelegate(const MockCastTransportDelegate&) = delete;
+  MockCastTransportDelegate& operator=(const MockCastTransportDelegate&) =
+      delete;
+
   ~MockCastTransportDelegate() override;
 
   MOCK_METHOD1(OnError, void(ChannelError error));
   MOCK_METHOD1(OnMessage, void(const CastMessage& message));
   MOCK_METHOD0(Start, void(void));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCastTransportDelegate);
 };
 
 class MockCastSocketObserver : public CastSocket::Observer {
@@ -103,6 +107,10 @@ class MockCastSocket : public CastSocket {
   using MockOnOpenCallback = base::RepeatingCallback<void(CastSocket* socket)>;
 
   MockCastSocket();
+
+  MockCastSocket(const MockCastSocket&) = delete;
+  MockCastSocket& operator=(const MockCastSocket&) = delete;
+
   ~MockCastSocket() override;
 
   void Connect(CastSocket::OnOpenCallback callback) override {
@@ -152,13 +160,15 @@ class MockCastSocket : public CastSocket {
 
   std::unique_ptr<MockCastTransport> mock_transport_;
   std::unique_ptr<Observer> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCastSocket);
 };
 
 class MockCastMessageHandler : public CastMessageHandler {
  public:
   explicit MockCastMessageHandler(MockCastSocketService* socket_service);
+
+  MockCastMessageHandler(const MockCastMessageHandler&) = delete;
+  MockCastMessageHandler& operator=(const MockCastMessageHandler&) = delete;
+
   ~MockCastMessageHandler() override;
 
   MOCK_METHOD4(EnsureConnection,
@@ -203,9 +213,6 @@ class MockCastMessageHandler : public CastMessageHandler {
                     const base::Value& body,
                     const std::string& source_id,
                     ResultCallback callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCastMessageHandler);
 };
 
 // Creates the IPEndpoint 192.168.1.1.

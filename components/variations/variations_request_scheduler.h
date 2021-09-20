@@ -19,6 +19,10 @@ namespace variations {
 // A helper class that makes VariationsService requests at the correct times.
 class COMPONENT_EXPORT(VARIATIONS) VariationsRequestScheduler {
  public:
+  VariationsRequestScheduler(const VariationsRequestScheduler&) = delete;
+  VariationsRequestScheduler& operator=(const VariationsRequestScheduler&) =
+      delete;
+
   virtual ~VariationsRequestScheduler();
 
   // Starts the task. This can be a repeated event or a one-off.
@@ -63,8 +67,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsRequestScheduler {
 
   // A one-shot timer used for scheduling out-of-band fetches.
   base::OneShotTimer one_shot_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsRequestScheduler);
 };
 
 }  // namespace variations

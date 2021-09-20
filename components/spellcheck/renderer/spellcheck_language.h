@@ -35,6 +35,10 @@ class SpellcheckLanguage {
 
   explicit SpellcheckLanguage(
       service_manager::LocalInterfaceProvider* embedder_provider);
+
+  SpellcheckLanguage(const SpellcheckLanguage&) = delete;
+  SpellcheckLanguage& operator=(const SpellcheckLanguage&) = delete;
+
   ~SpellcheckLanguage();
 
   void Init(base::File file, const std::string& language);
@@ -101,8 +105,6 @@ class SpellcheckLanguage {
   // Pointer to a platform-specific spelling engine, if it is in use. This
   // should only be set if hunspell is not used. (I.e. on OSX, for now)
   std::unique_ptr<SpellingEngine> platform_spelling_engine_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckLanguage);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_LANGUAGE_H_

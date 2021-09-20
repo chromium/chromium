@@ -53,6 +53,9 @@ class FileErrorData : public base::trace_event::ConvertableToTraceFormat {
         os_error_(os_error),
         interrupt_reason_(interrupt_reason) {}
 
+  FileErrorData(const FileErrorData&) = delete;
+  FileErrorData& operator=(const FileErrorData&) = delete;
+
   ~FileErrorData() override = default;
 
   void AppendAsTraceFormat(std::string* out) const override {
@@ -70,7 +73,6 @@ class FileErrorData : public base::trace_event::ConvertableToTraceFormat {
   std::string operation_;
   int os_error_;
   DownloadInterruptReason interrupt_reason_;
-  DISALLOW_COPY_AND_ASSIGN(FileErrorData);
 };
 
 void InitializeFile(base::File* file, const base::FilePath& file_path) {

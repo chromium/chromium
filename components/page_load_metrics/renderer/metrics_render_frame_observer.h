@@ -40,6 +40,11 @@ class MetricsRenderFrameObserver
       public subresource_filter::AdResourceTracker::Observer {
  public:
   explicit MetricsRenderFrameObserver(content::RenderFrame* render_frame);
+
+  MetricsRenderFrameObserver(const MetricsRenderFrameObserver&) = delete;
+  MetricsRenderFrameObserver& operator=(const MetricsRenderFrameObserver&) =
+      delete;
+
   ~MetricsRenderFrameObserver() override;
 
   // RenderFrameObserver implementation
@@ -162,8 +167,6 @@ class MetricsRenderFrameObserver
 
   // Will be null when we're not actively sending metrics.
   std::unique_ptr<PageTimingMetricsSender> page_timing_metrics_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsRenderFrameObserver);
 };
 
 }  // namespace page_load_metrics

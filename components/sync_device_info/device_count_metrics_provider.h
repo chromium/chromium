@@ -32,6 +32,11 @@ class DeviceCountMetricsProvider : public metrics::MetricsProvider {
 
   explicit DeviceCountMetricsProvider(
       const ProvideTrackersCallback& provide_trackers);
+
+  DeviceCountMetricsProvider(const DeviceCountMetricsProvider&) = delete;
+  DeviceCountMetricsProvider& operator=(const DeviceCountMetricsProvider&) =
+      delete;
+
   ~DeviceCountMetricsProvider() override;
 
   // MetricsProvider:
@@ -43,8 +48,6 @@ class DeviceCountMetricsProvider : public metrics::MetricsProvider {
   int MaxActiveDeviceCount() const;
 
   const ProvideTrackersCallback provide_trackers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCountMetricsProvider);
 };
 
 }  // namespace syncer

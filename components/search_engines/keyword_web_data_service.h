@@ -54,12 +54,14 @@ class KeywordWebDataService : public WebDataServiceBase {
   class BatchModeScoper {
    public:
     explicit BatchModeScoper(KeywordWebDataService* service);
+
+    BatchModeScoper(const BatchModeScoper&) = delete;
+    BatchModeScoper& operator=(const BatchModeScoper&) = delete;
+
     ~BatchModeScoper();
 
    private:
     KeywordWebDataService* service_;
-
-    DISALLOW_COPY_AND_ASSIGN(BatchModeScoper);
   };
 
   KeywordWebDataService(

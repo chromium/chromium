@@ -25,6 +25,10 @@ class SequencedTaskRunner;
 class COMPONENTS_PREFS_EXPORT PrefServiceFactory {
  public:
   PrefServiceFactory();
+
+  PrefServiceFactory(const PrefServiceFactory&) = delete;
+  PrefServiceFactory& operator=(const PrefServiceFactory&) = delete;
+
   virtual ~PrefServiceFactory();
 
   // Functions for setting the various parameters of the PrefService to build.
@@ -93,9 +97,6 @@ class COMPONENTS_PREFS_EXPORT PrefServiceFactory {
 
   // Defaults to false.
   bool async_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefServiceFactory);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_SERVICE_FACTORY_H_

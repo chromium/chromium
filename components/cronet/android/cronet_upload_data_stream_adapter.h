@@ -36,6 +36,11 @@ class ByteBufferWithIOBuffer;
 class CronetUploadDataStreamAdapter : public CronetUploadDataStream::Delegate {
  public:
   CronetUploadDataStreamAdapter(JNIEnv* env, jobject jupload_data_stream);
+
+  CronetUploadDataStreamAdapter(const CronetUploadDataStreamAdapter&) = delete;
+  CronetUploadDataStreamAdapter& operator=(
+      const CronetUploadDataStreamAdapter&) = delete;
+
   ~CronetUploadDataStreamAdapter() override;
 
   // CronetUploadDataStream::Delegate implementation.  Called on network thread.
@@ -68,8 +73,6 @@ class CronetUploadDataStreamAdapter : public CronetUploadDataStream::Delegate {
 
   // Keeps the net::IOBuffer and Java ByteBuffer alive until the next Read().
   std::unique_ptr<ByteBufferWithIOBuffer> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetUploadDataStreamAdapter);
 };
 
 }  // namespace cronet

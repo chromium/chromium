@@ -126,6 +126,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings);
 
+  OverlayProcessorInterface(const OverlayProcessorInterface&) = delete;
+  OverlayProcessorInterface& operator=(const OverlayProcessorInterface&) =
+      delete;
+
   virtual ~OverlayProcessorInterface() = default;
 
   virtual bool IsOverlaySupported() const = 0;
@@ -194,9 +198,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
  protected:
   OverlayProcessorInterface() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlayProcessorInterface);
 };
 
 }  // namespace viz

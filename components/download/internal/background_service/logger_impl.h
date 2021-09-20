@@ -29,6 +29,10 @@ struct Entry;
 class LoggerImpl : public Logger, public LogSink {
  public:
   LoggerImpl();
+
+  LoggerImpl(const LoggerImpl&) = delete;
+  LoggerImpl& operator=(const LoggerImpl&) = delete;
+
   ~LoggerImpl() override;
 
   void SetLogSource(LogSource* log_source);
@@ -52,8 +56,6 @@ class LoggerImpl : public Logger, public LogSink {
 
   LogSource* log_source_;
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggerImpl);
 };
 
 }  // namespace download

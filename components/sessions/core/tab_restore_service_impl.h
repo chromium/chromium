@@ -30,6 +30,9 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
                         PrefService* pref_service,
                         TimeFactory* time_factory);
 
+  TabRestoreServiceImpl(const TabRestoreServiceImpl&) = delete;
+  TabRestoreServiceImpl& operator=(const TabRestoreServiceImpl&) = delete;
+
   ~TabRestoreServiceImpl() override;
 
   // TabRestoreService:
@@ -73,8 +76,6 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   std::unique_ptr<PersistenceDelegate> persistence_delegate_;
   TabRestoreServiceHelper helper_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestoreServiceImpl);
 };
 
 }  // namespace sessions

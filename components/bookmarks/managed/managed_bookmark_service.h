@@ -31,6 +31,10 @@ class ManagedBookmarkService : public KeyedService,
 
   ManagedBookmarkService(PrefService* prefs,
                          GetManagementDomainCallback callback);
+
+  ManagedBookmarkService(const ManagedBookmarkService&) = delete;
+  ManagedBookmarkService& operator=(const ManagedBookmarkService&) = delete;
+
   ~ManagedBookmarkService() override;
 
   // Called upon creation of the BookmarkModel.
@@ -84,8 +88,6 @@ class ManagedBookmarkService : public KeyedService,
   std::unique_ptr<ManagedBookmarksTracker> managed_bookmarks_tracker_;
   GetManagementDomainCallback managed_domain_callback_;
   BookmarkPermanentNode* managed_node_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedBookmarkService);
 };
 
 }  // namespace bookmarks

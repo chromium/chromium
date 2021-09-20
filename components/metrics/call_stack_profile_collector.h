@@ -14,6 +14,11 @@ namespace metrics {
 class CallStackProfileCollector : public mojom::CallStackProfileCollector {
  public:
   CallStackProfileCollector();
+
+  CallStackProfileCollector(const CallStackProfileCollector&) = delete;
+  CallStackProfileCollector& operator=(const CallStackProfileCollector&) =
+      delete;
+
   ~CallStackProfileCollector() override;
 
   // Create a collector to receive profiles from |expected_process|.
@@ -23,9 +28,6 @@ class CallStackProfileCollector : public mojom::CallStackProfileCollector {
   // mojom::CallStackProfileCollector:
   void Collect(base::TimeTicks start_timestamp,
                mojom::SampledProfilePtr profile) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CallStackProfileCollector);
 };
 
 }  // namespace metrics

@@ -27,6 +27,10 @@ class NaClBrokerListener : public content::SandboxedProcessLauncherDelegate,
                            public IPC::Listener {
  public:
   NaClBrokerListener();
+
+  NaClBrokerListener(const NaClBrokerListener&) = delete;
+  NaClBrokerListener& operator=(const NaClBrokerListener&) = delete;
+
   ~NaClBrokerListener() override;
 
   void Listen();
@@ -51,8 +55,6 @@ class NaClBrokerListener : public content::SandboxedProcessLauncherDelegate,
   base::RunLoop run_loop_;
   base::Process browser_process_;
   std::unique_ptr<IPC::Channel> channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClBrokerListener);
 };
 
 #endif  // COMPONENTS_NACL_BROKER_NACL_BROKER_LISTENER_H_

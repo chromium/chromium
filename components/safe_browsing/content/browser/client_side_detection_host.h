@@ -76,6 +76,9 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
       bool is_off_the_record,
       const PrimaryAccountSignedIn& account_signed_in_callback);
 
+  ClientSideDetectionHost(const ClientSideDetectionHost&) = delete;
+  ClientSideDetectionHost& operator=(const ClientSideDetectionHost&) = delete;
+
   // The caller keeps ownership of the tab object and is responsible for
   // ensuring that it stays valid until WebContentsDestroyed is called.
   ~ClientSideDetectionHost() override;
@@ -222,8 +225,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   PrimaryAccountSignedIn account_signed_in_callback_;
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionHost);
 };
 
 }  // namespace safe_browsing

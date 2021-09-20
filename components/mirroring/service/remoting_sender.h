@@ -43,6 +43,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
                  mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
                      stream_sender,
                  base::OnceClosure error_callback);
+
+  RemotingSender(const RemotingSender&) = delete;
+  RemotingSender& operator=(const RemotingSender&) = delete;
+
   ~RemotingSender() override;
 
  private:
@@ -118,8 +122,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<RemotingSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingSender);
 };
 
 }  // namespace mirroring

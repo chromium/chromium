@@ -148,6 +148,12 @@ class PageLoadMetricsUpdateDispatcher {
       Client* client,
       content::NavigationHandle* navigation_handle,
       PageLoadMetricsEmbedderInterface* embedder_interface);
+
+  PageLoadMetricsUpdateDispatcher(const PageLoadMetricsUpdateDispatcher&) =
+      delete;
+  PageLoadMetricsUpdateDispatcher& operator=(
+      const PageLoadMetricsUpdateDispatcher&) = delete;
+
   ~PageLoadMetricsUpdateDispatcher();
 
   void UpdateMetrics(
@@ -324,8 +330,6 @@ class PageLoadMetricsUpdateDispatcher {
   // and most input types (but not mousemove or pinch zoom). More comments in
   // UpdateHasSeenInputOrScroll.
   bool has_seen_input_or_scroll_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsUpdateDispatcher);
 };
 
 }  // namespace page_load_metrics

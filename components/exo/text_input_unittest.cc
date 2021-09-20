@@ -60,6 +60,10 @@ class TestingInputMethodObserver : public ui::InputMethodObserver {
     input_method_->AddObserver(this);
   }
 
+  TestingInputMethodObserver(const TestingInputMethodObserver&) = delete;
+  TestingInputMethodObserver& operator=(const TestingInputMethodObserver&) =
+      delete;
+
   ~TestingInputMethodObserver() override {
     input_method_->RemoveObserver(this);
   }
@@ -74,8 +78,6 @@ class TestingInputMethodObserver : public ui::InputMethodObserver {
 
  private:
   ui::InputMethod* input_method_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingInputMethodObserver);
 };
 
 class TextInputTest : public test::ExoTestBase {

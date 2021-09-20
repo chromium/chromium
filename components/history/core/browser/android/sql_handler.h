@@ -41,6 +41,10 @@ class SQLHandler {
   // `columns` is the implementation's columns.
   // `column_count` is the number of column in `columns`.
   SQLHandler(const HistoryAndBookmarkRow::ColumnID columns[], int column_count);
+
+  SQLHandler(const SQLHandler&) = delete;
+  SQLHandler& operator=(const SQLHandler&) = delete;
+
   virtual ~SQLHandler();
 
   // Updates the rows whose URLID or URL is in the given `ids_set` with new
@@ -67,8 +71,6 @@ class SQLHandler {
  private:
   // The columns of this handler.
   const std::set<HistoryAndBookmarkRow::ColumnID> columns_;
-
-  DISALLOW_COPY_AND_ASSIGN(SQLHandler);
 };
 
 }  // namespace history.

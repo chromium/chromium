@@ -35,6 +35,10 @@ class COMPONENTS_DOWNLOAD_EXPORT ParallelDownloadJob
       URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr
           url_loader_factory_provider,
       DownloadJobFactory::WakeLockProviderBinder wake_lock_provider_binder);
+
+  ParallelDownloadJob(const ParallelDownloadJob&) = delete;
+  ParallelDownloadJob& operator=(const ParallelDownloadJob&) = delete;
+
   ~ParallelDownloadJob() override;
 
   // DownloadJobImpl implementation.
@@ -117,8 +121,6 @@ class COMPONENTS_DOWNLOAD_EXPORT ParallelDownloadJob
   // Callbac used for binding WakeLockProvider receivers as needed by each
   // subrequest.
   const DownloadJobFactory::WakeLockProviderBinder wake_lock_provider_binder_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParallelDownloadJob);
 };
 
 }  //  namespace download

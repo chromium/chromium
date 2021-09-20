@@ -175,6 +175,10 @@ class RequestAdapter {
                  const net::HttpRequestHeaders& original_headers,
                  net::HttpRequestHeaders* modified_headers,
                  std::vector<std::string>* headers_to_remove);
+
+  RequestAdapter(const RequestAdapter&) = delete;
+  RequestAdapter& operator=(const RequestAdapter&) = delete;
+
   virtual ~RequestAdapter();
 
   const GURL& GetUrl();
@@ -187,8 +191,6 @@ class RequestAdapter {
   const net::HttpRequestHeaders& original_headers_;
   net::HttpRequestHeaders* const modified_headers_;
   std::vector<std::string>* const headers_to_remove_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestAdapter);
 };
 
 // Base class for managing the signin headers (Dice and Chrome-Connected).

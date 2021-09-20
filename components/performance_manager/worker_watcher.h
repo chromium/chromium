@@ -63,6 +63,10 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
                 content::ServiceWorkerContext* service_worker_context,
                 ProcessNodeSource* process_node_source,
                 FrameNodeSource* frame_node_source);
+
+  WorkerWatcher(const WorkerWatcher&) = delete;
+  WorkerWatcher& operator=(const WorkerWatcher&) = delete;
+
   ~WorkerWatcher() override;
 
   // Cleans up this instance and ensures shared worker nodes are correctly
@@ -274,8 +278,6 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   base::flat_map<WorkerNodeImpl*, base::flat_set<ServiceWorkerClient>>
       missing_service_worker_clients_;
 #endif  // DCHECK_IS_ON()
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerWatcher);
 };
 
 }  // namespace performance_manager

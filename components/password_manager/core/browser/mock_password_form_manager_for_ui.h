@@ -16,6 +16,11 @@ namespace password_manager {
 class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
  public:
   MockPasswordFormManagerForUI();
+
+  MockPasswordFormManagerForUI(const MockPasswordFormManagerForUI&) = delete;
+  MockPasswordFormManagerForUI& operator=(const MockPasswordFormManagerForUI&) =
+      delete;
+
   ~MockPasswordFormManagerForUI() override;
 
   MOCK_METHOD(const GURL&, GetURL, (), (const override));
@@ -61,8 +66,6 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
   MOCK_METHOD(void, OnPasswordsRevealed, (), (override));
   MOCK_METHOD(void, MoveCredentialsToAccountStore, (), (override));
   MOCK_METHOD(void, BlockMovingCredentialsToAccountStore, (), (override));
-
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordFormManagerForUI);
 };
 
 }  // namespace password_manager

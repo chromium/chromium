@@ -27,6 +27,10 @@ class AdsBlockedInfobarDelegate : public ConfirmInfoBarDelegate {
   // |infobar_manager|.
   static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
+  AdsBlockedInfobarDelegate(const AdsBlockedInfobarDelegate&) = delete;
+  AdsBlockedInfobarDelegate& operator=(const AdsBlockedInfobarDelegate&) =
+      delete;
+
   ~AdsBlockedInfobarDelegate() override;
 
   std::u16string GetExplanationText() const;
@@ -47,8 +51,6 @@ class AdsBlockedInfobarDelegate : public ConfirmInfoBarDelegate {
 
   // True when the infobar is in the expanded state.
   bool infobar_expanded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AdsBlockedInfobarDelegate);
 };
 
 }  // namespace subresource_filter

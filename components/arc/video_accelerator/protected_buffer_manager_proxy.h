@@ -18,6 +18,11 @@ class GpuArcProtectedBufferManagerProxy
   explicit GpuArcProtectedBufferManagerProxy(
       scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager);
 
+  GpuArcProtectedBufferManagerProxy(const GpuArcProtectedBufferManagerProxy&) =
+      delete;
+  GpuArcProtectedBufferManagerProxy& operator=(
+      const GpuArcProtectedBufferManagerProxy&) = delete;
+
   ~GpuArcProtectedBufferManagerProxy() override;
 
   // arc::mojom::ProtectedBufferManager implementation.
@@ -27,8 +32,6 @@ class GpuArcProtectedBufferManagerProxy
 
  private:
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuArcProtectedBufferManagerProxy);
 };
 
 }  // namespace arc

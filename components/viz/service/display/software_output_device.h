@@ -35,6 +35,10 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDevice {
   SoftwareOutputDevice();
   explicit SoftwareOutputDevice(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  SoftwareOutputDevice(const SoftwareOutputDevice&) = delete;
+  SoftwareOutputDevice& operator=(const SoftwareOutputDevice&) = delete;
+
   virtual ~SoftwareOutputDevice();
 
   // This may be called only once, and requires a non-nullptr argument.
@@ -82,9 +86,6 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDevice {
   gfx::Rect damage_rect_;
   sk_sp<SkSurface> surface_;
   std::unique_ptr<gfx::VSyncProvider> vsync_provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SoftwareOutputDevice);
 };
 
 }  // namespace viz

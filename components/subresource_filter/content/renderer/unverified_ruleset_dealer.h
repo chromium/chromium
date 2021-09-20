@@ -27,6 +27,10 @@ class UnverifiedRulesetDealer : public RulesetDealer,
                                 public mojom::SubresourceFilterRulesetObserver {
  public:
   UnverifiedRulesetDealer();
+
+  UnverifiedRulesetDealer(const UnverifiedRulesetDealer&) = delete;
+  UnverifiedRulesetDealer& operator=(const UnverifiedRulesetDealer&) = delete;
+
   ~UnverifiedRulesetDealer() override;
 
  private:
@@ -45,8 +49,6 @@ class UnverifiedRulesetDealer : public RulesetDealer,
 
   mojo::AssociatedReceiver<mojom::SubresourceFilterRulesetObserver> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(UnverifiedRulesetDealer);
 };
 
 }  // namespace subresource_filter

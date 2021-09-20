@@ -46,6 +46,10 @@ class TestHeavyAdBlocklist : public HeavyAdBlocklist {
 class HeavyAdBlocklistTest : public testing::Test {
  public:
   HeavyAdBlocklistTest() = default;
+
+  HeavyAdBlocklistTest(const HeavyAdBlocklistTest&) = delete;
+  HeavyAdBlocklistTest& operator=(const HeavyAdBlocklistTest&) = delete;
+
   ~HeavyAdBlocklistTest() override = default;
 
   void SetUp() override { ConfigBlocklistWithParams({}); }
@@ -75,8 +79,6 @@ class HeavyAdBlocklistTest : public testing::Test {
   EmptyOptOutBlocklistDelegate blocklist_delegate_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeavyAdBlocklistTest);
 };
 
 TEST_F(HeavyAdBlocklistTest, DefaultParams) {

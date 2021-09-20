@@ -99,6 +99,9 @@ class ServiceWorkerStorage {
       base::OnceCallback<void(ServiceWorkerDatabase::Status,
                               std::vector<mojom::ServiceWorkerUserDataPtr>)>;
 
+  ServiceWorkerStorage(const ServiceWorkerStorage&) = delete;
+  ServiceWorkerStorage& operator=(const ServiceWorkerStorage&) = delete;
+
   ~ServiceWorkerStorage();
 
   static std::unique_ptr<ServiceWorkerStorage> Create(
@@ -562,8 +565,6 @@ class ServiceWorkerStorage {
       resource_metadata_writers_;
 
   base::WeakPtrFactory<ServiceWorkerStorage> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerStorage);
 };
 
 }  // namespace storage

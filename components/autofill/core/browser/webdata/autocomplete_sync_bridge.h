@@ -35,6 +35,10 @@ class AutocompleteSyncBridge
   AutocompleteSyncBridge(
       AutofillWebDataBackend* backend,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  AutocompleteSyncBridge(const AutocompleteSyncBridge&) = delete;
+  AutocompleteSyncBridge& operator=(const AutocompleteSyncBridge&) = delete;
+
   ~AutocompleteSyncBridge() override;
 
   static void CreateForWebDataServiceAndBackend(
@@ -82,8 +86,6 @@ class AutocompleteSyncBridge
   base::ScopedObservation<AutofillWebDataBackend,
                           AutofillWebDataServiceObserverOnDBSequence>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteSyncBridge);
 };
 
 }  // namespace autofill

@@ -75,6 +75,9 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
   GLRendererCopier(ContextProvider* context_provider,
                    TextureDeleter* texture_deleter);
 
+  GLRendererCopier(const GLRendererCopier&) = delete;
+  GLRendererCopier& operator=(const GLRendererCopier&) = delete;
+
   ~GLRendererCopier();
 
   // Executes the |request|, copying from the currently-bound framebuffer of the
@@ -474,8 +477,6 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
 
   // Weak ptr to this class.
   base::WeakPtrFactory<GLRendererCopier> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLRendererCopier);
 };
 
 }  // namespace viz

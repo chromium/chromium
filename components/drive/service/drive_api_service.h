@@ -56,6 +56,10 @@ class BatchRequestConfigurator : public BatchRequestConfiguratorInterface {
       base::SequencedTaskRunner* task_runner,
       const google_apis::DriveApiUrlGenerator& url_generator,
       const google_apis::CancelCallbackRepeating& cancel_callback);
+
+  BatchRequestConfigurator(const BatchRequestConfigurator&) = delete;
+  BatchRequestConfigurator& operator=(const BatchRequestConfigurator&) = delete;
+
   ~BatchRequestConfigurator() override;
 
   // BatchRequestConfiguratorInterface overrides.
@@ -86,8 +90,6 @@ class BatchRequestConfigurator : public BatchRequestConfiguratorInterface {
   google_apis::CancelCallbackRepeating cancel_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BatchRequestConfigurator);
 };
 
 // This class provides Drive request calls using Drive V2 API.
@@ -116,6 +118,10 @@ class DriveAPIService : public DriveServiceInterface,
       const GURL& base_thumbnail_url,
       const std::string& custom_user_agent,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  DriveAPIService(const DriveAPIService&) = delete;
+  DriveAPIService& operator=(const DriveAPIService&) = delete;
+
   ~DriveAPIService() override;
 
   // DriveServiceInterface Overrides
@@ -276,8 +282,6 @@ class DriveAPIService : public DriveServiceInterface,
   google_apis::DriveApiUrlGenerator url_generator_;
   const std::string custom_user_agent_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveAPIService);
 };
 
 }  // namespace drive

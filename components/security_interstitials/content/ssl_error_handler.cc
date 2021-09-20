@@ -90,6 +90,11 @@ class CommonNameMismatchRedirectObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<CommonNameMismatchRedirectObserver> {
  public:
+  CommonNameMismatchRedirectObserver(
+      const CommonNameMismatchRedirectObserver&) = delete;
+  CommonNameMismatchRedirectObserver& operator=(
+      const CommonNameMismatchRedirectObserver&) = delete;
+
   ~CommonNameMismatchRedirectObserver() override {}
 
   static void AddToConsoleAfterNavigation(
@@ -141,8 +146,6 @@ class CommonNameMismatchRedirectObserver
   const std::string suggested_url_hostname_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CommonNameMismatchRedirectObserver);
 };
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CommonNameMismatchRedirectObserver)

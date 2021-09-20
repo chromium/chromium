@@ -29,6 +29,9 @@ class OptimizationFilter {
                               std::unique_ptr<RegexpList> exclusion_regexps,
                               bool skip_host_suffix_checking);
 
+  OptimizationFilter(const OptimizationFilter&) = delete;
+  OptimizationFilter& operator=(const OptimizationFilter&) = delete;
+
   ~OptimizationFilter();
 
   // Returns true if the given url is matched by this filter.
@@ -57,8 +60,6 @@ class OptimizationFilter {
   bool skip_host_suffix_checking_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationFilter);
 };
 
 }  // namespace optimization_guide

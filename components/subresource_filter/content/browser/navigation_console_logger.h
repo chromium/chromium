@@ -37,6 +37,9 @@ class NavigationConsoleLogger
                                  blink::mojom::ConsoleMessageLevel level,
                                  const std::string& message);
 
+  NavigationConsoleLogger(const NavigationConsoleLogger&) = delete;
+  NavigationConsoleLogger& operator=(const NavigationConsoleLogger&) = delete;
+
   ~NavigationConsoleLogger() override;
 
  private:
@@ -62,8 +65,6 @@ class NavigationConsoleLogger
   const content::NavigationHandle* handle_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationConsoleLogger);
 };
 
 }  // namespace subresource_filter

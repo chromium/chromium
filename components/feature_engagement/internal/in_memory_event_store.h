@@ -18,6 +18,10 @@ class InMemoryEventStore : public EventStore {
  public:
   explicit InMemoryEventStore(std::unique_ptr<std::vector<Event>> events);
   InMemoryEventStore();
+
+  InMemoryEventStore(const InMemoryEventStore&) = delete;
+  InMemoryEventStore& operator=(const InMemoryEventStore&) = delete;
+
   ~InMemoryEventStore() override;
 
   // EventStore implementation.
@@ -39,8 +43,6 @@ class InMemoryEventStore : public EventStore {
   // Whether the store is ready or not. It is true after Load(...) has been
   // invoked.
   bool ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryEventStore);
 };
 
 }  // namespace feature_engagement

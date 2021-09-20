@@ -42,6 +42,9 @@ class SSLBlockingPage : public SSLBlockingPageBase {
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
 
+  SSLBlockingPage(const SSLBlockingPage&) = delete;
+  SSLBlockingPage& operator=(const SSLBlockingPage&) = delete;
+
   ~SSLBlockingPage() override;
 
   // InterstitialPageDelegate method:
@@ -83,8 +86,6 @@ class SSLBlockingPage : public SSLBlockingPageBase {
   const bool overridable_;  // The UI allows the user to override the error.
 
   const std::unique_ptr<security_interstitials::SSLErrorUI> ssl_error_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLBlockingPage);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_BLOCKING_PAGE_H_

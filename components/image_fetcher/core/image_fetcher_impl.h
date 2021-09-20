@@ -37,6 +37,10 @@ class ImageFetcherImpl : public ImageFetcher {
   ImageFetcherImpl(
       std::unique_ptr<ImageDecoder> image_decoder,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  ImageFetcherImpl(const ImageFetcherImpl&) = delete;
+  ImageFetcherImpl& operator=(const ImageFetcherImpl&) = delete;
+
   ~ImageFetcherImpl() override;
 
   void FetchImageAndData(const GURL& image_url,
@@ -96,8 +100,6 @@ class ImageFetcherImpl : public ImageFetcher {
   ImageRequestMap pending_net_requests_;
 
   base::WeakPtrFactory<ImageFetcherImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherImpl);
 };
 
 }  // namespace image_fetcher

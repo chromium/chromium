@@ -108,6 +108,11 @@ class SkiaOutputSurfaceImplOnGpu
       BufferPresentedCallback buffer_presented_callback,
       ContextLostCallback context_lost_callback,
       GpuVSyncCallback gpu_vsync_callback);
+
+  SkiaOutputSurfaceImplOnGpu(const SkiaOutputSurfaceImplOnGpu&) = delete;
+  SkiaOutputSurfaceImplOnGpu& operator=(const SkiaOutputSurfaceImplOnGpu&) =
+      delete;
+
   ~SkiaOutputSurfaceImplOnGpu() override;
 
   gpu::CommandBufferId command_buffer_id() const {
@@ -357,6 +362,11 @@ class SkiaOutputSurfaceImplOnGpu
   class PromiseImageAccessHelper {
    public:
     explicit PromiseImageAccessHelper(SkiaOutputSurfaceImplOnGpu* impl_on_gpu);
+
+    PromiseImageAccessHelper(const PromiseImageAccessHelper&) = delete;
+    PromiseImageAccessHelper& operator=(const PromiseImageAccessHelper&) =
+        delete;
+
     ~PromiseImageAccessHelper();
 
     void BeginAccess(std::vector<ImageContextImpl*> image_contexts,
@@ -367,8 +377,6 @@ class SkiaOutputSurfaceImplOnGpu
    private:
     SkiaOutputSurfaceImplOnGpu* const impl_on_gpu_;
     base::flat_set<ImageContextImpl*> image_contexts_;
-
-    DISALLOW_COPY_AND_ASSIGN(PromiseImageAccessHelper);
   };
   PromiseImageAccessHelper promise_image_access_helper_{this};
   base::flat_set<ImageContextImpl*> image_contexts_with_end_access_state_;
@@ -430,8 +438,6 @@ class SkiaOutputSurfaceImplOnGpu
 
   base::WeakPtr<SkiaOutputSurfaceImplOnGpu> weak_ptr_;
   base::WeakPtrFactory<SkiaOutputSurfaceImplOnGpu> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputSurfaceImplOnGpu);
 };
 
 }  // namespace viz

@@ -18,6 +18,10 @@ class PartitionImpl;
 class OriginContextImpl : public mojom::OriginContext {
  public:
   OriginContextImpl(PartitionImpl* partition, const url::Origin& origin);
+
+  OriginContextImpl(const OriginContextImpl&) = delete;
+  OriginContextImpl& operator=(const OriginContextImpl&) = delete;
+
   ~OriginContextImpl() override;
 
   const mojo::ReceiverSet<mojom::OriginContext>& receivers() const {
@@ -32,8 +36,6 @@ class OriginContextImpl : public mojom::OriginContext {
   PartitionImpl* const partition_;
   const url::Origin origin_;
   mojo::ReceiverSet<mojom::OriginContext> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginContextImpl);
 };
 
 }  // namespace storage

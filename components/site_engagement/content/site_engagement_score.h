@@ -130,6 +130,10 @@ class SiteEngagementScore {
                       const GURL& origin,
                       HostContentSettingsMap* settings);
   SiteEngagementScore(SiteEngagementScore&& other);
+
+  SiteEngagementScore(const SiteEngagementScore&) = delete;
+  SiteEngagementScore& operator=(const SiteEngagementScore&) = delete;
+
   ~SiteEngagementScore();
 
   SiteEngagementScore& operator=(SiteEngagementScore&& other);
@@ -237,8 +241,6 @@ class SiteEngagementScore {
 
   // The settings to write this score to when Commit() is called.
   HostContentSettingsMap* settings_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementScore);
 };
 
 }  // namespace site_engagement

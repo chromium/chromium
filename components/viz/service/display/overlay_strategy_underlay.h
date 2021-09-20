@@ -34,6 +34,10 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
   OverlayStrategyUnderlay(
       OverlayProcessorUsingStrategy* capability_checker,
       OpaqueMode opaque_mode = OpaqueMode::RequireOpaqueCandidates);
+
+  OverlayStrategyUnderlay(const OverlayStrategyUnderlay&) = delete;
+  OverlayStrategyUnderlay& operator=(const OverlayStrategyUnderlay&) = delete;
+
   ~OverlayStrategyUnderlay() override;
 
   bool Attempt(const skia::Matrix44& output_color_matrix,
@@ -77,8 +81,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
  private:
   OverlayProcessorUsingStrategy* capability_checker_;  // Weak.
   OpaqueMode opaque_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayStrategyUnderlay);
 };
 
 }  // namespace viz

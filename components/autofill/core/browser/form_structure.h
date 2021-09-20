@@ -64,6 +64,10 @@ class RandomizedEncoder;
 class FormStructure {
  public:
   explicit FormStructure(const FormData& form);
+
+  FormStructure(const FormStructure&) = delete;
+  FormStructure& operator=(const FormStructure&) = delete;
+
   virtual ~FormStructure();
 
   // Runs several heuristics against the form fields to determine their possible
@@ -686,8 +690,6 @@ class FormStructure {
   // Single username details, if applicable.
   absl::optional<AutofillUploadContents::SingleUsernameData>
       single_username_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FormStructure);
 };
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);

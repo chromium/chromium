@@ -38,6 +38,9 @@ class IndexedRulesetPerftest : public testing::Test {
  public:
   IndexedRulesetPerftest() {}
 
+  IndexedRulesetPerftest(const IndexedRulesetPerftest&) = delete;
+  IndexedRulesetPerftest& operator=(const IndexedRulesetPerftest&) = delete;
+
   ~IndexedRulesetPerftest() override {}
 
   void SetUp() override {
@@ -93,7 +96,6 @@ class IndexedRulesetPerftest : public testing::Test {
   std::ofstream output_;
 
   std::unique_ptr<FilterTool> filter_tool_;
-  DISALLOW_COPY_AND_ASSIGN(IndexedRulesetPerftest);
 };
 
 TEST_F(IndexedRulesetPerftest, IndexRuleset) {

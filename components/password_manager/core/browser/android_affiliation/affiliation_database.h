@@ -35,6 +35,10 @@ namespace password_manager {
 class AffiliationDatabase {
  public:
   AffiliationDatabase();
+
+  AffiliationDatabase(const AffiliationDatabase&) = delete;
+  AffiliationDatabase& operator=(const AffiliationDatabase&) = delete;
+
   ~AffiliationDatabase();
 
   // Opens an existing database at |path|, or creates a new one if none exists,
@@ -102,8 +106,6 @@ class AffiliationDatabase {
 
   // The SQL connection to the database.
   std::unique_ptr<sql::Database> sql_connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationDatabase);
 };
 
 }  // namespace password_manager

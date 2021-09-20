@@ -27,6 +27,11 @@ namespace storage_monitor {
 class TestVolumeMountWatcherWin : public VolumeMountWatcherWin {
  public:
   TestVolumeMountWatcherWin();
+
+  TestVolumeMountWatcherWin(const TestVolumeMountWatcherWin&) = delete;
+  TestVolumeMountWatcherWin& operator=(const TestVolumeMountWatcherWin&) =
+      delete;
+
   ~TestVolumeMountWatcherWin() override;
 
   static bool GetDeviceRemovable(const base::FilePath& device_path,
@@ -56,8 +61,6 @@ class TestVolumeMountWatcherWin : public VolumeMountWatcherWin {
   std::vector<base::FilePath> devices_checked_;
   std::unique_ptr<base::WaitableEvent> device_check_complete_event_;
   bool attached_devices_fake_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVolumeMountWatcherWin);
 };
 
 }  // namespace storage_monitor

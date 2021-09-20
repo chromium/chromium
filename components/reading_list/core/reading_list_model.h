@@ -154,6 +154,10 @@ class ReadingListModel {
    public:
     explicit ScopedReadingListBatchUpdate(ReadingListModel* model);
 
+    ScopedReadingListBatchUpdate(const ScopedReadingListBatchUpdate&) = delete;
+    ScopedReadingListBatchUpdate& operator=(
+        const ScopedReadingListBatchUpdate&) = delete;
+
     ~ScopedReadingListBatchUpdate() override;
 
     void ReadingListModelLoaded(const ReadingListModel* model) override;
@@ -161,8 +165,6 @@ class ReadingListModel {
 
    private:
     ReadingListModel* model_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedReadingListBatchUpdate);
   };
 
  protected:

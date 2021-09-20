@@ -26,6 +26,10 @@ class LayeredWindowUpdaterImpl;
 class VIZ_HOST_EXPORT HostDisplayClient : public mojom::DisplayClient {
  public:
   explicit HostDisplayClient(gfx::AcceleratedWidget widget);
+
+  HostDisplayClient(const HostDisplayClient&) = delete;
+  HostDisplayClient& operator=(const HostDisplayClient&) = delete;
+
   ~HostDisplayClient() override;
 
   mojo::PendingRemote<mojom::DisplayClient> GetBoundRemote(
@@ -57,8 +61,6 @@ class VIZ_HOST_EXPORT HostDisplayClient : public mojom::DisplayClient {
 #if defined(OS_WIN)
   std::unique_ptr<LayeredWindowUpdaterImpl> layered_window_updater_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(HostDisplayClient);
 };
 
 }  // namespace viz

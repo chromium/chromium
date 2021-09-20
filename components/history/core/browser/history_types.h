@@ -145,6 +145,10 @@ class QueryResults {
   typedef std::vector<URLResult> URLResultVector;
 
   QueryResults();
+
+  QueryResults(const QueryResults&) = delete;
+  QueryResults& operator=(const QueryResults&) = delete;
+
   ~QueryResults();
 
   QueryResults(QueryResults&& other) noexcept;
@@ -218,8 +222,6 @@ class QueryResults {
 
   // Maps URLs to entries in results_.
   URLToResultIndices url_to_results_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryResults);
 };
 
 // QueryOptions ----------------------------------------------------------------
@@ -618,6 +620,9 @@ class DeletionInfo {
                std::set<GURL> favicon_urls,
                absl::optional<std::set<GURL>> restrict_urls);
 
+  DeletionInfo(const DeletionInfo&) = delete;
+  DeletionInfo& operator=(const DeletionInfo&) = delete;
+
   ~DeletionInfo();
   // Move-only because of potentially large containers.
   DeletionInfo(DeletionInfo&& other) noexcept;
@@ -668,8 +673,6 @@ class DeletionInfo {
   std::set<GURL> favicon_urls_;
   absl::optional<std::set<GURL>> restrict_urls_;
   OriginCountAndLastVisitMap deleted_urls_origin_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeletionInfo);
 };
 
 // Represents a visit to a domain.

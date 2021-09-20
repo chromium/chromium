@@ -33,6 +33,10 @@ class EventWaiter {
   explicit EventWaiter(
       std::list<Event> expected_event_sequence,
       base::TimeDelta timeout = base::TimeDelta::FromSeconds(0));
+
+  EventWaiter(const EventWaiter&) = delete;
+  EventWaiter& operator=(const EventWaiter&) = delete;
+
   ~EventWaiter();
 
   // Either returns right away if all events were observed between this
@@ -46,8 +50,6 @@ class EventWaiter {
  private:
   std::list<Event> expected_events_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventWaiter);
 };
 
 template <typename Event>

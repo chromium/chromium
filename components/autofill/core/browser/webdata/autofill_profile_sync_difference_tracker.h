@@ -32,6 +32,12 @@ class AutofillTable;
 class AutofillProfileSyncDifferenceTracker {
  public:
   explicit AutofillProfileSyncDifferenceTracker(AutofillTable* table);
+
+  AutofillProfileSyncDifferenceTracker(
+      const AutofillProfileSyncDifferenceTracker&) = delete;
+  AutofillProfileSyncDifferenceTracker& operator=(
+      const AutofillProfileSyncDifferenceTracker&) = delete;
+
   virtual ~AutofillProfileSyncDifferenceTracker();
 
   // Adds a new |remote| entry to the diff tracker, originating from the sync
@@ -106,15 +112,18 @@ class AutofillProfileSyncDifferenceTracker {
   // sides and need to be deleted from sync (because the conflict resolution
   // preferred the local copies).
   std::set<std::string> delete_from_sync_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncDifferenceTracker);
 };
 
 class AutofillProfileInitialSyncDifferenceTracker
     : public AutofillProfileSyncDifferenceTracker {
  public:
   explicit AutofillProfileInitialSyncDifferenceTracker(AutofillTable* table);
+
+  AutofillProfileInitialSyncDifferenceTracker(
+      const AutofillProfileInitialSyncDifferenceTracker&) = delete;
+  AutofillProfileInitialSyncDifferenceTracker& operator=(
+      const AutofillProfileInitialSyncDifferenceTracker&) = delete;
+
   ~AutofillProfileInitialSyncDifferenceTracker() override;
 
   absl::optional<syncer::ModelError> IncorporateRemoteDelete(
@@ -136,8 +145,6 @@ class AutofillProfileInitialSyncDifferenceTracker
   absl::optional<AutofillProfile> FindMergeableLocalEntry(
       const AutofillProfile& remote,
       const AutofillProfileComparator& comparator);
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileInitialSyncDifferenceTracker);
 };
 
 }  // namespace autofill

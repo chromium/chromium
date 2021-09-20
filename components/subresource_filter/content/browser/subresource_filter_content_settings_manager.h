@@ -64,6 +64,12 @@ class SubresourceFilterContentSettingsManager {
  public:
   explicit SubresourceFilterContentSettingsManager(
       HostContentSettingsMap* settings_map);
+
+  SubresourceFilterContentSettingsManager(
+      const SubresourceFilterContentSettingsManager&) = delete;
+  SubresourceFilterContentSettingsManager& operator=(
+      const SubresourceFilterContentSettingsManager&) = delete;
+
   ~SubresourceFilterContentSettingsManager();
 
   ContentSetting GetSitePermission(const GURL& url) const;
@@ -150,8 +156,6 @@ class SubresourceFilterContentSettingsManager {
   std::unique_ptr<base::Clock> clock_;
 
   bool should_use_smart_ui_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterContentSettingsManager);
 };
 
 }  // namespace subresource_filter

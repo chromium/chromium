@@ -51,6 +51,10 @@ constexpr char kUserEmail[] = "user@gmail.com";
 class AccessTokenConsumer : public OAuth2AccessTokenConsumer {
  public:
   AccessTokenConsumer() = default;
+
+  AccessTokenConsumer(const AccessTokenConsumer&) = delete;
+  AccessTokenConsumer& operator=(const AccessTokenConsumer&) = delete;
+
   ~AccessTokenConsumer() override = default;
 
   void OnGetTokenSuccess(const TokenResponse& token_response) override {
@@ -67,9 +71,6 @@ class AccessTokenConsumer : public OAuth2AccessTokenConsumer {
 
   int num_access_token_fetch_success_ = 0;
   int num_access_token_fetch_failure_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessTokenConsumer);
 };
 
 class TestOAuth2TokenServiceObserver
@@ -190,6 +191,12 @@ class MockProfileOAuth2TokenServiceObserver
 class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
  public:
   ProfileOAuth2TokenServiceDelegateChromeOSTest() {}
+
+  ProfileOAuth2TokenServiceDelegateChromeOSTest(
+      const ProfileOAuth2TokenServiceDelegateChromeOSTest&) = delete;
+  ProfileOAuth2TokenServiceDelegateChromeOSTest& operator=(
+      const ProfileOAuth2TokenServiceDelegateChromeOSTest&) = delete;
+
   ~ProfileOAuth2TokenServiceDelegateChromeOSTest() override = default;
 
  protected:
@@ -356,9 +363,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
           [](base::OnceClosure closure) -> void { std::move(closure).Run(); });
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<TestSigninClient> client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileOAuth2TokenServiceDelegateChromeOSTest);
 };
 
 // Refresh tokens should load successfully for non-regular (Signin and Lock

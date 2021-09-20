@@ -37,6 +37,12 @@ class PresentationMediaSinksObserver : public MediaSinksObserver {
       content::PresentationScreenAvailabilityListener* listener,
       const MediaSource& source,
       const url::Origin& origin);
+
+  PresentationMediaSinksObserver(const PresentationMediaSinksObserver&) =
+      delete;
+  PresentationMediaSinksObserver& operator=(
+      const PresentationMediaSinksObserver&) = delete;
+
   ~PresentationMediaSinksObserver() override;
 
   // MediaSinksObserver implementation.
@@ -49,8 +55,6 @@ class PresentationMediaSinksObserver : public MediaSinksObserver {
  private:
   content::PresentationScreenAvailabilityListener* listener_;
   blink::mojom::ScreenAvailability previous_availability_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationMediaSinksObserver);
 };
 
 }  // namespace media_router

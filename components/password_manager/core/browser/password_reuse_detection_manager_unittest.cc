@@ -29,6 +29,11 @@ constexpr size_t kMaxNumberOfCharactersToStore = 45;
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MockPasswordManagerClient() = default;
+
+  MockPasswordManagerClient(const MockPasswordManagerClient&) = delete;
+  MockPasswordManagerClient& operator=(const MockPasswordManagerClient&) =
+      delete;
+
   ~MockPasswordManagerClient() override = default;
 
   MOCK_METHOD(PasswordReuseManager*,
@@ -43,9 +48,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                const std::vector<MatchingReusedCredential>&,
                bool),
               (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordManagerClient);
 };
 
 class PasswordReuseDetectionManagerTest : public ::testing::Test {

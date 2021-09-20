@@ -41,6 +41,11 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
   InterceptNavigationDelegate(JNIEnv* env,
                               jobject jdelegate,
                               bool escape_external_handler_value = false);
+
+  InterceptNavigationDelegate(const InterceptNavigationDelegate&) = delete;
+  InterceptNavigationDelegate& operator=(const InterceptNavigationDelegate&) =
+      delete;
+
   ~InterceptNavigationDelegate() override;
 
   // Associates the InterceptNavigationDelegate with a WebContents using the
@@ -70,8 +75,6 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
   JavaObjectWeakGlobalRef weak_jdelegate_;
   base::TimeTicks last_user_gesture_carryover_timestamp_;
   bool escape_external_handler_value_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptNavigationDelegate);
 };
 
 }  // namespace navigation_interception

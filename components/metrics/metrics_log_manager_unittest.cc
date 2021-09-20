@@ -30,6 +30,10 @@ class MetricsLogManagerTest : public testing::Test {
     MetricsLogStore::RegisterPrefs(pref_service_.registry());
     log_store()->LoadPersistedUnsentLogs();
   }
+
+  MetricsLogManagerTest(const MetricsLogManagerTest&) = delete;
+  MetricsLogManagerTest& operator=(const MetricsLogManagerTest&) = delete;
+
   ~MetricsLogManagerTest() override {}
 
   MetricsLogStore* log_store() { return &log_store_; }
@@ -46,8 +50,6 @@ class MetricsLogManagerTest : public testing::Test {
   TestMetricsServiceClient client_;
   TestingPrefServiceSimple pref_service_;
   MetricsLogStore log_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsLogManagerTest);
 };
 
 }  // namespace

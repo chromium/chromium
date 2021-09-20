@@ -98,6 +98,12 @@ class PasswordManagerMetricsRecorder {
 
   PasswordManagerMetricsRecorder(
       PasswordManagerMetricsRecorder&& that) noexcept;
+
+  PasswordManagerMetricsRecorder(const PasswordManagerMetricsRecorder&) =
+      delete;
+  PasswordManagerMetricsRecorder& operator=(
+      const PasswordManagerMetricsRecorder&) = delete;
+
   ~PasswordManagerMetricsRecorder();
 
   PasswordManagerMetricsRecorder& operator=(
@@ -135,8 +141,6 @@ class PasswordManagerMetricsRecorder {
       FormManagerAvailable::kNotSet;
 
   std::unique_ptr<NavigationMetricRecorderDelegate> navigation_metric_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerMetricsRecorder);
 };
 
 }  // namespace password_manager

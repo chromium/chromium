@@ -21,6 +21,12 @@ class EventModel;
 class FeatureConfigConditionValidator : public ConditionValidator {
  public:
   FeatureConfigConditionValidator();
+
+  FeatureConfigConditionValidator(const FeatureConfigConditionValidator&) =
+      delete;
+  FeatureConfigConditionValidator& operator=(
+      const FeatureConfigConditionValidator&) = delete;
+
   ~FeatureConfigConditionValidator() override;
 
   // ConditionValidator implementation.
@@ -57,8 +63,6 @@ class FeatureConfigConditionValidator : public ConditionValidator {
   // By default, all features impact each other, but some features override this
   // through the use of |session_rate_impact|.
   std::map<std::string, uint32_t> times_shown_for_feature_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureConfigConditionValidator);
 };
 
 }  // namespace feature_engagement

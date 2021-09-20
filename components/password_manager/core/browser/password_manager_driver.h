@@ -39,6 +39,10 @@ class PasswordManagerDriver
       base::StrongAlias<class ShowVirtualKeyboardTag, bool>;
 
   PasswordManagerDriver() = default;
+
+  PasswordManagerDriver(const PasswordManagerDriver&) = delete;
+  PasswordManagerDriver& operator=(const PasswordManagerDriver&) = delete;
+
   virtual ~PasswordManagerDriver() = default;
 
   // Returns driver id which is unique in the current tab.
@@ -125,9 +129,6 @@ class PasswordManagerDriver
   // corresponding HTML attributes. It is used only for debugging.
   virtual void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerDriver);
 };
 
 }  // namespace password_manager

@@ -13,6 +13,11 @@ class PrimaryAccountManager;
 class PrimaryAccountPolicyManager {
  public:
   PrimaryAccountPolicyManager() = default;
+
+  PrimaryAccountPolicyManager(const PrimaryAccountPolicyManager&) = delete;
+  PrimaryAccountPolicyManager& operator=(const PrimaryAccountPolicyManager&) =
+      delete;
+
   virtual ~PrimaryAccountPolicyManager() = default;
 
   // On platforms where PrimaryAccountManager is responsible for dealing with
@@ -21,9 +26,6 @@ class PrimaryAccountPolicyManager {
   virtual void InitializePolicy(
       PrefService* local_state,
       PrimaryAccountManager* primary_account_manager) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrimaryAccountPolicyManager);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_POLICY_MANAGER_H_

@@ -53,6 +53,10 @@ class ServiceWorkerDatabase {
  public:
   // We do leveldb stuff in |path| or in memory if |path| is empty.
   explicit ServiceWorkerDatabase(const base::FilePath& path);
+
+  ServiceWorkerDatabase(const ServiceWorkerDatabase&) = delete;
+  ServiceWorkerDatabase& operator=(const ServiceWorkerDatabase&) = delete;
+
   ~ServiceWorkerDatabase();
 
   using Status = mojom::ServiceWorkerDatabaseStatus;
@@ -417,8 +421,6 @@ class ServiceWorkerDatabase {
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest, InvalidWebFeature);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerDatabaseTest,
                            NoCrossOriginEmbedderPolicyValue);
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerDatabase);
 };
 
 }  // namespace storage

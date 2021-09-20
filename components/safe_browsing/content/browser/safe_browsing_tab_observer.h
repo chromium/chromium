@@ -52,6 +52,9 @@ class SafeBrowsingTabObserver
     CreateClientSideDetectionHost(content::WebContents* web_contents) = 0;
   };
 
+  SafeBrowsingTabObserver(const SafeBrowsingTabObserver&) = delete;
+  SafeBrowsingTabObserver& operator=(const SafeBrowsingTabObserver&) = delete;
+
   ~SafeBrowsingTabObserver() override;
 
  private:
@@ -76,8 +79,6 @@ class SafeBrowsingTabObserver
   PrefChangeRegistrar pref_change_registrar_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingTabObserver);
 };
 
 }  // namespace safe_browsing

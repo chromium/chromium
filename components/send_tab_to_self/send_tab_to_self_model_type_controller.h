@@ -20,14 +20,17 @@ class SendTabToSelfModelTypeController : public syncer::ModelTypeController {
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_transport_mode);
+
+  SendTabToSelfModelTypeController(const SendTabToSelfModelTypeController&) =
+      delete;
+  SendTabToSelfModelTypeController& operator=(
+      const SendTabToSelfModelTypeController&) = delete;
+
   ~SendTabToSelfModelTypeController() override;
 
   // DataTypeController overrides.
   void Stop(syncer::ShutdownReason shutdown_reason,
             StopCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfModelTypeController);
 };
 
 }  // namespace send_tab_to_self

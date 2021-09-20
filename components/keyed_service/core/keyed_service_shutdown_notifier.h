@@ -19,6 +19,11 @@
 class KEYED_SERVICE_EXPORT KeyedServiceShutdownNotifier : public KeyedService {
  public:
   KeyedServiceShutdownNotifier();
+
+  KeyedServiceShutdownNotifier(const KeyedServiceShutdownNotifier&) = delete;
+  KeyedServiceShutdownNotifier& operator=(const KeyedServiceShutdownNotifier&) =
+      delete;
+
   ~KeyedServiceShutdownNotifier() override;
 
   // Subscribe for a notification when the keyed services this object depends on
@@ -31,8 +36,6 @@ class KEYED_SERVICE_EXPORT KeyedServiceShutdownNotifier : public KeyedService {
   void Shutdown() override;
 
   base::OnceClosureList closure_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyedServiceShutdownNotifier);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_SHUTDOWN_NOTIFIER_H_

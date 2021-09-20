@@ -20,6 +20,11 @@ class DownloadNavigationObserver
  public:
   DownloadNavigationObserver(content::WebContents* web_contents,
                              NavigationMonitor* navigation_monitor);
+
+  DownloadNavigationObserver(const DownloadNavigationObserver&) = delete;
+  DownloadNavigationObserver& operator=(const DownloadNavigationObserver&) =
+      delete;
+
   ~DownloadNavigationObserver() override;
 
  private:
@@ -36,8 +41,6 @@ class DownloadNavigationObserver
   NavigationMonitor* navigation_monitor_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadNavigationObserver);
 };
 
 }  // namespace download

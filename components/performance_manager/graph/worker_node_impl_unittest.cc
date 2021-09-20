@@ -213,6 +213,10 @@ TEST_F(WorkerNodeImplTest, PriorityAndReason) {
 class TestWorkerNodeObserver : public WorkerNodeObserver {
  public:
   TestWorkerNodeObserver() = default;
+
+  TestWorkerNodeObserver(const TestWorkerNodeObserver&) = delete;
+  TestWorkerNodeObserver& operator=(const TestWorkerNodeObserver&) = delete;
+
   ~TestWorkerNodeObserver() override = default;
 
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override {
@@ -282,8 +286,6 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
       client_workers_;
 
   bool on_priority_and_reason_changed_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWorkerNodeObserver);
 };
 
 // Same as the AddWorkerNodes test, but the graph is verified through the

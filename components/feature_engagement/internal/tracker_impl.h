@@ -32,6 +32,10 @@ class TrackerImpl : public Tracker {
               std::unique_ptr<DisplayLockController> display_lock_controller,
               std::unique_ptr<ConditionValidator> condition_validator,
               std::unique_ptr<TimeProvider> time_provider);
+
+  TrackerImpl(const TrackerImpl&) = delete;
+  TrackerImpl& operator=(const TrackerImpl&) = delete;
+
   ~TrackerImpl() override;
 
   // Tracker implementation.
@@ -100,8 +104,6 @@ class TrackerImpl : public Tracker {
   std::vector<OnInitializedCallback> on_initialized_callbacks_;
 
   base::WeakPtrFactory<TrackerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerImpl);
 };
 
 }  // namespace feature_engagement

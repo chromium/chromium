@@ -36,6 +36,10 @@ class TestSigninClient : public SigninClient {
   TestSigninClient(
       PrefService* pref_service,
       network::TestURLLoaderFactory* test_url_loader_factory = nullptr);
+
+  TestSigninClient(const TestSigninClient&) = delete;
+  TestSigninClient& operator=(const TestSigninClient&) = delete;
+
   ~TestSigninClient() override;
 
   // SigninClient implementation that is specialized for unit tests.
@@ -122,8 +126,6 @@ class TestSigninClient : public SigninClient {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   absl::optional<account_manager::Account> initial_primary_account_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TestSigninClient);
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_TEST_SIGNIN_CLIENT_H_

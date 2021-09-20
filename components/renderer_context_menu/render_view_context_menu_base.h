@@ -68,6 +68,10 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   RenderViewContextMenuBase(content::RenderFrameHost* render_frame_host,
                             const content::ContextMenuParams& params);
 
+  RenderViewContextMenuBase(const RenderViewContextMenuBase&) = delete;
+  RenderViewContextMenuBase& operator=(const RenderViewContextMenuBase&) =
+      delete;
+
   ~RenderViewContextMenuBase() override;
 
   // Displays the menu.
@@ -211,8 +215,6 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<ToolkitDelegate> toolkit_delegate_;
 
   std::vector<std::unique_ptr<ui::SimpleMenuModel>> custom_submenus_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuBase);
 };
 
 #endif  // COMPONENTS_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BASE_H_

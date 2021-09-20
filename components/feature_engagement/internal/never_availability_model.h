@@ -17,6 +17,10 @@ namespace feature_engagement {
 class NeverAvailabilityModel : public AvailabilityModel {
  public:
   NeverAvailabilityModel();
+
+  NeverAvailabilityModel(const NeverAvailabilityModel&) = delete;
+  NeverAvailabilityModel& operator=(const NeverAvailabilityModel&) = delete;
+
   ~NeverAvailabilityModel() override;
 
   // AvailabilityModel implementation.
@@ -34,8 +38,6 @@ class NeverAvailabilityModel : public AvailabilityModel {
 
   // Whether the model has been successfully initialized.
   bool ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(NeverAvailabilityModel);
 };
 
 }  // namespace feature_engagement

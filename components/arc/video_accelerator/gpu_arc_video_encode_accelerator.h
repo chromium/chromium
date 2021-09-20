@@ -31,6 +31,11 @@ class GpuArcVideoEncodeAccelerator
   explicit GpuArcVideoEncodeAccelerator(
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+
+  GpuArcVideoEncodeAccelerator(const GpuArcVideoEncodeAccelerator&) = delete;
+  GpuArcVideoEncodeAccelerator& operator=(const GpuArcVideoEncodeAccelerator&) =
+      delete;
+
   ~GpuArcVideoEncodeAccelerator() override;
 
  private:
@@ -92,8 +97,6 @@ class GpuArcVideoEncodeAccelerator
   int32_t bitstream_buffer_serial_;
   std::unordered_map<uint32_t, UseBitstreamBufferCallback> use_bitstream_cbs_;
   gpu::GpuMemoryBufferSupport support_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuArcVideoEncodeAccelerator);
 };
 
 }  // namespace arc

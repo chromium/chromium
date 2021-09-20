@@ -16,6 +16,10 @@ class AndroidURLsDatabase;
 class AndroidURLsSQLHandler : public SQLHandler {
  public:
   explicit AndroidURLsSQLHandler(AndroidURLsDatabase* android_urls_db);
+
+  AndroidURLsSQLHandler(const AndroidURLsSQLHandler&) = delete;
+  AndroidURLsSQLHandler& operator=(const AndroidURLsSQLHandler&) = delete;
+
   ~AndroidURLsSQLHandler() override;
 
   bool Update(const HistoryAndBookmarkRow& row,
@@ -27,8 +31,6 @@ class AndroidURLsSQLHandler : public SQLHandler {
 
  private:
   AndroidURLsDatabase* android_urls_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidURLsSQLHandler);
 };
 
 }  // namespace history.

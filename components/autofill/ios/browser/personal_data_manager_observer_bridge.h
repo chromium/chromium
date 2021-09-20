@@ -33,6 +33,12 @@ class PersonalDataManagerObserverBridge : public PersonalDataManagerObserver {
  public:
   explicit PersonalDataManagerObserverBridge(
       id<PersonalDataManagerObserver> delegate);
+
+  PersonalDataManagerObserverBridge(const PersonalDataManagerObserverBridge&) =
+      delete;
+  PersonalDataManagerObserverBridge& operator=(
+      const PersonalDataManagerObserverBridge&) = delete;
+
   ~PersonalDataManagerObserverBridge() override;
 
   // PersonalDataManagerObserver implementation.
@@ -41,8 +47,6 @@ class PersonalDataManagerObserverBridge : public PersonalDataManagerObserver {
 
  private:
   __weak id<PersonalDataManagerObserver> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersonalDataManagerObserverBridge);
 };
 
 }  // namespace autofill

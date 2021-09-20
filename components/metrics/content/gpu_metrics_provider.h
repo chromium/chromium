@@ -14,14 +14,15 @@ namespace metrics {
 class GPUMetricsProvider : public MetricsProvider {
  public:
   GPUMetricsProvider();
+
+  GPUMetricsProvider(const GPUMetricsProvider&) = delete;
+  GPUMetricsProvider& operator=(const GPUMetricsProvider&) = delete;
+
   ~GPUMetricsProvider() override;
 
   // MetricsProvider:
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUMetricsProvider);
 };
 
 }  // namespace metrics

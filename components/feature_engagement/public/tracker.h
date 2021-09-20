@@ -35,11 +35,14 @@ class DisplayLockHandle {
  public:
   typedef base::OnceClosure ReleaseCallback;
   explicit DisplayLockHandle(ReleaseCallback callback);
+
+  DisplayLockHandle(const DisplayLockHandle&) = delete;
+  DisplayLockHandle& operator=(const DisplayLockHandle&) = delete;
+
   ~DisplayLockHandle();
 
  private:
   ReleaseCallback release_callback_;
-  DISALLOW_COPY_AND_ASSIGN(DisplayLockHandle);
 };
 
 // The Tracker provides a backend for displaying feature

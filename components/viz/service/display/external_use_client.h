@@ -39,6 +39,10 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
                  ResourceFormat resource_format,
                  const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                  sk_sp<SkColorSpace> color_space);
+
+    ImageContext(const ImageContext&) = delete;
+    ImageContext& operator=(const ImageContext&) = delete;
+
     virtual ~ImageContext();
     virtual void OnContextLost();
 
@@ -91,8 +95,6 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     // The promise image which is used on display thread.
     sk_sp<SkImage> image_;
     GrBackendFormat backend_format_;
-
-    DISALLOW_COPY_AND_ASSIGN(ImageContext);
   };
 
   // If |maybe_concurrent_reads| is true then there can be concurrent reads to

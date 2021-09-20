@@ -551,6 +551,9 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     arc_service_manager->arc_bridge_service()->app()->AddObserver(this);
   }
 
+  ArcVmClientAdapter(const ArcVmClientAdapter&) = delete;
+  ArcVmClientAdapter& operator=(const ArcVmClientAdapter&) = delete;
+
   ~ArcVmClientAdapter() override {
     auto* arc_service_manager = arc::ArcServiceManager::Get();
     if (arc_service_manager)
@@ -1169,8 +1172,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   // For callbacks.
   base::WeakPtrFactory<ArcVmClientAdapter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcVmClientAdapter);
 };
 
 std::unique_ptr<ArcClientAdapter> CreateArcVmClientAdapter() {

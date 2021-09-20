@@ -16,6 +16,10 @@ namespace payments {
 class JourneyLoggerAndroid {
  public:
   JourneyLoggerAndroid(bool is_incognito, ukm::SourceId source_id);
+
+  JourneyLoggerAndroid(const JourneyLoggerAndroid&) = delete;
+  JourneyLoggerAndroid& operator=(const JourneyLoggerAndroid&) = delete;
+
   ~JourneyLoggerAndroid();
 
   // Message from Java to destroy this object.
@@ -88,8 +92,6 @@ class JourneyLoggerAndroid {
 
  private:
   JourneyLogger journey_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(JourneyLoggerAndroid);
 };
 
 }  // namespace payments

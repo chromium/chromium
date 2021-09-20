@@ -23,6 +23,12 @@ class ComponentUpdateService;
 class OnDeviceHeadSuggestInstallerPolicy : public ComponentInstallerPolicy {
  public:
   OnDeviceHeadSuggestInstallerPolicy(const std::string& locale);
+
+  OnDeviceHeadSuggestInstallerPolicy(
+      const OnDeviceHeadSuggestInstallerPolicy&) = delete;
+  OnDeviceHeadSuggestInstallerPolicy& operator=(
+      const OnDeviceHeadSuggestInstallerPolicy&) = delete;
+
   ~OnDeviceHeadSuggestInstallerPolicy() override;
 
  private:
@@ -46,8 +52,6 @@ class OnDeviceHeadSuggestInstallerPolicy : public ComponentInstallerPolicy {
   // The application (normalized) locale when this policy is created. Models
   // which do not match this locale will be rejected.
   std::string accept_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnDeviceHeadSuggestInstallerPolicy);
 };
 
 // Registers an OnDeviceHeadSuggest component with |cus|.

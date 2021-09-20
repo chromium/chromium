@@ -44,6 +44,10 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
    public:
     Overlay(base::WeakPtr<ClientFrameSinkVideoCapturer> client_capturer,
             int32_t stacking_index);
+
+    Overlay(const Overlay&) = delete;
+    Overlay& operator=(const Overlay&) = delete;
+
     ~Overlay() final;
 
     int32_t stacking_index() const { return stacking_index_; }
@@ -66,8 +70,6 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
 
     SkBitmap image_;
     gfx::RectF bounds_;
-
-    DISALLOW_COPY_AND_ASSIGN(Overlay);
   };
 
   using EstablishConnectionCallback = base::RepeatingCallback<void(

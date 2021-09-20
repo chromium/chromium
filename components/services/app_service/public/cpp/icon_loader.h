@@ -36,13 +36,15 @@ class IconLoader {
   class Releaser {
    public:
     Releaser(std::unique_ptr<Releaser> next, base::OnceClosure closure);
+
+    Releaser(const Releaser&) = delete;
+    Releaser& operator=(const Releaser&) = delete;
+
     virtual ~Releaser();
 
    private:
     std::unique_ptr<Releaser> next_;
     base::OnceClosure closure_;
-
-    DISALLOW_COPY_AND_ASSIGN(Releaser);
   };
 
   IconLoader();

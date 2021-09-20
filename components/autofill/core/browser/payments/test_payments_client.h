@@ -28,6 +28,9 @@ class TestPaymentsClient : public payments::PaymentsClient {
       signin::IdentityManager* identity_manager,
       PersonalDataManager* personal_data_manager);
 
+  TestPaymentsClient(const TestPaymentsClient&) = delete;
+  TestPaymentsClient& operator=(const TestPaymentsClient&) = delete;
+
   ~TestPaymentsClient() override;
 
   void GetUnmaskDetails(
@@ -126,8 +129,6 @@ class TestPaymentsClient : public payments::PaymentsClient {
   std::unique_ptr<std::unordered_map<std::string, std::string>> save_result_;
   bool use_invalid_legal_message_ = false;
   std::unique_ptr<base::Value> LegalMessage();
-
-  DISALLOW_COPY_AND_ASSIGN(TestPaymentsClient);
 };
 
 }  // namespace payments

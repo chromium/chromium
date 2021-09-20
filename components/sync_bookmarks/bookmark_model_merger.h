@@ -43,6 +43,9 @@ class BookmarkModelMerger {
                       favicon::FaviconService* favicon_service,
                       SyncedBookmarkTracker* bookmark_tracker);
 
+  BookmarkModelMerger(const BookmarkModelMerger&) = delete;
+  BookmarkModelMerger& operator=(const BookmarkModelMerger&) = delete;
+
   ~BookmarkModelMerger();
 
   // Merges the remote bookmark model represented as the updates received from
@@ -208,8 +211,6 @@ class BookmarkModelMerger {
   // permanent node. Computed upon construction via BuildRemoteForest().
   const RemoteForest remote_forest_;
   std::unordered_map<base::GUID, GuidMatch, base::GUIDHash> guid_to_match_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelMerger);
 };
 
 }  // namespace sync_bookmarks

@@ -13,6 +13,10 @@ namespace autofill {
 class SystemEncryptor : public AutofillTableEncryptor {
  public:
   SystemEncryptor() = default;
+
+  SystemEncryptor(const SystemEncryptor&) = delete;
+  SystemEncryptor& operator=(const SystemEncryptor&) = delete;
+
   ~SystemEncryptor() override = default;
 
   bool EncryptString16(const std::u16string& plaintext,
@@ -20,9 +24,6 @@ class SystemEncryptor : public AutofillTableEncryptor {
 
   bool DecryptString16(const std::string& ciphertext,
                        std::u16string* plaintext) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemEncryptor);
 };
 
 }  // namespace autofill

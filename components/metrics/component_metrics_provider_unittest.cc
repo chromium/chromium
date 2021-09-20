@@ -34,10 +34,12 @@ class TestComponentMetricsProviderDelegate
 class ComponentMetricsProviderTest : public testing::Test {
  public:
   ComponentMetricsProviderTest() {}
-  ~ComponentMetricsProviderTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ComponentMetricsProviderTest);
+  ComponentMetricsProviderTest(const ComponentMetricsProviderTest&) = delete;
+  ComponentMetricsProviderTest& operator=(const ComponentMetricsProviderTest&) =
+      delete;
+
+  ~ComponentMetricsProviderTest() override {}
 };
 
 TEST_F(ComponentMetricsProviderTest, ProvideComponentMetrics) {

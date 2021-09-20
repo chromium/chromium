@@ -32,6 +32,12 @@ class FinalizeDismissedUrlSuggestionTask : public Task {
 
   FinalizeDismissedUrlSuggestionTask(PrefetchStore* prefetch_store,
                                      const ClientId& client_id);
+
+  FinalizeDismissedUrlSuggestionTask(
+      const FinalizeDismissedUrlSuggestionTask&) = delete;
+  FinalizeDismissedUrlSuggestionTask& operator=(
+      const FinalizeDismissedUrlSuggestionTask&) = delete;
+
   ~FinalizeDismissedUrlSuggestionTask() override;
 
  private:
@@ -42,7 +48,6 @@ class FinalizeDismissedUrlSuggestionTask : public Task {
   ClientId client_id_;
   base::WeakPtrFactory<FinalizeDismissedUrlSuggestionTask> weak_ptr_factory_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(FinalizeDismissedUrlSuggestionTask);
 };
 
 }  // namespace offline_pages

@@ -102,6 +102,10 @@ class FullCardRequest final : public CardUnmaskDelegate {
   FullCardRequest(RiskDataLoader* risk_data_loader,
                   payments::PaymentsClient* payments_client,
                   PersonalDataManager* personal_data_manager);
+
+  FullCardRequest(const FullCardRequest&) = delete;
+  FullCardRequest& operator=(const FullCardRequest&) = delete;
+
   ~FullCardRequest();
 
   // Retrieves the pan for |card| after querying the user for CVC and invokes
@@ -226,8 +230,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Enables destroying FullCardRequest while CVC prompt is showing or a server
   // communication is pending.
   base::WeakPtrFactory<FullCardRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FullCardRequest);
 };
 
 }  // namespace payments

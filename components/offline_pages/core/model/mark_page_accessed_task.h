@@ -22,6 +22,10 @@ class MarkPageAccessedTask : public Task {
   MarkPageAccessedTask(OfflinePageMetadataStore* store,
                        int64_t offline_id,
                        const base::Time& access_time);
+
+  MarkPageAccessedTask(const MarkPageAccessedTask&) = delete;
+  MarkPageAccessedTask& operator=(const MarkPageAccessedTask&) = delete;
+
   ~MarkPageAccessedTask() override;
 
  private:
@@ -37,7 +41,6 @@ class MarkPageAccessedTask : public Task {
   base::Time access_time_;
 
   base::WeakPtrFactory<MarkPageAccessedTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MarkPageAccessedTask);
 };
 
 }  // namespace offline_pages

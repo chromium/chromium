@@ -35,6 +35,10 @@ class GCMAccountMapper : public GCMAppHandler {
                                    const IncomingMessage& message)>;
 
   explicit GCMAccountMapper(GCMDriver* gcm_driver);
+
+  GCMAccountMapper(const GCMAccountMapper&) = delete;
+  GCMAccountMapper& operator=(const GCMAccountMapper&) = delete;
+
   ~GCMAccountMapper() override;
 
   void Initialize(const AccountMappings& account_mappings,
@@ -125,8 +129,6 @@ class GCMAccountMapper : public GCMAppHandler {
   bool initialized_;
 
   base::WeakPtrFactory<GCMAccountMapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCMAccountMapper);
 };
 
 }  // namespace gcm

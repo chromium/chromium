@@ -18,6 +18,11 @@ class TypedURLModelTypeController : public syncer::ModelTypeController {
  public:
   TypedURLModelTypeController(HistoryService* history_service,
                               PrefService* pref_service);
+
+  TypedURLModelTypeController(const TypedURLModelTypeController&) = delete;
+  TypedURLModelTypeController& operator=(const TypedURLModelTypeController&) =
+      delete;
+
   ~TypedURLModelTypeController() override;
 
   // syncer::DataTypeController implementation.
@@ -30,8 +35,6 @@ class TypedURLModelTypeController : public syncer::ModelTypeController {
   PrefService* const pref_service_;
 
   PrefChangeRegistrar pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedURLModelTypeController);
 };
 
 }  // namespace history

@@ -80,6 +80,10 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
              DisplayResourceProviderGL* resource_provider,
              OverlayProcessorInterface* overlay_processor,
              scoped_refptr<base::SingleThreadTaskRunner> current_task_runner);
+
+  GLRenderer(const GLRenderer&) = delete;
+  GLRenderer& operator=(const GLRenderer&) = delete;
+
   ~GLRenderer() override;
 
   bool use_swap_with_bounds() const { return use_swap_with_bounds_; }
@@ -506,8 +510,6 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   // MessageLoop.
   scoped_refptr<base::SingleThreadTaskRunner> current_task_runner_;
   base::WeakPtrFactory<GLRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLRenderer);
 };
 
 }  // namespace viz

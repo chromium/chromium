@@ -29,6 +29,12 @@ class InitAwareBackgroundDownloadServiceTest : public testing::Test {
       : controller_(nullptr),
         task_runner_(new base::TestSimpleTaskRunner),
         handle_(task_runner_) {}
+
+  InitAwareBackgroundDownloadServiceTest(
+      const InitAwareBackgroundDownloadServiceTest&) = delete;
+  InitAwareBackgroundDownloadServiceTest& operator=(
+      const InitAwareBackgroundDownloadServiceTest&) = delete;
+
   ~InitAwareBackgroundDownloadServiceTest() override = default;
 
   void SetUp() override {
@@ -43,8 +49,6 @@ class InitAwareBackgroundDownloadServiceTest : public testing::Test {
   std::unique_ptr<InitAwareBackgroundDownloadService> service_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitAwareBackgroundDownloadServiceTest);
 };
 
 }  // namespace

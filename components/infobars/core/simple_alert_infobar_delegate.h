@@ -23,6 +23,11 @@ class SimpleAlertInfoBarDelegate : public ConfirmInfoBarDelegate {
       const std::u16string& message,
       bool auto_expire,
       bool should_animate);
+
+  SimpleAlertInfoBarDelegate(const SimpleAlertInfoBarDelegate&) = delete;
+  SimpleAlertInfoBarDelegate& operator=(const SimpleAlertInfoBarDelegate&) =
+      delete;
+
   ~SimpleAlertInfoBarDelegate() override;
 
  private:
@@ -39,8 +44,6 @@ class SimpleAlertInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string message_;
   bool auto_expire_;  // Should it expire automatically on navigation?
   bool should_animate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleAlertInfoBarDelegate);
 };
 
 #endif  // COMPONENTS_INFOBARS_CORE_SIMPLE_ALERT_INFOBAR_DELEGATE_H_

@@ -31,6 +31,10 @@ namespace nonsfi {
 class NonSfiListener : public IPC::Listener {
  public:
   NonSfiListener();
+
+  NonSfiListener(const NonSfiListener&) = delete;
+  NonSfiListener& operator=(const NonSfiListener&) = delete;
+
   ~NonSfiListener() override;
 
   // Listen for a request to launch a non-SFI NaCl module.
@@ -48,8 +52,6 @@ class NonSfiListener : public IPC::Listener {
   std::unique_ptr<NaClTrustedListener> trusted_listener_;
 
   std::unique_ptr<std::map<std::string, int>> key_fd_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(NonSfiListener);
 };
 
 }  // namespace nonsfi

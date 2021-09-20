@@ -27,6 +27,10 @@ namespace {
 class TestUpstartClient : public chromeos::FakeUpstartClient {
  public:
   TestUpstartClient() = default;
+
+  TestUpstartClient(const TestUpstartClient&) = delete;
+  TestUpstartClient& operator=(const TestUpstartClient&) = delete;
+
   ~TestUpstartClient() override = default;
 
   void StartJob(const std::string& job,
@@ -40,8 +44,6 @@ class TestUpstartClient : public chromeos::FakeUpstartClient {
 
  private:
   bool arc_available_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUpstartClient);
 };
 
 class ArcDataRemoverTest : public testing::Test {

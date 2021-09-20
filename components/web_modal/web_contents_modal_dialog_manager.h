@@ -26,6 +26,10 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
       public content::WebContentsObserver,
       public content::WebContentsUserData<WebContentsModalDialogManager> {
  public:
+  WebContentsModalDialogManager(const WebContentsModalDialogManager&) = delete;
+  WebContentsModalDialogManager& operator=(
+      const WebContentsModalDialogManager&) = delete;
+
   ~WebContentsModalDialogManager() override;
 
   WebContentsModalDialogManagerDelegate* delegate() const { return delegate_; }
@@ -107,8 +111,6 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   bool closing_all_dialogs_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsModalDialogManager);
 };
 
 }  // namespace web_modal

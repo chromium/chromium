@@ -90,6 +90,10 @@ class TranslateRankerImpl : public TranslateRanker {
   TranslateRankerImpl(const base::FilePath& model_path,
                       const GURL& model_url,
                       ukm::UkmRecorder* ukm_recorder);
+
+  TranslateRankerImpl(const TranslateRankerImpl&) = delete;
+  TranslateRankerImpl& operator=(const TranslateRankerImpl&) = delete;
+
   ~TranslateRankerImpl() override;
 
   // Get the file path of the translate ranker model, by default with a fixed
@@ -164,8 +168,6 @@ class TranslateRankerImpl : public TranslateRanker {
   std::vector<metrics::TranslateEventProto> event_cache_;
 
   base::WeakPtrFactory<TranslateRankerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateRankerImpl);
 };
 
 }  // namespace translate

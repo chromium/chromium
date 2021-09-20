@@ -99,6 +99,10 @@ class NetworkTimeTracker {
       std::unique_ptr<const base::TickClock> tick_clock,
       PrefService* pref_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  NetworkTimeTracker(const NetworkTimeTracker&) = delete;
+  NetworkTimeTracker& operator=(const NetworkTimeTracker&) = delete;
+
   ~NetworkTimeTracker();
 
   // Sets |network_time| to an estimate of the true time.  Returns
@@ -226,8 +230,6 @@ class NetworkTimeTracker {
   std::vector<base::OnceClosure> fetch_completion_callbacks_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkTimeTracker);
 };
 
 }  // namespace network_time

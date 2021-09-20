@@ -22,6 +22,10 @@ class MediaLoadDeferrer : public blink::WebViewObserver {
                     base::OnceClosure continue_loading_cb)
       : blink::WebViewObserver(web_view),
         continue_loading_cb_(std::move(continue_loading_cb)) {}
+
+  MediaLoadDeferrer(const MediaLoadDeferrer&) = delete;
+  MediaLoadDeferrer& operator=(const MediaLoadDeferrer&) = delete;
+
   ~MediaLoadDeferrer() override = default;
 
   // blink::WebViewObserver implementation:
@@ -36,8 +40,6 @@ class MediaLoadDeferrer : public blink::WebViewObserver {
 
  private:
   base::OnceClosure continue_loading_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaLoadDeferrer);
 };
 
 }  // namespace

@@ -11,6 +11,10 @@
 class TestingSearchTermsData : public SearchTermsData {
  public:
   explicit TestingSearchTermsData(const std::string& google_base_url);
+
+  TestingSearchTermsData(const TestingSearchTermsData&) = delete;
+  TestingSearchTermsData& operator=(const TestingSearchTermsData&) = delete;
+
   ~TestingSearchTermsData() override;
 
   std::string GoogleBaseURLValue() const override;
@@ -37,8 +41,6 @@ class TestingSearchTermsData : public SearchTermsData {
   std::string google_base_url_;
   std::string search_client_;
   std::string suggest_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingSearchTermsData);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TESTING_SEARCH_TERMS_DATA_H_

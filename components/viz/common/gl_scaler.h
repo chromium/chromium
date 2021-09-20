@@ -209,6 +209,9 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
 
   explicit GLScaler(ContextProvider* context_provider);
 
+  GLScaler(const GLScaler&) = delete;
+  GLScaler& operator=(const GLScaler&) = delete;
+
   ~GLScaler() final;
 
   // Returns true if the GL context provides the necessary support for enabling
@@ -317,6 +320,10 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
                   GLenum texture_type,
                   const gfx::ColorTransform* color_transform,
                   const GLenum swizzle[2]);
+
+    ShaderProgram(const ShaderProgram&) = delete;
+    ShaderProgram& operator=(const ShaderProgram&) = delete;
+
     ~ShaderProgram();
 
     Shader shader() const { return shader_; }
@@ -367,8 +374,6 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
     GLint src_pixelsize_location_ = -1;
     // Location of vector for scaling ratio between source and dest textures.
     GLint scaling_vector_location_ = -1;
-
-    DISALLOW_COPY_AND_ASSIGN(ShaderProgram);
   };
 
   // One scaling stage in a chain of scaler pipeline stages. Each ScalerStage
@@ -386,6 +391,10 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
                 Axis primary_axis,
                 const gfx::Vector2d& scale_from,
                 const gfx::Vector2d& scale_to);
+
+    ScalerStage(const ScalerStage&) = delete;
+    ScalerStage& operator=(const ScalerStage&) = delete;
+
     ~ScalerStage();
 
     Shader shader() const { return shader_; }
@@ -445,8 +454,6 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
     GLuint intermediate_texture_ = 0;
     gfx::Size intermediate_texture_size_;
     GLuint dest_framebuffer_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(ScalerStage);
   };
 
   // ContextLostObserver implementation.
@@ -521,8 +528,6 @@ class VIZ_COMMON_EXPORT GLScaler final : public ContextLostObserver {
 
   // The color space in which the scaling stages operate.
   gfx::ColorSpace scaling_color_space_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLScaler);
 };
 
 // For logging.

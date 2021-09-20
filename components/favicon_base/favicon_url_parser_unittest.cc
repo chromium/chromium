@@ -13,11 +13,11 @@
 class FaviconUrlParserTest : public testing::Test {
  public:
   FaviconUrlParserTest() = default;
+
+  FaviconUrlParserTest(const FaviconUrlParserTest&) = delete;
+  FaviconUrlParserTest& operator=(const FaviconUrlParserTest&) = delete;
+
   ~FaviconUrlParserTest() override = default;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconUrlParserTest);
 };
 
 // Test parsing path with no extra parameters.

@@ -30,6 +30,10 @@ class ContentInfoBarManager
       public content::WebContentsUserData<ContentInfoBarManager> {
  public:
   explicit ContentInfoBarManager(content::WebContents* web_contents);
+
+  ContentInfoBarManager(const ContentInfoBarManager&) = delete;
+  ContentInfoBarManager& operator=(const ContentInfoBarManager&) = delete;
+
   ~ContentInfoBarManager() override;
 
   static InfoBarDelegate::NavigationDetails
@@ -70,8 +74,6 @@ class ContentInfoBarManager
 
   // See description in set_ignore_next_reload().
   bool ignore_next_reload_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentInfoBarManager);
 };
 
 }  // namespace infobars

@@ -70,6 +70,10 @@ DOM::Node* FindNodeWithID(int id, DOM::Node* root) {
 class DOMAgentTest : public views::ViewsTestBase {
  public:
   DOMAgentTest() = default;
+
+  DOMAgentTest(const DOMAgentTest&) = delete;
+  DOMAgentTest& operator=(const DOMAgentTest&) = delete;
+
   ~DOMAgentTest() override = default;
 
   views::Widget::InitParams CreateParams(
@@ -261,8 +265,6 @@ class DOMAgentTest : public views::ViewsTestBase {
   std::unique_ptr<CSSAgent> css_agent_;
   std::unique_ptr<OverlayAgentViews> overlay_agent_;
   std::string name_;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMAgentTest);
 };
 
 // Tests to ensure that the DOMAgent's hierarchy matches the real hierarchy.

@@ -118,6 +118,11 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
       HostContentSettingsMap* host_content_settings_map,
       SafeBrowsingNavigationObserverManager* observer_manager);
 
+  SafeBrowsingNavigationObserver(const SafeBrowsingNavigationObserver&) =
+      delete;
+  SafeBrowsingNavigationObserver& operator=(
+      const SafeBrowsingNavigationObserver&) = delete;
+
   ~SafeBrowsingNavigationObserver() override;
 
   void SetObserverManagerForTesting(
@@ -184,8 +189,6 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
       content_settings_observation_{this};
 
   SafeBrowsingNavigationObserverManager* observer_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingNavigationObserver);
 };
 
 }  // namespace safe_browsing

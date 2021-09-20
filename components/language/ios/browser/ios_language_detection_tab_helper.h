@@ -35,6 +35,10 @@ class IOSLanguageDetectionTabHelper
     virtual ~Observer() {}
   };
 
+  IOSLanguageDetectionTabHelper(const IOSLanguageDetectionTabHelper&) = delete;
+  IOSLanguageDetectionTabHelper& operator=(
+      const IOSLanguageDetectionTabHelper&) = delete;
+
   ~IOSLanguageDetectionTabHelper() override;
 
   // Adds or Removes observers.
@@ -60,8 +64,6 @@ class IOSLanguageDetectionTabHelper
   UrlLanguageHistogram* const url_language_histogram_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(IOSLanguageDetectionTabHelper);
 };
 
 }  // namespace language

@@ -16,6 +16,10 @@ class ConfigureUiStateAction : public Action {
  public:
   explicit ConfigureUiStateAction(ActionDelegate* delegate,
                                   const ActionProto& proto);
+
+  ConfigureUiStateAction(const ConfigureUiStateAction&) = delete;
+  ConfigureUiStateAction& operator=(const ConfigureUiStateAction&) = delete;
+
   ~ConfigureUiStateAction() override;
 
  private:
@@ -23,7 +27,6 @@ class ConfigureUiStateAction : public Action {
   void InternalProcessAction(ProcessActionCallback callback) override;
 
   base::WeakPtrFactory<ConfigureUiStateAction> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ConfigureUiStateAction);
 };
 
 }  // namespace autofill_assistant

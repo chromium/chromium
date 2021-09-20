@@ -39,6 +39,10 @@ class UserModel {
   };
 
   UserModel();
+
+  UserModel(const UserModel&) = delete;
+  UserModel& operator=(const UserModel&) = delete;
+
   ~UserModel();
 
   base::WeakPtr<UserModel> GetWeakPtr();
@@ -153,7 +157,6 @@ class UserModel {
   GURL current_url_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<UserModel> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UserModel);
 };
 
 }  //  namespace autofill_assistant

@@ -152,6 +152,9 @@ class V4GetHashProtocolManager {
   using ThreatMetadataForApiCallback =
       base::OnceCallback<void(const ThreatMetadata& md)>;
 
+  V4GetHashProtocolManager(const V4GetHashProtocolManager&) = delete;
+  V4GetHashProtocolManager& operator=(const V4GetHashProtocolManager&) = delete;
+
   virtual ~V4GetHashProtocolManager();
 
   // Create an instance of the safe browsing v4 protocol manager.
@@ -356,22 +359,23 @@ class V4GetHashProtocolManager {
   std::vector<ThreatType> threat_types_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(V4GetHashProtocolManager);
 };
 
 // Interface of a factory to create V4GetHashProtocolManager.  Useful for tests.
 class V4GetHashProtocolManagerFactory {
  public:
   V4GetHashProtocolManagerFactory() {}
+
+  V4GetHashProtocolManagerFactory(const V4GetHashProtocolManagerFactory&) =
+      delete;
+  V4GetHashProtocolManagerFactory& operator=(
+      const V4GetHashProtocolManagerFactory&) = delete;
+
   virtual ~V4GetHashProtocolManagerFactory() {}
   virtual std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,
       const V4ProtocolConfig& config) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(V4GetHashProtocolManagerFactory);
 };
 
 #ifndef NDEBUG

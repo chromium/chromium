@@ -42,6 +42,10 @@ class LibsecretLoader {
   class COMPONENT_EXPORT(OS_CRYPT) SearchHelper {
    public:
     SearchHelper();
+
+    SearchHelper(const SearchHelper&) = delete;
+    SearchHelper& operator=(const SearchHelper&) = delete;
+
     ~SearchHelper();
 
     // Search must be called exactly once for success() and results() to be
@@ -57,7 +61,6 @@ class LibsecretLoader {
     // |results_| and |error_| are C-style objects owned by this instance.
     GList* results_ = nullptr;
     GError* error_ = nullptr;
-    DISALLOW_COPY_AND_ASSIGN(SearchHelper);
   };
 
   // Loads the libsecret library and checks that it responds to queries.
@@ -98,6 +101,11 @@ class LibsecretLoader {
 class COMPONENT_EXPORT(OS_CRYPT) LibsecretAttributesBuilder {
  public:
   LibsecretAttributesBuilder();
+
+  LibsecretAttributesBuilder(const LibsecretAttributesBuilder&) = delete;
+  LibsecretAttributesBuilder& operator=(const LibsecretAttributesBuilder&) =
+      delete;
+
   ~LibsecretAttributesBuilder();
 
   void Append(const std::string& name, const std::string& value);
@@ -116,8 +124,6 @@ class COMPONENT_EXPORT(OS_CRYPT) LibsecretAttributesBuilder {
   // ASan tests, because it may move the objects and break the references.
   std::list<std::string> name_values_;
   GHashTable* attrs_;
-
-  DISALLOW_COPY_AND_ASSIGN(LibsecretAttributesBuilder);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_LIBSECRET_UTIL_LINUX_H_

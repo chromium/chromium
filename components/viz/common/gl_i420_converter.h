@@ -77,6 +77,10 @@ class VIZ_COMMON_EXPORT GLI420Converter final : public ContextLostObserver {
   using Parameters = GLScaler::Parameters;
 
   explicit GLI420Converter(ContextProvider* context_provider);
+
+  GLI420Converter(const GLI420Converter&) = delete;
+  GLI420Converter& operator=(const GLI420Converter&) = delete;
+
   ~GLI420Converter() final;
 
   // Returns true if the GL context provides the necessary support for enabling
@@ -184,8 +188,6 @@ class VIZ_COMMON_EXPORT GLI420Converter final : public ContextLostObserver {
 
   // The Parameters that were provided to the last successful Configure() call.
   Parameters params_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLI420Converter);
 };
 
 }  // namespace viz

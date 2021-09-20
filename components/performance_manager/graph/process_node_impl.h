@@ -59,6 +59,9 @@ class ProcessNodeImpl
   ProcessNodeImpl(content::ProcessType process_type,
                   RenderProcessHostProxy render_process_proxy);
 
+  ProcessNodeImpl(const ProcessNodeImpl&) = delete;
+  ProcessNodeImpl& operator=(const ProcessNodeImpl&) = delete;
+
   ~ProcessNodeImpl() override;
 
   void Bind(mojo::PendingReceiver<mojom::ProcessCoordinationUnit> receiver);
@@ -276,8 +279,6 @@ class ProcessNodeImpl
   base::WeakPtr<ProcessNodeImpl> weak_this_;
   base::WeakPtrFactory<ProcessNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessNodeImpl);
 };
 
 }  // namespace performance_manager

@@ -112,6 +112,10 @@ class PaymentManifestParser {
                               std::unique_ptr<std::vector<WebAppIcon>>)>;
 
   explicit PaymentManifestParser(std::unique_ptr<ErrorLogger> log);
+
+  PaymentManifestParser(const PaymentManifestParser&) = delete;
+  PaymentManifestParser& operator=(const PaymentManifestParser&) = delete;
+
   ~PaymentManifestParser();
 
   void ParsePaymentMethodManifest(const GURL& manifest_url,
@@ -160,8 +164,6 @@ class PaymentManifestParser {
 
   std::unique_ptr<ErrorLogger> log_;
   base::WeakPtrFactory<PaymentManifestParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestParser);
 };
 
 }  // namespace payments

@@ -15,6 +15,9 @@ class StubFormSaver : public FormSaver {
  public:
   StubFormSaver() = default;
 
+  StubFormSaver(const StubFormSaver&) = delete;
+  StubFormSaver& operator=(const StubFormSaver&) = delete;
+
   ~StubFormSaver() override = default;
 
   // FormSaver:
@@ -32,9 +35,6 @@ class StubFormSaver : public FormSaver {
                      const PasswordForm& old_unique_key) override {}
   void Remove(const PasswordForm& form) override {}
   std::unique_ptr<FormSaver> Clone() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubFormSaver);
 };
 
 }  // namespace password_manager

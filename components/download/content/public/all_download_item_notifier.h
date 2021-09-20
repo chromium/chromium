@@ -44,6 +44,10 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     virtual void OnManagerInitialized(content::DownloadManager* manager) {}
@@ -58,13 +62,13 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
                                    download::DownloadItem* item) {}
     virtual void OnDownloadDestroyed(content::DownloadManager* manager,
                                      download::DownloadItem* item) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   AllDownloadItemNotifier(content::DownloadManager* manager,
                           Observer* observer);
+
+  AllDownloadItemNotifier(const AllDownloadItemNotifier&) = delete;
+  AllDownloadItemNotifier& operator=(const AllDownloadItemNotifier&) = delete;
 
   ~AllDownloadItemNotifier() override;
 
@@ -91,8 +95,6 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
   AllDownloadItemNotifier::Observer* observer_;
   std::set<DownloadItem*> observing_;
   base::WeakPtrFactory<AllDownloadItemNotifier> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AllDownloadItemNotifier);
 };
 
 }  // namespace download

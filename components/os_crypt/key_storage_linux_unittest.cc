@@ -15,6 +15,10 @@ class FakeKeyStorageLinux : public KeyStorageLinux {
  public:
   explicit FakeKeyStorageLinux(base::SequencedTaskRunner* task_runner)
       : task_runner_(task_runner) {}
+
+  FakeKeyStorageLinux(const FakeKeyStorageLinux&) = delete;
+  FakeKeyStorageLinux& operator=(const FakeKeyStorageLinux&) = delete;
+
   ~FakeKeyStorageLinux() override = default;
 
  protected:
@@ -27,16 +31,16 @@ class FakeKeyStorageLinux : public KeyStorageLinux {
 
  private:
   base::SequencedTaskRunner* task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(FakeKeyStorageLinux);
 };
 
 class KeyStorageLinuxTest : public testing::Test {
  public:
   KeyStorageLinuxTest() = default;
-  ~KeyStorageLinuxTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyStorageLinuxTest);
+  KeyStorageLinuxTest(const KeyStorageLinuxTest&) = delete;
+  KeyStorageLinuxTest& operator=(const KeyStorageLinuxTest&) = delete;
+
+  ~KeyStorageLinuxTest() override = default;
 };
 
 TEST_F(KeyStorageLinuxTest, SkipPostingToSameTaskRunner) {

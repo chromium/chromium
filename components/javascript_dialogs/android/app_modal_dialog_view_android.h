@@ -22,6 +22,11 @@ class AppModalDialogViewAndroid : public AppModalDialogView {
   AppModalDialogViewAndroid(JNIEnv* env,
                             AppModalDialogController* controller,
                             gfx::NativeWindow parent);
+
+  AppModalDialogViewAndroid(const AppModalDialogViewAndroid&) = delete;
+  AppModalDialogViewAndroid& operator=(const AppModalDialogViewAndroid&) =
+      delete;
+
   ~AppModalDialogViewAndroid() override;
 
   // AppModalDialogView:
@@ -48,8 +53,6 @@ class AppModalDialogViewAndroid : public AppModalDialogView {
   std::unique_ptr<AppModalDialogController> controller_;
   base::android::ScopedJavaGlobalRef<jobject> dialog_jobject_;
   JavaObjectWeakGlobalRef parent_jobject_weak_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppModalDialogViewAndroid);
 };
 
 }  // namespace javascript_dialogs

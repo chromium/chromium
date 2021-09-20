@@ -13,6 +13,10 @@ namespace {
 class MockPrefStoreObserver : public PrefStore::Observer {
  public:
   explicit MockPrefStoreObserver(DefaultPrefStore* pref_store);
+
+  MockPrefStoreObserver(const MockPrefStoreObserver&) = delete;
+  MockPrefStoreObserver& operator=(const MockPrefStoreObserver&) = delete;
+
   ~MockPrefStoreObserver() override;
 
   int change_count() {
@@ -27,8 +31,6 @@ class MockPrefStoreObserver : public PrefStore::Observer {
   DefaultPrefStore* pref_store_;
 
   int change_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPrefStoreObserver);
 };
 
 MockPrefStoreObserver::MockPrefStoreObserver(DefaultPrefStore* pref_store)
@@ -63,4 +65,3 @@ TEST(DefaultPrefStoreTest, NotifyPrefValueChanged) {
   pref_store->ReplaceDefaultValue(kPrefKey, Value("bar"));
   EXPECT_EQ(1, observer.change_count());
 }
-

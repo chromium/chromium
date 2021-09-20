@@ -16,6 +16,10 @@ namespace component_updater {
 class Timer {
  public:
   Timer();
+
+  Timer(const Timer&) = delete;
+  Timer& operator=(const Timer&) = delete;
+
   ~Timer();
 
   void Start(base::TimeDelta initial_delay,
@@ -33,8 +37,6 @@ class Timer {
 
   base::TimeDelta delay_;
   base::RepeatingClosure user_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(Timer);
 };
 
 }  // namespace component_updater

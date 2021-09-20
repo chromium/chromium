@@ -19,6 +19,10 @@ namespace testing {
 class TestRulesetPublisher {
  public:
   explicit TestRulesetPublisher(RulesetService* ruleset_service);
+
+  TestRulesetPublisher(const TestRulesetPublisher&) = delete;
+  TestRulesetPublisher& operator=(const TestRulesetPublisher&) = delete;
+
   ~TestRulesetPublisher();
 
   // Indexes the |unindexed_ruleset| and publishes it to all renderers
@@ -27,8 +31,6 @@ class TestRulesetPublisher {
 
  private:
   RulesetService* ruleset_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRulesetPublisher);
 };
 
 }  // namespace testing

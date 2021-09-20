@@ -119,6 +119,9 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
       NonClientFrameViewAsh::SetShouldPaintHeader(false);
   }
 
+  CustomFrameView(const CustomFrameView&) = delete;
+  CustomFrameView& operator=(const CustomFrameView&) = delete;
+
   ~CustomFrameView() override = default;
 
   // Overridden from ash::NonClientFrameViewAsh:
@@ -189,14 +192,16 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
 
  private:
   ShellSurfaceBase* const shell_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomFrameView);
 };
 
 class CustomWindowTargeter : public aura::WindowTargeter {
  public:
   explicit CustomWindowTargeter(ShellSurfaceBase* shell_surface)
       : shell_surface_(shell_surface), widget_(shell_surface->GetWidget()) {}
+
+  CustomWindowTargeter(const CustomWindowTargeter&) = delete;
+  CustomWindowTargeter& operator=(const CustomWindowTargeter&) = delete;
+
   ~CustomWindowTargeter() override = default;
 
   // Overridden from aura::WindowTargeter:
@@ -265,8 +270,6 @@ class CustomWindowTargeter : public aura::WindowTargeter {
 
   ShellSurfaceBase* shell_surface_;
   views::Widget* const widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomWindowTargeter);
 };
 
 // A place holder to disable default implementation created by
@@ -275,15 +278,17 @@ class CustomWindowTargeter : public aura::WindowTargeter {
 class CustomWindowStateDelegate : public ash::WindowStateDelegate {
  public:
   CustomWindowStateDelegate() {}
+
+  CustomWindowStateDelegate(const CustomWindowStateDelegate&) = delete;
+  CustomWindowStateDelegate& operator=(const CustomWindowStateDelegate&) =
+      delete;
+
   ~CustomWindowStateDelegate() override {}
 
   // Overridden from ash::WindowStateDelegate:
   bool ToggleFullscreen(ash::WindowState* window_state) override {
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CustomWindowStateDelegate);
 };
 
 void CloseAllShellSurfaceTransientChildren(aura::Window* window) {

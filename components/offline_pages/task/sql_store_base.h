@@ -53,6 +53,10 @@ class SqlStoreBase {
   SqlStoreBase(const std::string& histogram_tag,
                scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
                const base::FilePath& file_path);
+
+  SqlStoreBase(const SqlStoreBase&) = delete;
+  SqlStoreBase& operator=(const SqlStoreBase&) = delete;
+
   virtual ~SqlStoreBase();
 
   // Gets the initialization status of the store.
@@ -180,8 +184,6 @@ class SqlStoreBase {
 
   base::WeakPtrFactory<SqlStoreBase> weak_ptr_factory_{this};
   base::WeakPtrFactory<SqlStoreBase> closing_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SqlStoreBase);
 };
 
 }  // namespace offline_pages

@@ -47,6 +47,10 @@ namespace {
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() : prefs_(test::PrefServiceForTesting()) {}
+
+  MockAutofillClient(const MockAutofillClient&) = delete;
+  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
+
   ~MockAutofillClient() override = default;
   PrefService* GetPrefs() override {
     return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
@@ -55,8 +59,6 @@ class MockAutofillClient : public TestAutofillClient {
 
  private:
   std::unique_ptr<PrefService> prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillClient);
 };
 
 class MockSuggestionsHandler

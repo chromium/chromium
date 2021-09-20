@@ -283,6 +283,10 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
       : callback_(std::move(callback)),
         app_locale_(app_locale),
         full_sync_enabled_(full_sync_enabled) {}
+
+  GetUnmaskDetailsRequest(const GetUnmaskDetailsRequest&) = delete;
+  GetUnmaskDetailsRequest& operator=(const GetUnmaskDetailsRequest&) = delete;
+
   ~GetUnmaskDetailsRequest() override {}
 
   std::string GetRequestUrlPath() override {
@@ -360,7 +364,6 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
   // Suggested authentication method and other information to facilitate card
   // unmasking.
   payments::PaymentsClient::UnmaskDetails unmask_details_;
-  DISALLOW_COPY_AND_ASSIGN(GetUnmaskDetailsRequest);
 };
 
 class UnmaskCardRequest : public PaymentsRequest {
@@ -375,6 +378,10 @@ class UnmaskCardRequest : public PaymentsRequest {
         callback_(std::move(callback)) {
     DCHECK_NE(CreditCard::LOCAL_CARD, request_details.card.record_type());
   }
+
+  UnmaskCardRequest(const UnmaskCardRequest&) = delete;
+  UnmaskCardRequest& operator=(const UnmaskCardRequest&) = delete;
+
   ~UnmaskCardRequest() override {}
 
   std::string GetRequestUrlPath() override { return kUnmaskCardRequestPath; }
@@ -590,8 +597,6 @@ class UnmaskCardRequest : public PaymentsRequest {
                           PaymentsClient::UnmaskResponseDetails&)>
       callback_;
   PaymentsClient::UnmaskResponseDetails response_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnmaskCardRequest);
 };
 
 class OptChangeRequest : public PaymentsRequest {
@@ -605,6 +610,10 @@ class OptChangeRequest : public PaymentsRequest {
       : request_details_(request_details),
         callback_(std::move(callback)),
         full_sync_enabled_(full_sync_enabled) {}
+
+  OptChangeRequest(const OptChangeRequest&) = delete;
+  OptChangeRequest& operator=(const OptChangeRequest&) = delete;
+
   ~OptChangeRequest() override {}
 
   std::string GetRequestUrlPath() override { return kOptChangeRequestPath; }
@@ -702,8 +711,6 @@ class OptChangeRequest : public PaymentsRequest {
       callback_;
   const bool full_sync_enabled_;
   PaymentsClient::OptChangeResponseDetails response_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptChangeRequest);
 };
 
 class GetUploadDetailsRequest : public PaymentsRequest {
@@ -728,6 +735,10 @@ class GetUploadDetailsRequest : public PaymentsRequest {
         callback_(std::move(callback)),
         billable_service_number_(billable_service_number),
         upload_card_source_(upload_card_source) {}
+
+  GetUploadDetailsRequest(const GetUploadDetailsRequest&) = delete;
+  GetUploadDetailsRequest& operator=(const GetUploadDetailsRequest&) = delete;
+
   ~GetUploadDetailsRequest() override {}
 
   std::string GetRequestUrlPath() override {
@@ -874,8 +885,6 @@ class GetUploadDetailsRequest : public PaymentsRequest {
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   const int billable_service_number_;
   PaymentsClient::UploadCardSource upload_card_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetUploadDetailsRequest);
 };
 
 class UploadCardRequest : public PaymentsRequest {
@@ -887,6 +896,10 @@ class UploadCardRequest : public PaymentsRequest {
       : request_details_(request_details),
         full_sync_enabled_(full_sync_enabled),
         callback_(std::move(callback)) {}
+
+  UploadCardRequest(const UploadCardRequest&) = delete;
+  UploadCardRequest& operator=(const UploadCardRequest&) = delete;
+
   ~UploadCardRequest() override {}
 
   std::string GetRequestUrlPath() override { return kUploadCardRequestPath; }
@@ -991,8 +1004,6 @@ class UploadCardRequest : public PaymentsRequest {
                           const std::string&)>
       callback_;
   std::string server_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadCardRequest);
 };
 
 class MigrateCardsRequest : public PaymentsRequest {
@@ -1006,6 +1017,10 @@ class MigrateCardsRequest : public PaymentsRequest {
         migratable_credit_cards_(migratable_credit_cards),
         full_sync_enabled_(full_sync_enabled),
         callback_(std::move(callback)) {}
+
+  MigrateCardsRequest(const MigrateCardsRequest&) = delete;
+  MigrateCardsRequest& operator=(const MigrateCardsRequest&) = delete;
+
   ~MigrateCardsRequest() override {}
 
   std::string GetRequestUrlPath() override { return kMigrateCardsRequestPath; }
@@ -1119,8 +1134,6 @@ class MigrateCardsRequest : public PaymentsRequest {
   MigrateCardsCallback callback_;
   std::unique_ptr<std::unordered_map<std::string, std::string>> save_result_;
   std::string display_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(MigrateCardsRequest);
 };
 
 }  // namespace

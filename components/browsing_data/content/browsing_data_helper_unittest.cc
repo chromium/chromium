@@ -16,15 +16,16 @@ namespace {
 class BrowsingDataHelperTest : public testing::Test {
  public:
   BrowsingDataHelperTest() {}
+
+  BrowsingDataHelperTest(const BrowsingDataHelperTest&) = delete;
+  BrowsingDataHelperTest& operator=(const BrowsingDataHelperTest&) = delete;
+
   ~BrowsingDataHelperTest() override {}
 
   bool IsWebScheme(const std::string& scheme) {
     GURL test(scheme + "://example.com");
     return (HasWebScheme(test) && browsing_data::IsWebScheme(scheme));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataHelperTest);
 };
 
 TEST_F(BrowsingDataHelperTest, WebStorageSchemesAreWebSchemes) {

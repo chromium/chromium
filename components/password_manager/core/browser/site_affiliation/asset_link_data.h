@@ -24,6 +24,10 @@ class AssetLinkData {
  public:
   AssetLinkData();
   AssetLinkData(AssetLinkData&& other) noexcept;
+
+  AssetLinkData(const AssetLinkData&) = delete;
+  AssetLinkData& operator=(const AssetLinkData&) = delete;
+
   ~AssetLinkData();
 
   AssetLinkData& operator=(AssetLinkData&& other);
@@ -36,8 +40,6 @@ class AssetLinkData {
  private:
   std::vector<GURL> includes_;
   std::vector<GURL> targets_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssetLinkData);
 };
 
 }  // namespace password_manager

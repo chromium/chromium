@@ -36,6 +36,10 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
   // The exported DBus object will not be unregistered upon deletion.  It is the
   // responsibility of the caller to remove it after |this| is deleted.
   DbusMenu(dbus::ExportedObject* exported_object, InitializedCallback callback);
+
+  DbusMenu(const DbusMenu&) = delete;
+  DbusMenu& operator=(const DbusMenu&) = delete;
+
   ~DbusMenu();
 
   // Should be called when there's a new root menu.
@@ -59,6 +63,10 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
              ui::MenuModel* menu,
              ui::MenuModel* containing_menu,
              int containing_menu_index);
+
+    MenuItem(const MenuItem&) = delete;
+    MenuItem& operator=(const MenuItem&) = delete;
+
     ~MenuItem();
 
     const int32_t id;
@@ -72,8 +80,6 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
     // |containing_menu_index| is meaningless.
     ui::MenuModel* const containing_menu;
     const int containing_menu_index;
-
-    DISALLOW_COPY_AND_ASSIGN(MenuItem);
   };
 
   class ScopedMethodResponse {
@@ -159,8 +165,6 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
   std::map<int32_t, std::unique_ptr<MenuItem>> items_;
 
   base::WeakPtrFactory<DbusMenu> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DbusMenu);
 };
 
 #endif  // COMPONENTS_DBUS_MENU_MENU_H_

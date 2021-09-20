@@ -50,6 +50,10 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
 
   explicit CaptivePortalDetector(
       network::mojom::URLLoaderFactory* loader_factory);
+
+  CaptivePortalDetector(const CaptivePortalDetector&) = delete;
+  CaptivePortalDetector& operator=(const CaptivePortalDetector&) = delete;
+
   ~CaptivePortalDetector();
 
   // Triggers a check for a captive portal. After completion, runs the
@@ -119,8 +123,6 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::WeakPtrFactory<CaptivePortalDetector> weak_factory_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalDetector);
 };
 
 }  // namespace captive_portal

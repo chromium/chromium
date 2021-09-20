@@ -41,6 +41,9 @@ using AggregatedRenderPassId = base::IdTypeU64<AggregatedRenderPass>;
 // all of the AggregatedRenderPasses.
 class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
  public:
+  AggregatedRenderPass(const AggregatedRenderPass&) = delete;
+  AggregatedRenderPass& operator=(const AggregatedRenderPass&) = delete;
+
   ~AggregatedRenderPass();
 
   AggregatedRenderPass();
@@ -107,8 +110,6 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
         "AggregatedRenderPass");
     return quad_list.AllocateAndCopyFrom(DrawQuadType::MaterialCast(quad));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AggregatedRenderPass);
 };
 
 using AggregatedRenderPassList =

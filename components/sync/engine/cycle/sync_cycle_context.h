@@ -50,9 +50,6 @@ class SyncCycleContext {
                    const std::string& bag_of_chips,
                    base::TimeDelta poll_interval);
 
-  SyncCycleContext(const SyncCycleContext&) = delete;
-  SyncCycleContext& operator=(const SyncCycleContext&) = delete;
-
   ~SyncCycleContext();
 
   ServerConnectionManager* connection_manager() { return connection_manager_; }
@@ -183,6 +180,8 @@ class SyncCycleContext {
   ActiveDevicesInvalidationInfo active_devices_invalidation_info_;
 
   base::TimeDelta poll_interval_;
+
+  DISALLOW_COPY_AND_ASSIGN(SyncCycleContext);
 };
 
 }  // namespace syncer

@@ -50,6 +50,10 @@ class ReportUploader {
 
   ReportUploader(policy::CloudPolicyClient* client,
                  int maximum_number_of_retries);
+
+  ReportUploader(const ReportUploader&) = delete;
+  ReportUploader& operator=(const ReportUploader&) = delete;
+
   virtual ~ReportUploader();
 
   // Sets a list of requests and upload it. Request will be uploaded one after
@@ -84,7 +88,6 @@ class ReportUploader {
   const int maximum_number_of_retries_;
 
   base::WeakPtrFactory<ReportUploader> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ReportUploader);
 };
 
 enum ReportResponseMetricsStatus {

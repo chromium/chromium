@@ -25,6 +25,10 @@ namespace {
 class MockSiteDataStore : public testing::NoopSiteDataStore {
  public:
   MockSiteDataStore() = default;
+
+  MockSiteDataStore(const MockSiteDataStore&) = delete;
+  MockSiteDataStore& operator=(const MockSiteDataStore&) = delete;
+
   ~MockSiteDataStore() = default;
 
   // Note: As move-only parameters (e.g. OnceCallback) aren't supported by mock
@@ -40,9 +44,6 @@ class MockSiteDataStore : public testing::NoopSiteDataStore {
 
   MOCK_METHOD2(WriteSiteDataIntoStore,
                void(const url::Origin&, const SiteDataProto&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSiteDataStore);
 };
 
 void InitializeSiteDataProto(SiteDataProto* site_data) {

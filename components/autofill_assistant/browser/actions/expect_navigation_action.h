@@ -14,13 +14,15 @@ class ExpectNavigationAction : public Action {
  public:
   explicit ExpectNavigationAction(ActionDelegate* delegate,
                                   const ActionProto& proto);
+
+  ExpectNavigationAction(const ExpectNavigationAction&) = delete;
+  ExpectNavigationAction& operator=(const ExpectNavigationAction&) = delete;
+
   ~ExpectNavigationAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectNavigationAction);
 };
 
 }  // namespace autofill_assistant

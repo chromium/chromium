@@ -56,6 +56,12 @@ class GeolocationPermissionContextAndroid
 
   GeolocationPermissionContextAndroid(content::BrowserContext* browser_context,
                                       std::unique_ptr<Delegate> delegate);
+
+  GeolocationPermissionContextAndroid(
+      const GeolocationPermissionContextAndroid&) = delete;
+  GeolocationPermissionContextAndroid& operator=(
+      const GeolocationPermissionContextAndroid&) = delete;
+
   ~GeolocationPermissionContextAndroid() override;
 
   static void AddDayOffsetForTesting(int days);
@@ -142,8 +148,6 @@ class GeolocationPermissionContextAndroid
   // Must be the last member, to ensure that it will be destroyed first, which
   // will invalidate weak pointers.
   base::WeakPtrFactory<GeolocationPermissionContextAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationPermissionContextAndroid);
 };
 
 }  // namespace permissions

@@ -19,6 +19,9 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceX11 : public SoftwareOutputDevice {
  public:
   explicit SoftwareOutputDeviceX11(gfx::AcceleratedWidget widget);
 
+  SoftwareOutputDeviceX11(const SoftwareOutputDeviceX11&) = delete;
+  SoftwareOutputDeviceX11& operator=(const SoftwareOutputDeviceX11&) = delete;
+
   ~SoftwareOutputDeviceX11() override;
 
  private:
@@ -32,8 +35,6 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceX11 : public SoftwareOutputDevice {
   ui::X11SoftwareBitmapPresenter x11_software_bitmap_presenter_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareOutputDeviceX11);
 };
 
 }  // namespace viz

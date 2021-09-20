@@ -21,6 +21,10 @@ struct URLAndTitle {
 class HistoryBackendClient {
  public:
   HistoryBackendClient() {}
+
+  HistoryBackendClient(const HistoryBackendClient&) = delete;
+  HistoryBackendClient& operator=(const HistoryBackendClient&) = delete;
+
   virtual ~HistoryBackendClient() {}
 
   // Returns true if the specified URL is pinned due to being bookmarked or used
@@ -33,9 +37,6 @@ class HistoryBackendClient {
   // Returns whether `url` should be considered web-safe (see
   // content::ChildProcessSecurityPolicy).
   virtual bool IsWebSafe(const GURL& url) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackendClient);
 };
 
 }  // namespace history

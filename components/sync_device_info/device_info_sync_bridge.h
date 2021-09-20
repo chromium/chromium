@@ -45,6 +45,10 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
       OnceModelTypeStoreFactory store_factory,
       std::unique_ptr<ModelTypeChangeProcessor> change_processor,
       std::unique_ptr<DeviceInfoPrefs> device_info_prefs);
+
+  DeviceInfoSyncBridge(const DeviceInfoSyncBridge&) = delete;
+  DeviceInfoSyncBridge& operator=(const DeviceInfoSyncBridge&) = delete;
+
   ~DeviceInfoSyncBridge() override;
 
   LocalDeviceInfoProvider* GetLocalDeviceInfoProvider();
@@ -194,8 +198,6 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   const std::unique_ptr<DeviceInfoPrefs> device_info_prefs_;
 
   base::WeakPtrFactory<DeviceInfoSyncBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncBridge);
 };
 
 }  // namespace syncer

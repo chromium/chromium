@@ -40,6 +40,11 @@ class ContentPasswordManagerDriver
   ContentPasswordManagerDriver(content::RenderFrameHost* render_frame_host,
                                PasswordManagerClient* client,
                                autofill::AutofillClient* autofill_client);
+
+  ContentPasswordManagerDriver(const ContentPasswordManagerDriver&) = delete;
+  ContentPasswordManagerDriver& operator=(const ContentPasswordManagerDriver&) =
+      delete;
+
   ~ContentPasswordManagerDriver() override;
 
   // Gets the driver for |render_frame_host|.
@@ -169,8 +174,6 @@ class ContentPasswordManagerDriver
   content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 
   base::WeakPtrFactory<ContentPasswordManagerDriver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentPasswordManagerDriver);
 };
 
 }  // namespace password_manager

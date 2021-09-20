@@ -25,6 +25,10 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
                             public KeyedService {
  public:
   BookmarkUndoService();
+
+  BookmarkUndoService(const BookmarkUndoService&) = delete;
+  BookmarkUndoService& operator=(const BookmarkUndoService&) = delete;
+
   ~BookmarkUndoService() override;
 
   // Starts the BookmarkUndoService and register it as a BookmarkModelObserver.
@@ -73,8 +77,6 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkUndoService);
 };
 
 #endif  // COMPONENTS_UNDO_BOOKMARK_UNDO_SERVICE_H_

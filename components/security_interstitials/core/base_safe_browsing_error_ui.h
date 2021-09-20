@@ -93,6 +93,10 @@ class BaseSafeBrowsingErrorUI {
       const std::string& app_locale,
       const base::Time& time_triggered,
       ControllerClient* controller);
+
+  BaseSafeBrowsingErrorUI(const BaseSafeBrowsingErrorUI&) = delete;
+  BaseSafeBrowsingErrorUI& operator=(const BaseSafeBrowsingErrorUI&) = delete;
+
   virtual ~BaseSafeBrowsingErrorUI();
 
   bool is_main_frame_load_blocked() const {
@@ -198,8 +202,6 @@ class BaseSafeBrowsingErrorUI {
   const base::Time time_triggered_;
 
   ControllerClient* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseSafeBrowsingErrorUI);
 };
 
 }  // security_interstitials

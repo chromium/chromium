@@ -38,6 +38,10 @@ class EventLogger {
 
   // Creates an event logger that keeps the latest kDefaultHistorySize events.
   EventLogger();
+
+  EventLogger(const EventLogger&) = delete;
+  EventLogger& operator=(const EventLogger&) = delete;
+
   ~EventLogger();
 
   // Logs a message and its severity.
@@ -62,8 +66,6 @@ class EventLogger {
   size_t history_size_;  // guarded by lock_.
   int next_event_id_;  // guarded by lock_.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventLogger);
 };
 
 }  // namespace drive

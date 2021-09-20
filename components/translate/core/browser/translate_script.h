@@ -27,6 +27,10 @@ class TranslateScript {
   using RequestCallback = base::OnceCallback<void(bool)>;
 
   TranslateScript();
+
+  TranslateScript(const TranslateScript&) = delete;
+  TranslateScript& operator=(const TranslateScript&) = delete;
+
   virtual ~TranslateScript();
 
   // Returns the fetched translate script.
@@ -97,8 +101,6 @@ class TranslateScript {
   RequestCallbackList callback_list_;
 
   base::WeakPtrFactory<TranslateScript> weak_method_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateScript);
 };
 
 }  // namespace translate

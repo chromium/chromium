@@ -27,6 +27,10 @@ class ReadingListStore : public ReadingListModelStorage {
   ReadingListStore(
       syncer::OnceModelTypeStoreFactory create_store_callback,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  ReadingListStore(const ReadingListStore&) = delete;
+  ReadingListStore& operator=(const ReadingListStore&) = delete;
+
   ~ReadingListStore() override;
 
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override;
@@ -134,12 +138,13 @@ class ReadingListStore : public ReadingListModelStorage {
    public:
     explicit ScopedBatchUpdate(ReadingListStore* store);
 
+    ScopedBatchUpdate(const ScopedBatchUpdate&) = delete;
+    ScopedBatchUpdate& operator=(const ScopedBatchUpdate&) = delete;
+
     ~ScopedBatchUpdate() override;
 
    private:
     ReadingListStore* store_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedBatchUpdate);
   };
 
  private:
@@ -169,8 +174,6 @@ class ReadingListStore : public ReadingListModelStorage {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ReadingListStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListStore);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_STORE_H_

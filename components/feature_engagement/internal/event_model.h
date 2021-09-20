@@ -22,6 +22,9 @@ class EventModel {
   // argument denotes whether the model was successfully initialized.
   using OnModelInitializationFinished = base::OnceCallback<void(bool success)>;
 
+  EventModel(const EventModel&) = delete;
+  EventModel& operator=(const EventModel&) = delete;
+
   virtual ~EventModel() = default;
 
   // Initialize the model, including all underlying sub systems. When all
@@ -79,9 +82,6 @@ class EventModel {
 
  protected:
   EventModel() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventModel);
 };
 
 }  // namespace feature_engagement

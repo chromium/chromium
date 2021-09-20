@@ -100,6 +100,10 @@ class USER_MANAGER_EXPORT UserManager {
     UserAccountData(const std::u16string& display_name,
                     const std::u16string& given_name,
                     const std::string& locale);
+
+    UserAccountData(const UserAccountData&) = delete;
+    UserAccountData& operator=(const UserAccountData&) = delete;
+
     ~UserAccountData();
     const std::u16string& display_name() const { return display_name_; }
     const std::u16string& given_name() const { return given_name_; }
@@ -109,8 +113,6 @@ class USER_MANAGER_EXPORT UserManager {
     const std::u16string display_name_;
     const std::u16string given_name_;
     const std::string locale_;
-
-    DISALLOW_COPY_AND_ASSIGN(UserAccountData);
   };
 
   // Initializes UserManager instance to this. Normally should be called right

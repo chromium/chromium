@@ -48,6 +48,10 @@ class MediaSinkServiceBaseTest : public ::testing::Test {
  public:
   MediaSinkServiceBaseTest()
       : media_sink_service_(mock_sink_discovered_cb_.Get()) {}
+
+  MediaSinkServiceBaseTest(const MediaSinkServiceBaseTest&) = delete;
+  MediaSinkServiceBaseTest& operator=(const MediaSinkServiceBaseTest&) = delete;
+
   ~MediaSinkServiceBaseTest() override = default;
 
   void PopulateSinks(const std::vector<MediaSinkInternal>& old_sinks,
@@ -73,8 +77,6 @@ class MediaSinkServiceBaseTest : public ::testing::Test {
  protected:
   base::MockCallback<OnSinksDiscoveredCallback> mock_sink_discovered_cb_;
   TestMediaSinkService media_sink_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSinkServiceBaseTest);
 };
 
 TEST_F(MediaSinkServiceBaseTest, TestOnDiscoveryComplete_SameSink) {

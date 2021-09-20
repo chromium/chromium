@@ -50,6 +50,10 @@ class VariationParamsManager {
       const std::string& trial_name,
       const std::map<std::string, std::string>& param_values,
       const std::set<std::string>& associated_features);
+
+  VariationParamsManager(const VariationParamsManager&) = delete;
+  VariationParamsManager& operator=(const VariationParamsManager&) = delete;
+
   ~VariationParamsManager();
 
   // Associates |param_values| with the given |trial_name|. |param_values| maps
@@ -92,8 +96,6 @@ class VariationParamsManager {
   base::test::ScopedFieldTrialListResetter field_trial_list_resetter_;
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationParamsManager);
 };
 
 }  // namespace testing

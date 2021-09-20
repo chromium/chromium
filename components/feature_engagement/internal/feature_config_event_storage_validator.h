@@ -22,6 +22,12 @@ struct FeatureConfig;
 class FeatureConfigEventStorageValidator : public EventStorageValidator {
  public:
   FeatureConfigEventStorageValidator();
+
+  FeatureConfigEventStorageValidator(
+      const FeatureConfigEventStorageValidator&) = delete;
+  FeatureConfigEventStorageValidator& operator=(
+      const FeatureConfigEventStorageValidator&) = delete;
+
   ~FeatureConfigEventStorageValidator() override;
 
   // EventStorageValidator implementation.
@@ -54,8 +60,6 @@ class FeatureConfigEventStorageValidator : public EventStorageValidator {
   // Contains the longest time to store each event across all EventConfigs,
   // as a number of days.
   std::unordered_map<std::string, uint32_t> longest_storage_times_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureConfigEventStorageValidator);
 };
 
 }  // namespace feature_engagement

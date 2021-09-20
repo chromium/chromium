@@ -27,6 +27,10 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
  public:
   PermissionPromptAndroid(content::WebContents* web_contents,
                           Delegate* delegate);
+
+  PermissionPromptAndroid(const PermissionPromptAndroid&) = delete;
+  PermissionPromptAndroid& operator=(const PermissionPromptAndroid&) = delete;
+
   ~PermissionPromptAndroid() override;
 
   // permissions::PermissionPrompt:
@@ -66,8 +70,6 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   infobars::InfoBar* permission_infobar_;
 
   base::WeakPtrFactory<PermissionPromptAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionPromptAndroid);
 };
 
 }  // namespace permissions

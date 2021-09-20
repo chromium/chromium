@@ -28,6 +28,12 @@ class OptimizationHintsComponentInstallerPolicy
   static const char kManifestRulesetFormatKey[];
 
   OptimizationHintsComponentInstallerPolicy();
+
+  OptimizationHintsComponentInstallerPolicy(
+      const OptimizationHintsComponentInstallerPolicy&) = delete;
+  OptimizationHintsComponentInstallerPolicy& operator=(
+      const OptimizationHintsComponentInstallerPolicy&) = delete;
+
   ~OptimizationHintsComponentInstallerPolicy() override;
 
  private:
@@ -51,8 +57,6 @@ class OptimizationHintsComponentInstallerPolicy
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   const base::Version ruleset_format_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationHintsComponentInstallerPolicy);
 };
 
 void RegisterOptimizationHintsComponent(ComponentUpdateService* cus);

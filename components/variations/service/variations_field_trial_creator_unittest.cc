@@ -150,6 +150,10 @@ std::string SerializeSeed(const VariationsSeed& seed) {
 class TestPlatformFieldTrials : public PlatformFieldTrials {
  public:
   TestPlatformFieldTrials() = default;
+
+  TestPlatformFieldTrials(const TestPlatformFieldTrials&) = delete;
+  TestPlatformFieldTrials& operator=(const TestPlatformFieldTrials&) = delete;
+
   ~TestPlatformFieldTrials() override = default;
 
   // PlatformFieldTrials:
@@ -158,15 +162,16 @@ class TestPlatformFieldTrials : public PlatformFieldTrials {
       bool has_seed,
       const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestPlatformFieldTrials);
 };
 
 class MockSafeSeedManager : public SafeSeedManager {
  public:
   explicit MockSafeSeedManager(PrefService* local_state)
       : SafeSeedManager(local_state) {}
+
+  MockSafeSeedManager(const MockSafeSeedManager&) = delete;
+  MockSafeSeedManager& operator=(const MockSafeSeedManager&) = delete;
+
   ~MockSafeSeedManager() override = default;
 
   MOCK_CONST_METHOD0(ShouldRunInSafeMode, bool());
@@ -184,15 +189,17 @@ class MockSafeSeedManager : public SafeSeedManager {
     DoSetActiveSeedState(seed_data, base64_seed_signature,
                          client_filterable_state.get(), seed_fetch_time);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSafeSeedManager);
 };
 
 // TODO(crbug.com/1167566): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
  public:
   TestVariationsServiceClient() = default;
+
+  TestVariationsServiceClient(const TestVariationsServiceClient&) = delete;
+  TestVariationsServiceClient& operator=(const TestVariationsServiceClient&) =
+      delete;
+
   ~TestVariationsServiceClient() override = default;
 
   // VariationsServiceClient:
@@ -222,8 +229,6 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   }
 
   std::string restrict_parameter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVariationsServiceClient);
 };
 
 class MockVariationsServiceClient : public TestVariationsServiceClient {
@@ -235,6 +240,10 @@ class TestVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit TestVariationsSeedStore(PrefService* local_state)
       : VariationsSeedStore(local_state) {}
+
+  TestVariationsSeedStore(const TestVariationsSeedStore&) = delete;
+  TestVariationsSeedStore& operator=(const TestVariationsSeedStore&) = delete;
+
   ~TestVariationsSeedStore() override = default;
 
   bool LoadSeed(VariationsSeed* seed,
@@ -272,8 +281,6 @@ class TestVariationsSeedStore : public VariationsSeedStore {
 
   // Whether to simulate having an empty safe seed.
   bool has_empty_safe_seed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVariationsSeedStore);
 };
 
 class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
@@ -299,6 +306,11 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         base::BindRepeating(&NoOpLoadClientInfoBackup), startup_visibility);
     metrics_state_manager_->InstantiateFieldTrialList();
   }
+
+  TestVariationsFieldTrialCreator(const TestVariationsFieldTrialCreator&) =
+      delete;
+  TestVariationsFieldTrialCreator& operator=(
+      const TestVariationsFieldTrialCreator&) = delete;
 
   ~TestVariationsFieldTrialCreator() override = default;
 
@@ -326,8 +338,6 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
   SafeSeedManager* const safe_seed_manager_;
   base::Time build_time_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVariationsFieldTrialCreator);
 };
 
 }  // namespace
@@ -339,6 +349,9 @@ class FieldTrialCreatorTest : public ::testing::Test {
     VariationsService::RegisterPrefs(prefs_.registry());
     global_feature_list_ = base::FeatureList::ClearInstanceForTesting();
   }
+
+  FieldTrialCreatorTest(const FieldTrialCreatorTest&) = delete;
+  FieldTrialCreatorTest& operator=(const FieldTrialCreatorTest&) = delete;
 
   ~FieldTrialCreatorTest() override {
     // Clear out any features created by tests in this suite, and restore the
@@ -363,8 +376,6 @@ class FieldTrialCreatorTest : public ::testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   // The global feature list, which is ignored by tests in this suite.
   std::unique_ptr<base::FeatureList> global_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialCreatorTest);
 };
 
 #if !defined(OS_ANDROID)

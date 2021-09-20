@@ -631,6 +631,9 @@ class TemplateURL {
               base::Time install_time,
               bool wants_to_be_default_engine);
 
+  TemplateURL(const TemplateURL&) = delete;
+  TemplateURL& operator=(const TemplateURL&) = delete;
+
   ~TemplateURL();
 
   // For two engines with the same keyword, |this| and |other|,
@@ -877,8 +880,6 @@ class TemplateURL {
   mutable SearchEngineType engine_type_;
 
   // TODO(sky): Add date last parsed OSD file.
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURL);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_H_

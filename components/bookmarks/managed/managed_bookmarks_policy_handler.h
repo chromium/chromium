@@ -16,6 +16,11 @@ class ManagedBookmarksPolicyHandler
     : public policy::SchemaValidatingPolicyHandler {
  public:
   explicit ManagedBookmarksPolicyHandler(policy::Schema chrome_schema);
+
+  ManagedBookmarksPolicyHandler(const ManagedBookmarksPolicyHandler&) = delete;
+  ManagedBookmarksPolicyHandler& operator=(
+      const ManagedBookmarksPolicyHandler&) = delete;
+
   ~ManagedBookmarksPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -25,8 +30,6 @@ class ManagedBookmarksPolicyHandler
  private:
   std::string GetFolderName(const base::Value& list);
   base::Value::ListStorage FilterBookmarks(base::Value::ListStorage bookmarks);
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedBookmarksPolicyHandler);
 };
 
 }  // namespace bookmarks

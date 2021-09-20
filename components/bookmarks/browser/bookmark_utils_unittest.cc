@@ -37,6 +37,9 @@ class BookmarkUtilsTest : public testing::Test,
         grouped_changes_beginning_count_(0),
         grouped_changes_ended_count_(0) {}
 
+  BookmarkUtilsTest(const BookmarkUtilsTest&) = delete;
+  BookmarkUtilsTest& operator=(const BookmarkUtilsTest&) = delete;
+
   ~BookmarkUtilsTest() override {}
 
 // Copy and paste is not yet supported on iOS. http://crbug.com/228147
@@ -78,8 +81,6 @@ class BookmarkUtilsTest : public testing::Test,
 
   int grouped_changes_beginning_count_;
   int grouped_changes_ended_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkUtilsTest);
 };
 
 TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesWordPhraseQuery) {

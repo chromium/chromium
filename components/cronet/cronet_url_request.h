@@ -212,6 +212,9 @@ class CronetURLRequest {
                  int32_t traffic_stats_uid,
                  net::Idempotency idempotency);
 
+    NetworkTasks(const NetworkTasks&) = delete;
+    NetworkTasks& operator=(const NetworkTasks&) = delete;
+
     // Invoked on the network thread.
     ~NetworkTasks() override;
 
@@ -295,7 +298,6 @@ class CronetURLRequest {
     std::unique_ptr<net::URLRequest> url_request_;
 
     THREAD_CHECKER(network_thread_checker_);
-    DISALLOW_COPY_AND_ASSIGN(NetworkTasks);
   };
 
   CronetURLRequestContext* context_;

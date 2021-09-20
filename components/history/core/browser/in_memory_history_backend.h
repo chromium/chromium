@@ -44,6 +44,10 @@ class URLRow;
 class InMemoryHistoryBackend : public HistoryServiceObserver {
  public:
   InMemoryHistoryBackend();
+
+  InMemoryHistoryBackend(const InMemoryHistoryBackend&) = delete;
+  InMemoryHistoryBackend& operator=(const InMemoryHistoryBackend&) = delete;
+
   ~InMemoryHistoryBackend() override;
 
   // Initializes the backend from the history database pointed to by the
@@ -93,8 +97,6 @@ class InMemoryHistoryBackend : public HistoryServiceObserver {
 
   base::ScopedObservation<HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryHistoryBackend);
 };
 
 }  // namespace history

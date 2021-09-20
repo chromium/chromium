@@ -29,6 +29,10 @@ class PerFrameTranslateAgent : public content::RenderFrameObserver,
   PerFrameTranslateAgent(content::RenderFrame* render_frame,
                          int world_id,
                          blink::AssociatedInterfaceRegistry* registry);
+
+  PerFrameTranslateAgent(const PerFrameTranslateAgent&) = delete;
+  PerFrameTranslateAgent& operator=(const PerFrameTranslateAgent&) = delete;
+
   ~PerFrameTranslateAgent() override;
 
   // mojom::TranslateAgent implementation.
@@ -150,8 +154,6 @@ class PerFrameTranslateAgent : public content::RenderFrameObserver,
 
   // Method factory used to make calls to TranslateFrameImpl.
   base::WeakPtrFactory<PerFrameTranslateAgent> weak_method_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerFrameTranslateAgent);
 };
 
 }  // namespace translate

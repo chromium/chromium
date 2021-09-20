@@ -20,6 +20,11 @@ class SafeBrowsingSubresourceTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<SafeBrowsingSubresourceTabHelper> {
  public:
+  SafeBrowsingSubresourceTabHelper(const SafeBrowsingSubresourceTabHelper&) =
+      delete;
+  SafeBrowsingSubresourceTabHelper& operator=(
+      const SafeBrowsingSubresourceTabHelper&) = delete;
+
   ~SafeBrowsingSubresourceTabHelper() override;
 
   // WebContentsObserver::
@@ -35,7 +40,6 @@ class SafeBrowsingSubresourceTabHelper
   SafeBrowsingUIManager* manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingSubresourceTabHelper);
 };
 
 }  // namespace safe_browsing

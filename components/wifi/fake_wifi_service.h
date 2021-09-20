@@ -20,6 +20,10 @@ namespace wifi {
 class FakeWiFiService : public WiFiService {
  public:
   FakeWiFiService();
+
+  FakeWiFiService(const FakeWiFiService&) = delete;
+  FakeWiFiService& operator=(const FakeWiFiService&) = delete;
+
   ~FakeWiFiService() override;
 
   void Initialize(
@@ -75,8 +79,6 @@ class FakeWiFiService : public WiFiService {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   NetworkGuidListCallback networks_changed_observer_;
   NetworkGuidListCallback network_list_changed_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWiFiService);
 };
 
 }  // namespace wifi

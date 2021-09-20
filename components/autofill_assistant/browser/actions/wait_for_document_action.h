@@ -17,6 +17,10 @@ class WaitForDocumentAction : public Action {
  public:
   explicit WaitForDocumentAction(ActionDelegate* delegate,
                                  const ActionProto& proto);
+
+  WaitForDocumentAction(const WaitForDocumentAction&) = delete;
+  WaitForDocumentAction& operator=(const WaitForDocumentAction&) = delete;
+
   ~WaitForDocumentAction() override;
 
  private:
@@ -42,8 +46,6 @@ class WaitForDocumentAction : public Action {
   ProcessActionCallback callback_;
   std::unique_ptr<ElementFinder::Result> optional_frame_element_;
   base::WeakPtrFactory<WaitForDocumentAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForDocumentAction);
 };
 
 }  // namespace autofill_assistant

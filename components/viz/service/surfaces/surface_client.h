@@ -34,6 +34,9 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
  public:
   SurfaceClient() = default;
 
+  SurfaceClient(const SurfaceClient&) = delete;
+  SurfaceClient& operator=(const SurfaceClient&) = delete;
+
   virtual ~SurfaceClient() = default;
 
   // Called when |surface| has a new CompositorFrame available for display.
@@ -90,9 +93,6 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
       base::TimeTicks expected_display_time) = 0;
 
   virtual bool IsVideoCaptureStarted() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SurfaceClient);
 };
 
 }  // namespace viz

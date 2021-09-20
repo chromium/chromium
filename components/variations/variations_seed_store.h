@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
                       std::unique_ptr<SeedResponse> initial_seed,
                       bool signature_verification_enabled,
                       bool use_first_run_prefs = true);
+
+  VariationsSeedStore(const VariationsSeedStore&) = delete;
+  VariationsSeedStore& operator=(const VariationsSeedStore&) = delete;
+
   virtual ~VariationsSeedStore();
 
   // Loads the variations seed data from local state into |seed|, as well as the
@@ -245,8 +249,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // Whether this may read or write to Java "first run" SharedPreferences.
   const bool use_first_run_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsSeedStore);
 };
 
 }  // namespace variations

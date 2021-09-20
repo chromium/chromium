@@ -53,6 +53,10 @@ class DataReductionProxyService
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       const base::TimeDelta& commit_delay);
 
+  DataReductionProxyService(const DataReductionProxyService&) = delete;
+  DataReductionProxyService& operator=(const DataReductionProxyService&) =
+      delete;
+
   virtual ~DataReductionProxyService();
 
   void Shutdown();
@@ -143,8 +147,6 @@ class DataReductionProxyService
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DataReductionProxyService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxyService);
 };
 
 }  // namespace data_reduction_proxy

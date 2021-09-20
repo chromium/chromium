@@ -304,10 +304,12 @@ GURL ParseExchangeURL(base::StringPiece str) {
 class WebBundleParser::SharedBundleDataSource::Observer {
  public:
   Observer() {}
+
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   virtual ~Observer() {}
   virtual void OnDisconnect() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 // A parser for bundle's metadata. This class owns itself and will self destruct
@@ -320,6 +322,10 @@ class WebBundleParser::MetadataParser
       : data_source_(data_source), callback_(std::move(callback)) {
     data_source_->AddObserver(this);
   }
+
+  MetadataParser(const MetadataParser&) = delete;
+  MetadataParser& operator=(const MetadataParser&) = delete;
+
   ~MetadataParser() override { data_source_->RemoveObserver(this); }
 
   void Start() {
@@ -1141,8 +1147,6 @@ class WebBundleParser::MetadataParser
   mojom::BundleMetadataPtr metadata_;
   bool bundle_version_is_b1_ = false;
   base::WeakPtrFactory<MetadataParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataParser);
 };
 
 // A parser for reading single item from the responses section. This class owns
@@ -1160,6 +1164,10 @@ class WebBundleParser::ResponseParser
         callback_(std::move(callback)) {
     data_source_->AddObserver(this);
   }
+
+  ResponseParser(const ResponseParser&) = delete;
+  ResponseParser& operator=(const ResponseParser&) = delete;
+
   ~ResponseParser() override { data_source_->RemoveObserver(this); }
 
   void Start(uint64_t buffer_size = kInitialBufferSizeForResponse) {
@@ -1309,8 +1317,6 @@ class WebBundleParser::ResponseParser
   ParseResponseCallback callback_;
 
   base::WeakPtrFactory<ResponseParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResponseParser);
 };
 
 WebBundleParser::SharedBundleDataSource::SharedBundleDataSource(

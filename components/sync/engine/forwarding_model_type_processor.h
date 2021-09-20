@@ -20,11 +20,6 @@ class ForwardingModelTypeProcessor : public ModelTypeProcessor {
  public:
   // |processor| must not be null and must outlive this object.
   explicit ForwardingModelTypeProcessor(ModelTypeProcessor* processor);
-
-  ForwardingModelTypeProcessor(const ForwardingModelTypeProcessor&) = delete;
-  ForwardingModelTypeProcessor& operator=(const ForwardingModelTypeProcessor&) =
-      delete;
-
   ~ForwardingModelTypeProcessor() override;
 
   void ConnectSync(std::unique_ptr<CommitQueue> worker) override;
@@ -41,6 +36,8 @@ class ForwardingModelTypeProcessor : public ModelTypeProcessor {
 
  private:
   ModelTypeProcessor* const processor_;
+
+  DISALLOW_COPY_AND_ASSIGN(ForwardingModelTypeProcessor);
 };
 
 }  // namespace syncer

@@ -37,6 +37,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadWorker
   };
 
   DownloadWorker(DownloadWorker::Delegate* delegate, int64_t offset);
+
+  DownloadWorker(const DownloadWorker&) = delete;
+  DownloadWorker& operator=(const DownloadWorker&) = delete;
+
   virtual ~DownloadWorker();
 
   int64_t offset() const { return offset_; }
@@ -78,8 +82,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadWorker
   UrlDownloadHandler::UniqueUrlDownloadHandlerPtr url_download_handler_;
 
   base::WeakPtrFactory<DownloadWorker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadWorker);
 };
 
 }  // namespace download

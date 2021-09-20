@@ -24,6 +24,10 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
  public:
   WMHelperTester(aura::Window* root_window)
       : root_window_(root_window), vsync_timing_manager_(this) {}
+
+  WMHelperTester(const WMHelperTester&) = delete;
+  WMHelperTester& operator=(const WMHelperTester&) = delete;
+
   ~WMHelperTester() override {}
 
   // Overridden from WMHelper
@@ -109,8 +113,6 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
   aura::Window* root_window_;
   LifetimeManager lifetime_manager_;
   VSyncTimingManager vsync_timing_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(WMHelperTester);
 };
 
 }  // namespace

@@ -56,6 +56,10 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
       : is_webapk_compatible_(false),
         title_available_(false),
         data_available_(false) {}
+
+  ObserverWaiter(const ObserverWaiter&) = delete;
+  ObserverWaiter& operator=(const ObserverWaiter&) = delete;
+
   ~ObserverWaiter() override {}
 
   // Waits till the OnDataAvailable() callback is called.
@@ -99,8 +103,6 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
   bool title_available_;
   bool data_available_;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverWaiter);
 };
 
 // Builds WebAPK compatible blink::Manifest.
@@ -207,6 +209,12 @@ class AddToHomescreenDataFetcherTest
     : public content::RenderViewHostTestHarness {
  public:
   AddToHomescreenDataFetcherTest() {}
+
+  AddToHomescreenDataFetcherTest(const AddToHomescreenDataFetcherTest&) =
+      delete;
+  AddToHomescreenDataFetcherTest& operator=(
+      const AddToHomescreenDataFetcherTest&) = delete;
+
   ~AddToHomescreenDataFetcherTest() override {}
 
   void SetUp() override {
@@ -314,8 +322,6 @@ class AddToHomescreenDataFetcherTest
 
   TestInstallableManager* installable_manager_;
   NullLargeFaviconProvider null_large_favicon_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddToHomescreenDataFetcherTest);
 };
 
 TEST_F(AddToHomescreenDataFetcherTest, EmptyManifest) {

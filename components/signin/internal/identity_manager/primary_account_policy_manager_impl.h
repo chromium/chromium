@@ -21,6 +21,12 @@ class SigninClient;
 class PrimaryAccountPolicyManagerImpl : public PrimaryAccountPolicyManager {
  public:
   explicit PrimaryAccountPolicyManagerImpl(SigninClient* client);
+
+  PrimaryAccountPolicyManagerImpl(const PrimaryAccountPolicyManagerImpl&) =
+      delete;
+  PrimaryAccountPolicyManagerImpl& operator=(
+      const PrimaryAccountPolicyManagerImpl&) = delete;
+
   ~PrimaryAccountPolicyManagerImpl() override;
 
   // PrimaryAccountPolicyManager:
@@ -55,8 +61,6 @@ class PrimaryAccountPolicyManagerImpl : public PrimaryAccountPolicyManager {
 
   base::WeakPtrFactory<PrimaryAccountPolicyManagerImpl> weak_pointer_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrimaryAccountPolicyManagerImpl);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_POLICY_MANAGER_IMPL_H_

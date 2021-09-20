@@ -64,6 +64,9 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   void SetIntentHandlers(const std::string& action,
                          std::vector<mojom::IntentHandlerInfoPtr> handlers);
 
+  FakeIntentHelperInstance(const FakeIntentHelperInstance&) = delete;
+  FakeIntentHelperInstance& operator=(const FakeIntentHelperInstance&) = delete;
+
   // mojom::IntentHelperInstance:
   ~FakeIntentHelperInstance() override;
 
@@ -150,8 +153,6 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
   mojo::Remote<mojom::IntentHelperHost> host_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeIntentHelperInstance);
 };
 
 }  // namespace arc

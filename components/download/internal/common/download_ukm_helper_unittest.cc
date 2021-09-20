@@ -24,6 +24,10 @@ namespace download {
 class DownloadUkmHelperTest : public testing::Test {
  public:
   DownloadUkmHelperTest() : download_id_(123) { ResetUkmRecorder(); }
+
+  DownloadUkmHelperTest(const DownloadUkmHelperTest&) = delete;
+  DownloadUkmHelperTest& operator=(const DownloadUkmHelperTest&) = delete;
+
   ~DownloadUkmHelperTest() override = default;
 
   void ResetUkmRecorder() {
@@ -49,8 +53,6 @@ class DownloadUkmHelperTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadUkmHelperTest);
 };
 
 TEST_F(DownloadUkmHelperTest, TestBasicReporting) {

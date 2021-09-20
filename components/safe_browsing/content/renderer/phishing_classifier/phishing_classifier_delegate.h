@@ -47,6 +47,11 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // will be used.
   static PhishingClassifierDelegate* Create(content::RenderFrame* render_frame,
                                             PhishingClassifier* classifier);
+
+  PhishingClassifierDelegate(const PhishingClassifierDelegate&) = delete;
+  PhishingClassifierDelegate& operator=(const PhishingClassifierDelegate&) =
+      delete;
+
   ~PhishingClassifierDelegate() override;
 
   // mojom::PhishingDetector
@@ -172,8 +177,6 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   mojo::ReceiverSet<mojom::PhishingDetector> phishing_detector_receivers_;
 
   service_manager::BinderRegistry registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(PhishingClassifierDelegate);
 };
 
 }  // namespace safe_browsing

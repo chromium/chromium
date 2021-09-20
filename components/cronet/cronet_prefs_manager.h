@@ -46,6 +46,9 @@ class CronetPrefsManager {
       net::NetLog* net_log,
       net::URLRequestContextBuilder* context_builder);
 
+  CronetPrefsManager(const CronetPrefsManager&) = delete;
+  CronetPrefsManager& operator=(const CronetPrefsManager&) = delete;
+
   virtual ~CronetPrefsManager();
 
   void SetupNqePersistence(net::NetworkQualityEstimator* nqe);
@@ -75,8 +78,6 @@ class CronetPrefsManager {
 
   // Checks that all methods are called on the network thread.
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CronetPrefsManager);
 
 };  // class CronetPrefsManager
 

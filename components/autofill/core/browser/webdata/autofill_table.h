@@ -441,6 +441,10 @@ class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
  public:
   AutofillTable();
+
+  AutofillTable(const AutofillTable&) = delete;
+  AutofillTable& operator=(const AutofillTable&) = delete;
+
   ~AutofillTable() override;
 
   // Retrieves the AutofillTable* owned by |db|.
@@ -832,8 +836,6 @@ class AutofillTable : public WebDatabaseTable,
   bool InitCreditCardArtImagesTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillTable);
 };
 
 }  // namespace autofill

@@ -45,6 +45,9 @@ class SubKeyRequest : public SubKeyRequester::Request {
         base::TimeDelta::FromSeconds(timeout_seconds));
   }
 
+  SubKeyRequest(const SubKeyRequest&) = delete;
+  SubKeyRequest& operator=(const SubKeyRequest&) = delete;
+
   ~SubKeyRequest() override { on_timeout_.Cancel(); }
 
   void OnRulesLoaded() override {
@@ -75,8 +78,6 @@ class SubKeyRequest : public SubKeyRequester::Request {
 
   bool has_responded_;
   base::CancelableOnceClosure on_timeout_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubKeyRequest);
 };
 
 }  // namespace

@@ -16,6 +16,10 @@ namespace password_manager {
 class MockAffiliationConsumer {
  public:
   MockAffiliationConsumer();
+
+  MockAffiliationConsumer(const MockAffiliationConsumer&) = delete;
+  MockAffiliationConsumer& operator=(const MockAffiliationConsumer&) = delete;
+
   ~MockAffiliationConsumer();
 
   // Expects that the result callback will be called exactly once and that it
@@ -30,8 +34,6 @@ class MockAffiliationConsumer {
 
  private:
   MOCK_METHOD2(OnResultCallback, void(const AffiliatedFacets&, bool));
-
-  DISALLOW_COPY_AND_ASSIGN(MockAffiliationConsumer);
 };
 
 }  // namespace password_manager

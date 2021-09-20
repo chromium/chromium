@@ -16,6 +16,10 @@ namespace gcm {
 class GCMDelayedTaskController {
  public:
   GCMDelayedTaskController();
+
+  GCMDelayedTaskController(const GCMDelayedTaskController&) = delete;
+  GCMDelayedTaskController& operator=(const GCMDelayedTaskController&) = delete;
+
   ~GCMDelayedTaskController();
 
   // Adds a task that will be invoked once we're ready.
@@ -34,8 +38,6 @@ class GCMDelayedTaskController {
   bool ready_;
 
   std::vector<base::OnceClosure> delayed_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDelayedTaskController);
 };
 
 }  // namespace gcm

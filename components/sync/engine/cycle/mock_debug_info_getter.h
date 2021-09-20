@@ -17,10 +17,6 @@ namespace syncer {
 class MockDebugInfoGetter : public DebugInfoGetter {
  public:
   MockDebugInfoGetter();
-
-  MockDebugInfoGetter(const MockDebugInfoGetter&) = delete;
-  MockDebugInfoGetter& operator=(const MockDebugInfoGetter&) = delete;
-
   ~MockDebugInfoGetter() override;
 
   // DebugInfoGetter implementation.
@@ -31,6 +27,8 @@ class MockDebugInfoGetter : public DebugInfoGetter {
 
  private:
   sync_pb::DebugInfo debug_info_;
+
+  DISALLOW_COPY_AND_ASSIGN(MockDebugInfoGetter);
 };
 
 }  // namespace syncer

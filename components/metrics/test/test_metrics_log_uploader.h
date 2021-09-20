@@ -14,6 +14,10 @@ class TestMetricsLogUploader : public MetricsLogUploader {
  public:
   explicit TestMetricsLogUploader(
       const MetricsLogUploader::UploadCallback& on_upload_complete);
+
+  TestMetricsLogUploader(const TestMetricsLogUploader&) = delete;
+  TestMetricsLogUploader& operator=(const TestMetricsLogUploader&) = delete;
+
   ~TestMetricsLogUploader() override;
 
   // Mark the current upload complete with the given response code.
@@ -34,8 +38,6 @@ class TestMetricsLogUploader : public MetricsLogUploader {
   const MetricsLogUploader::UploadCallback on_upload_complete_;
   ReportingInfo last_reporting_info_;
   bool is_uploading_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricsLogUploader);
 };
 
 }  // namespace metrics

@@ -15,6 +15,10 @@ namespace download {
 class DebuggingClient : public Client {
  public:
   DebuggingClient() = default;
+
+  DebuggingClient(const DebuggingClient&) = delete;
+  DebuggingClient& operator=(const DebuggingClient&) = delete;
+
   ~DebuggingClient() override = default;
 
  private:
@@ -39,8 +43,6 @@ class DebuggingClient : public Client {
                                       bool force_delete) override;
   void GetUploadData(const std::string& guid,
                      GetUploadDataCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DebuggingClient);
 };
 
 }  // namespace download

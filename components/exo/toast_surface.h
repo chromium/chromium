@@ -20,6 +20,10 @@ class ToastSurface : public ClientControlledShellSurface {
   ToastSurface(ToastSurfaceManager* manager,
                Surface* surface,
                bool default_scale_cancellation);
+
+  ToastSurface(const ToastSurface&) = delete;
+  ToastSurface& operator=(const ToastSurface&) = delete;
+
   ~ToastSurface() override;
 
   // Overridden from SurfaceDelegate:
@@ -28,8 +32,6 @@ class ToastSurface : public ClientControlledShellSurface {
  private:
   ToastSurfaceManager* const manager_;
   bool added_to_manager_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ToastSurface);
 };
 
 }  // namespace exo

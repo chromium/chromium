@@ -25,6 +25,10 @@ class TranslateAcceptLanguages : public KeyedService {
   // languages.
   TranslateAcceptLanguages(PrefService* prefs,
                            const char* accept_languages_pref);
+
+  TranslateAcceptLanguages(const TranslateAcceptLanguages&) = delete;
+  TranslateAcceptLanguages& operator=(const TranslateAcceptLanguages&) = delete;
+
   ~TranslateAcceptLanguages() override;
 
   // Returns true if |language| is available as Accept-Languages. |language|
@@ -49,8 +53,6 @@ class TranslateAcceptLanguages : public KeyedService {
 
   // Path of accept languages preference.
   const std::string accept_languages_pref_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateAcceptLanguages);
 };
 
 }  // namespace translate

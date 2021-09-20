@@ -69,14 +69,16 @@ class SafeBrowsingServiceInterface
 class SafeBrowsingServiceFactory {
  public:
   SafeBrowsingServiceFactory() {}
+
+  SafeBrowsingServiceFactory(const SafeBrowsingServiceFactory&) = delete;
+  SafeBrowsingServiceFactory& operator=(const SafeBrowsingServiceFactory&) =
+      delete;
+
   virtual ~SafeBrowsingServiceFactory() {}
 
   // TODO(crbug/925153): Once callers of this function are no longer downcasting
   // it to the SafeBrowsingService, we can make this a scoped_refptr.
   virtual SafeBrowsingServiceInterface* CreateSafeBrowsingService() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingServiceFactory);
 };
 
 }  // namespace safe_browsing

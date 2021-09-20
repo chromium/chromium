@@ -36,6 +36,9 @@ class SafeBrowsingLoudErrorUI
       ControllerClient* controller,
       bool created_prior_to_navigation);
 
+  SafeBrowsingLoudErrorUI(const SafeBrowsingLoudErrorUI&) = delete;
+  SafeBrowsingLoudErrorUI& operator=(const SafeBrowsingLoudErrorUI&) = delete;
+
   ~SafeBrowsingLoudErrorUI() override;
 
   // Implement BaseSafeBrowsingErrorUI.
@@ -55,8 +58,6 @@ class SafeBrowsingLoudErrorUI
   void PopulateEnhancedProtectionMessage(base::Value* load_time_data);
 
   const bool created_prior_to_navigation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingLoudErrorUI);
 };
 
 }  // security_interstitials

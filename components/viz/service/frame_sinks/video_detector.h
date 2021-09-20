@@ -33,6 +33,10 @@ class VIZ_SERVICE_EXPORT VideoDetector : public SurfaceObserver {
       SurfaceManager* surface_manager,
       const base::TickClock* tick_clock = base::DefaultTickClock::GetInstance(),
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
+
+  VideoDetector(const VideoDetector&) = delete;
+  VideoDetector& operator=(const VideoDetector&) = delete;
+
   ~VideoDetector() override;
 
   // Adds an observer. The observer can be removed by closing the mojo
@@ -101,8 +105,6 @@ class VIZ_SERVICE_EXPORT VideoDetector : public SurfaceObserver {
   mojo::RemoteSet<mojom::VideoDetectorObserver> observers_;
 
   SurfaceManager* const surface_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDetector);
 };
 
 }  // namespace viz

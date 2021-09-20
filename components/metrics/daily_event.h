@@ -40,13 +40,14 @@ class DailyEvent {
   class Observer {
    public:
     Observer();
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer();
 
     // Called when the daily event is fired.
     virtual void OnDailyEvent(IntervalType type) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Constructs DailyEvent monitor which stores the time it last fired in the
@@ -60,6 +61,10 @@ class DailyEvent {
   DailyEvent(PrefService* pref_service,
              const char* pref_name,
              const std::string& histogram_name);
+
+  DailyEvent(const DailyEvent&) = delete;
+  DailyEvent& operator=(const DailyEvent&) = delete;
+
   ~DailyEvent();
 
   // Adds a observer to be notified when a day elapses. All observers should
@@ -95,8 +100,6 @@ class DailyEvent {
 
   // The time that the daily event was last fired.
   base::Time last_fired_;
-
-  DISALLOW_COPY_AND_ASSIGN(DailyEvent);
 };
 
 }  // namespace metrics

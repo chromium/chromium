@@ -59,6 +59,9 @@ class InstanceResetter
     base::test::TaskEnvironment::AddDestructionObserver(this);
   }
 
+  InstanceResetter(const InstanceResetter&) = delete;
+  InstanceResetter& operator=(const InstanceResetter&) = delete;
+
   ~InstanceResetter() override {
     base::test::TaskEnvironment::RemoveDestructionObserver(this);
   }
@@ -87,8 +90,6 @@ class InstanceResetter
 
  private:
   bool reset_by_task_env = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceResetter);
 };
 
 }  // namespace

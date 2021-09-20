@@ -23,6 +23,10 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceMac : public SoftwareOutputDevice {
  public:
   explicit SoftwareOutputDeviceMac(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  SoftwareOutputDeviceMac(const SoftwareOutputDeviceMac&) = delete;
+  SoftwareOutputDeviceMac& operator=(const SoftwareOutputDeviceMac&) = delete;
+
   ~SoftwareOutputDeviceMac() override;
 
   // SoftwareOutputDevice implementation.
@@ -73,8 +77,6 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceMac : public SoftwareOutputDevice {
   std::unique_ptr<SkCanvas> current_paint_canvas_;
 
   SkRegion last_copy_region_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareOutputDeviceMac);
 };
 
 }  // namespace viz

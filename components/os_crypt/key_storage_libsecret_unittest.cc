@@ -225,14 +225,15 @@ void MockLibsecretLoader::TearDown() {
 class LibsecretTest : public testing::Test {
  public:
   LibsecretTest() = default;
+
+  LibsecretTest(const LibsecretTest&) = delete;
+  LibsecretTest& operator=(const LibsecretTest&) = delete;
+
   ~LibsecretTest() override = default;
 
   void SetUp() override { MockLibsecretLoader::ResetForOSCrypt(); }
 
   void TearDown() override { MockLibsecretLoader::TearDown(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LibsecretTest);
 };
 
 TEST_F(LibsecretTest, LibsecretRepeats) {

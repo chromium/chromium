@@ -20,6 +20,12 @@ class InstallableAmbientBadgeInfoBar : public infobars::InfoBarAndroid {
  public:
   explicit InstallableAmbientBadgeInfoBar(
       std::unique_ptr<InstallableAmbientBadgeInfoBarDelegate> delegate);
+
+  InstallableAmbientBadgeInfoBar(const InstallableAmbientBadgeInfoBar&) =
+      delete;
+  InstallableAmbientBadgeInfoBar& operator=(
+      const InstallableAmbientBadgeInfoBar&) = delete;
+
   ~InstallableAmbientBadgeInfoBar() override;
 
   void AddToHomescreen(JNIEnv* env,
@@ -33,8 +39,6 @@ class InstallableAmbientBadgeInfoBar : public infobars::InfoBarAndroid {
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
   void ProcessButton(int action) override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallableAmbientBadgeInfoBar);
 };
 
 }  // namespace webapps

@@ -41,6 +41,11 @@ class SingleClientVideoCaptureHost final
   SingleClientVideoCaptureHost(const std::string& device_id,
                                blink::mojom::MediaStreamType type,
                                DeviceLauncherCreateCallback callback);
+
+  SingleClientVideoCaptureHost(const SingleClientVideoCaptureHost&) = delete;
+  SingleClientVideoCaptureHost& operator=(const SingleClientVideoCaptureHost&) =
+      delete;
+
   ~SingleClientVideoCaptureHost() override;
 
   // media::mojom::VideoCaptureHost implementations
@@ -128,8 +133,6 @@ class SingleClientVideoCaptureHost final
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SingleClientVideoCaptureHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientVideoCaptureHost);
 };
 
 }  // namespace mirroring

@@ -26,6 +26,11 @@ class MockableTime;
 class DOMAIN_RELIABILITY_EXPORT DomainReliabilityDispatcher {
  public:
   explicit DomainReliabilityDispatcher(MockableTime* time);
+
+  DomainReliabilityDispatcher(const DomainReliabilityDispatcher&) = delete;
+  DomainReliabilityDispatcher& operator=(const DomainReliabilityDispatcher&) =
+      delete;
+
   ~DomainReliabilityDispatcher();
 
   // Schedules |task| to be executed between |min_delay| and |max_delay| from
@@ -61,8 +66,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityDispatcher {
   MockableTime* time_;
   std::set<std::unique_ptr<Task>, base::UniquePtrComparator> tasks_;
   std::set<Task*> eligible_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityDispatcher);
 };
 
 }  // namespace domain_reliability

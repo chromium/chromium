@@ -67,6 +67,10 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // |sii|.
   BufferQueue(gpu::SharedImageInterface* sii,
               gpu::SurfaceHandle surface_handle);
+
+  BufferQueue(const BufferQueue&) = delete;
+  BufferQueue& operator=(const BufferQueue&) = delete;
+
   virtual ~BufferQueue();
 
   // Sets the provider of sync tokens that the BufferQueue needs to ensure
@@ -171,8 +175,6 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   base::circular_deque<std::unique_ptr<AllocatedSurface>> in_flight_surfaces_;
   gpu::SurfaceHandle surface_handle_;
   SyncTokenProvider* sync_token_provider_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferQueue);
 };
 
 }  // namespace viz

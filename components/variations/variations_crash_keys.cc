@@ -52,6 +52,10 @@ std::string ActiveGroupToString(const ActiveGroupId& active_group) {
 class VariationsCrashKeys final : public base::FieldTrialList::Observer {
  public:
   VariationsCrashKeys();
+
+  VariationsCrashKeys(const VariationsCrashKeys&) = delete;
+  VariationsCrashKeys& operator=(const VariationsCrashKeys&) = delete;
+
   ~VariationsCrashKeys() override;
 
   // base::FieldTrialList::Observer:
@@ -99,8 +103,6 @@ class VariationsCrashKeys final : public base::FieldTrialList::Observer {
   size_t num_synthetic_trials_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsCrashKeys);
 };
 
 VariationsCrashKeys::VariationsCrashKeys() {

@@ -27,6 +27,10 @@ namespace viz {
 class TestContextSupport : public gpu::ContextSupport {
  public:
   TestContextSupport();
+
+  TestContextSupport(const TestContextSupport&) = delete;
+  TestContextSupport& operator=(const TestContextSupport&) = delete;
+
   ~TestContextSupport() override;
 
   // gpu::ContextSupport implementation.
@@ -115,8 +119,6 @@ class TestContextSupport : public gpu::ContextSupport {
   bool out_of_order_callbacks_;
 
   base::WeakPtrFactory<TestContextSupport> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestContextSupport);
 };
 
 }  // namespace viz

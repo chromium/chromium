@@ -69,6 +69,10 @@ struct FillData {
 class AccountSelectFillData {
  public:
   AccountSelectFillData();
+
+  AccountSelectFillData(const AccountSelectFillData&) = delete;
+  AccountSelectFillData& operator=(const AccountSelectFillData&) = delete;
+
   ~AccountSelectFillData();
 
   // Adds form structure from |form_data| to internal lists of known forms and
@@ -122,8 +126,6 @@ class AccountSelectFillData {
   const FormInfo* GetFormInfo(autofill::FormRendererId form_identifier,
                               autofill::FieldRendererId field_identifier,
                               bool is_password_field) const;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountSelectFillData);
 };
 
 }  // namespace  password_manager

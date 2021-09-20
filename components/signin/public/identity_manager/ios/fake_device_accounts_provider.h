@@ -17,6 +17,11 @@
 class FakeDeviceAccountsProvider : public DeviceAccountsProvider {
  public:
   FakeDeviceAccountsProvider();
+
+  FakeDeviceAccountsProvider(const FakeDeviceAccountsProvider&) = delete;
+  FakeDeviceAccountsProvider& operator=(const FakeDeviceAccountsProvider&) =
+      delete;
+
   ~FakeDeviceAccountsProvider() override;
 
   // DeviceAccountsProvider
@@ -42,8 +47,6 @@ class FakeDeviceAccountsProvider : public DeviceAccountsProvider {
 
   std::vector<AccountInfo> accounts_;
   std::vector<AccessTokenRequest> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceAccountsProvider);
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IOS_FAKE_DEVICE_ACCOUNTS_PROVIDER_H_

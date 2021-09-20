@@ -30,6 +30,10 @@ class VIZ_SERVICE_EXPORT TextureDeleter {
   // to. If null, the delete will happen on the calling thread.
   explicit TextureDeleter(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  TextureDeleter(const TextureDeleter&) = delete;
+  TextureDeleter& operator=(const TextureDeleter&) = delete;
+
   ~TextureDeleter();
 
   // Returns a Callback that can be used as the ReleaseCallback for a
@@ -53,8 +57,6 @@ class VIZ_SERVICE_EXPORT TextureDeleter {
   scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner_;
   std::vector<std::unique_ptr<ReleaseCallback>> impl_callbacks_;
   base::WeakPtrFactory<TextureDeleter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TextureDeleter);
 };
 
 }  // namespace viz

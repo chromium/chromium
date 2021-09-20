@@ -30,6 +30,12 @@ class PaymentManifestWebDataServiceAndroid : public WebDataServiceConsumer {
   PaymentManifestWebDataServiceAndroid(JNIEnv* env,
                                        jobject obj,
                                        content::WebContents* web_contents);
+
+  PaymentManifestWebDataServiceAndroid(
+      const PaymentManifestWebDataServiceAndroid&) = delete;
+  PaymentManifestWebDataServiceAndroid& operator=(
+      const PaymentManifestWebDataServiceAndroid&) = delete;
+
   ~PaymentManifestWebDataServiceAndroid() override;
 
   // Override WebDataServiceConsumer interface.
@@ -91,8 +97,6 @@ class PaymentManifestWebDataServiceAndroid : public WebDataServiceConsumer {
   std::map<WebDataServiceBase::Handle,
            std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>>
       web_data_service_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestWebDataServiceAndroid);
 };
 
 }  // namespace payments

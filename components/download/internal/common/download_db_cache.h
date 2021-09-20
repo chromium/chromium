@@ -27,6 +27,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadDBCache
     : public DownloadItem::Observer {
  public:
   explicit DownloadDBCache(std::unique_ptr<DownloadDB> download_db);
+
+  DownloadDBCache(const DownloadDBCache&) = delete;
+  DownloadDBCache& operator=(const DownloadDBCache&) = delete;
+
   ~DownloadDBCache() override;
 
   using InitializeCallback =
@@ -81,8 +85,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadDBCache
   base::OneShotTimer update_timer_;
 
   base::WeakPtrFactory<DownloadDBCache> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDBCache);
 };
 
 }  //  namespace download

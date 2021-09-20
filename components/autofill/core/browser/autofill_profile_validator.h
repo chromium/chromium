@@ -35,6 +35,9 @@ class AutofillProfileValidator : public autofill::LoadRulesListener {
       std::unique_ptr<::i18n::addressinput::Source> source,
       std::unique_ptr<::i18n::addressinput::Storage> storage);
 
+  AutofillProfileValidator(const AutofillProfileValidator&) = delete;
+  AutofillProfileValidator& operator=(const AutofillProfileValidator&) = delete;
+
   ~AutofillProfileValidator() override;
 
   // If the rule corresponding to the |profile| is loaded, this validates the
@@ -60,6 +63,9 @@ class AutofillProfileValidator : public autofill::LoadRulesListener {
                       AddressValidator* validator,
                       AutofillProfileValidatorCallback on_validated);
 
+    ValidationRequest(const ValidationRequest&) = delete;
+    ValidationRequest& operator=(const ValidationRequest&) = delete;
+
     ~ValidationRequest();
 
     // Validates various fields of the |profile_|, and calls |on_validated_|.
@@ -76,7 +82,6 @@ class AutofillProfileValidator : public autofill::LoadRulesListener {
     bool has_responded_ = false;
     base::CancelableOnceCallback<void()> on_timeout_;
     base::WeakPtrFactory<ValidationRequest> weak_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(ValidationRequest);
   };
 
   friend class AutofillProfileValidatorTest;
@@ -92,8 +97,6 @@ class AutofillProfileValidator : public autofill::LoadRulesListener {
   // A map of the region code and the pending requests for that region code.
   std::map<std::string, std::vector<std::unique_ptr<ValidationRequest>>>
       pending_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileValidator);
 };
 
 }  // namespace autofill

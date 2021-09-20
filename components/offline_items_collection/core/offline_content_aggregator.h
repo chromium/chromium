@@ -39,6 +39,10 @@ class OfflineContentAggregator : public OfflineContentProvider,
                                  public KeyedService {
  public:
   OfflineContentAggregator();
+
+  OfflineContentAggregator(const OfflineContentAggregator&) = delete;
+  OfflineContentAggregator& operator=(const OfflineContentAggregator&) = delete;
+
   ~OfflineContentAggregator() override;
 
   // Creates a unique namespace with the given prefix. Should be called to get
@@ -111,8 +115,6 @@ class OfflineContentAggregator : public OfflineContentProvider,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OfflineContentAggregator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineContentAggregator);
 };
 
 }  // namespace offline_items_collection

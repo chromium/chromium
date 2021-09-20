@@ -27,6 +27,12 @@ class InitAwareBackgroundDownloadService : public BackgroundDownloadService {
  public:
   explicit InitAwareBackgroundDownloadService(
       std::unique_ptr<InitializableBackgroundDownloadService> service);
+
+  InitAwareBackgroundDownloadService(
+      const InitAwareBackgroundDownloadService&) = delete;
+  InitAwareBackgroundDownloadService& operator=(
+      const InitAwareBackgroundDownloadService&) = delete;
+
   ~InitAwareBackgroundDownloadService() override;
 
   // BackgroundDownloadService implementation.
@@ -54,8 +60,6 @@ class InitAwareBackgroundDownloadService : public BackgroundDownloadService {
 
   base::WeakPtrFactory<InitAwareBackgroundDownloadService> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(InitAwareBackgroundDownloadService);
 };
 
 }  // namespace download

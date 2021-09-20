@@ -18,6 +18,11 @@ class ChildProcessCrashObserver
     : public crash_reporter::ChildExitObserver::Client {
  public:
   ChildProcessCrashObserver();
+
+  ChildProcessCrashObserver(const ChildProcessCrashObserver&) = delete;
+  ChildProcessCrashObserver& operator=(const ChildProcessCrashObserver&) =
+      delete;
+
   ~ChildProcessCrashObserver() override;
 
   // crash_reporter::ChildExitObserver::Client implementation:
@@ -27,8 +32,6 @@ class ChildProcessCrashObserver
   void OnChildExitImpl(const ChildExitObserver::TerminationInfo& info);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessCrashObserver);
 };
 
 }  // namespace crash_reporter

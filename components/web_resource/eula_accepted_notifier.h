@@ -24,6 +24,10 @@ class EulaAcceptedNotifier {
   };
 
   explicit EulaAcceptedNotifier(PrefService* local_state);
+
+  EulaAcceptedNotifier(const EulaAcceptedNotifier&) = delete;
+  EulaAcceptedNotifier& operator=(const EulaAcceptedNotifier&) = delete;
+
   virtual ~EulaAcceptedNotifier();
 
   // Initializes this class with the given |observer|. Must be called before
@@ -55,8 +59,6 @@ class EulaAcceptedNotifier {
 
   // Observer of the EULA accepted notification.
   Observer* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(EulaAcceptedNotifier);
 };
 
 }  // namespace web_resource

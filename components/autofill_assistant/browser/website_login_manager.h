@@ -32,6 +32,10 @@ class WebsiteLoginManager {
   };
 
   WebsiteLoginManager() = default;
+
+  WebsiteLoginManager(const WebsiteLoginManager&) = delete;
+  WebsiteLoginManager& operator=(const WebsiteLoginManager&) = delete;
+
   virtual ~WebsiteLoginManager() = default;
 
   // Asynchronously returns all matching login details for |url| in the
@@ -92,8 +96,6 @@ class WebsiteLoginManager {
   // submitted password exist (E.g ReadyToCommitSubmittedPassword) and it is
   // properly saved, false otherwise.
   virtual bool SaveSubmittedPassword() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WebsiteLoginManager);
 };
 
 }  // namespace autofill_assistant

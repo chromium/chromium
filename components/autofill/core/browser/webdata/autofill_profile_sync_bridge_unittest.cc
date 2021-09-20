@@ -265,6 +265,12 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
 class AutofillProfileSyncBridgeTestBase : public testing::Test {
  public:
   AutofillProfileSyncBridgeTestBase() = default;
+
+  AutofillProfileSyncBridgeTestBase(const AutofillProfileSyncBridgeTestBase&) =
+      delete;
+  AutofillProfileSyncBridgeTestBase& operator=(
+      const AutofillProfileSyncBridgeTestBase&) = delete;
+
   ~AutofillProfileSyncBridgeTestBase() override = default;
 
   void SetUp() override {
@@ -375,8 +381,6 @@ class AutofillProfileSyncBridgeTestBase : public testing::Test {
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
   std::unique_ptr<AutofillProfileSyncBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncBridgeTestBase);
 };
 
 // This class performs the sync bridge test with and without structured names
@@ -1462,10 +1466,13 @@ class AutofillProfileSyncBridgeUpdatesUsageStatsTest
       public testing::WithParamInterface<UpdatesUsageStatsTestCase> {
  public:
   AutofillProfileSyncBridgeUpdatesUsageStatsTest() {}
-  ~AutofillProfileSyncBridgeUpdatesUsageStatsTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncBridgeUpdatesUsageStatsTest);
+  AutofillProfileSyncBridgeUpdatesUsageStatsTest(
+      const AutofillProfileSyncBridgeUpdatesUsageStatsTest&) = delete;
+  AutofillProfileSyncBridgeUpdatesUsageStatsTest& operator=(
+      const AutofillProfileSyncBridgeUpdatesUsageStatsTest&) = delete;
+
+  ~AutofillProfileSyncBridgeUpdatesUsageStatsTest() override {}
 };
 
 TEST_P(AutofillProfileSyncBridgeUpdatesUsageStatsTest, UpdatesUsageStats) {

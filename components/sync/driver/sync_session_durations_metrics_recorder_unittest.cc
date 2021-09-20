@@ -29,11 +29,6 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
     sync_service_.SetDisableReasons(SyncService::DISABLE_REASON_NOT_SIGNED_IN);
   }
 
-  SyncSessionDurationsMetricsRecorderTest(
-      const SyncSessionDurationsMetricsRecorderTest&) = delete;
-  SyncSessionDurationsMetricsRecorderTest& operator=(
-      const SyncSessionDurationsMetricsRecorderTest&) = delete;
-
   ~SyncSessionDurationsMetricsRecorderTest() override {}
 
   void EnableSync() {
@@ -101,6 +96,8 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   TestSyncService sync_service_;
+
+  DISALLOW_COPY_AND_ASSIGN(SyncSessionDurationsMetricsRecorderTest);
 };
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, WebSignedOut) {

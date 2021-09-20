@@ -138,6 +138,10 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   BrowsingHistoryService(BrowsingHistoryDriver* driver,
                          HistoryService* local_history,
                          syncer::SyncService* sync_service);
+
+  BrowsingHistoryService(const BrowsingHistoryService&) = delete;
+  BrowsingHistoryService& operator=(const BrowsingHistoryService&) = delete;
+
   ~BrowsingHistoryService() override;
 
   // Start a new query with the given parameters.
@@ -284,8 +288,6 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   std::unique_ptr<base::Clock> clock_;
 
   base::WeakPtrFactory<BrowsingHistoryService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingHistoryService);
 };
 
 }  // namespace history

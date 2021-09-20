@@ -37,6 +37,9 @@ struct RegExLogging {
 // name, phone number, or address field.
 class FormField {
  public:
+  FormField(const FormField&) = delete;
+  FormField& operator=(const FormField&) = delete;
+
   virtual ~FormField() = default;
 
   // Classifies each field in |fields| with its heuristically detected type.
@@ -207,8 +210,6 @@ class FormField {
                                   FieldCandidatesMap* field_candidates,
                                   const LanguageCode& page_language,
                                   LogManager* log_manager = nullptr);
-
-  DISALLOW_COPY_AND_ASSIGN(FormField);
 };
 
 }  // namespace autofill

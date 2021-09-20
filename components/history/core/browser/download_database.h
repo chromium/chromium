@@ -32,6 +32,10 @@ class DownloadDatabase {
   // Must call InitDownloadTable before using any other functions.
   DownloadDatabase(DownloadInterruptReason download_interrupt_reason_none,
                    DownloadInterruptReason download_interrupt_reason_crash);
+
+  DownloadDatabase(const DownloadDatabase&) = delete;
+  DownloadDatabase& operator=(const DownloadDatabase&) = delete;
+
   virtual ~DownloadDatabase();
 
   uint32_t GetNextDownloadId();
@@ -167,8 +171,6 @@ class DownloadDatabase {
   // to use for respectively an undefined value and in case of a crash.
   DownloadInterruptReason download_interrupt_reason_none_;
   DownloadInterruptReason download_interrupt_reason_crash_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDatabase);
 };
 
 }  // namespace history

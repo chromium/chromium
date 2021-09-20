@@ -18,14 +18,17 @@ class LocalCardMigrationBubble;
 class LocalCardMigrationBubbleController {
  public:
   LocalCardMigrationBubbleController() {}
+
+  LocalCardMigrationBubbleController(
+      const LocalCardMigrationBubbleController&) = delete;
+  LocalCardMigrationBubbleController& operator=(
+      const LocalCardMigrationBubbleController&) = delete;
+
   virtual ~LocalCardMigrationBubbleController() {}
 
   virtual void OnConfirmButtonClicked() = 0;
   virtual void OnCancelButtonClicked() = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationBubbleController);
 };
 
 }  // namespace autofill

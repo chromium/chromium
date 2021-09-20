@@ -53,6 +53,11 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   BackgroundSyncControllerImpl(
       content::BrowserContext* browser_context,
       std::unique_ptr<background_sync::BackgroundSyncDelegate> delegate);
+
+  BackgroundSyncControllerImpl(const BackgroundSyncControllerImpl&) = delete;
+  BackgroundSyncControllerImpl& operator=(const BackgroundSyncControllerImpl&) =
+      delete;
+
   ~BackgroundSyncControllerImpl() override;
 
   // content::BackgroundSyncController overrides.
@@ -127,8 +132,6 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   std::unique_ptr<BackgroundSyncMetrics> background_sync_metrics_;
 
   std::set<url::Origin> periodic_sync_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncControllerImpl);
 };
 
 #endif  // COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_IMPL_H_

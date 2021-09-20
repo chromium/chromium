@@ -105,12 +105,13 @@ class ScopedUkmFeatureParams {
                                                             params);
   }
 
+  ScopedUkmFeatureParams(const ScopedUkmFeatureParams&) = delete;
+  ScopedUkmFeatureParams& operator=(const ScopedUkmFeatureParams&) = delete;
+
   ~ScopedUkmFeatureParams() {}
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUkmFeatureParams);
 };
 
 class MockDemographicMetricsProvider

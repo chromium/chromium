@@ -52,6 +52,10 @@ class UnifiedConsentServiceTest : public testing::Test {
     syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
+  UnifiedConsentServiceTest(const UnifiedConsentServiceTest&) = delete;
+  UnifiedConsentServiceTest& operator=(const UnifiedConsentServiceTest&) =
+      delete;
+
   ~UnifiedConsentServiceTest() override {
     if (consent_service_)
       consent_service_->Shutdown();
@@ -79,8 +83,6 @@ class UnifiedConsentServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_environment_;
   TestSyncService sync_service_;
   std::unique_ptr<UnifiedConsentService> consent_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedConsentServiceTest);
 };
 
 TEST_F(UnifiedConsentServiceTest, DefaultValuesWhenSignedOut) {

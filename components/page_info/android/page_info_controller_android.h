@@ -24,6 +24,11 @@ class PageInfoControllerAndroid : public PageInfoUI {
   PageInfoControllerAndroid(JNIEnv* env,
                             jobject java_page_info,
                             content::WebContents* web_contents);
+
+  PageInfoControllerAndroid(const PageInfoControllerAndroid&) = delete;
+  PageInfoControllerAndroid& operator=(const PageInfoControllerAndroid&) =
+      delete;
+
   ~PageInfoControllerAndroid() override;
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
   void RecordPageInfoAction(JNIEnv* env,
@@ -56,8 +61,6 @@ class PageInfoControllerAndroid : public PageInfoUI {
   GURL url_;
 
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageInfoControllerAndroid);
 };
 
 #endif  // COMPONENTS_PAGE_INFO_ANDROID_PAGE_INFO_CONTROLLER_ANDROID_H_

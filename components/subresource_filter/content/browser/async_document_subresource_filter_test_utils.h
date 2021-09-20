@@ -19,6 +19,12 @@ namespace testing {
 class TestActivationStateCallbackReceiver {
  public:
   TestActivationStateCallbackReceiver();
+
+  TestActivationStateCallbackReceiver(
+      const TestActivationStateCallbackReceiver&) = delete;
+  TestActivationStateCallbackReceiver& operator=(
+      const TestActivationStateCallbackReceiver&) = delete;
+
   ~TestActivationStateCallbackReceiver();
 
   base::OnceCallback<void(mojom::ActivationState)> GetCallback();
@@ -34,8 +40,6 @@ class TestActivationStateCallbackReceiver {
   int callback_count_ = 0;
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestActivationStateCallbackReceiver);
 };
 
 }  // namespace testing

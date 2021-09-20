@@ -17,14 +17,16 @@ namespace content_settings {
 class CookieSettingsPolicyHandler : public policy::TypeCheckingPolicyHandler {
  public:
   CookieSettingsPolicyHandler();
+
+  CookieSettingsPolicyHandler(const CookieSettingsPolicyHandler&) = delete;
+  CookieSettingsPolicyHandler& operator=(const CookieSettingsPolicyHandler&) =
+      delete;
+
   ~CookieSettingsPolicyHandler() override;
 
   // TypeCheckingPolicyHandler:
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieSettingsPolicyHandler);
 };
 
 }  // namespace content_settings

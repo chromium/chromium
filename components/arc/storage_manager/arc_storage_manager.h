@@ -30,6 +30,10 @@ class ArcStorageManager : public KeyedService {
 
   ArcStorageManager(content::BrowserContext* context,
                     ArcBridgeService* bridge_service);
+
+  ArcStorageManager(const ArcStorageManager&) = delete;
+  ArcStorageManager& operator=(const ArcStorageManager&) = delete;
+
   ~ArcStorageManager() override;
 
   // Opens detailed preference screen of private volume on ARC.
@@ -46,8 +50,6 @@ class ArcStorageManager : public KeyedService {
 
  private:
   ArcBridgeService* const arc_bridge_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcStorageManager);
 };
 
 }  // namespace arc

@@ -23,6 +23,10 @@ namespace metrics {
 class DataUseTracker {
  public:
   explicit DataUseTracker(PrefService* local_state);
+
+  DataUseTracker(const DataUseTracker&) = delete;
+  DataUseTracker& operator=(const DataUseTracker&) = delete;
+
   virtual ~DataUseTracker();
 
   // Returns an instance of |DataUseTracker| with provided |local_state| if
@@ -83,8 +87,6 @@ class DataUseTracker {
   PrefService* local_state_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DataUseTracker);
 };
 
 }  // namespace metrics

@@ -38,6 +38,9 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
     return base::WrapUnique(new FakeSkiaOutputSurface(std::move(provider)));
   }
 
+  FakeSkiaOutputSurface(const FakeSkiaOutputSurface&) = delete;
+  FakeSkiaOutputSurface& operator=(const FakeSkiaOutputSurface&) = delete;
+
   ~FakeSkiaOutputSurface() override;
 
   // OutputSurface implementation:
@@ -187,8 +190,6 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<FakeSkiaOutputSurface> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSkiaOutputSurface);
 };
 
 }  // namespace viz

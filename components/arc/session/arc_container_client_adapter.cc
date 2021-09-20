@@ -103,6 +103,10 @@ class ArcContainerClientAdapter
       chromeos::SessionManagerClient::Get()->AddObserver(this);
   }
 
+  ArcContainerClientAdapter(const ArcContainerClientAdapter&) = delete;
+  ArcContainerClientAdapter& operator=(const ArcContainerClientAdapter&) =
+      delete;
+
   ~ArcContainerClientAdapter() override {
     if (chromeos::SessionManagerClient::Get())
       chromeos::SessionManagerClient::Get()->RemoveObserver(this);
@@ -220,8 +224,6 @@ class ArcContainerClientAdapter
  private:
   // A cryptohome ID of the primary profile.
   cryptohome::Identification cryptohome_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcContainerClientAdapter);
 };
 
 std::unique_ptr<ArcClientAdapter> CreateArcContainerClientAdapter() {

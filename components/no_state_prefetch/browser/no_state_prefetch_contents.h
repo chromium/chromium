@@ -55,6 +55,10 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   class Factory {
    public:
     Factory() {}
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     virtual ~Factory() {}
 
     // Ownership is not transferred through this interface as
@@ -68,9 +72,6 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
         const content::Referrer& referrer,
         const absl::optional<url::Origin>& initiator_origin,
         Origin origin) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   class Observer {

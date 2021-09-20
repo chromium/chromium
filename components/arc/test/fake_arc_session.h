@@ -22,6 +22,10 @@ namespace arc {
 class FakeArcSession : public ArcSession {
  public:
   FakeArcSession();
+
+  FakeArcSession(const FakeArcSession&) = delete;
+  FakeArcSession& operator=(const FakeArcSession&) = delete;
+
   ~FakeArcSession() override;
 
   // ArcSession overrides:
@@ -73,8 +77,6 @@ class FakeArcSession : public ArcSession {
   bool running_ = false;
   bool stop_requested_ = false;
   std::string upgrade_locale_param_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeArcSession);
 };
 
 }  // namespace arc

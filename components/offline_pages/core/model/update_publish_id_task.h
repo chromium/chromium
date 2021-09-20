@@ -28,6 +28,10 @@ class UpdatePublishIdTask : public Task {
                       int64_t offline_id,
                       const PublishedArchiveId& publish_id,
                       base::OnceCallback<void(bool)> callback);
+
+  UpdatePublishIdTask(const UpdatePublishIdTask&) = delete;
+  UpdatePublishIdTask& operator=(const UpdatePublishIdTask&) = delete;
+
   ~UpdatePublishIdTask() override;
 
  private:
@@ -44,7 +48,6 @@ class UpdatePublishIdTask : public Task {
   base::OnceCallback<void(bool)> callback_;
 
   base::WeakPtrFactory<UpdatePublishIdTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UpdatePublishIdTask);
 };
 
 }  // namespace offline_pages

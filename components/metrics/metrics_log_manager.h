@@ -21,6 +21,10 @@ class MetricsLogStore;
 class MetricsLogManager {
  public:
   MetricsLogManager();
+
+  MetricsLogManager(const MetricsLogManager&) = delete;
+  MetricsLogManager& operator=(const MetricsLogManager&) = delete;
+
   ~MetricsLogManager();
 
   // Makes |log| the current_log. This should only be called if there is not a
@@ -54,8 +58,6 @@ class MetricsLogManager {
 
   // A paused, previously-current log.
   std::unique_ptr<MetricsLog> paused_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsLogManager);
 };
 
 }  // namespace metrics

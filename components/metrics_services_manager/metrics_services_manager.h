@@ -40,6 +40,10 @@ class MetricsServicesManager {
   // Creates the MetricsServicesManager with the given client.
   explicit MetricsServicesManager(
       std::unique_ptr<MetricsServicesManagerClient> client);
+
+  MetricsServicesManager(const MetricsServicesManager&) = delete;
+  MetricsServicesManager& operator=(const MetricsServicesManager&) = delete;
+
   virtual ~MetricsServicesManager();
 
   // Instantiates the FieldTrialList using Chrome's default entropy provider.
@@ -113,8 +117,6 @@ class MetricsServicesManager {
 
   // The VariationsService, for server-side experiments infrastructure.
   std::unique_ptr<variations::VariationsService> variations_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServicesManager);
 };
 
 }  // namespace metrics_services_manager

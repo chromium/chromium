@@ -35,6 +35,10 @@ class RulesetPublisherImpl : public RulesetPublisher,
   RulesetPublisherImpl(
       RulesetService* ruleset_service,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
+
+  RulesetPublisherImpl(const RulesetPublisherImpl&) = delete;
+  RulesetPublisherImpl& operator=(const RulesetPublisherImpl&) = delete;
+
   ~RulesetPublisherImpl() override;
 
   // RulesetPublisher:
@@ -70,8 +74,6 @@ class RulesetPublisherImpl : public RulesetPublisher,
   RulesetService* ruleset_service_;
   std::unique_ptr<VerifiedRulesetDealer::Handle> ruleset_dealer_;
   scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetPublisherImpl);
 };
 
 }  // namespace subresource_filter

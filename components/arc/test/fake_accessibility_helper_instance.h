@@ -14,6 +14,12 @@ class FakeAccessibilityHelperInstance
     : public mojom::AccessibilityHelperInstance {
  public:
   FakeAccessibilityHelperInstance();
+
+  FakeAccessibilityHelperInstance(const FakeAccessibilityHelperInstance&) =
+      delete;
+  FakeAccessibilityHelperInstance& operator=(
+      const FakeAccessibilityHelperInstance&) = delete;
+
   ~FakeAccessibilityHelperInstance() override;
 
   void Init(mojo::PendingRemote<mojom::AccessibilityHelperHost> host_remote,
@@ -54,8 +60,6 @@ class FakeAccessibilityHelperInstance
   mojom::AccessibilityActionDataPtr last_requested_action_;
   mojom::AccessibilityWindowKeyPtr last_requested_tree_window_key_;
   RefreshWithExtraDataCallback refresh_with_extra_data_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAccessibilityHelperInstance);
 };
 
 }  // namespace arc

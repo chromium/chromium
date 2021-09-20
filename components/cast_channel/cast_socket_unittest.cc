@@ -165,6 +165,10 @@ class TestCastSocketBase : public CastSocketImpl {
     SetPeerCertForTesting(
         net::ImportCertFromFile(GetTestCertsDirectory(), "self_signed.pem"));
   }
+
+  TestCastSocketBase(const TestCastSocketBase&) = delete;
+  TestCastSocketBase& operator=(const TestCastSocketBase&) = delete;
+
   ~TestCastSocketBase() override {}
 
   void SetVerifyChallengeResult(bool value) {
@@ -192,9 +196,6 @@ class TestCastSocketBase : public CastSocketImpl {
   bool verify_challenge_result_;
   bool verify_challenge_disallow_;
   std::unique_ptr<base::MockOneShotTimer> mock_timer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestCastSocketBase);
 };
 
 class MockTestCastSocket : public TestCastSocketBase {
@@ -213,6 +214,9 @@ class MockTestCastSocket : public TestCastSocketBase {
                      const CastSocketOpenParams& open_params,
                      Logger* logger)
       : TestCastSocketBase(network_context, open_params, logger) {}
+
+  MockTestCastSocket(const MockTestCastSocket&) = delete;
+  MockTestCastSocket& operator=(const MockTestCastSocket&) = delete;
 
   ~MockTestCastSocket() override {}
 
@@ -234,14 +238,16 @@ class MockTestCastSocket : public TestCastSocketBase {
 
  private:
   MockCastTransport* mock_transport_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTestCastSocket);
 };
 
 // TODO(https://crbug.com/928467):  Remove this class.
 class TestSocketFactory : public net::ClientSocketFactory {
  public:
   explicit TestSocketFactory(net::IPEndPoint ip) : ip_(ip) {}
+
+  TestSocketFactory(const TestSocketFactory&) = delete;
+  TestSocketFactory& operator=(const TestSocketFactory&) = delete;
+
   ~TestSocketFactory() override = default;
 
   // Socket connection helpers.
@@ -370,8 +376,6 @@ class TestSocketFactory : public net::ClientSocketFactory {
   bool tcp_unresponsive_ = false;
   std::unique_ptr<net::TransportClientSocket> tcp_client_socket_;
   base::OnceClosure tls_socket_created_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketFactory);
 };
 
 class CastSocketTestBase : public testing::Test {

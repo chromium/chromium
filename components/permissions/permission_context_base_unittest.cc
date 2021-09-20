@@ -61,6 +61,9 @@ class TestPermissionContext : public PermissionContextBase {
             blink::mojom::PermissionsPolicyFeature::kNotFound),
         tab_context_updated_(false) {}
 
+  TestPermissionContext(const TestPermissionContext&) = delete;
+  TestPermissionContext& operator=(const TestPermissionContext&) = delete;
+
   ~TestPermissionContext() override {}
 
   const std::vector<ContentSetting>& decisions() const { return decisions_; }
@@ -139,7 +142,6 @@ class TestPermissionContext : public PermissionContextBase {
   // Callback for responding to a permission once the request has been completed
   // (valid URL, kill switch disabled)
   base::OnceClosure respond_permission_;
-  DISALLOW_COPY_AND_ASSIGN(TestPermissionContext);
 };
 
 class TestKillSwitchPermissionContext : public TestPermissionContext {

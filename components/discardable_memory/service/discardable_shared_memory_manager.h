@@ -49,6 +49,12 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
       public base::CurrentThread::DestructionObserver {
  public:
   DiscardableSharedMemoryManager();
+
+  DiscardableSharedMemoryManager(const DiscardableSharedMemoryManager&) =
+      delete;
+  DiscardableSharedMemoryManager& operator=(
+      const DiscardableSharedMemoryManager&) = delete;
+
   ~DiscardableSharedMemoryManager() override;
 
   // Returns the global instance of DiscardableSharedMemoryManager, usable from
@@ -183,8 +189,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // WeakPtrFractory for generating weak pointers used in the mojo thread.
   base::WeakPtrFactory<DiscardableSharedMemoryManager>
       mojo_thread_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardableSharedMemoryManager);
 };
 
 }  // namespace discardable_memory

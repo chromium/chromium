@@ -40,6 +40,9 @@ class PerformanceManagerImpl : public PerformanceManager {
  public:
   using FrameNodeCreationCallback = base::OnceCallback<void(FrameNodeImpl*)>;
 
+  PerformanceManagerImpl(const PerformanceManagerImpl&) = delete;
+  PerformanceManagerImpl& operator=(const PerformanceManagerImpl&) = delete;
+
   ~PerformanceManagerImpl() override;
 
   // Posts a callback that will run on the PM sequence. Valid to call from any
@@ -185,8 +188,6 @@ class PerformanceManagerImpl : public PerformanceManager {
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceManagerImpl);
 };
 
 // static

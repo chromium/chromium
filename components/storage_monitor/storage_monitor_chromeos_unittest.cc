@@ -68,6 +68,9 @@ class TestStorageMonitorCros : public StorageMonitorCros {
  public:
   TestStorageMonitorCros() {}
 
+  TestStorageMonitorCros(const TestStorageMonitorCros&) = delete;
+  TestStorageMonitorCros& operator=(const TestStorageMonitorCros&) = delete;
+
   ~TestStorageMonitorCros() override {}
 
   void Init() override {
@@ -101,15 +104,16 @@ class TestStorageMonitorCros : public StorageMonitorCros {
                    base::OnceCallback<void(EjectStatus)> callback) override {
     StorageMonitorCros::EjectDevice(device_id, std::move(callback));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestStorageMonitorCros);
 };
 
 // Wrapper class to test StorageMonitorCros.
 class StorageMonitorCrosTest : public testing::Test {
  public:
   StorageMonitorCrosTest();
+
+  StorageMonitorCrosTest(const StorageMonitorCrosTest&) = delete;
+  StorageMonitorCrosTest& operator=(const StorageMonitorCrosTest&) = delete;
+
   ~StorageMonitorCrosTest() override;
 
   void EjectNotify(StorageMonitor::EjectStatus status);
@@ -159,8 +163,6 @@ class StorageMonitorCrosTest : public testing::Test {
 
   // Objects that talks with StorageMonitorCros.
   std::unique_ptr<MockRemovableStorageObserver> mock_storage_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageMonitorCrosTest);
 };
 
 StorageMonitorCrosTest::StorageMonitorCrosTest()

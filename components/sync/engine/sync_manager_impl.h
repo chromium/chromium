@@ -48,10 +48,6 @@ class SyncManagerImpl
   SyncManagerImpl(
       const std::string& name,
       network::NetworkConnectionTracker* network_connection_tracker);
-
-  SyncManagerImpl(const SyncManagerImpl&) = delete;
-  SyncManagerImpl& operator=(const SyncManagerImpl&) = delete;
-
   ~SyncManagerImpl() override;
 
   // SyncManager implementation.
@@ -172,6 +168,8 @@ class SyncManagerImpl
   std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy_;
 
   base::WeakPtrFactory<SyncManagerImpl> weak_ptr_factory_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(SyncManagerImpl);
 };
 
 }  // namespace syncer

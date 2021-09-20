@@ -37,6 +37,10 @@ class TitledUrlIndex {
   // returned unsorted.
   explicit TitledUrlIndex(
       std::unique_ptr<TitledUrlNodeSorter> sorter = nullptr);
+
+  TitledUrlIndex(const TitledUrlIndex&) = delete;
+  TitledUrlIndex& operator=(const TitledUrlIndex&) = delete;
+
   ~TitledUrlIndex();
 
   void SetNodeSorter(std::unique_ptr<TitledUrlNodeSorter> sorter);
@@ -119,8 +123,6 @@ class TitledUrlIndex {
   Index index_;
 
   std::unique_ptr<TitledUrlNodeSorter> sorter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TitledUrlIndex);
 };
 
 }  // namespace bookmarks

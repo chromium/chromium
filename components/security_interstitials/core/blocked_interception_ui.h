@@ -21,6 +21,10 @@ class BlockedInterceptionUI {
                         int cert_error,
                         const net::SSLInfo& ssl_info,
                         ControllerClient* controller_);
+
+  BlockedInterceptionUI(const BlockedInterceptionUI&) = delete;
+  BlockedInterceptionUI& operator=(const BlockedInterceptionUI&) = delete;
+
   ~BlockedInterceptionUI();
 
   void PopulateStringsForHTML(base::Value* load_time_data);
@@ -32,8 +36,6 @@ class BlockedInterceptionUI {
   const net::SSLInfo ssl_info_;
   ControllerClient* controller_;
   bool user_made_decision_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockedInterceptionUI);
 };
 
 }  // namespace security_interstitials

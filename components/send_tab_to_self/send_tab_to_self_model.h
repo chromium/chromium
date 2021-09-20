@@ -24,6 +24,10 @@ struct TargetDeviceInfo;
 class SendTabToSelfModel {
  public:
   SendTabToSelfModel();
+
+  SendTabToSelfModel(const SendTabToSelfModel&) = delete;
+  SendTabToSelfModel& operator=(const SendTabToSelfModel&) = delete;
+
   virtual ~SendTabToSelfModel();
 
   // Returns a vector of entry IDs in the model.
@@ -83,9 +87,6 @@ class SendTabToSelfModel {
  protected:
   // The observers.
   base::ObserverList<SendTabToSelfModelObserver>::Unchecked observers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfModel);
 };
 
 }  // namespace send_tab_to_self

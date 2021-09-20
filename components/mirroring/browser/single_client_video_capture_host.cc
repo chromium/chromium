@@ -23,6 +23,9 @@ class DeviceLauncherCallbacks final
       base::WeakPtr<SingleClientVideoCaptureHost> host)
       : video_capture_host_(host) {}
 
+  DeviceLauncherCallbacks(const DeviceLauncherCallbacks&) = delete;
+  DeviceLauncherCallbacks& operator=(const DeviceLauncherCallbacks&) = delete;
+
   ~DeviceLauncherCallbacks() override {}
 
   // content::VideoCaptureDeviceLauncher::Callbacks implementations
@@ -44,8 +47,6 @@ class DeviceLauncherCallbacks final
 
  private:
   base::WeakPtr<SingleClientVideoCaptureHost> video_capture_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLauncherCallbacks);
 };
 
 }  // namespace

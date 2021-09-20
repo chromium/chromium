@@ -24,6 +24,10 @@ class EventModelImpl : public EventModel {
  public:
   EventModelImpl(std::unique_ptr<EventStore> store,
                  std::unique_ptr<EventStorageValidator> storage_validator);
+
+  EventModelImpl(const EventModelImpl&) = delete;
+  EventModelImpl& operator=(const EventModelImpl&) = delete;
+
   ~EventModelImpl() override;
 
   // EventModel implementation.
@@ -77,8 +81,6 @@ class EventModelImpl : public EventModel {
   bool ready_;
 
   base::WeakPtrFactory<EventModelImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventModelImpl);
 };
 
 }  // namespace feature_engagement

@@ -30,6 +30,10 @@ class OriginPolicyInterstitialPage : public SecurityInterstitialPage {
       std::unique_ptr<SecurityInterstitialControllerClient> controller,
       network::OriginPolicyState error_reason);
 
+  OriginPolicyInterstitialPage(const OriginPolicyInterstitialPage&) = delete;
+  OriginPolicyInterstitialPage& operator=(const OriginPolicyInterstitialPage&) =
+      delete;
+
   ~OriginPolicyInterstitialPage() override;
 
   void OnInterstitialClosing() override;
@@ -44,8 +48,6 @@ class OriginPolicyInterstitialPage : public SecurityInterstitialPage {
 
   void Proceed();
   void DontProceed();
-
-  DISALLOW_COPY_AND_ASSIGN(OriginPolicyInterstitialPage);
 };
 
 }  // namespace security_interstitials

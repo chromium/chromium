@@ -26,10 +26,6 @@ namespace syncer {
 class TestSyncService : public SyncService {
  public:
   TestSyncService();
-
-  TestSyncService(const TestSyncService&) = delete;
-  TestSyncService& operator=(const TestSyncService&) = delete;
-
   ~TestSyncService() override;
 
   void SetDisableReasons(DisableReasonSet disable_reasons);
@@ -139,6 +135,8 @@ class TestSyncService : public SyncService {
   base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
 
   GURL sync_service_url_;
+
+  DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };
 
 }  // namespace syncer

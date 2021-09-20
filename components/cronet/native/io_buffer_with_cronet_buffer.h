@@ -38,6 +38,11 @@ class Cronet_BufferWithIOBuffer {
  public:
   Cronet_BufferWithIOBuffer(scoped_refptr<net::IOBuffer> io_buffer,
                             size_t io_buffer_len);
+
+  Cronet_BufferWithIOBuffer(const Cronet_BufferWithIOBuffer&) = delete;
+  Cronet_BufferWithIOBuffer& operator=(const Cronet_BufferWithIOBuffer&) =
+      delete;
+
   ~Cronet_BufferWithIOBuffer();
 
   const net::IOBuffer* io_buffer() const { return io_buffer_.get(); }
@@ -55,8 +60,6 @@ class Cronet_BufferWithIOBuffer {
 
   // Cronet buffer owned by |this|.
   std::unique_ptr<Cronet_Buffer> cronet_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_BufferWithIOBuffer);
 };
 
 }  // namespace cronet

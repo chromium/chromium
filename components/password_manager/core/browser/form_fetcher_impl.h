@@ -34,6 +34,9 @@ class FormFetcherImpl : public FormFetcher,
                   const PasswordManagerClient* client,
                   bool should_migrate_http_passwords);
 
+  FormFetcherImpl(const FormFetcherImpl&) = delete;
+  FormFetcherImpl& operator=(const FormFetcherImpl&) = delete;
+
   ~FormFetcherImpl() override;
 
   // Returns a MultiStoreFormFetcher if  the password account storage feature is
@@ -136,8 +139,6 @@ class FormFetcherImpl : public FormFetcher,
   base::ObserverList<FormFetcher::Consumer> consumers_;
 
   base::WeakPtrFactory<FormFetcherImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FormFetcherImpl);
 };
 
 }  // namespace password_manager

@@ -158,6 +158,10 @@ class TestNodeWrapper<SystemNodeImpl> {
 
   explicit TestNodeWrapper(SystemNodeImpl* impl) : impl_(impl) {}
   TestNodeWrapper(TestNodeWrapper&& other) : impl_(other.impl_) {}
+
+  TestNodeWrapper(const TestNodeWrapper&) = delete;
+  TestNodeWrapper& operator=(const TestNodeWrapper&) = delete;
+
   ~TestNodeWrapper() { reset(); }
 
   SystemNodeImpl* operator->() const { return impl_; }
@@ -167,8 +171,6 @@ class TestNodeWrapper<SystemNodeImpl> {
 
  private:
   SystemNodeImpl* impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNodeWrapper);
 };
 
 class TestGraphImpl : public GraphImpl {

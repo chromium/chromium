@@ -25,6 +25,10 @@ class NotificationSurface : public SurfaceTreeHost,
   NotificationSurface(NotificationSurfaceManager* manager,
                       Surface* surface,
                       const std::string& notification_key);
+
+  NotificationSurface(const NotificationSurface&) = delete;
+  NotificationSurface& operator=(const NotificationSurface&) = delete;
+
   ~NotificationSurface() override;
 
   // Get the content size of the |root_surface()|.
@@ -58,8 +62,6 @@ class NotificationSurface : public SurfaceTreeHost,
   // True if the notification is visible by e.g. being embedded in the message
   // center.
   bool is_embedded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationSurface);
 };
 
 }  // namespace exo

@@ -32,6 +32,10 @@ class RequiredFieldsFallbackHandler {
       const std::map<field_formatter::Key, std::string>& fallback_values,
       ActionDelegate* delegate);
 
+  RequiredFieldsFallbackHandler(const RequiredFieldsFallbackHandler&) = delete;
+  RequiredFieldsFallbackHandler& operator=(
+      const RequiredFieldsFallbackHandler&) = delete;
+
   ~RequiredFieldsFallbackHandler();
 
   // Check if there are required fields. If so, verify them and fallback if
@@ -117,8 +121,6 @@ class RequiredFieldsFallbackHandler {
   std::unique_ptr<BatchElementChecker> batch_element_checker_;
   base::TimeDelta total_wait_time_ = base::TimeDelta::FromSeconds(0);
   base::WeakPtrFactory<RequiredFieldsFallbackHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RequiredFieldsFallbackHandler);
 };
 
 }  // namespace autofill_assistant

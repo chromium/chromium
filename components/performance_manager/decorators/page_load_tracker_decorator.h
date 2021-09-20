@@ -32,6 +32,10 @@ class PageLoadTrackerDecorator : public FrameNode::ObserverDefaultImpl,
   class Data;
 
   PageLoadTrackerDecorator();
+
+  PageLoadTrackerDecorator(const PageLoadTrackerDecorator&) = delete;
+  PageLoadTrackerDecorator& operator=(const PageLoadTrackerDecorator&) = delete;
+
   ~PageLoadTrackerDecorator() override;
 
   // FrameNodeObserver implementation:
@@ -106,9 +110,6 @@ class PageLoadTrackerDecorator : public FrameNode::ObserverDefaultImpl,
   static void TransitionToLoadedAndIdle(PageNodeImpl* page_node);
 
   static bool IsIdling(const PageNodeImpl* page_node);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageLoadTrackerDecorator);
 };
 
 class PageLoadTrackerDecorator::Data {

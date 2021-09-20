@@ -30,6 +30,10 @@ class TestUploadDataStreamHandler {
       jobject jtest_upload_data_stream_handler,
       jlong jcontext_adapter);
 
+  TestUploadDataStreamHandler(const TestUploadDataStreamHandler&) = delete;
+  TestUploadDataStreamHandler& operator=(const TestUploadDataStreamHandler&) =
+      delete;
+
   ~TestUploadDataStreamHandler();
 
   // Destroys |network_thread_| created by this class.
@@ -95,8 +99,6 @@ class TestUploadDataStreamHandler {
   // A Java reference pointer for calling methods on the Java
   // TestUploadDataStreamHandler object. Initialized during construction.
   base::android::ScopedJavaGlobalRef<jobject> jtest_upload_data_stream_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUploadDataStreamHandler);
 };
 
 }  // namespace cronet

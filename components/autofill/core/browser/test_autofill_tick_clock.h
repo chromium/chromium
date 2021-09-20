@@ -21,6 +21,10 @@ namespace autofill {
 class TestAutofillTickClock {
  public:
   TestAutofillTickClock();
+
+  TestAutofillTickClock(const TestAutofillTickClock&) = delete;
+  TestAutofillTickClock& operator=(const TestAutofillTickClock&) = delete;
+
   ~TestAutofillTickClock();
 
   // Set the time to be returned from AutofillTickClock::Now() calls.
@@ -31,8 +35,6 @@ class TestAutofillTickClock {
 
  private:
   base::SimpleTestTickClock test_tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillTickClock);
 };
 
 }  // namespace autofill

@@ -14,6 +14,9 @@ namespace performance_manager {
 // Specialization of a SiteDataWriter that doesn't record anything.
 class NoopSiteDataWriter : public SiteDataWriter {
  public:
+  NoopSiteDataWriter(const NoopSiteDataWriter&) = delete;
+  NoopSiteDataWriter& operator=(const NoopSiteDataWriter&) = delete;
+
   ~NoopSiteDataWriter() override;
 
   // Implementation of SiteDataWriter:
@@ -35,8 +38,6 @@ class NoopSiteDataWriter : public SiteDataWriter {
   // Private constructor, these objects are meant to be created by a
   // NonRecordingSiteDataCache.
   NoopSiteDataWriter();
-
-  DISALLOW_COPY_AND_ASSIGN(NoopSiteDataWriter);
 };
 
 }  // namespace performance_manager

@@ -20,6 +20,10 @@ namespace {
 class BufferTest : public ::testing::Test {
  public:
   BufferTest() = default;
+
+  BufferTest(const BufferTest&) = delete;
+  BufferTest& operator=(const BufferTest&) = delete;
+
   ~BufferTest() override {}
 
  protected:
@@ -35,7 +39,6 @@ class BufferTest : public ::testing::Test {
   void set_on_destroy_called(bool value) { on_destroy_called_ = value; }
 
   bool on_destroy_called_ = false;
-  DISALLOW_COPY_AND_ASSIGN(BufferTest);
 };
 
 const uint64_t kTestBufferSize = 20;

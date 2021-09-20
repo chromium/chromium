@@ -27,6 +27,11 @@ class SendTabToSelfInfoBarDelegate : public infobars::InfoBarDelegate {
   static std::unique_ptr<SendTabToSelfInfoBarDelegate> Create(
       content::WebContents* web_contents,
       const SendTabToSelfEntry* entry);
+
+  SendTabToSelfInfoBarDelegate(const SendTabToSelfInfoBarDelegate&) = delete;
+  SendTabToSelfInfoBarDelegate& operator=(const SendTabToSelfInfoBarDelegate&) =
+      delete;
+
   ~SendTabToSelfInfoBarDelegate() override;
 
   // Returns the message to be shown in the infobar.
@@ -47,8 +52,6 @@ class SendTabToSelfInfoBarDelegate : public infobars::InfoBarDelegate {
   content::WebContents* web_contents_ = nullptr;
   // The entry that was share to this device. Must outlive this instance.
   const SendTabToSelfEntry* entry_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfInfoBarDelegate);
 };
 
 }  // namespace send_tab_to_self

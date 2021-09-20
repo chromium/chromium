@@ -68,6 +68,10 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
   PepperPDFHost(content::RendererPpapiHost* host,
                 PP_Instance instance,
                 PP_Resource resource);
+
+  PepperPDFHost(const PepperPDFHost&) = delete;
+  PepperPDFHost& operator=(const PepperPDFHost&) = delete;
+
   ~PepperPDFHost() override;
 
   // Invokes the "Print" command for the given instance as if the user right
@@ -150,8 +154,6 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
   content::RendererPpapiHost* const host_;
   mojo::AssociatedRemote<mojom::PdfService> remote_pdf_service_;
   mojo::Receiver<mojom::PdfListener> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPDFHost);
 };
 
 }  // namespace pdf

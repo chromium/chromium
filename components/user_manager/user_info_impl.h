@@ -19,6 +19,10 @@ namespace user_manager {
 class USER_MANAGER_EXPORT UserInfoImpl : public UserInfo {
  public:
   UserInfoImpl();
+
+  UserInfoImpl(const UserInfoImpl&) = delete;
+  UserInfoImpl& operator=(const UserInfoImpl&) = delete;
+
   ~UserInfoImpl() override;
 
   // UserInfo:
@@ -31,8 +35,6 @@ class USER_MANAGER_EXPORT UserInfoImpl : public UserInfo {
  private:
   const AccountId account_id_;
   gfx::ImageSkia user_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserInfoImpl);
 };
 
 }  // namespace user_manager

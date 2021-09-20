@@ -14,10 +14,11 @@ namespace sync_preferences {
 class PrefServiceMockFactory : public PrefServiceSyncableFactory {
  public:
   PrefServiceMockFactory();
-  ~PrefServiceMockFactory() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefServiceMockFactory);
+  PrefServiceMockFactory(const PrefServiceMockFactory&) = delete;
+  PrefServiceMockFactory& operator=(const PrefServiceMockFactory&) = delete;
+
+  ~PrefServiceMockFactory() override;
 };
 
 }  // namespace sync_preferences

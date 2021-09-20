@@ -15,6 +15,10 @@ class DOMAgent;
 class OverlayAgentAura : public OverlayAgentViews {
  public:
   OverlayAgentAura(DOMAgent* dom_agent);
+
+  OverlayAgentAura(const OverlayAgentAura&) = delete;
+  OverlayAgentAura& operator=(const OverlayAgentAura&) = delete;
+
   ~OverlayAgentAura() override;
 
   int FindElementIdTargetedByPoint(ui::LocatedEvent* event) const override;
@@ -28,8 +32,6 @@ class OverlayAgentAura : public OverlayAgentViews {
   FRIEND_TEST_ALL_PREFIXES(OverlayAgentTest, HighlightEmptyOrInvisibleWindow);
 
   static OverlayAgentAura* overlay_agent_aura_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayAgentAura);
 };
 
 }  // namespace ui_devtools

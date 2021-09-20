@@ -20,6 +20,9 @@ class OSCryptLinuxTest : public testing::Test {
  public:
   OSCryptLinuxTest() : key_("something") { key_ptr_ = &key_; }
 
+  OSCryptLinuxTest(const OSCryptLinuxTest&) = delete;
+  OSCryptLinuxTest& operator=(const OSCryptLinuxTest&) = delete;
+
   ~OSCryptLinuxTest() override { key_ptr_ = nullptr; }
 
   void SetUp() override {
@@ -39,8 +42,6 @@ class OSCryptLinuxTest : public testing::Test {
   std::string key_;
   // Points to the |key_| of the currently running test.
   static std::string* key_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(OSCryptLinuxTest);
 };
 
 std::string* OSCryptLinuxTest::key_ptr_;

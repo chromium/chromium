@@ -27,6 +27,10 @@ class DownloadStore : public Store {
  public:
   DownloadStore(
       std::unique_ptr<leveldb_proto::ProtoDatabase<protodb::Entry>> db);
+
+  DownloadStore(const DownloadStore&) = delete;
+  DownloadStore& operator=(const DownloadStore&) = delete;
+
   ~DownloadStore() override;
 
   // Store implementation.
@@ -50,8 +54,6 @@ class DownloadStore : public Store {
   bool is_initialized_;
 
   base::WeakPtrFactory<DownloadStore> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadStore);
 };
 
 }  // namespace download

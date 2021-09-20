@@ -34,6 +34,10 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
          bool use_zero_copy,
          bool is_overlay_candidate,
          bool y_invert);
+
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+
   ~Buffer();
 
   const gfx::GpuMemoryBuffer* gfx_buffer() const {
@@ -182,8 +186,6 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
   // Even if we send explicit synchronization release information, Wayland
   // protocol requires us to send regular buffer release events.
   base::flat_map<uint64_t, BufferRelease> buffer_releases_;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 }  // namespace exo

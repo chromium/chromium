@@ -44,6 +44,10 @@ class PageTimingMetricsSender {
                           const PageTimingMetadataRecorder::MonotonicTiming&
                               initial_monotonic_timing,
                           std::unique_ptr<PageResourceDataUse> initial_request);
+
+  PageTimingMetricsSender(const PageTimingMetricsSender&) = delete;
+  PageTimingMetricsSender& operator=(const PageTimingMetricsSender&) = delete;
+
   ~PageTimingMetricsSender();
 
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior);
@@ -136,8 +140,6 @@ class PageTimingMetricsSender {
   // Responsible for recording sampling profiler metadata corresponding to page
   // timing.
   PageTimingMetadataRecorder metadata_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageTimingMetricsSender);
 };
 
 }  // namespace page_load_metrics

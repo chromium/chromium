@@ -23,6 +23,10 @@ namespace mirroring {
 class COMPONENT_EXPORT(MIRRORING_SERVICE) MirrorSettings {
  public:
   MirrorSettings();
+
+  MirrorSettings(const MirrorSettings&) = delete;
+  MirrorSettings& operator=(const MirrorSettings&) = delete;
+
   ~MirrorSettings();
 
   // Get the audio/video config with given codec.
@@ -52,8 +56,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirrorSettings {
   int max_width_;
   int max_height_;
   bool enable_sender_side_letterboxing_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MirrorSettings);
 };
 
 }  // namespace mirroring

@@ -22,6 +22,11 @@ class SentGetOperationCleanupTask : public Task {
 
   SentGetOperationCleanupTask(PrefetchStore* prefetch_store,
                               PrefetchNetworkRequestFactory* request_factory);
+
+  SentGetOperationCleanupTask(const SentGetOperationCleanupTask&) = delete;
+  SentGetOperationCleanupTask& operator=(const SentGetOperationCleanupTask&) =
+      delete;
+
   ~SentGetOperationCleanupTask() override;
 
  private:
@@ -32,8 +37,6 @@ class SentGetOperationCleanupTask : public Task {
   PrefetchNetworkRequestFactory* request_factory_;  // Outlives this class.
 
   base::WeakPtrFactory<SentGetOperationCleanupTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SentGetOperationCleanupTask);
 };
 
 }  // namespace offline_pages

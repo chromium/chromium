@@ -21,6 +21,10 @@ namespace history {
 class InMemoryDatabase : public URLDatabase {
  public:
   InMemoryDatabase();
+
+  InMemoryDatabase(const InMemoryDatabase&) = delete;
+  InMemoryDatabase& operator=(const InMemoryDatabase&) = delete;
+
   ~InMemoryDatabase() override;
 
   // Creates an empty in-memory database.
@@ -42,8 +46,6 @@ class InMemoryDatabase : public URLDatabase {
   bool InitDB();
 
   sql::Database db_;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryDatabase);
 };
 
 }  // namespace history

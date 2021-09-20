@@ -121,6 +121,10 @@ std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
 class PersonalDataManagerMock : public PersonalDataManager {
  public:
   PersonalDataManagerMock();
+
+  PersonalDataManagerMock(const PersonalDataManagerMock&) = delete;
+  PersonalDataManagerMock& operator=(const PersonalDataManagerMock&) = delete;
+
   ~PersonalDataManagerMock() override;
 
   // Reset the saved profiles.
@@ -132,8 +136,6 @@ class PersonalDataManagerMock : public PersonalDataManager {
 
  private:
   std::vector<std::unique_ptr<AutofillProfile>> profiles_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersonalDataManagerMock);
 };
 
 PersonalDataManagerMock::PersonalDataManagerMock()

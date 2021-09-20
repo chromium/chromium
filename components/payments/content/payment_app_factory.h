@@ -119,6 +119,10 @@ class PaymentAppFactory {
   };
 
   explicit PaymentAppFactory(PaymentApp::Type type);
+
+  PaymentAppFactory(const PaymentAppFactory&) = delete;
+  PaymentAppFactory& operator=(const PaymentAppFactory&) = delete;
+
   virtual ~PaymentAppFactory();
 
   PaymentApp::Type type() const { return type_; }
@@ -127,8 +131,6 @@ class PaymentAppFactory {
 
  private:
   const PaymentApp::Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppFactory);
 };
 
 }  // namespace payments

@@ -40,6 +40,10 @@ class LevelDBWriteBatch;
 class LevelDBSnapshot {
  public:
   explicit LevelDBSnapshot(TransactionalLevelDBDatabase* db);
+
+  LevelDBSnapshot(const LevelDBSnapshot&) = delete;
+  LevelDBSnapshot& operator=(const LevelDBSnapshot&) = delete;
+
   ~LevelDBSnapshot();
 
   const leveldb::Snapshot* snapshot() const { return snapshot_; }
@@ -47,8 +51,6 @@ class LevelDBSnapshot {
  private:
   leveldb::DB* db_;
   const leveldb::Snapshot* snapshot_;
-
-  DISALLOW_COPY_AND_ASSIGN(LevelDBSnapshot);
 };
 
 class TransactionalLevelDBDatabase

@@ -113,6 +113,10 @@ class DeviceInfo {
              const absl::optional<PhoneAsASecurityKeyInfo>& paask_info,
              const std::string& fcm_registration_token,
              const ModelTypeSet& interested_data_types);
+
+  DeviceInfo(const DeviceInfo&) = delete;
+  DeviceInfo& operator=(const DeviceInfo&) = delete;
+
   ~DeviceInfo();
 
   // Sync specific unique identifier for the device. Note if a device
@@ -249,8 +253,6 @@ class DeviceInfo {
   // NOTE: when adding a member, don't forget to update
   // |StoredDeviceInfoStillAccurate| in device_info_sync_bridge.cc or else
   // changes in that member might not trigger uploads of updated DeviceInfos.
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfo);
 };
 
 }  // namespace syncer

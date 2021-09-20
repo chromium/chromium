@@ -46,6 +46,10 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   PasswordGenerationAgent(content::RenderFrame* render_frame,
                           PasswordAutofillAgent* password_agent,
                           blink::AssociatedInterfaceRegistry* registry);
+
+  PasswordGenerationAgent(const PasswordGenerationAgent&) = delete;
+  PasswordGenerationAgent& operator=(const PasswordGenerationAgent&) = delete;
+
   ~PasswordGenerationAgent() override;
 
   void BindPendingReceiver(
@@ -180,8 +184,6 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
       deferring_password_generation_driver_;
 
   mojo::AssociatedReceiver<mojom::PasswordGenerationAgent> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationAgent);
 };
 
 }  // namespace autofill

@@ -32,6 +32,10 @@ class BackgroundSyncMetrics {
 
   explicit BackgroundSyncMetrics(
       background_sync::BackgroundSyncDelegate* delegate);
+
+  BackgroundSyncMetrics(const BackgroundSyncMetrics&) = delete;
+  BackgroundSyncMetrics& operator=(const BackgroundSyncMetrics&) = delete;
+
   ~BackgroundSyncMetrics();
 
   void MaybeRecordOneShotSyncRegistrationEvent(const url::Origin& origin,
@@ -84,8 +88,6 @@ class BackgroundSyncMetrics {
   base::OnceClosure ukm_event_recorded_for_testing_;
 
   base::WeakPtrFactory<BackgroundSyncMetrics> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncMetrics);
 };
 
 #endif  // COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_METRICS_H_

@@ -39,6 +39,10 @@ class WaylandDisplayHandler : public display::DisplayObserver,
  public:
   WaylandDisplayHandler(WaylandDisplayOutput* output,
                         wl_resource* output_resource);
+
+  WaylandDisplayHandler(const WaylandDisplayHandler&) = delete;
+  WaylandDisplayHandler& operator=(const WaylandDisplayHandler&) = delete;
+
   ~WaylandDisplayHandler() override;
   void AddObserver(WaylandDisplayObserver* observer);
   int64_t id() const;
@@ -74,8 +78,6 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   base::ObserverList<WaylandDisplayObserver> observers_;
 
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDisplayHandler);
 };
 
 }  // namespace wayland

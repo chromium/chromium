@@ -113,6 +113,9 @@ class MockOfflinePageModel : public StubOfflinePageModel {
   explicit MockOfflinePageModel(base::TestMockTimeTaskRunner* task_runner)
       : observer_(nullptr), task_runner_(task_runner) {}
 
+  MockOfflinePageModel(const MockOfflinePageModel&) = delete;
+  MockOfflinePageModel& operator=(const MockOfflinePageModel&) = delete;
+
   ~MockOfflinePageModel() override {}
 
   void AddInitialPage(ClientId client_id) {
@@ -207,8 +210,6 @@ class MockOfflinePageModel : public StubOfflinePageModel {
  private:
   OfflinePageModel::Observer* observer_;
   base::TestMockTimeTaskRunner* task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockOfflinePageModel);
 };
 
 // Creates mock versions for OfflinePageModel, RequestCoordinator and their

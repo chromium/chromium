@@ -16,6 +16,9 @@ class StubCredentialsFilter : public CredentialsFilter {
  public:
   StubCredentialsFilter();
 
+  StubCredentialsFilter(const StubCredentialsFilter&) = delete;
+  StubCredentialsFilter& operator=(const StubCredentialsFilter&) = delete;
+
   ~StubCredentialsFilter() override;
 
   // CredentialsFilter
@@ -26,9 +29,6 @@ class StubCredentialsFilter : public CredentialsFilter {
   void ReportFormLoginSuccess(
       const PasswordFormManager& form_manager) const override;
   bool IsSyncAccountEmail(const std::string& username) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubCredentialsFilter);
 };
 
 }  // namespace password_manager

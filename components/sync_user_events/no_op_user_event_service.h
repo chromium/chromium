@@ -17,6 +17,10 @@ namespace syncer {
 class NoOpUserEventService : public UserEventService {
  public:
   NoOpUserEventService();
+
+  NoOpUserEventService(const NoOpUserEventService&) = delete;
+  NoOpUserEventService& operator=(const NoOpUserEventService&) = delete;
+
   ~NoOpUserEventService() override;
 
   // UserEventService implementation.
@@ -25,9 +29,6 @@ class NoOpUserEventService : public UserEventService {
   void RecordUserEvent(const sync_pb::UserEventSpecifics& specifics) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoOpUserEventService);
 };
 
 }  // namespace syncer

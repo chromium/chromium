@@ -45,6 +45,10 @@ class SubresourceFilterAgent
       content::RenderFrame* render_frame,
       UnverifiedRulesetDealer* ruleset_dealer,
       std::unique_ptr<AdResourceTracker> ad_resource_tracker);
+
+  SubresourceFilterAgent(const SubresourceFilterAgent&) = delete;
+  SubresourceFilterAgent& operator=(const SubresourceFilterAgent&) = delete;
+
   ~SubresourceFilterAgent() override;
 
   // Unit tests don't have a RenderFrame so the construction relies on virtual
@@ -149,8 +153,6 @@ class SubresourceFilterAgent
 
   base::WeakPtr<WebDocumentSubresourceFilterImpl>
       filter_for_last_created_document_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterAgent);
 };
 
 }  // namespace subresource_filter

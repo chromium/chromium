@@ -144,6 +144,12 @@ class V4GetHashProtocolManagerFactoryImpl
     : public V4GetHashProtocolManagerFactory {
  public:
   V4GetHashProtocolManagerFactoryImpl() {}
+
+  V4GetHashProtocolManagerFactoryImpl(
+      const V4GetHashProtocolManagerFactoryImpl&) = delete;
+  V4GetHashProtocolManagerFactoryImpl& operator=(
+      const V4GetHashProtocolManagerFactoryImpl&) = delete;
+
   ~V4GetHashProtocolManagerFactoryImpl() override {}
   std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -152,9 +158,6 @@ class V4GetHashProtocolManagerFactoryImpl
     return base::WrapUnique(new V4GetHashProtocolManager(
         url_loader_factory, stores_to_check, config));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(V4GetHashProtocolManagerFactoryImpl);
 };
 
 // ----------------------------------------------------------------

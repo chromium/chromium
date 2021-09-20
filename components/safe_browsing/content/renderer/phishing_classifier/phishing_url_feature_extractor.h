@@ -24,6 +24,11 @@ class FeatureMap;
 class PhishingUrlFeatureExtractor {
  public:
   PhishingUrlFeatureExtractor();
+
+  PhishingUrlFeatureExtractor(const PhishingUrlFeatureExtractor&) = delete;
+  PhishingUrlFeatureExtractor& operator=(const PhishingUrlFeatureExtractor&) =
+      delete;
+
   ~PhishingUrlFeatureExtractor();
 
   // Extracts features for |url| into the given feature map.
@@ -41,8 +46,6 @@ class PhishingUrlFeatureExtractor {
   static void SplitStringIntoLongAlphanumTokens(
       const std::string& full,
       std::vector<std::string>* tokens);
-
-  DISALLOW_COPY_AND_ASSIGN(PhishingUrlFeatureExtractor);
 };
 
 }  // namespace safe_browsing

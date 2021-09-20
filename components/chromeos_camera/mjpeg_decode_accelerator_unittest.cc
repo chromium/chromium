@@ -525,6 +525,10 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
       std::unique_ptr<media::test::ClientStateNotification<ClientState>> note,
       bool use_dmabuf,
       bool skip_result_checking);
+
+  JpegClient(const JpegClient&) = delete;
+  JpegClient& operator=(const JpegClient&) = delete;
+
   ~JpegClient() override;
   void CreateJpegDecoder();
   void StartDecode(int32_t task_id, bool do_prepare_memory);
@@ -598,8 +602,6 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
   std::vector<base::TimeDelta> decode_map_times_;
 
   base::WeakPtrFactory<JpegClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JpegClient);
 };
 
 JpegClient::JpegClient(
@@ -949,6 +951,10 @@ class ScopedJpegClient {
   ScopedJpegClient(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                    std::unique_ptr<JpegClient> client)
       : task_runner_(task_runner), client_(std::move(client)) {}
+
+  ScopedJpegClient(const ScopedJpegClient&) = delete;
+  ScopedJpegClient& operator=(const ScopedJpegClient&) = delete;
+
   ~ScopedJpegClient() {
     task_runner_->DeleteSoon(FROM_HERE, std::move(client_));
   }
@@ -957,8 +963,6 @@ class ScopedJpegClient {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<JpegClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedJpegClient);
 };
 
 class MjpegDecodeAcceleratorTest : public ::testing::TestWithParam<bool> {

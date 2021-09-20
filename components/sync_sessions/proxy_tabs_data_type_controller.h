@@ -20,6 +20,11 @@ class ProxyTabsDataTypeController : public syncer::DataTypeController {
   // |state_changed_cb| can be used to listen to state changes.
   explicit ProxyTabsDataTypeController(
       const base::RepeatingCallback<void(State)>& state_changed_cb);
+
+  ProxyTabsDataTypeController(const ProxyTabsDataTypeController&) = delete;
+  ProxyTabsDataTypeController& operator=(const ProxyTabsDataTypeController&) =
+      delete;
+
   ~ProxyTabsDataTypeController() override;
 
   // DataTypeController interface.
@@ -39,8 +44,6 @@ class ProxyTabsDataTypeController : public syncer::DataTypeController {
  private:
   const base::RepeatingCallback<void(State)> state_changed_cb_;
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyTabsDataTypeController);
 };
 
 }  // namespace sync_sessions

@@ -24,6 +24,9 @@ class SESSIONS_EXPORT SessionTabHelper
   using DelegateLookup =
       base::RepeatingCallback<SessionTabHelperDelegate*(content::WebContents*)>;
 
+  SessionTabHelper(const SessionTabHelper&) = delete;
+  SessionTabHelper& operator=(const SessionTabHelper&) = delete;
+
   ~SessionTabHelper() override;
 
   // Returns the identifier used by session restore for this tab.
@@ -79,8 +82,6 @@ class SESSIONS_EXPORT SessionTabHelper
   SessionID window_id_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SessionTabHelper);
 };
 
 }  // namespace sessions

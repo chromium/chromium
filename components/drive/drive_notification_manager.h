@@ -40,6 +40,10 @@ class DriveNotificationManager : public KeyedService,
   explicit DriveNotificationManager(
       invalidation::InvalidationService* invalidation_service,
       const base::TickClock* clock = base::DefaultTickClock::GetInstance());
+
+  DriveNotificationManager(const DriveNotificationManager&) = delete;
+  DriveNotificationManager& operator=(const DriveNotificationManager&) = delete;
+
   ~DriveNotificationManager() override;
 
   // KeyedService override.
@@ -148,8 +152,6 @@ class DriveNotificationManager : public KeyedService,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DriveNotificationManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveNotificationManager);
 };
 
 }  // namespace drive

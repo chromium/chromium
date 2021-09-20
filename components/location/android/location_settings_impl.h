@@ -13,6 +13,10 @@
 class LocationSettingsImpl : public LocationSettings {
  public:
   LocationSettingsImpl();
+
+  LocationSettingsImpl(const LocationSettingsImpl&) = delete;
+  LocationSettingsImpl& operator=(const LocationSettingsImpl&) = delete;
+
   ~LocationSettingsImpl() override;
 
   // LocationSettings implementation:
@@ -25,9 +29,6 @@ class LocationSettingsImpl : public LocationSettings {
       const LocationSettingsDialogContext prompt_context,
       ui::WindowAndroid* window,
       LocationSettingsDialogOutcomeCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocationSettingsImpl);
 };
 
 #endif  // COMPONENTS_LOCATION_ANDROID_LOCATION_SETTINGS_IMPL_H_

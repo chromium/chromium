@@ -44,6 +44,10 @@ class TestSiteDataImpl : public SiteDataImpl {
 class MockDataStore : public testing::NoopSiteDataStore {
  public:
   MockDataStore() = default;
+
+  MockDataStore(const MockDataStore&) = delete;
+  MockDataStore& operator=(const MockDataStore&) = delete;
+
   ~MockDataStore() = default;
 
   // Note: As move-only parameters (e.g. OnceCallback) aren't supported by mock
@@ -59,9 +63,6 @@ class MockDataStore : public testing::NoopSiteDataStore {
 
   MOCK_METHOD2(WriteSiteDataIntoStore,
                void(const url::Origin&, const SiteDataProto&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDataStore);
 };
 
 // Returns a SiteDataFeatureProto that indicates that a feature hasn't been

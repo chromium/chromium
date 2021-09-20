@@ -25,6 +25,10 @@ class ElementArea {
   // |delegate| and |settings| must remain valid for the lifetime of this
   // instance.
   explicit ElementArea(ScriptExecutorDelegate* delegate);
+
+  ElementArea(const ElementArea&) = delete;
+  ElementArea& operator=(const ElementArea&) = delete;
+
   ~ElementArea();
 
   // Clears the area. Stops scheduled updates.
@@ -150,8 +154,6 @@ class ElementArea {
       on_update_;
 
   base::WeakPtrFactory<ElementArea> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ElementArea);
 };
 
 }  // namespace autofill_assistant

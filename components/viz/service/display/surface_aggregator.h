@@ -54,6 +54,10 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                     DisplayResourceProvider* provider,
                     bool aggregate_only_damaged,
                     bool needs_surface_damage_rect_list);
+
+  SurfaceAggregator(const SurfaceAggregator&) = delete;
+  SurfaceAggregator& operator=(const SurfaceAggregator&) = delete;
+
   ~SurfaceAggregator();
 
   // These constants are used for all time related metrics recorded in
@@ -457,8 +461,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   // Used to generate new unique render pass ids in the aggregated namespace.
   AggregatedRenderPassId::Generator render_pass_id_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceAggregator);
 };
 
 }  // namespace viz

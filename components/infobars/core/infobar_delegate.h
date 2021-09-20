@@ -196,6 +196,9 @@ class InfoBarDelegate {
   // Value to use when the InfoBar has no icon to show.
   static const int kNoIconID;
 
+  InfoBarDelegate(const InfoBarDelegate&) = delete;
+  InfoBarDelegate& operator=(const InfoBarDelegate&) = delete;
+
   // Called when the InfoBar that owns this delegate is being destroyed.  At
   // this point nothing is visible onscreen.
   virtual ~InfoBarDelegate();
@@ -291,8 +294,6 @@ class InfoBarDelegate {
 
   // The ID of the active navigation entry at the time we became owned.
   int nav_entry_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarDelegate);
 };
 
 }  // namespace infobars

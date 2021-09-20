@@ -120,6 +120,10 @@ int GetVmMemorySize(int vm_ram_mib) {
 class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
  public:
   TestDebugDaemonClient() = default;
+
+  TestDebugDaemonClient(const TestDebugDaemonClient&) = delete;
+  TestDebugDaemonClient& operator=(const TestDebugDaemonClient&) = delete;
+
   ~TestDebugDaemonClient() override = default;
 
   void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
@@ -138,8 +142,6 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
  private:
   bool backup_arc_bug_report_called_ = false;
   bool backup_arc_bug_report_result_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDebugDaemonClient);
 };
 
 // A concierge that remembers the parameter passed to StartArcVm.
@@ -147,6 +149,10 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 class TestConciergeClient : public chromeos::FakeConciergeClient {
  public:
   static void Initialize() { new TestConciergeClient(); }
+
+  TestConciergeClient(const TestConciergeClient&) = delete;
+  TestConciergeClient& operator=(const TestConciergeClient&) = delete;
+
   ~TestConciergeClient() override = default;
 
   void StopVm(const vm_tools::concierge::StopVmRequest& request,
@@ -194,8 +200,6 @@ class TestConciergeClient : public chromeos::FakeConciergeClient {
   vm_tools::concierge::StartArcVmRequest start_arc_vm_request_;
   vm_tools::concierge::StopVmRequest stop_vm_request_;
   base::OnceClosure on_stop_vm_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConciergeClient);
 };
 
 // A fake ArcVmBootNotificationServer that listens on an UDS and records
@@ -306,6 +310,9 @@ class ArcVmClientAdapterTest : public testing::Test,
     TestConciergeClient::Initialize();
     chromeos::UpstartClient::InitializeFake();
   }
+
+  ArcVmClientAdapterTest(const ArcVmClientAdapterTest&) = delete;
+  ArcVmClientAdapterTest& operator=(const ArcVmClientAdapterTest&) = delete;
 
   ~ArcVmClientAdapterTest() override {
     chromeos::ConciergeClient::Shutdown();
@@ -636,8 +643,6 @@ class ArcVmClientAdapterTest : public testing::Test,
   FakeDemoModeDelegate demo_mode_delegate_;
   std::unique_ptr<FakeAppHost> app_host_;
   std::unique_ptr<FakeAppInstance> app_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcVmClientAdapterTest);
 };
 
 // Tests that SetUserInfo() doesn't crash.

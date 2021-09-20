@@ -17,6 +17,12 @@ class ActiveDirectoryAccountReconcilorDelegate
     : public AccountReconcilorDelegate {
  public:
   ActiveDirectoryAccountReconcilorDelegate();
+
+  ActiveDirectoryAccountReconcilorDelegate(
+      const ActiveDirectoryAccountReconcilorDelegate&) = delete;
+  ActiveDirectoryAccountReconcilorDelegate& operator=(
+      const ActiveDirectoryAccountReconcilorDelegate&) = delete;
+
   ~ActiveDirectoryAccountReconcilorDelegate() override;
 
   // AccountReconcilorDelegate:
@@ -45,8 +51,6 @@ class ActiveDirectoryAccountReconcilorDelegate
   CoreAccountId GetFirstAccount(
       const std::vector<CoreAccountId>& chrome_accounts,
       const std::vector<gaia::ListedAccount>& gaia_accounts) const;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryAccountReconcilorDelegate);
 };
 
 }  // namespace signin

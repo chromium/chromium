@@ -25,6 +25,12 @@ class AutofillCreditCardFillingInfoBarDelegateMobile
   AutofillCreditCardFillingInfoBarDelegateMobile(
       const CreditCard& card,
       base::OnceClosure card_filling_callback);
+
+  AutofillCreditCardFillingInfoBarDelegateMobile(
+      const AutofillCreditCardFillingInfoBarDelegateMobile&) = delete;
+  AutofillCreditCardFillingInfoBarDelegateMobile& operator=(
+      const AutofillCreditCardFillingInfoBarDelegateMobile&) = delete;
+
   ~AutofillCreditCardFillingInfoBarDelegateMobile() override;
 
   int issuer_icon_id() const { return issuer_icon_id_; }
@@ -61,8 +67,6 @@ class AutofillCreditCardFillingInfoBarDelegateMobile
 
   std::u16string card_label_;
   std::u16string card_sub_label_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillCreditCardFillingInfoBarDelegateMobile);
 };
 
 }  // namespace autofill

@@ -25,6 +25,10 @@ class VisitSegmentDatabase {
  public:
   // Must call InitSegmentTables before using any other part of this class.
   VisitSegmentDatabase();
+
+  VisitSegmentDatabase(const VisitSegmentDatabase&) = delete;
+  VisitSegmentDatabase& operator=(const VisitSegmentDatabase&) = delete;
+
   virtual ~VisitSegmentDatabase();
 
   // Compute a segment name given a URL. The segment name is currently the
@@ -91,8 +95,6 @@ class VisitSegmentDatabase {
   // `from_segment_id` are updated to `to_segment_id` and `from_segment_id` is
   // deleted. Returns true on success.
   bool MergeSegments(SegmentID from_segment_id, SegmentID to_segment_id);
-
-  DISALLOW_COPY_AND_ASSIGN(VisitSegmentDatabase);
 };
 
 }  // namespace history

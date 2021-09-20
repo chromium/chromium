@@ -34,6 +34,10 @@ class BookmarkCodec {
   // guarantees on how the IDs are reassigned or about doing minimal
   // reassignments to achieve uniqueness.
   BookmarkCodec();
+
+  BookmarkCodec(const BookmarkCodec&) = delete;
+  BookmarkCodec& operator=(const BookmarkCodec&) = delete;
+
   ~BookmarkCodec();
 
   // Encodes the model to a JSON value. This is invoked to encode the contents
@@ -205,8 +209,6 @@ class BookmarkCodec {
 
   // Meta info set on bookmark model root.
   BookmarkNode::MetaInfoMap model_meta_info_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkCodec);
 };
 
 }  // namespace bookmarks

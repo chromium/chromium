@@ -19,6 +19,9 @@ class WebStateTopSitesObserver
     : public web::WebStateObserver,
       public web::WebStateUserData<WebStateTopSitesObserver> {
  public:
+  WebStateTopSitesObserver(const WebStateTopSitesObserver&) = delete;
+  WebStateTopSitesObserver& operator=(const WebStateTopSitesObserver&) = delete;
+
   ~WebStateTopSitesObserver() override;
 
   static void CreateForWebState(web::WebState* web_state, TopSites* top_sites);
@@ -37,8 +40,6 @@ class WebStateTopSitesObserver
   TopSites* top_sites_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateTopSitesObserver);
 };
 
 }  // namespace history

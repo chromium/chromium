@@ -31,6 +31,10 @@ class ArcObbMounterBridge
 
   ArcObbMounterBridge(content::BrowserContext* context,
                       ArcBridgeService* bridge_service);
+
+  ArcObbMounterBridge(const ArcObbMounterBridge&) = delete;
+  ArcObbMounterBridge& operator=(const ArcObbMounterBridge&) = delete;
+
   ~ArcObbMounterBridge() override;
 
   // mojom::ObbMounterHost overrides:
@@ -43,8 +47,6 @@ class ArcObbMounterBridge
 
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
-
-  DISALLOW_COPY_AND_ASSIGN(ArcObbMounterBridge);
 };
 
 }  // namespace arc

@@ -53,6 +53,10 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& metric_suffix) {
 class TimeLogger {
  public:
   explicit TimeLogger(std::string metric_suffix);
+
+  TimeLogger(const TimeLogger&) = delete;
+  TimeLogger& operator=(const TimeLogger&) = delete;
+
   ~TimeLogger();
   void Done();
 
@@ -60,8 +64,6 @@ class TimeLogger {
   bool logged_;
   std::string metric_suffix_;
   base::ElapsedTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeLogger);
 };
 
 TimeLogger::TimeLogger(std::string metric_suffix)

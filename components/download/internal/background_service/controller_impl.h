@@ -69,6 +69,10 @@ class ControllerImpl : public Controller,
                  std::unique_ptr<TaskScheduler> task_scheduler,
                  std::unique_ptr<FileMonitor> file_monitor,
                  const base::FilePath& download_file_dir);
+
+  ControllerImpl(const ControllerImpl&) = delete;
+  ControllerImpl& operator=(const ControllerImpl&) = delete;
+
   ~ControllerImpl() override;
 
   // Controller implementation.
@@ -283,8 +287,6 @@ class ControllerImpl : public Controller,
 
   // Only used to post tasks on the same thread.
   base::WeakPtrFactory<ControllerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ControllerImpl);
 };
 
 }  // namespace download

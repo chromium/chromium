@@ -22,6 +22,11 @@ namespace variations {
 class SyntheticTrialRegistryTest : public ::testing::Test {
  public:
   SyntheticTrialRegistryTest() { InitCrashKeys(); }
+
+  SyntheticTrialRegistryTest(const SyntheticTrialRegistryTest&) = delete;
+  SyntheticTrialRegistryTest& operator=(const SyntheticTrialRegistryTest&) =
+      delete;
+
   ~SyntheticTrialRegistryTest() override { ClearCrashKeysInstanceForTesting(); }
 
   // Returns true if there is a synthetic trial in the given vector that matches
@@ -57,8 +62,6 @@ class SyntheticTrialRegistryTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTrialRegistryTest);
 };
 
 TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {

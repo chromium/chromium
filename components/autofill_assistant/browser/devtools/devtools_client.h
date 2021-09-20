@@ -34,6 +34,10 @@ class DevtoolsClient : public MessageDispatcher,
                        public content::DevToolsAgentHostClient {
  public:
   explicit DevtoolsClient(scoped_refptr<content::DevToolsAgentHost> agent_host);
+
+  DevtoolsClient(const DevtoolsClient&) = delete;
+  DevtoolsClient& operator=(const DevtoolsClient&) = delete;
+
   ~DevtoolsClient() override;
 
   input::Domain* GetInput();
@@ -88,6 +92,10 @@ class DevtoolsClient : public MessageDispatcher,
     // Register the event handlers and start tracking new targets. |client|
     // must outlive this frame tracker.
     FrameTracker(DevtoolsClient* client);
+
+    FrameTracker(const FrameTracker&) = delete;
+    FrameTracker& operator=(const FrameTracker&) = delete;
+
     ~FrameTracker();
 
     void Start();
@@ -117,7 +125,6 @@ class DevtoolsClient : public MessageDispatcher,
     std::unordered_map<std::string, std::string> sessions_map_;
 
     base::WeakPtrFactory<FrameTracker> weak_ptr_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(FrameTracker);
   };
 
   // If the frame is known to devtools, return the session id for it.
@@ -160,7 +167,6 @@ class DevtoolsClient : public MessageDispatcher,
   FrameTracker frame_tracker_;
 
   base::WeakPtrFactory<DevtoolsClient> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DevtoolsClient);
 };
 
 }  // namespace autofill_assistant.

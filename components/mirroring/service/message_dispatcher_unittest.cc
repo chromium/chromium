@@ -75,6 +75,10 @@ class MessageDispatcherTest : public mojom::CastMessageChannel,
         base::BindRepeating(&MessageDispatcherTest::OnRpcMessage,
                             base::Unretained(this)));
   }
+
+  MessageDispatcherTest(const MessageDispatcherTest&) = delete;
+  MessageDispatcherTest& operator=(const MessageDispatcherTest&) = delete;
+
   ~MessageDispatcherTest() override { task_environment_.RunUntilIdle(); }
 
   void OnParsingError(const std::string& error_message) {
@@ -111,7 +115,6 @@ class MessageDispatcherTest : public mojom::CastMessageChannel,
  private:
   mojo::Receiver<mojom::CastMessageChannel> receiver_{this};
   mojo::Remote<mojom::CastMessageChannel> inbound_channel_;
-  DISALLOW_COPY_AND_ASSIGN(MessageDispatcherTest);
 };
 
 TEST_F(MessageDispatcherTest, SendsOutboundMessage) {

@@ -26,6 +26,10 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
  public:
   PrefNotifierImpl();
   explicit PrefNotifierImpl(PrefService* pref_service);
+
+  PrefNotifierImpl(const PrefNotifierImpl&) = delete;
+  PrefNotifierImpl& operator=(const PrefNotifierImpl&) = delete;
+
   ~PrefNotifierImpl() override;
 
   // If the pref at the given path changes, we call the observer's
@@ -80,8 +84,6 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
   PrefObserverList all_prefs_pref_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrefNotifierImpl);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_NOTIFIER_IMPL_H_

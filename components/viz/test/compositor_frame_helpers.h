@@ -136,6 +136,10 @@ class RenderPassBuilder {
 class CompositorFrameBuilder {
  public:
   CompositorFrameBuilder();
+
+  CompositorFrameBuilder(const CompositorFrameBuilder&) = delete;
+  CompositorFrameBuilder& operator=(const CompositorFrameBuilder&) = delete;
+
   ~CompositorFrameBuilder();
 
   // Builds the CompositorFrame and leaves |this| in an invalid state. This can
@@ -185,8 +189,6 @@ class CompositorFrameBuilder {
 
   absl::optional<CompositorFrame> frame_;
   CompositorRenderPassId::Generator render_pass_id_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorFrameBuilder);
 };
 
 // Creates a CompositorFrame that has a render pass with 20x20 output_rect and

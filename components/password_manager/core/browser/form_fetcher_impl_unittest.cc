@@ -82,6 +82,9 @@ class NameFilter : public StubCredentialsFilter {
   // |username_value|.
   explicit NameFilter(StringPiece name) : name_(ASCIIToUTF16(name)) {}
 
+  NameFilter(const NameFilter&) = delete;
+  NameFilter& operator=(const NameFilter&) = delete;
+
   ~NameFilter() override = default;
 
   bool ShouldSave(const PasswordForm& form) const override {
@@ -90,8 +93,6 @@ class NameFilter : public StubCredentialsFilter {
 
  private:
   const std::u16string name_;  // |username_value| to filter
-
-  DISALLOW_COPY_AND_ASSIGN(NameFilter);
 };
 
 class FakeNetworkContext : public network::TestNetworkContext {
@@ -106,6 +107,11 @@ class FakeNetworkContext : public network::TestNetworkContext {
 class FakePasswordManagerClient : public StubPasswordManagerClient {
  public:
   FakePasswordManagerClient() = default;
+
+  FakePasswordManagerClient(const FakePasswordManagerClient&) = delete;
+  FakePasswordManagerClient& operator=(const FakePasswordManagerClient&) =
+      delete;
+
   ~FakePasswordManagerClient() override = default;
 
   network::mojom::NetworkContext* GetNetworkContext() const override {
@@ -134,8 +140,6 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   std::unique_ptr<CredentialsFilter> filter_;
   PasswordStoreInterface* store_ = nullptr;
   mutable FakeNetworkContext network_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePasswordManagerClient);
 };
 
 PasswordForm CreateHTMLForm(const char* origin_url,
@@ -239,6 +243,9 @@ class FormFetcherImplTest : public testing::Test,
         .WillByDefault(Return(&mock_smart_bubble_stats_store_));
   }
 
+  FormFetcherImplTest(const FormFetcherImplTest&) = delete;
+  FormFetcherImplTest& operator=(const FormFetcherImplTest&) = delete;
+
   ~FormFetcherImplTest() override = default;
 
  protected:
@@ -260,9 +267,6 @@ class FormFetcherImplTest : public testing::Test,
   scoped_refptr<MockPasswordStoreInterface> mock_store_;
   testing::NiceMock<MockSmartBubbleStatsStore> mock_smart_bubble_stats_store_;
   FakePasswordManagerClient client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FormFetcherImplTest);
 };
 
 // Check that the absence of PasswordStore results is handled correctly.

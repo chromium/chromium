@@ -67,6 +67,11 @@ class OfflinePageModelTaskified : public OfflinePageModel,
       std::unique_ptr<ArchiveManager> archive_manager,
       std::unique_ptr<OfflinePageArchivePublisher> archive_publisher,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  OfflinePageModelTaskified(const OfflinePageModelTaskified&) = delete;
+  OfflinePageModelTaskified& operator=(const OfflinePageModelTaskified&) =
+      delete;
+
   ~OfflinePageModelTaskified() override;
 
   // TaskQueue::Delegate implementation.
@@ -225,8 +230,6 @@ class OfflinePageModelTaskified : public OfflinePageModel,
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<OfflinePageModelTaskified> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageModelTaskified);
 };
 
 }  // namespace offline_pages

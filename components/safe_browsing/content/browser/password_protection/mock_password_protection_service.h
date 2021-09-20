@@ -23,6 +23,11 @@ class MockPasswordProtectionService : public PasswordProtectionService {
       bool is_off_the_record,
       signin::IdentityManager* identity_manager,
       bool try_token_fetch);
+
+  MockPasswordProtectionService(const MockPasswordProtectionService&) = delete;
+  MockPasswordProtectionService& operator=(
+      const MockPasswordProtectionService&) = delete;
+
   ~MockPasswordProtectionService() override;
 
   // safe_browsing::PasswordProtectionService
@@ -112,9 +117,6 @@ class MockPasswordProtectionService : public PasswordProtectionService {
            PasswordType,
            const std::vector<password_manager::MatchingReusedCredential>&,
            bool));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordProtectionService);
 };
 
 }  // namespace safe_browsing

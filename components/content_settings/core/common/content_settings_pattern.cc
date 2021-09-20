@@ -126,6 +126,10 @@ class ContentSettingsPattern::Builder :
     public ContentSettingsPattern::BuilderInterface {
  public:
   Builder();
+
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
+
   ~Builder() override;
 
   // BuilderInterface:
@@ -152,8 +156,6 @@ class ContentSettingsPattern::Builder :
   bool is_valid_;
 
   PatternParts parts_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 ContentSettingsPattern::Builder::Builder() : is_valid_(true) {}

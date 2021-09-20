@@ -19,6 +19,12 @@ class ServiceWorkerPaymentAppCreator;
 class ServiceWorkerPaymentAppFactory : public PaymentAppFactory {
  public:
   ServiceWorkerPaymentAppFactory();
+
+  ServiceWorkerPaymentAppFactory(const ServiceWorkerPaymentAppFactory&) =
+      delete;
+  ServiceWorkerPaymentAppFactory& operator=(
+      const ServiceWorkerPaymentAppFactory&) = delete;
+
   ~ServiceWorkerPaymentAppFactory() override;
 
   // PaymentAppFactory:
@@ -32,8 +38,6 @@ class ServiceWorkerPaymentAppFactory : public PaymentAppFactory {
   std::map<ServiceWorkerPaymentAppCreator*,
            std::unique_ptr<ServiceWorkerPaymentAppCreator>>
       creators_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPaymentAppFactory);
 };
 
 }  // namespace payments

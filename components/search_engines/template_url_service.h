@@ -127,6 +127,10 @@ class TemplateURLService : public WebDataServiceConsumer,
       const base::RepeatingClosure& dsp_change_callback);
   // The following is for testing.
   TemplateURLService(const Initializer* initializers, const int count);
+
+  TemplateURLService(const TemplateURLService&) = delete;
+  TemplateURLService& operator=(const TemplateURLService&) = delete;
+
   ~TemplateURLService() override;
 
   // Log a SearchTemplateURLEvent.
@@ -831,8 +835,6 @@ class TemplateURLService : public WebDataServiceConsumer,
   // android.
   std::unique_ptr<TemplateUrlServiceAndroid> template_url_service_android_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLService);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_H_

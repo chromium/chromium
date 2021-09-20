@@ -78,6 +78,10 @@ class AutofillAgent : public content::RenderFrameObserver,
                 PasswordGenerationAgent* password_generation_agent,
                 AutofillAssistantAgent* autofill_assistant_agent,
                 blink::AssociatedInterfaceRegistry* registry);
+
+  AutofillAgent(const AutofillAgent&) = delete;
+  AutofillAgent& operator=(const AutofillAgent&) = delete;
+
   ~AutofillAgent() override;
 
   void BindPendingReceiver(
@@ -398,8 +402,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   const scoped_refptr<FieldDataManager> field_data_manager_;
 
   base::WeakPtrFactory<AutofillAgent> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillAgent);
 };
 
 }  // namespace autofill

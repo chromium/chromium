@@ -67,6 +67,10 @@ class CaptivePortalService : public KeyedService {
       PrefService* pref_service,
       const base::TickClock* clock_for_testing = nullptr,
       network::mojom::URLLoaderFactory* loader_factory_for_testing = nullptr);
+
+  CaptivePortalService(const CaptivePortalService&) = delete;
+  CaptivePortalService& operator=(const CaptivePortalService&) = delete;
+
   ~CaptivePortalService() override;
 
   // Triggers a check for a captive portal.  If there's already a check in
@@ -215,8 +219,6 @@ class CaptivePortalService : public KeyedService {
 
   // Test tick clock used by unit tests.
   const base::TickClock* const tick_clock_for_testing_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalService);
 };
 
 }  // namespace captive_portal

@@ -60,6 +60,10 @@ class PaymentHandlerHost : public mojom::PaymentHandlerHost {
   // context as the payment handler.
   PaymentHandlerHost(content::WebContents* web_contents,
                      base::WeakPtr<Delegate> delegate);
+
+  PaymentHandlerHost(const PaymentHandlerHost&) = delete;
+  PaymentHandlerHost& operator=(const PaymentHandlerHost&) = delete;
+
   ~PaymentHandlerHost() override;
 
   // Sets the origin of the payment handler / service worker registration scope.
@@ -149,8 +153,6 @@ class PaymentHandlerHost : public mojom::PaymentHandlerHost {
   base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<PaymentHandlerHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerHost);
 };
 
 }  // namespace payments

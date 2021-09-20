@@ -34,6 +34,10 @@ class Cronet_UploadDataSinkImpl::NetworkTasks
  public:
   NetworkTasks(Cronet_UploadDataSinkImpl* upload_data_sink,
                Cronet_Executor* upload_data_provider_executor);
+
+  NetworkTasks(const NetworkTasks&) = delete;
+  NetworkTasks& operator=(const NetworkTasks&) = delete;
+
   ~NetworkTasks() override;
 
  private:
@@ -56,7 +60,6 @@ class Cronet_UploadDataSinkImpl::NetworkTasks
   Cronet_ExecutorPtr const upload_data_provider_executor_ = nullptr;
 
   THREAD_CHECKER(network_thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(NetworkTasks);
 };
 
 Cronet_UploadDataSinkImpl::NetworkTasks::NetworkTasks(

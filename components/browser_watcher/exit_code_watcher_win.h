@@ -15,6 +15,10 @@ namespace browser_watcher {
 class ExitCodeWatcher {
  public:
   ExitCodeWatcher();
+
+  ExitCodeWatcher(const ExitCodeWatcher&) = delete;
+  ExitCodeWatcher& operator=(const ExitCodeWatcher&) = delete;
+
   ~ExitCodeWatcher();
 
   // This function expects |process| to be open with sufficient privilege to
@@ -48,8 +52,6 @@ class ExitCodeWatcher {
 
   // Event handle to use to stop exit watcher thread
   base::win::ScopedHandle stop_watching_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitCodeWatcher);
 };
 
 }  // namespace browser_watcher

@@ -18,6 +18,10 @@ namespace nacl {
 class NaClHelper : public content::RenderFrameObserver {
  public:
   explicit NaClHelper(content::RenderFrame* render_frame);
+
+  NaClHelper(const NaClHelper&) = delete;
+  NaClHelper& operator=(const NaClHelper&) = delete;
+
   ~NaClHelper() override;
 
   // RenderFrameObserver.
@@ -26,8 +30,6 @@ class NaClHelper : public content::RenderFrameObserver {
  private:
   // RenderFrameObserver implementation.
   void OnDestruct() override;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClHelper);
 };
 
 }  // namespace nacl

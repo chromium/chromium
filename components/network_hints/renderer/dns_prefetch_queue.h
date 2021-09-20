@@ -51,6 +51,10 @@ class DnsQueue {
   // length K to fit, you should actually construct a buffer with
   // an internal size of N*(K+1).
   explicit DnsQueue(BufferSize size);
+
+  DnsQueue(const DnsQueue&) = delete;
+  DnsQueue& operator=(const DnsQueue&) = delete;
+
   ~DnsQueue(void);
 
   size_t Size() const { return size_; }
@@ -88,8 +92,6 @@ class DnsQueue {
 
   // Number of queued strings
   size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsQueue);
 };  // class DnsQueue
 
 }  // namespace network_hints

@@ -31,6 +31,10 @@ class VIZ_SERVICE_EXPORT InfoCollectionGpuServiceImpl
       const gpu::GPUInfo::GPUDevice& gpu_device,
       mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver);
 
+  InfoCollectionGpuServiceImpl(const InfoCollectionGpuServiceImpl&) = delete;
+  InfoCollectionGpuServiceImpl& operator=(const InfoCollectionGpuServiceImpl&) =
+      delete;
+
   ~InfoCollectionGpuServiceImpl() override;
 
   void RequestDxDiagNodeInfo(RequestDxDiagNodeInfoCallback callback) override;
@@ -66,8 +70,6 @@ class VIZ_SERVICE_EXPORT InfoCollectionGpuServiceImpl
 
   // Should only be accessed on the IO thread after creation.
   mojo::Receiver<mojom::InfoCollectionGpuService> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InfoCollectionGpuServiceImpl);
 };
 }  // namespace viz
 

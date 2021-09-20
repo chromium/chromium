@@ -34,6 +34,10 @@ class DownloadDBImpl : public DownloadDB {
       DownloadNamespace download_namespace,
       std::unique_ptr<
           leveldb_proto::ProtoDatabase<download_pb::DownloadDBEntry>> db);
+
+  DownloadDBImpl(const DownloadDBImpl&) = delete;
+  DownloadDBImpl& operator=(const DownloadDBImpl&) = delete;
+
   ~DownloadDBImpl() override;
 
   // DownloadDB implementation.
@@ -84,8 +88,6 @@ class DownloadDBImpl : public DownloadDB {
   int num_initialize_attempts_ = 0;
 
   base::WeakPtrFactory<DownloadDBImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDBImpl);
 };
 
 }  // namespace download

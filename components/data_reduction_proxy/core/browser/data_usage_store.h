@@ -30,6 +30,9 @@ class DataUsageStore {
  public:
   explicit DataUsageStore(DataStore* db);
 
+  DataUsageStore(const DataUsageStore&) = delete;
+  DataUsageStore& operator=(const DataUsageStore&) = delete;
+
   ~DataUsageStore();
 
   // Loads the historic data usage into |data_usage|.
@@ -108,8 +111,6 @@ class DataUsageStore {
   base::Time current_bucket_last_updated_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataUsageStore);
 };
 
 }  // namespace data_reduction_proxy

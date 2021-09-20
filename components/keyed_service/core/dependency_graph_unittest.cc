@@ -21,12 +21,13 @@ class DummyNode : public DependencyNode {
     dependency_graph_->AddNode(this);
   }
 
+  DummyNode(const DummyNode&) = delete;
+  DummyNode& operator=(const DummyNode&) = delete;
+
   ~DummyNode() { dependency_graph_->RemoveNode(this); }
 
  private:
   DependencyGraph* dependency_graph_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyNode);
 };
 
 // Tests that we can deal with a single component.

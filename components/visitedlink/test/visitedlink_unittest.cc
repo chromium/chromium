@@ -635,15 +635,18 @@ class VisitRelayingRenderProcessHost : public MockRenderProcessHost {
         content::Source<RenderProcessHost>(this),
         content::NotificationService::NoDetails());
   }
+
+  VisitRelayingRenderProcessHost(const VisitRelayingRenderProcessHost&) =
+      delete;
+  VisitRelayingRenderProcessHost& operator=(
+      const VisitRelayingRenderProcessHost&) = delete;
+
   ~VisitRelayingRenderProcessHost() override {
     content::NotificationService::current()->Notify(
         content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
         content::Source<content::RenderProcessHost>(this),
         content::NotificationService::NoDetails());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VisitRelayingRenderProcessHost);
 };
 
 class VisitedLinkRenderProcessHostFactory

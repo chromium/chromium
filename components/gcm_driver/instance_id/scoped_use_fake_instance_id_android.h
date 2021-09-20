@@ -16,12 +16,16 @@ namespace instance_id {
 class ScopedUseFakeInstanceIDAndroid {
  public:
   ScopedUseFakeInstanceIDAndroid();
+
+  ScopedUseFakeInstanceIDAndroid(const ScopedUseFakeInstanceIDAndroid&) =
+      delete;
+  ScopedUseFakeInstanceIDAndroid& operator=(
+      const ScopedUseFakeInstanceIDAndroid&) = delete;
+
   ~ScopedUseFakeInstanceIDAndroid();
 
  private:
   bool previous_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUseFakeInstanceIDAndroid);
 };
 
 }  // namespace instance_id

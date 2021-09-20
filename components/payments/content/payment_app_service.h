@@ -25,6 +25,10 @@ class PaymentAppService : public KeyedService {
  public:
   // The |context| pointer is not being saved.
   explicit PaymentAppService(content::BrowserContext* context);
+
+  PaymentAppService(const PaymentAppService&) = delete;
+  PaymentAppService& operator=(const PaymentAppService&) = delete;
+
   ~PaymentAppService() override;
 
   // Returns the number of payment app factories, which is the number of times
@@ -40,8 +44,6 @@ class PaymentAppService : public KeyedService {
 
  private:
   std::vector<std::unique_ptr<PaymentAppFactory>> factories_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppService);
 };
 
 }  // namespace payments

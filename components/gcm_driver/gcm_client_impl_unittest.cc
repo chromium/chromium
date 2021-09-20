@@ -186,6 +186,10 @@ void FakeMCSClient::SendMessage(const MCSMessage& message) {
 class AutoAdvancingTestClock : public base::Clock {
  public:
   explicit AutoAdvancingTestClock(base::TimeDelta auto_increment_time_delta);
+
+  AutoAdvancingTestClock(const AutoAdvancingTestClock&) = delete;
+  AutoAdvancingTestClock& operator=(const AutoAdvancingTestClock&) = delete;
+
   ~AutoAdvancingTestClock() override;
 
   base::Time Now() const override;
@@ -196,8 +200,6 @@ class AutoAdvancingTestClock : public base::Clock {
   mutable int call_count_;
   base::TimeDelta auto_increment_time_delta_;
   mutable base::Time now_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoAdvancingTestClock);
 };
 
 AutoAdvancingTestClock::AutoAdvancingTestClock(

@@ -19,6 +19,10 @@ class NaClTrustedListener {
   NaClTrustedListener(
       mojo::PendingRemote<nacl::mojom::NaClRendererHost> renderer_host,
       base::SingleThreadTaskRunner* io_task_runner);
+
+  NaClTrustedListener(const NaClTrustedListener&) = delete;
+  NaClTrustedListener& operator=(const NaClTrustedListener&) = delete;
+
   ~NaClTrustedListener();
 
   nacl::mojom::NaClRendererHost* renderer_host() {
@@ -27,8 +31,6 @@ class NaClTrustedListener {
 
  private:
   mojo::Remote<nacl::mojom::NaClRendererHost> renderer_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClTrustedListener);
 };
 
 #endif  // COMPONENTS_NACL_LOADER_NACL_TRUSTED_LISTENER_H_

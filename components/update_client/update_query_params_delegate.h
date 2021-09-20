@@ -17,14 +17,16 @@ namespace update_client {
 class UpdateQueryParamsDelegate {
  public:
   UpdateQueryParamsDelegate();
+
+  UpdateQueryParamsDelegate(const UpdateQueryParamsDelegate&) = delete;
+  UpdateQueryParamsDelegate& operator=(const UpdateQueryParamsDelegate&) =
+      delete;
+
   virtual ~UpdateQueryParamsDelegate();
 
   // Returns additional parameters, if any. If there are any parameters, the
   // string should begin with a & character.
   virtual std::string GetExtraParams() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateQueryParamsDelegate);
 };
 
 }  // namespace update_client

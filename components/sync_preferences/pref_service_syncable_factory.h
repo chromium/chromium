@@ -31,6 +31,11 @@ class PrefServiceSyncable;
 class PrefServiceSyncableFactory : public PrefServiceFactory {
  public:
   PrefServiceSyncableFactory();
+
+  PrefServiceSyncableFactory(const PrefServiceSyncableFactory&) = delete;
+  PrefServiceSyncableFactory& operator=(const PrefServiceSyncableFactory&) =
+      delete;
+
   ~PrefServiceSyncableFactory() override;
 
   // Set up policy pref stores using the given policy service and connector.
@@ -48,8 +53,6 @@ class PrefServiceSyncableFactory : public PrefServiceFactory {
 
  private:
   PrefModelAssociatorClient* pref_model_associator_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefServiceSyncableFactory);
 };
 
 }  // namespace sync_preferences

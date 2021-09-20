@@ -27,6 +27,12 @@ class CallStackProfileMetricsProvider : public MetricsProvider {
       base::RepeatingCallback<void(SampledProfile profile)>;
 
   CallStackProfileMetricsProvider();
+
+  CallStackProfileMetricsProvider(const CallStackProfileMetricsProvider&) =
+      delete;
+  CallStackProfileMetricsProvider& operator=(
+      const CallStackProfileMetricsProvider&) = delete;
+
   ~CallStackProfileMetricsProvider() override;
 
   // Receives SampledProfile protobuf instances. May be called on any thread.
@@ -63,9 +69,6 @@ class CallStackProfileMetricsProvider : public MetricsProvider {
 
   // Reset the static state to the defaults after startup.
   static void ResetStaticStateForTesting();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CallStackProfileMetricsProvider);
 };
 
 }  // namespace metrics

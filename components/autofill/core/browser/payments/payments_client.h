@@ -288,6 +288,9 @@ class PaymentsClient {
       AccountInfoGetter* const account_info_getter,
       bool is_off_the_record = false);
 
+  PaymentsClient(const PaymentsClient&) = delete;
+  PaymentsClient& operator=(const PaymentsClient&) = delete;
+
   virtual ~PaymentsClient();
 
   // Starts fetching the OAuth2 token in anticipation of future Payments
@@ -441,8 +444,6 @@ class PaymentsClient {
   bool has_retried_authorization_;
 
   base::WeakPtrFactory<PaymentsClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentsClient);
 };
 
 }  // namespace payments

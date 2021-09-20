@@ -34,6 +34,10 @@ class CachedImageFetcher : public ImageFetcher {
   CachedImageFetcher(ImageFetcher* image_fetcher,
                      scoped_refptr<ImageCache> image_cache,
                      bool read_only);
+
+  CachedImageFetcher(const CachedImageFetcher&) = delete;
+  CachedImageFetcher& operator=(const CachedImageFetcher&) = delete;
+
   ~CachedImageFetcher() override;
 
   // ImageFetcher:
@@ -110,8 +114,6 @@ class CachedImageFetcher : public ImageFetcher {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<CachedImageFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CachedImageFetcher);
 };
 
 }  // namespace image_fetcher

@@ -177,6 +177,12 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   static void SanitizeReferrerChain(ReferrerChain* referrer_chain);
 
   explicit SafeBrowsingNavigationObserverManager(PrefService* pref_service);
+
+  SafeBrowsingNavigationObserverManager(
+      const SafeBrowsingNavigationObserverManager&) = delete;
+  SafeBrowsingNavigationObserverManager& operator=(
+      const SafeBrowsingNavigationObserverManager&) = delete;
+
   ~SafeBrowsingNavigationObserverManager() override;
 
   // Adds |nav_event| to |navigation_event_list_|. Object pointed to by
@@ -355,8 +361,6 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   PrefService* pref_service_;
 
   base::OneShotTimer cleanup_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingNavigationObserverManager);
 };
 }  // namespace safe_browsing
 

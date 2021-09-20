@@ -83,6 +83,9 @@ class DefaultSearchManager {
   DefaultSearchManager(PrefService* pref_service,
                        const ObserverCallback& change_observer);
 
+  DefaultSearchManager(const DefaultSearchManager&) = delete;
+  DefaultSearchManager& operator=(const DefaultSearchManager&) = delete;
+
   ~DefaultSearchManager();
 
   // Register prefs needed for tracking the default search provider.
@@ -169,8 +172,6 @@ class DefaultSearchManager {
 
   // True if the default search is currently enforced by policy.
   bool default_search_controlled_by_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultSearchManager);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_DEFAULT_SEARCH_MANAGER_H_

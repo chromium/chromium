@@ -19,6 +19,10 @@ class PasswordStateData : public base::SupportsUserData::Data {
   explicit PasswordStateData(
       SerializedNavigationEntry::PasswordState password_state)
       : password_state_(password_state) {}
+
+  PasswordStateData(const PasswordStateData&) = delete;
+  PasswordStateData& operator=(const PasswordStateData&) = delete;
+
   ~PasswordStateData() override = default;
 
   SerializedNavigationEntry::PasswordState password_state() const {
@@ -32,8 +36,6 @@ class PasswordStateData : public base::SupportsUserData::Data {
 
  private:
   const SerializedNavigationEntry::PasswordState password_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordStateData);
 };
 
 }  // namespace

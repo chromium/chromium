@@ -32,6 +32,10 @@ class PrefetchDispatcherImpl : public PrefetchDispatcher,
                                public TaskQueue::Delegate {
  public:
   explicit PrefetchDispatcherImpl(PrefService* pref_service);
+
+  PrefetchDispatcherImpl(const PrefetchDispatcherImpl&) = delete;
+  PrefetchDispatcherImpl& operator=(const PrefetchDispatcherImpl&) = delete;
+
   ~PrefetchDispatcherImpl() override;
 
   // PrefetchDispatcher implementation:
@@ -145,8 +149,6 @@ class PrefetchDispatcherImpl : public PrefetchDispatcher,
   bool suspended_ = false;
   std::unique_ptr<PrefetchBackgroundTask> background_task_;
   base::WeakPtrFactory<PrefetchDispatcherImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchDispatcherImpl);
 };
 
 }  // namespace offline_pages

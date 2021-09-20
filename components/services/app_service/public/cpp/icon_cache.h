@@ -67,6 +67,10 @@ class IconCache : public IconLoader {
   };
 
   IconCache(IconLoader* wrapped_loader, GarbageCollectionPolicy gc_policy);
+
+  IconCache(const IconCache&) = delete;
+  IconCache& operator=(const IconCache&) = delete;
+
   ~IconCache() override;
 
   // IconLoader overrides.
@@ -111,8 +115,6 @@ class IconCache : public IconLoader {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<IconCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IconCache);
 };
 
 }  // namespace apps

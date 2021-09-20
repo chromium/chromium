@@ -22,6 +22,11 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
   MediaControlsProgressViewTest()
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  MediaControlsProgressViewTest(const MediaControlsProgressViewTest&) = delete;
+  MediaControlsProgressViewTest& operator=(
+      const MediaControlsProgressViewTest&) = delete;
+
   ~MediaControlsProgressViewTest() override = default;
 
   // ViewsTestBase:
@@ -52,8 +57,6 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
 
  private:
   views::Widget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlsProgressViewTest);
 };
 
 // TODO(crbug.com/1009356): many of these tests are failing on TSan builds.

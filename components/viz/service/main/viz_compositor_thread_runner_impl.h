@@ -35,6 +35,11 @@ using VizCompositorThreadType = base::Thread;
 class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
  public:
   VizCompositorThreadRunnerImpl();
+
+  VizCompositorThreadRunnerImpl(const VizCompositorThreadRunnerImpl&) = delete;
+  VizCompositorThreadRunnerImpl& operator=(
+      const VizCompositorThreadRunnerImpl&) = delete;
+
   // Performs teardown on thread and then stops thread.
   ~VizCompositorThreadRunnerImpl() override;
 
@@ -63,8 +68,6 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
 
   std::unique_ptr<VizCompositorThreadType> thread_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(VizCompositorThreadRunnerImpl);
 };
 
 }  // namespace viz

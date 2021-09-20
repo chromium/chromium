@@ -18,6 +18,11 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
  public:
   DiceAccountReconcilorDelegate(SigninClient* signin_client,
                                 bool migration_completed);
+
+  DiceAccountReconcilorDelegate(const DiceAccountReconcilorDelegate&) = delete;
+  DiceAccountReconcilorDelegate& operator=(
+      const DiceAccountReconcilorDelegate&) = delete;
+
   ~DiceAccountReconcilorDelegate() override {}
 
   // AccountReconcilorDelegate:
@@ -116,8 +121,6 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
 
   // Last known "first account". Used when cookies are lost as a best guess.
   CoreAccountId last_known_first_account_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiceAccountReconcilorDelegate);
 };
 
 }  // namespace signin

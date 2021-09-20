@@ -32,6 +32,9 @@ class AsyncDomStorageDatabase {
  public:
   using StatusCallback = base::OnceCallback<void(leveldb::Status)>;
 
+  AsyncDomStorageDatabase(const AsyncDomStorageDatabase&) = delete;
+  AsyncDomStorageDatabase& operator=(const AsyncDomStorageDatabase&) = delete;
+
   ~AsyncDomStorageDatabase();
 
   static std::unique_ptr<AsyncDomStorageDatabase> OpenDirectory(
@@ -121,8 +124,6 @@ class AsyncDomStorageDatabase {
   std::vector<BoundDatabaseTask> tasks_to_run_on_open_;
 
   base::WeakPtrFactory<AsyncDomStorageDatabase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncDomStorageDatabase);
 };
 
 namespace internal {

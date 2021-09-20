@@ -55,6 +55,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       base::RepeatingCallback<ChromeUserPopulation()>
           get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider);
+
+  RealTimeUrlLookupServiceBase(const RealTimeUrlLookupServiceBase&) = delete;
+  RealTimeUrlLookupServiceBase& operator=(const RealTimeUrlLookupServiceBase&) =
+      delete;
+
   ~RealTimeUrlLookupServiceBase() override;
 
   // Returns true if |url|'s scheme can be checked.
@@ -260,8 +265,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 
   base::WeakPtrFactory<RealTimeUrlLookupServiceBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RealTimeUrlLookupServiceBase);
 
 };  // class RealTimeUrlLookupServiceBase
 

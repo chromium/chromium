@@ -65,6 +65,10 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       bool is_off_the_record,
       variations::VariationsService* variations_service,
       ReferrerChainProvider* referrer_chain_provider);
+
+  RealTimeUrlLookupService(const RealTimeUrlLookupService&) = delete;
+  RealTimeUrlLookupService& operator=(const RealTimeUrlLookupService&) = delete;
+
   ~RealTimeUrlLookupService() override;
 
   // RealTimeUrlLookupServiceBase:
@@ -135,8 +139,6 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   friend class RealTimeUrlLookupServiceTest;
 
   base::WeakPtrFactory<RealTimeUrlLookupService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RealTimeUrlLookupService);
 
 };  // class RealTimeUrlLookupService
 

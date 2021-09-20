@@ -74,6 +74,10 @@ class WebController {
   WebController(content::WebContents* web_contents,
                 std::unique_ptr<DevtoolsClient> devtools_client,
                 const UserData* user_data);
+
+  WebController(const WebController&) = delete;
+  WebController& operator=(const WebController&) = delete;
+
   virtual ~WebController();
 
   // Load |url| in the current tab. Returns immediately, before the new page has
@@ -569,7 +573,6 @@ class WebController {
   std::vector<std::unique_ptr<WebControllerWorker>> pending_workers_;
 
   base::WeakPtrFactory<WebController> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(WebController);
 };
 }  // namespace autofill_assistant
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_WEB_CONTROLLER_H_

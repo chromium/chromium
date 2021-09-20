@@ -16,6 +16,10 @@ namespace offline_pages {
 class LoadTerminationListener {
  public:
   LoadTerminationListener() = default;
+
+  LoadTerminationListener(const LoadTerminationListener&) = delete;
+  LoadTerminationListener& operator=(const LoadTerminationListener&) = delete;
+
   virtual ~LoadTerminationListener() = default;
 
   // Called by Offliner when it takes ownership of this listener. Used to
@@ -25,7 +29,6 @@ class LoadTerminationListener {
  protected:
   // Raw pointer because this class is owned by Offliner.
   Offliner* offliner_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(LoadTerminationListener);
 };
 
 }  // namespace offline_pages

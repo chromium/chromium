@@ -60,6 +60,10 @@ class MetricsWebContentsObserver
   class TestingObserver {
    public:
     explicit TestingObserver(content::WebContents* web_contents);
+
+    TestingObserver(const TestingObserver&) = delete;
+    TestingObserver& operator=(const TestingObserver&) = delete;
+
     virtual ~TestingObserver();
 
     void OnGoingAway();
@@ -84,8 +88,6 @@ class MetricsWebContentsObserver
 
    private:
     page_load_metrics::MetricsWebContentsObserver* observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestingObserver);
   };
 
   // Record a set of WebFeatures directly from the browser process. This

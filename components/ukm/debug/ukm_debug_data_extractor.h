@@ -19,6 +19,10 @@ namespace debug {
 class UkmDebugDataExtractor {
  public:
   UkmDebugDataExtractor();
+
+  UkmDebugDataExtractor(const UkmDebugDataExtractor&) = delete;
+  UkmDebugDataExtractor& operator=(const UkmDebugDataExtractor&) = delete;
+
   ~UkmDebugDataExtractor();
 
   // Returns UKM data structured in a DictionaryValue.
@@ -30,9 +34,6 @@ class UkmDebugDataExtractor {
   // 32 bit representation of the high 32 bit and the second item is the lower
   // 32 bit of the 64 bit number.
   static base::Value UInt64AsPairOfInt(uint64_t v);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UkmDebugDataExtractor);
 };
 
 }  // namespace debug

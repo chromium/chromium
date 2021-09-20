@@ -25,6 +25,11 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
  public:
   explicit OverlayStrategyUnderlayCast(
       OverlayProcessorUsingStrategy* capability_checker);
+
+  OverlayStrategyUnderlayCast(const OverlayStrategyUnderlayCast&) = delete;
+  OverlayStrategyUnderlayCast& operator=(const OverlayStrategyUnderlayCast&) =
+      delete;
+
   ~OverlayStrategyUnderlayCast() override;
 
   bool Attempt(const skia::Matrix44& output_color_matrix,
@@ -75,8 +80,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
  private:
   // Keep track if an overlay is being used on the previous frame.
   bool is_using_overlay_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayStrategyUnderlayCast);
 };
 
 }  // namespace viz

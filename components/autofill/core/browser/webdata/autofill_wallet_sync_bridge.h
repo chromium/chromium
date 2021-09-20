@@ -47,6 +47,10 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   explicit AutofillWalletSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
+
+  AutofillWalletSyncBridge(const AutofillWalletSyncBridge&) = delete;
+  AutofillWalletSyncBridge& operator=(const AutofillWalletSyncBridge&) = delete;
+
   ~AutofillWalletSyncBridge() override;
 
   // ModelTypeSyncBridge implementation.
@@ -148,8 +152,6 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
 
   // The bridge should be used on the same sequence where it is constructed.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWalletSyncBridge);
 };
 
 }  // namespace autofill

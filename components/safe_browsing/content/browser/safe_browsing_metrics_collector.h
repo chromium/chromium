@@ -86,6 +86,11 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   };
 
   explicit SafeBrowsingMetricsCollector(PrefService* pref_service_);
+
+  SafeBrowsingMetricsCollector(const SafeBrowsingMetricsCollector&) = delete;
+  SafeBrowsingMetricsCollector& operator=(const SafeBrowsingMetricsCollector&) =
+      delete;
+
   ~SafeBrowsingMetricsCollector() override = default;
 
   // Checks the last logging time. If the time is longer than a day ago, log
@@ -135,8 +140,6 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   base::OneShotTimer metrics_collector_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingMetricsCollector);
 };
 
 }  // namespace safe_browsing

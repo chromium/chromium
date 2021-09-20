@@ -20,6 +20,11 @@
 class FullscreenControlPopupTest : public views::test::WidgetTest {
  public:
   FullscreenControlPopupTest() {}
+
+  FullscreenControlPopupTest(const FullscreenControlPopupTest&) = delete;
+  FullscreenControlPopupTest& operator=(const FullscreenControlPopupTest&) =
+      delete;
+
   ~FullscreenControlPopupTest() override {}
 
   // views::test::WidgetTest:
@@ -63,8 +68,6 @@ class FullscreenControlPopupTest : public views::test::WidgetTest {
  private:
   std::unique_ptr<gfx::AnimationTestApi> animation_api_;
   views::Widget* parent_widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControlPopupTest);
 };
 
 TEST_F(FullscreenControlPopupTest, ShowPopupAnimated) {

@@ -29,6 +29,10 @@ enum class MediaRouterDialogOpenOrigin;
 // This class is not thread safe and must be called on the UI thread.
 class MediaRouterDialogController {
  public:
+  MediaRouterDialogController(const MediaRouterDialogController&) = delete;
+  MediaRouterDialogController& operator=(const MediaRouterDialogController&) =
+      delete;
+
   virtual ~MediaRouterDialogController();
 
   using GetOrCreate = base::RepeatingCallback<MediaRouterDialogController*(
@@ -100,8 +104,6 @@ class MediaRouterDialogController {
   // is destroyed or navigated.
   std::unique_ptr<InitiatorWebContentsObserver> initiator_observer_;
   content::WebContents* const initiator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterDialogController);
 };
 
 }  // namespace media_router

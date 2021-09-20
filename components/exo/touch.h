@@ -26,6 +26,10 @@ class TouchStylusDelegate;
 class Touch : public ui::EventHandler, public SurfaceObserver {
  public:
   Touch(TouchDelegate* delegate, Seat* seat);
+
+  Touch(const Touch&) = delete;
+  Touch& operator=(const Touch&) = delete;
+
   ~Touch() override;
 
   TouchDelegate* delegate() const { return delegate_; }
@@ -60,8 +64,6 @@ class Touch : public ui::EventHandler, public SurfaceObserver {
 
   // Map of a touched surface to the count of touch pointers on that surface.
   base::flat_map<Surface*, int> surface_touch_count_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(Touch);
 };
 
 }  // namespace exo

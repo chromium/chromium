@@ -21,6 +21,10 @@ class LegacyTLSUI {
               int cert_error,
               const net::SSLInfo& ssl_info,
               ControllerClient* controller_);
+
+  LegacyTLSUI(const LegacyTLSUI&) = delete;
+  LegacyTLSUI& operator=(const LegacyTLSUI&) = delete;
+
   ~LegacyTLSUI();
   void PopulateStringsForHTML(base::Value* load_time_data);
   void HandleCommand(SecurityInterstitialCommand command);
@@ -31,8 +35,6 @@ class LegacyTLSUI {
   const net::SSLInfo ssl_info_;
   ControllerClient* controller_;
   bool user_made_decision_;
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyTLSUI);
 };
 
 }  // namespace security_interstitials

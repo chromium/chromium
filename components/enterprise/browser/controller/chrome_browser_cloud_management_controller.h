@@ -179,6 +179,12 @@ class ChromeBrowserCloudManagementController
   explicit ChromeBrowserCloudManagementController(
       std::unique_ptr<ChromeBrowserCloudManagementController::Delegate>
           delegate);
+
+  ChromeBrowserCloudManagementController(
+      const ChromeBrowserCloudManagementController&) = delete;
+  ChromeBrowserCloudManagementController& operator=(
+      const ChromeBrowserCloudManagementController&) = delete;
+
   ~ChromeBrowserCloudManagementController() override;
 
   // The Chrome browser cloud management is only enabled on Chrome by default.
@@ -283,8 +289,6 @@ class ChromeBrowserCloudManagementController
 
   base::WeakPtrFactory<ChromeBrowserCloudManagementController> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserCloudManagementController);
 };
 
 }  // namespace policy

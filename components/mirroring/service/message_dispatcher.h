@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MessageDispatcher final
       mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
       mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
       ErrorCallback error_callback);
+
+  MessageDispatcher(const MessageDispatcher&) = delete;
+  MessageDispatcher& operator=(const MessageDispatcher&) = delete;
+
   ~MessageDispatcher() override;
 
   using ResponseCallback =
@@ -75,8 +79,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MessageDispatcher final
 
   // Holds callbacks for different types of responses.
   base::flat_map<ResponseType, ResponseCallback> callback_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageDispatcher);
 };
 
 }  // namespace mirroring

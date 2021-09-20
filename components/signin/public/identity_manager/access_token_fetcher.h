@@ -200,6 +200,9 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
                      TokenCallback callback,
                      Mode mode);
 
+  AccessTokenFetcher(const AccessTokenFetcher&) = delete;
+  AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
+
   ~AccessTokenFetcher() override;
 
  private:
@@ -263,8 +266,6 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
       token_service_observation_{this};
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> access_token_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessTokenFetcher);
 };
 
 }  // namespace signin

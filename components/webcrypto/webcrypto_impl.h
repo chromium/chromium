@@ -24,6 +24,9 @@ class WebCryptoImpl : public blink::WebCrypto {
  public:
   WebCryptoImpl();
 
+  WebCryptoImpl(const WebCryptoImpl&) = delete;
+  WebCryptoImpl& operator=(const WebCryptoImpl&) = delete;
+
   ~WebCryptoImpl() override;
 
   void Encrypt(
@@ -118,9 +121,6 @@ class WebCryptoImpl : public blink::WebCrypto {
 
   bool SerializeKeyForClone(const blink::WebCryptoKey& key,
                             blink::WebVector<unsigned char>& key_data) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebCryptoImpl);
 };
 
 }  // namespace webcrypto

@@ -69,6 +69,10 @@ class PageAnnotator {
 
   explicit PageAnnotator(
       mojo::PendingRemote<image_annotation::mojom::Annotator> annotator);
+
+  PageAnnotator(const PageAnnotator&) = delete;
+  PageAnnotator& operator=(const PageAnnotator&) = delete;
+
   ~PageAnnotator();
 
   // Request annotation of the given image via the image annotation service.
@@ -109,8 +113,6 @@ class PageAnnotator {
 
   std::map<uint64_t, std::pair<ImageMetadata, image_annotation::ImageProcessor>>
       images_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageAnnotator);
 };
 
 }  // namespace page_image_annotation

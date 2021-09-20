@@ -159,6 +159,10 @@ class PrefMember : public subtle::PrefMemberBase {
   // Defer initialization to an Init method so it's easy to make this class be
   // a member variable.
   PrefMember() {}
+
+  PrefMember(const PrefMember&) = delete;
+  PrefMember& operator=(const PrefMember&) = delete;
+
   virtual ~PrefMember() {}
 
   // Do the actual initialization of the class.  Use the two-parameter
@@ -286,8 +290,6 @@ class PrefMember : public subtle::PrefMemberBase {
   void COMPONENTS_PREFS_EXPORT UpdatePref(const ValueType& value);
 
   mutable scoped_refptr<Internal> internal_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefMember);
 };
 
 // Declaration of template specialization need to be repeated here

@@ -46,6 +46,10 @@ namespace apps {
 class IconCoalescer : public IconLoader {
  public:
   explicit IconCoalescer(IconLoader* wrapped_loader);
+
+  IconCoalescer(const IconCoalescer&) = delete;
+  IconCoalescer& operator=(const IconCoalescer&) = delete;
+
   ~IconCoalescer() override;
 
   // IconLoader overrides.
@@ -93,8 +97,6 @@ class IconCoalescer : public IconLoader {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<IconCoalescer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IconCoalescer);
 };
 
 }  // namespace apps

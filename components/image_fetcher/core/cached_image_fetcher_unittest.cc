@@ -60,6 +60,9 @@ class CachedImageFetcherTest : public testing::Test {
  public:
   CachedImageFetcherTest() {}
 
+  CachedImageFetcherTest(const CachedImageFetcherTest&) = delete;
+  CachedImageFetcherTest& operator=(const CachedImageFetcherTest&) = delete;
+
   ~CachedImageFetcherTest() override {
     cached_image_fetcher_.reset();
     // We need to run until idle after deleting the database, because
@@ -143,8 +146,6 @@ class CachedImageFetcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedImageFetcherTest);
 };
 
 MATCHER(EmptyImage, "") {

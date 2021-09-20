@@ -34,6 +34,10 @@ class SendTabToSelfSyncService : public KeyedService {
       syncer::OnceModelTypeStoreFactory create_store_callback,
       history::HistoryService* history_service,
       syncer::DeviceInfoTracker* device_info_tracker);
+
+  SendTabToSelfSyncService(const SendTabToSelfSyncService&) = delete;
+  SendTabToSelfSyncService& operator=(const SendTabToSelfSyncService&) = delete;
+
   ~SendTabToSelfSyncService() override;
 
   virtual SendTabToSelfModel* GetSendTabToSelfModel();
@@ -48,8 +52,6 @@ class SendTabToSelfSyncService : public KeyedService {
  private:
   std::unique_ptr<SendTabToSelfBridge> bridge_;
   std::unique_ptr<FakeSendTabToSelfModel> fake_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfSyncService);
 };
 
 }  // namespace send_tab_to_self

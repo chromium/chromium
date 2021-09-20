@@ -48,6 +48,10 @@ class ClearStorageTask : public Task {
                    ArchiveManager* archive_manager,
                    const base::Time& clearup_time,
                    ClearStorageCallback callback);
+
+  ClearStorageTask(const ClearStorageTask&) = delete;
+  ClearStorageTask& operator=(const ClearStorageTask&) = delete;
+
   ~ClearStorageTask() override;
 
  private:
@@ -67,7 +71,6 @@ class ClearStorageTask : public Task {
   base::Time clearup_time_;
 
   base::WeakPtrFactory<ClearStorageTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ClearStorageTask);
 };
 
 }  // namespace offline_pages

@@ -16,6 +16,10 @@ class URLDatabase;
 class UrlsSQLHandler : public SQLHandler {
  public:
   explicit UrlsSQLHandler(URLDatabase* url_db);
+
+  UrlsSQLHandler(const UrlsSQLHandler&) = delete;
+  UrlsSQLHandler& operator=(const UrlsSQLHandler&) = delete;
+
   ~UrlsSQLHandler() override;
 
   // Overriden from SQLHandler.
@@ -26,8 +30,6 @@ class UrlsSQLHandler : public SQLHandler {
 
  private:
   URLDatabase* url_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlsSQLHandler);
 };
 
 }  // namespace history.

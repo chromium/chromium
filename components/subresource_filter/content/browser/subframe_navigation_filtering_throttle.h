@@ -54,6 +54,12 @@ class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
   SubframeNavigationFilteringThrottle(
       content::NavigationHandle* handle,
       AsyncDocumentSubresourceFilter* parent_frame_filter);
+
+  SubframeNavigationFilteringThrottle(
+      const SubframeNavigationFilteringThrottle&) = delete;
+  SubframeNavigationFilteringThrottle& operator=(
+      const SubframeNavigationFilteringThrottle&) = delete;
+
   ~SubframeNavigationFilteringThrottle() override;
 
   // content::NavigationThrottle:
@@ -102,8 +108,6 @@ class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
 
   base::WeakPtrFactory<SubframeNavigationFilteringThrottle> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(SubframeNavigationFilteringThrottle);
 };
 
 }  // namespace subresource_filter

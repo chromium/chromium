@@ -287,6 +287,12 @@ MATCHER_P(HasSpecifics, expected, "") {
 class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
  public:
   AutofillWalletMetadataSyncBridgeTest() {}
+
+  AutofillWalletMetadataSyncBridgeTest(
+      const AutofillWalletMetadataSyncBridgeTest&) = delete;
+  AutofillWalletMetadataSyncBridgeTest& operator=(
+      const AutofillWalletMetadataSyncBridgeTest&) = delete;
+
   ~AutofillWalletMetadataSyncBridgeTest() override {}
 
   void SetUp() override {
@@ -483,8 +489,6 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletMetadataSyncBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWalletMetadataSyncBridgeTest);
 };
 
 // The following 2 tests make sure client tags stay stable.
@@ -1171,6 +1175,12 @@ class AutofillWalletMetadataSyncBridgeRemoteChangesTest
       public AutofillWalletMetadataSyncBridgeTest {
  public:
   AutofillWalletMetadataSyncBridgeRemoteChangesTest() {}
+
+  AutofillWalletMetadataSyncBridgeRemoteChangesTest(
+      const AutofillWalletMetadataSyncBridgeRemoteChangesTest&) = delete;
+  AutofillWalletMetadataSyncBridgeRemoteChangesTest& operator=(
+      const AutofillWalletMetadataSyncBridgeRemoteChangesTest&) = delete;
+
   ~AutofillWalletMetadataSyncBridgeRemoteChangesTest() override {}
 
   void ResetBridgeWithPotentialInitialSync(
@@ -1190,9 +1200,6 @@ class AutofillWalletMetadataSyncBridgeRemoteChangesTest
       ReceiveUpdates(remote_data);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillWalletMetadataSyncBridgeRemoteChangesTest);
 };
 
 // No upstream communication or local DB change happens if the server sends an

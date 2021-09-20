@@ -24,6 +24,10 @@ using base::TimeDelta;
 class KeywordTableTest : public testing::Test {
  public:
   KeywordTableTest() {}
+
+  KeywordTableTest(const KeywordTableTest&) = delete;
+  KeywordTableTest& operator=(const KeywordTableTest&) = delete;
+
   ~KeywordTableTest() override {}
 
  protected:
@@ -104,8 +108,6 @@ class KeywordTableTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<KeywordTable> table_;
   std::unique_ptr<WebDatabase> db_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeywordTableTest);
 };
 
 

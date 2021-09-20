@@ -154,6 +154,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // Constructor for software compositing.
   explicit OutputSurface(std::unique_ptr<SoftwareOutputDevice> software_device);
 
+  OutputSurface(const OutputSurface&) = delete;
+  OutputSurface& operator=(const OutputSurface&) = delete;
+
   virtual ~OutputSurface();
 
   const Capabilities& capabilities() const { return capabilities_; }
@@ -305,8 +308,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
  private:
   const Type type_;
   skia::Matrix44 color_matrix_;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputSurface);
 };
 
 }  // namespace viz

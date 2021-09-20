@@ -21,6 +21,12 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
       public ExternalBeginFrameSourceClient {
  public:
   ExternalBeginFrameSourceAndroid(uint32_t restart_id, float refresh_rate);
+
+  ExternalBeginFrameSourceAndroid(const ExternalBeginFrameSourceAndroid&) =
+      delete;
+  ExternalBeginFrameSourceAndroid& operator=(
+      const ExternalBeginFrameSourceAndroid&) = delete;
+
   ~ExternalBeginFrameSourceAndroid() override;
 
   void OnVSync(JNIEnv* env,
@@ -37,8 +43,6 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
 
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
   BeginFrameArgsGenerator begin_frame_args_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalBeginFrameSourceAndroid);
 };
 
 }  // namespace viz

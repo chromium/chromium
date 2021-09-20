@@ -50,11 +50,14 @@ class ScopedArcFeature {
       feature_list.InitFromCommandLine(std::string(), kArcFeatureName);
     }
   }
+
+  ScopedArcFeature(const ScopedArcFeature&) = delete;
+  ScopedArcFeature& operator=(const ScopedArcFeature&) = delete;
+
   ~ScopedArcFeature() = default;
 
  private:
   base::test::ScopedFeatureList feature_list;
-  DISALLOW_COPY_AND_ASSIGN(ScopedArcFeature);
 };
 
 class ScopedRtVcpuFeature {
@@ -89,6 +92,10 @@ class FakeUser : public user_manager::User {
   explicit FakeUser(user_manager::UserType user_type)
       : User(AccountId::FromUserEmailGaiaId("user@test.com", "1234567890")),
         user_type_(user_type) {}
+
+  FakeUser(const FakeUser&) = delete;
+  FakeUser& operator=(const FakeUser&) = delete;
+
   ~FakeUser() override = default;
 
   // user_manager::User:
@@ -96,8 +103,6 @@ class FakeUser : public user_manager::User {
 
  private:
   const user_manager::UserType user_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUser);
 };
 
 class ArcUtilTest : public testing::Test {

@@ -33,6 +33,9 @@ class TestCardUnmaskDelegate : public CardUnmaskDelegate {
  public:
   TestCardUnmaskDelegate() {}
 
+  TestCardUnmaskDelegate(const TestCardUnmaskDelegate&) = delete;
+  TestCardUnmaskDelegate& operator=(const TestCardUnmaskDelegate&) = delete;
+
   virtual ~TestCardUnmaskDelegate() {}
 
   // CardUnmaskDelegate implementation.
@@ -52,8 +55,6 @@ class TestCardUnmaskDelegate : public CardUnmaskDelegate {
  private:
   UserProvidedUnmaskDetails details_;
   base::WeakPtrFactory<TestCardUnmaskDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestCardUnmaskDelegate);
 };
 
 class TestCardUnmaskPromptView : public CardUnmaskPromptView {
@@ -158,6 +159,12 @@ class CardUnmaskPromptControllerImplTest
       public testing::Test {
  public:
   CardUnmaskPromptControllerImplTest() {}
+
+  CardUnmaskPromptControllerImplTest(
+      const CardUnmaskPromptControllerImplTest&) = delete;
+  CardUnmaskPromptControllerImplTest& operator=(
+      const CardUnmaskPromptControllerImplTest&) = delete;
+
   ~CardUnmaskPromptControllerImplTest() override {}
 
   void SetUp() override {
@@ -169,9 +176,6 @@ class CardUnmaskPromptControllerImplTest
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptControllerImplTest);
 };
 
 #if defined(OS_ANDROID)
@@ -326,6 +330,12 @@ class LoggingValidationTestForNickname
       public testing::TestWithParam<bool> {
  public:
   LoggingValidationTestForNickname() : card_has_nickname_(GetParam()) {}
+
+  LoggingValidationTestForNickname(const LoggingValidationTestForNickname&) =
+      delete;
+  LoggingValidationTestForNickname& operator=(
+      const LoggingValidationTestForNickname&) = delete;
+
   ~LoggingValidationTestForNickname() override = default;
 
   void SetUp() override {
@@ -345,8 +355,6 @@ class LoggingValidationTestForNickname
 
  private:
   bool card_has_nickname_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggingValidationTestForNickname);
 };
 
 TEST_P(LoggingValidationTestForNickname, LogShown) {
@@ -656,6 +664,10 @@ class CvcInputValidationTest : public CardUnmaskPromptControllerImplGenericTest,
                                public testing::TestWithParam<CvcCase> {
  public:
   CvcInputValidationTest() {}
+
+  CvcInputValidationTest(const CvcInputValidationTest&) = delete;
+  CvcInputValidationTest& operator=(const CvcInputValidationTest&) = delete;
+
   ~CvcInputValidationTest() override {}
 
   void SetUp() override {
@@ -667,9 +679,6 @@ class CvcInputValidationTest : public CardUnmaskPromptControllerImplGenericTest,
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CvcInputValidationTest);
 };
 
 TEST_P(CvcInputValidationTest, CvcInputValidation) {
@@ -699,6 +708,11 @@ class CvcInputAmexValidationTest
       public testing::TestWithParam<CvcCase> {
  public:
   CvcInputAmexValidationTest() {}
+
+  CvcInputAmexValidationTest(const CvcInputAmexValidationTest&) = delete;
+  CvcInputAmexValidationTest& operator=(const CvcInputAmexValidationTest&) =
+      delete;
+
   ~CvcInputAmexValidationTest() override {}
 
   void SetUp() override {
@@ -710,9 +724,6 @@ class CvcInputAmexValidationTest
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CvcInputAmexValidationTest);
 };
 
 TEST_P(CvcInputAmexValidationTest, CvcInputValidation) {
@@ -751,6 +762,11 @@ class ExpirationDateValidationTest
       public testing::TestWithParam<ExpirationDateTestCase> {
  public:
   ExpirationDateValidationTest() {}
+
+  ExpirationDateValidationTest(const ExpirationDateValidationTest&) = delete;
+  ExpirationDateValidationTest& operator=(const ExpirationDateValidationTest&) =
+      delete;
+
   ~ExpirationDateValidationTest() override {}
 
   void SetUp() override {
@@ -762,9 +778,6 @@ class ExpirationDateValidationTest
         prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExpirationDateValidationTest);
 };
 
 TEST_P(ExpirationDateValidationTest, ExpirationDateValidation) {

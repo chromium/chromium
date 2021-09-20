@@ -41,6 +41,10 @@ class AutofillField : public FormFieldData {
   AutofillField();
   explicit AutofillField(const FormFieldData& field);
   AutofillField(const FormFieldData& field, const std::u16string& unique_name);
+
+  AutofillField(const AutofillField&) = delete;
+  AutofillField& operator=(const AutofillField&) = delete;
+
   virtual ~AutofillField();
 
   // Creates AutofillField that has bare minimum information for uploading
@@ -304,8 +308,6 @@ class AutofillField : public FormFieldData {
   // Strength of the single username vote signal, if applicable.
   absl::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
       single_username_vote_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillField);
 };
 
 }  // namespace autofill

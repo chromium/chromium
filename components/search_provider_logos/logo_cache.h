@@ -38,6 +38,10 @@ class LogoCache {
   // Constructs a logo cache that stores data in |cache_directory|.
   // |cache_directory| will be created if it does not already exist.
   explicit LogoCache(const base::FilePath& cache_directory);
+
+  LogoCache(const LogoCache&) = delete;
+  LogoCache& operator=(const LogoCache&) = delete;
+
   virtual ~LogoCache();
 
   // Updates the metadata for the cached logo.
@@ -123,8 +127,6 @@ class LogoCache {
 
   // Ensure LogoCache is only used sequentially.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LogoCache);
 };
 
 }  // namespace search_provider_logos

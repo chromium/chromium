@@ -55,6 +55,10 @@ class MockAffiliationFetchThrottler : public AffiliationFetchThrottler {
     EXPECT_CALL(*this, OnInformOfNetworkRequestComplete(testing::_)).Times(0);
   }
 
+  MockAffiliationFetchThrottler(const MockAffiliationFetchThrottler&) = delete;
+  MockAffiliationFetchThrottler& operator=(
+      const MockAffiliationFetchThrottler&) = delete;
+
   ~MockAffiliationFetchThrottler() override {
     EXPECT_FALSE(signaled_network_request_needed_);
   }
@@ -103,8 +107,6 @@ class MockAffiliationFetchThrottler : public AffiliationFetchThrottler {
   }
 
   bool signaled_network_request_needed_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAffiliationFetchThrottler);
 };
 
 const char kTestFacetURIAlpha1[] = "https://one.alpha.example.com";

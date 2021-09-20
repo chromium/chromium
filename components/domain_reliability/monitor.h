@@ -84,6 +84,9 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityMonitor
           upload_allowed_callback,
       std::unique_ptr<MockableTime> time);
 
+  DomainReliabilityMonitor(const DomainReliabilityMonitor&) = delete;
+  DomainReliabilityMonitor& operator=(const DomainReliabilityMonitor&) = delete;
+
   ~DomainReliabilityMonitor() override;
 
   // Shuts down the monitor prior to destruction. Currently, ensures that there
@@ -154,8 +157,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityMonitor
   DomainReliabilityContextManager context_manager_;
 
   bool discard_uploads_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityMonitor);
 };
 
 }  // namespace domain_reliability

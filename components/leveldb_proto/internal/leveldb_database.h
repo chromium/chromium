@@ -46,6 +46,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
   // for UMA statics as so: LevelDB.<value>.<client name>. It is best to not
   // change once shipped.
   explicit LevelDB(const char* client_name);
+
+  LevelDB(const LevelDB&) = delete;
+  LevelDB& operator=(const LevelDB&) = delete;
+
   virtual ~LevelDB();
 
   // Initializes a leveldb with the given options. If |database_dir| is
@@ -136,8 +140,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
   base::FilePath database_dir_;
   leveldb_env::Options open_options_;
   base::HistogramBase* approx_memtable_mem_histogram_;
-
-  DISALLOW_COPY_AND_ASSIGN(LevelDB);
 };
 
 }  // namespace leveldb_proto

@@ -25,6 +25,10 @@ namespace wayland {
 class WaylandDisplayOutput {
  public:
   explicit WaylandDisplayOutput(int64_t display_id);
+
+  WaylandDisplayOutput(const WaylandDisplayOutput&) = delete;
+  WaylandDisplayOutput& operator=(const WaylandDisplayOutput&) = delete;
+
   ~WaylandDisplayOutput();
 
   int64_t id() const;
@@ -46,8 +50,6 @@ class WaylandDisplayOutput {
   const int64_t id_;
   wl_global* global_ = nullptr;
   base::flat_map<wl_client*, wl_resource*> output_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDisplayOutput);
 };
 
 }  // namespace wayland

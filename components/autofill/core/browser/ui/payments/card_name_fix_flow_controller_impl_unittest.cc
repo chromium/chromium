@@ -69,15 +69,18 @@ class CardNameFixFlowControllerImplTest
       public testing::Test {
  public:
   CardNameFixFlowControllerImplTest() {}
+
+  CardNameFixFlowControllerImplTest(const CardNameFixFlowControllerImplTest&) =
+      delete;
+  CardNameFixFlowControllerImplTest& operator=(
+      const CardNameFixFlowControllerImplTest&) = delete;
+
   ~CardNameFixFlowControllerImplTest() override {}
 
   void SetUp() override {
     test_card_name_fix_flow_view_ = std::make_unique<TestCardNameFixFlowView>();
     controller_ = std::make_unique<CardNameFixFlowControllerImpl>();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowControllerImplTest);
 };
 
 TEST_F(CardNameFixFlowControllerImplTest, LogShown) {

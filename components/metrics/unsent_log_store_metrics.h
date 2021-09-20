@@ -33,6 +33,10 @@ class UnsentLogStoreMetrics {
   };
 
   UnsentLogStoreMetrics();
+
+  UnsentLogStoreMetrics(const UnsentLogStoreMetrics&) = delete;
+  UnsentLogStoreMetrics& operator=(const UnsentLogStoreMetrics&) = delete;
+
   virtual ~UnsentLogStoreMetrics();
 
   virtual void RecordLogReadStatus(LogReadStatus status);
@@ -51,9 +55,6 @@ class UnsentLogStoreMetrics {
   // The feature to record the unsent log info metrics, refer to
   // UnsentLogStoreMetricsImpl::RecordLastUnsentLogMetadataMetrics.
   static const base::Feature kRecordLastUnsentLogMetadataMetrics;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnsentLogStoreMetrics);
 };
 
 }  // namespace metrics

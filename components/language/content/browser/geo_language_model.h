@@ -18,6 +18,10 @@ class GeoLanguageProvider;
 class GeoLanguageModel : public LanguageModel {
  public:
   GeoLanguageModel(const GeoLanguageProvider* const geo_language_provider);
+
+  GeoLanguageModel(const GeoLanguageModel&) = delete;
+  GeoLanguageModel& operator=(const GeoLanguageModel&) = delete;
+
   ~GeoLanguageModel() override;
 
   std::vector<LanguageDetails> GetLanguages() override;
@@ -28,8 +32,6 @@ class GeoLanguageModel : public LanguageModel {
   // is injected from the creator of this model to make testing easier by
   // passing in a mock.
   const GeoLanguageProvider* const geo_language_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeoLanguageModel);
 };
 
 }  // namespace language

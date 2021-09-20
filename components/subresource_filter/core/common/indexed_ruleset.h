@@ -59,6 +59,10 @@ class RulesetIndexer {
   static const int kIndexedFormatVersion;
 
   RulesetIndexer();
+
+  RulesetIndexer(const RulesetIndexer&) = delete;
+  RulesetIndexer& operator=(const RulesetIndexer&) = delete;
+
   ~RulesetIndexer();
 
   // Adds |rule| to the ruleset and the index unless the |rule| has unsupported
@@ -89,8 +93,6 @@ class RulesetIndexer {
   // Maintains a map of domain vectors to their existing offsets, to avoid
   // storing a particular vector more than once.
   url_pattern_index::FlatDomainMap domain_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetIndexer);
 };
 
 // Matches URLs against the FlatBuffer representation of an indexed ruleset.

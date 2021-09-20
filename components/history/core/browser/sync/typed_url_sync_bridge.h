@@ -32,6 +32,10 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
       HistoryBackend* history_backend,
       TypedURLSyncMetadataDatabase* sync_metadata_store,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  TypedURLSyncBridge(const TypedURLSyncBridge&) = delete;
+  TypedURLSyncBridge& operator=(const TypedURLSyncBridge&) = delete;
+
   ~TypedURLSyncBridge() override;
 
   // syncer::ModelTypeSyncBridge implementation.
@@ -249,8 +253,6 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   // backend.
   base::ScopedObservation<HistoryBackend, HistoryBackendObserver>
       history_backend_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TypedURLSyncBridge);
 };
 
 }  // namespace history

@@ -30,6 +30,10 @@ class StaleEntryFinalizerTask : public Task {
 
   StaleEntryFinalizerTask(PrefetchDispatcher* prefetch_dispatcher,
                           PrefetchStore* prefetch_store);
+
+  StaleEntryFinalizerTask(const StaleEntryFinalizerTask&) = delete;
+  StaleEntryFinalizerTask& operator=(const StaleEntryFinalizerTask&) = delete;
+
   ~StaleEntryFinalizerTask() override;
 
   // Will be set to true upon after an error-free run.
@@ -48,7 +52,6 @@ class StaleEntryFinalizerTask : public Task {
   Result final_status_ = Result::NO_MORE_WORK;
 
   base::WeakPtrFactory<StaleEntryFinalizerTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(StaleEntryFinalizerTask);
 };
 
 }  // namespace offline_pages

@@ -29,6 +29,10 @@ class DataSource {
   static constexpr int kMaxDataTypes = 6;
 
   explicit DataSource(DataSourceDelegate* delegate);
+
+  DataSource(const DataSource&) = delete;
+  DataSource& operator=(const DataSource&) = delete;
+
   ~DataSource();
 
   void AddObserver(DataSourceObserver* observer);
@@ -126,21 +130,21 @@ class DataSource {
   base::flat_set<DndAction> dnd_actions_;
 
   base::WeakPtrFactory<DataSource> read_data_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataSource);
 };
 
 class ScopedDataSource {
  public:
   ScopedDataSource(DataSource* data_source, DataSourceObserver* observer);
+
+  ScopedDataSource(const ScopedDataSource&) = delete;
+  ScopedDataSource& operator=(const ScopedDataSource&) = delete;
+
   ~ScopedDataSource();
   DataSource* get() { return data_source_; }
 
  private:
   DataSource* const data_source_;
   DataSourceObserver* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDataSource);
 };
 
 }  // namespace exo

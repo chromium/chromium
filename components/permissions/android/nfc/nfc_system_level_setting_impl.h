@@ -15,6 +15,11 @@ namespace permissions {
 class NfcSystemLevelSettingImpl : public NfcSystemLevelSetting {
  public:
   NfcSystemLevelSettingImpl();
+
+  NfcSystemLevelSettingImpl(const NfcSystemLevelSettingImpl&) = delete;
+  NfcSystemLevelSettingImpl& operator=(const NfcSystemLevelSettingImpl&) =
+      delete;
+
   ~NfcSystemLevelSettingImpl() override;
 
   // NfcSystemLevelSetting implementation:
@@ -23,9 +28,6 @@ class NfcSystemLevelSettingImpl : public NfcSystemLevelSetting {
   void PromptToEnableNfcSystemLevelSetting(
       content::WebContents* web_contents,
       base::OnceClosure prompt_completed_callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NfcSystemLevelSettingImpl);
 };
 
 }  // namespace permissions

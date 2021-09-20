@@ -84,6 +84,10 @@ struct ClientPhishingRequestAndToken {
 class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
  public:
   SafeBrowsingUIHandler(content::BrowserContext* context);
+
+  SafeBrowsingUIHandler(const SafeBrowsingUIHandler&) = delete;
+  SafeBrowsingUIHandler& operator=(const SafeBrowsingUIHandler&) = delete;
+
   ~SafeBrowsingUIHandler() override;
 
   // Callback when Javascript becomes allowed in the WebUI.
@@ -274,18 +278,17 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   static std::vector<SafeBrowsingUIHandler*> webui_list_;
 
   base::WeakPtrFactory<SafeBrowsingUIHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUIHandler);
 };
 
 // The WebUI for chrome://safe-browsing
 class SafeBrowsingUI : public content::WebUIController {
  public:
   explicit SafeBrowsingUI(content::WebUI* web_ui);
-  ~SafeBrowsingUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUI);
+  SafeBrowsingUI(const SafeBrowsingUI&) = delete;
+  SafeBrowsingUI& operator=(const SafeBrowsingUI&) = delete;
+
+  ~SafeBrowsingUI() override;
 };
 
 class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {

@@ -23,14 +23,15 @@ class Node;
 class NodeAttachedData {
  public:
   NodeAttachedData();
+
+  NodeAttachedData(const NodeAttachedData&) = delete;
+  NodeAttachedData& operator=(const NodeAttachedData&) = delete;
+
   virtual ~NodeAttachedData();
 
   // Returns the 'key' associated with this type of NodeAttachedData. This needs
   // to be unique per data type or bad things happen.
   virtual const void* GetKey() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NodeAttachedData);
 };
 
 // Implements NodeAttachedData for a given UserDataType.
@@ -41,6 +42,11 @@ template <typename UserDataType>
 class ExternalNodeAttachedDataImpl : public NodeAttachedData {
  public:
   ExternalNodeAttachedDataImpl() = default;
+
+  ExternalNodeAttachedDataImpl(const ExternalNodeAttachedDataImpl&) = delete;
+  ExternalNodeAttachedDataImpl& operator=(const ExternalNodeAttachedDataImpl&) =
+      delete;
+
   ~ExternalNodeAttachedDataImpl() override = default;
 
   // NodeAttachedData implementation:
@@ -64,8 +70,6 @@ class ExternalNodeAttachedDataImpl : public NodeAttachedData {
  private:
   static constexpr int kUserDataKey = 0;
   static const void* UserDataKey() { return &kUserDataKey; }
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalNodeAttachedDataImpl);
 };
 
 // Everything below this point is pure implementation detail.

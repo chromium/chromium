@@ -23,6 +23,10 @@ class URLLoaderStatusMonitor : public network::mojom::URLLoaderClient {
   using URLLoaderStatusChangeCallback =
       base::OnceCallback<void(const network::URLLoaderCompletionStatus&)>;
   explicit URLLoaderStatusMonitor(URLLoaderStatusChangeCallback callback);
+
+  URLLoaderStatusMonitor(const URLLoaderStatusMonitor&) = delete;
+  URLLoaderStatusMonitor& operator=(const URLLoaderStatusMonitor&) = delete;
+
   ~URLLoaderStatusMonitor() override = default;
 
   // network::mojom::URLLoaderClient
@@ -40,7 +44,6 @@ class URLLoaderStatusMonitor : public network::mojom::URLLoaderClient {
 
  private:
   URLLoaderStatusChangeCallback callback_;
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderStatusMonitor);
 };
 
 URLLoaderStatusMonitor::URLLoaderStatusMonitor(

@@ -35,14 +35,16 @@ class VIZ_COMMON_EXPORT SharedBitmap {
   static SharedBitmapId GenerateId();
 
   explicit SharedBitmap(uint8_t* pixels);
+
+  SharedBitmap(const SharedBitmap&) = delete;
+  SharedBitmap& operator=(const SharedBitmap&) = delete;
+
   virtual ~SharedBitmap();
 
   uint8_t* pixels() { return pixels_; }
 
  private:
   uint8_t* pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedBitmap);
 };
 
 }  // namespace viz

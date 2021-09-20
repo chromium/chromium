@@ -49,6 +49,10 @@ class ArcNetHostImpl : public KeyedService,
   // The constructor will register an Observer with ArcBridgeService.
   ArcNetHostImpl(content::BrowserContext* context,
                  ArcBridgeService* arc_bridge_service);
+
+  ArcNetHostImpl(const ArcNetHostImpl&) = delete;
+  ArcNetHostImpl& operator=(const ArcNetHostImpl&) = delete;
+
   ~ArcNetHostImpl() override;
 
   void SetPrefService(PrefService* pref_service);
@@ -169,8 +173,6 @@ class ArcNetHostImpl : public KeyedService,
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ArcNetHostImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNetHostImpl);
 };
 
 }  // namespace arc

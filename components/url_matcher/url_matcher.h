@@ -118,6 +118,11 @@ class URL_MATCHER_EXPORT URLMatcherCondition {
 class URL_MATCHER_EXPORT URLMatcherConditionFactory {
  public:
   URLMatcherConditionFactory();
+
+  URLMatcherConditionFactory(const URLMatcherConditionFactory&) = delete;
+  URLMatcherConditionFactory& operator=(const URLMatcherConditionFactory&) =
+      delete;
+
   ~URLMatcherConditionFactory();
 
   // Canonicalizes a URL for "Create{Host,Path,Query}*Condition" searches.
@@ -220,8 +225,6 @@ class URL_MATCHER_EXPORT URLMatcherConditionFactory {
   PatternSingletons substring_pattern_singletons_;
   PatternSingletons regex_pattern_singletons_;
   PatternSingletons origin_and_path_regex_pattern_singletons_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLMatcherConditionFactory);
 };
 
 // This class represents a single URL query matching condition. The query
@@ -278,13 +281,15 @@ class URL_MATCHER_EXPORT URLMatcherSchemeFilter {
  public:
   explicit URLMatcherSchemeFilter(const std::string& filter);
   explicit URLMatcherSchemeFilter(const std::vector<std::string>& filters);
+
+  URLMatcherSchemeFilter(const URLMatcherSchemeFilter&) = delete;
+  URLMatcherSchemeFilter& operator=(const URLMatcherSchemeFilter&) = delete;
+
   ~URLMatcherSchemeFilter();
   bool IsMatch(const GURL& url) const;
 
  private:
   std::vector<std::string> filters_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLMatcherSchemeFilter);
 };
 
 // This class represents a filter for port numbers to be hooked up into a
@@ -294,6 +299,10 @@ class URL_MATCHER_EXPORT URLMatcherPortFilter {
   // Boundaries of a port range (both ends are included).
   typedef std::pair<int, int> Range;
   explicit URLMatcherPortFilter(const std::vector<Range>& ranges);
+
+  URLMatcherPortFilter(const URLMatcherPortFilter&) = delete;
+  URLMatcherPortFilter& operator=(const URLMatcherPortFilter&) = delete;
+
   ~URLMatcherPortFilter();
   bool IsMatch(const GURL& url) const;
 
@@ -304,8 +313,6 @@ class URL_MATCHER_EXPORT URLMatcherPortFilter {
 
  private:
   std::vector<Range> ranges_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLMatcherPortFilter);
 };
 
 // This class represents a set of conditions that all need to match on a
@@ -368,6 +375,10 @@ class URL_MATCHER_EXPORT URLMatcherConditionSet
 class URL_MATCHER_EXPORT URLMatcher {
  public:
   URLMatcher();
+
+  URLMatcher(const URLMatcher&) = delete;
+  URLMatcher& operator=(const URLMatcher&) = delete;
+
   ~URLMatcher();
 
   // Adds new URLMatcherConditionSet to this URL Matcher. Each condition set
@@ -424,8 +435,6 @@ class URL_MATCHER_EXPORT URLMatcher {
   std::unique_ptr<SubstringSetMatcher> url_component_matcher_;
   RegexSetMatcher regex_set_matcher_;
   RegexSetMatcher origin_and_path_regex_set_matcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLMatcher);
 };
 
 }  // namespace url_matcher

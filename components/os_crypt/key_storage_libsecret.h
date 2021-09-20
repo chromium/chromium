@@ -16,6 +16,10 @@
 class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLibsecret : public KeyStorageLinux {
  public:
   explicit KeyStorageLibsecret(std::string application_name);
+
+  KeyStorageLibsecret(const KeyStorageLibsecret&) = delete;
+  KeyStorageLibsecret& operator=(const KeyStorageLibsecret&) = delete;
+
   ~KeyStorageLibsecret() override = default;
 
  protected:
@@ -27,8 +31,6 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageLibsecret : public KeyStorageLinux {
   absl::optional<std::string> AddRandomPasswordInLibsecret();
 
   const std::string application_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyStorageLibsecret);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_KEY_STORAGE_LIBSECRET_H_

@@ -92,6 +92,9 @@ class CastSocketServiceImpl : public CastSocketService {
  public:
   using CastSocketService::NetworkContextGetter;
 
+  CastSocketServiceImpl(const CastSocketServiceImpl&) = delete;
+  CastSocketServiceImpl& operator=(const CastSocketServiceImpl&) = delete;
+
   ~CastSocketServiceImpl() override;
 
   // CastSocketService overrides.
@@ -123,8 +126,6 @@ class CastSocketServiceImpl : public CastSocketService {
 
   // List of socket observers.
   base::ObserverList<CastSocket::Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastSocketServiceImpl);
 };
 
 }  // namespace cast_channel

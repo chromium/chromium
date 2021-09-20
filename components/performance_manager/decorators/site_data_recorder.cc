@@ -58,6 +58,10 @@ class SiteDataNodeData : public NodeAttachedDataImpl<SiteDataNodeData>,
 
   explicit SiteDataNodeData(const PageNodeImpl* page_node)
       : page_node_(page_node) {}
+
+  SiteDataNodeData(const SiteDataNodeData&) = delete;
+  SiteDataNodeData& operator=(const SiteDataNodeData&) = delete;
+
   ~SiteDataNodeData() override = default;
 
   // NodeAttachedData:
@@ -134,8 +138,6 @@ class SiteDataNodeData : public NodeAttachedDataImpl<SiteDataNodeData>,
   std::unique_ptr<SiteDataReader> reader_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataNodeData);
 };
 
 void SiteDataNodeData::OnMainFrameUrlChanged(const GURL& url,

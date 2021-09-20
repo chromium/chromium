@@ -31,6 +31,11 @@ class MojoMjpegDecodeAcceleratorService
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           receiver);
 
+  MojoMjpegDecodeAcceleratorService(const MojoMjpegDecodeAcceleratorService&) =
+      delete;
+  MojoMjpegDecodeAcceleratorService& operator=(
+      const MojoMjpegDecodeAcceleratorService&) = delete;
+
   ~MojoMjpegDecodeAcceleratorService() override;
 
   // MjpegDecodeAccelerator::Client implementation.
@@ -90,8 +95,6 @@ class MojoMjpegDecodeAcceleratorService
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<MojoMjpegDecodeAcceleratorService> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoMjpegDecodeAcceleratorService);
 };
 
 }  // namespace chromeos_camera

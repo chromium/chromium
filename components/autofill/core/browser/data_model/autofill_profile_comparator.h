@@ -36,6 +36,11 @@ ServerFieldTypeSet GetUserVisibleTypes();
 class AutofillProfileComparator {
  public:
   explicit AutofillProfileComparator(const base::StringPiece& app_locale);
+
+  AutofillProfileComparator(const AutofillProfileComparator&) = delete;
+  AutofillProfileComparator& operator=(const AutofillProfileComparator&) =
+      delete;
+
   ~AutofillProfileComparator();
 
   enum WhitespaceSpec { RETAIN_WHITESPACE, DISCARD_WHITESPACE };
@@ -314,8 +319,6 @@ class AutofillProfileComparator {
  private:
   l10n::CaseInsensitiveCompare case_insensitive_compare_;
   const std::string app_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileComparator);
 };
 
 }  // namespace autofill

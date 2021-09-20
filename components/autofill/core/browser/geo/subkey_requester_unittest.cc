@@ -63,6 +63,9 @@ class TestSubKeyRequester : public SubKeyRequester {
       : SubKeyRequester(std::move(source), std::move(storage)),
         should_load_rules_(true) {}
 
+  TestSubKeyRequester(const TestSubKeyRequester&) = delete;
+  TestSubKeyRequester& operator=(const TestSubKeyRequester&) = delete;
+
   ~TestSubKeyRequester() override {}
 
   void ShouldLoadRules(bool should_load_rules) {
@@ -77,8 +80,6 @@ class TestSubKeyRequester : public SubKeyRequester {
 
  private:
   bool should_load_rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSubKeyRequester);
 };
 
 }  // namespace

@@ -16,6 +16,11 @@ namespace metrics {
 class ScreenInfoMetricsProvider : public MetricsProvider {
  public:
   ScreenInfoMetricsProvider();
+
+  ScreenInfoMetricsProvider(const ScreenInfoMetricsProvider&) = delete;
+  ScreenInfoMetricsProvider& operator=(const ScreenInfoMetricsProvider&) =
+      delete;
+
   ~ScreenInfoMetricsProvider() override;
 
   // MetricsProvider:
@@ -33,9 +38,6 @@ class ScreenInfoMetricsProvider : public MetricsProvider {
 
   // Returns the number of monitors the user is using.
   virtual int GetScreenCount() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenInfoMetricsProvider);
 };
 
 }  // namespace metrics

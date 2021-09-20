@@ -21,6 +21,10 @@ class FrameEvictorClient {
 class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
  public:
   explicit FrameEvictor(FrameEvictorClient* client);
+
+  FrameEvictor(const FrameEvictor&) = delete;
+  FrameEvictor& operator=(const FrameEvictor&) = delete;
+
   ~FrameEvictor() override;
 
   // Called when the parent allocates a new LocalSurfaceId for this child and
@@ -45,8 +49,6 @@ class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
   FrameEvictorClient* client_;
   bool has_surface_ = false;
   bool visible_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameEvictor);
 };
 
 }  // namespace viz

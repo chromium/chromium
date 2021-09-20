@@ -63,6 +63,11 @@ class SubresourceFilterSafeBrowsingClient {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner);
 
+  SubresourceFilterSafeBrowsingClient(
+      const SubresourceFilterSafeBrowsingClient&) = delete;
+  SubresourceFilterSafeBrowsingClient& operator=(
+      const SubresourceFilterSafeBrowsingClient&) = delete;
+
   ~SubresourceFilterSafeBrowsingClient();
 
   void CheckUrlOnIO(const GURL& url,
@@ -84,8 +89,6 @@ class SubresourceFilterSafeBrowsingClient {
   base::WeakPtr<SubresourceFilterSafeBrowsingActivationThrottle> throttle_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterSafeBrowsingClient);
 };
 
 }  // namespace subresource_filter

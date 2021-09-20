@@ -55,6 +55,9 @@ class MyScopedHistogramTimer {
   MyScopedHistogramTimer(const base::StringPiece& name)
       : name_(name.begin(), name.end()), start_(base::TimeTicks::Now()) {}
 
+  MyScopedHistogramTimer(const MyScopedHistogramTimer&) = delete;
+  MyScopedHistogramTimer& operator=(const MyScopedHistogramTimer&) = delete;
+
   ~MyScopedHistogramTimer() {
     RecordTimerHistogram(name_, base::TimeTicks::Now() - start_);
   }
@@ -62,8 +65,6 @@ class MyScopedHistogramTimer {
  private:
   const std::string name_;
   const base::TimeTicks start_;
-
-  DISALLOW_COPY_AND_ASSIGN(MyScopedHistogramTimer);
 };
 
 std::string LoadFromFile(const base::FilePath& model_path) {

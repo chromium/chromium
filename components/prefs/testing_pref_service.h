@@ -26,6 +26,9 @@ class TestingPrefStore;
 template <class SuperPrefService, class ConstructionPrefRegistry>
 class TestingPrefServiceBase : public SuperPrefService {
  public:
+  TestingPrefServiceBase(const TestingPrefServiceBase&) = delete;
+  TestingPrefServiceBase& operator=(const TestingPrefServiceBase&) = delete;
+
   virtual ~TestingPrefServiceBase();
 
   // Reads the value of a preference from the managed layer. Returns NULL if the
@@ -102,8 +105,6 @@ class TestingPrefServiceBase : public SuperPrefService {
   scoped_refptr<TestingPrefStore> extension_prefs_;
   scoped_refptr<TestingPrefStore> user_prefs_;
   scoped_refptr<TestingPrefStore> recommended_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingPrefServiceBase);
 };
 
 // Test version of PrefService.
@@ -111,6 +112,10 @@ class TestingPrefServiceSimple
     : public TestingPrefServiceBase<PrefService, PrefRegistry> {
  public:
   TestingPrefServiceSimple();
+
+  TestingPrefServiceSimple(const TestingPrefServiceSimple&) = delete;
+  TestingPrefServiceSimple& operator=(const TestingPrefServiceSimple&) = delete;
+
   ~TestingPrefServiceSimple() override;
 
   // This is provided as a convenience for registering preferences on
@@ -119,9 +124,6 @@ class TestingPrefServiceSimple
   // it, passing it a PrefRegistry via its constructor (or via
   // e.g. PrefServiceFactory).
   PrefRegistrySimple* registry();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingPrefServiceSimple);
 };
 
 template <>

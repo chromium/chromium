@@ -36,6 +36,10 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   // BrowserAutofillManager and AutofillDriver.
   AutofillExternalDelegate(BrowserAutofillManager* manager,
                            AutofillDriver* driver);
+
+  AutofillExternalDelegate(const AutofillExternalDelegate&) = delete;
+  AutofillExternalDelegate& operator=(const AutofillExternalDelegate&) = delete;
+
   virtual ~AutofillExternalDelegate();
 
   // AutofillPopupDelegate implementation.
@@ -183,8 +187,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   base::OnceClosure deletion_callback_;
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillExternalDelegate);
 };
 
 }  // namespace autofill

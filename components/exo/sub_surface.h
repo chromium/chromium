@@ -27,6 +27,10 @@ class Surface;
 class SubSurface : public SurfaceDelegate, public SurfaceObserver {
  public:
   SubSurface(Surface* surface, Surface* parent);
+
+  SubSurface(const SubSurface&) = delete;
+  SubSurface& operator=(const SubSurface&) = delete;
+
   ~SubSurface() override;
 
   // This schedules a sub-surface position change. The sub-surface will be
@@ -85,8 +89,6 @@ class SubSurface : public SurfaceDelegate, public SurfaceObserver {
   Surface* surface_;
   Surface* parent_;
   bool is_synchronized_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(SubSurface);
 };
 
 }  // namespace exo

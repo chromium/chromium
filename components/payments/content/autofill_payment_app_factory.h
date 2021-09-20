@@ -29,13 +29,15 @@ class AutofillPaymentAppFactory : public PaymentAppFactory {
       base::WeakPtr<Delegate> delegate);
 
   AutofillPaymentAppFactory();
+
+  AutofillPaymentAppFactory(const AutofillPaymentAppFactory&) = delete;
+  AutofillPaymentAppFactory& operator=(const AutofillPaymentAppFactory&) =
+      delete;
+
   ~AutofillPaymentAppFactory() override;
 
   // PaymentAppFactory:
   void Create(base::WeakPtr<Delegate> delegate) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillPaymentAppFactory);
 };
 
 }  // namespace payments

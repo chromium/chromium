@@ -18,6 +18,10 @@ namespace viz {
 class VIZ_SERVICE_EXPORT DynamicGeometryBinding {
  public:
   explicit DynamicGeometryBinding(gpu::gles2::GLES2Interface* gl);
+
+  DynamicGeometryBinding(const DynamicGeometryBinding&) = delete;
+  DynamicGeometryBinding& operator=(const DynamicGeometryBinding&) = delete;
+
   ~DynamicGeometryBinding();
 
   void PrepareForDraw();
@@ -29,8 +33,6 @@ class VIZ_SERVICE_EXPORT DynamicGeometryBinding {
 
   GLuint quad_vertices_vbo_;
   GLuint quad_elements_vbo_;
-
-  DISALLOW_COPY_AND_ASSIGN(DynamicGeometryBinding);
 };
 
 }  // namespace viz

@@ -370,6 +370,10 @@ class Cronet_EngineImpl::StreamEngineImpl : public stream_engine {
 class Cronet_EngineImpl::Callback : public CronetURLRequestContext::Callback {
  public:
   explicit Callback(Cronet_EngineImpl* engine);
+
+  Callback(const Callback&) = delete;
+  Callback& operator=(const Callback&) = delete;
+
   ~Callback() override;
 
   // CronetURLRequestContext::Callback implementation:
@@ -396,7 +400,6 @@ class Cronet_EngineImpl::Callback : public CronetURLRequestContext::Callback {
 
   // All methods are invoked on the network thread.
   THREAD_CHECKER(network_thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(Callback);
 };
 
 Cronet_EngineImpl::Callback::Callback(Cronet_EngineImpl* engine)

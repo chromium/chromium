@@ -160,6 +160,11 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
                                    Mode mode,
                                    ConsentLevel consent = ConsentLevel::kSync);
 
+  PrimaryAccountAccessTokenFetcher(const PrimaryAccountAccessTokenFetcher&) =
+      delete;
+  PrimaryAccountAccessTokenFetcher& operator=(
+      const PrimaryAccountAccessTokenFetcher&) = delete;
+
   ~PrimaryAccountAccessTokenFetcher() override;
 
   // Exposed for tests.
@@ -218,8 +223,6 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   Mode mode_;
 
   const ConsentLevel consent_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrimaryAccountAccessTokenFetcher);
 };
 
 }  // namespace signin

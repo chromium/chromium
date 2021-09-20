@@ -17,6 +17,11 @@ namespace viz {
 class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
  public:
   TestGpuMemoryBufferManager();
+
+  TestGpuMemoryBufferManager(const TestGpuMemoryBufferManager&) = delete;
+  TestGpuMemoryBufferManager& operator=(const TestGpuMemoryBufferManager&) =
+      delete;
+
   ~TestGpuMemoryBufferManager() override;
 
   std::unique_ptr<TestGpuMemoryBufferManager>
@@ -65,8 +70,6 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
   std::map<int, TestGpuMemoryBufferManager*> clients_;
 
   bool fail_on_create_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGpuMemoryBufferManager);
 };
 
 }  // namespace viz

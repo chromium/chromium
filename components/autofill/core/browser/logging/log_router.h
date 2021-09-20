@@ -27,6 +27,10 @@ class LogReceiver;
 class LogRouter : public KeyedService {
  public:
   LogRouter();
+
+  LogRouter(const LogRouter&) = delete;
+  LogRouter& operator=(const LogRouter&) = delete;
+
   ~LogRouter() override;
 
   // Returns a JSON entry that can be fed into the logger.
@@ -65,8 +69,6 @@ class LogRouter : public KeyedService {
 
   // Logs accumulated since the first receiver was registered.
   std::vector<base::Value> accumulated_logs_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogRouter);
 };
 
 }  // namespace autofill

@@ -20,6 +20,11 @@ class VIZ_SERVICE_EXPORT OverlayStrategyFullscreen
  public:
   explicit OverlayStrategyFullscreen(
       OverlayProcessorUsingStrategy* capability_checker);
+
+  OverlayStrategyFullscreen(const OverlayStrategyFullscreen&) = delete;
+  OverlayStrategyFullscreen& operator=(const OverlayStrategyFullscreen&) =
+      delete;
+
   ~OverlayStrategyFullscreen() override;
 
   bool Attempt(const skia::Matrix44& output_color_matrix,
@@ -59,8 +64,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategyFullscreen
 
  private:
   OverlayProcessorUsingStrategy* capability_checker_;  // Weak.
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayStrategyFullscreen);
 };
 
 }  // namespace viz

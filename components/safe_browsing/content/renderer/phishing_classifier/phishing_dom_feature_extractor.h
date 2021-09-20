@@ -36,6 +36,11 @@ class PhishingDOMFeatureExtractor {
 
   // Creates a PhishingDOMFeatureExtractor instance.
   PhishingDOMFeatureExtractor();
+
+  PhishingDOMFeatureExtractor(const PhishingDOMFeatureExtractor&) = delete;
+  PhishingDOMFeatureExtractor& operator=(const PhishingDOMFeatureExtractor&) =
+      delete;
+
   virtual ~PhishingDOMFeatureExtractor();
 
   // Begins extracting features into the given FeatureMap for the page.
@@ -138,8 +143,6 @@ class PhishingDOMFeatureExtractor {
   // Used in scheduling ExtractFeaturesWithTimeout tasks.
   // These pointers are invalidated if extraction is cancelled.
   base::WeakPtrFactory<PhishingDOMFeatureExtractor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PhishingDOMFeatureExtractor);
 };
 
 }  // namespace safe_browsing

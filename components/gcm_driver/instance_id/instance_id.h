@@ -85,6 +85,9 @@ class InstanceID {
   static std::unique_ptr<InstanceID> CreateInternal(const std::string& app_id,
                                                     gcm::GCMDriver* gcm_driver);
 
+  InstanceID(const InstanceID&) = delete;
+  InstanceID& operator=(const InstanceID&) = delete;
+
   virtual ~InstanceID();
 
   // Returns the Instance ID.
@@ -172,8 +175,6 @@ class InstanceID {
   std::string app_id_;
 
   base::WeakPtrFactory<InstanceID> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceID);
 };
 
 }  // namespace instance_id

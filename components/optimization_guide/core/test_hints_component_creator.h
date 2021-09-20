@@ -26,6 +26,11 @@ namespace testing {
 class TestHintsComponentCreator {
  public:
   TestHintsComponentCreator();
+
+  TestHintsComponentCreator(const TestHintsComponentCreator&) = delete;
+  TestHintsComponentCreator& operator=(const TestHintsComponentCreator&) =
+      delete;
+
   ~TestHintsComponentCreator();
 
   // Creates component data based on |allowlisted_hosts| and
@@ -56,8 +61,6 @@ class TestHintsComponentCreator {
 
   std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
   int next_component_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHintsComponentCreator);
 };
 
 }  // namespace testing

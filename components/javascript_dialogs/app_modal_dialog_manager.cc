@@ -31,6 +31,10 @@ namespace {
 class DefaultExtensionsClient : public ExtensionsClient {
  public:
   DefaultExtensionsClient() = default;
+
+  DefaultExtensionsClient(const DefaultExtensionsClient&) = delete;
+  DefaultExtensionsClient& operator=(const DefaultExtensionsClient&) = delete;
+
   ~DefaultExtensionsClient() override = default;
 
  private:
@@ -42,8 +46,6 @@ class DefaultExtensionsClient : public ExtensionsClient {
                         std::string* name_out) override {
     return false;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultExtensionsClient);
 };
 
 bool ShouldDisplaySuppressCheckbox(

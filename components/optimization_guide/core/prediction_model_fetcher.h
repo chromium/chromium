@@ -42,6 +42,10 @@ class PredictionModelFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& optimization_guide_service_get_models_url,
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  PredictionModelFetcher(const PredictionModelFetcher&) = delete;
+  PredictionModelFetcher& operator=(const PredictionModelFetcher&) = delete;
+
   virtual ~PredictionModelFetcher();
 
   // Requests PredictionModels and HostModelFeatures from the Optimization Guide
@@ -92,8 +96,6 @@ class PredictionModelFetcher {
   network::NetworkConnectionTracker* network_connection_tracker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PredictionModelFetcher);
 };
 
 }  // namespace optimization_guide

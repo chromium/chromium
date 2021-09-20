@@ -36,6 +36,10 @@ class UnindexedRulesetReader {
   // Note: The |stream| should outlive |this| instance.
   explicit UnindexedRulesetReader(
       google::protobuf::io::ZeroCopyInputStream* stream);
+
+  UnindexedRulesetReader(const UnindexedRulesetReader&) = delete;
+  UnindexedRulesetReader& operator=(const UnindexedRulesetReader&) = delete;
+
   ~UnindexedRulesetReader();
 
   // Reads the next ruleset |chunk| from the |input|. Returns false iff reached
@@ -48,8 +52,6 @@ class UnindexedRulesetReader {
 
  private:
   google::protobuf::io::CodedInputStream coded_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnindexedRulesetReader);
 };
 
 // Divides an unindexed ruleset into chunks and writes them into |stream|.
@@ -65,6 +67,10 @@ class UnindexedRulesetWriter {
   explicit UnindexedRulesetWriter(
       google::protobuf::io::ZeroCopyOutputStream* stream,
       int max_rules_per_chunk = 64);
+
+  UnindexedRulesetWriter(const UnindexedRulesetWriter&) = delete;
+  UnindexedRulesetWriter& operator=(const UnindexedRulesetWriter&) = delete;
+
   ~UnindexedRulesetWriter();
 
   int max_rules_per_chunk() const { return max_rules_per_chunk_; }
@@ -93,8 +99,6 @@ class UnindexedRulesetWriter {
 
   const int max_rules_per_chunk_ = 0;
   url_pattern_index::proto::FilteringRules pending_chunk_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnindexedRulesetWriter);
 };
 
 }  // namespace subresource_filter

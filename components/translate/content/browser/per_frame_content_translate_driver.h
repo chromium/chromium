@@ -43,6 +43,12 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
       content::WebContents& web_contents,
       content::NavigationController* nav_controller,
       language::UrlLanguageHistogram* url_language_histogram);
+
+  PerFrameContentTranslateDriver(const PerFrameContentTranslateDriver&) =
+      delete;
+  PerFrameContentTranslateDriver& operator=(
+      const PerFrameContentTranslateDriver&) = delete;
+
   ~PerFrameContentTranslateDriver() override;
 
   // TranslateDriver methods.
@@ -155,8 +161,6 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
 
   base::WeakPtrFactory<PerFrameContentTranslateDriver> weak_pointer_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerFrameContentTranslateDriver);
 };
 
 }  // namespace translate

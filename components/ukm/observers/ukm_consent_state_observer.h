@@ -25,6 +25,10 @@ class UkmConsentStateObserver
       public unified_consent::UrlKeyedDataCollectionConsentHelper::Observer {
  public:
   UkmConsentStateObserver();
+
+  UkmConsentStateObserver(const UkmConsentStateObserver&) = delete;
+  UkmConsentStateObserver& operator=(const UkmConsentStateObserver&) = delete;
+
   ~UkmConsentStateObserver() override;
 
   // Starts observing whether UKM is allowed for a profile.
@@ -140,8 +144,6 @@ class UkmConsentStateObserver
   // Tracks if extension sync was enabled on all profiles after the last state
   // change.
   bool ukm_allowed_with_extensions_for_all_profiles_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmConsentStateObserver);
 };
 
 }  // namespace ukm

@@ -22,11 +22,6 @@ class PollGetUpdatesRequestEvent : public ProtocolEvent {
  public:
   PollGetUpdatesRequestEvent(base::Time timestamp,
                              const sync_pb::ClientToServerMessage& request);
-
-  PollGetUpdatesRequestEvent(const PollGetUpdatesRequestEvent&) = delete;
-  PollGetUpdatesRequestEvent& operator=(const PollGetUpdatesRequestEvent&) =
-      delete;
-
   ~PollGetUpdatesRequestEvent() override;
   std::unique_ptr<ProtocolEvent> Clone() const override;
 
@@ -39,6 +34,8 @@ class PollGetUpdatesRequestEvent : public ProtocolEvent {
 
   const base::Time timestamp_;
   const sync_pb::ClientToServerMessage request_;
+
+  DISALLOW_COPY_AND_ASSIGN(PollGetUpdatesRequestEvent);
 };
 
 }  // namespace syncer

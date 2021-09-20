@@ -177,6 +177,9 @@ class Configuration {
   // Convenience alias for typical implementations of Configuration.
   using ConfigMap = std::map<std::string, FeatureConfig>;
 
+  Configuration(const Configuration&) = delete;
+  Configuration& operator=(const Configuration&) = delete;
+
   virtual ~Configuration() = default;
 
   // Returns the FeatureConfig for the given |feature|. The |feature| must
@@ -197,9 +200,6 @@ class Configuration {
 
  protected:
   Configuration() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Configuration);
 };
 
 }  // namespace feature_engagement

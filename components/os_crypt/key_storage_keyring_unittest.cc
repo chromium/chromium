@@ -119,14 +119,15 @@ void MockGnomeKeyringLoader::mock_gnome_keyring_free_password(gchar* password) {
 class GnomeKeyringTest : public testing::Test {
  public:
   GnomeKeyringTest();
+
+  GnomeKeyringTest(const GnomeKeyringTest&) = delete;
+  GnomeKeyringTest& operator=(const GnomeKeyringTest&) = delete;
+
   ~GnomeKeyringTest() override;
 
  protected:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   KeyStorageKeyring keyring_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GnomeKeyringTest);
 };
 
 GnomeKeyringTest::GnomeKeyringTest()

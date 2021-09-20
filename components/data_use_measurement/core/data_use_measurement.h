@@ -61,6 +61,10 @@ class DataUseMeasurement
   DataUseMeasurement(
       PrefService* pref_service,
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  DataUseMeasurement(const DataUseMeasurement&) = delete;
+  DataUseMeasurement& operator=(const DataUseMeasurement&) = delete;
+
   ~DataUseMeasurement() override;
 
 #if defined(OS_ANDROID)
@@ -191,8 +195,6 @@ class DataUseMeasurement
   DataUseTrackerPrefs data_use_tracker_prefs_;
 
   base::WeakPtrFactory<DataUseMeasurement> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataUseMeasurement);
 };
 
 }  // namespace data_use_measurement

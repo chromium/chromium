@@ -25,6 +25,10 @@ class BookmarkModel;
 class TestBookmarkClient : public BookmarkClient {
  public:
   TestBookmarkClient();
+
+  TestBookmarkClient(const TestBookmarkClient&) = delete;
+  TestBookmarkClient& operator=(const TestBookmarkClient&) = delete;
+
   ~TestBookmarkClient() override;
 
   // Returns a new BookmarkModel using a TestBookmarkClient.
@@ -92,8 +96,6 @@ class TestBookmarkClient : public BookmarkClient {
   base::CancelableTaskTracker::TaskId next_task_id_ = 1;
   std::map<GURL, std::list<favicon_base::FaviconImageCallback>>
       requests_per_page_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBookmarkClient);
 };
 
 }  // namespace bookmarks

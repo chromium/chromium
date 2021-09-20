@@ -30,6 +30,10 @@ class SyncCredentialsFilter : public CredentialsFilter {
   SyncCredentialsFilter(
       PasswordManagerClient* client,
       SyncServiceFactoryFunction sync_service_factory_function);
+
+  SyncCredentialsFilter(const SyncCredentialsFilter&) = delete;
+  SyncCredentialsFilter& operator=(const SyncCredentialsFilter&) = delete;
+
   ~SyncCredentialsFilter() override;
 
   // CredentialsFilter
@@ -45,8 +49,6 @@ class SyncCredentialsFilter : public CredentialsFilter {
   PasswordManagerClient* const client_;
 
   const SyncServiceFactoryFunction sync_service_factory_function_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncCredentialsFilter);
 };
 
 }  // namespace password_manager

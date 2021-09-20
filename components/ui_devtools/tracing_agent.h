@@ -30,6 +30,10 @@ class UI_DEVTOOLS_EXPORT TracingAgent
     : public UiDevToolsBaseAgent<protocol::Tracing::Metainfo> {
  public:
   explicit TracingAgent(std::unique_ptr<ConnectorDelegate> connector);
+
+  TracingAgent(const TracingAgent&) = delete;
+  TracingAgent& operator=(const TracingAgent&) = delete;
+
   ~TracingAgent() override;
 
   void set_gpu_pid(base::ProcessId pid) { gpu_pid_ = pid; }
@@ -108,7 +112,6 @@ class UI_DEVTOOLS_EXPORT TracingAgent
   std::unique_ptr<PerfettoTracingSession> perfetto_session_;
   TraceDataBufferState trace_data_buffer_state_;
   base::WeakPtrFactory<TracingAgent> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(TracingAgent);
 };
 
 }  // namespace ui_devtools

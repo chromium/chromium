@@ -94,6 +94,10 @@ class TestOverrideStringCallback {
       : callback_(base::BindRepeating(&TestOverrideStringCallback::Override,
                                       base::Unretained(this))) {}
 
+  TestOverrideStringCallback(const TestOverrideStringCallback&) = delete;
+  TestOverrideStringCallback& operator=(const TestOverrideStringCallback&) =
+      delete;
+
   virtual ~TestOverrideStringCallback() {}
 
   const VariationsSeedProcessor::UIStringOverrideCallback& callback() const {
@@ -109,8 +113,6 @@ class TestOverrideStringCallback {
 
   VariationsSeedProcessor::UIStringOverrideCallback callback_;
   OverrideMap overrides_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverrideStringCallback);
 };
 
 }  // namespace
@@ -119,6 +121,10 @@ class VariationsSeedProcessorTest : public ::testing::Test {
  public:
   VariationsSeedProcessorTest() {
   }
+
+  VariationsSeedProcessorTest(const VariationsSeedProcessorTest&) = delete;
+  VariationsSeedProcessorTest& operator=(const VariationsSeedProcessorTest&) =
+      delete;
 
   ~VariationsSeedProcessorTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
@@ -182,9 +188,6 @@ class VariationsSeedProcessorTest : public ::testing::Test {
 
  protected:
   TestOverrideStringCallback override_callback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VariationsSeedProcessorTest);
 };
 
 TEST_F(VariationsSeedProcessorTest, AllowForceGroupAndVariationId) {

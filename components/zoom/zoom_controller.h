@@ -93,6 +93,9 @@ class ZoomController : public content::WebContentsObserver,
   // given WebContents*.
   static double GetZoomLevelForWebContents(content::WebContents* web_contents);
 
+  ZoomController(const ZoomController&) = delete;
+  ZoomController& operator=(const ZoomController&) = delete;
+
   ~ZoomController() override;
 
   ZoomMode zoom_mode() const { return zoom_mode_; }
@@ -197,8 +200,6 @@ class ZoomController : public content::WebContentsObserver,
   base::CallbackListSubscription zoom_subscription_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomController);
 };
 
 }  // namespace zoom

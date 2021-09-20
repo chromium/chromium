@@ -45,6 +45,9 @@ class StatusListener {
     Cronet_UrlRequestStatusListener_SetClientContext(status_listener_, this);
   }
 
+  StatusListener(const StatusListener&) = delete;
+  StatusListener& operator=(const StatusListener&) = delete;
+
   ~StatusListener() {
     Cronet_UrlRequestStatusListener_Destroy(status_listener_);
   }
@@ -89,8 +92,6 @@ class StatusListener {
   // this variable races the reading of it, but it's initialized to a safe
   // value.
   std::atomic_bool expect_request_not_done_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusListener);
 };
 
 // Query and return status of |request|. |callback| is verified to not yet have

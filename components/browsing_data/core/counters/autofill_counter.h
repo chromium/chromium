@@ -29,6 +29,10 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter,
                    ResultInt num_credit_cards,
                    ResultInt num_addresses,
                    bool autofill_sync_enabled_);
+
+    AutofillResult(const AutofillResult&) = delete;
+    AutofillResult& operator=(const AutofillResult&) = delete;
+
     ~AutofillResult() override;
 
     ResultInt num_credit_cards() const { return num_credit_cards_; }
@@ -37,8 +41,6 @@ class AutofillCounter : public browsing_data::BrowsingDataCounter,
    private:
     ResultInt num_credit_cards_;
     ResultInt num_addresses_;
-
-    DISALLOW_COPY_AND_ASSIGN(AutofillResult);
   };
 
   explicit AutofillCounter(

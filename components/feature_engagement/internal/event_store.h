@@ -20,6 +20,9 @@ class EventStore {
       base::OnceCallback<void(bool success,
                               std::unique_ptr<std::vector<Event>>)>;
 
+  EventStore(const EventStore&) = delete;
+  EventStore& operator=(const EventStore&) = delete;
+
   virtual ~EventStore() = default;
 
   // Loads the database from storage and asynchronously posts the result back
@@ -39,9 +42,6 @@ class EventStore {
 
  protected:
   EventStore() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventStore);
 };
 
 }  // namespace feature_engagement

@@ -28,6 +28,10 @@ class WMHelper;
 class WaylandClientTestHelper {
  public:
   WaylandClientTestHelper();
+
+  WaylandClientTestHelper(const WaylandClientTestHelper&) = delete;
+  WaylandClientTestHelper& operator=(const WaylandClientTestHelper&) = delete;
+
   virtual ~WaylandClientTestHelper();
 
   static void SetUIThreadTaskRunner(
@@ -51,8 +55,6 @@ class WaylandClientTestHelper {
   std::unique_ptr<Display> display_;
   std::unique_ptr<wayland::Server> wayland_server_;
   std::unique_ptr<WaylandWatcher> wayland_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandClientTestHelper);
 };
 
 }  // namespace exo

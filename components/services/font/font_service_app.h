@@ -18,6 +18,10 @@ namespace font_service {
 class FontServiceApp : public mojom::FontService {
  public:
   FontServiceApp();
+
+  FontServiceApp(const FontServiceApp&) = delete;
+  FontServiceApp& operator=(const FontServiceApp&) = delete;
+
   ~FontServiceApp() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::FontService> receiver);
@@ -55,8 +59,6 @@ class FontServiceApp : public mojom::FontService {
   // We don't want to leak paths to our callers; we thus enumerate the paths of
   // fonts.
   std::vector<base::FilePath> paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontServiceApp);
 };
 
 }  // namespace font_service

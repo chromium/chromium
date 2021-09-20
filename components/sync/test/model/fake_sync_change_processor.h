@@ -13,10 +13,6 @@ namespace syncer {
 class FakeSyncChangeProcessor : public SyncChangeProcessor {
  public:
   FakeSyncChangeProcessor();
-
-  FakeSyncChangeProcessor(const FakeSyncChangeProcessor&) = delete;
-  FakeSyncChangeProcessor& operator=(const FakeSyncChangeProcessor&) = delete;
-
   ~FakeSyncChangeProcessor() override;
 
   // SyncChangeProcessor implementation.
@@ -32,6 +28,8 @@ class FakeSyncChangeProcessor : public SyncChangeProcessor {
 
  private:
   SyncChangeList changes_;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeSyncChangeProcessor);
 };
 
 }  // namespace syncer

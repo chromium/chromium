@@ -16,6 +16,10 @@
 class OSCryptMockerLinux : public KeyStorageLinux {
  public:
   OSCryptMockerLinux() = default;
+
+  OSCryptMockerLinux(const OSCryptMockerLinux&) = delete;
+  OSCryptMockerLinux& operator=(const OSCryptMockerLinux&) = delete;
+
   ~OSCryptMockerLinux() override = default;
 
   // Get a pointer to the stored password. OSCryptMockerLinux owns the pointer.
@@ -34,8 +38,6 @@ class OSCryptMockerLinux : public KeyStorageLinux {
 
  private:
   std::string key_;
-
-  DISALLOW_COPY_AND_ASSIGN(OSCryptMockerLinux);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_OS_CRYPT_MOCKER_LINUX_H_

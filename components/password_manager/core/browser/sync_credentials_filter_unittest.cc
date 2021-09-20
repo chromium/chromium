@@ -58,6 +58,10 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
                       kEnterpriseURL);
   }
 
+  FakePasswordManagerClient(const FakePasswordManagerClient&) = delete;
+  FakePasswordManagerClient& operator=(const FakePasswordManagerClient&) =
+      delete;
+
   ~FakePasswordManagerClient() override {
     password_store_->ShutdownOnUIThread();
   }
@@ -91,8 +95,6 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   bool is_incognito_ = false;
   signin::IdentityManager* identity_manager_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePasswordManagerClient);
 };
 
 }  // namespace

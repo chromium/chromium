@@ -29,11 +29,16 @@ class InstanceIDAndroid : public InstanceID {
   class ScopedBlockOnAsyncTasksForTesting {
    public:
     ScopedBlockOnAsyncTasksForTesting();
+
+    ScopedBlockOnAsyncTasksForTesting(
+        const ScopedBlockOnAsyncTasksForTesting&) = delete;
+    ScopedBlockOnAsyncTasksForTesting& operator=(
+        const ScopedBlockOnAsyncTasksForTesting&) = delete;
+
     ~ScopedBlockOnAsyncTasksForTesting();
 
    private:
     bool previous_value_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedBlockOnAsyncTasksForTesting);
   };
 
   InstanceIDAndroid(const std::string& app_id, gcm::GCMDriver* gcm_driver);

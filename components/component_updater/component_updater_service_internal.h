@@ -41,6 +41,10 @@ class CrxUpdateService : public ComponentUpdateService,
   CrxUpdateService(scoped_refptr<Configurator> config,
                    std::unique_ptr<UpdateScheduler> scheduler,
                    scoped_refptr<UpdateClient> update_client);
+
+  CrxUpdateService(const CrxUpdateService&) = delete;
+  CrxUpdateService& operator=(const CrxUpdateService&) = delete;
+
   ~CrxUpdateService() override;
 
   // Overrides for ComponentUpdateService.
@@ -123,8 +127,6 @@ class CrxUpdateService : public ComponentUpdateService,
   // for that media type. Only the most recently-registered component is
   // tracked. May include the IDs of un-registered components.
   std::map<std::string, std::string> component_ids_by_mime_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrxUpdateService);
 };
 
 }  // namespace component_updater

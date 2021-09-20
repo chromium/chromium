@@ -31,6 +31,10 @@ bool IsURLSafe(int render_process_id, const GURL& url) {
 class CompletedInputStream : public InputStream {
  public:
   CompletedInputStream(DownloadInterruptReason status) : status_(status) {}
+
+  CompletedInputStream(const CompletedInputStream&) = delete;
+  CompletedInputStream& operator=(const CompletedInputStream&) = delete;
+
   ~CompletedInputStream() override = default;
 
   // InputStream
@@ -45,7 +49,6 @@ class CompletedInputStream : public InputStream {
 
  private:
   DownloadInterruptReason status_;
-  DISALLOW_COPY_AND_ASSIGN(CompletedInputStream);
 };
 
 void CreateUrlDownloadHandler(

@@ -62,6 +62,10 @@ class SegmentLength {
   };
 
   SegmentLength() = default;
+
+  SegmentLength(const SegmentLength&) = delete;
+  SegmentLength& operator=(const SegmentLength&) = delete;
+
   ~SegmentLength() = default;
 
   // Add a line segment to the set of active line segments, the segment
@@ -128,8 +132,6 @@ class SegmentLength {
 
   // Map from the segment_id passed by user to the Segment struct.
   std::unordered_map<int, SegmentEventSetIterators> segment_event_iterators_;
-
-  DISALLOW_COPY_AND_ASSIGN(SegmentLength);
 };
 
 }  // namespace

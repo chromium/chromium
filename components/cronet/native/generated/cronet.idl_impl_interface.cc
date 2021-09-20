@@ -62,6 +62,9 @@ class Cronet_BufferStub : public Cronet_Buffer {
         GetSizeFunc_(GetSizeFunc),
         GetDataFunc_(GetDataFunc) {}
 
+  Cronet_BufferStub(const Cronet_BufferStub&) = delete;
+  Cronet_BufferStub& operator=(const Cronet_BufferStub&) = delete;
+
   ~Cronet_BufferStub() override {}
 
  protected:
@@ -82,8 +85,6 @@ class Cronet_BufferStub : public Cronet_Buffer {
   const Cronet_Buffer_InitWithAllocFunc InitWithAllocFunc_;
   const Cronet_Buffer_GetSizeFunc GetSizeFunc_;
   const Cronet_Buffer_GetDataFunc GetDataFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_BufferStub);
 };
 
 Cronet_BufferPtr Cronet_Buffer_CreateWith(
@@ -129,6 +130,10 @@ class Cronet_BufferCallbackStub : public Cronet_BufferCallback {
       Cronet_BufferCallback_OnDestroyFunc OnDestroyFunc)
       : OnDestroyFunc_(OnDestroyFunc) {}
 
+  Cronet_BufferCallbackStub(const Cronet_BufferCallbackStub&) = delete;
+  Cronet_BufferCallbackStub& operator=(const Cronet_BufferCallbackStub&) =
+      delete;
+
   ~Cronet_BufferCallbackStub() override {}
 
  protected:
@@ -138,8 +143,6 @@ class Cronet_BufferCallbackStub : public Cronet_BufferCallback {
 
  private:
   const Cronet_BufferCallback_OnDestroyFunc OnDestroyFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_BufferCallbackStub);
 };
 
 Cronet_BufferCallbackPtr Cronet_BufferCallback_CreateWith(
@@ -176,6 +179,9 @@ class Cronet_RunnableStub : public Cronet_Runnable {
   explicit Cronet_RunnableStub(Cronet_Runnable_RunFunc RunFunc)
       : RunFunc_(RunFunc) {}
 
+  Cronet_RunnableStub(const Cronet_RunnableStub&) = delete;
+  Cronet_RunnableStub& operator=(const Cronet_RunnableStub&) = delete;
+
   ~Cronet_RunnableStub() override {}
 
  protected:
@@ -183,8 +189,6 @@ class Cronet_RunnableStub : public Cronet_Runnable {
 
  private:
   const Cronet_Runnable_RunFunc RunFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_RunnableStub);
 };
 
 Cronet_RunnablePtr Cronet_Runnable_CreateWith(Cronet_Runnable_RunFunc RunFunc) {
@@ -221,6 +225,9 @@ class Cronet_ExecutorStub : public Cronet_Executor {
   explicit Cronet_ExecutorStub(Cronet_Executor_ExecuteFunc ExecuteFunc)
       : ExecuteFunc_(ExecuteFunc) {}
 
+  Cronet_ExecutorStub(const Cronet_ExecutorStub&) = delete;
+  Cronet_ExecutorStub& operator=(const Cronet_ExecutorStub&) = delete;
+
   ~Cronet_ExecutorStub() override {}
 
  protected:
@@ -230,8 +237,6 @@ class Cronet_ExecutorStub : public Cronet_Executor {
 
  private:
   const Cronet_Executor_ExecuteFunc ExecuteFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_ExecutorStub);
 };
 
 Cronet_ExecutorPtr Cronet_Executor_CreateWith(
@@ -328,6 +333,9 @@ class Cronet_EngineStub : public Cronet_Engine {
         AddRequestFinishedListenerFunc_(AddRequestFinishedListenerFunc),
         RemoveRequestFinishedListenerFunc_(RemoveRequestFinishedListenerFunc) {}
 
+  Cronet_EngineStub(const Cronet_EngineStub&) = delete;
+  Cronet_EngineStub& operator=(const Cronet_EngineStub&) = delete;
+
   ~Cronet_EngineStub() override {}
 
  protected:
@@ -373,8 +381,6 @@ class Cronet_EngineStub : public Cronet_Engine {
       AddRequestFinishedListenerFunc_;
   const Cronet_Engine_RemoveRequestFinishedListenerFunc
       RemoveRequestFinishedListenerFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_EngineStub);
 };
 
 Cronet_EnginePtr Cronet_Engine_CreateWith(
@@ -430,6 +436,11 @@ class Cronet_UrlRequestStatusListenerStub
       Cronet_UrlRequestStatusListener_OnStatusFunc OnStatusFunc)
       : OnStatusFunc_(OnStatusFunc) {}
 
+  Cronet_UrlRequestStatusListenerStub(
+      const Cronet_UrlRequestStatusListenerStub&) = delete;
+  Cronet_UrlRequestStatusListenerStub& operator=(
+      const Cronet_UrlRequestStatusListenerStub&) = delete;
+
   ~Cronet_UrlRequestStatusListenerStub() override {}
 
  protected:
@@ -439,8 +450,6 @@ class Cronet_UrlRequestStatusListenerStub
 
  private:
   const Cronet_UrlRequestStatusListener_OnStatusFunc OnStatusFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UrlRequestStatusListenerStub);
 };
 
 Cronet_UrlRequestStatusListenerPtr Cronet_UrlRequestStatusListener_CreateWith(
@@ -535,6 +544,10 @@ class Cronet_UrlRequestCallbackStub : public Cronet_UrlRequestCallback {
         OnFailedFunc_(OnFailedFunc),
         OnCanceledFunc_(OnCanceledFunc) {}
 
+  Cronet_UrlRequestCallbackStub(const Cronet_UrlRequestCallbackStub&) = delete;
+  Cronet_UrlRequestCallbackStub& operator=(
+      const Cronet_UrlRequestCallbackStub&) = delete;
+
   ~Cronet_UrlRequestCallbackStub() override {}
 
  protected:
@@ -580,8 +593,6 @@ class Cronet_UrlRequestCallbackStub : public Cronet_UrlRequestCallback {
   const Cronet_UrlRequestCallback_OnSucceededFunc OnSucceededFunc_;
   const Cronet_UrlRequestCallback_OnFailedFunc OnFailedFunc_;
   const Cronet_UrlRequestCallback_OnCanceledFunc OnCanceledFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UrlRequestCallbackStub);
 };
 
 Cronet_UrlRequestCallbackPtr Cronet_UrlRequestCallback_CreateWith(
@@ -654,6 +665,10 @@ class Cronet_UploadDataSinkStub : public Cronet_UploadDataSink {
         OnRewindSucceededFunc_(OnRewindSucceededFunc),
         OnRewindErrorFunc_(OnRewindErrorFunc) {}
 
+  Cronet_UploadDataSinkStub(const Cronet_UploadDataSinkStub&) = delete;
+  Cronet_UploadDataSinkStub& operator=(const Cronet_UploadDataSinkStub&) =
+      delete;
+
   ~Cronet_UploadDataSinkStub() override {}
 
  protected:
@@ -676,8 +691,6 @@ class Cronet_UploadDataSinkStub : public Cronet_UploadDataSink {
   const Cronet_UploadDataSink_OnReadErrorFunc OnReadErrorFunc_;
   const Cronet_UploadDataSink_OnRewindSucceededFunc OnRewindSucceededFunc_;
   const Cronet_UploadDataSink_OnRewindErrorFunc OnRewindErrorFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UploadDataSinkStub);
 };
 
 Cronet_UploadDataSinkPtr Cronet_UploadDataSink_CreateWith(
@@ -748,6 +761,10 @@ class Cronet_UploadDataProviderStub : public Cronet_UploadDataProvider {
         RewindFunc_(RewindFunc),
         CloseFunc_(CloseFunc) {}
 
+  Cronet_UploadDataProviderStub(const Cronet_UploadDataProviderStub&) = delete;
+  Cronet_UploadDataProviderStub& operator=(
+      const Cronet_UploadDataProviderStub&) = delete;
+
   ~Cronet_UploadDataProviderStub() override {}
 
  protected:
@@ -769,8 +786,6 @@ class Cronet_UploadDataProviderStub : public Cronet_UploadDataProvider {
   const Cronet_UploadDataProvider_ReadFunc ReadFunc_;
   const Cronet_UploadDataProvider_RewindFunc RewindFunc_;
   const Cronet_UploadDataProvider_CloseFunc CloseFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UploadDataProviderStub);
 };
 
 Cronet_UploadDataProviderPtr Cronet_UploadDataProvider_CreateWith(
@@ -862,6 +877,9 @@ class Cronet_UrlRequestStub : public Cronet_UrlRequest {
         IsDoneFunc_(IsDoneFunc),
         GetStatusFunc_(GetStatusFunc) {}
 
+  Cronet_UrlRequestStub(const Cronet_UrlRequestStub&) = delete;
+  Cronet_UrlRequestStub& operator=(const Cronet_UrlRequestStub&) = delete;
+
   ~Cronet_UrlRequestStub() override {}
 
  protected:
@@ -897,8 +915,6 @@ class Cronet_UrlRequestStub : public Cronet_UrlRequest {
   const Cronet_UrlRequest_CancelFunc CancelFunc_;
   const Cronet_UrlRequest_IsDoneFunc IsDoneFunc_;
   const Cronet_UrlRequest_GetStatusFunc GetStatusFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UrlRequestStub);
 };
 
 Cronet_UrlRequestPtr Cronet_UrlRequest_CreateWith(
@@ -954,6 +970,11 @@ class Cronet_RequestFinishedInfoListenerStub
           OnRequestFinishedFunc)
       : OnRequestFinishedFunc_(OnRequestFinishedFunc) {}
 
+  Cronet_RequestFinishedInfoListenerStub(
+      const Cronet_RequestFinishedInfoListenerStub&) = delete;
+  Cronet_RequestFinishedInfoListenerStub& operator=(
+      const Cronet_RequestFinishedInfoListenerStub&) = delete;
+
   ~Cronet_RequestFinishedInfoListenerStub() override {}
 
  protected:
@@ -966,8 +987,6 @@ class Cronet_RequestFinishedInfoListenerStub
  private:
   const Cronet_RequestFinishedInfoListener_OnRequestFinishedFunc
       OnRequestFinishedFunc_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_RequestFinishedInfoListenerStub);
 };
 
 Cronet_RequestFinishedInfoListenerPtr

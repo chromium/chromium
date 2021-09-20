@@ -42,6 +42,9 @@ class DownloadDBTest : public testing::Test {
  public:
   DownloadDBTest() : db_(nullptr), init_success_(false) {}
 
+  DownloadDBTest(const DownloadDBTest&) = delete;
+  DownloadDBTest& operator=(const DownloadDBTest&) = delete;
+
   ~DownloadDBTest() override = default;
 
   void CreateDatabase() {
@@ -89,7 +92,6 @@ class DownloadDBTest : public testing::Test {
   leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>* db_;
   std::unique_ptr<DownloadDBImpl> download_db_;
   bool init_success_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadDBTest);
 };
 
 TEST_F(DownloadDBTest, InitializeSucceeded) {

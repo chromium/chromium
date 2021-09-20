@@ -201,6 +201,9 @@ class ScopedStoreTransaction {
     }
   }
 
+  ScopedStoreTransaction(const ScopedStoreTransaction&) = delete;
+  ScopedStoreTransaction& operator=(const ScopedStoreTransaction&) = delete;
+
   ~ScopedStoreTransaction() {
     if (!committed_) {
       store_->RollbackTransaction();
@@ -210,8 +213,6 @@ class ScopedStoreTransaction {
  private:
   PasswordStoreSync* store_;
   bool committed_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedStoreTransaction);
 };
 
 }  // namespace

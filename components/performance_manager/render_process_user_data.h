@@ -35,6 +35,9 @@ class RenderProcessUserData : public base::SupportsUserData::Data,
         content::RenderProcessHost*) = 0;
   };
 
+  RenderProcessUserData(const RenderProcessUserData&) = delete;
+  RenderProcessUserData& operator=(const RenderProcessUserData&) = delete;
+
   ~RenderProcessUserData() override;
 
   static const void* UserDataKey();
@@ -72,8 +75,6 @@ class RenderProcessUserData : public base::SupportsUserData::Data,
   std::unique_ptr<ProcessNodeImpl> process_node_;
 
   DestructionObserver* destruction_observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessUserData);
 };
 
 }  // namespace performance_manager

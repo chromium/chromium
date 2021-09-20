@@ -33,6 +33,10 @@ struct FormDataPredictions;
 class FormCache {
  public:
   explicit FormCache(blink::WebLocalFrame* frame);
+
+  FormCache(const FormCache&) = delete;
+  FormCache& operator=(const FormCache&) = delete;
+
   ~FormCache();
 
   // Scans the DOM in |frame_| extracting and storing forms that have not been
@@ -156,8 +160,6 @@ class FormCache {
 
   // Fields that are eligible to show manual filling on form interaction.
   base::flat_set<FieldRendererId> fields_eligible_for_manual_filling_;
-
-  DISALLOW_COPY_AND_ASSIGN(FormCache);
 };
 
 }  // namespace autofill

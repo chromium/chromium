@@ -35,6 +35,10 @@ class FacetManager {
   FacetManager(const FacetURI& facet_uri,
                FacetManagerHost* backend,
                base::Clock* clock);
+
+  FacetManager(const FacetManager&) = delete;
+  FacetManager& operator=(const FacetManager&) = delete;
+
   ~FacetManager();
 
   // Facet-specific implementations for methods in AffiliationService of
@@ -130,8 +134,6 @@ class FacetManager {
   // of individual prefetches can be supported even if there are two requests
   // with the same |keep_fresh_until| threshold.
   std::multiset<base::Time> keep_fresh_until_thresholds_;
-
-  DISALLOW_COPY_AND_ASSIGN(FacetManager);
 };
 
 }  // namespace password_manager

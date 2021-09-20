@@ -28,6 +28,10 @@ class SpellCheckerSessionBridge;
 class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
  public:
   SpellCheckHostImpl();
+
+  SpellCheckHostImpl(const SpellCheckHostImpl&) = delete;
+  SpellCheckHostImpl& operator=(const SpellCheckHostImpl&) = delete;
+
   ~SpellCheckHostImpl() override;
 
  protected:
@@ -67,8 +71,6 @@ class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
   // Android-specific object used to query the Android spellchecker.
   SpellCheckerSessionBridge session_bridge_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckHostImpl);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_BROWSER_SPELL_CHECK_HOST_IMPL_H_

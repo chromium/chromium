@@ -53,6 +53,12 @@ class SampledProfile;
 class ChildCallStackProfileCollector {
  public:
   ChildCallStackProfileCollector();
+
+  ChildCallStackProfileCollector(const ChildCallStackProfileCollector&) =
+      delete;
+  ChildCallStackProfileCollector& operator=(
+      const ChildCallStackProfileCollector&) = delete;
+
   ~ChildCallStackProfileCollector();
 
   // Sets the CallStackProfileCollector interface from |parent_collector|. This
@@ -114,8 +120,6 @@ class ChildCallStackProfileCollector {
   // Profiles being cached by this object, pending a parent interface to be
   // supplied.
   std::vector<ProfileState> profiles_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildCallStackProfileCollector);
 };
 
 }  // namespace metrics

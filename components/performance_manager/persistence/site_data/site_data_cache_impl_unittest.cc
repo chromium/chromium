@@ -28,13 +28,14 @@ constexpr base::TimeDelta kDelay = base::TimeDelta::FromMinutes(1);
 class MockSiteCache : public testing::NoopSiteDataStore {
  public:
   MockSiteCache() = default;
+
+  MockSiteCache(const MockSiteCache&) = delete;
+  MockSiteCache& operator=(const MockSiteCache&) = delete;
+
   ~MockSiteCache() = default;
 
   MOCK_METHOD1(RemoveSiteDataFromStore, void(const std::vector<url::Origin>&));
   MOCK_METHOD0(ClearStore, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSiteCache);
 };
 
 }  // namespace

@@ -56,6 +56,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
       DownloadSource download_source,
       std::vector<GURL> url_chain,
       bool is_background_mode);
+
+  DownloadResponseHandler(const DownloadResponseHandler&) = delete;
+  DownloadResponseHandler& operator=(const DownloadResponseHandler&) = delete;
+
   ~DownloadResponseHandler() override;
 
   // network::mojom::URLLoaderClient
@@ -113,7 +117,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
 
   // Whether the download is running in background mode.
   bool is_background_mode_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadResponseHandler);
 };
 
 }  // namespace download

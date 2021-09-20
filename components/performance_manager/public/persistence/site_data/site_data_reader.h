@@ -23,6 +23,9 @@ class SiteDataImpl;
 
 class SiteDataReader {
  public:
+  SiteDataReader(const SiteDataReader&) = delete;
+  SiteDataReader& operator=(const SiteDataReader&) = delete;
+
   ~SiteDataReader();
 
   // Accessors for the site characteristics usage.
@@ -67,8 +70,6 @@ class SiteDataReader {
 
   // Used for invalidating callbacks.
   base::WeakPtrFactory<SiteDataReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataReader);
 };
 
 }  // namespace performance_manager

@@ -37,6 +37,11 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // |bookmark_undo_service| must not be nullptr and must outlive this object.
   explicit BookmarkModelTypeProcessor(
       BookmarkUndoService* bookmark_undo_service);
+
+  BookmarkModelTypeProcessor(const BookmarkModelTypeProcessor&) = delete;
+  BookmarkModelTypeProcessor& operator=(const BookmarkModelTypeProcessor&) =
+      delete;
+
   ~BookmarkModelTypeProcessor() override;
 
   // ModelTypeProcessor implementation.
@@ -175,8 +180,6 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // WeakPtrFactory for this processor which will be sent to sync thread.
   base::WeakPtrFactory<BookmarkModelTypeProcessor> weak_ptr_factory_for_worker_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelTypeProcessor);
 };
 
 }  // namespace sync_bookmarks

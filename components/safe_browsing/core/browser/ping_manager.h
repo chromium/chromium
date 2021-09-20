@@ -28,6 +28,9 @@ namespace safe_browsing {
 
 class PingManager {
  public:
+  PingManager(const PingManager&) = delete;
+  PingManager& operator=(const PingManager&) = delete;
+
   virtual ~PingManager();
 
   // Create an instance of the safe browsing ping manager.
@@ -75,8 +78,6 @@ class PingManager {
   // Track outstanding SafeBrowsing report fetchers for clean up.
   // We add both "hit" and "detail" fetchers in this set.
   Reports safebrowsing_reports_;
-
-  DISALLOW_COPY_AND_ASSIGN(PingManager);
 };
 
 }  // namespace safe_browsing

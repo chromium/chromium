@@ -23,6 +23,11 @@ class HistoryBackendClient;
 class HistoryClientFakeBookmarks : public HistoryClient {
  public:
   HistoryClientFakeBookmarks();
+
+  HistoryClientFakeBookmarks(const HistoryClientFakeBookmarks&) = delete;
+  HistoryClientFakeBookmarks& operator=(const HistoryClientFakeBookmarks&) =
+      delete;
+
   ~HistoryClientFakeBookmarks() override;
 
   void ClearAllBookmarks();
@@ -41,8 +46,6 @@ class HistoryClientFakeBookmarks : public HistoryClient {
 
  private:
   scoped_refptr<FakeBookmarkDatabase> bookmarks_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryClientFakeBookmarks);
 };
 
 }  // namespace history

@@ -34,6 +34,12 @@ class URLRequestInterceptingJobFactory : public net::URLRequestJobFactory {
   // Does not take ownership of |job_factory| and |interceptor|.
   URLRequestInterceptingJobFactory(net::URLRequestJobFactory* job_factory,
                                    net::URLRequestInterceptor* interceptor);
+
+  URLRequestInterceptingJobFactory(const URLRequestInterceptingJobFactory&) =
+      delete;
+  URLRequestInterceptingJobFactory& operator=(
+      const URLRequestInterceptingJobFactory&) = delete;
+
   ~URLRequestInterceptingJobFactory() override;
 
   // URLRequestJobFactory implementation
@@ -44,8 +50,6 @@ class URLRequestInterceptingJobFactory : public net::URLRequestJobFactory {
  private:
   net::URLRequestJobFactory* const job_factory_;
   net::URLRequestInterceptor* const interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestInterceptingJobFactory);
 };
 
 }  // namespace cronet

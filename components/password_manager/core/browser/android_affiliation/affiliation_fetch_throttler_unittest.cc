@@ -35,6 +35,12 @@ class MockAffiliationFetchThrottlerDelegate
       : tick_clock_(tick_clock),
         emulated_return_value_(true),
         can_send_count_(0u) {}
+
+  MockAffiliationFetchThrottlerDelegate(
+      const MockAffiliationFetchThrottlerDelegate&) = delete;
+  MockAffiliationFetchThrottlerDelegate& operator=(
+      const MockAffiliationFetchThrottlerDelegate&) = delete;
+
   ~MockAffiliationFetchThrottlerDelegate() override {
     EXPECT_EQ(0u, can_send_count_);
   }
@@ -56,8 +62,6 @@ class MockAffiliationFetchThrottlerDelegate
   bool emulated_return_value_;
   size_t can_send_count_;
   base::TimeTicks last_can_send_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAffiliationFetchThrottlerDelegate);
 };
 
 }  // namespace

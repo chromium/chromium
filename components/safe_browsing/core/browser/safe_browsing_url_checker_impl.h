@@ -123,6 +123,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui);
 
+  SafeBrowsingUrlCheckerImpl(const SafeBrowsingUrlCheckerImpl&) = delete;
+  SafeBrowsingUrlCheckerImpl& operator=(const SafeBrowsingUrlCheckerImpl&) =
+      delete;
+
   ~SafeBrowsingUrlCheckerImpl() override;
 
   // mojom::SafeBrowsingUrlChecker implementation.
@@ -333,8 +337,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   WebUIDelegate* webui_delegate_ = nullptr;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUrlCheckerImpl);
 };
 
 }  // namespace safe_browsing

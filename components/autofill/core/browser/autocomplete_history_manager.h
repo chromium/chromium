@@ -34,6 +34,11 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
                                    public AutofillSubject {
  public:
   AutocompleteHistoryManager();
+
+  AutocompleteHistoryManager(const AutocompleteHistoryManager&) = delete;
+  AutocompleteHistoryManager& operator=(const AutocompleteHistoryManager&) =
+      delete;
+
   ~AutocompleteHistoryManager() override;
 
   // SingleFieldFormFiller overrides:
@@ -81,6 +86,10 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
   class UMARecorder {
    public:
     UMARecorder() = default;
+
+    UMARecorder(const UMARecorder&) = delete;
+    UMARecorder& operator=(const UMARecorder&) = delete;
+
     ~UMARecorder() = default;
 
     void OnGetAutocompleteSuggestions(
@@ -97,8 +106,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
     // The name of field that is currently measured, we don't repeatedly measure
     // the query of the same field while user is filling the field.
     std::u16string measuring_name_;
-
-    DISALLOW_COPY_AND_ASSIGN(UMARecorder);
   };
 
   // Internal data object used to keep a request's context to associate it
@@ -192,8 +199,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
   UMARecorder uma_recorder_;
 
   base::WeakPtrFactory<AutocompleteHistoryManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteHistoryManager);
 };
 
 }  // namespace autofill

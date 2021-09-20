@@ -36,6 +36,9 @@ class BookmarkSyncService : public KeyedService {
   // |bookmark_undo_service| must not be null and must outlive this object.
   explicit BookmarkSyncService(BookmarkUndoService* bookmark_undo_service);
 
+  BookmarkSyncService(const BookmarkSyncService&) = delete;
+  BookmarkSyncService& operator=(const BookmarkSyncService&) = delete;
+
   // KeyedService implemenation.
   ~BookmarkSyncService() override;
 
@@ -62,8 +65,6 @@ class BookmarkSyncService : public KeyedService {
   // BookmarkModel/HistoryService.
   std::unique_ptr<sync_bookmarks::BookmarkModelTypeProcessor>
       bookmark_model_type_processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkSyncService);
 };
 
 }  // namespace sync_bookmarks

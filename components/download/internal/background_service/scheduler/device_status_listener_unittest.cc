@@ -39,6 +39,11 @@ class MockObserver : public DeviceStatusListener::Observer {
 class TestBatteryStatusListener : public BatteryStatusListenerImpl {
  public:
   TestBatteryStatusListener() : BatteryStatusListenerImpl(base::TimeDelta()) {}
+
+  TestBatteryStatusListener(const TestBatteryStatusListener&) = delete;
+  TestBatteryStatusListener& operator=(const TestBatteryStatusListener&) =
+      delete;
+
   ~TestBatteryStatusListener() override = default;
 
   void set_battery_percentage(int battery_percentage) {
@@ -50,7 +55,6 @@ class TestBatteryStatusListener : public BatteryStatusListenerImpl {
 
  private:
   int battery_percentage_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(TestBatteryStatusListener);
 };
 
 // Test target that only loads default implementation of NetworkStatusListener.

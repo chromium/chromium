@@ -54,6 +54,10 @@ class LevelDBScopes {
                 scoped_refptr<LevelDBState> level_db,
                 ScopesLockManager* lock_manager,
                 TearDownCallback tear_down_callback);
+
+  LevelDBScopes(const LevelDBScopes&) = delete;
+  LevelDBScopes& operator=(const LevelDBScopes&) = delete;
+
   ~LevelDBScopes();
 
   // This method needs to be called before any other method on this class. If
@@ -147,7 +151,6 @@ class LevelDBScopes {
 #endif
 
   base::WeakPtrFactory<LevelDBScopes> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(LevelDBScopes);
 };
 
 }  // namespace content

@@ -30,6 +30,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
   // For testing.
   explicit OverlayProcessorMac(
       std::unique_ptr<CALayerOverlayProcessor> ca_layer_overlay_processor);
+
+  OverlayProcessorMac(const OverlayProcessorMac&) = delete;
+  OverlayProcessorMac& operator=(const OverlayProcessorMac&) = delete;
+
   ~OverlayProcessorMac() override;
 
   bool DisableSplittingQuads() const override;
@@ -84,7 +88,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
 
  private:
   bool output_surface_already_handled_;
-  DISALLOW_COPY_AND_ASSIGN(OverlayProcessorMac);
 };
 
 }  // namespace viz

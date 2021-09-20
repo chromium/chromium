@@ -24,14 +24,15 @@ namespace {
 class GuestViewManagerTest : public content::RenderViewHostTestHarness {
  public:
   GuestViewManagerTest() {}
+
+  GuestViewManagerTest(const GuestViewManagerTest&) = delete;
+  GuestViewManagerTest& operator=(const GuestViewManagerTest&) = delete;
+
   ~GuestViewManagerTest() override {}
 
   std::unique_ptr<WebContents> CreateWebContents() {
     return WebContentsTester::CreateTestWebContents(browser_context(), nullptr);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GuestViewManagerTest);
 };
 
 }  // namespace

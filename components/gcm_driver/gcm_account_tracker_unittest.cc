@@ -69,6 +69,10 @@ void VerifyAccountTokens(
 class CustomFakeGCMDriver : public FakeGCMDriver {
  public:
   CustomFakeGCMDriver();
+
+  CustomFakeGCMDriver(const CustomFakeGCMDriver&) = delete;
+  CustomFakeGCMDriver& operator=(const CustomFakeGCMDriver&) = delete;
+
   ~CustomFakeGCMDriver() override;
 
   // GCMDriver overrides:
@@ -102,8 +106,6 @@ class CustomFakeGCMDriver : public FakeGCMDriver {
   GCMConnectionObserver* removed_connection_observer_;
   net::IPEndPoint ip_endpoint_;
   base::Time last_token_fetch_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomFakeGCMDriver);
 };
 
 CustomFakeGCMDriver::CustomFakeGCMDriver()

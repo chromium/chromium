@@ -36,6 +36,11 @@ class LanguageDetectionController : public web::WebStateObserver {
  public:
   LanguageDetectionController(web::WebState* web_state,
                               PrefService* prefs);
+
+  LanguageDetectionController(const LanguageDetectionController&) = delete;
+  LanguageDetectionController& operator=(const LanguageDetectionController&) =
+      delete;
+
   ~LanguageDetectionController() override;
 
  private:
@@ -77,8 +82,6 @@ class LanguageDetectionController : public web::WebStateObserver {
   BooleanPrefMember translate_enabled_;
   std::string content_language_header_;
   base::WeakPtrFactory<LanguageDetectionController> weak_method_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageDetectionController);
 };
 
 }  // namespace translate

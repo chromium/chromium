@@ -33,6 +33,10 @@ class ComponentMetricsProvider : public MetricsProvider {
   explicit ComponentMetricsProvider(
       std::unique_ptr<ComponentMetricsProviderDelegate>
           components_info_delegate);
+
+  ComponentMetricsProvider(const ComponentMetricsProvider&) = delete;
+  ComponentMetricsProvider& operator=(const ComponentMetricsProvider&) = delete;
+
   ~ComponentMetricsProvider() override;
 
   // MetricsProvider:
@@ -41,8 +45,6 @@ class ComponentMetricsProvider : public MetricsProvider {
 
  private:
   std::unique_ptr<ComponentMetricsProviderDelegate> components_info_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentMetricsProvider);
 };
 
 }  // namespace metrics

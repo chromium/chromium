@@ -25,6 +25,12 @@ class ProfileOAuth2TokenServiceIOSDelegate
       SigninClient* client,
       std::unique_ptr<DeviceAccountsProvider> provider,
       AccountTrackerService* account_tracker_service);
+
+  ProfileOAuth2TokenServiceIOSDelegate(
+      const ProfileOAuth2TokenServiceIOSDelegate&) = delete;
+  ProfileOAuth2TokenServiceIOSDelegate& operator=(
+      const ProfileOAuth2TokenServiceIOSDelegate&) = delete;
+
   ~ProfileOAuth2TokenServiceIOSDelegate() override;
 
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
@@ -95,7 +101,5 @@ class ProfileOAuth2TokenServiceIOSDelegate
   SigninClient* client_ = nullptr;
   std::unique_ptr<DeviceAccountsProvider> provider_;
   AccountTrackerService* account_tracker_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileOAuth2TokenServiceIOSDelegate);
 };
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_IOS_H_

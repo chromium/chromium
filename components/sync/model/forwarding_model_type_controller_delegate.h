@@ -21,12 +21,6 @@ class ForwardingModelTypeControllerDelegate
   // Except for tests, |other| must not be null and must outlive this object.
   explicit ForwardingModelTypeControllerDelegate(
       ModelTypeControllerDelegate* other);
-
-  ForwardingModelTypeControllerDelegate(
-      const ForwardingModelTypeControllerDelegate&) = delete;
-  ForwardingModelTypeControllerDelegate& operator=(
-      const ForwardingModelTypeControllerDelegate&) = delete;
-
   ~ForwardingModelTypeControllerDelegate() override;
 
   // ModelTypeControllerDelegate implementation.
@@ -41,6 +35,8 @@ class ForwardingModelTypeControllerDelegate
 
  private:
   ModelTypeControllerDelegate* const other_;
+
+  DISALLOW_COPY_AND_ASSIGN(ForwardingModelTypeControllerDelegate);
 };
 
 }  // namespace syncer

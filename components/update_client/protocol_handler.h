@@ -16,15 +16,15 @@ class ProtocolSerializer;
 
 class ProtocolHandlerFactory {
  public:
+  ProtocolHandlerFactory(const ProtocolHandlerFactory&) = delete;
+  ProtocolHandlerFactory& operator=(const ProtocolHandlerFactory&) = delete;
+
   virtual ~ProtocolHandlerFactory() = default;
   virtual std::unique_ptr<ProtocolParser> CreateParser() const = 0;
   virtual std::unique_ptr<ProtocolSerializer> CreateSerializer() const = 0;
 
  protected:
   ProtocolHandlerFactory() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProtocolHandlerFactory);
 };
 
 class ProtocolHandlerFactoryJSON final : public ProtocolHandlerFactory {

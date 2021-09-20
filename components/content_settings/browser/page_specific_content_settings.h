@@ -172,6 +172,10 @@ class PageSpecificContentSettings
   class SiteDataObserver {
    public:
     explicit SiteDataObserver(content::WebContents* web_contents);
+
+    SiteDataObserver(const SiteDataObserver&) = delete;
+    SiteDataObserver& operator=(const SiteDataObserver&) = delete;
+
     virtual ~SiteDataObserver();
 
     // Called whenever site data is accessed.
@@ -185,8 +189,6 @@ class PageSpecificContentSettings
 
    private:
     content::WebContents* web_contents_;
-
-    DISALLOW_COPY_AND_ASSIGN(SiteDataObserver);
   };
 
   ~PageSpecificContentSettings() override;

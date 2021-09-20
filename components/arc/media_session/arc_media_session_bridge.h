@@ -35,6 +35,10 @@ class ArcMediaSessionBridge
 
   ArcMediaSessionBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
+
+  ArcMediaSessionBridge(const ArcMediaSessionBridge&) = delete;
+  ArcMediaSessionBridge& operator=(const ArcMediaSessionBridge&) = delete;
+
   ~ArcMediaSessionBridge() override;
 
   // ConnectionObserver<mojom::MediaSessionInstance> overrides.
@@ -45,8 +49,6 @@ class ArcMediaSessionBridge
   void SetupAudioFocus();
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
-
-  DISALLOW_COPY_AND_ASSIGN(ArcMediaSessionBridge);
 };
 
 }  // namespace arc

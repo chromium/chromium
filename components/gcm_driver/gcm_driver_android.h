@@ -29,6 +29,10 @@ class GCMDriverAndroid : public GCMDriver,
   GCMDriverAndroid(
       const base::FilePath& store_path,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+
+  GCMDriverAndroid(const GCMDriverAndroid&) = delete;
+  GCMDriverAndroid& operator=(const GCMDriverAndroid&) = delete;
+
   ~GCMDriverAndroid() override;
 
   // Methods called from Java via JNI:
@@ -105,8 +109,6 @@ class GCMDriverAndroid : public GCMDriver,
 
   // Recorder that logs GCM activities.
   GCMStatsRecorderAndroid recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverAndroid);
 };
 
 }  // namespace gcm

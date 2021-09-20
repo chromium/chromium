@@ -222,6 +222,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                    const std::string& mime_type,
                    DownloadJob::CancelRequestCallback cancel_request_callback);
 
+  DownloadItemImpl(const DownloadItemImpl&) = delete;
+  DownloadItemImpl& operator=(const DownloadItemImpl&) = delete;
+
   ~DownloadItemImpl() override;
 
   // DownloadItem
@@ -890,8 +893,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<DownloadItemImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemImpl);
 };
 
 }  // namespace download

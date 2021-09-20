@@ -18,6 +18,10 @@ namespace web_package {
 class WebBundleParserFactory : public mojom::WebBundleParserFactory {
  public:
   WebBundleParserFactory();
+
+  WebBundleParserFactory(const WebBundleParserFactory&) = delete;
+  WebBundleParserFactory& operator=(const WebBundleParserFactory&) = delete;
+
   ~WebBundleParserFactory() override;
 
   std::unique_ptr<mojom::BundleDataSource> CreateFileDataSourceForTesting(
@@ -31,8 +35,6 @@ class WebBundleParserFactory : public mojom::WebBundleParserFactory {
   void GetParserForDataSource(
       mojo::PendingReceiver<mojom::WebBundleParser> receiver,
       mojo::PendingRemote<mojom::BundleDataSource> data_source) override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleParserFactory);
 };
 
 }  // namespace web_package

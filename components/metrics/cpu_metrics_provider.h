@@ -16,13 +16,14 @@ namespace metrics {
 class CPUMetricsProvider : public MetricsProvider {
  public:
   CPUMetricsProvider();
+
+  CPUMetricsProvider(const CPUMetricsProvider&) = delete;
+  CPUMetricsProvider& operator=(const CPUMetricsProvider&) = delete;
+
   ~CPUMetricsProvider() override;
 
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CPUMetricsProvider);
 };
 
 }  // namespace metrics

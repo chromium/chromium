@@ -40,6 +40,10 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
 
   ArcDiskQuotaBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
+
+  ArcDiskQuotaBridge(const ArcDiskQuotaBridge&) = delete;
+  ArcDiskQuotaBridge& operator=(const ArcDiskQuotaBridge&) = delete;
+
   ~ArcDiskQuotaBridge() override;
 
   void SetAccountId(const AccountId& account_id);
@@ -65,8 +69,6 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   AccountId account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDiskQuotaBridge);
 };
 
 }  // namespace arc

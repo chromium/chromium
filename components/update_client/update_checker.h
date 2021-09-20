@@ -35,6 +35,9 @@ class UpdateChecker {
       std::unique_ptr<UpdateChecker> (*)(scoped_refptr<Configurator> config,
                                          PersistedData* persistent);
 
+  UpdateChecker(const UpdateChecker&) = delete;
+  UpdateChecker& operator=(const UpdateChecker&) = delete;
+
   virtual ~UpdateChecker() = default;
 
   // Initiates an update check for the components specified by their ids.
@@ -57,9 +60,6 @@ class UpdateChecker {
 
  protected:
   UpdateChecker() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateChecker);
 };
 
 }  // namespace update_client

@@ -62,6 +62,10 @@ struct TestRulesetPair {
 class TestRulesetCreator {
  public:
   TestRulesetCreator();
+
+  TestRulesetCreator(const TestRulesetCreator&) = delete;
+  TestRulesetCreator& operator=(const TestRulesetCreator&) = delete;
+
   ~TestRulesetCreator();
 
   // Creates both the indexed and unindexed versions of a testing ruleset that
@@ -112,8 +116,6 @@ class TestRulesetCreator {
 
   std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
   int next_unique_file_suffix = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRulesetCreator);
 };
 
 }  // namespace testing

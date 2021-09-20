@@ -32,6 +32,11 @@ class GeneratePageBundleRequest {
       const std::string& testing_header_value,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefetchRequestFinishedCallback callback);
+
+  GeneratePageBundleRequest(const GeneratePageBundleRequest&) = delete;
+  GeneratePageBundleRequest& operator=(const GeneratePageBundleRequest&) =
+      delete;
+
   ~GeneratePageBundleRequest();
 
   const std::vector<std::string>& requested_urls() { return requested_urls_; }
@@ -42,8 +47,6 @@ class GeneratePageBundleRequest {
   PrefetchRequestFinishedCallback callback_;
   std::vector<std::string> requested_urls_;
   std::unique_ptr<PrefetchRequestFetcher> fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratePageBundleRequest);
 };
 
 }  // namespace offline_pages

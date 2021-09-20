@@ -29,6 +29,9 @@ namespace media_router {
 
 class MediaRouterBase : public MediaRouter {
  public:
+  MediaRouterBase(const MediaRouterBase&) = delete;
+  MediaRouterBase& operator=(const MediaRouterBase&) = delete;
+
   ~MediaRouterBase() override;
 
   // Must be called before invoking any other method.
@@ -115,8 +118,6 @@ class MediaRouterBase : public MediaRouter {
 
   std::unique_ptr<InternalMediaRoutesObserver> internal_routes_observer_;
   bool initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterBase);
 };
 
 }  // namespace media_router

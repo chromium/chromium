@@ -61,6 +61,9 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseProvider {
       const base::FilePath& unique_db_dir,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
+  ProtoDatabaseProvider(const ProtoDatabaseProvider&) = delete;
+  ProtoDatabaseProvider& operator=(const ProtoDatabaseProvider&) = delete;
+
   virtual ~ProtoDatabaseProvider();
 
   // This method is thread safe.
@@ -87,8 +90,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseProvider {
   scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
 
   base::WeakPtrFactory<ProtoDatabaseProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProtoDatabaseProvider);
 };
 
 template <typename P, typename T>

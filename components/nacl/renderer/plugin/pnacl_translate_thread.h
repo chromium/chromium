@@ -30,6 +30,10 @@ class PnaclCoordinator;
 class PnaclTranslateThread {
  public:
   PnaclTranslateThread();
+
+  PnaclTranslateThread(const PnaclTranslateThread&) = delete;
+  PnaclTranslateThread& operator=(const PnaclTranslateThread&) = delete;
+
   ~PnaclTranslateThread();
 
   // Set up the state for RunCompile and RunLink. When an error is
@@ -168,9 +172,6 @@ class PnaclTranslateThread {
   // These IPC::SyncMessageFilters can be used by the child thread.
   scoped_refptr<IPC::SyncMessageFilter> compiler_channel_filter_;
   scoped_refptr<IPC::SyncMessageFilter> ld_channel_filter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PnaclTranslateThread);
 };
 
 }

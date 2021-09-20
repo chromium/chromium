@@ -24,6 +24,10 @@ class ClientHints : public KeyedService,
               network::NetworkQualityTracker* network_quality_tracker,
               HostContentSettingsMap* settings_map,
               const blink::UserAgentMetadata& user_agent_metadata);
+
+  ClientHints(const ClientHints&) = delete;
+  ClientHints& operator=(const ClientHints&) = delete;
+
   ~ClientHints() override;
 
   // content::ClientHintsControllerDelegate:
@@ -53,8 +57,6 @@ class ClientHints : public KeyedService,
   HostContentSettingsMap* settings_map_ = nullptr;
   blink::UserAgentMetadata user_agent_metadata_;
   std::vector<network::mojom::WebClientHintsType> additional_hints_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientHints);
 };
 
 }  // namespace client_hints

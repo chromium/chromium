@@ -25,6 +25,11 @@ namespace sessions {
 class SESSIONS_EXPORT ContentSerializedNavigationDriver
     : public SerializedNavigationDriver {
  public:
+  ContentSerializedNavigationDriver(const ContentSerializedNavigationDriver&) =
+      delete;
+  ContentSerializedNavigationDriver& operator=(
+      const ContentSerializedNavigationDriver&) = delete;
+
   ~ContentSerializedNavigationDriver() override;
 
   // Returns the singleton ContentSerializedNavigationDriver.  Almost all
@@ -64,8 +69,6 @@ class SESSIONS_EXPORT ContentSerializedNavigationDriver
   friend class ContentSerializedNavigationBuilderTest;
 
   ExtendedInfoHandlerMap extended_info_handler_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSerializedNavigationDriver);
 };
 
 }  // namespace sessions

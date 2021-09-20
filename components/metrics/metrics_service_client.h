@@ -36,6 +36,10 @@ class MetricsService;
 class MetricsServiceClient {
  public:
   MetricsServiceClient();
+
+  MetricsServiceClient(const MetricsServiceClient&) = delete;
+  MetricsServiceClient& operator=(const MetricsServiceClient&) = delete;
+
   virtual ~MetricsServiceClient();
 
   // Returns the MetricsService instance that this client is associated with.
@@ -180,8 +184,6 @@ class MetricsServiceClient {
 
  private:
   base::RepeatingClosure update_running_services_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceClient);
 };
 
 }  // namespace metrics

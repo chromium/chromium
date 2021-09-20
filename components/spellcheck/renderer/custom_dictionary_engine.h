@@ -16,6 +16,10 @@
 class CustomDictionaryEngine {
  public:
   CustomDictionaryEngine();
+
+  CustomDictionaryEngine(const CustomDictionaryEngine&) = delete;
+  CustomDictionaryEngine& operator=(const CustomDictionaryEngine&) = delete;
+
   ~CustomDictionaryEngine();
 
   // Initialize the custom dictionary engine.
@@ -35,8 +39,6 @@ class CustomDictionaryEngine {
  private:
   // Correctly spelled words.
   std::set<std::u16string> dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomDictionaryEngine);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_CUSTOM_DICTIONARY_ENGINE_H_

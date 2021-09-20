@@ -86,6 +86,11 @@ class LocalCardMigrationManager {
                             payments::PaymentsClient* payments_client,
                             const std::string& app_locale,
                             PersonalDataManager* personal_data_manager);
+
+  LocalCardMigrationManager(const LocalCardMigrationManager&) = delete;
+  LocalCardMigrationManager& operator=(const LocalCardMigrationManager&) =
+      delete;
+
   virtual ~LocalCardMigrationManager();
 
   // Returns true if all of the conditions for allowing local credit card
@@ -252,8 +257,6 @@ class LocalCardMigrationManager {
       local_card_migration_strike_database_;
 
   base::WeakPtrFactory<LocalCardMigrationManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationManager);
 };
 
 }  // namespace autofill

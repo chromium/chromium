@@ -17,6 +17,11 @@ class MediaRouterDialogControllerAndroid
     : public content::WebContentsUserData<MediaRouterDialogControllerAndroid>,
       public MediaRouterDialogController {
  public:
+  MediaRouterDialogControllerAndroid(
+      const MediaRouterDialogControllerAndroid&) = delete;
+  MediaRouterDialogControllerAndroid& operator=(
+      const MediaRouterDialogControllerAndroid&) = delete;
+
   ~MediaRouterDialogControllerAndroid() override;
 
   // The methods called by the Java counterpart.
@@ -61,8 +66,6 @@ class MediaRouterDialogControllerAndroid
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_controller_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterDialogControllerAndroid);
 };
 
 }  // namespace media_router

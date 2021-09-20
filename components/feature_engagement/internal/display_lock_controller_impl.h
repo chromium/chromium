@@ -21,6 +21,11 @@ class DisplayLockHandle;
 class DisplayLockControllerImpl : public DisplayLockController {
  public:
   DisplayLockControllerImpl();
+
+  DisplayLockControllerImpl(const DisplayLockControllerImpl&) = delete;
+  DisplayLockControllerImpl& operator=(const DisplayLockControllerImpl&) =
+      delete;
+
   ~DisplayLockControllerImpl() override;
 
   // DisplayLockController implementation.
@@ -40,8 +45,6 @@ class DisplayLockControllerImpl : public DisplayLockController {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<DisplayLockControllerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayLockControllerImpl);
 };
 
 }  // namespace feature_engagement

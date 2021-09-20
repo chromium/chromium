@@ -53,6 +53,12 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
         is_provisional_(is_provisional),
         is_parent_ad_subframe_(is_parent_ad_subframe),
         is_subframe_created_by_ad_script_(is_subframe_created_by_ad_script) {}
+
+  SubresourceFilterAgentUnderTest(const SubresourceFilterAgentUnderTest&) =
+      delete;
+  SubresourceFilterAgentUnderTest& operator=(
+      const SubresourceFilterAgentUnderTest&) = delete;
+
   ~SubresourceFilterAgentUnderTest() override = default;
 
   MOCK_METHOD0(GetDocumentURL, GURL());
@@ -119,8 +125,6 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
   absl::optional<blink::FrameAdEvidence> ad_evidence_;
   std::unique_ptr<blink::WebDocumentSubresourceFilter> last_injected_filter_;
   mojom::ActivationState inherited_activation_state_for_new_document_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterAgentUnderTest);
 };
 
 constexpr const char kTestFirstURL[] = "http://example.com/alpha";

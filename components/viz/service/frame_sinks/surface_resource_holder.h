@@ -24,6 +24,10 @@ class SurfaceResourceHolderClient;
 class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
  public:
   explicit SurfaceResourceHolder(SurfaceResourceHolderClient* client);
+
+  SurfaceResourceHolder(const SurfaceResourceHolder&) = delete;
+  SurfaceResourceHolder& operator=(const SurfaceResourceHolder&) = delete;
+
   ~SurfaceResourceHolder();
 
   void Reset();
@@ -46,8 +50,6 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
   using ResourceIdInfoMap =
       std::unordered_map<ResourceId, ResourceRefs, ResourceIdHasher>;
   ResourceIdInfoMap resource_id_info_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceResourceHolder);
 };
 
 }  // namespace viz

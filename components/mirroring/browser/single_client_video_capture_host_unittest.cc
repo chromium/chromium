@@ -28,6 +28,10 @@ class MockVideoCaptureDevice final
     : public content::LaunchedVideoCaptureDevice {
  public:
   MockVideoCaptureDevice() {}
+
+  MockVideoCaptureDevice(const MockVideoCaptureDevice&) = delete;
+  MockVideoCaptureDevice& operator=(const MockVideoCaptureDevice&) = delete;
+
   ~MockVideoCaptureDevice() override {}
   void GetPhotoState(
       VideoCaptureDevice::GetPhotoStateCallback callback) override {}
@@ -41,9 +45,6 @@ class MockVideoCaptureDevice final
   MOCK_METHOD0(ResumeDevice, void());
   MOCK_METHOD0(RequestRefreshFrame, void());
   MOCK_METHOD2(OnUtilizationReport, void(int, media::VideoCaptureFeedback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockVideoCaptureDevice);
 };
 
 class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
@@ -54,6 +55,9 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
 
   explicit FakeDeviceLauncher(DeviceLaunchedCallback launched_cb)
       : after_launch_cb_(std::move(launched_cb)) {}
+
+  FakeDeviceLauncher(const FakeDeviceLauncher&) = delete;
+  FakeDeviceLauncher& operator=(const FakeDeviceLauncher&) = delete;
 
   ~FakeDeviceLauncher() override {}
 
@@ -86,17 +90,17 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
 
   DeviceLaunchedCallback after_launch_cb_;
   base::WeakPtrFactory<FakeDeviceLauncher> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceLauncher);
 };
 
 class StubReadWritePermission final
     : public VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
  public:
   StubReadWritePermission() {}
-  ~StubReadWritePermission() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubReadWritePermission);
+  StubReadWritePermission(const StubReadWritePermission&) = delete;
+  StubReadWritePermission& operator=(const StubReadWritePermission&) = delete;
+
+  ~StubReadWritePermission() override {}
 };
 
 class MockVideoCaptureObserver final

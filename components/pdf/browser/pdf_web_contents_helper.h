@@ -37,6 +37,9 @@ class PDFWebContentsHelper
       public ui::TouchSelectionMenuClient,
       public content::TouchSelectionControllerClientManager::Observer {
  public:
+  PDFWebContentsHelper(const PDFWebContentsHelper&) = delete;
+  PDFWebContentsHelper& operator=(const PDFWebContentsHelper&) = delete;
+
   ~PDFWebContentsHelper() override;
 
   static void CreateForWebContentsWithClient(
@@ -109,8 +112,6 @@ class PDFWebContentsHelper
   mojo::Remote<mojom::PdfListener> remote_pdf_client_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PDFWebContentsHelper);
 };
 
 }  // namespace pdf

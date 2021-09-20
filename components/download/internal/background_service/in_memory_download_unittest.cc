@@ -88,6 +88,10 @@ class MockDelegate : public InMemoryDownload::Delegate {
 class InMemoryDownloadTest : public testing::Test {
  public:
   InMemoryDownloadTest() = default;
+
+  InMemoryDownloadTest(const InMemoryDownloadTest&) = delete;
+  InMemoryDownloadTest& operator=(const InMemoryDownloadTest&) = delete;
+
   ~InMemoryDownloadTest() override = default;
 
   void SetUp() override {
@@ -185,8 +189,6 @@ class InMemoryDownloadTest : public testing::Test {
 
   // Memory backed blob storage that can never page to disk.
   std::unique_ptr<storage::BlobStorageContext> blob_storage_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryDownloadTest);
 };
 
 TEST_F(InMemoryDownloadTest, DownloadTest) {

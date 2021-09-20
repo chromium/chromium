@@ -27,6 +27,10 @@ class URL_MATCHER_EXPORT StringPattern {
   static constexpr ID kInvalidId = -1;
 
   StringPattern(std::string pattern, ID id);
+
+  StringPattern(const StringPattern&) = delete;
+  StringPattern& operator=(const StringPattern&) = delete;
+
   ~StringPattern();
   StringPattern(StringPattern&&);
   StringPattern& operator=(StringPattern&&);
@@ -38,8 +42,6 @@ class URL_MATCHER_EXPORT StringPattern {
  private:
   std::string pattern_;
   ID id_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringPattern);
 };
 
 }  // namespace url_matcher

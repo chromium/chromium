@@ -31,6 +31,10 @@ class ContentMetricsHelper : public security_interstitials::MetricsHelper {
       history::HistoryService* history_service,
       const GURL& url,
       const security_interstitials::MetricsHelper::ReportDetails settings);
+
+  ContentMetricsHelper(const ContentMetricsHelper&) = delete;
+  ContentMetricsHelper& operator=(const ContentMetricsHelper&) = delete;
+
   ~ContentMetricsHelper() override;
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -47,8 +51,6 @@ class ContentMetricsHelper : public security_interstitials::MetricsHelper {
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   std::unique_ptr<CaptivePortalMetricsRecorder> captive_portal_recorder_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ContentMetricsHelper);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CONTENT_METRICS_HELPER_H_

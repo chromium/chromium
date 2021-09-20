@@ -17,6 +17,10 @@ namespace syncer {
 class DeviceInfoSyncClient {
  public:
   DeviceInfoSyncClient();
+
+  DeviceInfoSyncClient(const DeviceInfoSyncClient&) = delete;
+  DeviceInfoSyncClient& operator=(const DeviceInfoSyncClient&) = delete;
+
   virtual ~DeviceInfoSyncClient();
 
   virtual std::string GetSigninScopedDeviceId() const = 0;
@@ -40,9 +44,6 @@ class DeviceInfoSyncClient {
   // Returns whether a CrOS device has User Metric Analysis (UMA) enabled.
   // Returns false if method is called on non-CrOS device.
   virtual bool IsUmaEnabledOnCrOSDevice() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncClient);
 };
 
 }  // namespace syncer

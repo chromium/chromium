@@ -38,6 +38,11 @@ class InstallableAmbientBadgeInfoBarDelegate
     virtual ~Client() {}
   };
 
+  InstallableAmbientBadgeInfoBarDelegate(
+      const InstallableAmbientBadgeInfoBarDelegate&) = delete;
+  InstallableAmbientBadgeInfoBarDelegate& operator=(
+      const InstallableAmbientBadgeInfoBarDelegate&) = delete;
+
   ~InstallableAmbientBadgeInfoBarDelegate() override;
 
   // Returns a pointer to the InstallableAmbientBadgeInfoBar if it is currently
@@ -75,8 +80,6 @@ class InstallableAmbientBadgeInfoBarDelegate
   const SkBitmap primary_icon_;
   const bool is_primary_icon_maskable_;
   const GURL& start_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallableAmbientBadgeInfoBarDelegate);
 };
 
 }  // namespace webapps

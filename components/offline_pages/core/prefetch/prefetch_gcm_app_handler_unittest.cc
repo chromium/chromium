@@ -32,6 +32,10 @@ class PrefetchGCMAppHandlerTest : public testing::Test {
     prefetch_service_taco_->CreatePrefetchService();
   }
 
+  PrefetchGCMAppHandlerTest(const PrefetchGCMAppHandlerTest&) = delete;
+  PrefetchGCMAppHandlerTest& operator=(const PrefetchGCMAppHandlerTest&) =
+      delete;
+
   ~PrefetchGCMAppHandlerTest() override {
     // Ensures that the store is properly disposed off.
     prefetch_service_taco_.reset();
@@ -49,8 +53,6 @@ class PrefetchGCMAppHandlerTest : public testing::Test {
   TestPrefetchDispatcher* test_dispatcher_;
   // Owned by the taco.
   PrefetchGCMAppHandler* handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchGCMAppHandlerTest);
 };
 
 TEST_F(PrefetchGCMAppHandlerTest, TestOnMessage) {

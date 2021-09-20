@@ -90,6 +90,9 @@ class TabModalDialogManager
     kMaxValue = kDialogClosed,
   };
 
+  TabModalDialogManager(const TabModalDialogManager&) = delete;
+  TabModalDialogManager& operator=(const TabModalDialogManager&) = delete;
+
   ~TabModalDialogManager() override;
 
   void BrowserActiveStateChanged();
@@ -192,8 +195,6 @@ class TabModalDialogManager
   std::unique_ptr<TabModalDialogManagerDelegate> delegate_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TabModalDialogManager);
 };
 
 }  // namespace javascript_dialogs

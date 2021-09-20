@@ -25,6 +25,12 @@ class PaymentHandlerPermissionContext
  public:
   explicit PaymentHandlerPermissionContext(
       content::BrowserContext* browser_context);
+
+  PaymentHandlerPermissionContext(const PaymentHandlerPermissionContext&) =
+      delete;
+  PaymentHandlerPermissionContext& operator=(
+      const PaymentHandlerPermissionContext&) = delete;
+
   ~PaymentHandlerPermissionContext() override;
 
  private:
@@ -37,8 +43,6 @@ class PaymentHandlerPermissionContext
       bool user_gesture,
       permissions::BrowserPermissionCallback callback) override;
   bool IsRestrictedToSecureOrigins() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerPermissionContext);
 };
 
 }  // namespace payments

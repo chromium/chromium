@@ -130,6 +130,10 @@ bool IsDeskContainer(aura::Window* container) {
 class CustomWindowDelegate : public aura::WindowDelegate {
  public:
   explicit CustomWindowDelegate(Surface* surface) : surface_(surface) {}
+
+  CustomWindowDelegate(const CustomWindowDelegate&) = delete;
+  CustomWindowDelegate& operator=(const CustomWindowDelegate&) = delete;
+
   ~CustomWindowDelegate() override {}
 
   // Overridden from aura::WindowDelegate:
@@ -187,13 +191,15 @@ class CustomWindowDelegate : public aura::WindowDelegate {
 
  private:
   Surface* const surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomWindowDelegate);
 };
 
 class CustomWindowTargeter : public aura::WindowTargeter {
  public:
   CustomWindowTargeter() {}
+
+  CustomWindowTargeter(const CustomWindowTargeter&) = delete;
+  CustomWindowTargeter& operator=(const CustomWindowTargeter&) = delete;
+
   ~CustomWindowTargeter() override {}
 
   // Overridden from aura::WindowTargeter:
@@ -207,9 +213,6 @@ class CustomWindowTargeter : public aura::WindowTargeter {
         ConvertEventLocationToWindowCoordinates(window, event);
     return surface->HitTest(local_point);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CustomWindowTargeter);
 };
 
 const std::string& GetApplicationId(aura::Window* window) {

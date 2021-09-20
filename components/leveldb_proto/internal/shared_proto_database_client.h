@@ -73,6 +73,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
   // with a |LAST| to mark the end of list.
   static void SetObsoleteClientListForTesting(const ProtoDbType* list);
 
+  SharedProtoDatabaseClient(const SharedProtoDatabaseClient&) = delete;
+  SharedProtoDatabaseClient& operator=(const SharedProtoDatabaseClient&) =
+      delete;
+
   ~SharedProtoDatabaseClient() override;
 
   void Init(const std::string& client_uma_name,
@@ -191,8 +195,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
   scoped_refptr<SharedProtoDatabase> parent_db_;
 
   base::WeakPtrFactory<SharedProtoDatabaseClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharedProtoDatabaseClient);
 };
 
 }  // namespace leveldb_proto

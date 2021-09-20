@@ -53,6 +53,10 @@ namespace exo {
 class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
  public:
   WMHelperChromeOS();
+
+  WMHelperChromeOS(const WMHelperChromeOS&) = delete;
+  WMHelperChromeOS& operator=(const WMHelperChromeOS&) = delete;
+
   ~WMHelperChromeOS() override;
   static WMHelperChromeOS* GetInstance();
   void AddTabletModeObserver(ash::TabletModeObserver* observer);
@@ -134,8 +138,6 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
   VSyncTimingManager vsync_timing_manager_;
   bool default_scale_cancellation_ = true;
   base::WeakPtrFactory<WMHelperChromeOS> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WMHelperChromeOS);
 };
 
 // Returnsn the default device scale factor used for

@@ -39,6 +39,9 @@ class KeepAliveDelegate : public CastTransport::Delegate {
                     base::TimeDelta ping_interval,
                     base::TimeDelta liveness_timeout);
 
+  KeepAliveDelegate(const KeepAliveDelegate&) = delete;
+  KeepAliveDelegate& operator=(const KeepAliveDelegate&) = delete;
+
   ~KeepAliveDelegate() override;
 
   void SetTimersForTest(
@@ -55,8 +58,6 @@ class KeepAliveDelegate : public CastTransport::Delegate {
   std::unique_ptr<CastTransport::Delegate> inner_delegate_;
 
   KeepAliveHandler handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveDelegate);
 };
 
 }  // namespace cast_channel

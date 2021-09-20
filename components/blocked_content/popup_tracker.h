@@ -43,6 +43,10 @@ class PopupTracker : public content::WebContentsObserver,
   static PopupTracker* CreateForWebContents(content::WebContents* contents,
                                             content::WebContents* opener,
                                             WindowOpenDisposition disposition);
+
+  PopupTracker(const PopupTracker&) = delete;
+  PopupTracker& operator=(const PopupTracker&) = delete;
+
   ~PopupTracker() override;
 
   void set_is_trusted(bool is_trusted) { is_trusted_ = is_trusted; }
@@ -112,8 +116,6 @@ class PopupTracker : public content::WebContentsObserver,
   const WindowOpenDisposition window_open_disposition_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PopupTracker);
 };
 
 }  // namespace blocked_content

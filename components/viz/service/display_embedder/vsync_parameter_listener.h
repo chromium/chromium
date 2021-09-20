@@ -23,6 +23,10 @@ class VIZ_SERVICE_EXPORT VSyncParameterListener {
  public:
   explicit VSyncParameterListener(
       mojo::PendingRemote<mojom::VSyncParameterObserver> observer);
+
+  VSyncParameterListener(const VSyncParameterListener&) = delete;
+  VSyncParameterListener& operator=(const VSyncParameterListener&) = delete;
+
   ~VSyncParameterListener();
 
   void OnVSyncParametersUpdated(base::TimeTicks timebase,
@@ -40,8 +44,6 @@ class VIZ_SERVICE_EXPORT VSyncParameterListener {
 
   base::TimeDelta last_interval_;
   base::TimeDelta last_offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(VSyncParameterListener);
 };
 
 }  // namespace viz

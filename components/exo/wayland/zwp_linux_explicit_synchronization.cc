@@ -74,6 +74,11 @@ class LinuxSurfaceSynchronization : public SurfaceObserver {
     surface_->AddSurfaceObserver(this);
     surface_->SetProperty(kSurfaceSynchronizationResource, resource);
   }
+
+  LinuxSurfaceSynchronization(const LinuxSurfaceSynchronization&) = delete;
+  LinuxSurfaceSynchronization& operator=(const LinuxSurfaceSynchronization&) =
+      delete;
+
   ~LinuxSurfaceSynchronization() override {
     if (surface_) {
       surface_->RemoveSurfaceObserver(this);
@@ -93,8 +98,6 @@ class LinuxSurfaceSynchronization : public SurfaceObserver {
 
  private:
   Surface* surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinuxSurfaceSynchronization);
 };
 
 void linux_surface_synchronization_destroy(struct wl_client* client,

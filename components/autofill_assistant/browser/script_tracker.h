@@ -57,6 +57,9 @@ class ScriptTracker : public ScriptExecutor::Listener {
   ScriptTracker(ScriptExecutorDelegate* delegate,
                 ScriptTracker::Listener* listener);
 
+  ScriptTracker(const ScriptTracker&) = delete;
+  ScriptTracker& operator=(const ScriptTracker&) = delete;
+
   ~ScriptTracker() override;
 
   // Updates the set of available |scripts|. This interrupts any pending checks,
@@ -174,8 +177,6 @@ class ScriptTracker : public ScriptExecutor::Listener {
   std::string last_script_payload_;
 
   base::WeakPtrFactory<ScriptTracker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptTracker);
 };
 
 }  // namespace autofill_assistant

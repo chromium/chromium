@@ -25,6 +25,10 @@ class ChildCallStackProfileCollectorTest : public testing::Test {
     explicit Receiver(
         mojo::PendingReceiver<mojom::CallStackProfileCollector> receiver)
         : receiver_(this, std::move(receiver)) {}
+
+    Receiver(const Receiver&) = delete;
+    Receiver& operator=(const Receiver&) = delete;
+
     ~Receiver() override {}
 
     void Collect(base::TimeTicks start_timestamp,
@@ -36,8 +40,6 @@ class ChildCallStackProfileCollectorTest : public testing::Test {
 
    private:
     mojo::Receiver<mojom::CallStackProfileCollector> receiver_;
-
-    DISALLOW_COPY_AND_ASSIGN(Receiver);
   };
 
   ChildCallStackProfileCollectorTest()

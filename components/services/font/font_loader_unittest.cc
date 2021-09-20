@@ -75,6 +75,10 @@ mojo::PendingRemote<mojom::FontService> ConnectToBackgroundFontService() {
 class FontLoaderTest : public testing::Test {
  public:
   FontLoaderTest() = default;
+
+  FontLoaderTest(const FontLoaderTest&) = delete;
+  FontLoaderTest& operator=(const FontLoaderTest&) = delete;
+
   ~FontLoaderTest() override = default;
 
  protected:
@@ -83,8 +87,6 @@ class FontLoaderTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   FontLoader font_loader_{ConnectToBackgroundFontService()};
-
-  DISALLOW_COPY_AND_ASSIGN(FontLoaderTest);
 };
 
 }  // namespace

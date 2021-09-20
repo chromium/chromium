@@ -35,6 +35,9 @@ class WebDataRequestManager;
 //////////////////////////////////////////////////////////////////////////////
 class WebDataRequest {
  public:
+  WebDataRequest(const WebDataRequest&) = delete;
+  WebDataRequest& operator=(const WebDataRequest&) = delete;
+
   virtual ~WebDataRequest();
 
   // Returns the identifier for this request.
@@ -82,8 +85,6 @@ class WebDataRequest {
 
   // Identifier for this request.
   const WebDataServiceBase::Handle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDataRequest);
 };
 
 //////////////////////////////////////////////////////////////////////////////

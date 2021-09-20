@@ -65,6 +65,10 @@ class ClientControlledShellSurfaceDelegate
 class ExoTestHelper {
  public:
   ExoTestHelper();
+
+  ExoTestHelper(const ExoTestHelper&) = delete;
+  ExoTestHelper& operator=(const ExoTestHelper&) = delete;
+
   ~ExoTestHelper();
 
   // Creates a GpuMemoryBuffer instance that can be used for tests.
@@ -84,9 +88,6 @@ class ExoTestHelper {
       Surface* surface,
       ToastSurfaceManager* surface_manager,
       bool default_scale_cancellation = true);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExoTestHelper);
 };
 
 }  // namespace test

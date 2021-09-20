@@ -24,6 +24,10 @@ namespace test {
 class TestDownloadService : public BackgroundDownloadService {
  public:
   TestDownloadService();
+
+  TestDownloadService(const TestDownloadService&) = delete;
+  TestDownloadService& operator=(const TestDownloadService&) = delete;
+
   ~TestDownloadService() override;
 
   // DownloadService implementation.
@@ -78,8 +82,6 @@ class TestDownloadService : public BackgroundDownloadService {
   Client* client_;
 
   std::list<absl::optional<DownloadParams>> downloads_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadService);
 };
 
 }  // namespace test

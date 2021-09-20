@@ -458,6 +458,12 @@ namespace {
 class SecurityStateWebContentsDelegate : public content::WebContentsDelegate {
  public:
   SecurityStateWebContentsDelegate() {}
+
+  SecurityStateWebContentsDelegate(const SecurityStateWebContentsDelegate&) =
+      delete;
+  SecurityStateWebContentsDelegate& operator=(
+      const SecurityStateWebContentsDelegate&) = delete;
+
   ~SecurityStateWebContentsDelegate() override {}
 
   bool visible_security_state_changed() const {
@@ -475,7 +481,6 @@ class SecurityStateWebContentsDelegate : public content::WebContentsDelegate {
 
  private:
   bool visible_security_state_changed_ = false;
-  DISALLOW_COPY_AND_ASSIGN(SecurityStateWebContentsDelegate);
 };
 
 }  // namespace

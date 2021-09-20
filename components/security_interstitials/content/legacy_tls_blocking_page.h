@@ -30,6 +30,10 @@ class LegacyTLSBlockingPage : public SSLBlockingPageBase {
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
+
+  LegacyTLSBlockingPage(const LegacyTLSBlockingPage&) = delete;
+  LegacyTLSBlockingPage& operator=(const LegacyTLSBlockingPage&) = delete;
+
   ~LegacyTLSBlockingPage() override;
 
   // SecurityInterstitialPage method:
@@ -45,8 +49,6 @@ class LegacyTLSBlockingPage : public SSLBlockingPageBase {
   const net::SSLInfo ssl_info_;
 
   const std::unique_ptr<security_interstitials::LegacyTLSUI> legacy_tls_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyTLSBlockingPage);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_LEGACY_TLS_BLOCKING_PAGE_H_

@@ -59,6 +59,10 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
   static void DoNotResetOnTestExit();
 
   explicit TestGpuServiceHolder(const gpu::GpuPreferences& preferences);
+
+  TestGpuServiceHolder(const TestGpuServiceHolder&) = delete;
+  TestGpuServiceHolder& operator=(const TestGpuServiceHolder&) = delete;
+
   ~TestGpuServiceHolder() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_task_runner() {
@@ -112,8 +116,6 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TestGpuServiceHolder);
 };
 
 }  // namespace viz

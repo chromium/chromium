@@ -58,6 +58,10 @@ class ServiceWorkerPaymentApp : public PaymentApp {
       const std::string& enabled_method,
       bool is_incognito,
       const base::RepeatingClosure& show_processing_spinner);
+
+  ServiceWorkerPaymentApp(const ServiceWorkerPaymentApp&) = delete;
+  ServiceWorkerPaymentApp& operator=(const ServiceWorkerPaymentApp&) = delete;
+
   ~ServiceWorkerPaymentApp() override;
 
   // The callback for ValidateCanMakePayment.
@@ -163,8 +167,6 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<ServiceWorkerPaymentApp> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPaymentApp);
 };
 
 }  // namespace payments

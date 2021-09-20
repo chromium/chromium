@@ -49,6 +49,10 @@ class FormDataImporter {
                    payments::PaymentsClient* payments_client,
                    PersonalDataManager* personal_data_manager,
                    const std::string& app_locale);
+
+  FormDataImporter(const FormDataImporter&) = delete;
+  FormDataImporter& operator=(const FormDataImporter&) = delete;
+
   ~FormDataImporter();
 
   // Imports the form data, submitted by the user, into
@@ -281,8 +285,6 @@ class FormDataImporter {
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest, ImportUpiId);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest, ImportUpiIdDisabled);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest, ImportUpiIdIgnoreNonUpiId);
-
-  DISALLOW_COPY_AND_ASSIGN(FormDataImporter);
 };
 
 }  // namespace autofill

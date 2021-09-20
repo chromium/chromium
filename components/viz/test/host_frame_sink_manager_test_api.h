@@ -21,6 +21,11 @@ class HostFrameSinkManagerTestApi {
  public:
   explicit HostFrameSinkManagerTestApi(
       HostFrameSinkManager* host_frame_sink_manager);
+
+  HostFrameSinkManagerTestApi(const HostFrameSinkManagerTestApi&) = delete;
+  HostFrameSinkManagerTestApi& operator=(const HostFrameSinkManagerTestApi&) =
+      delete;
+
   ~HostFrameSinkManagerTestApi() = default;
 
   // Clears out the currently set hit test queries, and overrides it with |map|.
@@ -31,8 +36,6 @@ class HostFrameSinkManagerTestApi {
  private:
   // Not owned.
   HostFrameSinkManager* host_frame_sink_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostFrameSinkManagerTestApi);
 };
 
 }  // namespace viz

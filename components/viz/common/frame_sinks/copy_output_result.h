@@ -72,6 +72,9 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
                    const gfx::Rect& rect,
                    bool needs_lock_for_bitmap);
 
+  CopyOutputResult(const CopyOutputResult&) = delete;
+  CopyOutputResult& operator=(const CopyOutputResult&) = delete;
+
   virtual ~CopyOutputResult();
 
   // Returns false if the request succeeded and the data accessors will return
@@ -260,8 +263,6 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
 
   // Cached bitmap returned by the default implementation of AsSkBitmap().
   mutable SkBitmap cached_bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyOutputResult);
 };
 
 // Subclass of CopyOutputResult that provides a RGBA result from an
@@ -273,12 +274,13 @@ class VIZ_COMMON_EXPORT CopyOutputSkBitmapResult : public CopyOutputResult {
                            const gfx::Rect& rect,
                            SkBitmap bitmap);
   CopyOutputSkBitmapResult(const gfx::Rect& rect, SkBitmap bitmap);
+
+  CopyOutputSkBitmapResult(const CopyOutputSkBitmapResult&) = delete;
+  CopyOutputSkBitmapResult& operator=(const CopyOutputSkBitmapResult&) = delete;
+
   ~CopyOutputSkBitmapResult() override;
 
   const SkBitmap& AsSkBitmap() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CopyOutputSkBitmapResult);
 };
 
 // Subclass of CopyOutputResult that holds references to textures (via
@@ -293,6 +295,10 @@ class VIZ_COMMON_EXPORT CopyOutputTextureResult : public CopyOutputResult {
   CopyOutputTextureResult(const gfx::Rect& rect,
                           TextureResult texture_result,
                           ReleaseCallbacks release_callbacks);
+
+  CopyOutputTextureResult(const CopyOutputTextureResult&) = delete;
+  CopyOutputTextureResult& operator=(const CopyOutputTextureResult&) = delete;
+
   ~CopyOutputTextureResult() override;
 
   const TextureResult* GetTextureResult() const override;
@@ -301,8 +307,6 @@ class VIZ_COMMON_EXPORT CopyOutputTextureResult : public CopyOutputResult {
  private:
   TextureResult texture_result_;
   ReleaseCallbacks release_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyOutputTextureResult);
 };
 
 // Scoped class for accessing SkBitmap in CopyOutputRequest.

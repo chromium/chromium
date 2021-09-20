@@ -101,6 +101,10 @@ class VisitedLinkWriter : public VisitedLinkCommon {
                     bool suppress_rebuild,
                     const base::FilePath& filename,
                     int32_t default_table_size);
+
+  VisitedLinkWriter(const VisitedLinkWriter&) = delete;
+  VisitedLinkWriter& operator=(const VisitedLinkWriter&) = delete;
+
   ~VisitedLinkWriter() override;
 
   // Must be called immediately after object creation. Nothing else will work
@@ -479,8 +483,6 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   bool suppress_rebuild_ = false;
 
   base::WeakPtrFactory<VisitedLinkWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VisitedLinkWriter);
 };
 
 // NOTE: These methods are defined inline here, so we can share the compilation

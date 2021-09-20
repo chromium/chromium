@@ -35,6 +35,10 @@ class ImageDataFetcher {
   // thread is required.
   explicit ImageDataFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  ImageDataFetcher(const ImageDataFetcher&) = delete;
+  ImageDataFetcher& operator=(const ImageDataFetcher&) = delete;
+
   ~ImageDataFetcher();
 
   // Sets an upper limit for image downloads.
@@ -102,8 +106,6 @@ class ImageDataFetcher {
   absl::optional<int64_t> max_download_bytes_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDataFetcher);
 };
 
 }  // namespace image_fetcher

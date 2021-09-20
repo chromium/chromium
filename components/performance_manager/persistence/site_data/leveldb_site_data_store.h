@@ -30,6 +30,9 @@ class LevelDBSiteDataStore : public SiteDataStore {
  public:
   explicit LevelDBSiteDataStore(const base::FilePath& db_path);
 
+  LevelDBSiteDataStore(const LevelDBSiteDataStore&) = delete;
+  LevelDBSiteDataStore& operator=(const LevelDBSiteDataStore&) = delete;
+
   ~LevelDBSiteDataStore() override;
 
   // SiteDataStore:
@@ -72,8 +75,6 @@ class LevelDBSiteDataStore : public SiteDataStore {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LevelDBSiteDataStore);
 };
 
 }  // namespace performance_manager

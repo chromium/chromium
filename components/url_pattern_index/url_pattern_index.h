@@ -94,6 +94,10 @@ constexpr int kUrlPatternIndexFormatVersion = 11;
 class UrlPatternIndexBuilder {
  public:
   explicit UrlPatternIndexBuilder(flatbuffers::FlatBufferBuilder* flat_builder);
+
+  UrlPatternIndexBuilder(const UrlPatternIndexBuilder&) = delete;
+  UrlPatternIndexBuilder& operator=(const UrlPatternIndexBuilder&) = delete;
+
   ~UrlPatternIndexBuilder();
 
   // Adds a UrlRule to the index. The caller should have already persisted the
@@ -126,8 +130,6 @@ class UrlPatternIndexBuilder {
 
   // Must outlive this instance.
   flatbuffers::FlatBufferBuilder* flat_builder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlPatternIndexBuilder);
 };
 
 // Encapsulates a read-only index built over the URL patterns of a set of URL
@@ -154,6 +156,10 @@ class UrlPatternIndexMatcher {
   // Creates an instance to access the given |flat_index|. If |flat_index| is
   // nullptr, then all requests return no match.
   explicit UrlPatternIndexMatcher(const flat::UrlPatternIndex* flat_index);
+
+  UrlPatternIndexMatcher(const UrlPatternIndexMatcher&) = delete;
+  UrlPatternIndexMatcher& operator=(const UrlPatternIndexMatcher&) = delete;
+
   ~UrlPatternIndexMatcher();
   UrlPatternIndexMatcher(UrlPatternIndexMatcher&&);
   UrlPatternIndexMatcher& operator=(UrlPatternIndexMatcher&&);
@@ -240,8 +246,6 @@ class UrlPatternIndexMatcher {
 
   // The number of rules in this index. Mutable since this is lazily computed.
   mutable absl::optional<size_t> rules_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlPatternIndexMatcher);
 };
 
 // Returns whether the |origin| matches the domain list of the |rule|. A match

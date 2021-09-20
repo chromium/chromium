@@ -227,6 +227,10 @@ class CastCRLImpl : public CastCRL {
  public:
   CastCRLImpl(const TbsCrl& tbs_crl,
               const net::der::GeneralizedTime& overall_not_after);
+
+  CastCRLImpl(const CastCRLImpl&) = delete;
+  CastCRLImpl& operator=(const CastCRLImpl&) = delete;
+
   ~CastCRLImpl() override;
 
   bool CheckRevocation(const net::ParsedCertificateList& trusted_chain,
@@ -250,7 +254,6 @@ class CastCRLImpl : public CastCRL {
   // The value is a list of revoked serial number ranges.
   std::unordered_map<std::string, std::vector<SerialNumberRange>>
       revoked_serial_numbers_;
-  DISALLOW_COPY_AND_ASSIGN(CastCRLImpl);
 };
 
 CastCRLImpl::CastCRLImpl(const TbsCrl& tbs_crl,

@@ -37,9 +37,6 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
     }
   }
 
-  ControllerDelegate(const ControllerDelegate&) = delete;
-  ControllerDelegate& operator=(const ControllerDelegate&) = delete;
-
   ~ControllerDelegate() override {}
 
   void OnSyncStarting(const DataTypeActivationRequest& request,
@@ -74,6 +71,8 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
   const ModelType type_;
   const base::RepeatingClosure dump_stack_;
   std::unique_ptr<ModelTypeSyncBridge> bridge_;
+
+  DISALLOW_COPY_AND_ASSIGN(ControllerDelegate);
 };
 
 }  // namespace

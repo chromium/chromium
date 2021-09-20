@@ -27,6 +27,10 @@ class OpenTabsUIDelegate;
 class SessionSyncService : public KeyedService {
  public:
   SessionSyncService();
+
+  SessionSyncService(const SessionSyncService&) = delete;
+  SessionSyncService& operator=(const SessionSyncService&) = delete;
+
   ~SessionSyncService() override;
 
   virtual syncer::GlobalIdMapper* GetGlobalIdMapper() const = 0;
@@ -46,9 +50,6 @@ class SessionSyncService : public KeyedService {
   // GetOpenTabsUIDelegate() returns null or not.
   virtual void ProxyTabsStateChanged(
       syncer::DataTypeController::State state) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionSyncService);
 };
 
 }  // namespace sync_sessions

@@ -30,6 +30,11 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
   };
 
   MockAffiliatedMatchHelper();
+
+  MockAffiliatedMatchHelper(const MockAffiliatedMatchHelper&) = delete;
+  MockAffiliatedMatchHelper& operator=(const MockAffiliatedMatchHelper&) =
+      delete;
+
   ~MockAffiliatedMatchHelper() override;
 
   // Expects GetAffiliatedAndroidAndWebRealms() to be called with the
@@ -58,8 +63,6 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
       std::vector<std::unique_ptr<PasswordForm>> forms,
       AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
       PasswordFormsCallback result_callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAffiliatedMatchHelper);
 };
 
 }  // namespace password_manager

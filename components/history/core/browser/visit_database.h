@@ -28,6 +28,10 @@ class VisitDatabase {
   // Must call InitVisitTable() before using to make sure the database is
   // initialized.
   VisitDatabase();
+
+  VisitDatabase(const VisitDatabase&) = delete;
+  VisitDatabase& operator=(const VisitDatabase&) = delete;
+
   virtual ~VisitDatabase();
 
   // Deletes the visit table. Used for rapidly clearing all visits. In this
@@ -276,9 +280,6 @@ class VisitDatabase {
   // A subprocedure in the process of migration to version 40.
   bool GetAllVisitedURLRowidsForMigrationToVersion40(
       std::vector<URLID>* visited_url_rowids_sorted);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VisitDatabase);
 };
 
 // Columns, in order, of the visit table.

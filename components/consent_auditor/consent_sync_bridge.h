@@ -22,6 +22,10 @@ namespace consent_auditor {
 class ConsentSyncBridge {
  public:
   ConsentSyncBridge() = default;
+
+  ConsentSyncBridge(const ConsentSyncBridge&) = delete;
+  ConsentSyncBridge& operator=(const ConsentSyncBridge&) = delete;
+
   virtual ~ConsentSyncBridge() = default;
 
   virtual void RecordConsent(
@@ -30,9 +34,6 @@ class ConsentSyncBridge {
   // Returns the delegate for the controller, i.e. sync integration point.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConsentSyncBridge);
 };
 
 }  // namespace consent_auditor

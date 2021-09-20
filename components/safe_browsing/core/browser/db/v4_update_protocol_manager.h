@@ -50,6 +50,9 @@ using ExtendedReportingLevelCallback =
 
 class V4UpdateProtocolManager {
  public:
+  V4UpdateProtocolManager(const V4UpdateProtocolManager&) = delete;
+  V4UpdateProtocolManager& operator=(const V4UpdateProtocolManager&) = delete;
+
   ~V4UpdateProtocolManager();
 
   // Makes the passed |factory| the factory used to instantiate
@@ -207,23 +210,24 @@ class V4UpdateProtocolManager {
   ExtendedReportingLevelCallback extended_reporting_level_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(V4UpdateProtocolManager);
 };
 
 // Interface of a factory to create V4UpdateProtocolManager.  Useful for tests.
 class V4UpdateProtocolManagerFactory {
  public:
   V4UpdateProtocolManagerFactory() {}
+
+  V4UpdateProtocolManagerFactory(const V4UpdateProtocolManagerFactory&) =
+      delete;
+  V4UpdateProtocolManagerFactory& operator=(
+      const V4UpdateProtocolManagerFactory&) = delete;
+
   virtual ~V4UpdateProtocolManagerFactory() {}
   virtual std::unique_ptr<V4UpdateProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config,
       V4UpdateCallback update_callback,
       ExtendedReportingLevelCallback extended_reporting_level_callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(V4UpdateProtocolManagerFactory);
 };
 
 }  // namespace safe_browsing

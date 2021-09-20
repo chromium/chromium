@@ -23,6 +23,12 @@ class CardUnmaskPromptView;
 class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
  public:
   explicit CardUnmaskPromptControllerImpl(PrefService* pref_service);
+
+  CardUnmaskPromptControllerImpl(const CardUnmaskPromptControllerImpl&) =
+      delete;
+  CardUnmaskPromptControllerImpl& operator=(
+      const CardUnmaskPromptControllerImpl&) = delete;
+
   virtual ~CardUnmaskPromptControllerImpl();
 
   // This should be OnceCallback<unique_ptr<CardUnmaskPromptView>> but there are
@@ -95,8 +101,6 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
 
   base::WeakPtrFactory<CardUnmaskPromptControllerImpl> weak_pointer_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptControllerImpl);
 };
 
 }  // namespace autofill

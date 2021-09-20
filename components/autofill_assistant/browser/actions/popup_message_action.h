@@ -19,13 +19,15 @@ class PopupMessageAction : public Action {
  public:
   explicit PopupMessageAction(ActionDelegate* delegate,
                               const ActionProto& proto);
+
+  PopupMessageAction(const PopupMessageAction&) = delete;
+  PopupMessageAction& operator=(const PopupMessageAction&) = delete;
+
   ~PopupMessageAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupMessageAction);
 };
 
 }  // namespace autofill_assistant

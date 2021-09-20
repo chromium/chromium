@@ -60,6 +60,10 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
       std::unique_ptr<download::TaskManager> task_manager,
       std::unique_ptr<Config> config,
       base::Clock* clock);
+
+  AutoResumptionHandler(const AutoResumptionHandler&) = delete;
+  AutoResumptionHandler& operator=(const AutoResumptionHandler&) = delete;
+
   ~AutoResumptionHandler() override;
 
   void SetResumableDownloads(
@@ -121,8 +125,6 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   bool recompute_task_params_scheduled_ = false;
 
   base::WeakPtrFactory<AutoResumptionHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoResumptionHandler);
 };
 
 }  // namespace download

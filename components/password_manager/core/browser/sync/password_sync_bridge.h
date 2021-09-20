@@ -36,6 +36,10 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       PasswordStoreSync* password_store_sync,
       const base::RepeatingClosure& sync_enabled_or_disabled_cb);
+
+  PasswordSyncBridge(const PasswordSyncBridge&) = delete;
+  PasswordSyncBridge& operator=(const PasswordSyncBridge&) = delete;
+
   ~PasswordSyncBridge() override;
 
   // Notifies the bridge of changes to the password database. Callers are
@@ -84,8 +88,6 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   bool is_processing_remote_sync_changes_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordSyncBridge);
 };
 
 }  // namespace password_manager

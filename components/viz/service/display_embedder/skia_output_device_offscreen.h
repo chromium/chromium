@@ -23,6 +23,11 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
       bool has_alpha,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceOffscreen(const SkiaOutputDeviceOffscreen&) = delete;
+  SkiaOutputDeviceOffscreen& operator=(const SkiaOutputDeviceOffscreen&) =
+      delete;
+
   ~SkiaOutputDeviceOffscreen() override;
 
   // SkiaOutputDevice implementation:
@@ -55,8 +60,6 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
 
  private:
   uint64_t backbuffer_estimated_size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputDeviceOffscreen);
 };
 
 }  // namespace viz

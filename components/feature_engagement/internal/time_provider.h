@@ -14,6 +14,9 @@ namespace feature_engagement {
 // A TimeProvider provides functionality related to time.
 class TimeProvider {
  public:
+  TimeProvider(const TimeProvider&) = delete;
+  TimeProvider& operator=(const TimeProvider&) = delete;
+
   virtual ~TimeProvider() = default;
 
   // Returns the number of days since epoch (1970-01-01) in the local timezone.
@@ -21,9 +24,6 @@ class TimeProvider {
 
  protected:
   TimeProvider() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TimeProvider);
 };
 
 }  // namespace feature_engagement

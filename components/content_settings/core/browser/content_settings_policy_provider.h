@@ -26,6 +26,10 @@ namespace content_settings {
 class PolicyProvider : public ObservableProvider {
  public:
   explicit PolicyProvider(PrefService* prefs);
+
+  PolicyProvider(const PolicyProvider&) = delete;
+  PolicyProvider& operator=(const PolicyProvider&) = delete;
+
   ~PolicyProvider() override;
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -77,8 +81,6 @@ class PolicyProvider : public ObservableProvider {
   // Used around accesses to the |value_map_| object to guarantee
   // thread safety.
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyProvider);
 };
 
 }  // namespace content_settings

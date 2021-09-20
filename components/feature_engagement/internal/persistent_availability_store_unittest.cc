@@ -51,6 +51,11 @@ class PersistentAvailabilityStoreTest : public testing::Test {
         &PersistentAvailabilityStoreTest::LoadCallback, base::Unretained(this));
   }
 
+  PersistentAvailabilityStoreTest(const PersistentAvailabilityStoreTest&) =
+      delete;
+  PersistentAvailabilityStoreTest& operator=(
+      const PersistentAvailabilityStoreTest&) = delete;
+
   ~PersistentAvailabilityStoreTest() override = default;
 
   // Creates a DB and stores off a pointer to it as a member.
@@ -87,9 +92,6 @@ class PersistentAvailabilityStoreTest : public testing::Test {
 
   // Constant test data.
   base::FilePath storage_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PersistentAvailabilityStoreTest);
 };
 
 }  // namespace

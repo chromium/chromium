@@ -13,13 +13,15 @@ namespace autofill_assistant {
 class NavigateAction : public Action {
  public:
   explicit NavigateAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  NavigateAction(const NavigateAction&) = delete;
+  NavigateAction& operator=(const NavigateAction&) = delete;
+
   ~NavigateAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigateAction);
 };
 
 }  // namespace autofill_assistant

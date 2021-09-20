@@ -30,6 +30,9 @@ class GamingSeat : public aura::client::FocusChangeObserver,
   // This class will monitor gamepad connection changes and manage gamepads.
   GamingSeat(GamingSeatDelegate* gaming_seat_delegate);
 
+  GamingSeat(const GamingSeat&) = delete;
+  GamingSeat& operator=(const GamingSeat&) = delete;
+
   ~GamingSeat() override;
 
   // Overridden from ui::aura::client::FocusChangeObserver:
@@ -50,8 +53,6 @@ class GamingSeat : public aura::client::FocusChangeObserver,
   // The flag if a valid target for gaming seat is focused. In other words, if
   // it's true, this class is observing gamepad events.
   bool focused_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GamingSeat);
 };
 
 }  // namespace exo

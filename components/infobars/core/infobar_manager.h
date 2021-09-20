@@ -38,6 +38,10 @@ class InfoBarManager {
   };
 
   InfoBarManager();
+
+  InfoBarManager(const InfoBarManager&) = delete;
+  InfoBarManager& operator=(const InfoBarManager&) = delete;
+
   virtual ~InfoBarManager();
 
   // Must be called before destruction.
@@ -124,8 +128,6 @@ class InfoBarManager {
   bool animations_enabled_ = true;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarManager);
 };
 
 }  // namespace infobars

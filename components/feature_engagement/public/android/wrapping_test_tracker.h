@@ -18,6 +18,10 @@ namespace feature_engagement {
 class WrappingTestTracker : public Tracker {
  public:
   explicit WrappingTestTracker(const base::android::JavaRef<jobject>& jtracker);
+
+  WrappingTestTracker(const WrappingTestTracker&) = delete;
+  WrappingTestTracker& operator=(const WrappingTestTracker&) = delete;
+
   ~WrappingTestTracker() override;
 
   // TrackerImpl:
@@ -39,8 +43,6 @@ class WrappingTestTracker : public Tracker {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappingTestTracker);
 };
 
 }  // namespace feature_engagement

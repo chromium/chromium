@@ -25,6 +25,10 @@ namespace media_router {
 class MediaRouterAndroid : public MediaRouterBase {
  public:
   MediaRouterAndroid();
+
+  MediaRouterAndroid(const MediaRouterAndroid&) = delete;
+  MediaRouterAndroid& operator=(const MediaRouterAndroid&) = delete;
+
   ~MediaRouterAndroid() override;
 
   const MediaRoute* FindRouteBySource(const MediaSource::Id& source_id) const;
@@ -101,6 +105,11 @@ class MediaRouterAndroid : public MediaRouterBase {
 
     PresentationConnectionProxy(MediaRouterAndroid* media_router_android,
                                 const MediaRoute::Id& route_id);
+
+    PresentationConnectionProxy(const PresentationConnectionProxy&) = delete;
+    PresentationConnectionProxy& operator=(const PresentationConnectionProxy&) =
+        delete;
+
     ~PresentationConnectionProxy() override;
 
     // Initializes the connection binding and interface request and returns that
@@ -130,8 +139,6 @@ class MediaRouterAndroid : public MediaRouterBase {
     // |media_router_android_| owns |this|, so it will outlive |this|.
     MediaRouterAndroid* media_router_android_;
     MediaRoute::Id route_id_;
-
-    DISALLOW_COPY_AND_ASSIGN(PresentationConnectionProxy);
   };
 
   // Removes the route with the given id from |active_routes_| and updates the
@@ -189,8 +196,6 @@ class MediaRouterAndroid : public MediaRouterBase {
   std::unordered_map<MediaRoute::Id,
                      std::vector<std::unique_ptr<PresentationConnectionProxy>>>
       presentation_connections_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterAndroid);
 };
 
 }  // namespace media_router

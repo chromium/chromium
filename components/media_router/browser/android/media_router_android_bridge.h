@@ -25,6 +25,10 @@ class MediaRouterAndroid;
 class MediaRouterAndroidBridge {
  public:
   explicit MediaRouterAndroidBridge(MediaRouterAndroid* router);
+
+  MediaRouterAndroidBridge(const MediaRouterAndroidBridge&) = delete;
+  MediaRouterAndroidBridge& operator=(const MediaRouterAndroidBridge&) = delete;
+
   virtual ~MediaRouterAndroidBridge();
 
   // Implement the corresponding calls for the MediaRouterAndroid class.
@@ -86,8 +90,6 @@ class MediaRouterAndroidBridge {
  private:
   MediaRouterAndroid* native_media_router_;
   base::android::ScopedJavaGlobalRef<jobject> java_media_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterAndroidBridge);
 };
 
 }  // namespace media_router

@@ -33,6 +33,10 @@ class AddressNormalizerImpl : public AddressNormalizer {
   AddressNormalizerImpl(std::unique_ptr<::i18n::addressinput::Source> source,
                         std::unique_ptr<::i18n::addressinput::Storage> storage,
                         const std::string& app_locale);
+
+  AddressNormalizerImpl(const AddressNormalizerImpl&) = delete;
+  AddressNormalizerImpl& operator=(const AddressNormalizerImpl&) = delete;
+
   ~AddressNormalizerImpl() override;
 
   // AddressNormalizer implementation.
@@ -71,8 +75,6 @@ class AddressNormalizerImpl : public AddressNormalizer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AddressNormalizerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AddressNormalizerImpl);
 };
 
 }  // namespace autofill

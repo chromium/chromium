@@ -21,6 +21,10 @@ namespace rlz {
 class RLZTrackerDelegate {
  public:
   RLZTrackerDelegate() {}
+
+  RLZTrackerDelegate(const RLZTrackerDelegate&) = delete;
+  RLZTrackerDelegate& operator=(const RLZTrackerDelegate&) = delete;
+
   virtual ~RLZTrackerDelegate() {}
 
   // Invoked during RLZTracker cleanup, to request the cleanup of the delegate.
@@ -71,9 +75,6 @@ class RLZTrackerDelegate {
   // Returns true if the existing access point RLZ strings in the data file
   // should be updated.
   virtual bool ShouldUpdateExistingAccessPointRlz() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RLZTrackerDelegate);
 };
 
 }  // namespace rlz

@@ -118,9 +118,6 @@ class LocalChangeProcessor : public SyncChangeProcessor {
     DCHECK(other);
   }
 
-  LocalChangeProcessor(const LocalChangeProcessor&) = delete;
-  LocalChangeProcessor& operator=(const LocalChangeProcessor&) = delete;
-
   ~LocalChangeProcessor() override {}
 
   absl::optional<ModelError> ProcessSyncChanges(
@@ -205,15 +202,13 @@ class LocalChangeProcessor : public SyncChangeProcessor {
   SyncableServiceBasedBridge::InMemoryStore* const in_memory_store_;
   ModelTypeChangeProcessor* const other_;
   SEQUENCE_CHECKER(sequence_checker_);
+
+  DISALLOW_COPY_AND_ASSIGN(LocalChangeProcessor);
 };
 
 class SyncErrorFactoryImpl : public SyncErrorFactory {
  public:
   explicit SyncErrorFactoryImpl(ModelType type) : type_(type) {}
-
-  SyncErrorFactoryImpl(const SyncErrorFactoryImpl&) = delete;
-  SyncErrorFactoryImpl& operator=(const SyncErrorFactoryImpl&) = delete;
-
   ~SyncErrorFactoryImpl() override = default;
 
   SyncError CreateAndUploadError(const base::Location& location,
@@ -224,6 +219,8 @@ class SyncErrorFactoryImpl : public SyncErrorFactory {
 
  private:
   const ModelType type_;
+
+  DISALLOW_COPY_AND_ASSIGN(SyncErrorFactoryImpl);
 };
 
 }  // namespace

@@ -95,6 +95,10 @@ class KeywordMap {
 
   // Initializes the map with default keywords.
   KeywordMap();
+
+  KeywordMap(const KeywordMap&) = delete;
+  KeywordMap& operator=(const KeywordMap&) = delete;
+
   ~KeywordMap();
 
   // Returns detailed information associated with the provided |name| option.
@@ -106,8 +110,6 @@ class KeywordMap {
   void AddOption(base::StringPiece name, const OptionDetails& details);
 
   std::map<std::string, OptionDetails> options_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeywordMap);
 };
 
 KeywordMap::KeywordMap() {

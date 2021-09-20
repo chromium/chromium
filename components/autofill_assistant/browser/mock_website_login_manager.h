@@ -16,6 +16,10 @@ namespace autofill_assistant {
 class MockWebsiteLoginManager : public WebsiteLoginManager {
  public:
   MockWebsiteLoginManager();
+
+  MockWebsiteLoginManager(const MockWebsiteLoginManager&) = delete;
+  MockWebsiteLoginManager& operator=(const MockWebsiteLoginManager&) = delete;
+
   ~MockWebsiteLoginManager() override;
 
   MOCK_METHOD(void,
@@ -66,8 +70,6 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
   MOCK_METHOD(bool, ReadyToCommitSubmittedPassword, (), (override));
 
   MOCK_METHOD(bool, SaveSubmittedPassword, (), (override));
-
-  DISALLOW_COPY_AND_ASSIGN(MockWebsiteLoginManager);
 };
 
 }  // namespace autofill_assistant

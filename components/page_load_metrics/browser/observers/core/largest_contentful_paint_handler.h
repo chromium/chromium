@@ -88,6 +88,11 @@ class LargestContentfulPaintHandler {
   using FrameTreeNodeId = int;
   static void SetTestMode(bool enabled);
   LargestContentfulPaintHandler();
+
+  LargestContentfulPaintHandler(const LargestContentfulPaintHandler&) = delete;
+  LargestContentfulPaintHandler& operator=(
+      const LargestContentfulPaintHandler&) = delete;
+
   ~LargestContentfulPaintHandler();
 
   // Returns true if the out parameters are assigned values.
@@ -192,7 +197,6 @@ class LargestContentfulPaintHandler {
   // Navigation start offsets for the most recently committed document in each
   // frame.
   std::map<FrameTreeNodeId, base::TimeDelta> subframe_navigation_start_offset_;
-  DISALLOW_COPY_AND_ASSIGN(LargestContentfulPaintHandler);
 };
 
 }  // namespace page_load_metrics

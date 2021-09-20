@@ -101,6 +101,10 @@ class OptimizationGuideStore {
   explicit OptimizationGuideStore(
       std::unique_ptr<StoreEntryProtoDatabase> database,
       scoped_refptr<base::SequencedTaskRunner> store_task_runner);
+
+  OptimizationGuideStore(const OptimizationGuideStore&) = delete;
+  OptimizationGuideStore& operator=(const OptimizationGuideStore&) = delete;
+
   virtual ~OptimizationGuideStore();
 
   // Initializes the store. If |purge_existing_data| is set to true,
@@ -517,8 +521,6 @@ class OptimizationGuideStore {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OptimizationGuideStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationGuideStore);
 };
 
 }  // namespace optimization_guide

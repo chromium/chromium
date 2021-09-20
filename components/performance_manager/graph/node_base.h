@@ -40,6 +40,10 @@ class NodeBase {
   // TODO(siggi): Don't store the node type, expose it on a virtual function
   //    instead.
   explicit NodeBase(NodeTypeEnum type);
+
+  NodeBase(const NodeBase&) = delete;
+  NodeBase& operator=(const NodeBase&) = delete;
+
   virtual ~NodeBase();
 
   // May be called on any sequence.
@@ -140,9 +144,6 @@ class NodeBase {
   GraphImpl* graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NodeBase);
 };
 
 // Helper for implementing the Node parent of a PublicNodeClass.

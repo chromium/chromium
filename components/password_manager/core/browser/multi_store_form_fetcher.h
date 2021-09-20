@@ -19,6 +19,10 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
   MultiStoreFormFetcher(PasswordFormDigest form_digest,
                         const PasswordManagerClient* client,
                         bool should_migrate_http_passwords);
+
+  MultiStoreFormFetcher(const MultiStoreFormFetcher&) = delete;
+  MultiStoreFormFetcher& operator=(const MultiStoreFormFetcher&) = delete;
+
   ~MultiStoreFormFetcher() override;
 
   // FormFetcher overrides.
@@ -59,8 +63,6 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
   base::flat_map<PasswordStoreInterface*,
                  std::unique_ptr<HttpPasswordStoreMigrator>>
       http_migrators_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiStoreFormFetcher);
 };
 
 }  // namespace password_manager

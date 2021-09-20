@@ -126,6 +126,10 @@ class SpellCheck::SpellcheckRequest {
         start_ticks_(base::TimeTicks::Now()) {
     DCHECK(completion_);
   }
+
+  SpellcheckRequest(const SpellcheckRequest&) = delete;
+  SpellcheckRequest& operator=(const SpellcheckRequest&) = delete;
+
   ~SpellcheckRequest() {}
 
   std::u16string text() { return text_; }
@@ -140,8 +144,6 @@ class SpellCheck::SpellcheckRequest {
 
   // The time ticks at which this request was created
   base::TimeTicks start_ticks_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckRequest);
 };
 
 

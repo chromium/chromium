@@ -27,6 +27,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadJob {
 
   DownloadJob(DownloadItem* download_item,
               CancelRequestCallback cancel_request_callback);
+
+  DownloadJob(const DownloadJob&) = delete;
+  DownloadJob& operator=(const DownloadJob&) = delete;
+
   virtual ~DownloadJob();
 
   // Download operations.
@@ -75,8 +79,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadJob {
   bool is_paused_;
 
   base::WeakPtrFactory<DownloadJob> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadJob);
 };
 
 }  // namespace download

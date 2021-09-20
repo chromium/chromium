@@ -31,6 +31,10 @@ enum class GCMDecryptionResult;
 class GCMStatsRecorderImpl : public GCMStatsRecorder {
  public:
   GCMStatsRecorderImpl();
+
+  GCMStatsRecorderImpl(const GCMStatsRecorderImpl&) = delete;
+  GCMStatsRecorderImpl& operator=(const GCMStatsRecorderImpl&) = delete;
+
   ~GCMStatsRecorderImpl() override;
 
   // Set a delegate to receive callback from the recorder.
@@ -160,8 +164,6 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
       decryption_failure_activities_;
 
   base::TimeTicks last_connection_initiation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMStatsRecorderImpl);
 };
 
 }  // namespace gcm

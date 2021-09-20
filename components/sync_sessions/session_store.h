@@ -83,6 +83,10 @@ class SessionStore {
                CommitCallback commit_cb,
                syncer::OnceModelErrorHandler error_handler,
                SyncedSessionTracker* session_tracker);
+
+    WriteBatch(const WriteBatch&) = delete;
+    WriteBatch& operator=(const WriteBatch&) = delete;
+
     ~WriteBatch();
 
     // Most mutations below return storage keys.
@@ -107,8 +111,6 @@ class SessionStore {
     CommitCallback commit_cb_;
     syncer::OnceModelErrorHandler error_handler_;
     SyncedSessionTracker* const session_tracker_;
-
-    DISALLOW_COPY_AND_ASSIGN(WriteBatch);
   };
 
   ~SessionStore();

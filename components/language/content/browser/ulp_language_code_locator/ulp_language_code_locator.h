@@ -28,6 +28,10 @@ class UlpLanguageCodeLocator : public LanguageCodeLocator {
   UlpLanguageCodeLocator(std::vector<std::unique_ptr<SerializedLanguageTree>>&&
                              serialized_langtrees,
                          PrefService* prefs);
+
+  UlpLanguageCodeLocator(const UlpLanguageCodeLocator&) = delete;
+  UlpLanguageCodeLocator& operator=(const UlpLanguageCodeLocator&) = delete;
+
   ~UlpLanguageCodeLocator() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -39,8 +43,6 @@ class UlpLanguageCodeLocator : public LanguageCodeLocator {
  private:
   std::vector<std::unique_ptr<SerializedLanguageTree>> serialized_langtrees_;
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(UlpLanguageCodeLocator);
 };
 }  // namespace language
 

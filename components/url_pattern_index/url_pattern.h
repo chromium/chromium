@@ -35,6 +35,10 @@ class UrlPattern {
    public:
     // The |url| must outlive this instance.
     UrlInfo(const GURL& url);
+
+    UrlInfo(const UrlInfo&) = delete;
+    UrlInfo& operator=(const UrlInfo&) = delete;
+
     ~UrlInfo();
 
     base::StringPiece spec() const { return spec_; }
@@ -51,8 +55,6 @@ class UrlPattern {
 
     // The url host component.
     const url::Component host_;
-
-    DISALLOW_COPY_AND_ASSIGN(UrlInfo);
   };
 
   UrlPattern();

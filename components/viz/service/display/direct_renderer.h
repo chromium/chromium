@@ -62,6 +62,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
                  OutputSurface* output_surface,
                  DisplayResourceProvider* resource_provider,
                  OverlayProcessorInterface* overlay_processor);
+
+  DirectRenderer(const DirectRenderer&) = delete;
+  DirectRenderer& operator=(const DirectRenderer&) = delete;
+
   virtual ~DirectRenderer();
 
   void Initialize();
@@ -376,8 +380,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::ColorSpace reshape_color_space_;
   absl::optional<gfx::BufferFormat> reshape_buffer_format_;
   bool reshape_use_stencil_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectRenderer);
 };
 
 }  // namespace viz

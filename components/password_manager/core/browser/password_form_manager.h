@@ -64,6 +64,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       FormFetcher* form_fetcher,
       std::unique_ptr<PasswordSaveManager> password_save_manager);
 
+  PasswordFormManager(const PasswordFormManager&) = delete;
+  PasswordFormManager& operator=(const PasswordFormManager&) = delete;
+
   ~PasswordFormManager() override;
 
   // The upper limit on how many times Chrome will try to autofill the same
@@ -393,8 +396,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   FormDataParser parser_;
 
   base::WeakPtrFactory<PasswordFormManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordFormManager);
 };
 
 }  // namespace password_manager

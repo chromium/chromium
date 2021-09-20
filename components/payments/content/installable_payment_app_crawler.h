@@ -71,6 +71,11 @@ class InstallablePaymentAppCrawler {
       PaymentManifestDownloader* downloader,
       PaymentManifestParser* parser,
       PaymentManifestWebDataService* cache);
+
+  InstallablePaymentAppCrawler(const InstallablePaymentAppCrawler&) = delete;
+  InstallablePaymentAppCrawler& operator=(const InstallablePaymentAppCrawler&) =
+      delete;
+
   ~InstallablePaymentAppCrawler();
 
   // Starts the crawling process. All the url based payment methods in
@@ -154,8 +159,6 @@ class InstallablePaymentAppCrawler {
   CrawlingMode crawling_mode_ = CrawlingMode::kJustInTimeInstallation;
 
   base::WeakPtrFactory<InstallablePaymentAppCrawler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstallablePaymentAppCrawler);
 };
 
 }  // namespace payments.

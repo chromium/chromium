@@ -92,6 +92,10 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
       AutofillClient* client,
       PersonalDataManager* personal_data_manager,
       CreditCardFormEventLogger* credit_card_form_event_logger);
+
+  CreditCardAccessManager(const CreditCardAccessManager&) = delete;
+  CreditCardAccessManager& operator=(const CreditCardAccessManager&) = delete;
+
   ~CreditCardAccessManager() override;
 
   // Logs information about current credit card data.
@@ -358,8 +362,6 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   std::unordered_map<std::string, CachedServerCardInfo> unmasked_card_cache_;
 
   base::WeakPtrFactory<CreditCardAccessManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardAccessManager);
 };
 
 }  // namespace autofill

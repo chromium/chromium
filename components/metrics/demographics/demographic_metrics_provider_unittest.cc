@@ -40,6 +40,9 @@ enum TestSyncServiceState {
 // Profile client for testing that gets fake Profile information and services.
 class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
  public:
+  TestProfileClient(const TestProfileClient&) = delete;
+  TestProfileClient& operator=(const TestProfileClient&) = delete;
+
   ~TestProfileClient() override = default;
 
   TestProfileClient(int number_of_profiles,
@@ -124,8 +127,6 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
   std::unique_ptr<syncer::TestSyncService> sync_service_;
   const int number_of_profiles_;
   base::SimpleTestClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProfileClient);
 };
 
 TEST(DemographicMetricsProviderTest,

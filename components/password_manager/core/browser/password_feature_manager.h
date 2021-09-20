@@ -15,6 +15,10 @@ namespace password_manager {
 class PasswordFeatureManager {
  public:
   PasswordFeatureManager() = default;
+
+  PasswordFeatureManager(const PasswordFeatureManager&) = delete;
+  PasswordFeatureManager& operator=(const PasswordFeatureManager&) = delete;
+
   virtual ~PasswordFeatureManager() = default;
 
   virtual bool IsGenerationEnabled() const = 0;
@@ -93,9 +97,6 @@ class PasswordFeatureManager {
   // their account. Should only be called if the user is signed-in and not
   // opted-in.
   virtual int GetMoveOfferedToNonOptedInUserCount() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordFeatureManager);
 };
 
 }  // namespace password_manager

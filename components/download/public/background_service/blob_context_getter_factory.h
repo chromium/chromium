@@ -25,13 +25,13 @@ class BlobContextGetterFactory {
   virtual void RetrieveBlobContextGetter(
       BlobContextGetterCallback callback) = 0;
 
+  BlobContextGetterFactory(const BlobContextGetterFactory&) = delete;
+  BlobContextGetterFactory& operator=(const BlobContextGetterFactory&) = delete;
+
   virtual ~BlobContextGetterFactory() = default;
 
  protected:
   BlobContextGetterFactory() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlobContextGetterFactory);
 };
 
 using BlobContextGetterFactoryPtr = std::unique_ptr<BlobContextGetterFactory>;

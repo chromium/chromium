@@ -15,6 +15,10 @@ namespace download {
 class NavigationMonitorImpl : public NavigationMonitor {
  public:
   NavigationMonitorImpl();
+
+  NavigationMonitorImpl(const NavigationMonitorImpl&) = delete;
+  NavigationMonitorImpl& operator=(const NavigationMonitorImpl&) = delete;
+
   ~NavigationMonitorImpl() override;
 
   // NavigationMonitor implementation.
@@ -41,8 +45,6 @@ class NavigationMonitorImpl : public NavigationMonitor {
   base::TimeDelta navigation_timeout_delay_;
 
   base::WeakPtrFactory<NavigationMonitorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationMonitorImpl);
 };
 
 }  // namespace download

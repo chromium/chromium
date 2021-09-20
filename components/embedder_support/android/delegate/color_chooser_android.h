@@ -29,6 +29,10 @@ class ColorChooserAndroid : public content::ColorChooser {
       content::WebContents* tab,
       SkColor initial_color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions);
+
+  ColorChooserAndroid(const ColorChooserAndroid&) = delete;
+  ColorChooserAndroid& operator=(const ColorChooserAndroid&) = delete;
+
   ~ColorChooserAndroid() override;
 
   void OnColorChosen(JNIEnv* env,
@@ -45,8 +49,6 @@ class ColorChooserAndroid : public content::ColorChooser {
   // The web contents invoking the color chooser.  No ownership. because it will
   // outlive this class.
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ColorChooserAndroid);
 };
 
 }  // namespace web_contents_delegate_android

@@ -53,6 +53,9 @@ class NetworkFetcher {
   // trusted.
   static constexpr char kHeaderXRetryAfter[] = "X-Retry-After";
 
+  NetworkFetcher(const NetworkFetcher&) = delete;
+  NetworkFetcher& operator=(const NetworkFetcher&) = delete;
+
   virtual ~NetworkFetcher() = default;
 
   virtual void PostRequest(
@@ -72,9 +75,6 @@ class NetworkFetcher {
 
  protected:
   NetworkFetcher() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkFetcher);
 };
 
 class NetworkFetcherFactory

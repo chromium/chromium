@@ -147,6 +147,11 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
  public:
   SubresourceFilterSafeBrowsingActivationThrottleTest() {}
 
+  SubresourceFilterSafeBrowsingActivationThrottleTest(
+      const SubresourceFilterSafeBrowsingActivationThrottleTest&) = delete;
+  SubresourceFilterSafeBrowsingActivationThrottleTest& operator=(
+      const SubresourceFilterSafeBrowsingActivationThrottleTest&) = delete;
+
   ~SubresourceFilterSafeBrowsingActivationThrottleTest() override {}
 
   void SetUp() override {
@@ -371,8 +376,6 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
   std::unique_ptr<TestSubresourceFilterObserver> observer_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   base::HistogramTester tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterSafeBrowsingActivationThrottleTest);
 };
 
 class SubresourceFilterSafeBrowsingActivationThrottleParamTest

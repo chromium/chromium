@@ -42,6 +42,10 @@ class IterateUrlsDBTask : public HistoryDBTask {
  public:
   explicit IterateUrlsDBTask(const scoped_refptr<
       visitedlink::VisitedLinkDelegate::URLEnumerator>& enumerator);
+
+  IterateUrlsDBTask(const IterateUrlsDBTask&) = delete;
+  IterateUrlsDBTask& operator=(const IterateUrlsDBTask&) = delete;
+
   ~IterateUrlsDBTask() override;
 
  private:
@@ -50,8 +54,6 @@ class IterateUrlsDBTask : public HistoryDBTask {
   void DoneRunOnMainThread() override;
 
   scoped_refptr<visitedlink::VisitedLinkDelegate::URLEnumerator> enumerator_;
-
-  DISALLOW_COPY_AND_ASSIGN(IterateUrlsDBTask);
 };
 
 IterateUrlsDBTask::IterateUrlsDBTask(const scoped_refptr<

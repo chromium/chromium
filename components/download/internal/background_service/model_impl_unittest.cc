@@ -31,6 +31,10 @@ class DownloadServiceModelImplTest : public testing::Test {
  public:
   DownloadServiceModelImplTest() : store_(nullptr) {}
 
+  DownloadServiceModelImplTest(const DownloadServiceModelImplTest&) = delete;
+  DownloadServiceModelImplTest& operator=(const DownloadServiceModelImplTest&) =
+      delete;
+
   ~DownloadServiceModelImplTest() override = default;
 
   void SetUp() override {
@@ -43,9 +47,6 @@ class DownloadServiceModelImplTest : public testing::Test {
   test::MockModelClient client_;
   test::TestStore* store_;
   std::unique_ptr<ModelImpl> model_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadServiceModelImplTest);
 };
 
 }  // namespace

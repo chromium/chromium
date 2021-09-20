@@ -36,6 +36,10 @@ class TranslateAgent : public content::RenderFrameObserver,
   TranslateAgent(content::RenderFrame* render_frame,
                  int world_id,
                  const std::string& extension_scheme);
+
+  TranslateAgent(const TranslateAgent&) = delete;
+  TranslateAgent& operator=(const TranslateAgent&) = delete;
+
   ~TranslateAgent() override;
 
   // content::RenderFrameObserver implementation.
@@ -200,8 +204,6 @@ class TranslateAgent : public content::RenderFrameObserver,
 
   // Weak pointer factory used to provide references to the translate host.
   base::WeakPtrFactory<TranslateAgent> weak_pointer_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateAgent);
 };
 
 }  // namespace translate

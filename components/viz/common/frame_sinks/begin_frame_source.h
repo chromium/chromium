@@ -93,6 +93,10 @@ class VIZ_COMMON_EXPORT BeginFrameObserver {
 class VIZ_COMMON_EXPORT BeginFrameObserverBase : public BeginFrameObserver {
  public:
   BeginFrameObserverBase();
+
+  BeginFrameObserverBase(const BeginFrameObserverBase&) = delete;
+  BeginFrameObserverBase& operator=(const BeginFrameObserverBase&) = delete;
+
   ~BeginFrameObserverBase() override;
 
   // BeginFrameObserver
@@ -115,9 +119,6 @@ class VIZ_COMMON_EXPORT BeginFrameObserverBase : public BeginFrameObserver {
   BeginFrameArgs last_begin_frame_args_;
   int64_t dropped_begin_frame_args_ = 0;
   bool wants_animate_only_begin_frames_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BeginFrameObserverBase);
 };
 
 // Interface for a class which produces BeginFrame calls to a
@@ -262,6 +263,11 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
  public:
   explicit BackToBackBeginFrameSource(
       std::unique_ptr<DelayBasedTimeSource> time_source);
+
+  BackToBackBeginFrameSource(const BackToBackBeginFrameSource&) = delete;
+  BackToBackBeginFrameSource& operator=(const BackToBackBeginFrameSource&) =
+      delete;
+
   ~BackToBackBeginFrameSource() override;
 
   // BeginFrameSource implementation.
@@ -283,8 +289,6 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
   base::flat_set<BeginFrameObserver*> pending_begin_frame_observers_;
   uint64_t next_sequence_number_;
   base::WeakPtrFactory<BackToBackBeginFrameSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackToBackBeginFrameSource);
 };
 
 // A frame source which is locked to an external parameters provides from a
@@ -295,6 +299,11 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
  public:
   DelayBasedBeginFrameSource(std::unique_ptr<DelayBasedTimeSource> time_source,
                              uint32_t restart_id);
+
+  DelayBasedBeginFrameSource(const DelayBasedBeginFrameSource&) = delete;
+  DelayBasedBeginFrameSource& operator=(const DelayBasedBeginFrameSource&) =
+      delete;
+
   ~DelayBasedBeginFrameSource() override;
 
   // BeginFrameSource implementation.
@@ -326,8 +335,6 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   BeginFrameArgs last_begin_frame_args_;
 
   BeginFrameArgsGenerator begin_frame_args_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayBasedBeginFrameSource);
 };
 
 class VIZ_COMMON_EXPORT ExternalBeginFrameSourceClient {
@@ -347,6 +354,10 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   // calls to |client| are made during construction / destruction.
   explicit ExternalBeginFrameSource(ExternalBeginFrameSourceClient* client,
                                     uint32_t restart_id = kNotRestartableId);
+
+  ExternalBeginFrameSource(const ExternalBeginFrameSource&) = delete;
+  ExternalBeginFrameSource& operator=(const ExternalBeginFrameSource&) = delete;
+
   ~ExternalBeginFrameSource() override;
 
   // BeginFrameSource implementation.
@@ -384,8 +395,6 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
 
  private:
   BeginFrameArgs pending_begin_frame_args_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalBeginFrameSource);
 };
 
 }  // namespace viz

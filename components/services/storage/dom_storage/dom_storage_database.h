@@ -64,6 +64,9 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
     Value value;
   };
 
+  DomStorageDatabase(const DomStorageDatabase&) = delete;
+  DomStorageDatabase& operator=(const DomStorageDatabase&) = delete;
+
   ~DomStorageDatabase() override;
 
   // Callback invoked asynchronously with the result of both |OpenDirectory()|
@@ -208,8 +211,6 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
   base::OnceClosure destruction_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DomStorageDatabase);
 };
 
 }  // namespace storage

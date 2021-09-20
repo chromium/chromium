@@ -12,13 +12,14 @@
 class NaClValidationDB {
  public:
   NaClValidationDB() {}
+
+  NaClValidationDB(const NaClValidationDB&) = delete;
+  NaClValidationDB& operator=(const NaClValidationDB&) = delete;
+
   virtual ~NaClValidationDB() {}
 
   virtual bool QueryKnownToValidate(const std::string& signature) = 0;
   virtual void SetKnownToValidate(const std::string& signature) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NaClValidationDB);
 };
 
 #endif  // COMPONENTS_NACL_LOADER_NACL_VALIDATION_DB_H_

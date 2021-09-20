@@ -34,12 +34,13 @@ class CountingAutofillDriver : public TestAutofillDriver {
     ++*instance_counter;
   }
 
+  CountingAutofillDriver(const CountingAutofillDriver&) = delete;
+  CountingAutofillDriver& operator=(const CountingAutofillDriver&) = delete;
+
   ~CountingAutofillDriver() override { --*instance_counter_; }
 
  private:
   int* const instance_counter_;
-
-  DISALLOW_COPY_AND_ASSIGN(CountingAutofillDriver);
 };
 
 // Code-wise this class is identitcal to AutofillDriverFactory, but exposes the

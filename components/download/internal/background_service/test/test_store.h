@@ -22,6 +22,10 @@ namespace test {
 class TestStore : public Store {
  public:
   TestStore();
+
+  TestStore(const TestStore&) = delete;
+  TestStore& operator=(const TestStore&) = delete;
+
   ~TestStore() override;
 
   // Store implementation.
@@ -60,8 +64,6 @@ class TestStore : public Store {
   StoreCallback hard_recover_callback_;
   StoreCallback update_callback_;
   StoreCallback remove_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStore);
 };
 
 }  // namespace test

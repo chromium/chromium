@@ -48,6 +48,10 @@ class TranslateController : public web::WebStateObserver {
   };
 
   TranslateController(web::WebState* web_state, JsTranslateManager* manager);
+
+  TranslateController(const TranslateController&) = delete;
+  TranslateController& operator=(const TranslateController&) = delete;
+
   ~TranslateController() override;
 
   // Sets the observer.
@@ -128,8 +132,6 @@ class TranslateController : public web::WebStateObserver {
   Observer* observer_;
   __strong JsTranslateManager* js_manager_;
   base::WeakPtrFactory<TranslateController> weak_method_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateController);
 };
 
 }  // namespace translate

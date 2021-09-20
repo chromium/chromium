@@ -102,6 +102,10 @@ class PasswordManagerExporterTest : public testing::Test {
         mock_set_posix_file_permissions_.Get());
   }
 
+  PasswordManagerExporterTest(const PasswordManagerExporterTest&) = delete;
+  PasswordManagerExporterTest& operator=(const PasswordManagerExporterTest&) =
+      delete;
+
   ~PasswordManagerExporterTest() override = default;
 
  protected:
@@ -117,9 +121,6 @@ class PasswordManagerExporterTest : public testing::Test {
       mock_set_posix_file_permissions_;
   base::FilePath destination_path_;
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerExporterTest);
 };
 
 TEST_F(PasswordManagerExporterTest, PasswordExportSetPasswordListFirst) {

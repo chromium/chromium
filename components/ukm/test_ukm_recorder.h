@@ -42,6 +42,10 @@ class TestUkmRecorder : public UkmRecorderImpl {
   };
 
   TestUkmRecorder();
+
+  TestUkmRecorder(const TestUkmRecorder&) = delete;
+  TestUkmRecorder& operator=(const TestUkmRecorder&) = delete;
+
   ~TestUkmRecorder() override;
 
   bool ShouldRestrictToWhitelistedSourceIds() const override;
@@ -115,8 +119,6 @@ class TestUkmRecorder : public UkmRecorderImpl {
  private:
   uint64_t entry_hash_to_wait_for_ = 0;
   base::OnceClosure on_add_entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUkmRecorder);
 };
 
 // Similar to a TestUkmRecorder, but also sets itself as the global UkmRecorder

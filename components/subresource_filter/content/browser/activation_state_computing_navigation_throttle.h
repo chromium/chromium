@@ -49,6 +49,11 @@ class ActivationStateComputingNavigationThrottle
                     VerifiedRuleset::Handle* ruleset_handle,
                     const mojom::ActivationState& parent_activation_state);
 
+  ActivationStateComputingNavigationThrottle(
+      const ActivationStateComputingNavigationThrottle&) = delete;
+  ActivationStateComputingNavigationThrottle& operator=(
+      const ActivationStateComputingNavigationThrottle&) = delete;
+
   ~ActivationStateComputingNavigationThrottle() override;
 
   // Notification for main frames when the page level activation is computed.
@@ -120,8 +125,6 @@ class ActivationStateComputingNavigationThrottle
 
   base::WeakPtrFactory<ActivationStateComputingNavigationThrottle>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ActivationStateComputingNavigationThrottle);
 };
 
 }  // namespace subresource_filter

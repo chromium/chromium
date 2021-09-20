@@ -71,6 +71,10 @@ class QueryNodeWord : public QueryNode {
  public:
   explicit QueryNodeWord(const std::u16string& word,
                          MatchingAlgorithm matching_algorithm);
+
+  QueryNodeWord(const QueryNodeWord&) = delete;
+  QueryNodeWord& operator=(const QueryNodeWord&) = delete;
+
   ~QueryNodeWord() override;
 
   const std::u16string& word() const { return word_; }
@@ -91,8 +95,6 @@ class QueryNodeWord : public QueryNode {
   std::u16string word_;
   bool literal_;
   const MatchingAlgorithm matching_algorithm_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryNodeWord);
 };
 
 QueryNodeWord::QueryNodeWord(const std::u16string& word,
@@ -151,6 +153,10 @@ void QueryNodeWord::AppendWords(std::vector<std::u16string>* words) const {
 class QueryNodeList : public QueryNode {
  public:
   QueryNodeList();
+
+  QueryNodeList(const QueryNodeList&) = delete;
+  QueryNodeList& operator=(const QueryNodeList&) = delete;
+
   ~QueryNodeList() override;
 
   QueryNodeVector* children() { return &children_; }
@@ -173,9 +179,6 @@ class QueryNodeList : public QueryNode {
   int AppendChildrenToString(std::u16string* query) const;
 
   QueryNodeVector children_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueryNodeList);
 };
 
 QueryNodeList::QueryNodeList() {}
@@ -246,6 +249,10 @@ int QueryNodeList::AppendChildrenToString(std::u16string* query) const {
 class QueryNodePhrase : public QueryNodeList {
  public:
   QueryNodePhrase();
+
+  QueryNodePhrase(const QueryNodePhrase&) = delete;
+  QueryNodePhrase& operator=(const QueryNodePhrase&) = delete;
+
   ~QueryNodePhrase() override;
 
   // QueryNodeList:
@@ -258,7 +265,6 @@ class QueryNodePhrase : public QueryNodeList {
   bool MatchesAll(const QueryWordVector& words,
                   const QueryWord** first_word,
                   const QueryWord** last_word) const;
-  DISALLOW_COPY_AND_ASSIGN(QueryNodePhrase);
 };
 
 QueryNodePhrase::QueryNodePhrase() {}

@@ -114,11 +114,14 @@ class ScopedTransaction {
   explicit ScopedTransaction(LoginDatabase* db) : db_(db) {
     db_->BeginTransaction();
   }
+
+  ScopedTransaction(const ScopedTransaction&) = delete;
+  ScopedTransaction& operator=(const ScopedTransaction&) = delete;
+
   ~ScopedTransaction() { db_->CommitTransaction(); }
 
  private:
   LoginDatabase* db_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedTransaction);
 };
 
 // Convenience enum for interacting with SQL queries that use all the columns.

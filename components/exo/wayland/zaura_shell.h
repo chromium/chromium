@@ -32,6 +32,10 @@ class AuraSurface : public SurfaceObserver,
                     public ::wm::ActivationChangeObserver {
  public:
   AuraSurface(Surface* surface, wl_resource* resource);
+
+  AuraSurface(const AuraSurface&) = delete;
+  AuraSurface& operator=(const AuraSurface&) = delete;
+
   ~AuraSurface() override;
 
   void SetFrame(SurfaceFrameType type);
@@ -84,8 +88,6 @@ class AuraSurface : public SurfaceObserver,
   void ComputeAndSendOcclusion(
       const aura::Window::OcclusionState occlusion_state,
       const SkRegion& occluded_region);
-
-  DISALLOW_COPY_AND_ASSIGN(AuraSurface);
 };
 
 }  // namespace wayland

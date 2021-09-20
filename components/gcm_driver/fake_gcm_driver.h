@@ -22,6 +22,9 @@ class FakeGCMDriver : public GCMDriver {
   explicit FakeGCMDriver(
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
 
+  FakeGCMDriver(const FakeGCMDriver&) = delete;
+  FakeGCMDriver& operator=(const FakeGCMDriver&) = delete;
+
   ~FakeGCMDriver() override;
 
   // GCMDriver overrides:
@@ -62,9 +65,6 @@ class FakeGCMDriver : public GCMDriver {
                 const OutgoingMessage& message) override;
   void RecordDecryptionFailure(const std::string& app_id,
                                GCMDecryptionResult result) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeGCMDriver);
 };
 
 }  // namespace gcm

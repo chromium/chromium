@@ -22,10 +22,11 @@ class SystemNode : public Node {
   class ObserverDefaultImpl;
 
   SystemNode();
-  ~SystemNode() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemNode);
+  SystemNode(const SystemNode&) = delete;
+  SystemNode& operator=(const SystemNode&) = delete;
+
+  ~SystemNode() override;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
@@ -33,6 +34,10 @@ class SystemNode : public Node {
 class SystemNodeObserver {
  public:
   SystemNodeObserver();
+
+  SystemNodeObserver(const SystemNodeObserver&) = delete;
+  SystemNodeObserver& operator=(const SystemNodeObserver&) = delete;
+
   virtual ~SystemNodeObserver();
 
   // Called when a new set of process memory metrics is available.
@@ -60,9 +65,6 @@ class SystemNodeObserver {
   // the response to these notifications should be stateless.
   virtual void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel new_level) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemNodeObserver);
 };
 
 // Default implementation of observer that provides dummy versions of each
@@ -71,6 +73,10 @@ class SystemNodeObserver {
 class SystemNode::ObserverDefaultImpl : public SystemNodeObserver {
  public:
   ObserverDefaultImpl();
+
+  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
+  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
+
   ~ObserverDefaultImpl() override;
 
   // SystemNodeObserver implementation:
@@ -80,9 +86,6 @@ class SystemNode::ObserverDefaultImpl : public SystemNodeObserver {
       base::MemoryPressureListener::MemoryPressureLevel new_level) override {}
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel new_level) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);
 };
 
 }  // namespace performance_manager

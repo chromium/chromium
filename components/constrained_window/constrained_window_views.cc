@@ -56,6 +56,11 @@ class WidgetModalDialogHostObserverViews
     target_widget_->AddObserver(this);
   }
 
+  WidgetModalDialogHostObserverViews(
+      const WidgetModalDialogHostObserverViews&) = delete;
+  WidgetModalDialogHostObserverViews& operator=(
+      const WidgetModalDialogHostObserverViews&) = delete;
+
   ~WidgetModalDialogHostObserverViews() override {
     if (host_)
       host_->RemoveObserver(this);
@@ -81,8 +86,6 @@ class WidgetModalDialogHostObserverViews
   ModalDialogHost* host_;
   views::Widget* target_widget_;
   const char* const native_window_property_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetModalDialogHostObserverViews);
 };
 
 void UpdateModalDialogPosition(views::Widget* widget,

@@ -221,6 +221,9 @@ class TestArcSessionObserver : public ArcSession::Observer {
     arc_session_->AddObserver(this);
   }
 
+  TestArcSessionObserver(const TestArcSessionObserver&) = delete;
+  TestArcSessionObserver& operator=(const TestArcSessionObserver&) = delete;
+
   ~TestArcSessionObserver() override { arc_session_->RemoveObserver(this); }
 
   const absl::optional<OnSessionStoppedArgs>& on_session_stopped_args() const {
@@ -241,8 +244,6 @@ class TestArcSessionObserver : public ArcSession::Observer {
   ArcSession* const arc_session_;            // Not owned.
   base::RunLoop* const run_loop_ = nullptr;  // Not owned.
   absl::optional<OnSessionStoppedArgs> on_session_stopped_args_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestArcSessionObserver);
 };
 
 // Custom deleter for ArcSession testing.
@@ -259,6 +260,12 @@ class FakeSchedulerConfigurationManager
     : public chromeos::SchedulerConfigurationManagerBase {
  public:
   FakeSchedulerConfigurationManager() = default;
+
+  FakeSchedulerConfigurationManager(const FakeSchedulerConfigurationManager&) =
+      delete;
+  FakeSchedulerConfigurationManager& operator=(
+      const FakeSchedulerConfigurationManager&) = delete;
+
   ~FakeSchedulerConfigurationManager() override = default;
 
   void SetLastReply(size_t num_cores_disabled) {
@@ -273,8 +280,6 @@ class FakeSchedulerConfigurationManager
 
  private:
   absl::optional<std::pair<bool, size_t>> reply_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSchedulerConfigurationManager);
 };
 
 class FakeAdbSideloadingAvailabilityDelegate
@@ -300,6 +305,10 @@ class FakeAdbSideloadingAvailabilityDelegate
 class ArcSessionImplTest : public testing::Test {
  public:
   ArcSessionImplTest() = default;
+
+  ArcSessionImplTest(const ArcSessionImplTest&) = delete;
+  ArcSessionImplTest& operator=(const ArcSessionImplTest&) = delete;
+
   ~ArcSessionImplTest() override = default;
 
   std::unique_ptr<ArcSessionImpl, ArcSessionDeleter> CreateArcSession(
@@ -354,8 +363,6 @@ class ArcSessionImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionImplTest);
 };
 
 // Starting mini container success case.

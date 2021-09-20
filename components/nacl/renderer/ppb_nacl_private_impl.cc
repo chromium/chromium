@@ -232,6 +232,9 @@ class ManifestServiceProxy : public ManifestServiceChannel::Delegate {
   ManifestServiceProxy(PP_Instance pp_instance, NaClAppProcessType process_type)
       : pp_instance_(pp_instance), process_type_(process_type) {}
 
+  ManifestServiceProxy(const ManifestServiceProxy&) = delete;
+  ManifestServiceProxy& operator=(const ManifestServiceProxy&) = delete;
+
   ~ManifestServiceProxy() override {}
 
   void StartupInitializationComplete() override {
@@ -319,7 +322,6 @@ class ManifestServiceProxy : public ManifestServiceChannel::Delegate {
 
   PP_Instance pp_instance_;
   NaClAppProcessType process_type_;
-  DISALLOW_COPY_AND_ASSIGN(ManifestServiceProxy);
 };
 
 std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(

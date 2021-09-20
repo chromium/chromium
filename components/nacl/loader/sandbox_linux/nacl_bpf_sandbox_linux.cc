@@ -56,6 +56,10 @@ class NaClBPFSandboxPolicy : public sandbox::bpf_dsl::Policy {
     // whenever kEnableNaClDebug is passed.
     enable_nacl_debug_ = command_line->HasSwitch(switches::kEnableNaClDebug);
   }
+
+  NaClBPFSandboxPolicy(const NaClBPFSandboxPolicy&) = delete;
+  NaClBPFSandboxPolicy& operator=(const NaClBPFSandboxPolicy&) = delete;
+
   ~NaClBPFSandboxPolicy() override {}
 
   ResultExpr EvaluateSyscall(int system_call_number) const override;
@@ -67,8 +71,6 @@ class NaClBPFSandboxPolicy : public sandbox::bpf_dsl::Policy {
   std::unique_ptr<sandbox::bpf_dsl::Policy> baseline_policy_;
   bool enable_nacl_debug_;
   const pid_t policy_pid_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClBPFSandboxPolicy);
 };
 
 ResultExpr NaClBPFSandboxPolicy::EvaluateSyscall(int sysno) const {

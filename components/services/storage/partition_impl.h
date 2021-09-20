@@ -31,6 +31,10 @@ class PartitionImpl : public mojom::Partition {
   // |service| owns and outlives this object.
   explicit PartitionImpl(StorageServiceImpl* service,
                          const absl::optional<base::FilePath>& path);
+
+  PartitionImpl(const PartitionImpl&) = delete;
+  PartitionImpl& operator=(const PartitionImpl&) = delete;
+
   ~PartitionImpl() override;
 
   const absl::optional<base::FilePath>& path() const { return path_; }
@@ -70,8 +74,6 @@ class PartitionImpl : public mojom::Partition {
   std::unique_ptr<SessionStorageImpl> session_storage_;
   std::unique_ptr<LocalStorageImpl> local_storage_;
   std::unique_ptr<ServiceWorkerStorageControlImpl> service_worker_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartitionImpl);
 };
 
 }  // namespace storage

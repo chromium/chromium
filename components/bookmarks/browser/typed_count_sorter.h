@@ -18,6 +18,10 @@ class BookmarkClient;
 class TypedCountSorter : public TitledUrlNodeSorter {
  public:
   explicit TypedCountSorter(BookmarkClient* client);
+
+  TypedCountSorter(const TypedCountSorter&) = delete;
+  TypedCountSorter& operator=(const TypedCountSorter&) = delete;
+
   ~TypedCountSorter() override;
 
   // TitledUrlNodeSorter
@@ -26,8 +30,6 @@ class TypedCountSorter : public TitledUrlNodeSorter {
 
  private:
   BookmarkClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedCountSorter);
 };
 
 }

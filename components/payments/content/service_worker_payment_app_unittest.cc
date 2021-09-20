@@ -25,6 +25,11 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
     web_contents_ =
         test_web_contents_factory_.CreateWebContents(&browser_context_);
   }
+
+  ServiceWorkerPaymentAppTest(const ServiceWorkerPaymentAppTest&) = delete;
+  ServiceWorkerPaymentAppTest& operator=(const ServiceWorkerPaymentAppTest&) =
+      delete;
+
   ~ServiceWorkerPaymentAppTest() override = default;
 
  protected:
@@ -143,8 +148,6 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
   std::unique_ptr<ServiceWorkerPaymentApp> app_;
   const SkBitmap* icon_bitmap_;
   base::WeakPtrFactory<ServiceWorkerPaymentAppTest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPaymentAppTest);
 };
 
 // Test app info and status are correct.

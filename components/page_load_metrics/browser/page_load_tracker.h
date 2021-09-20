@@ -188,6 +188,10 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                   UserInitiatedInfo user_initiated_info,
                   int aborted_chain_size,
                   int aborted_chain_size_same_url);
+
+  PageLoadTracker(const PageLoadTracker&) = delete;
+  PageLoadTracker& operator=(const PageLoadTracker&) = delete;
+
   ~PageLoadTracker() override;
 
   // PageLoadMetricsUpdateDispatcher::Client implementation:
@@ -508,8 +512,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       largest_contentful_paint_handler_;
   page_load_metrics::LargestContentfulPaintHandler
       experimental_largest_contentful_paint_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageLoadTracker);
 };
 
 }  // namespace page_load_metrics

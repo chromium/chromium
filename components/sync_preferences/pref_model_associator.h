@@ -46,6 +46,10 @@ class PrefModelAssociator : public syncer::SyncableService {
   PrefModelAssociator(const PrefModelAssociatorClient* client,
                       syncer::ModelType type,
                       PersistentPrefStore* user_pref_store);
+
+  PrefModelAssociator(const PrefModelAssociator&) = delete;
+  PrefModelAssociator& operator=(const PrefModelAssociator&) = delete;
+
   ~PrefModelAssociator() override;
 
   // See description above field for details.
@@ -230,8 +234,6 @@ class PrefModelAssociator : public syncer::SyncableService {
   PersistentPrefStore* const user_pref_store_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrefModelAssociator);
 };
 
 }  // namespace sync_preferences

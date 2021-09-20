@@ -254,11 +254,13 @@ class ScopedCrashKeyString {
     crash_key->Set(value);
   }
 
+  ScopedCrashKeyString(const ScopedCrashKeyString&) = delete;
+  ScopedCrashKeyString& operator=(const ScopedCrashKeyString&) = delete;
+
   ~ScopedCrashKeyString() { crash_key_->Clear(); }
 
  private:
   CrashKeyType* const crash_key_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedCrashKeyString);
 };
 
 namespace internal {

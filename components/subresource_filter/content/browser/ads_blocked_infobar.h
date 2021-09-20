@@ -15,6 +15,10 @@ class AdsBlockedInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit AdsBlockedInfoBar(
       std::unique_ptr<AdsBlockedInfobarDelegate> delegate);
+
+  AdsBlockedInfoBar(const AdsBlockedInfoBar&) = delete;
+  AdsBlockedInfoBar& operator=(const AdsBlockedInfoBar&) = delete;
+
   ~AdsBlockedInfoBar() override;
 
  private:
@@ -22,8 +26,6 @@ class AdsBlockedInfoBar : public infobars::ConfirmInfoBar {
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AdsBlockedInfoBar);
 };
 
 }  // namespace subresource_filter

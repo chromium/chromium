@@ -40,6 +40,9 @@ class ReadingListModelImpl : public ReadingListModel,
 
   syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override;
 
+  ReadingListModelImpl(const ReadingListModelImpl&) = delete;
+  ReadingListModelImpl& operator=(const ReadingListModelImpl&) = delete;
+
   ~ReadingListModelImpl() override;
 
   void StoreLoaded(std::unique_ptr<ReadingListEntries> entries) override;
@@ -108,14 +111,16 @@ class ReadingListModelImpl : public ReadingListModel,
    public:
     explicit ScopedReadingListBatchUpdate(ReadingListModelImpl* model);
 
+    ScopedReadingListBatchUpdate(const ScopedReadingListBatchUpdate&) = delete;
+    ScopedReadingListBatchUpdate& operator=(
+        const ScopedReadingListBatchUpdate&) = delete;
+
     ~ScopedReadingListBatchUpdate() override;
 
     void ReadingListModelBeingShutdown(const ReadingListModel* model) override;
 
    private:
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> storage_token_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedReadingListBatchUpdate);
   };
 
  protected:
@@ -159,8 +164,6 @@ class ReadingListModelImpl : public ReadingListModel,
   bool loaded_;
 
   base::WeakPtrFactory<ReadingListModelImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListModelImpl);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_IMPL_H_

@@ -58,6 +58,9 @@ class DeletePageTask : public Task {
       DeletePageTask::DeletePageTaskCallback callback,
       const OfflinePageItem& page);
 
+  DeletePageTask(const DeletePageTask&) = delete;
+  DeletePageTask& operator=(const DeletePageTask&) = delete;
+
   ~DeletePageTask() override;
 
   // Deletes a single page from the database. This function reads
@@ -97,7 +100,6 @@ class DeletePageTask : public Task {
   DeletePageTaskCallback callback_;
 
   base::WeakPtrFactory<DeletePageTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DeletePageTask);
 };
 
 }  // namespace offline_pages

@@ -54,6 +54,10 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       mojo::PendingReceiver<mojom::PrintCompositor> receiver,
       bool initialize_environment,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  PrintCompositorImpl(const PrintCompositorImpl&) = delete;
+  PrintCompositorImpl& operator=(const PrintCompositorImpl&) = delete;
+
   ~PrintCompositorImpl() override;
 
   // mojom::PrintCompositor
@@ -250,8 +254,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   // If present, the accessibility tree for the document needed to
   // export a tagged (accessible) PDF.
   ui::AXTreeUpdate accessibility_tree_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintCompositorImpl);
 };
 
 }  // namespace printing

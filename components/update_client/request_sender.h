@@ -43,6 +43,10 @@ class RequestSender {
       void(int error, const std::string& response, int retry_after_sec)>;
 
   explicit RequestSender(scoped_refptr<Configurator> config);
+
+  RequestSender(const RequestSender&) = delete;
+  RequestSender& operator=(const RequestSender&) = delete;
+
   ~RequestSender();
 
   // |use_signing| enables CUP signing of protocol messages exchanged using
@@ -104,8 +108,6 @@ class RequestSender {
   std::unique_ptr<client_update_protocol::Ecdsa> signer_;
 
   int response_code_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestSender);
 };
 
 }  // namespace update_client

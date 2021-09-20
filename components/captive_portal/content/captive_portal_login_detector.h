@@ -23,6 +23,10 @@ class CaptivePortalLoginDetector {
   explicit CaptivePortalLoginDetector(
       CaptivePortalService* captive_portal_service);
 
+  CaptivePortalLoginDetector(const CaptivePortalLoginDetector&) = delete;
+  CaptivePortalLoginDetector& operator=(const CaptivePortalLoginDetector&) =
+      delete;
+
   ~CaptivePortalLoginDetector();
 
   void OnStoppedLoading();
@@ -42,8 +46,6 @@ class CaptivePortalLoginDetector {
   // Page is on its first load since being tagged as a login tab.  Used to
   // prevent a second captive portal check on the first load of the login page.
   bool first_login_tab_load_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalLoginDetector);
 };
 
 }  // namespace captive_portal

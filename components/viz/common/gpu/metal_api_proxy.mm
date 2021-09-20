@@ -148,6 +148,10 @@ constexpr uint32_t kShaderCrashDumpLength = 8128;
 class MTLLibraryCache {
  public:
   MTLLibraryCache() = default;
+
+  MTLLibraryCache(const MTLLibraryCache&) = delete;
+  MTLLibraryCache& operator=(const MTLLibraryCache&) = delete;
+
   ~MTLLibraryCache() = default;
 
   id<MTLLibrary> NewLibraryWithSource(id<MTLDevice> device,
@@ -224,7 +228,6 @@ class MTLLibraryCache {
   };
 
   std::map<LibraryKey, LibraryData> libraries_;
-  DISALLOW_COPY_AND_ASSIGN(MTLLibraryCache);
 };
 
 // Disable protocol warnings and property synthesis warnings. Any unimplemented

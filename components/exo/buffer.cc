@@ -63,6 +63,10 @@ class Buffer::Texture : public viz::ContextLostObserver {
           unsigned query_type,
           base::TimeDelta wait_for_release_time,
           bool is_overlay_candidate);
+
+  Texture(const Texture&) = delete;
+  Texture& operator=(const Texture&) = delete;
+
   ~Texture() override;
 
   // Overridden from viz::ContextLostObserver:
@@ -118,8 +122,6 @@ class Buffer::Texture : public viz::ContextLostObserver {
   base::TimeTicks wait_for_release_time_;
   bool wait_for_release_pending_ = false;
   base::WeakPtrFactory<Texture> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Texture);
 };
 
 Buffer::Texture::Texture(

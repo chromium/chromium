@@ -18,6 +18,10 @@ namespace test {
 class MockTracker : public Tracker {
  public:
   MockTracker();
+
+  MockTracker(const MockTracker&) = delete;
+  MockTracker& operator=(const MockTracker&) = delete;
+
   ~MockTracker() override;
 
   // Tracker implememtation.
@@ -37,9 +41,6 @@ class MockTracker : public Tracker {
                     absl::optional<SnoozeAction> snooze_action));
   MOCK_METHOD0(AcquireDisplayLock, std::unique_ptr<DisplayLockHandle>());
   MOCK_METHOD1(AddOnInitializedCallback, void(OnInitializedCallback callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTracker);
 };
 
 }  // namespace test

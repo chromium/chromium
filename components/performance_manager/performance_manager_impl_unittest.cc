@@ -25,6 +25,10 @@ class PerformanceManagerImplTest : public testing::Test {
  public:
   PerformanceManagerImplTest() {}
 
+  PerformanceManagerImplTest(const PerformanceManagerImplTest&) = delete;
+  PerformanceManagerImplTest& operator=(const PerformanceManagerImplTest&) =
+      delete;
+
   ~PerformanceManagerImplTest() override {}
 
   void SetUp() override {
@@ -45,8 +49,6 @@ class PerformanceManagerImplTest : public testing::Test {
  private:
   std::unique_ptr<PerformanceManagerImpl> performance_manager_;
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceManagerImplTest);
 };
 
 TEST_F(PerformanceManagerImplTest, InstantiateNodes) {

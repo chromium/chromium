@@ -77,6 +77,9 @@ class AutofillManager
       LogManager* log_manager,
       const std::vector<FormStructure*>& forms);
 
+  AutofillManager(const AutofillManager&) = delete;
+  AutofillManager& operator=(const AutofillManager&) = delete;
+
   ~AutofillManager() override;
 
   // The following will fail a DCHECK if called for a prerendered main frame.
@@ -389,8 +392,6 @@ class AutofillManager
 
   // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
   ObserverForTest* observer_for_testing_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillManager);
 };
 
 }  // namespace autofill

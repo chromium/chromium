@@ -83,6 +83,10 @@ class BrowserAutofillManager : public AutofillManager,
                          AutofillClient* client,
                          const std::string& app_locale,
                          AutofillDownloadManagerState enable_download_manager);
+
+  BrowserAutofillManager(const BrowserAutofillManager&) = delete;
+  BrowserAutofillManager& operator=(const BrowserAutofillManager&) = delete;
+
   ~BrowserAutofillManager() override;
 
   void ShowAutofillSettings(bool show_credit_card_settings);
@@ -767,7 +771,6 @@ class BrowserAutofillManager : public AutofillManager,
   friend class FormStructureBrowserTest;
   friend class GetMatchingTypesTest;
   friend class CreditCardAccessoryControllerTest;
-  DISALLOW_COPY_AND_ASSIGN(BrowserAutofillManager);
 };
 
 }  // namespace autofill

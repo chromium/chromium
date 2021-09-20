@@ -46,6 +46,10 @@ class ArcWakeLockBridge : public KeyedService,
 
   ArcWakeLockBridge(content::BrowserContext* context,
                     ArcBridgeService* bridge_service);
+
+  ArcWakeLockBridge(const ArcWakeLockBridge&) = delete;
+  ArcWakeLockBridge& operator=(const ArcWakeLockBridge&) = delete;
+
   ~ArcWakeLockBridge() override;
 
   void SetWakeLockProviderForTesting(
@@ -82,8 +86,6 @@ class ArcWakeLockBridge : public KeyedService,
   mojo::Receiver<mojom::WakeLockHost> receiver_{this};
 
   base::WeakPtrFactory<ArcWakeLockBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcWakeLockBridge);
 };
 
 }  // namespace arc

@@ -21,6 +21,10 @@ class AutofillCountry {
   // Returns country data corresponding to the two-letter ISO code
   // |country_code|.
   AutofillCountry(const std::string& country_code, const std::string& locale);
+
+  AutofillCountry(const AutofillCountry&) = delete;
+  AutofillCountry& operator=(const AutofillCountry&) = delete;
+
   ~AutofillCountry();
 
   // Returns the likely country code for |locale|, or "US" as a fallback if no
@@ -71,8 +75,6 @@ class AutofillCountry {
 
   // Required fields for an address import for the country.
   RequiredFieldsForAddressImport required_fields_for_address_import_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillCountry);
 };
 
 LogBuffer& operator<<(LogBuffer& buffer, const AutofillCountry& country);

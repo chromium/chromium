@@ -600,14 +600,16 @@ class SkiaRenderer::ScopedSkImageBuilder {
                        SkAlphaType alpha_type = kPremul_SkAlphaType,
                        GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin,
                        bool use_target_color_space = false);
+
+  ScopedSkImageBuilder(const ScopedSkImageBuilder&) = delete;
+  ScopedSkImageBuilder& operator=(const ScopedSkImageBuilder&) = delete;
+
   ~ScopedSkImageBuilder() = default;
 
   const SkImage* sk_image() const { return sk_image_; }
 
  private:
   const SkImage* sk_image_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSkImageBuilder);
 };
 
 SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
@@ -706,14 +708,15 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
     LOG_IF(ERROR, !sk_image_) << "Failed to create the promise sk yuva image.";
   }
 
+  ScopedYUVSkImageBuilder(const ScopedYUVSkImageBuilder&) = delete;
+  ScopedYUVSkImageBuilder& operator=(const ScopedYUVSkImageBuilder&) = delete;
+
   ~ScopedYUVSkImageBuilder() = default;
 
   const SkImage* sk_image() const { return sk_image_.get(); }
 
  private:
   sk_sp<SkImage> sk_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedYUVSkImageBuilder);
 };
 
 class SkiaRenderer::FrameResourceFence : public ResourceFence {

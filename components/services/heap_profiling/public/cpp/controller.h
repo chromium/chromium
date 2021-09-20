@@ -40,6 +40,10 @@ class Controller {
   Controller(mojo::PendingRemote<mojom::ProfilingService> service,
              mojom::StackMode stack_mode,
              uint32_t sampling_rate);
+
+  Controller(const Controller&) = delete;
+  Controller& operator=(const Controller&) = delete;
+
   ~Controller();
 
   // Starts Heap Profiling for the client.
@@ -67,7 +71,6 @@ class Controller {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<Controller> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(Controller);
 };
 
 }  // namespace heap_profiling

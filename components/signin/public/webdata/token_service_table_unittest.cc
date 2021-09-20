@@ -20,6 +20,10 @@ using base::Time;
 class TokenServiceTableTest : public testing::Test {
  public:
   TokenServiceTableTest() {}
+
+  TokenServiceTableTest(const TokenServiceTableTest&) = delete;
+  TokenServiceTableTest& operator=(const TokenServiceTableTest&) = delete;
+
   ~TokenServiceTableTest() override {}
 
  protected:
@@ -40,9 +44,6 @@ class TokenServiceTableTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TokenServiceTable> table_;
   std::unique_ptr<WebDatabase> db_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TokenServiceTableTest);
 };
 
 TEST_F(TokenServiceTableTest, TokenServiceGetAllRemoveAll) {

@@ -28,6 +28,10 @@ class NetworkFetcherImpl : public NetworkFetcher {
   explicit NetworkFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_network_factory,
       SendCookiesPredicate cookie_predicate);
+
+  NetworkFetcherImpl(const NetworkFetcherImpl&) = delete;
+  NetworkFetcherImpl& operator=(const NetworkFetcherImpl&) = delete;
+
   ~NetworkFetcherImpl() override;
 
   // NetworkFetcher overrides.
@@ -60,8 +64,6 @@ class NetworkFetcherImpl : public NetworkFetcher {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_network_factory_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   SendCookiesPredicate cookie_predicate_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkFetcherImpl);
 };
 
 }  // namespace update_client

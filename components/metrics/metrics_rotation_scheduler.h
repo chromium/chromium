@@ -23,6 +23,10 @@ class MetricsRotationScheduler : public MetricsScheduler {
       const base::RepeatingClosure& rotation_callback,
       const base::RepeatingCallback<base::TimeDelta(void)>& interval_callback,
       bool fast_startup_for_testing);
+
+  MetricsRotationScheduler(const MetricsRotationScheduler&) = delete;
+  MetricsRotationScheduler& operator=(const MetricsRotationScheduler&) = delete;
+
   ~MetricsRotationScheduler() override;
 
   // Callback from MetricsService when the startup init task has completed.
@@ -54,8 +58,6 @@ class MetricsRotationScheduler : public MetricsScheduler {
 
   // Callback function used to get the standard upload time.
   base::RepeatingCallback<base::TimeDelta(void)> upload_interval_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsRotationScheduler);
 };
 
 }  // namespace metrics

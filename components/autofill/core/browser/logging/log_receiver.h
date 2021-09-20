@@ -15,12 +15,13 @@ namespace autofill {
 class LogReceiver {
  public:
   LogReceiver() {}
+
+  LogReceiver(const LogReceiver&) = delete;
+  LogReceiver& operator=(const LogReceiver&) = delete;
+
   virtual ~LogReceiver() {}
 
   virtual void LogEntry(const base::Value& entry) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LogReceiver);
 };
 
 }  // namespace autofill

@@ -68,6 +68,10 @@ class Controller : public ScriptExecutorDelegate,
              base::WeakPtr<RuntimeManagerImpl> runtime_manager,
              std::unique_ptr<Service> service,
              std::unique_ptr<AutofillAssistantTtsController> tts_controller);
+
+  Controller(const Controller&) = delete;
+  Controller& operator=(const Controller&) = delete;
+
   ~Controller() override;
 
   // Let the controller know it should keep tracking script availability for the
@@ -617,8 +621,6 @@ class Controller : public ScriptExecutorDelegate,
   std::unique_ptr<GenericUserInterfaceProto> persistent_generic_user_interface_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Controller);
 };
 
 }  // namespace autofill_assistant

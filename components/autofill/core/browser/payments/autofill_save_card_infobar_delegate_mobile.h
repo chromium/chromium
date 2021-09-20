@@ -48,6 +48,11 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
           local_save_card_prompt_callback,
       const AccountInfo& displayed_target_account);
 
+  AutofillSaveCardInfoBarDelegateMobile(
+      const AutofillSaveCardInfoBarDelegateMobile&) = delete;
+  AutofillSaveCardInfoBarDelegateMobile& operator=(
+      const AutofillSaveCardInfoBarDelegateMobile&) = delete;
+
   ~AutofillSaveCardInfoBarDelegateMobile() override;
 
   // Returns |delegate| as an AutofillSaveCardInfoBarDelegateMobile, or nullptr
@@ -172,8 +177,6 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   // shouldn't appear.
   std::u16string displayed_target_account_email_;
   gfx::Image displayed_target_account_avatar_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillSaveCardInfoBarDelegateMobile);
 };
 
 }  // namespace autofill

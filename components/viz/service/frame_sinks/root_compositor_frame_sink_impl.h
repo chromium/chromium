@@ -55,6 +55,10 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
       const DebugRendererSettings* debug_settings,
       gfx::RenderingPipeline* gpu_pipeline);
 
+  RootCompositorFrameSinkImpl(const RootCompositorFrameSinkImpl&) = delete;
+  RootCompositorFrameSinkImpl& operator=(const RootCompositorFrameSinkImpl&) =
+      delete;
+
   ~RootCompositorFrameSinkImpl() override;
 
   // mojom::DisplayPrivate:
@@ -180,8 +184,6 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   gfx::Size last_swap_pixel_size_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(RootCompositorFrameSinkImpl);
 };
 
 }  // namespace viz

@@ -43,6 +43,10 @@ class PaymentResponseHelper
       autofill::AutofillProfile* selected_shipping_profile,
       autofill::AutofillProfile* selected_contact_profile,
       base::WeakPtr<Delegate> delegate);
+
+  PaymentResponseHelper(const PaymentResponseHelper&) = delete;
+  PaymentResponseHelper& operator=(const PaymentResponseHelper&) = delete;
+
   ~PaymentResponseHelper() override;
 
   // PaymentApp::Delegate
@@ -88,8 +92,6 @@ class PaymentResponseHelper
   PayerData payer_data_from_app_;
 
   base::WeakPtrFactory<PaymentResponseHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentResponseHelper);
 };
 
 }  // namespace payments

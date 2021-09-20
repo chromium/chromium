@@ -14,6 +14,10 @@ namespace arc {
 class AlwaysOnVpnManager {
  public:
   explicit AlwaysOnVpnManager(PrefService* pref_service);
+
+  AlwaysOnVpnManager(const AlwaysOnVpnManager&) = delete;
+  AlwaysOnVpnManager& operator=(const AlwaysOnVpnManager&) = delete;
+
   ~AlwaysOnVpnManager();
 
  private:
@@ -21,8 +25,6 @@ class AlwaysOnVpnManager {
   void OnPrefChanged();
 
   PrefChangeRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlwaysOnVpnManager);
 };
 
 }  // namespace arc

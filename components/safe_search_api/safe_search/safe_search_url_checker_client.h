@@ -31,6 +31,10 @@ class SafeSearchURLCheckerClient : public URLCheckerClient {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       const std::string& api_key = google_apis::GetAPIKey());
 
+  SafeSearchURLCheckerClient(const SafeSearchURLCheckerClient&) = delete;
+  SafeSearchURLCheckerClient& operator=(const SafeSearchURLCheckerClient&) =
+      delete;
+
   ~SafeSearchURLCheckerClient() override;
 
   // Checks whether an |url| is restricted according to SafeSearch.
@@ -52,8 +56,6 @@ class SafeSearchURLCheckerClient : public URLCheckerClient {
   const std::string api_key_;
 
   CheckList checks_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeSearchURLCheckerClient);
 };
 
 }  // namespace safe_search_api

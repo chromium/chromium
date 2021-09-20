@@ -30,6 +30,10 @@ class FilterTool {
   FilterTool(
       scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset,
       std::ostream* output);
+
+  FilterTool(const FilterTool&) = delete;
+  FilterTool& operator=(const FilterTool&) = delete;
+
   ~FilterTool();
 
   // Checks the ruleset for a request with document origin |document_origin|,
@@ -73,8 +77,6 @@ class FilterTool {
 
   scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset_;
   std::ostream* output_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilterTool);
 };
 
 }  // namespace subresource_filter

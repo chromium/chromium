@@ -19,6 +19,10 @@ class WebContentsTopSitesObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<WebContentsTopSitesObserver> {
  public:
+  WebContentsTopSitesObserver(const WebContentsTopSitesObserver&) = delete;
+  WebContentsTopSitesObserver& operator=(const WebContentsTopSitesObserver&) =
+      delete;
+
   ~WebContentsTopSitesObserver() override;
 
  private:
@@ -35,8 +39,6 @@ class WebContentsTopSitesObserver
   TopSites* top_sites_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsTopSitesObserver);
 };
 
 }  // namespace history

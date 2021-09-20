@@ -96,6 +96,10 @@ class ScopedVulkanRenderFrame {
     vkCmdBeginRenderPass(command_buffer_, &render_pass_begin_info,
                          VK_SUBPASS_CONTENTS_INLINE);
   }
+
+  ScopedVulkanRenderFrame(const ScopedVulkanRenderFrame&) = delete;
+  ScopedVulkanRenderFrame& operator=(const ScopedVulkanRenderFrame&) = delete;
+
   ~ScopedVulkanRenderFrame() {
     vkCmdEndRenderPass(command_buffer_);
 
@@ -116,8 +120,6 @@ class ScopedVulkanRenderFrame {
  private:
   VulkanClient* const client_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVulkanRenderFrame);
 };
 
 void VulkanClient::Run(const ClientBase::InitParams& params) {

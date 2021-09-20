@@ -52,6 +52,9 @@ class WebResourceService : public ResourceRequestAllowedNotifier::Observer {
       ResourceRequestAllowedNotifier::NetworkConnectionTrackerGetter
           network_connection_tracker_getter);
 
+  WebResourceService(const WebResourceService&) = delete;
+  WebResourceService& operator=(const WebResourceService&) = delete;
+
   ~WebResourceService() override;
 
   // Sleep until cache needs to be updated, but always for at least
@@ -136,8 +139,6 @@ class WebResourceService : public ResourceRequestAllowedNotifier::Observer {
   // So that we can delay our start so as not to affect start-up time; also,
   // so that we can schedule future cache updates.
   base::WeakPtrFactory<WebResourceService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebResourceService);
 };
 
 }  // namespace web_resource

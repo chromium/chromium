@@ -46,6 +46,10 @@ class ImageDataFetcherTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
         image_data_fetcher_(shared_factory_) {}
+
+  ImageDataFetcherTest(const ImageDataFetcherTest&) = delete;
+  ImageDataFetcherTest& operator=(const ImageDataFetcherTest&) = delete;
+
   ~ImageDataFetcherTest() override {}
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -67,9 +71,6 @@ class ImageDataFetcherTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
 
   ImageDataFetcher image_data_fetcher_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageDataFetcherTest);
 };
 
 TEST_F(ImageDataFetcherTest, FetchImageData) {

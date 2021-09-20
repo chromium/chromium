@@ -21,6 +21,10 @@ class SelectOptionAction : public Action {
  public:
   explicit SelectOptionAction(ActionDelegate* delegate,
                               const ActionProto& proto);
+
+  SelectOptionAction(const SelectOptionAction&) = delete;
+  SelectOptionAction& operator=(const SelectOptionAction&) = delete;
+
   ~SelectOptionAction() override;
 
  private:
@@ -37,8 +41,6 @@ class SelectOptionAction : public Action {
   ProcessActionCallback process_action_callback_;
 
   base::WeakPtrFactory<SelectOptionAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SelectOptionAction);
 };
 
 }  // namespace autofill_assistant

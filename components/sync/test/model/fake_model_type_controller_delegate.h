@@ -19,12 +19,6 @@ namespace syncer {
 class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
  public:
   explicit FakeModelTypeControllerDelegate(ModelType type);
-
-  FakeModelTypeControllerDelegate(const FakeModelTypeControllerDelegate&) =
-      delete;
-  FakeModelTypeControllerDelegate& operator=(
-      const FakeModelTypeControllerDelegate&) = delete;
-
   ~FakeModelTypeControllerDelegate() override;
 
   void SetModelTypeStateForActivationResponse(
@@ -68,6 +62,8 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   StartCallback start_callback_;
   ModelErrorHandler error_handler_;
   base::WeakPtrFactory<FakeModelTypeControllerDelegate> weak_ptr_factory_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(FakeModelTypeControllerDelegate);
 };
 
 }  // namespace syncer

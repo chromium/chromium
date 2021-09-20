@@ -29,6 +29,10 @@ class ContentVisitDelegate : public VisitDelegate,
                              public visitedlink::VisitedLinkDelegate {
  public:
   explicit ContentVisitDelegate(content::BrowserContext* browser_context);
+
+  ContentVisitDelegate(const ContentVisitDelegate&) = delete;
+  ContentVisitDelegate& operator=(const ContentVisitDelegate&) = delete;
+
   ~ContentVisitDelegate() override;
 
  private:
@@ -46,8 +50,6 @@ class ContentVisitDelegate : public VisitDelegate,
   HistoryService* history_service_;  // Weak.
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;
   base::CancelableTaskTracker task_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVisitDelegate);
 };
 
 }  // namespace history

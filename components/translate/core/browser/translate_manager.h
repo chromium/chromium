@@ -62,6 +62,10 @@ class TranslateManager {
   TranslateManager(TranslateClient* translate_client,
                    TranslateRanker* translate_ranker,
                    language::LanguageModel* language_model);
+
+  TranslateManager(const TranslateManager&) = delete;
+  TranslateManager& operator=(const TranslateManager&) = delete;
+
   virtual ~TranslateManager();
 
   // Returns a weak pointer to this instance.
@@ -361,8 +365,6 @@ class TranslateManager {
   // By default, don't offer to translate in builds lacking an API key. For
   // testing, set to true to offer anyway.
   static bool ignore_missing_key_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateManager);
 };
 
 }  // namespace translate

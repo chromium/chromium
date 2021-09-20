@@ -22,6 +22,10 @@ namespace web_cache {
 class WebCacheImpl : public mojom::WebCache {
  public:
   WebCacheImpl();
+
+  WebCacheImpl(const WebCacheImpl&) = delete;
+  WebCacheImpl& operator=(const WebCacheImpl&) = delete;
+
   ~WebCacheImpl() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::WebCache> web_cache_receiver);
@@ -51,8 +55,6 @@ class WebCacheImpl : public mojom::WebCache {
   mojo::ReceiverSet<mojom::WebCache> receivers_;
 
   absl::optional<base::MemoryPressureListener> memory_pressure_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebCacheImpl);
 };
 
 }  // namespace web_cache

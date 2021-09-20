@@ -15,6 +15,9 @@ namespace performance_manager {
 // should be sent if/when the tab using it gets loaded.
 class SiteDataWriter {
  public:
+  SiteDataWriter(const SiteDataWriter&) = delete;
+  SiteDataWriter& operator=(const SiteDataWriter&) = delete;
+
   virtual ~SiteDataWriter();
 
   // Records tab load/unload events.
@@ -58,8 +61,6 @@ class SiteDataWriter {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataWriter);
 };
 
 }  // namespace performance_manager

@@ -41,6 +41,10 @@ class DeleteDirectiveHandler : public syncer::SyncableService {
                                    base::CancelableTaskTracker* tracker)>;
 
   explicit DeleteDirectiveHandler(BackendTaskScheduler backend_task_scheduler);
+
+  DeleteDirectiveHandler(const DeleteDirectiveHandler&) = delete;
+  DeleteDirectiveHandler& operator=(const DeleteDirectiveHandler&) = delete;
+
   ~DeleteDirectiveHandler() override;
 
   // Notifies that HistoryBackend has been fully loaded and hence is ready to
@@ -96,8 +100,6 @@ class DeleteDirectiveHandler : public syncer::SyncableService {
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<DeleteDirectiveHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteDirectiveHandler);
 };
 
 }  // namespace history

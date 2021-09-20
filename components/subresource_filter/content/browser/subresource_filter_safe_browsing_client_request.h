@@ -40,6 +40,12 @@ class SubresourceFilterSafeBrowsingClientRequest
           database_manager,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       SubresourceFilterSafeBrowsingClient* client);
+
+  SubresourceFilterSafeBrowsingClientRequest(
+      const SubresourceFilterSafeBrowsingClientRequest&) = delete;
+  SubresourceFilterSafeBrowsingClientRequest& operator=(
+      const SubresourceFilterSafeBrowsingClientRequest&) = delete;
+
   ~SubresourceFilterSafeBrowsingClientRequest() override;
 
   void Start(const GURL& url);
@@ -84,8 +90,6 @@ class SubresourceFilterSafeBrowsingClientRequest
   base::OneShotTimer timer_;
 
   bool request_completed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterSafeBrowsingClientRequest);
 };
 
 }  // namespace subresource_filter

@@ -32,6 +32,10 @@ class ElementPrecondition {
       const base::flat_map<std::string, DomObjectFrameStack>&)>;
 
   ElementPrecondition(const ElementConditionProto& proto);
+
+  ElementPrecondition(const ElementPrecondition&) = delete;
+  ElementPrecondition& operator=(const ElementPrecondition&) = delete;
+
   ~ElementPrecondition();
 
   // Check whether the conditions are satisfied and return the result through
@@ -88,8 +92,6 @@ class ElementPrecondition {
   base::flat_map<std::string, DomObjectFrameStack> elements_;
 
   base::WeakPtrFactory<ElementPrecondition> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ElementPrecondition);
 };
 
 }  // namespace autofill_assistant

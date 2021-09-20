@@ -26,6 +26,9 @@ class SESSIONS_EXPORT ContentLiveTab
     : public LiveTab,
       public base::SupportsUserData::Data {
  public:
+  ContentLiveTab(const ContentLiveTab&) = delete;
+  ContentLiveTab& operator=(const ContentLiveTab&) = delete;
+
   ~ContentLiveTab() override;
 
   // Returns the ContentLiveTab associated with |web_contents|, creating it if
@@ -57,8 +60,6 @@ class SESSIONS_EXPORT ContentLiveTab
   }
 
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentLiveTab);
 };
 
 }  // namespace sessions

@@ -26,6 +26,9 @@ class DataAccessor {
   // same part of input twice.
   DataAccessor(const uint8_t* data, size_t size);
 
+  DataAccessor(const DataAccessor&) = delete;
+  DataAccessor& operator=(const DataAccessor&) = delete;
+
   ~DataAccessor();
 
   // Return the next bit and advance the "reading head" by one bit.
@@ -60,8 +63,6 @@ class DataAccessor {
   const uint8_t* data_;
   size_t bits_consumed_;
   size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataAccessor);
 };
 
 }  // namespace password_manager

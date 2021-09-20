@@ -16,10 +16,11 @@ namespace autofill_assistant {
 class WebControllerWorker {
  public:
   WebControllerWorker() = default;
-  virtual ~WebControllerWorker() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebControllerWorker);
+  WebControllerWorker(const WebControllerWorker&) = delete;
+  WebControllerWorker& operator=(const WebControllerWorker&) = delete;
+
+  virtual ~WebControllerWorker() = default;
 };
 
 }  //  namespace autofill_assistant

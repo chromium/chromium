@@ -38,15 +38,16 @@ class DataImpl : public PageLoadTrackerDecorator::Data,
   struct Traits : public NodeAttachedDataOwnedByNodeType<PageNodeImpl> {};
 
   explicit DataImpl(const PageNodeImpl* page_node) {}
+
+  DataImpl(const DataImpl&) = delete;
+  DataImpl& operator=(const DataImpl&) = delete;
+
   ~DataImpl() override = default;
 
   static std::unique_ptr<NodeAttachedData>* GetUniquePtrStorage(
       PageNodeImpl* page_node) {
     return PageLoadTrackerAccess::GetUniquePtrStorage(page_node);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DataImpl);
 };
 
 // static

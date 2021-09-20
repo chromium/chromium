@@ -23,6 +23,10 @@ class VisualsAvailabilityTask : public Task {
   VisualsAvailabilityTask(OfflinePageMetadataStore* store,
                           int64_t offline_id,
                           VisualsAvailableCallback exists_callback);
+
+  VisualsAvailabilityTask(const VisualsAvailabilityTask&) = delete;
+  VisualsAvailabilityTask& operator=(const VisualsAvailabilityTask&) = delete;
+
   ~VisualsAvailabilityTask() override;
 
  private:
@@ -35,7 +39,6 @@ class VisualsAvailabilityTask : public Task {
   int64_t offline_id_;
   VisualsAvailableCallback exists_callback_;
   base::WeakPtrFactory<VisualsAvailabilityTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(VisualsAvailabilityTask);
 };
 
 }  // namespace offline_pages

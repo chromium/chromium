@@ -18,6 +18,12 @@ class ChildAccountInfoFetcherAndroid {
   static std::unique_ptr<ChildAccountInfoFetcherAndroid> Create(
       AccountFetcherService* service,
       const CoreAccountId& account_id);
+
+  ChildAccountInfoFetcherAndroid(const ChildAccountInfoFetcherAndroid&) =
+      delete;
+  ChildAccountInfoFetcherAndroid& operator=(
+      const ChildAccountInfoFetcherAndroid&) = delete;
+
   ~ChildAccountInfoFetcherAndroid();
 
   static void InitializeForTests();
@@ -27,8 +33,6 @@ class ChildAccountInfoFetcherAndroid {
                                  const CoreAccountInfo& account_info);
 
   base::android::ScopedJavaGlobalRef<jobject> j_child_account_info_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildAccountInfoFetcherAndroid);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_CHILD_ACCOUNT_INFO_FETCHER_ANDROID_H_

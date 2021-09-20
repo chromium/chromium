@@ -25,6 +25,12 @@ namespace offline_pages {
 class OfflinePageMetadataStoreTestUtil {
  public:
   OfflinePageMetadataStoreTestUtil();
+
+  OfflinePageMetadataStoreTestUtil(const OfflinePageMetadataStoreTestUtil&) =
+      delete;
+  OfflinePageMetadataStoreTestUtil& operator=(
+      const OfflinePageMetadataStoreTestUtil&) = delete;
+
   ~OfflinePageMetadataStoreTestUtil();
 
   // Builds a new store in a temporary directory.
@@ -59,8 +65,6 @@ class OfflinePageMetadataStoreTestUtil {
   std::unique_ptr<OfflinePageMetadataStore> store_;
   OfflinePageMetadataStore* store_ptr_;
   base::SimpleTestClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageMetadataStoreTestUtil);
 };
 
 }  // namespace offline_pages

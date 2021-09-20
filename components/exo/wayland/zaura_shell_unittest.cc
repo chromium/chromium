@@ -122,6 +122,10 @@ class ZAuraSurfaceTest : public test::ExoTestBase,
                          public ::wm::ActivationChangeObserver {
  public:
   ZAuraSurfaceTest() {}
+
+  ZAuraSurfaceTest(const ZAuraSurfaceTest&) = delete;
+  ZAuraSurfaceTest& operator=(const ZAuraSurfaceTest&) = delete;
+
   ~ZAuraSurfaceTest() override {}
 
   // test::ExoTestBase overrides:
@@ -191,8 +195,6 @@ class ZAuraSurfaceTest : public test::ExoTestBase,
   std::unique_ptr<Surface> surface_;
   std::unique_ptr<views::Widget> parent_widget_;
   float occlusion_fraction_on_activation_loss_ = -1.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(ZAuraSurfaceTest);
 };
 
 TEST_F(ZAuraSurfaceTest, OcclusionTrackingStartsAfterCommit) {

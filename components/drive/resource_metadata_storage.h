@@ -46,6 +46,10 @@ class ResourceMetadataStorage {
   class Iterator {
    public:
     explicit Iterator(std::unique_ptr<leveldb::Iterator> it);
+
+    Iterator(const Iterator&) = delete;
+    Iterator& operator=(const Iterator&) = delete;
+
     ~Iterator();
 
     // Returns true if this iterator cannot advance any more and does not point
@@ -67,8 +71,6 @@ class ResourceMetadataStorage {
    private:
     ResourceEntry entry_;
     std::unique_ptr<leveldb::Iterator> it_;
-
-    DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
 
   // Cache information recovered from trashed DB.

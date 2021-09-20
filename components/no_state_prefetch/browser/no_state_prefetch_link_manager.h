@@ -35,6 +35,11 @@ class NoStatePrefetchLinkManager : public KeyedService,
                                    public NoStatePrefetchHandle::Observer {
  public:
   explicit NoStatePrefetchLinkManager(NoStatePrefetchManager* manager);
+
+  NoStatePrefetchLinkManager(const NoStatePrefetchLinkManager&) = delete;
+  NoStatePrefetchLinkManager& operator=(const NoStatePrefetchLinkManager&) =
+      delete;
+
   ~NoStatePrefetchLinkManager() override;
 
   // Called when a <link rel=prerender ...> element has been inserted into the
@@ -145,8 +150,6 @@ class NoStatePrefetchLinkManager : public KeyedService,
   // youngest at the back. Using std::unique_ptr<> here as LinkTrigger is not
   // copyable.
   std::list<std::unique_ptr<LinkTrigger>> triggers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchLinkManager);
 };
 
 }  // namespace prerender

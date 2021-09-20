@@ -26,6 +26,10 @@ class VIZ_COMMON_EXPORT CompositorFrame {
  public:
   CompositorFrame();
   CompositorFrame(CompositorFrame&& other);
+
+  CompositorFrame(const CompositorFrame&) = delete;
+  CompositorFrame& operator=(const CompositorFrame&) = delete;
+
   ~CompositorFrame();
 
   CompositorFrame& operator=(CompositorFrame&& other);
@@ -45,9 +49,6 @@ class VIZ_COMMON_EXPORT CompositorFrame {
   // The last one is the "root" CompositorRenderPass that all others are
   // directly or indirectly drawn into.
   CompositorRenderPassList render_pass_list;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompositorFrame);
 };
 
 }  // namespace viz

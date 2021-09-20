@@ -63,6 +63,9 @@ class PaymentApp {
     virtual void OnInstrumentDetailsError(const std::string& error_message) = 0;
   };
 
+  PaymentApp(const PaymentApp&) = delete;
+  PaymentApp& operator=(const PaymentApp&) = delete;
+
   virtual ~PaymentApp();
 
   // Will call into the |delegate| (can't be null) on success or error.
@@ -196,8 +199,6 @@ class PaymentApp {
   bool operator<(const PaymentApp& other) const;
   int icon_resource_id_;
   Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentApp);
 };
 
 }  // namespace payments

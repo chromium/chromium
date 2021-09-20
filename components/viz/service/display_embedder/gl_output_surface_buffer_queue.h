@@ -38,6 +38,10 @@ class VIZ_SERVICE_EXPORT GLOutputSurfaceBufferQueue
       gpu::SurfaceHandle surface_handle,
       std::unique_ptr<BufferQueue> buffer_queue);
 
+  GLOutputSurfaceBufferQueue(const GLOutputSurfaceBufferQueue&) = delete;
+  GLOutputSurfaceBufferQueue& operator=(const GLOutputSurfaceBufferQueue&) =
+      delete;
+
   ~GLOutputSurfaceBufferQueue() override;
 
   // BufferQueue::SyncTokenProvider implementation.
@@ -100,8 +104,6 @@ class VIZ_SERVICE_EXPORT GLOutputSurfaceBufferQueue
   gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
   gfx::Size reshape_size_;
   gfx::Size swap_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOutputSurfaceBufferQueue);
 };
 
 }  // namespace viz

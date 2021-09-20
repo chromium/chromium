@@ -65,13 +65,14 @@ class ScopedFunctionOverride {
     std::swap(*target_, replacement_);
   }
 
+  ScopedFunctionOverride(const ScopedFunctionOverride&) = delete;
+  ScopedFunctionOverride& operator=(const ScopedFunctionOverride&) = delete;
+
   ~ScopedFunctionOverride() { std::swap(*target_, replacement_); }
 
  private:
   Fun* target_;
   Fun replacement_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFunctionOverride);
 };
 
 template <typename Fun>
@@ -99,6 +100,10 @@ class MockRulesetPublisherImpl : public RulesetPublisher {
       scoped_refptr<base::TestSimpleTaskRunner> best_effort_task_runner)
       : blocking_task_runner_(std::move(blocking_task_runner)),
         best_effort_task_runner_(std::move(best_effort_task_runner)) {}
+
+  MockRulesetPublisherImpl(const MockRulesetPublisherImpl&) = delete;
+  MockRulesetPublisherImpl& operator=(const MockRulesetPublisherImpl&) = delete;
+
   ~MockRulesetPublisherImpl() override = default;
 
   void TryOpenAndSetRulesetFile(
@@ -148,8 +153,6 @@ class MockRulesetPublisherImpl : public RulesetPublisher {
   std::vector<RulesetFilePtr> published_rulesets_;
   scoped_refptr<base::TestSimpleTaskRunner> blocking_task_runner_;
   scoped_refptr<base::TestSimpleTaskRunner> best_effort_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRulesetPublisherImpl);
 };
 
 bool MockFailingReplaceFile(const base::FilePath&,

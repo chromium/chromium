@@ -16,6 +16,10 @@ namespace component_updater {
 class TimerUpdateScheduler : public UpdateScheduler {
  public:
   TimerUpdateScheduler();
+
+  TimerUpdateScheduler(const TimerUpdateScheduler&) = delete;
+  TimerUpdateScheduler& operator=(const TimerUpdateScheduler&) = delete;
+
   ~TimerUpdateScheduler() override;
 
   // UpdateScheduler:
@@ -28,8 +32,6 @@ class TimerUpdateScheduler : public UpdateScheduler {
  private:
   Timer timer_;
   base::RepeatingClosure user_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimerUpdateScheduler);
 };
 
 }  // namespace component_updater

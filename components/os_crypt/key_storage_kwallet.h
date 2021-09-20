@@ -17,6 +17,10 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKWallet : public KeyStorageLinux {
  public:
   KeyStorageKWallet(base::nix::DesktopEnvironment desktop_env,
                     std::string app_name);
+
+  KeyStorageKWallet(const KeyStorageKWallet&) = delete;
+  KeyStorageKWallet& operator=(const KeyStorageKWallet&) = delete;
+
   ~KeyStorageKWallet() override;
 
   // Initialize using an optional KWalletDBus mock.
@@ -48,8 +52,6 @@ class COMPONENT_EXPORT(OS_CRYPT) KeyStorageKWallet : public KeyStorageLinux {
   std::string wallet_name_;
   const std::string app_name_;
   std::unique_ptr<KWalletDBus> kwallet_dbus_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyStorageKWallet);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_KEY_STORAGE_KWALLET_H_

@@ -45,6 +45,9 @@ class ScriptPrecondition {
           parameter_match,
       const ElementConditionProto& must_match);
 
+  ScriptPrecondition(const ScriptPrecondition&) = delete;
+  ScriptPrecondition& operator=(const ScriptPrecondition&) = delete;
+
   ~ScriptPrecondition();
 
   // Check whether the conditions satisfied and return the result through
@@ -72,8 +75,6 @@ class ScriptPrecondition {
   std::vector<ScriptParameterMatchProto> parameter_match_;
 
   ElementPrecondition element_precondition_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptPrecondition);
 };
 
 }  // namespace autofill_assistant

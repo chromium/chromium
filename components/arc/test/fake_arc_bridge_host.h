@@ -14,6 +14,10 @@ namespace arc {
 class FakeArcBridgeHost : public mojom::ArcBridgeHost {
  public:
   FakeArcBridgeHost();
+
+  FakeArcBridgeHost(const FakeArcBridgeHost&) = delete;
+  FakeArcBridgeHost& operator=(const FakeArcBridgeHost&) = delete;
+
   ~FakeArcBridgeHost() override;
 
   // ArcBridgeHost overrides.
@@ -159,9 +163,6 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       mojo::PendingRemote<mojom::WallpaperInstance> wallpaper_remote) override;
   void OnWebApkInstanceReady(
       mojo::PendingRemote<mojom::WebApkInstance> webapk_instance) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeArcBridgeHost);
 };
 
 }  // namespace arc

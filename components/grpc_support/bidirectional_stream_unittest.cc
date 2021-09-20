@@ -95,9 +95,11 @@ class TestBidirectionalStreamCallback {
     bool flush;
 
     WriteData(const std::string& buffer, bool flush);
-    ~WriteData();
 
-    DISALLOW_COPY_AND_ASSIGN(WriteData);
+    WriteData(const WriteData&) = delete;
+    WriteData& operator=(const WriteData&) = delete;
+
+    ~WriteData();
   };
 
   bidirectional_stream* stream;

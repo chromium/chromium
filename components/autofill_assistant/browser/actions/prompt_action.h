@@ -26,6 +26,10 @@ namespace autofill_assistant {
 class PromptAction : public Action {
  public:
   explicit PromptAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  PromptAction(const PromptAction&) = delete;
+  PromptAction& operator=(const PromptAction&) = delete;
+
   ~PromptAction() override;
 
   // Overrides Action:
@@ -100,8 +104,6 @@ class PromptAction : public Action {
   Stopwatch last_checks_stopwatch_;
 
   base::WeakPtrFactory<PromptAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PromptAction);
 };
 
 }  // namespace autofill_assistant

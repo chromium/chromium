@@ -95,6 +95,11 @@ class MockContentSettingsAgentDelegate
 class MockContentSettingsAgentImpl : public ContentSettingsAgentImpl {
  public:
   MockContentSettingsAgentImpl(content::RenderFrame* render_frame);
+
+  MockContentSettingsAgentImpl(const MockContentSettingsAgentImpl&) = delete;
+  MockContentSettingsAgentImpl& operator=(const MockContentSettingsAgentImpl&) =
+      delete;
+
   ~MockContentSettingsAgentImpl() override {}
 
   const GURL& image_url() const { return image_url_; }
@@ -116,8 +121,6 @@ class MockContentSettingsAgentImpl : public ContentSettingsAgentImpl {
   MockContentSettingsManagerImpl::Log log_;
   const GURL image_url_;
   const std::string image_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockContentSettingsAgentImpl);
 };
 
 MockContentSettingsAgentImpl::MockContentSettingsAgentImpl(

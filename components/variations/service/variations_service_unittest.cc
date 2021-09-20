@@ -82,6 +82,11 @@ class TestVariationsServiceClient : public VariationsServiceClient {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
   }
+
+  TestVariationsServiceClient(const TestVariationsServiceClient&) = delete;
+  TestVariationsServiceClient& operator=(const TestVariationsServiceClient&) =
+      delete;
+
   ~TestVariationsServiceClient() override {}
 
   // VariationsServiceClient:
@@ -119,8 +124,6 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVariationsServiceClient);
 };
 
 // A test class used to validate expected functionality in VariationsService.
@@ -147,6 +150,9 @@ class TestVariationsService : public VariationsService {
         GetVariationsServerURL(use_secure_url ? USE_HTTPS : USE_HTTP);
     set_variations_server_url(interception_url_);
   }
+
+  TestVariationsService(const TestVariationsService&) = delete;
+  TestVariationsService& operator=(const TestVariationsService&) = delete;
 
   ~TestVariationsService() override {}
 
@@ -235,14 +241,17 @@ class TestVariationsService : public VariationsService {
   std::string stored_country_;
   bool delta_compressed_seed_;
   bool gzip_compressed_seed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVariationsService);
 };
 
 class TestVariationsServiceObserver : public VariationsService::Observer {
  public:
   TestVariationsServiceObserver()
       : best_effort_changes_notified_(0), crticial_changes_notified_(0) {}
+
+  TestVariationsServiceObserver(const TestVariationsServiceObserver&) = delete;
+  TestVariationsServiceObserver& operator=(
+      const TestVariationsServiceObserver&) = delete;
+
   ~TestVariationsServiceObserver() override {}
 
   void OnExperimentChangesDetected(Severity severity) override {
@@ -270,8 +279,6 @@ class TestVariationsServiceObserver : public VariationsService::Observer {
 
   // Number of notification received with CRITICAL severity.
   int crticial_changes_notified_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVariationsServiceObserver);
 };
 
 // Constants used to create the test seed.

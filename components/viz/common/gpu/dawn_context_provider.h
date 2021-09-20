@@ -18,6 +18,10 @@ namespace viz {
 class VIZ_DAWN_CONTEXT_PROVIDER_EXPORT DawnContextProvider {
  public:
   static std::unique_ptr<DawnContextProvider> Create();
+
+  DawnContextProvider(const DawnContextProvider&) = delete;
+  DawnContextProvider& operator=(const DawnContextProvider&) = delete;
+
   ~DawnContextProvider();
 
   wgpu::Device GetDevice() { return device_; }
@@ -33,8 +37,6 @@ class VIZ_DAWN_CONTEXT_PROVIDER_EXPORT DawnContextProvider {
   dawn_native::Instance instance_;
   wgpu::Device device_;
   sk_sp<GrDirectContext> gr_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(DawnContextProvider);
 };
 
 }  // namespace viz

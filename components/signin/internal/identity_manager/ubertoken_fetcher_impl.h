@@ -63,6 +63,10 @@ class UbertokenFetcherImpl : public UbertokenFetcher,
                        ProfileOAuth2TokenService* token_service,
                        CompletionCallback ubertoken_callback,
                        GaiaAuthFetcherFactory factory);
+
+  UbertokenFetcherImpl(const UbertokenFetcherImpl&) = delete;
+  UbertokenFetcherImpl& operator=(const UbertokenFetcherImpl&) = delete;
+
   ~UbertokenFetcherImpl() override;
 
   // Overridden from GaiaAuthConsumer
@@ -93,8 +97,6 @@ class UbertokenFetcherImpl : public UbertokenFetcher,
   int retry_number_;
   base::OneShotTimer retry_timer_;
   bool second_access_token_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(UbertokenFetcherImpl);
 };
 
 }  // namespace signin

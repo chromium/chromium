@@ -207,6 +207,10 @@ PasswordForm MakeBlocklistedForm(const std::string& signon_realm) {
 class FakeDatabase {
  public:
   FakeDatabase() = default;
+
+  FakeDatabase(const FakeDatabase&) = delete;
+  FakeDatabase& operator=(const FakeDatabase&) = delete;
+
   ~FakeDatabase() = default;
 
   FormRetrievalResult ReadAllLogins(PrimaryKeyToFormMap* map) {
@@ -282,8 +286,6 @@ class FakeDatabase {
   int primary_key_ = 1;
   PrimaryKeyToFormMap data_;
   AddLoginError error_ = AddLoginError::kNone;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDatabase);
 };
 
 class MockSyncMetadataStore : public PasswordStoreSync::MetadataStore {

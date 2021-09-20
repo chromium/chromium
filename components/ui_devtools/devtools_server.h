@@ -33,6 +33,9 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
   // Network tags to be used for the UI devtools servers.
   static const net::NetworkTrafficAnnotationTag kUIDevtoolsServerTag;
 
+  UiDevToolsServer(const UiDevToolsServer&) = delete;
+  UiDevToolsServer& operator=(const UiDevToolsServer&) = delete;
+
   ~UiDevToolsServer() override;
 
   // Returns an empty unique_ptr if ui devtools flag isn't enabled or if a
@@ -126,8 +129,6 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
 
   SEQUENCE_CHECKER(devtools_server_sequence_);
   base::WeakPtrFactory<UiDevToolsServer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UiDevToolsServer);
 };
 
 }  // namespace ui_devtools

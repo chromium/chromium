@@ -93,6 +93,10 @@ class HistoryService : public KeyedService {
   HistoryService();
   HistoryService(std::unique_ptr<HistoryClient> history_client,
                  std::unique_ptr<VisitDelegate> visit_delegate);
+
+  HistoryService(const HistoryService&) = delete;
+  HistoryService& operator=(const HistoryService&) = delete;
+
   ~HistoryService() override;
 
   // Initializes the history service, returning true on success. On false, do
@@ -982,8 +986,6 @@ class HistoryService : public KeyedService {
 
   // All vended weak pointers are invalidated in Cleanup().
   base::WeakPtrFactory<HistoryService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryService);
 };
 
 }  // namespace history

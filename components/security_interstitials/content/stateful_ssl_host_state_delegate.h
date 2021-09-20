@@ -44,6 +44,11 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
       content::BrowserContext* browser_context,
       PrefService* pref_service,
       HostContentSettingsMap* host_content_settings_map);
+
+  StatefulSSLHostStateDelegate(const StatefulSSLHostStateDelegate&) = delete;
+  StatefulSSLHostStateDelegate& operator=(const StatefulSSLHostStateDelegate&) =
+      delete;
+
   ~StatefulSSLHostStateDelegate() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -180,8 +185,6 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // allowlist decisions purely in memory.
   std::set<std::string /* host */>
       allowed_http_hosts_for_non_default_storage_partitions_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatefulSSLHostStateDelegate);
 
   int recurrent_interstitial_threshold_for_testing;
   enum RecurrentInterstitialMode recurrent_interstitial_mode_for_testing;

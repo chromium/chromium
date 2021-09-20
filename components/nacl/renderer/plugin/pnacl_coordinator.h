@@ -49,6 +49,9 @@ class PnaclTranslateThread;
 // (2) ld links the object code in obj_file_ and produces a nexe in nexe_file_.
 class PnaclCoordinator {
  public:
+  PnaclCoordinator(const PnaclCoordinator&) = delete;
+  PnaclCoordinator& operator=(const PnaclCoordinator&) = delete;
+
   virtual ~PnaclCoordinator();
 
   // The factory method for translations.
@@ -180,8 +183,6 @@ class PnaclCoordinator {
   // It accesses fields of PnaclCoordinator so it must have a
   // shorter lifetime.
   std::unique_ptr<PnaclTranslateThread> translate_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(PnaclCoordinator);
 };
 
 //----------------------------------------------------------------------

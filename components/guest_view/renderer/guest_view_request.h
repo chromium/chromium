@@ -27,6 +27,10 @@ class GuestViewRequest {
   GuestViewRequest(GuestViewContainer* container,
                    v8::Local<v8::Function> callback,
                    v8::Isolate* isolate);
+
+  GuestViewRequest(const GuestViewRequest&) = delete;
+  GuestViewRequest& operator=(const GuestViewRequest&) = delete;
+
   virtual ~GuestViewRequest();
 
   // Performs the associated request.
@@ -51,8 +55,6 @@ class GuestViewRequest {
   GuestViewContainer* const container_;
   v8::Global<v8::Function> callback_;
   v8::Isolate* const isolate_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestViewRequest);
 };
 
 }  // namespace guest_view

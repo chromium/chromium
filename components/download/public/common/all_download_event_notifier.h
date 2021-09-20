@@ -27,6 +27,10 @@ class COMPONENTS_DOWNLOAD_EXPORT AllDownloadEventNotifier
   class Observer {
    public:
     Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() = default;
 
     virtual void OnDownloadsInitialized(
@@ -42,12 +46,13 @@ class COMPONENTS_DOWNLOAD_EXPORT AllDownloadEventNotifier
                                   DownloadItem* item) {}
     virtual void OnDownloadRemoved(SimpleDownloadManagerCoordinator* manager,
                                    DownloadItem* item) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   explicit AllDownloadEventNotifier(SimpleDownloadManagerCoordinator* manager);
+
+  AllDownloadEventNotifier(const AllDownloadEventNotifier&) = delete;
+  AllDownloadEventNotifier& operator=(const AllDownloadEventNotifier&) = delete;
+
   ~AllDownloadEventNotifier() override;
 
   void AddObserver(Observer* observer);
@@ -72,8 +77,6 @@ class COMPONENTS_DOWNLOAD_EXPORT AllDownloadEventNotifier
 
   // Observers that want to be notified of download events.
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AllDownloadEventNotifier);
 };
 
 }  // namespace download

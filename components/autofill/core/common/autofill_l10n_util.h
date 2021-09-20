@@ -25,14 +25,16 @@ class CaseInsensitiveCompare {
   CaseInsensitiveCompare();
   // Used for testing.
   explicit CaseInsensitiveCompare(const icu::Locale& locale);
+
+  CaseInsensitiveCompare(const CaseInsensitiveCompare&) = delete;
+  CaseInsensitiveCompare& operator=(const CaseInsensitiveCompare&) = delete;
+
   ~CaseInsensitiveCompare();
 
   bool StringsEqual(const std::u16string& lhs, const std::u16string& rhs) const;
 
  private:
   std::unique_ptr<icu::Collator> collator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaseInsensitiveCompare);
 };
 
 }  // namespace l10n

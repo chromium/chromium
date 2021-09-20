@@ -122,6 +122,9 @@ class V4Database {
   // long operation.
   static void Destroy(std::unique_ptr<V4Database> v4_database);
 
+  V4Database(const V4Database&) = delete;
+  V4Database& operator=(const V4Database&) = delete;
+
   virtual ~V4Database();
 
   // Updates the stores with the response received from the SafeBrowsing service
@@ -252,8 +255,6 @@ class V4Database {
   // Only meant to be dereferenced and invalidated on the IO thread and hence
   // named. For details, see the comment at the top of weak_ptr.h
   base::WeakPtrFactory<V4Database> weak_factory_on_io_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(V4Database);
 };
 
 }  // namespace safe_browsing

@@ -58,6 +58,10 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   static const char kLastUpdatePref[];
 
   AccountFetcherService();
+
+  AccountFetcherService(const AccountFetcherService&) = delete;
+  AccountFetcherService& operator=(const AccountFetcherService&) = delete;
+
   ~AccountFetcherService() override;
 
   // Registers the preferences used by AccountFetcherService.
@@ -197,8 +201,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   std::unique_ptr<image_fetcher::ImageDecoder> image_decoder_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AccountFetcherService);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_FETCHER_SERVICE_H_

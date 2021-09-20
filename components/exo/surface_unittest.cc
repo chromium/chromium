@@ -67,6 +67,10 @@ class SurfaceTest : public test::ExoTestBase,
                     public ::testing::WithParamInterface<float> {
  public:
   SurfaceTest() = default;
+
+  SurfaceTest(const SurfaceTest&) = delete;
+  SurfaceTest& operator=(const SurfaceTest&) = delete;
+
   ~SurfaceTest() override = default;
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -116,9 +120,6 @@ class SurfaceTest : public test::ExoTestBase,
         GetSurfaceManager()->GetSurfaceForId(surface_id)->GetActiveFrame();
     return frame;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SurfaceTest);
 };
 
 void ReleaseBuffer(int* release_buffer_call_count) {

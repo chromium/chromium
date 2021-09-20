@@ -21,6 +21,10 @@ namespace {
 class MockNotifierObserver : public AllDownloadEventNotifier::Observer {
  public:
   MockNotifierObserver() = default;
+
+  MockNotifierObserver(const MockNotifierObserver&) = delete;
+  MockNotifierObserver& operator=(const MockNotifierObserver&) = delete;
+
   ~MockNotifierObserver() override = default;
 
   MOCK_METHOD2(OnDownloadsInitialized,
@@ -38,14 +42,15 @@ class MockNotifierObserver : public AllDownloadEventNotifier::Observer {
   MOCK_METHOD2(OnDownloadRemoved,
                void(SimpleDownloadManagerCoordinator* manager,
                     DownloadItem* item));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNotifierObserver);
 };
 
 class AllDownloadEventNotifierTest : public testing::Test {
  public:
   AllDownloadEventNotifierTest() : coordinator_(base::NullCallback(), false) {}
+
+  AllDownloadEventNotifierTest(const AllDownloadEventNotifierTest&) = delete;
+  AllDownloadEventNotifierTest& operator=(const AllDownloadEventNotifierTest&) =
+      delete;
 
   ~AllDownloadEventNotifierTest() override = default;
 
@@ -59,7 +64,6 @@ class AllDownloadEventNotifierTest : public testing::Test {
   NiceMock<MockDownloadItem> item_;
   SimpleDownloadManagerCoordinator coordinator_;
   NiceMock<MockNotifierObserver> observer_;
-  DISALLOW_COPY_AND_ASSIGN(AllDownloadEventNotifierTest);
 };
 
 }  // namespace

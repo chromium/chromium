@@ -34,6 +34,10 @@ class SecurityInterstitialPage {
       content::WebContents* web_contents,
       const GURL& request_url,
       std::unique_ptr<SecurityInterstitialControllerClient> controller);
+
+  SecurityInterstitialPage(const SecurityInterstitialPage&) = delete;
+  SecurityInterstitialPage& operator=(const SecurityInterstitialPage&) = delete;
+
   virtual ~SecurityInterstitialPage();
 
   // Prevents creating the actual interstitial view for testing.
@@ -90,8 +94,6 @@ class SecurityInterstitialPage {
 
   // For subclasses that don't have their own ControllerClients yet.
   std::unique_ptr<SecurityInterstitialControllerClient> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityInterstitialPage);
 };
 
 }  // security_interstitials

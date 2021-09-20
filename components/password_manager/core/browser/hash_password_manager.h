@@ -25,6 +25,10 @@ class HashPasswordManager {
  public:
   HashPasswordManager();
   explicit HashPasswordManager(PrefService* prefs);
+
+  HashPasswordManager(const HashPasswordManager&) = delete;
+  HashPasswordManager& operator=(const HashPasswordManager&) = delete;
+
   ~HashPasswordManager();
 
   bool SavePasswordHash(const std::string username,
@@ -75,8 +79,6 @@ class HashPasswordManager {
   // saving the password hash actually succeeded.
   base::RepeatingCallbackList<void(const std::string& username)>
       state_callback_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HashPasswordManager);
 };
 
 }  // namespace password_manager

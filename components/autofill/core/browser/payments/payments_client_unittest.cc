@@ -125,6 +125,10 @@ struct CardUnmaskOptions {
 class PaymentsClientTest : public testing::Test {
  public:
   PaymentsClientTest() = default;
+
+  PaymentsClientTest(const PaymentsClientTest&) = delete;
+  PaymentsClientTest& operator=(const PaymentsClientTest&) = delete;
+
   ~PaymentsClientTest() override = default;
 
   void SetUp() override {
@@ -480,8 +484,6 @@ class PaymentsClientTest : public testing::Test {
   base::WeakPtrFactory<PaymentsClientTest> weak_ptr_factory_{this};
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentsClientTest);
-
   std::vector<AutofillProfile> BuildTestProfiles() {
     std::vector<AutofillProfile> profiles;
     profiles.push_back(BuildProfile("John", "Smith", "1234 Main St.", "Miami",

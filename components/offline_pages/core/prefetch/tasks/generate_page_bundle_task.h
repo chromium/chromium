@@ -29,6 +29,10 @@ class GeneratePageBundleTask : public Task {
                          const std::string& gcm_token,
                          PrefetchNetworkRequestFactory* request_factory,
                          PrefetchRequestFinishedCallback callback);
+
+  GeneratePageBundleTask(const GeneratePageBundleTask&) = delete;
+  GeneratePageBundleTask& operator=(const GeneratePageBundleTask&) = delete;
+
   ~GeneratePageBundleTask() override;
 
  private:
@@ -43,7 +47,6 @@ class GeneratePageBundleTask : public Task {
   PrefetchRequestFinishedCallback callback_;
 
   base::WeakPtrFactory<GeneratePageBundleTask> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(GeneratePageBundleTask);
 };
 
 }  // namespace offline_pages

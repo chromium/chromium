@@ -16,6 +16,10 @@ namespace viz {
 class FakeHostFrameSinkClient : public HostFrameSinkClient {
  public:
   FakeHostFrameSinkClient();
+
+  FakeHostFrameSinkClient(const FakeHostFrameSinkClient&) = delete;
+  FakeHostFrameSinkClient& operator=(const FakeHostFrameSinkClient&) = delete;
+
   ~FakeHostFrameSinkClient() override;
 
   // HostFrameSinkClient implementation.
@@ -26,7 +30,6 @@ class FakeHostFrameSinkClient : public HostFrameSinkClient {
 
  private:
   uint32_t last_frame_token_seen_ = 0u;
-  DISALLOW_COPY_AND_ASSIGN(FakeHostFrameSinkClient);
 };
 
 }  // namespace viz

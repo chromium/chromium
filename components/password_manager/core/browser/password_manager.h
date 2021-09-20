@@ -62,6 +62,10 @@ class PasswordManager : public PasswordManagerInterface {
   static void RegisterLocalPrefs(PrefRegistrySimple* registry);
 
   explicit PasswordManager(PasswordManagerClient* client);
+
+  PasswordManager(const PasswordManager&) = delete;
+  PasswordManager& operator=(const PasswordManager&) = delete;
+
   ~PasswordManager() override;
 
   // FormSubmissionObserver:
@@ -377,8 +381,6 @@ class PasswordManager : public PasswordManagerInterface {
   LeakDetectionDelegate leak_delegate_;
 
   absl::optional<PossibleUsernameData> possible_username_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManager);
 };
 
 }  // namespace password_manager

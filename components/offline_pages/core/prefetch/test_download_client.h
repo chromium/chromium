@@ -15,6 +15,10 @@ class PrefetchDownloader;
 class TestDownloadClient : public download::test::EmptyClient {
  public:
   explicit TestDownloadClient(PrefetchDownloader* downloader);
+
+  TestDownloadClient(const TestDownloadClient&) = delete;
+  TestDownloadClient& operator=(const TestDownloadClient&) = delete;
+
   ~TestDownloadClient() override = default;
 
   void OnDownloadFailed(const std::string& guid,
@@ -26,8 +30,6 @@ class TestDownloadClient : public download::test::EmptyClient {
 
  private:
   PrefetchDownloader* downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadClient);
 };
 
 }  // namespace offline_pages

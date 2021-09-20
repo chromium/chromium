@@ -29,13 +29,15 @@ class MockFilteredOfflineItemObserver {
    public:
     ScopedMockObserver(FilteredOfflineItemObserver* observer,
                        const ContentId& id);
+
+    ScopedMockObserver(const ScopedMockObserver&) = delete;
+    ScopedMockObserver& operator=(const ScopedMockObserver&) = delete;
+
     ~ScopedMockObserver() override;
 
    private:
     ContentId id_;
     FilteredOfflineItemObserver* observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedMockObserver);
   };
 
  private:

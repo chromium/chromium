@@ -24,6 +24,12 @@ class TestMediaTransferProtocolManagerChromeOS
  public:
   static TestMediaTransferProtocolManagerChromeOS* GetFakeMtpManager();
   TestMediaTransferProtocolManagerChromeOS();
+
+  TestMediaTransferProtocolManagerChromeOS(
+      const TestMediaTransferProtocolManagerChromeOS&) = delete;
+  TestMediaTransferProtocolManagerChromeOS& operator=(
+      const TestMediaTransferProtocolManagerChromeOS&) = delete;
+
   ~TestMediaTransferProtocolManagerChromeOS() override;
 
   void AddReceiver(mojo::PendingReceiver<device::mojom::MtpManager> receiver);
@@ -72,8 +78,6 @@ class TestMediaTransferProtocolManagerChromeOS
                     DeleteObjectCallback callback) override;
 
   mojo::ReceiverSet<device::mojom::MtpManager> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaTransferProtocolManagerChromeOS);
 };
 
 }  // namespace storage_monitor

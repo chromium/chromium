@@ -22,6 +22,11 @@ class LanguageDetectionServiceImpl : public mojom::LanguageDetectionService {
  public:
   explicit LanguageDetectionServiceImpl(
       mojo::PendingReceiver<mojom::LanguageDetectionService> receiver);
+
+  LanguageDetectionServiceImpl(const LanguageDetectionServiceImpl&) = delete;
+  LanguageDetectionServiceImpl& operator=(const LanguageDetectionServiceImpl&) =
+      delete;
+
   ~LanguageDetectionServiceImpl() override;
 
  private:
@@ -30,8 +35,6 @@ class LanguageDetectionServiceImpl : public mojom::LanguageDetectionService {
                          DetermineLanguageCallback callback) override;
 
   mojo::Receiver<mojom::LanguageDetectionService> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageDetectionServiceImpl);
 };
 
 }  // namespace language_detection

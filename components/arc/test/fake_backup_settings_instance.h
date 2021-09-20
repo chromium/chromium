@@ -13,6 +13,11 @@ namespace arc {
 class FakeBackupSettingsInstance : public mojom::BackupSettingsInstance {
  public:
   FakeBackupSettingsInstance();
+
+  FakeBackupSettingsInstance(const FakeBackupSettingsInstance&) = delete;
+  FakeBackupSettingsInstance& operator=(const FakeBackupSettingsInstance&) =
+      delete;
+
   ~FakeBackupSettingsInstance() override;
 
   // mojom::BackupSettingsInstance overrides:
@@ -28,8 +33,6 @@ class FakeBackupSettingsInstance : public mojom::BackupSettingsInstance {
   int set_backup_enabled_count_ = 0;
   bool enabled_ = false;
   bool managed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBackupSettingsInstance);
 };
 
 }  // namespace arc

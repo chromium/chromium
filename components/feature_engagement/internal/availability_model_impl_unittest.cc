@@ -34,6 +34,10 @@ class AvailabilityModelImplTest : public testing::Test {
         &AvailabilityModelImplTest::OnInitialized, base::Unretained(this));
   }
 
+  AvailabilityModelImplTest(const AvailabilityModelImplTest&) = delete;
+  AvailabilityModelImplTest& operator=(const AvailabilityModelImplTest&) =
+      delete;
+
   ~AvailabilityModelImplTest() override = default;
 
   // SetUpModel exists so that the filter can be changed for any test.
@@ -64,9 +68,6 @@ class AvailabilityModelImplTest : public testing::Test {
   AvailabilityModel::OnInitializedCallback initialized_callback_;
   absl::optional<bool> success_;
   absl::optional<uint32_t> current_day_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityModelImplTest);
 };
 
 }  // namespace

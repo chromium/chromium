@@ -24,6 +24,10 @@ namespace subresource_filter {
 class RulesetConverter {
  public:
   RulesetConverter();
+
+  RulesetConverter(const RulesetConverter&) = delete;
+  RulesetConverter& operator=(const RulesetConverter&) = delete;
+
   ~RulesetConverter();
 
   // Converts rulesets based on Set* configurations.
@@ -64,8 +68,6 @@ class RulesetConverter {
 
   // Increase this if rule_stream gets more custom logic for versions > 59.
   int chrome_version_ = 59;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetConverter);
 };
 
 }  // namespace subresource_filter

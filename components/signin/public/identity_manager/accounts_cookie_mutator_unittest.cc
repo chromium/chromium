@@ -78,6 +78,10 @@ class AccountsCookieMutatorTest
                            AccountConsistencyMethod::kDisabled,
                            &test_signin_client_) {}
 
+  AccountsCookieMutatorTest(const AccountsCookieMutatorTest&) = delete;
+  AccountsCookieMutatorTest& operator=(const AccountsCookieMutatorTest&) =
+      delete;
+
   ~AccountsCookieMutatorTest() override {}
 
   // Make an account available and returns the account ID.
@@ -174,8 +178,6 @@ class AccountsCookieMutatorTest
   TestSigninClient test_signin_client_;
   IdentityTestEnvironment identity_test_env_;
   network::TestCookieManager cookie_manager_for_partition_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountsCookieMutatorTest);
 };
 
 // Test that adding a non existing account without providing an access token

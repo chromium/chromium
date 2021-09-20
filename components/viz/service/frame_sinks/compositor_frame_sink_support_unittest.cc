@@ -82,6 +82,11 @@ bool BeginFrameArgsAreEquivalent(const BeginFrameArgs& first,
 class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
  public:
   MockFrameSinkManagerClient() = default;
+
+  MockFrameSinkManagerClient(const MockFrameSinkManagerClient&) = delete;
+  MockFrameSinkManagerClient& operator=(const MockFrameSinkManagerClient&) =
+      delete;
+
   ~MockFrameSinkManagerClient() override = default;
 
   // mojom::FrameSinkManagerClient:
@@ -91,9 +96,6 @@ class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
   void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFrameSinkManagerClient);
 };
 
 class CompositorFrameSinkSupportTest : public testing::Test {

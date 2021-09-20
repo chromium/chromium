@@ -56,6 +56,9 @@ class SessionStorageImplTest : public testing::Test {
  public:
   SessionStorageImplTest() { CHECK(temp_dir_.CreateUniqueTempDir()); }
 
+  SessionStorageImplTest(const SessionStorageImplTest&) = delete;
+  SessionStorageImplTest& operator=(const SessionStorageImplTest&) = delete;
+
   ~SessionStorageImplTest() override {
     EXPECT_TRUE(temp_dir_.Delete());
   }
@@ -161,8 +164,6 @@ class SessionStorageImplTest : public testing::Test {
           {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})};
   std::unique_ptr<SessionStorageImpl> session_storage_;
   mojo::Remote<mojom::SessionStorageControl> remote_session_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStorageImplTest);
 };
 
 TEST_F(SessionStorageImplTest, MigrationV0ToV1) {

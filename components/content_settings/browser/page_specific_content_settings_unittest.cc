@@ -38,12 +38,12 @@ class MockSiteDataObserver
   explicit MockSiteDataObserver(content::WebContents* web_contents)
       : SiteDataObserver(web_contents) {}
 
+  MockSiteDataObserver(const MockSiteDataObserver&) = delete;
+  MockSiteDataObserver& operator=(const MockSiteDataObserver&) = delete;
+
   ~MockSiteDataObserver() override = default;
 
   MOCK_METHOD0(OnSiteDataAccessed, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSiteDataObserver);
 };
 
 class MockPageSpecificContentSettingsDelegate

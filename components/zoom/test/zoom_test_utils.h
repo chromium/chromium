@@ -39,6 +39,9 @@ class ZoomChangedWatcher : public zoom::ZoomObserver {
       content::WebContents* web_contents,
       const ZoomController::ZoomChangedEventData& expected_event_data);
 
+  ZoomChangedWatcher(const ZoomChangedWatcher&) = delete;
+  ZoomChangedWatcher& operator=(const ZoomChangedWatcher&) = delete;
+
   ~ZoomChangedWatcher() override;
 
   void Wait();
@@ -52,8 +55,6 @@ class ZoomChangedWatcher : public zoom::ZoomObserver {
   ZoomEventPred predicate_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   bool change_received_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomChangedWatcher);
 };
 
 }  // namespace zoom

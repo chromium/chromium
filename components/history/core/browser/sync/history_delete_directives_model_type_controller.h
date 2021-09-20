@@ -32,6 +32,12 @@ class HistoryDeleteDirectivesModelTypeController
       syncer::SyncService* sync_service,
       syncer::ModelTypeStoreService* model_type_store_service,
       HistoryService* history_service);
+
+  HistoryDeleteDirectivesModelTypeController(
+      const HistoryDeleteDirectivesModelTypeController&) = delete;
+  HistoryDeleteDirectivesModelTypeController& operator=(
+      const HistoryDeleteDirectivesModelTypeController&) = delete;
+
   ~HistoryDeleteDirectivesModelTypeController() override;
 
   // DataTypeController overrides.
@@ -46,8 +52,6 @@ class HistoryDeleteDirectivesModelTypeController
 
  private:
   syncer::SyncService* const sync_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryDeleteDirectivesModelTypeController);
 };
 
 }  // namespace history

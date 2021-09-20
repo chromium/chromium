@@ -46,6 +46,10 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                                  public content::WebContentsObserver {
  public:
   WebControllerBrowserTest() {}
+
+  WebControllerBrowserTest(const WebControllerBrowserTest&) = delete;
+  WebControllerBrowserTest& operator=(const WebControllerBrowserTest&) = delete;
+
   ~WebControllerBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -914,8 +918,6 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
  private:
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_server_iframe_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebControllerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ElementExistenceCheck) {

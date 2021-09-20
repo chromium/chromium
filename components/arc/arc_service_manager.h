@@ -26,6 +26,10 @@ class ArcBridgeService;
 class ArcServiceManager {
  public:
   ArcServiceManager();
+
+  ArcServiceManager(const ArcServiceManager&) = delete;
+  ArcServiceManager& operator=(const ArcServiceManager&) = delete;
+
   ~ArcServiceManager();
 
   // Returns the current BrowserContext which ARC is allowed.
@@ -78,8 +82,6 @@ class ArcServiceManager {
   // TODO(hidehiko): Remove this when we move IsArcAllowedForProfile() to
   // components/arc. See browser_context() for details.
   AccountId account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcServiceManager);
 };
 
 }  // namespace arc

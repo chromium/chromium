@@ -21,6 +21,10 @@ class MetricsUploadScheduler : public MetricsScheduler {
   // arrange to call either UploadFinished or UploadCancelled on completion.
   MetricsUploadScheduler(const base::RepeatingClosure& upload_callback,
                          bool fast_startup_for_testing);
+
+  MetricsUploadScheduler(const MetricsUploadScheduler&) = delete;
+  MetricsUploadScheduler& operator=(const MetricsUploadScheduler&) = delete;
+
   ~MetricsUploadScheduler() override;
 
   // Callback from MetricsService when a triggered upload finishes.
@@ -43,8 +47,6 @@ class MetricsUploadScheduler : public MetricsScheduler {
 
   // Time to wait for the next upload attempt if the next one fails.
   base::TimeDelta backoff_interval_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsUploadScheduler);
 };
 
 }  // namespace metrics

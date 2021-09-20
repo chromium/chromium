@@ -20,11 +20,6 @@ class ModelTypeStoreBackend;
 class TestModelTypeStoreService : public ModelTypeStoreService {
  public:
   TestModelTypeStoreService();
-
-  TestModelTypeStoreService(const TestModelTypeStoreService&) = delete;
-  TestModelTypeStoreService& operator=(const TestModelTypeStoreService&) =
-      delete;
-
   ~TestModelTypeStoreService() override;
 
   // ModelTypeStoreService:
@@ -35,6 +30,8 @@ class TestModelTypeStoreService : public ModelTypeStoreService {
  private:
   const scoped_refptr<ModelTypeStoreBackend> store_backend_;
   base::ScopedTempDir sync_data_path_;
+
+  DISALLOW_COPY_AND_ASSIGN(TestModelTypeStoreService);
 };
 
 }  // namespace syncer

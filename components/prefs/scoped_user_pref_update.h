@@ -71,6 +71,9 @@ class ScopedUserPrefUpdate : public subtle::ScopedUserPrefUpdateBase {
   ScopedUserPrefUpdate(PrefService* service, const std::string& path)
       : ScopedUserPrefUpdateBase(service, path) {}
 
+  ScopedUserPrefUpdate(const ScopedUserPrefUpdate&) = delete;
+  ScopedUserPrefUpdate& operator=(const ScopedUserPrefUpdate&) = delete;
+
   // Triggers an update notification if Get() was called.
   virtual ~ScopedUserPrefUpdate() {}
 
@@ -96,9 +99,6 @@ class ScopedUserPrefUpdate : public subtle::ScopedUserPrefUpdateBase {
   T* operator->() {
     return Get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedUserPrefUpdate);
 };
 
 typedef ScopedUserPrefUpdate<base::DictionaryValue,

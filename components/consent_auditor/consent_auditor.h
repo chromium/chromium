@@ -45,6 +45,10 @@ enum class ConsentStatus { NOT_GIVEN, GIVEN };
 class ConsentAuditor : public KeyedService {
  public:
   ConsentAuditor() = default;
+
+  ConsentAuditor(const ConsentAuditor&) = delete;
+  ConsentAuditor& operator=(const ConsentAuditor&) = delete;
+
   ~ConsentAuditor() override = default;
 
   // Records the ARC Play |consent| for the signed-in GAIA account with the ID
@@ -97,9 +101,6 @@ class ConsentAuditor : public KeyedService {
   // Returns the underlying Sync integration point.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConsentAuditor);
 };
 
 }  // namespace consent_auditor

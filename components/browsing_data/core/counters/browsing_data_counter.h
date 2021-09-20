@@ -29,6 +29,10 @@ class BrowsingDataCounter {
   class Result {
    public:
     explicit Result(const BrowsingDataCounter* source);
+
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
+
     virtual ~Result();
 
     const BrowsingDataCounter* source() const { return source_; }
@@ -36,8 +40,6 @@ class BrowsingDataCounter {
 
    private:
     const BrowsingDataCounter* source_;
-
-    DISALLOW_COPY_AND_ASSIGN(Result);
   };
 
   // A subclass of Result returned when the computation has finished. The result
@@ -47,6 +49,10 @@ class BrowsingDataCounter {
   class FinishedResult : public Result {
    public:
     FinishedResult(const BrowsingDataCounter* source, ResultInt value);
+
+    FinishedResult(const FinishedResult&) = delete;
+    FinishedResult& operator=(const FinishedResult&) = delete;
+
     ~FinishedResult() override;
 
     // Result:
@@ -56,8 +62,6 @@ class BrowsingDataCounter {
 
    private:
     ResultInt value_;
-
-    DISALLOW_COPY_AND_ASSIGN(FinishedResult);
   };
 
   // A subclass of FinishedResult that besides |Value()| also stores whether
@@ -67,14 +71,16 @@ class BrowsingDataCounter {
     SyncResult(const BrowsingDataCounter* source,
                ResultInt value,
                bool sync_enabled);
+
+    SyncResult(const SyncResult&) = delete;
+    SyncResult& operator=(const SyncResult&) = delete;
+
     ~SyncResult() override;
 
     bool is_sync_enabled() const { return sync_enabled_; }
 
    private:
     bool sync_enabled_;
-
-    DISALLOW_COPY_AND_ASSIGN(SyncResult);
   };
 
   typedef base::RepeatingCallback<void(std::unique_ptr<Result>)> ResultCallback;

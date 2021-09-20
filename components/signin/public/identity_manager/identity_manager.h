@@ -383,6 +383,10 @@ class IdentityManager : public KeyedService,
   };
 
   explicit IdentityManager(IdentityManager::InitParameters&& parameters);
+
+  IdentityManager(const IdentityManager&) = delete;
+  IdentityManager& operator=(const IdentityManager&) = delete;
+
   ~IdentityManager() override;
 
   // KeyedService:
@@ -717,8 +721,6 @@ class IdentityManager : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   account_manager::AccountManager* ash_account_manager_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityManager);
 };
 
 }  // namespace signin

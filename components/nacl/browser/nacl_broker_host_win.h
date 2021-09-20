@@ -24,6 +24,10 @@ namespace nacl {
 class NaClBrokerHost : public content::BrowserChildProcessHostDelegate {
  public:
   NaClBrokerHost();
+
+  NaClBrokerHost(const NaClBrokerHost&) = delete;
+  NaClBrokerHost& operator=(const NaClBrokerHost&) = delete;
+
   ~NaClBrokerHost() override;
 
   // This function starts the broker process. It needs to be called
@@ -59,8 +63,6 @@ class NaClBrokerHost : public content::BrowserChildProcessHostDelegate {
 
   std::unique_ptr<content::BrowserChildProcessHost> process_;
   bool is_terminating_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClBrokerHost);
 };
 
 }  // namespace nacl

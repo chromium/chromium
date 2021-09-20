@@ -14,6 +14,12 @@
 class SigninStatusMetricsProviderBase : public metrics::MetricsProvider {
  public:
   SigninStatusMetricsProviderBase();
+
+  SigninStatusMetricsProviderBase(const SigninStatusMetricsProviderBase&) =
+      delete;
+  SigninStatusMetricsProviderBase& operator=(
+      const SigninStatusMetricsProviderBase&) = delete;
+
   ~SigninStatusMetricsProviderBase() override;
 
   // Possible sign-in status of all opened profiles during one UMA session. For
@@ -50,8 +56,6 @@ class SigninStatusMetricsProviderBase : public metrics::MetricsProvider {
  private:
   // Sign-in status of all profiles seen so far.
   SigninStatus signin_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninStatusMetricsProviderBase);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_STATUS_METRICS_PROVIDER_BASE_H_

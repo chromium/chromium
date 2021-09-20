@@ -60,14 +60,14 @@ class BackgroundTask {
   // task will not be rescheduled.
   virtual bool OnStopTask(const TaskParameters& task_params) = 0;
 
+  BackgroundTask(const BackgroundTask&) = delete;
+  BackgroundTask& operator=(const BackgroundTask&) = delete;
+
   // Destructor.
   virtual ~BackgroundTask() {}
 
  protected:
   BackgroundTask() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTask);
 };
 
 }  // namespace background_task

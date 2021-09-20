@@ -108,6 +108,9 @@ class SuspiciousSiteTrigger
     kMaxValue = MONITOR_MODE
   };
 
+  SuspiciousSiteTrigger(const SuspiciousSiteTrigger&) = delete;
+  SuspiciousSiteTrigger& operator=(const SuspiciousSiteTrigger&) = delete;
+
   ~SuspiciousSiteTrigger() override;
 
   // content::WebContentsObserver implementations.
@@ -177,8 +180,6 @@ class SuspiciousSiteTrigger
   base::WeakPtrFactory<SuspiciousSiteTrigger> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SuspiciousSiteTrigger);
 };
 
 }  // namespace safe_browsing

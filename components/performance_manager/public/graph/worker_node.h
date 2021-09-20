@@ -62,6 +62,10 @@ class WorkerNode : public Node {
   class ObserverDefaultImpl;
 
   WorkerNode();
+
+  WorkerNode(const WorkerNode&) = delete;
+  WorkerNode& operator=(const WorkerNode&) = delete;
+
   ~WorkerNode() override;
 
   // Returns the worker type. Note that this is different from the NodeTypeEnum.
@@ -113,9 +117,6 @@ class WorkerNode : public Node {
   // Returns the current priority of the worker, and the reason for the worker
   // having that particular priority.
   virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkerNode);
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
@@ -123,6 +124,10 @@ class WorkerNode : public Node {
 class WorkerNodeObserver {
  public:
   WorkerNodeObserver();
+
+  WorkerNodeObserver(const WorkerNodeObserver&) = delete;
+  WorkerNodeObserver& operator=(const WorkerNodeObserver&) = delete;
+
   virtual ~WorkerNodeObserver();
 
   // Node lifetime notifications.
@@ -165,9 +170,6 @@ class WorkerNodeObserver {
   virtual void OnPriorityAndReasonChanged(
       const WorkerNode* worker_node,
       const PriorityAndReason& previous_value) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkerNodeObserver);
 };
 
 // Default implementation of observer that provides dummy versions of each
@@ -176,6 +178,10 @@ class WorkerNodeObserver {
 class WorkerNode::ObserverDefaultImpl : public WorkerNodeObserver {
  public:
   ObserverDefaultImpl();
+
+  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
+  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
+
   ~ObserverDefaultImpl() override;
 
   // WorkerNodeObserver implementation:
@@ -197,9 +203,6 @@ class WorkerNode::ObserverDefaultImpl : public WorkerNodeObserver {
   void OnPriorityAndReasonChanged(
       const WorkerNode* worker_node,
       const PriorityAndReason& previous_value) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);
 };
 
 }  // namespace performance_manager

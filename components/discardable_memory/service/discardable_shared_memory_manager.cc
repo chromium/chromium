@@ -57,6 +57,11 @@ class MojoDiscardableSharedMemoryManagerImpl
           manager)
       : client_id_(client_id), manager_(manager) {}
 
+  MojoDiscardableSharedMemoryManagerImpl(
+      const MojoDiscardableSharedMemoryManagerImpl&) = delete;
+  MojoDiscardableSharedMemoryManagerImpl& operator=(
+      const MojoDiscardableSharedMemoryManagerImpl&) = delete;
+
   ~MojoDiscardableSharedMemoryManagerImpl() override {
     // Remove this client from the |manager_|, so all allocated discardable
     // memory belong to this client will be released.
@@ -85,8 +90,6 @@ class MojoDiscardableSharedMemoryManagerImpl
  private:
   const int32_t client_id_;
   base::WeakPtr<::discardable_memory::DiscardableSharedMemoryManager> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDiscardableSharedMemoryManagerImpl);
 };
 
 class DiscardableMemoryImpl : public base::DiscardableMemory {
@@ -97,6 +100,9 @@ class DiscardableMemoryImpl : public base::DiscardableMemory {
       : shared_memory_(std::move(shared_memory)),
         deleted_callback_(std::move(deleted_callback)),
         is_locked_(true) {}
+
+  DiscardableMemoryImpl(const DiscardableMemoryImpl&) = delete;
+  DiscardableMemoryImpl& operator=(const DiscardableMemoryImpl&) = delete;
 
   ~DiscardableMemoryImpl() override {
     if (is_locked_)
@@ -148,8 +154,6 @@ class DiscardableMemoryImpl : public base::DiscardableMemory {
   std::unique_ptr<base::DiscardableSharedMemory> shared_memory_;
   base::OnceClosure deleted_callback_;
   bool is_locked_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardableMemoryImpl);
 };
 
 // Returns the default memory limit to use for discardable memory, taking

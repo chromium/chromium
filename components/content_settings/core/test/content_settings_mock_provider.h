@@ -19,6 +19,10 @@ class MockProvider : public ObservableProvider {
  public:
   MockProvider();
   explicit MockProvider(bool read_only);
+
+  MockProvider(const MockProvider&) = delete;
+  MockProvider& operator=(const MockProvider&) = delete;
+
   ~MockProvider() override;
 
   std::unique_ptr<RuleIterator> GetRuleIterator(
@@ -44,8 +48,6 @@ class MockProvider : public ObservableProvider {
  private:
   OriginIdentifierValueMap value_map_;
   bool read_only_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockProvider);
 };
 
 }  // namespace content_settings

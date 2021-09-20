@@ -30,6 +30,9 @@ class ContentFaviconDriver
       public content::WebContentsUserData<ContentFaviconDriver>,
       public FaviconDriverImpl {
  public:
+  ContentFaviconDriver(const ContentFaviconDriver&) = delete;
+  ContentFaviconDriver& operator=(const ContentFaviconDriver&) = delete;
+
   ~ContentFaviconDriver() override;
 
   // FaviconDriver implementation.
@@ -100,8 +103,6 @@ class ContentFaviconDriver
   GURL bypass_cache_page_url_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ContentFaviconDriver);
 };
 
 }  // namespace favicon

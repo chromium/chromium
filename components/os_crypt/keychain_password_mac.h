@@ -23,6 +23,10 @@ class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
 #endif
 
   KeychainPassword(const crypto::AppleKeychain& keychain);
+
+  KeychainPassword(const KeychainPassword&) = delete;
+  KeychainPassword& operator=(const KeychainPassword&) = delete;
+
   ~KeychainPassword();
 
   // Get the OSCrypt password for this system. If no password exists
@@ -39,8 +43,6 @@ class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
 
  private:
   const crypto::AppleKeychain& keychain_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeychainPassword);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_KEYCHAIN_PASSWORD_MAC_H_

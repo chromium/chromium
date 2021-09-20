@@ -37,6 +37,10 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
   explicit ClipboardRecentContentIOS(
       ClipboardRecentContentImplIOS* implementation);
 
+  ClipboardRecentContentIOS(const ClipboardRecentContentIOS&) = delete;
+  ClipboardRecentContentIOS& operator=(const ClipboardRecentContentIOS&) =
+      delete;
+
   ~ClipboardRecentContentIOS() override;
 
   // ClipboardRecentContent implementation.
@@ -59,8 +63,6 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
 
   // The implementation instance.
   __strong ClipboardRecentContentImplIOS* implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardRecentContentIOS);
 };
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_RECENT_CONTENT_IOS_H_

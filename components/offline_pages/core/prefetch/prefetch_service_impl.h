@@ -33,6 +33,9 @@ class PrefetchServiceImpl : public PrefetchService {
       image_fetcher::ImageFetcher* image_fetcher_,
       PrefService* prefs);
 
+  PrefetchServiceImpl(const PrefetchServiceImpl&) = delete;
+  PrefetchServiceImpl& operator=(const PrefetchServiceImpl&) = delete;
+
   ~PrefetchServiceImpl() override;
 
   // PrefetchService implementation:
@@ -94,8 +97,6 @@ class PrefetchServiceImpl : public PrefetchService {
   SuggestionsProvider* suggestions_provider_ = nullptr;
 
   base::WeakPtrFactory<PrefetchServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchServiceImpl);
 };
 
 }  // namespace offline_pages

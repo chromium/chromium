@@ -98,6 +98,9 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
           AccountConsistencyMethod::kDisabled,
       TestSigninClient* test_signin_client = nullptr);
 
+  IdentityTestEnvironment(const IdentityTestEnvironment&) = delete;
+  IdentityTestEnvironment& operator=(const IdentityTestEnvironment&) = delete;
+
   ~IdentityTestEnvironment() override;
 
   // The IdentityManager instance associated with this instance.
@@ -452,8 +455,6 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   std::vector<AccessTokenRequestState> requesters_;
 
   base::WeakPtrFactory<IdentityTestEnvironment> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityTestEnvironment);
 };
 
 }  // namespace signin

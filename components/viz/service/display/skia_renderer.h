@@ -47,6 +47,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
                DisplayResourceProviderSkia* resource_provider,
                OverlayProcessorInterface* overlay_processor,
                SkiaOutputSurface* skia_output_surface);
+
+  SkiaRenderer(const SkiaRenderer&) = delete;
+  SkiaRenderer& operator=(const SkiaRenderer&) = delete;
+
   ~SkiaRenderer() override;
 
   void SwapBuffers(SwapFrameData swap_frame_data) override;
@@ -361,8 +365,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   bool UsingSkiaForDelegatedInk() const;
   uint32_t debug_tint_modulate_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaRenderer);
 };
 
 }  // namespace viz

@@ -51,6 +51,10 @@ class GCMDriverBaseTest : public testing::Test {
   enum WaitToFinish { DO_NOT_WAIT, WAIT };
 
   GCMDriverBaseTest();
+
+  GCMDriverBaseTest(const GCMDriverBaseTest&) = delete;
+  GCMDriverBaseTest& operator=(const GCMDriverBaseTest&) = delete;
+
   ~GCMDriverBaseTest() override;
 
   // testing::Test:
@@ -109,8 +113,6 @@ class GCMDriverBaseTest : public testing::Test {
   std::string encrypted_message_;
   GCMDecryptionResult decryption_result_ = GCMDecryptionResult::UNENCRYPTED;
   std::string decrypted_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverBaseTest);
 };
 
 GCMDriverBaseTest::GCMDriverBaseTest() : io_thread_("IOThread") {}

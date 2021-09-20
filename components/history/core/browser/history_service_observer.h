@@ -16,6 +16,10 @@ class HistoryService;
 class HistoryServiceObserver {
  public:
   HistoryServiceObserver() {}
+
+  HistoryServiceObserver(const HistoryServiceObserver&) = delete;
+  HistoryServiceObserver& operator=(const HistoryServiceObserver&) = delete;
+
   virtual ~HistoryServiceObserver() {}
 
   // Called when user visits an URL.
@@ -64,9 +68,6 @@ class HistoryServiceObserver {
   // `url_id` is the id of the url row.
   virtual void OnKeywordSearchTermDeleted(HistoryService* history_service,
                                           URLID url_id) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryServiceObserver);
 };
 
 }  // namespace history

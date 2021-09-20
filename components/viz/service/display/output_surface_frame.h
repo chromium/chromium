@@ -24,6 +24,10 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
  public:
   OutputSurfaceFrame();
   OutputSurfaceFrame(OutputSurfaceFrame&& other);
+
+  OutputSurfaceFrame(const OutputSurfaceFrame&) = delete;
+  OutputSurfaceFrame& operator=(const OutputSurfaceFrame&) = delete;
+
   ~OutputSurfaceFrame();
 
   OutputSurfaceFrame& operator=(OutputSurfaceFrame&& other);
@@ -40,9 +44,6 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
   // Metadata containing information to draw a delegated ink trail using
   // platform APIs.
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OutputSurfaceFrame);
 };
 
 }  // namespace viz

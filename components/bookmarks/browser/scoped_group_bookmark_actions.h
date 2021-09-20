@@ -15,12 +15,15 @@ class BookmarkModel;
 class ScopedGroupBookmarkActions {
  public:
   explicit ScopedGroupBookmarkActions(BookmarkModel* model);
+
+  ScopedGroupBookmarkActions(const ScopedGroupBookmarkActions&) = delete;
+  ScopedGroupBookmarkActions& operator=(const ScopedGroupBookmarkActions&) =
+      delete;
+
   ~ScopedGroupBookmarkActions();
 
  private:
   BookmarkModel* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGroupBookmarkActions);
 };
 
 }  // namespace bookmarks

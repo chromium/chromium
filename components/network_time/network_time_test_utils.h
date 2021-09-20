@@ -47,6 +47,10 @@ std::unique_ptr<net::test_server::HttpResponse> GoodTimeResponseHandler(
 class FieldTrialTest {
  public:
   FieldTrialTest();
+
+  FieldTrialTest(const FieldTrialTest&) = delete;
+  FieldTrialTest& operator=(const FieldTrialTest&) = delete;
+
   virtual ~FieldTrialTest();
 
   void SetNetworkQueriesWithVariationsService(
@@ -56,8 +60,6 @@ class FieldTrialTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialTest);
 };
 
 }  // namespace network_time

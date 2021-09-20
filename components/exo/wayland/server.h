@@ -42,6 +42,10 @@ struct WestonTestState;
 class Server : public display::DisplayObserver {
  public:
   explicit Server(Display* display);
+
+  Server(const Server&) = delete;
+  Server& operator=(const Server&) = delete;
+
   ~Server() override;
 
   // Creates a Wayland display server that clients can connect to using the
@@ -93,8 +97,6 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WestonTestState> weston_test_data_;
 #endif
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Server);
 };
 
 }  // namespace wayland

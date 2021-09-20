@@ -51,6 +51,10 @@ class DigitalAssetLinksHandler {
   explicit DigitalAssetLinksHandler(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       content::WebContents* web_contents = nullptr);
+
+  DigitalAssetLinksHandler(const DigitalAssetLinksHandler&) = delete;
+  DigitalAssetLinksHandler& operator=(const DigitalAssetLinksHandler&) = delete;
+
   ~DigitalAssetLinksHandler();
 
   // Checks whether the given "relationship" has been declared by the target
@@ -126,8 +130,6 @@ class DigitalAssetLinksHandler {
   base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<DigitalAssetLinksHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DigitalAssetLinksHandler);
 };
 
 }  // namespace digital_asset_links

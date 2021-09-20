@@ -27,12 +27,15 @@ uint64_t REMOTE_COCOA_APP_SHIM_EXPORT GetIdFromNSView(NSView* ns_view);
 class REMOTE_COCOA_APP_SHIM_EXPORT ScopedNSViewIdMapping {
  public:
   ScopedNSViewIdMapping(uint64_t ns_view_id, NSView* view);
+
+  ScopedNSViewIdMapping(const ScopedNSViewIdMapping&) = delete;
+  ScopedNSViewIdMapping& operator=(const ScopedNSViewIdMapping&) = delete;
+
   ~ScopedNSViewIdMapping();
 
  private:
   NSView* const ns_view_;
   const uint64_t ns_view_id_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedNSViewIdMapping);
 };
 
 }  // namespace remote_cocoa

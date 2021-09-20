@@ -23,6 +23,10 @@ class FakeGCMClientFactory : public GCMClientFactory {
   FakeGCMClientFactory(
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
       const scoped_refptr<base::SequencedTaskRunner>& io_thread);
+
+  FakeGCMClientFactory(const FakeGCMClientFactory&) = delete;
+  FakeGCMClientFactory& operator=(const FakeGCMClientFactory&) = delete;
+
   ~FakeGCMClientFactory() override;
 
   // GCMClientFactory:
@@ -31,8 +35,6 @@ class FakeGCMClientFactory : public GCMClientFactory {
  private:
   scoped_refptr<base::SequencedTaskRunner> ui_thread_;
   scoped_refptr<base::SequencedTaskRunner> io_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGCMClientFactory);
 };
 
 }  // namespace gcm

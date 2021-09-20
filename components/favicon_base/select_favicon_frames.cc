@@ -174,6 +174,10 @@ SkBitmap GetResizedBitmap(const SkBitmap& source_bitmap,
 class FaviconImageSource : public gfx::ImageSkiaSource {
  public:
   FaviconImageSource() {}
+
+  FaviconImageSource(const FaviconImageSource&) = delete;
+  FaviconImageSource& operator=(const FaviconImageSource&) = delete;
+
   ~FaviconImageSource() override {}
 
   // gfx::ImageSkiaSource:
@@ -207,7 +211,6 @@ class FaviconImageSource : public gfx::ImageSkiaSource {
 
  private:
   std::vector<gfx::ImageSkiaRep> image_skia_reps_;
-  DISALLOW_COPY_AND_ASSIGN(FaviconImageSource);
 };
 
 }  // namespace

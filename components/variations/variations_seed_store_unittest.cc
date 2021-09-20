@@ -48,15 +48,16 @@ class TestVariationsSeedStore : public VariationsSeedStore {
                             std::move(initial_seed),
                             /*signature_verification_enabled=*/false,
                             use_first_run_prefs) {}
+
+  TestVariationsSeedStore(const TestVariationsSeedStore&) = delete;
+  TestVariationsSeedStore& operator=(const TestVariationsSeedStore&) = delete;
+
   ~TestVariationsSeedStore() override = default;
 
   bool StoreSeedForTesting(const std::string& seed_data) {
     return StoreSeedData(seed_data, std::string(), std::string(),
                          base::Time::Now(), false, false, nullptr);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestVariationsSeedStore);
 };
 
 // Signature verification is disabled on Android and iOS for performance
@@ -66,10 +67,13 @@ class SignatureVerifyingVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit SignatureVerifyingVariationsSeedStore(PrefService* local_state)
       : VariationsSeedStore(local_state) {}
-  ~SignatureVerifyingVariationsSeedStore() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SignatureVerifyingVariationsSeedStore);
+  SignatureVerifyingVariationsSeedStore(
+      const SignatureVerifyingVariationsSeedStore&) = delete;
+  SignatureVerifyingVariationsSeedStore& operator=(
+      const SignatureVerifyingVariationsSeedStore&) = delete;
+
+  ~SignatureVerifyingVariationsSeedStore() override = default;
 };
 
 // Creates a base::Time object from the corresponding raw value. The specific

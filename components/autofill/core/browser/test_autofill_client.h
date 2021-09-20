@@ -41,6 +41,10 @@ namespace autofill {
 class TestAutofillClient : public AutofillClient {
  public:
   TestAutofillClient();
+
+  TestAutofillClient(const TestAutofillClient&) = delete;
+  TestAutofillClient& operator=(const TestAutofillClient&) = delete;
+
   ~TestAutofillClient() override;
 
   // AutofillClient:
@@ -304,8 +308,6 @@ class TestAutofillClient : public AutofillClient {
   std::vector<std::string> allowed_merchants_;
   std::vector<std::string> allowed_bin_ranges_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillClient);
 };
 
 }  // namespace autofill

@@ -40,6 +40,10 @@ class PermissionManager : public KeyedService,
                          ContentSettingsTypeHash>;
   PermissionManager(content::BrowserContext* browser_context,
                     PermissionContextMap permission_contexts);
+
+  PermissionManager(const PermissionManager&) = delete;
+  PermissionManager& operator=(const PermissionManager&) = delete;
+
   ~PermissionManager() override;
 
   // Converts from |url|'s actual origin to the "canonical origin" that should
@@ -245,8 +249,6 @@ class PermissionManager : public KeyedService,
 
   // This is false when not processing a permission change and true otherwise
   bool is_processing_permission_change_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionManager);
 };
 
 }  // namespace permissions

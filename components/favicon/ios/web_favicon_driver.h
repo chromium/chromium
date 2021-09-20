@@ -26,6 +26,9 @@ class WebFaviconDriver : public web::WebStateObserver,
                          public web::WebStateUserData<WebFaviconDriver>,
                          public FaviconDriverImpl {
  public:
+  WebFaviconDriver(const WebFaviconDriver&) = delete;
+  WebFaviconDriver& operator=(const WebFaviconDriver&) = delete;
+
   ~WebFaviconDriver() override;
 
   static void CreateForWebState(web::WebState* web_state,
@@ -79,8 +82,6 @@ class WebFaviconDriver : public web::WebStateObserver,
   web::WebState* web_state_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebFaviconDriver);
 };
 
 }  // namespace favicon

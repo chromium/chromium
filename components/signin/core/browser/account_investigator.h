@@ -44,6 +44,10 @@ class AccountInvestigator : public KeyedService,
 
   AccountInvestigator(PrefService* pref_service,
                       signin::IdentityManager* identity_manager);
+
+  AccountInvestigator(const AccountInvestigator&) = delete;
+  AccountInvestigator& operator=(const AccountInvestigator&) = delete;
+
   ~AccountInvestigator() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -128,8 +132,6 @@ class AccountInvestigator : public KeyedService,
   // allows us ot emit AccountRelation metrics during a sign in that doesn't
   // actually change the cookie jar.
   bool previously_authenticated_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountInvestigator);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_INVESTIGATOR_H_

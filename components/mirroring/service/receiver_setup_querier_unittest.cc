@@ -27,6 +27,10 @@ class ReceiverSetupQuerierTest : public ::testing::Test {
  public:
   ReceiverSetupQuerierTest()
       : receiver_address_(media::cast::test::GetFreeLocalPort().address()) {}
+
+  ReceiverSetupQuerierTest(const ReceiverSetupQuerierTest&) = delete;
+  ReceiverSetupQuerierTest& operator=(const ReceiverSetupQuerierTest&) = delete;
+
   ~ReceiverSetupQuerierTest() override = default;
 
  protected:
@@ -57,8 +61,6 @@ class ReceiverSetupQuerierTest : public ::testing::Test {
   const net::IPAddress receiver_address_;
   network::TestURLLoaderFactory* url_loader_factory_ = nullptr;
   std::unique_ptr<ReceiverSetupQuerier> setup_querier_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReceiverSetupQuerierTest);
 };
 
 TEST_F(ReceiverSetupQuerierTest, ValidSetupInfo) {

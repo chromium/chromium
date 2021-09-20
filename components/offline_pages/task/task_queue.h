@@ -47,6 +47,10 @@ class TaskQueue {
   };
 
   explicit TaskQueue(Delegate* delegate);
+
+  TaskQueue(const TaskQueue&) = delete;
+  TaskQueue& operator=(const TaskQueue&) = delete;
+
   ~TaskQueue();
 
   // Adds a task to the queue. Queue takes ownership of the task.
@@ -99,8 +103,6 @@ class TaskQueue {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<TaskQueue> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TaskQueue);
 };
 
 }  // namespace offline_pages

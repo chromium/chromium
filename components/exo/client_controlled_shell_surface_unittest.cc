@@ -105,6 +105,10 @@ void EnableTabletMode(bool enable) {
 class TestCanvas : public SkNoDrawCanvas {
  public:
   TestCanvas() : SkNoDrawCanvas(100, 100) {}
+
+  TestCanvas(const TestCanvas&) = delete;
+  TestCanvas& operator=(const TestCanvas&) = delete;
+
   ~TestCanvas() override {}
 
   void onDrawTextBlob(const SkTextBlob*,
@@ -118,8 +122,6 @@ class TestCanvas : public SkNoDrawCanvas {
 
  private:
   bool text_was_drawn_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCanvas);
 };
 
 }  // namespace
@@ -637,6 +639,10 @@ namespace {
 class TestEventHandler : public ui::EventHandler {
  public:
   TestEventHandler() = default;
+
+  TestEventHandler(const TestEventHandler&) = delete;
+  TestEventHandler& operator=(const TestEventHandler&) = delete;
+
   ~TestEventHandler() override = default;
 
   // ui::EventHandler:
@@ -646,7 +652,6 @@ class TestEventHandler : public ui::EventHandler {
 
  private:
   bool received_event_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
 
 }  // namespace
@@ -1157,6 +1162,11 @@ class ShellSurfaceWindowObserver : public aura::WindowObserver {
         has_delegate_(ash::WindowState::Get(window)->HasDelegate()) {
     window_->AddObserver(this);
   }
+
+  ShellSurfaceWindowObserver(const ShellSurfaceWindowObserver&) = delete;
+  ShellSurfaceWindowObserver& operator=(const ShellSurfaceWindowObserver&) =
+      delete;
+
   ~ShellSurfaceWindowObserver() override {
     if (window_) {
       window_->RemoveObserver(this);
@@ -1180,8 +1190,6 @@ class ShellSurfaceWindowObserver : public aura::WindowObserver {
  private:
   aura::Window* window_;
   bool has_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellSurfaceWindowObserver);
 };
 
 }  // namespace
@@ -1222,6 +1230,12 @@ namespace {
 class ClientControlledShellSurfaceDragTest : public test::ExoTestBase {
  public:
   ClientControlledShellSurfaceDragTest() = default;
+
+  ClientControlledShellSurfaceDragTest(
+      const ClientControlledShellSurfaceDragTest&) = delete;
+  ClientControlledShellSurfaceDragTest& operator=(
+      const ClientControlledShellSurfaceDragTest&) = delete;
+
   ~ClientControlledShellSurfaceDragTest() override = default;
 
   // Sends a gesture scroll sequence to TabletModeAppWindowDragController.
@@ -1252,9 +1266,6 @@ class ClientControlledShellSurfaceDragTest : public test::ExoTestBase {
     }
     ash::WindowState::Get(window)->DeleteDragDetails();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientControlledShellSurfaceDragTest);
 };
 
 }  // namespace

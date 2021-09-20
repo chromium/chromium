@@ -23,6 +23,9 @@ class VIZ_SERVICE_EXPORT InFlightFrameDelivery final
       base::OnceCallback<void(const media::VideoCaptureFeedback&)>
           feedback_callback);
 
+  InFlightFrameDelivery(const InFlightFrameDelivery&) = delete;
+  InFlightFrameDelivery& operator=(const InFlightFrameDelivery&) = delete;
+
   ~InFlightFrameDelivery() final;
 
   // mojom::FrameSinkVideoConsumerFrameCallbacks implementation:
@@ -33,8 +36,6 @@ class VIZ_SERVICE_EXPORT InFlightFrameDelivery final
   base::OnceClosure post_delivery_callback_;
   base::OnceCallback<void(const media::VideoCaptureFeedback&)>
       feedback_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(InFlightFrameDelivery);
 };
 
 }  // namespace viz

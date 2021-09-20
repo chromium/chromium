@@ -22,6 +22,10 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
  public:
   WebsiteLoginManagerImpl(password_manager::PasswordManagerClient* client,
                           content::WebContents* web_contents);
+
+  WebsiteLoginManagerImpl(const WebsiteLoginManagerImpl&) = delete;
+  WebsiteLoginManagerImpl& operator=(const WebsiteLoginManagerImpl&) = delete;
+
   ~WebsiteLoginManagerImpl() override;
 
   // From WebsiteLoginManager:
@@ -80,8 +84,6 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
 
   // Needs to be the last member.
   base::WeakPtrFactory<WebsiteLoginManagerImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebsiteLoginManagerImpl);
 };
 
 }  // namespace autofill_assistant

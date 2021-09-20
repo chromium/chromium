@@ -14,6 +14,10 @@ class UIElement;
 class UIElementDelegate {
  public:
   UIElementDelegate() {}
+
+  UIElementDelegate(const UIElementDelegate&) = delete;
+  UIElementDelegate& operator=(const UIElementDelegate&) = delete;
+
   virtual ~UIElementDelegate() {}
 
   virtual void OnUIElementAdded(UIElement* parent, UIElement* child) = 0;
@@ -26,8 +30,6 @@ class UIElementDelegate {
 
   // Update CSS agent when bounds change.
   virtual void OnUIElementBoundsChanged(UIElement* ui_element) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UIElementDelegate);
 };
 
 }  // namespace ui_devtools

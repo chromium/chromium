@@ -49,6 +49,10 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
  public:
   SurfaceManager(SurfaceManagerDelegate* delegate,
                  absl::optional<uint32_t> activation_deadline_in_frames);
+
+  SurfaceManager(const SurfaceManager&) = delete;
+  SurfaceManager& operator=(const SurfaceManager&) = delete;
+
   ~SurfaceManager();
 
 #if DCHECK_IS_ON()
@@ -323,8 +327,6 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   bool allocation_groups_need_garbage_collection_ = false;
 
   base::WeakPtrFactory<SurfaceManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceManager);
 };
 
 }  // namespace viz

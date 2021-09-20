@@ -45,6 +45,10 @@ extern const int kCompatibleVersionNumber;
 class LoginDatabase : public PasswordStoreSync::MetadataStore {
  public:
   LoginDatabase(const base::FilePath& db_path, IsAccountStore is_account_store);
+
+  LoginDatabase(const LoginDatabase&) = delete;
+  LoginDatabase& operator=(const LoginDatabase&) = delete;
+
   ~LoginDatabase() override;
 
   // Returns whether this is the profile-scoped or the account-scoped storage:
@@ -368,8 +372,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // PasswordStoreSync::MetadataStore::SetDeletionsHaveSyncedCallback for more
   // details.
   base::RepeatingCallback<void(bool)> deletions_have_synced_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDatabase);
 };
 
 }  // namespace password_manager

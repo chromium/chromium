@@ -17,6 +17,11 @@ class ConfigureBottomSheetAction : public Action {
  public:
   explicit ConfigureBottomSheetAction(ActionDelegate* delegate,
                                       const ActionProto& proto);
+
+  ConfigureBottomSheetAction(const ConfigureBottomSheetAction&) = delete;
+  ConfigureBottomSheetAction& operator=(const ConfigureBottomSheetAction&) =
+      delete;
+
   ~ConfigureBottomSheetAction() override;
 
  private:
@@ -29,7 +34,6 @@ class ConfigureBottomSheetAction : public Action {
   ProcessActionCallback callback_;
   base::OneShotTimer timer_;
   base::WeakPtrFactory<ConfigureBottomSheetAction> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ConfigureBottomSheetAction);
 };
 
 }  // namespace autofill_assistant

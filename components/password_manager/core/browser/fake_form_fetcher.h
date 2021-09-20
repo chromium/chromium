@@ -23,6 +23,9 @@ class FakeFormFetcher : public FormFetcher {
  public:
   FakeFormFetcher();
 
+  FakeFormFetcher(const FakeFormFetcher&) = delete;
+  FakeFormFetcher& operator=(const FakeFormFetcher&) = delete;
+
   ~FakeFormFetcher() override;
 
   // Registers consumers to be notified when results are set. Unlike the
@@ -88,8 +91,6 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<InsecureCredential> insecure_credentials_;
   const PasswordForm* preferred_match_ = nullptr;
   bool is_blocklisted_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFormFetcher);
 };
 
 }  // namespace password_manager

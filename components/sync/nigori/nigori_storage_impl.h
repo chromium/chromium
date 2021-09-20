@@ -15,10 +15,6 @@ class NigoriStorageImpl : public NigoriStorage {
  public:
   // |encryptor| must be not null and must outlive this object.
   explicit NigoriStorageImpl(const base::FilePath& path);
-
-  NigoriStorageImpl(const NigoriStorageImpl&) = delete;
-  NigoriStorageImpl& operator=(const NigoriStorageImpl&) = delete;
-
   ~NigoriStorageImpl() override;
 
   // NigoriStorage implementation.
@@ -31,6 +27,7 @@ class NigoriStorageImpl : public NigoriStorage {
   base::FilePath path_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+  DISALLOW_COPY_AND_ASSIGN(NigoriStorageImpl);
 };
 
 }  // namespace syncer

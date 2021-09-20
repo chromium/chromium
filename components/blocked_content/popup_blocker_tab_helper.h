@@ -52,6 +52,9 @@ class PopupBlockerTabHelper
     kMaxValue = kClickedThroughAbusive
   };
 
+  PopupBlockerTabHelper(const PopupBlockerTabHelper&) = delete;
+  PopupBlockerTabHelper& operator=(const PopupBlockerTabHelper&) = delete;
+
   ~PopupBlockerTabHelper() override;
 
   // Returns the number of blocked popups.
@@ -100,8 +103,6 @@ class PopupBlockerTabHelper
   int32_t next_id_ = 0;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PopupBlockerTabHelper);
 };
 
 }  // namespace blocked_content

@@ -39,6 +39,10 @@ class SigninErrorController : public KeyedService,
 
   SigninErrorController(AccountMode mode,
                         signin::IdentityManager* identity_manager);
+
+  SigninErrorController(const SigninErrorController&) = delete;
+  SigninErrorController& operator=(const SigninErrorController&) = delete;
+
   ~SigninErrorController() override;
 
   // KeyedService implementation:
@@ -94,8 +98,6 @@ class SigninErrorController : public KeyedService,
   GoogleServiceAuthError auth_error_;
 
   base::ObserverList<Observer, false>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorController);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_ERROR_CONTROLLER_H_

@@ -19,6 +19,10 @@ namespace storage {
 class StorageServiceImplTest : public testing::Test {
  public:
   StorageServiceImplTest() = default;
+
+  StorageServiceImplTest(const StorageServiceImplTest&) = delete;
+  StorageServiceImplTest& operator=(const StorageServiceImplTest&) = delete;
+
   ~StorageServiceImplTest() override = default;
 
  protected:
@@ -30,8 +34,6 @@ class StorageServiceImplTest : public testing::Test {
   mojo::Remote<mojom::StorageService> remote_service_;
   StorageServiceImpl service_{remote_service_.BindNewPipeAndPassReceiver(),
                               /*io_task_runner=*/nullptr};
-
-  DISALLOW_COPY_AND_ASSIGN(StorageServiceImplTest);
 };
 
 TEST_F(StorageServiceImplTest, UniqueInMemoryPartitions) {

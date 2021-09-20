@@ -143,6 +143,10 @@ class LevelDBSiteDataStore::AsyncHelper {
     // the process crashes).
     write_options_.sync = false;
   }
+
+  AsyncHelper(const AsyncHelper&) = delete;
+  AsyncHelper& operator=(const AsyncHelper&) = delete;
+
   ~AsyncHelper() = default;
 
   // Open the database from |db_path_| after creating it if it didn't exist,
@@ -206,7 +210,6 @@ class LevelDBSiteDataStore::AsyncHelper {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(AsyncHelper);
 };
 
 void LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabase() {

@@ -219,6 +219,10 @@ class DEVICE_EVENT_LOG_EXPORT DeviceEventLogInstance {
                          int line,
                          device_event_log::LogType type,
                          device_event_log::LogLevel level);
+
+  DeviceEventLogInstance(const DeviceEventLogInstance&) = delete;
+  DeviceEventLogInstance& operator=(const DeviceEventLogInstance&) = delete;
+
   ~DeviceEventLogInstance();
 
   std::ostream& stream() { return stream_; }
@@ -229,8 +233,6 @@ class DEVICE_EVENT_LOG_EXPORT DeviceEventLogInstance {
   device_event_log::LogType type_;
   device_event_log::LogLevel level_;
   std::ostringstream stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceEventLogInstance);
 };
 
 // Implementation class for DEVICE_PLOG macros. Provides a stream for creating
@@ -243,6 +245,12 @@ class DEVICE_EVENT_LOG_EXPORT DeviceEventSystemErrorLogInstance {
                                     device_event_log::LogType type,
                                     device_event_log::LogLevel level,
                                     logging::SystemErrorCode err);
+
+  DeviceEventSystemErrorLogInstance(const DeviceEventSystemErrorLogInstance&) =
+      delete;
+  DeviceEventSystemErrorLogInstance& operator=(
+      const DeviceEventSystemErrorLogInstance&) = delete;
+
   ~DeviceEventSystemErrorLogInstance();
 
   std::ostream& stream() { return log_instance_.stream(); }
@@ -253,8 +261,6 @@ class DEVICE_EVENT_LOG_EXPORT DeviceEventSystemErrorLogInstance {
   // log when it is destroyed (after a string description of |err_| is appended
   // to the stream).
   DeviceEventLogInstance log_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceEventSystemErrorLogInstance);
 };
 
 // Implementation class for SCOPED_LOG_IF_SLOW macros. Tests the elapsed time on

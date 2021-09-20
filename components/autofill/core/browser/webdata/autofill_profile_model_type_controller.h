@@ -28,6 +28,12 @@ class AutofillProfileModelTypeController : public syncer::ModelTypeController {
           delegate_for_full_sync_mode,
       PrefService* pref_service,
       syncer::SyncService* sync_service);
+
+  AutofillProfileModelTypeController(
+      const AutofillProfileModelTypeController&) = delete;
+  AutofillProfileModelTypeController& operator=(
+      const AutofillProfileModelTypeController&) = delete;
+
   ~AutofillProfileModelTypeController() override;
 
   // DataTypeController overrides.
@@ -42,8 +48,6 @@ class AutofillProfileModelTypeController : public syncer::ModelTypeController {
 
   // Registrar for listening to prefs::kAutofillProfileEnabled.
   PrefChangeRegistrar pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileModelTypeController);
 };
 
 }  // namespace browser_sync

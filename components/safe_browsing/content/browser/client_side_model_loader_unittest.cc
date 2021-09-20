@@ -52,13 +52,14 @@ class MockModelLoader : public ModelLoader {
       const std::string model_name)
       : ModelLoader(update_renderers_callback, url_loader_factory, model_name) {
   }
+
+  MockModelLoader(const MockModelLoader&) = delete;
+  MockModelLoader& operator=(const MockModelLoader&) = delete;
+
   ~MockModelLoader() override {}
 
   MOCK_METHOD1(ScheduleFetch, void(int64_t));
   MOCK_METHOD2(EndFetch, void(ClientModelStatus, base::TimeDelta));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockModelLoader);
 };
 
 }  // namespace

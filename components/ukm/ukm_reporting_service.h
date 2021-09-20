@@ -34,6 +34,10 @@ class UkmReportingService : public metrics::ReportingService {
   // for the lifetime of this class.
   UkmReportingService(metrics::MetricsServiceClient* client,
                       PrefService* local_state);
+
+  UkmReportingService(const UkmReportingService&) = delete;
+  UkmReportingService& operator=(const UkmReportingService&) = delete;
+
   ~UkmReportingService() override;
 
   // At startup, prefs needs to be called with a list of all the pref names and
@@ -62,8 +66,6 @@ class UkmReportingService : public metrics::ReportingService {
   void LogLargeRejection(size_t log_size) override;
 
   metrics::UnsentLogStore unsent_log_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmReportingService);
 };
 
 }  // namespace ukm

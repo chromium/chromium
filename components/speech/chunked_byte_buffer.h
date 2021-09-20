@@ -29,6 +29,10 @@ namespace speech {
 class ChunkedByteBuffer {
  public:
   ChunkedByteBuffer();
+
+  ChunkedByteBuffer(const ChunkedByteBuffer&) = delete;
+  ChunkedByteBuffer& operator=(const ChunkedByteBuffer&) = delete;
+
   ~ChunkedByteBuffer();
 
   // Appends |length| bytes starting from |start| to the buffer.
@@ -66,8 +70,6 @@ class ChunkedByteBuffer {
   std::vector<std::unique_ptr<Chunk>> chunks_;
   std::unique_ptr<Chunk> partial_chunk_;
   size_t total_bytes_stored_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChunkedByteBuffer);
 };
 
 }  // namespace speech

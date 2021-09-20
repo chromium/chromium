@@ -28,6 +28,10 @@ class FakeGCMAppHandler : public GCMAppHandler {
   };
 
   FakeGCMAppHandler();
+
+  FakeGCMAppHandler(const FakeGCMAppHandler&) = delete;
+  FakeGCMAppHandler& operator=(const FakeGCMAppHandler&) = delete;
+
   ~FakeGCMAppHandler() override;
 
   const Event& received_event() const { return received_event_; }
@@ -65,8 +69,6 @@ class FakeGCMAppHandler : public GCMAppHandler {
   std::string acked_message_id_;
   IncomingMessage message_;
   GCMClient::SendErrorDetails send_error_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGCMAppHandler);
 };
 
 }  // namespace gcm

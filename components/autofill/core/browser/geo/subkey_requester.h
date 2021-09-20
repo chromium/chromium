@@ -31,6 +31,10 @@ class SubKeyRequester : public LoadRulesListener {
 
   SubKeyRequester(std::unique_ptr<::i18n::addressinput::Source> source,
                   std::unique_ptr<::i18n::addressinput::Storage> storage);
+
+  SubKeyRequester(const SubKeyRequester&) = delete;
+  SubKeyRequester& operator=(const SubKeyRequester&) = delete;
+
   ~SubKeyRequester() override;
 
   // If the rules for |region_code| are loaded, this gets the subkeys for the
@@ -68,8 +72,6 @@ class SubKeyRequester : public LoadRulesListener {
 
   // The address validator used to load subkeys.
   AddressValidator address_validator_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubKeyRequester);
 };
 
 }  // namespace autofill

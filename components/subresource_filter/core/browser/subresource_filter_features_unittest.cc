@@ -61,14 +61,16 @@ class ScopedExperimentalStateToggle {
     }
   }
 
+  ScopedExperimentalStateToggle(const ScopedExperimentalStateToggle&) = delete;
+  ScopedExperimentalStateToggle& operator=(
+      const ScopedExperimentalStateToggle&) = delete;
+
   ~ScopedExperimentalStateToggle() {
   }
 
  private:
   testing::ScopedSubresourceFilterConfigurator scoped_configurator_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedExperimentalStateToggle);
 };
 
 void ExpectAndRetrieveExactlyOneEnabledConfig(Configuration* actual_config) {
@@ -119,6 +121,11 @@ void ExpectParamsGeneratePreset(
 class SubresourceFilterFeaturesTest : public ::testing::Test {
  public:
   SubresourceFilterFeaturesTest() {}
+
+  SubresourceFilterFeaturesTest(const SubresourceFilterFeaturesTest&) = delete;
+  SubresourceFilterFeaturesTest& operator=(
+      const SubresourceFilterFeaturesTest&) = delete;
+
   ~SubresourceFilterFeaturesTest() override {}
 
   void SetUp() override {
@@ -126,9 +133,6 @@ class SubresourceFilterFeaturesTest : public ::testing::Test {
     // cached value from a previous in-process test run.
     testing::GetAndSetActivateConfigurations(nullptr);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterFeaturesTest);
 };
 
 TEST_F(SubresourceFilterFeaturesTest, ActivationLevel) {

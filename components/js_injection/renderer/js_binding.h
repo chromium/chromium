@@ -46,6 +46,9 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
 
   void ReleaseV8GlobalObjects();
 
+  JsBinding(const JsBinding&) = delete;
+  JsBinding& operator=(const JsBinding&) = delete;
+
   ~JsBinding() override;
 
  private:
@@ -77,8 +80,6 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
   JsCommunication* js_java_configurator_;
 
   mojo::AssociatedReceiver<mojom::BrowserToJsMessaging> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JsBinding);
 };
 
 }  // namespace js_injection

@@ -25,10 +25,13 @@ const int kDelayOneHour = kDelayOneMinute * 60;
 class ComponentUpdaterConfiguratorImplTest : public testing::Test {
  public:
   ComponentUpdaterConfiguratorImplTest() = default;
-  ~ComponentUpdaterConfiguratorImplTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ComponentUpdaterConfiguratorImplTest);
+  ComponentUpdaterConfiguratorImplTest(
+      const ComponentUpdaterConfiguratorImplTest&) = delete;
+  ComponentUpdaterConfiguratorImplTest& operator=(
+      const ComponentUpdaterConfiguratorImplTest&) = delete;
+
+  ~ComponentUpdaterConfiguratorImplTest() override = default;
 };
 
 TEST_F(ComponentUpdaterConfiguratorImplTest, FastUpdate) {

@@ -30,6 +30,10 @@ class ArcClipboardBridge : public KeyedService,
 
   ArcClipboardBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
+
+  ArcClipboardBridge(const ArcClipboardBridge&) = delete;
+  ArcClipboardBridge& operator=(const ArcClipboardBridge&) = delete;
+
   ~ArcClipboardBridge() override;
 
   // ClipboardObserver overrides.
@@ -45,8 +49,6 @@ class ArcClipboardBridge : public KeyedService,
   bool event_originated_at_instance_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ArcClipboardBridge);
 };
 
 }  // namespace arc

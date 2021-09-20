@@ -30,6 +30,10 @@ namespace history {
 class FakeWebHistoryService : public WebHistoryService {
  public:
   FakeWebHistoryService();
+
+  FakeWebHistoryService(const FakeWebHistoryService&) = delete;
+  FakeWebHistoryService& operator=(const FakeWebHistoryService&) = delete;
+
   ~FakeWebHistoryService() override;
 
   // Sets up the behavior of the fake response returned when calling
@@ -96,8 +100,6 @@ class FakeWebHistoryService : public WebHistoryService {
 
   // Fake visits storage.
   std::vector<Visit> visits_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWebHistoryService);
 };
 
 }  // namespace history

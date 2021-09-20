@@ -32,6 +32,9 @@ class ChromiumTestdataSource : public TestdataSource {
  public:
   ChromiumTestdataSource() : TestdataSource(true) {}
 
+  ChromiumTestdataSource(const ChromiumTestdataSource&) = delete;
+  ChromiumTestdataSource& operator=(const ChromiumTestdataSource&) = delete;
+
   ~ChromiumTestdataSource() override {}
 
   // For this test, only load the rules for the "US".
@@ -46,9 +49,6 @@ class ChromiumTestdataSource : public TestdataSource {
                         "\"California\",\"key\":\"CA\",\"id\":"
                         "\"data/US/CA\"}}"));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromiumTestdataSource);
 };
 
 // A test subclass of the AddressNormalizerImpl. Used to simulate rules not
@@ -58,6 +58,9 @@ class TestAddressNormalizer : public AddressNormalizerImpl {
   TestAddressNormalizer(std::unique_ptr<::i18n::addressinput::Source> source,
                         std::unique_ptr<::i18n::addressinput::Storage> storage)
       : AddressNormalizerImpl(std::move(source), std::move(storage), "en-US") {}
+
+  TestAddressNormalizer(const TestAddressNormalizer&) = delete;
+  TestAddressNormalizer& operator=(const TestAddressNormalizer&) = delete;
 
   ~TestAddressNormalizer() override {}
 
@@ -73,8 +76,6 @@ class TestAddressNormalizer : public AddressNormalizerImpl {
 
  private:
   bool should_load_rules_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAddressNormalizer);
 };
 
 }  // namespace

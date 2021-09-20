@@ -23,6 +23,10 @@ namespace payments {
 class CanMakePaymentQuery : public KeyedService {
  public:
   CanMakePaymentQuery();
+
+  CanMakePaymentQuery(const CanMakePaymentQuery&) = delete;
+  CanMakePaymentQuery& operator=(const CanMakePaymentQuery&) = delete;
+
   ~CanMakePaymentQuery() override;
 
   // Returns whether |top_level_origin| and |frame_origin| can call
@@ -61,8 +65,6 @@ class CanMakePaymentQuery : public KeyedService {
   std::map<std::string, std::map<std::string, std::set<std::string>>> queries_;
 
   base::WeakPtrFactory<CanMakePaymentQuery> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CanMakePaymentQuery);
 };
 
 }  // namespace payments

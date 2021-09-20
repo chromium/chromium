@@ -16,6 +16,10 @@ class WaitForNavigationAction : public Action {
  public:
   explicit WaitForNavigationAction(ActionDelegate* delegate,
                                    const ActionProto& proto);
+
+  WaitForNavigationAction(const WaitForNavigationAction&) = delete;
+  WaitForNavigationAction& operator=(const WaitForNavigationAction&) = delete;
+
   ~WaitForNavigationAction() override;
 
  private:
@@ -29,8 +33,6 @@ class WaitForNavigationAction : public Action {
   ProcessActionCallback callback_;
   base::OneShotTimer timer_;
   base::WeakPtrFactory<WaitForNavigationAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForNavigationAction);
 };
 
 }  // namespace autofill_assistant

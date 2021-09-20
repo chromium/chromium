@@ -48,6 +48,11 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
       ProfileOAuth2TokenServiceDelegateAndroid* oauth2_token_service_delegate,
       OAuth2AccessTokenConsumer* consumer,
       const std::string& account_id);
+
+  AndroidAccessTokenFetcher(const AndroidAccessTokenFetcher&) = delete;
+  AndroidAccessTokenFetcher& operator=(const AndroidAccessTokenFetcher&) =
+      delete;
+
   ~AndroidAccessTokenFetcher() override;
 
   // Overrides from OAuth2AccessTokenFetcher:
@@ -68,8 +73,6 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
   std::string account_id_;
   bool request_was_cancelled_;
   base::WeakPtrFactory<AndroidAccessTokenFetcher> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidAccessTokenFetcher);
 };
 
 AndroidAccessTokenFetcher::AndroidAccessTokenFetcher(

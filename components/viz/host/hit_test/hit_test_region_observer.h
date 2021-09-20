@@ -19,14 +19,15 @@ namespace viz {
 class HitTestRegionObserver {
  public:
   HitTestRegionObserver() = default;
+
+  HitTestRegionObserver(const HitTestRegionObserver&) = delete;
+  HitTestRegionObserver& operator=(const HitTestRegionObserver&) = delete;
+
   virtual ~HitTestRegionObserver() = default;
 
   virtual void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HitTestRegionObserver);
 };
 
 }  // namespace viz

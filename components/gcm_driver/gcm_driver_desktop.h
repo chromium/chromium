@@ -66,6 +66,10 @@ class GCMDriverDesktop : public GCMDriver,
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
       const scoped_refptr<base::SequencedTaskRunner>& io_thread,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+
+  GCMDriverDesktop(const GCMDriverDesktop&) = delete;
+  GCMDriverDesktop& operator=(const GCMDriverDesktop&) = delete;
+
   ~GCMDriverDesktop() override;
 
   // GCMDriver implementation:
@@ -249,8 +253,6 @@ class GCMDriverDesktop : public GCMDriver,
 
   // Used to pass a weak pointer to the IO worker.
   base::WeakPtrFactory<GCMDriverDesktop> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverDesktop);
 };
 
 }  // namespace gcm

@@ -54,6 +54,9 @@ class FrameNodeImpl
                 content::BrowsingInstanceId browsing_instance_id,
                 content::SiteInstanceId site_instance_id);
 
+  FrameNodeImpl(const FrameNodeImpl&) = delete;
+  FrameNodeImpl& operator=(const FrameNodeImpl&) = delete;
+
   ~FrameNodeImpl() override;
 
   void Bind(mojo::PendingReceiver<mojom::DocumentCoordinationUnit> receiver);
@@ -354,8 +357,6 @@ class FrameNodeImpl
   base::WeakPtr<FrameNodeImpl> weak_this_;
   base::WeakPtrFactory<FrameNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameNodeImpl);
 };
 
 }  // namespace performance_manager

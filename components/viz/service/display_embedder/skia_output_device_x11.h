@@ -25,6 +25,10 @@ class SkiaOutputDeviceX11 final : public SkiaOutputDeviceOffscreen {
       x11::VisualId visual,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceX11(const SkiaOutputDeviceX11&) = delete;
+  SkiaOutputDeviceX11& operator=(const SkiaOutputDeviceX11&) = delete;
+
   ~SkiaOutputDeviceX11() override;
 
   static std::unique_ptr<SkiaOutputDeviceX11> Create(
@@ -50,8 +54,6 @@ class SkiaOutputDeviceX11 final : public SkiaOutputDeviceOffscreen {
   const x11::VisualId visual_;
   const x11::GraphicsContext gc_;
   scoped_refptr<base::RefCountedMemory> pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputDeviceX11);
 };
 
 }  // namespace viz

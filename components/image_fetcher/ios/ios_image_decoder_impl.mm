@@ -28,6 +28,10 @@ namespace image_fetcher {
 class IOSImageDecoderImpl : public ImageDecoder {
  public:
   explicit IOSImageDecoderImpl();
+
+  IOSImageDecoderImpl(const IOSImageDecoderImpl&) = delete;
+  IOSImageDecoderImpl& operator=(const IOSImageDecoderImpl&) = delete;
+
   ~IOSImageDecoderImpl() override;
 
   // Note, that |desired_image_frame_size| is not supported
@@ -49,8 +53,6 @@ class IOSImageDecoderImpl : public ImageDecoder {
   // The WeakPtrFactory is used to cancel callbacks if ImageFetcher is
   // destroyed during WebP decoding.
   base::WeakPtrFactory<IOSImageDecoderImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSImageDecoderImpl);
 };
 
 IOSImageDecoderImpl::IOSImageDecoderImpl() : weak_factory_(this) {

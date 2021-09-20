@@ -61,6 +61,10 @@ const char kUpdateItemId[] = "jebgalgnebhfojomionfpkfelancnnkf";
 class UpdateCheckerTest : public testing::TestWithParam<bool> {
  public:
   UpdateCheckerTest();
+
+  UpdateCheckerTest(const UpdateCheckerTest&) = delete;
+  UpdateCheckerTest& operator=(const UpdateCheckerTest&) = delete;
+
   ~UpdateCheckerTest() override;
 
   // Overrides from testing::Test.
@@ -102,8 +106,6 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
 
   base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateCheckerTest);
 };
 
 // This test is parameterized for |is_foreground|.

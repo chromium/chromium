@@ -17,6 +17,9 @@ namespace history {
 //
 class HistoryUnitTestBase : public testing::Test {
  public:
+  HistoryUnitTestBase(const HistoryUnitTestBase&) = delete;
+  HistoryUnitTestBase& operator=(const HistoryUnitTestBase&) = delete;
+
   ~HistoryUnitTestBase() override;
 
   // Executes the sql from the file `sql_path` in the database at `db_path`.
@@ -27,9 +30,6 @@ class HistoryUnitTestBase : public testing::Test {
 
  protected:
   HistoryUnitTestBase();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryUnitTestBase);
 };
 
 }  // namespace history

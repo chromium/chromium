@@ -21,6 +21,10 @@ class COMPONENTS_DOWNLOAD_EXPORT URLLoaderFactoryProvider {
 
   explicit URLLoaderFactoryProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  URLLoaderFactoryProvider(const URLLoaderFactoryProvider&) = delete;
+  URLLoaderFactoryProvider& operator=(const URLLoaderFactoryProvider&) = delete;
+
   virtual ~URLLoaderFactoryProvider();
 
   // Called on the io thread to get the URL loader.
@@ -31,8 +35,6 @@ class COMPONENTS_DOWNLOAD_EXPORT URLLoaderFactoryProvider {
 
  private:
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryProvider);
 };
 
 }  // namespace download

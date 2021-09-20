@@ -509,6 +509,10 @@ class InitializationSerializer {
   }
 
   InitializationSerializer() = default;
+
+  InitializationSerializer(const InitializationSerializer&) = delete;
+  InitializationSerializer& operator=(const InitializationSerializer&) = delete;
+
   ~InitializationSerializer() = default;
 
   void FetchOriginId(
@@ -592,7 +596,6 @@ class InitializationSerializer {
       pending_requests_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(InitializationSerializer);
 };
 
 }  // namespace

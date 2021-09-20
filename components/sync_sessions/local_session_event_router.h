@@ -18,6 +18,9 @@ class SyncedTabDelegate;
 // via ProcessSyncChanges, just with a more granular breakdown.
 class LocalSessionEventHandler {
  public:
+  LocalSessionEventHandler(const LocalSessionEventHandler&) = delete;
+  LocalSessionEventHandler& operator=(const LocalSessionEventHandler&) = delete;
+
   virtual ~LocalSessionEventHandler() {}
 
   // Called when asynchronous session restore has completed. On Android, this
@@ -31,9 +34,6 @@ class LocalSessionEventHandler {
 
  protected:
   LocalSessionEventHandler() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalSessionEventHandler);
 };
 
 // The LocalSessionEventRouter is responsible for hooking itself up to various
@@ -41,15 +41,15 @@ class LocalSessionEventHandler {
 // events to a handler as defined in the LocalSessionEventHandler contract.
 class LocalSessionEventRouter {
  public:
+  LocalSessionEventRouter(const LocalSessionEventRouter&) = delete;
+  LocalSessionEventRouter& operator=(const LocalSessionEventRouter&) = delete;
+
   virtual ~LocalSessionEventRouter() {}
   virtual void StartRoutingTo(LocalSessionEventHandler* handler) = 0;
   virtual void Stop() = 0;
 
  protected:
   LocalSessionEventRouter() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocalSessionEventRouter);
 };
 
 }  // namespace sync_sessions

@@ -34,6 +34,10 @@ class PaymentRequestDisplayManager : public KeyedService {
    public:
     DisplayHandle(base::WeakPtr<PaymentRequestDisplayManager> display_manager,
                   base::WeakPtr<ContentPaymentRequestDelegate> delegate);
+
+    DisplayHandle(const DisplayHandle&) = delete;
+    DisplayHandle& operator=(const DisplayHandle&) = delete;
+
     ~DisplayHandle();
     void Show(base::WeakPtr<PaymentRequest> request);
     void Retry();
@@ -54,7 +58,6 @@ class PaymentRequestDisplayManager : public KeyedService {
     bool was_shown_ = false;
 
     base::WeakPtrFactory<DisplayHandle> weak_ptr_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(DisplayHandle);
   };
 
   PaymentRequestDisplayManager();

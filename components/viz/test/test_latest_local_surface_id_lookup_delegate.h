@@ -16,6 +16,12 @@ class TestLatestLocalSurfaceIdLookupDelegate
     : public LatestLocalSurfaceIdLookupDelegate {
  public:
   TestLatestLocalSurfaceIdLookupDelegate();
+
+  TestLatestLocalSurfaceIdLookupDelegate(
+      const TestLatestLocalSurfaceIdLookupDelegate&) = delete;
+  TestLatestLocalSurfaceIdLookupDelegate& operator=(
+      const TestLatestLocalSurfaceIdLookupDelegate&) = delete;
+
   ~TestLatestLocalSurfaceIdLookupDelegate() override;
 
   // LatestLocalSurfaceIdLookupDelegate:
@@ -26,8 +32,6 @@ class TestLatestLocalSurfaceIdLookupDelegate
 
  private:
   base::flat_map<FrameSinkId, LocalSurfaceId> surface_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLatestLocalSurfaceIdLookupDelegate);
 };
 
 }  // namespace viz

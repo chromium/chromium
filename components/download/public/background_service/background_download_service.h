@@ -98,13 +98,14 @@ class BackgroundDownloadService : public KeyedService {
   // components in the larger system.
   virtual Logger* GetLogger() = 0;
 
+  BackgroundDownloadService(const BackgroundDownloadService&) = delete;
+  BackgroundDownloadService& operator=(const BackgroundDownloadService&) =
+      delete;
+
   ~BackgroundDownloadService() override = default;
 
  protected:
   BackgroundDownloadService() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundDownloadService);
 };
 
 }  // namespace download

@@ -70,6 +70,11 @@ class SubresourceFilterAbusiveTest
         .push_back(subresource_filter::kFilterAdsOnAbusiveSites);
     scoped_features_.InitWithFeatures(enabled_features, disabled_features);
   }
+
+  SubresourceFilterAbusiveTest(const SubresourceFilterAbusiveTest&) = delete;
+  SubresourceFilterAbusiveTest& operator=(const SubresourceFilterAbusiveTest&) =
+      delete;
+
   ~SubresourceFilterAbusiveTest() override {}
 
   // SubresourceFilterTestHarness:
@@ -116,7 +121,6 @@ class SubresourceFilterAbusiveTest
 
  private:
   base::test::ScopedFeatureList scoped_features_;
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterAbusiveTest);
 };
 
 TEST_P(SubresourceFilterAbusiveTest, ConfigCombination) {

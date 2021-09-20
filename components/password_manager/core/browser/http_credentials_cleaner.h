@@ -64,6 +64,10 @@ class HttpCredentialCleaner : public PasswordStoreConsumer,
       base::RepeatingCallback<network::mojom::NetworkContext*()>
           network_context_getter,
       PrefService* prefs);
+
+  HttpCredentialCleaner(const HttpCredentialCleaner&) = delete;
+  HttpCredentialCleaner& operator=(const HttpCredentialCleaner&) = delete;
+
   ~HttpCredentialCleaner() override;
 
   // CredentialsCleaner:
@@ -125,8 +129,6 @@ class HttpCredentialCleaner : public PasswordStoreConsumer,
   size_t total_http_credentials_ = 0;
 
   base::WeakPtrFactory<HttpCredentialCleaner> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpCredentialCleaner);
 };
 
 }  // namespace password_manager

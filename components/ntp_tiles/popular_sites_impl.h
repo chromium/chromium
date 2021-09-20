@@ -44,6 +44,9 @@ class PopularSitesImpl : public PopularSites {
       variations::VariationsService* variations_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  PopularSitesImpl(const PopularSitesImpl&) = delete;
+  PopularSitesImpl& operator=(const PopularSitesImpl&) = delete;
+
   ~PopularSitesImpl() override;
 
   // PopularSites implementation.
@@ -87,8 +90,6 @@ class PopularSitesImpl : public PopularSites {
   int version_in_pending_url_;
 
   base::WeakPtrFactory<PopularSitesImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PopularSitesImpl);
 };
 
 }  // namespace ntp_tiles

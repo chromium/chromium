@@ -35,6 +35,10 @@ class VIZ_COMMON_EXPORT DelayBasedTimeSourceClient {
 class VIZ_COMMON_EXPORT DelayBasedTimeSource {
  public:
   explicit DelayBasedTimeSource(base::SingleThreadTaskRunner* task_runner);
+
+  DelayBasedTimeSource(const DelayBasedTimeSource&) = delete;
+  DelayBasedTimeSource& operator=(const DelayBasedTimeSource&) = delete;
+
   virtual ~DelayBasedTimeSource();
 
   void SetClient(DelayBasedTimeSourceClient* client);
@@ -79,8 +83,6 @@ class VIZ_COMMON_EXPORT DelayBasedTimeSource {
 
   base::RepeatingClosure tick_closure_;
   base::OneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayBasedTimeSource);
 };
 
 }  // namespace viz

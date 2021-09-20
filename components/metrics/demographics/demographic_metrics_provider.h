@@ -65,6 +65,11 @@ class DemographicMetricsProvider : public MetricsProvider,
   DemographicMetricsProvider(
       std::unique_ptr<ProfileClient> profile_client,
       MetricsLogUploader::MetricServiceType metrics_service_type);
+
+  DemographicMetricsProvider(const DemographicMetricsProvider&) = delete;
+  DemographicMetricsProvider& operator=(const DemographicMetricsProvider&) =
+      delete;
+
   ~DemographicMetricsProvider() override;
 
   // Provides the synced user's noised birth year and gender to a metrics report
@@ -108,8 +113,6 @@ class DemographicMetricsProvider : public MetricsProvider,
   // The type of the metrics service for which to emit the user demographics
   // status histogram (e.g., UMA).
   const MetricsLogUploader::MetricServiceType metrics_service_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemographicMetricsProvider);
 };
 
 }  // namespace metrics

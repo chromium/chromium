@@ -14,6 +14,11 @@ namespace syncer {
 class FakeLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
  public:
   FakeLocalDeviceInfoProvider();
+
+  FakeLocalDeviceInfoProvider(const FakeLocalDeviceInfoProvider&) = delete;
+  FakeLocalDeviceInfoProvider& operator=(const FakeLocalDeviceInfoProvider&) =
+      delete;
+
   ~FakeLocalDeviceInfoProvider() override;
 
   // Overrides for LocalDeviceInfoProvider.
@@ -29,8 +34,6 @@ class FakeLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
   DeviceInfo device_info_;
   bool ready_ = true;
   base::RepeatingClosureList closure_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLocalDeviceInfoProvider);
 };
 
 }  // namespace syncer

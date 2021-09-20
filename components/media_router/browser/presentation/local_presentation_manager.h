@@ -110,6 +110,9 @@ namespace media_router {
 // thread.
 class LocalPresentationManager : public KeyedService {
  public:
+  LocalPresentationManager(const LocalPresentationManager&) = delete;
+  LocalPresentationManager& operator=(const LocalPresentationManager&) = delete;
+
   ~LocalPresentationManager() override;
 
   // Registers controller PresentationConnectionPtr to presentation with
@@ -170,6 +173,10 @@ class LocalPresentationManager : public KeyedService {
    public:
     explicit LocalPresentation(
         const blink::mojom::PresentationInfo& presentation_info);
+
+    LocalPresentation(const LocalPresentation&) = delete;
+    LocalPresentation& operator=(const LocalPresentation&) = delete;
+
     ~LocalPresentation();
 
     // Register controller with |render_frame_id|. If |receiver_callback_| has
@@ -240,8 +247,6 @@ class LocalPresentationManager : public KeyedService {
                        std::unique_ptr<ControllerConnection>,
                        content::GlobalRenderFrameHostIdHasher>
         pending_controllers_;
-
-    DISALLOW_COPY_AND_ASSIGN(LocalPresentation);
   };
 
  private:
@@ -265,8 +270,6 @@ class LocalPresentationManager : public KeyedService {
   LocalPresentationMap local_presentations_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalPresentationManager);
 };
 
 }  // namespace media_router

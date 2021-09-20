@@ -25,6 +25,10 @@ class PluginPlaceholderBase : public content::RenderFrameObserver,
   PluginPlaceholderBase(content::RenderFrame* render_frame,
                         const blink::WebPluginParams& params,
                         const std::string& html_data);
+
+  PluginPlaceholderBase(const PluginPlaceholderBase&) = delete;
+  PluginPlaceholderBase& operator=(const PluginPlaceholderBase&) = delete;
+
   ~PluginPlaceholderBase() override;
 
   WebViewPlugin* plugin() { return plugin_; }
@@ -55,8 +59,6 @@ class PluginPlaceholderBase : public content::RenderFrameObserver,
   WebViewPlugin* plugin_;
 
   bool hidden_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginPlaceholderBase);
 };
 
 // A basic placeholder that supports only hiding.

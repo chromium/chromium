@@ -87,6 +87,10 @@ class QueuedHistoryDBTask {
       std::unique_ptr<HistoryDBTask> task,
       scoped_refptr<base::SingleThreadTaskRunner> origin_loop,
       const base::CancelableTaskTracker::IsCanceledCallback& is_canceled);
+
+  QueuedHistoryDBTask(const QueuedHistoryDBTask&) = delete;
+  QueuedHistoryDBTask& operator=(const QueuedHistoryDBTask&) = delete;
+
   ~QueuedHistoryDBTask();
 
   bool is_canceled();
@@ -97,8 +101,6 @@ class QueuedHistoryDBTask {
   std::unique_ptr<HistoryDBTask> task_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_loop_;
   base::CancelableTaskTracker::IsCanceledCallback is_canceled_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueuedHistoryDBTask);
 };
 
 // *See the .cc file for more information on the design.*

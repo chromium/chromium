@@ -29,6 +29,10 @@ class ThinWebView : public content::WebContentsObserver {
               jobject obj,
               CompositorView* compositor_view,
               ui::WindowAndroid* window_android);
+
+  ThinWebView(const ThinWebView&) = delete;
+  ThinWebView& operator=(const ThinWebView&) = delete;
+
   ~ThinWebView() override;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& object);
@@ -61,8 +65,6 @@ class ThinWebView : public content::WebContentsObserver {
   std::unique_ptr<web_contents_delegate_android::WebContentsDelegateAndroid>
       web_contents_delegate_;
   gfx::Size view_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThinWebView);
 };
 
 }  // namespace android

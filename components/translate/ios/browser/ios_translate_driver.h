@@ -35,6 +35,10 @@ class IOSTranslateDriver
   IOSTranslateDriver(web::WebState* web_state,
                      web::NavigationManager* navigation_manager,
                      TranslateManager* translate_manager);
+
+  IOSTranslateDriver(const IOSTranslateDriver&) = delete;
+  IOSTranslateDriver& operator=(const IOSTranslateDriver&) = delete;
+
   ~IOSTranslateDriver() override;
 
   LanguageDetectionController* language_detection_controller() {
@@ -122,8 +126,6 @@ class IOSTranslateDriver
   // Parameters of the current translation.
   std::string source_language_;
   std::string target_language_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSTranslateDriver);
 };
 
 }  // namespace translate

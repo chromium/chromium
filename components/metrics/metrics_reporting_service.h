@@ -33,6 +33,10 @@ class MetricsReportingService : public ReportingService {
   // the lifetime of this class.
   MetricsReportingService(MetricsServiceClient* client,
                           PrefService* local_state);
+
+  MetricsReportingService(const MetricsReportingService&) = delete;
+  MetricsReportingService& operator=(const MetricsReportingService&) = delete;
+
   ~MetricsReportingService() override;
 
   MetricsLogStore* metrics_log_store() { return &metrics_log_store_; }
@@ -60,8 +64,6 @@ class MetricsReportingService : public ReportingService {
   void LogLargeRejection(size_t log_size) override;
 
   MetricsLogStore metrics_log_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsReportingService);
 };
 
 }  // namespace metrics

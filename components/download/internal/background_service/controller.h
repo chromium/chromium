@@ -38,6 +38,10 @@ class Controller : public InitializableBackgroundDownloadService {
   };
 
   Controller() = default;
+
+  Controller(const Controller&) = delete;
+  Controller& operator=(const Controller&) = delete;
+
   ~Controller() override = default;
 
   // Returns the status of Controller.
@@ -46,9 +50,6 @@ class Controller : public InitializableBackgroundDownloadService {
   // Exposes the owner of the download request for |guid| if one exists.
   // Otherwise returns DownloadClient::INVALID for an unowned entry.
   virtual DownloadClient GetOwnerOfDownload(const std::string& guid) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Controller);
 };
 
 }  // namespace download

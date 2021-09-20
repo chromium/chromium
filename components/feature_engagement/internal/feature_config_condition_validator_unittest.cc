@@ -161,6 +161,10 @@ class TestEventModel : public EventModel {
 class TestAvailabilityModel : public AvailabilityModel {
  public:
   TestAvailabilityModel() : ready_(true) {}
+
+  TestAvailabilityModel(const TestAvailabilityModel&) = delete;
+  TestAvailabilityModel& operator=(const TestAvailabilityModel&) = delete;
+
   ~TestAvailabilityModel() override = default;
 
   void Initialize(AvailabilityModel::OnInitializedCallback callback,
@@ -188,13 +192,16 @@ class TestAvailabilityModel : public AvailabilityModel {
   bool ready_;
 
   std::map<std::string, absl::optional<uint32_t>> availabilities_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAvailabilityModel);
 };
 
 class TestDisplayLockController : public DisplayLockController {
  public:
   TestDisplayLockController() = default;
+
+  TestDisplayLockController(const TestDisplayLockController&) = delete;
+  TestDisplayLockController& operator=(const TestDisplayLockController&) =
+      delete;
+
   ~TestDisplayLockController() override = default;
 
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override {
@@ -210,8 +217,6 @@ class TestDisplayLockController : public DisplayLockController {
  private:
   // The next result to return from IsDisplayLocked().
   bool next_display_locked_result_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayLockController);
 };
 
 class FeatureConfigConditionValidatorTest : public ::testing::Test {

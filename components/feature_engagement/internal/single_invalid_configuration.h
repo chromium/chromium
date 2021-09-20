@@ -22,6 +22,11 @@ namespace feature_engagement {
 class SingleInvalidConfiguration : public Configuration {
  public:
   SingleInvalidConfiguration();
+
+  SingleInvalidConfiguration(const SingleInvalidConfiguration&) = delete;
+  SingleInvalidConfiguration& operator=(const SingleInvalidConfiguration&) =
+      delete;
+
   ~SingleInvalidConfiguration() override;
 
   // Configuration implementation.
@@ -38,8 +43,6 @@ class SingleInvalidConfiguration : public Configuration {
 
   // An empty map.
   ConfigMap configs_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleInvalidConfiguration);
 };
 
 }  // namespace feature_engagement

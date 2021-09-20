@@ -18,6 +18,10 @@ class WebBundleParser : public mojom::WebBundleParser {
  public:
   WebBundleParser(mojo::PendingReceiver<mojom::WebBundleParser> receiver,
                   mojo::PendingRemote<mojom::BundleDataSource> data_source);
+
+  WebBundleParser(const WebBundleParser&) = delete;
+  WebBundleParser& operator=(const WebBundleParser&) = delete;
+
   ~WebBundleParser() override;
 
  private:
@@ -60,8 +64,6 @@ class WebBundleParser : public mojom::WebBundleParser {
 
   mojo::Receiver<mojom::WebBundleParser> receiver_;
   scoped_refptr<SharedBundleDataSource> data_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleParser);
 };
 
 }  // namespace web_package

@@ -129,6 +129,9 @@ class DriveUploader : public DriveUploaderInterface {
       const scoped_refptr<base::TaskRunner>& blocking_task_runner,
       mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider);
 
+  DriveUploader(const DriveUploader&) = delete;
+  DriveUploader& operator=(const DriveUploader&) = delete;
+
   ~DriveUploader() override;
 
   // DriveUploaderInterface overrides.
@@ -247,7 +250,6 @@ class DriveUploader : public DriveUploaderInterface {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DriveUploader> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DriveUploader);
 };
 
 }  // namespace drive

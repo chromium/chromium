@@ -44,6 +44,10 @@ class PerformanceManagerTabHelper
         content::WebContents*) = 0;
   };
 
+  PerformanceManagerTabHelper(const PerformanceManagerTabHelper&) = delete;
+  PerformanceManagerTabHelper& operator=(const PerformanceManagerTabHelper&) =
+      delete;
+
   ~PerformanceManagerTabHelper() override;
 
   // Returns the PageNode associated with the primary page. This can change
@@ -203,8 +207,6 @@ class PerformanceManagerTabHelper
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   base::WeakPtrFactory<PerformanceManagerTabHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceManagerTabHelper);
 };
 
 }  // namespace performance_manager

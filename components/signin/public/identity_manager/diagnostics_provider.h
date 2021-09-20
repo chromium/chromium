@@ -16,6 +16,10 @@ namespace signin {
 class DiagnosticsProvider {
  public:
   DiagnosticsProvider() = default;
+
+  DiagnosticsProvider(const DiagnosticsProvider&) = delete;
+  DiagnosticsProvider& operator=(const DiagnosticsProvider&) = delete;
+
   virtual ~DiagnosticsProvider() = default;
 
   // Returns the state of the load credentials operation.
@@ -29,9 +33,6 @@ class DiagnosticsProvider {
   // Returns the time until a cookie request can be sent (will be zero if the
   // release time is in the past).
   virtual base::TimeDelta GetDelayBeforeMakingCookieRequests() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsProvider);
 };
 
 }  // namespace signin

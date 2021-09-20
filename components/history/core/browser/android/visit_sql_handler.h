@@ -21,6 +21,10 @@ class VisitDatabase;
 class VisitSQLHandler : public SQLHandler {
  public:
   VisitSQLHandler(URLDatabase* url_db, VisitDatabase* visit_db);
+
+  VisitSQLHandler(const VisitSQLHandler&) = delete;
+  VisitSQLHandler& operator=(const VisitSQLHandler&) = delete;
+
   ~VisitSQLHandler() override;
 
   // Overriden from SQLHandler.
@@ -44,8 +48,6 @@ class VisitSQLHandler : public SQLHandler {
 
   URLDatabase* url_db_;
   VisitDatabase* visit_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(VisitSQLHandler);
 };
 
 }  // namespace history.

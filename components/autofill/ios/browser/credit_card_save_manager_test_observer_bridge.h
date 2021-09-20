@@ -38,6 +38,12 @@ class CreditCardSaveManagerTestObserverBridge
   explicit CreditCardSaveManagerTestObserverBridge(
       CreditCardSaveManager* credit_card_save_manager,
       id<CreditCardSaveManagerTestObserver> observer);
+
+  CreditCardSaveManagerTestObserverBridge(
+      const CreditCardSaveManagerTestObserverBridge&) = delete;
+  CreditCardSaveManagerTestObserverBridge& operator=(
+      const CreditCardSaveManagerTestObserverBridge&) = delete;
+
   ~CreditCardSaveManagerTestObserverBridge() override = default;
 
   // CreditCardSaveManager::ObserverForTest:
@@ -50,8 +56,6 @@ class CreditCardSaveManagerTestObserverBridge
 
  private:
   __weak id<CreditCardSaveManagerTestObserver> observer_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardSaveManagerTestObserverBridge);
 };
 
 }  // namespace autofill

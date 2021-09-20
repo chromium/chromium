@@ -37,6 +37,11 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
   // must be called consistently on a single GL thread. This is verified by
   // DCHECKs.
   MailboxToSurfaceBridgeImpl();
+
+  MailboxToSurfaceBridgeImpl(const MailboxToSurfaceBridgeImpl&) = delete;
+  MailboxToSurfaceBridgeImpl& operator=(const MailboxToSurfaceBridgeImpl&) =
+      delete;
+
   ~MailboxToSurfaceBridgeImpl() override;
 
   bool IsConnected() override;
@@ -109,8 +114,6 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
 
   // Must be last.
   base::WeakPtrFactory<MailboxToSurfaceBridgeImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MailboxToSurfaceBridgeImpl);
 };
 
 class MailboxToSurfaceBridgeFactoryImpl

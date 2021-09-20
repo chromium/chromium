@@ -56,6 +56,12 @@ class PasswordRequirementsSpecFetcherImpl
       int version,
       size_t prefix_length,
       int timeout);
+
+  PasswordRequirementsSpecFetcherImpl(
+      const PasswordRequirementsSpecFetcherImpl&) = delete;
+  PasswordRequirementsSpecFetcherImpl& operator=(
+      const PasswordRequirementsSpecFetcherImpl&) = delete;
+
   ~PasswordRequirementsSpecFetcherImpl() override;
 
   // Implementation for PasswordRequirementsSpecFetcher:
@@ -134,8 +140,6 @@ class PasswordRequirementsSpecFetcherImpl
   // time of starting the network request until receiving the response or a
   // timeout.
   std::map<std::string, std::unique_ptr<LookupInFlight>> lookups_in_flight_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordRequirementsSpecFetcherImpl);
 };
 
 }  // namespace autofill

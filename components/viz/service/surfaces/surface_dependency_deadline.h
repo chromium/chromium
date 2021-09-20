@@ -22,6 +22,11 @@ class FrameDeadline;
 class VIZ_SERVICE_EXPORT SurfaceDependencyDeadline {
  public:
   explicit SurfaceDependencyDeadline(const base::TickClock* tick_clock);
+
+  SurfaceDependencyDeadline(const SurfaceDependencyDeadline&) = delete;
+  SurfaceDependencyDeadline& operator=(const SurfaceDependencyDeadline&) =
+      delete;
+
   ~SurfaceDependencyDeadline();
 
   // Sets up a deadline in wall time where
@@ -51,8 +56,6 @@ class VIZ_SERVICE_EXPORT SurfaceDependencyDeadline {
   const base::TickClock* tick_clock_;
   base::TimeTicks start_time_;
   absl::optional<base::TimeTicks> deadline_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceDependencyDeadline);
 };
 
 }  // namespace viz

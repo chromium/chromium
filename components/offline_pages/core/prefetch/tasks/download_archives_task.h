@@ -45,6 +45,10 @@ class DownloadArchivesTask : public Task {
   DownloadArchivesTask(PrefetchStore* prefetch_store,
                        PrefetchDownloader* prefetch_downloader,
                        PrefService* prefs);
+
+  DownloadArchivesTask(const DownloadArchivesTask&) = delete;
+  DownloadArchivesTask& operator=(const DownloadArchivesTask&) = delete;
+
   ~DownloadArchivesTask() override;
 
  private:
@@ -60,8 +64,6 @@ class DownloadArchivesTask : public Task {
   PrefService* prefs_;
 
   base::WeakPtrFactory<DownloadArchivesTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadArchivesTask);
 };
 
 }  // namespace offline_pages

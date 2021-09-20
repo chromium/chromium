@@ -28,6 +28,12 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   TestContentPaymentRequestDelegate(
       std::unique_ptr<base::SingleThreadTaskExecutor> task_executor,
       autofill::PersonalDataManager* pdm);
+
+  TestContentPaymentRequestDelegate(const TestContentPaymentRequestDelegate&) =
+      delete;
+  TestContentPaymentRequestDelegate& operator=(
+      const TestContentPaymentRequestDelegate&) = delete;
+
   ~TestContentPaymentRequestDelegate() override;
 
   // ContentPaymentRequestDelegate:
@@ -76,8 +82,6 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
 
  private:
   TestPaymentRequestDelegate core_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContentPaymentRequestDelegate);
 };
 
 }  // namespace payments

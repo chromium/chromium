@@ -114,6 +114,9 @@ class MostVisitedSites : public history::TopSitesObserver,
                    std::unique_ptr<IconCacher> icon_cacher,
                    std::unique_ptr<MostVisitedSitesSupervisor> supervisor);
 
+  MostVisitedSites(const MostVisitedSites&) = delete;
+  MostVisitedSites& operator=(const MostVisitedSites&) = delete;
+
   ~MostVisitedSites() override;
 
   // Returns true if this object was created with a non-null provider for the
@@ -364,8 +367,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   // For callbacks may be run after destruction, used exclusively for TopSites
   // (since it's used to detect whether there's a query in flight).
   base::WeakPtrFactory<MostVisitedSites> top_sites_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MostVisitedSites);
 };
 
 }  // namespace ntp_tiles

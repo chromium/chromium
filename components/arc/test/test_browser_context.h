@@ -18,6 +18,10 @@ namespace arc {
 class TestBrowserContext : public content::TestBrowserContext {
  public:
   TestBrowserContext();
+
+  TestBrowserContext(const TestBrowserContext&) = delete;
+  TestBrowserContext& operator=(const TestBrowserContext&) = delete;
+
   ~TestBrowserContext() override;
 
   inline PrefRegistrySimple* pref_registry() { return prefs_.registry(); }
@@ -25,8 +29,6 @@ class TestBrowserContext : public content::TestBrowserContext {
  private:
   BrowserContextDependencyManager* const browser_context_dependency_manager_;
   TestingPrefServiceSimple prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserContext);
 };
 
 }  // namespace arc

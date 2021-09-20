@@ -34,6 +34,11 @@ class MockTaskScheduler : public TaskScheduler {
 class DownloadSchedulerImplTest : public testing::Test {
  public:
   DownloadSchedulerImplTest() {}
+
+  DownloadSchedulerImplTest(const DownloadSchedulerImplTest&) = delete;
+  DownloadSchedulerImplTest& operator=(const DownloadSchedulerImplTest&) =
+      delete;
+
   ~DownloadSchedulerImplTest() override = default;
 
   void TearDown() override { DestroyScheduler(); }
@@ -94,9 +99,6 @@ class DownloadSchedulerImplTest : public testing::Test {
 
   // Entries owned by the test fixture.
   std::vector<Entry> entries_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadSchedulerImplTest);
 };
 
 // Ensures normal polling logic is correct.

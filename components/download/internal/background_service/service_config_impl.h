@@ -15,6 +15,10 @@ struct Configuration;
 class ServiceConfigImpl : public ServiceConfig {
  public:
   explicit ServiceConfigImpl(Configuration* config);
+
+  ServiceConfigImpl(const ServiceConfigImpl&) = delete;
+  ServiceConfigImpl& operator=(const ServiceConfigImpl&) = delete;
+
   ~ServiceConfigImpl() override;
 
   // ServiceConfig implementation.
@@ -24,8 +28,6 @@ class ServiceConfigImpl : public ServiceConfig {
 
  private:
   struct Configuration* config_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceConfigImpl);
 };
 
 }  // namespace download

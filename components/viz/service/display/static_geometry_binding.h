@@ -17,6 +17,10 @@ class VIZ_SERVICE_EXPORT StaticGeometryBinding {
  public:
   StaticGeometryBinding(gpu::gles2::GLES2Interface* gl,
                         const gfx::RectF& quad_vertex_rect);
+
+  StaticGeometryBinding(const StaticGeometryBinding&) = delete;
+  StaticGeometryBinding& operator=(const StaticGeometryBinding&) = delete;
+
   ~StaticGeometryBinding();
 
   void PrepareForDraw();
@@ -30,8 +34,6 @@ class VIZ_SERVICE_EXPORT StaticGeometryBinding {
 
   GLuint quad_vertices_vbo_;
   GLuint quad_elements_vbo_;
-
-  DISALLOW_COPY_AND_ASSIGN(StaticGeometryBinding);
 };
 
 }  // namespace viz

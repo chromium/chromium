@@ -82,6 +82,9 @@ class ConditionValidator {
     bool NoErrors() const;
   };
 
+  ConditionValidator(const ConditionValidator&) = delete;
+  ConditionValidator& operator=(const ConditionValidator&) = delete;
+
   virtual ~ConditionValidator() = default;
 
   // Returns a Result object that describes whether each condition has been met.
@@ -104,9 +107,6 @@ class ConditionValidator {
 
  protected:
   ConditionValidator() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConditionValidator);
 };
 
 std::ostream& operator<<(std::ostream& os,

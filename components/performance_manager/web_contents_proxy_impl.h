@@ -25,6 +25,10 @@ namespace performance_manager {
 class WebContentsProxyImpl {
  public:
   WebContentsProxyImpl();
+
+  WebContentsProxyImpl(const WebContentsProxyImpl&) = delete;
+  WebContentsProxyImpl& operator=(const WebContentsProxyImpl&) = delete;
+
   virtual ~WebContentsProxyImpl();
 
   // Allows resolving this proxy to the underlying WebContents. This must only
@@ -40,9 +44,6 @@ class WebContentsProxyImpl {
   // older or equal to "LastNavigationId". This must only be called on the UI
   // thread.
   virtual int64_t LastNewDocNavigationId() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsProxyImpl);
 };
 
 }  // namespace performance_manager

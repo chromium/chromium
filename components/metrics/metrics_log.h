@@ -79,6 +79,11 @@ class MetricsLog {
   class IndependentMetricsLoader {
    public:
     explicit IndependentMetricsLoader(std::unique_ptr<MetricsLog> log);
+
+    IndependentMetricsLoader(const IndependentMetricsLoader&) = delete;
+    IndependentMetricsLoader& operator=(const IndependentMetricsLoader&) =
+        delete;
+
     ~IndependentMetricsLoader();
 
     // Call ProvideIndependentMetrics (which may execute on a background thread)
@@ -96,8 +101,6 @@ class MetricsLog {
     std::unique_ptr<MetricsLog> log_;
     std::unique_ptr<base::HistogramFlattener> flattener_;
     std::unique_ptr<base::HistogramSnapshotManager> snapshot_manager_;
-
-    DISALLOW_COPY_AND_ASSIGN(IndependentMetricsLoader);
   };
 
   // Creates a new metrics log of the specified type.

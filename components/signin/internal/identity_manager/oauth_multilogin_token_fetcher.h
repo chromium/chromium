@@ -47,6 +47,10 @@ class OAuthMultiloginTokenFetcher : public OAuth2AccessTokenManager::Consumer {
                               SuccessCallback success_callback,
                               FailureCallback failure_callback);
 
+  OAuthMultiloginTokenFetcher(const OAuthMultiloginTokenFetcher&) = delete;
+  OAuthMultiloginTokenFetcher& operator=(const OAuthMultiloginTokenFetcher&) =
+      delete;
+
   ~OAuthMultiloginTokenFetcher() override;
 
  private:
@@ -75,8 +79,6 @@ class OAuthMultiloginTokenFetcher : public OAuth2AccessTokenManager::Consumer {
   std::set<CoreAccountId> retried_requests_;  // Requests are retried once.
 
   base::WeakPtrFactory<OAuthMultiloginTokenFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OAuthMultiloginTokenFetcher);
 };
 
 }  // namespace signin

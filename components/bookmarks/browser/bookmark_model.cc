@@ -97,6 +97,10 @@ class SortComparator {
 class EmptyUndoDelegate : public BookmarkUndoDelegate {
  public:
   EmptyUndoDelegate() {}
+
+  EmptyUndoDelegate(const EmptyUndoDelegate&) = delete;
+  EmptyUndoDelegate& operator=(const EmptyUndoDelegate&) = delete;
+
   ~EmptyUndoDelegate() override {}
 
  private:
@@ -106,8 +110,6 @@ class EmptyUndoDelegate : public BookmarkUndoDelegate {
                              const BookmarkNode* parent,
                              size_t index,
                              std::unique_ptr<BookmarkNode> node) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyUndoDelegate);
 };
 
 }  // namespace

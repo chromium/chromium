@@ -32,6 +32,10 @@ class ArcAudioBridge : public KeyedService,
 
   ArcAudioBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);
+
+  ArcAudioBridge(const ArcAudioBridge&) = delete;
+  ArcAudioBridge& operator=(const ArcAudioBridge&) = delete;
+
   ~ArcAudioBridge() override;
 
   // ConnectionObserver<mojom::AudioInstance> overrides.
@@ -61,8 +65,6 @@ class ArcAudioBridge : public KeyedService,
   // Avoids sending requests when the instance is unavailable.
   // TODO(crbug.com/549195): Remove once the root cause is fixed.
   bool available_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAudioBridge);
 };
 
 }  // namespace arc

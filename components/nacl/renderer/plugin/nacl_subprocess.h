@@ -27,6 +27,10 @@ class ServiceRuntime;
 class NaClSubprocess {
  public:
   NaClSubprocess();
+
+  NaClSubprocess(const NaClSubprocess&) = delete;
+  NaClSubprocess& operator=(const NaClSubprocess&) = delete;
+
   virtual ~NaClSubprocess();
 
   ServiceRuntime* service_runtime() const { return service_runtime_.get(); }
@@ -40,8 +44,6 @@ class NaClSubprocess {
  private:
   // The service runtime representing the NaCl module instance.
   std::unique_ptr<ServiceRuntime> service_runtime_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClSubprocess);
 };
 
 }  // namespace plugin

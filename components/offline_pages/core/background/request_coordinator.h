@@ -130,6 +130,9 @@ class RequestCoordinator : public KeyedService,
                      network::NetworkQualityTracker* network_quality_tracker,
                      std::unique_ptr<ActiveTabInfo> active_tab_info);
 
+  RequestCoordinator(const RequestCoordinator&) = delete;
+  RequestCoordinator& operator=(const RequestCoordinator&) = delete;
+
   ~RequestCoordinator() override;
 
   // Queues |request| to later load and save when system conditions allow.
@@ -505,8 +508,6 @@ class RequestCoordinator : public KeyedService,
   std::unique_ptr<ActiveTabInfo> active_tab_info_;
   // Allows us to pass a weak pointer to callbacks.
   base::WeakPtrFactory<RequestCoordinator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RequestCoordinator);
 };
 
 }  // namespace offline_pages

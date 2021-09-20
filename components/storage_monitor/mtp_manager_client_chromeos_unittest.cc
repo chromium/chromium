@@ -110,6 +110,10 @@ class MtpManagerClientChromeOSTest : public testing::Test {
   MtpManagerClientChromeOSTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
+  MtpManagerClientChromeOSTest(const MtpManagerClientChromeOSTest&) = delete;
+  MtpManagerClientChromeOSTest& operator=(const MtpManagerClientChromeOSTest&) =
+      delete;
+
   ~MtpManagerClientChromeOSTest() override {}
 
  protected:
@@ -140,8 +144,6 @@ class MtpManagerClientChromeOSTest : public testing::Test {
 
   std::unique_ptr<FakeMtpManagerClientChromeOS> mtp_device_observer_;
   std::unique_ptr<MockRemovableStorageObserver> mock_storage_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MtpManagerClientChromeOSTest);
 };
 
 // Test to verify basic MTP storage attach and detach notifications.

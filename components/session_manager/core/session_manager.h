@@ -22,6 +22,10 @@ class SessionManagerObserver;
 class SESSION_EXPORT SessionManager {
  public:
   SessionManager();
+
+  SessionManager(const SessionManager&) = delete;
+  SessionManager& operator=(const SessionManager&) = delete;
+
   virtual ~SessionManager();
 
   // Returns current SessionManager instance and NULL if it hasn't been
@@ -117,8 +121,6 @@ class SESSION_EXPORT SessionManager {
   std::vector<Session> sessions_;
 
   base::ObserverList<SessionManagerObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionManager);
 };
 
 }  // namespace session_manager

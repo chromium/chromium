@@ -43,6 +43,9 @@ class URLChecker {
   URLChecker(std::unique_ptr<URLCheckerClient> async_checker,
              size_t cache_size);
 
+  URLChecker(const URLChecker&) = delete;
+  URLChecker& operator=(const URLChecker&) = delete;
+
   ~URLChecker();
 
   // Returns whether |callback| was run synchronously.
@@ -73,8 +76,6 @@ class URLChecker {
   base::TimeDelta cache_timeout_;
 
   base::WeakPtrFactory<URLChecker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLChecker);
 };
 
 }  // namespace safe_search_api

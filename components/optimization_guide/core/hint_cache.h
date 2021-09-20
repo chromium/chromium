@@ -38,6 +38,10 @@ class HintCache {
   // stored in-memory.
   explicit HintCache(OptimizationGuideStore* optimization_guide_store,
                      int max_host_keyed_memory_cache_size);
+
+  HintCache(const HintCache&) = delete;
+  HintCache& operator=(const HintCache&) = delete;
+
   ~HintCache();
 
   // Initializes the backing store contained within the hint cache, if provided,
@@ -203,8 +207,6 @@ class HintCache {
 
   // Weak ptr factory to get weak pointer of |this|.
   base::WeakPtrFactory<HintCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HintCache);
 };
 
 }  // namespace optimization_guide

@@ -40,6 +40,10 @@ class DataUseUserData : public base::SupportsUserData::Data {
   enum AppState { UNKNOWN, BACKGROUND, FOREGROUND };
 
   explicit DataUseUserData(AppState app_state);
+
+  DataUseUserData(const DataUseUserData&) = delete;
+  DataUseUserData& operator=(const DataUseUserData&) = delete;
+
   ~DataUseUserData() override;
 
   AppState app_state() const { return app_state_; }
@@ -60,8 +64,6 @@ class DataUseUserData : public base::SupportsUserData::Data {
   AppState app_state_;
 
   DataUseContentType content_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataUseUserData);
 };
 
 }  // namespace data_use_measurement

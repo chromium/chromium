@@ -108,6 +108,12 @@ class TestTrackerInMemoryEventStore : public InMemoryEventStore {
 class StoreEverythingEventStorageValidator : public EventStorageValidator {
  public:
   StoreEverythingEventStorageValidator() = default;
+
+  StoreEverythingEventStorageValidator(
+      const StoreEverythingEventStorageValidator&) = delete;
+  StoreEverythingEventStorageValidator& operator=(
+      const StoreEverythingEventStorageValidator&) = delete;
+
   ~StoreEverythingEventStorageValidator() override = default;
 
   bool ShouldStore(const std::string& event_name) const override {
@@ -119,26 +125,29 @@ class StoreEverythingEventStorageValidator : public EventStorageValidator {
                   uint32_t current_day) const override {
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StoreEverythingEventStorageValidator);
 };
 
 class TestTimeProvider : public TimeProvider {
  public:
   TestTimeProvider() = default;
+
+  TestTimeProvider(const TestTimeProvider&) = delete;
+  TestTimeProvider& operator=(const TestTimeProvider&) = delete;
+
   ~TestTimeProvider() override = default;
 
   // TimeProvider implementation.
   uint32_t GetCurrentDay() const override { return 1u; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestTimeProvider);
 };
 
 class TestTrackerAvailabilityModel : public AvailabilityModel {
  public:
   TestTrackerAvailabilityModel() : ready_(true) {}
+
+  TestTrackerAvailabilityModel(const TestTrackerAvailabilityModel&) = delete;
+  TestTrackerAvailabilityModel& operator=(const TestTrackerAvailabilityModel&) =
+      delete;
+
   ~TestTrackerAvailabilityModel() override = default;
 
   void Initialize(AvailabilityModel::OnInitializedCallback callback,
@@ -158,13 +167,17 @@ class TestTrackerAvailabilityModel : public AvailabilityModel {
 
  private:
   bool ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTrackerAvailabilityModel);
 };
 
 class TestTrackerDisplayLockController : public DisplayLockController {
  public:
   TestTrackerDisplayLockController() = default;
+
+  TestTrackerDisplayLockController(const TestTrackerDisplayLockController&) =
+      delete;
+  TestTrackerDisplayLockController& operator=(
+      const TestTrackerDisplayLockController&) = delete;
+
   ~TestTrackerDisplayLockController() override = default;
 
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override {
@@ -181,8 +194,6 @@ class TestTrackerDisplayLockController : public DisplayLockController {
  private:
   // The next DisplayLockHandle to return.
   std::unique_ptr<DisplayLockHandle> next_display_lock_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTrackerDisplayLockController);
 };
 
 class TrackerImplTest : public ::testing::Test {

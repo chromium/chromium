@@ -17,13 +17,15 @@ enum class KeepAliveRestartOption;
 class ScopedKeepAlive {
  public:
   ScopedKeepAlive(KeepAliveOrigin origin, KeepAliveRestartOption restart);
+
+  ScopedKeepAlive(const ScopedKeepAlive&) = delete;
+  ScopedKeepAlive& operator=(const ScopedKeepAlive&) = delete;
+
   ~ScopedKeepAlive();
 
  private:
   const KeepAliveOrigin origin_;
   const KeepAliveRestartOption restart_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedKeepAlive);
 };
 
 #endif  // COMPONENTS_KEEP_ALIVE_REGISTRY_SCOPED_KEEP_ALIVE_H_

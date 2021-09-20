@@ -56,6 +56,9 @@ class CapturedAudioInputTest : public ::testing::Test {
  public:
   CapturedAudioInputTest() {}
 
+  CapturedAudioInputTest(const CapturedAudioInputTest&) = delete;
+  CapturedAudioInputTest& operator=(const CapturedAudioInputTest&) = delete;
+
   ~CapturedAudioInputTest() override { task_environment_.RunUntilIdle(); }
 
   void CreateMockStream(
@@ -155,8 +158,6 @@ class CapturedAudioInputTest : public ::testing::Test {
   MockStream* stream_ = nullptr;
   mojo::Remote<media::mojom::AudioInputStreamClient> stream_client_;
   base::CancelableSyncSocket socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapturedAudioInputTest);
 };
 
 TEST_F(CapturedAudioInputTest, CreateStream) {

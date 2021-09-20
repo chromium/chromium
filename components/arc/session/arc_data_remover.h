@@ -22,6 +22,10 @@ class ArcDataRemover {
  public:
   ArcDataRemover(PrefService* prefs,
                  const cryptohome::Identification& cryptohome_id);
+
+  ArcDataRemover(const ArcDataRemover&) = delete;
+  ArcDataRemover& operator=(const ArcDataRemover&) = delete;
+
   ~ArcDataRemover();
 
   // Schedules to remove the data. This is persistent, calling Run() just
@@ -49,7 +53,6 @@ class ArcDataRemover {
   const cryptohome::Identification cryptohome_id_;
 
   base::WeakPtrFactory<ArcDataRemover> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ArcDataRemover);
 };
 
 }  // namespace arc

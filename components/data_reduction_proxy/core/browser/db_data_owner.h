@@ -35,6 +35,10 @@ using LoadCurrentDataUsageCallback =
 class DBDataOwner {
  public:
   explicit DBDataOwner(std::unique_ptr<DataStore> store);
+
+  DBDataOwner(const DBDataOwner&) = delete;
+  DBDataOwner& operator=(const DBDataOwner&) = delete;
+
   virtual ~DBDataOwner();
 
   // Initializes all the DB objects. Must be called on the DB task runner.
@@ -63,8 +67,6 @@ class DBDataOwner {
   std::unique_ptr<DataUsageStore> data_usage_;
   base::SequenceChecker sequence_checker_;
   base::WeakPtrFactory<DBDataOwner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DBDataOwner);
 };
 
 }  // namespace data_reduction_proxy

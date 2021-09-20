@@ -16,14 +16,17 @@ class AutofillCreditCardPolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
   AutofillCreditCardPolicyHandler();
+
+  AutofillCreditCardPolicyHandler(const AutofillCreditCardPolicyHandler&) =
+      delete;
+  AutofillCreditCardPolicyHandler& operator=(
+      const AutofillCreditCardPolicyHandler&) = delete;
+
   ~AutofillCreditCardPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillCreditCardPolicyHandler);
 };
 
 }  // namespace autofill

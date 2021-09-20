@@ -42,6 +42,9 @@ class PersistedData {
   PersistedData(PrefService* pref_service,
                 ActivityDataService* activity_data_service);
 
+  PersistedData(const PersistedData&) = delete;
+  PersistedData& operator=(const PersistedData&) = delete;
+
   ~PersistedData();
 
   // Returns the DateLastRollCall (the server-localized calendar date number the
@@ -137,8 +140,6 @@ class PersistedData {
   SEQUENCE_CHECKER(sequence_checker_);
   PrefService* pref_service_;
   ActivityDataService* activity_data_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistedData);
 };
 
 }  // namespace update_client

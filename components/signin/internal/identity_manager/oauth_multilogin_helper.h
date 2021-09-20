@@ -48,6 +48,9 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
       const gaia::GaiaSource& gaia_source,
       base::OnceCallback<void(SetAccountsInCookieResult)> callback);
 
+  OAuthMultiloginHelper(const OAuthMultiloginHelper&) = delete;
+  OAuthMultiloginHelper& operator=(const OAuthMultiloginHelper&) = delete;
+
   ~OAuthMultiloginHelper() override;
 
  private:
@@ -100,8 +103,6 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   std::set<std::pair<std::string, std::string>> cookies_to_set_;
 
   base::WeakPtrFactory<OAuthMultiloginHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OAuthMultiloginHelper);
 };
 
 }  // namespace signin

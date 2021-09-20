@@ -18,6 +18,10 @@ namespace filesystem {
 class DirectoryTestHelper {
  public:
   DirectoryTestHelper();
+
+  DirectoryTestHelper(const DirectoryTestHelper&) = delete;
+  DirectoryTestHelper& operator=(const DirectoryTestHelper&) = delete;
+
   ~DirectoryTestHelper();
 
   mojo::Remote<mojom::Directory> CreateTempDir();
@@ -26,8 +30,6 @@ class DirectoryTestHelper {
   class BlockingState;
 
   base::SequenceBound<BlockingState> blocking_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectoryTestHelper);
 };
 
 }  // namespace filesystem

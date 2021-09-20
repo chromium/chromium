@@ -39,6 +39,10 @@ class DataDevice : public WMHelper::DragDropObserver,
                    public SeatObserver {
  public:
   DataDevice(DataDeviceDelegate* delegate, Seat* seat);
+
+  DataDevice(const DataDevice&) = delete;
+  DataDevice& operator=(const DataDevice&) = delete;
+
   ~DataDevice() override;
 
   // Starts drag-and-drop operation.
@@ -97,8 +101,6 @@ class DataDevice : public WMHelper::DragDropObserver,
   bool drop_succeeded_;
   base::WeakPtrFactory<DataDevice> drop_weak_factory_{this};
   base::WeakPtrFactory<DataDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataDevice);
 };
 
 }  // namespace exo

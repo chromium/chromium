@@ -67,6 +67,9 @@ class WebDataServiceWrapper : public KeyedService {
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
       const ShowErrorCallback& show_error_callback);
 
+  WebDataServiceWrapper(const WebDataServiceWrapper&) = delete;
+  WebDataServiceWrapper& operator=(const WebDataServiceWrapper&) = delete;
+
   ~WebDataServiceWrapper() override;
 
   // KeyedService:
@@ -102,8 +105,6 @@ class WebDataServiceWrapper : public KeyedService {
   scoped_refptr<payments::PaymentManifestWebDataService>
       payment_manifest_web_data_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(WebDataServiceWrapper);
 };
 
 #endif  // COMPONENTS_WEBDATA_SERVICES_WEB_DATA_SERVICE_WRAPPER_H_

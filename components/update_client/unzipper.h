@@ -19,6 +19,9 @@ class Unzipper {
  public:
   using UnzipCompleteCallback = base::OnceCallback<void(bool success)>;
 
+  Unzipper(const Unzipper&) = delete;
+  Unzipper& operator=(const Unzipper&) = delete;
+
   virtual ~Unzipper() = default;
 
   virtual void Unzip(const base::FilePath& zip_file,
@@ -27,9 +30,6 @@ class Unzipper {
 
  protected:
   Unzipper() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Unzipper);
 };
 
 class UnzipperFactory : public base::RefCountedThreadSafe<UnzipperFactory> {

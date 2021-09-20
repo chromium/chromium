@@ -88,6 +88,10 @@ class BlocklistData {
                 std::unique_ptr<Policy> type_policy,
                 size_t max_hosts,
                 AllowedTypesAndVersions allowed_types);
+
+  BlocklistData(const BlocklistData&) = delete;
+  BlocklistData& operator=(const BlocklistData&) = delete;
+
   ~BlocklistData();
 
   // Adds a new entry for all rules to use when evaluating blocklisting state.
@@ -166,8 +170,6 @@ class BlocklistData {
   // to remove stale entries from the database and to DCHECK that other methods
   // are not using disallowed types.
   AllowedTypesAndVersions allowed_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlocklistData);
 };
 
 }  // namespace blocklist

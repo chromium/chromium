@@ -114,6 +114,11 @@ class ClientControlledStateDelegate
   explicit ClientControlledStateDelegate(
       ClientControlledShellSurface* shell_surface)
       : shell_surface_(shell_surface) {}
+
+  ClientControlledStateDelegate(const ClientControlledStateDelegate&) = delete;
+  ClientControlledStateDelegate& operator=(
+      const ClientControlledStateDelegate&) = delete;
+
   ~ClientControlledStateDelegate() override {}
 
   // Overridden from ash::ClientControlledState::Delegate:
@@ -136,8 +141,6 @@ class ClientControlledStateDelegate
 
  private:
   ClientControlledShellSurface* shell_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientControlledStateDelegate);
 };
 
 // A WindowStateDelegate that implements ToggleFullscreen behavior for
@@ -148,6 +151,12 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
       ClientControlledShellSurface* shell_surface,
       ash::ClientControlledState::Delegate* delegate)
       : shell_surface_(shell_surface), delegate_(delegate) {}
+
+  ClientControlledWindowStateDelegate(
+      const ClientControlledWindowStateDelegate&) = delete;
+  ClientControlledWindowStateDelegate& operator=(
+      const ClientControlledWindowStateDelegate&) = delete;
+
   ~ClientControlledWindowStateDelegate() override {}
 
   // Overridden from ash::WindowStateDelegate:
@@ -216,8 +225,6 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
  private:
   ClientControlledShellSurface* shell_surface_;
   ash::ClientControlledState::Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientControlledWindowStateDelegate);
 };
 
 bool IsPinned(const ash::WindowState* window_state) {
@@ -255,6 +262,9 @@ class EventTargetingBlocker : aura::WindowObserver {
  public:
   EventTargetingBlocker() = default;
 
+  EventTargetingBlocker(const EventTargetingBlocker&) = delete;
+  EventTargetingBlocker& operator=(const EventTargetingBlocker&) = delete;
+
   ~EventTargetingBlocker() override {
     if (window_)
       Unregister(window_);
@@ -291,8 +301,6 @@ class EventTargetingBlocker : aura::WindowObserver {
            std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>>
       event_targeting_blocker_map_;
   aura::Window* window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(EventTargetingBlocker);
 };
 
 }  // namespace
@@ -303,12 +311,14 @@ class ClientControlledShellSurface::ScopedSetBoundsLocally {
       : state_(shell_surface->client_controlled_state_) {
     state_->set_bounds_locally(true);
   }
+
+  ScopedSetBoundsLocally(const ScopedSetBoundsLocally&) = delete;
+  ScopedSetBoundsLocally& operator=(const ScopedSetBoundsLocally&) = delete;
+
   ~ScopedSetBoundsLocally() { state_->set_bounds_locally(false); }
 
  private:
   ash::ClientControlledState* const state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetBoundsLocally);
 };
 
 class ClientControlledShellSurface::ScopedLockedToRoot {
@@ -317,12 +327,14 @@ class ClientControlledShellSurface::ScopedLockedToRoot {
       : window_(widget->GetNativeWindow()) {
     window_->SetProperty(ash::kLockedToRootKey, true);
   }
+
+  ScopedLockedToRoot(const ScopedLockedToRoot&) = delete;
+  ScopedLockedToRoot& operator=(const ScopedLockedToRoot&) = delete;
+
   ~ScopedLockedToRoot() { window_->ClearProperty(ash::kLockedToRootKey); }
 
  private:
   aura::Window* const window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLockedToRoot);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

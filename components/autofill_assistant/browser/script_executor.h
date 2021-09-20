@@ -88,6 +88,10 @@ class ScriptExecutor : public ActionDelegate,
                  std::map<std::string, ScriptStatus>* scripts_state,
                  const std::vector<std::unique_ptr<Script>>* ordered_interrupts,
                  ScriptExecutorDelegate* delegate);
+
+  ScriptExecutor(const ScriptExecutor&) = delete;
+  ScriptExecutor& operator=(const ScriptExecutor&) = delete;
+
   ~ScriptExecutor() override;
 
   // What should happen after the script has run.
@@ -299,6 +303,10 @@ class ScriptExecutor : public ActionDelegate,
             void(BatchElementChecker*,
                  base::OnceCallback<void(const ClientStatus&)>)> check_elements,
         WaitForDomOperation::Callback callback);
+
+    WaitForDomOperation(const WaitForDomOperation&) = delete;
+    WaitForDomOperation& operator=(const WaitForDomOperation&) = delete;
+
     ~WaitForDomOperation() override;
 
     void Run();
@@ -391,8 +399,6 @@ class ScriptExecutor : public ActionDelegate,
     RetryTimer retry_timer_;
 
     base::WeakPtrFactory<WaitForDomOperation> weak_ptr_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(WaitForDomOperation);
   };
 
   void OnGetActions(base::TimeTicks start_time,
@@ -540,7 +546,6 @@ class ScriptExecutor : public ActionDelegate,
   int consecutive_slow_roundtrip_counter_ = 0;
 
   base::WeakPtrFactory<ScriptExecutor> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ScriptExecutor);
 };
 }  // namespace autofill_assistant
 

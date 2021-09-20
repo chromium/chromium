@@ -60,6 +60,10 @@ class MetricsService : public base::HistogramFlattener {
   MetricsService(MetricsStateManager* state_manager,
                  MetricsServiceClient* client,
                  PrefService* local_state);
+
+  MetricsService(const MetricsService&) = delete;
+  MetricsService& operator=(const MetricsService&) = delete;
+
   ~MetricsService() override;
 
   // Initializes metrics recording state. Updates various bookkeeping values in
@@ -415,8 +419,6 @@ class MetricsService : public base::HistogramFlattener {
   // Weak pointers factory used to post task on different threads. All weak
   // pointers managed by this factory have the same lifetime as MetricsService.
   base::WeakPtrFactory<MetricsService> self_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsService);
 };
 
 }  // namespace metrics

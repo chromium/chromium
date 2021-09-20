@@ -63,6 +63,12 @@ class IdentityManagerDependenciesOwner {
   IdentityManagerDependenciesOwner(
       sync_preferences::TestingPrefServiceSyncable* pref_service,
       TestSigninClient* test_signin_client);
+
+  IdentityManagerDependenciesOwner(const IdentityManagerDependenciesOwner&) =
+      delete;
+  IdentityManagerDependenciesOwner& operator=(
+      const IdentityManagerDependenciesOwner&) = delete;
+
   ~IdentityManagerDependenciesOwner();
 
   sync_preferences::TestingPrefServiceSyncable* pref_service();
@@ -82,8 +88,6 @@ class IdentityManagerDependenciesOwner {
   sync_preferences::TestingPrefServiceSyncable* raw_pref_service_ = nullptr;
   std::unique_ptr<TestSigninClient> owned_signin_client_;
   TestSigninClient* raw_signin_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityManagerDependenciesOwner);
 };
 
 IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(

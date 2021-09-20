@@ -25,6 +25,10 @@ using ImageDecodedCallback = base::OnceCallback<void(const gfx::Image&)>;
 class ImageDecoder {
  public:
   ImageDecoder() {}
+
+  ImageDecoder(const ImageDecoder&) = delete;
+  ImageDecoder& operator=(const ImageDecoder&) = delete;
+
   virtual ~ImageDecoder() {}
 
   // Decodes the passed |image_data| and runs the given callback. The callback
@@ -38,9 +42,6 @@ class ImageDecoder {
   virtual void DecodeImage(const std::string& image_data,
                            const gfx::Size& desired_image_frame_size,
                            ImageDecodedCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageDecoder);
 };
 
 }  // namespace image_fetcher

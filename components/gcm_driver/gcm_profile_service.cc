@@ -42,6 +42,10 @@ class GCMProfileService::IdentityObserver
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       GCMDriver* driver);
+
+  IdentityObserver(const IdentityObserver&) = delete;
+  IdentityObserver& operator=(const IdentityObserver&) = delete;
+
   ~IdentityObserver() override;
 
   // signin::IdentityManager::Observer:
@@ -63,8 +67,6 @@ class GCMProfileService::IdentityObserver
 
   base::WeakPtrFactory<GCMProfileService::IdentityObserver> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityObserver);
 };
 
 GCMProfileService::IdentityObserver::IdentityObserver(

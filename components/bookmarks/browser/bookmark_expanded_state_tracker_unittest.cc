@@ -25,6 +25,12 @@ namespace bookmarks {
 class BookmarkExpandedStateTrackerTest : public testing::Test {
  public:
   BookmarkExpandedStateTrackerTest();
+
+  BookmarkExpandedStateTrackerTest(const BookmarkExpandedStateTrackerTest&) =
+      delete;
+  BookmarkExpandedStateTrackerTest& operator=(
+      const BookmarkExpandedStateTrackerTest&) = delete;
+
   ~BookmarkExpandedStateTrackerTest() override;
 
  protected:
@@ -36,8 +42,6 @@ class BookmarkExpandedStateTrackerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<BookmarkModel> model_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkExpandedStateTrackerTest);
 };
 
 BookmarkExpandedStateTrackerTest::BookmarkExpandedStateTrackerTest() = default;

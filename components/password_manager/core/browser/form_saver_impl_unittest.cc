@@ -70,6 +70,9 @@ class FormSaverImplTest : public testing::Test {
       : mock_store_(new StrictMock<MockPasswordStoreInterface>()),
         form_saver_(mock_store_.get()) {}
 
+  FormSaverImplTest(const FormSaverImplTest&) = delete;
+  FormSaverImplTest& operator=(const FormSaverImplTest&) = delete;
+
   ~FormSaverImplTest() override { mock_store_->ShutdownOnUIThread(); }
 
  protected:
@@ -78,9 +81,6 @@ class FormSaverImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<StrictMock<MockPasswordStoreInterface>> mock_store_;
   FormSaverImpl form_saver_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FormSaverImplTest);
 };
 
 class FormSaverImplSaveTest

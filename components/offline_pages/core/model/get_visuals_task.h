@@ -24,6 +24,10 @@ class GetVisualsTask : public Task {
   GetVisualsTask(OfflinePageMetadataStore* store,
                  int64_t offline_id,
                  CompleteCallback complete_callback);
+
+  GetVisualsTask(const GetVisualsTask&) = delete;
+  GetVisualsTask& operator=(const GetVisualsTask&) = delete;
+
   ~GetVisualsTask() override;
 
  private:
@@ -39,7 +43,6 @@ class GetVisualsTask : public Task {
   base::OnceCallback<void(std::unique_ptr<OfflinePageVisuals>)>
       complete_callback_;
   base::WeakPtrFactory<GetVisualsTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(GetVisualsTask);
 };
 
 }  // namespace offline_pages

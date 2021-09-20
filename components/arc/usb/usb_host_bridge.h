@@ -59,6 +59,10 @@ class ArcUsbHostBridge : public KeyedService,
   // The constructor will register an Observer with ArcBridgeService.
   ArcUsbHostBridge(content::BrowserContext* context,
                    ArcBridgeService* bridge_service);
+
+  ArcUsbHostBridge(const ArcUsbHostBridge&) = delete;
+  ArcUsbHostBridge& operator=(const ArcUsbHostBridge&) = delete;
+
   ~ArcUsbHostBridge() override;
 
   // Returns the factory instance for this class.
@@ -124,8 +128,6 @@ class ArcUsbHostBridge : public KeyedService,
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcUsbHostBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcUsbHostBridge);
 };
 
 }  // namespace arc

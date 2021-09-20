@@ -114,6 +114,9 @@ class LargeIconServiceTest : public testing::Test {
                             favicon_base::IconType::kTouchIcon,
                             /*google_server_client_param=*/"test_chrome") {}
 
+  LargeIconServiceTest(const LargeIconServiceTest&) = delete;
+  LargeIconServiceTest& operator=(const LargeIconServiceTest&) = delete;
+
   ~LargeIconServiceTest() override {}
 
  protected:
@@ -124,9 +127,6 @@ class LargeIconServiceTest : public testing::Test {
   testing::NiceMock<MockFaviconService> mock_favicon_service_;
   LargeIconServiceImpl large_icon_service_;
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LargeIconServiceTest);
 };
 
 TEST_F(LargeIconServiceTest, ShouldGetFromGoogleServer) {
@@ -418,6 +418,11 @@ class LargeIconServiceGetterTest : public LargeIconServiceTest,
                                    public ::testing::WithParamInterface<bool> {
  public:
   LargeIconServiceGetterTest() {}
+
+  LargeIconServiceGetterTest(const LargeIconServiceGetterTest&) = delete;
+  LargeIconServiceGetterTest& operator=(const LargeIconServiceGetterTest&) =
+      delete;
+
   ~LargeIconServiceGetterTest() override {}
 
   void GetLargeIconOrFallbackStyleAndWaitForCallback(
@@ -488,9 +493,6 @@ class LargeIconServiceGetterTest : public LargeIconServiceTest,
 
   std::unique_ptr<favicon_base::FallbackIconStyle> returned_fallback_style_;
   std::unique_ptr<gfx::Size> returned_bitmap_size_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LargeIconServiceGetterTest);
 };
 
 TEST_P(LargeIconServiceGetterTest, SameSize) {

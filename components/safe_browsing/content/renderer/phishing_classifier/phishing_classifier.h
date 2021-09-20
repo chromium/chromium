@@ -60,6 +60,10 @@ class PhishingClassifier {
   // |render_view|. Note that the classifier will not be 'ready' until
   // set_phishing_scorer() is called.
   explicit PhishingClassifier(content::RenderFrame* render_frame);
+
+  PhishingClassifier(const PhishingClassifier&) = delete;
+  PhishingClassifier& operator=(const PhishingClassifier&) = delete;
+
   virtual ~PhishingClassifier();
 
   // Sets a scorer for the classifier to use in computing the phishiness score.
@@ -166,8 +170,6 @@ class PhishingClassifier {
   // Used in scheduling BeginFeatureExtraction tasks.
   // These pointers are invalidated if classification is cancelled.
   base::WeakPtrFactory<PhishingClassifier> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PhishingClassifier);
 };
 
 }  // namespace safe_browsing

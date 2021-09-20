@@ -35,6 +35,10 @@ struct PasswordForm;
 class PasswordSaveManager {
  public:
   PasswordSaveManager() = default;
+
+  PasswordSaveManager(const PasswordSaveManager&) = delete;
+  PasswordSaveManager& operator=(const PasswordSaveManager&) = delete;
+
   virtual ~PasswordSaveManager() = default;
 
   virtual void Init(PasswordManagerClient* client,
@@ -104,9 +108,6 @@ class PasswordSaveManager {
   virtual bool HasGeneratedPassword() const = 0;
 
   virtual std::unique_ptr<PasswordSaveManager> Clone() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordSaveManager);
 };
 }  // namespace password_manager
 

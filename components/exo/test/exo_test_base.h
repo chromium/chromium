@@ -32,6 +32,9 @@ class ExoTestBase : public ash::AshTestBase {
   NOINLINE explicit ExoTestBase(TaskEnvironmentTraits&&... traits)
       : AshTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
 
+  ExoTestBase(const ExoTestBase&) = delete;
+  ExoTestBase& operator=(const ExoTestBase&) = delete;
+
   ~ExoTestBase() override;
 
   // ash::AshTestBase:
@@ -48,8 +51,6 @@ class ExoTestBase : public ash::AshTestBase {
  private:
   ExoTestHelper exo_test_helper_;
   std::unique_ptr<WMHelper> wm_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExoTestBase);
 };
 
 }  // namespace test

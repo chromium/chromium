@@ -31,6 +31,10 @@ class GetOperationRequest {
       version_info::Channel channel,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefetchRequestFinishedCallback callback);
+
+  GetOperationRequest(const GetOperationRequest&) = delete;
+  GetOperationRequest& operator=(const GetOperationRequest&) = delete;
+
   ~GetOperationRequest();
 
   // Returns the stored callback. Note that this moves the internal value
@@ -44,8 +48,6 @@ class GetOperationRequest {
 
   PrefetchRequestFinishedCallback callback_;
   std::unique_ptr<PrefetchRequestFetcher> fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetOperationRequest);
 };
 
 }  // namespace offline_pages

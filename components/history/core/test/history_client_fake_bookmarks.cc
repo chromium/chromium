@@ -77,6 +77,12 @@ class HistoryBackendClientFakeBookmarks : public HistoryBackendClient {
  public:
   explicit HistoryBackendClientFakeBookmarks(
       const scoped_refptr<FakeBookmarkDatabase>& bookmarks);
+
+  HistoryBackendClientFakeBookmarks(const HistoryBackendClientFakeBookmarks&) =
+      delete;
+  HistoryBackendClientFakeBookmarks& operator=(
+      const HistoryBackendClientFakeBookmarks&) = delete;
+
   ~HistoryBackendClientFakeBookmarks() override;
 
   // HistoryBackendClient implementation.
@@ -86,8 +92,6 @@ class HistoryBackendClientFakeBookmarks : public HistoryBackendClient {
 
  private:
   scoped_refptr<FakeBookmarkDatabase> bookmarks_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackendClientFakeBookmarks);
 };
 
 HistoryBackendClientFakeBookmarks::HistoryBackendClientFakeBookmarks(

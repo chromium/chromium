@@ -44,25 +44,31 @@ class AccountReconcilor : public KeyedService,
   class Lock final {
    public:
     explicit Lock(AccountReconcilor* reconcilor);
+
+    Lock(const Lock&) = delete;
+    Lock& operator=(const Lock&) = delete;
+
     ~Lock();
 
    private:
     base::WeakPtr<AccountReconcilor> reconcilor_;
     THREAD_CHECKER(thread_checker_);
-    DISALLOW_COPY_AND_ASSIGN(Lock);
   };
 
   // Helper class to indicate that synced data is being deleted. The object
   // must be destroyed when the data deletion is complete.
   class ScopedSyncedDataDeletion {
    public:
+    ScopedSyncedDataDeletion(const ScopedSyncedDataDeletion&) = delete;
+    ScopedSyncedDataDeletion& operator=(const ScopedSyncedDataDeletion&) =
+        delete;
+
     ~ScopedSyncedDataDeletion();
 
    private:
     friend class AccountReconcilor;
     explicit ScopedSyncedDataDeletion(AccountReconcilor* reconcilor);
     base::WeakPtr<AccountReconcilor> reconcilor_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedSyncedDataDeletion);
   };
 
   class Observer {
@@ -91,6 +97,10 @@ class AccountReconcilor : public KeyedService,
       signin::IdentityManager* identity_manager,
       SigninClient* client,
       std::unique_ptr<signin::AccountReconcilorDelegate> delegate);
+
+  AccountReconcilor(const AccountReconcilor&) = delete;
+  AccountReconcilor& operator=(const AccountReconcilor&) = delete;
+
   ~AccountReconcilor() override;
 
   // Initializes the account reconcilor. Should be called once after
@@ -418,8 +428,6 @@ class AccountReconcilor : public KeyedService,
   bool was_shut_down_ = false;
 
   base::WeakPtrFactory<AccountReconcilor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilor);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_ACCOUNT_RECONCILOR_H_

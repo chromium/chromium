@@ -34,6 +34,11 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
       const base::RepeatingClosure& nudge_for_commit_closure,
       base::OnceClosure on_bookmark_model_being_deleted_closure,
       SyncedBookmarkTracker* bookmark_tracker);
+
+  BookmarkModelObserverImpl(const BookmarkModelObserverImpl&) = delete;
+  BookmarkModelObserverImpl& operator=(const BookmarkModelObserverImpl&) =
+      delete;
+
   ~BookmarkModelObserverImpl() override;
 
   // BookmarkModelObserver:
@@ -99,8 +104,6 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
   // The callback used to inform the processor that the bookmark is getting
   // deleted.
   base::OnceClosure on_bookmark_model_being_deleted_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelObserverImpl);
 };
 
 }  // namespace sync_bookmarks

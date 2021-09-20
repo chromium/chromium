@@ -96,6 +96,9 @@ class WaylandNotificationShell {
  public:
   WaylandNotificationShell() : id_(g_next_notification_shell_id.GetNext()) {}
 
+  WaylandNotificationShell(const WaylandNotificationShell&) = delete;
+  WaylandNotificationShell& operator=(const WaylandNotificationShell&) = delete;
+
   ~WaylandNotificationShell() = default;
 
   // Creates a notification on message center from textual information.
@@ -117,8 +120,6 @@ class WaylandNotificationShell {
  private:
   // Id for this notification shell instance.
   const uint32_t id_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandNotificationShell);
 };
 
 void notification_shell_create_notification(wl_client* client,

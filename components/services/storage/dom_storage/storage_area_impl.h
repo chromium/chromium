@@ -96,6 +96,9 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
                   Delegate* delegate,
                   const Options& options);
 
+  StorageAreaImpl(const StorageAreaImpl&) = delete;
+  StorageAreaImpl& operator=(const StorageAreaImpl&) = delete;
+
   ~StorageAreaImpl() override;
 
   // Initializes the storage area as loaded & empty. This can only be called
@@ -346,8 +349,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   base::WeakPtrFactory<StorageAreaImpl> weak_ptr_factory_{this};
 
   static bool s_aggressive_flushing_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageAreaImpl);
 };
 
 }  // namespace storage

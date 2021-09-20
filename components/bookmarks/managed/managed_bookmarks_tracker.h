@@ -43,6 +43,10 @@ class ManagedBookmarksTracker {
   ManagedBookmarksTracker(BookmarkModel* model,
                           PrefService* prefs,
                           GetManagementDomainCallback callback);
+
+  ManagedBookmarksTracker(const ManagedBookmarksTracker&) = delete;
+  ManagedBookmarksTracker& operator=(const ManagedBookmarksTracker&) = delete;
+
   ~ManagedBookmarksTracker();
 
   // Returns the initial list of managed bookmarks, which can be passed to
@@ -77,11 +81,8 @@ class ManagedBookmarksTracker {
   PrefService* prefs_;
   PrefChangeRegistrar registrar_;
   GetManagementDomainCallback get_management_domain_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedBookmarksTracker);
 };
 
 }  // namespace bookmarks
 
 #endif  // COMPONENTS_BOOKMARKS_MANAGED_MANAGED_BOOKMARKS_TRACKER_H_
-

@@ -59,6 +59,9 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
                     ResultDestination result_destination,
                     CopyOutputRequestCallback result_callback);
 
+  CopyOutputRequest(const CopyOutputRequest&) = delete;
+  CopyOutputRequest& operator=(const CopyOutputRequest&) = delete;
+
   ~CopyOutputRequest();
 
   // Returns the requested result format.
@@ -146,8 +149,6 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   absl::optional<base::UnguessableToken> source_;
   absl::optional<gfx::Rect> area_;
   absl::optional<gfx::Rect> result_selection_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyOutputRequest);
 };
 
 }  // namespace viz

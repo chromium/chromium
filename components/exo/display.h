@@ -65,6 +65,9 @@ class Display {
       std::unique_ptr<DataExchangeDelegate> data_exchange_delegate);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  Display(const Display&) = delete;
+  Display& operator=(const Display&) = delete;
+
   ~Display();
 
   void Shutdown();
@@ -151,8 +154,6 @@ class Display {
 #if defined(USE_OZONE)
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 #endif  // defined(USE_OZONE)
-
-  DISALLOW_COPY_AND_ASSIGN(Display);
 };
 
 }  // namespace exo

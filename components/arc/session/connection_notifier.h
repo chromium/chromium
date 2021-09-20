@@ -19,6 +19,10 @@ class ConnectionObserverBase;
 class ConnectionNotifier {
  public:
   ConnectionNotifier();
+
+  ConnectionNotifier(const ConnectionNotifier&) = delete;
+  ConnectionNotifier& operator=(const ConnectionNotifier&) = delete;
+
   ~ConnectionNotifier();
 
   void AddObserver(ConnectionObserverBase* observer);
@@ -33,8 +37,6 @@ class ConnectionNotifier {
  private:
   THREAD_CHECKER(thread_checker_);
   base::ObserverList<ConnectionObserverBase>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionNotifier);
 };
 
 }  // namespace internal

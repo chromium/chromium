@@ -62,6 +62,10 @@ class AutoResumptionHandlerTest : public testing::Test {
   AutoResumptionHandlerTest()
       : task_runner_(new base::TestMockTimeTaskRunner), handle_(task_runner_) {}
 
+  AutoResumptionHandlerTest(const AutoResumptionHandlerTest&) = delete;
+  AutoResumptionHandlerTest& operator=(const AutoResumptionHandlerTest&) =
+      delete;
+
   ~AutoResumptionHandlerTest() override = default;
 
  protected:
@@ -132,8 +136,6 @@ class AutoResumptionHandlerTest : public testing::Test {
   download::test::MockTaskManager* task_manager_;
   std::unique_ptr<AutoResumptionHandler> auto_resumption_handler_;
   base::SimpleTestClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoResumptionHandlerTest);
 };
 
 TEST_F(AutoResumptionHandlerTest, ScheduleTaskCalledOnDownloadStart) {

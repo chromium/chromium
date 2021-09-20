@@ -84,6 +84,10 @@ class VIZ_SERVICE_EXPORT Surface final {
    public:
     PresentationHelper(base::WeakPtr<SurfaceClient> surface_client,
                        uint32_t frame_token);
+
+    PresentationHelper(const PresentationHelper&) = delete;
+    PresentationHelper& operator=(const PresentationHelper&) = delete;
+
     ~PresentationHelper();
 
     void DidPresent(base::TimeTicks draw_start_timestamp,
@@ -93,8 +97,6 @@ class VIZ_SERVICE_EXPORT Surface final {
    private:
     base::WeakPtr<SurfaceClient> surface_client_;
     const uint32_t frame_token_;
-
-    DISALLOW_COPY_AND_ASSIGN(PresentationHelper);
   };
 
   using PresentedCallback =

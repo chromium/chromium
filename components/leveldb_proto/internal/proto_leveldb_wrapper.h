@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       LevelDB* db);
 
+  ProtoLevelDBWrapper(const ProtoLevelDBWrapper&) = delete;
+  ProtoLevelDBWrapper& operator=(const ProtoLevelDBWrapper&) = delete;
+
   virtual ~ProtoLevelDBWrapper();
 
   void UpdateEntries(std::unique_ptr<KeyValueVector> entries_to_save,
@@ -156,8 +159,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
   std::string metrics_id_ = "Default";
 
   base::WeakPtrFactory<ProtoLevelDBWrapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProtoLevelDBWrapper);
 };
 
 }  // namespace leveldb_proto

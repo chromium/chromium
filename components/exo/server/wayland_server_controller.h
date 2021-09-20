@@ -36,6 +36,9 @@ class WaylandServerController {
       std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
       std::unique_ptr<ToastSurfaceManager> toast_surface_manager);
 
+  WaylandServerController(const WaylandServerController&) = delete;
+  WaylandServerController& operator=(const WaylandServerController&) = delete;
+
   ~WaylandServerController();
 
   InputMethodSurfaceManager* input_method_surface_manager() {
@@ -53,8 +56,6 @@ class WaylandServerController {
   std::unique_ptr<Display> display_;
   std::unique_ptr<wayland::Server> wayland_server_;
   std::unique_ptr<wayland::WaylandWatcher> wayland_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandServerController);
 };
 
 }  // namespace exo

@@ -16,15 +16,18 @@ class PageLoadMetricsTestContentBrowserClient
     : public content::ContentBrowserClient {
  public:
   PageLoadMetricsTestContentBrowserClient();
+
+  PageLoadMetricsTestContentBrowserClient(
+      const PageLoadMetricsTestContentBrowserClient&) = delete;
+  PageLoadMetricsTestContentBrowserClient& operator=(
+      const PageLoadMetricsTestContentBrowserClient&) = delete;
+
   ~PageLoadMetricsTestContentBrowserClient() override;
 
   // content::ContentBrowserClient:
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
       content::NavigationHandle* navigation_handle) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsTestContentBrowserClient);
 };
 
 }  // namespace page_load_metrics

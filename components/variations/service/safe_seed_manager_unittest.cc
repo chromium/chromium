@@ -37,6 +37,10 @@ class FakeSeedStore : public VariationsSeedStore {
  public:
   explicit FakeSeedStore(PrefService* local_state)
       : VariationsSeedStore(local_state) {}
+
+  FakeSeedStore(const FakeSeedStore&) = delete;
+  FakeSeedStore& operator=(const FakeSeedStore&) = delete;
+
   ~FakeSeedStore() override = default;
 
   bool StoreSafeSeed(const std::string& seed_data,
@@ -74,8 +78,6 @@ class FakeSeedStore : public VariationsSeedStore {
   std::string permanent_consistency_country_;
   std::string session_consistency_country_;
   base::Time fetch_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSeedStore);
 };
 
 // Passes the default test values as the active state into the

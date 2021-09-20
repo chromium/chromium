@@ -49,6 +49,12 @@ class FakeBluetoothChooserController : public ChooserController {
   };
 
   explicit FakeBluetoothChooserController(std::vector<FakeDevice> devices = {});
+
+  FakeBluetoothChooserController(const FakeBluetoothChooserController&) =
+      delete;
+  FakeBluetoothChooserController& operator=(
+      const FakeBluetoothChooserController&) = delete;
+
   ~FakeBluetoothChooserController() override;
 
   // ChooserController:
@@ -83,8 +89,6 @@ class FakeBluetoothChooserController : public ChooserController {
  private:
   std::vector<FakeDevice> devices_;
   bool table_view_always_disabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothChooserController);
 };
 
 }  // namespace permissions

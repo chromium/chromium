@@ -88,6 +88,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
       int render_frame_host_routing_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
+  DownloadUrlParameters(const DownloadUrlParameters&) = delete;
+  DownloadUrlParameters& operator=(const DownloadUrlParameters&) = delete;
+
   ~DownloadUrlParameters();
 
   // Should be set to true if the download was initiated by a script or a web
@@ -370,8 +373,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   bool require_safety_checks_;
   absl::optional<net::IsolationInfo> isolation_info_;
   bool has_user_gesture_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadUrlParameters);
 };
 
 }  // namespace download

@@ -29,6 +29,10 @@ class DistilledPagePrefs {
   };
 
   explicit DistilledPagePrefs(PrefService* pref_service);
+
+  DistilledPagePrefs(const DistilledPagePrefs&) = delete;
+  DistilledPagePrefs& operator=(const DistilledPagePrefs&) = delete;
+
   ~DistilledPagePrefs();
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -63,8 +67,6 @@ class DistilledPagePrefs {
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<DistilledPagePrefs> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DistilledPagePrefs);
 };
 
 }  // namespace dom_distiller

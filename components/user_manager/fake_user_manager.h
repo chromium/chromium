@@ -21,6 +21,10 @@ namespace user_manager {
 class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
  public:
   FakeUserManager();
+
+  FakeUserManager(const FakeUserManager&) = delete;
+  FakeUserManager& operator=(const FakeUserManager&) = delete;
+
   ~FakeUserManager() override;
 
   // Create and add a new user. Created user is not affiliated with the domain,
@@ -180,8 +184,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   // Contains AccountIds for which IsCurrentUserNonCryptohomeDataEphemeral will
   // return true.
   std::set<AccountId> accounts_with_ephemeral_non_cryptohome_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUserManager);
 };
 
 }  // namespace user_manager

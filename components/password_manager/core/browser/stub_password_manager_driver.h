@@ -16,6 +16,11 @@ namespace password_manager {
 class StubPasswordManagerDriver : public PasswordManagerDriver {
  public:
   StubPasswordManagerDriver();
+
+  StubPasswordManagerDriver(const StubPasswordManagerDriver&) = delete;
+  StubPasswordManagerDriver& operator=(const StubPasswordManagerDriver&) =
+      delete;
+
   ~StubPasswordManagerDriver() override;
 
   // PasswordManagerDriver:
@@ -35,9 +40,6 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   bool CanShowAutofillUi() const override;
   ::ui::AXTreeID GetAxTreeId() const override;
   const GURL& GetLastCommittedURL() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubPasswordManagerDriver);
 };
 
 }  // namespace password_manager

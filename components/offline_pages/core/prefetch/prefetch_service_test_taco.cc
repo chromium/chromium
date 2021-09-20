@@ -42,6 +42,12 @@ const version_info::Channel kTestChannel = version_info::Channel::UNKNOWN;
 class StubPrefetchBackgroundTaskHandler : public PrefetchBackgroundTaskHandler {
  public:
   StubPrefetchBackgroundTaskHandler() = default;
+
+  StubPrefetchBackgroundTaskHandler(const StubPrefetchBackgroundTaskHandler&) =
+      delete;
+  StubPrefetchBackgroundTaskHandler& operator=(
+      const StubPrefetchBackgroundTaskHandler&) = delete;
+
   ~StubPrefetchBackgroundTaskHandler() override = default;
   void CancelBackgroundTask() override {}
   void EnsureTaskScheduled() override {}
@@ -51,9 +57,6 @@ class StubPrefetchBackgroundTaskHandler : public PrefetchBackgroundTaskHandler {
   void Suspend() override {}
   void RemoveSuspension() override {}
   int GetAdditionalBackoffSeconds() const override { return 0; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubPrefetchBackgroundTaskHandler);
 };
 
 }  // namespace

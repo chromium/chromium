@@ -19,6 +19,10 @@ class MetricsScheduler {
   // callback to call when a task should happen.
   MetricsScheduler(const base::RepeatingClosure& task_callback,
                    bool fast_startup_for_testing);
+
+  MetricsScheduler(const MetricsScheduler&) = delete;
+  MetricsScheduler& operator=(const MetricsScheduler&) = delete;
+
   virtual ~MetricsScheduler();
 
   // Starts scheduling uploads. This in a no-op if the scheduler is already
@@ -57,8 +61,6 @@ class MetricsScheduler {
 
   // Indicates that the last triggered task hasn't resolved yet.
   bool callback_pending_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsScheduler);
 };
 
 }  // namespace metrics

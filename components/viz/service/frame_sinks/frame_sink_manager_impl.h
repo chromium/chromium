@@ -85,6 +85,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   FrameSinkManagerImpl(
       SharedBitmapManager* shared_bitmap_manager,
       OutputSurfaceProvider* output_surface_provider = nullptr);
+
+  FrameSinkManagerImpl(const FrameSinkManagerImpl&) = delete;
+  FrameSinkManagerImpl& operator=(const FrameSinkManagerImpl&) = delete;
+
   ~FrameSinkManagerImpl() override;
 
   CompositorFrameSinkImpl* GetFrameSinkImpl(const FrameSinkId& id);
@@ -405,8 +409,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   base::ObserverList<FrameSinkObserver>::Unchecked observer_list_;
 
   gfx::RenderingPipeline* gpu_pipeline_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSinkManagerImpl);
 };
 
 }  // namespace viz

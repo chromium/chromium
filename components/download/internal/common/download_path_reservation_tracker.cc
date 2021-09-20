@@ -71,6 +71,10 @@ class DownloadItemObserver : public DownloadItem::Observer,
                              public base::SupportsUserData::Data {
  public:
   explicit DownloadItemObserver(DownloadItem* download_item);
+
+  DownloadItemObserver(const DownloadItemObserver&) = delete;
+  DownloadItemObserver& operator=(const DownloadItemObserver&) = delete;
+
   ~DownloadItemObserver() override;
 
  private:
@@ -84,8 +88,6 @@ class DownloadItemObserver : public DownloadItem::Observer,
   base::FilePath last_target_path_;
 
   static const int kUserDataKey;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemObserver);
 };
 
 // Returns true if the given path is in use by a path reservation.

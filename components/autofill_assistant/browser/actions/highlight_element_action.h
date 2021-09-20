@@ -18,6 +18,10 @@ class HighlightElementAction : public Action {
  public:
   explicit HighlightElementAction(ActionDelegate* delegate,
                                   const ActionProto& proto);
+
+  HighlightElementAction(const HighlightElementAction&) = delete;
+  HighlightElementAction& operator=(const HighlightElementAction&) = delete;
+
   ~HighlightElementAction() override;
 
  private:
@@ -31,8 +35,6 @@ class HighlightElementAction : public Action {
                           const ClientStatus& status);
 
   base::WeakPtrFactory<HighlightElementAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HighlightElementAction);
 };
 
 }  // namespace autofill_assistant

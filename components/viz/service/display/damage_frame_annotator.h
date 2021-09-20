@@ -21,6 +21,10 @@ class AggregatedRenderPass;
 class DamageFrameAnnotator : public SurfaceAggregator::FrameAnnotator {
  public:
   DamageFrameAnnotator();
+
+  DamageFrameAnnotator(const DamageFrameAnnotator&) = delete;
+  DamageFrameAnnotator& operator=(const DamageFrameAnnotator&) = delete;
+
   ~DamageFrameAnnotator() override;
 
   // SurfaceAggregator::FrameAnnotator implementation.
@@ -41,8 +45,6 @@ class DamageFrameAnnotator : public SurfaceAggregator::FrameAnnotator {
   void AnnotateRootRenderPass(AggregatedRenderPass* render_pass);
 
   std::vector<AnnotationData> annotations_;
-
-  DISALLOW_COPY_AND_ASSIGN(DamageFrameAnnotator);
 };
 
 }  // namespace viz

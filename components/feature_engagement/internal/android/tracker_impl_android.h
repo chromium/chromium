@@ -34,6 +34,10 @@ class DisplayLockHandleAndroid {
  public:
   DisplayLockHandleAndroid(
       std::unique_ptr<DisplayLockHandle> display_lock_handle);
+
+  DisplayLockHandleAndroid(const DisplayLockHandleAndroid&) = delete;
+  DisplayLockHandleAndroid& operator=(const DisplayLockHandleAndroid&) = delete;
+
   ~DisplayLockHandleAndroid();
 
   // Returns the Java-side of this JNI bridge.
@@ -48,8 +52,6 @@ class DisplayLockHandleAndroid {
 
   // The Java-side of this JNI bridge.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayLockHandleAndroid);
 };
 
 // JNI bridge between TrackerImpl in Java and C++. See the
@@ -62,6 +64,10 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
       const base::android::JavaRef<jobject>& jobj);
 
   TrackerImplAndroid(Tracker* tracker, FeatureVector features);
+
+  TrackerImplAndroid(const TrackerImplAndroid&) = delete;
+  TrackerImplAndroid& operator=(const TrackerImplAndroid&) = delete;
+
   ~TrackerImplAndroid() override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
@@ -123,8 +129,6 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
 
   // The Java-side of this JNI bridge.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerImplAndroid);
 };
 
 }  // namespace feature_engagement

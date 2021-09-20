@@ -46,6 +46,9 @@ class PnaclHost {
   // ever been started.
   static PnaclHost* GetInstance();
 
+  PnaclHost(const PnaclHost&) = delete;
+  PnaclHost& operator=(const PnaclHost&) = delete;
+
   // The PnaclHost instance is intentionally leaked on shutdown. DeInitIfSafe()
   // attempts to cleanup |disk_cache_| earlier, but if it fails to do so in
   // time, it will be too late when AtExitManager kicks in anway so subscribing
@@ -191,7 +194,6 @@ class PnaclHost {
   std::unique_ptr<PnaclTranslationCache> disk_cache_;
   PendingTranslationMap pending_translations_;
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(PnaclHost);
 };
 
 }  // namespace pnacl

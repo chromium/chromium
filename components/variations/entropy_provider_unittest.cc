@@ -84,6 +84,9 @@ class SHA1EntropyGenerator : public TrialEntropyGenerator {
       : trial_name_(trial_name) {
   }
 
+  SHA1EntropyGenerator(const SHA1EntropyGenerator&) = delete;
+  SHA1EntropyGenerator& operator=(const SHA1EntropyGenerator&) = delete;
+
   ~SHA1EntropyGenerator() override {}
 
   double GenerateEntropyValue() const override {
@@ -98,8 +101,6 @@ class SHA1EntropyGenerator : public TrialEntropyGenerator {
 
  private:
   const std::string trial_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(SHA1EntropyGenerator);
 };
 
 // An TrialEntropyGenerator that uses the normalized MurmurHash entropy provider
@@ -108,6 +109,11 @@ class NormalizedMurmurHashEntropyGenerator : public TrialEntropyGenerator {
  public:
   explicit NormalizedMurmurHashEntropyGenerator(const std::string& trial_name)
       : trial_name_(trial_name) {}
+
+  NormalizedMurmurHashEntropyGenerator(
+      const NormalizedMurmurHashEntropyGenerator&) = delete;
+  NormalizedMurmurHashEntropyGenerator& operator=(
+      const NormalizedMurmurHashEntropyGenerator&) = delete;
 
   ~NormalizedMurmurHashEntropyGenerator() override {}
 
@@ -120,8 +126,6 @@ class NormalizedMurmurHashEntropyGenerator : public TrialEntropyGenerator {
 
  private:
   const std::string trial_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizedMurmurHashEntropyGenerator);
 };
 
 // Tests uniformity of a given |entropy_generator| using the Chi-Square Goodness

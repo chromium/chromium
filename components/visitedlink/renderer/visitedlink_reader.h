@@ -23,6 +23,10 @@ class VisitedLinkReader : public VisitedLinkCommon,
                           public mojom::VisitedLinkNotificationSink {
  public:
   VisitedLinkReader();
+
+  VisitedLinkReader(const VisitedLinkReader&) = delete;
+  VisitedLinkReader& operator=(const VisitedLinkReader&) = delete;
+
   ~VisitedLinkReader() override;
 
   base::RepeatingCallback<
@@ -46,8 +50,6 @@ class VisitedLinkReader : public VisitedLinkCommon,
   mojo::Receiver<mojom::VisitedLinkNotificationSink> receiver_{this};
 
   base::WeakPtrFactory<VisitedLinkReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VisitedLinkReader);
 };
 
 }  // namespace visitedlink

@@ -37,6 +37,10 @@ class MarkOperationDoneTask : public Task {
   MarkOperationDoneTask(PrefetchDispatcher* prefetch_dispatcher,
                         PrefetchStore* prefetch_store,
                         const std::string& operation_name);
+
+  MarkOperationDoneTask(const MarkOperationDoneTask&) = delete;
+  MarkOperationDoneTask& operator=(const MarkOperationDoneTask&) = delete;
+
   ~MarkOperationDoneTask() override;
 
   StoreResult store_result() const { return std::get<0>(result_); }
@@ -57,8 +61,6 @@ class MarkOperationDoneTask : public Task {
   TaskResult result_ = std::make_pair(StoreResult::UNFINISHED, -1);
 
   base::WeakPtrFactory<MarkOperationDoneTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MarkOperationDoneTask);
 };
 
 }  // namespace offline_pages

@@ -30,6 +30,9 @@ class ParseCallback {
   explicit ParseCallback(const base::android::JavaParamRef<jobject>& jcallback)
       : jcallback_(jcallback) {}
 
+  ParseCallback(const ParseCallback&) = delete;
+  ParseCallback& operator=(const ParseCallback&) = delete;
+
   ~ParseCallback() {}
 
   // Copies payment method manifest into Java.
@@ -116,8 +119,6 @@ class ParseCallback {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jcallback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParseCallback);
 };
 
 }  // namespace

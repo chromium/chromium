@@ -27,15 +27,16 @@ namespace {
 class TestCallback {
  public:
   TestCallback();
+
+  TestCallback(const TestCallback&) = delete;
+  TestCallback& operator=(const TestCallback&) = delete;
+
   virtual ~TestCallback() = default;
   void Set(update_client::UnpackerError error, int extra_code);
 
   update_client::UnpackerError error_;
   int extra_code_;
   bool called_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestCallback);
 };
 
 TestCallback::TestCallback()

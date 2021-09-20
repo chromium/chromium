@@ -27,10 +27,6 @@ class FakeServerVerifier {
   // Creates a FakeServerVerifier for |fake_server|. This class does not take
   // ownership of |fake_server|.
   explicit FakeServerVerifier(FakeServer* fake_server);
-
-  FakeServerVerifier(const FakeServerVerifier&) = delete;
-  FakeServerVerifier& operator=(const FakeServerVerifier&) = delete;
-
   virtual ~FakeServerVerifier();
 
   // Returns a successful result if there are |expected_count| entities with the
@@ -55,6 +51,8 @@ class FakeServerVerifier {
 
  private:
   FakeServer* const fake_server_;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeServerVerifier);
 };
 
 }  // namespace fake_server

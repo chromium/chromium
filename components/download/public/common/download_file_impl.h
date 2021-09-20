@@ -52,6 +52,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
                    uint32_t download_id,
                    base::WeakPtr<DownloadDestinationObserver> observer);
 
+  DownloadFileImpl(const DownloadFileImpl&) = delete;
+  DownloadFileImpl& operator=(const DownloadFileImpl&) = delete;
+
   ~DownloadFileImpl() override;
 
   // DownloadFile functions.
@@ -101,6 +104,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
     SourceStream(int64_t offset,
                  int64_t starting_file_write_offset,
                  std::unique_ptr<InputStream> stream);
+
+    SourceStream(const SourceStream&) = delete;
+    SourceStream& operator=(const SourceStream&) = delete;
+
     ~SourceStream();
 
     void Initialize();
@@ -190,8 +197,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
 
     // Cancelable callback to read from the |input_stream_|.
     base::CancelableOnceClosure read_stream_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(SourceStream);
   };
 
   // Sets the task runner for testing purpose, must be called before
@@ -391,8 +396,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
 
   base::WeakPtr<DownloadDestinationObserver> observer_;
   base::WeakPtrFactory<DownloadFileImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFileImpl);
 };
 
 }  // namespace download

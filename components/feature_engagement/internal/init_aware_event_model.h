@@ -20,6 +20,10 @@ namespace feature_engagement {
 class InitAwareEventModel : public EventModel {
  public:
   InitAwareEventModel(std::unique_ptr<EventModel> event_model);
+
+  InitAwareEventModel(const InitAwareEventModel&) = delete;
+  InitAwareEventModel& operator=(const InitAwareEventModel&) = delete;
+
   ~InitAwareEventModel() override;
 
   // EventModel implementation.
@@ -58,8 +62,6 @@ class InitAwareEventModel : public EventModel {
   bool initialization_complete_;
 
   base::WeakPtrFactory<InitAwareEventModel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InitAwareEventModel);
 };
 
 }  // namespace feature_engagement

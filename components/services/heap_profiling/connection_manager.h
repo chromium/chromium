@@ -47,6 +47,10 @@ class ConnectionManager {
 
  public:
   ConnectionManager();
+
+  ConnectionManager(const ConnectionManager&) = delete;
+  ConnectionManager& operator=(const ConnectionManager&) = delete;
+
   ~ConnectionManager();
 
   // Dumping is asynchronous so will not be complete when this function
@@ -110,8 +114,6 @@ class ConnectionManager {
 
   // Must be the last.
   base::WeakPtrFactory<ConnectionManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionManager);
 };
 
 }  // namespace heap_profiling

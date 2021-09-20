@@ -16,6 +16,11 @@ namespace policy {
 class DefaultSearchPolicyHandler : public ConfigurationPolicyHandler {
  public:
   DefaultSearchPolicyHandler();
+
+  DefaultSearchPolicyHandler(const DefaultSearchPolicyHandler&) = delete;
+  DefaultSearchPolicyHandler& operator=(const DefaultSearchPolicyHandler&) =
+      delete;
+
   ~DefaultSearchPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -56,8 +61,6 @@ class DefaultSearchPolicyHandler : public ConfigurationPolicyHandler {
   // Make sure that the |path| is present in |prefs_| and is a ListValue.  If
   // not, set it to an empty list.
   void EnsureListPrefExists(PrefValueMap* prefs, const std::string& path);
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultSearchPolicyHandler);
 };
 
 }  // namespace policy

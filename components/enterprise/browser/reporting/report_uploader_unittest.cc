@@ -44,6 +44,10 @@ class ReportUploaderTest : public ::testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     CreateUploader(0);
   }
+
+  ReportUploaderTest(const ReportUploaderTest&) = delete;
+  ReportUploaderTest& operator=(const ReportUploaderTest&) = delete;
+
   ~ReportUploaderTest() override {}
 
   void UploadReportAndSetExpectation(
@@ -101,9 +105,6 @@ class ReportUploaderTest : public ::testing::Test {
   policy::MockCloudPolicyClient client_;
   bool has_responded_ = false;
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReportUploaderTest);
 };
 
 class ReportUploaderTestWithTransientError

@@ -213,6 +213,11 @@ MATCHER_P2(AddChange, key, data, "") {
 class AutofillWalletSyncBridgeTest : public testing::Test {
  public:
   AutofillWalletSyncBridgeTest() {}
+
+  AutofillWalletSyncBridgeTest(const AutofillWalletSyncBridgeTest&) = delete;
+  AutofillWalletSyncBridgeTest& operator=(const AutofillWalletSyncBridgeTest&) =
+      delete;
+
   ~AutofillWalletSyncBridgeTest() override {}
 
   void SetUp() override {
@@ -334,8 +339,6 @@ class AutofillWalletSyncBridgeTest : public testing::Test {
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletSyncBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWalletSyncBridgeTest);
 };
 
 // The following 4 tests make sure client tags stay stable.

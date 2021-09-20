@@ -33,6 +33,11 @@ class PasswordRequirementsService : public KeyedService {
   // If |fetcher| is a nullptr, no network requests happen.
   explicit PasswordRequirementsService(
       std::unique_ptr<autofill::PasswordRequirementsSpecFetcher> fetcher);
+
+  PasswordRequirementsService(const PasswordRequirementsService&) = delete;
+  PasswordRequirementsService& operator=(const PasswordRequirementsService&) =
+      delete;
+
   ~PasswordRequirementsService() override;
 
   // Returns the password requirements for a field that appears on a site
@@ -77,8 +82,6 @@ class PasswordRequirementsService : public KeyedService {
       specs_for_signatures_;
   // May be a nullptr.
   std::unique_ptr<autofill::PasswordRequirementsSpecFetcher> fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordRequirementsService);
 };
 
 std::unique_ptr<PasswordRequirementsService> CreatePasswordRequirementsService(

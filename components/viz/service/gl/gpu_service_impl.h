@@ -100,6 +100,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
                  gpu::VulkanImplementation* vulkan_implementation,
                  base::OnceCallback<void(ExitCode)> exit_callback);
 
+  GpuServiceImpl(const GpuServiceImpl&) = delete;
+  GpuServiceImpl& operator=(const GpuServiceImpl&) = delete;
+
   ~GpuServiceImpl() override;
 
   void UpdateGPUInfo();
@@ -469,8 +472,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
 
   base::WeakPtr<GpuServiceImpl> weak_ptr_;
   base::WeakPtrFactory<GpuServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuServiceImpl);
 };
 
 }  // namespace viz

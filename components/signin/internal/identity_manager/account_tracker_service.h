@@ -73,6 +73,10 @@ class AccountTrackerService {
   };
 
   AccountTrackerService();
+
+  AccountTrackerService(const AccountTrackerService&) = delete;
+  AccountTrackerService& operator=(const AccountTrackerService&) = delete;
+
   ~AccountTrackerService();
 
   // Registers the preferences used by AccountTrackerService.
@@ -245,8 +249,6 @@ class AccountTrackerService {
   // Used to pass weak pointers of |this| to tasks created by
   // |image_storage_task_runner_|.
   base::WeakPtrFactory<AccountTrackerService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccountTrackerService);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_TRACKER_SERVICE_H_

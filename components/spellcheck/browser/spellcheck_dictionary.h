@@ -12,12 +12,15 @@
 class SpellcheckDictionary {
  public:
   SpellcheckDictionary() {}
+
+  SpellcheckDictionary(const SpellcheckDictionary&) = delete;
+  SpellcheckDictionary& operator=(const SpellcheckDictionary&) = delete;
+
   virtual ~SpellcheckDictionary() {}
 
   virtual void Load() = 0;
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckDictionary);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_BROWSER_SPELLCHECK_DICTIONARY_H_

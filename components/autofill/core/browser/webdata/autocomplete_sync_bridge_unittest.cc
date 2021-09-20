@@ -144,6 +144,11 @@ AutofillEntry CreateAutofillEntry(const AutofillSpecifics& autofill_specifics) {
 class AutocompleteSyncBridgeTest : public testing::Test {
  public:
   AutocompleteSyncBridgeTest() {}
+
+  AutocompleteSyncBridgeTest(const AutocompleteSyncBridgeTest&) = delete;
+  AutocompleteSyncBridgeTest& operator=(const AutocompleteSyncBridgeTest&) =
+      delete;
+
   ~AutocompleteSyncBridgeTest() override {}
 
   void SetUp() override {
@@ -302,8 +307,6 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   std::unique_ptr<AutocompleteSyncBridge> bridge_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteSyncBridgeTest);
 };
 
 TEST_F(AutocompleteSyncBridgeTest, GetClientTag) {

@@ -85,6 +85,11 @@ class VariationsFieldTrialCreator {
   VariationsFieldTrialCreator(VariationsServiceClient* client,
                               std::unique_ptr<VariationsSeedStore> seed_store,
                               const UIStringOverrider& ui_string_overrider);
+
+  VariationsFieldTrialCreator(const VariationsFieldTrialCreator&) = delete;
+  VariationsFieldTrialCreator& operator=(const VariationsFieldTrialCreator&) =
+      delete;
+
   virtual ~VariationsFieldTrialCreator();
 
   // Returns what variations will consider to be the latest country. Returns
@@ -248,8 +253,6 @@ class VariationsFieldTrialCreator {
   std::unordered_map<int, std::u16string> overridden_strings_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsFieldTrialCreator);
 };
 
 }  // namespace variations

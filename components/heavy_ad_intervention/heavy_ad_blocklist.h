@@ -36,6 +36,10 @@ class HeavyAdBlocklist : public blocklist::OptOutBlocklist {
   HeavyAdBlocklist(std::unique_ptr<blocklist::OptOutStore> opt_out_store,
                    base::Clock* clock,
                    blocklist::OptOutBlocklistDelegate* blocklist_delegate);
+
+  HeavyAdBlocklist(const HeavyAdBlocklist&) = delete;
+  HeavyAdBlocklist& operator=(const HeavyAdBlocklist&) = delete;
+
   ~HeavyAdBlocklist() override;
 
  protected:
@@ -55,9 +59,6 @@ class HeavyAdBlocklist : public blocklist::OptOutBlocklist {
                            int* threshold) const override;
   blocklist::BlocklistData::AllowedTypesAndVersions GetAllowedTypes()
       const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeavyAdBlocklist);
 };
 
 }  // namespace heavy_ad_intervention

@@ -70,6 +70,11 @@ class DataReductionProxySettings {
       base::RepeatingCallback<bool(base::StringPiece, base::StringPiece)>;
 
   explicit DataReductionProxySettings(bool is_off_the_record_profile);
+
+  DataReductionProxySettings(const DataReductionProxySettings&) = delete;
+  DataReductionProxySettings& operator=(const DataReductionProxySettings&) =
+      delete;
+
   virtual ~DataReductionProxySettings();
 
   // Initializes the Data Reduction Proxy with the profile prefs. The caller
@@ -258,8 +263,6 @@ class DataReductionProxySettings {
   const bool is_off_the_record_profile_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxySettings);
 };
 
 }  // namespace data_reduction_proxy

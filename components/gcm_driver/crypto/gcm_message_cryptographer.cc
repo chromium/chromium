@@ -48,6 +48,10 @@ class WebPushEncryptionDraft03
     : public GCMMessageCryptographer::EncryptionScheme {
  public:
   WebPushEncryptionDraft03() = default;
+
+  WebPushEncryptionDraft03(const WebPushEncryptionDraft03&) = delete;
+  WebPushEncryptionDraft03& operator=(const WebPushEncryptionDraft03&) = delete;
+
   ~WebPushEncryptionDraft03() override = default;
 
   // GCMMessageCryptographer::EncryptionScheme implementation.
@@ -164,9 +168,6 @@ class WebPushEncryptionDraft03
     record.remove_prefix(padding_length);
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebPushEncryptionDraft03);
 };
 
 // Implementation of draft 08 of the Web Push Encryption standard:
@@ -176,6 +177,10 @@ class WebPushEncryptionDraft08
     : public GCMMessageCryptographer::EncryptionScheme {
  public:
   WebPushEncryptionDraft08() = default;
+
+  WebPushEncryptionDraft08(const WebPushEncryptionDraft08&) = delete;
+  WebPushEncryptionDraft08& operator=(const WebPushEncryptionDraft08&) = delete;
+
   ~WebPushEncryptionDraft08() override = default;
 
   // GCMMessageCryptographer::EncryptionScheme implementation.
@@ -266,9 +271,6 @@ class WebPushEncryptionDraft08
     record.remove_suffix(padding_length);
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebPushEncryptionDraft08);
 };
 
 }  // namespace

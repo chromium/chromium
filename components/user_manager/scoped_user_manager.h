@@ -21,13 +21,15 @@ class UserManager;
 class USER_MANAGER_EXPORT ScopedUserManager {
  public:
   explicit ScopedUserManager(std::unique_ptr<UserManager> user_manager);
+
+  ScopedUserManager(const ScopedUserManager&) = delete;
+  ScopedUserManager& operator=(const ScopedUserManager&) = delete;
+
   ~ScopedUserManager();
 
  private:
   const std::unique_ptr<UserManager> user_manager_;
   UserManager* previous_user_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUserManager);
 };
 
 }  // namespace user_manager

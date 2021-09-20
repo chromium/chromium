@@ -25,6 +25,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsRequestSchedulerMobile
   // is the PrefService that contains the time of the last fetch.
   VariationsRequestSchedulerMobile(const base::RepeatingClosure& task,
                                    PrefService* local_state);
+
+  VariationsRequestSchedulerMobile(const VariationsRequestSchedulerMobile&) =
+      delete;
+  VariationsRequestSchedulerMobile& operator=(
+      const VariationsRequestSchedulerMobile&) = delete;
+
   ~VariationsRequestSchedulerMobile() override;
 
   // Base class overrides.
@@ -48,8 +54,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsRequestSchedulerMobile
 
   // The time the last seed request was initiated.
   base::Time last_request_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsRequestSchedulerMobile);
 };
 
 }  // namespace variations

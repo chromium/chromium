@@ -44,6 +44,10 @@ class PredictionModelFetcherTest : public testing::Test {
         network_tracker_);
   }
 
+  PredictionModelFetcherTest(const PredictionModelFetcherTest&) = delete;
+  PredictionModelFetcherTest& operator=(const PredictionModelFetcherTest&) =
+      delete;
+
   ~PredictionModelFetcherTest() override {}
 
   void OnModelsFetched(absl::optional<std::unique_ptr<proto::GetModelsResponse>>
@@ -113,8 +117,6 @@ class PredictionModelFetcherTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   network::TestNetworkConnectionTracker* network_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PredictionModelFetcherTest);
 };
 
 TEST_F(PredictionModelFetcherTest, FetchOptimizationGuideServiceModels) {

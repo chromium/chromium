@@ -64,6 +64,10 @@ class UkmService : public UkmRecorderImpl {
              metrics::MetricsServiceClient* client,
              std::unique_ptr<metrics::UkmDemographicMetricsProvider>
                  demographics_provider);
+
+  UkmService(const UkmService&) = delete;
+  UkmService& operator=(const UkmService&) = delete;
+
   ~UkmService() override;
 
   // Initializes the UKM service.
@@ -215,8 +219,6 @@ class UkmService : public UkmRecorderImpl {
   // Weak pointers factory used to post task on different threads. All weak
   // pointers managed by this factory have the same lifetime as UkmService.
   base::WeakPtrFactory<UkmService> self_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UkmService);
 };
 
 }  // namespace ukm

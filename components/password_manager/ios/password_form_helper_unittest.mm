@@ -58,6 +58,9 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
          password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
   }
 
+  PasswordFormHelperTest(const PasswordFormHelperTest&) = delete;
+  PasswordFormHelperTest& operator=(const PasswordFormHelperTest&) = delete;
+
   ~PasswordFormHelperTest() override = default;
 
   void SetUp() override {
@@ -106,8 +109,6 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
  protected:
   // PasswordFormHelper for testing.
   PasswordFormHelper* helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordFormHelperTest);
 };
 
 struct FindPasswordFormTestData {

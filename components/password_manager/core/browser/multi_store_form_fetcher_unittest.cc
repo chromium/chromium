@@ -50,6 +50,11 @@ class MockConsumer : public FormFetcher::Consumer {
 class FakePasswordManagerClient : public StubPasswordManagerClient {
  public:
   FakePasswordManagerClient() = default;
+
+  FakePasswordManagerClient(const FakePasswordManagerClient&) = delete;
+  FakePasswordManagerClient& operator=(const FakePasswordManagerClient&) =
+      delete;
+
   ~FakePasswordManagerClient() override = default;
 
   void set_profile_store(PasswordStoreInterface* store) {
@@ -69,8 +74,6 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
 
   PasswordStoreInterface* profile_store_ = nullptr;
   PasswordStoreInterface* account_store_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePasswordManagerClient);
 };
 
 PasswordForm CreateHTMLForm(const std::string& origin_url,
@@ -146,6 +149,10 @@ class MultiStoreFormFetcherTest : public testing::Test {
         form_digest_, &client_, /*should_migrate_http_passwords=*/false);
   }
 
+  MultiStoreFormFetcherTest(const MultiStoreFormFetcherTest&) = delete;
+  MultiStoreFormFetcherTest& operator=(const MultiStoreFormFetcherTest&) =
+      delete;
+
   ~MultiStoreFormFetcherTest() override = default;
 
   void SetUp() override {
@@ -177,9 +184,6 @@ class MultiStoreFormFetcherTest : public testing::Test {
   scoped_refptr<MockPasswordStoreInterface> account_mock_store_;
   testing::NiceMock<MockSmartBubbleStatsStore> mock_smart_bubble_stats_store;
   FakePasswordManagerClient client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MultiStoreFormFetcherTest);
 };
 
 // Check that the absence of PasswordStore results is handled correctly.

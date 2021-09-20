@@ -47,6 +47,10 @@ class SyncedSessionTracker {
   };
 
   explicit SyncedSessionTracker(SyncSessionsClient* sessions_client);
+
+  SyncedSessionTracker(const SyncedSessionTracker&) = delete;
+  SyncedSessionTracker& operator=(const SyncedSessionTracker&) = delete;
+
   ~SyncedSessionTracker();
 
   // **** Synced session/tab query methods. ****
@@ -290,8 +294,6 @@ class SyncedSessionTracker {
   // The tag for this machine's local session, so we can distinguish the foreign
   // sessions.
   std::string local_session_tag_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedSessionTracker);
 };
 
 // Helper function to load and add window or tab data from synced specifics to

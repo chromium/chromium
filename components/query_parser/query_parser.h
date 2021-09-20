@@ -77,6 +77,10 @@ using QueryNodeVector = std::vector<std::unique_ptr<query_parser::QueryNode>>;
 class QueryParser {
  public:
   QueryParser() = delete;
+
+  QueryParser(const QueryParser&) = delete;
+  QueryParser& operator=(const QueryParser&) = delete;
+
   ~QueryParser() = delete;
 
   // For CJK ideographs and Korean Hangul, even a single character
@@ -142,8 +146,6 @@ class QueryParser {
   static bool ParseQueryImpl(const std::u16string& query,
                              MatchingAlgorithm matching_algorithm,
                              QueryNodeList* root);
-
-  DISALLOW_COPY_AND_ASSIGN(QueryParser);
 };
 
 }  // namespace query_parser

@@ -27,6 +27,11 @@ class Cronet_UploadDataSinkImpl : public Cronet_UploadDataSink {
   Cronet_UploadDataSinkImpl(Cronet_UrlRequestImpl* url_request,
                             Cronet_UploadDataProvider* upload_data_provider,
                             Cronet_Executor* upload_data_provider_executor);
+
+  Cronet_UploadDataSinkImpl(const Cronet_UploadDataSinkImpl&) = delete;
+  Cronet_UploadDataSinkImpl& operator=(const Cronet_UploadDataSinkImpl&) =
+      delete;
+
   ~Cronet_UploadDataSinkImpl() override;
 
   // Initialize length and attach upload to request. Called on client thread.
@@ -84,8 +89,6 @@ class Cronet_UploadDataSinkImpl : public Cronet_UploadDataSink {
   bool close_when_not_in_callback_ = false;
   // Keeps the net::IOBuffer and Cronet ByteBuffer alive until the next Read().
   std::unique_ptr<Cronet_BufferWithIOBuffer> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UploadDataSinkImpl);
 };
 
 }  // namespace cronet

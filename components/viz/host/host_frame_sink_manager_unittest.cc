@@ -107,6 +107,10 @@ class MockFrameSinkManagerImpl : public TestFrameSinkManagerImpl {
 class HostFrameSinkManagerTest : public testing::Test {
  public:
   HostFrameSinkManagerTest() { ConnectToGpu(); }
+
+  HostFrameSinkManagerTest(const HostFrameSinkManagerTest&) = delete;
+  HostFrameSinkManagerTest& operator=(const HostFrameSinkManagerTest&) = delete;
+
   ~HostFrameSinkManagerTest() override = default;
 
   HostFrameSinkManager& host() { return host_manager_; }
@@ -164,9 +168,6 @@ class HostFrameSinkManagerTest : public testing::Test {
  protected:
   HostFrameSinkManager host_manager_;
   std::unique_ptr<testing::NiceMock<MockFrameSinkManagerImpl>> manager_impl_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostFrameSinkManagerTest);
 };
 
 // Verify that registering and destroying multiple CompositorFrameSinks works

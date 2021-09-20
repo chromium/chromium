@@ -32,6 +32,10 @@ class QuirksClient {
                const std::string& display_name,
                RequestFinishedCallback on_request_finished,
                QuirksManager* manager);
+
+  QuirksClient(const QuirksClient&) = delete;
+  QuirksClient& operator=(const QuirksClient&) = delete;
+
   ~QuirksClient();
 
   void StartDownload();
@@ -79,8 +83,6 @@ class QuirksClient {
 
   // Factory for callbacks.
   base::WeakPtrFactory<QuirksClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuirksClient);
 };
 
 }  // namespace quirks

@@ -21,6 +21,11 @@ class FakeBrowserDMTokenStorage : public BrowserDMTokenStorage {
                             const std::string& enrollment_token,
                             const std::string& dm_token,
                             bool enrollment_error_option);
+
+  FakeBrowserDMTokenStorage(const FakeBrowserDMTokenStorage&) = delete;
+  FakeBrowserDMTokenStorage& operator=(const FakeBrowserDMTokenStorage&) =
+      delete;
+
   ~FakeBrowserDMTokenStorage() override;
 
   void SetClientId(const std::string& client_id);
@@ -41,6 +46,10 @@ class FakeBrowserDMTokenStorage : public BrowserDMTokenStorage {
                  const std::string& enrollment_token,
                  const std::string& dm_token,
                  bool enrollment_error_option);
+
+    MockDelegate(const MockDelegate&) = delete;
+    MockDelegate& operator=(const MockDelegate&) = delete;
+
     ~MockDelegate() override;
 
     void SetClientId(const std::string& client_id);
@@ -66,11 +75,7 @@ class FakeBrowserDMTokenStorage : public BrowserDMTokenStorage {
     bool enrollment_error_option_ = true;
 
     bool storage_enabled_ = true;
-
-    DISALLOW_COPY_AND_ASSIGN(MockDelegate);
   };
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBrowserDMTokenStorage);
 };
 
 }  // namespace policy

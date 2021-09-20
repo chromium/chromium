@@ -40,6 +40,11 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service);
+
+  PasswordModelTypeController(const PasswordModelTypeController&) = delete;
+  PasswordModelTypeController& operator=(const PasswordModelTypeController&) =
+      delete;
+
   ~PasswordModelTypeController() override;
 
   // DataTypeController overrides.
@@ -77,8 +82,6 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
   syncer::SyncMode sync_mode_ = syncer::SyncMode::kFull;
 
   base::WeakPtrFactory<PasswordModelTypeController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordModelTypeController);
 };
 
 }  // namespace password_manager

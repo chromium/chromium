@@ -55,6 +55,11 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityScheduler {
                              size_t num_collectors,
                              const Params& params,
                              const ScheduleUploadCallback& callback);
+
+  DomainReliabilityScheduler(const DomainReliabilityScheduler&) = delete;
+  DomainReliabilityScheduler& operator=(const DomainReliabilityScheduler&) =
+      delete;
+
   ~DomainReliabilityScheduler();
 
   // If there is no upload pending, schedules an upload based on the provided
@@ -125,8 +130,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityScheduler {
   base::TimeTicks last_upload_end_time_;
   size_t last_upload_collector_index_;
   bool last_upload_success_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityScheduler);
 };
 
 }  // namespace domain_reliability

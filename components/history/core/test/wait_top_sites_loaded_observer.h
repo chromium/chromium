@@ -18,6 +18,11 @@ class TopSites;
 class WaitTopSitesLoadedObserver : public TopSitesObserver {
  public:
   explicit WaitTopSitesLoadedObserver(scoped_refptr<TopSites> top_sites);
+
+  WaitTopSitesLoadedObserver(const WaitTopSitesLoadedObserver&) = delete;
+  WaitTopSitesLoadedObserver& operator=(const WaitTopSitesLoadedObserver&) =
+      delete;
+
   ~WaitTopSitesLoadedObserver() override;
 
   // Wait until TopSites has finished loading. Returns immediately if it has
@@ -32,8 +37,6 @@ class WaitTopSitesLoadedObserver : public TopSitesObserver {
 
   scoped_refptr<TopSites> top_sites_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitTopSitesLoadedObserver);
 };
 
 }  // namespace history

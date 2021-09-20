@@ -16,6 +16,10 @@ class Server;
 class WaylandWatcher : public base::MessagePumpForUI::FdWatcher {
  public:
   explicit WaylandWatcher(wayland::Server* server);
+
+  WaylandWatcher(const WaylandWatcher&) = delete;
+  WaylandWatcher& operator=(const WaylandWatcher&) = delete;
+
   ~WaylandWatcher() override;
 
  private:
@@ -26,8 +30,6 @@ class WaylandWatcher : public base::MessagePumpForUI::FdWatcher {
 
   base::MessagePumpForUI::FdWatchController controller_;
   wayland::Server* const server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandWatcher);
 };
 
 }  // namespace wayland

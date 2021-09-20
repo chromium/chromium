@@ -43,6 +43,10 @@ using testing::ReturnRef;
 class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
  public:
   MockDeviceInfoSyncClient() = default;
+
+  MockDeviceInfoSyncClient(const MockDeviceInfoSyncClient&) = delete;
+  MockDeviceInfoSyncClient& operator=(const MockDeviceInfoSyncClient&) = delete;
+
   ~MockDeviceInfoSyncClient() = default;
 
   MOCK_METHOD(std::string, GetSigninScopedDeviceId, (), (const override));
@@ -64,9 +68,6 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               (),
               (const override));
   MOCK_METHOD(bool, IsUmaEnabledOnCrOSDevice, (), (const override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDeviceInfoSyncClient);
 };
 
 class LocalDeviceInfoProviderImplTest : public testing::Test {

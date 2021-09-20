@@ -143,6 +143,12 @@ class MockPageStateActivationThrottle : public content::NavigationThrottle {
     mock_page_activations_[GURL(kTestURLWithNoActivation)] =
         mojom::ActivationState();
   }
+
+  MockPageStateActivationThrottle(const MockPageStateActivationThrottle&) =
+      delete;
+  MockPageStateActivationThrottle& operator=(
+      const MockPageStateActivationThrottle&) = delete;
+
   ~MockPageStateActivationThrottle() override {}
 
   // content::NavigationThrottle:
@@ -175,8 +181,6 @@ class MockPageStateActivationThrottle : public content::NavigationThrottle {
 
   std::map<GURL, mojom::ActivationState> mock_page_activations_;
   PageActivationNotificationTiming activation_throttle_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPageStateActivationThrottle);
 };
 
 class ContentSubresourceFilterThrottleManagerTest
@@ -185,6 +189,12 @@ class ContentSubresourceFilterThrottleManagerTest
       public ::testing::WithParamInterface<PageActivationNotificationTiming> {
  public:
   ContentSubresourceFilterThrottleManagerTest() {}
+
+  ContentSubresourceFilterThrottleManagerTest(
+      const ContentSubresourceFilterThrottleManagerTest&) = delete;
+  ContentSubresourceFilterThrottleManagerTest& operator=(
+      const ContentSubresourceFilterThrottleManagerTest&) = delete;
+
   ~ContentSubresourceFilterThrottleManagerTest() override {}
 
   // content::RenderViewHostTestHarness:
@@ -406,8 +416,6 @@ class ContentSubresourceFilterThrottleManagerTest
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
 
   bool created_safe_browsing_throttle_for_last_navigation_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSubresourceFilterThrottleManagerTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

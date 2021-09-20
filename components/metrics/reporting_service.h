@@ -42,6 +42,10 @@ class ReportingService {
   ReportingService(MetricsServiceClient* client,
                    PrefService* local_state,
                    size_t max_retransmit_size);
+
+  ReportingService(const ReportingService&) = delete;
+  ReportingService& operator=(const ReportingService&) = delete;
+
   virtual ~ReportingService();
 
   // Completes setup tasks that can't be done at construction time.
@@ -141,8 +145,6 @@ class ReportingService {
   // pointers managed by this factory have the same lifetime as
   // ReportingService.
   base::WeakPtrFactory<ReportingService> self_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingService);
 };
 
 }  // namespace metrics

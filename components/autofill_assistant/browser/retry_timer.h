@@ -25,6 +25,10 @@ class RetryTimer {
  public:
   // A RetryTimer with the given retry period
   explicit RetryTimer(base::TimeDelta period);
+
+  RetryTimer(const RetryTimer&) = delete;
+  RetryTimer& operator=(const RetryTimer&) = delete;
+
   ~RetryTimer();
 
   // Tries to run |task| once immediately and then periodically until it
@@ -68,7 +72,6 @@ class RetryTimer {
   std::unique_ptr<base::OneShotTimer> timer_;
 
   base::WeakPtrFactory<RetryTimer> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(RetryTimer);
 };
 
 }  // namespace autofill_assistant

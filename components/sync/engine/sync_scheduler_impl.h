@@ -40,9 +40,6 @@ class SyncSchedulerImpl : public SyncScheduler {
                     std::unique_ptr<Syncer> syncer,
                     bool ignore_auth_credentials);
 
-  SyncSchedulerImpl(const SyncSchedulerImpl&) = delete;
-  SyncSchedulerImpl& operator=(const SyncSchedulerImpl&) = delete;
-
   // Calls Stop().
   ~SyncSchedulerImpl() override;
 
@@ -297,6 +294,8 @@ class SyncSchedulerImpl : public SyncScheduler {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncSchedulerImpl> weak_ptr_factory_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(SyncSchedulerImpl);
 };
 
 }  // namespace syncer

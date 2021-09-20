@@ -74,6 +74,10 @@ CastMessage CreateCastMessage() {
 class CompletionQueue {
  public:
   CompletionQueue() {}
+
+  CompletionQueue(const CompletionQueue&) = delete;
+  CompletionQueue& operator=(const CompletionQueue&) = delete;
+
   ~CompletionQueue() { CHECK_EQ(0u, cb_queue_.size()); }
 
   // Enqueues a pending completion callback.
@@ -87,7 +91,6 @@ class CompletionQueue {
 
  private:
   base::queue<net::CompletionOnceCallback> cb_queue_;
-  DISALLOW_COPY_AND_ASSIGN(CompletionQueue);
 };
 
 // GMock action that reads data from an IOBuffer and writes it to a string

@@ -18,12 +18,15 @@ class ScopedSuspendBookmarkUndo {
  public:
   explicit ScopedSuspendBookmarkUndo(
       BookmarkUndoService* bookmark_undo_service);
+
+  ScopedSuspendBookmarkUndo(const ScopedSuspendBookmarkUndo&) = delete;
+  ScopedSuspendBookmarkUndo& operator=(const ScopedSuspendBookmarkUndo&) =
+      delete;
+
   ~ScopedSuspendBookmarkUndo();
 
  private:
   UndoManager* undo_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSuspendBookmarkUndo);
 };
 
 #endif  // COMPONENTS_UNDO_BOOKMARK_UNDO_UTILS_H_

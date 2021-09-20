@@ -22,6 +22,9 @@ namespace sessions {
 class SESSIONS_EXPORT IOSWebStateLiveTab : public IOSLiveTab,
                                            public base::SupportsUserData::Data {
  public:
+  IOSWebStateLiveTab(const IOSWebStateLiveTab&) = delete;
+  IOSWebStateLiveTab& operator=(const IOSWebStateLiveTab&) = delete;
+
   ~IOSWebStateLiveTab() override;
 
   // Returns the IOSLiveTab associated with |web_state|, creating it if
@@ -49,8 +52,6 @@ class SESSIONS_EXPORT IOSWebStateLiveTab : public IOSLiveTab,
   }
 
   web::WebState* web_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSWebStateLiveTab);
 };
 
 }  // namespace sessions

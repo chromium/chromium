@@ -55,6 +55,10 @@ bool VerifyInstanceID(const std::string& str) {
 class InstanceIDDriverTest : public testing::Test {
  public:
   InstanceIDDriverTest();
+
+  InstanceIDDriverTest(const InstanceIDDriverTest&) = delete;
+  InstanceIDDriverTest& operator=(const InstanceIDDriverTest&) = delete;
+
   ~InstanceIDDriverTest() override;
 
   // testing::Test:
@@ -103,8 +107,6 @@ class InstanceIDDriverTest : public testing::Test {
 
   bool async_operation_completed_;
   base::OnceClosure async_operation_completed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDDriverTest);
 };
 
 InstanceIDDriverTest::InstanceIDDriverTest()

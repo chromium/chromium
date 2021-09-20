@@ -24,6 +24,10 @@ class SyncedWindowDelegatesGetter;
 class SyncSessionsClient {
  public:
   SyncSessionsClient();
+
+  SyncSessionsClient(const SyncSessionsClient&) = delete;
+  SyncSessionsClient& operator=(const SyncSessionsClient&) = delete;
+
   virtual ~SyncSessionsClient();
 
   // Getters for services that sessions depends on.
@@ -50,9 +54,6 @@ class SyncSessionsClient {
   // Returns a LocalSessionEventRouter instance that is customized for the
   // embedder's context.
   virtual LocalSessionEventRouter* GetLocalSessionEventRouter() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsClient);
 };
 
 }  // namespace sync_sessions

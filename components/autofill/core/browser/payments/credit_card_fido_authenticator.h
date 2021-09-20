@@ -102,6 +102,11 @@ class CreditCardFIDOAuthenticator
     virtual void OnFidoAuthorizationComplete(bool did_succeed) = 0;
   };
   CreditCardFIDOAuthenticator(AutofillDriver* driver, AutofillClient* client);
+
+  CreditCardFIDOAuthenticator(const CreditCardFIDOAuthenticator&) = delete;
+  CreditCardFIDOAuthenticator& operator=(const CreditCardFIDOAuthenticator&) =
+      delete;
+
   ~CreditCardFIDOAuthenticator() override;
 
   // Invokes Authentication flow. Responds to |accessor_| with full pan.
@@ -291,8 +296,6 @@ class CreditCardFIDOAuthenticator
   base::WaitableEvent user_is_verifiable_callback_received_;
 
   base::WeakPtrFactory<CreditCardFIDOAuthenticator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardFIDOAuthenticator);
 };
 
 }  // namespace autofill

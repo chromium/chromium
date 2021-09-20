@@ -36,6 +36,10 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   ArcBridgeHostImpl(
       ArcBridgeService* arc_bridge_service,
       mojo::PendingReceiver<mojom::ArcBridgeHost> pending_receiver);
+
+  ArcBridgeHostImpl(const ArcBridgeHostImpl&) = delete;
+  ArcBridgeHostImpl& operator=(const ArcBridgeHostImpl&) = delete;
+
   ~ArcBridgeHostImpl() override;
 
   // ArcBridgeHost overrides.
@@ -208,8 +212,6 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   // Put as a last member to ensure that any callback tied to the elements
   // is not invoked.
   std::vector<std::unique_ptr<MojoChannelBase>> mojo_channels_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBridgeHostImpl);
 };
 
 }  // namespace arc

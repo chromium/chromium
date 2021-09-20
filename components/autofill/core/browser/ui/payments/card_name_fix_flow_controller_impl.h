@@ -18,6 +18,11 @@ class CardNameFixFlowView;
 class CardNameFixFlowControllerImpl : public CardNameFixFlowController {
  public:
   CardNameFixFlowControllerImpl();
+
+  CardNameFixFlowControllerImpl(const CardNameFixFlowControllerImpl&) = delete;
+  CardNameFixFlowControllerImpl& operator=(
+      const CardNameFixFlowControllerImpl&) = delete;
+
   ~CardNameFixFlowControllerImpl() override;
 
   void Show(CardNameFixFlowView* card_name_fix_flow_view,
@@ -52,8 +57,6 @@ class CardNameFixFlowControllerImpl : public CardNameFixFlowController {
 
   // Whether the user explicitly accepted or dismissed this prompt.
   bool had_user_interaction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowControllerImpl);
 };
 
 }  // namespace autofill

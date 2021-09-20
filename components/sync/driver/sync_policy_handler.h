@@ -19,15 +19,14 @@ class PolicyMap;
 class SyncPolicyHandler : public policy::TypeCheckingPolicyHandler {
  public:
   SyncPolicyHandler();
-
-  SyncPolicyHandler(const SyncPolicyHandler&) = delete;
-  SyncPolicyHandler& operator=(const SyncPolicyHandler&) = delete;
-
   ~SyncPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SyncPolicyHandler);
 };
 
 }  // namespace syncer

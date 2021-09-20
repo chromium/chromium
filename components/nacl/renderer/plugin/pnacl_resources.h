@@ -30,6 +30,10 @@ struct PnaclResourceEntry {
 class PnaclResources {
  public:
   PnaclResources(Plugin* plugin, bool use_subzero);
+
+  PnaclResources(const PnaclResources&) = delete;
+  PnaclResources& operator=(const PnaclResources&) = delete;
+
   virtual ~PnaclResources();
 
   // Read the resource info JSON file.  This is the first step after
@@ -51,8 +55,6 @@ class PnaclResources {
   bool use_subzero_;
 
   PnaclResourceEntry resources_[NUM_TYPES + 1];
-
-  DISALLOW_COPY_AND_ASSIGN(PnaclResources);
 };
 
 }  // namespace plugin

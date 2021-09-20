@@ -75,6 +75,12 @@ class CronetBidirectionalStreamAdapter
       int32_t traffic_stats_tag,
       bool traffic_stats_uid_set,
       int32_t traffic_stats_uid);
+
+  CronetBidirectionalStreamAdapter(const CronetBidirectionalStreamAdapter&) =
+      delete;
+  CronetBidirectionalStreamAdapter& operator=(
+      const CronetBidirectionalStreamAdapter&) = delete;
+
   ~CronetBidirectionalStreamAdapter() override;
 
   // Validates method and headers, initializes and starts the request. If
@@ -182,8 +188,6 @@ class CronetBidirectionalStreamAdapter
 
   // Whether BidirectionalStream::Delegate::OnFailed callback is invoked.
   bool stream_failed_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetBidirectionalStreamAdapter);
 };
 
 }  // namespace cronet

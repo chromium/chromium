@@ -19,6 +19,10 @@ namespace download {
 class ClientSet {
  public:
   explicit ClientSet(std::unique_ptr<DownloadClientMap> clients);
+
+  ClientSet(const ClientSet&) = delete;
+  ClientSet& operator=(const ClientSet&) = delete;
+
   virtual ~ClientSet();
 
   std::set<DownloadClient> GetRegisteredClients() const;
@@ -26,8 +30,6 @@ class ClientSet {
 
  private:
   std::unique_ptr<DownloadClientMap> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSet);
 };
 
 }  // namespace download

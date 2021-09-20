@@ -18,6 +18,10 @@ struct Entry;
 class NoopStore : public Store {
  public:
   NoopStore();
+
+  NoopStore(const NoopStore&) = delete;
+  NoopStore& operator=(const NoopStore&) = delete;
+
   ~NoopStore() override;
 
   // Store implementation.
@@ -35,8 +39,6 @@ class NoopStore : public Store {
   bool initialized_;
 
   base::WeakPtrFactory<NoopStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NoopStore);
 };
 
 }  // namespace download

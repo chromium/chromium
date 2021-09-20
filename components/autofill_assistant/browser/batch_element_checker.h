@@ -27,6 +27,10 @@ class WebController;
 class BatchElementChecker {
  public:
   explicit BatchElementChecker();
+
+  BatchElementChecker(const BatchElementChecker&) = delete;
+  BatchElementChecker& operator=(const BatchElementChecker&) = delete;
+
   virtual ~BatchElementChecker();
 
   // Callback for AddElementCheck. Arguments are an ok client status if the
@@ -101,8 +105,6 @@ class BatchElementChecker {
   std::vector<base::OnceCallback<void()>> all_done_;
 
   base::WeakPtrFactory<BatchElementChecker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BatchElementChecker);
 };
 
 }  // namespace autofill_assistant

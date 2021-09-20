@@ -26,6 +26,12 @@ class PrefBasedUrlKeyedDataCollectionConsentHelper
  public:
   explicit PrefBasedUrlKeyedDataCollectionConsentHelper(
       PrefService* pref_service);
+
+  PrefBasedUrlKeyedDataCollectionConsentHelper(
+      const PrefBasedUrlKeyedDataCollectionConsentHelper&) = delete;
+  PrefBasedUrlKeyedDataCollectionConsentHelper& operator=(
+      const PrefBasedUrlKeyedDataCollectionConsentHelper&) = delete;
+
   ~PrefBasedUrlKeyedDataCollectionConsentHelper() override = default;
 
   // UrlKeyedDataCollectionConsentHelper:
@@ -35,8 +41,6 @@ class PrefBasedUrlKeyedDataCollectionConsentHelper
   void OnPrefChanged();
   PrefService* pref_service_;  // weak (must outlive this)
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefBasedUrlKeyedDataCollectionConsentHelper);
 };
 
 class SyncBasedUrlKeyedDataCollectionConsentHelper
@@ -46,6 +50,12 @@ class SyncBasedUrlKeyedDataCollectionConsentHelper
   SyncBasedUrlKeyedDataCollectionConsentHelper(
       syncer::SyncService* sync_service,
       std::set<syncer::ModelType> sync_data_types);
+
+  SyncBasedUrlKeyedDataCollectionConsentHelper(
+      const SyncBasedUrlKeyedDataCollectionConsentHelper&) = delete;
+  SyncBasedUrlKeyedDataCollectionConsentHelper& operator=(
+      const SyncBasedUrlKeyedDataCollectionConsentHelper&) = delete;
+
   ~SyncBasedUrlKeyedDataCollectionConsentHelper() override;
 
   // UrlKeyedDataCollectionConsentHelper:
@@ -60,8 +70,6 @@ class SyncBasedUrlKeyedDataCollectionConsentHelper
 
   syncer::SyncService* sync_service_;
   std::map<syncer::ModelType, syncer::UploadState> sync_data_type_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncBasedUrlKeyedDataCollectionConsentHelper);
 };
 
 PrefBasedUrlKeyedDataCollectionConsentHelper::

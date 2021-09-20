@@ -15,14 +15,15 @@ namespace autofill {
 class AutofillPolicyHandler : public policy::TypeCheckingPolicyHandler {
  public:
   AutofillPolicyHandler();
+
+  AutofillPolicyHandler(const AutofillPolicyHandler&) = delete;
+  AutofillPolicyHandler& operator=(const AutofillPolicyHandler&) = delete;
+
   ~AutofillPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillPolicyHandler);
 };
 
 }  // namespace autofill

@@ -19,6 +19,10 @@ class DiagnosticsProviderImpl final : public DiagnosticsProvider {
   DiagnosticsProviderImpl(
       ProfileOAuth2TokenService* profile_oauth2_token_service,
       GaiaCookieManagerService* gaia_cookie_manager_service);
+
+  DiagnosticsProviderImpl(const DiagnosticsProviderImpl&) = delete;
+  DiagnosticsProviderImpl& operator=(const DiagnosticsProviderImpl&) = delete;
+
   ~DiagnosticsProviderImpl() override;
 
   // Returns the state of the load credentials operation.
@@ -36,8 +40,6 @@ class DiagnosticsProviderImpl final : public DiagnosticsProvider {
  private:
   GaiaCookieManagerService* gaia_cookie_manager_service_;
   ProfileOAuth2TokenService* profile_oauth2_token_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsProviderImpl);
 };
 
 }  // namespace signin

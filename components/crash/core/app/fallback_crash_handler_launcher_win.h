@@ -25,6 +25,11 @@ namespace crash_reporter {
 class FallbackCrashHandlerLauncher {
  public:
   FallbackCrashHandlerLauncher();
+
+  FallbackCrashHandlerLauncher(const FallbackCrashHandlerLauncher&) = delete;
+  FallbackCrashHandlerLauncher& operator=(const FallbackCrashHandlerLauncher&) =
+      delete;
+
   ~FallbackCrashHandlerLauncher();
 
   // Initializes everything that's needed in LaunchAndWaitForHandler.
@@ -59,8 +64,6 @@ class FallbackCrashHandlerLauncher {
   // An inheritable handle to our own process, the raw handle is necessary
   // for pre-computing the startup info.
   base::win::ScopedHandle self_process_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(FallbackCrashHandlerLauncher);
 };
 
 }  // namespace crash_reporter

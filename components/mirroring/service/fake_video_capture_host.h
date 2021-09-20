@@ -20,6 +20,10 @@ class FakeVideoCaptureHost : public media::mojom::VideoCaptureHost {
  public:
   explicit FakeVideoCaptureHost(
       mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver);
+
+  FakeVideoCaptureHost(const FakeVideoCaptureHost&) = delete;
+  FakeVideoCaptureHost& operator=(const FakeVideoCaptureHost&) = delete;
+
   ~FakeVideoCaptureHost() override;
 
   // mojom::VideoCaptureHost implementations
@@ -60,8 +64,6 @@ class FakeVideoCaptureHost : public media::mojom::VideoCaptureHost {
  private:
   mojo::Receiver<media::mojom::VideoCaptureHost> receiver_;
   mojo::Remote<media::mojom::VideoCaptureObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoCaptureHost);
 };
 
 }  // namespace mirroring

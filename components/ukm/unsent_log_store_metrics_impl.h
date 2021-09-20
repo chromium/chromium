@@ -14,6 +14,11 @@ namespace ukm {
 class UnsentLogStoreMetricsImpl : public metrics::UnsentLogStoreMetrics {
  public:
   UnsentLogStoreMetricsImpl();
+
+  UnsentLogStoreMetricsImpl(const UnsentLogStoreMetricsImpl&) = delete;
+  UnsentLogStoreMetricsImpl& operator=(const UnsentLogStoreMetricsImpl&) =
+      delete;
+
   ~UnsentLogStoreMetricsImpl() override;
 
   // metrics::UnsentLogStoreMetrics:
@@ -23,9 +28,6 @@ class UnsentLogStoreMetricsImpl : public metrics::UnsentLogStoreMetrics {
                               size_t original_size) override;
   void RecordDroppedLogSize(size_t size) override;
   void RecordDroppedLogsNum(int dropped_logs_num) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnsentLogStoreMetricsImpl);
 };
 
 }  // namespace ukm

@@ -80,6 +80,10 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   static bool TypeHasGaiaAccount(UserType user_type);
 
   explicit User(const AccountId& account_id);
+
+  User(const User&) = delete;
+  User& operator=(const User&) = delete;
+
   ~User() override;
 
   // UserInfo
@@ -339,8 +343,6 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   std::vector<base::OnceClosure> on_profile_created_observers_;
   std::vector<base::OnceCallback<void(bool is_affiliated)>>
       on_affiliation_set_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(User);
 };
 
 // List of known users.

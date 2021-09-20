@@ -21,6 +21,10 @@ namespace viz {
 class VizTestSuite : public base::TestSuite {
  public:
   VizTestSuite(int argc, char** argv);
+
+  VizTestSuite(const VizTestSuite&) = delete;
+  VizTestSuite& operator=(const VizTestSuite&) = delete;
+
   ~VizTestSuite() override;
 
   static void RunUntilIdle();
@@ -35,8 +39,6 @@ class VizTestSuite : public base::TestSuite {
   std::unique_ptr<ui::PlatformEventSource> platform_event_source_;
 
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(VizTestSuite);
 };
 
 }  // namespace viz

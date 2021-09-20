@@ -835,6 +835,12 @@ namespace {
 class MultipleGoodTimeResponseHandler {
  public:
   MultipleGoodTimeResponseHandler() {}
+
+  MultipleGoodTimeResponseHandler(const MultipleGoodTimeResponseHandler&) =
+      delete;
+  MultipleGoodTimeResponseHandler& operator=(
+      const MultipleGoodTimeResponseHandler&) = delete;
+
   ~MultipleGoodTimeResponseHandler() {}
 
   std::unique_ptr<net::test_server::HttpResponse> ResponseHandler(
@@ -850,8 +856,6 @@ class MultipleGoodTimeResponseHandler {
   // and |kGoodTimeResponseServerProofHeaders| that will be used in the
   // response in the next ResponseHandler() call.
   unsigned int next_time_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MultipleGoodTimeResponseHandler);
 };
 
 std::unique_ptr<net::test_server::HttpResponse>

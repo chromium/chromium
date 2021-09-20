@@ -30,6 +30,10 @@ constexpr FrameSinkId kDisplayFrameSink(kDisplayClientId, 0);
 class TestHostFrameSinkManager : public HostFrameSinkManager {
  public:
   TestHostFrameSinkManager() = default;
+
+  TestHostFrameSinkManager(const TestHostFrameSinkManager&) = delete;
+  TestHostFrameSinkManager& operator=(const TestHostFrameSinkManager&) = delete;
+
   ~TestHostFrameSinkManager() override = default;
 
   void OnAggregatedHitTestRegionListUpdated(
@@ -46,14 +50,16 @@ class TestHostFrameSinkManager : public HostFrameSinkManager {
  private:
   FrameSinkId buffer_frame_sink_id_;
   std::vector<AggregatedHitTestRegion> active_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHostFrameSinkManager);
 };
 
 class TestFrameSinkManagerImpl : public FrameSinkManagerImpl {
  public:
   explicit TestFrameSinkManagerImpl(SharedBitmapManager* shared_bitmap_manager)
       : FrameSinkManagerImpl(shared_bitmap_manager) {}
+
+  TestFrameSinkManagerImpl(const TestFrameSinkManagerImpl&) = delete;
+  TestFrameSinkManagerImpl& operator=(const TestFrameSinkManagerImpl&) = delete;
+
   ~TestFrameSinkManagerImpl() override = default;
 
   void SetLocalClient(TestHostFrameSinkManager* client) {
@@ -72,8 +78,6 @@ class TestFrameSinkManagerImpl : public FrameSinkManagerImpl {
 
  private:
   TestHostFrameSinkManager* host_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFrameSinkManagerImpl);
 };
 
 }  // namespace
@@ -105,6 +109,10 @@ class TestHitTestAggregator final : public HitTestAggregator {
 class HitTestAggregatorTest : public testing::Test {
  public:
   HitTestAggregatorTest() = default;
+
+  HitTestAggregatorTest(const HitTestAggregatorTest&) = delete;
+  HitTestAggregatorTest& operator=(const HitTestAggregatorTest&) = delete;
+
   ~HitTestAggregatorTest() override = default;
 
   // testing::Test:
@@ -225,8 +233,6 @@ class HitTestAggregatorTest : public testing::Test {
       local_surface_id_lookup_delegate_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   SurfaceIdAllocatorSet allocator_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestAggregatorTest);
 };
 
 // TODO(gklassen): Add tests for 3D use cases as suggested by and with

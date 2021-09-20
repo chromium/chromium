@@ -26,6 +26,9 @@ class AvailabilityModel {
   // GetAvailability(...).
   using OnInitializedCallback = base::OnceCallback<void(bool success)>;
 
+  AvailabilityModel(const AvailabilityModel&) = delete;
+  AvailabilityModel& operator=(const AvailabilityModel&) = delete;
+
   virtual ~AvailabilityModel() = default;
 
   // Starts initialization of the AvailabilityModel.
@@ -44,9 +47,6 @@ class AvailabilityModel {
 
  protected:
   AvailabilityModel() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityModel);
 };
 
 }  // namespace feature_engagement

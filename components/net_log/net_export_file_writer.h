@@ -85,6 +85,9 @@ class NetExportFileWriter {
   // process.
   NetExportFileWriter();
 
+  NetExportFileWriter(const NetExportFileWriter&) = delete;
+  NetExportFileWriter& operator=(const NetExportFileWriter&) = delete;
+
   ~NetExportFileWriter();
 
   // Attaches a StateObserver. |observer| will be notified of state changes to
@@ -224,8 +227,6 @@ class NetExportFileWriter {
   DirectoryGetter default_log_base_dir_getter_;
 
   base::WeakPtrFactory<NetExportFileWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetExportFileWriter);
 };
 
 }  // namespace net_log

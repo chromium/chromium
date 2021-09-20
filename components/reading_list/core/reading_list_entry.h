@@ -64,6 +64,10 @@ class ReadingListEntry {
                    const base::Time& now,
                    std::unique_ptr<net::BackoffEntry> backoff);
   ReadingListEntry(ReadingListEntry&& entry);
+
+  ReadingListEntry(const ReadingListEntry&) = delete;
+  ReadingListEntry& operator=(const ReadingListEntry&) = delete;
+
   ~ReadingListEntry();
 
   // Entries are created in WAITING state. At some point they will be PROCESSING
@@ -231,8 +235,6 @@ class ReadingListEntry {
   int64_t distillation_size_;
 
   reading_list::ContentSuggestionsExtra content_suggestions_extra_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListEntry);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_ENTRY_H_

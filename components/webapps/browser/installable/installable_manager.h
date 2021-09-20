@@ -38,6 +38,10 @@ class InstallableManager
       public content::WebContentsUserData<InstallableManager> {
  public:
   explicit InstallableManager(content::WebContents* web_contents);
+
+  InstallableManager(const InstallableManager&) = delete;
+  InstallableManager& operator=(const InstallableManager&) = delete;
+
   ~InstallableManager() override;
 
   // Returns the minimum icon size in pixels for a site to be installable.
@@ -283,8 +287,6 @@ class InstallableManager
   base::WeakPtrFactory<InstallableManager> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(InstallableManager);
 };
 
 }  // namespace webapps

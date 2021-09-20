@@ -111,15 +111,17 @@ class InstrumentedGaiaCookieManagerService : public GaiaCookieManagerService {
     total++;
   }
 
+  InstrumentedGaiaCookieManagerService(
+      const InstrumentedGaiaCookieManagerService&) = delete;
+  InstrumentedGaiaCookieManagerService& operator=(
+      const InstrumentedGaiaCookieManagerService&) = delete;
+
   ~InstrumentedGaiaCookieManagerService() override { total--; }
 
   MOCK_METHOD0(StartFetchingUbertoken, void());
   MOCK_METHOD0(StartFetchingListAccounts, void());
   MOCK_METHOD0(StartGaiaLogOut, void());
   MOCK_METHOD0(StartFetchingMergeSession, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstrumentedGaiaCookieManagerService);
 };
 
 class GaiaCookieManagerServiceTest : public testing::Test {

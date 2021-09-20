@@ -15,6 +15,11 @@ namespace guest_view {
 class GuestViewContainerDispatcher : public content::RenderThreadObserver {
  public:
   GuestViewContainerDispatcher();
+
+  GuestViewContainerDispatcher(const GuestViewContainerDispatcher&) = delete;
+  GuestViewContainerDispatcher& operator=(const GuestViewContainerDispatcher&) =
+      delete;
+
   ~GuestViewContainerDispatcher() override;
 
  protected:
@@ -23,9 +28,6 @@ class GuestViewContainerDispatcher : public content::RenderThreadObserver {
 
   // content::RenderThreadObserver implementation.
   bool OnControlMessageReceived(const IPC::Message& message) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GuestViewContainerDispatcher);
 };
 
 }  // namespace guest_view

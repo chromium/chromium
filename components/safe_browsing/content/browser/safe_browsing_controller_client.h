@@ -34,14 +34,16 @@ class SafeBrowsingControllerClient
       const GURL& default_safe_page,
       std::unique_ptr<security_interstitials::SettingsPageHelper>
           settings_page_helper);
+
+  SafeBrowsingControllerClient(const SafeBrowsingControllerClient&) = delete;
+  SafeBrowsingControllerClient& operator=(const SafeBrowsingControllerClient&) =
+      delete;
+
   ~SafeBrowsingControllerClient() override;
 
   void Proceed() override;
 
   void GoBack() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingControllerClient);
 };
 
 }  // namespace safe_browsing

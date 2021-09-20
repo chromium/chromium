@@ -17,6 +17,11 @@ namespace contextual_search {
 class ContextualSearchJsApiHandler {
  public:
   ContextualSearchJsApiHandler() {}
+
+  ContextualSearchJsApiHandler(const ContextualSearchJsApiHandler&) = delete;
+  ContextualSearchJsApiHandler& operator=(const ContextualSearchJsApiHandler&) =
+      delete;
+
   virtual ~ContextualSearchJsApiHandler() {}
 
   // Enabling API, determines if the JS API should be enabled for the given URL.
@@ -38,9 +43,6 @@ class ContextualSearchJsApiHandler {
   // The panel cannot be set to any opened position if it's not already opened.
   virtual void ChangeOverlayPosition(
       mojom::OverlayPosition desired_position) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchJsApiHandler);
 };
 
 }  // namespace contextual_search

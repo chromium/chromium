@@ -23,6 +23,11 @@ class TestNavigationMonitorObserver : public NavigationMonitor::Observer {
       : task_runner_(task_runner),
         monitor_(monitor),
         navigation_in_progress_(false) {}
+
+  TestNavigationMonitorObserver(const TestNavigationMonitorObserver&) = delete;
+  TestNavigationMonitorObserver& operator=(
+      const TestNavigationMonitorObserver&) = delete;
+
   ~TestNavigationMonitorObserver() override = default;
 
   void OnNavigationEvent() override {
@@ -46,14 +51,17 @@ class TestNavigationMonitorObserver : public NavigationMonitor::Observer {
   NavigationMonitor* monitor_;
   bool navigation_in_progress_;
   base::WeakPtrFactory<TestNavigationMonitorObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationMonitorObserver);
 };
 
 class NavigationMonitorImplTest : public testing::Test {
  public:
   NavigationMonitorImplTest()
       : task_runner_(new base::TestMockTimeTaskRunner), handle_(task_runner_) {}
+
+  NavigationMonitorImplTest(const NavigationMonitorImplTest&) = delete;
+  NavigationMonitorImplTest& operator=(const NavigationMonitorImplTest&) =
+      delete;
+
   ~NavigationMonitorImplTest() override = default;
 
   void SetUp() override {
@@ -89,9 +97,6 @@ class NavigationMonitorImplTest : public testing::Test {
   std::unique_ptr<NavigationMonitorImpl> navigation_monitor_;
   std::unique_ptr<TestNavigationMonitorObserver> observer_;
   base::WeakPtrFactory<NavigationMonitorImplTest> weak_ptr_factory_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NavigationMonitorImplTest);
 };
 
 TEST_F(NavigationMonitorImplTest, NoObserver) {

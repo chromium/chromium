@@ -16,6 +16,10 @@ class TestEnabledStateProvider : public EnabledStateProvider {
  public:
   TestEnabledStateProvider(bool consent, bool enabled)
       : consent_(consent), enabled_(enabled) {}
+
+  TestEnabledStateProvider(const TestEnabledStateProvider&) = delete;
+  TestEnabledStateProvider& operator=(const TestEnabledStateProvider&) = delete;
+
   ~TestEnabledStateProvider() override {}
 
   // EnabledStateProvider
@@ -28,8 +32,6 @@ class TestEnabledStateProvider : public EnabledStateProvider {
  private:
   bool consent_;
   bool enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEnabledStateProvider);
 };
 
 }  // namespace metrics

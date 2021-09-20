@@ -29,6 +29,12 @@ class PresentationMediaSinksObserverTest : public ::testing::Test {
  public:
   PresentationMediaSinksObserverTest()
       : listener_(GURL("http://example.com/presentation.html")) {}
+
+  PresentationMediaSinksObserverTest(
+      const PresentationMediaSinksObserverTest&) = delete;
+  PresentationMediaSinksObserverTest& operator=(
+      const PresentationMediaSinksObserverTest&) = delete;
+
   ~PresentationMediaSinksObserverTest() override {}
 
   void SetUp() override {
@@ -53,9 +59,6 @@ class PresentationMediaSinksObserverTest : public ::testing::Test {
   MockMediaRouter router_;
   MockScreenAvailabilityListener listener_;
   std::unique_ptr<PresentationMediaSinksObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PresentationMediaSinksObserverTest);
 };
 
 TEST_F(PresentationMediaSinksObserverTest, AvailableScreens) {

@@ -22,10 +22,11 @@ namespace mirroring {
 class ReceiverResponseTest : public ::testing::Test {
  public:
   ReceiverResponseTest() {}
-  ~ReceiverResponseTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReceiverResponseTest);
+  ReceiverResponseTest(const ReceiverResponseTest&) = delete;
+  ReceiverResponseTest& operator=(const ReceiverResponseTest&) = delete;
+
+  ~ReceiverResponseTest() override {}
 };
 
 TEST_F(ReceiverResponseTest, ParseValidJson) {

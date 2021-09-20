@@ -18,6 +18,10 @@ class IssueManager;
 class IssuesObserver {
  public:
   explicit IssuesObserver(IssueManager* issue_manager);
+
+  IssuesObserver(const IssuesObserver&) = delete;
+  IssuesObserver& operator=(const IssuesObserver&) = delete;
+
   virtual ~IssuesObserver();
 
   // Registers with |issue_manager_| to start observing for Issues. No-ops if
@@ -36,8 +40,6 @@ class IssuesObserver {
  private:
   IssueManager* const issue_manager_;
   bool initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(IssuesObserver);
 };
 
 }  // namespace media_router

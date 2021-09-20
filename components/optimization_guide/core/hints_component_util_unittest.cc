@@ -27,6 +27,9 @@ class HintsComponentUtilTest : public testing::Test {
  public:
   HintsComponentUtilTest() {}
 
+  HintsComponentUtilTest(const HintsComponentUtilTest&) = delete;
+  HintsComponentUtilTest& operator=(const HintsComponentUtilTest&) = delete;
+
   ~HintsComponentUtilTest() override {}
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
@@ -44,8 +47,6 @@ class HintsComponentUtilTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(HintsComponentUtilTest);
 };
 
 TEST_F(HintsComponentUtilTest, RecordProcessHintsComponentResult) {

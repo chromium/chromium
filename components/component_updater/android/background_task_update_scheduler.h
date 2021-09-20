@@ -23,6 +23,11 @@ class BackgroundTaskUpdateScheduler : public UpdateScheduler {
   static bool IsAvailable();
 
   BackgroundTaskUpdateScheduler();
+
+  BackgroundTaskUpdateScheduler(const BackgroundTaskUpdateScheduler&) = delete;
+  BackgroundTaskUpdateScheduler& operator=(
+      const BackgroundTaskUpdateScheduler&) = delete;
+
   ~BackgroundTaskUpdateScheduler() override;
 
   // UpdateScheduler:
@@ -45,8 +50,6 @@ class BackgroundTaskUpdateScheduler : public UpdateScheduler {
   OnStopTaskCallback on_stop_;
 
   base::WeakPtrFactory<BackgroundTaskUpdateScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTaskUpdateScheduler);
 };
 
 }  // namespace component_updater

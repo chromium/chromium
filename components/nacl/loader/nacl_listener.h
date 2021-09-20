@@ -33,6 +33,10 @@ class SyncMessageFilter;
 class NaClListener : public IPC::Listener {
  public:
   NaClListener();
+
+  NaClListener(const NaClListener&) = delete;
+  NaClListener& operator=(const NaClListener&) = delete;
+
   ~NaClListener() override;
   // Listen for a request to launch a NaCl module.
   void Listen();
@@ -118,8 +122,6 @@ class NaClListener : public IPC::Listener {
   PrefetchedResourceFilesMap prefetched_resource_files_;
 
   bool is_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClListener);
 };
 
 #endif  // COMPONENTS_NACL_LOADER_NACL_LISTENER_H_

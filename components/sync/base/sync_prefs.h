@@ -41,10 +41,6 @@ class SyncPrefs {
  public:
   // |pref_service| must not be null and must outlive this object.
   explicit SyncPrefs(PrefService* pref_service);
-
-  SyncPrefs(const SyncPrefs&) = delete;
-  SyncPrefs& operator=(const SyncPrefs&) = delete;
-
   ~SyncPrefs();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -159,6 +155,8 @@ class SyncPrefs {
   bool local_sync_enabled_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  DISALLOW_COPY_AND_ASSIGN(SyncPrefs);
 };
 
 void ClearObsoletePassphrasePromptPrefs(PrefService* pref_service);

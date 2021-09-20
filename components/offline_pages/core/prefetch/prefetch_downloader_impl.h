@@ -33,6 +33,10 @@ class PrefetchDownloaderImpl : public PrefetchDownloader {
   PrefetchDownloaderImpl(download::BackgroundDownloadService* download_service,
                          version_info::Channel channel,
                          PrefService* prefs);
+
+  PrefetchDownloaderImpl(const PrefetchDownloaderImpl&) = delete;
+  PrefetchDownloaderImpl& operator=(const PrefetchDownloaderImpl&) = delete;
+
   ~PrefetchDownloaderImpl() override;
 
   // PrefetchDownloader implementation:
@@ -95,8 +99,6 @@ class PrefetchDownloaderImpl : public PrefetchDownloader {
   PrefService* prefs_;
 
   base::WeakPtrFactory<PrefetchDownloaderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchDownloaderImpl);
 };
 
 }  // namespace offline_pages

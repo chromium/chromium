@@ -56,6 +56,9 @@ class ByteBufferWithIOBuffer {
                          scoped_refptr<net::IOBuffer> io_buffer,
                          int io_buffer_len);
 
+  ByteBufferWithIOBuffer(const ByteBufferWithIOBuffer&) = delete;
+  ByteBufferWithIOBuffer& operator=(const ByteBufferWithIOBuffer&) = delete;
+
   ~ByteBufferWithIOBuffer();
   const net::IOBuffer* io_buffer() const { return io_buffer_.get(); }
   int io_buffer_len() const { return io_buffer_len_; }
@@ -69,8 +72,6 @@ class ByteBufferWithIOBuffer {
   int io_buffer_len_;
 
   base::android::ScopedJavaGlobalRef<jobject> byte_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ByteBufferWithIOBuffer);
 };
 
 }  // namespace cronet

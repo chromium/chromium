@@ -25,6 +25,10 @@ struct FormRemovalParams;
 class FormActivityObserver {
  public:
   FormActivityObserver() {}
+
+  FormActivityObserver(const FormActivityObserver&) = delete;
+  FormActivityObserver& operator=(const FormActivityObserver&) = delete;
+
   virtual ~FormActivityObserver() {}
 
   // Called when the user is typing on a form field in the main frame or in a
@@ -70,9 +74,6 @@ class FormActivityObserver {
   virtual void FormRemoved(web::WebState* web_state,
                            web::WebFrame* sender_frame,
                            const FormRemovalParams& params) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FormActivityObserver);
 };
 
 }  // namespace autofill

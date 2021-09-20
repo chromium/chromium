@@ -66,12 +66,14 @@ class SafeBrowserUserData : public base::SupportsUserData::Data {
  public:
   explicit SafeBrowserUserData(std::unique_ptr<MojoSafeBrowsingImpl> impl)
       : impl_(std::move(impl)) {}
+
+  SafeBrowserUserData(const SafeBrowserUserData&) = delete;
+  SafeBrowserUserData& operator=(const SafeBrowserUserData&) = delete;
+
   ~SafeBrowserUserData() override = default;
 
  private:
   std::unique_ptr<MojoSafeBrowsingImpl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowserUserData);
 };
 
 }  // namespace

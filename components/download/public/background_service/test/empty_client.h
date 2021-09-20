@@ -15,6 +15,10 @@ namespace test {
 class EmptyClient : public Client {
  public:
   EmptyClient() = default;
+
+  EmptyClient(const EmptyClient&) = delete;
+  EmptyClient& operator=(const EmptyClient&) = delete;
+
   ~EmptyClient() override = default;
 
   // Client implementation.
@@ -38,9 +42,6 @@ class EmptyClient : public Client {
                                       bool force_delete) override;
   void GetUploadData(const std::string& guid,
                      GetUploadDataCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EmptyClient);
 };
 
 }  // namespace test

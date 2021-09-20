@@ -51,6 +51,10 @@ class ManifestServiceChannel : public IPC::Listener {
                          base::OnceCallback<void(int32_t)> connected_callback,
                          std::unique_ptr<Delegate> delegate,
                          base::WaitableEvent* waitable_event);
+
+  ManifestServiceChannel(const ManifestServiceChannel&) = delete;
+  ManifestServiceChannel& operator=(const ManifestServiceChannel&) = delete;
+
   ~ManifestServiceChannel() override;
 
   void Send(IPC::Message* message);
@@ -76,8 +80,6 @@ class ManifestServiceChannel : public IPC::Listener {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ManifestServiceChannel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestServiceChannel);
 };
 
 }  // namespace nacl

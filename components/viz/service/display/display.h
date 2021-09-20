@@ -93,6 +93,9 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       std::unique_ptr<DisplaySchedulerBase> scheduler,
       scoped_refptr<base::SingleThreadTaskRunner> current_task_runner);
 
+  Display(const Display&) = delete;
+  Display& operator=(const Display&) = delete;
+
   ~Display() override;
 
   static constexpr base::TimeDelta kDrawToSwapMin =
@@ -217,6 +220,10 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
    public:
     PresentationGroupTiming();
     PresentationGroupTiming(PresentationGroupTiming&& other);
+
+    PresentationGroupTiming(const PresentationGroupTiming&) = delete;
+    PresentationGroupTiming& operator=(const PresentationGroupTiming&) = delete;
+
     ~PresentationGroupTiming();
 
     void AddPresentationHelper(
@@ -236,8 +243,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     gfx::SwapTimings swap_timings_;
     std::vector<std::unique_ptr<Surface::PresentationHelper>>
         presentation_helpers_;
-
-    DISALLOW_COPY_AND_ASSIGN(PresentationGroupTiming);
   };
 
   // TODO(cblume, crbug.com/900973): |enable_shared_images| is a temporary
@@ -310,8 +315,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   uint64_t frame_sequence_number_ = 0;
   // The height of the top-controls in the previously drawn frame.
   float last_top_controls_visible_height_ = 0.f;
-
-  DISALLOW_COPY_AND_ASSIGN(Display);
 };
 
 }  // namespace viz

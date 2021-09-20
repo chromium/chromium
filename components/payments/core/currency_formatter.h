@@ -24,6 +24,10 @@ class CurrencyFormatter {
   // (as part of payment_details_validation.h) before this is created.
   CurrencyFormatter(const std::string& currency_code,
                     const std::string& locale_name);
+
+  CurrencyFormatter(const CurrencyFormatter&) = delete;
+  CurrencyFormatter& operator=(const CurrencyFormatter&) = delete;
+
   ~CurrencyFormatter();
 
   // Set the maximum number of fractional digits. (kMaximumNumFractionalDigits
@@ -49,8 +53,6 @@ class CurrencyFormatter {
   std::unique_ptr<icu::UnicodeString> currency_code_;
   std::string formatted_currency_code_;
   std::unique_ptr<icu::NumberFormat> icu_formatter_;
-
-  DISALLOW_COPY_AND_ASSIGN(CurrencyFormatter);
 };
 
 }  // namespace payments

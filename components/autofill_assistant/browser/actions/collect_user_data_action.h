@@ -29,6 +29,10 @@ class CollectUserDataAction : public Action,
  public:
   explicit CollectUserDataAction(ActionDelegate* delegate,
                                  const ActionProto& proto);
+
+  CollectUserDataAction(const CollectUserDataAction&) = delete;
+  CollectUserDataAction& operator=(const CollectUserDataAction&) = delete;
+
   ~CollectUserDataAction() override;
 
   // Overrides Action:
@@ -122,8 +126,6 @@ class CollectUserDataAction : public Action,
   std::map<std::string, std::unique_ptr<LoginDetails>> login_details_map_;
 
   base::WeakPtrFactory<CollectUserDataAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CollectUserDataAction);
 };
 
 }  // namespace autofill_assistant

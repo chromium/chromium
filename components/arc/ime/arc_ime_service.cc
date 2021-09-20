@@ -69,6 +69,9 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
   explicit ArcWindowDelegateImpl(ArcImeService* ime_service)
       : ime_service_(ime_service) {}
 
+  ArcWindowDelegateImpl(const ArcWindowDelegateImpl&) = delete;
+  ArcWindowDelegateImpl& operator=(const ArcWindowDelegateImpl&) = delete;
+
   ~ArcWindowDelegateImpl() override = default;
 
   bool IsInArcAppWindow(const aura::Window* window) const override {
@@ -130,8 +133,6 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
 
  private:
   ArcImeService* const ime_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcWindowDelegateImpl);
 };
 
 // Singleton factory for ArcImeService.

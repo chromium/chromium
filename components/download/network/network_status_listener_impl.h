@@ -20,6 +20,11 @@ class NetworkStatusListenerImpl
  public:
   explicit NetworkStatusListenerImpl(
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  NetworkStatusListenerImpl(const NetworkStatusListenerImpl&) = delete;
+  NetworkStatusListenerImpl& operator=(const NetworkStatusListenerImpl&) =
+      delete;
+
   ~NetworkStatusListenerImpl() override;
 
   // NetworkStatusListener implementation.
@@ -36,7 +41,6 @@ class NetworkStatusListenerImpl
   network::NetworkConnectionTracker* network_connection_tracker_;
 
   base::WeakPtrFactory<NetworkStatusListenerImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(NetworkStatusListenerImpl);
 };
 
 }  // namespace download

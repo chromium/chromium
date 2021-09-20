@@ -30,6 +30,11 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
   // Must call InitVisitTable() before using to make sure the database is
   // initialized.
   TypedURLSyncMetadataDatabase();
+
+  TypedURLSyncMetadataDatabase(const TypedURLSyncMetadataDatabase&) = delete;
+  TypedURLSyncMetadataDatabase& operator=(const TypedURLSyncMetadataDatabase&) =
+      delete;
+
   ~TypedURLSyncMetadataDatabase() override;
 
   // Read all the stored metadata for typed URL and fill `metadata_batch`
@@ -76,8 +81,6 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
 
   // Read sync_pb::ModelTypeState for typed URL and fill `state` with it.
   bool GetModelTypeState(sync_pb::ModelTypeState* state);
-
-  DISALLOW_COPY_AND_ASSIGN(TypedURLSyncMetadataDatabase);
 };
 
 }  // namespace history

@@ -34,6 +34,10 @@ struct MetalContextProviderImpl : public MetalContextProvider {
         GrDirectContext::MakeMetal(device_, command_queue_, context_options);
     DCHECK(gr_context_);
   }
+
+  MetalContextProviderImpl(const MetalContextProviderImpl&) = delete;
+  MetalContextProviderImpl& operator=(const MetalContextProviderImpl&) = delete;
+
   ~MetalContextProviderImpl() override {
     // Because there are no guarantees that |device_| will not outlive |this|,
     // un-set the progress reporter on |device_|.
@@ -49,8 +53,6 @@ struct MetalContextProviderImpl : public MetalContextProvider {
   base::scoped_nsobject<MTLDeviceProxy> device_;
   base::scoped_nsprotocol<id<MTLCommandQueue>> command_queue_;
   sk_sp<GrDirectContext> gr_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetalContextProviderImpl);
 };
 
 }  // namespace

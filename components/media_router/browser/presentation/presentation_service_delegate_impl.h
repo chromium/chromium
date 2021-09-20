@@ -63,6 +63,11 @@ class PresentationServiceDelegateImpl
   static PresentationServiceDelegateImpl* GetOrCreateForWebContents(
       content::WebContents* web_contents);
 
+  PresentationServiceDelegateImpl(const PresentationServiceDelegateImpl&) =
+      delete;
+  PresentationServiceDelegateImpl& operator=(
+      const PresentationServiceDelegateImpl&) = delete;
+
   ~PresentationServiceDelegateImpl() override;
 
   // content::PresentationServiceDelegate implementation.
@@ -261,8 +266,6 @@ class PresentationServiceDelegateImpl
   base::WeakPtrFactory<PresentationServiceDelegateImpl> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationServiceDelegateImpl);
 };
 
 }  // namespace media_router

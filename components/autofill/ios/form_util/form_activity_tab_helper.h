@@ -29,6 +29,9 @@ class FormActivityObserver;
 class FormActivityTabHelper
     : public web::WebStateUserData<FormActivityTabHelper> {
  public:
+  FormActivityTabHelper(const FormActivityTabHelper&) = delete;
+  FormActivityTabHelper& operator=(const FormActivityTabHelper&) = delete;
+
   ~FormActivityTabHelper() override;
 
   static FormActivityTabHelper* GetOrCreateForWebState(
@@ -74,8 +77,6 @@ class FormActivityTabHelper
   base::ObserverList<FormActivityObserver>::Unchecked observers_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(FormActivityTabHelper);
 };
 
 }  // namespace autofill

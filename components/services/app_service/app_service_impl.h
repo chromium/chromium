@@ -32,6 +32,10 @@ class AppServiceImpl : public apps::mojom::AppService {
       const base::FilePath& profile_dir,
       base::OnceClosure read_completed_for_testing = base::OnceClosure(),
       base::OnceClosure write_completed_for_testing = base::OnceClosure());
+
+  AppServiceImpl(const AppServiceImpl&) = delete;
+  AppServiceImpl& operator=(const AppServiceImpl&) = delete;
+
   ~AppServiceImpl() override;
 
   void BindReceiver(mojo::PendingReceiver<apps::mojom::AppService> receiver);
@@ -163,8 +167,6 @@ class AppServiceImpl : public apps::mojom::AppService {
   base::OnceClosure write_completed_for_testing_;
 
   base::WeakPtrFactory<AppServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceImpl);
 };
 
 }  // namespace apps

@@ -99,6 +99,12 @@ class V4UpdateProtocolManagerFactoryImpl
     : public V4UpdateProtocolManagerFactory {
  public:
   V4UpdateProtocolManagerFactoryImpl() {}
+
+  V4UpdateProtocolManagerFactoryImpl(
+      const V4UpdateProtocolManagerFactoryImpl&) = delete;
+  V4UpdateProtocolManagerFactoryImpl& operator=(
+      const V4UpdateProtocolManagerFactoryImpl&) = delete;
+
   ~V4UpdateProtocolManagerFactoryImpl() override {}
   std::unique_ptr<V4UpdateProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -110,9 +116,6 @@ class V4UpdateProtocolManagerFactoryImpl
         new V4UpdateProtocolManager(url_loader_factory, config, update_callback,
                                     extended_reporting_level_callback));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(V4UpdateProtocolManagerFactoryImpl);
 };
 
 // V4UpdateProtocolManager implementation --------------------------------

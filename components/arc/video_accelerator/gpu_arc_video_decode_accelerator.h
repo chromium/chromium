@@ -43,6 +43,11 @@ class GpuArcVideoDecodeAccelerator
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       scoped_refptr<ProtectedBufferManager> protected_buffer_manager);
+
+  GpuArcVideoDecodeAccelerator(const GpuArcVideoDecodeAccelerator&) = delete;
+  GpuArcVideoDecodeAccelerator& operator=(const GpuArcVideoDecodeAccelerator&) =
+      delete;
+
   ~GpuArcVideoDecodeAccelerator() override;
 
   // Implementation of media::VideoDecodeAccelerator::Client interface.
@@ -187,7 +192,6 @@ class GpuArcVideoDecodeAccelerator
   bool awaiting_first_import_ = false;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(GpuArcVideoDecodeAccelerator);
 };
 
 }  // namespace arc

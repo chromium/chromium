@@ -31,6 +31,10 @@ class BreakIterator;
 class SpellcheckCharAttribute {
  public:
   SpellcheckCharAttribute();
+
+  SpellcheckCharAttribute(const SpellcheckCharAttribute&) = delete;
+  SpellcheckCharAttribute& operator=(const SpellcheckCharAttribute&) = delete;
+
   ~SpellcheckCharAttribute();
 
   // Sets the language of the spellchecker. When this function is called with an
@@ -77,8 +81,6 @@ class SpellcheckCharAttribute {
 
   // The script code used by this language.
   UScriptCode script_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckCharAttribute);
 };
 
 // A class which extracts words that can be checked for spelling from a
@@ -129,6 +131,10 @@ class SpellcheckWordIterator {
   };
 
   SpellcheckWordIterator();
+
+  SpellcheckWordIterator(const SpellcheckWordIterator&) = delete;
+  SpellcheckWordIterator& operator=(const SpellcheckWordIterator&) = delete;
+
   ~SpellcheckWordIterator();
 
   // Initializes a word-iterator object with the language-specific attribute. If
@@ -197,9 +203,6 @@ class SpellcheckWordIterator {
 
   // The break iterator.
   std::unique_ptr<base::i18n::BreakIterator> iterator_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckWordIterator);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_WORDITERATOR_H_
-

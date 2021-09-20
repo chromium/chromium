@@ -40,6 +40,9 @@ class TestClient : public AndroidMetricsServiceClient {
         package_name_rate_per_mille_(1000),
         record_package_name_for_app_type_(true) {}
 
+  TestClient(const TestClient&) = delete;
+  TestClient& operator=(const TestClient&) = delete;
+
   ~TestClient() override = default;
 
   void Initialize(PrefService* pref_service) {
@@ -110,7 +113,6 @@ class TestClient : public AndroidMetricsServiceClient {
   int sampled_in_rate_per_mille_;
   int package_name_rate_per_mille_;
   bool record_package_name_for_app_type_;
-  DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
 
 std::unique_ptr<TestingPrefServiceSimple> CreateTestPrefs() {

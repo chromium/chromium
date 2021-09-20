@@ -23,6 +23,9 @@ class UnzipperImpl : public mojom::Unzipper {
   // Constructs an UnzipperImpl bound to |receiver|.
   explicit UnzipperImpl(mojo::PendingReceiver<mojom::Unzipper> receiver);
 
+  UnzipperImpl(const UnzipperImpl&) = delete;
+  UnzipperImpl& operator=(const UnzipperImpl&) = delete;
+
   ~UnzipperImpl() override;
 
  private:
@@ -39,8 +42,6 @@ class UnzipperImpl : public mojom::Unzipper {
       UnzipWithFilterCallback callback) override;
 
   mojo::Receiver<mojom::Unzipper> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UnzipperImpl);
 };
 
 }  // namespace unzip

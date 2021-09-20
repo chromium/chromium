@@ -70,6 +70,9 @@ class StaleHostResolver : public net::HostResolver {
   StaleHostResolver(std::unique_ptr<net::ContextHostResolver> inner_resolver,
                     const StaleOptions& stale_options);
 
+  StaleHostResolver(const StaleHostResolver&) = delete;
+  StaleHostResolver& operator=(const StaleHostResolver&) = delete;
+
   ~StaleHostResolver() override;
 
   // HostResolver implementation:
@@ -134,8 +137,6 @@ class StaleHostResolver : public net::HostResolver {
       detached_requests_;
 
   base::WeakPtrFactory<StaleHostResolver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StaleHostResolver);
 };
 
 }  // namespace cronet

@@ -39,10 +39,6 @@ namespace syncer {
 class SingleTypeMockServer {
  public:
   explicit SingleTypeMockServer(ModelType type);
-
-  SingleTypeMockServer(const SingleTypeMockServer&) = delete;
-  SingleTypeMockServer& operator=(const SingleTypeMockServer&) = delete;
-
   ~SingleTypeMockServer();
 
   // Generates a SyncEntity representing a server-delivered update containing
@@ -114,6 +110,8 @@ class SingleTypeMockServer {
 
   // The token that is used to generate the current progress marker.
   std::string progress_marker_token_;
+
+  DISALLOW_COPY_AND_ASSIGN(SingleTypeMockServer);
 };
 
 }  // namespace syncer

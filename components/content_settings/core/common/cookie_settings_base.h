@@ -67,6 +67,10 @@ namespace content_settings {
 class CookieSettingsBase {
  public:
   CookieSettingsBase() = default;
+
+  CookieSettingsBase(const CookieSettingsBase&) = delete;
+  CookieSettingsBase& operator=(const CookieSettingsBase&) = delete;
+
   virtual ~CookieSettingsBase() = default;
 
   // Returns true if the cookie associated with |domain| should be deleted
@@ -191,8 +195,6 @@ class CookieSettingsBase {
       const GURL& first_party_url,
       bool is_third_party_request,
       content_settings::SettingSource* source) const = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSettingsBase);
 };
 
 }  // namespace content_settings

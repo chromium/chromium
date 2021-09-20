@@ -71,6 +71,10 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
 
   explicit SpellCheck(
       service_manager::LocalInterfaceProvider* embedder_provider);
+
+  SpellCheck(const SpellCheck&) = delete;
+  SpellCheck& operator=(const SpellCheck&) = delete;
+
   ~SpellCheck() override;
 
   void AddSpellcheckLanguage(base::File file, const std::string& language);
@@ -236,8 +240,6 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
       dictionary_update_observers_;
 
   base::WeakPtrFactory<SpellCheck> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheck);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_H_

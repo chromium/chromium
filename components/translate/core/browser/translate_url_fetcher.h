@@ -33,6 +33,10 @@ class TranslateURLFetcher {
   };
 
   TranslateURLFetcher();
+
+  TranslateURLFetcher(const TranslateURLFetcher&) = delete;
+  TranslateURLFetcher& operator=(const TranslateURLFetcher&) = delete;
+
   ~TranslateURLFetcher();
 
   int max_retry_on_5xx() {
@@ -83,8 +87,6 @@ class TranslateURLFetcher {
 
   // An extra HTTP request header
   std::string extra_request_header_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateURLFetcher);
 };
 
 }  // namespace translate

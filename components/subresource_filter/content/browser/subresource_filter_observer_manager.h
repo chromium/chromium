@@ -36,6 +36,12 @@ class SubresourceFilterObserverManager
     : public content::WebContentsUserData<SubresourceFilterObserverManager> {
  public:
   explicit SubresourceFilterObserverManager(content::WebContents* web_contents);
+
+  SubresourceFilterObserverManager(const SubresourceFilterObserverManager&) =
+      delete;
+  SubresourceFilterObserverManager& operator=(
+      const SubresourceFilterObserverManager&) = delete;
+
   ~SubresourceFilterObserverManager() override;
 
   void AddObserver(SubresourceFilterObserver* observer);
@@ -73,8 +79,6 @@ class SubresourceFilterObserverManager
   friend class content::WebContentsUserData<SubresourceFilterObserverManager>;
   base::ObserverList<SubresourceFilterObserver>::Unchecked observers_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterObserverManager);
 };
 
 }  // namespace subresource_filter

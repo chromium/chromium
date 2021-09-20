@@ -30,6 +30,10 @@ class VisitedLinkEventListener : public VisitedLinkWriter::Listener,
                                  public content::NotificationObserver {
  public:
   explicit VisitedLinkEventListener(content::BrowserContext* browser_context);
+
+  VisitedLinkEventListener(const VisitedLinkEventListener&) = delete;
+  VisitedLinkEventListener& operator=(const VisitedLinkEventListener&) = delete;
+
   ~VisitedLinkEventListener() override;
 
   void NewTable(base::ReadOnlySharedMemoryRegion* table_region) override;
@@ -68,8 +72,6 @@ class VisitedLinkEventListener : public VisitedLinkWriter::Listener,
   // Used to filter RENDERER_PROCESS_CREATED notifications to renderers that
   // belong to this BrowserContext.
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(VisitedLinkEventListener);
 };
 
 }  // namespace visitedlink

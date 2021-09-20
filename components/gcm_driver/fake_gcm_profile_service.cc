@@ -27,6 +27,10 @@ class FakeGCMProfileService::CustomFakeGCMDriver
     : public instance_id::FakeGCMDriverForInstanceID {
  public:
   explicit CustomFakeGCMDriver(FakeGCMProfileService* service);
+
+  CustomFakeGCMDriver(const CustomFakeGCMDriver&) = delete;
+  CustomFakeGCMDriver& operator=(const CustomFakeGCMDriver&) = delete;
+
   ~CustomFakeGCMDriver() override;
 
   void OnRegisterFinished(const std::string& app_id,
@@ -85,8 +89,6 @@ class FakeGCMProfileService::CustomFakeGCMDriver
 
   base::WeakPtrFactory<CustomFakeGCMDriver> weak_factory_{
       this};  // Must be last.
-
-  DISALLOW_COPY_AND_ASSIGN(CustomFakeGCMDriver);
 };
 
 FakeGCMProfileService::CustomFakeGCMDriver::CustomFakeGCMDriver(

@@ -21,6 +21,12 @@ namespace component_updater {
 class SafetyTipsComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   SafetyTipsComponentInstallerPolicy();
+
+  SafetyTipsComponentInstallerPolicy(
+      const SafetyTipsComponentInstallerPolicy&) = delete;
+  SafetyTipsComponentInstallerPolicy& operator=(
+      const SafetyTipsComponentInstallerPolicy&) = delete;
+
   ~SafetyTipsComponentInstallerPolicy() override;
 
  private:
@@ -42,8 +48,6 @@ class SafetyTipsComponentInstallerPolicy : public ComponentInstallerPolicy {
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
-
-  DISALLOW_COPY_AND_ASSIGN(SafetyTipsComponentInstallerPolicy);
 };
 
 void RegisterSafetyTipsComponent(ComponentUpdateService* cus);

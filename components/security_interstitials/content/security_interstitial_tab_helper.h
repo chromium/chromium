@@ -27,6 +27,10 @@ class SecurityInterstitialTabHelper
       public content::WebContentsUserData<SecurityInterstitialTabHelper>,
       public security_interstitials::mojom::InterstitialCommands {
  public:
+  SecurityInterstitialTabHelper(const SecurityInterstitialTabHelper&) = delete;
+  SecurityInterstitialTabHelper& operator=(
+      const SecurityInterstitialTabHelper&) = delete;
+
   ~SecurityInterstitialTabHelper() override;
 
   // WebContentsObserver:
@@ -108,8 +112,6 @@ class SecurityInterstitialTabHelper
       receivers_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityInterstitialTabHelper);
 };
 
 }  // namespace security_interstitials

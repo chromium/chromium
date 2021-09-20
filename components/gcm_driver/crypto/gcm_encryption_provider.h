@@ -59,6 +59,10 @@ class GCMEncryptionProvider {
   static const char kContentCodingAes128Gcm[];
 
   GCMEncryptionProvider();
+
+  GCMEncryptionProvider(const GCMEncryptionProvider&) = delete;
+  GCMEncryptionProvider& operator=(const GCMEncryptionProvider&) = delete;
+
   ~GCMEncryptionProvider();
 
   // Initializes the encryption provider with the |store_path| and the
@@ -147,8 +151,6 @@ class GCMEncryptionProvider {
   std::unique_ptr<GCMKeyStore> key_store_;
 
   base::WeakPtrFactory<GCMEncryptionProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCMEncryptionProvider);
 };
 
 }  // namespace gcm

@@ -350,13 +350,15 @@ class Component {
   class StateRegistration : public State {
    public:
     explicit StateRegistration(Component* component);
+
+    StateRegistration(const StateRegistration&) = delete;
+    StateRegistration& operator=(const StateRegistration&) = delete;
+
     ~StateRegistration() override;
 
    private:
     // State overrides.
     void DoHandle() override;
-
-    DISALLOW_COPY_AND_ASSIGN(StateRegistration);
   };
 
   class StateRun : public State {

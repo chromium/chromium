@@ -31,6 +31,10 @@ class InfoBarAndroid : public InfoBar {
   using ResourceIdMapper = base::RepeatingCallback<int(int)>;
 
   explicit InfoBarAndroid(std::unique_ptr<InfoBarDelegate> delegate);
+
+  InfoBarAndroid(const InfoBarAndroid&) = delete;
+  InfoBarAndroid& operator=(const InfoBarAndroid&) = delete;
+
   ~InfoBarAndroid() override;
 
   // InfoBar:
@@ -68,8 +72,6 @@ class InfoBarAndroid : public InfoBar {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_info_bar_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarAndroid);
 };
 
 }  // namespace infobars

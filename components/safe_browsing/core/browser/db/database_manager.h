@@ -278,6 +278,10 @@ class SafeBrowsingDatabaseManager
   class SafeBrowsingApiCheck {
    public:
     SafeBrowsingApiCheck(const GURL& url, Client* client);
+
+    SafeBrowsingApiCheck(const SafeBrowsingApiCheck&) = delete;
+    SafeBrowsingApiCheck& operator=(const SafeBrowsingApiCheck&) = delete;
+
     ~SafeBrowsingApiCheck() = default;
 
     const GURL& url() const { return url_; }
@@ -288,8 +292,6 @@ class SafeBrowsingDatabaseManager
 
     // Not owned.
     Client* client_;
-
-    DISALLOW_COPY_AND_ASSIGN(SafeBrowsingApiCheck);
   };
 
   SafeBrowsingDatabaseManager(

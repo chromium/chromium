@@ -40,6 +40,10 @@ class StorageMonitorCros : public StorageMonitor,
   // Should only be called by browser start up code.
   // Use StorageMonitor::GetInstance() instead.
   StorageMonitorCros();
+
+  StorageMonitorCros(const StorageMonitorCros&) = delete;
+  StorageMonitorCros& operator=(const StorageMonitorCros&) = delete;
+
   ~StorageMonitorCros() override;
 
   // Sets up disk listeners and issues notifications for any discovered
@@ -96,8 +100,6 @@ class StorageMonitorCros : public StorageMonitor,
   std::unique_ptr<MtpManagerClientChromeOS> mtp_manager_client_;
 
   base::WeakPtrFactory<StorageMonitorCros> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StorageMonitorCros);
 };
 
 }  // namespace storage_monitor

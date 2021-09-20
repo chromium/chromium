@@ -64,6 +64,9 @@ class DownloadDBCacheTest : public testing::Test {
   DownloadDBCacheTest()
       : db_(nullptr), task_runner_(new base::TestMockTimeTaskRunner) {}
 
+  DownloadDBCacheTest(const DownloadDBCacheTest&) = delete;
+  DownloadDBCacheTest& operator=(const DownloadDBCacheTest&) = delete;
+
   ~DownloadDBCacheTest() override = default;
 
   void CreateDBCache() {
@@ -110,7 +113,6 @@ class DownloadDBCacheTest : public testing::Test {
   std::unique_ptr<DownloadDBCache> db_cache_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::test::TaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadDBCacheTest);
 };
 
 TEST_F(DownloadDBCacheTest, InitializeAndRetrieve) {

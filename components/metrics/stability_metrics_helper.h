@@ -43,6 +43,10 @@ class SystemProfileProto;
 class StabilityMetricsHelper {
  public:
   explicit StabilityMetricsHelper(PrefService* local_state);
+
+  StabilityMetricsHelper(const StabilityMetricsHelper&) = delete;
+  StabilityMetricsHelper& operator=(const StabilityMetricsHelper&) = delete;
+
   ~StabilityMetricsHelper();
 
   // Provides stability metrics.
@@ -98,8 +102,6 @@ class StabilityMetricsHelper {
   void LogRendererLaunchFailed(bool was_extension_process);
 
   PrefService* local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(StabilityMetricsHelper);
 };
 
 }  // namespace metrics

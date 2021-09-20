@@ -13,6 +13,10 @@ namespace ui_devtools {
 class UI_DEVTOOLS_EXPORT RootElement : public UIElement {
  public:
   explicit RootElement(UIElementDelegate* ui_element_delegate);
+
+  RootElement(const RootElement&) = delete;
+  RootElement& operator=(const RootElement&) = delete;
+
   ~RootElement() override;
 
   // UIElement:
@@ -23,9 +27,6 @@ class UI_DEVTOOLS_EXPORT RootElement : public UIElement {
   std::vector<std::string> GetAttributes() const override;
   std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RootElement);
 };
 }  // namespace ui_devtools
 

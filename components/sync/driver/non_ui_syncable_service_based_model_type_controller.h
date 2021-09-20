@@ -42,13 +42,10 @@ class NonUiSyncableServiceBasedModelTypeController
       const base::RepeatingClosure& dump_stack,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       bool allow_transport_mode = false);
-
-  NonUiSyncableServiceBasedModelTypeController(
-      const NonUiSyncableServiceBasedModelTypeController&) = delete;
-  NonUiSyncableServiceBasedModelTypeController& operator=(
-      const NonUiSyncableServiceBasedModelTypeController&) = delete;
-
   ~NonUiSyncableServiceBasedModelTypeController() override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(NonUiSyncableServiceBasedModelTypeController);
 };
 
 }  // namespace syncer

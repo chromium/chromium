@@ -26,12 +26,14 @@ class DemoService {
  public:
   DemoService(mojo::PendingReceiver<viz::mojom::FrameSinkManager> receiver,
               mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client);
+
+  DemoService(const DemoService&) = delete;
+  DemoService& operator=(const DemoService&) = delete;
+
   ~DemoService();
 
  private:
   std::unique_ptr<viz::VizCompositorThreadRunnerImpl> runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoService);
 };
 
 }  // namespace demo

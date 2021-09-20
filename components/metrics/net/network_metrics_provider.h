@@ -36,6 +36,11 @@ class NetworkMetricsProvider
   // Class that provides |this| with the network quality estimator.
   class NetworkQualityEstimatorProvider {
    public:
+    NetworkQualityEstimatorProvider(const NetworkQualityEstimatorProvider&) =
+        delete;
+    NetworkQualityEstimatorProvider& operator=(
+        const NetworkQualityEstimatorProvider&) = delete;
+
     virtual ~NetworkQualityEstimatorProvider() {}
 
     // Provides |this| with |callback| that would be invoked by |this| every
@@ -46,9 +51,6 @@ class NetworkMetricsProvider
 
    protected:
     NetworkQualityEstimatorProvider() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(NetworkQualityEstimatorProvider);
   };
 
   // Creates a NetworkMetricsProvider, where

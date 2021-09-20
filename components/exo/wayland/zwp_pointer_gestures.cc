@@ -38,6 +38,11 @@ class WaylandPointerGesturePinchDelegate : public PointerGesturePinchDelegate {
     pointer_->SetGesturePinchDelegate(this);
   }
 
+  WaylandPointerGesturePinchDelegate(
+      const WaylandPointerGesturePinchDelegate&) = delete;
+  WaylandPointerGesturePinchDelegate& operator=(
+      const WaylandPointerGesturePinchDelegate&) = delete;
+
   ~WaylandPointerGesturePinchDelegate() override {
     if (pointer_)
       pointer_->SetGesturePinchDelegate(nullptr);
@@ -67,8 +72,6 @@ class WaylandPointerGesturePinchDelegate : public PointerGesturePinchDelegate {
  private:
   wl_resource* const resource_;
   Pointer* pointer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandPointerGesturePinchDelegate);
 };
 
 void pointer_gesture_pinch_destroy(wl_client* client, wl_resource* resource) {

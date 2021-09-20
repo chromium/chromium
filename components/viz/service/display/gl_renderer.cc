@@ -395,6 +395,9 @@ class GLRenderer::ScopedUseGrContext {
     return nullptr;
   }
 
+  ScopedUseGrContext(const ScopedUseGrContext&) = delete;
+  ScopedUseGrContext& operator=(const ScopedUseGrContext&) = delete;
+
   ~ScopedUseGrContext() {
     // Pass context control back to GLrenderer.
     scoped_gpu_raster_ = nullptr;
@@ -415,8 +418,6 @@ class GLRenderer::ScopedUseGrContext {
 
   std::unique_ptr<cc::ScopedGpuRaster> scoped_gpu_raster_;
   GLRenderer* renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUseGrContext);
 };
 
 GLRenderer::GLRenderer(

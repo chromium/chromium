@@ -53,6 +53,10 @@ class ArcPowerBridge : public KeyedService,
 
   ArcPowerBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);
+
+  ArcPowerBridge(const ArcPowerBridge&) = delete;
+  ArcPowerBridge& operator=(const ArcPowerBridge&) = delete;
+
   ~ArcPowerBridge() override;
 
   void AddObserver(Observer* observer);
@@ -149,8 +153,6 @@ class ArcPowerBridge : public KeyedService,
   bool is_suspending_ = false;
 
   base::WeakPtrFactory<ArcPowerBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPowerBridge);
 };
 
 }  // namespace arc

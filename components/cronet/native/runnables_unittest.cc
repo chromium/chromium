@@ -21,6 +21,10 @@ namespace {
 class RunnablesTest : public ::testing::Test {
  public:
   RunnablesTest() = default;
+
+  RunnablesTest(const RunnablesTest&) = delete;
+  RunnablesTest& operator=(const RunnablesTest&) = delete;
+
   ~RunnablesTest() override {}
 
  protected:
@@ -47,7 +51,6 @@ class RunnablesTest : public ::testing::Test {
 
  private:
   bool callback_called_ = false;
-  DISALLOW_COPY_AND_ASSIGN(RunnablesTest);
 };
 
 class OnRedirectReceived_Runnable : public Cronet_Runnable {

@@ -179,6 +179,9 @@ class WaylandToplevel : public aura::WindowObserver {
                                 weak_ptr_factory_.GetWeakPtr())));
   }
 
+  WaylandToplevel(const WaylandToplevel&) = delete;
+  WaylandToplevel& operator=(const WaylandToplevel&) = delete;
+
   ~WaylandToplevel() override {
     if (shell_surface_data_)
       shell_surface_data_->shell_surface->host_window()->RemoveObserver(this);
@@ -308,8 +311,6 @@ class WaylandToplevel : public aura::WindowObserver {
   wl_resource* const resource_;
   WaylandXdgSurface* shell_surface_data_;
   base::WeakPtrFactory<WaylandToplevel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandToplevel);
 };
 
 void xdg_toplevel_destroy(wl_client* client, wl_resource* resource) {
@@ -470,6 +471,10 @@ class WaylandPopup : aura::WindowObserver {
             base::BindRepeating(&WaylandPopup::OnConfigure,
                                 weak_ptr_factory_.GetWeakPtr())));
   }
+
+  WaylandPopup(const WaylandPopup&) = delete;
+  WaylandPopup& operator=(const WaylandPopup&) = delete;
+
   ~WaylandPopup() override {
     if (shell_surface_data_)
       shell_surface_data_->shell_surface->host_window()->RemoveObserver(this);
@@ -510,8 +515,6 @@ class WaylandPopup : aura::WindowObserver {
   wl_resource* const resource_;
   WaylandXdgSurface* shell_surface_data_;
   base::WeakPtrFactory<WaylandPopup> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandPopup);
 };
 
 void xdg_popup_destroy(wl_client* client, wl_resource* resource) {

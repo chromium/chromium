@@ -61,6 +61,11 @@ class GeolocationPermissionContext : public PermissionContextBase {
 
   GeolocationPermissionContext(content::BrowserContext* browser_context,
                                std::unique_ptr<Delegate> delegate);
+
+  GeolocationPermissionContext(const GeolocationPermissionContext&) = delete;
+  GeolocationPermissionContext& operator=(const GeolocationPermissionContext&) =
+      delete;
+
   ~GeolocationPermissionContext() override;
 
   void DecidePermission(content::WebContents* web_contents,
@@ -89,8 +94,6 @@ class GeolocationPermissionContext : public PermissionContextBase {
   mojo::Remote<device::mojom::GeolocationControl> geolocation_control_;
 
   base::WeakPtrFactory<GeolocationPermissionContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationPermissionContext);
 };
 
 }  // namespace permissions

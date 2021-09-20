@@ -15,6 +15,10 @@ namespace arc {
 class FakePipInstance : public mojom::PipInstance {
  public:
   FakePipInstance();
+
+  FakePipInstance(const FakePipInstance&) = delete;
+  FakePipInstance& operator=(const FakePipInstance&) = delete;
+
   ~FakePipInstance() override;
 
   int num_closed() { return num_closed_; }
@@ -30,8 +34,6 @@ class FakePipInstance : public mojom::PipInstance {
   mojo::Remote<mojom::PipHost> host_remote_;
   int num_closed_ = 0;
   absl::optional<bool> suppressed_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePipInstance);
 };
 
 }  // namespace arc

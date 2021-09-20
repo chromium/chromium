@@ -82,6 +82,11 @@ class CreditCardCVCAuthenticator
 #endif
   };
   explicit CreditCardCVCAuthenticator(AutofillClient* client);
+
+  CreditCardCVCAuthenticator(const CreditCardCVCAuthenticator&) = delete;
+  CreditCardCVCAuthenticator& operator=(const CreditCardCVCAuthenticator&) =
+      delete;
+
   ~CreditCardCVCAuthenticator() override;
 
   // Authentication
@@ -131,8 +136,6 @@ class CreditCardCVCAuthenticator
   base::WeakPtr<Requester> requester_;
 
   base::WeakPtrFactory<CreditCardCVCAuthenticator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardCVCAuthenticator);
 };
 
 }  // namespace autofill

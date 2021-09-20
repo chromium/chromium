@@ -17,6 +17,10 @@ namespace subresource_filter {
 class CopyingFileInputStream : public google::protobuf::io::CopyingInputStream {
  public:
   explicit CopyingFileInputStream(base::File file);
+
+  CopyingFileInputStream(const CopyingFileInputStream&) = delete;
+  CopyingFileInputStream& operator=(const CopyingFileInputStream&) = delete;
+
   ~CopyingFileInputStream() override;
 
   // google::protobuf::io::CopyingInputStream:
@@ -24,8 +28,6 @@ class CopyingFileInputStream : public google::protobuf::io::CopyingInputStream {
 
  private:
   base::File file_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyingFileInputStream);
 };
 
 // Implements a CopyingOutputStream that writes to a base::File. Can be used in
@@ -35,6 +37,10 @@ class CopyingFileOutputStream
     : public google::protobuf::io::CopyingOutputStream {
  public:
   explicit CopyingFileOutputStream(base::File file);
+
+  CopyingFileOutputStream(const CopyingFileOutputStream&) = delete;
+  CopyingFileOutputStream& operator=(const CopyingFileOutputStream&) = delete;
+
   ~CopyingFileOutputStream() override;
 
   // google::protobuf::io::CopyingOutputStream:
@@ -42,8 +48,6 @@ class CopyingFileOutputStream
 
  private:
   base::File file_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyingFileOutputStream);
 };
 
 }  // namespace subresource_filter

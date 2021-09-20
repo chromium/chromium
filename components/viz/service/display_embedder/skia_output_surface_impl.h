@@ -64,6 +64,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       DisplayCompositorMemoryAndTaskController* display_controller,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings);
+
+  SkiaOutputSurfaceImpl(const SkiaOutputSurfaceImpl&) = delete;
+  SkiaOutputSurfaceImpl& operator=(const SkiaOutputSurfaceImpl&) = delete;
+
   ~SkiaOutputSurfaceImpl() override;
 
   // OutputSurface implementation:
@@ -396,8 +400,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
   base::WeakPtr<SkiaOutputSurfaceImpl> weak_ptr_;
   base::WeakPtrFactory<SkiaOutputSurfaceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputSurfaceImpl);
 };
 
 }  // namespace viz

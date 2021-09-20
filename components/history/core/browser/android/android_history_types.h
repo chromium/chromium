@@ -269,6 +269,10 @@ struct SearchTermRow {
 class AndroidStatement {
  public:
   AndroidStatement(sql::Statement* statement, int favicon_index);
+
+  AndroidStatement(const AndroidStatement&) = delete;
+  AndroidStatement& operator=(const AndroidStatement&) = delete;
+
   ~AndroidStatement();
 
   sql::Statement* statement() { return statement_.get(); }
@@ -280,8 +284,6 @@ class AndroidStatement {
  private:
   std::unique_ptr<sql::Statement> statement_;
   int favicon_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidStatement);
 };
 
 }  // namespace history

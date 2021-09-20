@@ -108,6 +108,10 @@ static base::LazyInstance<NetLogWithNetworkChangeEvents>::Leaky g_net_log =
 class BasicNetworkDelegate : public net::NetworkDelegateImpl {
  public:
   BasicNetworkDelegate() {}
+
+  BasicNetworkDelegate(const BasicNetworkDelegate&) = delete;
+  BasicNetworkDelegate& operator=(const BasicNetworkDelegate&) = delete;
+
   ~BasicNetworkDelegate() override {}
 
  private:
@@ -130,8 +134,6 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
     // Disallow saving cookies by default.
     return false;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BasicNetworkDelegate);
 };
 
 }  // namespace

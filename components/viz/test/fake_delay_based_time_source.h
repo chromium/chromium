@@ -34,6 +34,10 @@ class FakeDelayBasedTimeSource : public DelayBasedTimeSource {
  public:
   FakeDelayBasedTimeSource(const base::TickClock* now_src,
                            base::SingleThreadTaskRunner* task_runner);
+
+  FakeDelayBasedTimeSource(const FakeDelayBasedTimeSource&) = delete;
+  FakeDelayBasedTimeSource& operator=(const FakeDelayBasedTimeSource&) = delete;
+
   ~FakeDelayBasedTimeSource() override;
 
   // Overridden from DelayBasedTimeSource
@@ -43,8 +47,6 @@ class FakeDelayBasedTimeSource : public DelayBasedTimeSource {
  private:
   // Not owned.
   const base::TickClock* now_src_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDelayBasedTimeSource);
 };
 
 }  // namespace viz

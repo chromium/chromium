@@ -50,6 +50,10 @@ class CrashHandlerHostLinux : public base::MessagePumpForIO::FdWatcher,
   CrashHandlerHostLinux(const std::string& process_type,
                         const base::FilePath& dumps_path,
                         bool upload);
+
+  CrashHandlerHostLinux(const CrashHandlerHostLinux&) = delete;
+  CrashHandlerHostLinux& operator=(const CrashHandlerHostLinux&) = delete;
+
   ~CrashHandlerHostLinux() override;
 
   // Starts the uploader thread. Must be called immediately after creating the
@@ -112,8 +116,6 @@ class CrashHandlerHostLinux : public base::MessagePumpForIO::FdWatcher,
   base::AtomicFlag shutting_down_;
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashHandlerHostLinux);
 };
 
 }  // namespace breakpad

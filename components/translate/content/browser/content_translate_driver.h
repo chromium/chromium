@@ -60,6 +60,10 @@ class ContentTranslateDriver : public TranslateDriver,
                          content::NavigationController* nav_controller,
                          language::UrlLanguageHistogram* url_language_histogram,
                          TranslateModelService* translate_model_service);
+
+  ContentTranslateDriver(const ContentTranslateDriver&) = delete;
+  ContentTranslateDriver& operator=(const ContentTranslateDriver&) = delete;
+
   ~ContentTranslateDriver() override;
 
   // Adds or removes observers.
@@ -180,8 +184,6 @@ class ContentTranslateDriver : public TranslateDriver,
   TranslateModelService* const translate_model_service_;
 
   base::WeakPtrFactory<ContentTranslateDriver> weak_pointer_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentTranslateDriver);
 };
 
 }  // namespace translate

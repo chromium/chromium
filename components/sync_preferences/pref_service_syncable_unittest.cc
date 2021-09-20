@@ -364,6 +364,11 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationWithDataTypeMismatch) {
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   TestPrefModelAssociatorClient() {}
+
+  TestPrefModelAssociatorClient(const TestPrefModelAssociatorClient&) = delete;
+  TestPrefModelAssociatorClient& operator=(
+      const TestPrefModelAssociatorClient&) = delete;
+
   ~TestPrefModelAssociatorClient() override {}
 
   // PrefModelAssociatorClient implementation.
@@ -387,8 +392,6 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
 
  private:
   bool is_dict_pref_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPrefModelAssociatorClient);
 };
 
 class PrefServiceSyncableMergeTest : public testing::Test {

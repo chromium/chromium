@@ -29,6 +29,11 @@ class NativeWebContentsModalDialogManagerViews
       gfx::NativeWindow dialog,
       web_modal::SingleWebContentsDialogManagerDelegate* native_delegate);
 
+  NativeWebContentsModalDialogManagerViews(
+      const NativeWebContentsModalDialogManagerViews&) = delete;
+  NativeWebContentsModalDialogManagerViews& operator=(
+      const NativeWebContentsModalDialogManagerViews&) = delete;
+
   ~NativeWebContentsModalDialogManagerViews() override;
 
   // Sets up this object to manage the |dialog_|. Registers for closing events
@@ -78,8 +83,6 @@ class NativeWebContentsModalDialogManagerViews
   bool host_destroying_ = false;
   std::set<views::Widget*> observed_widgets_;
   std::set<views::Widget*> shown_widgets_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWebContentsModalDialogManagerViews);
 };
 
 }  // namespace constrained_window

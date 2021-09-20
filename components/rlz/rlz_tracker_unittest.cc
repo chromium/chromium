@@ -174,6 +174,9 @@ class TestRLZTracker : public RLZTracker {
 
   TestRLZTracker() : assume_not_ui_thread_(true) { set_tracker(this); }
 
+  TestRLZTracker(const TestRLZTracker&) = delete;
+  TestRLZTracker& operator=(const TestRLZTracker&) = delete;
+
   ~TestRLZTracker() override { set_tracker(nullptr); }
 
   bool was_ping_sent_for_brand(const std::string& brand) const {
@@ -234,8 +237,6 @@ class TestRLZTracker : public RLZTracker {
 
   std::set<std::string> pinged_brands_;
   bool assume_not_ui_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRLZTracker);
 };
 
 class RlzLibTest : public testing::Test {

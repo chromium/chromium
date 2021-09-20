@@ -73,6 +73,10 @@ class InsecureCredentialsTable {
   static const char kTableName[];
 
   InsecureCredentialsTable() = default;
+
+  InsecureCredentialsTable(const InsecureCredentialsTable&) = delete;
+  InsecureCredentialsTable& operator=(const InsecureCredentialsTable&) = delete;
+
   ~InsecureCredentialsTable() = default;
 
   // Initializes |db_|.
@@ -92,8 +96,6 @@ class InsecureCredentialsTable {
 
  private:
   sql::Database* db_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(InsecureCredentialsTable);
 };
 
 }  // namespace password_manager

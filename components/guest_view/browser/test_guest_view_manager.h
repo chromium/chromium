@@ -22,6 +22,10 @@ class TestGuestViewManager : public GuestViewManager {
  public:
   TestGuestViewManager(content::BrowserContext* context,
                        std::unique_ptr<GuestViewManagerDelegate> delegate);
+
+  TestGuestViewManager(const TestGuestViewManager&) = delete;
+  TestGuestViewManager& operator=(const TestGuestViewManager&) = delete;
+
   ~TestGuestViewManager() override;
 
   void WaitForAllGuestsDeleted();
@@ -110,14 +114,17 @@ class TestGuestViewManager : public GuestViewManager {
   GuestViewBase* waiting_for_attach_;
   scoped_refptr<content::MessageLoopRunner> attached_message_loop_runner_;
   scoped_refptr<content::MessageLoopRunner> gc_message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGuestViewManager);
 };
 
 // Test factory for creating test instances of GuestViewManager.
 class TestGuestViewManagerFactory : public GuestViewManagerFactory {
  public:
   TestGuestViewManagerFactory();
+
+  TestGuestViewManagerFactory(const TestGuestViewManagerFactory&) = delete;
+  TestGuestViewManagerFactory& operator=(const TestGuestViewManagerFactory&) =
+      delete;
+
   ~TestGuestViewManagerFactory() override;
 
   GuestViewManager* CreateGuestViewManager(
@@ -126,8 +133,6 @@ class TestGuestViewManagerFactory : public GuestViewManagerFactory {
 
  private:
   TestGuestViewManager* test_guest_view_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGuestViewManagerFactory);
 };
 
 }  // namespace guest_view

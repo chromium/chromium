@@ -37,6 +37,10 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
   // Called on UI thread.
   IOWorker(const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
            const scoped_refptr<base::SequencedTaskRunner>& io_thread);
+
+  IOWorker(const IOWorker&) = delete;
+  IOWorker& operator=(const IOWorker&) = delete;
+
   virtual ~IOWorker();
 
   // Overridden from GCMClient::Delegate:
@@ -126,8 +130,6 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
   base::WeakPtr<GCMDriverDesktop> service_;
 
   std::unique_ptr<GCMClient> gcm_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOWorker);
 };
 
 GCMDriverDesktop::IOWorker::IOWorker(

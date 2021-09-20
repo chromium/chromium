@@ -22,6 +22,10 @@ class DeviceInfo;
 class FakeDeviceInfoTracker : public DeviceInfoTracker {
  public:
   FakeDeviceInfoTracker();
+
+  FakeDeviceInfoTracker(const FakeDeviceInfoTracker&) = delete;
+  FakeDeviceInfoTracker& operator=(const FakeDeviceInfoTracker&) = delete;
+
   ~FakeDeviceInfoTracker() override;
 
   // DeviceInfoTracker
@@ -52,8 +56,6 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
   absl::optional<int> active_device_count_;
   // Registered observers, not owned.
   base::ObserverList<Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceInfoTracker);
 };
 
 }  // namespace syncer

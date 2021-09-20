@@ -31,6 +31,11 @@ class SecurityInterstitialControllerClient
       const GURL& default_safe_page,
       std::unique_ptr<SettingsPageHelper> settings_page_helper);
 
+  SecurityInterstitialControllerClient(
+      const SecurityInterstitialControllerClient&) = delete;
+  SecurityInterstitialControllerClient& operator=(
+      const SecurityInterstitialControllerClient&) = delete;
+
   ~SecurityInterstitialControllerClient() override;
 
   // security_interstitials::ControllerClient overrides.
@@ -60,8 +65,6 @@ class SecurityInterstitialControllerClient
   // back to, e.g. chrome:kChromeUINewTabURL.
   const GURL default_safe_page_;
   std::unique_ptr<SettingsPageHelper> settings_page_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityInterstitialControllerClient);
 };
 
 }  // namespace security_interstitials

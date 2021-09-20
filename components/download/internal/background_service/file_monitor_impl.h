@@ -28,6 +28,10 @@ class FileMonitorImpl : public FileMonitor {
   FileMonitorImpl(
       const base::FilePath& download_file_dir,
       const scoped_refptr<base::SequencedTaskRunner>& file_thread_task_runner);
+
+  FileMonitorImpl(const FileMonitorImpl&) = delete;
+  FileMonitorImpl& operator=(const FileMonitorImpl&) = delete;
+
   ~FileMonitorImpl() override;
 
   // FileMonitor implementation.
@@ -48,8 +52,6 @@ class FileMonitorImpl : public FileMonitor {
 
   scoped_refptr<base::SequencedTaskRunner> file_thread_task_runner_;
   base::WeakPtrFactory<FileMonitorImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileMonitorImpl);
 };
 
 }  // namespace download

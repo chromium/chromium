@@ -24,6 +24,10 @@ class LogManager;
 class CreditCardField : public FormField {
  public:
   explicit CreditCardField(LogManager* log_manager);
+
+  CreditCardField(const CreditCardField&) = delete;
+  CreditCardField& operator=(const CreditCardField&) = delete;
+
   ~CreditCardField() override;
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
                                           const LanguageCode& page_language,
@@ -103,8 +107,6 @@ class CreditCardField : public FormField {
   // |CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR|; otherwise we store
   // |CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR|.
   ServerFieldType exp_year_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardField);
 };
 
 }  // namespace autofill

@@ -29,6 +29,10 @@ namespace viz {
 class VIZ_SERVICE_EXPORT ProgramBindingBase {
  public:
   ProgramBindingBase();
+
+  ProgramBindingBase(const ProgramBindingBase&) = delete;
+  ProgramBindingBase& operator=(const ProgramBindingBase&) = delete;
+
   ~ProgramBindingBase();
 
   bool Init(gpu::gles2::GLES2Interface* context,
@@ -55,9 +59,6 @@ class VIZ_SERVICE_EXPORT ProgramBindingBase {
   unsigned vertex_shader_id_;
   unsigned fragment_shader_id_;
   bool initialized_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProgramBindingBase);
 };
 
 enum ProgramType {

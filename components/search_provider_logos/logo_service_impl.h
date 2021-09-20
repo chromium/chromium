@@ -52,6 +52,9 @@ class LogoServiceImpl : public LogoService,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::RepeatingCallback<bool()> want_gray_logo_getter);
 
+  LogoServiceImpl(const LogoServiceImpl&) = delete;
+  LogoServiceImpl& operator=(const LogoServiceImpl&) = delete;
+
   ~LogoServiceImpl() override;
 
   // KeyedService implementation.
@@ -229,8 +232,6 @@ class LogoServiceImpl : public LogoService,
   base::Clock* clock_ = nullptr;
 
   base::WeakPtrFactory<LogoServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LogoServiceImpl);
 };
 
 }  // namespace search_provider_logos

@@ -54,6 +54,9 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
                    sk_sp<SkColorSpace> color_space,
                    const bool allow_keeping_read_access = true);
 
+  ImageContextImpl(const ImageContextImpl&) = delete;
+  ImageContextImpl& operator=(const ImageContextImpl&) = delete;
+
   ~ImageContextImpl() final;
 
   void OnContextLost() final;
@@ -120,8 +123,6 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   // The |promise_image_texture| is used for fulfilling the promise image. It is
   // used on GPU thread.
   SkPromiseImageTexture* promise_image_texture_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageContextImpl);
 };
 
 }  // namespace viz

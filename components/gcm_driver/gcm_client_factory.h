@@ -16,14 +16,15 @@ class GCMClient;
 class GCMClientFactory {
  public:
   GCMClientFactory();
+
+  GCMClientFactory(const GCMClientFactory&) = delete;
+  GCMClientFactory& operator=(const GCMClientFactory&) = delete;
+
   virtual ~GCMClientFactory();
 
   // Creates a new instance of GCMClient. The testing code could override this
   // to provide a mocked instance.
   virtual std::unique_ptr<GCMClient> BuildInstance();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GCMClientFactory);
 };
 
 }  // namespace gcm

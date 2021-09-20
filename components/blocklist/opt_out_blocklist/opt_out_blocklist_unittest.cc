@@ -224,6 +224,10 @@ class TestOptOutBlocklist : public OptOutBlocklist {
 class OptOutBlocklistTest : public testing::Test {
  public:
   OptOutBlocklistTest() = default;
+
+  OptOutBlocklistTest(const OptOutBlocklistTest&) = delete;
+  OptOutBlocklistTest& operator=(const OptOutBlocklistTest&) = delete;
+
   ~OptOutBlocklistTest() override = default;
 
   void StartTest(bool null_opt_out_store) {
@@ -298,8 +302,6 @@ class OptOutBlocklistTest : public testing::Test {
   size_t max_hosts_ = 0;
 
   BlocklistData::AllowedTypesAndVersions allowed_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptOutBlocklistTest);
 };
 
 TEST_F(OptOutBlocklistTest, HostBlockListNoStore) {

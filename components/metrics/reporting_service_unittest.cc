@@ -87,6 +87,10 @@ class TestReportingService : public ReportingService {
       : ReportingService(client, local_state, 100) {
     Initialize();
   }
+
+  TestReportingService(const TestReportingService&) = delete;
+  TestReportingService& operator=(const TestReportingService&) = delete;
+
   ~TestReportingService() override {}
 
   void AddLog(const TestLog& log) { log_store_.AddLog(log); }
@@ -102,8 +106,6 @@ class TestReportingService : public ReportingService {
   }
 
   TestLogStore log_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingService);
 };
 
 class ReportingServiceTest : public testing::Test {
@@ -113,6 +115,9 @@ class ReportingServiceTest : public testing::Test {
         task_runner_handle_(task_runner_) {
     ReportingService::RegisterPrefs(testing_local_state_.registry());
   }
+
+  ReportingServiceTest(const ReportingServiceTest&) = delete;
+  ReportingServiceTest& operator=(const ReportingServiceTest&) = delete;
 
   ~ReportingServiceTest() override {}
 
@@ -125,8 +130,6 @@ class ReportingServiceTest : public testing::Test {
 
  private:
   TestingPrefServiceSimple testing_local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingServiceTest);
 };
 
 }  // namespace

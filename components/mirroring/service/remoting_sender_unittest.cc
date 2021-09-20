@@ -33,6 +33,10 @@ constexpr int kDataPipeCapacity = 1024;
 class FakeTransport final : public media::cast::CastTransport {
  public:
   FakeTransport() = default;
+
+  FakeTransport(const FakeTransport&) = delete;
+  FakeTransport& operator=(const FakeTransport&) = delete;
+
   ~FakeTransport() override = default;
 
   void TakeSentFrames(std::vector<media::cast::EncodedFrame>* frames) {
@@ -97,8 +101,6 @@ class FakeTransport final : public media::cast::CastTransport {
 
   base::RepeatingClosure kickstarted_callback_;
   media::cast::FrameId kickstarted_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTransport);
 };
 
 }  // namespace

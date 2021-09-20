@@ -43,6 +43,10 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   PasswordAutofillManager(PasswordManagerDriver* password_manager_driver,
                           autofill::AutofillClient* autofill_client,
                           PasswordManagerClient* password_client);
+
+  PasswordAutofillManager(const PasswordAutofillManager&) = delete;
+  PasswordAutofillManager& operator=(const PasswordAutofillManager&) = delete;
+
   virtual ~PasswordAutofillManager();
 
   // AutofillPopupDelegate implementation.
@@ -221,8 +225,6 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordAutofillManager);
 };
 
 }  // namespace password_manager

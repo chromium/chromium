@@ -85,6 +85,10 @@ class OriginIdentifierValueMap {
       base::Lock* lock) const;
 
   OriginIdentifierValueMap();
+
+  OriginIdentifierValueMap(const OriginIdentifierValueMap&) = delete;
+  OriginIdentifierValueMap& operator=(const OriginIdentifierValueMap&) = delete;
+
   ~OriginIdentifierValueMap();
 
   // Returns a weak pointer to the value for the given |primary_pattern|,
@@ -124,8 +128,6 @@ class OriginIdentifierValueMap {
 
  private:
   EntryMap entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginIdentifierValueMap);
 };
 
 }  // namespace content_settings

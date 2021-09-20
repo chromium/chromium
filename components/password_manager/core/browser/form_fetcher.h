@@ -42,6 +42,9 @@ class FormFetcher {
 
   FormFetcher() = default;
 
+  FormFetcher(const FormFetcher&) = delete;
+  FormFetcher& operator=(const FormFetcher&) = delete;
+
   virtual ~FormFetcher() = default;
 
   // Adds |consumer|, which must not be null. If the current state is
@@ -102,9 +105,6 @@ class FormFetcher {
   // Creates a copy of |*this| with contains the same credentials without the
   // need for calling Fetch().
   virtual std::unique_ptr<FormFetcher> Clone() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FormFetcher);
 };
 
 }  // namespace password_manager

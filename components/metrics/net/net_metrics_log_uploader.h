@@ -46,6 +46,9 @@ class NetMetricsLogUploader : public MetricsLogUploader {
       MetricsLogUploader::MetricServiceType service_type,
       const MetricsLogUploader::UploadCallback& on_upload_complete);
 
+  NetMetricsLogUploader(const NetMetricsLogUploader&) = delete;
+  NetMetricsLogUploader& operator=(const NetMetricsLogUploader&) = delete;
+
   ~NetMetricsLogUploader() override;
 
   // MetricsLogUploader:
@@ -80,8 +83,6 @@ class NetMetricsLogUploader : public MetricsLogUploader {
   const MetricsLogUploader::UploadCallback on_upload_complete_;
   // The outstanding transmission appears as a URL Fetch operation.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetMetricsLogUploader);
 };
 
 }  // namespace metrics

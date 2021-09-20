@@ -36,10 +36,11 @@ class VIZ_CLIENT_EXPORT FrameEvictionManager {
   class VIZ_CLIENT_EXPORT ScopedPause {
    public:
     ScopedPause();
-    ~ScopedPause();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedPause);
+    ScopedPause(const ScopedPause&) = delete;
+    ScopedPause& operator=(const ScopedPause&) = delete;
+
+    ~ScopedPause();
   };
 
   static FrameEvictionManager* GetInstance();

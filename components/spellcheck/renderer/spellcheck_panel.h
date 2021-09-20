@@ -30,6 +30,10 @@ class SpellCheckPanel : public content::RenderFrameObserver,
   SpellCheckPanel(content::RenderFrame* render_frame,
                   service_manager::BinderRegistry* registry,
                   service_manager::LocalInterfaceProvider* embedder_provider);
+
+  SpellCheckPanel(const SpellCheckPanel&) = delete;
+  SpellCheckPanel& operator=(const SpellCheckPanel&) = delete;
+
   ~SpellCheckPanel() override;
 
  private:
@@ -59,8 +63,6 @@ class SpellCheckPanel : public content::RenderFrameObserver,
   bool spelling_panel_visible_;
 
   service_manager::LocalInterfaceProvider* embedder_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckPanel);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H_

@@ -28,6 +28,10 @@ class AppModalDialogViewViews : public AppModalDialogView,
                                 public views::DialogDelegate {
  public:
   explicit AppModalDialogViewViews(AppModalDialogController* controller);
+
+  AppModalDialogViewViews(const AppModalDialogViewViews&) = delete;
+  AppModalDialogViewViews& operator=(const AppModalDialogViewViews&) = delete;
+
   ~AppModalDialogViewViews() override;
 
   // AppModalDialogView:
@@ -57,8 +61,6 @@ class AppModalDialogViewViews : public AppModalDialogView,
 
   // The message box view whose commands we handle.
   views::MessageBoxView* message_box_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppModalDialogViewViews);
 };
 
 }  // namespace javascript_dialogs

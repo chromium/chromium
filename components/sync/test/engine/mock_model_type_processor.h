@@ -38,10 +38,6 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
   using DisconnectCallback = base::OnceCallback<void()>;
 
   MockModelTypeProcessor();
-
-  MockModelTypeProcessor(const MockModelTypeProcessor&) = delete;
-  MockModelTypeProcessor& operator=(const MockModelTypeProcessor&) = delete;
-
   ~MockModelTypeProcessor() override;
 
   // Implementation of ModelTypeProcessor.
@@ -187,6 +183,8 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
   CommitRequestDataList commit_request_;
 
   int get_local_changes_call_count_ = 0;
+
+  DISALLOW_COPY_AND_ASSIGN(MockModelTypeProcessor);
 };
 
 }  // namespace syncer

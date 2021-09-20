@@ -22,6 +22,12 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
  public:
   explicit TestCreditCardFIDOAuthenticator(AutofillDriver* driver,
                                            AutofillClient* client);
+
+  TestCreditCardFIDOAuthenticator(const TestCreditCardFIDOAuthenticator&) =
+      delete;
+  TestCreditCardFIDOAuthenticator& operator=(
+      const TestCreditCardFIDOAuthenticator&) = delete;
+
   ~TestCreditCardFIDOAuthenticator() override;
 
   // CreditCardFIDOAuthenticator:
@@ -61,8 +67,6 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
   PublicKeyCredentialCreationOptionsPtr creation_options_;
   bool is_user_verifiable_ = false;
   bool opt_out_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCreditCardFIDOAuthenticator);
 };
 
 }  // namespace autofill

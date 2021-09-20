@@ -23,6 +23,10 @@ namespace metrics {
 class PersistentSystemProfile {
  public:
   PersistentSystemProfile();
+
+  PersistentSystemProfile(const PersistentSystemProfile&) = delete;
+  PersistentSystemProfile& operator=(const PersistentSystemProfile&) = delete;
+
   ~PersistentSystemProfile();
 
   // This object can store records in multiple memory allocators.
@@ -139,8 +143,6 @@ class PersistentSystemProfile {
   bool all_have_complete_profile_ = false;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentSystemProfile);
 };
 
 // A singleton instance of the above.

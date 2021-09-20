@@ -19,6 +19,12 @@ class ContextualSearchJsApiServiceImpl
  public:
   explicit ContextualSearchJsApiServiceImpl(
       ContextualSearchJsApiHandler* contextual_search_js_api_handler);
+
+  ContextualSearchJsApiServiceImpl(const ContextualSearchJsApiServiceImpl&) =
+      delete;
+  ContextualSearchJsApiServiceImpl& operator=(
+      const ContextualSearchJsApiServiceImpl&) = delete;
+
   ~ContextualSearchJsApiServiceImpl() override;
 
   // Mojo ContextualSearchApiService implementation.
@@ -42,8 +48,6 @@ class ContextualSearchJsApiServiceImpl
  private:
   // The UI handler for calls through the JavaScript API.
   ContextualSearchJsApiHandler* contextual_search_js_api_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchJsApiServiceImpl);
 };
 
 // static

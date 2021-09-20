@@ -34,6 +34,10 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
                    absl::optional<int> max_pending_swaps_120hz,
                    bool wait_for_all_surfaces_before_draw = false,
                    gfx::RenderingPipeline* gpu_pipeline = nullptr);
+
+  DisplayScheduler(const DisplayScheduler&) = delete;
+  DisplayScheduler& operator=(const DisplayScheduler&) = delete;
+
   ~DisplayScheduler() override;
 
   // DisplaySchedulerBase implementation.
@@ -131,9 +135,6 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   bool observing_begin_frame_source_;
 
   base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayScheduler);
 };
 
 }  // namespace viz

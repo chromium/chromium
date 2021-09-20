@@ -27,6 +27,12 @@ class BlockedInterceptionBlockingPage : public SSLBlockingPageBase {
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
+
+  BlockedInterceptionBlockingPage(const BlockedInterceptionBlockingPage&) =
+      delete;
+  BlockedInterceptionBlockingPage& operator=(
+      const BlockedInterceptionBlockingPage&) = delete;
+
   ~BlockedInterceptionBlockingPage() override;
 
   // SecurityInterstitialPage method:
@@ -43,8 +49,6 @@ class BlockedInterceptionBlockingPage : public SSLBlockingPageBase {
 
   const std::unique_ptr<security_interstitials::BlockedInterceptionUI>
       blocked_interception_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockedInterceptionBlockingPage);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_BLOCKED_INTERCEPTION_BLOCKING_PAGE_H_

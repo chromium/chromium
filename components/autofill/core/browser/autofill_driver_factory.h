@@ -25,6 +25,9 @@ class AutofillDriverFactory {
 
   explicit AutofillDriverFactory(AutofillClient* client);
 
+  AutofillDriverFactory(const AutofillDriverFactory&) = delete;
+  AutofillDriverFactory& operator=(const AutofillDriverFactory&) = delete;
+
   ~AutofillDriverFactory();
 
   // A convenience function to retrieve an AutofillDriver for the given key or
@@ -61,8 +64,6 @@ class AutofillDriverFactory {
   AutofillClient* const client_;
 
   std::unordered_map<void*, std::unique_ptr<AutofillDriver>> driver_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillDriverFactory);
 };
 
 }  // namespace autofill

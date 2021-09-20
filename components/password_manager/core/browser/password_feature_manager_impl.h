@@ -22,6 +22,11 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
  public:
   PasswordFeatureManagerImpl(PrefService* pref_service,
                              const syncer::SyncService* sync_service);
+
+  PasswordFeatureManagerImpl(const PasswordFeatureManagerImpl&) = delete;
+  PasswordFeatureManagerImpl& operator=(const PasswordFeatureManagerImpl&) =
+      delete;
+
   ~PasswordFeatureManagerImpl() override = default;
 
   bool IsGenerationEnabled() const override;
@@ -49,7 +54,6 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
  private:
   PrefService* const pref_service_;
   const syncer::SyncService* const sync_service_;
-  DISALLOW_COPY_AND_ASSIGN(PasswordFeatureManagerImpl);
 };
 
 }  // namespace password_manager

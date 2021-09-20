@@ -171,6 +171,10 @@ class ArcSessionDelegateImpl : public ArcSessionImpl::Delegate {
  public:
   ArcSessionDelegateImpl(ArcBridgeService* arc_bridge_service,
                          version_info::Channel channel);
+
+  ArcSessionDelegateImpl(const ArcSessionDelegateImpl&) = delete;
+  ArcSessionDelegateImpl& operator=(const ArcSessionDelegateImpl&) = delete;
+
   ~ArcSessionDelegateImpl() override = default;
 
   // ArcSessionImpl::Delegate override.
@@ -206,8 +210,6 @@ class ArcSessionDelegateImpl : public ArcSessionImpl::Delegate {
 
   // WeakPtrFactory to use callbacks.
   base::WeakPtrFactory<ArcSessionDelegateImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionDelegateImpl);
 };
 
 ArcSessionDelegateImpl::ArcSessionDelegateImpl(

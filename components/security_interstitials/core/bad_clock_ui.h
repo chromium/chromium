@@ -24,6 +24,10 @@ class BadClockUI {
              const base::Time& time_triggered,  // Time the error was triggered
              ssl_errors::ClockState clock_state,
              ControllerClient* controller_);
+
+  BadClockUI(const BadClockUI&) = delete;
+  BadClockUI& operator=(const BadClockUI&) = delete;
+
   ~BadClockUI();
 
   void PopulateStringsForHTML(base::Value* load_time_data);
@@ -38,8 +42,6 @@ class BadClockUI {
   const base::Time time_triggered_;
   ControllerClient* controller_;
   ssl_errors::ClockState clock_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BadClockUI);
 };
 
 }  // security_interstitials

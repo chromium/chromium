@@ -22,6 +22,10 @@ class RulesetDistributionListener {
     service_->SetRulesetPublishedCallbackForTesting(run_loop_.QuitClosure());
   }
 
+  RulesetDistributionListener(const RulesetDistributionListener&) = delete;
+  RulesetDistributionListener& operator=(const RulesetDistributionListener&) =
+      delete;
+
   ~RulesetDistributionListener() {
     service_->SetRulesetPublishedCallbackForTesting(base::OnceClosure());
   }
@@ -31,8 +35,6 @@ class RulesetDistributionListener {
  private:
   RulesetService* service_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetDistributionListener);
 };
 
 }  // namespace

@@ -39,6 +39,10 @@ class BookmarkPermanentNodeLoader {
     DCHECK(initial_bookmarks_.is_list());
   }
 
+  BookmarkPermanentNodeLoader(const BookmarkPermanentNodeLoader&) = delete;
+  BookmarkPermanentNodeLoader& operator=(const BookmarkPermanentNodeLoader&) =
+      delete;
+
   ~BookmarkPermanentNodeLoader() {}
 
   // Initializes |node_| from |initial_bookmarks_| and |title_id_| and returns
@@ -56,8 +60,6 @@ class BookmarkPermanentNodeLoader {
   std::unique_ptr<BookmarkPermanentNode> node_;
   base::Value initial_bookmarks_;
   int title_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkPermanentNodeLoader);
 };
 
 // Returns a std::unique_ptr<BookmarkPermanentNode> using |next_node_id| for

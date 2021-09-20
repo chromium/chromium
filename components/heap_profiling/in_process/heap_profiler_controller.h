@@ -18,6 +18,10 @@
 class HeapProfilerController {
  public:
   HeapProfilerController();
+
+  HeapProfilerController(const HeapProfilerController&) = delete;
+  HeapProfilerController& operator=(const HeapProfilerController&) = delete;
+
   ~HeapProfilerController();
 
   // Starts periodic heap snapshot collection.
@@ -56,8 +60,6 @@ class HeapProfilerController {
   static void RetrieveAndSendSnapshot();
 
   scoped_refptr<StoppedFlag> stopped_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeapProfilerController);
 };
 
 #endif  // COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_CONTROLLER_H_

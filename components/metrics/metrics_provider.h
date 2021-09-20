@@ -23,6 +23,10 @@ class SystemProfileProto;
 class MetricsProvider {
  public:
   MetricsProvider();
+
+  MetricsProvider(const MetricsProvider&) = delete;
+  MetricsProvider& operator=(const MetricsProvider&) = delete;
+
   virtual ~MetricsProvider();
 
   // Called after initialization of MetricsService and field trials.
@@ -130,9 +134,6 @@ class MetricsProvider {
   // PrepareDelta(), not PrepareDeltas (plural), should be made.
   virtual void RecordInitialHistogramSnapshots(
       base::HistogramSnapshotManager* snapshot_manager);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricsProvider);
 };
 
 }  // namespace metrics

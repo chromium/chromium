@@ -72,6 +72,11 @@ class TestViewsDelegateWithContext : public views::TestViewsDelegate {
 class ConstrainedWindowViewsTest : public views::ViewsTestBase {
  public:
   ConstrainedWindowViewsTest() = default;
+
+  ConstrainedWindowViewsTest(const ConstrainedWindowViewsTest&) = delete;
+  ConstrainedWindowViewsTest& operator=(const ConstrainedWindowViewsTest&) =
+      delete;
+
   ~ConstrainedWindowViewsTest() override = default;
 
   void SetUp() override {
@@ -124,8 +129,6 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
   views::View* contents_ = nullptr;
   std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
   Widget* dialog_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ConstrainedWindowViewsTest);
 };
 
 }  // namespace

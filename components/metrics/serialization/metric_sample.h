@@ -37,6 +37,9 @@ class MetricSample {
                const int max,
                const int bucket_count);
 
+  MetricSample(const MetricSample&) = delete;
+  MetricSample& operator=(const MetricSample&) = delete;
+
   ~MetricSample();
 
   // Returns true if the sample is valid (can be serialized without ambiguity).
@@ -113,8 +116,6 @@ class MetricSample {
   const int min_;
   const int max_;
   const int bucket_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricSample);
 };
 
 }  // namespace metrics

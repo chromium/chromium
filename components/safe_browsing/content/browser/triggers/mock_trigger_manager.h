@@ -16,6 +16,10 @@ namespace safe_browsing {
 class MockTriggerManager : public TriggerManager {
  public:
   MockTriggerManager();
+
+  MockTriggerManager(const MockTriggerManager&) = delete;
+  MockTriggerManager& operator=(const MockTriggerManager&) = delete;
+
   ~MockTriggerManager() override;
 
   MOCK_METHOD7(
@@ -45,9 +49,6 @@ class MockTriggerManager : public TriggerManager {
                     bool did_proceed,
                     int num_visits,
                     const SBErrorOptions& error_display_options));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTriggerManager);
 };
 
 }  // namespace safe_browsing

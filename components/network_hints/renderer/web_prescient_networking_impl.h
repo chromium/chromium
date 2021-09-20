@@ -22,6 +22,11 @@ namespace network_hints {
 class WebPrescientNetworkingImpl : public blink::WebPrescientNetworking {
  public:
   explicit WebPrescientNetworkingImpl(content::RenderFrame* render_frame);
+
+  WebPrescientNetworkingImpl(const WebPrescientNetworkingImpl&) = delete;
+  WebPrescientNetworkingImpl& operator=(const WebPrescientNetworkingImpl&) =
+      delete;
+
   ~WebPrescientNetworkingImpl() override;
 
   // blink::WebPrescientNetworking methods:
@@ -31,8 +36,6 @@ class WebPrescientNetworkingImpl : public blink::WebPrescientNetworking {
  private:
   mojo::Remote<mojom::NetworkHintsHandler> handler_;
   RendererDnsPrefetch dns_prefetch_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebPrescientNetworkingImpl);
 };
 
 }  // namespace network_hints

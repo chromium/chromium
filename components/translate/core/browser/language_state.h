@@ -24,6 +24,10 @@ class TranslateDriver;
 class LanguageState {
  public:
   explicit LanguageState(TranslateDriver* driver);
+
+  LanguageState(const LanguageState&) = delete;
+  LanguageState& operator=(const LanguageState&) = delete;
+
   ~LanguageState();
 
   // Should be called when the page did a new navigation (whether it is a main
@@ -156,8 +160,6 @@ class LanguageState {
 
   // Target language set by client.
   std::string predefined_target_language_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageState);
 };
 
 }  // namespace translate

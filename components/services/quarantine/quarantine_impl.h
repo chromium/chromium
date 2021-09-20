@@ -22,6 +22,10 @@ class QuarantineImpl : public mojom::Quarantine {
  public:
   QuarantineImpl();
   explicit QuarantineImpl(mojo::PendingReceiver<mojom::Quarantine> receiver);
+
+  QuarantineImpl(const QuarantineImpl&) = delete;
+  QuarantineImpl& operator=(const QuarantineImpl&) = delete;
+
   ~QuarantineImpl() override;
 
   // mojom::Quarantine:
@@ -39,8 +43,6 @@ class QuarantineImpl : public mojom::Quarantine {
   base::win::ScopedCOMInitializer com_initializer_{
       base::win::ScopedCOMInitializer::Uninitialization::kBlockPremature};
 #endif  // OS_WIN
-
-  DISALLOW_COPY_AND_ASSIGN(QuarantineImpl);
 };
 
 }  // namespace quarantine

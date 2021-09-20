@@ -33,6 +33,9 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
             uint64_t client_tracing_id,
             scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  GpuClient(const GpuClient&) = delete;
+  GpuClient& operator=(const GpuClient&) = delete;
+
   ~GpuClient() override;
 
   // This needs to be run on the thread associated with |task_runner_|.
@@ -116,8 +119,6 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
   // this thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtrFactory<GpuClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuClient);
 };
 
 }  // namespace viz

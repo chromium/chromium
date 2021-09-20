@@ -61,6 +61,9 @@ class HintsFetcherTest : public testing::Test,
     hints_fetcher_->SetTimeClockForTesting(task_environment_.GetMockClock());
   }
 
+  HintsFetcherTest(const HintsFetcherTest&) = delete;
+  HintsFetcherTest& operator=(const HintsFetcherTest&) = delete;
+
   ~HintsFetcherTest() override = default;
 
   void OnHintsFetched(absl::optional<std::unique_ptr<proto::GetHintsResponse>>
@@ -177,8 +180,6 @@ class HintsFetcherTest : public testing::Test,
   network::TestNetworkConnectionTracker* network_tracker_;
 
   std::string last_request_body_;
-
-  DISALLOW_COPY_AND_ASSIGN(HintsFetcherTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(WithPersistentStore,

@@ -22,6 +22,11 @@ namespace autofill_assistant {
 class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
  public:
   FakeScriptExecutorDelegate();
+
+  FakeScriptExecutorDelegate(const FakeScriptExecutorDelegate&) = delete;
+  FakeScriptExecutorDelegate& operator=(const FakeScriptExecutorDelegate&) =
+      delete;
+
   ~FakeScriptExecutorDelegate() override;
 
   const ClientSettings& GetSettings() override;
@@ -195,8 +200,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::unique_ptr<GenericUserInterfaceProto> persistent_generic_ui_;
 
   bool require_ui_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeScriptExecutorDelegate);
 };
 
 }  // namespace autofill_assistant

@@ -174,9 +174,6 @@ class SyncService : public KeyedService {
     ACTIVE
   };
 
-  SyncService(const SyncService&) = delete;
-  SyncService& operator=(const SyncService&) = delete;
-
   ~SyncService() override {}
 
   //////////////////////////////////////////////////////////////////////////////
@@ -437,6 +434,9 @@ class SyncService : public KeyedService {
 
  protected:
   SyncService() {}
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SyncService);
 };
 
 }  // namespace syncer

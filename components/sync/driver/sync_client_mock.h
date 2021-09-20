@@ -14,10 +14,6 @@ namespace syncer {
 class SyncClientMock : public SyncClient {
  public:
   SyncClientMock();
-
-  SyncClientMock(const SyncClientMock&) = delete;
-  SyncClientMock& operator=(const SyncClientMock&) = delete;
-
   ~SyncClientMock() override;
   MOCK_METHOD(PrefService*, GetPrefService, (), (override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
@@ -48,6 +44,9 @@ class SyncClientMock : public SyncClient {
               (),
               (override));
   MOCK_METHOD(void, OnLocalSyncTransportDataCleared, (), (override));
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SyncClientMock);
 };
 
 }  // namespace syncer

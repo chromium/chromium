@@ -30,14 +30,16 @@ class HSTSStateManager {
   HSTSStateManager(net::TransportSecurityState* state,
                    bool is_hsts,
                    std::string host);
+
+  HSTSStateManager(const HSTSStateManager&) = delete;
+  HSTSStateManager& operator=(const HSTSStateManager&) = delete;
+
   ~HSTSStateManager();
 
  private:
   net::TransportSecurityState* state_;
   const bool is_hsts_;
   const std::string host_;
-
-  DISALLOW_COPY_AND_ASSIGN(HSTSStateManager);
 };
 
 HSTSStateManager::HSTSStateManager(net::TransportSecurityState* state,

@@ -47,6 +47,9 @@ class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
  public:
   CrashKeyBaseSupport() = default;
 
+  CrashKeyBaseSupport(const CrashKeyBaseSupport&) = delete;
+  CrashKeyBaseSupport& operator=(const CrashKeyBaseSupport&) = delete;
+
   ~CrashKeyBaseSupport() override = default;
 
   base::debug::CrashKeyString* Allocate(
@@ -96,9 +99,6 @@ class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
     }
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashKeyBaseSupport);
 };
 
 #undef SIZE_CLASS_OPERATION

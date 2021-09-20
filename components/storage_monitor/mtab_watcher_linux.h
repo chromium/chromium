@@ -40,6 +40,10 @@ class MtabWatcherLinux {
   // Caller is responsible for bouncing to the correct sequence.
   MtabWatcherLinux(const base::FilePath& mtab_path,
                    const UpdateMtabCallback& callback);
+
+  MtabWatcherLinux(const MtabWatcherLinux&) = delete;
+  MtabWatcherLinux& operator=(const MtabWatcherLinux&) = delete;
+
   ~MtabWatcherLinux();
 
  private:
@@ -60,8 +64,6 @@ class MtabWatcherLinux {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<MtabWatcherLinux> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MtabWatcherLinux);
 };
 
 }  // namespace storage_monitor

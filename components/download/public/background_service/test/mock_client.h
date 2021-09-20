@@ -16,6 +16,10 @@ namespace test {
 class MockClient : public Client {
  public:
   MockClient();
+
+  MockClient(const MockClient&) = delete;
+  MockClient& operator=(const MockClient&) = delete;
+
   ~MockClient() override;
 
   // Client implementation.
@@ -34,9 +38,6 @@ class MockClient : public Client {
   MOCK_METHOD2(CanServiceRemoveDownloadedFile, bool(const std::string&, bool));
   void GetUploadData(const std::string& guid,
                      GetUploadDataCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClient);
 };
 
 }  // namespace test

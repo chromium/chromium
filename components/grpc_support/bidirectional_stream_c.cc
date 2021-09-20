@@ -39,11 +39,14 @@ namespace {
 class HeadersArray : public bidirectional_stream_header_array {
  public:
   explicit HeadersArray(const spdy::Http2HeaderBlock& header_block);
+
+  HeadersArray(const HeadersArray&) = delete;
+  HeadersArray& operator=(const HeadersArray&) = delete;
+
   ~HeadersArray();
 
  private:
   base::StringPairs headers_strings_;
-  DISALLOW_COPY_AND_ASSIGN(HeadersArray);
 };
 
 HeadersArray::HeadersArray(const spdy::Http2HeaderBlock& header_block)

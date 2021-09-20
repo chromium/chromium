@@ -33,6 +33,9 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
                    DisplayResourceProviderSoftware* resource_provider,
                    OverlayProcessorInterface* overlay_processor);
 
+  SoftwareRenderer(const SoftwareRenderer&) = delete;
+  SoftwareRenderer& operator=(const SoftwareRenderer&) = delete;
+
   ~SoftwareRenderer() override;
 
   void SwapBuffers(SwapFrameData swap_frame_data) override;
@@ -125,8 +128,6 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   SkPaint current_paint_;
   SkSamplingOptions current_sampling_;
   std::unique_ptr<SkCanvas> current_framebuffer_canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareRenderer);
 };
 
 }  // namespace viz

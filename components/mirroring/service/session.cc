@@ -100,6 +100,10 @@ constexpr int kSupportedRemotingVersion = 2;
 class TransportClient final : public media::cast::CastTransport::Client {
  public:
   explicit TransportClient(Session* session) : session_(session) {}
+
+  TransportClient(const TransportClient&) = delete;
+  TransportClient& operator=(const TransportClient&) = delete;
+
   ~TransportClient() override {}
 
   // media::cast::CastTransport::Client implementation.
@@ -121,8 +125,6 @@ class TransportClient final : public media::cast::CastTransport::Client {
 
  private:
   Session* const session_;  // Outlives this class.
-
-  DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
 
 // Generates a string with cryptographically secure random bytes.
@@ -335,6 +337,9 @@ class Session::AudioCapturingCallback final
     DCHECK(!audio_data_callback_.is_null());
   }
 
+  AudioCapturingCallback(const AudioCapturingCallback&) = delete;
+  AudioCapturingCallback& operator=(const AudioCapturingCallback&) = delete;
+
   ~AudioCapturingCallback() override {}
 
  private:
@@ -364,8 +369,6 @@ class Session::AudioCapturingCallback final
 
   const AudioDataCallback audio_data_callback_;
   base::OnceClosure error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioCapturingCallback);
 };
 
 Session::Session(

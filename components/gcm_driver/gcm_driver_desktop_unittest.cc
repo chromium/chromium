@@ -101,6 +101,10 @@ class GCMDriverTest : public testing::Test {
   };
 
   GCMDriverTest();
+
+  GCMDriverTest(const GCMDriverTest&) = delete;
+  GCMDriverTest& operator=(const GCMDriverTest&) = delete;
+
   ~GCMDriverTest() override;
 
   // testing::Test:
@@ -182,8 +186,6 @@ class GCMDriverTest : public testing::Test {
   GCMClient::Result unregistration_result_;
   std::string p256dh_;
   std::string auth_secret_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverTest);
 };
 
 GCMDriverTest::GCMDriverTest()
@@ -525,13 +527,14 @@ TEST_F(GCMDriverTest, GCMClientNotReadyBeforeSending) {
 class GCMDriverFunctionalTest : public GCMDriverTest {
  public:
   GCMDriverFunctionalTest();
+
+  GCMDriverFunctionalTest(const GCMDriverFunctionalTest&) = delete;
+  GCMDriverFunctionalTest& operator=(const GCMDriverFunctionalTest&) = delete;
+
   ~GCMDriverFunctionalTest() override;
 
   // GCMDriverTest:
   void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverFunctionalTest);
 };
 
 GCMDriverFunctionalTest::GCMDriverFunctionalTest() {
@@ -882,6 +885,10 @@ TEST_F(GCMDriverFunctionalTest, LastTokenFetchTime) {
 class GCMDriverInstanceIDTest : public GCMDriverTest {
  public:
   GCMDriverInstanceIDTest();
+
+  GCMDriverInstanceIDTest(const GCMDriverInstanceIDTest&) = delete;
+  GCMDriverInstanceIDTest& operator=(const GCMDriverInstanceIDTest&) = delete;
+
   ~GCMDriverInstanceIDTest() override;
 
   void GetReady();
@@ -913,8 +920,6 @@ class GCMDriverInstanceIDTest : public GCMDriverTest {
   std::string extra_data_;
 
   int instance_id_resolved_counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverInstanceIDTest);
 };
 
 GCMDriverInstanceIDTest::GCMDriverInstanceIDTest() {

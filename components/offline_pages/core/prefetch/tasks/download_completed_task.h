@@ -20,6 +20,10 @@ class DownloadCompletedTask : public Task {
   DownloadCompletedTask(PrefetchDispatcher* prefetch_dispatcher,
                         PrefetchStore* prefetch_store,
                         const PrefetchDownloadResult& download_result);
+
+  DownloadCompletedTask(const DownloadCompletedTask&) = delete;
+  DownloadCompletedTask& operator=(const DownloadCompletedTask&) = delete;
+
   ~DownloadCompletedTask() override;
 
   struct UpdateInfo {
@@ -38,8 +42,6 @@ class DownloadCompletedTask : public Task {
   PrefetchDownloadResult download_result_;
 
   base::WeakPtrFactory<DownloadCompletedTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadCompletedTask);
 };
 
 }  // namespace offline_pages

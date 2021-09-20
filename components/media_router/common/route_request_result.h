@@ -63,6 +63,9 @@ class RouteRequestResult {
                      const std::string& error,
                      ResultCode result_code);
 
+  RouteRequestResult(const RouteRequestResult&) = delete;
+  RouteRequestResult& operator=(const RouteRequestResult&) = delete;
+
   ~RouteRequestResult();
 
   // Note the caller does not own the returned MediaRoute. The caller must
@@ -79,8 +82,6 @@ class RouteRequestResult {
   GURL presentation_url_;
   std::string error_;
   ResultCode result_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(RouteRequestResult);
 };
 
 }  // namespace media_router

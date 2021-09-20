@@ -27,6 +27,10 @@ class UserAction {
 
   UserAction(UserAction&&);
   UserAction();
+
+  UserAction(const UserAction&) = delete;
+  UserAction& operator=(const UserAction&) = delete;
+
   ~UserAction();
   UserAction& operator=(UserAction&&);
 
@@ -99,8 +103,6 @@ class UserAction {
 
   // Optional identifier to uniquely identify this user action.
   std::string identifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserAction);
 };
 
 }  // namespace autofill_assistant

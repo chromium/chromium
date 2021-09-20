@@ -85,6 +85,10 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
       const DebugRendererSettings* debug_settings,
       int allowed_yuv_overlay_count,
       bool skip_initialization_for_testing = false);
+
+  DCLayerOverlayProcessor(const DCLayerOverlayProcessor&) = delete;
+  DCLayerOverlayProcessor& operator=(const DCLayerOverlayProcessor&) = delete;
+
   virtual ~DCLayerOverlayProcessor();
 
   // Virtual for testing.
@@ -174,8 +178,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   SurfaceDamageRectList surface_damage_rect_list_;
 
   scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DCLayerOverlayProcessor);
 };
 
 }  // namespace viz

@@ -69,6 +69,9 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   static int GetMaximumNumberOfAutoAlways();
   static int GetMaximumNumberOfAutoNever();
 
+  TranslateInfoBarDelegate(const TranslateInfoBarDelegate&) = delete;
+  TranslateInfoBarDelegate& operator=(const TranslateInfoBarDelegate&) = delete;
+
   ~TranslateInfoBarDelegate() override;
 
   // Factory method to create a translate infobar.  |error_type| must be
@@ -276,8 +279,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   // Observers to handle front-end changes on different steps.
   // It's only used when we try to reuse the existing UI.
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateInfoBarDelegate);
 };
 
 }  // namespace translate

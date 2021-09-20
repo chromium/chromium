@@ -16,6 +16,10 @@ namespace ukm {
 class HistoryDeleteObserver : public history::HistoryServiceObserver {
  public:
   HistoryDeleteObserver();
+
+  HistoryDeleteObserver(const HistoryDeleteObserver&) = delete;
+  HistoryDeleteObserver& operator=(const HistoryDeleteObserver&) = delete;
+
   ~HistoryDeleteObserver() override;
 
   // Starts observing a service for history deletions.
@@ -35,8 +39,6 @@ class HistoryDeleteObserver : public history::HistoryServiceObserver {
   base::ScopedMultiSourceObservation<history::HistoryService,
                                      history::HistoryServiceObserver>
       history_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryDeleteObserver);
 };
 
 }  // namespace ukm

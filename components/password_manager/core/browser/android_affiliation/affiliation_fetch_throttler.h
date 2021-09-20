@@ -60,6 +60,11 @@ class AffiliationFetchThrottler
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       network::NetworkConnectionTracker* network_connection_tracker,
       const base::TickClock* tick_clock);
+
+  AffiliationFetchThrottler(const AffiliationFetchThrottler&) = delete;
+  AffiliationFetchThrottler& operator=(const AffiliationFetchThrottler&) =
+      delete;
+
   ~AffiliationFetchThrottler() override;
 
   // Signals to the throttling logic that a network request is needed, and that
@@ -127,8 +132,6 @@ class AffiliationFetchThrottler
   std::unique_ptr<net::BackoffEntry> exponential_backoff_;
 
   base::WeakPtrFactory<AffiliationFetchThrottler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationFetchThrottler);
 };
 
 }  // namespace password_manager

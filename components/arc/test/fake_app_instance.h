@@ -33,6 +33,10 @@ class FakeAppInstance : public mojom::AppInstance {
    public:
     Request(const std::string& package_name, const std::string& activity)
         : package_name_(package_name), activity_(activity) {}
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request() {}
 
     const std::string& package_name() const { return package_name_; }
@@ -47,8 +51,6 @@ class FakeAppInstance : public mojom::AppInstance {
    private:
     std::string package_name_;
     std::string activity_;
-
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   class IconRequest : public Request {
@@ -58,14 +60,16 @@ class FakeAppInstance : public mojom::AppInstance {
                 int dimension)
         : Request(package_name, activity),
           dimension_(static_cast<int>(dimension)) {}
+
+    IconRequest(const IconRequest&) = delete;
+    IconRequest& operator=(const IconRequest&) = delete;
+
     ~IconRequest() {}
 
     int dimension() const { return dimension_; }
 
    private:
     const int dimension_;
-
-    DISALLOW_COPY_AND_ASSIGN(IconRequest);
   };
 
   class ShortcutIconRequest {
@@ -73,6 +77,10 @@ class FakeAppInstance : public mojom::AppInstance {
     ShortcutIconRequest(const std::string& icon_resource_id, int dimension)
         : icon_resource_id_(icon_resource_id),
           dimension_(static_cast<int>(dimension)) {}
+
+    ShortcutIconRequest(const ShortcutIconRequest&) = delete;
+    ShortcutIconRequest& operator=(const ShortcutIconRequest&) = delete;
+
     ~ShortcutIconRequest() {}
 
     const std::string& icon_resource_id() const { return icon_resource_id_; }
@@ -81,8 +89,6 @@ class FakeAppInstance : public mojom::AppInstance {
    private:
     const std::string icon_resource_id_;
     const int dimension_;
-
-    DISALLOW_COPY_AND_ASSIGN(ShortcutIconRequest);
   };
 
   explicit FakeAppInstance(mojom::AppHost* app_host);

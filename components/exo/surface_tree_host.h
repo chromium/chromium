@@ -36,6 +36,10 @@ class SurfaceTreeHost : public SurfaceDelegate,
                         public viz::ContextLostObserver {
  public:
   explicit SurfaceTreeHost(const std::string& window_name);
+
+  SurfaceTreeHost(const SurfaceTreeHost&) = delete;
+  SurfaceTreeHost& operator=(const SurfaceTreeHost&) = delete;
+
   ~SurfaceTreeHost() override;
 
   // Sets a root surface of a surface tree. This surface tree will be hosted in
@@ -167,8 +171,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
   int64_t display_id_ = display::kInvalidDisplayId;
 
   base::WeakPtrFactory<SurfaceTreeHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceTreeHost);
 };
 
 }  // namespace exo

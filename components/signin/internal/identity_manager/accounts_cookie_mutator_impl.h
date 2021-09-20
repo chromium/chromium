@@ -32,6 +32,11 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
       ProfileOAuth2TokenService* token_service,
       GaiaCookieManagerService* gaia_cookie_manager_service,
       AccountTrackerService* account_tracker_service);
+
+  AccountsCookieMutatorImpl(const AccountsCookieMutatorImpl&) = delete;
+  AccountsCookieMutatorImpl& operator=(const AccountsCookieMutatorImpl&) =
+      delete;
+
   ~AccountsCookieMutatorImpl() override;
 
   void AddAccountToCookie(
@@ -84,8 +89,6 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
   ProfileOAuth2TokenService* token_service_;
   GaiaCookieManagerService* gaia_cookie_manager_service_;
   AccountTrackerService* account_tracker_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountsCookieMutatorImpl);
 };
 
 }  // namespace signin

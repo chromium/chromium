@@ -60,6 +60,9 @@ class USER_MANAGER_EXPORT UserImage {
             scoped_refptr<base::RefCountedBytes> image_bytes,
             ImageFormat image_format);
 
+  UserImage(const UserImage&) = delete;
+  UserImage& operator=(const UserImage&) = delete;
+
   virtual ~UserImage();
 
   const gfx::ImageSkia& image() const { return image_; }
@@ -95,8 +98,6 @@ class USER_MANAGER_EXPORT UserImage {
   base::FilePath file_path_;
   bool is_safe_format_ = false;
   ImageFormat image_format_ = FORMAT_UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(UserImage);
 };
 
 }  // namespace user_manager

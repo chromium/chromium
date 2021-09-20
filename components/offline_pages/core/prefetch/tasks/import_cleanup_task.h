@@ -20,6 +20,10 @@ class ImportCleanupTask : public Task {
  public:
   ImportCleanupTask(PrefetchStore* prefetch_store,
                     PrefetchImporter* prefetch_importer);
+
+  ImportCleanupTask(const ImportCleanupTask&) = delete;
+  ImportCleanupTask& operator=(const ImportCleanupTask&) = delete;
+
   ~ImportCleanupTask() override;
 
  private:
@@ -30,8 +34,6 @@ class ImportCleanupTask : public Task {
   PrefetchImporter* prefetch_importer_;  // Outlives this class.
 
   base::WeakPtrFactory<ImportCleanupTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImportCleanupTask);
 };
 
 }  // namespace offline_pages

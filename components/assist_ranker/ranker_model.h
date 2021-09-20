@@ -17,6 +17,10 @@ class RankerModelProto;
 class RankerModel {
  public:
   RankerModel();
+
+  RankerModel(const RankerModel&) = delete;
+  RankerModel& operator=(const RankerModel&) = delete;
+
   ~RankerModel();
 
   // Returns a new ranker model constructed from |data|.
@@ -36,8 +40,6 @@ class RankerModel {
  private:
   // The underlying ranker model proto.
   std::unique_ptr<RankerModelProto> proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(RankerModel);
 };
 
 }  // namespace assist_ranker

@@ -24,6 +24,11 @@ namespace password_manager {
 class StubPasswordManagerClient : public PasswordManagerClient {
  public:
   StubPasswordManagerClient();
+
+  StubPasswordManagerClient(const StubPasswordManagerClient&) = delete;
+  StubPasswordManagerClient& operator=(const StubPasswordManagerClient&) =
+      delete;
+
   ~StubPasswordManagerClient() override;
 
   // PasswordManagerClient:
@@ -97,8 +102,6 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   autofill::StubLogManager log_manager_;
   ukm::SourceId ukm_source_id_;
   absl::optional<PasswordManagerMetricsRecorder> metrics_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubPasswordManagerClient);
 };
 
 }  // namespace password_manager

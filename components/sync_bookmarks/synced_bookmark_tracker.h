@@ -49,6 +49,10 @@ class SyncedBookmarkTracker {
     // |bookmark_node| can be null for tombstones. |metadata| must not be null.
     Entity(const bookmarks::BookmarkNode* bookmark_node,
            std::unique_ptr<sync_pb::EntityMetadata> metadata);
+
+    Entity(const Entity&) = delete;
+    Entity& operator=(const Entity&) = delete;
+
     ~Entity();
 
     // Returns true if this data is out of sync with the server.
@@ -115,8 +119,6 @@ class SyncedBookmarkTracker {
     // server. The tracker sets it to true in the constructor because this code
     // path is only executed in production when loading from disk.
     bool commit_may_have_started_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Entity);
   };
 
   // Returns a client tag hash given a bookmark GUID.

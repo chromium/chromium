@@ -72,6 +72,10 @@ class FakePredictor : public BasePredictor {
   // |predictor_config|.
   static std::unique_ptr<FakePredictor> Create(
       PredictorConfig predictor_config);
+
+  FakePredictor(const FakePredictor&) = delete;
+  FakePredictor& operator=(const FakePredictor&) = delete;
+
   ~FakePredictor() override {}
   // Validation will always succeed.
   static RankerModelStatus ValidateModel(const RankerModel& model) {
@@ -84,7 +88,6 @@ class FakePredictor : public BasePredictor {
 
  private:
   FakePredictor(const PredictorConfig& config) : BasePredictor(config) {}
-  DISALLOW_COPY_AND_ASSIGN(FakePredictor);
 };
 
 std::unique_ptr<FakePredictor> FakePredictor::Create(

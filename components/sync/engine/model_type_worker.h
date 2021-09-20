@@ -87,10 +87,6 @@ class ModelTypeWorker : public UpdateHandler,
                   PassphraseType passphrase_type,
                   NudgeHandler* nudge_handler,
                   CancelationSignal* cancelation_signal);
-
-  ModelTypeWorker(const ModelTypeWorker&) = delete;
-  ModelTypeWorker& operator=(const ModelTypeWorker&) = delete;
-
   ~ModelTypeWorker() override;
 
   // Public for testing.
@@ -297,6 +293,8 @@ class ModelTypeWorker : public UpdateHandler,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ModelTypeWorker> weak_ptr_factory_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(ModelTypeWorker);
 };
 
 // GetLocalChangesRequest is a container for GetLocalChanges call response. It

@@ -39,6 +39,9 @@ class PrefetchRequestFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FinishedCallback callback);
 
+  PrefetchRequestFetcher(const PrefetchRequestFetcher&) = delete;
+  PrefetchRequestFetcher& operator=(const PrefetchRequestFetcher&) = delete;
+
   ~PrefetchRequestFetcher();
 
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
@@ -64,8 +67,6 @@ class PrefetchRequestFetcher {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   FinishedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchRequestFetcher);
 };
 
 }  // namespace offline_pages

@@ -29,6 +29,10 @@ class TestCaptivePortalTabReloader : public CaptivePortalTabReloader {
   explicit TestCaptivePortalTabReloader(content::WebContents* web_contents)
       : CaptivePortalTabReloader(nullptr, web_contents, base::NullCallback()) {}
 
+  TestCaptivePortalTabReloader(const TestCaptivePortalTabReloader&) = delete;
+  TestCaptivePortalTabReloader& operator=(const TestCaptivePortalTabReloader&) =
+      delete;
+
   ~TestCaptivePortalTabReloader() override {}
 
   bool TimerRunning() { return slow_ssl_load_timer_.IsRunning(); }
@@ -47,9 +51,6 @@ class TestCaptivePortalTabReloader : public CaptivePortalTabReloader {
   MOCK_METHOD0(ReloadTab, void());
   MOCK_METHOD0(MaybeOpenCaptivePortalLoginTab, void());
   MOCK_METHOD0(CheckForCaptivePortal, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestCaptivePortalTabReloader);
 };
 
 class CaptivePortalTabReloaderTest : public content::RenderViewHostTestHarness {

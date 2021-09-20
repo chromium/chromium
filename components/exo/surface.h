@@ -77,6 +77,10 @@ class Surface final : public ui::PropertyHandler {
   using LeaveEnterCallback = base::RepeatingCallback<void(int64_t, int64_t)>;
 
   Surface();
+
+  Surface(const Surface&) = delete;
+  Surface& operator=(const Surface&) = delete;
+
   ~Surface() override;
 
   // Type-checking downcast routine.
@@ -395,6 +399,10 @@ class Surface final : public ui::PropertyHandler {
   class BufferAttachment {
    public:
     BufferAttachment();
+
+    BufferAttachment(const BufferAttachment&) = delete;
+    BufferAttachment& operator=(const BufferAttachment&) = delete;
+
     ~BufferAttachment();
 
     BufferAttachment& operator=(BufferAttachment&& buffer);
@@ -407,8 +415,6 @@ class Surface final : public ui::PropertyHandler {
    private:
     base::WeakPtr<Buffer> buffer_;
     gfx::Size size_;
-
-    DISALLOW_COPY_AND_ASSIGN(BufferAttachment);
   };
 
   struct ExtendedState {
@@ -538,21 +544,21 @@ class Surface final : public ui::PropertyHandler {
   gfx::Size embedded_surface_size_;
 
   LeaveEnterCallback leave_enter_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Surface);
 };
 
 class ScopedSurface {
  public:
   ScopedSurface(Surface* surface, SurfaceObserver* observer);
+
+  ScopedSurface(const ScopedSurface&) = delete;
+  ScopedSurface& operator=(const ScopedSurface&) = delete;
+
   virtual ~ScopedSurface();
   Surface* get() { return surface_; }
 
  private:
   Surface* const surface_;
   SurfaceObserver* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSurface);
 };
 
 }  // namespace exo

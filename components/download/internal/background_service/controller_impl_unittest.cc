@@ -73,6 +73,10 @@ void NotifyTaskFinished(bool success) {}
 class UploadClient : public test::MockClient {
  public:
   UploadClient() = default;
+
+  UploadClient(const UploadClient&) = delete;
+  UploadClient& operator=(const UploadClient&) = delete;
+
   ~UploadClient() override = default;
 
   void GetUploadData(const std::string& guid,
@@ -82,8 +86,6 @@ class UploadClient : public test::MockClient {
 
  private:
   std::map<std::string, unsigned int> upload_response_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadClient);
 };
 
 void UploadClient::GetUploadData(const std::string& guid,
@@ -139,6 +141,11 @@ class DownloadServiceControllerImplTest : public testing::Test {
         base::BindRepeating(&DownloadServiceControllerImplTest::StartCallback,
                             base::Unretained(this));
   }
+
+  DownloadServiceControllerImplTest(const DownloadServiceControllerImplTest&) =
+      delete;
+  DownloadServiceControllerImplTest& operator=(
+      const DownloadServiceControllerImplTest&) = delete;
 
   ~DownloadServiceControllerImplTest() override = default;
 
@@ -237,9 +244,6 @@ class DownloadServiceControllerImplTest : public testing::Test {
   base::RepeatingCallback<void(const std::string&, DownloadParams::StartResult)>
       start_callback_;
   bool init_callback_called_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadServiceControllerImplTest);
 };
 
 }  // namespace

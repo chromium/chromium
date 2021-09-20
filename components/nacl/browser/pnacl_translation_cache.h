@@ -38,6 +38,10 @@ class PnaclTranslationCache
     : public base::SupportsWeakPtr<PnaclTranslationCache> {
  public:
   PnaclTranslationCache();
+
+  PnaclTranslationCache(const PnaclTranslationCache&) = delete;
+  PnaclTranslationCache& operator=(const PnaclTranslationCache&) = delete;
+
   virtual ~PnaclTranslationCache();
 
   // Initialize the translation cache in |cache_dir|.  If the return value is
@@ -96,8 +100,6 @@ class PnaclTranslationCache
   CompletionOnceCallback init_callback_;
   bool in_memory_;
   std::map<void*, scoped_refptr<PnaclTranslationCacheEntry> > open_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(PnaclTranslationCache);
 };
 
 }  // namespace pnacl

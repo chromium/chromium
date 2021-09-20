@@ -42,6 +42,10 @@ class XdgShellSurface : public ShellSurface {
                   const gfx::Point& origin,
                   bool can_minimize,
                   int container);
+
+  XdgShellSurface(const XdgShellSurface&) = delete;
+  XdgShellSurface& operator=(const XdgShellSurface&) = delete;
+
   ~XdgShellSurface() override;
 
   // ShellSurfaceBase::
@@ -52,8 +56,6 @@ class XdgShellSurface : public ShellSurface {
   // their bounds are larger or equal to the display area. This behaviour is
   // implemented in linux display managers (e.g. Muffin/Cinnamon).
   bool ShouldAutoMaximize();
-
-  DISALLOW_COPY_AND_ASSIGN(XdgShellSurface);
 };
 
 }  // namespace exo

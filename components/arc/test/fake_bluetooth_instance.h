@@ -25,6 +25,10 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
    public:
     GattDBResult(mojom::BluetoothAddressPtr&& remote_addr,
                  std::vector<mojom::BluetoothGattDBElementPtr>&& db);
+
+    GattDBResult(const GattDBResult&) = delete;
+    GattDBResult& operator=(const GattDBResult&) = delete;
+
     ~GattDBResult();
 
     const mojom::BluetoothAddressPtr& remote_addr() const {
@@ -38,8 +42,6 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
    private:
     mojom::BluetoothAddressPtr remote_addr_;
     std::vector<mojom::BluetoothGattDBElementPtr> db_;
-
-    DISALLOW_COPY_AND_ASSIGN(GattDBResult);
   };
 
   class LEDeviceFoundData {
@@ -47,6 +49,10 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
     LEDeviceFoundData(mojom::BluetoothAddressPtr addr,
                       int32_t rssi,
                       const std::vector<uint8_t>& eir);
+
+    LEDeviceFoundData(const LEDeviceFoundData&) = delete;
+    LEDeviceFoundData& operator=(const LEDeviceFoundData&) = delete;
+
     ~LEDeviceFoundData();
 
     const mojom::BluetoothAddressPtr& addr() const { return addr_; }
@@ -59,8 +65,6 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
     mojom::BluetoothAddressPtr addr_;
     int32_t rssi_;
     std::vector<uint8_t> eir_;
-
-    DISALLOW_COPY_AND_ASSIGN(LEDeviceFoundData);
   };
 
   class ConnectionStateChangedData {
@@ -68,6 +72,11 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
     ConnectionStateChangedData(mojom::BluetoothAddressPtr addr,
                                device::BluetoothTransport device_type,
                                bool connected);
+
+    ConnectionStateChangedData(const ConnectionStateChangedData&) = delete;
+    ConnectionStateChangedData& operator=(const ConnectionStateChangedData&) =
+        delete;
+
     ~ConnectionStateChangedData();
 
     const mojom::BluetoothAddressPtr& addr() const { return addr_; }
@@ -78,14 +87,17 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
     mojom::BluetoothAddressPtr addr_;
     device::BluetoothTransport device_type_;
     bool connected_;
-
-    DISALLOW_COPY_AND_ASSIGN(ConnectionStateChangedData);
   };
 
   class LEConnectionStateChangeData {
    public:
     LEConnectionStateChangeData(mojom::BluetoothAddressPtr addr,
                                 bool connected);
+
+    LEConnectionStateChangeData(const LEConnectionStateChangeData&) = delete;
+    LEConnectionStateChangeData& operator=(const LEConnectionStateChangeData&) =
+        delete;
+
     ~LEConnectionStateChangeData();
 
     const mojom::BluetoothAddressPtr& addr() const { return addr_; }
@@ -94,8 +106,6 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
    private:
     mojom::BluetoothAddressPtr addr_;
     bool connected_;
-
-    DISALLOW_COPY_AND_ASSIGN(LEConnectionStateChangeData);
   };
 
   FakeBluetoothInstance();

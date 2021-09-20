@@ -16,10 +16,11 @@ namespace security_interstitials {
 class ConnectionHelpUI : public content::WebUIController {
  public:
   explicit ConnectionHelpUI(content::WebUI* web_ui);
-  ~ConnectionHelpUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConnectionHelpUI);
+  ConnectionHelpUI(const ConnectionHelpUI&) = delete;
+  ConnectionHelpUI& operator=(const ConnectionHelpUI&) = delete;
+
+  ~ConnectionHelpUI() override;
 };
 
 }  // namespace security_interstitials

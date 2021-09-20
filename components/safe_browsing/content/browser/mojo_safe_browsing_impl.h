@@ -27,6 +27,9 @@ namespace safe_browsing {
 // disconnected or |resource_context_| is destructed.
 class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
  public:
+  MojoSafeBrowsingImpl(const MojoSafeBrowsingImpl&) = delete;
+  MojoSafeBrowsingImpl& operator=(const MojoSafeBrowsingImpl&) = delete;
+
   ~MojoSafeBrowsingImpl() override;
 
   static void MaybeCreate(
@@ -68,8 +71,6 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
   // Not owned by this object. It is always valid during the lifetime of this
   // object.
   content::ResourceContext* resource_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoSafeBrowsingImpl);
 };
 
 }  // namespace safe_browsing

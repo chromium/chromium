@@ -37,6 +37,10 @@ class BlobTaskProxy {
 
   BlobTaskProxy(BlobContextGetter blob_context_getter,
                 scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  BlobTaskProxy(const BlobTaskProxy&) = delete;
+  BlobTaskProxy& operator=(const BlobTaskProxy&) = delete;
+
   ~BlobTaskProxy();
 
   // Save blob data on UI thread. |callback| will be called on main thread after
@@ -66,8 +70,6 @@ class BlobTaskProxy {
 
   // Bounded to IO thread task runner.
   base::WeakPtrFactory<BlobTaskProxy> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlobTaskProxy);
 };
 
 }  // namespace download

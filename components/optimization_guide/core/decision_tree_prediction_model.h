@@ -22,6 +22,10 @@ class DecisionTreePredictionModel : public PredictionModel {
   explicit DecisionTreePredictionModel(
       const proto::PredictionModel& prediction_model);
 
+  DecisionTreePredictionModel(const DecisionTreePredictionModel&) = delete;
+  DecisionTreePredictionModel& operator=(const DecisionTreePredictionModel&) =
+      delete;
+
   ~DecisionTreePredictionModel() override;
 
   // PredictionModel implementation:
@@ -87,8 +91,6 @@ class DecisionTreePredictionModel : public PredictionModel {
   bool ValidateTreeNode(const proto::DecisionTree& tree,
                         const proto::TreeNode& node,
                         int node_index) const;
-
-  DISALLOW_COPY_AND_ASSIGN(DecisionTreePredictionModel);
 };
 
 }  // namespace optimization_guide

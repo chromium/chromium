@@ -29,6 +29,10 @@ class InputStream {
   // |stream| should be an instance of the InputStream Java class.
   // |stream| can't be null.
   InputStream(const base::android::JavaRef<jobject>& stream);
+
+  InputStream(const InputStream&) = delete;
+  InputStream& operator=(const InputStream&) = delete;
+
   virtual ~InputStream();
 
   // Gets the underlying Java object. Guaranteed non-NULL.
@@ -62,8 +66,6 @@ class InputStream {
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
   base::android::ScopedJavaGlobalRef<jbyteArray> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputStream);
 };
 
 }  // namespace embedder_support

@@ -42,6 +42,10 @@ class TestingWebHistoryService : public WebHistoryService {
         expected_url_(GURL()),
         expected_audio_history_value_(false),
         current_expected_post_data_("") {}
+
+  TestingWebHistoryService(const TestingWebHistoryService&) = delete;
+  TestingWebHistoryService& operator=(const TestingWebHistoryService&) = delete;
+
   ~TestingWebHistoryService() override {}
 
   WebHistoryService::Request* CreateRequest(
@@ -85,8 +89,6 @@ class TestingWebHistoryService : public WebHistoryService {
   bool expected_audio_history_value_;
   std::string current_expected_post_data_;
   std::map<Request*, std::string> expected_post_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingWebHistoryService);
 };
 
 // A testing request class that allows expected values to be filled in.
@@ -118,6 +120,9 @@ class TestRequest : public WebHistoryService::Request {
                      web_history_service->GetExpectedAudioHistoryValue() +
                      ("}");
   }
+
+  TestRequest(const TestRequest&) = delete;
+  TestRequest& operator=(const TestRequest&) = delete;
 
   ~TestRequest() override {}
 
@@ -156,8 +161,6 @@ class TestRequest : public WebHistoryService::Request {
   std::string response_body_;
   std::string post_data_;
   bool is_pending_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRequest);
 };
 
 WebHistoryService::Request* TestingWebHistoryService::CreateRequest(
@@ -218,6 +221,9 @@ class WebHistoryServiceTest : public testing::Test {
                 &test_url_loader_factory_)),
         web_history_service_(test_shared_loader_factory_) {}
 
+  WebHistoryServiceTest(const WebHistoryServiceTest&) = delete;
+  WebHistoryServiceTest& operator=(const WebHistoryServiceTest&) = delete;
+
   ~WebHistoryServiceTest() override {}
 
   void TearDown() override {
@@ -236,8 +242,6 @@ class WebHistoryServiceTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestingWebHistoryService web_history_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebHistoryServiceTest);
 };
 
 TEST_F(WebHistoryServiceTest, GetAudioHistoryEnabled) {

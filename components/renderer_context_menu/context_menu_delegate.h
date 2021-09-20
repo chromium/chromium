@@ -20,6 +20,10 @@ struct ContextMenuParams;
 class ContextMenuDelegate {
  public:
   explicit ContextMenuDelegate(content::WebContents* web_contents);
+
+  ContextMenuDelegate(const ContextMenuDelegate&) = delete;
+  ContextMenuDelegate& operator=(const ContextMenuDelegate&) = delete;
+
   virtual ~ContextMenuDelegate();
 
   static ContextMenuDelegate* FromWebContents(
@@ -33,9 +37,6 @@ class ContextMenuDelegate {
 
   // Displays the context menu.
   virtual void ShowMenu(std::unique_ptr<RenderViewContextMenuBase> menu) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuDelegate);
 };
 
 #endif  // COMPONENTS_RENDERER_CONTEXT_MENU_CONTEXT_MENU_DELEGATE_H_

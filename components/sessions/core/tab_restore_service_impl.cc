@@ -431,6 +431,9 @@ class TabRestoreServiceImpl::PersistenceDelegate
  public:
   explicit PersistenceDelegate(TabRestoreServiceClient* client);
 
+  PersistenceDelegate(const PersistenceDelegate&) = delete;
+  PersistenceDelegate& operator=(const PersistenceDelegate&) = delete;
+
   ~PersistenceDelegate() override;
 
   // CommandStorageManagerDelegate:
@@ -569,8 +572,6 @@ class TabRestoreServiceImpl::PersistenceDelegate
 
   // Used when loading previous tabs/session and open tabs/session.
   base::WeakPtrFactory<PersistenceDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PersistenceDelegate);
 };
 
 TabRestoreServiceImpl::PersistenceDelegate::PersistenceDelegate(

@@ -49,6 +49,10 @@ class GuestOsEngagementMetrics : public wm::ActivationChangeObserver,
                            WindowMatcher window_matcher,
                            const std::string& pref_prefix,
                            const std::string& uma_name);
+
+  GuestOsEngagementMetrics(const GuestOsEngagementMetrics&) = delete;
+  GuestOsEngagementMetrics& operator=(const GuestOsEngagementMetrics&) = delete;
+
   ~GuestOsEngagementMetrics() override;
 
   // Instead of using |window_matcher_|, we let consumers define when the Guest
@@ -136,8 +140,6 @@ class GuestOsEngagementMetrics : public wm::ActivationChangeObserver,
   base::TimeDelta engagement_time_total_;
   base::TimeDelta engagement_time_foreground_;
   base::TimeDelta engagement_time_background_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsEngagementMetrics);
 };
 
 }  // namespace guest_os

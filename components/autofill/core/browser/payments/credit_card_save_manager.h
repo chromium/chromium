@@ -98,6 +98,10 @@ class CreditCardSaveManager {
                         payments::PaymentsClient* payments_client,
                         const std::string& app_locale,
                         PersonalDataManager* personal_data_manager);
+
+  CreditCardSaveManager(const CreditCardSaveManager&) = delete;
+  CreditCardSaveManager& operator=(const CreditCardSaveManager&) = delete;
+
   virtual ~CreditCardSaveManager();
 
   // Begins the process to offer local credit card save to the user.
@@ -393,8 +397,6 @@ class CreditCardSaveManager {
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardSaveManagerTest,
       UploadCreditCard_WalletSyncTransportNotEnabled_ShouldRequestExpirationDate);
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardSaveManager);
 };
 
 }  // namespace autofill

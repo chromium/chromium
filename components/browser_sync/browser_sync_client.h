@@ -52,6 +52,10 @@ namespace browser_sync {
 class BrowserSyncClient : public syncer::SyncClient {
  public:
   BrowserSyncClient() = default;
+
+  BrowserSyncClient(const BrowserSyncClient&) = delete;
+  BrowserSyncClient& operator=(const BrowserSyncClient&) = delete;
+
   ~BrowserSyncClient() override = default;
 
   virtual syncer::ModelTypeStoreService* GetModelTypeStoreService() = 0;
@@ -71,9 +75,6 @@ class BrowserSyncClient : public syncer::SyncClient {
   virtual send_tab_to_self::SendTabToSelfSyncService*
   GetSendTabToSelfSyncService() = 0;
   virtual BookmarkUndoService* GetBookmarkUndoService() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserSyncClient);
 };
 
 }  // namespace browser_sync

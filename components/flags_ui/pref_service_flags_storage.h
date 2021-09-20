@@ -24,6 +24,10 @@ namespace flags_ui {
 class PrefServiceFlagsStorage : public FlagsStorage {
  public:
   explicit PrefServiceFlagsStorage(PrefService* prefs);
+
+  PrefServiceFlagsStorage(const PrefServiceFlagsStorage&) = delete;
+  PrefServiceFlagsStorage& operator=(const PrefServiceFlagsStorage&) = delete;
+
   ~PrefServiceFlagsStorage() override;
 
   std::set<std::string> GetFlags() const override;
@@ -42,8 +46,6 @@ class PrefServiceFlagsStorage : public FlagsStorage {
 
  private:
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefServiceFlagsStorage);
 };
 
 }  // namespace flags_ui

@@ -75,6 +75,10 @@ class TestMetricsService : public MetricsService {
                      MetricsServiceClient* client,
                      PrefService* local_state)
       : MetricsService(state_manager, client, local_state) {}
+
+  TestMetricsService(const TestMetricsService&) = delete;
+  TestMetricsService& operator=(const TestMetricsService&) = delete;
+
   ~TestMetricsService() override = default;
 
   using MetricsService::INIT_TASK_SCHEDULED;
@@ -99,8 +103,6 @@ class TestMetricsService : public MetricsService {
  private:
   bool persistent_system_profile_provided_ = false;
   bool persistent_system_profile_complete_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricsService);
 };
 
 class TestMetricsLog : public MetricsLog {
@@ -110,10 +112,10 @@ class TestMetricsLog : public MetricsLog {
                  MetricsServiceClient* client)
       : MetricsLog(client_id, session_id, MetricsLog::ONGOING_LOG, client) {}
 
-  ~TestMetricsLog() override {}
+  TestMetricsLog(const TestMetricsLog&) = delete;
+  TestMetricsLog& operator=(const TestMetricsLog&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMetricsLog);
+  ~TestMetricsLog() override {}
 };
 
 const char kOnDidCreateMetricsLogHistogramName[] = "Test.OnDidCreateMetricsLog";
@@ -137,6 +139,9 @@ class MetricsServiceTest : public testing::Test {
     base::SetRecordActionTaskRunner(task_runner_);
     MetricsService::RegisterPrefs(testing_local_state_.registry());
   }
+
+  MetricsServiceTest(const MetricsServiceTest&) = delete;
+  MetricsServiceTest& operator=(const MetricsServiceTest&) = delete;
 
   ~MetricsServiceTest() override {}
 
@@ -227,8 +232,6 @@ class MetricsServiceTest : public testing::Test {
   std::unique_ptr<TestEnabledStateProvider> enabled_state_provider_;
   TestingPrefServiceSimple testing_local_state_;
   std::unique_ptr<MetricsStateManager> metrics_state_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceTest);
 };
 
 struct StartupVisibilityTestParams {

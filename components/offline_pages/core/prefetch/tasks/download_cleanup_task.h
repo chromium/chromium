@@ -33,6 +33,10 @@ class DownloadCleanupTask : public Task {
       const std::set<std::string>& outstanding_download_ids,
       const std::map<std::string, std::pair<base::FilePath, int64_t>>&
           success_downloads);
+
+  DownloadCleanupTask(const DownloadCleanupTask&) = delete;
+  DownloadCleanupTask& operator=(const DownloadCleanupTask&) = delete;
+
   ~DownloadCleanupTask() override;
 
  private:
@@ -45,8 +49,6 @@ class DownloadCleanupTask : public Task {
   std::map<std::string, std::pair<base::FilePath, int64_t>> success_downloads_;
 
   base::WeakPtrFactory<DownloadCleanupTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadCleanupTask);
 };
 
 }  // namespace offline_pages

@@ -94,6 +94,10 @@ class KeywordTable : public WebDatabaseTable {
   static const char kDefaultSearchProviderKey[];
 
   KeywordTable();
+
+  KeywordTable(const KeywordTable&) = delete;
+  KeywordTable& operator=(const KeywordTable&) = delete;
+
   ~KeywordTable() override;
 
   // Retrieves the KeywordTable* owned by |database|.
@@ -168,8 +172,6 @@ class KeywordTable : public WebDatabaseTable {
   bool GetKeywordAsString(TemplateURLID id,
                           const std::string& table_name,
                           std::string* result);
-
-  DISALLOW_COPY_AND_ASSIGN(KeywordTable);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_KEYWORD_TABLE_H_

@@ -23,6 +23,10 @@ class FieldTrialsProvider : public metrics::MetricsProvider {
   // |registry| must outlive this metrics provider.
   FieldTrialsProvider(SyntheticTrialRegistry* registry,
                       base::StringPiece suffix);
+
+  FieldTrialsProvider(const FieldTrialsProvider&) = delete;
+  FieldTrialsProvider& operator=(const FieldTrialsProvider&) = delete;
+
   ~FieldTrialsProvider() override;
 
   // metrics::MetricsProvider:
@@ -55,8 +59,6 @@ class FieldTrialsProvider : public metrics::MetricsProvider {
 
   // Suffix used for the field trial names before they are hashed for uploads.
   std::string suffix_;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialsProvider);
 };
 
 }  // namespace variations

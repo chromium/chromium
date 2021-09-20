@@ -22,6 +22,10 @@ class HistoryService;
 class HistoryClient {
  public:
   HistoryClient() {}
+
+  HistoryClient(const HistoryClient&) = delete;
+  HistoryClient& operator=(const HistoryClient&) = delete;
+
   virtual ~HistoryClient() {}
 
   // Called upon HistoryService creation.
@@ -40,9 +44,6 @@ class HistoryClient {
 
   // Returns a new HistoryBackendClient instance.
   virtual std::unique_ptr<HistoryBackendClient> CreateBackendClient() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryClient);
 };
 
 }  // namespace history

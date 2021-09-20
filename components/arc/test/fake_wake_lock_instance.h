@@ -15,6 +15,10 @@ namespace arc {
 class FakeWakeLockInstance : public mojom::WakeLockInstance {
  public:
   FakeWakeLockInstance();
+
+  FakeWakeLockInstance(const FakeWakeLockInstance&) = delete;
+  FakeWakeLockInstance& operator=(const FakeWakeLockInstance&) = delete;
+
   ~FakeWakeLockInstance() override;
 
   // mojom::WakeLockInstance overrides:
@@ -23,8 +27,6 @@ class FakeWakeLockInstance : public mojom::WakeLockInstance {
 
  private:
   mojo::Remote<mojom::WakeLockHost> host_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWakeLockInstance);
 };
 
 }  // namespace arc

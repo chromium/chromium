@@ -30,6 +30,10 @@ class LevelDBScopesTask {
  public:
   explicit LevelDBScopesTask(scoped_refptr<LevelDBState> level_db,
                              size_t max_write_batch_size_bytes);
+
+  LevelDBScopesTask(const LevelDBScopesTask&) = delete;
+  LevelDBScopesTask& operator=(const LevelDBScopesTask&) = delete;
+
   ~LevelDBScopesTask();
 
  protected:
@@ -53,9 +57,6 @@ class LevelDBScopesTask {
   const scoped_refptr<LevelDBState> level_db_;
   const size_t max_write_batch_size_bytes_;
   leveldb::WriteBatch write_batch_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LevelDBScopesTask);
 };
 
 // Deletes the undo log for a given scope, and optionally executes the cleanup

@@ -90,6 +90,10 @@ class TestUndoService {
 class TestUndoOperation : public UndoOperation {
  public:
   explicit TestUndoOperation(TestUndoService* undo_service);
+
+  TestUndoOperation(const TestUndoOperation&) = delete;
+  TestUndoOperation& operator=(const TestUndoOperation&) = delete;
+
   ~TestUndoOperation() override;
 
   // UndoOperation:
@@ -99,8 +103,6 @@ class TestUndoOperation : public UndoOperation {
 
  private:
   TestUndoService* undo_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUndoOperation);
 };
 
 TestUndoOperation::TestUndoOperation(TestUndoService* undo_service)

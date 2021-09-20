@@ -50,6 +50,11 @@ class AutofillProfileSyncBridge
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       const std::string& app_locale,
       AutofillWebDataBackend* backend);
+
+  AutofillProfileSyncBridge(const AutofillProfileSyncBridge&) = delete;
+  AutofillProfileSyncBridge& operator=(const AutofillProfileSyncBridge&) =
+      delete;
+
   ~AutofillProfileSyncBridge() override;
 
   // Constructor that hides dealing with change_processor and also stores the
@@ -110,8 +115,6 @@ class AutofillProfileSyncBridge
   base::ScopedObservation<AutofillWebDataBackend,
                           AutofillWebDataServiceObserverOnDBSequence>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncBridge);
 };
 
 }  // namespace autofill

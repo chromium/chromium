@@ -17,13 +17,14 @@ namespace guest_view {
 class IframeGuestViewContainer : public GuestViewContainer {
  public:
   explicit IframeGuestViewContainer(content::RenderFrame* render_frame);
+
+  IframeGuestViewContainer(const IframeGuestViewContainer&) = delete;
+  IframeGuestViewContainer& operator=(const IframeGuestViewContainer&) = delete;
+
   ~IframeGuestViewContainer() override;
 
   // GuestViewContainer overrides.
   bool OnMessage(const IPC::Message& message) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IframeGuestViewContainer);
 };
 
 }  // namespace guest_view

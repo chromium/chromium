@@ -30,6 +30,12 @@ class BackForwardCachePageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   BackForwardCachePageLoadMetricsObserver();
+
+  BackForwardCachePageLoadMetricsObserver(
+      const BackForwardCachePageLoadMetricsObserver&) = delete;
+  BackForwardCachePageLoadMetricsObserver& operator=(
+      const BackForwardCachePageLoadMetricsObserver&) = delete;
+
   ~BackForwardCachePageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -91,8 +97,6 @@ class BackForwardCachePageLoadMetricsObserver
   // IDs for the navigations when the page is restored from the back-forward
   // cache.
   std::vector<ukm::SourceId> back_forward_cache_navigation_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackForwardCachePageLoadMetricsObserver);
 };
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_BACK_FORWARD_CACHE_PAGE_LOAD_METRICS_OBSERVER_H_

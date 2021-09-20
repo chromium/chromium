@@ -54,6 +54,10 @@ class ReducedModeImageFetcherTest : public testing::Test {
  public:
   ReducedModeImageFetcherTest() {}
 
+  ReducedModeImageFetcherTest(const ReducedModeImageFetcherTest&) = delete;
+  ReducedModeImageFetcherTest& operator=(const ReducedModeImageFetcherTest&) =
+      delete;
+
   ~ReducedModeImageFetcherTest() override {
     reduced_mode_image_fetcher_.reset();
     // We need to run until idle after deleting the database, because
@@ -155,8 +159,6 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReducedModeImageFetcherTest);
 };
 
 TEST_F(ReducedModeImageFetcherTest, FetchNeedsTranscodingImageFromCache) {

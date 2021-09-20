@@ -34,6 +34,10 @@ class WebDocumentSubresourceFilterImpl
                 mojom::ActivationState activation_state,
                 base::File ruleset_file,
                 base::OnceClosure first_disallowed_load_callback);
+
+    BuilderImpl(const BuilderImpl&) = delete;
+    BuilderImpl& operator=(const BuilderImpl&) = delete;
+
     ~BuilderImpl() override;
 
     std::unique_ptr<blink::WebDocumentSubresourceFilter> Build() override;
@@ -44,8 +48,6 @@ class WebDocumentSubresourceFilterImpl
     base::File ruleset_file_;
     base::OnceClosure first_disallowed_load_callback_;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(BuilderImpl);
   };
 
   // See DocumentSubresourceFilter description.

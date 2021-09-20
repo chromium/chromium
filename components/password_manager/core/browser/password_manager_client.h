@@ -101,6 +101,10 @@ class PasswordManagerClient {
   using ReauthSucceeded = base::StrongAlias<class ReauthSucceededTag, bool>;
 
   PasswordManagerClient() = default;
+
+  PasswordManagerClient(const PasswordManagerClient&) = delete;
+  PasswordManagerClient& operator=(const PasswordManagerClient&) = delete;
+
   virtual ~PasswordManagerClient() = default;
 
   // Is saving new data for password autofill and filling of saved data enabled
@@ -428,9 +432,6 @@ class PasswordManagerClient {
 
   // Returns if the Autofill Assistant UI is shown.
   virtual bool IsAutofillAssistantUIVisible() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerClient);
 };
 
 }  // namespace password_manager

@@ -35,6 +35,9 @@ class GetPagesTask : public Task {
                const PageCriteria& criteria,
                MultipleOfflinePageItemCallback callback);
 
+  GetPagesTask(const GetPagesTask&) = delete;
+  GetPagesTask& operator=(const GetPagesTask&) = delete;
+
   ~GetPagesTask() override;
 
   // Reads and returns all pages matching |criteria|. This function reads
@@ -55,7 +58,6 @@ class GetPagesTask : public Task {
   MultipleOfflinePageItemCallback callback_;
 
   base::WeakPtrFactory<GetPagesTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(GetPagesTask);
 };
 
 }  // namespace offline_pages

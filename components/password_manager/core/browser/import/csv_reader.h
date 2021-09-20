@@ -18,6 +18,10 @@ namespace password_manager {
 class CSVTable {
  public:
   CSVTable();
+
+  CSVTable(const CSVTable&) = delete;
+  CSVTable& operator=(const CSVTable&) = delete;
+
   ~CSVTable();
 
   // Reads tabular data |csv| in a CSV (Comma Separated Values) format and fills
@@ -48,8 +52,6 @@ class CSVTable {
   // Values from the subsequent rows. Each map represents one row and maps the
   // column names to the value stored at that column in that row.
   std::vector<std::map<base::StringPiece, std::string>> records_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSVTable);
 };
 
 }  // namespace password_manager

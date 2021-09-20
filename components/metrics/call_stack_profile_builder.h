@@ -61,6 +61,9 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
       const WorkIdRecorder* work_id_recorder = nullptr,
       base::OnceClosure completed_callback = base::OnceClosure());
 
+  CallStackProfileBuilder(const CallStackProfileBuilder&) = delete;
+  CallStackProfileBuilder& operator=(const CallStackProfileBuilder&) = delete;
+
   ~CallStackProfileBuilder() override;
 
   // Both weight and count are used by the heap profiler only.
@@ -139,8 +142,6 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
 
   // Maintains the current metadata to apply to samples.
   CallStackProfileMetadata metadata_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallStackProfileBuilder);
 };
 
 }  // namespace metrics

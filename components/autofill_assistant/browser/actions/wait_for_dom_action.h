@@ -25,6 +25,10 @@ class BatchElementChecker;
 class WaitForDomAction : public Action {
  public:
   explicit WaitForDomAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  WaitForDomAction(const WaitForDomAction&) = delete;
+  WaitForDomAction& operator=(const WaitForDomAction&) = delete;
+
   ~WaitForDomAction() override;
 
  private:
@@ -48,8 +52,6 @@ class WaitForDomAction : public Action {
   base::flat_map<std::string, DomObjectFrameStack> elements_;
 
   base::WeakPtrFactory<WaitForDomAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForDomAction);
 };
 
 }  // namespace autofill_assistant

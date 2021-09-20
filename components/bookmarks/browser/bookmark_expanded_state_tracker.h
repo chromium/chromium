@@ -26,6 +26,11 @@ class BookmarkExpandedStateTracker : public BaseBookmarkModelObserver {
 
   BookmarkExpandedStateTracker(BookmarkModel* bookmark_model,
                                PrefService* pref_service);
+
+  BookmarkExpandedStateTracker(const BookmarkExpandedStateTracker&) = delete;
+  BookmarkExpandedStateTracker& operator=(const BookmarkExpandedStateTracker&) =
+      delete;
+
   ~BookmarkExpandedStateTracker() override;
 
   // The set of expanded nodes.
@@ -51,8 +56,6 @@ class BookmarkExpandedStateTracker : public BaseBookmarkModelObserver {
 
   BookmarkModel* bookmark_model_;
   PrefService* pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkExpandedStateTracker);
 };
 
 }  // namespace bookmarks

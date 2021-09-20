@@ -34,6 +34,11 @@ class SingleSampleMetricsFactoryImplTest : public testing::Test {
         base::SingleSampleMetricsFactory::Get());
   }
 
+  SingleSampleMetricsFactoryImplTest(
+      const SingleSampleMetricsFactoryImplTest&) = delete;
+  SingleSampleMetricsFactoryImplTest& operator=(
+      const SingleSampleMetricsFactoryImplTest&) = delete;
+
   ~SingleSampleMetricsFactoryImplTest() override {
     factory_->DestroyProviderForTesting();
     if (thread_.IsRunning())
@@ -81,9 +86,6 @@ class SingleSampleMetricsFactoryImplTest : public testing::Test {
   SingleSampleMetricsFactoryImpl* factory_;
   base::Thread thread_;
   size_t provider_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleSampleMetricsFactoryImplTest);
 };
 
 }  // namespace

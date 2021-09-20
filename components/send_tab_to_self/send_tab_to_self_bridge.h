@@ -48,6 +48,10 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
       syncer::OnceModelTypeStoreFactory create_store_callback,
       history::HistoryService* history_service,
       syncer::DeviceInfoTracker* device_info_tracker);
+
+  SendTabToSelfBridge(const SendTabToSelfBridge&) = delete;
+  SendTabToSelfBridge& operator=(const SendTabToSelfBridge&) = delete;
+
   ~SendTabToSelfBridge() override;
 
   // syncer::ModelTypeSyncBridge overrides.
@@ -182,8 +186,6 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
       history_service_observation_{this};
 
   base::WeakPtrFactory<SendTabToSelfBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfBridge);
 };
 
 }  // namespace send_tab_to_self

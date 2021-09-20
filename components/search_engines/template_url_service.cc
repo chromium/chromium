@@ -246,6 +246,9 @@ class TemplateURLService::Scoper {
     ++service_->outstanding_scoper_handles_;
   }
 
+  Scoper(const Scoper&) = delete;
+  Scoper& operator=(const Scoper&) = delete;
+
   // When a Scoper is destroyed, the handle count is updated. If the handle
   // count is at zero, notify the observers that the model has changed if
   // service is loaded and model was mutated.
@@ -268,8 +271,6 @@ class TemplateURLService::Scoper {
  private:
   std::unique_ptr<KeywordWebDataService::BatchModeScoper> batch_mode_scoper_;
   TemplateURLService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(Scoper);
 };
 
 // TemplateURLService ---------------------------------------------------------

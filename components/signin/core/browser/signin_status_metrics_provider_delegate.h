@@ -35,6 +35,12 @@ struct AccountsStatus {
 class SigninStatusMetricsProviderDelegate {
  public:
   SigninStatusMetricsProviderDelegate();
+
+  SigninStatusMetricsProviderDelegate(
+      const SigninStatusMetricsProviderDelegate&) = delete;
+  SigninStatusMetricsProviderDelegate& operator=(
+      const SigninStatusMetricsProviderDelegate&) = delete;
+
   virtual ~SigninStatusMetricsProviderDelegate();
 
   // Set the |owner_| field to the owning SigninStatusMetricsProvider.
@@ -56,8 +62,6 @@ class SigninStatusMetricsProviderDelegate {
 
  private:
   SigninStatusMetricsProvider* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninStatusMetricsProviderDelegate);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_STATUS_METRICS_PROVIDER_DELEGATE_H_

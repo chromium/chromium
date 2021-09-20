@@ -61,6 +61,12 @@ class CardExpirationDateFixFlowControllerImplTest
       public testing::Test {
  public:
   CardExpirationDateFixFlowControllerImplTest() {}
+
+  CardExpirationDateFixFlowControllerImplTest(
+      const CardExpirationDateFixFlowControllerImplTest&) = delete;
+  CardExpirationDateFixFlowControllerImplTest& operator=(
+      const CardExpirationDateFixFlowControllerImplTest&) = delete;
+
   ~CardExpirationDateFixFlowControllerImplTest() override {}
 
   void SetUp() override {
@@ -68,9 +74,6 @@ class CardExpirationDateFixFlowControllerImplTest
         std::make_unique<TestCardExpirationDateFixFlowView>();
     controller_ = std::make_unique<CardExpirationDateFixFlowControllerImpl>();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CardExpirationDateFixFlowControllerImplTest);
 };
 
 TEST_F(CardExpirationDateFixFlowControllerImplTest, LogShown) {

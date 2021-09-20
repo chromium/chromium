@@ -21,6 +21,11 @@ class ErrorLogger;
 class PaymentManifestParserAndroid {
  public:
   explicit PaymentManifestParserAndroid(std::unique_ptr<ErrorLogger> log);
+
+  PaymentManifestParserAndroid(const PaymentManifestParserAndroid&) = delete;
+  PaymentManifestParserAndroid& operator=(const PaymentManifestParserAndroid&) =
+      delete;
+
   ~PaymentManifestParserAndroid();
 
   void ParsePaymentMethodManifest(
@@ -38,8 +43,6 @@ class PaymentManifestParserAndroid {
 
  private:
   PaymentManifestParser parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestParserAndroid);
 };
 
 }  // namespace payments

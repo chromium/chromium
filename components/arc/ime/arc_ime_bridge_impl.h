@@ -26,6 +26,10 @@ class ArcBridgeService;
 class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
  public:
   ArcImeBridgeImpl(Delegate* delegate, ArcBridgeService* bridge_service);
+
+  ArcImeBridgeImpl(const ArcImeBridgeImpl&) = delete;
+  ArcImeBridgeImpl& operator=(const ArcImeBridgeImpl&) = delete;
+
   ~ArcImeBridgeImpl() override;
 
   // ArcImeBridge overrides:
@@ -59,8 +63,6 @@ class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
  private:
   Delegate* const delegate_;
   ArcBridgeService* const bridge_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcImeBridgeImpl);
 };
 
 }  // namespace arc

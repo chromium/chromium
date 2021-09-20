@@ -45,6 +45,10 @@ class Graph {
   using Observer = GraphObserver;
 
   Graph();
+
+  Graph(const Graph&) = delete;
+  Graph& operator=(const Graph&) = delete;
+
   virtual ~Graph();
 
   // Adds an |observer| on the graph. It is safe for observers to stay
@@ -142,8 +146,6 @@ class Graph {
   // Retrieves the object with the given |type_id|, returning nullptr if none
   // exists. Clients must use the GetRegisteredObjectAs wrapper instead.
   virtual GraphRegistered* GetRegisteredObject(uintptr_t type_id) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Graph);
 };
 
 #if DCHECK_IS_ON()
@@ -157,6 +159,10 @@ class Graph {
 class GraphObserver {
  public:
   GraphObserver();
+
+  GraphObserver(const GraphObserver&) = delete;
+  GraphObserver& operator=(const GraphObserver&) = delete;
+
   virtual ~GraphObserver();
 
   // Called before the |graph| associated with this observer disappears. This
@@ -166,15 +172,16 @@ class GraphObserver {
   // TODO(chrisha): Make this run before the destructor!
   // crbug.com/966840
   virtual void OnBeforeGraphDestroyed(Graph* graph) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GraphObserver);
 };
 
 // Helper class for passing ownership of objects to a graph.
 class GraphOwned {
  public:
   GraphOwned();
+
+  GraphOwned(const GraphOwned&) = delete;
+  GraphOwned& operator=(const GraphOwned&) = delete;
+
   virtual ~GraphOwned();
 
   // Called when the object is passed into the graph.
@@ -183,23 +190,21 @@ class GraphOwned {
   // Called when the object is removed from the graph, either via an explicit
   // call to Graph::TakeFromGraph, or prior to the Graph being destroyed.
   virtual void OnTakenFromGraph(Graph* graph) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GraphOwned);
 };
 
 // A default implementation of GraphOwned.
 class GraphOwnedDefaultImpl : public GraphOwned {
  public:
   GraphOwnedDefaultImpl();
+
+  GraphOwnedDefaultImpl(const GraphOwnedDefaultImpl&) = delete;
+  GraphOwnedDefaultImpl& operator=(const GraphOwnedDefaultImpl&) = delete;
+
   ~GraphOwnedDefaultImpl() override;
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override {}
   void OnTakenFromGraph(Graph* graph) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GraphOwnedDefaultImpl);
 };
 
 }  // namespace performance_manager

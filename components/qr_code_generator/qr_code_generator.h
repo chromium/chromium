@@ -27,6 +27,10 @@ class QRCodeGenerator {
    public:
     GeneratedCode();
     GeneratedCode(GeneratedCode&&);
+
+    GeneratedCode(const GeneratedCode&) = delete;
+    GeneratedCode& operator=(const GeneratedCode&) = delete;
+
     ~GeneratedCode();
 
     // Pixel data; pointer to an array of bytes, where the least-significant
@@ -37,8 +41,6 @@ class QRCodeGenerator {
 
     // Width and height (which are equal) of the generated data, in tiles.
     int qr_size = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(GeneratedCode);
   };
 
   // Static parameters for V5 QR codes.

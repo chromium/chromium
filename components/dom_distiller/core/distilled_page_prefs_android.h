@@ -19,6 +19,11 @@ class DistilledPagePrefsAndroid {
   DistilledPagePrefsAndroid(JNIEnv* env,
                             jobject obj,
                             DistilledPagePrefs* distilled_page_prefs_ptr);
+
+  DistilledPagePrefsAndroid(const DistilledPagePrefsAndroid&) = delete;
+  DistilledPagePrefsAndroid& operator=(const DistilledPagePrefsAndroid&) =
+      delete;
+
   virtual ~DistilledPagePrefsAndroid();
   void SetFontFamily(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj,
@@ -44,8 +49,6 @@ class DistilledPagePrefsAndroid {
 
  private:
   DistilledPagePrefs* distilled_page_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(DistilledPagePrefsAndroid);
 };
 
 class DistilledPagePrefsObserverAndroid : public DistilledPagePrefs::Observer {

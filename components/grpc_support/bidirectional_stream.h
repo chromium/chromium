@@ -60,6 +60,10 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
 
   BidirectionalStream(net::URLRequestContextGetter* request_context_getter,
                       Delegate* delegate);
+
+  BidirectionalStream(const BidirectionalStream&) = delete;
+  BidirectionalStream& operator=(const BidirectionalStream&) = delete;
+
   ~BidirectionalStream() override;
 
   // Disables automatic flushing of each buffer passed to WriteData().
@@ -141,6 +145,10 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
   class WriteBuffers {
    public:
     WriteBuffers();
+
+    WriteBuffers(const WriteBuffers&) = delete;
+    WriteBuffers& operator=(const WriteBuffers&) = delete;
+
     ~WriteBuffers();
 
     // Clears Write Buffers list.
@@ -167,8 +175,6 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
     std::vector<scoped_refptr<net::IOBuffer>> write_buffer_list;
     // A list of the length of each IOBuffer in |write_buffer_list|.
     std::vector<int> write_buffer_len_list;
-
-    DISALLOW_COPY_AND_ASSIGN(WriteBuffers);
   };
 
   // net::BidirectionalStream::Delegate implementations:
@@ -234,8 +240,6 @@ class BidirectionalStream : public net::BidirectionalStream::Delegate {
 
   base::WeakPtr<BidirectionalStream> weak_this_;
   base::WeakPtrFactory<BidirectionalStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BidirectionalStream);
 };
 
 }  // namespace grpc_support

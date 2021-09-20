@@ -84,6 +84,10 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
       std::unique_ptr<media::VideoCaptureOracle> oracle,
       bool log_to_webrtc);
 
+  FrameSinkVideoCapturerImpl(const FrameSinkVideoCapturerImpl&) = delete;
+  FrameSinkVideoCapturerImpl& operator=(const FrameSinkVideoCapturerImpl&) =
+      delete;
+
   ~FrameSinkVideoCapturerImpl() final;
 
   // The currently-requested frame sink for capture. The frame sink manager
@@ -358,8 +362,6 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // A weak pointer factory used for cancelling the results from any in-flight
   // copy output requests.
   base::WeakPtrFactory<FrameSinkVideoCapturerImpl> capture_weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSinkVideoCapturerImpl);
 };
 
 }  // namespace viz

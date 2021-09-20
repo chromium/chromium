@@ -25,6 +25,11 @@ class OverlayJsRenderFrameObserver : public content::RenderFrameObserver {
  public:
   OverlayJsRenderFrameObserver(content::RenderFrame* render_frame,
                                service_manager::BinderRegistry* registry);
+
+  OverlayJsRenderFrameObserver(const OverlayJsRenderFrameObserver&) = delete;
+  OverlayJsRenderFrameObserver& operator=(const OverlayJsRenderFrameObserver&) =
+      delete;
+
   ~OverlayJsRenderFrameObserver() override;
 
   // RenderFrameObserver implementation.
@@ -52,8 +57,6 @@ class OverlayJsRenderFrameObserver : public content::RenderFrameObserver {
   bool did_start_enabling_js_api_ = false;
 
   base::WeakPtrFactory<OverlayJsRenderFrameObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayJsRenderFrameObserver);
 };
 
 }  // namespace contextual_search

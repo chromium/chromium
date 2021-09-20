@@ -19,6 +19,10 @@ namespace test {
 class TestDownloadDriver : public DownloadDriver {
  public:
   TestDownloadDriver();
+
+  TestDownloadDriver(const TestDownloadDriver&) = delete;
+  TestDownloadDriver& operator=(const TestDownloadDriver&) = delete;
+
   ~TestDownloadDriver() override;
 
   // Marks download driver as ready, used to test logic that depends on
@@ -57,8 +61,6 @@ class TestDownloadDriver : public DownloadDriver {
 
   // Map of guid --> DriverEntry.
   std::map<std::string, DriverEntry> entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadDriver);
 };
 
 }  // namespace test

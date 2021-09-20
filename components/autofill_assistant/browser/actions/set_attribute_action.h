@@ -19,6 +19,10 @@ class SetAttributeAction : public Action {
  public:
   explicit SetAttributeAction(ActionDelegate* delegate,
                               const ActionProto& proto);
+
+  SetAttributeAction(const SetAttributeAction&) = delete;
+  SetAttributeAction& operator=(const SetAttributeAction&) = delete;
+
   ~SetAttributeAction() override;
 
  private:
@@ -32,8 +36,6 @@ class SetAttributeAction : public Action {
                       const ClientStatus& status);
 
   base::WeakPtrFactory<SetAttributeAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SetAttributeAction);
 };
 
 }  // namespace autofill_assistant

@@ -14,13 +14,15 @@ class UnsupportedAction : public Action {
  public:
   explicit UnsupportedAction(ActionDelegate* delegate,
                              const ActionProto& proto);
+
+  UnsupportedAction(const UnsupportedAction&) = delete;
+  UnsupportedAction& operator=(const UnsupportedAction&) = delete;
+
   ~UnsupportedAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(UnsupportedAction);
 };
 
 }  // namespace autofill_assistant

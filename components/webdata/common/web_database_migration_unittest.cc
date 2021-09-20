@@ -52,6 +52,10 @@ std::string RemoveQuotes(const std::string& has_quotes) {
 class WebDatabaseMigrationTest : public testing::Test {
  public:
   WebDatabaseMigrationTest() {}
+
+  WebDatabaseMigrationTest(const WebDatabaseMigrationTest&) = delete;
+  WebDatabaseMigrationTest& operator=(const WebDatabaseMigrationTest&) = delete;
+
   ~WebDatabaseMigrationTest() override {}
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
@@ -120,8 +124,6 @@ class WebDatabaseMigrationTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDatabaseMigrationTest);
 };
 
 const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 97;

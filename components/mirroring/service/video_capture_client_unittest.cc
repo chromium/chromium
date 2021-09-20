@@ -51,6 +51,9 @@ class VideoCaptureClientTest : public ::testing::Test,
                                                    std::move(host));
   }
 
+  VideoCaptureClientTest(const VideoCaptureClientTest&) = delete;
+  VideoCaptureClientTest& operator=(const VideoCaptureClientTest&) = delete;
+
   ~VideoCaptureClientTest() override {
     if (client_) {
       base::RunLoop run_loop;
@@ -118,8 +121,6 @@ class VideoCaptureClientTest : public ::testing::Test,
   base::MockCallback<base::OnceClosure> error_cb_;
   std::unique_ptr<FakeVideoCaptureHost> host_impl_;
   std::unique_ptr<VideoCaptureClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureClientTest);
 };
 
 TEST_P(VideoCaptureClientTest, Basic) {

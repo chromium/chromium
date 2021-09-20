@@ -38,6 +38,9 @@ class OverlayAgentViews : public OverlayAgent,
                           public ui::EventHandler,
                           public ui::LayerDelegate {
  public:
+  OverlayAgentViews(const OverlayAgentViews&) = delete;
+  OverlayAgentViews& operator=(const OverlayAgentViews&) = delete;
+
   ~OverlayAgentViews() override;
 
   // Creates a platform-specific instance.
@@ -119,8 +122,6 @@ class OverlayAgentViews : public OverlayAgent,
   gfx::Rect pinned_rect_;
 
   int pinned_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayAgentViews);
 };
 
 }  // namespace ui_devtools

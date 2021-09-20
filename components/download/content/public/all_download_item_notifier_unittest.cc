@@ -22,6 +22,10 @@ namespace {
 class MockNotifierObserver : public AllDownloadItemNotifier::Observer {
  public:
   MockNotifierObserver() {}
+
+  MockNotifierObserver(const MockNotifierObserver&) = delete;
+  MockNotifierObserver& operator=(const MockNotifierObserver&) = delete;
+
   ~MockNotifierObserver() override {}
 
   MOCK_METHOD(void,
@@ -44,15 +48,16 @@ class MockNotifierObserver : public AllDownloadItemNotifier::Observer {
               OnDownloadDestroyed,
               (content::DownloadManager * manager, DownloadItem* item),
               (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNotifierObserver);
 };
 
 class AllDownloadItemNotifierTest : public testing::Test {
  public:
   AllDownloadItemNotifierTest()
       : download_manager_(new content::MockDownloadManager) {}
+
+  AllDownloadItemNotifierTest(const AllDownloadItemNotifierTest&) = delete;
+  AllDownloadItemNotifierTest& operator=(const AllDownloadItemNotifierTest&) =
+      delete;
 
   ~AllDownloadItemNotifierTest() override {}
 
@@ -83,8 +88,6 @@ class AllDownloadItemNotifierTest : public testing::Test {
   std::unique_ptr<content::MockDownloadManager> download_manager_;
   std::unique_ptr<AllDownloadItemNotifier> notifier_;
   NiceMock<MockNotifierObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AllDownloadItemNotifierTest);
 };
 
 }  // namespace

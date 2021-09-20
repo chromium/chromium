@@ -66,6 +66,10 @@ class InterceptingPrefFilter : public PrefFilter {
  public:
   InterceptingPrefFilter();
   InterceptingPrefFilter(OnWriteCallbackPair callback_pair);
+
+  InterceptingPrefFilter(const InterceptingPrefFilter&) = delete;
+  InterceptingPrefFilter& operator=(const InterceptingPrefFilter&) = delete;
+
   ~InterceptingPrefFilter() override;
 
   // PrefFilter implementation:
@@ -89,8 +93,6 @@ class InterceptingPrefFilter : public PrefFilter {
   PostFilterOnLoadCallback post_filter_on_load_callback_;
   std::unique_ptr<base::DictionaryValue> intercepted_prefs_;
   OnWriteCallbackPair on_write_callback_pair_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptingPrefFilter);
 };
 
 InterceptingPrefFilter::InterceptingPrefFilter() {}

@@ -22,6 +22,10 @@ namespace viz {
 class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
  public:
   TestFrameSinkManagerImpl();
+
+  TestFrameSinkManagerImpl(const TestFrameSinkManagerImpl&) = delete;
+  TestFrameSinkManagerImpl& operator=(const TestFrameSinkManagerImpl&) = delete;
+
   ~TestFrameSinkManagerImpl() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::FrameSinkManager> receiver,
@@ -77,8 +81,6 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFrameSinkManagerImpl);
 };
 
 }  // namespace viz

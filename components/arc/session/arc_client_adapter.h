@@ -49,6 +49,10 @@ class ArcClientAdapter {
 
   // Creates a default instance of ArcClientAdapter.
   static std::unique_ptr<ArcClientAdapter> Create();
+
+  ArcClientAdapter(const ArcClientAdapter&) = delete;
+  ArcClientAdapter& operator=(const ArcClientAdapter&) = delete;
+
   virtual ~ArcClientAdapter();
 
   // StartMiniArc starts ARC with only a handful of ARC processes for Chrome OS
@@ -88,9 +92,6 @@ class ArcClientAdapter {
   ArcClientAdapter();
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcClientAdapter);
 };
 
 }  // namespace arc

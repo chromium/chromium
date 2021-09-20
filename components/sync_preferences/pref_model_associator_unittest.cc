@@ -29,6 +29,11 @@ const char kCustomMergePrefName[] = "pref.custom";
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   TestPrefModelAssociatorClient() {}
+
+  TestPrefModelAssociatorClient(const TestPrefModelAssociatorClient&) = delete;
+  TestPrefModelAssociatorClient& operator=(
+      const TestPrefModelAssociatorClient&) = delete;
+
   ~TestPrefModelAssociatorClient() override {}
 
   // PrefModelAssociatorClient implementation.
@@ -50,9 +55,6 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
     }
     return nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestPrefModelAssociatorClient);
 };
 
 class AbstractPreferenceMergeTest : public testing::Test {

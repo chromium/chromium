@@ -108,6 +108,9 @@ class CastMessageHandlerTest : public testing::Test {
         .WillByDefault(testing::Return(&cast_socket_));
   }
 
+  CastMessageHandlerTest(const CastMessageHandlerTest&) = delete;
+  CastMessageHandlerTest& operator=(const CastMessageHandlerTest&) = delete;
+
   ~CastMessageHandlerTest() override = default;
 
   void OnMessage(const CastMessage& message) {
@@ -234,9 +237,6 @@ class CastMessageHandlerTest : public testing::Test {
   base::MockCallback<GetAppAvailabilityCallback> get_app_availability_callback_;
   base::MockCallback<ResultCallback> set_volume_callback_;
   base::MockCallback<ResultCallback> stop_session_callback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastMessageHandlerTest);
 };
 
 TEST_F(CastMessageHandlerTest, VirtualConnectionCreatedOnlyOnce) {

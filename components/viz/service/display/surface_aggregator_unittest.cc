@@ -80,6 +80,11 @@ constexpr gfx::Rect kEmptyDamage(0, 0);
 class MockAggregatedDamageCallback {
  public:
   MockAggregatedDamageCallback() = default;
+
+  MockAggregatedDamageCallback(const MockAggregatedDamageCallback&) = delete;
+  MockAggregatedDamageCallback& operator=(const MockAggregatedDamageCallback&) =
+      delete;
+
   ~MockAggregatedDamageCallback() = default;
 
   CompositorFrameSinkSupport::AggregatedDamageCallback GetCallback() {
@@ -96,8 +101,6 @@ class MockAggregatedDamageCallback {
 
  private:
   base::WeakPtrFactory<MockAggregatedDamageCallback> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockAggregatedDamageCallback);
 };
 
 class DisplayTimeSource {
@@ -1004,6 +1007,9 @@ class TestVizClient {
     allocator_.GenerateId();
   }
 
+  TestVizClient(const TestVizClient&) = delete;
+  TestVizClient& operator=(const TestVizClient&) = delete;
+
   ~TestVizClient() = default;
 
   Surface* GetSurface() const {
@@ -1065,8 +1071,6 @@ class TestVizClient {
   ParentLocalSurfaceIdAllocator allocator_;
 
   std::map<TestVizClient*, bool> embedded_clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVizClient);
 };
 
 TEST_F(SurfaceAggregatorValidSurfaceTest, UndrawnSurfaces) {

@@ -15,14 +15,16 @@ namespace metrics {
 class RenderingPerfMetricsProvider : public MetricsProvider {
  public:
   RenderingPerfMetricsProvider();
+
+  RenderingPerfMetricsProvider(const RenderingPerfMetricsProvider&) = delete;
+  RenderingPerfMetricsProvider& operator=(const RenderingPerfMetricsProvider&) =
+      delete;
+
   ~RenderingPerfMetricsProvider() override;
 
   // MetricsProvider:
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderingPerfMetricsProvider);
 };
 
 }  // namespace metrics

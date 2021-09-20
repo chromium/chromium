@@ -91,6 +91,12 @@ gfx::ImageSkia CreateTestBackgroundImage(SkColor color) {
 class MediaNotificationBackgroundImplTest : public views::ViewsTestBase {
  public:
   MediaNotificationBackgroundImplTest() = default;
+
+  MediaNotificationBackgroundImplTest(
+      const MediaNotificationBackgroundImplTest&) = delete;
+  MediaNotificationBackgroundImplTest& operator=(
+      const MediaNotificationBackgroundImplTest&) = delete;
+
   ~MediaNotificationBackgroundImplTest() override = default;
 
   void SetUp() override {
@@ -123,8 +129,6 @@ class MediaNotificationBackgroundImplTest : public views::ViewsTestBase {
 
  private:
   std::unique_ptr<MediaNotificationBackgroundImpl> background_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaNotificationBackgroundImplTest);
 };
 
 // If we have no artwork then we should use the default background color.

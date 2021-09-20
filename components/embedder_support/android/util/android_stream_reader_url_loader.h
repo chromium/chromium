@@ -90,6 +90,11 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       std::unique_ptr<ResponseDelegate> response_delegate,
       absl::optional<SecurityOptions> security_options);
+
+  AndroidStreamReaderURLLoader(const AndroidStreamReaderURLLoader&) = delete;
+  AndroidStreamReaderURLLoader& operator=(const AndroidStreamReaderURLLoader&) =
+      delete;
+
   ~AndroidStreamReaderURLLoader() override;
 
   void Start();
@@ -156,8 +161,6 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<AndroidStreamReaderURLLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidStreamReaderURLLoader);
 };
 
 }  // namespace embedder_support

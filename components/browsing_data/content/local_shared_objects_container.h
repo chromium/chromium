@@ -37,6 +37,11 @@ class LocalSharedObjectsContainer {
       content::BrowserContext* browser_context,
       const std::vector<storage::FileSystemType>& additional_file_system_types,
       browsing_data::CookieHelper::IsDeletionDisabledCallback callback);
+
+  LocalSharedObjectsContainer(const LocalSharedObjectsContainer&) = delete;
+  LocalSharedObjectsContainer& operator=(const LocalSharedObjectsContainer&) =
+      delete;
+
   ~LocalSharedObjectsContainer();
 
   // Returns the number of objects stored in the container.
@@ -83,8 +88,6 @@ class LocalSharedObjectsContainer {
   scoped_refptr<CannedSharedWorkerHelper> shared_workers_;
   scoped_refptr<CannedCacheStorageHelper> cache_storages_;
   scoped_refptr<CannedLocalStorageHelper> session_storages_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalSharedObjectsContainer);
 };
 
 }  // namespace browsing_data

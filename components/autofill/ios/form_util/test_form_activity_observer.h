@@ -41,6 +41,10 @@ struct TestFormRemovalInfo {
 class TestFormActivityObserver : public autofill::FormActivityObserver {
  public:
   explicit TestFormActivityObserver(web::WebState* web_state);
+
+  TestFormActivityObserver(const TestFormActivityObserver&) = delete;
+  TestFormActivityObserver& operator=(const TestFormActivityObserver&) = delete;
+
   ~TestFormActivityObserver() override;
 
   // Arguments passed to |DocumentSubmitted|.
@@ -72,8 +76,6 @@ class TestFormActivityObserver : public autofill::FormActivityObserver {
   std::unique_ptr<TestSubmitDocumentInfo> submit_document_info_;
   std::unique_ptr<TestFormActivityInfo> form_activity_info_;
   std::unique_ptr<TestFormRemovalInfo> form_removal_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFormActivityObserver);
 };
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_IOS_FORM_UTIL_TEST_FORM_ACTIVITY_OBSERVER_H_

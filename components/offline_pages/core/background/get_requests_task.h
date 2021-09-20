@@ -18,6 +18,10 @@ class GetRequestsTask : public Task {
  public:
   GetRequestsTask(RequestQueueStore* store,
                   RequestQueueStore::GetRequestsCallback callback);
+
+  GetRequestsTask(const GetRequestsTask&) = delete;
+  GetRequestsTask& operator=(const GetRequestsTask&) = delete;
+
   ~GetRequestsTask() override;
 
  private:
@@ -36,7 +40,6 @@ class GetRequestsTask : public Task {
   RequestQueueStore::GetRequestsCallback callback_;
 
   base::WeakPtrFactory<GetRequestsTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(GetRequestsTask);
 };
 
 }  // namespace offline_pages

@@ -61,6 +61,9 @@ enum AdSamplerTriggerAction {
 class AdSamplerTrigger : public content::WebContentsObserver,
                          public content::WebContentsUserData<AdSamplerTrigger> {
  public:
+  AdSamplerTrigger(const AdSamplerTrigger&) = delete;
+  AdSamplerTrigger& operator=(const AdSamplerTrigger&) = delete;
+
   ~AdSamplerTrigger() override;
 
   // content::WebContentsObserver implementation.
@@ -119,8 +122,6 @@ class AdSamplerTrigger : public content::WebContentsObserver,
   base::WeakPtrFactory<AdSamplerTrigger> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AdSamplerTrigger);
 };
 
 }  // namespace safe_browsing

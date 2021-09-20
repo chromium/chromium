@@ -24,6 +24,11 @@ class InternalNodeAttachedDataStorage {
 
   InternalNodeAttachedDataStorage() {}
 
+  InternalNodeAttachedDataStorage(const InternalNodeAttachedDataStorage&) =
+      delete;
+  InternalNodeAttachedDataStorage& operator=(
+      const InternalNodeAttachedDataStorage&) = delete;
+
   ~InternalNodeAttachedDataStorage() { Reset(); }
 
   operator bool() const { return data_; }
@@ -57,7 +62,6 @@ class InternalNodeAttachedDataStorage {
  private:
   NodeAttachedData* data_ = nullptr;
   uint8_t buffer_[kDataSize];
-  DISALLOW_COPY_AND_ASSIGN(InternalNodeAttachedDataStorage);
 };
 
 }  // namespace performance_manager

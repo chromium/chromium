@@ -81,6 +81,10 @@ class WMHelper : public aura::client::DragDropDelegate {
     };
 
     LifetimeManager();
+
+    LifetimeManager(const LifetimeManager&) = delete;
+    LifetimeManager& operator=(const LifetimeManager&) = delete;
+
     ~LifetimeManager();
 
     void AddObserver(Observer* observer);
@@ -88,8 +92,6 @@ class WMHelper : public aura::client::DragDropDelegate {
 
    private:
     base::ObserverList<Observer> observers_;
-
-    DISALLOW_COPY_AND_ASSIGN(LifetimeManager);
   };
 
   // Used to resolve the properties to be set to the window
@@ -109,6 +111,10 @@ class WMHelper : public aura::client::DragDropDelegate {
   };
 
   WMHelper();
+
+  WMHelper(const WMHelper&) = delete;
+  WMHelper& operator=(const WMHelper&) = delete;
+
   ~WMHelper() override;
 
   static WMHelper* GetInstance();
@@ -182,8 +188,6 @@ class WMHelper : public aura::client::DragDropDelegate {
 
  protected:
   std::vector<std::unique_ptr<AppPropertyResolver>> resolver_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WMHelper);
 };
 
 }  // namespace exo

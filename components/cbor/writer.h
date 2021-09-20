@@ -72,6 +72,9 @@ class CBOR_EXPORT Writer {
     bool allow_invalid_utf8_for_testing = false;
   };
 
+  Writer(const Writer&) = delete;
+  Writer& operator=(const Writer&) = delete;
+
   ~Writer();
 
   // Returns the CBOR byte string representation of |node|, unless its nesting
@@ -109,8 +112,6 @@ class CBOR_EXPORT Writer {
 
   // Holds the encoded CBOR data.
   std::vector<uint8_t>* encoded_cbor_;
-
-  DISALLOW_COPY_AND_ASSIGN(Writer);
 };
 
 }  // namespace cbor

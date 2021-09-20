@@ -36,6 +36,10 @@ std::string TestAttribution() {
 class TestOfflinePageModel : public StubOfflinePageModel {
  public:
   TestOfflinePageModel() { ignore_result(archive_dir_.CreateUniqueTempDir()); }
+
+  TestOfflinePageModel(const TestOfflinePageModel&) = delete;
+  TestOfflinePageModel& operator=(const TestOfflinePageModel&) = delete;
+
   ~TestOfflinePageModel() override = default;
 
   void AddPage(const OfflinePageItem& page, AddPageCallback callback) override {
@@ -59,8 +63,6 @@ class TestOfflinePageModel : public StubOfflinePageModel {
   base::ScopedTempDir archive_dir_;
   bool page_added_ = false;
   OfflinePageItem last_added_page_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOfflinePageModel);
 };
 
 }  // namespace
@@ -68,6 +70,10 @@ class TestOfflinePageModel : public StubOfflinePageModel {
 class PrefetchImporterImplTest : public testing::Test {
  public:
   PrefetchImporterImplTest() = default;
+
+  PrefetchImporterImplTest(const PrefetchImporterImplTest&) = delete;
+  PrefetchImporterImplTest& operator=(const PrefetchImporterImplTest&) = delete;
+
   ~PrefetchImporterImplTest() override = default;
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
@@ -105,8 +111,6 @@ class PrefetchImporterImplTest : public testing::Test {
   TestOfflinePageModel model_;
   base::ScopedTempDir temp_dir_;
   TestPrefetchDispatcher dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchImporterImplTest);
 };
 
 TEST_F(PrefetchImporterImplTest, ImportSuccess) {

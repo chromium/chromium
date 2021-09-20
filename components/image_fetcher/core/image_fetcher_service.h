@@ -51,6 +51,10 @@ class ImageFetcherService : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<ImageCache> image_cache,
       bool read_only);
+
+  ImageFetcherService(const ImageFetcherService&) = delete;
+  ImageFetcherService& operator=(const ImageFetcherService&) = delete;
+
   ~ImageFetcherService() override;
 
   // Get an image fetcher according to the given config.
@@ -69,8 +73,6 @@ class ImageFetcherService : public KeyedService {
   // This fetcher goes through a disk cache before going to the network, but
   // defers image transcoding when fetching.
   std::unique_ptr<ImageFetcher> reduced_mode_image_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherService);
 };
 
 }  // namespace image_fetcher

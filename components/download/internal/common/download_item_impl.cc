@@ -181,6 +181,10 @@ class DownloadItemActivatedData
         start_offset_(start_offset),
         has_user_gesture_(has_user_gesture) {}
 
+  DownloadItemActivatedData(const DownloadItemActivatedData&) = delete;
+  DownloadItemActivatedData& operator=(const DownloadItemActivatedData&) =
+      delete;
+
   ~DownloadItemActivatedData() override = default;
 
   void AppendAsTraceFormat(std::string* out) const override {
@@ -217,7 +221,6 @@ class DownloadItemActivatedData
   DownloadDangerType danger_type_;
   int64_t start_offset_;
   bool has_user_gesture_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemActivatedData);
 };
 
 }  // namespace

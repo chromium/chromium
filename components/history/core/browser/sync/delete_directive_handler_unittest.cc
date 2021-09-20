@@ -118,6 +118,11 @@ class HistoryDeleteDirectiveHandlerTest : public testing::Test {
     return history_backend_->QueryURL(url, /*want_visits=*/true);
   }
 
+  HistoryDeleteDirectiveHandlerTest(const HistoryDeleteDirectiveHandlerTest&) =
+      delete;
+  HistoryDeleteDirectiveHandlerTest& operator=(
+      const HistoryDeleteDirectiveHandlerTest&) = delete;
+
   ~HistoryDeleteDirectiveHandlerTest() override { history_backend_->Closing(); }
 
   scoped_refptr<HistoryBackend> history_backend() { return history_backend_; }
@@ -134,8 +139,6 @@ class HistoryDeleteDirectiveHandlerTest : public testing::Test {
   base::ScopedTempDir test_dir_;
   scoped_refptr<HistoryBackend> history_backend_;
   std::unique_ptr<DeleteDirectiveHandler> delete_directive_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryDeleteDirectiveHandlerTest);
 };
 
 // Tests calling WaitUntilReadyToSync() after the backend has already been

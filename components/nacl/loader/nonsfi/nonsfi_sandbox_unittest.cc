@@ -605,6 +605,10 @@ template<void(*callback)(int pid, int tid)>
 class TgkillDelegate : public sandbox::BPFTesterDelegate {
  public:
   TgkillDelegate() {}
+
+  TgkillDelegate(const TgkillDelegate&) = delete;
+  TgkillDelegate& operator=(const TgkillDelegate&) = delete;
+
   ~TgkillDelegate() override {}
 
   std::unique_ptr<sandbox::bpf_dsl::Policy> GetSandboxBPFPolicy() override {
@@ -625,9 +629,6 @@ class TgkillDelegate : public sandbox::BPFTesterDelegate {
   // These are longs as a temporary workaround for crbug.com/532992.
   long pid_;
   long tid_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TgkillDelegate);
 };
 
 void BPF_TEST_D_tgkill_with_invalid_signal(int pid, int tid) {

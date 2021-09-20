@@ -182,6 +182,10 @@ class PageInfo {
   PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
            content::WebContents* web_contents,
            const GURL& url);
+
+  PageInfo(const PageInfo&) = delete;
+  PageInfo& operator=(const PageInfo&) = delete;
+
   ~PageInfo();
 
   // Checks whether this permission is currently the factory default, as set by
@@ -429,8 +433,6 @@ class PageInfo {
   // Description of the Safe Browsing status. Non-empty if
   // MaliciousContentStatus isn't NONE.
   std::u16string safe_browsing_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageInfo);
 };
 
 #endif  // COMPONENTS_PAGE_INFO_PAGE_INFO_H_

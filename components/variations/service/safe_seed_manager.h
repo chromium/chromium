@@ -25,6 +25,10 @@ class SafeSeedManager {
   // Creates a SafeSeedManager instance and updates a safe mode pref,
   // kVariationsFailedToFetchSeedStreak, for bookkeeping.
   explicit SafeSeedManager(PrefService* local_state);
+
+  SafeSeedManager(const SafeSeedManager&) = delete;
+  SafeSeedManager& operator=(const SafeSeedManager&) = delete;
+
   virtual ~SafeSeedManager();
 
   // Registers safe mode prefs in Local State.
@@ -85,8 +89,6 @@ class SafeSeedManager {
   // The pref service used to persist the variations seed. Weak reference; must
   // outlive |this| instance.
   PrefService* local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeSeedManager);
 };
 
 }  // namespace variations

@@ -123,6 +123,9 @@ class FeedbackUploaderTest : public testing::Test {
     RecreateUploader();
   }
 
+  FeedbackUploaderTest(const FeedbackUploaderTest&) = delete;
+  FeedbackUploaderTest& operator=(const FeedbackUploaderTest&) = delete;
+
   ~FeedbackUploaderTest() override = default;
 
   void RecreateUploader() {
@@ -143,8 +146,6 @@ class FeedbackUploaderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
   std::unique_ptr<MockFeedbackUploader> uploader_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderTest);
 };
 
 TEST_F(FeedbackUploaderTest, QueueMultiple) {

@@ -27,6 +27,11 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
  public:
   WebSocketSBHandshakeThrottle(mojom::SafeBrowsing* safe_browsing,
                                int render_frame_id);
+
+  WebSocketSBHandshakeThrottle(const WebSocketSBHandshakeThrottle&) = delete;
+  WebSocketSBHandshakeThrottle& operator=(const WebSocketSBHandshakeThrottle&) =
+      delete;
+
   ~WebSocketSBHandshakeThrottle() override;
 
   void ThrottleHandshake(const blink::WebURL& url,
@@ -63,8 +68,6 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
   State state_ = State::kInitial;
 
   base::WeakPtrFactory<WebSocketSBHandshakeThrottle> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketSBHandshakeThrottle);
 };
 
 }  // namespace safe_browsing

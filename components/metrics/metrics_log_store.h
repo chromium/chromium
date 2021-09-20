@@ -65,6 +65,10 @@ class MetricsLogStore : public LogStore {
   MetricsLogStore(PrefService* local_state,
                   StorageLimits storage_limits,
                   const std::string& signing_key);
+
+  MetricsLogStore(const MetricsLogStore&) = delete;
+  MetricsLogStore& operator=(const MetricsLogStore&) = delete;
+
   ~MetricsLogStore() override;
 
   // Registers local state prefs used by this class.
@@ -135,8 +139,6 @@ class MetricsLogStore : public LogStore {
   // been sent yet. If initialized, all logs of type ONGOING_LOG will be stored
   // here instead of |ongoing_log_queue_|.
   std::unique_ptr<UnsentLogStore> alternate_ongoing_log_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsLogStore);
 };
 
 }  // namespace metrics

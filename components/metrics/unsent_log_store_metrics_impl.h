@@ -14,6 +14,11 @@ namespace metrics {
 class UnsentLogStoreMetricsImpl : public UnsentLogStoreMetrics {
  public:
   UnsentLogStoreMetricsImpl() {}
+
+  UnsentLogStoreMetricsImpl(const UnsentLogStoreMetricsImpl&) = delete;
+  UnsentLogStoreMetricsImpl& operator=(const UnsentLogStoreMetricsImpl&) =
+      delete;
+
   ~UnsentLogStoreMetricsImpl() override {}
 
   // UnsentLogStoreMetrics:
@@ -24,9 +29,6 @@ class UnsentLogStoreMetricsImpl : public UnsentLogStoreMetrics {
   void RecordLastUnsentLogMetadataMetrics(int unsent_samples_count,
                                           int sent_samples_count,
                                           int persisted_size_in_kb) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnsentLogStoreMetricsImpl);
 };
 
 }  // namespace metrics

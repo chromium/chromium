@@ -76,6 +76,10 @@ namespace {
 class IndependentFlattener : public base::HistogramFlattener {
  public:
   explicit IndependentFlattener(MetricsLog* log) : log_(log) {}
+
+  IndependentFlattener(const IndependentFlattener&) = delete;
+  IndependentFlattener& operator=(const IndependentFlattener&) = delete;
+
   ~IndependentFlattener() override {}
 
   // base::HistogramFlattener:
@@ -86,8 +90,6 @@ class IndependentFlattener : public base::HistogramFlattener {
 
  private:
   MetricsLog* const log_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndependentFlattener);
 };
 
 // Convenience function to return the given time at a resolution in seconds.

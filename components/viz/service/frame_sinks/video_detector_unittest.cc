@@ -86,6 +86,9 @@ class VideoDetectorTest : public testing::Test {
                             false,
                             false) {}
 
+  VideoDetectorTest(const VideoDetectorTest&) = delete;
+  VideoDetectorTest& operator=(const VideoDetectorTest&) = delete;
+
   ~VideoDetectorTest() override = default;
 
   void SetUp() override {
@@ -214,8 +217,6 @@ class VideoDetectorTest : public testing::Test {
   SurfaceAggregator surface_aggregator_;
   std::unique_ptr<CompositorFrameSinkSupport> root_frame_sink_;
   std::set<CompositorFrameSinkSupport*> embedded_clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDetectorTest);
 };
 
 constexpr gfx::Rect VideoDetectorTest::kMinRect;

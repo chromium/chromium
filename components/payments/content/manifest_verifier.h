@@ -78,6 +78,9 @@ class ManifestVerifier final : public WebDataServiceConsumer {
                    PaymentManifestParser* parser,
                    PaymentManifestWebDataService* cache);
 
+  ManifestVerifier(const ManifestVerifier&) = delete;
+  ManifestVerifier& operator=(const ManifestVerifier&) = delete;
+
   ~ManifestVerifier() override;
 
   // Initiates the verification. This object should be deleted after
@@ -168,8 +171,6 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   std::string first_error_message_;
 
   base::WeakPtrFactory<ManifestVerifier> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestVerifier);
 };
 
 }  // namespace payments

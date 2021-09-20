@@ -48,6 +48,10 @@ class DataOffer final : public ui::PropertyHandler {
   using AsyncSendDataCallback = base::OnceCallback<void(SendDataCallback)>;
 
   DataOffer(DataOfferDelegate* delegate);
+
+  DataOffer(const DataOffer&) = delete;
+  DataOffer& operator=(const DataOffer&) = delete;
+
   ~DataOffer() override;
 
   void AddObserver(DataOfferObserver* observer);
@@ -126,21 +130,21 @@ class DataOffer final : public ui::PropertyHandler {
   bool finished_;
 
   base::WeakPtrFactory<DataOffer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataOffer);
 };
 
 class ScopedDataOffer {
  public:
   ScopedDataOffer(DataOffer* data_offer, DataOfferObserver* observer);
+
+  ScopedDataOffer(const ScopedDataOffer&) = delete;
+  ScopedDataOffer& operator=(const ScopedDataOffer&) = delete;
+
   ~ScopedDataOffer();
   DataOffer* get() { return data_offer_; }
 
  private:
   DataOffer* const data_offer_;
   DataOfferObserver* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDataOffer);
 };
 
 }  // namespace exo

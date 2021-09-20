@@ -34,6 +34,10 @@ class LanguagePrefs {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   explicit LanguagePrefs(PrefService* user_prefs);
+
+  LanguagePrefs(const LanguagePrefs&) = delete;
+  LanguagePrefs& operator=(const LanguagePrefs&) = delete;
+
   ~LanguagePrefs();
 
   // Gets the language settings list containing combination of policy-forced and
@@ -69,8 +73,6 @@ class LanguagePrefs {
 
   PrefService* prefs_;  // Weak.
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguagePrefs);
 };
 
 void ResetLanguagePrefs(PrefService* prefs);

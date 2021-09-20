@@ -16,13 +16,14 @@ class SavePackageDownloadJob : public DownloadJob {
   SavePackageDownloadJob(
       DownloadItem* download_item,
       DownloadJob::CancelRequestCallback cancel_request_callback);
+
+  SavePackageDownloadJob(const SavePackageDownloadJob&) = delete;
+  SavePackageDownloadJob& operator=(const SavePackageDownloadJob&) = delete;
+
   ~SavePackageDownloadJob() override;
 
   // DownloadJob implementation.
   bool IsSavePackageDownload() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SavePackageDownloadJob);
 };
 
 }  //  namespace download

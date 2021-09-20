@@ -65,6 +65,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
                const media::mojom::RemotingSinkMetadata& sink_metadata,
                MessageDispatcher* message_dispatcher);
 
+  MediaRemoter(const MediaRemoter&) = delete;
+  MediaRemoter& operator=(const MediaRemoter&) = delete;
+
   ~MediaRemoter() override;
 
   // Callback from |message_dispatcher_| for received RPC messages.
@@ -144,8 +147,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   } state_;
 
   base::WeakPtrFactory<MediaRemoter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRemoter);
 };
 
 }  // namespace mirroring

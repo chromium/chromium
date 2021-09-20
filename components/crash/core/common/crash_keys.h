@@ -42,10 +42,11 @@ void ResetCommandLineForTesting();
 class ScopedPrinterInfo {
  public:
   explicit ScopedPrinterInfo(base::StringPiece data);
-  ~ScopedPrinterInfo();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedPrinterInfo);
+  ScopedPrinterInfo(const ScopedPrinterInfo&) = delete;
+  ScopedPrinterInfo& operator=(const ScopedPrinterInfo&) = delete;
+
+  ~ScopedPrinterInfo();
 };
 
 }  // namespace crash_keys

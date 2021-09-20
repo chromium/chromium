@@ -37,6 +37,10 @@ class FaviconDriverObserver {
   };
 
   FaviconDriverObserver() {}
+
+  FaviconDriverObserver(const FaviconDriverObserver&) = delete;
+  FaviconDriverObserver& operator=(const FaviconDriverObserver&) = delete;
+
   virtual ~FaviconDriverObserver() {}
 
   // Called when either:
@@ -66,9 +70,6 @@ class FaviconDriverObserver {
                                 const GURL& icon_url,
                                 bool icon_url_changed,
                                 const gfx::Image& image) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FaviconDriverObserver);
 };
 
 }  // namespace favicon

@@ -56,6 +56,9 @@ class CaptivePortalTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<CaptivePortalTabHelper> {
  public:
+  CaptivePortalTabHelper(const CaptivePortalTabHelper&) = delete;
+  CaptivePortalTabHelper& operator=(const CaptivePortalTabHelper&) = delete;
+
   ~CaptivePortalTabHelper() override;
 
   // content::WebContentsObserver:
@@ -117,8 +120,6 @@ class CaptivePortalTabHelper
   base::CallbackListSubscription subscription_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalTabHelper);
 };
 
 }  // namespace captive_portal

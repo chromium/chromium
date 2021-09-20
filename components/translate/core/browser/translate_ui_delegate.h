@@ -42,6 +42,10 @@ class TranslateUIDelegate {
   TranslateUIDelegate(const base::WeakPtr<TranslateManager>& translate_manager,
                       const std::string& source_language,
                       const std::string& target_language);
+
+  TranslateUIDelegate(const TranslateUIDelegate&) = delete;
+  TranslateUIDelegate& operator=(const TranslateUIDelegate&) = delete;
+
   virtual ~TranslateUIDelegate();
 
   // Handles when an error message is shown.
@@ -193,8 +197,6 @@ class TranslateUIDelegate {
 
   // Listens to accept languages changes.
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateUIDelegate);
 };
 
 }  // namespace translate

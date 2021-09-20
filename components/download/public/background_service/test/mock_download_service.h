@@ -19,6 +19,10 @@ namespace test {
 class MockDownloadService : public BackgroundDownloadService {
  public:
   MockDownloadService();
+
+  MockDownloadService(const MockDownloadService&) = delete;
+  MockDownloadService& operator=(const MockDownloadService&) = delete;
+
   ~MockDownloadService() override;
 
   // BackgroundDownloadService implementation.
@@ -40,9 +44,6 @@ class MockDownloadService : public BackgroundDownloadService {
   MOCK_METHOD2(ChangeDownloadCriteria,
                void(const std::string& guid, const SchedulingParams& params));
   MOCK_METHOD0(GetLogger, Logger*());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDownloadService);
 };
 
 }  // namespace test

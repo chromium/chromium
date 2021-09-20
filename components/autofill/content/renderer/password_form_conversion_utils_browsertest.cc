@@ -86,6 +86,12 @@ class PasswordFormBuilder {
 class PasswordFormConversionUtilsTest : public content::RenderViewTest {
  public:
   PasswordFormConversionUtilsTest() = default;
+
+  PasswordFormConversionUtilsTest(const PasswordFormConversionUtilsTest&) =
+      delete;
+  PasswordFormConversionUtilsTest& operator=(
+      const PasswordFormConversionUtilsTest&) = delete;
+
   ~PasswordFormConversionUtilsTest() override = default;
 
  protected:
@@ -113,8 +119,6 @@ class PasswordFormConversionUtilsTest : public content::RenderViewTest {
 
     *form = forms[0];
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordFormConversionUtilsTest);
 };
 
 }  // namespace

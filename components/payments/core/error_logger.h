@@ -22,6 +22,10 @@ namespace payments {
 class ErrorLogger {
  public:
   ErrorLogger();
+
+  ErrorLogger(const ErrorLogger&) = delete;
+  ErrorLogger& operator=(const ErrorLogger&) = delete;
+
   virtual ~ErrorLogger();
 
   // Disables logs for tests to keep test output clean.
@@ -37,9 +41,6 @@ class ErrorLogger {
 
  protected:
   bool enabled_ = true;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ErrorLogger);
 };
 
 }  // namespace payments

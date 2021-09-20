@@ -19,6 +19,10 @@ namespace test {
 class MockController : public Controller {
  public:
   MockController();
+
+  MockController(const MockController&) = delete;
+  MockController& operator=(const MockController&) = delete;
+
   ~MockController() override;
 
   // Controller implementation.
@@ -52,7 +56,6 @@ class MockController : public Controller {
 
  private:
   base::OnceClosure init_callback_;
-  DISALLOW_COPY_AND_ASSIGN(MockController);
 };
 
 }  // namespace test

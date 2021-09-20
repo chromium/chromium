@@ -37,6 +37,10 @@ enum class GCMDecryptionResult;
 class MessagePayloadParser {
  public:
   explicit MessagePayloadParser(base::StringPiece message);
+
+  MessagePayloadParser(const MessagePayloadParser&) = delete;
+  MessagePayloadParser& operator=(const MessagePayloadParser&) = delete;
+
   ~MessagePayloadParser();
 
   // Returns whether the parser represents a valid message.
@@ -87,8 +91,6 @@ class MessagePayloadParser {
   uint32_t record_size_ = 0;
   std::string public_key_;
   std::string ciphertext_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePayloadParser);
 };
 
 }  // namespace gcm

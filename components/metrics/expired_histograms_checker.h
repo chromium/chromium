@@ -25,6 +25,10 @@ class ExpiredHistogramsChecker final : public base::RecordHistogramChecker {
   ExpiredHistogramsChecker(const uint32_t* expired_histogram_hashes,
                            size_t size,
                            const std::string& allowlist_str);
+
+  ExpiredHistogramsChecker(const ExpiredHistogramsChecker&) = delete;
+  ExpiredHistogramsChecker& operator=(const ExpiredHistogramsChecker&) = delete;
+
   ~ExpiredHistogramsChecker() override;
 
   // Checks if the given |histogram_hash| corresponds to an expired histogram.
@@ -43,8 +47,6 @@ class ExpiredHistogramsChecker final : public base::RecordHistogramChecker {
 
   // Set of expired histogram hashes that should be recorded.
   std::set<uint32_t> allowlist_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpiredHistogramsChecker);
 };
 
 }  // namespace metrics

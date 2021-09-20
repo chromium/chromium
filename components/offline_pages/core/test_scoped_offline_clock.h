@@ -15,10 +15,13 @@ namespace offline_pages {
 class TestScopedOfflineClockOverride {
  public:
   explicit TestScopedOfflineClockOverride(const base::Clock* clock);
-  ~TestScopedOfflineClockOverride();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestScopedOfflineClockOverride);
+  TestScopedOfflineClockOverride(const TestScopedOfflineClockOverride&) =
+      delete;
+  TestScopedOfflineClockOverride& operator=(
+      const TestScopedOfflineClockOverride&) = delete;
+
+  ~TestScopedOfflineClockOverride();
 };
 
 // Overrides |OfflineClock()| with |this| upon construction. Returns
@@ -26,12 +29,14 @@ class TestScopedOfflineClockOverride {
 class TestScopedOfflineClock : public base::SimpleTestClock {
  public:
   TestScopedOfflineClock();
+
+  TestScopedOfflineClock(const TestScopedOfflineClock&) = delete;
+  TestScopedOfflineClock& operator=(const TestScopedOfflineClock&) = delete;
+
   ~TestScopedOfflineClock() override;
 
  private:
   TestScopedOfflineClockOverride override_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScopedOfflineClock);
 };
 
 }  // namespace offline_pages

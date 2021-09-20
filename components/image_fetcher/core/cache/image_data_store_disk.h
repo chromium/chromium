@@ -26,6 +26,10 @@ class ImageDataStoreDisk : public ImageDataStore {
   // be postfixed with a special directory.
   ImageDataStoreDisk(base::FilePath generic_storage_path,
                      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  ImageDataStoreDisk(const ImageDataStoreDisk&) = delete;
+  ImageDataStoreDisk& operator=(const ImageDataStoreDisk&) = delete;
+
   ~ImageDataStoreDisk() override;
 
   // ImageDataStorage:
@@ -61,8 +65,6 @@ class ImageDataStoreDisk : public ImageDataStore {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<ImageDataStoreDisk> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDataStoreDisk);
 };
 }  // namespace image_fetcher
 

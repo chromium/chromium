@@ -19,6 +19,11 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
  public:
   explicit OverlayStrategySingleOnTop(
       OverlayProcessorUsingStrategy* capability_checker);
+
+  OverlayStrategySingleOnTop(const OverlayStrategySingleOnTop&) = delete;
+  OverlayStrategySingleOnTop& operator=(const OverlayStrategySingleOnTop&) =
+      delete;
+
   ~OverlayStrategySingleOnTop() override;
 
   bool Attempt(const skia::Matrix44& output_color_matrix,
@@ -68,8 +73,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
 
   ResourceId previous_frame_resource_id_ = kInvalidResourceId;
   size_t same_resource_id_frames_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayStrategySingleOnTop);
 };
 
 }  // namespace viz

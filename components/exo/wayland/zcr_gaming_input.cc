@@ -118,6 +118,9 @@ class WaylandGamepadDelegate : public GamepadDelegate {
   explicit WaylandGamepadDelegate(wl_resource* gamepad_resource)
       : gamepad_resource_(gamepad_resource) {}
 
+  WaylandGamepadDelegate(const WaylandGamepadDelegate&) = delete;
+  WaylandGamepadDelegate& operator=(const WaylandGamepadDelegate&) = delete;
+
   ~WaylandGamepadDelegate() override = default;
 
   // If gamepad_resource_ is destroyed first, ResetGamepadResource will
@@ -204,8 +207,6 @@ class WaylandGamepadDelegate : public GamepadDelegate {
 
   // The gamepad resource associated with the gamepad.
   wl_resource* gamepad_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandGamepadDelegate);
 };
 
 void gamepad_destroy(wl_client* client, wl_resource* resource) {

@@ -24,6 +24,10 @@ class TestMediaSinkService : public MediaSinkServiceBase {
  public:
   TestMediaSinkService();
   explicit TestMediaSinkService(const OnSinksDiscoveredCallback& callback);
+
+  TestMediaSinkService(const TestMediaSinkService&) = delete;
+  TestMediaSinkService& operator=(const TestMediaSinkService&) = delete;
+
   ~TestMediaSinkService() override;
 
   base::MockOneShotTimer* timer() { return timer_; }
@@ -31,7 +35,6 @@ class TestMediaSinkService : public MediaSinkServiceBase {
  private:
   // Owned by MediaSinkService.
   base::MockOneShotTimer* timer_;
-  DISALLOW_COPY_AND_ASSIGN(TestMediaSinkService);
 };
 #endif  // !defined(OS_ANDROID)
 

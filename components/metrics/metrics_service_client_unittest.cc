@@ -19,10 +19,11 @@ namespace {
 class MetricsServiceClientTest : public testing::Test {
  public:
   MetricsServiceClientTest() {}
-  ~MetricsServiceClientTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceClientTest);
+  MetricsServiceClientTest(const MetricsServiceClientTest&) = delete;
+  MetricsServiceClientTest& operator=(const MetricsServiceClientTest&) = delete;
+
+  ~MetricsServiceClientTest() override {}
 };
 
 }  // namespace

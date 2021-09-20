@@ -50,6 +50,10 @@ class AccountsCookieMutator {
   };
 
   AccountsCookieMutator() = default;
+
+  AccountsCookieMutator(const AccountsCookieMutator&) = delete;
+  AccountsCookieMutator& operator=(const AccountsCookieMutator&) = delete;
+
   virtual ~AccountsCookieMutator() = default;
 
   typedef base::OnceCallback<void(const CoreAccountId& account_id,
@@ -134,9 +138,6 @@ class AccountsCookieMutator {
   // Indicates that an account previously listed via ListAccounts should now
   // be removed.
   virtual void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountsCookieMutator);
 };
 
 }  // namespace signin

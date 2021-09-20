@@ -19,6 +19,9 @@ class MessageDispatcher::RequestHolder {
  public:
   RequestHolder() {}
 
+  RequestHolder(const RequestHolder&) = delete;
+  RequestHolder& operator=(const RequestHolder&) = delete;
+
   ~RequestHolder() {}
 
   void Start(const base::TimeDelta& timeout,
@@ -45,8 +48,6 @@ class MessageDispatcher::RequestHolder {
   OnceResponseCallback response_callback_;
   base::OneShotTimer timer_;
   int32_t sequence_number_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestHolder);
 };
 
 MessageDispatcher::MessageDispatcher(

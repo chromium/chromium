@@ -156,6 +156,10 @@ class PasswordHashDataMatcher
     : public ::testing::MatcherInterface<absl::optional<PasswordHashData>> {
  public:
   explicit PasswordHashDataMatcher(absl::optional<PasswordHashData> expected);
+
+  PasswordHashDataMatcher(const PasswordHashDataMatcher&) = delete;
+  PasswordHashDataMatcher& operator=(const PasswordHashDataMatcher&) = delete;
+
   ~PasswordHashDataMatcher() override = default;
 
   // ::testing::MatcherInterface overrides
@@ -166,8 +170,6 @@ class PasswordHashDataMatcher
 
  private:
   const absl::optional<PasswordHashData> expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordHashDataMatcher);
 };
 
 ::testing::Matcher<absl::optional<PasswordHashData>> Matches(

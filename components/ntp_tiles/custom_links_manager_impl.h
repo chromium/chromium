@@ -36,6 +36,9 @@ class CustomLinksManagerImpl : public CustomLinksManager,
                          // Can be nullptr in unittests.
                          history::HistoryService* history_service);
 
+  CustomLinksManagerImpl(const CustomLinksManagerImpl&) = delete;
+  CustomLinksManagerImpl& operator=(const CustomLinksManagerImpl&) = delete;
+
   ~CustomLinksManagerImpl() override;
 
   // CustomLinksManager implementation.
@@ -107,8 +110,6 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   bool updating_preferences_ = false;
 
   base::WeakPtrFactory<CustomLinksManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CustomLinksManagerImpl);
 };
 
 }  // namespace ntp_tiles

@@ -62,6 +62,9 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
 
+  SafeBrowsingBlockingPage(const SafeBrowsingBlockingPage&) = delete;
+  SafeBrowsingBlockingPage& operator=(const SafeBrowsingBlockingPage&) = delete;
+
   ~SafeBrowsingBlockingPage() override;
 
   // SecurityInterstitialPage method:
@@ -137,8 +140,6 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   SafeBrowsingNavigationObserverManager* navigation_observer_manager_ = nullptr;
   SafeBrowsingMetricsCollector* metrics_collector_ = nullptr;
   TriggerManager* trigger_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPage);
 };
 
 }  // namespace safe_browsing

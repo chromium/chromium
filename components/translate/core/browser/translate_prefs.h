@@ -126,6 +126,9 @@ class TranslatePrefs {
 
   explicit TranslatePrefs(PrefService* user_prefs);
 
+  TranslatePrefs(const TranslatePrefs&) = delete;
+  TranslatePrefs& operator=(const TranslatePrefs&) = delete;
+
   ~TranslatePrefs();
 
   // Some existing preferences do not follow inclusive naming. Existing
@@ -385,8 +388,6 @@ class TranslatePrefs {
   std::string country_;  // The country the app runs in.
 
   std::unique_ptr<language::LanguagePrefs> language_prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslatePrefs);
 };
 
 }  // namespace translate

@@ -15,6 +15,10 @@ namespace feature_engagement {
 class SystemTimeProvider : public TimeProvider {
  public:
   SystemTimeProvider();
+
+  SystemTimeProvider(const SystemTimeProvider&) = delete;
+  SystemTimeProvider& operator=(const SystemTimeProvider&) = delete;
+
   ~SystemTimeProvider() override;
 
   // TimeProvider implementation.
@@ -24,9 +28,6 @@ class SystemTimeProvider : public TimeProvider {
   // Return the current time.
   // virtual for testing.
   virtual base::Time Now() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemTimeProvider);
 };
 
 }  // namespace feature_engagement

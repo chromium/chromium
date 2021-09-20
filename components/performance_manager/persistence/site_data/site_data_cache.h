@@ -19,6 +19,10 @@ namespace performance_manager {
 class SiteDataCache {
  public:
   SiteDataCache() = default;
+
+  SiteDataCache(const SiteDataCache&) = delete;
+  SiteDataCache& operator=(const SiteDataCache&) = delete;
+
   virtual ~SiteDataCache() = default;
 
   // Returns a SiteDataReader for the given origin.
@@ -35,9 +39,6 @@ class SiteDataCache {
 
   // Returns the number of element in the cache.
   virtual int Size() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SiteDataCache);
 };
 
 }  // namespace performance_manager

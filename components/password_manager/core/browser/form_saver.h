@@ -23,6 +23,9 @@ class FormSaver {
  public:
   FormSaver() = default;
 
+  FormSaver(const FormSaver&) = delete;
+  FormSaver& operator=(const FormSaver&) = delete;
+
   virtual ~FormSaver() = default;
 
   // Blocklist the origin described by |digest|. Returns the PasswordForm pushed
@@ -68,9 +71,6 @@ class FormSaver {
 
   // Creates a new FormSaver with the same state as |*this|.
   virtual std::unique_ptr<FormSaver> Clone() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FormSaver);
 };
 
 }  // namespace password_manager

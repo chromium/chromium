@@ -58,6 +58,10 @@ class SkiaOutputDevice {
     ScopedPaint(std::vector<GrBackendSemaphore> end_semaphores,
                 SkiaOutputDevice* device,
                 SkSurface* sk_surface);
+
+    ScopedPaint(const ScopedPaint&) = delete;
+    ScopedPaint& operator=(const ScopedPaint&) = delete;
+
     ~ScopedPaint();
 
     // This can be null.
@@ -82,8 +86,6 @@ class SkiaOutputDevice {
     SkiaOutputDevice* const device_;
     // Null when using vulkan secondary command buffer.
     SkSurface* const sk_surface_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedPaint);
   };
 
   using BufferPresentedCallback =

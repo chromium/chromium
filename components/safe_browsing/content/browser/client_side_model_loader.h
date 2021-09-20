@@ -67,6 +67,10 @@ class ModelLoader {
   ModelLoader(base::RepeatingClosure update_renderers,
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
               bool is_extended_reporting);
+
+  ModelLoader(const ModelLoader&) = delete;
+  ModelLoader& operator=(const ModelLoader&) = delete;
+
   virtual ~ModelLoader();
 
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
@@ -157,7 +161,6 @@ class ModelLoader {
   FRIEND_TEST_ALL_PREFIXES(ModelLoaderTest, UpdateRenderersTest);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
                            SetEnabledAndRefreshState);
-  DISALLOW_COPY_AND_ASSIGN(ModelLoader);
 };
 
 }  // namespace safe_browsing

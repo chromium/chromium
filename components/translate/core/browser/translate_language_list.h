@@ -27,6 +27,10 @@ class TranslateURLFetcher;
 class TranslateLanguageList {
  public:
   TranslateLanguageList();
+
+  TranslateLanguageList(const TranslateLanguageList&) = delete;
+  TranslateLanguageList& operator=(const TranslateLanguageList&) = delete;
+
   virtual ~TranslateLanguageList();
 
   // Returns the last-updated time when the language list is fetched from the
@@ -113,8 +117,6 @@ class TranslateLanguageList {
 
   // The last-updated time when the language list is sent.
   base::Time last_updated_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateLanguageList);
 };
 
 }  // namespace translate

@@ -99,6 +99,9 @@ class ArcTimerTest : public testing::Test {
         ArcServiceManager::Get()->arc_bridge_service()->timer());
   }
 
+  ArcTimerTest(const ArcTimerTest&) = delete;
+  ArcTimerTest& operator=(const ArcTimerTest&) = delete;
+
   ~ArcTimerTest() override {
     // Destroys the FakeTimerInstance. This results in
     // ArcTimerBridge::OnInstanceClosed being called.
@@ -133,8 +136,6 @@ class ArcTimerTest : public testing::Test {
   ArcTimerStore arc_timer_store_;
 
   ArcTimerBridge* timer_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTimerTest);
 };
 
 bool ArcTimerTest::StoreReadFds(const std::vector<clockid_t> clocks,

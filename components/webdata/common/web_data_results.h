@@ -57,6 +57,9 @@ typedef enum {
 //
 class WEBDATA_EXPORT WDTypedResult {
  public:
+  WDTypedResult(const WDTypedResult&) = delete;
+  WDTypedResult& operator=(const WDTypedResult&) = delete;
+
   virtual ~WDTypedResult() {}
 
   // Return the result type.
@@ -67,7 +70,6 @@ class WEBDATA_EXPORT WDTypedResult {
 
  private:
   WDResultType type_;
-  DISALLOW_COPY_AND_ASSIGN(WDTypedResult);
 };
 
 // A result containing one specific pointer or literal value.
@@ -78,6 +80,9 @@ class WDResult : public WDTypedResult {
   WDResult(WDResultType type, T&& v)
       : WDTypedResult(type), value_(std::move(v)) {}
 
+  WDResult(const WDResult&) = delete;
+  WDResult& operator=(const WDResult&) = delete;
+
   ~WDResult() override {}
 
   // Return a single value result.
@@ -86,8 +91,6 @@ class WDResult : public WDTypedResult {
 
  private:
   T value_;
-
-  DISALLOW_COPY_AND_ASSIGN(WDResult);
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATA_RESULTS_H_

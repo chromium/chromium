@@ -71,6 +71,10 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       signin::IdentityManager* identity_manager,
       bool try_token_fetch);
 
+  PasswordProtectionServiceBase(const PasswordProtectionServiceBase&) = delete;
+  PasswordProtectionServiceBase& operator=(
+      const PasswordProtectionServiceBase&) = delete;
+
   ~PasswordProtectionServiceBase() override;
 
   base::WeakPtr<PasswordProtectionServiceBase> GetWeakPtr() {
@@ -466,7 +470,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   bool try_token_fetch_;
 
   base::WeakPtrFactory<PasswordProtectionServiceBase> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PasswordProtectionServiceBase);
 };
 
 }  // namespace safe_browsing

@@ -21,6 +21,10 @@ namespace autofill_assistant {
 class ShowCastAction : public Action {
  public:
   explicit ShowCastAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  ShowCastAction(const ShowCastAction&) = delete;
+  ShowCastAction& operator=(const ShowCastAction&) = delete;
+
   ~ShowCastAction() override;
 
  private:
@@ -54,8 +58,6 @@ class ShowCastAction : public Action {
   ProcessActionCallback process_action_callback_;
 
   base::WeakPtrFactory<ShowCastAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShowCastAction);
 };
 
 }  // namespace autofill_assistant

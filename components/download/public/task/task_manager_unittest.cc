@@ -46,6 +46,9 @@ class TaskManagerImplTest : public testing::Test {
     task_manager_ = std::make_unique<TaskManagerImpl>(std::move(scheduler));
   }
 
+  TaskManagerImplTest(const TaskManagerImplTest&) = delete;
+  TaskManagerImplTest& operator=(const TaskManagerImplTest&) = delete;
+
   ~TaskManagerImplTest() override = default;
 
  protected:
@@ -76,9 +79,6 @@ class TaskManagerImplTest : public testing::Test {
 
   MockTaskScheduler* task_scheduler_;
   std::unique_ptr<TaskManagerImpl> task_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerImplTest);
 };
 
 }  // namespace

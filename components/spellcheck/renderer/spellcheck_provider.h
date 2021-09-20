@@ -59,6 +59,10 @@ class SpellCheckProvider : public content::RenderFrameObserver,
       content::RenderFrame* render_frame,
       SpellCheck* spellcheck,
       service_manager::LocalInterfaceProvider* embedder_provider);
+
+  SpellCheckProvider(const SpellCheckProvider&) = delete;
+  SpellCheckProvider& operator=(const SpellCheckProvider&) = delete;
+
   ~SpellCheckProvider() override;
 
   // Requests async spell and grammar checks from the platform text checker
@@ -176,8 +180,6 @@ class SpellCheckProvider : public content::RenderFrameObserver,
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   base::WeakPtrFactory<SpellCheckProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckProvider);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PROVIDER_H_

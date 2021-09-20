@@ -21,6 +21,9 @@ class FormSaverImpl : public FormSaver {
   // PasswordStoreInterface operations.
   explicit FormSaverImpl(PasswordStoreInterface* store);
 
+  FormSaverImpl(const FormSaverImpl&) = delete;
+  FormSaverImpl& operator=(const FormSaverImpl&) = delete;
+
   ~FormSaverImpl() override;
 
   // FormSaver:
@@ -46,8 +49,6 @@ class FormSaverImpl : public FormSaver {
 
   // Cached pointer to the PasswordStoreInterface.
   PasswordStoreInterface* const store_;
-
-  DISALLOW_COPY_AND_ASSIGN(FormSaverImpl);
 };
 
 }  // namespace password_manager

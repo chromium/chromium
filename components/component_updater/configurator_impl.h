@@ -32,6 +32,9 @@ class ConfiguratorImpl {
   ConfiguratorImpl(const update_client::CommandLineConfigPolicy& config_policy,
                    bool require_encryption);
 
+  ConfiguratorImpl(const ConfiguratorImpl&) = delete;
+  ConfiguratorImpl& operator=(const ConfiguratorImpl&) = delete;
+
   ~ConfiguratorImpl();
 
   // Delay in seconds from calling Start() to the first update check.
@@ -101,8 +104,6 @@ class ConfiguratorImpl {
   const bool require_encryption_;
   const GURL url_source_override_;
   const double initial_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfiguratorImpl);
 };
 
 }  // namespace component_updater

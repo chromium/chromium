@@ -17,6 +17,10 @@ namespace download {
 class EmptyFileMonitor : public FileMonitor {
  public:
   EmptyFileMonitor();
+
+  EmptyFileMonitor(const EmptyFileMonitor&) = delete;
+  EmptyFileMonitor& operator=(const EmptyFileMonitor&) = delete;
+
   ~EmptyFileMonitor() override;
 
  private:
@@ -33,8 +37,6 @@ class EmptyFileMonitor : public FileMonitor {
   void HardRecover(InitCallback callback) override;
 
   base::WeakPtrFactory<EmptyFileMonitor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyFileMonitor);
 };
 
 }  // namespace download

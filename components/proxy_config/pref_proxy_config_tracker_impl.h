@@ -35,6 +35,10 @@ class ProxyConfigServiceImpl : public net::ProxyConfigService,
   ProxyConfigServiceImpl(std::unique_ptr<net::ProxyConfigService> base_service,
                          ProxyPrefs::ConfigState initial_config_state,
                          const net::ProxyConfigWithAnnotation& initial_config);
+
+  ProxyConfigServiceImpl(const ProxyConfigServiceImpl&) = delete;
+  ProxyConfigServiceImpl& operator=(const ProxyConfigServiceImpl&) = delete;
+
   ~ProxyConfigServiceImpl() override;
 
   // ProxyConfigService implementation:
@@ -72,8 +76,6 @@ class ProxyConfigServiceImpl : public net::ProxyConfigService,
   bool registered_observer_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceImpl);
 };
 
 // A class that tracks proxy preferences. It translates the configuration
@@ -87,6 +89,11 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
   PrefProxyConfigTrackerImpl(PrefService* pref_service,
                              scoped_refptr<base::SingleThreadTaskRunner>
                                  proxy_config_service_task_runner);
+
+  PrefProxyConfigTrackerImpl(const PrefProxyConfigTrackerImpl&) = delete;
+  PrefProxyConfigTrackerImpl& operator=(const PrefProxyConfigTrackerImpl&) =
+      delete;
+
   ~PrefProxyConfigTrackerImpl() override;
 
   // PrefProxyConfigTracker implementation:
@@ -177,8 +184,6 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
   scoped_refptr<base::SingleThreadTaskRunner> proxy_config_service_task_runner_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefProxyConfigTrackerImpl);
 };
 
 #endif  // COMPONENTS_PROXY_CONFIG_PREF_PROXY_CONFIG_TRACKER_IMPL_H_

@@ -73,6 +73,11 @@ class ClientSideDetectionService : public KeyedService {
   };
 
   explicit ClientSideDetectionService(std::unique_ptr<Delegate> delegate);
+
+  ClientSideDetectionService(const ClientSideDetectionService&) = delete;
+  ClientSideDetectionService& operator=(const ClientSideDetectionService&) =
+      delete;
+
   ~ClientSideDetectionService() override;
 
   void Shutdown() override;
@@ -256,8 +261,6 @@ class ClientSideDetectionService : public KeyedService {
   // Used to asynchronously call the callbacks for
   // SendClientReportPhishingRequest.
   base::WeakPtrFactory<ClientSideDetectionService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionService);
 };
 
 }  // namespace safe_browsing

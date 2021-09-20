@@ -66,6 +66,10 @@ enum class CastCertError {
 class CertVerificationContext {
  public:
   CertVerificationContext() {}
+
+  CertVerificationContext(const CertVerificationContext&) = delete;
+  CertVerificationContext& operator=(const CertVerificationContext&) = delete;
+
   virtual ~CertVerificationContext() {}
 
   // Use the public key from the verified certificate to verify a
@@ -81,9 +85,6 @@ class CertVerificationContext {
   // the verified certificate, if present.  Returns an empty string if no Common
   // Name is found.
   virtual std::string GetCommonName() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CertVerificationContext);
 };
 
 // Verifies a cast device certficate given a chain of DER-encoded certificates,

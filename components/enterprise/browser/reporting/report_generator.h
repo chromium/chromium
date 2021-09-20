@@ -43,6 +43,10 @@ class ReportGenerator {
   };
 
   explicit ReportGenerator(ReportingDelegateFactory* delegate_factory);
+
+  ReportGenerator(const ReportGenerator&) = delete;
+  ReportGenerator& operator=(const ReportGenerator&) = delete;
+
   virtual ~ReportGenerator();
 
   // Asynchronously generates a queue of report requests, providing them to
@@ -95,8 +99,6 @@ class ReportGenerator {
   BrowserReportGenerator browser_report_generator_;
 
   base::WeakPtrFactory<ReportGenerator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReportGenerator);
 };
 
 }  // namespace enterprise_reporting

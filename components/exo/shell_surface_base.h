@@ -59,6 +59,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
                    const gfx::Point& origin,
                    bool can_minimize,
                    int container);
+
+  ShellSurfaceBase(const ShellSurfaceBase&) = delete;
+  ShellSurfaceBase& operator=(const ShellSurfaceBase&) = delete;
+
   ~ShellSurfaceBase() override;
 
   // Set the callback to run when the user wants the shell surface to be closed.
@@ -387,8 +391,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool skip_ime_processing_ = false;
   bool overlay_overlaps_frame_ = true;
   absl::optional<bool> overlay_can_resize_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellSurfaceBase);
 };
 
 }  // namespace exo

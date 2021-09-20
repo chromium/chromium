@@ -38,6 +38,11 @@ class SubprocessMetricsProvider
       public content::RenderProcessHostObserver {
  public:
   SubprocessMetricsProvider();
+
+  SubprocessMetricsProvider(const SubprocessMetricsProvider&) = delete;
+  SubprocessMetricsProvider& operator=(const SubprocessMetricsProvider&) =
+      delete;
+
   ~SubprocessMetricsProvider() override;
 
   // Merge histograms for all subprocesses. This is used by tests that don't
@@ -114,8 +119,6 @@ class SubprocessMetricsProvider
       scoped_observations_{this};
 
   base::WeakPtrFactory<SubprocessMetricsProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SubprocessMetricsProvider);
 };
 
 }  // namespace metrics

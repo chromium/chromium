@@ -24,6 +24,10 @@ struct Entry;
 class ModelImpl : public Model {
  public:
   ModelImpl(std::unique_ptr<Store> store);
+
+  ModelImpl(const ModelImpl&) = delete;
+  ModelImpl& operator=(const ModelImpl&) = delete;
+
   ~ModelImpl() override;
 
   // Model implementation.
@@ -65,8 +69,6 @@ class ModelImpl : public Model {
   OwnedEntryMap entries_;
 
   base::WeakPtrFactory<ModelImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModelImpl);
 };
 
 }  // namespace download

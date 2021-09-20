@@ -64,6 +64,11 @@ class SurfaceSynchronizationTest : public testing::Test {
   SurfaceSynchronizationTest()
       : frame_sink_manager_(&shared_bitmap_manager_),
         surface_observer_(false) {}
+
+  SurfaceSynchronizationTest(const SurfaceSynchronizationTest&) = delete;
+  SurfaceSynchronizationTest& operator=(const SurfaceSynchronizationTest&) =
+      delete;
+
   ~SurfaceSynchronizationTest() override {}
 
   CompositorFrameSinkSupport& display_support() {
@@ -261,8 +266,6 @@ class SurfaceSynchronizationTest : public testing::Test {
                      FrameSinkIdHash>
       supports_;
   SurfaceIdAllocatorSet allocator_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceSynchronizationTest);
 };
 
 // The display root surface should have a surface reference from the top-level

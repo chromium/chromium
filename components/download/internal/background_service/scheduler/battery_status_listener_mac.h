@@ -17,6 +17,10 @@ namespace download {
 class BatteryStatusListenerMac : public BatteryStatusListener {
  public:
   BatteryStatusListenerMac();
+
+  BatteryStatusListenerMac(const BatteryStatusListenerMac&) = delete;
+  BatteryStatusListenerMac& operator=(const BatteryStatusListenerMac&) = delete;
+
   ~BatteryStatusListenerMac() override;
 
  private:
@@ -25,8 +29,6 @@ class BatteryStatusListenerMac : public BatteryStatusListener {
   bool IsOnBatteryPower() override;
   void Start(Observer* observer) override;
   void Stop() override;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusListenerMac);
 };
 
 }  // namespace download

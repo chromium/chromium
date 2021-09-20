@@ -27,6 +27,10 @@ namespace media_router {
 class IssueManager {
  public:
   IssueManager();
+
+  IssueManager(const IssueManager&) = delete;
+  IssueManager& operator=(const IssueManager&) = delete;
+
   ~IssueManager();
 
   // Returns the amount of time before |issue_info| is dismissed after it is
@@ -105,8 +109,6 @@ class IssueManager {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IssueManager);
 };
 
 }  // namespace media_router

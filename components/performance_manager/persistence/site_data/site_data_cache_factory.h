@@ -34,6 +34,10 @@ class SiteDataCacheInspector;
 class SiteDataCacheFactory {
  public:
   SiteDataCacheFactory();
+
+  SiteDataCacheFactory(const SiteDataCacheFactory&) = delete;
+  SiteDataCacheFactory& operator=(const SiteDataCacheFactory&) = delete;
+
   ~SiteDataCacheFactory();
 
   // Returns a pointer to the global instance.
@@ -89,8 +93,6 @@ class SiteDataCacheFactory {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataCacheFactory);
 };
 
 }  // namespace performance_manager

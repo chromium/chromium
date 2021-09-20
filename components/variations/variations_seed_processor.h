@@ -35,6 +35,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
       base::RepeatingCallback<void(uint32_t, const std::u16string&)>;
 
   VariationsSeedProcessor();
+
+  VariationsSeedProcessor(const VariationsSeedProcessor&) = delete;
+  VariationsSeedProcessor& operator=(const VariationsSeedProcessor&) = delete;
+
   virtual ~VariationsSeedProcessor();
 
   // Creates field trials from the specified variations |seed|, filtered
@@ -86,8 +90,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
       const UIStringOverrideCallback& override_callback,
       const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list);
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsSeedProcessor);
 };
 
 }  // namespace variations

@@ -56,6 +56,10 @@ class ProcessNode : public Node {
       base::EnumSet<ContentType, ContentType::kExtension, ContentType::kAd>;
 
   ProcessNode();
+
+  ProcessNode(const ProcessNode&) = delete;
+  ProcessNode& operator=(const ProcessNode&) = delete;
+
   ~ProcessNode() override;
 
   // Returns the type of this process.
@@ -126,9 +130,6 @@ class ProcessNode : public Node {
   // Returns a bit field indicating what type of content this process has
   // hosted, either currently or in the past.
   virtual ContentTypes GetHostedContentTypes() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessNode);
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
@@ -136,6 +137,10 @@ class ProcessNode : public Node {
 class ProcessNodeObserver {
  public:
   ProcessNodeObserver();
+
+  ProcessNodeObserver(const ProcessNodeObserver&) = delete;
+  ProcessNodeObserver& operator=(const ProcessNodeObserver&) = delete;
+
   virtual ~ProcessNodeObserver();
 
   // Node lifetime notifications.
@@ -167,9 +172,6 @@ class ProcessNodeObserver {
 
   // Fired when all frames in a process have transitioned to being frozen.
   virtual void OnAllFramesInProcessFrozen(const ProcessNode* process_node) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessNodeObserver);
 };
 
 // Default implementation of observer that provides dummy versions of each
@@ -178,6 +180,10 @@ class ProcessNodeObserver {
 class ProcessNode::ObserverDefaultImpl : public ProcessNodeObserver {
  public:
   ObserverDefaultImpl();
+
+  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
+  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
+
   ~ObserverDefaultImpl() override;
 
   // ProcessNodeObserver implementation:
@@ -188,9 +194,6 @@ class ProcessNode::ObserverDefaultImpl : public ProcessNodeObserver {
   void OnPriorityChanged(const ProcessNode* process_node,
                          base::TaskPriority previous_value) override {}
   void OnAllFramesInProcessFrozen(const ProcessNode* process_node) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);
 };
 
 }  // namespace performance_manager

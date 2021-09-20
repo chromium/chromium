@@ -35,6 +35,9 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
  public:
   HintCacheTest() : loaded_hint_(nullptr) {}
 
+  HintCacheTest(const HintCacheTest&) = delete;
+  HintCacheTest& operator=(const HintCacheTest&) = delete;
+
   ~HintCacheTest() override {}
 
   void SetUp() override { ProtoDatabaseProviderTestBase::SetUp(); }
@@ -174,8 +177,6 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
   bool are_component_hints_updated_;
   bool on_load_hint_callback_called_;
   bool are_fetched_hints_updated_;
-
-  DISALLOW_COPY_AND_ASSIGN(HintCacheTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(WithPersistentStore,

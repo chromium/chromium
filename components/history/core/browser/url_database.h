@@ -47,6 +47,9 @@ class URLDatabase {
   // sure the database is initialized.
   URLDatabase();
 
+  URLDatabase(const URLDatabase&) = delete;
+  URLDatabase& operator=(const URLDatabase&) = delete;
+
   // This object must be destroyed on the thread where all accesses are
   // happening to avoid thread-safety problems.
   virtual ~URLDatabase();
@@ -117,6 +120,10 @@ class URLDatabase {
   class URLEnumeratorBase {
    public:
     URLEnumeratorBase();
+
+    URLEnumeratorBase(const URLEnumeratorBase&) = delete;
+    URLEnumeratorBase& operator=(const URLEnumeratorBase&) = delete;
+
     virtual ~URLEnumeratorBase();
 
    private:
@@ -124,8 +131,6 @@ class URLDatabase {
 
     bool initialized_;
     sql::Statement statement_;
-
-    DISALLOW_COPY_AND_ASSIGN(URLEnumeratorBase);
   };
 
   // A basic enumerator to enumerate urls
@@ -308,8 +313,6 @@ class URLDatabase {
   // True if InitKeywordSearchTermsTable() has been invoked. Not all subclasses
   // have keyword search terms.
   bool has_keyword_search_terms_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLDatabase);
 };
 
 // The fields and order expected by FillURLRow(). ID is guaranteed to be first

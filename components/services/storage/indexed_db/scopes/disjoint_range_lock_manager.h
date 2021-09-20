@@ -40,6 +40,10 @@ class DisjointRangeLockManager : public ScopesLockManager {
   // leveldb keys, and the current task runner that we are running on. The task
   // runner will be used for the lock acquisition callbacks.
   explicit DisjointRangeLockManager(int level_count);
+
+  DisjointRangeLockManager(const DisjointRangeLockManager&) = delete;
+  DisjointRangeLockManager& operator=(const DisjointRangeLockManager&) = delete;
+
   ~DisjointRangeLockManager() override;
 
   int64_t LocksHeldForTesting() const override;
@@ -112,7 +116,6 @@ class DisjointRangeLockManager : public ScopesLockManager {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DisjointRangeLockManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DisjointRangeLockManager);
 };
 
 }  // namespace content

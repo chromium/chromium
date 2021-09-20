@@ -15,13 +15,15 @@ class ShowInfoBoxAction : public Action {
  public:
   explicit ShowInfoBoxAction(ActionDelegate* delegate,
                              const ActionProto& proto);
+
+  ShowInfoBoxAction(const ShowInfoBoxAction&) = delete;
+  ShowInfoBoxAction& operator=(const ShowInfoBoxAction&) = delete;
+
   ~ShowInfoBoxAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ShowInfoBoxAction);
 };
 
 }  // namespace autofill_assistant

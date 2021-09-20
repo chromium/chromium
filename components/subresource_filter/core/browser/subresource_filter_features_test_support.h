@@ -26,6 +26,12 @@ class ScopedSubresourceFilterConfigurator {
   explicit ScopedSubresourceFilterConfigurator(Configuration config);
   explicit ScopedSubresourceFilterConfigurator(
       std::vector<Configuration> configs);
+
+  ScopedSubresourceFilterConfigurator(
+      const ScopedSubresourceFilterConfigurator&) = delete;
+  ScopedSubresourceFilterConfigurator& operator=(
+      const ScopedSubresourceFilterConfigurator&) = delete;
+
   ~ScopedSubresourceFilterConfigurator();
 
   void ResetConfiguration(Configuration config);
@@ -36,8 +42,6 @@ class ScopedSubresourceFilterConfigurator {
       scoped_refptr<ConfigurationList> config_list = nullptr);
 
   scoped_refptr<ConfigurationList> original_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSubresourceFilterConfigurator);
 };
 
 }  // namespace testing

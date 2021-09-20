@@ -15,6 +15,10 @@ namespace variations {
 class COMPONENT_EXPORT(VARIATIONS) PlatformFieldTrials {
  public:
   PlatformFieldTrials() = default;
+
+  PlatformFieldTrials(const PlatformFieldTrials&) = delete;
+  PlatformFieldTrials& operator=(const PlatformFieldTrials&) = delete;
+
   virtual ~PlatformFieldTrials() = default;
 
   // Set up field trials for a specific platform.
@@ -36,9 +40,6 @@ class COMPONENT_EXPORT(VARIATIONS) PlatformFieldTrials {
   // Register any synthetic field trials. Will be called later than the above
   // methods, in particular after g_browser_process is available..
   virtual void RegisterSyntheticTrials() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformFieldTrials);
 };
 
 }  // namespace variations

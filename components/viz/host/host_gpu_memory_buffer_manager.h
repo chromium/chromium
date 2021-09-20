@@ -54,6 +54,11 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
       int client_id,
       std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  HostGpuMemoryBufferManager(const HostGpuMemoryBufferManager&) = delete;
+  HostGpuMemoryBufferManager& operator=(const HostGpuMemoryBufferManager&) =
+      delete;
+
   ~HostGpuMemoryBufferManager() override;
 
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
@@ -164,8 +169,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<HostGpuMemoryBufferManager> weak_ptr_;
   base::WeakPtrFactory<HostGpuMemoryBufferManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostGpuMemoryBufferManager);
 };
 
 }  // namespace viz

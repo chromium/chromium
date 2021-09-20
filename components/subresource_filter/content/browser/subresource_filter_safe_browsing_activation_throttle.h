@@ -74,6 +74,11 @@ class SubresourceFilterSafeBrowsingActivationThrottle
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager);
 
+  SubresourceFilterSafeBrowsingActivationThrottle(
+      const SubresourceFilterSafeBrowsingActivationThrottle&) = delete;
+  SubresourceFilterSafeBrowsingActivationThrottle& operator=(
+      const SubresourceFilterSafeBrowsingActivationThrottle&) = delete;
+
   ~SubresourceFilterSafeBrowsingActivationThrottle() override;
 
   // content::NavigationThrottle:
@@ -141,8 +146,6 @@ class SubresourceFilterSafeBrowsingActivationThrottle
   // Whether this throttle is deferring the navigation. Only set to true in
   // WillProcessResponse if there are ongoing safe browsing checks.
   bool deferring_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterSafeBrowsingActivationThrottle);
 };
 
 }  // namespace subresource_filter

@@ -88,6 +88,10 @@ class MockFaviconServiceWithFake : public MockFaviconService {
             });
   }
 
+  MockFaviconServiceWithFake(const MockFaviconServiceWithFake&) = delete;
+  MockFaviconServiceWithFake& operator=(const MockFaviconServiceWithFake&) =
+      delete;
+
   ~MockFaviconServiceWithFake() override = default;
 
   // Simulates the service having an icon stored for |page_url|, the URL of the
@@ -111,9 +115,6 @@ class MockFaviconServiceWithFake : public MockFaviconService {
           return kTaskId;
         });
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFaviconServiceWithFake);
 };
 
 class MockLargeIconServiceWithFake : public LargeIconService {
@@ -133,6 +134,10 @@ class MockLargeIconServiceWithFake : public LargeIconService {
                            FAILURE_HTTP_ERROR);
             });
   }
+
+  MockLargeIconServiceWithFake(const MockLargeIconServiceWithFake&) = delete;
+  MockLargeIconServiceWithFake& operator=(const MockLargeIconServiceWithFake&) =
+      delete;
 
   ~MockLargeIconServiceWithFake() override = default;
 
@@ -192,8 +197,6 @@ class MockLargeIconServiceWithFake : public LargeIconService {
 
  private:
   MockFaviconServiceWithFake* const mock_favicon_service_with_fake_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockLargeIconServiceWithFake);
 };
 
 class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {

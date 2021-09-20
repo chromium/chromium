@@ -56,6 +56,9 @@ class TestMetricsLog : public MetricsLog {
                  MetricsServiceClient* client)
       : MetricsLog(client_id, session_id, log_type, client) {}
 
+  TestMetricsLog(const TestMetricsLog&) = delete;
+  TestMetricsLog& operator=(const TestMetricsLog&) = delete;
+
   ~TestMetricsLog() override {}
 
   const ChromeUserMetricsExtension& uma_proto() const {
@@ -69,9 +72,6 @@ class TestMetricsLog : public MetricsLog {
   const SystemProfileProto& system_profile() const {
     return uma_proto().system_profile();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMetricsLog);
 };
 
 // Returns the expected hardware class for a metrics log.
@@ -97,6 +97,10 @@ std::string GetExpectedHardwareClass() {
 class MetricsLogTest : public testing::Test {
  public:
   MetricsLogTest() {}
+
+  MetricsLogTest(const MetricsLogTest&) = delete;
+  MetricsLogTest& operator=(const MetricsLogTest&) = delete;
+
   ~MetricsLogTest() override {}
 
  protected:
@@ -129,9 +133,6 @@ class MetricsLogTest : public testing::Test {
     // TODO(isherman): Verify other data written into the protobuf as a result
     // of this call.
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricsLogTest);
 };
 
 TEST_F(MetricsLogTest, LogType) {

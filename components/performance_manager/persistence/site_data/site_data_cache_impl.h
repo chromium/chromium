@@ -36,6 +36,10 @@ class SiteDataCacheImpl : public SiteDataCache,
 
   SiteDataCacheImpl(const std::string& browser_context_id,
                     const base::FilePath& browser_context_path);
+
+  SiteDataCacheImpl(const SiteDataCacheImpl&) = delete;
+  SiteDataCacheImpl& operator=(const SiteDataCacheImpl&) = delete;
+
   ~SiteDataCacheImpl() override;
 
   // SiteDataCache:
@@ -104,8 +108,6 @@ class SiteDataCacheImpl : public SiteDataCache,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SiteDataCacheImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataCacheImpl);
 };
 
 }  // namespace performance_manager

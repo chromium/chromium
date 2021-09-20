@@ -76,6 +76,10 @@ class KeepAliveDelegateTest : public testing::Test {
   using ChannelError = ::cast_channel::ChannelError;
 
   KeepAliveDelegateTest() {}
+
+  KeepAliveDelegateTest(const KeepAliveDelegateTest&) = delete;
+  KeepAliveDelegateTest& operator=(const KeepAliveDelegateTest&) = delete;
+
   ~KeepAliveDelegateTest() override {}
 
  protected:
@@ -107,9 +111,6 @@ class KeepAliveDelegateTest : public testing::Test {
   MockCastTransportDelegate* inner_delegate_;
   MockTimerWithMonitoredReset* liveness_timer_;
   MockTimerWithMonitoredReset* ping_timer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveDelegateTest);
 };
 
 TEST_F(KeepAliveDelegateTest, TestErrorHandledBeforeStarting) {

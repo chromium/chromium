@@ -32,6 +32,11 @@ struct TranslateInitDetails;
 class TranslateInternalsHandler {
  public:
   TranslateInternalsHandler();
+
+  TranslateInternalsHandler(const TranslateInternalsHandler&) = delete;
+  TranslateInternalsHandler& operator=(const TranslateInternalsHandler&) =
+      delete;
+
   ~TranslateInternalsHandler();
 
   // Returns a dictionary of languages where each key is a language
@@ -119,8 +124,6 @@ class TranslateInternalsHandler {
 
   // Subscription for translate initialization event.
   base::CallbackListSubscription init_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateInternalsHandler);
 };
 
 }  // namespace translate

@@ -60,6 +60,10 @@ bool MustSignalGmbConfigReadyForTest() {
 class TestGpuService : public mojom::GpuService {
  public:
   TestGpuService() = default;
+
+  TestGpuService(const TestGpuService&) = delete;
+  TestGpuService& operator=(const TestGpuService&) = delete;
+
   ~TestGpuService() override = default;
 
   mojom::GpuService* GetGpuService(base::OnceClosure connection_error_handler) {
@@ -250,8 +254,6 @@ class TestGpuService : public mojom::GpuService {
     const int client_id;
   };
   std::vector<DestructionRequest> destruction_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGpuService);
 };
 
 }  // namespace
@@ -259,6 +261,12 @@ class TestGpuService : public mojom::GpuService {
 class HostGpuMemoryBufferManagerTest : public ::testing::Test {
  public:
   HostGpuMemoryBufferManagerTest() = default;
+
+  HostGpuMemoryBufferManagerTest(const HostGpuMemoryBufferManagerTest&) =
+      delete;
+  HostGpuMemoryBufferManagerTest& operator=(
+      const HostGpuMemoryBufferManagerTest&) = delete;
+
   ~HostGpuMemoryBufferManagerTest() override = default;
 
   void SetUp() override {
@@ -330,8 +338,6 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
  private:
   std::unique_ptr<TestGpuService> gpu_service_;
   std::unique_ptr<HostGpuMemoryBufferManager> gpu_memory_buffer_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostGpuMemoryBufferManagerTest);
 };
 
 // Tests that allocation requests from a client that goes away before allocation

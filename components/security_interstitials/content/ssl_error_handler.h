@@ -83,6 +83,9 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
       void(content::WebContents*, const GURL&, const std::string&, int)>
       OnBlockingPageShownCallback;
 
+  SSLErrorHandler(const SSLErrorHandler&) = delete;
+  SSLErrorHandler& operator=(const SSLErrorHandler&) = delete;
+
   ~SSLErrorHandler() override;
 
   // Events for UMA. Do not rename or remove values, add new values to the end.
@@ -269,8 +272,6 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   base::WeakPtrFactory<SSLErrorHandler> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorHandler);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_ERROR_HANDLER_H_

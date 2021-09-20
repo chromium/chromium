@@ -26,6 +26,11 @@ class TestPortableDeviceWatcherWin : public PortableDeviceWatcherWin {
   static const char kStorageUniqueIdA[];
 
   TestPortableDeviceWatcherWin();
+
+  TestPortableDeviceWatcherWin(const TestPortableDeviceWatcherWin&) = delete;
+  TestPortableDeviceWatcherWin& operator=(const TestPortableDeviceWatcherWin&) =
+      delete;
+
   ~TestPortableDeviceWatcherWin() override;
 
   // Returns the persistent storage unique id of the device specified by the
@@ -70,8 +75,6 @@ class TestPortableDeviceWatcherWin : public PortableDeviceWatcherWin {
   // Set to true to get dummy storage details from
   // GetMTPStorageInfoFromDeviceId().
   bool use_dummy_mtp_storage_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPortableDeviceWatcherWin);
 };
 
 }  // namespace storage_monitor

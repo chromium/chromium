@@ -32,6 +32,9 @@ class LibcastSocketService final
  public:
   using CastSocketService::NetworkContextGetter;
 
+  LibcastSocketService(const LibcastSocketService&) = delete;
+  LibcastSocketService& operator=(const LibcastSocketService&) = delete;
+
   ~LibcastSocketService() override;
 
   // CastSocketService overrides.
@@ -120,8 +123,6 @@ class LibcastSocketService final
   std::map<openscreen::IPEndpoint, SavedOpenParams> open_params_;
 
   std::unique_ptr<LibcastSocket> libcast_socket_for_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(LibcastSocketService);
 };
 
 }  // namespace cast_channel

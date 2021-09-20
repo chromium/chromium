@@ -28,6 +28,11 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   TestBrowserAutofillManager(AutofillDriver* driver,
                              AutofillClient* client,
                              TestPersonalDataManager* personal_data);
+
+  TestBrowserAutofillManager(const TestBrowserAutofillManager&) = delete;
+  TestBrowserAutofillManager& operator=(const TestBrowserAutofillManager&) =
+      delete;
+
   ~TestBrowserAutofillManager() override;
 
   // BrowserAutofillManager overrides.
@@ -81,8 +86,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   std::string submitted_form_signature_;
   std::vector<ServerFieldTypeSet> expected_submitted_field_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserAutofillManager);
 };
 
 }  // namespace autofill

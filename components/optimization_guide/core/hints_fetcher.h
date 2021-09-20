@@ -72,6 +72,10 @@ class HintsFetcher {
       const GURL& optimization_guide_service_url,
       PrefService* pref_service,
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  HintsFetcher(const HintsFetcher&) = delete;
+  HintsFetcher& operator=(const HintsFetcher&) = delete;
+
   virtual ~HintsFetcher();
 
   // Requests hints from the Optimization Guide Service if a request for them is
@@ -179,8 +183,6 @@ class HintsFetcher {
   base::TimeTicks hints_fetch_start_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HintsFetcher);
 };
 
 }  // namespace optimization_guide

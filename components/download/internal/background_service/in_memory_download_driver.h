@@ -25,6 +25,10 @@ class InMemoryDownloadFactory : public InMemoryDownload::Factory {
   InMemoryDownloadFactory(
       network::mojom::URLLoaderFactory* url_loader_factory,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  InMemoryDownloadFactory(const InMemoryDownloadFactory&) = delete;
+  InMemoryDownloadFactory& operator=(const InMemoryDownloadFactory&) = delete;
+
   ~InMemoryDownloadFactory() override;
 
  private:
@@ -39,8 +43,6 @@ class InMemoryDownloadFactory : public InMemoryDownload::Factory {
   network::mojom::URLLoaderFactory* url_loader_factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryDownloadFactory);
 };
 
 // Download backend that owns the list of in memory downloads and propagate
@@ -51,6 +53,10 @@ class InMemoryDownloadDriver : public DownloadDriver,
   InMemoryDownloadDriver(
       std::unique_ptr<InMemoryDownload::Factory> download_factory,
       BlobContextGetterFactoryPtr blob_context_getter_factory);
+
+  InMemoryDownloadDriver(const InMemoryDownloadDriver&) = delete;
+  InMemoryDownloadDriver& operator=(const InMemoryDownloadDriver&) = delete;
+
   ~InMemoryDownloadDriver() override;
 
  private:
@@ -89,8 +95,6 @@ class InMemoryDownloadDriver : public DownloadDriver,
 
   // A map of GUID and in memory download, which holds download data.
   std::map<std::string, std::unique_ptr<InMemoryDownload>> downloads_;
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryDownloadDriver);
 };
 
 }  // namespace download

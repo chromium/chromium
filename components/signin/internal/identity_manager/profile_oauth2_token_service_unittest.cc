@@ -438,6 +438,12 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
       : public TestingOAuth2AccessTokenManagerConsumer {
    public:
     MockOAuth2AccessTokenConsumer() = default;
+
+    MockOAuth2AccessTokenConsumer(const MockOAuth2AccessTokenConsumer&) =
+        delete;
+    MockOAuth2AccessTokenConsumer& operator=(
+        const MockOAuth2AccessTokenConsumer&) = delete;
+
     ~MockOAuth2AccessTokenConsumer() = default;
 
     MOCK_METHOD2(
@@ -448,8 +454,6 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
     MOCK_METHOD2(OnGetTokenFailure,
                  void(const OAuth2AccessTokenManager::Request* request,
                       const GoogleServiceAuthError& error));
-
-    DISALLOW_COPY_AND_ASSIGN(MockOAuth2AccessTokenConsumer);
   };
   ProfileOAuth2TokenService token_service(
       &prefs_,

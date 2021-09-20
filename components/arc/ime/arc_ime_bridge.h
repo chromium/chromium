@@ -27,6 +27,9 @@ namespace arc {
 // Chromium and the ARC container.
 class ArcImeBridge {
  public:
+  ArcImeBridge(const ArcImeBridge&) = delete;
+  ArcImeBridge& operator=(const ArcImeBridge&) = delete;
+
   virtual ~ArcImeBridge() {}
 
   // Received IPCs are deserialized and passed to this delegate.
@@ -65,9 +68,6 @@ class ArcImeBridge {
 
  protected:
   ArcImeBridge() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcImeBridge);
 };
 
 }  // namespace arc

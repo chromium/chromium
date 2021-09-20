@@ -63,6 +63,10 @@ class ContentSettingsAgentImpl
   ContentSettingsAgentImpl(content::RenderFrame* render_frame,
                            bool should_allowlist,
                            std::unique_ptr<Delegate> delegate);
+
+  ContentSettingsAgentImpl(const ContentSettingsAgentImpl&) = delete;
+  ContentSettingsAgentImpl& operator=(const ContentSettingsAgentImpl&) = delete;
+
   ~ContentSettingsAgentImpl() override;
 
   // Sets the content setting rules which back `allowImage()`, `allowScript()`,
@@ -181,8 +185,6 @@ class ContentSettingsAgentImpl
   std::unique_ptr<Delegate> delegate_;
 
   mojo::AssociatedReceiverSet<mojom::ContentSettingsAgent> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsAgentImpl);
 };
 
 }  // namespace content_settings

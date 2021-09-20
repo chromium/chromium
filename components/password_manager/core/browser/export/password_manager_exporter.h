@@ -36,6 +36,10 @@ class PasswordManagerExporter {
   explicit PasswordManagerExporter(
       CredentialProviderInterface* credential_provider_interface,
       ProgressCallback on_progress);
+
+  PasswordManagerExporter(const PasswordManagerExporter&) = delete;
+  PasswordManagerExporter& operator=(const PasswordManagerExporter&) = delete;
+
   virtual ~PasswordManagerExporter();
 
   // Pre-load the passwords from the password store.
@@ -127,8 +131,6 @@ class PasswordManagerExporter {
   // the same sequence.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<PasswordManagerExporter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerExporter);
 };
 
 }  // namespace password_manager

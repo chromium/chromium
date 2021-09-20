@@ -241,10 +241,12 @@ class AutofillWebDataBackendImpl
   class SupportsUserDataAggregatable : public base::SupportsUserData {
    public:
     SupportsUserDataAggregatable() {}
-    ~SupportsUserDataAggregatable() override {}
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SupportsUserDataAggregatable);
+    SupportsUserDataAggregatable(const SupportsUserDataAggregatable&) = delete;
+    SupportsUserDataAggregatable& operator=(
+        const SupportsUserDataAggregatable&) = delete;
+
+    ~SupportsUserDataAggregatable() override {}
   };
 
   // The task runner that this class uses for its UI tasks.

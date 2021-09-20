@@ -23,9 +23,6 @@ class NigoriSyncBridge {
  public:
   NigoriSyncBridge() = default;
 
-  NigoriSyncBridge(const NigoriSyncBridge&) = delete;
-  NigoriSyncBridge& operator=(const NigoriSyncBridge&) = delete;
-
   virtual ~NigoriSyncBridge() = default;
 
   // Perform the initial merge between local and sync data.
@@ -42,6 +39,9 @@ class NigoriSyncBridge {
   // Informs the bridge that sync has been disabed. The bridge is responsible
   // for deleting all data and metadata upon disabling sync.
   virtual void ApplyDisableSyncChanges() = 0;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(NigoriSyncBridge);
 };
 
 }  // namespace syncer

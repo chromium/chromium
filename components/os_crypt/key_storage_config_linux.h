@@ -20,6 +20,10 @@ namespace os_crypt {
 struct COMPONENT_EXPORT(OS_CRYPT) Config {
  public:
   Config();
+
+  Config(const Config&) = delete;
+  Config& operator=(const Config&) = delete;
+
   ~Config();
 
   // Force OSCrypt to use a specific linux password store.
@@ -40,9 +44,6 @@ struct COMPONENT_EXPORT(OS_CRYPT) Config {
   bool should_use_preference;
   // Preferences are stored in a separate file in the user data directory.
   base::FilePath user_data_path;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Config);
 };
 
 }  // namespace os_crypt

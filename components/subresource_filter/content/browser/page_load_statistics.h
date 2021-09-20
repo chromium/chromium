@@ -16,6 +16,10 @@ namespace subresource_filter {
 class PageLoadStatistics {
  public:
   PageLoadStatistics(const mojom::ActivationState& state);
+
+  PageLoadStatistics(const PageLoadStatistics&) = delete;
+  PageLoadStatistics& operator=(const PageLoadStatistics&) = delete;
+
   ~PageLoadStatistics();
 
   void OnDocumentLoadStatistics(
@@ -28,8 +32,6 @@ class PageLoadStatistics {
   // Statistics about subresource loads, aggregated across all frames of the
   // current page.
   mojom::DocumentLoadStatistics aggregated_document_statistics_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageLoadStatistics);
 };
 
 }  // namespace subresource_filter

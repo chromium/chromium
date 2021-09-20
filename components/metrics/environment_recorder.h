@@ -21,6 +21,10 @@ class SystemProfileProto;
 class EnvironmentRecorder {
  public:
   explicit EnvironmentRecorder(PrefService* local_state);
+
+  EnvironmentRecorder(const EnvironmentRecorder&) = delete;
+  EnvironmentRecorder& operator=(const EnvironmentRecorder&) = delete;
+
   ~EnvironmentRecorder();
 
   // Serializes the system profile and records it in prefs for the next
@@ -50,8 +54,6 @@ class EnvironmentRecorder {
 
  private:
   PrefService* local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnvironmentRecorder);
 };
 
 }  // namespace metrics

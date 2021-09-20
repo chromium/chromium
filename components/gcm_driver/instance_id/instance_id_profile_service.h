@@ -23,14 +23,15 @@ class InstanceIDProfileService : public KeyedService {
  public:
   InstanceIDProfileService(gcm::GCMDriver* driver, bool is_off_the_record);
 
+  InstanceIDProfileService(const InstanceIDProfileService&) = delete;
+  InstanceIDProfileService& operator=(const InstanceIDProfileService&) = delete;
+
   ~InstanceIDProfileService() override;
 
   InstanceIDDriver* driver() const { return driver_.get(); }
 
  private:
   std::unique_ptr<InstanceIDDriver> driver_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDProfileService);
 };
 
 }  // namespace instance_id

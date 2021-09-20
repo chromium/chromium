@@ -82,6 +82,9 @@ class CaptivePortalTabReloader {
                            content::WebContents* web_contents,
                            const OpenLoginTabCallback& open_login_tab_callback);
 
+  CaptivePortalTabReloader(const CaptivePortalTabReloader&) = delete;
+  CaptivePortalTabReloader& operator=(const CaptivePortalTabReloader&) = delete;
+
   virtual ~CaptivePortalTabReloader();
 
   // The following functions are all invoked by the CaptivePortalTabHelper:
@@ -187,8 +190,6 @@ class CaptivePortalTabReloader {
   const OpenLoginTabCallback open_login_tab_callback_;
 
   base::WeakPtrFactory<CaptivePortalTabReloader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalTabReloader);
 };
 
 }  // namespace captive_portal

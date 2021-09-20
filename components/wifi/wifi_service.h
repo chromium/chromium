@@ -32,6 +32,9 @@ class WIFI_EXPORT WiFiService {
   using NetworkGuidListCallback =
       base::RepeatingCallback<void(const NetworkGuidList& network_guid_list)>;
 
+  WiFiService(const WiFiService&) = delete;
+  WiFiService& operator=(const WiFiService&) = delete;
+
   virtual ~WiFiService() {}
 
   // Initialize WiFiService, store |task_runner| for posting worker tasks.
@@ -136,9 +139,6 @@ class WIFI_EXPORT WiFiService {
   static const char kErrorNotImplemented[];
   static const char kErrorScanForNetworksWithName[];
   static const char kErrorWiFiService[];
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WiFiService);
 };
 
 }  // namespace wifi

@@ -22,6 +22,10 @@ namespace ntp_tiles {
 class CustomLinksStore {
  public:
   explicit CustomLinksStore(PrefService* prefs);
+
+  CustomLinksStore(const CustomLinksStore&) = delete;
+  CustomLinksStore& operator=(const CustomLinksStore&) = delete;
+
   // Virtual for testing.
   virtual ~CustomLinksStore();
 
@@ -46,8 +50,6 @@ class CustomLinksStore {
  private:
   // The pref service used to persist the custom link data.
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomLinksStore);
 };
 
 }  // namespace ntp_tiles

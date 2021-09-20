@@ -72,6 +72,11 @@ bool IsWorkerClient(WorkerNodeImpl* worker_node,
 class TestDedicatedWorkerService : public content::DedicatedWorkerService {
  public:
   TestDedicatedWorkerService();
+
+  TestDedicatedWorkerService(const TestDedicatedWorkerService&) = delete;
+  TestDedicatedWorkerService& operator=(const TestDedicatedWorkerService&) =
+      delete;
+
   ~TestDedicatedWorkerService() override;
 
   // content::DedicatedWorkerService
@@ -93,8 +98,6 @@ class TestDedicatedWorkerService : public content::DedicatedWorkerService {
   // Maps each running worker to its client RenderFrameHost ID.
   base::flat_map<blink::DedicatedWorkerToken, content::GlobalRenderFrameHostId>
       dedicated_worker_client_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDedicatedWorkerService);
 };
 
 TestDedicatedWorkerService::TestDedicatedWorkerService() = default;
@@ -155,6 +158,10 @@ void TestDedicatedWorkerService::DestroyDedicatedWorker(
 class TestSharedWorkerService : public content::SharedWorkerService {
  public:
   TestSharedWorkerService();
+
+  TestSharedWorkerService(const TestSharedWorkerService&) = delete;
+  TestSharedWorkerService& operator=(const TestSharedWorkerService&) = delete;
+
   ~TestSharedWorkerService() override;
 
   // content::SharedWorkerService
@@ -188,8 +195,6 @@ class TestSharedWorkerService : public content::SharedWorkerService {
   base::flat_map<blink::SharedWorkerToken,
                  base::flat_set<content::GlobalRenderFrameHostId>>
       shared_worker_client_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSharedWorkerService);
 };
 
 TestSharedWorkerService::TestSharedWorkerService() = default;
@@ -490,6 +495,10 @@ void TestServiceWorkerContext::OnControlleeNavigationCommitted(
 class TestProcessNodeSource : public ProcessNodeSource {
  public:
   TestProcessNodeSource();
+
+  TestProcessNodeSource(const TestProcessNodeSource&) = delete;
+  TestProcessNodeSource& operator=(const TestProcessNodeSource&) = delete;
+
   ~TestProcessNodeSource() override;
 
   // ProcessNodeSource:
@@ -501,8 +510,6 @@ class TestProcessNodeSource : public ProcessNodeSource {
  private:
   // Maps render process IDs with their associated process node.
   base::flat_map<int, std::unique_ptr<ProcessNodeImpl>> process_node_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProcessNodeSource);
 };
 
 TestProcessNodeSource::TestProcessNodeSource() = default;
@@ -544,6 +551,10 @@ int TestProcessNodeSource::CreateProcessNode() {
 class TestFrameNodeSource : public FrameNodeSource {
  public:
   TestFrameNodeSource();
+
+  TestFrameNodeSource(const TestFrameNodeSource&) = delete;
+  TestFrameNodeSource& operator=(const TestFrameNodeSource&) = delete;
+
   ~TestFrameNodeSource() override;
 
   // FrameNodeSource:
@@ -580,8 +591,6 @@ class TestFrameNodeSource : public FrameNodeSource {
   // Maps each observed frame node to their callback.
   base::flat_map<FrameNodeImpl*, OnbeforeFrameNodeRemovedCallback>
       frame_node_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFrameNodeSource);
 };
 
 TestFrameNodeSource::TestFrameNodeSource()
@@ -679,6 +688,10 @@ void TestFrameNodeSource::InvokeAndRemoveCallback(FrameNodeImpl* frame_node) {
 class WorkerWatcherTest : public testing::Test {
  public:
   WorkerWatcherTest();
+
+  WorkerWatcherTest(const WorkerWatcherTest&) = delete;
+  WorkerWatcherTest& operator=(const WorkerWatcherTest&) = delete;
+
   ~WorkerWatcherTest() override;
 
   // testing::Test:
@@ -731,8 +744,6 @@ class WorkerWatcherTest : public testing::Test {
 
   // The WorkerWatcher that's being tested.
   std::unique_ptr<WorkerWatcher> worker_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerWatcherTest);
 };
 
 WorkerWatcherTest::WorkerWatcherTest() = default;

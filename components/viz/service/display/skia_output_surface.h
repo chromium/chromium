@@ -68,6 +68,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
 #endif
 
   explicit SkiaOutputSurface(OutputSurface::Type type);
+
+  SkiaOutputSurface(const SkiaOutputSurface&) = delete;
+  SkiaOutputSurface& operator=(const SkiaOutputSurface&) = delete;
+
   ~SkiaOutputSurface() override;
 
   SkiaOutputSurface* AsSkiaOutputSurface() override;
@@ -197,9 +201,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
       sk_sp<SkColorSpace> color_space) = 0;
   virtual sk_sp<SkDeferredDisplayList> EndPaintRenderPassOverlay() = 0;
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputSurface);
 };
 
 }  // namespace viz

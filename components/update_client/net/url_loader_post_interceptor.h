@@ -61,6 +61,9 @@ class URLLoaderPostInterceptor {
   URLLoaderPostInterceptor(std::vector<GURL> supported_urls,
                            net::test_server::EmbeddedTestServer*);
 
+  URLLoaderPostInterceptor(const URLLoaderPostInterceptor&) = delete;
+  URLLoaderPostInterceptor& operator=(const URLLoaderPostInterceptor&) = delete;
+
   ~URLLoaderPostInterceptor();
 
   // Sets an expection for the body of the POST request and optionally,
@@ -152,8 +155,6 @@ class URLLoaderPostInterceptor {
   std::vector<GURL> filtered_urls_;
 
   UrlJobRequestReadyCallback url_job_request_ready_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderPostInterceptor);
 };
 
 class PartialMatch : public URLLoaderPostInterceptor::RequestMatcher {

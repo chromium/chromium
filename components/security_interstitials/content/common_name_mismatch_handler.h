@@ -52,6 +52,11 @@ class CommonNameMismatchHandler {
   CommonNameMismatchHandler(
       const GURL& request_url,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  CommonNameMismatchHandler(const CommonNameMismatchHandler&) = delete;
+  CommonNameMismatchHandler& operator=(const CommonNameMismatchHandler&) =
+      delete;
+
   ~CommonNameMismatchHandler();
 
   // Performs a network request to suggested URL. After completion, runs the
@@ -100,8 +105,6 @@ class CommonNameMismatchHandler {
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CommonNameMismatchHandler);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_COMMON_NAME_MISMATCH_HANDLER_H_

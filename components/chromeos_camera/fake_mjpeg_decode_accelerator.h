@@ -28,6 +28,11 @@ class FakeMjpegDecodeAccelerator : public MjpegDecodeAccelerator {
  public:
   FakeMjpegDecodeAccelerator(
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
+
+  FakeMjpegDecodeAccelerator(const FakeMjpegDecodeAccelerator&) = delete;
+  FakeMjpegDecodeAccelerator& operator=(const FakeMjpegDecodeAccelerator&) =
+      delete;
+
   ~FakeMjpegDecodeAccelerator() override;
 
   // MjpegDecodeAccelerator implementation.
@@ -67,8 +72,6 @@ class FakeMjpegDecodeAccelerator : public MjpegDecodeAccelerator {
   scoped_refptr<base::SingleThreadTaskRunner> decoder_task_runner_;
 
   base::WeakPtrFactory<FakeMjpegDecodeAccelerator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMjpegDecodeAccelerator);
 };
 
 }  // namespace chromeos_camera

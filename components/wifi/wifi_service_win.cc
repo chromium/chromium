@@ -186,6 +186,10 @@ namespace wifi {
 class WiFiServiceImpl : public WiFiService {
  public:
   WiFiServiceImpl();
+
+  WiFiServiceImpl(const WiFiServiceImpl&) = delete;
+  WiFiServiceImpl& operator=(const WiFiServiceImpl&) = delete;
+
   ~WiFiServiceImpl() override;
 
   // WiFiService interface implementation.
@@ -487,7 +491,6 @@ class WiFiServiceImpl : public WiFiService {
   static const int kMaxAttempts = 100;
   // Delay between attempts to check that network has connected successfully.
   static const int kAttemptDelayMs = 100;
-  DISALLOW_COPY_AND_ASSIGN(WiFiServiceImpl);
 };
 
 WiFiServiceImpl::WiFiServiceImpl()

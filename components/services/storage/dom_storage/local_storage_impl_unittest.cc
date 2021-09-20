@@ -106,6 +106,9 @@ class LocalStorageImplTest : public testing::Test {
  public:
   LocalStorageImplTest() { EXPECT_TRUE(temp_path_.CreateUniqueTempDir()); }
 
+  LocalStorageImplTest(const LocalStorageImplTest&) = delete;
+  LocalStorageImplTest& operator=(const LocalStorageImplTest&) = delete;
+
   ~LocalStorageImplTest() override {
     if (storage_)
       ShutDownStorage();
@@ -293,8 +296,6 @@ class LocalStorageImplTest : public testing::Test {
   base::ScopedTempDir temp_path_;
 
   std::unique_ptr<LocalStorageImpl> storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalStorageImplTest);
 };
 
 TEST_F(LocalStorageImplTest, Basic) {

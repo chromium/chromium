@@ -67,6 +67,11 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
                                bool can_minimize,
                                int container,
                                bool default_scale_cancellation);
+
+  ClientControlledShellSurface(const ClientControlledShellSurface&) = delete;
+  ClientControlledShellSurface& operator=(const ClientControlledShellSurface&) =
+      delete;
+
   ~ClientControlledShellSurface() override;
 
   Delegate* set_delegate(std::unique_ptr<Delegate> delegate) {
@@ -376,8 +381,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   absl::optional<int32_t> client_accessibility_id_;
 
   bool pending_resize_lock_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientControlledShellSurface);
 };
 
 }  // namespace exo

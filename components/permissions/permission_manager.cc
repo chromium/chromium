@@ -247,6 +247,10 @@ class PermissionManager::PermissionResponseCallback {
         permission_id_(permission_id),
         request_answered_(false) {}
 
+  PermissionResponseCallback(const PermissionResponseCallback&) = delete;
+  PermissionResponseCallback& operator=(const PermissionResponseCallback&) =
+      delete;
+
   ~PermissionResponseCallback() {
     if (!request_answered_ &&
         permission_manager_->pending_requests_.Lookup(request_local_id_)) {
@@ -265,8 +269,6 @@ class PermissionManager::PermissionResponseCallback {
   PendingRequestLocalId request_local_id_;
   int permission_id_;
   bool request_answered_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionResponseCallback);
 };
 
 struct PermissionManager::Subscription {

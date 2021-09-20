@@ -30,6 +30,10 @@ class DefaultProvider : public ObservableProvider {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   DefaultProvider(PrefService* prefs, bool off_the_record);
+
+  DefaultProvider(const DefaultProvider&) = delete;
+  DefaultProvider& operator=(const DefaultProvider&) = delete;
+
   ~DefaultProvider() override;
 
   // ProviderInterface implementations.
@@ -90,8 +94,6 @@ class DefaultProvider : public ObservableProvider {
   // Whether we are currently updating preferences, this is used to ignore
   // notifications from the preferences service that we triggered ourself.
   bool updating_preferences_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultProvider);
 };
 
 }  // namespace content_settings

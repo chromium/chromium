@@ -25,6 +25,10 @@ class ClientStatus;
 class UseAddressAction : public Action {
  public:
   explicit UseAddressAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  UseAddressAction(const UseAddressAction&) = delete;
+  UseAddressAction& operator=(const UseAddressAction&) = delete;
+
   ~UseAddressAction() override;
 
  private:
@@ -51,8 +55,6 @@ class UseAddressAction : public Action {
 
   ProcessActionCallback process_action_callback_;
   base::WeakPtrFactory<UseAddressAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UseAddressAction);
 };
 
 }  // namespace autofill_assistant

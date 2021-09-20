@@ -162,6 +162,10 @@ class RulesetService : public base::SupportsWeakPtr<RulesetService> {
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       // Note: Optional publisher parameter used exclusively for testing.
       std::unique_ptr<RulesetPublisher> publisher = nullptr);
+
+  RulesetService(const RulesetService&) = delete;
+  RulesetService& operator=(const RulesetService&) = delete;
+
   virtual ~RulesetService();
 
   // Pass-through function to set the callback on publishing.
@@ -269,8 +273,6 @@ class RulesetService : public base::SupportsWeakPtr<RulesetService> {
   bool is_initialized_;
 
   const base::FilePath indexed_ruleset_base_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetService);
 };
 
 }  // namespace subresource_filter

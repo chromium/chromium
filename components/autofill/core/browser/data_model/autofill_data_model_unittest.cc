@@ -35,6 +35,10 @@ class TestAutofillDataModel : public AutofillDataModel {
     set_use_count(use_count);
     set_use_date(use_date);
   }
+
+  TestAutofillDataModel(const TestAutofillDataModel&) = delete;
+  TestAutofillDataModel& operator=(const TestAutofillDataModel&) = delete;
+
   ~TestAutofillDataModel() override {}
 
  private:
@@ -46,8 +50,6 @@ class TestAutofillDataModel : public AutofillDataModel {
       const std::u16string& value,
       structured_address::VerificationStatus status) override {}
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillDataModel);
 };
 
 }  // namespace

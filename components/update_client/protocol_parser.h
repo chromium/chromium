@@ -109,6 +109,9 @@ class ProtocolParser {
 
   static std::unique_ptr<ProtocolParser> Create();
 
+  ProtocolParser(const ProtocolParser&) = delete;
+  ProtocolParser& operator=(const ProtocolParser&) = delete;
+
   virtual ~ProtocolParser();
 
   // Parses an update response string into Result data. Returns a bool
@@ -132,8 +135,6 @@ class ProtocolParser {
 
   Results results_;
   std::string errors_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolParser);
 };
 
 }  // namespace update_client

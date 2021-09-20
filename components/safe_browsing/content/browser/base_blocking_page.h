@@ -34,6 +34,9 @@ class BaseBlockingPage
   typedef std::unordered_map<content::WebContents*, UnsafeResourceList>
       UnsafeResourceMap;
 
+  BaseBlockingPage(const BaseBlockingPage&) = delete;
+  BaseBlockingPage& operator=(const BaseBlockingPage&) = delete;
+
   ~BaseBlockingPage() override;
 
   static const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions
@@ -150,8 +153,6 @@ class BaseBlockingPage
 
   // For displaying safe browsing interstitial.
   std::unique_ptr<BaseSafeBrowsingErrorUI> sb_error_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseBlockingPage);
 };
 
 }  // namespace safe_browsing
