@@ -39,6 +39,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
@@ -249,10 +250,34 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
   TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 }
 
+enum class SyncSettingsCategorization { kEnabled, kDisabled };
+
+class ExternalProviderImplChromeOSSyncCategorizationTest
+    : public ExternalProviderImplChromeOSTest,
+      public ::testing::WithParamInterface<SyncSettingsCategorization> {
+ public:
+  ExternalProviderImplChromeOSSyncCategorizationTest() {
+    switch (GetParam()) {
+      case SyncSettingsCategorization::kEnabled:
+        feature_list_.InitAndEnableFeature(
+            chromeos::features::kSyncSettingsCategorization);
+        break;
+      case SyncSettingsCategorization::kDisabled:
+        feature_list_.InitAndDisableFeature(
+            chromeos::features::kSyncSettingsCategorization);
+        break;
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // User signed in, sync service started, install app when priority sync is
 // completed.
 // TODO(crbug.com/1177118) Re-enable test
-TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
+TEST_P(ExternalProviderImplChromeOSSyncCategorizationTest,
+       DISABLED_PriorityCompleted) {
   InitServiceWithExternalProviders(true);
 
   // User is logged in.
@@ -272,7 +297,7 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
   // SyncSettingsCategorization makes ExternalPrefLoader wait for OS priority
   // prefs.
   syncer::ModelType priority_pref_type =
-      chromeos::features::IsSyncSettingsCategorizationEnabled()
+      GetParam() == SyncSettingsCategorization::kEnabled
           ? syncer::OS_PRIORITY_PREFERENCES
           : syncer::PRIORITY_PREFERENCES;
 
@@ -290,6 +315,11 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
 
   EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExternalProviderImplChromeOSSyncCategorizationTest,
+                         testing::Values(SyncSettingsCategorization::kDisabled,
+                                         SyncSettingsCategorization::kEnabled));
 
 // Validate the external providers enabled in the Chrome App Kiosk session. The
 // expected number should be 3.
