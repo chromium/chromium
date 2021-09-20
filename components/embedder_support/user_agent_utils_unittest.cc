@@ -13,12 +13,15 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/user_agent.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/re2/src/re2/re2.h"
 
 #if defined(USE_X11) || defined(USE_OZONE)
 #include <sys/utsname.h>
@@ -38,6 +41,12 @@
 namespace embedder_support {
 
 namespace {
+
+// A regular expression that matches Chrome/{major_version}.{minor_version} in
+// the User-Agent string, where the first capture is the {major_version} and the
+// second capture is the {minor_version}.
+static constexpr char kChromeProductVersionRegex[] =
+    "Chrome/([0-9]+)\\.([0-9]+\\.[0-9]+\\.[0-9]+)";
 
 void CheckUserAgentStringOrdering(bool mobile_device) {
   std::vector<std::string> pieces;
@@ -265,7 +274,37 @@ void VerifyWinPlatformVersion(std::string version) {
 
 }  // namespace
 
-TEST(UserAgentUtilsTest, UserAgentStringOrdering) {
+class UserAgentUtilsTest : public testing::Test,
+                           public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    if (ForceMajorVersionTo100())
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kForceMajorVersion100InUserAgent);
+  }
+
+  bool ForceMajorVersionTo100() { return GetParam(); }
+
+  std::string M100VersionNumber() {
+    const base::Version version = version_info::GetVersion();
+    std::string m100_version("100");
+    // The rest of the version after the major version string is the same.
+    for (size_t i = 1; i < version.components().size(); ++i) {
+      m100_version.append(".");
+      m100_version.append(base::NumberToString(version.components()[i]));
+    }
+    return m100_version;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_CASE_P(All,
+                        UserAgentUtilsTest,
+                        /*force_major_version_to_M100*/ testing::Bool());
+
+TEST_P(UserAgentUtilsTest, UserAgentStringOrdering) {
 #if defined(OS_ANDROID)
   const char* const kArguments[] = {"chrome"};
   base::test::ScopedCommandLine scoped_command_line;
@@ -285,7 +324,7 @@ TEST(UserAgentUtilsTest, UserAgentStringOrdering) {
 #endif
 }
 
-TEST(UserAgentUtilsTest, UserAgentStringReduced) {
+TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(blink::features::kReduceUserAgent);
 
@@ -296,6 +335,10 @@ TEST(UserAgentUtilsTest, UserAgentStringReduced) {
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
   command_line->InitFromArgv(1, kArguments);
+  const std::string major_version_number =
+      version_info::GetMajorVersionNumber();
+  const char* const major_version =
+      ForceMajorVersionTo100() ? "100" : major_version_number.c_str();
 
   // Verify the mobile user agent string is not returned when not using a mobile
   // user agent.
@@ -306,8 +349,7 @@ TEST(UserAgentUtilsTest, UserAgentStringReduced) {
     EXPECT_EQ(buffer,
               base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
                                  content::GetUnifiedPlatform().c_str(),
-                                 version_info::GetMajorVersionNumber().c_str(),
-                                 device_compat.c_str()));
+                                 major_version, device_compat.c_str()));
   }
 
   // Verify the mobile user agent string is returned when using a mobile user
@@ -320,8 +362,7 @@ TEST(UserAgentUtilsTest, UserAgentStringReduced) {
     EXPECT_EQ(buffer,
               base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
                                  content::GetUnifiedPlatform().c_str(),
-                                 version_info::GetMajorVersionNumber().c_str(),
-                                 device_compat.c_str()));
+                                 major_version, device_compat.c_str()));
   }
 #else
   {
@@ -329,17 +370,20 @@ TEST(UserAgentUtilsTest, UserAgentStringReduced) {
     EXPECT_EQ(buffer, base::StringPrintf(
                           content::frozen_user_agent_strings::kDesktop,
                           content::GetUnifiedPlatform().c_str(),
-                          version_info::GetMajorVersionNumber().c_str()));
+                          ForceMajorVersionTo100()
+                              ? "100"
+                              : version_info::GetMajorVersionNumber().c_str()));
   }
 #endif
 
   EXPECT_EQ(GetUserAgent(), GetReducedUserAgent());
 }
 
-TEST(UserAgentUtilsTest, UserAgentMetadata) {
+TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
   auto metadata = GetUserAgentMetadata();
 
-  std::string major_version = version_info::GetMajorVersionNumber();
+  const std::string major_version =
+      ForceMajorVersionTo100() ? "100" : version_info::GetMajorVersionNumber();
 
   // According to spec, Sec-CH-UA should contain what project the browser is
   // based on (i.e. Chromium in this case) as well as the actual product.
@@ -349,7 +393,7 @@ TEST(UserAgentUtilsTest, UserAgentMetadata) {
   const blink::UserAgentBrandVersion chromium_brand_version = {"Chromium",
                                                                major_version};
   const blink::UserAgentBrandVersion product_brand_version = {
-      version_info::GetProductName(), version_info::GetMajorVersionNumber()};
+      version_info::GetProductName(), major_version};
   bool contains_chromium_brand_version = false;
   bool contains_product_brand_version = false;
 
@@ -365,7 +409,10 @@ TEST(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_TRUE(contains_chromium_brand_version);
   EXPECT_TRUE(contains_product_brand_version);
 
-  EXPECT_EQ(metadata.full_version, version_info::GetVersionNumber());
+  const std::string expected_version_number =
+      ForceMajorVersionTo100() ? M100VersionNumber()
+                               : version_info::GetVersionNumber();
+  EXPECT_EQ(metadata.full_version, expected_version_number);
 
 #if defined(OS_WIN)
   if (base::win::GetVersion() < base::win::Version::WIN10) {
@@ -393,7 +440,7 @@ TEST(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_EQ(metadata.bitness, content::GetLowEntropyCpuBitness());
 }
 
-TEST(UserAgentUtilsTest, GenerateBrandVersionList) {
+TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {
   blink::UserAgentMetadata metadata;
 
   metadata.brand_version_list =
@@ -425,6 +472,30 @@ TEST(UserAgentUtilsTest, GenerateBrandVersionList) {
   // Should DCHECK on negative numbers
   EXPECT_DCHECK_DEATH(
       GenerateBrandVersionList(-1, absl::nullopt, "99", absl::nullopt));
+}
+
+TEST_P(UserAgentUtilsTest, GetProduct) {
+  const std::string product = GetProduct();
+  std::string major_version;
+  EXPECT_TRUE(
+      re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
+  if (ForceMajorVersionTo100())
+    EXPECT_EQ(major_version, "100");
+  else
+    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+}
+
+TEST_P(UserAgentUtilsTest, GetUserAgent) {
+  const std::string ua = GetUserAgent();
+  std::string major_version;
+  std::string minor_version;
+  EXPECT_TRUE(re2::RE2::PartialMatch(ua, kChromeProductVersionRegex,
+                                     &major_version, &minor_version));
+  if (ForceMajorVersionTo100())
+    EXPECT_EQ(major_version, "100");
+  else
+    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  EXPECT_NE(minor_version, "0.0.0");
 }
 
 }  // namespace embedder_support

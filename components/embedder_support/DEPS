@@ -9,4 +9,5 @@ include_rules = [
   "+content/public/common",
   "+net",
   "+third_party/blink/public/common",
+  "+third_party/re2",
 ]

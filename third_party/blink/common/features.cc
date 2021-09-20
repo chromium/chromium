@@ -1035,5 +1035,8 @@ const base::FeatureParam<double> kCostReductionOfMultiplexedRequests{
     &kDelayLowPriorityRequestsAccordingToNetworkState,
     "CostReductionOfMultiplexedRequests", 0.5};
 
+const base::Feature kForceMajorVersion100InUserAgent{
+    "ForceMajorVersion100InUserAgent", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

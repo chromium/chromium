@@ -1634,6 +1634,9 @@ extern const char kExtensionWorkflowJustificationDescription[];
 extern const char kShareContextMenuName[];
 extern const char kShareContextMenuDescription[];
 
+extern const char kForceMajorVersion100InUserAgentName[];
+extern const char kForceMajorVersion100InUserAgentDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if defined(OS_ANDROID)

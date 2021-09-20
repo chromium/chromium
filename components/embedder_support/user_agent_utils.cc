@@ -5,11 +5,13 @@
 #include "components/embedder_support/user_agent_utils.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
@@ -31,8 +33,11 @@
 
 namespace embedder_support {
 
-#if defined(OS_WIN)
 namespace {
+
+constexpr char kMajorVersion100[] = "100";
+
+#if defined(OS_WIN)
 
 // The registry key where the UniversalApiContract version value can be read
 // from.
@@ -109,10 +114,68 @@ std::string GetUniversalApiContractVersion() {
                        base::NumberToString(minor_version), ".0"});
 }
 
-}  // namespace
 #endif  // defined(OS_WIN)
 
+const std::string& GetM100VersionNumber() {
+  static const base::NoDestructor<std::string> m100_version_number([] {
+    base::Version version(version_info::GetVersionNumber());
+    std::string version_str(kMajorVersion100);
+    const std::vector<uint32_t>& components = version.components();
+    // Rest of the version string remains the same.
+    for (size_t i = 1; i < components.size(); ++i) {
+      version_str.append(".");
+      version_str.append(base::NumberToString(components[i]));
+    }
+    return version_str;
+  }());
+  return *m100_version_number;
+}
+
+const blink::UserAgentBrandList GetUserAgentBrandList(
+    const std::string& major_version) {
+  int major_version_number;
+  base::StringToInt(major_version, &major_version_number);
+  absl::optional<std::string> brand;
+#if !BUILDFLAG(CHROMIUM_BRANDING)
+  brand = version_info::GetProductName();
+#endif
+  absl::optional<std::string> maybe_param_override =
+      base::GetFieldTrialParamValueByFeature(features::kGreaseUACH,
+                                             "brand_override");
+  if (maybe_param_override->empty())
+    maybe_param_override = absl::nullopt;
+
+  return GenerateBrandVersionList(major_version_number, brand, major_version,
+                                  maybe_param_override);
+}
+
+const blink::UserAgentBrandList& GetUserAgentBrandList() {
+  static const base::NoDestructor<blink::UserAgentBrandList> brand_list(
+      GetUserAgentBrandList(version_info::GetMajorVersionNumber()));
+  return *brand_list;
+}
+
+const blink::UserAgentBrandList& GetForcedM100UserAgentBrandList() {
+  static const base::NoDestructor<blink::UserAgentBrandList> brand_list(
+      GetUserAgentBrandList(kMajorVersion100));
+  return *brand_list;
+}
+
+const blink::UserAgentBrandList& GetBrandVersionList() {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kForceMajorVersion100InUserAgent))
+    return GetForcedM100UserAgentBrandList();
+
+  return GetUserAgentBrandList();
+}
+
+}  // namespace
+
 std::string GetProduct() {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kForceMajorVersion100InUserAgent))
+    return "Chrome/" + GetM100VersionNumber();
+
   return version_info::GetProductNameAndVersionForUserAgent();
 }
 
@@ -140,7 +203,10 @@ std::string GetReducedUserAgent() {
   return content::GetReducedUserAgent(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent),
-      version_info::GetMajorVersionNumber());
+      base::FeatureList::IsEnabled(
+          blink::features::kForceMajorVersion100InUserAgent)
+          ? kMajorVersion100
+          : version_info::GetMajorVersionNumber());
 }
 
 // Generate a pseudo-random permutation of the following brand/version pairs:
@@ -196,28 +262,6 @@ blink::UserAgentBrandList GenerateBrandVersionList(
   return greased_brand_version_list;
 }
 
-const blink::UserAgentBrandList& GetBrandVersionList() {
-  static const base::NoDestructor<blink::UserAgentBrandList>
-      greased_brand_version_list([] {
-        int major_version_number;
-        std::string major_version = version_info::GetMajorVersionNumber();
-        base::StringToInt(major_version, &major_version_number);
-        absl::optional<std::string> brand;
-#if !BUILDFLAG(CHROMIUM_BRANDING)
-        brand = version_info::GetProductName();
-#endif
-        absl::optional<std::string> maybe_param_override =
-            base::GetFieldTrialParamValueByFeature(features::kGreaseUACH,
-                                                   "brand_override");
-        if (maybe_param_override->empty())
-          maybe_param_override = absl::nullopt;
-
-        return GenerateBrandVersionList(major_version_number, brand,
-                                        major_version, maybe_param_override);
-      }());
-  return *greased_brand_version_list;
-}
-
 // TODO(crbug.com/1103047): This can be removed/re-refactored once we use
 // "macOS" by default
 std::string GetPlatformForUAMetadata() {
@@ -232,7 +276,10 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
   blink::UserAgentMetadata metadata;
 
   metadata.brand_version_list = GetBrandVersionList();
-  metadata.full_version = version_info::GetVersionNumber();
+  metadata.full_version = base::FeatureList::IsEnabled(
+                              blink::features::kForceMajorVersion100InUserAgent)
+                              ? GetM100VersionNumber()
+                              : version_info::GetVersionNumber();
   metadata.platform = GetPlatformForUAMetadata();
   metadata.architecture = content::GetLowEntropyCpuArchitecture();
   metadata.model = content::BuildModelInfo();
@@ -265,11 +312,10 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
                                  const blink::UserAgentMetadata& metadata,
                                  bool override_in_new_tabs) {
   const char kLinuxInfoStr[] = "X11; Linux x86_64";
-  std::string product = version_info::GetProductNameAndVersionForUserAgent();
 
   blink::UserAgentOverride spoofed_ua;
   spoofed_ua.ua_string_override =
-      content::BuildUserAgentFromOSAndProduct(kLinuxInfoStr, product);
+      content::BuildUserAgentFromOSAndProduct(kLinuxInfoStr, GetProduct());
   spoofed_ua.ua_metadata_override = metadata;
   spoofed_ua.ua_metadata_override->platform = "Linux";
   spoofed_ua.ua_metadata_override->platform_version =

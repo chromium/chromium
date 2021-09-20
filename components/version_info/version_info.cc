@@ -30,8 +30,8 @@ std::string GetVersionNumber() {
 }
 
 std::string GetMajorVersionNumber() {
-  DCHECK(version_info::GetVersion().IsValid());
-  return base::NumberToString(version_info::GetVersion().components()[0]);
+  DCHECK(GetVersion().IsValid());
+  return base::NumberToString(GetVersion().components()[0]);
 }
 
 const base::Version& GetVersion() {
