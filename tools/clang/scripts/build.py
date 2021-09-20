@@ -578,6 +578,7 @@ def main():
       '-DCMAKE_BUILD_TYPE=Release',
       '-DLLVM_ENABLE_ASSERTIONS=%s' % ('OFF' if args.disable_asserts else 'ON'),
       '-DLLVM_ENABLE_PROJECTS=' + projects,
+      '-DLLVM_CHECK_ENABLED_PROJECTS=OFF',
       '-DLLVM_TARGETS_TO_BUILD=' + targets,
       '-DLLVM_ENABLE_PIC=OFF',
       '-DLLVM_ENABLE_UNWIND_TABLES=OFF',
