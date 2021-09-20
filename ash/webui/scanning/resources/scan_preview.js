@@ -42,6 +42,9 @@ Polymer({
   /** @private {?Function} */
   onWindowResized_: null,
 
+  /** @private {?ResizeObserver} */
+  previewAreaResizeObserver_: null,
+
   /** @private {?Function} */
   onDialogActionClick_: null,
 
@@ -172,10 +175,9 @@ Polymer({
   created() {
     // ScanningBrowserProxy is initialized when scanning_app.js is created.
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
-    this.onWindowResized_ = () => {
-      this.setMultiPageScanProgessHeight_();
-      this.setActionToolbarPosition_();
-    };
+    this.onWindowResized_ = () => this.setActionToolbarPosition_();
+    this.previewAreaResizeObserver_ =
+        new ResizeObserver(() => this.setMultiPageScanProgessHeight_());
   },
 
   /** @override */
@@ -188,6 +190,7 @@ Polymer({
   detached() {
     if (this.isMultiPageScan) {
       window.removeEventListener('resize', this.onWindowResized_);
+      this.previewAreaResizeObserver_.disconnect();
     }
   },
 
@@ -396,8 +399,6 @@ Polymer({
     this.setFocusedScannedImage_(
         scannedImages, this.getCurrentPageInView_(scannedImages));
 
-    this.setMultiPageScanProgessHeight_();
-
     // The below actions only needed for the first scanned image load.
     if (this.scannedImagesLoaded_) {
       return;
@@ -550,12 +551,19 @@ Polymer({
 
   /** @private */
   onIsMultiPageScanChange_() {
-    // Only listen for window size changes during multi-page scan sessions so
-    // the position of the action toolbar can be updated.
+    // Listen for window size changes during multi-page scan sessions so the
+    // position of the action toolbar can be updated.
     if (this.isMultiPageScan) {
       window.addEventListener('resize', this.onWindowResized_);
+
+      // Observe changes to the preview area during multi-page scan sessions so
+      // the scan progress div height can be updated when images are
+      // added/removed.
+      this.previewAreaResizeObserver_.observe(
+          /** @type {!HTMLElement} */ (this.$$('#previewDiv')));
     } else {
       window.removeEventListener('resize', this.onWindowResized_);
+      this.previewAreaResizeObserver_.disconnect();
     }
   },
 
