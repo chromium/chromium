@@ -841,6 +841,10 @@ KeyEvent::KeyEvent(const PlatformEvent& native_event, int event_flags)
 #endif  // defined(USE_OZONE)
       code_(CodeFromNative(native_event)),
       is_char_(IsCharFromNative(native_event)) {
+#if defined(USE_OZONE)
+  DCHECK(native_event->IsKeyEvent());
+  key_ = native_event->AsKeyEvent()->key_;
+#endif
   InitializeNative();
 }
 
@@ -961,8 +965,11 @@ void KeyEvent::ApplyLayout() const {
       return;
     }
   }
-  KeyboardCode dummy_key_code;
 
+  if (key_ != DomKey::NONE)
+    return;
+
+  KeyboardCode dummy_key_code;
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform() &&
       KeyboardLayoutEngineManager::GetKeyboardLayoutEngine()->Lookup(
