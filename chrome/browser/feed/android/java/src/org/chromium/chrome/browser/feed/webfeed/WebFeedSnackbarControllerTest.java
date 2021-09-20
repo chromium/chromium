@@ -41,6 +41,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -400,6 +401,17 @@ public final class WebFeedSnackbarControllerTest {
         Snackbar snackbar = mSnackbarCaptor.getValue();
         assertEquals("Snackbar duration for unfollow should be correct.",
                 WebFeedSnackbarController.SNACKBAR_DURATION_MS, snackbar.getDuration());
+    }
+
+    @Test
+    public void postFollowSnackbarIsDismissedUponFeedSurfaceOpened() {
+        mWebFeedSnackbarController.showPostFollowHelp(
+                mTab, getSuccessfulFollowResult(), sFollowId, sTestUrl, sTitle);
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+
+        FeedSurfaceTracker.getInstance().surfaceOpened();
+        verify(mSnackbarManager).dismissSnackbars(eq(mSnackbarCaptor.getValue().getController()));
     }
 
     private WebFeedBridge.FollowResults getSuccessfulFollowResult() {

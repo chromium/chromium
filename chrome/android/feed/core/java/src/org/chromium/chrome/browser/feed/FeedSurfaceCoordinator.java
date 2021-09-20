@@ -32,13 +32,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
+import org.chromium.chrome.browser.feed.v2.FeedServiceBridgeDelegateImpl;
 import org.chromium.chrome.browser.feed.v2.FeedStream;
 import org.chromium.chrome.browser.feed.v2.NativeViewListRenderer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -89,9 +92,9 @@ import java.util.List;
 /**
  * Provides a surface that displays an interest feed rendered list of content suggestions.
  */
-public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDelegate,
-                                               SwipeRefreshLayout.OnRefreshListener,
-                                               BackToTopBubbleScrollListener.ResultHandler {
+public class FeedSurfaceCoordinator
+        implements FeedSurfaceProvider, FeedBubbleDelegate, SwipeRefreshLayout.OnRefreshListener,
+                   BackToTopBubbleScrollListener.ResultHandler, SurfaceCoordinator {
     @VisibleForTesting
     public static final String FEED_STREAM_CREATED_TIME_MS_UMA = "FeedStreamCreatedTime";
 
@@ -112,6 +115,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     private final Supplier<ShareDelegate> mShareSupplier;
     private final Handler mHandler;
     private final boolean mOverScrollDisabled;
+    private final ObserverList<SurfaceCoordinator.Observer> mObservers = new ObserverList<>();
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -292,7 +296,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             FeedLaunchReliabilityLoggingState launchReliabilityLoggingState,
             @Nullable FeedSwipeRefreshLayout swipeRefreshLayout, boolean overScrollDisabled,
             @Nullable ViewGroup viewportView) {
-        FeedSurfaceTracker.getInstance().initServiceBridge();
+        FeedSurfaceTracker.getInstance().initServiceBridge(new FeedServiceBridgeDelegateImpl());
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
@@ -348,9 +352,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
                 new FeedSurfaceMediator(this, mActivity, snapScrollHelper, mPageNavigationDelegate,
                         mSectionHeaderModel, getTabIdFromLaunchOrigin(launchOrigin));
 
+        FeedSurfaceTracker.getInstance().trackSurface(this);
+
         // Creates streams, initiates content changes.
         mMediator.updateContent();
-        FeedSurfaceTracker.getInstance().trackSurface(this);
 
         // Enable pull-to-refresh.
         if (mSwipeRefreshLayout != null) {
@@ -473,20 +478,25 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     }
 
     /** @return whether this coordinator is currently active. */
-    boolean isActive() {
+    @Override
+    public boolean isActive() {
         return mIsActive;
     }
 
     /** Shows the feed. */
+    @Override
     public void onSurfaceOpened() {
         // Guard on isStartupCalled.
         if (!FeedSurfaceTracker.getInstance().isStartupCalled()) return;
         mIsActive = true;
-
+        for (Observer observer : mObservers) {
+            observer.surfaceOpened();
+        }
         mMediator.onSurfaceOpened();
     }
 
     /** Hides the feed. */
+    @Override
     public void onSurfaceClosed() {
         if (!FeedSurfaceTracker.getInstance().isStartupCalled()) return;
         mIsActive = false;
@@ -1005,6 +1015,16 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         if (mBackToTopBubble == null) return;
         mBackToTopBubble.dismiss();
         mBackToTopBubble = null;
+    }
+
+    @Override
+    public void addObserver(SurfaceCoordinator.Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeObserver(SurfaceCoordinator.Observer observer) {
+        mObservers.removeObserver(observer);
     }
 
     private boolean isReliabilityLoggingEnabled() {

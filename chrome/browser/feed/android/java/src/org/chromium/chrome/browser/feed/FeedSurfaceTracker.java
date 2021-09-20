@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.feed;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.feed.v2.FeedServiceBridgeDelegateImpl;
+import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 
 import java.util.ArrayList;
@@ -16,7 +17,13 @@ import java.util.List;
 /**
  * Tracker class for various feed surfaces.
  */
-public class FeedSurfaceTracker {
+public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
+    /** Feed surface tracker observer. */
+    public interface Observer {
+        // Called any time a Feed surface is opened.
+        void surfaceOpened();
+    }
+
     private static FeedSurfaceTracker sSurfaceTracker;
 
     // We avoid attaching surfaces until after |startup()| is called. This ensures that
@@ -24,20 +31,21 @@ public class FeedSurfaceTracker {
     private boolean mStartupCalled;
 
     private boolean mSetServiceBridgeDelegate;
+    private ObserverList<Observer> mObservers = new ObserverList<>();
 
     /**
      * Initializes the FeedServiceBridge. We do this once at startup, either in startup(), or
      * in FeedStreamSurface's constructor, whichever comes first.
      */
-    void initServiceBridge() {
+    void initServiceBridge(FeedServiceBridge.Delegate delegate) {
         if (mSetServiceBridgeDelegate) return;
         mSetServiceBridgeDelegate = true;
-        FeedServiceBridge.setDelegate(new FeedServiceBridgeDelegateImpl());
+        FeedServiceBridge.setDelegate(delegate);
     }
 
     // Tracks all the instances of FeedSurfaceCoordinator.
     @VisibleForTesting
-    HashSet<FeedSurfaceCoordinator> mCoordinators;
+    HashSet<SurfaceCoordinator> mCoordinators;
 
     public static FeedSurfaceTracker getInstance() {
         if (sSurfaceTracker == null) {
@@ -61,39 +69,50 @@ public class FeedSurfaceTracker {
         mStartupCalled = true;
         FeedServiceBridge.startup();
         if (mCoordinators != null) {
-            for (FeedSurfaceCoordinator coordinator : mCoordinators) {
+            for (SurfaceCoordinator coordinator : mCoordinators) {
                 coordinator.onSurfaceOpened();
             }
         }
+    }
+
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
     }
 
     boolean isStartupCalled() {
         return mStartupCalled;
     }
 
-    void untrackSurface(FeedSurfaceCoordinator coordinator) {
-        if (mCoordinators != null) {
-            mCoordinators.remove(coordinator);
+    void untrackSurface(SurfaceCoordinator coordinator) {
+        if (mCoordinators == null) {
+            return;
         }
+        mCoordinators.remove(coordinator);
+        coordinator.removeObserver(this);
     }
 
-    void trackSurface(FeedSurfaceCoordinator coordinator) {
+    void trackSurface(SurfaceCoordinator coordinator) {
         if (mCoordinators == null) {
             mCoordinators = new HashSet<>();
         }
         mCoordinators.add(coordinator);
+        coordinator.addObserver(this);
     }
 
     /** Clears all inactive coordinators and resets account. */
     public void clearAll() {
         if (mCoordinators == null) return;
 
-        List<FeedSurfaceCoordinator> activeCoordinators = new ArrayList<>();
-        for (FeedSurfaceCoordinator coordinator : mCoordinators) {
+        List<SurfaceCoordinator> activeCoordinators = new ArrayList<>();
+        for (SurfaceCoordinator coordinator : mCoordinators) {
             if (coordinator.isActive()) activeCoordinators.add(coordinator);
         }
 
-        for (FeedSurfaceCoordinator coordinator : activeCoordinators) {
+        for (SurfaceCoordinator coordinator : activeCoordinators) {
             coordinator.onSurfaceClosed();
         }
 
@@ -102,8 +121,15 @@ public class FeedSurfaceTracker {
             processScope.resetAccount();
         }
 
-        for (FeedSurfaceCoordinator coordinator : activeCoordinators) {
+        for (SurfaceCoordinator coordinator : activeCoordinators) {
             coordinator.onSurfaceOpened();
+        }
+    }
+
+    @Override
+    public void surfaceOpened() {
+        for (Observer observer : mObservers) {
+            observer.surfaceOpened();
         }
     }
 
