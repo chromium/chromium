@@ -9,5 +9,7 @@ PASS rename(name) can be called multiple times
 PASS rename(dir) should rename to stringified dir object
 PASS rename(name) with a name with a trailing period should fail
 PASS rename(name) with a name with invalid characters should fail
+PASS rename(name) while the file has an open writable fails
+PASS rename(name) while the destination file has an open writable fails
 Harness: the test ran to completion.
 
