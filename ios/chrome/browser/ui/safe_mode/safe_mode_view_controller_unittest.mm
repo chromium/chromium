@@ -58,13 +58,7 @@ class SafeModeViewControllerTest : public PlatformTest {
 // reports to upload. +[SafeModeViewController hasSuggestions] does not depend
 // on the value of crash_helper::IsEnabled or
 // crash_helper::IsUploadingEnabled.
-// TODO(crbug.com/1173776): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_HasSuggestions HasSuggestions
-#else
-#define MAYBE_HasSuggestions DISABLED_HasSuggestions
-#endif
-TEST_F(SafeModeViewControllerTest, MAYBE_HasSuggestions) {
+TEST_F(SafeModeViewControllerTest, HasSuggestions) {
   // Test when crash reporter is disabled.
   crash_helper::SetUserEnabledUploading(false);
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
