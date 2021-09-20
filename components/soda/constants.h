@@ -98,12 +98,18 @@ constexpr SodaLanguagePackComponentConfig kLanguageComponentConfigs[] = {
 // Location of the libsoda binary within the SODA installation directory.
 extern const base::FilePath::CharType kSodaBinaryRelativePath[];
 
+// Name of the of the libsoda binary used in browser tests.
+extern const base::FilePath::CharType kSodaTestBinaryRelativePath[];
+
 // Location of the SODA component relative to the components directory.
 extern const base::FilePath::CharType kSodaInstallationRelativePath[];
 
 // Location of the SODA language packs relative to the components
 // directory.
 extern const base::FilePath::CharType kSodaLanguagePacksRelativePath[];
+
+// Location of the SODA files used in browser tests.
+extern const base::FilePath::CharType kSodaTestResourcesRelativePath[];
 
 // Location of the SODA models directory relative to the language pack
 // installation directory.
@@ -114,6 +120,10 @@ const base::FilePath GetSodaDirectory();
 
 // Get the absolute path of the SODA directory containing the language packs.
 const base::FilePath GetSodaLanguagePacksDirectory();
+
+// Get the absolute path of the SODA directory containing the language packs
+// used in browser tests.
+const base::FilePath GetSodaTestResourcesDirectory();
 
 // Get the absolute path of the latest SODA language pack for a given language
 // (e.g. en-US).
@@ -130,6 +140,10 @@ const base::FilePath GetLatestSodaDirectory();
 // Get the path to the SODA binary. Returns an empty path if SODA is not
 // installed.
 const base::FilePath GetSodaBinaryPath();
+
+// Get the path to the SODA binary used in browser tests. Returns an empty path
+// if SODA is not installed.
+const base::FilePath GetSodaTestBinaryPath();
 
 absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     LanguageCode language_code);

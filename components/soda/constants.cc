@@ -27,6 +27,12 @@ constexpr base::FilePath::CharType kSodaBinaryRelativePath[] =
     FILE_PATH_LITERAL("SODAFiles/libsoda.so");
 #endif
 
+constexpr base::FilePath::CharType kSodaTestBinaryRelativePath[] =
+    FILE_PATH_LITERAL("libsoda.so");
+
+constexpr base::FilePath::CharType kSodaTestResourcesRelativePath[] =
+    FILE_PATH_LITERAL("third_party/soda/resources/");
+
 constexpr base::FilePath::CharType kSodaInstallationRelativePath[] =
     FILE_PATH_LITERAL("SODA");
 
@@ -54,6 +60,14 @@ const base::FilePath GetSodaLanguagePacksDirectory() {
   return components_dir.empty()
              ? base::FilePath()
              : components_dir.Append(kSodaLanguagePacksRelativePath);
+}
+
+const base::FilePath GetSodaTestResourcesDirectory() {
+  base::FilePath source_root;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root);
+  return source_root.empty()
+             ? base::FilePath()
+             : source_root.Append(kSodaTestResourcesRelativePath);
 }
 
 const base::FilePath GetLatestSodaLanguagePackDirectory(
@@ -91,6 +105,12 @@ const base::FilePath GetSodaBinaryPath() {
   base::FilePath soda_dir = GetLatestSodaDirectory();
   return soda_dir.empty() ? base::FilePath()
                           : soda_dir.Append(kSodaBinaryRelativePath);
+}
+
+const base::FilePath GetSodaTestBinaryPath() {
+  base::FilePath test_dir = GetSodaTestResourcesDirectory();
+  return test_dir.empty() ? base::FilePath()
+                          : test_dir.Append(kSodaTestBinaryRelativePath);
 }
 
 absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(

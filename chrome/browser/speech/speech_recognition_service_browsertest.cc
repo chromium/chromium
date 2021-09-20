@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
 #include "components/soda/pref_names.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/common/content_switches.h"
@@ -147,12 +148,6 @@ class SpeechRecognitionServiceTest
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Required for the utility process to access the directory containing the
-    // test files.
-    command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
-  }
-
  protected:
   void CloseCaptionBubble() {
     is_client_requesting_speech_recognition_ = false;
@@ -212,10 +207,8 @@ void SpeechRecognitionServiceTest::OnLanguageIdentificationEvent(
 }
 
 void SpeechRecognitionServiceTest::SetUpPrefs() {
-  g_browser_process->local_state()->SetFilePath(
-      prefs::kSodaBinaryPath,
-      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
-          .Append(soda::kSodaTestBinaryRelativePath));
+  g_browser_process->local_state()->SetFilePath(prefs::kSodaBinaryPath,
+                                                GetSodaTestBinaryPath());
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
