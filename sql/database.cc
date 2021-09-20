@@ -1764,10 +1764,12 @@ int Database::OnSqliteError(int sqlite_error_code,
   }
 
   if (!error_callback_.is_null()) {
-    // Fire from a copy of the callback in case of reentry into
-    // re/set_error_callback().
-    // TODO(shess): <http://crbug.com/254584>
-    ErrorCallback(error_callback_).Run(sqlite_error_code, statement);
+    // Create an additional reference to the state in `error_callback_`, so the
+    // state doesn't go away if the callback changes `error_callback_` by
+    // calling set_error_callback() or reset_error_callback(). This avoids a
+    // subtle source of use-after-frees. See https://crbug.com/254584.
+    ErrorCallback error_callback_copy = error_callback_;
+    error_callback_copy.Run(sqlite_error_code, statement);
     return sqlite_error_code;
   }
 

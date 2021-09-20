@@ -215,8 +215,17 @@ class COMPONENT_EXPORT(SQL) Database {
   // Set an error-handling callback.  On errors, the error number (and
   // statement, if available) will be passed to the callback.
   //
-  // If no callback is set, the default action is to crash in debug
-  // mode or return failure in release mode.
+  // If no callback is set, the default error-handling behavior is invoked. The
+  // default behavior is to LOGs the error and propagate the failure.
+  //
+  // In DCHECK-enabled builds, the default error-handling behavior currently
+  // DCHECKs on errors. This is not correct, because DCHECKs are supposed to
+  // cover invariants and never fail, whereas SQLite errors can surface even on
+  // correct usage, due to I/O errors and data corruption. At some point in the
+  // future, errors will not result in DCHECKs.
+  //
+  // The callback will be called on the sequence used for database operations.
+  // The callback will never be called after the Database instance is destroyed.
   using ErrorCallback = base::RepeatingCallback<void(int, Statement*)>;
   void set_error_callback(const ErrorCallback& callback) {
     error_callback_ = callback;
@@ -801,6 +810,15 @@ class COMPONENT_EXPORT(SQL) Database {
   // since memory was last released.
   int total_changes_at_last_release_ = 0;
 
+  // Called when a SQLite error occurs.
+  //
+  // This callback may be null, in which case errors are handled using a default
+  // behavior.
+  //
+  // This callback must never be exposed outside this Database instance. This is
+  // a straight-forward way to guarantee that this callback will not be called
+  // after the Database instance goes out of scope. set_error_callback() makes
+  // this guarantee.
   ErrorCallback error_callback_;
 
   // Developer-friendly database ID used in logging output and memory dumps.
