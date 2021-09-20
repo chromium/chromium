@@ -48,8 +48,7 @@ namespace internal {
 //                         ^           |
 //                         |  mark()   |
 //                         +-----------+
-//                           (and 00)
-//                          (or 01(10))
+//                           (xor 11)
 //
 // The bitmap can be safely accessed from multiple threads, but this doesn't
 // imply visibility on the data (i.e. no ordering guaranties, since relaxed
@@ -99,8 +98,9 @@ class StateBitmap final {
   // already quarantined or freed before, returns |false|.
   ALWAYS_INLINE bool Quarantine(uintptr_t address, Epoch epoch);
 
-  // Marks ("promotes") quarantined object.
-  ALWAYS_INLINE void MarkQuarantinedAsReachable(uintptr_t address, Epoch epoch);
+  // Marks ("promotes") quarantined object. Returns |true| on success, otherwise
+  // |false| if the object was marked before.
+  ALWAYS_INLINE bool MarkQuarantinedAsReachable(uintptr_t address, Epoch epoch);
 
   // Sets the bits corresponding to |address| as freed.
   ALWAYS_INLINE void Free(uintptr_t address);
@@ -233,24 +233,40 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::Quarantine(
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
-ALWAYS_INLINE void StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
+ALWAYS_INLINE bool StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
     MarkQuarantinedAsReachable(uintptr_t address, Epoch epoch) {
   static_assert((~static_cast<CellType>(State::kQuarantined1) & kStateMask) ==
                     (static_cast<CellType>(State::kQuarantined2) & kStateMask),
                 "kQuarantined1 must be inverted kQuarantined2");
-  const State quarantine_state =
-      epoch & 0b1 ? State::kQuarantined1 : State::kQuarantined2;
+  const State quarantine_state_old =
+      epoch & 0b1 ? State::kQuarantined2 : State::kQuarantined1;
   size_t cell_index, object_bit;
   std::tie(cell_index, object_bit) = AllocationIndexAndBit(address);
   const CellType clear_mask =
       ~(static_cast<CellType>(State::kAlloced) << object_bit);
-  const CellType set_mask = static_cast<CellType>(quarantine_state)
-                            << object_bit;
+  const CellType set_mask_old = static_cast<CellType>(quarantine_state_old)
+                                << object_bit;
+  const CellType xor_mask = static_cast<CellType>(0b11) << object_bit;
   auto& cell = AsAtomicCell(cell_index);
-  // First, clear the bits.
-  cell.fetch_and(clear_mask, std::memory_order_relaxed);
-  // Then, set the bits as qurantined according to the current epoch.
-  cell.fetch_or(set_mask, std::memory_order_relaxed);
+  CellType expected =
+      (cell.load(std::memory_order_relaxed) & clear_mask) | set_mask_old;
+  CellType desired = expected ^ xor_mask;
+  while (UNLIKELY(!cell.compare_exchange_weak(expected, desired,
+                                              std::memory_order_relaxed,
+                                              std::memory_order_relaxed))) {
+    // First check if the object was already marked before or in parallel.
+    if ((expected & set_mask_old) == 0) {
+      // Check that the bits can't be in any state other than
+      // marked-quarantined.
+      PA_DCHECK(((expected >> object_bit) & kStateMask) ==
+                (~static_cast<CellType>(quarantine_state_old) & kStateMask));
+      return false;
+    }
+    // Otherwise, some other bits in the cell were concurrently changed. Update
+    // desired and retry.
+    desired = expected ^ xor_mask;
+  }
+  return true;
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>

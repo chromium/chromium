@@ -625,8 +625,10 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   // the mutator bitmap and clear from the scanner bitmap. Note that since
   // PCScan has exclusive access to the scanner bitmap, we can avoid atomic rmw
   // operation for it.
-  state_map->MarkQuarantinedAsReachable(base, pcscan_epoch_);
-  return target_slot_span->bucket->slot_size;
+  if (LIKELY(state_map->MarkQuarantinedAsReachable(base, pcscan_epoch_)))
+    return target_slot_span->bucket->slot_size;
+
+  return 0;
 }
 
 void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {

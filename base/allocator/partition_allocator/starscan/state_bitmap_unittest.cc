@@ -56,9 +56,9 @@ class PartitionAllocStateBitmapTest : public ::testing::Test {
     return page.bitmap().Quarantine(ObjectAddress(object_position), epoch);
   }
 
-  void MarkQuarantinedObject(size_t object_position, size_t epoch) {
-    page.bitmap().MarkQuarantinedAsReachable(ObjectAddress(object_position),
-                                             epoch);
+  bool MarkQuarantinedObject(size_t object_position, size_t epoch) {
+    return page.bitmap().MarkQuarantinedAsReachable(
+        ObjectAddress(object_position), epoch);
   }
 
   bool IsAllocated(size_t object_position) const {
@@ -170,6 +170,48 @@ TEST_F(PartitionAllocStateBitmapTest, StateTransititions) {
     FreeObject(i);
     AssertFreed(i);
   }
+}
+
+TEST_F(PartitionAllocStateBitmapTest, MultipleMarks) {
+  AllocateObject(0);
+  QuarantineObject(0, kTestEpoch);
+
+  EXPECT_TRUE(MarkQuarantinedObject(0, kTestEpoch));
+  EXPECT_FALSE(MarkQuarantinedObject(0, kTestEpoch));
+  EXPECT_FALSE(MarkQuarantinedObject(0, kTestEpoch));
+
+  EXPECT_TRUE(MarkQuarantinedObject(0, kTestEpoch + 1));
+  EXPECT_FALSE(MarkQuarantinedObject(0, kTestEpoch + 1));
+  EXPECT_FALSE(MarkQuarantinedObject(0, kTestEpoch + 1));
+
+  EXPECT_TRUE(MarkQuarantinedObject(0, kTestEpoch + 2));
+  EXPECT_FALSE(MarkQuarantinedObject(0, kTestEpoch + 2));
+  EXPECT_FALSE(MarkQuarantinedObject(0, kTestEpoch + 2));
+}
+
+TEST_F(PartitionAllocStateBitmapTest, MultipleMarksAdjacent) {
+  AllocateObject(0);
+  QuarantineObject(0, kTestEpoch);
+
+  AllocateObject(1);
+  QuarantineObject(1, kTestEpoch);
+
+  AllocateObject(2);
+  QuarantineObject(2, kTestEpoch);
+
+  EXPECT_TRUE(MarkQuarantinedObject(0, kTestEpoch));
+  EXPECT_TRUE(MarkQuarantinedObject(1, kTestEpoch));
+  EXPECT_TRUE(MarkQuarantinedObject(2, kTestEpoch));
+  EXPECT_FALSE(MarkQuarantinedObject(0, kTestEpoch));
+  EXPECT_FALSE(MarkQuarantinedObject(1, kTestEpoch));
+  EXPECT_FALSE(MarkQuarantinedObject(2, kTestEpoch));
+
+  EXPECT_TRUE(MarkQuarantinedObject(0, kTestEpoch + 1));
+  EXPECT_TRUE(MarkQuarantinedObject(1, kTestEpoch + 1));
+  EXPECT_TRUE(MarkQuarantinedObject(2, kTestEpoch + 1));
+  EXPECT_FALSE(MarkQuarantinedObject(0, kTestEpoch + 1));
+  EXPECT_FALSE(MarkQuarantinedObject(1, kTestEpoch + 1));
+  EXPECT_FALSE(MarkQuarantinedObject(2, kTestEpoch + 1));
 }
 
 TEST_F(PartitionAllocStateBitmapTest, QuarantineFreeMultipleObjects) {

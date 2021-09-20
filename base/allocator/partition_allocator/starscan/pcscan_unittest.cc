@@ -687,6 +687,27 @@ TEST_F(PartitionAllocPCScanTest, PointersToGuardPages) {
   RunPCScan();
 }
 
+TEST_F(PartitionAllocPCScanTest, TwoDanglingPointersToSameObject) {
+  using SourceList = List<8>;
+  using ValueList = List<128>;
+
+  auto* value = ValueList::Create(root(), nullptr);
+  // Create two source objects referring to |value|.
+  SourceList::Create(root(), value);
+  SourceList::Create(root(), value);
+
+  // Destroy |value| and run PCScan.
+  ValueList::Destroy(root(), value);
+  RunPCScan();
+  EXPECT_TRUE(IsInQuarantine(value));
+
+  // Check that accounted size after the cycle is only sizeof ValueList.
+  auto* slot_span_metadata = SlotSpan::FromSlotInnerPtr(value);
+  const auto& quarantine =
+      PCScan::scheduler().scheduling_backend().GetQuarantineData();
+  EXPECT_EQ(slot_span_metadata->bucket->slot_size, quarantine.current_size);
+}
+
 }  // namespace internal
 }  // namespace base
 
