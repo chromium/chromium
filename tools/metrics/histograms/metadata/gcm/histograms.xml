@@ -421,9 +421,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="GCM.StoreSizeKB" units="KB" expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>Size of the GCM persistent store in kilobytes at startup.</summary>
+<histogram name="GCM.StoreSizeKB" units="KB" expires_after="2022-01-16">
+  <owner>peter@chromium.org</owner>
+  <owner>rayankans@chromium.org</owner>
+  <summary>
+    Size of the GCM persistent store in kilobytes at startup. Warning: this
+    histogram was expired from 2018-08-30 to 2021-09-20; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="GCM.StoreUpdateSucceeded" enum="BooleanSuccess"
