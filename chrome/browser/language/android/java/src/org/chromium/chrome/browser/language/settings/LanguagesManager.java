@@ -215,7 +215,7 @@ public class LanguagesManager {
      * The current Accept-Languages are added to the front of the the list.
      * @return List of LanguageItems.
      */
-    public List<LanguageItem> getPotentialUiLanguages() {
+    private List<LanguageItem> getPotentialUiLanguages() {
         LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
         LanguageItem currentUiLanguage = getLanguageItem(AppLocaleUtils.getAppLanguagePref());
 
@@ -229,6 +229,19 @@ public class LanguagesManager {
             return item.isUISupported() && !item.equals(currentUiLanguage);
         };
         addItemsToResult(results, getUserAcceptLanguageItems(), filter);
+        addItemsToResult(results, mLanguagesMap.values(), filter);
+        return new ArrayList<>(results);
+    }
+
+    /**
+     * Get a list of all possible UI Languages ins alphabetical order.
+     * @return List of LanguageItems
+     */
+    public List<LanguageItem> getAllPossibleUiLanguages() {
+        LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
+        Predicate<LanguageItem> filter = (item) -> {
+            return item.isUISupported();
+        };
         addItemsToResult(results, mLanguagesMap.values(), filter);
         return new ArrayList<>(results);
     }
