@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_gl_surface.h"
-#include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
 #include "android_webview/browser/gfx/display_webview.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"

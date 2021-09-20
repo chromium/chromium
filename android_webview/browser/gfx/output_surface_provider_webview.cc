@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_gl_surface_external_stencil.h"
-#include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/deferred_gpu_command_service.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
