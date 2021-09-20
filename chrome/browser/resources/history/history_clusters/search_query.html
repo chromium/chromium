@@ -31,7 +31,8 @@
     margin-inline-start: 8px;
   }
 </style>
-<a class="pill pill-icon-start" href$="[[searchQuery.url.url]]">
+<a class="pill pill-icon-start" href$="[[searchQuery.url.url]]"
+    on-click="onClick_">
   <div id="icon"></div>
   <div id="text" class="truncate">[[searchQuery.query]]</div>
 </a>

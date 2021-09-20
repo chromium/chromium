@@ -14,6 +14,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
+import {OpenWindowProxy} from './open_window_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a visit to a
@@ -108,22 +109,22 @@ class VisitRowElement extends PolymerElement {
   //============================================================================
 
   private onActionMenuButtonClick_(event: MouseEvent) {
-    // Only handle main (usually the left) and auxiliary (usually the wheel or
-    // the middle) button presses.
-    if (event.button > 1) {
-      return;
-    }
-
     this.$.actionMenu.get().showAt(this.$.actionMenuButton);
+    event.preventDefault();  // Prevent default browser action (navigation).
   }
 
-  private onRemoveAllButtonClick_(event: MouseEvent) {
-    // Only handle main (usually the left) and auxiliary (usually the wheel or
-    // the middle) button presses.
-    if (event.button > 1) {
+  private onClick_(event: MouseEvent) {
+    // Ignore previousely handled events.
+    if (event.defaultPrevented) {
       return;
     }
 
+    event.preventDefault();  // Prevent default browser action (navigation).
+
+    OpenWindowProxy.getInstance().open(this.visit.normalizedUrl.url);
+  }
+
+  private onRemoveAllButtonClick_() {
     this.dispatchEvent(new CustomEvent('remove-visits', {
       bubbles: true,
       composed: true,
@@ -133,13 +134,7 @@ class VisitRowElement extends PolymerElement {
     this.$.actionMenu.get().close();
   }
 
-  private onRemoveSelfButtonClick_(event: MouseEvent) {
-    // Only handle main (usually the left) and auxiliary (usually the wheel or
-    // the middle) button presses.
-    if (event.button > 1) {
-      return;
-    }
-
+  private onRemoveSelfButtonClick_() {
     this.dispatchEvent(new CustomEvent('remove-visits', {
       bubbles: true,
       composed: true,
@@ -189,7 +184,7 @@ class VisitRowElement extends PolymerElement {
    * Returns the domain name of `url` without the leading 'www.'.
    */
   private getHostnameFromUrl_(url: Url): string {
-    return new URL(url.url).hostname.replace(/^(www\.)/, '');
+    return new URL(url.url).hostname.replace(/^(www\.)/, '').trim();
   }
 }
 

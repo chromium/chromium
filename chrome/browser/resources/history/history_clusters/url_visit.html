@@ -1,6 +1,5 @@
 <style include="history-clusters-shared-style">
   :host {
-    cursor: pointer;
     display: flex;
     height: 64px;
   }
@@ -23,12 +22,15 @@
     box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
   #start-justified {
     align-items: center;
-    color: inherit;
     display: flex;
     min-width: 0;
-    text-decoration: none;
   }
 
   #page-info {
@@ -99,8 +101,8 @@
     --cr-icon-button-margin-end: 1px;
   }
 </style>
-<div id="header" tabindex="0">
-  <a id="start-justified" href="[[visit.normalizedUrl.url]]" tabindex="-1">
+<a id="header" href="[[visit.normalizedUrl.url]]" on-click="onClick_">
+  <div id="start-justified">
     <page-favicon is-top-visit-favicon="[[isTopVisit]]"
         url="[[visit.normalizedUrl]]">
     </page-favicon>
@@ -117,14 +119,14 @@
         <span id="debug-info" hidden="[[!debugInfo_]]">[[debugInfo_]]</span>
       </span>
     </div>
-  </a>
+  </div>
   <div id="end-justified">
     <div id="timestamp" hidden="[[!isTopVisit]]">[[visit.relativeDate]]</div>
     <cr-icon-button id="actionMenuButton" class="icon-more-vert"
         on-click="onActionMenuButtonClick_">
     </cr-icon-button>
   </div>
-</div>
+</a>
 
 <cr-lazy-render id="actionMenu">
   <template>

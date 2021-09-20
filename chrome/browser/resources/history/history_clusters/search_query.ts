@@ -7,6 +7,7 @@ import './shared_style.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchQuery} from './history_clusters.mojom-webui.js';
+import {OpenWindowProxy} from './open_window_proxy.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a search query.
@@ -41,6 +42,15 @@ class SearchQueryElement extends PolymerElement {
   //============================================================================
 
   searchQuery: SearchQuery = new SearchQuery();
+
+  //============================================================================
+  // Event handlers
+  //============================================================================
+
+  private onClick_(event: MouseEvent) {
+    event.preventDefault();  // Prevent default browser action (navigation).
+    OpenWindowProxy.getInstance().open(this.searchQuery.url.url);
+  }
 }
 
 customElements.define(SearchQueryElement.is, SearchQueryElement);
