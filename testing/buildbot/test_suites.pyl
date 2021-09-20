@@ -1770,7 +1770,7 @@
         'name': 'mediapipe_validating_tests',
         'telemetry_test_name': 'mediapipe',
         'args': [
-          '--extra-browser-args=--force_high_performance_gpu --use-cmd-decoder=validating',
+          '--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=validating',
         ],
         'mixins': [
           'has_native_resultdb_integration',
@@ -2953,7 +2953,7 @@
         'name': 'mediapipe_passthrough_tests',
         'telemetry_test_name': 'mediapipe',
         'args': [
-          '--extra-browser-args=--force_high_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle',
+          '--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle',
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
@@ -2976,7 +2976,7 @@
         'name': 'mediapipe_validating_tests',
         'telemetry_test_name': 'mediapipe',
         'args': [
-          '--extra-browser-args=--force_high_performance_gpu --use-cmd-decoder=validating',
+          '--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=validating',
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
