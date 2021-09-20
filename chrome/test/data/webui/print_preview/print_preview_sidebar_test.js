@@ -39,7 +39,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
   setup(function() {
     // Stub out the native layer and cloud print interface
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>

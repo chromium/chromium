@@ -37,7 +37,7 @@ suite(system_dialog_browsertest.suiteName, function() {
   /** @override */
   setup(function() {
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     document.body.innerHTML = '';
 
     const initialSettings = getDefaultInitialSettings();

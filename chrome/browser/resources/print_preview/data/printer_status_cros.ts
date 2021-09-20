@@ -6,68 +6,64 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 /**
  *  These values must be kept in sync with the Reason enum in
  *  /chromeos/printing/cups_printer_status.h
- *  @enum {number}
  */
-export const PrinterStatusReason = {
-  UNKNOWN_REASON: 0,
-  DEVICE_ERROR: 1,
-  DOOR_OPEN: 2,
-  LOW_ON_INK: 3,
-  LOW_ON_PAPER: 4,
-  NO_ERROR: 5,
-  OUT_OF_INK: 6,
-  OUT_OF_PAPER: 7,
-  OUTPUT_ALMOST_FULL: 8,
-  OUTPUT_FULL: 9,
-  PAPER_JAM: 10,
-  PAUSED: 11,
-  PRINTER_QUEUE_FULL: 12,
-  PRINTER_UNREACHABLE: 13,
-  STOPPED: 14,
-  TRAY_MISSING: 15,
-};
+export enum PrinterStatusReason {
+  UNKNOWN_REASON = 0,
+  DEVICE_ERROR = 1,
+  DOOR_OPEN = 2,
+  LOW_ON_INK = 3,
+  LOW_ON_PAPER = 4,
+  NO_ERROR = 5,
+  OUT_OF_INK = 6,
+  OUT_OF_PAPER = 7,
+  OUTPUT_ALMOST_FULL = 8,
+  OUTPUT_FULL = 9,
+  PAPER_JAM = 10,
+  PAUSED = 11,
+  PRINTER_QUEUE_FULL = 12,
+  PRINTER_UNREACHABLE = 13,
+  STOPPED = 14,
+  TRAY_MISSING = 15,
+}
 
 /**
  *  These values must be kept in sync with the Severity enum in
  *  /chromeos/printing/cups_printer_status.h
- *  @enum {number}
  */
-export const PrinterStatusSeverity = {
-  UNKNOWN_SEVERITY: 0,
-  REPORT: 1,
-  WARNING: 2,
-  ERROR: 3,
-};
+export enum PrinterStatusSeverity {
+  UNKNOWN_SEVERITY = 0,
+  REPORT = 1,
+  WARNING = 2,
+  ERROR = 3,
+}
 
 /**
  * Enumeration giving a local Chrome OS printer 3 different state possibilities
  * depending on its current status.
- * @enum {number}
  */
-export const PrinterState = {
-  GOOD: 0,
-  ERROR: 1,
-  UNKNOWN: 2,
+export enum PrinterState {
+  GOOD = 0,
+  ERROR = 1,
+  UNKNOWN = 2,
+}
+
+type StatusReasonEntry = {
+  reason: PrinterStatusReason,
+  severity: PrinterStatusSeverity,
 };
 
 /**
  * A container for the results of a printer status query. A printer status query
  * can return multiple error reasons. |timestamp| is set at the time of status
  * creation.
- *
- * @typedef {{
- *   printerId: string,
- *   statusReasons: !Array<{
- *     reason: PrinterStatusReason,
- *     severity: PrinterStatusSeverity,
- *   }>,
- *   timestamp: number,
- * }}
  */
-export let PrinterStatus;
+export type PrinterStatus = {
+  printerId: string,
+  statusReasons: StatusReasonEntry[],
+  timestamp: number,
+};
 
-/** @const {!Map<!PrinterStatusReason, string>} */
-export const ERROR_STRING_KEY_MAP = new Map([
+export const ERROR_STRING_KEY_MAP: Map<PrinterStatusReason, string> = new Map([
   [PrinterStatusReason.DEVICE_ERROR, 'printerStatusDeviceError'],
   [PrinterStatusReason.DOOR_OPEN, 'printerStatusDoorOpen'],
   [PrinterStatusReason.LOW_ON_INK, 'printerStatusLowOnInk'],
@@ -91,10 +87,10 @@ export const ERROR_STRING_KEY_MAP = new Map([
  * will get highest precedence since this usually means the printer is in a
  * bad state. If there does not exist an error status reason with a high enough
  * severity, then return NO_ERROR.
- * @param {!PrinterStatus} printerStatus
- * @return {!PrinterStatusReason} Status reason extracted from |printerStatus|.
+ * @return Status reason extracted from |printerStatus|.
  */
-export function getStatusReasonFromPrinterStatus(printerStatus) {
+export function getStatusReasonFromPrinterStatus(printerStatus: PrinterStatus):
+    PrinterStatusReason {
   if (!printerStatus.printerId) {
     // TODO(crbug.com/1027400): Remove console.warn once bug is confirmed fix.
     console.warn('Received printer status missing printer id');
@@ -124,12 +120,9 @@ export function getStatusReasonFromPrinterStatus(printerStatus) {
   return statusReason;
 }
 
-/**
- * @param {?PrinterStatusReason} printerStatusReason
- * @return {number}
- */
-export function computePrinterState(printerStatusReason) {
-  if (!printerStatusReason ||
+export function computePrinterState(
+    printerStatusReason: (PrinterStatusReason|null)): PrinterState {
+  if (printerStatusReason === null ||
       printerStatusReason === PrinterStatusReason.UNKNOWN_REASON) {
     return PrinterState.UNKNOWN;
   }
@@ -139,12 +132,9 @@ export function computePrinterState(printerStatusReason) {
   return PrinterState.ERROR;
 }
 
-/**
- * @param {?PrinterStatusReason} printerStatusReason
- * @param {boolean} isEnterprisePrinter
- * @return {string}
- */
-export function getPrinterStatusIcon(printerStatusReason, isEnterprisePrinter) {
+export function getPrinterStatusIcon(
+    printerStatusReason: PrinterStatusReason|null,
+    isEnterprisePrinter: boolean): string {
   switch (computePrinterState(printerStatusReason)) {
     case PrinterState.GOOD:
       return isEnterprisePrinter ?
@@ -159,5 +149,6 @@ export function getPrinterStatusIcon(printerStatusReason, isEnterprisePrinter) {
           'print-preview:printer-status-grey';
     default:
       assertNotReached();
+      return '';
   }
 }

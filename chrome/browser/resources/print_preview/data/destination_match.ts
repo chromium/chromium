@@ -9,22 +9,16 @@ import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationI
  * Printer types for capabilities and printer list requests.
  * Must match PrinterType in printing/print_job_constants.h
  * Note: PRIVET_PRINTER is deprecated.
- * @enum {number}
  */
-export const PrinterType = {
-  PRIVET_PRINTER: 0,
-  EXTENSION_PRINTER: 1,
-  PDF_PRINTER: 2,
-  LOCAL_PRINTER: 3,
-  CLOUD_PRINTER: 4
-};
+export enum PrinterType {
+  PRIVET_PRINTER = 0,
+  EXTENSION_PRINTER = 1,
+  PDF_PRINTER = 2,
+  LOCAL_PRINTER = 3,
+  CLOUD_PRINTER = 4
+}
 
-/**
- * Converts DestinationOrigin to PrinterType.
- * @param {!DestinationOrigin} origin The printer's destination origin.
- * return {!PrinterType} The corresponding PrinterType.
- */
-export const originToType = function(origin) {
+export function originToType(origin: DestinationOrigin): PrinterType {
   if (origin === DestinationOrigin.LOCAL || origin === DestinationOrigin.CROS) {
     return PrinterType.LOCAL_PRINTER;
   }
@@ -33,14 +27,10 @@ export const originToType = function(origin) {
   }
   assert(CloudOrigins.includes(origin));
   return PrinterType.CLOUD_PRINTER;
-};
+}
 
-/**
- * @param {!Destination|!RecentDestination} destination The destination to
- *     figure out the printer type of.
- * @return {!PrinterType} Map the destination to a PrinterType.
- */
-export function getPrinterTypeForDestination(destination) {
+export function getPrinterTypeForDestination(
+    destination: (Destination|RecentDestination)): PrinterType {
   // <if expr="chromeos or lacros">
   if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
     return PrinterType.PDF_PRINTER;
@@ -54,55 +44,42 @@ export function getPrinterTypeForDestination(destination) {
 }
 
 export class DestinationMatch {
+  private origins_: DestinationOrigin[];
+
+  private idRegExp_: RegExp|null;
+
+  private displayNameRegExp_: RegExp|null;
+
+  private skipVirtualDestinations_: boolean;
+
   /**
    * A set of key parameters describing a destination used to determine
    * if two destinations are the same.
-   * @param {!Array<!DestinationOrigin>} origins Match
-   *     destinations from these origins.
-   * @param {RegExp} idRegExp Match destination's id.
-   * @param {RegExp} displayNameRegExp Match destination's displayName.
-   * @param {boolean} skipVirtualDestinations Whether to ignore virtual
+   * @param origins Match destinations from these origins.
+   * @param idRegExp Match destination's id.
+   * @param displayNameRegExp Match destination's displayName.
+   * @param skipVirtualDestinations Whether to ignore virtual
    *     destinations, for example, Save as PDF.
    */
-  constructor(origins, idRegExp, displayNameRegExp, skipVirtualDestinations) {
-    /** @private {!Array<!DestinationOrigin>} */
+  constructor(
+      origins: DestinationOrigin[], idRegExp: RegExp|null,
+      displayNameRegExp: RegExp|null, skipVirtualDestinations: boolean) {
     this.origins_ = origins;
-
-    /** @private {RegExp} */
     this.idRegExp_ = idRegExp;
-
-    /** @private {RegExp} */
     this.displayNameRegExp_ = displayNameRegExp;
-
-    /** @private {boolean} */
     this.skipVirtualDestinations_ = skipVirtualDestinations;
   }
 
-  /**
-   * @param {!DestinationOrigin} origin Origin to match.
-   * @return {boolean} Whether the origin is one of the {@code origins_}.
-   */
-  matchOrigin(origin) {
+  matchOrigin(origin: DestinationOrigin): boolean {
     return this.origins_.includes(origin);
   }
 
-  /**
-   * @param {string} id Id of the destination.
-   * @param {!DestinationOrigin} origin Origin of the
-   *     destination.
-   * @return {boolean} Whether destination is the same as initial.
-   */
-  matchIdAndOrigin(id, origin) {
+  matchIdAndOrigin(id: string, origin: DestinationOrigin): boolean {
     return this.matchOrigin(origin) && !!this.idRegExp_ &&
         this.idRegExp_.test(id);
   }
 
-  /**
-   * @param {!Destination} destination Destination to match.
-   * @return {boolean} Whether {@code destination} matches the last user
-   *     selected one.
-   */
-  match(destination) {
+  match(destination: Destination): boolean {
     if (!this.matchOrigin(destination.origin)) {
       return false;
     }
@@ -121,12 +98,10 @@ export class DestinationMatch {
   }
 
   /**
-   * @param {!Destination} destination Destination to check.
-   * @return {boolean} Whether {@code destination} is virtual, in terms of
+   * @return Whether {@code destination} is virtual, in terms of
    *     destination selection.
-   * @private
    */
-  isVirtualDestination_(destination) {
+  private isVirtualDestination_(destination: Destination): boolean {
     // <if expr="chromeos or lacros">
     if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return true;
@@ -138,10 +113,9 @@ export class DestinationMatch {
   }
 
   /**
-   * @return {!Set<!PrinterType>} The printer types that
-   *     correspond to this destination match.
+   * @return The printer types that correspond to this destination match.
    */
-  getTypes() {
+  getTypes(): Set<PrinterType> {
     return new Set(this.origins_.map(originToType));
   }
 }

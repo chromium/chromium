@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {Cdd} from './data/cdd.js';
 import {PrinterType} from './data/destination_match.js';
@@ -314,6 +314,17 @@ export class NativeLayerImpl {
     chrome.send(
         'metricsHandler:recordInHistogram', [histogram, bucket, maxBucket]);
   }
+
+  /** @return {!NativeLayer} */
+  static getInstance() {
+    return instance || (instance = new NativeLayerImpl());
+  }
+
+  /** @param {!NativeLayer} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(NativeLayerImpl);
+/** @type {?NativeLayer} */
+let instance = null;

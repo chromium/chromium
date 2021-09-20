@@ -190,7 +190,7 @@ export class MetricsContext {
         histogram = 'PrintPreview.Initialization.GetPrinters.Cloud';
         break;
       default:
-        assertNotReached();
+        assertNotReached('unknown type = ' + type);
     }
     return new MetricsContext(
         histogram,

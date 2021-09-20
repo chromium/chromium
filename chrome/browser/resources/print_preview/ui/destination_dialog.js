@@ -28,7 +28,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
-import {DestinationStore} from '../data/destination_store.js';
+import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
 import {Metrics, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 
@@ -147,10 +147,10 @@ export class PrintPreviewDestinationDialogElement extends
     assert(this.destinations_.length === 0);
     const destinationStore = assert(this.destinationStore);
     this.tracker_.add(
-        destinationStore, DestinationStore.EventType.DESTINATIONS_INSERTED,
+        destinationStore, DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDestinations_.bind(this));
     this.tracker_.add(
-        destinationStore, DestinationStore.EventType.DESTINATION_SEARCH_DONE,
+        destinationStore, DestinationStoreEventType.DESTINATION_SEARCH_DONE,
         this.updateDestinations_.bind(this));
     this.initialized_ = true;
   }

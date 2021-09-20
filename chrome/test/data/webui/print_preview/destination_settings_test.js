@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStore, DestinationType, Error, GooglePromotedDestinationId, makeRecentDestination, NativeLayer, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement, State} from 'chrome://print/print_preview.js';
+import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStore, DestinationStoreEventType, DestinationType, Error, GooglePromotedDestinationId, makeRecentDestination, NativeLayer, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -86,7 +86,7 @@ suite(destination_settings_test.suiteName, function() {
 
     // Stub out native layer and cloud print interface.
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
@@ -139,7 +139,7 @@ suite(destination_settings_test.suiteName, function() {
         assertFalse(dropdown.loaded);
 
         return eventToPromise(
-                   DestinationStore.EventType
+                   DestinationStoreEventType
                        .SELECTED_DESTINATION_CAPABILITIES_READY,
                    destinationSettings.getDestinationStoreForTest())
             .then(() => {
@@ -165,7 +165,7 @@ suite(destination_settings_test.suiteName, function() {
               destinationSettings.disabled = false;
               destinationSettings.getDestinationStoreForTest().dispatchEvent(
                   new CustomEvent(
-                      DestinationStore.EventType.ERROR,
+                      DestinationStoreEventType.ERROR,
                       {detail: DestinationErrorType.INVALID}));
               flush();
 
@@ -179,7 +179,7 @@ suite(destination_settings_test.suiteName, function() {
               // Simulate the user having no printers.
               destinationSettings.getDestinationStoreForTest().dispatchEvent(
                   new CustomEvent(
-                      DestinationStore.EventType.ERROR,
+                      DestinationStoreEventType.ERROR,
                       {detail: DestinationErrorType.NO_DESTINATIONS}));
               flush();
 
@@ -429,7 +429,7 @@ suite(destination_settings_test.suiteName, function() {
             0, 1,
             makeRecentDestination(getGoogleDriveDestination(defaultUser)));
         const whenSelected = eventToPromise(
-            DestinationStore.EventType.DESTINATION_SELECT,
+            DestinationStoreEventType.DESTINATION_SELECT,
             destinationSettings.getDestinationStoreForTest());
         cloudPrintInterface.setPrinter(getGoogleDriveDestination(defaultUser));
         initialize();
@@ -509,7 +509,7 @@ suite(destination_settings_test.suiteName, function() {
 
           // Simulate selection of Save as PDF printer.
           const whenDestinationSelect = eventToPromise(
-              DestinationStore.EventType.DESTINATION_SELECT,
+              DestinationStoreEventType.DESTINATION_SELECT,
               destinationSettings.getDestinationStoreForTest());
           dropdown.fire('selected-option-change', 'Save as PDF/local/');
 
@@ -571,7 +571,7 @@ suite(destination_settings_test.suiteName, function() {
 
               // Simulate selection of Google Drive printer.
               const whenDestinationSelect = eventToPromise(
-                  DestinationStore.EventType.DESTINATION_SELECT,
+                  DestinationStoreEventType.DESTINATION_SELECT,
                   destinationSettings.getDestinationStoreForTest());
               dropdown.fire('selected-option-change', driveDestinationKey);
               return whenDestinationSelect;
@@ -621,7 +621,7 @@ suite(destination_settings_test.suiteName, function() {
 
               // Simulate selection of Save as PDF printer.
               const whenDestinationSelect = eventToPromise(
-                  DestinationStore.EventType.DESTINATION_SELECT,
+                  DestinationStoreEventType.DESTINATION_SELECT,
                   destinationSettings.getDestinationStoreForTest());
               dropdown.fire(
                   'selected-option-change', makeLocalDestinationKey('ID2'));
@@ -743,7 +743,7 @@ suite(destination_settings_test.suiteName, function() {
                       'print-preview-destination-dialog');
               assertTrue(dialog.isOpen());
               const whenAdded = eventToPromise(
-                  DestinationStore.EventType.DESTINATIONS_INSERTED,
+                  DestinationStoreEventType.DESTINATIONS_INSERTED,
                   destinationSettings.getDestinationStoreForTest());
               // Simulate setting a new account.
               dialog.fire('account-change', account2);

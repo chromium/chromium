@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, PrintPreviewLayoutSettingsElement, PrintPreviewNumberSettingsSectionElement, PrintPreviewPreviewAreaElement, PrintPreviewSidebarElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, PrintPreviewLayoutSettingsElement, PrintPreviewNumberSettingsSectionElement, PrintPreviewPreviewAreaElement, PrintPreviewSidebarElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -70,7 +70,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
   /** @override */
   setup(function() {
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
@@ -462,7 +462,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
 
               // Select the invalid destination and wait for the event.
               const whenInvalid = eventToPromise(
-                  DestinationStore.EventType.ERROR,
+                  DestinationStoreEventType.ERROR,
                   destinationSettings.getDestinationStoreForTest());
               destinationSettings.getDestinationStoreForTest()
                   .selectDestination(invalidPrinter);
@@ -478,7 +478,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
 
               // Reselect the valid cloud destination.
               const whenSelected = eventToPromise(
-                  DestinationStore.EventType.DESTINATION_SELECT,
+                  DestinationStoreEventType.DESTINATION_SELECT,
                   destinationSettings.getDestinationStoreForTest());
               destinationSettings.getDestinationStoreForTest()
                   .selectDestination(validPrinter);

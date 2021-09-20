@@ -46,6 +46,7 @@ export let CloudPrintInterfaceSearchDoneDetail;
 
 /**
  * @typedef {{
+ *   account: string,
  *   destinationId: string,
  *   origin: !DestinationOrigin,
  * }}

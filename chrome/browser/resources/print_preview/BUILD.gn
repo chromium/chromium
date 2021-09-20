@@ -83,8 +83,8 @@ preprocess_if_expr("preprocess") {
     "data/cloud_parsers.ts",
     "data/coordinate2d.ts",
     "data/destination.ts",
-    "data/destination_match.js",
-    "data/destination_store.js",
+    "data/destination_match.ts",
+    "data/destination_store.ts",
     "data/document_info.ts",
     "data/local_parsers.ts",
     "data/margins.ts",
@@ -104,8 +104,8 @@ preprocess_if_expr("preprocess") {
 
   if (is_chromeos) {
     in_files += [
-      "data/print_server_store.js",
-      "data/printer_status_cros.js",
+      "data/print_server_store.ts",
+      "data/printer_status_cros.ts",
       "native_layer_cros.js",
     ]
   }
@@ -245,8 +245,8 @@ ts_library("build_ts") {
     "data/cloud_parsers.ts",
     "data/coordinate2d.ts",
     "data/destination.ts",
-    "data/destination_match.js",
-    "data/destination_store.js",
+    "data/destination_match.ts",
+    "data/destination_store.ts",
     "data/document_info.ts",
     "data/local_parsers.ts",
     "data/margins.ts",
@@ -301,8 +301,8 @@ ts_library("build_ts") {
 
   if (is_chromeos) {
     in_files += [
-      "data/print_server_store.js",
-      "data/printer_status_cros.js",
+      "data/print_server_store.ts",
+      "data/printer_status_cros.ts",
       "native_layer_cros.js",
       "ui/destination_dialog_cros.js",
       "ui/destination_dropdown_cros.js",

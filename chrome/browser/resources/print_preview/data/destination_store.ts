@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -15,7 +14,7 @@ import {CapabilitiesResponse, NativeLayer, NativeLayerImpl} from '../native_laye
 import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from '../native_layer_cros.js';
 
 // </if>
-import {Cdd} from './cdd.js';
+import {Cdd, MediaSizeOption} from './cdd.js';
 import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationProvisionalType, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
 import {DestinationMatch, getPrinterTypeForDestination, originToType, PrinterType} from './destination_match.js';
 import {LocalDestinationInfo, parseDestination, parseExtensionDestination, ProvisionalDestinationInfo} from './local_parsers.js';
@@ -24,29 +23,27 @@ import {LocalDestinationInfo, parseDestination, parseExtensionDestination, Provi
  * Printer search statuses used by the destination store.
  * @enum {string}
  */
-const DestinationStorePrinterSearchStatus = {
-  START: 'start',
-  SEARCHING: 'searching',
-  DONE: 'done'
-};
+enum DestinationStorePrinterSearchStatus {
+  START = 'start',
+  SEARCHING = 'searching',
+  DONE = 'done'
+}
 
 /**
  * Enumeration of possible destination errors.
- * @enum {number}
  */
-export const DestinationErrorType = {
-  INVALID: 0,
-  UNSUPPORTED: 1,
-  NO_DESTINATIONS: 2,
-};
+export enum DestinationErrorType {
+  INVALID = 0,
+  UNSUPPORTED = 1,
+  NO_DESTINATIONS = 2,
+}
 
 /**
  * Localizes printer capabilities.
- * @param {!Cdd} capabilities Printer capabilities to
- *     localize.
- * @return {!Cdd} Localized capabilities.
+ * @param capabilities Printer capabilities to localize.
+ * @return Localized capabilities.
  */
-const localizeCapabilities = function(capabilities) {
+function localizeCapabilities(capabilities: Cdd): Cdd {
   if (!capabilities.printer) {
     return capabilities;
   }
@@ -60,32 +57,26 @@ const localizeCapabilities = function(capabilities) {
     // No need to patch capabilities with localized names provided.
     if (!media.custom_display_name_localized) {
       media.custom_display_name = media.custom_display_name ||
-          DestinationStore.MEDIA_DISPLAY_NAMES_[media.name] || media.name;
+          MEDIA_DISPLAY_NAMES_[media.name!] || media.name;
     }
   }
   return capabilities;
-};
+}
 
 /**
  * Compare two media sizes by their names.
- * @param {!Object} a Media to compare.
- * @param {!Object} b Media to compare.
- * @return {number} 1 if a > b, -1 if a < b, or 0 if a === b.
+ * @return 1 if a > b, -1 if a < b, or 0 if a === b.
  */
-const compareMediaNames = function(a, b) {
-  const nameA = a.custom_display_name_localized || a.custom_display_name;
-  const nameB = b.custom_display_name_localized || b.custom_display_name;
+function compareMediaNames(a: MediaSizeOption, b: MediaSizeOption): number {
+  const nameA = a.custom_display_name_localized || a.custom_display_name || '';
+  const nameB = b.custom_display_name_localized || b.custom_display_name || '';
   return nameA === nameB ? 0 : (nameA > nameB ? 1 : -1);
-};
+}
 
 /**
  * Sort printer media sizes.
- * @param {!Cdd} capabilities Printer capabilities to
- * localize.
- * @return {!Cdd} Localized capabilities.
- * @private
  */
-const sortMediaSizes = function(capabilities) {
+function sortMediaSizes(capabilities: Cdd): Cdd {
   if (!capabilities.printer) {
     return capabilities;
   }
@@ -103,15 +94,15 @@ const sortMediaSizes = function(capabilities) {
   // - Japanese
   // - Other metric
   // Otherwise, assume they are custom sizes.
-  const categoryStandardNA = [];
-  const categoryStandardCN = [];
-  const categoryStandardISO = [];
-  const categoryStandardJP = [];
-  const categoryStandardMisc = [];
-  const categoryCustom = [];
+  const categoryStandardNA: MediaSizeOption[] = [];
+  const categoryStandardCN: MediaSizeOption[] = [];
+  const categoryStandardISO: MediaSizeOption[] = [];
+  const categoryStandardJP: MediaSizeOption[] = [];
+  const categoryStandardMisc: MediaSizeOption[] = [];
+  const categoryCustom: MediaSizeOption[] = [];
   for (let i = 0, media; (media = mediaSize.option[i]); i++) {
     const name = media.name || 'CUSTOM';
-    let category;
+    let category: MediaSizeOption[];
     if (name.startsWith('NA_')) {
       category = categoryStandardNA;
     } else if (
@@ -146,56 +137,137 @@ const sortMediaSizes = function(capabilities) {
       ...categoryStandardCN, ...categoryStandardISO, ...categoryStandardJP,
       ...categoryStandardMisc, ...categoryCustom);
   return capabilities;
-};
+}
 
+/**
+ * Event types dispatched by the destination store.
+ * @enum {string}
+ */
+export enum DestinationStoreEventType {
+  DESTINATION_SEARCH_DONE = 'DestinationStore.DESTINATION_SEARCH_DONE',
+  DESTINATION_SELECT = 'DestinationStore.DESTINATION_SELECT',
+  DESTINATIONS_INSERTED = 'DestinationStore.DESTINATIONS_INSERTED',
+  ERROR = 'DestinationStore.ERROR',
+  SELECTED_DESTINATION_CAPABILITIES_READY = 'DestinationStore' +
+      '.SELECTED_DESTINATION_CAPABILITIES_READY',
+  // <if expr="chromeos or lacros">
+  DESTINATION_EULA_READY = 'DestinationStore.DESTINATION_EULA_READY',
+  // </if>
+}
 
 export class DestinationStore extends EventTarget {
   /**
+   * Currently active user.
+   */
+  private activeUser_: string = '';
+
+  /**
+   * Whether the destination store will auto select the destination that
+   * matches this set of parameters.
+   */
+  private autoSelectMatchingDestination_: DestinationMatch|null = null;
+
+  /**
+   * Used to fetch cloud-based print destinations.
+   */
+  private cloudPrintInterface_: CloudPrintInterface|null = null;
+
+  /**
+   * Cache used for constant lookup of destinations by key.
+   */
+  private destinationMap_: Map<string, Destination> = new Map();
+
+  /**
+   * Internal backing store for the data store.
+   */
+  private destinations_: Destination[] = [];
+
+  /**
+   * Whether a search for destinations is in progress for each type of
+   * printer.
+   */
+  private destinationSearchStatus_:
+      Map<PrinterType, DestinationStorePrinterSearchStatus>;
+
+  private inFlightCloudPrintRequests_: Set<string> = new Set();
+
+  private initialDestinationSelected_: boolean = false;
+
+  /**
+   * Maps user account to the list of origins for which destinations are
+   * already loaded.
+   */
+  private loadedCloudOrigins_: Map<string, DestinationOrigin[]> = new Map();
+
+  /**
+   * Used to track metrics.
+   */
+  private metrics_: MetricsContext = MetricsContext.destinationSearch();
+
+  /**
+   * Used to fetch local print destinations.
+   */
+  private nativeLayer_: NativeLayer = NativeLayerImpl.getInstance();
+
+  // <if expr="chromeos or lacros">
+  /**
+   * Used to fetch information about Chrome OS local print destinations.
+   */
+  private nativeLayerCros_: NativeLayerCros = NativeLayerCrosImpl.getInstance();
+  // </if>
+
+  /**
+   * Whether PDF printer is enabled. It's disabled, for example, in App
+   * Kiosk mode or when PDF printing is disallowed by policy.
+   */
+  private pdfPrinterEnabled_: boolean = false;
+
+  /**
+   * Local destinations are CROS destinations on ChromeOS because they
+   * require extra setup.
+   */
+  private platformOrigin_: DestinationOrigin;
+
+  private recentDestinationKeys_: string[] = [];
+
+  /**
+   * Currently selected destination.
+   */
+  private selectedDestination_: Destination|null = null;
+
+  /**
+   * Key of the system default destination.
+   */
+  private systemDefaultDestinationKey_: string = '';
+
+  /**
+   * Event tracker used to track event listeners of the destination store.
+   */
+  private tracker_: EventTracker = new EventTracker();
+
+  private typesToSearch_: Set<PrinterType> = new Set();
+
+  /**
+   * Whether to default to the system default printer instead of the most
+   * recent destination.
+   */
+  private useSystemDefaultAsDefault_: boolean;
+
+  /**
    * A data store that stores destinations and dispatches events when the
    * data store changes.
-   * @param {function(string, !Function):void} addListenerCallback Function
-   *     to call to add Web UI listeners in DestinationStore constructor.
+   * @param addListenerCallback Function to call to add Web UI listeners in
+   *     DestinationStore constructor.
    */
-  constructor(addListenerCallback) {
+  constructor(
+      addListenerCallback:
+          (eventName: string,
+           listener:
+               (t: PrinterType,
+                p: LocalDestinationInfo[]|
+                ProvisionalDestinationInfo[]) => void) => void) {
     super();
 
-    /**
-     * Currently active user.
-     * @private {string}
-     */
-    this.activeUser_ = '';
-
-    /**
-     * Whether the destination store will auto select the destination that
-     * matches this set of parameters.
-     * @private {DestinationMatch}
-     */
-    this.autoSelectMatchingDestination_ = null;
-
-    /**
-     * Used to fetch cloud-based print destinations.
-     * @private {CloudPrintInterface}
-     */
-    this.cloudPrintInterface_ = null;
-
-    /**
-     * Cache used for constant lookup of destinations by key.
-     * @private {!Map<string, !Destination>}
-     */
-    this.destinationMap_ = new Map();
-
-    /**
-     * Internal backing store for the data store.
-     * @private {!Array<!Destination>}
-     */
-    this.destinations_ = [];
-
-    /**
-     * Whether a search for destinations is in progress for each type of
-     * printer.
-     * @private {!Map<!PrinterType,
-     *                !DestinationStorePrinterSearchStatus>}
-     */
     this.destinationSearchStatus_ = new Map([
       [
         PrinterType.EXTENSION_PRINTER, DestinationStorePrinterSearchStatus.START
@@ -203,96 +275,27 @@ export class DestinationStore extends EventTarget {
       [PrinterType.LOCAL_PRINTER, DestinationStorePrinterSearchStatus.START],
     ]);
 
-    /** @private {!Set<string>} */
-    this.inFlightCloudPrintRequests_ = new Set();
-
-    /** @private {boolean} */
-    this.initialDestinationSelected_ = false;
-
-    /**
-     * Maps user account to the list of origins for which destinations are
-     * already loaded.
-     * @private {!Map<string, !Array<!DestinationOrigin>>}
-     */
-    this.loadedCloudOrigins_ = new Map();
-
-    /**
-     * Used to track metrics.
-     * @private {!MetricsContext}
-     */
-    this.metrics_ = MetricsContext.destinationSearch();
-
-    /**
-     * Used to fetch local print destinations.
-     * @private {!NativeLayer}
-     */
-    this.nativeLayer_ = NativeLayerImpl.getInstance();
-
+    this.platformOrigin_ = DestinationOrigin.LOCAL;
     // <if expr="chromeos or lacros">
-    /**
-     * Used to fetch information about Chrome OS local print destinations.
-     * @private {!NativeLayerCros}
-     */
-    this.nativeLayerCros_ = NativeLayerCrosImpl.getInstance();
+    this.platformOrigin_ = DestinationOrigin.CROS;
     // </if>
 
-    /**
-     * Whether PDF printer is enabled. It's disabled, for example, in App
-     * Kiosk mode or when PDF printing is disallowed by policy.
-     * @private {boolean}
-     */
-    this.pdfPrinterEnabled_ = false;
-
-    /**
-     * Local destinations are CROS destinations on ChromeOS because they
-     * require extra setup.
-     * @private {!DestinationOrigin}
-     */
-    this.platformOrigin_ = (isChromeOS || isLacros) ? DestinationOrigin.CROS :
-                                                      DestinationOrigin.LOCAL;
-
-    /** @private {!Array<string>} */
-    this.recentDestinationKeys_ = [];
-
-    /**
-     * Currently selected destination.
-     * @private {Destination}
-     */
-    this.selectedDestination_ = null;
-
-    /**
-     * Key of the system default destination.
-     * @private {string}
-     */
-    this.systemDefaultDestinationKey_ = '';
-
-    /**
-     * Event tracker used to track event listeners of the destination store.
-     * @private {!EventTracker}
-     */
-    this.tracker_ = new EventTracker();
-
-    /** @private {!Set<PrinterType>} */
-    this.typesToSearch_ = new Set();
-
-    /**
-     * Whether to default to the system default printer instead of the most
-     * recent destination.
-     * @private {boolean}
-     */
     this.useSystemDefaultAsDefault_ =
         loadTimeData.getBoolean('useSystemDefaultPrinter');
 
-    addListenerCallback('printers-added', this.onPrintersAdded_.bind(this));
+    addListenerCallback(
+        'printers-added',
+        (type: PrinterType,
+         printers: LocalDestinationInfo[]|ProvisionalDestinationInfo[]) =>
+            this.onPrintersAdded_(type, printers));
   }
 
   /**
-   * @param {?string=} opt_account Account to filter destinations by. When
+   * @param opt_account Account to filter destinations by. When
    *     null or omitted, all destinations are returned.
-   * @return {!Array<!Destination>} List of destinations
-   *     accessible by the {@code account}.
+   * @return List of destinations accessible by the {@code account}.
    */
-  destinations(opt_account) {
+  destinations(opt_account?: string|null): Destination[] {
     return this.destinations_.filter(function(destination) {
       return !destination.account ||
           (!!opt_account && destination.account === opt_account);
@@ -300,9 +303,9 @@ export class DestinationStore extends EventTarget {
   }
 
   /**
-   * @return {boolean} Whether a search for print destinations is in progress.
+   * @return Whether a search for print destinations is in progress.
    */
-  get isPrintDestinationSearchInProgress() {
+  get isPrintDestinationSearchInProgress(): boolean {
     const isLocalDestinationSearchInProgress =
         Array.from(this.destinationSearchStatus_.values())
             .some(el => el === DestinationStorePrinterSearchStatus.SEARCHING);
@@ -311,25 +314,19 @@ export class DestinationStore extends EventTarget {
     }
 
     const isCloudDestinationSearchInProgress = !!this.cloudPrintInterface_ &&
-        this.cloudPrintInterface_.isCloudDestinationSearchInProgress();
+        this.cloudPrintInterface_!.isCloudDestinationSearchInProgress();
     return isCloudDestinationSearchInProgress;
   }
 
   /**
-   * @return {Destination} The currently selected destination or
-   *     {@code null} if none is selected.
+   * @return The currently selected destination or null if none is selected.
    */
-  get selectedDestination() {
+  get selectedDestination(): Destination|null {
     return this.selectedDestination_;
   }
 
-  /**
-   * @param {(?Destination |
-   *          ?RecentDestination)} destination
-   * @return {boolean} Whether the destination is valid.
-   * @private
-   */
-  isDestinationValid_(destination) {
+  private isDestinationValid_(destination: (Destination|RecentDestination|
+                                            null)): boolean {
     return !!destination && !!destination.id && !!destination.origin;
   }
 
@@ -337,20 +334,27 @@ export class DestinationStore extends EventTarget {
    * Initializes the destination store. Sets the initially selected
    * destination. If any inserted destinations match this ID, that destination
    * will be automatically selected.
-   * @param {boolean} pdfPrinterDisabled Whether the PDF print destination is
+   * @param pdfPrinterDisabled Whether the PDF print destination is
    *     disabled in print preview.
-   * @param {boolean} isDriveMounted Whether Google Drive is mounted. Only used
+   * @param isDriveMounted Whether Google Drive is mounted. Only used
         on Chrome OS.
-   * @param {string} systemDefaultDestinationId ID of the system default
+   * @param systemDefaultDestinationId ID of the system default
    *     destination.
-   * @param {?string} serializedDefaultDestinationSelectionRulesStr Serialized
+   * @param serializedDefaultDestinationSelectionRulesStr Serialized
    *     default destination selection rules.
-   * @param {!Array<!RecentDestination>}
-   *     recentDestinations The recent print destinations.
+   * @param recentDestinations The recent print destinations.
    */
   init(
-      pdfPrinterDisabled, isDriveMounted, systemDefaultDestinationId,
-      serializedDefaultDestinationSelectionRulesStr, recentDestinations) {
+      pdfPrinterDisabled: boolean,
+      // <if expr="chromeos or lacros">
+      isDriveMounted: boolean,
+      // </if>
+      // <if expr="not chromeos and not lacros">
+      _isDriveMounted: boolean,
+      // </if>
+      systemDefaultDestinationId: string,
+      serializedDefaultDestinationSelectionRulesStr: string|null,
+      recentDestinations: RecentDestination[]) {
     if (systemDefaultDestinationId) {
       const systemDefaultOrigin =
           this.isDestinationLocal_(systemDefaultDestinationId) ?
@@ -418,11 +422,10 @@ export class DestinationStore extends EventTarget {
   }
 
   /**
-   * @param {boolean=} timeoutExpired Whether the select timeout is expired.
+   * @param timeoutExpired Whether the select timeout is expired.
    *     Defaults to false.
-   * @private
    */
-  tryToSelectInitialDestination_(timeoutExpired = false) {
+  private tryToSelectInitialDestination_(timeoutExpired: boolean = false) {
     if (this.initialDestinationSelected_) {
       return;
     }
@@ -432,7 +435,7 @@ export class DestinationStore extends EventTarget {
         this.typesToSearch_.size === 0) {
       // No destinations
       this.dispatchEvent(new CustomEvent(
-          DestinationStore.EventType.ERROR,
+          DestinationStoreEventType.ERROR,
           {detail: DestinationErrorType.NO_DESTINATIONS}));
     }
     this.initialDestinationSelected_ = success;
@@ -450,11 +453,10 @@ export class DestinationStore extends EventTarget {
    * Called when destinations are added to the store when the initial
    * destination has not yet been set. Selects the initial destination based on
    * relevant policies, recent printers, and system default.
-   * @param {boolean} timeoutExpired Whether the initial timeout has expired.
-   * @return {boolean} Whether an initial destination was successfully selected.
-   * @private
+   * @param timeoutExpired Whether the initial timeout has expired.
+   * @return Whether an initial destination was successfully selected.
    */
-  selectInitialDestination_(timeoutExpired) {
+  private selectInitialDestination_(timeoutExpired: boolean): boolean {
     const searchInProgress = this.typesToSearch_.size !== 0 && !timeoutExpired;
 
     // System default printer policy takes priority.
@@ -517,11 +519,10 @@ export class DestinationStore extends EventTarget {
   }
 
   /**
-   * @param {string} key The destination key to try to select.
-   * @return {boolean} Whether the destination was found and selected.
-   * @private
+   * @param key The destination key to try to select.
+   * @return Whether the destination was found and selected.
    */
-  tryToSelectDestinationByKey_(key) {
+  private tryToSelectDestinationByKey_(key: string): boolean {
     const candidate = this.destinationMap_.get(key);
     if (candidate) {
       this.selectDestination(candidate);
@@ -530,11 +531,7 @@ export class DestinationStore extends EventTarget {
     return false;
   }
 
-  /**
-   * @param {?string} destinationId
-   * @return {boolean}
-   */
-  isDestinationLocal_(destinationId) {
+  private isDestinationLocal_(destinationId: string|null): boolean {
     // <if expr="chromeos or lacros">
     if (destinationId === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return true;
@@ -552,16 +549,15 @@ export class DestinationStore extends EventTarget {
   // <if expr="chromeos or lacros">
   /**
    * Attempts to find the EULA URL of the the destination ID.
-   * @param {string} destinationId ID of the destination.
    */
-  fetchEulaUrl(destinationId) {
+  fetchEulaUrl(destinationId: string) {
     this.nativeLayerCros_.getEulaUrl(destinationId).then(response => {
       // Check that the currently selected destination ID still matches the
       // destination ID we used to fetch the EULA URL.
       if (this.selectedDestination_ &&
           destinationId === this.selectedDestination_.id) {
         this.dispatchEvent(new CustomEvent(
-            DestinationStore.EventType.DESTINATION_EULA_READY,
+            DestinationStoreEventType.DESTINATION_EULA_READY,
             {detail: response}));
       }
     });
@@ -569,21 +565,18 @@ export class DestinationStore extends EventTarget {
 
   /**
    * Reloads all local printers.
-   * @return {!Promise}
    */
-  reloadLocalPrinters() {
+  reloadLocalPrinters(): Promise<void> {
     return this.nativeLayer_.getPrinters(PrinterType.LOCAL_PRINTER);
   }
   // </if>
 
   /**
-   * @param {?string} serializedDefaultDestinationSelectionRulesStr Serialized
-   *     default destination selection rules.
-   * @return {?DestinationMatch} Creates rules matching
-   *     previously selected destination.
-   * @private
+   * @return Creates rules matching previously selected destination.
    */
-  convertToDestinationMatch_(serializedDefaultDestinationSelectionRulesStr) {
+  private convertToDestinationMatch_(
+      serializedDefaultDestinationSelectionRulesStr: (string|null)):
+      (DestinationMatch|null) {
     let matchRules = null;
     try {
       if (serializedDefaultDestinationSelectionRulesStr) {
@@ -637,53 +630,53 @@ export class DestinationStore extends EventTarget {
 
   /**
    * Updates the current active user account.
-   * @param {string} activeUser
    */
-  setActiveUser(activeUser) {
+  setActiveUser(activeUser: string) {
     this.activeUser_ = activeUser;
   }
 
   /**
    * Sets the destination store's Google Cloud Print interface.
-   * @param {!CloudPrintInterface} cloudPrintInterface Interface
-   *     to set.
    */
-  setCloudPrintInterface(cloudPrintInterface) {
+  setCloudPrintInterface(cloudPrintInterface: CloudPrintInterface) {
     assert(this.cloudPrintInterface_ === null);
     this.cloudPrintInterface_ = cloudPrintInterface;
     [CloudPrintInterfaceEventType.SEARCH_DONE,
      CloudPrintInterfaceEventType.SEARCH_FAILED,
     ].forEach(eventName => {
       this.tracker_.add(
-          this.cloudPrintInterface_.getEventTarget(), eventName,
-          this.onCloudPrintSearchDone_.bind(this));
+          this.cloudPrintInterface_!.getEventTarget(), eventName,
+          (event: CustomEvent<CloudPrintInterfaceSearchDoneDetail>) =>
+              this.onCloudPrintSearchDone_(event));
     });
     this.tracker_.add(
-        this.cloudPrintInterface_.getEventTarget(),
+        this.cloudPrintInterface_!.getEventTarget(),
         CloudPrintInterfaceEventType.PRINTER_DONE,
-        this.onCloudPrintPrinterDone_.bind(this));
+        (event: CustomEvent<Destination>) =>
+            this.onCloudPrintPrinterDone_(event));
     this.tracker_.add(
-        this.cloudPrintInterface_.getEventTarget(),
+        this.cloudPrintInterface_!.getEventTarget(),
         CloudPrintInterfaceEventType.PRINTER_FAILED,
-        this.onCloudPrintPrinterFailed_.bind(this));
+        (event: CustomEvent<CloudPrintInterfacePrinterFailedDetail>) =>
+            this.onCloudPrintPrinterFailed_(event));
   }
 
-  /** @param {string} key Key identifying the destination to select */
-  selectDestinationByKey(key) {
+  /** @param Key identifying the destination to select */
+  selectDestinationByKey(key: string) {
     assert(this.tryToSelectDestinationByKey_(key));
   }
 
   /**
-   * @param {Destination} destination Destination to select.
+   * @param Destination to select.
    */
-  selectDestination(destination) {
+  selectDestination(destination: Destination) {
     if (destination === this.selectedDestination_) {
       return;
     }
     if (destination === null) {
       this.selectedDestination_ = null;
       this.dispatchEvent(
-          new CustomEvent(DestinationStore.EventType.DESTINATION_SELECT));
+          new CustomEvent(DestinationStoreEventType.DESTINATION_SELECT));
       return;
     }
 
@@ -703,7 +696,7 @@ export class DestinationStore extends EventTarget {
     }
     // Notify about selected destination change.
     this.dispatchEvent(
-        new CustomEvent(DestinationStore.EventType.DESTINATION_SELECT));
+        new CustomEvent(DestinationStoreEventType.DESTINATION_SELECT));
     // Request destination capabilities from backend, since they are not
     // known yet.
     if (destination.capabilities === null) {
@@ -721,7 +714,7 @@ export class DestinationStore extends EventTarget {
         assert(
             this.cloudPrintInterface_ !== null,
             'Cloud destination selected, but GCP is not enabled');
-        this.cloudPrintInterface_.printer(
+        this.cloudPrintInterface_!.printer(
             destination.id, destination.origin, destination.account);
       }
     } else {
@@ -732,22 +725,19 @@ export class DestinationStore extends EventTarget {
   // <if expr="chromeos or lacros">
   /**
    * Attempt to resolve the capabilities for a Chrome OS printer.
-   * @param {!Destination} destination The destination which
-   *     requires resolution.
-   * @return {!Promise<!PrinterSetupResponse>}
    */
-  resolveCrosDestination(destination) {
+  resolveCrosDestination(destination: Destination):
+      Promise<PrinterSetupResponse> {
     assert(destination.origin === DestinationOrigin.CROS);
     return this.nativeLayerCros_.setupPrinter(destination.id);
   }
 
   /**
    * Attempts to resolve a provisional destination.
-   * @param {!Destination} destination Provisional destination
-   *     that should be resolved.
-   * @return {!Promise<?Destination>}
+   * @param Provisional destination that should be resolved.
    */
-  resolveProvisionalDestination(destination) {
+  resolveProvisionalDestination(destination: Destination):
+      Promise<Destination|null> {
     assert(
         destination.provisionalType ===
             DestinationProvisionalType.NEEDS_USB_PERMISSION,
@@ -780,15 +770,14 @@ export class DestinationStore extends EventTarget {
   /**
    * Selects the Save as PDF fallback if it is available. If not, selects the
    * first destination if it exists.
-   * @return {boolean} Whether a final destination could be found.
-   * @private
+   * @return Whether a final destination could be found.
    */
-  selectFinalFallbackDestination_() {
+  private selectFinalFallbackDestination_(): boolean {
     // Save as PDF should always exist if it is enabled.
     if (this.pdfPrinterEnabled_) {
       const saveToPdfKey = createDestinationKey(
           GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL, '');
-      this.selectDestination(assert(this.destinationMap_.get(saveToPdfKey)));
+      this.selectDestination(assert(this.destinationMap_.get(saveToPdfKey)!));
       return true;
     }
 
@@ -806,11 +795,9 @@ export class DestinationStore extends EventTarget {
 
   /**
    * Initiates loading of destinations.
-   * @param {!PrinterType} type The type of destinations to
-   *     load.
-   * @private
+   * @param type The type of destinations to load.
    */
-  startLoadDestinations_(type) {
+  private startLoadDestinations_(type: PrinterType) {
     if (this.destinationSearchStatus_.get(type) ===
         DestinationStorePrinterSearchStatus.DONE) {
       return;
@@ -818,20 +805,19 @@ export class DestinationStore extends EventTarget {
     this.destinationSearchStatus_.set(
         type, DestinationStorePrinterSearchStatus.SEARCHING);
     this.nativeLayer_.getPrinters(type).then(
-        this.onDestinationSearchDone_.bind(this, type));
+        () => this.onDestinationSearchDone_(type));
     MetricsContext.getPrinters(type).record(
         Metrics.PrintPreviewInitializationEvents.FUNCTION_INITIATED);
   }
 
   /**
    * Requests load of COOKIE based cloud destinations for |account|.
-   * @param {string} account
    */
-  reloadUserCookieBasedDestinations(account) {
+  reloadUserCookieBasedDestinations(account: string) {
     const origins = this.loadedCloudOrigins_.get(account) || [];
     if (origins.includes(DestinationOrigin.COOKIES)) {
       this.dispatchEvent(
-          new CustomEvent(DestinationStore.EventType.DESTINATION_SEARCH_DONE));
+          new CustomEvent(DestinationStoreEventType.DESTINATION_SEARCH_DONE));
     } else {
       this.startLoadCloudDestinations(DestinationOrigin.COOKIES);
     }
@@ -856,10 +842,9 @@ export class DestinationStore extends EventTarget {
 
   /**
    * Initiates loading of cloud destinations.
-   * @param {DestinationOrigin=} opt_origin Search destinations
-   *     for the specified origin only.
+   * @param opt_origin Search destinations for the specified origin only.
    */
-  startLoadCloudDestinations(opt_origin) {
+  startLoadCloudDestinations(opt_origin?: DestinationOrigin) {
     if (this.cloudPrintInterface_ === null) {
       return;
     }
@@ -871,10 +856,9 @@ export class DestinationStore extends EventTarget {
   }
 
   /**
-   * @param {string} key Key identifying the destination
-   * @return {?Destination} The destination matching the key, if it exists.
+   * @return The destination matching the key, if it exists.
    */
-  getDestinationByKey(key) {
+  getDestinationByKey(key: string): Destination|undefined {
     return this.destinationMap_.get(key);
   }
 
@@ -882,51 +866,37 @@ export class DestinationStore extends EventTarget {
   /**
    * Removes the provisional destination with ID |provisionalId| from
    * |destinationMap_| and |destinations_|.
-   * @param{string} provisionalId The provisional destination ID.
-   * @private
    */
-  removeProvisionalDestination_(provisionalId) {
-    this.destinations_ = this.destinations_.filter(function(el) {
+  private removeProvisionalDestination_(provisionalId: string) {
+    this.destinations_ = this.destinations_.filter(el => {
       if (el.id === provisionalId) {
         this.destinationMap_.delete(el.key);
         return false;
       }
       return true;
-    }, this);
+    });
   }
   // </if>
 
   /**
    * Inserts {@code destination} to the data store and dispatches a
    * DESTINATIONS_INSERTED event.
-   * @param {!Destination} destination Print destination to
-   *     insert.
-   * @private
    */
-  insertDestination_(destination) {
+  private insertDestination_(destination: Destination) {
     if (this.insertIntoStore_(destination)) {
-      this.destinationsInserted_(destination);
+      this.destinationsInserted_();
     }
   }
 
   /**
    * Inserts multiple {@code destinations} to the data store and dispatches
    * single DESTINATIONS_INSERTED event.
-   * @param {!Array<!Destination |
-   *                !Array<Destination>>} destinations Print
-   *     destinations to insert.
-   * @private
    */
-  insertDestinations_(destinations) {
+  private insertDestinations_(destinations: (Destination|null)[]) {
     let inserted = false;
     destinations.forEach(destination => {
-      if (Array.isArray(destination)) {
-        // privet printers return arrays of 1 or 2 printers
-        inserted = destination.reduce(function(soFar, d) {
-          return this.insertIntoStore_(d) || soFar;
-        }, inserted);
-      } else {
-        inserted = this.insertIntoStore_(destination) || inserted;
+      if (destination) {
+        inserted = this.insertIntoStore_(destination!) || inserted;
       }
     });
     if (inserted) {
@@ -938,14 +908,10 @@ export class DestinationStore extends EventTarget {
    * Dispatches DESTINATIONS_INSERTED event. In auto select mode, tries to
    * update selected destination to match
    * {@code autoSelectMatchingDestination_}.
-   * @param {Destination=} opt_destination The only destination
-   *     that was changed or skipped if possibly more than one destination was
-   *     changed. Used as a hint to limit destination search scope against
-   *     {@code autoSelectMatchingDestination_}.
    */
-  destinationsInserted_(opt_destination) {
+  private destinationsInserted_() {
     this.dispatchEvent(
-        new CustomEvent(DestinationStore.EventType.DESTINATIONS_INSERTED));
+        new CustomEvent(DestinationStoreEventType.DESTINATIONS_INSERTED));
 
     this.tryToSelectInitialDestination_();
   }
@@ -953,29 +919,26 @@ export class DestinationStore extends EventTarget {
   /**
    * Sends SELECTED_DESTINATION_CAPABILITIES_READY event if the destination
    * is supported, or ERROR otherwise of with error type UNSUPPORTED.
-   * @private
    */
-  sendSelectedDestinationUpdateEvent_() {
-    if (this.selectedDestination_.shouldShowInvalidCertificateError) {
+  private sendSelectedDestinationUpdateEvent_() {
+    if (this.selectedDestination_!.shouldShowInvalidCertificateError) {
       this.dispatchEvent(new CustomEvent(
-          DestinationStore.EventType.ERROR,
+          DestinationStoreEventType.ERROR,
           {detail: DestinationErrorType.UNSUPPORTED}));
     } else {
       this.dispatchEvent(new CustomEvent(
-          DestinationStore.EventType.SELECTED_DESTINATION_CAPABILITIES_READY));
+          DestinationStoreEventType.SELECTED_DESTINATION_CAPABILITIES_READY));
     }
   }
 
   /**
    * Updates an existing print destination with capabilities and display name
    * information. If the destination doesn't already exist, it will be added.
-   * @param {!Destination} destination Destination to update.
-   * @private
    */
-  updateDestination_(destination) {
+  private updateDestination_(destination: Destination) {
     assert(destination.constructor !== Array, 'Single printer expected');
     destination.capabilities =
-        localizeCapabilities(assert(destination.capabilities));
+        localizeCapabilities(assert(destination.capabilities!));
     if (originToType(destination.origin) !== PrinterType.LOCAL_PRINTER) {
       destination.capabilities = sortMediaSizes(destination.capabilities);
     }
@@ -995,13 +958,9 @@ export class DestinationStore extends EventTarget {
 
   /**
    * Inserts a destination into the store without dispatching any events.
-   * @param {!Destination} destination The destination to be
-   *     inserted.
-   * @return {boolean} Whether the inserted destination was not already in the
-   *     store.
-   * @private
+   * @return Whether the inserted destination was not already in the store.
    */
-  insertIntoStore_(destination) {
+  private insertIntoStore_(destination: Destination): boolean {
     const key = destination.key;
     const existingDestination = this.destinationMap_.get(key);
     if (existingDestination === undefined) {
@@ -1020,11 +979,8 @@ export class DestinationStore extends EventTarget {
 
   /**
    * Creates a local PDF print destination.
-   * @private
    */
-  createLocalPdfPrintDestination_() {
-    // TODO(alekseys): Create PDF printer in the native code and send its
-    // capabilities back with other local printers.
+  private createLocalPdfPrintDestination_() {
     if (this.pdfPrinterEnabled_) {
       this.insertDestination_(new Destination(
           GooglePromotedDestinationId.SAVE_AS_PDF, DestinationType.LOCAL,
@@ -1039,9 +995,8 @@ export class DestinationStore extends EventTarget {
   // <if expr="chromeos or lacros">
   /**
    * Creates a local Drive print destination.
-   * @private
    */
-  createLocalDrivePrintDestination_() {
+  private createLocalDrivePrintDestination_() {
     this.insertDestination_(new Destination(
         GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS, DestinationType.LOCAL,
         DestinationOrigin.LOCAL, loadTimeData.getString('printToGoogleDrive'),
@@ -1051,16 +1006,15 @@ export class DestinationStore extends EventTarget {
 
   /**
    * Called when destination search is complete for some type of printer.
-   * @param {!PrinterType} type The type of printers that are
-   *     done being retrieved.
+   * @param type The type of printers that are done being retrieved.
    */
-  onDestinationSearchDone_(type) {
+  private onDestinationSearchDone_(type: PrinterType) {
     MetricsContext.getPrinters(type).record(
         Metrics.PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
     this.destinationSearchStatus_.set(
         type, DestinationStorePrinterSearchStatus.DONE);
     this.dispatchEvent(
-        new CustomEvent(DestinationStore.EventType.DESTINATION_SEARCH_DONE));
+        new CustomEvent(DestinationStoreEventType.DESTINATION_SEARCH_DONE));
     if (this.typesToSearch_.has(type)) {
       this.typesToSearch_.delete(type);
       this.tryToSelectInitialDestination_();
@@ -1074,15 +1028,15 @@ export class DestinationStore extends EventTarget {
    * local destination. Updates the destination with new capabilities if the
    * destination already exists, otherwise it creates a new destination and
    * then updates its capabilities.
-   * @param {!DestinationOrigin} origin The origin of the
-   *     print destination.
-   * @param {string} id The id of the print destination.
-   * @param {!CapabilitiesResponse} settingsInfo Contains
-   *     the capabilities of the print destination, and information about
-   *     the destination except in the case of extension printers.
-   * @private
+   * @param origin The origin of the print destination.
+   * @param id The id of the print destination.
+   * @param settingsInfo Contains the capabilities of the print destination,
+   *     and information about the destination except in the case of extension
+   *     printers.
    */
-  onCapabilitiesSet_(origin, id, settingsInfo) {
+  private onCapabilitiesSet_(
+      origin: DestinationOrigin, id: string,
+      settingsInfo: CapabilitiesResponse) {
     MetricsContext.getPrinterCapabilities().record(
         Metrics.PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
     let dest = null;
@@ -1119,12 +1073,11 @@ export class DestinationStore extends EventTarget {
    * Called when a request to get a local destination's print capabilities
    * fails. If the destination is the initial destination, auto-select another
    * destination instead.
-   * @param {DestinationOrigin} origin The origin type of the
-   *     failed destination.
-   * @param {string} destinationId The destination ID that failed.
-   * @private
+   * @param _origin The origin type of the failed destination.
+   * @param destinationId The destination ID that failed.
    */
-  onGetCapabilitiesFail_(origin, destinationId) {
+  private onGetCapabilitiesFail_(
+      _origin: DestinationOrigin, destinationId: string) {
     MetricsContext.getPrinterCapabilities().record(
         Metrics.PrintPreviewInitializationEvents.FUNCTION_FAILED);
     console.warn(
@@ -1132,7 +1085,7 @@ export class DestinationStore extends EventTarget {
     if (this.selectedDestination_ &&
         this.selectedDestination_.id === destinationId) {
       this.dispatchEvent(new CustomEvent(
-          DestinationStore.EventType.ERROR,
+          DestinationStoreEventType.ERROR,
           {detail: DestinationErrorType.INVALID}));
     }
   }
@@ -1140,15 +1093,14 @@ export class DestinationStore extends EventTarget {
   /**
    * Called when the /search call completes, either successfully or not.
    * In case of success, stores fetched destinations.
-   * @param {!CustomEvent<!CloudPrintInterfaceSearchDoneDetail>}
-   *      event Contains the request result.
-   * @private
+   * @param event Contains the request result.
    */
-  onCloudPrintSearchDone_(event) {
+  private onCloudPrintSearchDone_(
+      event: CustomEvent<CloudPrintInterfaceSearchDoneDetail>) {
     const payload = event.detail;
     const searchingCloudPrintersDone =
         this.typesToSearch_.has(PrinterType.CLOUD_PRINTER) &&
-        !this.cloudPrintInterface_.isCloudDestinationSearchInProgress() &&
+        !this.cloudPrintInterface_!.isCloudDestinationSearchInProgress() &&
         (!!payload.user ||
          event.type === CloudPrintInterfaceEventType.SEARCH_FAILED);
     if (searchingCloudPrintersDone) {
@@ -1168,17 +1120,15 @@ export class DestinationStore extends EventTarget {
       }
     }
     this.dispatchEvent(
-        new CustomEvent(DestinationStore.EventType.DESTINATION_SEARCH_DONE));
+        new CustomEvent(DestinationStoreEventType.DESTINATION_SEARCH_DONE));
   }
 
   /**
    * Called when /printer call completes. Updates the specified destination's
    * print capabilities.
-   * @param {!CustomEvent<!Destination>} event Contains
-   *     detailed information about the destination.
-   * @private
+   * @param event Contains detailed information about the destination.
    */
-  onCloudPrintPrinterDone_(event) {
+  private onCloudPrintPrinterDone_(event: CustomEvent<Destination>) {
     this.updateDestination_(event.detail);
     this.inFlightCloudPrintRequests_.delete(event.detail.key);
   }
@@ -1187,18 +1137,18 @@ export class DestinationStore extends EventTarget {
    * Called when the Google Cloud Print interface fails to lookup a
    * destination. Selects another destination if the failed destination was
    * the initial destination.
-   * @param {!CustomEvent<!CloudPrintInterfacePrinterFailedDetail>}
-   *     event Contains the ID of the destination that failed to be looked up.
-   * @private
+   * @param event Contains the ID of the destination that failed to be looked
+   *     up.
    */
-  onCloudPrintPrinterFailed_(event) {
+  private onCloudPrintPrinterFailed_(
+      event: CustomEvent<CloudPrintInterfacePrinterFailedDetail>) {
     const key = createDestinationKey(
         event.detail.destinationId, event.detail.origin,
         event.detail.account || '');
     this.inFlightCloudPrintRequests_.delete(key);
     if (this.selectedDestination_ && this.selectedDestination_.key === key) {
       this.dispatchEvent(new CustomEvent(
-          DestinationStore.EventType.ERROR,
+          DestinationStoreEventType.ERROR,
           {detail: DestinationErrorType.INVALID}));
     }
   }
@@ -1206,49 +1156,29 @@ export class DestinationStore extends EventTarget {
   /**
    * Called when a printer or printers are detected after sending getPrinters
    * from the native layer.
-   * @param {!PrinterType} type The type of printer(s) added.
-   * @param {!Array<!LocalDestinationInfo |
-   *                !ProvisionalDestinationInfo>} printers
-   *     Information about the printers that have been retrieved.
+   * @param type The type of printer(s) added.
+   * @param printers Information about the printers that have been retrieved.
    */
-  onPrintersAdded_(type, printers) {
+  private onPrintersAdded_(
+      type: PrinterType,
+      printers: LocalDestinationInfo[]|ProvisionalDestinationInfo[]) {
     this.insertDestinations_(printers.map(
-        printer =>
-            /** @type {!Destination} */ (parseDestination(type, printer))));
+        (printer: LocalDestinationInfo|ProvisionalDestinationInfo) =>
+            parseDestination(type, printer)));
   }
 }
 
 /**
- * Event types dispatched by the destination store.
- * @enum {string}
- */
-DestinationStore.EventType = {
-  DESTINATION_SEARCH_DONE: 'DestinationStore.DESTINATION_SEARCH_DONE',
-  DESTINATION_SELECT: 'DestinationStore.DESTINATION_SELECT',
-  DESTINATIONS_INSERTED: 'DestinationStore.DESTINATIONS_INSERTED',
-  ERROR: 'DestinationStore.ERROR',
-  SELECTED_DESTINATION_CAPABILITIES_READY: 'DestinationStore' +
-      '.SELECTED_DESTINATION_CAPABILITIES_READY',
-  // <if expr="chromeos or lacros">
-  DESTINATION_EULA_READY: 'DestinationStore.DESTINATION_EULA_READY',
-  // </if>
-};
-
-/**
  * Maximum amount of time spent searching for extension destinations, in
  * milliseconds.
- * @private {number}
- * @const
  */
-DestinationStore.EXTENSION_SEARCH_DURATION_ = 5000;
+const EXTENSION_SEARCH_DURATION_: number = 5000;
 
 /**
  * Human readable names for media sizes in the cloud print CDD.
  * https://developers.google.com/cloud-print/docs/cdd
- * @private {Object<string>}
- * @const
  */
-DestinationStore.MEDIA_DISPLAY_NAMES_ = {
+const MEDIA_DISPLAY_NAMES_: {[key: string]: string} = {
   'ISO_2A0': '2A0',
   'ISO_A0': 'A0',
   'ISO_A0X3': 'A0x3',

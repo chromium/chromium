@@ -84,10 +84,11 @@ type PageOrientationCapability = {
   reset_to_default?: boolean,
 };
 
-type MediaSizeOption = {
+export type MediaSizeOption = {
   type?: string,
   vendor_id?: string,
   custom_display_name?: string,
+  custom_display_name_localized?: string,
   is_default?: boolean,
   name?: string,
 };

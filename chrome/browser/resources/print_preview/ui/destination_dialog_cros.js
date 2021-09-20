@@ -31,8 +31,8 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://re
 import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
-import {DestinationStore} from '../data/destination_store.js';
-import {PrintServerStore} from '../data/print_server_store.js';
+import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
+import {PrintServerStore, PrintServerStoreEventType} from '../data/print_server_store.js';
 import {Metrics, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 import {PrintServer, PrintServersConfig} from '../native_layer_cros.js';
@@ -168,12 +168,11 @@ export class PrintPreviewDestinationDialogCrosElement extends
         (/** string */ eventName, /** !Function */ callback) =>
             void this.addWebUIListener(eventName, callback));
     this.tracker_.add(
-        this.printServerStore_,
-        PrintServerStore.EventType.PRINT_SERVERS_CHANGED,
+        this.printServerStore_, PrintServerStoreEventType.PRINT_SERVERS_CHANGED,
         event => void this.onPrintServersChanged_(event));
     this.tracker_.add(
         this.printServerStore_,
-        PrintServerStore.EventType.SERVER_PRINTERS_LOADING,
+        PrintServerStoreEventType.SERVER_PRINTERS_LOADING,
         event => void this.onServerPrintersLoading_(event));
     this.printServerStore_.getPrintServersConfig().then(config => {
       this.printServerNames_ =
@@ -213,10 +212,10 @@ export class PrintPreviewDestinationDialogCrosElement extends
     assert(this.destinations_.length === 0);
     const destinationStore = assert(this.destinationStore);
     this.tracker_.add(
-        destinationStore, DestinationStore.EventType.DESTINATIONS_INSERTED,
+        destinationStore, DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDestinations_.bind(this));
     this.tracker_.add(
-        destinationStore, DestinationStore.EventType.DESTINATION_SEARCH_DONE,
+        destinationStore, DestinationStoreEventType.DESTINATION_SEARCH_DONE,
         this.updateDestinations_.bind(this));
     this.initialized_ = true;
     if (this.printServerStore_) {

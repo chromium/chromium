@@ -37,7 +37,7 @@ import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destinat
 import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 // </if>
 import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
-import {DestinationErrorType, DestinationStore} from '../data/destination_store.js';
+import {DestinationErrorType, DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
 import {Error, State} from '../data/state.js';
 
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
@@ -196,14 +196,14 @@ export class PrintPreviewDestinationSettingsElement extends
     this.destinationStore_ =
         new DestinationStore(this.addWebUIListener.bind(this));
     this.tracker_.add(
-        this.destinationStore_, DestinationStore.EventType.DESTINATION_SELECT,
+        this.destinationStore_, DestinationStoreEventType.DESTINATION_SELECT,
         this.onDestinationSelect_.bind(this));
     this.tracker_.add(
         this.destinationStore_,
-        DestinationStore.EventType.SELECTED_DESTINATION_CAPABILITIES_READY,
+        DestinationStoreEventType.SELECTED_DESTINATION_CAPABILITIES_READY,
         this.onDestinationCapabilitiesReady_.bind(this));
     this.tracker_.add(
-        this.destinationStore_, DestinationStore.EventType.ERROR,
+        this.destinationStore_, DestinationStoreEventType.ERROR,
         this.onDestinationError_.bind(this));
     // Need to update the recent list when the destination store inserts
     // destinations, in case any recent destinations have been added to the
@@ -212,13 +212,13 @@ export class PrintPreviewDestinationSettingsElement extends
     // fetched by the DestinationStore, to ensure that they still exist.
     this.tracker_.add(
         assert(this.destinationStore_),
-        DestinationStore.EventType.DESTINATIONS_INSERTED,
+        DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDropdownDestinations_.bind(this));
 
     // <if expr="chromeos or lacros">
     this.tracker_.add(
         this.destinationStore_,
-        DestinationStore.EventType.DESTINATION_EULA_READY,
+        DestinationStoreEventType.DESTINATION_EULA_READY,
         this.updateDestinationEulaUrl_.bind(this));
     // </if>
   }

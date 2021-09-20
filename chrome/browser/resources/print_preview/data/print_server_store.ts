@@ -11,52 +11,50 @@ import {DestinationStore} from './destination_store.js';
 
 export class PrintServerStore extends EventTarget {
   /**
+   * Used to fetch print servers.
+   */
+  private nativeLayerCros_: NativeLayerCros = NativeLayerCrosImpl.getInstance();
+
+  /**
+   * All available print servers mapped by name.
+   */
+  private printServersByName_: Map<string, PrintServer[]> = new Map();
+
+  /**
+   * Whether in single print server fetching mode.
+   */
+  private isSingleServerFetchingMode_: boolean = false;
+
+  /**
+   * Used to reload local printers.
+   */
+  private destinationStore_: DestinationStore|null = null;
+
+  /**
    * A data store that stores print servers and dispatches events when the
    * data store changes.
-   * @param {function(string, !Function):void} addListenerCallback Function
-   *     to call to add Web UI listeners in PrintServerStore constructor.
+   * @param addListenerCallback Function to call to add Web UI listeners in
+   *     PrintServerStore constructor.
    */
-  constructor(addListenerCallback) {
+  constructor(
+      addListenerCallback:
+          (eventName: string, listener: (p: any) => void) => void) {
     super();
-
-    /**
-     * Used to fetch print servers.
-     * @private {!NativeLayerCros}
-     */
-    this.nativeLayerCros_ = NativeLayerCrosImpl.getInstance();
-
-    /**
-     * All available print servers mapped by name.
-     * @private {!Map<string, !Array<!PrintServer>>}
-     */
-    this.printServersByName_ = new Map();
-
-    /**
-     * Whether in single print server fetching mode.
-     * @private {boolean}
-     */
-    this.isSingleServerFetchingMode_ = false;
-
-    /**
-     * Used to reload local printers.
-     * @private {?DestinationStore}
-     */
-    this.destinationStore_ = null;
 
     addListenerCallback(
         'print-servers-config-changed',
-        printServersConfig =>
+        (printServersConfig: PrintServersConfig) =>
             this.onPrintServersConfigChanged_(printServersConfig));
     addListenerCallback(
         'server-printers-loading',
-        isLoading => this.onServerPrintersLoading_(isLoading));
+        (isLoading: boolean) => this.onServerPrintersLoading_(isLoading));
   }
 
   /**
    * Selects the print server(s) with the corresponding name.
-   * @param {string} printServerName Name of the print server(s).
+   * @param printServerName Name of the print server(s).
    */
-  choosePrintServers(printServerName) {
+  choosePrintServers(printServerName: string) {
     const printServers = this.printServersByName_.get(printServerName);
     this.nativeLayerCros_.choosePrintServers(
         printServers ? printServers.map(printServer => printServer.id) : []);
@@ -64,51 +62,43 @@ export class PrintServerStore extends EventTarget {
 
   /**
    * Gets the currently available print servers and fetching mode.
-   * @return {!Promise<!PrintServersConfig>} The print servers configuration.
+   * @return The print servers configuration.
    */
-  async getPrintServersConfig() {
+  async getPrintServersConfig(): Promise<PrintServersConfig> {
     const printServersConfig =
         await this.nativeLayerCros_.getPrintServersConfig();
-    this.updatePrintServersConfig(printServersConfig);
+    this.updatePrintServersConfig_(printServersConfig);
     return printServersConfig;
   }
 
-  /**
-   * @param {!DestinationStore} destinationStore The destination store.
-   */
-  setDestinationStore(destinationStore) {
+  setDestinationStore(destinationStore: DestinationStore) {
     this.destinationStore_ = destinationStore;
   }
 
   /**
    * Called when new print servers and fetching mode are available.
-   * @param {!PrintServersConfig} printServersConfig The print servers
-   *     configuration.
    */
-  onPrintServersConfigChanged_(printServersConfig) {
-    this.updatePrintServersConfig(printServersConfig);
+  private onPrintServersConfigChanged_(printServersConfig: PrintServersConfig) {
+    this.updatePrintServersConfig_(printServersConfig);
     const eventData = {
       printServerNames: Array.from(this.printServersByName_.keys()),
       isSingleServerFetchingMode: this.isSingleServerFetchingMode_
     };
     this.dispatchEvent(new CustomEvent(
-        PrintServerStore.EventType.PRINT_SERVERS_CHANGED, {detail: eventData}));
+        PrintServerStoreEventType.PRINT_SERVERS_CHANGED, {detail: eventData}));
   }
 
   /**
    * Updates the print servers configuration when new print servers and fetching
    * mode are available.
-   * @param {!PrintServersConfig} printServersConfig The print servers
-   *     configuration.
-   * @private
    */
-  updatePrintServersConfig(printServersConfig) {
+  private updatePrintServersConfig_(printServersConfig: PrintServersConfig) {
     this.isSingleServerFetchingMode_ =
         printServersConfig.isSingleServerFetchingMode;
     this.printServersByName_ = new Map();
     for (const printServer of printServersConfig.printServers) {
       if (this.printServersByName_.has(printServer.name)) {
-        this.printServersByName_.get(printServer.name).push(printServer);
+        this.printServersByName_.get(printServer.name)!.push(printServer);
       } else {
         this.printServersByName_.set(printServer.name, [printServer]);
       }
@@ -117,23 +107,22 @@ export class PrintServerStore extends EventTarget {
 
   /**
    * Called when print server printers loading status has changed.
-   * @param {boolean} isLoading Whether server printers are loading
+   * @param isLoading Whether server printers are loading
    */
-  async onServerPrintersLoading_(isLoading) {
+  private async onServerPrintersLoading_(isLoading: boolean) {
     if (!isLoading && this.destinationStore_) {
       await this.destinationStore_.reloadLocalPrinters();
     }
     this.dispatchEvent(new CustomEvent(
-        PrintServerStore.EventType.SERVER_PRINTERS_LOADING,
+        PrintServerStoreEventType.SERVER_PRINTERS_LOADING,
         {detail: isLoading}));
   }
 }
 
 /**
  * Event types dispatched by the print server store.
- * @enum {string}
  */
-PrintServerStore.EventType = {
-  PRINT_SERVERS_CHANGED: 'PrintServerStore.PRINT_SERVERS_CHANGED',
-  SERVER_PRINTERS_LOADING: 'PrintServerStore.SERVER_PRINTERS_LOADING',
-};
+export enum PrintServerStoreEventType {
+  PRINT_SERVERS_CHANGED = 'PrintServerStore.PRINT_SERVERS_CHANGED',
+  SERVER_PRINTERS_LOADING = 'PrintServerStore.SERVER_PRINTERS_LOADING',
+}

@@ -10,15 +10,15 @@ export {ColorMode, createDestinationKey, Destination, DestinationCertificateStat
 export {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from './data/destination.js';
 // </if>
 export {PrinterType} from './data/destination_match.js';
-export {DestinationErrorType, DestinationStore} from './data/destination_store.js';
+export {DestinationErrorType, DestinationStore, DestinationStoreEventType} from './data/destination_store.js';
 export {CustomMarginsOrientation, Margins, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
 export {DuplexMode, DuplexType, getInstance, PrintPreviewModelElement, whenReady} from './data/model.js';
 // <if expr="chromeos or lacros">
-export {PrintServerStore} from './data/print_server_store.js';
+export {PrintServerStore, PrintServerStoreEventType} from './data/print_server_store.js';
 // </if>
 // <if expr="chromeos or lacros">
-export {PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './data/printer_status_cros.js';
+export {PrinterState, PrinterStatusReason, PrinterStatusSeverity} from './data/printer_status_cros.js';
 // </if>
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';

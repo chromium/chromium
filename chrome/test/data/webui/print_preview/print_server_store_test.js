@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrinterType, PrintServerStore} from 'chrome://print/print_preview.js';
+import {PrinterType, PrintServerStore, PrintServerStoreEventType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
@@ -84,7 +84,7 @@ suite(print_server_store_test.suiteName, function() {
           {id: 'server2', name: 'Print Server 2'},
         ];
         const whenPrintServersChangedEvent = eventToPromise(
-            PrintServerStore.EventType.PRINT_SERVERS_CHANGED, printServerStore);
+            PrintServerStoreEventType.PRINT_SERVERS_CHANGED, printServerStore);
 
         const printServersConfig = {
           printServers: printServers,
@@ -133,7 +133,7 @@ suite(print_server_store_test.suiteName, function() {
       assert(print_server_store_test.TestNames.ServerPrintersLoading),
       async () => {
         const whenServerPrintersLoadedEvent = eventToPromise(
-            PrintServerStore.EventType.SERVER_PRINTERS_LOADING,
+            PrintServerStoreEventType.SERVER_PRINTERS_LOADING,
             printServerStore);
 
         webUIListenerCallback('server-printers-loading', true);

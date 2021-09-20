@@ -55,7 +55,7 @@ suite(destination_settings_test_cros.suiteName, function() {
 
     // Stub out native layer.
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     nativeLayerCros = new NativeLayerCrosStub();
     NativeLayerCrosImpl.setInstance(nativeLayerCros);
 

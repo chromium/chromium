@@ -42,7 +42,7 @@ suite(destination_dialog_interactive_test.suiteName, function() {
 
     // Create destinations.
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     const localDestinations = [];
     const destinations = getDestinations(localDestinations);
     const recentDestinations = [makeRecentDestination(destinations[4])];

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceEventType, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, GooglePromotedDestinationId, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -80,7 +80,7 @@ suite(destination_store_test.suiteName, function() {
     setupTestListenerElement();
 
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
@@ -119,7 +119,7 @@ suite(destination_store_test.suiteName, function() {
     }
 
     destinationStore.addEventListener(
-        DestinationStore.EventType.DESTINATION_SELECT, function() {
+        DestinationStoreEventType.DESTINATION_SELECT, function() {
           numPrintersSelected++;
         });
 
@@ -128,7 +128,7 @@ suite(destination_store_test.suiteName, function() {
         JSON.parse(initialSettings.serializedAppStateStr).recentDestinations :
         [];
     const whenCapabilitiesReady = eventToPromise(
-        DestinationStore.EventType.SELECTED_DESTINATION_CAPABILITIES_READY,
+        DestinationStoreEventType.SELECTED_DESTINATION_CAPABILITIES_READY,
         destinationStore);
     destinationStore.init(
         initialSettings.pdfPrinterDisabled, !!initialSettings.isDriveMounted,
@@ -362,7 +362,7 @@ suite(destination_store_test.suiteName, function() {
             .all([
               setInitialSettings(false),
               eventToPromise(
-                  DestinationStore.EventType
+                  DestinationStoreEventType
                       .SELECTED_DESTINATION_CAPABILITIES_READY,
                   destinationStore),
             ])
@@ -418,8 +418,7 @@ suite(destination_store_test.suiteName, function() {
         return Promise
             .all([
               setInitialSettings(true),
-              eventToPromise(
-                  DestinationStore.EventType.ERROR, destinationStore),
+              eventToPromise(DestinationStoreEventType.ERROR, destinationStore),
             ])
             .then(function(argsArray) {
               const errorEvent = argsArray[1];

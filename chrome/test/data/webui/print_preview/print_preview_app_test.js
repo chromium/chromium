@@ -79,7 +79,7 @@ suite(print_preview_app_test.suiteName, function() {
     // Stub out the native layer, the cloud print interface, and the plugin.
     document.body.innerHTML = '';
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
