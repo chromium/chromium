@@ -669,10 +669,7 @@ bool SyncTest::SetupClients() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // SyncSettingsCategorization makes several types (e.g. APPS, APP_LIST,
   // PRINTERS) into OS sync types. OS sync is on-by-default, so enable it here.
-  // TODO(https://crbug.com/1227417): Remove SplitSettingsSync after migrating
-  // the affected tests.
-  if (chromeos::features::IsSplitSettingsSyncEnabled() ||
-      chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     for (int i = 0; i < num_clients(); ++i) {
       GetSyncService(i)->GetUserSettings()->SetOsSyncFeatureEnabled(true);
     }
