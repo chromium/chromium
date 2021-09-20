@@ -291,29 +291,6 @@ class AuthenticatorAndroidAccessorySheetModel
   std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
 };
 
-class AuthenticatorPaaskV2SheetModel : public AuthenticatorSheetModelBase {
- public:
-  explicit AuthenticatorPaaskV2SheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
-  ~AuthenticatorPaaskV2SheetModel() override;
-
- private:
-  // AuthenticatorSheetModelBase:
-  bool IsBackButtonVisible() const override;
-  bool IsActivityIndicatorVisible() const override;
-  const gfx::VectorIcon& GetStepIllustration(
-      ImageColorScheme color_scheme) const override;
-  std::u16string GetStepTitle() const override;
-  std::u16string GetStepDescription() const override;
-  ui::MenuModel* GetOtherMechanismsMenuModel() override;
-  bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
-  std::u16string GetAcceptButtonLabel() const override;
-  void OnAccept() override;
-
-  std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
-};
-
 class AuthenticatorClientPinEntrySheetModel
     : public AuthenticatorSheetModelBase {
  public:

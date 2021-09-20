@@ -11304,12 +11304,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CABLE_V2_ACTIVATE_DESCRIPTION_SHORT" desc="Second line of text in an item letting the user know how they can use Chrome on their Android phone as a security key. The substring 'Use phone as a security key' refers to the string IDS_PHONE_AS_SECURITY_KEY_TEXT in Chrome on Android.">
         Open Chrome on your Android phone, and go to "Settings > Passwords > Use phone as a security key", and follow the instructions there.
       </message>
-      <message name="IDS_WEBAUTHN_CABLE_QR_TITLE" desc="Title of a dialog that contains a QR-code for the user to scan with a mobile phone app. A QR Code is a type of barcode that can be read using a smartphone's camera.">
-        Add new phone
-      </message>
-      <message name="IDS_WEBAUTHN_CABLE_QR_DESCRIPTION" desc="Description text in a dialog that contains a QR-code for the user to scan with Chrome on their Android phone. A QR Code is a type of barcode that can be read using a smartphone's camera. The substring 'Use phone as a security key' refers to the string IDS_PHONE_AS_SECURITY_KEY_TEXT in Chrome on Android.">
-        To set up an Android phone to be used as a security key with this computer for the first time, open Chrome on your phone and go to "Settings > Passwords > Use phone as a security key". Then tap "Connect new device" and scan this QR Code.
-      </message>
 
       <!-- WebAuthn authenticator PIN entry/setup -->
       <message name="IDS_WEBAUTHN_PIN_ENTRY_TITLE" desc="Title of the dialog shown when instructing the user to enter the PIN code to use a security key (an external physical device for user authentication) with their computer.">

@@ -92,7 +92,6 @@ class AuthenticatorRequestDialogModel {
     // Phone as a security key.
     kCableActivate,
     kAndroidAccessory,
-    kCableV2Activate,
     kCableV2QRCode,
 
     // Authenticator Client PIN.
@@ -158,7 +157,9 @@ class AuthenticatorRequestDialogModel {
     using WindowsAPI = base::StrongAlias<class WindowsAPITag,
                                          bool /* unused, but cannot be void */>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
-    using Type = absl::variant<Transport, WindowsAPI, Phone>;
+    using OtherPhone = base::StrongAlias<class OtherPhoneTag,
+                                         bool /* unused, but cannot be void */>;
+    using Type = absl::variant<Transport, WindowsAPI, Phone, OtherPhone>;
 
     Mechanism(Type type,
               std::u16string name,
@@ -303,7 +304,7 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at step: kNotStarted, kMechanismSelection, and steps
   // where the other transports menu is shown, namely, kUsbInsertAndActivate,
   // kCableActivate.
-  void EnsureBleAdapterIsPoweredAndContinueWithCable();
+  void EnsureBleAdapterIsPoweredAndContinueWithStep(Step step);
 
   // Continues with the BLE/caBLE flow now that the Bluetooth adapter is
   // powered.
@@ -569,6 +570,9 @@ class AuthenticatorRequestDialogModel {
   // kCableActivate.
   void StartGuidedFlowForTransport(AuthenticatorTransport transport,
                                    size_t mechanism_index);
+
+  // Starts the flow for adding an unlisted phone by showing a QR code.
+  void StartGuidedFlowForOtherPhone(size_t mechanism_index);
 
   // Displays a resident-key warning if needed and then calls
   // |HideDialogAndDispatchToNativeWindowsApi|.
