@@ -5,6 +5,7 @@
 #ifndef SQL_TRANSACTION_H_
 #define SQL_TRANSACTION_H_
 
+#include "base/check.h"
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -88,6 +89,12 @@ class COMPONENT_EXPORT(SQL) Transaction {
   SEQUENCE_CHECKER(sequence_checker_);
 
   Database& database_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+#if DCHECK_IS_ON()
+  bool begin_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool commit_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool rollback_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+#endif  // DCHECK_IS_ON()
 
   // True between a successful Begin() and a Commit() / Rollback() call.
   bool is_active_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
