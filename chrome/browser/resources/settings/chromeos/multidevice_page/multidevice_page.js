@@ -111,10 +111,10 @@ Polymer({
 
     this.addWebUIListener(
         'settings.updateMultidevicePageContentData',
-        this.onPageContentDataChanged_.bind(this));
+        (data) => this.onPageContentDataChanged_(data));
 
     this.browserProxy_.getPageContentData().then(
-        this.onInitialPageContentDataFetched_.bind(this));
+        (data) => this.onInitialPageContentDataFetched_(data));
   },
 
   /**
