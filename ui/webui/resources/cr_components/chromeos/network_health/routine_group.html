@@ -29,10 +29,10 @@
     <network-health-container expanded="[[expanded]]" label="[[name]]"
         on-toggle-expanded="onToggleExpanded_">
       <span slot="header" >
-        <template is="dom-if" if="[[running]]">
+        <template is="dom-if" if="[[running_]]">
           <paper-spinner-lite active></paper-spinner-lite>
         </template>
-        <img class="routine-icon" hidden="[[!showGroupIcon]]"
+        <img class="routine-icon" hidden="[[!showGroupIcon_]]"
             src="[[getGroupIcon_(routines.*)]]">
       </span>
       <template is="dom-repeat" items="[[routines]]" as="routine"

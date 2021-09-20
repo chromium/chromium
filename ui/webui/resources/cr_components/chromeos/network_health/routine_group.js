@@ -43,20 +43,20 @@ Polymer({
 
     /**
      * Boolean flag if any routines in the group are running.
-     * @private {Boolean}
+     * @private {boolean}
      */
-    running: {
+    running_: {
       type: Boolean,
       computed: 'routinesRunning_(routines.*)',
     },
 
     /**
      * Boolean flag if icon representing the group result should be shown.
-     * @private {Boolean}
+     * @private {boolean}
      */
-    showGroupIcon: {
+    showGroupIcon_: {
       type: Boolean,
-      computed: 'showGroupIcon_(running, expanded)',
+      computed: 'computeShowGroupIcon_(running_, expanded)',
     },
   },
 
@@ -102,13 +102,11 @@ Polymer({
 
   /**
    * Determine if the group routine icon should be showing.
-   * @param {boolean} running
-   * @param {boolean} expanded
    * @return {boolean}
    * @private
    */
-  showGroupIcon_(running, expanded) {
-    return !running && !expanded;
+  computeShowGroupIcon_() {
+    return !this.running_ && !this.expanded;
   },
 
   /**
