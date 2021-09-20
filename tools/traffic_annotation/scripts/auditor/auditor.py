@@ -322,7 +322,7 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
   lines.insert(0, title)
   report = "\n".join(lines) + "\n"
 
-  file_path.write_text(report, "utf-8")
+  file_path.write_text(report, encoding="utf-8")
 
 
 class AuditorError:
@@ -948,7 +948,7 @@ class FileFilter:
 
   def __init__(self):
     self.git_files: List[Path] = []
-    self.git_file_for_testing: Optional[str] = None
+    self.git_file_for_testing: Optional[Path] = None
 
   def get_source_files(self, safe_list: SafeList, prefix: str) -> List[Path]:
     """Returns a filtered list of files in the prefix directory.
@@ -1008,8 +1008,7 @@ class FileFilter:
 
     if self.git_file_for_testing is not None:
       # Get list of files from git_list.txt (or similar).
-      with open(self.git_file_for_testing) as f:
-        lines = [l.rstrip() for l in f.readlines()]
+      lines = self.git_file_for_testing.read_text(encoding="utf-8").splitlines()
     else:
       # Get list of files from git.
       if platform.system() == "Windows":
@@ -1261,13 +1260,12 @@ class Exporter:
     assert current_platform in SUPPORTED_PLATFORMS
     self._current_platform = current_platform
 
-    with open(SRC_DIR / "chrome" / "VERSION") as f:
-      contents = f.read()
-      m = re.search(r'MAJOR=(\d+)', contents)
-      if not m:
-        raise ValueError(
-            "Unable to extract MAJOR=... version from chrome/VERSION")
-      self._current_milestone = int(m.group(1))
+    contents = (SRC_DIR / "chrome" / "VERSION").read_text(encoding="utf-8")
+    m = re.search(r'MAJOR=(\d+)', contents)
+    if not m:
+      raise ValueError(
+          "Unable to extract MAJOR=... version from chrome/VERSION")
+    self._current_milestone = int(m.group(1))
 
   def load_annotations_xml(self) -> None:
     """Loads annotations from annotations.xml into self.archive using
@@ -1503,7 +1501,7 @@ class Exporter:
     logger.info("Saving annotations to {}.".format(
         Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
     xml_str = self._generate_serialized_xml()
-    Exporter.ANNOTATIONS_XML_PATH.write_text(xml_str)
+    Exporter.ANNOTATIONS_XML_PATH.write_text(xml_str, encoding="utf-8")
 
   def get_deprecated_ids(self) -> List[UniqueId]:
     """Produces the list of deprecated unique ids. Requires that annotations.xml
@@ -1543,7 +1541,7 @@ class Exporter:
     logger.info("Computing required updates for {}.".format(
         Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
 
-    old_xml = Exporter.ANNOTATIONS_XML_PATH.read_text("utf-8")
+    old_xml = Exporter.ANNOTATIONS_XML_PATH.read_text(encoding="utf-8")
 
     new_xml = self._generate_serialized_xml()
 
@@ -1575,34 +1573,35 @@ class Auditor:
     self._safe_list = dict((t, []) for t in ExceptionType)
 
     # Ignore safe_list.txt while testing.
-    if self.file_filter.git_file_for_testing:
+    if self.file_filter.git_file_for_testing is not None:
       return self._safe_list
 
     logger.info("Parsing {}.".format(
         Auditor.SAFE_LIST_PATH.relative_to(SRC_DIR)))
-    with open(Auditor.SAFE_LIST_PATH) as f:
-      for line in f.readlines():
-        # Ignore comments and empty lines.
-        line = line.rstrip()
-        if not line or line.startswith("#"):
-          continue
 
-        # Expect a type, and at least 1 value on each line.
-        tokens = line.split(",")
-        assert len(tokens) >= 2, \
-               "Unexpected syntax in safe_list.txt, line: {}".format(line)
+    lines = Auditor.SAFE_LIST_PATH.read_text(encoding="utf-8").splitlines()
+    for line in lines:
+      # Ignore comments and empty lines.
+      line = line.rstrip()
+      if not line or line.startswith("#"):
+        continue
 
-        exception_type = ExceptionType(tokens[0])
-        valid_characters = "0123456789_abcdefghijklmnopqrstuvwxyz.*/:@"
-        for token in tokens[1:]:
-          token = token.strip()
-          # Convert the rest of the line into re.Patterns, marking dots as fixed
-          # characters and asterisks as wildcards.
-          assert all(c in valid_characters for c in token), \
-              "Unexpected character in safe_list.txt token: '{}'".format(token)
-          token = token.replace(".", "\\.")
-          token = token.replace("*", ".*")
-          self._safe_list[exception_type].append(re.compile(token))
+      # Expect a type, and at least 1 value on each line.
+      tokens = line.split(",")
+      assert len(tokens) >= 2, \
+              "Unexpected syntax in safe_list.txt, line: {}".format(line)
+
+      exception_type = ExceptionType(tokens[0])
+      valid_characters = "0123456789_abcdefghijklmnopqrstuvwxyz.*/:@"
+      for token in tokens[1:]:
+        token = token.strip()
+        # Convert the rest of the line into re.Patterns, marking dots as fixed
+        # characters and asterisks as wildcards.
+        assert all(c in valid_characters for c in token), \
+            "Unexpected character in safe_list.txt token: '{}'".format(token)
+        token = token.replace(".", "\\.")
+        token = token.replace("*", ".*")
+        self._safe_list[exception_type].append(re.compile(token))
 
     return self._safe_list
 
@@ -1647,7 +1646,7 @@ class Auditor:
     files = self.file_filter.get_source_files(safe_list, "")
 
     # Skip compdb generation while testing to speed up tests.
-    if self.file_filter.git_file_for_testing:
+    if self.file_filter.git_file_for_testing is not None:
       compdb_files = None
     else:
       logger.info("Generating compile_commands.json")

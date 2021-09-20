@@ -250,7 +250,7 @@ def extract_annotations(file_path: Path):
 
   language = LANGUAGE_MAPPING[file_path.suffix]
 
-  contents = file_path.read_text()
+  contents = file_path.read_text(encoding="utf-8")
 
   defs = []
 
@@ -323,12 +323,12 @@ def extract_annotations(file_path: Path):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--options-file',
-      help='optional file to read options from')
+  parser.add_argument('--options-file',
+                      type=Path,
+                      help='optional file to read options from')
   args, argv = parser.parse_known_args()
-  if args.options_file:
-    argv = open(args.options_file).read().split()
+  if args.options_file is not None:
+    argv = args.options_file.read_text(encoding="utf-8").split()
 
   parser.add_argument(
       '--build-path',
