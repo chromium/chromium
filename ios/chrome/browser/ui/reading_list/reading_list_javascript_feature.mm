@@ -179,16 +179,18 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
 
   ReadingListModel* model = ReadingListModelFactory::GetForBrowserState(
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
-  const ReadingListEntry* entry = model->GetEntryByURL(url.value());
-  if (entry) {
-    // Update an existing Reading List entry with the estimated time to read.
-    // Either way, return early to not show a Messages banner for an existing
-    // Reading List entry.
-    if (entry->EstimatedReadTime().is_zero()) {
-      model->SetEstimatedReadTime(
-          url.value(), base::TimeDelta::FromMinutes(estimated_read_time));
+  if (model->loaded()) {
+    const ReadingListEntry* entry = model->GetEntryByURL(url.value());
+    if (entry) {
+      // Update an existing Reading List entry with the estimated time to read.
+      // Either way, return early to not show a Messages banner for an existing
+      // Reading List entry.
+      if (entry->EstimatedReadTime().is_zero()) {
+        model->SetEstimatedReadTime(
+            url.value(), base::TimeDelta::FromMinutes(estimated_read_time));
+      }
+      return;
     }
-    return;
   }
   if (!web_state->IsVisible()) {
     // Do not show the Messages banner if the WebState is not visible, but delay
