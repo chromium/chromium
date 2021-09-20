@@ -21,4 +21,18 @@
         RuntimeEnabled=FileSystemAccessAccessHandle,
         Measure
     ] Promise<FileSystemSyncAccessHandle> createSyncAccessHandle();
+
+    [
+        CallWith=ScriptState,
+        RuntimeEnabled=FileSystemAccessAccessHandle
+    ]  Promise<void> rename(USVString new_entry_name);
+    [
+        CallWith=ScriptState,
+        RuntimeEnabled=FileSystemAccessAccessHandle
+    ]  Promise<void> move(FileSystemDirectoryHandle destination_directory);
+    [
+        CallWith=ScriptState,
+        RuntimeEnabled=FileSystemAccessAccessHandle
+    ]  Promise<void> move(FileSystemDirectoryHandle destination_directory,
+                          USVString new_entry_name);
 };
