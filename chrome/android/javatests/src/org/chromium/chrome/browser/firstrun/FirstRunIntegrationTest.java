@@ -43,6 +43,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Promise;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -84,6 +85,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -101,6 +103,8 @@ public class FirstRunIntegrationTest {
     private static final String FOO_URL = "https://foo.com";
     private static final long ACTIVITY_WAIT_LONG_MS = TimeUnit.SECONDS.toMillis(10);
     private static final String TEST_ENROLLMENT_TOKEN = "enrollment-token";
+    private static final String FRE_PROGRESS_MAIN_INTENT_HISTOGRAM =
+            "MobileFre.Progress.MainIntent";
 
     @Rule
     public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
@@ -590,6 +594,87 @@ public class FirstRunIntegrationTest {
 
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(!testCase.showSigninPromo());
         when(mSigninManagerMock.isSigninSupported()).thenReturn(testCase.showSigninPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_ProgressHistogramRecordedOnlyOnce() throws Exception {
+        initializePreferences(new FirstRunPagesTestCase()
+                                      .withDataSaverPromo()
+                                      .withSearchPromo()
+                                      .withSigninPromo());
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one, go back until initial page, and
+        // then complete first run.
+        new FirstRunNavigationHelper(firstRunActivity)
+                .ensurePagesCreationSucceeded()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine()
+                .ensureSigninPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDataSaverPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureTermsOfServiceIsCurrentPage()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+
+        checkRecordedProgressSteps(BitSet.valueOf(new long[] {
+                FirstRunActivity.FirstRunProgressStep.STARTED,
+                FirstRunActivity.FirstRunProgressStep.WELCOME_SHOWN,
+                FirstRunActivity.FirstRunProgressStep.DATA_SAVER_SHOWN,
+                FirstRunActivity.FirstRunProgressStep.SIGNIN_SHOWN,
+                FirstRunActivity.FirstRunProgressStep.COMPLETED_SIGNED_IN,
+                FirstRunActivity.FirstRunProgressStep.DEFAULT_SEARCH_ENGINE_SHOWN,
+        }));
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_ProgressHistogramRecording_NoPromos() throws Exception {
+        initializePreferences(new FirstRunPagesTestCase());
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        new FirstRunNavigationHelper(firstRunActivity)
+                .ensurePagesCreationSucceeded()
+                .acceptTermsOfService();
+
+        waitForActivity(ChromeTabbedActivity.class);
+
+        checkRecordedProgressSteps(BitSet.valueOf(new long[] {
+                FirstRunActivity.FirstRunProgressStep.STARTED,
+                FirstRunActivity.FirstRunProgressStep.WELCOME_SHOWN,
+                FirstRunActivity.FirstRunProgressStep.COMPLETED_NOT_SIGNED_IN,
+        }));
+    }
+
+    private void checkRecordedProgressSteps(BitSet bucketsRecorded) {
+        for (int bucket = FirstRunActivity.FirstRunProgressStep.STARTED;
+                bucket < FirstRunActivity.FirstRunProgressStep.MAX; ++bucket) {
+            int recordedValue = RecordHistogram.getHistogramValueCountForTesting(
+                    FRE_PROGRESS_MAIN_INTENT_HISTOGRAM, bucket);
+            if (bucketsRecorded.get(bucket)) {
+                Assert.assertEquals(
+                        String.format(
+                                "Histogram <%s>, bucket <%d> should be recorded exactly once.",
+                                FRE_PROGRESS_MAIN_INTENT_HISTOGRAM, bucket),
+                        1, recordedValue);
+            } else {
+                Assert.assertEquals(
+                        String.format("Histogram <%s>, bucket <%d> should not be recorded.",
+                                FRE_PROGRESS_MAIN_INTENT_HISTOGRAM, bucket),
+                        0, recordedValue);
+            }
+        }
     }
 
     @Test
