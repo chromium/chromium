@@ -1925,7 +1925,6 @@ component("ash") {
     "//ash/login/resources:resources_grit",
     "//ash/public/cpp/ambient/proto",
     "//ash/quick_pair",
-    "//ash/quick_pair/feature_status_tracker",
     "//ash/quick_pair/keyed_service",
     "//ash/quick_pair/repository",
     "//ash/quick_pair/ui",
@@ -2083,7 +2082,6 @@ component("ash") {
     "//ash/app_list",
     "//ash/assistant/ui",
     "//ash/quick_pair/ui",
-    "//ash/quick_pair/feature_status_tracker",
   ]
 
   if (enable_cros_ambient_mode_backend) {
