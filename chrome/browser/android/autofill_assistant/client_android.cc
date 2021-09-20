@@ -22,6 +22,7 @@
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -55,6 +56,11 @@ namespace {
 // A direct action that corresponds to pressing the close or cancel button on
 // the UI.
 const char* const kCancelActionName = "cancel";
+
+// Strings for Synthetic Field Trials.
+const char kAutofillAssistantTtsTrialName[] = "AutofillAssistantEnableTtsParam";
+const char kEnabledGroupName[] = "Enabled";
+const char kDisabledGroupName[] = "Disabled";
 
 }  // namespace
 
@@ -137,6 +143,13 @@ bool ClientAndroid::Start(
   if (joverlay_coordinator) {
     AttachUI(joverlay_coordinator);
   }
+
+  // Register TTS Synthetic Field Trial.
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      kAutofillAssistantTtsTrialName,
+      trigger_context->GetScriptParameters().GetEnableTts().value_or(false)
+          ? kEnabledGroupName
+          : kDisabledGroupName);
 
   DCHECK(!trigger_context->GetDirectAction());
   if (VLOG_IS_ON(2)) {
