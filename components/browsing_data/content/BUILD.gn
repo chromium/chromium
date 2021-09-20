@@ -50,7 +50,6 @@ static_library("content") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "appcache_helper_unittest.cc",
     "browsing_data_helper_unittest.cc",
     "cache_storage_helper_unittest.cc",
     "cookie_helper_unittest.cc",
