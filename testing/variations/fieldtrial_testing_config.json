@@ -2872,38 +2872,6 @@
             ]
         }
     ],
-    "DefaultChatWebApp": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DefaultChatWebApp"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DefaultMeetWebApp": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DefaultMeetWebApp"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
@@ -3097,37 +3065,6 @@
                     "enable_features": [
                         "IPH_DesktopSnoozeFeature",
                         "IPH_DesktopTabGroupsNewGroup"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DesktopWebAppInstallIconExperiment": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithDownloadIcon",
-                    "params": {
-                        "shape": "download"
-                    },
-                    "enable_features": [
-                        "InstallIconExperiment"
-                    ]
-                },
-                {
-                    "name": "EnabledWithDownloadToDeviceIcon",
-                    "params": {
-                        "shape": "downloadToDevice"
-                    },
-                    "enable_features": [
-                        "InstallIconExperiment"
                     ]
                 }
             ]
@@ -5339,22 +5276,6 @@
             ]
         }
     ],
-    "MobileIdentityConsistency": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MobileIdentityConsistency"
-                    ]
-                }
-            ]
-        }
-    ],
     "MobileIdentityConsistencyPromos": [
         {
             "platforms": [
@@ -5538,27 +5459,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NtpRealboxSuggestionAnswers"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NtpWebUIDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisableSearchSuggestChips",
-                        "IframeOneGoogleBar",
-                        "NtpWebUI"
                     ]
                 }
             ]
@@ -8200,21 +8100,6 @@
             ]
         }
     ],
-    "SimplifySignOutIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SimplifySignOutIOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "SmartSuggestionForLargeDownloads": [
         {
             "platforms": [
@@ -8948,27 +8833,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UseInProgressDownloadManagerForDownloadService"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseOzonePlatform": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled_20210609",
-                    "disable_features": [
-                        "UseOzonePlatform"
-                    ]
-                },
-                {
-                    "name": "Enabled_20210609",
-                    "enable_features": [
-                        "UseOzonePlatform"
                     ]
                 }
             ]
