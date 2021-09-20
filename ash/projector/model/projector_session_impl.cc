@@ -22,7 +22,6 @@ void ProjectorSessionImpl::Stop() {
   DCHECK(active_);
 
   active_ = false;
-  screencast_container_path_.reset();
   NotifySessionActiveStateChanged(active_);
 }
 
