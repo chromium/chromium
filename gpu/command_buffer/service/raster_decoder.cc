@@ -1218,6 +1218,9 @@ bool RasterDecoderImpl::MakeCurrent() {
   // Rebind textures if the service ids may have changed.
   RestoreAllExternalTextureBindingsIfNeeded();
 
+  // We're going to use skia, so make sure we reset context afterwards.
+  shared_context_state_->set_need_context_state_reset(true);
+
   return true;
 }
 
@@ -2452,8 +2455,6 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALSkia(
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
 
-  shared_context_state_->set_need_context_state_reset(true);
-
   // Allow uncleared access, as we manually handle clear tracking.
   std::unique_ptr<SharedImageRepresentationSkia::ScopedWriteAccess>
       dest_scoped_access = dest_shared_image->BeginScopedWriteAccess(
@@ -3502,7 +3503,6 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
 
   DCHECK(locked_handles_.empty());
   DCHECK(!raster_canvas_);
-  shared_context_state_->set_need_context_state_reset(true);
 
   SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
       /*gpu_compositing=*/true, shared_image_->format());
@@ -3617,7 +3617,6 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
     return;
   }
   DCHECK(transfer_cache());
-  shared_context_state_->set_need_context_state_reset(true);
 
   if (font_shm_size > 0) {
     // Deserialize fonts before raster.
@@ -3717,7 +3716,6 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
     return;
   }
 
-  shared_context_state_->set_need_context_state_reset(true);
   raster_canvas_ = nullptr;
 
   if (use_ddl_in_current_raster_session_) {
@@ -3825,9 +3823,6 @@ void RasterDecoderImpl::DoCreateTransferCacheEntryINTERNAL(
   GrDirectContext* context_for_entry =
       cc::ServiceTransferCacheEntry::UsesGrContext(entry_type) ? gr_context()
                                                                : nullptr;
-  if (context_for_entry)
-    shared_context_state_->set_need_context_state_reset(true);
-
   if (!transfer_cache()->CreateLockedEntry(
           ServiceTransferCache::EntryKey(raster_decoder_id_, entry_type,
                                          entry_id),

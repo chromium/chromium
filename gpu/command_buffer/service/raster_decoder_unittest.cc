@@ -417,6 +417,7 @@ TEST_F(RasterDecoderOOPTest, StateRestoreAcrossDecoders) {
   // First decoder receives a skia command requiring context state reset.
   auto decoder1 = CreateDecoder();
   EXPECT_FALSE(context_state_->need_context_state_reset());
+  decoder1->MakeCurrent();
   decoder1->SetUpForRasterCHROMIUMForTest();
   cmds::EndRasterCHROMIUM end_raster_cmd;
   end_raster_cmd.Init();
@@ -426,6 +427,7 @@ TEST_F(RasterDecoderOOPTest, StateRestoreAcrossDecoders) {
   // Another decoder receives a command which does not require consistent state,
   // it should be processed without state restoration.
   auto decoder2 = CreateDecoder();
+  decoder2->MakeCurrent();
   decoder2->SetUpForRasterCHROMIUMForTest();
   EXPECT_FALSE(error::IsError(ExecuteCmd(decoder2.get(), end_raster_cmd)));
   EXPECT_TRUE(context_state_->need_context_state_reset());
