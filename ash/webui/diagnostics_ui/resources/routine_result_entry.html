@@ -127,5 +127,8 @@
         <iron-icon icon="cr:open-in-new"></iron-icon>
       </a>
     </span>
+    <span class="routineLinkContainer" hidden$="[[!item.failedTest]]">
+      [[computeFailedTestText_(item.failedTest)]]
+    </span>
   </div>
 </div>

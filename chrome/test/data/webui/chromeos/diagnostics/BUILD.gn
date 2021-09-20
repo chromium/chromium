@@ -36,6 +36,7 @@ js_type_check("closure_compile") {
     ":overview_card_test",
     ":percent_bar_chart_test",
     ":realtime_cpu_chart_test",
+    ":routine_group_test",
     ":routine_list_executor_test",
     ":routine_result_entry_test",
     ":routine_result_list_test",
@@ -54,6 +55,7 @@ js_library("battery_status_card_test") {
     "//ash/webui/diagnostics_ui/resources:battery_status_card",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
+    "//ash/webui/diagnostics_ui/resources:routine_group",
     "//ash/webui/diagnostics_ui/resources:routine_section",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -127,10 +129,12 @@ js_library("diagnostics_test_utils") {
     "//ash/webui/diagnostics_ui/resources:battery_status_card",
     "//ash/webui/diagnostics_ui/resources:cpu_card",
     "//ash/webui/diagnostics_ui/resources:data_point",
+    "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
     "//ash/webui/diagnostics_ui/resources:memory_card",
     "//ash/webui/diagnostics_ui/resources:percent_bar_chart",
     "//ash/webui/diagnostics_ui/resources:realtime_cpu_chart",
+    "//ash/webui/diagnostics_ui/resources:routine_group",
     "//ash/webui/diagnostics_ui/resources:routine_result_entry",
     "//ash/webui/diagnostics_ui/resources:routine_result_list",
     "//ash/webui/diagnostics_ui/resources:routine_section",
@@ -309,6 +313,16 @@ js_library("realtime_cpu_chart_test") {
   ]
 }
 
+js_library("routine_group_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/diagnostics_ui/resources:diagnostics_types",
+    "//ash/webui/diagnostics_ui/resources:routine_group",
+    "//ash/webui/diagnostics_ui/resources:routine_list_executor",
+    "//ash/webui/diagnostics_ui/resources:routine_result_entry",
+  ]
+}
+
 js_library("routine_list_executor_test") {
   deps = [
     "../..:chai_assert",
@@ -325,6 +339,7 @@ js_library("routine_result_entry_test") {
     "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_system_routine_controller",
+    "//ash/webui/diagnostics_ui/resources:routine_group",
     "//ash/webui/diagnostics_ui/resources:routine_list_executor",
     "//ash/webui/diagnostics_ui/resources:routine_result_entry",
   ]
@@ -337,6 +352,7 @@ js_library("routine_result_list_test") {
     "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_system_routine_controller",
+    "//ash/webui/diagnostics_ui/resources:routine_group",
     "//ash/webui/diagnostics_ui/resources:routine_list_executor",
     "//ash/webui/diagnostics_ui/resources:routine_result_entry",
     "//ash/webui/diagnostics_ui/resources:routine_result_list",
@@ -351,6 +367,7 @@ js_library("routine_section_test") {
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_system_routine_controller",
     "//ash/webui/diagnostics_ui/resources:mojo_interface_provider",
+    "//ash/webui/diagnostics_ui/resources:routine_group",
     "//ash/webui/diagnostics_ui/resources:routine_list_executor",
     "//ash/webui/diagnostics_ui/resources:routine_result_entry",
     "//ash/webui/diagnostics_ui/resources:routine_section",
@@ -368,6 +385,7 @@ js_library("system_page_test") {
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",
     "//ash/webui/diagnostics_ui/resources:fake_data",
     "//ash/webui/diagnostics_ui/resources:fake_system_data_provider",
+    "//ash/webui/diagnostics_ui/resources:routine_group",
     "//ash/webui/diagnostics_ui/resources:routine_list_executor",
     "//ash/webui/diagnostics_ui/resources:system_page",
   ]

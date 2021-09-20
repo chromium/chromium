@@ -29,6 +29,7 @@ import {networkTroubleshootingTestSuite} from './network_troubleshooting_test.js
 import {overviewCardTestSuite} from './overview_card_test.js';
 import {percentBarChartTestSuite} from './percent_bar_chart_test.js';
 import {realtimeCpuChartTestSuite} from './realtime_cpu_chart_test.js';
+import {routineGroupTestSuite} from './routine_group_test.js';
 import {fakeRoutineListExecutorTestSuite} from './routine_list_executor_test.js';
 import {routineResultEntryTestSuite} from './routine_result_entry_test.js';
 import {routineResultListTestSuite} from './routine_result_list_test.js';
@@ -75,6 +76,7 @@ runSuite('NetworkTroubleshooting', networkTroubleshootingTestSuite, 'network');
 runSuite('OverviewCard', overviewCardTestSuite);
 runSuite('PercentBarChart', percentBarChartTestSuite);
 runSuite('RealtimeCpuChart', realtimeCpuChartTestSuite);
+runSuite('RoutineGroup', routineGroupTestSuite, 'network');
 runSuite('RoutineListExecutor', fakeRoutineListExecutorTestSuite);
 runSuite('RoutineResultEntry', routineResultEntryTestSuite);
 runSuite('RoutineResultList', routineResultListTestSuite);

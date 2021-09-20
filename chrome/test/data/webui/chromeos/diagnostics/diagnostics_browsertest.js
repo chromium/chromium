@@ -103,6 +103,7 @@ const debug_suites_list = [
   'OverviewCard',
   'PercentBarChart',
   'RealtimeCpuChart',
+  'RoutineGroup',
   'RoutineListExecutor',
   'RoutineResultEntry',
   'RoutineResultList',

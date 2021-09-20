@@ -1004,6 +1004,18 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_EID_LABEL" desc="The label for a Cellular network's EID.">
         EID
       </message>
+      <message name="IDS_DIAGNOSTICS_FAILED_TEST_TEXT" desc="The text that displays the test that failed.">
+        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> test failed
+      </message>
+      <message name="IDS_DIAGNOSTICS_LOCAL_NETWORK_GROUP_LABEL" desc="The label for the group of tests related to the device's local network.">
+        Local Network
+      </message>
+      <message name="IDS_DIAGNOSTICS_NAME_RESOLUTION_GROUP_LABEL" desc="The label for the group of tests  about the device's network DNS (domain name servers).">
+        Name Resolution
+      </message>
+      <message name="IDS_DIAGNOSTICS_INTERNET_CONNECTIVITY_GROUP_LABEL" desc="The label for the group of tests related to internet connectivity.">
+        Internet Connectivity
+      </message>
 
       <!-- Input diagnostics -->
       <message name="IDS_INPUT_DIAGNOSTICS_RUN_TEST" desc="Text for the button that runs a test for a specific input device">

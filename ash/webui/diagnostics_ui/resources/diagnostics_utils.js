@@ -4,7 +4,9 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {LockType, NetworkState, NetworkType, RoutineType} from './diagnostics_types.js';
+
+import {LockType, NetworkState, NetworkType, RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
+import {RoutineGroup} from './routine_group.js';
 
 /**
  * Converts a KiB storage value to GiB and returns a fixed-point string
@@ -104,40 +106,60 @@ export function getLockType(lockType) {
   }
 }
 
+
 /**
  * @param {!NetworkType} type
- * @return {!Array<!RoutineType>}
+ * @param {boolean} isArcEnabled
+ * @return {!Array<!RoutineGroup>}
  */
-export function getRoutinesByNetworkType(type) {
-  // TODO(ashleydp): Update function to support routine groups.
-  /** @type {!Array<!RoutineType>} */
-  let networkRoutines = [
-    RoutineType.kCaptivePortal,
-    RoutineType.kDnsLatency,
-    RoutineType.kDnsResolution,
-    RoutineType.kDnsResolverPresent,
-    RoutineType.kGatewayCanBePinged,
-    RoutineType.kHttpFirewall,
-    RoutineType.kHttpsFirewall,
-    RoutineType.kHttpsLatency,
-    RoutineType.kLanConnectivity,
+export function getRoutineGroups(type, isArcEnabled) {
+  let localNetworkGroup = new RoutineGroup(
+      [
+        RoutineType.kGatewayCanBePinged,
+        RoutineType.kLanConnectivity,
+      ],
+      'localNetworkGroupLabel');
+
+  let nameResolutionGroup = new RoutineGroup(
+      [
+        RoutineType.kDnsResolverPresent,
+        RoutineType.kDnsResolution,
+        RoutineType.kDnsLatency,
+      ],
+      'nameResolutionGroupLabel');
+
+  let wifiGroup = new RoutineGroup(
+      [
+        RoutineType.kSignalStrength,
+        RoutineType.kCaptivePortal,
+        RoutineType.kHasSecureWiFiConnection,
+      ],
+      'wifiGroupLabel');
+  let internetConnectivityGroup = new RoutineGroup(
+      [
+        RoutineType.kHttpsFirewall,
+        RoutineType.kHttpFirewall,
+        RoutineType.kHttpsLatency,
+      ],
+      'internetConnectivityGroupLabel');
+
+  if (isArcEnabled) {
+    // Add ARC routines to their corresponding groups.
+    nameResolutionGroup.routines.push(RoutineType.kArcDnsResolution);
+    internetConnectivityGroup.routines.push(RoutineType.kArcPing);
+    internetConnectivityGroup.routines.push(RoutineType.kArcHttp);
+  }
+
+  let groupsToAdd = type === NetworkType.kWiFi ?
+      [wifiGroup, internetConnectivityGroup] :
+      [internetConnectivityGroup];
+
+  let networkRoutineGroups = [
+    localNetworkGroup,
+    nameResolutionGroup,
   ];
 
-  if (loadTimeData.getBoolean('enableArcNetworkDiagnostics')) {
-    networkRoutines = networkRoutines.concat([
-      RoutineType.kArcHttp,
-      RoutineType.kArcPing,
-      RoutineType.kArcDnsResolution
-    ]);
-  }
-
-  // Add wifi-only routines to common networking routine array.
-  if (type === NetworkType.kWiFi) {
-    networkRoutines.push(RoutineType.kHasSecureWiFiConnection);
-    networkRoutines.push(RoutineType.kSignalStrength);
-  }
-
-  return networkRoutines;
+  return networkRoutineGroups.concat(groupsToAdd);
 }
 
 /**

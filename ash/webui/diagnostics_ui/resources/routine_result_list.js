@@ -9,7 +9,8 @@ import './routine_result_entry.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {RoutineType} from './diagnostics_types.js';
-import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js'
+import {RoutineGroup} from './routine_group.js';
+import {ResultStatusItem} from './routine_list_executor.js'
 
 /**
  * @fileoverview
@@ -21,7 +22,7 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
-    /** @private {!Array<!ResultStatusItem>} */
+    /** @private {!Array<RoutineGroup|ResultStatusItem>} */
     results_: {
       type: Array,
       value: () => [],
@@ -38,19 +39,27 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @type {boolean} */
+    usingRoutineGroups: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
    * Resets the list and creates a new list with all routines in the unstarted
    * state. Called by the parent RoutineResultSection when the user starts
    * a test run.
-   * @param {!Array<!RoutineType>} routines
+   * @param {!Array<RoutineGroup|RoutineType>} routines
    */
   initializeTestRun(routines) {
     this.clearRoutines();
-    routines.forEach((routine) => {
-      this.addRoutine_(routine);
-    });
+    if (this.usingRoutineGroups) {
+      this.set('results_', routines);
+    } else {
+      this.addRoutines_(routines);
+    }
   },
 
   /**
@@ -61,18 +70,19 @@ Polymer({
   },
 
   /**
-   * Add a new unstarted routine to the end of the list.
-   * @param {!RoutineType} routine
-   * @private
+   * Creates a list of unstarted routines.
+   * @param {!Array<!RoutineType>} routines
    */
-  addRoutine_(routine) {
-    this.push('results_', new ResultStatusItem(routine));
+  addRoutines_(routines) {
+    for (let routine of routines) {
+      this.push('results_', new ResultStatusItem(routine));
+    }
   },
 
   /**
    * Updates the routine's status in the results_ list.
    * @param {number} index
-   * @param {!ResultStatusItem} status
+   * @param {RoutineGroup|ResultStatusItem} status
    * @private
    */
   updateRoutineStatus_(index, status) {
@@ -87,22 +97,28 @@ Polymer({
    */
   onStatusUpdate(status) {
     assert(this.results_.length > 0);
-    this.results_.forEach((result, index) => {
-      if (result.routine == status.routine) {
-        this.updateRoutineStatus_(index, status);
+    this.results_.forEach((result, idx) => {
+      if (this.usingRoutineGroups && result.routines.includes(status.routine)) {
+        result.setStatus(status);
+        this.updateRoutineStatus_(idx, result.clone());
         return;
       }
-    });
+
+      if (status.routine === result.routine) {
+        this.updateRoutineStatus_(idx, status);
+        return;
+      }
+    })
   },
 
   /**
    * @protected
-   * @param {!ResultStatusItem} item
+   * @param {{path: string, value: (RoutineGroup|ResultStatusItem)}} item
    * @return {boolean}
    */
-  shouldHideVerticalLines_(item) {
+  shouldHideVerticalLines_({value}) {
     return this.hideVerticalLines ||
-        item === this.results_[this.results_.length - 1];
+        value === this.results_[this.results_.length - 1];
   },
 
   /** @override */

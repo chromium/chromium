@@ -10,11 +10,13 @@ import './network_info.js';
 import './routine_section.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, RoutineType} from './diagnostics_types.js';
-import {getNetworkState, getNetworkType, getRoutinesByNetworkType} from './diagnostics_utils.js';
+import {getNetworkState, getNetworkType, getRoutineGroups} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
+import {RoutineGroup} from './routine_group.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
 
 
@@ -48,8 +50,8 @@ Polymer({
       notify: true,
     },
 
-    /** @private {!Array<!RoutineType>} */
-    routines_: {
+    /** @private {!Array<!RoutineGroup>} */
+    routineGroups_: {
       type: Array,
       value: () => [],
     },
@@ -138,7 +140,8 @@ Polymer({
     this.macAddress_ = network.macAddress || '';
 
     if (this.testSuiteStatus === TestSuiteStatus.kNotRunning) {
-      this.routines_ = getRoutinesByNetworkType(network.type);
+      let isArcEnabled = loadTimeData.getBoolean('enableArcNetworkDiagnostics');
+      this.routineGroups_ = getRoutineGroups(network.type, isArcEnabled);
       this.getRoutineSectionElem_().runTests();
     }
 
@@ -181,7 +184,7 @@ Polymer({
       return;
     }
 
-    if (this.routines_.length > 0) {
+    if (this.routineGroups_.length > 0) {
       this.getRoutineSectionElem_().runTests();
     }
   },

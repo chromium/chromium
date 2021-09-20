@@ -41,6 +41,7 @@ js_type_check("closure_compile_module") {
     ":overview_card",
     ":percent_bar_chart",
     ":realtime_cpu_chart",
+    ":routine_group",
     ":routine_list_executor",
     ":routine_result_entry",
     ":routine_result_list",
@@ -78,6 +79,7 @@ js_library("connectivity_card") {
   deps = [
     ":ip_config_info_drawer",
     ":network_info",
+    ":routine_group",
     ":routine_section",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -304,12 +306,20 @@ js_library("realtime_cpu_chart") {
   externs_list = [ "../../../../third_party/d3/src/externs.js" ]
 }
 
+js_library("routine_group") {
+  deps = [
+    ":routine_list_executor",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
 js_library("routine_list_executor") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("routine_result_entry") {
   deps = [
+    ":routine_group",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
@@ -318,6 +328,7 @@ js_library("routine_result_entry") {
 
 js_library("routine_result_list") {
   deps = [
+    ":routine_group",
     ":routine_list_executor",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -326,6 +337,7 @@ js_library("routine_result_list") {
 js_library("routine_section") {
   deps = [
     ":mojo_interface_provider",
+    ":routine_group",
     ":routine_result_list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",

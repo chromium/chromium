@@ -12,6 +12,7 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
+import {RoutineGroup} from './routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
 import {BadgeType} from './text_badge.js';
 
@@ -128,7 +129,7 @@ export function getSimpleResult(result) {
 
 /**
  * @fileoverview
- * 'routine-result-entry' shows the status of a single test routine.
+ * 'routine-result-entry' shows the status of a single test routine or group.
  */
 Polymer({
   is: 'routine-result-entry',
@@ -136,7 +137,7 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
-    /** @type {!ResultStatusItem} */
+    /** @type {RoutineGroup|ResultStatusItem} */
     item: {
       type: Object,
     },
@@ -144,13 +145,13 @@ Polymer({
     /** @private */
     routineType_: {
       type: String,
-      computed: 'getRunningRoutineString_(item.routine)',
+      computed: 'getRunningRoutineString_(item.*)',
     },
 
     /** @protected */
     routineLink_: {
       type: String,
-      computed: 'getRoutineLink_(item.routine)',
+      computed: 'getRoutineLink_(item.*)',
     },
 
     /** @protected {!BadgeType} */
@@ -176,9 +177,15 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @type {boolean} */
+    usingRoutineGroups: {
+      type: Boolean,
+      value: false,
+    },
   },
 
-  observers: ['entryStatusChanged_(item.progress, item.result)'],
+  observers: ['entryStatusChanged_(item.*)'],
 
   /** @override */
   attached() {
@@ -187,21 +194,25 @@ Polymer({
 
   /**
    * Get the localized string name for the routine.
-   * @param {!RoutineType} routine
    * @return {string}
    */
-  getRunningRoutineString_(routine) {
-    return loadTimeData.getStringF('routineEntryText', getRoutineType(routine));
+  getRunningRoutineString_() {
+    if (this.usingRoutineGroups) {
+      return loadTimeData.getString(this.item.groupName);
+    }
+
+    return loadTimeData.getStringF(
+        'routineEntryText', getRoutineType(this.item.routine));
   },
 
   /**
    * Get routine's help/info link from lookup function
-   * @param {!RoutineType} routine
    * @return {string}
    * @private
    */
-  getRoutineLink_(routine) {
-    return lookupLinkForRoutine(routine);
+  getRoutineLink_() {
+    // TODO(michaelcheco): Use |lookupLinkForRoutine| to get correct links.
+    return this.usingRoutineGroups ? '#' : '';
   },
 
   /**
@@ -225,9 +236,11 @@ Polymer({
         break;
       case ExecutionProgress.kCompleted:
         this.testCompleted_ = true;
-        const testPassed = this.item.result &&
-            getSimpleResult(this.item.result) ===
-                StandardRoutineResult.kTestPassed;
+        const testPassed = this.usingRoutineGroups ?
+            !this.item.failedTest :
+            (this.item.result &&
+             getSimpleResult(this.item.result) ===
+                 StandardRoutineResult.kTestPassed);
         const badgeType = testPassed ? BadgeType.SUCCESS : BadgeType.ERROR;
         const badgeText = loadTimeData.getString(
             testPassed ? 'testSucceededBadgeText' : 'testFailedBadgeText');
@@ -288,5 +301,17 @@ Polymer({
    */
   shouldHideLines_() {
     return this.hideVerticalLines || !this.testCompleted_;
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeFailedTestText_() {
+    if (!this.usingRoutineGroups || !this.item.failedTest) {
+      return '';
+    }
+
+    return loadTimeData.getStringF('routineFailedText', this.item.failedTest);
   },
 });
