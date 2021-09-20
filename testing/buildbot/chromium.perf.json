@@ -1706,13 +1706,12 @@
           "ignore_task_failure": false,
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "shards": 1
         },
         "trigger_script": {
           "args": [
             "--multiple-dimension-script-verbose",
-            "True",
-            "--use-dynamic-shards"
+            "True"
           ],
           "requires_simultaneous_shard_dispatch": true,
           "script": "//testing/trigger_scripts/perf_device_trigger.py"
