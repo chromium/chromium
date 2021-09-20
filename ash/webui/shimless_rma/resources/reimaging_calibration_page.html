@@ -1,24 +1,26 @@
 <style include="cr-shared-style shimless-rma-shared">
   iron-icon {
-    width: 300px;
     height: 200px;
+    width: 300px;
   }
 </style>
 
 <base-page orientation="column">
   <div slot="header">
-    <!-- TODO(joonbug): update for i18n -->
-    <h1>Calibrate the device's accelerometer</h1>
-    <div id="preCalibration" hidden$="[[calibrationObserverReceiver_]]">
-      <span>Please place the device on a flat surface before proceeding</span>
-    </div>
-    <div id="calibration" hidden$="[[!calibrationObserverReceiver_]]">
-      <span>Please wait while accelerometer is calibrated</span>
-    </div>
-    <span hidden$="[[!calibrationComplete_]]">Completed</span>
+    <!-- TODO(gavindodd): update for i18n -->
+    <h1>Calibrate device components</h1>
   </div>
   <div slot="body">
-    <!-- TODO(joonbug): Replace with accelerometer calibration image -->
-    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
+    <div>
+      <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
+        <calibration-component-chip id="[[component.id]]"
+          skip="{{component.skip}}"
+          completed="{{component.completed}}"
+          failed$="[[component.failed]]"
+          disabled$="[[component.disabled]]"
+          component-name="[[component.name]]">
+        </calibration-component-chip>
+      </template>
+    </div>
   </div>
 </base-page>

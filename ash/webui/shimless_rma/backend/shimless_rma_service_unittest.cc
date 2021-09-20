@@ -1916,6 +1916,23 @@ TEST_F(ShimlessRmaServiceTest, StartCalibration) {
       CreateStateReply(rmad::RmadState::kDeviceDestination,
                        rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kCheckCalibration);
+        EXPECT_EQ(2, state.check_calibration().components_size());
+        EXPECT_EQ(state.check_calibration().components(0).component(),
+                  rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
+        EXPECT_EQ(state.check_calibration().components(0).status(),
+                  rmad::CalibrationComponentStatus::RMAD_CALIBRATION_WAITING);
+        // Progress passed to rmad should always be zero.
+        EXPECT_EQ(state.check_calibration().components(0).progress(), 0.0);
+        EXPECT_EQ(state.check_calibration().components(1).component(),
+                  rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
+        EXPECT_EQ(state.check_calibration().components(1).status(),
+                  rmad::CalibrationComponentStatus::RMAD_CALIBRATION_SKIP);
+        // Progress passed to rmad should always be zero.
+        EXPECT_EQ(state.check_calibration().components(1).progress(), 0.0);
+      });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
       [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
@@ -1925,9 +1942,21 @@ TEST_F(ShimlessRmaServiceTest, StartCalibration) {
       }));
   run_loop.RunUntilIdle();
 
-  shimless_rma_provider_->StartCalibration(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
-          rmad::RmadErrorCode error) {
+  std::vector<rmad::CalibrationComponentStatus> components(2);
+  components[0].set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
+  components[0].set_status(
+      rmad::CalibrationComponentStatus::RMAD_CALIBRATION_WAITING);
+  components[0].set_progress(0.25);
+  components[1].set_component(rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
+  components[1].set_status(
+      rmad::CalibrationComponentStatus::RMAD_CALIBRATION_SKIP);
+  components[1].set_progress(0.5);
+
+  shimless_rma_provider_->StartCalibration(
+      std::move(components),
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1939,6 +1968,8 @@ TEST_F(ShimlessRmaServiceTest, StartCalibrationFromWrongStateFails) {
   std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
       rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) { NOTREACHED(); });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
       [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
@@ -1948,9 +1979,19 @@ TEST_F(ShimlessRmaServiceTest, StartCalibrationFromWrongStateFails) {
       }));
   run_loop.RunUntilIdle();
 
-  shimless_rma_provider_->StartCalibration(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
-          rmad::RmadErrorCode error) {
+  std::vector<rmad::CalibrationComponentStatus> components(2);
+  components[0].set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
+  components[0].set_status(
+      rmad::CalibrationComponentStatus::RMAD_CALIBRATION_WAITING);
+  components[1].set_component(rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
+  components[1].set_status(
+      rmad::CalibrationComponentStatus::RMAD_CALIBRATION_SKIP);
+
+  shimless_rma_provider_->StartCalibration(
+      std::move(components),
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -1958,7 +1999,6 @@ TEST_F(ShimlessRmaServiceTest, StartCalibrationFromWrongStateFails) {
   run_loop.Run();
 }
 
-// RunCalibrationStep() => (RmaState state, RmadErrorCode error);
 TEST_F(ShimlessRmaServiceTest, RunCalibrationStep) {
   std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kSetupCalibration, rmad::RMAD_ERROR_OK),
@@ -2006,7 +2046,6 @@ TEST_F(ShimlessRmaServiceTest, RunCalibrationStepFromWrongStateFails) {
       }));
   run_loop.Run();
 }
-// ContinueCalibration() => (RmaState state, RmadErrorCode error);
 TEST_F(ShimlessRmaServiceTest, ContinueCalibration) {
   std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kRunCalibration, rmad::RMAD_ERROR_OK),
@@ -2055,7 +2094,6 @@ TEST_F(ShimlessRmaServiceTest, ContinueCalibrationFromWrongStateFails) {
   run_loop.Run();
 }
 
-// CalibrationComplete() => (RmaState state, RmadErrorCode error);
 TEST_F(ShimlessRmaServiceTest, CalibrationComplete) {
   std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kRunCalibration, rmad::RMAD_ERROR_OK),
@@ -2277,14 +2315,10 @@ class FakeErrorObserver : public mojom::ErrorObserver {
 };
 
 TEST_F(ShimlessRmaServiceTest, NoErrorObserver) {
-  // FakeErrorObserver fake_observer;
-  // shimless_rma_provider_->ObserveError(
-  //     fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   fake_rmad_client_()->TriggerErrorObservation(
       rmad::RmadErrorCode::RMAD_ERROR_REIMAGING_UNKNOWN_FAILURE);
   run_loop.RunUntilIdle();
-  // EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
 
 TEST_F(ShimlessRmaServiceTest, ObserveError) {

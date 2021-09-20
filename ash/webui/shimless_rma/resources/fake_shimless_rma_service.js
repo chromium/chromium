@@ -550,9 +550,12 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * The fake does not use the status list parameter, the fake data is never
+   * updated.
+   * @param {!Array<!CalibrationComponentStatus>} unused
    * @return {!Promise<!StateResult>}
    */
-  startCalibration() {
+  startCalibration(unused) {
     return this.getNextStateForMethod_(
         'startCalibration', RmaState.kCheckCalibration);
   }

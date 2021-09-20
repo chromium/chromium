@@ -558,7 +558,7 @@ interface ShimlessRmaService {
   // Request transition to the begin calibration.
   // Next state will be kSetupCalibration if setup is required, or
   // kRunCalibration if not.
-  StartCalibration()
+  StartCalibration(array<CalibrationComponentStatus> components)
       => (RmaState state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
   // Request transition from kSetupCalibration to run this calibration step.

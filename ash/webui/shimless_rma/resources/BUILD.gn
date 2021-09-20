@@ -14,6 +14,7 @@ preprocessed_mojo_manifest = "preprocessed_mojo_manifest.json"
 
 polymer_element_files = [
   "base_page.js",
+  "calibration_component_chip.js",
   "icons.js",
   "onboarding_choose_destination_page.js",
   "onboarding_choose_wp_disable_method_page.js",
@@ -40,6 +41,7 @@ polymer_element_files = [
 generate_grd("build_grd") {
   input_files = [
     "app_icon_192.png",
+    "data.js",
     "fake_data.js",
     "fake_shimless_rma_service.js",
     "index.html",
@@ -65,6 +67,7 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args
   deps = [
     ":base_page",
+    ":calibration_component_chip",
     ":fake_shimless_rma_service",
     ":mojo_interface_provider",
     ":onboarding_choose_destination_page",
@@ -122,6 +125,13 @@ js_library("shimless_rma") {
 js_library("base_page") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("data") {
+  deps = [
+    ":shimless_rma_types",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
   ]
 }
 
@@ -194,6 +204,7 @@ js_library("onboarding_landing_page") {
 js_library("onboarding_select_components_page") {
   deps = [
     ":base_page",
+    ":data",
     ":mojo_interface_provider",
     ":repair_component_chip",
     ":shimless_rma_types",
@@ -260,6 +271,8 @@ js_library("onboarding_wp_disable_complete_page") {
 js_library("reimaging_calibration_page") {
   deps = [
     ":base_page",
+    ":calibration_component_chip",
+    ":data",
     ":icons",
     ":mojo_interface_provider",
     ":shimless_rma_types",
@@ -304,6 +317,12 @@ js_library("reimaging_provisioning_page") {
     ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("calibration_component_chip") {
+  deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

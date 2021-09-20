@@ -536,7 +536,9 @@ void ShimlessRmaService::GetCalibrationSetupInstructions(
   std::move(callback).Run(state_proto_.setup_calibration().instruction());
 }
 
-void ShimlessRmaService::StartCalibration(StartCalibrationCallback callback) {
+void ShimlessRmaService::StartCalibration(
+    const std::vector<::rmad::CalibrationComponentStatus>& components,
+    StartCalibrationCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kCheckCalibration) {
     LOG(ERROR) << "StartCalibration called from incorrect state "
                << state_proto_.state_case();
@@ -544,6 +546,18 @@ void ShimlessRmaService::StartCalibration(StartCalibrationCallback callback) {
                             can_abort_, can_go_back_,
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
+  }
+  state_proto_.mutable_check_calibration()->clear_components();
+  state_proto_.mutable_check_calibration()->mutable_components()->Reserve(
+      components.size());
+  for (auto& component : components) {
+    rmad::CalibrationComponentStatus* proto_component =
+        state_proto_.mutable_check_calibration()->add_components();
+    proto_component->set_component(component.component());
+    // rmad only cares if the status is set to skip or not.
+    proto_component->set_status(component.status());
+    // Progress is not relevant when sending to rmad.
+    proto_component->set_progress(0.0);
   }
   TransitionNextStateGeneric(std::move(callback));
 }

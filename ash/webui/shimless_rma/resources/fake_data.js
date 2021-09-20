@@ -4,7 +4,7 @@
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 
-import {Component, ComponentRepairStatus, ComponentType, Network, QrCode, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, Network, QrCode, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
 
 /** @type {!Array<!StateResult>} */
 export const fakeStates = [
@@ -143,6 +143,35 @@ export const fakeComponentsForRepairStateTest = [
   {component: ComponentType.kCamera, state: ComponentRepairStatus.kOriginal},
   {component: ComponentType.kBattery, state: ComponentRepairStatus.kMissing},
   {component: ComponentType.kTouchpad, state: ComponentRepairStatus.kReplaced},
+];
+
+/** @type {!Array<!CalibrationComponentStatus>} */
+export const fakeCalibrationComponents = [
+  {
+    component: ComponentType.kCamera,
+    status: CalibrationStatus.kCalibrationWaiting,
+    progress: 0.0
+  },
+  {
+    component: ComponentType.kBattery,
+    status: CalibrationStatus.kCalibrationComplete,
+    progress: 1.0
+  },
+  {
+    component: ComponentType.kBaseAccelerometer,
+    status: CalibrationStatus.kCalibrationInProgress,
+    progress: 1.0
+  },
+  {
+    component: ComponentType.kLidAccelerometer,
+    status: CalibrationStatus.kCalibrationFailed,
+    progress: 1.0
+  },
+  {
+    component: ComponentType.kTouchpad,
+    status: CalibrationStatus.kCalibrationSkip,
+    progress: 0.0
+  },
 ];
 
 /** @type {!Array<!Network>} */

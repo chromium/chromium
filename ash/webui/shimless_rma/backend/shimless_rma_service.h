@@ -96,7 +96,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       GetCalibrationComponentListCallback callback) override;
   void GetCalibrationSetupInstructions(
       GetCalibrationSetupInstructionsCallback callback) override;
-  void StartCalibration(StartCalibrationCallback callback) override;
+  void StartCalibration(
+      const std::vector<::rmad::CalibrationComponentStatus>& components,
+      StartCalibrationCallback callback) override;
   void RunCalibrationStep(RunCalibrationStepCallback callback) override;
   void ContinueCalibration(ContinueCalibrationCallback callback) override;
   void CalibrationComplete(CalibrationCompleteCallback callback) override;
