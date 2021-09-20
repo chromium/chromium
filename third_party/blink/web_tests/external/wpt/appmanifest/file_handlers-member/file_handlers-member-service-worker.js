@@ -6,9 +6,9 @@ const CACHE_NAME = `cache-v${cacheVersion}`;
 
 // The resources cached by this service worker.
 const resources = [
-  "file_handlers-member-manual-service-worker.js",
-  "file_handlers-member-manual.html",
-  "resources/file_handlers-member-manual.js",
+  "file_handlers-member-service-worker.js",
+  "file_handlers-member-manual.tentative.html",
+  "resources/file_handlers-member.js",
   "resources/icon.png",
 ];
 

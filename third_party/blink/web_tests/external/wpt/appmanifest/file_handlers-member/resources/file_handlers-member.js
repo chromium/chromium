@@ -14,7 +14,7 @@ test(function() {
 }, 'serviceWorker exists')
 
 navigator.serviceWorker.register(
-    'file_handlers-member-manual-service-worker.js');
+    'file_handlers-member-service-worker.js');
 
 test(function() {
   assert_true('launchQueue' in window);
