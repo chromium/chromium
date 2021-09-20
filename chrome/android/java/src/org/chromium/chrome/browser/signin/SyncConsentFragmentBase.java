@@ -316,6 +316,7 @@ public abstract class SyncConsentFragmentBase
         mAccountManagerFacade.getAccounts().then(this::updateAccounts);
     }
 
+    /** Implements {@link SigninManager.SignInStateObserver}. */
     @Override
     public void onSignedIn() {
         final CoreAccountInfo primaryAccount =
@@ -326,6 +327,16 @@ public abstract class SyncConsentFragmentBase
                 && mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null);
         if (mIsSignedInWithoutSync) {
             mSelectedAccountName = primaryAccount.getEmail();
+            mAccountManagerFacade.getAccounts().then(this::updateAccounts);
+        }
+    }
+
+    /** Implements {@link SigninManager.SignInStateObserver}. */
+    @Override
+    public void onSignedOut() {
+        if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
+            mIsSignedInWithoutSync = false;
+            mSelectedAccountName = null;
             mAccountManagerFacade.getAccounts().then(this::updateAccounts);
         }
     }

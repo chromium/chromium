@@ -371,6 +371,32 @@ public class SyncConsentFragmentTest {
     }
 
     @Test
+    @MediumTest
+    public void testFRESyncConsentScreenWhenSigningOutFromWelcomeScreen() {
+        final CoreAccountInfo defaultAccount =
+                mAccountManagerTestRule.addAccount("test.default.account@gmail.com");
+        final CoreAccountInfo primaryAccount = mAccountManagerTestRule.addTestAccountThenSignin();
+        Assert.assertNotEquals(
+                "Primary account should be a different account!", defaultAccount, primaryAccount);
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(
+                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
+        fragment.setPageDelegate(mFirstRunPageDelegateMock);
+        launchActivityWithFragment(fragment);
+
+        mAccountManagerTestRule.signOut();
+
+        CriteriaHelper.pollUiThread(() -> {
+            return mActivityTestRule.getActivity()
+                    .findViewById(R.id.signin_account_picker)
+                    .isShown();
+        });
+        onView(withText(defaultAccount.getEmail())).check(matches(isDisplayed()));
+    }
+
+    @Test
     @LargeTest
     @Feature("RenderTest")
     public void testFRESyncConsentScreenWhenSignedInWithoutSyncDynamically() throws IOException {
