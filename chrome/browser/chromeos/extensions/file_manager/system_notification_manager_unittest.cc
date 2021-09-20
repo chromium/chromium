@@ -145,6 +145,11 @@ class SystemNotificationManagerTest : public ::testing::Test {
     return notification_manager_.get();
   }
 
+  NotificationDisplayService* GetNotificationDisplayService() {
+    return static_cast<NotificationDisplayService*>(
+        notification_display_service_);
+  }
+
   void GetNotificationsCallback(std::set<std::string> displayed_notifications,
                                 bool supports_synchronization) {
     notification_count = displayed_notifications.size();
@@ -808,6 +813,90 @@ TEST_F(SystemNotificationManagerTest, TestCopyEvents) {
 
   // Check: an uninitialized status.source_url doesn't crash copy event handler.
   notification_manager.HandleCopyEvent(0, status);
+}
+
+TEST_F(SystemNotificationManagerTest, CopyProgress) {
+  // Setup a copy operation status object.
+  file_manager_private::CopyOrMoveProgressStatus status;
+  int copy_id = 1;
+  double copy_size = 100.0;
+  std::string copy_file_dest_url =
+      "filesystem:chrome://file-manager/external/Downloads-test-user/NewFolder/"
+      "file.txt";
+  status.destination_url = std::make_unique<std::string>(copy_file_dest_url);
+  status.size = std::make_unique<double>(copy_size);
+  std::string copy_file_src_url =
+      "filesystem:chrome://file-manager/external/Downloads-test-user/file.txt";
+  status.source_url = std::make_unique<std::string>(copy_file_src_url);
+  status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_BEGIN;
+
+  // Send the copy begin event.
+  SystemNotificationManager* notification_manager =
+      GetSystemNotificationManager();
+  notification_manager->HandleCopyStart(copy_id, status);
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayService* notification_display_service =
+      GetNotificationDisplayService();
+  notification_display_service->GetDisplayed(
+      base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have zero notifications.
+  ASSERT_EQ(0, notification_count);
+
+  // Send progress event.
+  status.type =
+      file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_PROGRESS;
+  copy_size = 50.0;
+  notification_manager->HandleCopyEvent(copy_id, status);
+  notification_display_service->GetDisplayed(
+      base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have 1 notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings;
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Copying file.txt\x2026");
+
+  // Send copy success event.
+  status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_SUCCESS;
+  notification_manager->HandleCopyEvent(copy_id, status);
+  notification_display_service->GetDisplayed(
+      base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have zero notifications (copy progress has been closed).
+  ASSERT_EQ(0, notification_count);
+  // Start another copy that ends in error.
+  copy_id = 2;
+  copy_size = 100.0;
+  status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_BEGIN;
+
+  // Send the copy begin event.
+  notification_manager->HandleCopyStart(copy_id, status);
+
+  // Send progress event.
+  status.type =
+      file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_PROGRESS;
+  copy_size = 50.0;
+  notification_manager->HandleCopyEvent(copy_id, status);
+  notification_display_service->GetDisplayed(
+      base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have 1 notification.
+  ASSERT_EQ(1, notification_count);
+
+  // Send copy error event.
+  status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_ERROR;
+  notification_manager->HandleCopyEvent(copy_id, status);
+  notification_display_service->GetDisplayed(
+      base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have zero notifications (copy progress has been closed).
+  ASSERT_EQ(0, notification_count);
 }
 
 std::u16string kGoogleDrive = u"Google Drive";
