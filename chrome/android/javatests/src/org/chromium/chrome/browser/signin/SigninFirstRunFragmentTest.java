@@ -265,6 +265,40 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    public void testDismissButtonWhenUserIsSignedIn() {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        final CoreAccountInfo primaryAccount = mAccountManagerTestRule.addTestAccountThenSignin();
+        Assert.assertNotEquals("The primary account should be a different account!", TEST_EMAIL1,
+                primaryAccount.getEmail());
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+
+        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> {
+            return !IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .hasPrimaryAccount(ConsentLevel.SIGNIN);
+        });
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissButtonWithDefaultAccount() {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+
+        onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> { return mFragment.mIsAdvanceToNextPageCalled; });
+        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+    }
+
+    @Test
+    @MediumTest
     public void testContinueButtonWithSupervisedAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(
