@@ -21,6 +21,16 @@ const string kLocation = "location";
 // The attribute name to get the device name in SensorDevice::GetAttributes.
 const string kDeviceName = "name";
 
+// The attribute name to get the device's syspath in
+// SensorDevice::GetAttributes, which can be used to match up iio devices and
+// external devices, like external tablets.
+// For example, if device 0 has the iio path to the syspath with symbolic link:
+// /sys/bus/iio/devices/iio:device0 ->
+// ../../../devices/pci0000:00/0000:00:13.0/.../HID-SENSOR-200083.20.auto/iio:device0
+// , /sys/devices/pci0000:00/0000:00:13.0/.../HID-SENSOR-200083.20.auto/iio:device0
+// will be returned.
+const string kSysPath = "syspath";
+
 const string kLocationBase = "base";
 const string kLocationLid = "lid";
 const string kLocationCamera = "camera";
