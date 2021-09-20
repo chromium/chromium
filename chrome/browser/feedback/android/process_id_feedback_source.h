@@ -33,9 +33,6 @@ class ProcessIdFeedbackSource
   friend base::RefCountedThreadSafe<ProcessIdFeedbackSource>;
   ~ProcessIdFeedbackSource();
 
-  void PrepareProcessIdsOnProcessThread();
-  void PrepareCompleted();
-
   std::map<int, std::vector<base::ProcessHandle>> process_ids_;
   JavaObjectWeakGlobalRef java_ref_;
 
