@@ -37,6 +37,7 @@ void LogPageContentAnnotationsStorageStatus(
       status);
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 // Record the visibility score of the provided visit as a RAPPOR-style record to
 // UKM.
 void MaybeRecordVisibilityUKM(
@@ -68,6 +69,7 @@ void MaybeRecordVisibilityUKM(
       .SetVisibilityScore(static_cast<int64_t>(noisy_score))
       .Record(ukm::UkmRecorder::Get());
 }
+#endif /* BUILDFLAG(BUILD_WITH_TFLITE_LIB) */
 
 }  // namespace
 
