@@ -100,16 +100,17 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
   // Removes the UI overlay and any listeners.
   void RemoveUIOverlay();
 
-  // Callback for initial internal screenshot capture;
-  void OnSnapshotComplete(gfx::Image snapshot);
+  // Captures a new screenshot for the chosen region, and runs the completion
+  // callback.
+  void CaptureAndRunScreenshotCompleteCallback(gfx::Rect region);
 
   // Completes the capture process for |region| and runs the callback provided
   // to Start().
   void CompleteCapture(const gfx::Rect& region);
 
-  // Completes the capture process for a whole viewport capture. Primarily
-  // used when the user has a screenreader enabled.
-  void CompleteFullscreenCapture(gfx::Image img);
+  // Completes the capture process and runs the |flow_callback| with provided
+  // |image| data sourced from |bounds|.
+  void RunScreenshotCompleteCallback(gfx::Rect bounds, gfx::Image image);
 
   // Paints the screenshot selection layer. The user's selection is left
   // unpainted to be hollowed out. |invalidation_region| specifies an optional
@@ -146,13 +147,6 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
   // Our top-level layer that is superimposed over the browser window's root
   // layer while screen capture mode is active.
   std::unique_ptr<ui::Layer> screen_capture_layer_;
-
-  // Original window capture data providing the active capture area.
-  gfx::ImageSkia image_foreground_;
-
-  // Desaturated window capture data providing the background of region
-  // selection.
-  gfx::ImageSkia image_background_;
 
   base::WeakPtrFactory<ScreenshotFlow> weak_factory_{this};
 };
