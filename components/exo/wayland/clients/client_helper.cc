@@ -83,6 +83,7 @@ DEFAULT_DELETER(zcr_keyboard_configuration_v1,
 DEFAULT_DELETER(zcr_keyboard_extension_v1, zcr_keyboard_extension_v1_destroy)
 DEFAULT_DELETER(zcr_notification_shell_v1, zcr_notification_shell_v1_destroy)
 DEFAULT_DELETER(zcr_remote_shell_v1, zcr_remote_shell_v1_destroy)
+DEFAULT_DELETER(zcr_remote_shell_v2, zcr_remote_shell_v2_destroy)
 DEFAULT_DELETER(zcr_stylus_tools_v1, zcr_stylus_tools_v1_destroy)
 DEFAULT_DELETER(zcr_text_input_extension_v1,
                 zcr_text_input_extension_v1_destroy)

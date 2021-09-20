@@ -65,7 +65,10 @@ wayland_protocol("alpha_compositing_protocol") {
 }
 
 wayland_protocol("remote_shell_protocol") {
-  sources = [ "unstable/remote-shell/remote-shell-unstable-v1.xml" ]
+  sources = [
+    "unstable/remote-shell/remote-shell-unstable-v1.xml",
+    "unstable/remote-shell/remote-shell-unstable-v2.xml",
+  ]
 }
 
 wayland_protocol("gaming_input_protocol") {

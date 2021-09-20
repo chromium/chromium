@@ -18,6 +18,8 @@
 #include "ash/wm/window_state.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "components/exo/display.h"
+#include "components/exo/shell_surface_base.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wl_output.h"
@@ -679,7 +681,7 @@ const uint32_t kFixedBugIds[] = {
 class WaylandAuraShell : public ash::DesksController::Observer,
                          public ash::TabletModeObserver {
  public:
-  explicit WaylandAuraShell(wl_resource* aura_shell_resource)
+  WaylandAuraShell(wl_resource* aura_shell_resource, Display* display)
       : aura_shell_resource_(aura_shell_resource) {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->AddTabletModeObserver(this);
@@ -697,6 +699,9 @@ class WaylandAuraShell : public ash::DesksController::Observer,
         zaura_shell_send_bug_fix(aura_shell_resource_, bug_id);
       }
     }
+    display->seat()->SetFocusChangedCallback(
+        base::BindRepeating(&WaylandAuraShell::FocusedSurfaceChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
 
     OnDesksChanged();
     OnDeskActivationChanged();
@@ -773,8 +778,34 @@ class WaylandAuraShell : public ash::DesksController::Observer,
         ash::DesksController::Get()->GetActiveDeskIndex());
   }
 
+  void FocusedSurfaceChanged(Surface* gained_active_surface,
+                             Surface* lost_active_surface,
+                             bool has_focused_client) {
+    if (wl_resource_get_version(aura_shell_resource_) <
+        ZAURA_SHELL_ACTIVATED_SINCE_VERSION)
+      return;
+    if (gained_active_surface == lost_active_surface)
+      return;
+
+    wl_resource* gained_active_surface_resource =
+        gained_active_surface ? GetSurfaceResource(gained_active_surface)
+                              : nullptr;
+    wl_resource* lost_active_surface_resource =
+        lost_active_surface ? GetSurfaceResource(lost_active_surface) : nullptr;
+
+    wl_client* client = wl_resource_get_client(aura_shell_resource_);
+
+    zaura_shell_send_activated(aura_shell_resource_,
+                               gained_active_surface_resource,
+                               lost_active_surface_resource);
+
+    wl_client_flush(client);
+  }
+
   // The aura shell resource associated with observer.
   wl_resource* const aura_shell_resource_;
+
+  base::WeakPtrFactory<WaylandAuraShell> weak_ptr_factory_{this};
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH))
 
@@ -815,7 +846,9 @@ void aura_shell_get_aura_output(wl_client* client,
 }
 
 const struct zaura_shell_interface aura_shell_implementation = {
-    aura_shell_get_aura_surface, aura_shell_get_aura_output};
+    aura_shell_get_aura_surface,
+    aura_shell_get_aura_output,
+};
 
 }  // namespace
 
@@ -828,8 +861,9 @@ void bind_aura_shell(wl_client* client,
                          std::min(version, kZAuraShellVersion), id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  Display* display = static_cast<Display*>(data);
   SetImplementation(resource, &aura_shell_implementation,
-                    std::make_unique<WaylandAuraShell>(resource));
+                    std::make_unique<WaylandAuraShell>(resource, display));
 #else
   wl_resource_set_implementation(resource, &aura_shell_implementation, nullptr,
                                  nullptr);

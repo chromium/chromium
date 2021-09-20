@@ -29,6 +29,7 @@ server_wayland_protocols = [
   "//third_party/wayland-protocols/unstable/keyboard/keyboard-extension-unstable-v1.xml",
   "//third_party/wayland-protocols/unstable/notification-shell/notification-shell-unstable-v1.xml",
   "//third_party/wayland-protocols/unstable/remote-shell/remote-shell-unstable-v1.xml",
+  "//third_party/wayland-protocols/unstable/remote-shell/remote-shell-unstable-v2.xml",
   "//third_party/wayland-protocols/unstable/secure-output/secure-output-unstable-v1.xml",
   "//third_party/wayland-protocols/unstable/stylus/stylus-unstable-v2.xml",
   "//third_party/wayland-protocols/unstable/stylus-tools/stylus-tools-unstable-v1.xml",

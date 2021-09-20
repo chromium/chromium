@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="23">
+  <interface name="zaura_shell" version="24">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -107,6 +107,14 @@
         Notifies when there is a change of the active desk.
       </description>
       <arg name="active_desk_index" type="int" summary="index of the active desk"/>
+    </event>
+    <!-- Version 24 additions -->
+    <event name="activated" since="24">
+      <description summary="activated surface changed">
+	Notifies client that the activated surface changed.
+      </description>
+      <arg name="gained_active" type="object" interface="wl_surface" allow-null="true"/>
+      <arg name="lost_active" type="object" interface="wl_surface" allow-null="true"/>
     </event>
   </interface>
 

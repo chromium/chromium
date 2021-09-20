@@ -21,6 +21,7 @@
 #include <presentation-time-server-protocol.h>
 #include <relative-pointer-unstable-v1-server-protocol.h>
 #include <remote-shell-unstable-v1-server-protocol.h>
+#include <remote-shell-unstable-v2-server-protocol.h>
 #include <secure-output-unstable-v1-server-protocol.h>
 #include <stylus-tools-unstable-v1-server-protocol.h>
 #include <stylus-unstable-v2-server-protocol.h>
@@ -78,6 +79,7 @@
 #include "components/exo/wayland/zcr_keyboard_extension.h"
 #include "components/exo/wayland/zcr_notification_shell.h"
 #include "components/exo/wayland/zcr_remote_shell.h"
+#include "components/exo/wayland/zcr_remote_shell_v2.h"
 #include "components/exo/wayland/zcr_stylus_tools.h"
 #include "components/exo/wayland/zwp_input_timestamps_manager.h"
 #include "components/exo/wayland/zwp_pointer_constraints.h"
@@ -221,6 +223,9 @@ Server::Server(Display* display) : display_(display) {
   wl_global_create(wl_display_.get(), &zcr_remote_shell_v1_interface,
                    zcr_remote_shell_v1_interface.version,
                    remote_shell_data_.get(), bind_remote_shell);
+  wl_global_create(wl_display_.get(), &zcr_remote_shell_v2_interface,
+                   zcr_remote_shell_v2_interface.version,
+                   remote_shell_data_.get(), bind_remote_shell_v2);
 
   wl_global_create(wl_display_.get(), &zcr_stylus_tools_v1_interface, 1,
                    display_, bind_stylus_tools);

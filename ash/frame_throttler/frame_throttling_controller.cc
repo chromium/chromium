@@ -202,4 +202,9 @@ void FrameThrottlingController::RemoveArcObserver(
   arc_observers_.RemoveObserver(observer);
 }
 
+bool FrameThrottlingController::HasArcObserver(
+    FrameThrottlingObserver* observer) {
+  return arc_observers_.HasObserver(observer);
+}
+
 }  // namespace ash

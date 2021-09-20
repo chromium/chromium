@@ -61,6 +61,7 @@ class ASH_EXPORT FrameThrottlingController final
 
   void AddArcObserver(FrameThrottlingObserver* observer);
   void RemoveArcObserver(FrameThrottlingObserver* observer);
+  bool HasArcObserver(FrameThrottlingObserver* observer);
 
   uint8_t throttled_fps() const { return throttled_fps_; }
 

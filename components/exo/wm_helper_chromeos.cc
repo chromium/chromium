@@ -68,8 +68,12 @@ void WMHelperChromeOS::RemoveDisplayConfigurationObserver(
 }
 
 void WMHelperChromeOS::AddFrameThrottlingObserver() {
-  ash::Shell::Get()->frame_throttling_controller()->AddArcObserver(
-      &vsync_timing_manager_);
+  ash::FrameThrottlingController* controller =
+      ash::Shell::Get()->frame_throttling_controller();
+  if (!controller->HasArcObserver(&vsync_timing_manager_)) {
+    ash::Shell::Get()->frame_throttling_controller()->AddArcObserver(
+        &vsync_timing_manager_);
+  }
 }
 
 void WMHelperChromeOS::RemoveFrameThrottlingObserver() {
