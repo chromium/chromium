@@ -20,6 +20,7 @@ import {reimagingFirmwareUpdatePageTest} from './reimaging_firmware_update_page_
 import {reimagingProvisioningPageTest} from './reimaging_provisioning_page_test.js';
 import {shimlessRMAAppTest} from './shimless_rma_app_test.js';
 import {wrapupRepairCompletePageTest} from './wrapup_repair_complete_page_test.js';
+import {wrapupRestockPageTest} from './wrapup_restock_page_test.js';
 
 window.test_suites_list = [];
 
@@ -54,3 +55,4 @@ runSuite(
 runSuite('ReimagingProvisioningPageTest', reimagingProvisioningPageTest);
 runSuite('ShimlessRMAAppTest', shimlessRMAAppTest);
 runSuite('WrapupRepairCompletePageTest', wrapupRepairCompletePageTest);
+runSuite('WrapupRestockPageTest', wrapupRestockPageTest);

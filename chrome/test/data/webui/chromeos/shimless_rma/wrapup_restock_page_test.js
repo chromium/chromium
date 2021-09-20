@@ -46,6 +46,16 @@ export function wrapupRestockPageTest() {
     return flushTasks();
   }
 
+  /**
+   * @return {!Promise}
+   */
+  function clickShutdownButton() {
+    const shutdownComponent = component.shadowRoot.querySelector('#shutdown');
+    assertTrue(!!shutdownComponent);
+    shutdownComponent.click();
+    return flushTasks();
+  }
+
   test('ComponentRenders', async () => {
     await initializeRestockPage();
     assertTrue(!!component);
@@ -70,27 +80,21 @@ export function wrapupRestockPageTest() {
     resolver.resolve(expectedResult);
     await flushTasks();
 
-    assertEquals(callCounter, 1);
-    assertDeepEquals(savedResult, expectedResult);
+    assertEquals(1, callCounter);
+    assertDeepEquals(expectedResult, savedResult);
   });
 
   test('RestockPageOnShutdownCallsShutdownForRestock', async () => {
     const resolver = new PromiseResolver();
     await initializeRestockPage();
-    let callCounter = 0;
+    let restockCallCounter = 0;
     service.shutdownForRestock = () => {
-      callCounter++;
+      restockCallCounter++;
       return resolver.promise;
     };
 
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
+    await clickShutdownButton();
 
-    assertEquals(callCounter, 1);
-    assertDeepEquals(savedResult, expectedResult);
+    assertEquals(1, restockCallCounter);
   });
 }

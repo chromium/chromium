@@ -55,6 +55,7 @@ const debug_suites_list = [
   'ReimagingProvisioningPageTest',
   'ShimlessRMAAppTest',
   'WrapupRepairCompletePageTest',
+  'WrapupRestockPageTest',
 ];
 
 TEST_F('ShimlessRMABrowserTest', 'All', function() {
