@@ -1112,6 +1112,12 @@ void ChromeBrowserMainPartsChromeos::PreBrowserStart() {
 }
 
 void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
+  if (base::FeatureList::IsEnabled(features::kDeviceActiveClient)) {
+    device_activity_controller_ =
+        std::make_unique<ash::device_activity::DeviceActivityController>();
+    device_activity_controller_->Start(ash::device_activity::Trigger::kNetwork);
+  }
+
   // Construct a delegate to connect the accessibility component extensions and
   // AccessibilityEventRewriter.
   accessibility_event_rewriter_delegate_ =
@@ -1202,6 +1208,7 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
 // crbug.com/702403 for details.
 void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   SystemProxyManager::Shutdown();
+  device_activity_controller_.reset();
   crostini_unsupported_action_notifier_.reset();
 
   BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded", true);

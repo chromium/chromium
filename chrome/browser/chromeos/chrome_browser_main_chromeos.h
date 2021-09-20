@@ -9,6 +9,8 @@
 
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "ash/components/power/dark_resume_controller.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "ash/components/device_activity/device_activity_controller.h"
 #include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
@@ -201,6 +203,9 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<ash::AshUsbDetector> ash_usb_detector_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;
+
+  std::unique_ptr<ash::device_activity::DeviceActivityController>
+      device_activity_controller_;
 
   std::unique_ptr<crostini::CrostiniUnsupportedActionNotifier>
       crostini_unsupported_action_notifier_;

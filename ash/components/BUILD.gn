@@ -12,6 +12,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     "//ash/components/audio:unit_tests",
+    "//ash/components/device_activity:unit_tests",
     "//ash/components/drivefs:unit_tests",
     "//ash/components/pcie_peripheral:unit_tests",
     "//ash/components/power:unit_tests",

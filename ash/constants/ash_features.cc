@@ -1195,6 +1195,10 @@ const base::Feature kWindowControlMenu{"WindowControlMenu",
 const base::Feature kWindowsFollowCursor{"WindowsFollowCursor",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables Fresnel Device Active reporting on Chrome OS.
+const base::Feature kDeviceActiveClient{"DeviceActiveClient",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreContextualNudgesEnabled() {
