@@ -1040,6 +1040,9 @@ const char kEnableWin7WebRtcHWH264Decoding[] =
 // This switch allows us to pass the shared memory handle to the renderer.
 const char kFontCacheSharedHandle[] = "font-cache-shared-handle";
 
+// Renderer process that runs the non-PPAPI PDF plugin.
+const char kPdfRenderer[] = "pdf-renderer";
+
 // The boolean value (0/1) of FontRenderParams::antialiasing to be passed to
 // Ppapi processes.
 const char kPpapiAntialiasedTextEnabled[] = "ppapi-antialiased-text-enabled";

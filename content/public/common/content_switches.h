@@ -288,6 +288,7 @@ CONTENT_EXPORT extern const char kDisableLegacyIntermediateWindow[];
 CONTENT_EXPORT extern const char kEnableWin7WebRtcHWH264Decoding[];
 // Switch to pass the font cache shared memory handle to the renderer.
 CONTENT_EXPORT extern const char kFontCacheSharedHandle[];
+CONTENT_EXPORT extern const char kPdfRenderer[];
 CONTENT_EXPORT extern const char kPpapiAntialiasedTextEnabled[];
 CONTENT_EXPORT extern const char kPpapiSubpixelRenderingSetting[];
 CONTENT_EXPORT extern const char kRaiseTimerFrequency[];

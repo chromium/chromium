@@ -52,18 +52,15 @@ DWORD WINAPI GetFontDataPatch(HDC hdc,
 void MaybePatchGdiGetFontData() {
 #if defined(OS_WIN)
   // Only patch utility processes which explicitly need GDI.
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
   sandbox::policy::SandboxType service_sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(
-          *base::CommandLine::ForCurrentProcess());
+      sandbox::policy::SandboxTypeFromCommandLine(command_line);
   bool need_gdi =
       service_sandbox_type == sandbox::policy::SandboxType::kPpapi ||
       service_sandbox_type == sandbox::policy::SandboxType::kPrintCompositor ||
-      service_sandbox_type == sandbox::policy::SandboxType::kPdfConversion;
-
-  // TODO(crbug.com/1239330): Only apply to renderers containing PDF content.
-  if (service_sandbox_type == sandbox::policy::SandboxType::kRenderer)
-    need_gdi = true;
-
+      service_sandbox_type == sandbox::policy::SandboxType::kPdfConversion ||
+      (service_sandbox_type == sandbox::policy::SandboxType::kRenderer &&
+       command_line.HasSwitch(switches::kPdfRenderer));
   if (!need_gdi)
     return;
 

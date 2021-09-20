@@ -3348,6 +3348,11 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
                                                                 GetID());
 
 #if defined(OS_WIN)
+  if (IsPdf())
+    command_line->AppendSwitch(switches::kPdfRenderer);
+#endif
+
+#if defined(OS_WIN)
   command_line->AppendArg(switches::kPrefetchArgumentRenderer);
 #endif  // defined(OS_WIN)
 
