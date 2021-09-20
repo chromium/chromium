@@ -38,7 +38,8 @@
   </localized-link>
 </div>
 <div id="appNotificationsList">
-  <template is="dom-repeat" items="[[appList_]]" as="app">
+  <template is="dom-repeat" items="[[appList_]]" as="app"
+      sort="alphabeticalSort_">
     <app-notification-row app="[[app]]"></app-notification-row>
   </template>
 </div>

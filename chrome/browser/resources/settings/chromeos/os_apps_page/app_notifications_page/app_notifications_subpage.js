@@ -189,6 +189,17 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     this.setQuietMode_();
     event.stopPropagation();
   }
+
+  /**
+   * A function used for sorting languages alphabetically.
+   * @param {!Object} first An app array item.
+   * @param {!Object} second An app array item.
+   * @return {number} The result of the comparison.
+   * @private
+   */
+  alphabeticalSort_(first, second) {
+    return first.title.localeCompare(second.title);
+  }
 }
 
 

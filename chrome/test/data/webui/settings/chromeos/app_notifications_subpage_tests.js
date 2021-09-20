@@ -331,17 +331,17 @@ suite('AppNotificationsSubpageTests', function() {
     assertEquals('App2', appRow1.$.appTitle.textContent.trim());
   });
 
-  // TODO(crbug/1240175): Ensure that CrToggle is disabled correctly and
-  // CrPolicyIndicator is hidden correctly.
   test('Each app-notification-row displays correctly', async () => {
+    const appTitle1 = 'Files';
+    const appTitle2 = 'Chrome';
     const permission1 = createPermission(
         /**id=*/ 1, /**value_type=*/ 0,
         /**value=*/ 0, /**is_managed=*/ true);
     const permission2 = createPermission(
         /**id=*/ 2, /**value_type=*/ 0,
         /**value=*/ 1, /**is_managed=*/ false);
-    const app1 = createApp('1', 'Chrome', permission1);
-    const app2 = createApp('2', 'Files', permission2);
+    const app1 = createApp('file-id', appTitle1, permission1);
+    const app2 = createApp('chrome-id', appTitle2, permission2);
 
     await initializeObserver;
     simulateNotificationAppChanged(app1);
@@ -354,13 +354,19 @@ suite('AppNotificationsSubpageTests', function() {
     assertTrue(!!page);
     flush();
 
-    assertEquals('Chrome', chromeRow.$.appTitle.textContent.trim());
-    assertTrue(chromeRow.$.appToggle.disabled);
-    assertTrue(!!chromeRow.shadowRoot.querySelector('cr-policy-indicator'));
+    // Apps should be listed in alphabetical order. |appTitle1| should come
+    // before |appTitle2|, so a 1 should be returned by localCompare.
+    const expected = 1;
+    const actual = appTitle1.localeCompare(appTitle2);
+    assertEquals(expected, actual);
 
-    assertEquals('Files', filesRow.$.appTitle.textContent.trim());
-    assertFalse(filesRow.$.appToggle.disabled);
-    assertFalse(!!filesRow.shadowRoot.querySelector('cr-policy-indicator'));
+    assertEquals(appTitle2, chromeRow.$.appTitle.textContent.trim());
+    assertFalse(chromeRow.$.appToggle.disabled);
+    assertFalse(!!chromeRow.shadowRoot.querySelector('cr-policy-indicator'));
+
+    assertEquals(appTitle1, filesRow.$.appTitle.textContent.trim());
+    assertTrue(filesRow.$.appToggle.disabled);
+    assertTrue(!!filesRow.shadowRoot.querySelector('cr-policy-indicator'));
   });
 
   test('toggleDoNotDisturb', function() {
