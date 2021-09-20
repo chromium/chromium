@@ -1749,8 +1749,8 @@
   },
   {
     "name": "enable-de-jelly",
-    "owners": [ "ericrk", "//components/viz/OWNERS" ],
-    "expiry_milestone": 94
+    "owners": [ "boliu", "//components/viz/OWNERS" ],
+    "expiry_milestone": 104
   },
   {
     "name": "enable-debug-for-secure-payment-confirmation",
