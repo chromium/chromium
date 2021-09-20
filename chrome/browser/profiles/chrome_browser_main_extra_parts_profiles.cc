@@ -145,6 +145,7 @@
 #include "chrome/browser/storage/storage_notification_service_factory.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_service_manager.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #endif
 
@@ -499,6 +500,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   UnifiedConsentServiceFactory::GetInstance();
   UrlLanguageHistogramFactory::GetInstance();
 #if !defined(OS_ANDROID)
+  TutorialServiceManager::GetInstance();
   UsbChooserContextFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)

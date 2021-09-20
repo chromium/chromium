@@ -26,9 +26,9 @@ struct TutorialDescription {
       NONE,
       TOP,
       BOTTOM,
-      TOP_HORIZ,
-      CENTER_HORIZ,
-      BOTTOM_HORIZ,
+      TOP_HORIZONTAL,
+      CENTER_HORIZONTAL,
+      BOTTOM_HORIZONTAL,
     };
 
     Step();
@@ -56,7 +56,7 @@ struct TutorialDescription {
 
     // returns true iff all of the required parameters exist to display a
     // bubble.
-    bool ShouldShowBubble();
+    bool ShouldShowBubble() const;
   };
 
   // the list of TutorialDescription steps

@@ -9,6 +9,7 @@
 // it is implemented by a framework's bubble. It is returned as the result of
 // TutorialBubbleFactory's CreateBubble method.
 struct TutorialBubble {
+  TutorialBubble() = default;
   TutorialBubble(const TutorialBubble&) = delete;
   TutorialBubble& operator=(const TutorialBubble&) = delete;
   virtual ~TutorialBubble() = default;

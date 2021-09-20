@@ -38,6 +38,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/dialog_model_field.h"
@@ -182,6 +183,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   title_field_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER));
   title_field_->set_controller(&title_field_controller_);
+  title_field_->SetProperty(views::kElementIdentifierKey,
+                            kEditorBubbleIdentifier);
 
   const tab_groups::TabGroupColorId initial_color_id = InitColorSet();
   color_selector_ = AddChildView(std::make_unique<ColorPickerView>(
@@ -473,3 +476,6 @@ void TabGroupEditorBubbleView::TitleField::ShowContextMenu(
 
 BEGIN_METADATA(TabGroupEditorBubbleView, TitleField, views::Textfield)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupEditorBubbleView,
+                                      kEditorBubbleIdentifier);

@@ -28,7 +28,7 @@ TutorialDescription::Step::Step(absl::optional<std::u16string> title_text_,
 TutorialDescription::Step::Step(const TutorialDescription::Step& description) =
     default;
 
-bool TutorialDescription::Step::Step::ShouldShowBubble() {
+bool TutorialDescription::Step::Step::ShouldShowBubble() const {
   return (element_id &&
           step_type != ui::InteractionSequence::StepType::kHidden &&
           (title_text || body_text));

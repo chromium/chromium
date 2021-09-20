@@ -30,6 +30,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -113,6 +114,8 @@ TabGroupHeader::TabGroupHeader(TabStrip* tab_strip,
   // with the focus indicator, so draw an outline around the focus ring for it
   // to contrast with the solid color.
   SetProperty(views::kDrawFocusRingBackgroundOutline, true);
+
+  SetProperty(views::kElementIdentifierKey, kTabGroupHeaderIdentifier);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -495,3 +498,6 @@ void TabGroupHeader::EditorBubbleTracker::OnWidgetDestroyed(
     views::Widget* widget) {
   is_open_ = false;
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupHeader,
+                                      kTabGroupHeaderIdentifier);

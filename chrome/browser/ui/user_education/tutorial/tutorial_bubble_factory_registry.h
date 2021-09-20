@@ -29,7 +29,7 @@ class TutorialBubbleFactoryRegistry {
 
   // gets the correct bubble factory for a given element if none are found a
   // nullptr is returned.
-  std::unique_ptr<TutorialBubble> GetBubbleForTrackedElement(
+  std::unique_ptr<TutorialBubble> CreateBubbleForTrackedElement(
       ui::TrackedElement* element,
       absl::optional<std::u16string> title_text,
       absl::optional<std::u16string> body_text,

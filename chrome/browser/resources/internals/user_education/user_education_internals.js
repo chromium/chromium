@@ -45,7 +45,8 @@ class UserEducationInternalsElement extends PolymerElement {
    * @private
    */
   startTutorial_(e) {
-    // TODO(crbug.com/1194751): start tutorial through handler
+    const id = /** @type {string} */ (e.model.item);
+    this.handler_.startTutorial(id);
   }
 }
 

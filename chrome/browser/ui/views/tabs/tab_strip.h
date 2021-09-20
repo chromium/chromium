@@ -90,6 +90,8 @@ class TabStrip : public views::View,
   TabStrip& operator=(const TabStrip&) = delete;
   ~TabStrip() override;
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabStrip, kTabStripIdentifier);
+
   void SetAvailableWidthCallback(
       base::RepeatingCallback<int()> available_width_callback);
 

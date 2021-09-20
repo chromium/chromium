@@ -19,7 +19,7 @@ void TutorialBubbleFactoryRegistry::RegisterBubbleFactory(
 }
 
 std::unique_ptr<TutorialBubble>
-TutorialBubbleFactoryRegistry::GetBubbleForTrackedElement(
+TutorialBubbleFactoryRegistry::CreateBubbleForTrackedElement(
     ui::TrackedElement* element,
     absl::optional<std::u16string> title_text,
     absl::optional<std::u16string> body_text,

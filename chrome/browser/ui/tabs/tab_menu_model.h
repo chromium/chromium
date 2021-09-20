@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_
 
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class TabStripModel;
@@ -32,6 +33,9 @@ class TabMenuModel : public ui::SimpleMenuModel {
   TabMenuModel(const TabMenuModel&) = delete;
   TabMenuModel& operator=(const TabMenuModel&) = delete;
   ~TabMenuModel() override;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,
+                                         kAddToNewGroupItemIdentifier);
 
  private:
   void Build(TabStripModel* tab_strip, int index);
