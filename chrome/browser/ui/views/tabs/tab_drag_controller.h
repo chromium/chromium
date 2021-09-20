@@ -559,9 +559,6 @@ class TabDragController : public views::WidgetObserver {
   absl::optional<tab_groups::TabGroupId> GetTabGroupForTargetIndex(
       const std::vector<int>& selected);
 
-  // Validation method for tab group state. (crbug.com/1197888)
-  void CheckSourceAndAttachedContextContainNoDuplicateTabGroupIds();
-
   EventSource event_source_;
 
   // The TabDragContext the drag originated from. This is set to null
