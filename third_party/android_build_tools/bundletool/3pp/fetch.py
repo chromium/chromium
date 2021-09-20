@@ -34,8 +34,11 @@ def get_download_url():
 
     partial_manifest = {
         'url': urls,
-        'ext': '',  # Used only if recipe needs to extract.
-        'name': [urls[0].split('/')[-1]],  # Used as the file name.
+        # Used only if recipe needs to extract.
+        'ext': '',
+        # Use constant filename, so as to not need to update filepaths when
+        # bundletool is autorolled.
+        'name': ['bundletool.jar'],
     }
     print(json.dumps(partial_manifest))
 

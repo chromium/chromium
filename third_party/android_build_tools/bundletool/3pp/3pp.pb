@@ -4,7 +4,6 @@
 create {
   source {
     script { name: "fetch.py" }
-    patch_version: "cr0"
   }
 }
 
