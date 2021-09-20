@@ -2341,6 +2341,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //  nullptr.
   RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder();
 
+  static const char* LifecycleStateImplToString(LifecycleStateImpl state);
+
  protected:
   friend class RenderFrameHostFactory;
 
