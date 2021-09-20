@@ -277,6 +277,7 @@ class PartitionRootInspector {
   // Returns true for success.
   bool GatherStatistics();
   const std::vector<BucketStats>& bucket_stats() const { return bucket_stats_; }
+  const PartitionRoot<ThreadSafe>* root() { return root_.get(); }
 
  private:
   void Update();
@@ -478,7 +479,7 @@ void DisplayPerBucketData(ThreadCacheInspector& inspector) {
   std::cout << "\nALL THREADS TOTAL: " << total_memory / 1024 << "kiB\n";
 }
 
-void DisplayBucketAllocData(PartitionRootInspector& root_inspector) {
+void DisplayRootData(PartitionRootInspector& root_inspector) {
   std::cout << "Per-bucket size / allocated slots / free slots / slot span "
                "count:\n";
   for (size_t i = 0; i < root_inspector.bucket_stats().size(); i++) {
@@ -496,6 +497,19 @@ void DisplayBucketAllocData(PartitionRootInspector& root_inspector) {
     else
       std::cout << "\t";
   }
+
+  auto* root = root_inspector.root();
+  uint64_t syscall_count = root->syscall_count.load(std::memory_order_relaxed);
+  uint64_t total_duration_ms =
+      root->syscall_total_time_ns.load(std::memory_order_relaxed) / 1e6;
+
+  std::cout << "\n\nSyscall count = " << syscall_count
+            << "\tTotal duration = " << total_duration_ms << "ms\n"
+            << "Max committed size = "
+            << root->max_size_of_committed_pages.load(
+                   std::memory_order_relaxed) /
+                   1024
+            << "kiB";
 }
 
 }  // namespace tools
@@ -565,7 +579,7 @@ int main(int argc, char** argv) {
 
     if (has_bucket_stats) {
       std::cout << "\n\n";
-      DisplayBucketAllocData(root_inspector);
+      DisplayRootData(root_inspector);
     }
 
     std::cout << std::endl;
