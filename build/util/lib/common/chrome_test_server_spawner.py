@@ -44,10 +44,6 @@ os.environ['PYTHONPATH'] = os.environ.get('PYTHONPATH', '') + (':%s:%s:%s'
        os.path.join(_DIR_SOURCE_ROOT, 'net', 'tools', 'testserver')))
 
 
-# The timeout (in seconds) of starting up the Python test server.
-_TEST_SERVER_STARTUP_TIMEOUT = 10
-
-
 def _GetServerTypeCommandLine(server_type):
   """Returns the command-line by the given server type.
 
@@ -108,30 +104,25 @@ class TestServerThread(threading.Thread):
     self.port_forwarder = port_forwarder
     self.test_server_process = None
     self.is_ready = False
-    self.host_port = self.arguments['port']
+    self.host_port = 0
     self.host_ocsp_port = 0
     assert isinstance(self.host_port, int)
     # The forwarder device port now is dynamically allocated.
     self.forwarder_device_port = 0
     self.forwarder_ocsp_device_port = 0
-    # Anonymous pipe in order to get port info from test server.
-    self.pipe_in = None
-    self.pipe_out = None
     self.process = None
     self.command_line = []
 
-  def _WaitToStartAndGetPortFromTestServer(self):
+  def _WaitToStartAndGetPortFromTestServer(self, pipe_in):
     """Waits for the Python test server to start and gets the port it is using.
 
     The port information is passed by the Python test server with a pipe given
-    by self.pipe_in. It is written as a result to |self.host_port|.
+    by |pipe_in|. It is written as a result to |self.host_port|.
 
     Returns:
       Whether the port used by the test server was successfully fetched.
     """
-    assert self.host_port == 0 and self.pipe_in
-    (in_fds, _, _) = select.select([self.pipe_in, ], [], [],
-                                   _TEST_SERVER_STARTUP_TIMEOUT)
+    (in_fds, _, _) = select.select([pipe_in], [], [])
     if len(in_fds) == 0:
       _logger.error('Failed to wait to the Python test server to be started.')
       return False
@@ -141,14 +132,14 @@ class TestServerThread(threading.Thread):
     # configured to use little-endian.
     # TODO(jnd): Change the Python test server and local_test_server_*.cc to
     # use a unified byte order (either big-endian or little-endian).
-    data_length = os.read(self.pipe_in, struct.calcsize('=L'))
+    data_length = os.read(pipe_in, struct.calcsize('=L'))
     if data_length:
       (data_length,) = struct.unpack('=L', data_length)
       assert data_length
     if not data_length:
       _logger.error('Failed to get length of server data.')
       return False
-    server_data_json = os.read(self.pipe_in, data_length)
+    server_data_json = os.read(pipe_in, data_length)
     if not server_data_json:
       _logger.error('Failed to get server data.')
       return False
@@ -173,7 +164,7 @@ class TestServerThread(threading.Thread):
 
     return self.port_forwarder.WaitPortNotAvailable(self.host_port)
 
-  def _GenerateCommandLineArguments(self):
+  def _GenerateCommandLineArguments(self, pipe_out):
     """Generates the command line to run the test server.
 
     Note that all options are processed by following the definitions in
@@ -189,12 +180,8 @@ class TestServerThread(threading.Thread):
     if type_cmd:
       self.command_line.append(type_cmd)
 
-    # Use a pipe to get the port given by the instance of Python test server
-    # if the test does not specify the port.
-    assert self.host_port == args_copy['port']
-    if self.host_port == 0:
-      (self.pipe_in, self.pipe_out) = os.pipe()
-      self.command_line.append('--startup-pipe=%d' % self.pipe_out)
+    # Use a pipe to get the port given by the Python test server.
+    self.command_line.append('--startup-pipe=%d' % pipe_out)
 
     # Pass the remaining arguments as-is.
     for key, values in args_copy.iteritems():
@@ -206,7 +193,7 @@ class TestServerThread(threading.Thread):
         else:
           self.command_line.append('--%s=%s' % (key, value))
 
-  def _CloseUnnecessaryFDsForTestServerProcess(self):
+  def _CloseUnnecessaryFDsForTestServerProcess(self, pipe_out):
     # This is required to avoid subtle deadlocks that could be caused by the
     # test server child process inheriting undesirable file descriptors such as
     # file lock file descriptors. Note stdin, stdout, and stderr (0-2) are left
@@ -214,7 +201,7 @@ class TestServerThread(threading.Thread):
     # fds filled, or the test server will accidentally open other fds at those
     # numbers.
     for fd in xrange(3, 1024):
-      if fd != self.pipe_out:
+      if fd != pipe_out:
         try:
           os.close(fd)
         except:
@@ -223,93 +210,79 @@ class TestServerThread(threading.Thread):
   def run(self):
     _logger.info('Start running the thread!')
     self.wait_event.clear()
-    self._GenerateCommandLineArguments()
-    # TODO(crbug.com/941669): When this script is ported to Python 3, replace
-    # 'vpython3' below with sys.executable. The call to
-    # vpython3 -vpython-tool install below can also be removed.
-    command = [
-        'vpython3',
-        os.path.join(_DIR_SOURCE_ROOT, 'net', 'tools', 'testserver',
-                     'testserver.py')
-    ] + self.command_line
-    _logger.info('Running: %s', command)
 
-    # Disable PYTHONUNBUFFERED because it has a bad interaction with the
-    # testserver. Remove once this interaction is fixed.
-    unbuf = os.environ.pop('PYTHONUNBUFFERED', None)
+    # Set up a pipe for the server to report when it has started.
+    pipe_in, pipe_out = os.pipe()
+    try:
+      self._GenerateCommandLineArguments(pipe_out)
+      # TODO(crbug.com/941669): When this script is ported to Python 3, replace
+      # 'vpython3' below with sys.executable.
+      command = [
+          'vpython3',
+          os.path.join(_DIR_SOURCE_ROOT, 'net', 'tools', 'testserver',
+                       'testserver.py')
+      ] + self.command_line
+      _logger.info('Running: %s', command)
 
-    # Pass _DIR_SOURCE_ROOT as the child's working directory so that relative
-    # paths in the arguments are resolved correctly. devnull can be replaced
-    # with subprocess.DEVNULL in Python 3.
-    with open(os.devnull, 'r+b') as devnull:
-      # _WaitToStartAndGetPortFromTestServer has a short timeout. If the
-      # vpython3 cache is not initialized, launching the test server can take
-      # some time. Prewarm the cache before running the server.
-      subprocess.check_call(
-          [
-              'vpython3', '-vpython-spec',
-              os.path.join(_DIR_SOURCE_ROOT, '.vpython3'), '-vpython-tool',
-              'install'
-          ],
-          preexec_fn=self._CloseUnnecessaryFDsForTestServerProcess,
-          stdin=devnull,
-          stdout=None,
-          stderr=None,
-          cwd=_DIR_SOURCE_ROOT)
+      # Disable PYTHONUNBUFFERED because it has a bad interaction with the
+      # testserver. Remove once this interaction is fixed.
+      unbuf = os.environ.pop('PYTHONUNBUFFERED', None)
 
-      self.process = subprocess.Popen(
-          command,
-          preexec_fn=self._CloseUnnecessaryFDsForTestServerProcess,
-          stdin=devnull,
-          # Preserve stdout and stderr from the test server.
-          stdout=None,
-          stderr=None,
-          cwd=_DIR_SOURCE_ROOT)
-    # Close self.pipe_out early. If self.process crashes, this will be visible
-    # in _WaitToStartAndGetPortFromTestServer's select loop.
-    if self.pipe_out:
-      os.close(self.pipe_out)
-      self.pipe_out = None
-    if unbuf:
-      os.environ['PYTHONUNBUFFERED'] = unbuf
-    if self.process:
-      if self.pipe_in:
-        self.is_ready = self._WaitToStartAndGetPortFromTestServer()
-      else:
-        self.is_ready = self.port_forwarder.WaitPortNotAvailable(self.host_port)
+      # Pass _DIR_SOURCE_ROOT as the child's working directory so that relative
+      # paths in the arguments are resolved correctly. devnull can be replaced
+      # with subprocess.DEVNULL in Python 3.
+      with open(os.devnull, 'r+b') as devnull:
+        self.process = subprocess.Popen(
+            command,
+            preexec_fn=lambda: self._CloseUnnecessaryFDsForTestServerProcess(
+                pipe_out),
+            stdin=devnull,
+            # Preserve stdout and stderr from the test server.
+            stdout=None,
+            stderr=None,
+            cwd=_DIR_SOURCE_ROOT)
+      # Close pipe_out early. If self.process crashes, this will be visible
+      # in _WaitToStartAndGetPortFromTestServer's select loop.
+      os.close(pipe_out)
+      pipe_out = -1
+      if unbuf:
+        os.environ['PYTHONUNBUFFERED'] = unbuf
+      self.is_ready = self._WaitToStartAndGetPortFromTestServer(pipe_in)
 
-    if self.is_ready:
-      port_map = [(0, self.host_port)]
-      if self.host_ocsp_port:
-        port_map.extend([(0, self.host_ocsp_port)])
-      self.port_forwarder.Map(port_map)
+      if self.is_ready:
+        port_map = [(0, self.host_port)]
+        if self.host_ocsp_port:
+          port_map.extend([(0, self.host_ocsp_port)])
+        self.port_forwarder.Map(port_map)
 
-      self.forwarder_device_port = \
-          self.port_forwarder.GetDevicePortForHostPort(self.host_port)
-      if self.host_ocsp_port:
-        self.forwarder_ocsp_device_port = \
-            self.port_forwarder.GetDevicePortForHostPort(self.host_ocsp_port)
+        self.forwarder_device_port = \
+            self.port_forwarder.GetDevicePortForHostPort(self.host_port)
+        if self.host_ocsp_port:
+          self.forwarder_ocsp_device_port = \
+              self.port_forwarder.GetDevicePortForHostPort(self.host_ocsp_port)
 
-      # Check whether the forwarder is ready on the device.
-      self.is_ready = self.forwarder_device_port and \
-          self.port_forwarder.WaitDevicePortReady(self.forwarder_device_port)
+        # Check whether the forwarder is ready on the device.
+        self.is_ready = self.forwarder_device_port and \
+            self.port_forwarder.WaitDevicePortReady(self.forwarder_device_port)
 
-    # Wake up the request handler thread.
-    self.ready_event.set()
-    # Keep thread running until Stop() gets called.
-    self.stop_event.wait()
-    if self.process.poll() is None:
-      self.process.kill()
-      # Wait for process to actually terminate.
-      # (crbug.com/946475)
-      self.process.wait()
+      # Wake up the request handler thread.
+      self.ready_event.set()
+      # Keep thread running until Stop() gets called.
+      self.stop_event.wait()
+      if self.process.poll() is None:
+        self.process.kill()
+        # Wait for process to actually terminate.
+        # (crbug.com/946475)
+        self.process.wait()
 
-    self.port_forwarder.Unmap(self.forwarder_device_port)
-    self.process = None
-    self.is_ready = False
-    if self.pipe_in:
-      os.close(self.pipe_in)
-      self.pipe_in = None
+      self.port_forwarder.Unmap(self.forwarder_device_port)
+      self.process = None
+      self.is_ready = False
+    finally:
+      if pipe_in >= 0:
+        os.close(pipe_in)
+      if pipe_out >= 0:
+        os.close(pipe_out)
     _logger.info('Test-server has died.')
     self.wait_event.set()
 
