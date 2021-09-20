@@ -5,10 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_LOADER_WIN_H_
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_LOADER_WIN_H_
 
-#include <windows.h>
-
-#include <userenv.h>
-
 #include <memory>
 #include <string>
 

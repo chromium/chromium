@@ -4,11 +4,15 @@
 
 #include "components/policy/core/common/policy_loader_win.h"
 
+// Must be included before lm.h
+#include <windows.h>
+
 #include <lm.h>       // For NetGetJoinInformation
 // <security.h> needs this.
 #define SECURITY_WIN32 1
 #include <security.h>  // For GetUserNameEx()
 #include <stddef.h>
+#include <userenv.h>
 
 #include <memory>
 #include <string>
