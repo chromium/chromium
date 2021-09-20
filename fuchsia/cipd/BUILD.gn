@@ -271,6 +271,7 @@ build_id_dir(_build_ids_target) {
   deps = [
     ":test_packages_for_deps",
     "//fuchsia/engine:web_engine",
+    "//fuchsia/engine:web_engine_shell_pkg",
     "//fuchsia/runners:cast_runner_pkg",
     "//fuchsia/runners:web_runner_pkg",
   ]
