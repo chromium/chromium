@@ -84752,6 +84752,9 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="UserDataMoveResult">
+  <obsolete>
+    Removed from code in M96.
+  </obsolete>
   <int value="0" label="CreateTargetFailure">
     Failed to create a temporary directory within User Data into which the
     contents are to be moved for subsequent deletion.

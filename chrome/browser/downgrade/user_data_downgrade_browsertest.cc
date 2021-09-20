@@ -190,9 +190,6 @@ class UserDataDowngradeBrowserCopyAndCleanTest
       // Verify that the downgrade was detected and that the move took place.
       histogram_tester_->ExpectUniqueSample(
           "Downgrade.Type", 1 /* Type::kAdministrativeWipe */, 1);
-      histogram_tester_->ExpectUniqueSample(
-          "Downgrade.UserDataDirMove.Result",
-          1 /* UserDataMoveResult::kSuccess */, 1);
     } else {
       // Verify the renamed user data directory has been deleted.
       EXPECT_FALSE(base::DirectoryExists(moved_user_data_dir()));

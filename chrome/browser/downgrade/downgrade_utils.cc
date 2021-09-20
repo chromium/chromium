@@ -53,21 +53,21 @@ bool MoveWithoutFallback(const base::FilePath& source,
 #endif
 }
 
-absl::optional<int> MoveContents(const base::FilePath& source,
-                                 const base::FilePath& target,
-                                 ExclusionPredicate exclusion_predicate) {
+bool MoveContents(const base::FilePath& source,
+                  const base::FilePath& target,
+                  ExclusionPredicate exclusion_predicate) {
   // Implementation note: moving is better than deleting in this case since it
   // avoids certain failure modes. For example: on Windows, a file that is open
   // with FILE_SHARE_DELETE can be moved or marked for deletion. If it is moved
   // aside, the containing directory may then be eligible for deletion. If, on
   // the other hand, it is marked for deletion, it cannot be moved nor can its
   // containing directory be moved or deleted.
-  if (!base::CreateDirectory(target)) {
+  bool all_succeeded = base::CreateDirectory(target);
+  if (!all_succeeded) {
     PLOG(ERROR) << target;
-    return absl::nullopt;
+    return all_succeeded;
   }
 
-  int failure_count = 0;
   base::FileEnumerator enumerator(
       source, false,
       base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
@@ -90,17 +90,16 @@ absl::optional<int> MoveContents(const base::FilePath& source,
     if (MoveWithoutFallback(path, this_target))
       continue;
     if (!info.IsDirectory()) {
-      ++failure_count;
+      all_succeeded = false;
       continue;
     }
-    failure_count +=
-        MoveContents(path, this_target, ExclusionPredicate()).value_or(0);
+    MoveContents(path, this_target, ExclusionPredicate());
     // If everything within the directory was moved, it may be possible to
     // delete it now.
     if (!base::DeleteFile(path))
-      ++failure_count;
+      all_succeeded = false;
   }
-  return failure_count;
+  return all_succeeded;
 }
 
 }  // namespace downgrade

@@ -122,11 +122,11 @@ void MoveFolderForLaterDeletion(const base::FilePath& source,
                                 const base::FilePath& target) {
   if (MoveWithoutFallback(source, target))
     return;
-  auto failure_count =
-      MoveContents(source, base::GetUniquePath(target), ExclusionPredicate());
   // If some files failed to be moved, try and delete them immediately.
-  if (failure_count.has_value())
+  if (!MoveContents(source, base::GetUniquePath(target),
+                    ExclusionPredicate())) {
     base::DeletePathRecursively(source);
+  }
 }
 
 }  // namespace

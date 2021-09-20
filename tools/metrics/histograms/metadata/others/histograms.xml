@@ -5438,7 +5438,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Downgrade.UserDataDirMove.FailureCount" units="count"
     expires_after="2020-12-31">
+  <obsolete>
+    Deprecated as of M96
+  </obsolete>
   <owner>grt@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
   <summary>
     The number of items within User Data that could not be moved aside following
     a downgrade.
@@ -5447,6 +5451,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Downgrade.UserDataDirMove.Result" enum="UserDataMoveResult"
     expires_after="2020-12-31">
+  <obsolete>
+    Deprecated as of M96
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>
