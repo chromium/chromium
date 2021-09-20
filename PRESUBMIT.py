@@ -1476,6 +1476,51 @@ def CheckNoDISABLETypoInTests(input_api, output_api):
           '\n'.join(problems))
   ]
 
+def CheckForgettingMAYBEInTests(input_api, output_api):
+  """Checks to make sure tests disabled conditionally are not missing a
+  corresponding MAYBE_ prefix.
+  """
+  # Expect at least a lowercase character in the test name. This helps rule out
+  # false positives with macros wrapping the actual tests name.
+  define_maybe_pattern = input_api.re.compile(
+      r'^\#define MAYBE_(?P<test_name>\w*[a-z]\w*)')
+  test_maybe_pattern = r'^\s*\w*TEST[^(]*\(\s*\w+,\s*MAYBE_{test_name}\)'
+  suite_maybe_pattern = r'^\s*\w*TEST[^(]*\(\s*MAYBE_{test_name}[\),]'
+  warnings = []
+
+  # Read the entire files. We can't just read the affected lines, forgetting to
+  # add MAYBE_ on a change would not show up otherwise.
+  for f in input_api.AffectedFiles(False):
+    if not 'test' in f.LocalPath() or not f.LocalPath().endswith('.cc'):
+      continue
+    contents = input_api.ReadFile(f)
+    lines = contents.splitlines(True)
+    current_position = 0
+    warning_test_names = set()
+    for line_num, line in enumerate(lines, start=1):
+      current_position += len(line)
+      maybe_match = define_maybe_pattern.search(line)
+      if maybe_match:
+        test_name = maybe_match.group('test_name')
+        # Do not warn twice for the same test.
+        if (test_name in warning_test_names):
+          continue
+        warning_test_names.add(test_name)
+
+        # Attempt to find the corresponding MAYBE_ test or suite, starting from
+        # the current position.
+        test_match = input_api.re.compile(
+            test_maybe_pattern.format(test_name=test_name),
+            input_api.re.MULTILINE).search(contents, current_position)
+        suite_match = input_api.re.compile(
+            suite_maybe_pattern.format(test_name=test_name),
+            input_api.re.MULTILINE).search(contents, current_position)
+        if not test_match and not suite_match:
+          warnings.append(
+              output_api.PresubmitPromptWarning(
+                '%s:%d found MAYBE_ defined without corresponding test %s' %
+                (f.LocalPath(), line_num, test_name)))
+  return warnings
 
 def CheckDCHECK_IS_ONHasBraces(input_api, output_api):
   """Checks to make sure DCHECK_IS_ON() does not skip the parentheses."""

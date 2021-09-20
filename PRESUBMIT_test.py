@@ -3415,6 +3415,101 @@ class DISABLETypoInTest(unittest.TestCase):
                                                    MockOutputApi())
     self.assertEqual(0, len(results))
 
+class ForgettingMAYBEInTests(unittest.TestCase):
+  def testPositive(self):
+    test = (
+        '#if defined(HAS_ENERGY)\n'
+        '#define MAYBE_CastExplosion DISABLED_CastExplosion\n'
+        '#else\n'
+        '#define MAYBE_CastExplosion CastExplosion\n'
+        '#endif\n'
+        'TEST_F(ArchWizard, CastExplosion) {\n'
+        '#if defined(ARCH_PRIEST_IN_PARTY)\n'
+        '#define MAYBE_ArchPriest ArchPriest\n'
+        '#else\n'
+        '#define MAYBE_ArchPriest DISABLED_ArchPriest\n'
+        '#endif\n'
+        'TEST_F(ArchPriest, CastNaturesBounty) {\n'
+        '#if !defined(CRUSADER_IN_PARTY)\n'
+        '#define MAYBE_Crusader \\\n'
+        '    DISABLED_Crusader \n'
+        '#else\n'
+        '#define MAYBE_Crusader \\\n'
+        '    Crusader\n'
+        '#endif\n'
+        '  TEST_F(\n'
+        '    Crusader,\n'
+        '    CastTaunt) { }\n'
+        '#if defined(LEARNED_BASIC_SKILLS)\n'
+        '#define MAYBE_CastSteal \\\n'
+        '    DISABLED_CastSteal \n'
+        '#else\n'
+        '#define MAYBE_CastSteal \\\n'
+        '    CastSteal\n'
+        '#endif\n'
+        '  TEST_F(\n'
+        '    ThiefClass,\n'
+        '    CastSteal) { }\n'
+    )
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('fantasyworld/classes_unittest.cc', test.splitlines()),
+    ]
+    results = PRESUBMIT.CheckForgettingMAYBEInTests(mock_input_api,
+                                                    MockOutputApi())
+    self.assertEqual(4, len(results))
+    self.assertTrue('CastExplosion' in results[0].message)
+    self.assertTrue('fantasyworld/classes_unittest.cc:2' in results[0].message)
+    self.assertTrue('ArchPriest' in results[1].message)
+    self.assertTrue('fantasyworld/classes_unittest.cc:8' in results[1].message)
+    self.assertTrue('Crusader' in results[2].message)
+    self.assertTrue('fantasyworld/classes_unittest.cc:14' in results[2].message)
+    self.assertTrue('CastSteal' in results[3].message)
+    self.assertTrue('fantasyworld/classes_unittest.cc:24' in results[3].message)
+
+  def testNegative(self):
+    test = (
+        '#if defined(HAS_ENERGY)\n'
+        '#define MAYBE_CastExplosion DISABLED_CastExplosion\n'
+        '#else\n'
+        '#define MAYBE_CastExplosion CastExplosion\n'
+        '#endif\n'
+        'TEST_F(ArchWizard, MAYBE_CastExplosion) {\n'
+        '#if defined(ARCH_PRIEST_IN_PARTY)\n'
+        '#define MAYBE_ArchPriest ArchPriest\n'
+        '#else\n'
+        '#define MAYBE_ArchPriest DISABLED_ArchPriest\n'
+        '#endif\n'
+        'TEST_F(MAYBE_ArchPriest, CastNaturesBounty) {\n'
+        '#if !defined(CRUSADER_IN_PARTY)\n'
+        '#define MAYBE_Crusader \\\n'
+        '    DISABLED_Crusader \n'
+        '#else\n'
+        '#define MAYBE_Crusader \\\n'
+        '    Crusader\n'
+        '#endif\n'
+        '  TEST_F(\n'
+        '    MAYBE_Crusader,\n'
+        '    CastTaunt) { }\n'
+        '#if defined(LEARNED_BASIC_SKILLS)\n'
+        '#define MAYBE_CastSteal \\\n'
+        '    DISABLED_CastSteal \n'
+        '#else\n'
+        '#define MAYBE_CastSteal \\\n'
+        '    CastSteal\n'
+        '#endif\n'
+        '  TEST_F(\n'
+        '    ThiefClass,\n'
+        '    MAYBE_CastSteal) { }\n'
+    )
+
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('fantasyworld/classes_unittest.cc', test.splitlines()),
+    ]
+    results = PRESUBMIT.CheckForgettingMAYBEInTests(mock_input_api,
+                                                    MockOutputApi())
+    self.assertEqual(0, len(results))
 
 class CheckFuzzTargetsTest(unittest.TestCase):
 
