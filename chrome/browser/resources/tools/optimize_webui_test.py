@@ -112,7 +112,7 @@ import '../strings.m.js';
 alert('hello from element_in_dir');
 ''')
     self._write_file_to_src_dir('ui.js', '''
-import 'chrome://fake-host/strings.m.js';
+import './strings.m.js';
 import './element.js';
 import './element_in_dir/element_in_dir.js';
 ''')

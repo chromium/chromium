@@ -92,7 +92,7 @@ def _generate_rollup_config(tmp_out_dir, path_to_plugin, in_path, host_url,
     export default ({{
       plugins: [
         plugin('{in_path}', '{host_url}', {exclude_list},
-               {external_path_list}) ]
+               {external_path_list}, /* allowEmptyExtension= */ false) ]
     }});
     '''.format(plugin_path=path_to_plugin.replace('\\', '/'),
                in_path=in_path.replace('\\', '/'),
@@ -196,10 +196,9 @@ def _optimize(in_folder, args):
   tmp_out_dir = tempfile.mkdtemp(dir=out_path).replace('\\', '/')
 
   excludes = _BASE_EXCLUDES + [
-    # This file is dynamically created by C++. Need to specify an exclusion
-    # URL for both the relative URL and chrome:// URL syntax.
+    # This file is dynamically created by C++. Should always be imported with a
+    # relative path.
     'strings.m.js',
-    '%s/strings.m.js' % args.host_url,
   ]
   excludes.extend(args.exclude or [])
   external_paths = args.external_paths or []

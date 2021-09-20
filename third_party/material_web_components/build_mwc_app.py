@@ -106,7 +106,7 @@ def _generate_rollup_config(tmp_out_dir, path_to_plugin, in_path, host_url,
     export default ({{
       plugins: [
         plugin('{in_path}', '{host_url}', {exclude_list},
-               {external_path_list}) ]
+               {external_path_list}, /* allowEmptyExtension= */ true) ]
     }});
     '''.format(plugin_path=path_to_plugin.replace('\\', '/'),
                in_path=in_path.replace('\\', '/'),
