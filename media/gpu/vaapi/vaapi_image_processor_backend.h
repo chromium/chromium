@@ -7,13 +7,16 @@
 
 #include <memory>
 
+#include "base/containers/small_map.h"
 #include "base/macros.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
 class VaapiWrapper;
+class VASurface;
 
 // ImageProcessor that is hardware accelerated with VA-API. This ImageProcessor
 // supports only dma-buf and GpuMemoryBuffer VideoFrames for both input and
@@ -41,6 +44,7 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
   void Process(scoped_refptr<VideoFrame> input_frame,
                scoped_refptr<VideoFrame> output_frame,
                FrameReadyCB cb) override;
+  void Reset() override;
 
  private:
   VaapiImageProcessorBackend(
@@ -53,7 +57,19 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
   ~VaapiImageProcessorBackend() override;
 
+  const VASurface* GetSurfaceForVideoFrame(scoped_refptr<VideoFrame> frame,
+                                           bool use_protected);
+
   const scoped_refptr<VaapiWrapper> vaapi_wrapper_;
+  bool needs_context_ = false;
+
+  // VASurfaces are created via importing dma-bufs into libva using
+  // |vaapi_wrapper_|->CreateVASurfaceForPixmap(). The following map keeps those
+  // VASurfaces for reuse according to the expectations of libva
+  // vaDestroySurfaces(): "Surfaces can only be destroyed after all contexts
+  // using these surfaces have been destroyed."
+  base::small_map<std::map<gfx::GpuMemoryBufferId, scoped_refptr<VASurface>>>
+      allocated_va_surfaces_;
 };
 
 }  // namespace media

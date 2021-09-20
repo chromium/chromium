@@ -156,6 +156,47 @@ VaapiImageProcessorBackend::VaapiImageProcessorBackend(
 
 VaapiImageProcessorBackend::~VaapiImageProcessorBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
+
+  // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
+  vaapi_wrapper_->DestroyContext();
+  allocated_va_surfaces_.clear();
+}
+
+const VASurface* VaapiImageProcessorBackend::GetSurfaceForVideoFrame(
+    scoped_refptr<VideoFrame> frame,
+    bool use_protected) {
+  if (frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER ||
+      !frame->HasGpuMemoryBuffer()) {
+    return nullptr;
+  }
+
+  const gfx::GpuMemoryBufferId gmb_id = frame->GetGpuMemoryBuffer()->GetId();
+  if (base::Contains(allocated_va_surfaces_, gmb_id)) {
+    const VASurface* surface = allocated_va_surfaces_[gmb_id].get();
+    CHECK_EQ(frame->GetGpuMemoryBuffer()->GetSize(), surface->size());
+    const unsigned int format = VaapiWrapper::BufferFormatToVARTFormat(
+        frame->GetGpuMemoryBuffer()->GetFormat());
+    CHECK_NE(format, 0u);
+    CHECK_EQ(format, surface->format());
+    return surface;
+  }
+
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      CreateNativePixmapDmaBuf(frame.get());
+  if (!pixmap) {
+    VLOGF(1) << "Failed to create NativePixmap from VideoFrame";
+    return nullptr;
+  }
+
+  auto va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap),
+                                                             use_protected);
+  if (!va_surface) {
+    VLOGF(1) << "Failed to create VASurface from NativePixmap";
+    return nullptr;
+  }
+
+  allocated_va_surfaces_[gmb_id] = std::move(va_surface);
+  return allocated_va_surfaces_[gmb_id].get();
 }
 
 void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
@@ -181,33 +222,23 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  DCHECK(input_frame);
-  DCHECK(output_frame);
-  scoped_refptr<gfx::NativePixmap> input_pixmap =
-      CreateNativePixmapDmaBuf(input_frame.get());
-  if (!input_pixmap) {
-    VLOGF(1) << "Failed to create NativePixmap from VideoFrame";
+  if (needs_context_ && !vaapi_wrapper_->CreateContext(gfx::Size())) {
+    VLOGF(1) << "Failed to create context for VPP";
     error_cb_.Run();
     return;
   }
+  needs_context_ = false;
 
-  auto src_va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(
-      std::move(input_pixmap), use_protected);
+  DCHECK(input_frame);
+  DCHECK(output_frame);
+  const VASurface* src_va_surface =
+      GetSurfaceForVideoFrame(input_frame, use_protected);
   if (!src_va_surface) {
     error_cb_.Run();
     return;
   }
-
-  scoped_refptr<gfx::NativePixmap> output_pixmap =
-      CreateNativePixmapDmaBuf(output_frame.get());
-  if (!output_pixmap) {
-    VLOGF(1) << "Failed to create NativePixmap from VideoFrame";
-    error_cb_.Run();
-    return;
-  }
-
-  auto dst_va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(
-      std::move(output_pixmap), use_protected);
+  const VASurface* dst_va_surface =
+      GetSurfaceForVideoFrame(output_frame, use_protected);
   if (!dst_va_surface) {
     error_cb_.Run();
     return;
@@ -244,6 +275,16 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
 
   output_frame->set_timestamp(input_frame->timestamp());
   std::move(cb).Run(std::move(output_frame));
+}
+
+void VaapiImageProcessorBackend::Reset() {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
+
+  // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
+  vaapi_wrapper_->DestroyContext();
+  allocated_va_surfaces_.clear();
+  needs_context_ = true;
 }
 
 }  // namespace media
