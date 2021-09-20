@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+FAIL log(1) should be used-value-equivalent to 0 assert_equals: log(1) and 0 serialize to the same thing in used values. expected "matrix(0, 0, 0, 0, 0, 0)" but got "none"
+FAIL log(10, 10) should be used-value-equivalent to 1 assert_equals: log(10, 10) and 1 serialize to the same thing in used values. expected "matrix(1, 0, 0, 1, 0, 0)" but got "none"
+FAIL exp(0) should be used-value-equivalent to 1 assert_equals: exp(0) and 1 serialize to the same thing in used values. expected "matrix(1, 0, 0, 1, 0, 0)" but got "none"
+FAIL calc(log(e) ) should be used-value-equivalent to 1 Cannot read properties of undefined (reading 'split')
+FAIL calc(e - exp(1)) should be used-value-equivalent to 0 Cannot read properties of undefined (reading 'split')
+FAIL calc(log( 1 + 1 + 2 /2 - 2) ) should be used-value-equivalent to 0 Cannot read properties of undefined (reading 'split')
+PASS calc(log(1) + exp(0)) should be used-value-equivalent to 2
+PASS calc(exp(log(1) + exp(0)*2)) should be used-value-equivalent to 7.4
+PASS calc(log(log(1) + exp(0)*10)) should be used-value-equivalent to 2.3
+PASS calc(log(log(1) + exp(0)*20, 10)) should be used-value-equivalent to 1.3
+FAIL calc(log(e)  / log(e) + exp(0)*2 * log(e)) should be used-value-equivalent to 3 Cannot read properties of undefined (reading 'split')
+FAIL calc(log((1 + 1) /2)  / log(e) + exp(0*1)*2 * log(e)) should be used-value-equivalent to 2 Cannot read properties of undefined (reading 'split')
+FAIL calc(log((3 + 1) /2, 2)  / log(e) + exp(0*1)*2 * log(e)) should be used-value-equivalent to 3 Cannot read properties of undefined (reading 'split')
+FAIL calc(log((3 + 1) /2, 2)  / log(e, e) + exp(0*1)*2 * log(e, e)) should be used-value-equivalent to 3 Cannot read properties of undefined (reading 'split')
+FAIL calc(exp(0) + 1) should be used-value-equivalent to 2 Cannot read properties of undefined (reading 'split')
+FAIL calc(log(exp(1))) should be used-value-equivalent to 1 Cannot read properties of undefined (reading 'split')
+FAIL calc(log(exp(log(e)))) should be used-value-equivalent to 1 Cannot read properties of undefined (reading 'split')
+Harness: the test ran to completion.
+
