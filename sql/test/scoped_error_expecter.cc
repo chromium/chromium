@@ -10,11 +10,6 @@
 namespace sql {
 namespace test {
 
-// static
-int ScopedErrorExpecter::SQLiteLibVersionNumber() {
-  return sqlite3_libversion_number();
-}
-
 ScopedErrorExpecter::ScopedErrorExpecter()
     : checked_(false) {
   callback_ = base::BindRepeating(&ScopedErrorExpecter::ErrorSeen,
