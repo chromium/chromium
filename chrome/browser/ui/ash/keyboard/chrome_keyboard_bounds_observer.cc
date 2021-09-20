@@ -70,7 +70,8 @@ void ChromeKeyboardBoundsObserver::OnKeyboardVisibleBoundsChanged(
 
     while (content::RenderWidgetHost* host = hosts->GetNextHost()) {
       content::RenderWidgetHostView* view = host->GetView();
-      view->NotifyVirtualKeyboardOverlayRect(screen_bounds);
+      if (view)
+        view->NotifyVirtualKeyboardOverlayRect(screen_bounds);
     }
   }
 }
