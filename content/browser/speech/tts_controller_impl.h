@@ -46,6 +46,8 @@ class CONTENT_EXPORT TtsControllerImpl
   // Get the single instance of this class.
   static TtsControllerImpl* GetInstance();
 
+  static void SkipAddNetworkChangeObserverForTests(bool enabled);
+
   void SetStopSpeakingWhenHidden(bool value);
 
   // TtsController methods
@@ -193,6 +195,10 @@ class CONTENT_EXPORT TtsControllerImpl
 
   // Whether to allow remote voices.
   bool allow_remote_voices_ = false;
+
+  // Skip |AddNetworkChangeObserver| call during the creation of tts_controller
+  // for unittests as network change notifier wouldn't have been created.
+  static bool skip_add_network_change_observer_for_tests_;
 
   DISALLOW_COPY_AND_ASSIGN(TtsControllerImpl);
 };

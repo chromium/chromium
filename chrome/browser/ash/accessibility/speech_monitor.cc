@@ -19,6 +19,7 @@ constexpr int kPrintExpectationDelayMs = 3000;
 }  // namespace
 
 SpeechMonitor::SpeechMonitor() {
+  content::TtsController::SkipAddNetworkChangeObserverForTests(true);
   content::TtsController::GetInstance()->SetTtsPlatform(this);
 }
 

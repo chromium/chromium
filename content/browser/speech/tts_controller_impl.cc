@@ -78,6 +78,10 @@ TtsController* TtsController::GetInstance() {
   return TtsControllerImpl::GetInstance();
 }
 
+void TtsController::SkipAddNetworkChangeObserverForTests(bool enabled) {
+  return TtsControllerImpl::SkipAddNetworkChangeObserverForTests(enabled);
+}
+
 // IMPORTANT!
 // These values are written to logs.  Do not renumber or delete
 // existing items; add new entries to the end of the list.
@@ -103,8 +107,16 @@ enum class UMATextToSpeechEvent {
 //
 
 // static
+bool TtsControllerImpl::skip_add_network_change_observer_for_tests_ = false;
+
+// static
 TtsControllerImpl* TtsControllerImpl::GetInstance() {
   return base::Singleton<TtsControllerImpl>::get();
+}
+
+// static
+void TtsControllerImpl::SkipAddNetworkChangeObserverForTests(bool enabled) {
+  TtsControllerImpl::skip_add_network_change_observer_for_tests_ = enabled;
 }
 
 void TtsControllerImpl::SetStopSpeakingWhenHidden(bool value) {
@@ -112,7 +124,9 @@ void TtsControllerImpl::SetStopSpeakingWhenHidden(bool value) {
 }
 
 TtsControllerImpl::TtsControllerImpl() {
-  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  if (!skip_add_network_change_observer_for_tests_) {
+    net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  }
   OnNetworkChanged(net::NetworkChangeNotifier::GetConnectionType());
 }
 

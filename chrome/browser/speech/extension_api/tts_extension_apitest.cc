@@ -270,6 +270,7 @@ class TtsApiTest : public ExtensionApiTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+    content::TtsController::SkipAddNetworkChangeObserverForTests(true);
     content::TtsController* tts_controller =
         content::TtsController::GetInstance();
     tts_controller->SetTtsPlatform(&mock_platform_impl_);

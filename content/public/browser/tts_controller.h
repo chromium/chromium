@@ -90,6 +90,8 @@ class CONTENT_EXPORT TtsController {
   // Get the single instance of this class.
   static TtsController* GetInstance();
 
+  static void SkipAddNetworkChangeObserverForTests(bool enabled);
+
   // Returns true if we're currently speaking an utterance.
   virtual bool IsSpeaking() = 0;
 
