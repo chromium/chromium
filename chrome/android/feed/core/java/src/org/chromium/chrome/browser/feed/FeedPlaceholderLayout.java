@@ -80,9 +80,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        int contentPadding =
-                mResources.getDimensionPixelSize(R.dimen.content_suggestions_card_modern_padding);
-        lp.setMargins(contentPadding, 0, contentPadding, dpToPx(CARD_MARGIN_DP));
+        lp.bottomMargin = dpToPx(CARD_MARGIN_DP);
 
         // Set the First placeholder container - an image-right card. If it's in landscape mode, the
         // placeholder should always show in dense mode.

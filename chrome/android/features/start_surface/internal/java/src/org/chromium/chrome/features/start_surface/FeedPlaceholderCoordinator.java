@@ -9,6 +9,7 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -40,6 +41,11 @@ public class FeedPlaceholderCoordinator {
         mFeedPlaceholderView.setBlankHeaderHeight(mContext.getResources().getDimensionPixelSize(
                 R.dimen.snippets_article_header_menu_size));
         mParentView.addView(mFeedPlaceholderView);
+        MarginLayoutParams lp = (MarginLayoutParams) mFeedPlaceholderView.getLayoutParams();
+        int contentPadding = mContext.getResources().getDimensionPixelSize(
+                R.dimen.content_suggestions_card_modern_padding);
+        lp.setMargins(contentPadding, 0, contentPadding, 0);
+        mFeedPlaceholderView.requestLayout();
     }
 
     public void destroy() {
