@@ -235,7 +235,7 @@ ScriptPromise MediaDevices::getDisplayMedia(
     ScriptState* script_state,
     const MediaStreamConstraints* options,
     ExceptionState& exception_state) {
-  const ExecutionContext* const context = GetExecutionContext();
+  ExecutionContext* const context = GetExecutionContext();
   if (!context) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,

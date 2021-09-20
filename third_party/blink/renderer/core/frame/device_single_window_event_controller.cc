@@ -88,7 +88,7 @@ bool DeviceSingleWindowEventController::IsSameSecurityOriginAsMainFrame()
 
 bool DeviceSingleWindowEventController::CheckPolicyFeatures(
     const Vector<mojom::blink::PermissionsPolicyFeature>& features) const {
-  const LocalDOMWindow& window = GetWindow();
+  LocalDOMWindow& window = GetWindow();
   return std::all_of(features.begin(), features.end(),
                      [&window](mojom::blink::PermissionsPolicyFeature feature) {
                        return window.IsFeatureEnabled(

@@ -264,7 +264,7 @@ bool IsFeatureValidForMode(device::mojom::XRSessionFeature feature,
   }
 }
 
-bool HasRequiredPermissionsPolicy(const ExecutionContext* context,
+bool HasRequiredPermissionsPolicy(ExecutionContext* context,
                                   device::mojom::XRSessionFeature feature) {
   if (!context)
     return false;

@@ -737,7 +737,7 @@ void ValidateAndConvertPaymentMethodData(
   }
 }
 
-bool AllowedToUsePaymentRequest(const ExecutionContext* execution_context) {
+bool AllowedToUsePaymentRequest(ExecutionContext* execution_context) {
   // To determine whether a Document object |document| is allowed to use the
   // feature indicated by attribute name |allowpaymentrequest|, run these steps:
 

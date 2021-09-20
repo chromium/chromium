@@ -332,10 +332,12 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // Report-To endpoints, via ReportPermissionsPolicyViolation(), if the feature
   // is disabled. The optional ConsoleMessage will be sent to the console if
   // present, or else a default message will be used instead.
+  bool IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature) const;
   bool IsFeatureEnabled(
       mojom::blink::PermissionsPolicyFeature,
-      ReportOptions report_on_failure = ReportOptions::kDoNotReport,
-      const String& message = g_empty_string) const;
+      ReportOptions report_option = ReportOptions::kDoNotReport,
+      const String& message = g_empty_string);
+
   bool IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature,
       ReportOptions report_option = ReportOptions::kDoNotReport,

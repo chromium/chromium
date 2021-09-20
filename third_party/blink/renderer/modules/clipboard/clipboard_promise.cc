@@ -413,7 +413,7 @@ void ClipboardPromise::RequestPermission(
   ExecutionContext* context = GetExecutionContext();
   if (!context)
     return;
-  const LocalDOMWindow& window = *To<LocalDOMWindow>(context);
+  LocalDOMWindow& window = *To<LocalDOMWindow>(context);
   DCHECK(window.IsSecureContext());  // [SecureContext] in IDL
 
   if (!window.document()->hasFocus()) {
