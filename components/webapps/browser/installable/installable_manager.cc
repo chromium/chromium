@@ -723,11 +723,6 @@ bool InstallableManager::IsManifestValidForWebApp(
 void InstallableManager::CheckServiceWorker() {
   DCHECK(!worker_->fetched);
   DCHECK(!blink::IsEmptyManifest(manifest()));
-  // Service workers need a StorageKey (storage partitioning key), since we only
-  // install for top-level frames we can assume the StorageKey will always be in
-  // a 1P context. DCHECK this just to be sure.
-  DCHECK(GetWebContents() &&
-         GetWebContents()->GetMainFrame()->GetParent() == nullptr);
 
   if (!service_worker_context_)
     return;
