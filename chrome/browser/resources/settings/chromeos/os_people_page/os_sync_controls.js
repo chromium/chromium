@@ -97,6 +97,14 @@ Polymer({
       type: Object,
       value: () => new Set([chromeos.settings.mojom.Setting.kSplitSyncOnOff]),
     },
+
+    /** @private */
+    syncConsentOptionalEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('syncConsentOptionalEnabled');
+      },
+    },
   },
 
   /** @private {?settings.OsSyncBrowserProxy} */
@@ -219,6 +227,7 @@ Polymer({
    * @private
    */
   handleOsSyncPrefsChanged_(osSyncFeatureEnabled, osSyncPrefs) {
+    assert(osSyncFeatureEnabled || this.syncConsentOptionalEnabled_);
     this.osSyncFeatureEnabled = osSyncFeatureEnabled;
     this.osSyncPrefs = osSyncPrefs;
 
@@ -239,6 +248,7 @@ Polymer({
 
   /** @private */
   onSyncOnOffButtonClick_() {
+    assert(this.syncConsentOptionalEnabled_);
     this.browserProxy_.setOsSyncFeatureEnabled(!this.osSyncFeatureEnabled);
     settings.recordSettingChange();
   },

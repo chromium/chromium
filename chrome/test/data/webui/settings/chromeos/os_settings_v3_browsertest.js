@@ -217,8 +217,7 @@ var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
   get featureList() {
     return {
       enabled: super.featureList.enabled.concat([
-        // TODO(https://crbug.com/1227693): Remove kSplitSettingsSync.
-        'chromeos::features::kSplitSettingsSync',
+        'chromeos::features::kSyncConsentOptional',
         'chromeos::features::kSyncSettingsCategorization'
       ])
     };
@@ -228,6 +227,30 @@ var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
 TEST_F('OSSettingsPeoplePageOsSyncV3Test', 'AllJsTests', () => {
   mocha.run();
 });
+
+// eslint-disable-next-line no-var
+var OSSettingsPeoplePageOsSyncOptionalDisabledV3Test =
+    class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/' +
+      'os_sync_controls_optional_disabled_test.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat(
+          ['chromeos::features::kSyncSettingsCategorization']),
+      disabled: ['chromeos::features::kSyncConsentOptional']
+    };
+  }
+};
+
+TEST_F('OSSettingsPeoplePageOsSyncOptionalDisabledV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
 
 // eslint-disable-next-line no-var
 var OSSettingsPeoplePageV3Test = class extends OSSettingsV3BrowserTest {

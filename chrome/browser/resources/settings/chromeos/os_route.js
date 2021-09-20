@@ -99,14 +99,14 @@ cr.define('settings', function() {
           createSection(r.BASIC, mojom.PEOPLE_SECTION_PATH, Section.kPeople);
       r.ACCOUNT_MANAGER = createSubpage(
           r.OS_PEOPLE, mojom.MY_ACCOUNTS_SUBPAGE_PATH, Subpage.kMyAccounts);
-      if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
+      if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
         r.OS_SYNC =
             createSubpage(r.OS_PEOPLE, mojom.SYNC_SUBPAGE_PATH, Subpage.kSync);
       }
       r.SYNC = createSubpage(
           r.OS_PEOPLE, mojom.SYNC_DEPRECATED_SUBPAGE_PATH,
           Subpage.kSyncDeprecated);
-      if (!loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
+      if (!loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
         r.SYNC_ADVANCED = createSubpage(
             r.SYNC, mojom.SYNC_DEPRECATED_ADVANCED_SUBPAGE_PATH,
             Subpage.kSyncDeprecatedAdvanced);

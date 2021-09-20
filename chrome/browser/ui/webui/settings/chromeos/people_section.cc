@@ -613,11 +613,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  // TODO(https://crbug.com/1227694): Remove this after migrating all JS usages
-  // of splitSettingsSyncEnabled to syncSettingsCategorizationEnabled and
-  // syncConsentOptionalEnabled.
-  html_source->AddBoolean("splitSettingsSyncEnabled",
-                          chromeos::features::IsSplitSettingsSyncEnabled());
   html_source->AddBoolean(
       "syncSettingsCategorizationEnabled",
       chromeos::features::IsSyncSettingsCategorizationEnabled());

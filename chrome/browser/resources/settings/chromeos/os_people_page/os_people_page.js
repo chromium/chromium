@@ -26,10 +26,11 @@ Polymer({
       notify: true,
     },
 
-    splitSettingsSyncEnabled_: {
+    /** @private */
+    syncSettingsCategorizationEnabled_: {
       type: Boolean,
       value() {
-        return loadTimeData.getBoolean('splitSettingsSyncEnabled');
+        return loadTimeData.getBoolean('syncSettingsCategorizationEnabled');
       },
     },
 
@@ -364,7 +365,7 @@ Polymer({
    * @private
    */
   getSyncRowLabel_() {
-    if (this.splitSettingsSyncEnabled_) {
+    if (this.syncSettingsCategorizationEnabled_) {
       return this.i18n('osSyncPageTitle');
     } else {
       return this.i18n('syncAndNonPersonalizedServices');
@@ -485,7 +486,7 @@ Polymer({
 
   /** @private */
   onSyncTap_() {
-    if (this.splitSettingsSyncEnabled_) {
+    if (this.syncSettingsCategorizationEnabled_) {
       settings.Router.getInstance().navigateTo(settings.routes.OS_SYNC);
       return;
     }
