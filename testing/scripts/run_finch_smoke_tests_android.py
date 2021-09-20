@@ -63,9 +63,13 @@ _LOGCAT_FILTERS = [
   'StrictMode:D',
   'WebView*:v'
 ]
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+class TestResult(object):
+  Pass = 'PASS'
+  Fail = 'FAIL'
+
 
 @lru_cache
 def get_package_name(apk_path):
@@ -91,10 +95,13 @@ def install_apks(device, options):
   Returns:
     None
   """
-  device.Uninstall(get_package_name(options.webview_shell_apk))
-  device.Install(options.webview_shell_apk, reinstall=True)
-  with webview_app.UseWebViewProvider(device,
-                                      options.webview_provider_apk):
+  device.Uninstall(get_package_name(options.browser_apk))
+  device.Install(options.browser_apk, reinstall=True)
+  if options.webview_provider_apk:
+    with webview_app.UseWebViewProvider(device,
+                                        options.webview_provider_apk):
+      yield
+  else:
     yield
 
 
@@ -108,7 +115,7 @@ def install_seed(device, options):
   Returns:
     None
   """
-  shell_pkg_name = get_package_name(options.webview_shell_apk)
+  shell_pkg_name = get_package_name(options.browser_apk)
   app_data_dir = posixpath.join(
       device.GetApplicationDataDirectory(shell_pkg_name), 'app_webview')
   device.RunShellCommand(['mkdir', '-p', app_data_dir], run_as=shell_pkg_name)
@@ -130,22 +137,22 @@ def install_seed(device, options):
   device.RunShellCommand(['chown', user_id, seed_new_path], as_root=True)
 
 
-def run_tests(device, options, test_suffix, webview_flags):
+def run_tests(device, options, test_suffix, flags):
   """Run browser test on test device
 
   Args:
     device: Interface for device
     options: Command line options
     test_suffix: Suffix for log output
-    webview_flags: Flags for webview browser
+    flags: Flags for browser
 
   Returns:
     True if browser did not crash or False if the browser crashed
   """
-  webview_flags.ReplaceFlags(['--webview-verbose-logging'])
-  shell_pkg_name = get_package_name(options.webview_shell_apk)
+  flags.ReplaceFlags(options.browser_command_line_arg)
+  browser_pkg_name = get_package_name(options.browser_apk)
   activity_name = (
-      '%s/org.chromium.webview_shell.WebViewBrowserActivity' % shell_pkg_name)
+      '%s/%s' % (browser_pkg_name, options.browser_activity_name))
   logger.info('Starting activity %s' % activity_name)
 
   device.RunShellCommand([
@@ -167,7 +174,7 @@ def run_tests(device, options, test_suffix, webview_flags):
   else:
     logger.error('Browser is not running ' + test_suffix)
 
-  device.ForceStop(shell_pkg_name)
+  device.ForceStop(browser_pkg_name)
   device.ForceStop(get_package_name(options.webview_provider_apk))
   return browser_runs
 
@@ -185,32 +192,32 @@ def check_browser(device, options):
   zygotes = device.ListProcesses('zygote')
   zygote_pids = set(p.pid for p in zygotes)
   assert zygote_pids, 'No Android zygote found'
-  processes = device.ListProcesses(get_package_name(options.webview_shell_apk))
+  processes = device.ListProcesses(get_package_name(options.browser_apk))
   return [p for p in processes if p.ppid in zygote_pids]
 
 
-def get_json_results(w_seed_res, wo_seed_res):
+def get_json_results(with_seed_res, without_seed_res):
   """Get json results for test suite
 
   Args:
-    w_seed_res: Test result with seed installed
-    wo_seed_res: Test result with no seed installed
+    with_seed_res: Test result with seed installed
+    without_seed_res: Test result with no seed installed
 
   Returns:
     JSON results dictionary
   """
   json_results = {'version': 3, 'interrupted': False}
-  json_results['tests'] = {'webview_finch_smoke_tests': {}}
-  json_results['tests']['webview_finch_smoke_tests']['test_wo_seed'] = (
-      {'expected': 'PASS', 'actual': wo_seed_res})
-  json_results['tests']['webview_finch_smoke_tests']['test_w_seed'] = (
-      {'expected': 'PASS', 'actual': w_seed_res})
+  json_results['tests'] = {'finch_smoke_tests': {}}
+  json_results['tests']['finch_smoke_tests']['test_without_seed'] = (
+      {'expected': TestResult.Pass, 'actual': without_seed_res})
+  json_results['tests']['finch_smoke_tests']['test_with_seed'] = (
+      {'expected': TestResult.Pass, 'actual': with_seed_res})
 
   json_results['num_failures_by_type'] = {}
-  json_results['num_failures_by_type'].setdefault(w_seed_res, 0)
-  json_results['num_failures_by_type'].setdefault(wo_seed_res, 0)
-  json_results['num_failures_by_type'][w_seed_res] += 1
-  json_results['num_failures_by_type'][wo_seed_res] += 1
+  json_results['num_failures_by_type'].setdefault(with_seed_res, 0)
+  json_results['num_failures_by_type'].setdefault(without_seed_res, 0)
+  json_results['num_failures_by_type'][with_seed_res] += 1
+  json_results['num_failures_by_type'][without_seed_res] += 1
 
   json_results['seconds_since_epoch'] = int(time.time())
   return json_results
@@ -222,14 +229,37 @@ def main(args):
   parser.add_argument('--finch-seed-path', default=TEST_SEED_PATH,
                       type=os.path.realpath,
                       help='Path to the finch seed')
-  parser.add_argument('--webview-shell-apk',
-                      help='Path to the WebView shell apk',
+  parser.add_argument('--browser-apk',
+                      '--webview-shell-apk',
+                      '--weblayer-shell-apk',
+                      help='Path to the browser apk',
                       type=os.path.realpath,
                       required=True)
   parser.add_argument('--webview-provider-apk',
-                      required=True,
                       type=os.path.realpath,
                       help='Path to the WebView provider apk')
+  parser.add_argument('--browser-command-line-arg',
+                      # TODO(rmhasan): Remove default values after
+                      # adding arguments to test suites. Also make
+                      # this argument required.
+                      default=['--webview-verbose-logging'],
+                      action='append',
+                      help='Browser command line argument')
+  parser.add_argument('--browser-activity-name',
+                      action='store',
+                      help='Browser activity name',
+                      # TODO(rmhasan): After adding this argument to
+                      # all test suites, remove the default value. Also
+                      # make this argument required.
+                      default=('org.chromium.webview_shell.'
+                               'WebViewBrowserActivity'))
+  parser.add_argument('--command-line-file-name',
+                      action='store',
+                      # TODO(rmhasan): Remove default value after adding
+                      # argument to all test suites. Also make this argument
+                      # required.
+                      default='webview-command-line',
+                      help='Command line file name')
   parser.add_argument('--write-full-results-to',
                       '--isolated-script-test-output',
                       action='store',
@@ -252,27 +282,27 @@ def main(args):
           device.adb,
           output_file=os.path.join(
               os.path.dirname(options.write_full_results_to),
-              'webview_finch_logcat.txt'),
+              'finch_smoke_tests_logcat.txt'),
           filter_specs=_LOGCAT_FILTERS)
     log_mon.Start()
 
-    webview_flags = flag_changer.FlagChanger(device, 'webview-command-line')
+    flags = flag_changer.FlagChanger(device, options.command_line_file_name)
     device.RunShellCommand(
-        ['pm', 'clear', get_package_name(options.webview_shell_apk)],
+        ['pm', 'clear', get_package_name(options.browser_apk)],
         check_return=True)
 
     tests_pass = False
-    w_seed_res = 'FAIL'
-    wo_seed_res = 'FAIL'
-    if run_tests(device, options, 'without finch seed', webview_flags) != 0:
+    with_seed_res = TestResult.Fail
+    without_seed_res = TestResult.Fail
+    if run_tests(device, options, 'without finch seed', flags) != 0:
       install_seed(device, options)
-      tests_pass = run_tests(device, options, 'with finch seed', webview_flags)
-      wo_seed_res = 'PASS'
+      tests_pass = run_tests(device, options, 'with finch seed', flags)
+      without_seed_res = TestResult.Pass
       if tests_pass:
-        w_seed_res = 'PASS'
+        with_seed_res = TestResult.Pass
 
     log_mon.Stop()
-    json_results = get_json_results(w_seed_res, wo_seed_res)
+    json_results = get_json_results(with_seed_res, without_seed_res)
     with open(options.write_full_results_to, 'w') as json_out:
       json_out.write(json.dumps(json_results, indent=4))
 
