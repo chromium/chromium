@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/network_card.js';
 
-import {fakeCellularNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
@@ -49,6 +49,7 @@ export function networkCardTestSuite() {
         'ethernetDisconnectedGuid', [fakeDisconnectedEthernetNetwork]);
     provider.setFakeNetworkState(
         'wifiDisconnectedGuid', [fakeDisconnectedWifiNetwork]);
+    provider.setFakeNetworkState('wifiPortalGuid', [fakePortalWifiNetwork]);
     // Add the network info to the DOM.
     networkCardElement = /** @type {!NetworkCardElement} */ (
         document.createElement('network-card'));
@@ -67,12 +68,45 @@ export function networkCardTestSuite() {
         networkCardElement.$$('#networkTroubleshooting'));
   }
 
+  /** @return {!Element} */
+  function getIpConfigDrawerElement() {
+    assertTrue(!!networkCardElement);
+
+    return /** @type {!Element} */ (
+        networkCardElement.$$('#ipConfigInfoDrawer'));
+  }
+
+  /** @return {!Element} */
+  function getNetworkInfoElement() {
+    assertTrue(!!networkCardElement);
+
+    return /** @type {!Element} */ (networkCardElement.$$('network-info'));
+  }
+
+  /** @return {!Element} */
+  function getEthernetInfoElement() {
+    const networkInfoElement = getNetworkInfoElement();
+    assertTrue(!!networkInfoElement);
+
+    return dx_utils.getEthernetInfoElement(networkInfoElement);
+  }
+
+  /** @return {!Element} */
+  function getWifiInfoElement() {
+    const networkInfoElement = getNetworkInfoElement();
+    assertTrue(!!networkInfoElement);
+
+    return dx_utils.getWifiInfoElement(networkInfoElement);
+  }
+
   test('CardTitleWiFiConnectedInitializedCorrectly', () => {
     return initializeNetworkCard('wifiGuid').then(() => {
       dx_utils.assertElementContainsText(
           networkCardElement.$$('#cardTitle'),
           'Wi-Fi [84:C5:A6:30:3F:31] (Connected)');
       assertFalse(isVisible(getTroubleConnectingElement()));
+      assertTrue(isVisible(getWifiInfoElement()));
+      assertTrue(isVisible(getIpConfigDrawerElement()));
     });
   });
 
@@ -82,6 +116,8 @@ export function networkCardTestSuite() {
           networkCardElement.$$('#cardTitle'),
           'Wi-Fi [84:C5:A6:30:3F:31] (Disabled)');
       assertTrue(isVisible(getTroubleConnectingElement()));
+      assertFalse(isVisible(getNetworkInfoElement()));
+      assertFalse(isVisible(getIpConfigDrawerElement()));
     });
   });
 
@@ -91,6 +127,19 @@ export function networkCardTestSuite() {
           networkCardElement.$$('#cardTitle'),
           'Wi-Fi [84:C5:A6:30:3F:31] (Not Connected)');
       assertTrue(isVisible(getTroubleConnectingElement()));
+      assertFalse(isVisible(getNetworkInfoElement()));
+      assertFalse(isVisible(getIpConfigDrawerElement()));
+    });
+  });
+
+  test('WifiPortalShowTroubleShooting', () => {
+    return initializeNetworkCard('wifiPortalGuid').then(() => {
+      dx_utils.assertElementContainsText(
+          networkCardElement.$$('#cardTitle'),
+          'Wi-Fi [84:C5:A6:30:3F:31] (Portal)');
+      assertTrue(isVisible(getTroubleConnectingElement()));
+      assertTrue(isVisible(getNetworkInfoElement()));
+      assertTrue(isVisible(getIpConfigDrawerElement()));
     });
   });
 
@@ -100,6 +149,7 @@ export function networkCardTestSuite() {
           networkCardElement.$$('#cardTitle'),
           'Ethernet [81:C5:A6:30:3F:31] (Online)');
       assertFalse(isVisible(getTroubleConnectingElement()));
+      assertTrue(isVisible(getEthernetInfoElement()));
     });
   });
 
@@ -109,6 +159,8 @@ export function networkCardTestSuite() {
           networkCardElement.$$('#cardTitle'),
           'Ethernet [81:C5:A6:30:3F:32] (Not Connected)');
       assertTrue(isVisible(getTroubleConnectingElement()));
+      assertFalse(isVisible(getNetworkInfoElement()));
+      assertFalse(isVisible(getIpConfigDrawerElement()));
     });
   });
 

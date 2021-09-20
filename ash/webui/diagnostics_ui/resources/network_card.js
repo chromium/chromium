@@ -63,6 +63,12 @@ Polymer({
     },
 
     /** @protected {boolean} */
+    showNetworkDataPoints_: {
+      type: Boolean,
+      computed: 'computeShouldShowNetworkDataPoints_(network.state)',
+    },
+
+    /** @protected {boolean} */
     showTroubleConnectingState_: {
       type: Boolean,
       computed: 'computeShouldShowTroubleConnecting_(network.state)',
@@ -127,6 +133,27 @@ Polymer({
    */
   getNetworkCardTitle_() {
     return `${this.networkType_} [${this.macAddress_}] (${this.networkState_})`;
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  computeShouldShowNetworkDataPoints_() {
+    // Wait until the network is present before deciding.
+    if (!this.network) {
+      return false;
+    }
+
+    // Show the data-points when portal, online, or connected.
+    switch (this.network.state) {
+      case NetworkState.kPortal:
+      case NetworkState.kOnline:
+      case NetworkState.kConnected:
+        return true;
+      default:
+        return false;
+    }
   },
 
   /** @protected */
