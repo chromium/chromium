@@ -149,7 +149,11 @@ void RemoteOpenUrlClientDelegateLinux::OpenUrlOnFallbackBrowser(
   if (!url.is_empty()) {
     gtk_launch_command.AppendArg(url.spec());
   }
-  base::LaunchProcess(gtk_launch_command, base::LaunchOptions());
+  base::LaunchOptions options;
+  // Some browsers require privileges that can't be granted with the
+  // PR_SET_NO_NEW_PRIVS bit set.
+  options.allow_new_privs = true;
+  base::LaunchProcess(gtk_launch_command, options);
 }
 
 void RemoteOpenUrlClientDelegateLinux::ShowOpenUrlError(const GURL& url) {
