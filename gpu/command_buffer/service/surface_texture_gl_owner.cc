@@ -103,6 +103,9 @@ void SurfaceTextureGLOwner::UpdateTexImage() {
     // UpdateTexImage bounds texture to the SurfaceTexture context, so make it
     // current.
     auto scoped_make_current = MakeCurrentIfNeeded(this);
+    if (scoped_make_current && !scoped_make_current->IsContextCurrent())
+      return;
+
     // UpdateTexImage might change gl binding and we never should alter gl
     // binding without updating state tracking, which we can't do here, so
     // restore previous after we done.

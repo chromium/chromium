@@ -69,6 +69,8 @@ scoped_refptr<StreamTexture> StreamTexture::Create(
   if (result != ContextResult::kSuccess)
     return nullptr;
   auto scoped_make_current = MakeCurrent(context_state.get());
+  if (scoped_make_current && !scoped_make_current->IsContextCurrent())
+    return nullptr;
   return new StreamTexture(channel, stream_id, std::move(receiver),
                            std::move(context_state));
 }
