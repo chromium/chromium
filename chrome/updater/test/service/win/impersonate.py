@@ -20,6 +20,7 @@ import win32security
 import win32ts
 import winerror
 
+import proc_util
 
 class ImpersonationError(Exception):
   """Error representing impersonation error."""
@@ -87,7 +88,7 @@ class _StdoutStderrPipes(object):
     win32file.CloseHandle(self.stderr_w)
 
 
-def _RunAsOnWindowStationDesktop(command,
+def _RunAsOnWindowStationDesktop(command_line,
                                  security_token,
                                  window_station,
                                  desktop,
@@ -97,7 +98,7 @@ def _RunAsOnWindowStationDesktop(command,
   """Runs a command as the security token user on given desktop.
 
   Args:
-    command: Full command line string to run.
+    command_line: Full command line string to run.
     security_token: Security token that the command run as.
     window_station: Window station for the new process to run, tpically is
        "WinSta0", aka the interactive window station.
@@ -132,22 +133,22 @@ def _RunAsOnWindowStationDesktop(command,
   env_block = win32profile.CreateEnvironmentBlock(security_token, True)
   (process_handle, unused_thread, pid,
    unused_thread_id) = win32process.CreateProcessAsUser(
-       security_token, None, command, None, None, 1,
+       security_token, None, command_line, None, None, 1,
        create_flags, env_block, cwd, si)
   if env:
     os.environ.clear()
     os.environ.update(saved_env)
   pipes.CloseWriteHandles()
   if not process_handle:
-    logging.error('Failed to create child process [%s] on [%s\\%s]', command,
-                  window_station, desktop)
+    logging.error('Failed to create child process [%s] on [%s\\%s]',
+                  command_line, window_station, desktop)
     raise ImpersonationError(
         'Failed to create process [%s] with impersonation: [%s\\%s][%s]' %
-        (command, window_station, desktop, cwd))
+        (command_line, window_station, desktop, cwd))
 
   pipes.ReadAll()
   logging.info('Child process [%s] created on [%s\\%s]',
-      command, window_station, desktop)
+      command_line, window_station, desktop)
   logging.info('Waiting %s seconds for child process.', timeout)
   if timeout != win32event.INFINITE:
     timeout *= 1000  # Convert from seconds to milli-seconds.
@@ -165,11 +166,11 @@ def _RunAsOnWindowStationDesktop(command,
     return (pid, None, None, None)
 
 
-def RunAsConsoleUser(command, env, cwd, timeout):
-  """Runs a command as console user.
+def RunAsStandardUser(command_line, env, cwd, timeout):
+  """Runs a command as non-elevated logged-on user.
 
   Args:
-    command: The command line string, including arguments, to run.
+    command_line: The command line string, including arguments, to run.
     env: Environment variables for child process, None to inherit.
     cwd: Working directory for child process, None to inherit from parent.
     timeout: How long in seconds should wait for child process.
@@ -180,7 +181,7 @@ def RunAsConsoleUser(command, env, cwd, timeout):
   Raises:
     ImpersonationError: when impersonation failed.
   """
-  logging.info('Running the command "%s" as the console user.', command)
+  logging.info('Running "%s" as the logon user.', command_line)
 
   # Adjust current process to be part of the trusted computer base.
   current_process_token = win32security.OpenProcessToken(
@@ -191,12 +192,12 @@ def RunAsConsoleUser(command, env, cwd, timeout):
   win32security.AdjustTokenPrivileges(current_process_token, 0,
                                       [(tcb_privilege_flag, se_enable)])
 
-  console_session_id = ctypes.windll.kernel32.WTSGetActiveConsoleSessionId()
-  if not console_session_id:
-    raise ImpersonationError('Cannot find active console session.')
+  active_session_id = proc_util.GetActiveSessionID()
+  if not active_session_id:
+    raise ImpersonationError('Cannot find active logon session.')
 
   try:
-    console_user_token = win32ts.WTSQueryUserToken(console_session_id)
+    logon_user_token = win32ts.WTSQueryUserToken(active_session_id)
   except pywintypes.error as err:
     if err.winerror == winerror.ERROR_NO_TOKEN:
       raise ImpersonationError('No user is logged on.')
@@ -204,10 +205,10 @@ def RunAsConsoleUser(command, env, cwd, timeout):
       raise ImpersonationError('Failed to get user token: %s' % err)
 
   return _RunAsOnWindowStationDesktop(
-      command, console_user_token, 'WinSta0', 'default', env, cwd, timeout)
+      command_line, logon_user_token, 'WinSta0', 'default', env, cwd, timeout)
 
 
-def RunAsPidOnDeskstop(command,
+def RunAsPidOnDeskstop(command_line,
                        pid,
                        window_station='WinSta0',
                        desktop='default',
@@ -217,7 +218,7 @@ def RunAsPidOnDeskstop(command,
   """Runs a command with pid's security token and on the given desktop.
 
   Args:
-    command: The command line string to run.
+    command_line: The command line string, including arguments, to run.
     pid: ID of the process to get the security token from.
     window_station: Window station for the new process to run, tpically is
        "WinSta0", aka the interactive window station.
@@ -234,7 +235,7 @@ def RunAsPidOnDeskstop(command,
     (pid, exit_code, stdout, stderr) tuple.
   """
 
-  logging.info('RunAsPidOnDeskstop: [%s][%s]', pid, command)
+  logging.info('RunAsPidOnDeskstop: [%s][%s]', pid, command_line)
 
   process_handle = None
   token_handle = None
@@ -243,7 +244,7 @@ def RunAsPidOnDeskstop(command,
     token_handle = win32security.OpenProcessToken(process_handle,
                                                   win32con.TOKEN_ALL_ACCESS)
     return _RunAsOnWindowStationDesktop(
-        command, token_handle, window_station, desktop, env, cwd, timeout)
+        command_line, token_handle, window_station, desktop, env, cwd, timeout)
   except (pywintypes.error, ImpersonationError) as err:
     logging.error(err)
     return (None, None, None, None)

@@ -21,10 +21,11 @@ class UpdaterTestRPCHandler():
     """Runs the command as SYSTEM user.
 
     Args:
-      command: The command to run.
+      command: The command to run. This argument will be forwarded to
+        subprocess.Popen().
       env: Environment variables to pass to command.
       cwd: Working directory for the command.
-      timeout: How long the child process should wait for UAC before timeout.
+      timeout: How long the child process should wait before timeout.
 
     Returns:
       (pid, exit_code, sdtout, stderr) tuple.
@@ -47,19 +48,19 @@ class UpdaterTestRPCHandler():
       logging.exception(err)
       return (None, None, None, None)
 
-  def RunAsConsoleUser(self, command, env=None, cwd=None, timeout=200):
-    """Runs the command as the console user on default desktop.
+  def RunAsStandardUser(self, command_line, env=None, cwd=None, timeout=30):
+    """Runs the command as the non-elevated logon user on default desktop.
 
     Args:
-      command: The command to run.
+      command_line: The command line string, includes all arguments.
       env: Environment variables to pass to command.
       cwd: Working directory for the command.
-      timeout: How long the child process should wait for UAC before timeout.
+      timeout: How long the child process should wait before timeout.
 
     Returns:
       (pid, exit_code, sdtout, stderr) tuple.
     """
-    return impersonate.RunAsConsoleUser(command, env, cwd, timeout)
+    return impersonate.RunAsStandardUser(command_line, env, cwd, timeout)
 
   def AnswerUpcomingUACPrompt(self,
                               actions,

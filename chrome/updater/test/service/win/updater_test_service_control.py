@@ -6,11 +6,12 @@
 # python_version: "2.7"
 # wheel: <
 #   name: "infra/python/wheels/pywin32/${vpython_platform}"
-#    version: "version:227"
+#    version: "version:224"
 # >
 # [VPYTHON:END]
 
 
+import contextlib
 import logging
 import os
 import shutil
@@ -18,35 +19,20 @@ import subprocess
 import socket
 import sys
 import time
-import xmlrpclib
 
 import pywintypes
 import win32api
 import win32service
 import win32serviceutil
 
+import rpc_client
 
 _UPDATER_TEST_SERVICE_NAME = 'UpdaterTestService'
-
-# TODO(crbug.com/1233612): Query XML RPC server port once the server propgate
-# the value.
-_UPDATER_XML_RPC_PORT = 9090
 
 
 # Errors that might be raised when interacting with the service.
 _ServiceErrors = (OSError, pywintypes.error, win32api.error, win32service.error,
                   WindowsError)  # pylint: disable=undefined-variable
-
-
-def _TestXMLRPCServerConnection():
-  """Test that connection to the XML RPC server."""
-  proxy = xmlrpclib.ServerProxy('http://localhost:%s' % _UPDATER_XML_RPC_PORT)
-  try:
-    return 'hi' == proxy.echo('hi')
-  except (socket.error, socket.herror, socket.gaierror, socket.timeout) as err:
-    logging.error('Unable connect to XML RPC server')
-    logging.exception(err)
-    return False
 
 
 def _RunCommand(command, log_error=True):
@@ -179,7 +165,7 @@ def UninstallService():
 
     command = [sys.executable, service_main, 'remove']
     if _RunCommand(command):
-      logging.info('Service [%s] uninstalled.', _UPDATER_TEST_SERVICE_NAME)
+      logging.error('Service [%s] uninstalled.', _UPDATER_TEST_SERVICE_NAME)
       return True
     else:
       logging.error('Failed to uninstall [%s].', _UPDATER_TEST_SERVICE_NAME)
@@ -211,7 +197,7 @@ def StartService(timeout=30):
       return False
 
     logging.error('Service %s started.', _UPDATER_TEST_SERVICE_NAME)
-    return _TestXMLRPCServerConnection()
+    return rpc_client.TestConnection()
   except _ServiceErrors as err:
     logging.error('Failed to start service.')
     logging.exception(err)
@@ -241,6 +227,18 @@ def StopService(timeout=30):
     logging.error('Failed to stop service.')
     logging.exception(err)
     return False
+
+
+@contextlib.contextmanager
+def OpenService():
+  """Open the service as a managed resource."""
+  try:
+    if InstallService() and StartService():
+      yield _UPDATER_TEST_SERVICE_NAME
+    else:
+      yield None
+  finally:
+    UninstallService()
 
 
 if __name__ == '__main__':
