@@ -60,7 +60,7 @@
     box-shadow: 0 0 0 var(--preview-border-width) rgba(var(--google-blue-600-rgb), .4);
   }
 
-  .preview:hover {
+  :host([show-single-image-focus_]) .preview:hover {
     box-shadow: none;
   }
 
@@ -78,7 +78,7 @@
     width: calc(100% - 24px);
   }
 
-  :host(:not([multi-page-scanning_])) .preview:hover .focused-scanned-image {
+  :host([show-single-image-focus_]) .preview:hover .focused-scanned-image {
     box-shadow: rgba(var(--google-blue-600-rgb), .4) 0 0 0 var(--preview-border-width);
   }
 

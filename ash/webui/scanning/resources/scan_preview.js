@@ -163,6 +163,12 @@ Polymer({
       value: false,
       reflectToAttribute: true,
     },
+
+    /** @private {boolean} */
+    showSingleImageFocus_: {
+      type: Boolean,
+      reflectToAttribute: true,
+    },
   },
 
   observers: [
@@ -208,6 +214,8 @@ Polymer({
     this.showHelpOrProgress_ = !this.showScannedImages_ ||
         this.appState === AppState.MULTI_PAGE_SCANNING;
     this.multiPageScanning_ = this.appState === AppState.MULTI_PAGE_SCANNING;
+    this.showSingleImageFocus_ =
+        this.appState === AppState.MULTI_PAGE_NEXT_ACTION;
 
     // If no longer showing the scanned images, reset |scannedImagesLoaded_| so
     // it can be used again for the next scan job.
