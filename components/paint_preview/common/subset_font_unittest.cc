@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "components/paint_preview/common/glyph_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -16,14 +17,6 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace paint_preview {
-
-namespace {
-
-constexpr SkFourByteTag kItal = SkSetFourByteTag('i', 't', 'a', 'l');
-constexpr SkFourByteTag kWdth = SkSetFourByteTag('w', 'd', 't', 'h');
-constexpr SkFourByteTag kWght = SkSetFourByteTag('w', 'g', 'h', 't');
-
-}  // namespace
 
 TEST(PaintPreviewSubsetFontTest, TestBasicSubset) {
   auto typeface = SkTypeface::MakeDefault();
@@ -54,6 +47,16 @@ TEST(PaintPreviewSubsetFontTest, TestBasicSubset) {
 
 // TODO(crbug/1250606): Investigate removing the early exits for unsupported
 // variation fonts on at least Linux/Android.
+#if defined(OS_LINUX) || defined(OS_ANDROID)
+
+namespace {
+
+constexpr SkFourByteTag kItal = SkSetFourByteTag('i', 't', 'a', 'l');
+constexpr SkFourByteTag kWdth = SkSetFourByteTag('w', 'd', 't', 'h');
+constexpr SkFourByteTag kWght = SkSetFourByteTag('w', 'g', 'h', 't');
+
+}  // namespace
+
 TEST(PaintPreviewSubsetFontTest, TestVariantSubset) {
   std::vector<SkFontArguments::VariationPosition::Coordinate> axes = {
       {kItal, 1}, {kWdth, 100}, {kWght, 700}};
@@ -133,5 +136,6 @@ TEST(PaintPreviewSubsetFontTest, TestVariantSubset) {
   EXPECT_LE(subset_typeface->countTables(), typeface->countTables());
   EXPECT_LT(subset_typeface->countGlyphs(), typeface->countGlyphs());
 }
+#endif
 
 }  // namespace paint_preview
