@@ -37,30 +37,48 @@ web_app::BrowserAppLauncherForTesting& GetBrowserAppLauncherForTesting() {
   return *instance;
 }
 
+// Launches the app specified by `params` in the given `profile`.
 void LaunchAppWithParams(Profile* profile, apps::AppLaunchParams params) {
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->BrowserAppLauncher()
       ->LaunchAppWithParams(std::move(params));
 }
 
+// Cancels the launch of the app for the given `app_id`, potentially resulting
+// in the app shim exiting.
 void CancelAppLaunch(Profile* profile, const web_app::AppId& app_id) {
   apps::AppShimManager::Get()->OnAppLaunchCancelled(profile, app_id);
 }
 
-void OnProtocolHandlerDialogCompleted(apps::AppLaunchParams params,
-                                      Profile* profile,
-                                      bool allowed,
-                                      bool remember_user_choice) {
-  if (remember_user_choice) {
-    PersistProtocolHandlersUserChoice(
-        profile, params.app_id, params.protocol_handler_launch_url.value(),
-        allowed);
-  }
-
+// Called after the user's preference has been persisted, and the OS
+// has been notified of the change.
+void OnPersistProtocolHandlersUserChoiceCompleted(apps::AppLaunchParams params,
+                                                  Profile* profile,
+                                                  bool allowed) {
   if (allowed) {
     LaunchAppWithParams(profile, std::move(params));
   } else {
     CancelAppLaunch(profile, params.app_id);
+  }
+}
+
+// Called after the user has dismissed the WebAppProtocolHandlerIntentPicker
+// dialog.
+void OnProtocolHandlerDialogCompleted(apps::AppLaunchParams params,
+                                      Profile* profile,
+                                      bool allowed,
+                                      bool remember_user_choice) {
+  GURL protocol_url = params.protocol_handler_launch_url.value();
+  web_app::AppId app_id = params.app_id;
+  auto launch_callback =
+      base::BindOnce(&OnPersistProtocolHandlersUserChoiceCompleted,
+                     std::move(params), profile, allowed);
+
+  if (remember_user_choice) {
+    PersistProtocolHandlersUserChoice(profile, app_id, protocol_url, allowed,
+                                      std::move(launch_callback));
+  } else {
+    std::move(launch_callback).Run();
   }
 }
 

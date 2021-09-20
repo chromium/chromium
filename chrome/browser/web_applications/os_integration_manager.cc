@@ -254,10 +254,11 @@ void OsIntegrationManager::UpdateOsHooks(
     return;
 
   UpdateFileHandlers(app_id, file_handlers_need_os_update);
-  UpdateShortcuts(app_id, old_name);
+  UpdateShortcuts(app_id, old_name, base::DoNothing());
   UpdateShortcutsMenu(app_id, web_app_info);
   UpdateUrlHandlers(app_id, base::DoNothing());
-  UpdateProtocolHandlers(app_id);
+  UpdateProtocolHandlers(app_id, /*force_shortcut_updates_if_needed=*/false,
+                         base::DoNothing());
 }
 
 void OsIntegrationManager::GetAppExistingShortCutLocation(
@@ -569,9 +570,10 @@ void OsIntegrationManager::UnregisterWebAppOsUninstallation(
 }
 
 void OsIntegrationManager::UpdateShortcuts(const AppId& app_id,
-                                           base::StringPiece old_name) {
+                                           base::StringPiece old_name,
+                                           base::OnceClosure callback) {
   DCHECK(shortcut_manager_);
-  shortcut_manager_->UpdateShortcuts(app_id, old_name);
+  shortcut_manager_->UpdateShortcuts(app_id, old_name, std::move(callback));
 }
 
 void OsIntegrationManager::UpdateShortcutsMenu(
@@ -628,25 +630,75 @@ void OsIntegrationManager::UpdateFileHandlers(
   UnregisterFileHandlers(app_id, std::move(callback_after_removal));
 }
 
-void OsIntegrationManager::UpdateProtocolHandlers(const AppId& app_id) {
-  if (!protocol_handler_manager_)
+void OsIntegrationManager::UpdateProtocolHandlers(
+    const AppId& app_id,
+    bool force_shortcut_updates_if_needed,
+    base::OnceClosure callback) {
+  if (!protocol_handler_manager_) {
+    std::move(callback).Run();
     return;
+  }
 
+  // Disable protocol handler unregistration on Win7 due to bad interactions
+  // between preinstalled app scenarios and the need for elevation to unregister
+  // protocol handlers on that platform. See crbug.com/1224327 for context.
+#if defined(OS_WIN)
+  if (base::win::GetVersion() == base::win::Version::WIN7) {
+    std::move(callback).Run();
+    return;
+  }
+#endif  // defined(OS_WIN)
+
+  auto shortcuts_callback = base::BindOnce(
+      &OsIntegrationManager::OnShortcutsUpdatedForProtocolHandlers,
+      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback));
+
+#if !defined(OS_WIN)
+  // Windows handles protocol registration through the registry. For other
+  // OS's we also need to regenerate the shortcut file before we call into
+  // the OS. Since `UpdateProtocolHandlers` function is also called in
+  // `UpdateOSHooks`, which also recreates the shortcuts, only do it if
+  // required.
+  if (force_shortcut_updates_if_needed) {
+    UpdateShortcuts(app_id, "", std::move(shortcuts_callback));
+    return;
+  }
+#endif
+
+  std::move(shortcuts_callback).Run();
+}
+
+void OsIntegrationManager::OnShortcutsUpdatedForProtocolHandlers(
+    const AppId& app_id,
+    base::OnceClosure update_finished_callback) {
   // Update protocol handlers via complete uninstallation, then reinstallation.
-  base::OnceCallback<void(bool)> callback = base::BindOnce(
+  base::OnceCallback<void(bool)> unregister_callback = base::BindOnce(
       [](base::WeakPtr<OsIntegrationManager> os_integration_manager,
-         const AppId& app_id, bool unregister_success) {
+         const AppId& app_id, base::OnceClosure update_finished_callback,
+         bool unregister_success) {
         // Re-register protocol handlers regardless of `unregister_success`.
-        // TODO(https://crbug.com/1019239): Report `unregister_success` in
-        // an UMA metric.
-        if (!os_integration_manager)
+        // TODO(https://crbug.com/1250728): Report a UMA metric when
+        // unregistering fails, either here, or at the point of failure. This
+        // might also mean we can remove `unregister_success`.
+        if (!os_integration_manager) {
+          std::move(update_finished_callback).Run();
           return;
-        os_integration_manager->RegisterProtocolHandlers(
-            app_id, base::DoNothing::Once<bool>());
-      },
-      weak_ptr_factory_.GetWeakPtr(), app_id);
+        }
 
-  UnregisterProtocolHandlers(app_id, std::move(callback));
+        os_integration_manager->RegisterProtocolHandlers(
+            app_id, base::BindOnce(
+                        [](base::OnceClosure update_finished_callback,
+                           bool register_success) {
+                          // TODO(https://crbug.com/1250728): Report
+                          // |register_success| in an UMA metric.
+                          std::move(update_finished_callback).Run();
+                        },
+                        std::move(update_finished_callback)));
+      },
+      weak_ptr_factory_.GetWeakPtr(), app_id,
+      std::move(update_finished_callback));
+
+  UnregisterProtocolHandlers(app_id, std::move(unregister_callback));
 }
 
 std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(

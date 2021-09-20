@@ -59,7 +59,9 @@ class WebAppShortcutManager {
                        bool add_to_desktop,
                        CreateShortcutsCallback callback);
   // Fetch already-updated shortcut data and deploy to OS integration.
-  void UpdateShortcuts(const AppId& app_id, base::StringPiece old_name);
+  void UpdateShortcuts(const AppId& app_id,
+                       base::StringPiece old_name,
+                       base::OnceClosure update_finished_callback);
   void DeleteShortcuts(const AppId& app_id,
                        const base::FilePath& shortcuts_data_dir,
                        std::unique_ptr<ShortcutInfo> shortcut_info,
@@ -135,6 +137,7 @@ class WebAppShortcutManager {
 
   void OnShortcutInfoRetrievedUpdateShortcuts(
       std::u16string old_name,
+      base::OnceClosure update_finished_callback,
       std::unique_ptr<ShortcutInfo> info);
 
   void OnShortcutsMenuIconsReadRegisterShortcutsMenu(

@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -259,22 +260,41 @@ void EnableSystemWebAppsInLacrosForTesting() {
 }
 #endif
 
-void PersistProtocolHandlersUserChoice(Profile* profile,
-                                       const AppId& app_id,
-                                       const GURL& protocol_url,
-                                       bool allowed) {
+void PersistProtocolHandlersUserChoice(
+    Profile* profile,
+    const AppId& app_id,
+    const GURL& protocol_url,
+    bool allowed,
+    base::OnceClosure update_finished_callback) {
   web_app::WebAppProvider* const provider =
       web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
 
+  web_app::OsIntegrationManager& os_integration_manager =
+      provider->os_integration_manager();
+  const std::vector<ProtocolHandler> original_protocol_handlers =
+      os_integration_manager.GetAppProtocolHandlers(app_id);
+
   if (allowed) {
     provider->sync_bridge().AddApprovedLaunchProtocol(app_id,
                                                       protocol_url.scheme());
-
   } else {
     provider->sync_bridge().AddDisallowedLaunchProtocol(app_id,
                                                         protocol_url.scheme());
   }
+
+  // OS protocol registration does not need to be updated.
+  if (original_protocol_handlers ==
+      os_integration_manager.GetAppProtocolHandlers(app_id)) {
+    std::move(update_finished_callback).Run();
+    return;
+  }
+
+  // TODO(https://crbug.com/1251062): Can we avoid the delay of startup, if the
+  // action as allowed?
+  provider->os_integration_manager().UpdateProtocolHandlers(
+      app_id, /*force_shortcut_updates_if_needed=*/true,
+      std::move(update_finished_callback));
 }
 
 }  // namespace web_app

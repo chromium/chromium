@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/web_app_protocol_handler_registration.h"
+
 #include <string>
 #include <utility>
 
-#include "chrome/browser/web_applications/web_app_protocol_handler_registration.h"
+#include <shlobj.h>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -79,6 +81,7 @@ void RegisterProtocolHandlersWithOSInBackground(
 
   // Add protocol associations to the Windows registry.
   ShellUtil::AddAppProtocolAssociations(wstring_protocols, prog_id);
+  ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
 }
 
 void UnregisterProtocolHandlersWithOsInBackground(

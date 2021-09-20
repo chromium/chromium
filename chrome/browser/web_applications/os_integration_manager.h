@@ -180,6 +180,13 @@ class OsIntegrationManager {
       const AppId& app_id,
       FileHandlerUpdateAction file_handlers_need_os_update);
 
+  // Updates protocol handler registrations with the OS.
+  // If `force_shortcut_updates_if_needed` is true, then also update the
+  // application's shortcuts.
+  virtual void UpdateProtocolHandlers(const AppId& app_id,
+                                      bool force_shortcut_updates_if_needed,
+                                      base::OnceClosure callback);
+
  protected:
   WebAppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
   WebAppFileHandlerManager* file_handler_manager() {
@@ -253,10 +260,11 @@ class OsIntegrationManager {
   virtual void UnregisterWebAppOsUninstallation(const AppId& app_id);
 
   // Update:
-  virtual void UpdateShortcuts(const AppId& app_id, base::StringPiece old_name);
+  virtual void UpdateShortcuts(const AppId& app_id,
+                               base::StringPiece old_name,
+                               base::OnceClosure callback);
   virtual void UpdateShortcutsMenu(const AppId& app_id,
                                    const WebApplicationInfo& web_app_info);
-  virtual void UpdateProtocolHandlers(const AppId& app_id);
 
   // Utility methods:
   virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id);
@@ -277,6 +285,14 @@ class OsIntegrationManager {
   void OnShortcutInfoRetrievedRegisterRunOnOsLogin(
       RegisterRunOnOsLoginCallback callback,
       std::unique_ptr<ShortcutInfo> info);
+
+  // Called after the shortcuts for an app are updated in response
+  // to protocol handler changes.
+  // `update_finished_callback` is the callback provided in
+  // `UpdateProtocolHandlers`.
+  void OnShortcutsUpdatedForProtocolHandlers(
+      const AppId& app_id,
+      base::OnceClosure update_finished_callback);
 
   Profile* const profile_;
   WebAppRegistrar* registrar_ = nullptr;

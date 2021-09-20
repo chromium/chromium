@@ -66,6 +66,25 @@ void OnProtocolHandlerAppLaunched(
   // will keep the process alive.
 }
 
+void OnPersistProtocolHandlersUserChoiceCompleted(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    Profile* profile,
+    const GURL& protocol_url,
+    const web_app::AppId& app_id,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::vector<std::unique_ptr<ScopedProfileKeepAlive>> profile_keep_alives,
+    web_app::startup::FinalizeWebAppLaunchCallback app_launched_callback,
+    bool allowed) {
+  if (!allowed)
+    return;  // Allow the process to exit without opening a browser.
+
+  LaunchApp(profile, app_id, command_line, cur_dir, protocol_url,
+            base::BindOnce(&OnProtocolHandlerAppLaunched, std::move(keep_alive),
+                           std::move(profile_keep_alives),
+                           std::move(app_launched_callback)));
+}
+
 void OnProtocolHandlerDialogCompleted(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
@@ -77,18 +96,18 @@ void OnProtocolHandlerDialogCompleted(
     web_app::startup::FinalizeWebAppLaunchCallback app_launched_callback,
     bool allowed,
     bool remember_user_choice) {
+  auto launch_callback =
+      base::BindOnce(&OnPersistProtocolHandlersUserChoiceCompleted,
+                     command_line, cur_dir, profile, protocol_url, app_id,
+                     std::move(keep_alive), std::move(profile_keep_alives),
+                     std::move(app_launched_callback), allowed);
+
   if (remember_user_choice) {
-    web_app::PersistProtocolHandlersUserChoice(profile, app_id, protocol_url,
-                                               allowed);
+    web_app::PersistProtocolHandlersUserChoice(
+        profile, app_id, protocol_url, allowed, std::move(launch_callback));
+  } else {
+    std::move(launch_callback).Run();
   }
-
-  if (!allowed)
-    return;  // Allow the process to exit without opening a browser.
-
-  LaunchApp(profile, app_id, command_line, cur_dir, protocol_url,
-            base::BindOnce(&OnProtocolHandlerAppLaunched, std::move(keep_alive),
-                           std::move(profile_keep_alives),
-                           std::move(app_launched_callback)));
 }
 
 // Tries to launch the web app when the `provider` is ready. `startup_callback`

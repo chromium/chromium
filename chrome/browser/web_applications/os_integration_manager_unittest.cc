@@ -23,6 +23,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
+#if defined(OS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace web_app {
 namespace {
 
@@ -30,6 +34,13 @@ class MockOsIntegrationManager : public OsIntegrationManager {
  public:
   MockOsIntegrationManager()
       : OsIntegrationManager(nullptr, nullptr, nullptr, nullptr, nullptr) {}
+  explicit MockOsIntegrationManager(
+      std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager)
+      : OsIntegrationManager(nullptr,
+                             nullptr,
+                             nullptr,
+                             std::move(protocol_handler_manager),
+                             nullptr) {}
   ~MockOsIntegrationManager() override = default;
 
   // Installation:
@@ -126,7 +137,9 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (override));
   MOCK_METHOD(void,
               UpdateShortcuts,
-              (const AppId& app_id, base::StringPiece old_name),
+              (const AppId& app_id,
+               base::StringPiece old_name,
+               base::OnceClosure callback),
               (override));
   MOCK_METHOD(void,
               UpdateShortcutsMenu,
@@ -137,7 +150,12 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (const AppId& app_id,
                base::OnceCallback<void(bool success)> callback),
               (override));
-  MOCK_METHOD(void, UpdateProtocolHandlers, (const AppId& app_id), (override));
+  MOCK_METHOD(void,
+              UpdateProtocolHandlers,
+              (const AppId& app_id,
+               bool force_shortcut_updates_if_needed,
+               base::OnceClosure update_finished_callback),
+              (override));
 
   // Utility methods:
   MOCK_METHOD(std::unique_ptr<ShortcutInfo>,
@@ -307,13 +325,54 @@ TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
   EXPECT_CALL(manager,
               UpdateFileHandlers(app_id, FileHandlerUpdateAction::kUpdate))
       .Times(1);
-  EXPECT_CALL(manager, UpdateShortcuts(app_id, old_name)).Times(1);
+  EXPECT_CALL(manager, UpdateShortcuts(app_id, old_name, testing::_)).Times(1);
   EXPECT_CALL(manager, UpdateShortcutsMenu(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, UpdateUrlHandlers(app_id, testing::_)).Times(1);
-  EXPECT_CALL(manager, UpdateProtocolHandlers(app_id)).Times(1);
+  EXPECT_CALL(manager, UpdateProtocolHandlers(app_id, false, testing::_))
+      .Times(1);
 
   manager.UpdateOsHooks(app_id, old_name, FileHandlerUpdateAction::kUpdate,
                         web_app_info);
+}
+
+TEST_F(OsIntegrationManagerTest, UpdateProtocolHandlers) {
+#if defined(OS_WIN)
+  // UpdateProtocolHandlers is a no-op on Win7
+  if (base::win::GetVersion() == base::win::Version::WIN7)
+    return;
+#endif
+
+  const AppId app_id = "test";
+  testing::StrictMock<MockOsIntegrationManager> manager(
+      std::make_unique<WebAppProtocolHandlerManager>(nullptr));
+  base::RunLoop run_loop;
+
+#if !defined(OS_WIN)
+  EXPECT_CALL(manager, UpdateShortcuts(app_id, base::StringPiece(), testing::_))
+      .WillOnce([](const AppId& app_id, base::StringPiece old_name,
+                   base::OnceClosure update_finished_callback) {
+        std::move(update_finished_callback).Run();
+      });
+#endif
+
+  EXPECT_CALL(manager, UnregisterProtocolHandlers(app_id, testing::_))
+      .WillOnce([](const AppId& app_id,
+                   base::OnceCallback<void(bool)> update_finished_callback) {
+        std::move(update_finished_callback).Run(true);
+      });
+
+  EXPECT_CALL(manager, RegisterProtocolHandlers(app_id, testing::_))
+      .WillOnce([](const AppId& app_id,
+                   base::OnceCallback<void(bool)> update_finished_callback) {
+        std::move(update_finished_callback).Run(true);
+      });
+
+  auto update_finished_callback =
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); });
+
+  manager.OsIntegrationManager::UpdateProtocolHandlers(
+      app_id, true, update_finished_callback);
+  run_loop.Run();
 }
 
 }  // namespace

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,7 +66,15 @@ WebAppProtocolHandlerManager::GetAppProtocolHandlerInfos(
   if (!web_app)
     return {};
 
-  return web_app->protocol_handlers();
+  std::vector<apps::ProtocolHandlerInfo> protocol_handlers_infos;
+  for (const auto& handler_info : web_app->protocol_handlers()) {
+    if (!base::Contains(web_app->disallowed_launch_protocols(),
+                        handler_info.protocol)) {
+      protocol_handlers_infos.push_back(handler_info);
+    }
+  }
+
+  return protocol_handlers_infos;
 }
 
 std::vector<ProtocolHandler>
@@ -87,23 +96,19 @@ WebAppProtocolHandlerManager::GetAppProtocolHandlers(
 void WebAppProtocolHandlerManager::RegisterOsProtocolHandlers(
     const AppId& app_id,
     base::OnceCallback<void(bool)> callback) {
+  if (!app_registrar_->IsLocallyInstalled(app_id)) {
+    std::move(callback).Run(true);
+    return;
+  }
   const std::vector<apps::ProtocolHandlerInfo> handlers =
       GetAppProtocolHandlerInfos(app_id);
-  RegisterOsProtocolHandlers(app_id, handlers, std::move(callback));
-}
-
-void WebAppProtocolHandlerManager::RegisterOsProtocolHandlers(
-    const AppId& app_id,
-    const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
-    base::OnceCallback<void(bool)> callback) {
-  if (!app_registrar_->IsLocallyInstalled(app_id))
+  if (handlers.empty()) {
+    std::move(callback).Run(true);
     return;
-
-  if (!protocol_handlers.empty()) {
-    RegisterProtocolHandlersWithOs(
-        app_id, app_registrar_->GetAppShortName(app_id), profile_,
-        protocol_handlers, std::move(callback));
   }
+  RegisterProtocolHandlersWithOs(app_id,
+                                 app_registrar_->GetAppShortName(app_id),
+                                 profile_, handlers, std::move(callback));
 }
 
 void WebAppProtocolHandlerManager::UnregisterOsProtocolHandlers(

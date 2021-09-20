@@ -78,8 +78,10 @@ void WebAppShortcutManager::SetSubsystems(WebAppIconManager* icon_manager,
   registrar_ = registrar;
 }
 
-void WebAppShortcutManager::UpdateShortcuts(const AppId& app_id,
-                                            base::StringPiece old_name) {
+void WebAppShortcutManager::UpdateShortcuts(
+    const AppId& app_id,
+    base::StringPiece old_name,
+    base::OnceClosure update_finished_callback) {
   if (!CanCreateShortcuts())
     return;
 
@@ -87,7 +89,8 @@ void WebAppShortcutManager::UpdateShortcuts(const AppId& app_id,
       app_id,
       base::BindOnce(
           &WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts,
-          weak_ptr_factory_.GetWeakPtr(), base::UTF8ToUTF16(old_name)));
+          weak_ptr_factory_.GetWeakPtr(), base::UTF8ToUTF16(old_name),
+          std::move(update_finished_callback)));
 }
 
 void WebAppShortcutManager::GetAppExistingShortCutLocation(
@@ -262,6 +265,7 @@ void WebAppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu(
 
 void WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(
     std::u16string old_name,
+    base::OnceClosure update_finished_callback,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   if (GetShortcutUpdateCallbackForTesting())
     std::move(GetShortcutUpdateCallbackForTesting()).Run(shortcut_info.get());
@@ -271,10 +275,10 @@ void WebAppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(
 
   base::FilePath shortcut_data_dir =
       internals::GetShortcutDataDir(*shortcut_info);
-  internals::PostShortcutIOTask(
+  internals::PostShortcutIOTaskAndReply(
       base::BindOnce(&internals::UpdatePlatformShortcuts,
                      std::move(shortcut_data_dir), std::move(old_name)),
-      std::move(shortcut_info));
+      std::move(shortcut_info), std::move(update_finished_callback));
 }
 
 std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfo(

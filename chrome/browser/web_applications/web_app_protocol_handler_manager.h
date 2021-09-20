@@ -44,7 +44,8 @@ class WebAppProtocolHandlerManager {
   std::vector<ProtocolHandler> GetHandlersFor(
       const std::string& protocol) const;
 
-  // Gets all protocol handlers for |app_id|.
+  // Gets the protocol handlers for `app_id`. Any protocols that the user
+  // has explicitly disallowed, will be excluded.
   // `virtual` for testing.
   virtual std::vector<apps::ProtocolHandlerInfo> GetAppProtocolHandlerInfos(
       const std::string& app_id) const;
@@ -57,13 +58,6 @@ class WebAppProtocolHandlerManager {
   // protocol handler information supplied in the app manifest.
   void RegisterOsProtocolHandlers(const AppId& app_id,
                                   base::OnceCallback<void(bool)> callback);
-
-  // Registers OS specific protocol handlers for OSs that need them, using
-  // arbitrary protocol handler information.
-  void RegisterOsProtocolHandlers(
-      const AppId& app_id,
-      const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
-      base::OnceCallback<void(bool)> callback);
 
   // Unregisters OS specific protocol handlers for an app.
   void UnregisterOsProtocolHandlers(const AppId& app_id,

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -108,10 +109,14 @@ std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
     const GURL& url,
     bool* found_multiple = nullptr);
 
-void PersistProtocolHandlersUserChoice(Profile* profile,
-                                       const AppId& app_id,
-                                       const GURL& protocol_url,
-                                       bool allowed);
+// Updates the approved or disallowed protocol list for the given app. If
+// necessary, it also updates the protocol registration with the OS.
+void PersistProtocolHandlersUserChoice(
+    Profile* profile,
+    const AppId& app_id,
+    const GURL& protocol_url,
+    bool allowed,
+    base::OnceClosure update_finished_callback);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Enables System Web Apps so we can test SWA features in Lacros, even we don't
