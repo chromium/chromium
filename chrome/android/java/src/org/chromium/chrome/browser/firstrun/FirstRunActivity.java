@@ -59,7 +59,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      */
     public interface FirstRunActivityObserver {
         /** See {@link #onCreatePostNativeAndPoliciesPageSequence}. */
-        void onCreatePostNativeAndPoliciesPageSequence(FirstRunActivity caller);
+        void onCreatePostNativeAndPoliciesPageSequence(
+                FirstRunActivity caller, Bundle freProperties);
 
         /** See {@link #acceptTermsOfService}. */
         void onAcceptTermsOfService(FirstRunActivity caller);
@@ -215,7 +216,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         mPostNativeAndPolicyPagesCreated = true;
 
         if (sObserver != null) {
-            sObserver.onCreatePostNativeAndPoliciesPageSequence(FirstRunActivity.this);
+            sObserver.onCreatePostNativeAndPoliciesPageSequence(
+                    FirstRunActivity.this, mFreProperties);
         }
     }
 
@@ -433,7 +435,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (mPager.getCurrentItem() == 0) {
             abortFirstRunExperience();
         } else {
-            jumpToPage(mPager.getCurrentItem() - 1);
+            setCurrentItemForPager(mPager.getCurrentItem() - 1);
         }
     }
 
@@ -444,12 +446,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public boolean advanceToNextPage() {
-        int position = mPager.getCurrentItem() + 1;
-        if (!jumpToPage(position)) return false;
-
-        recordFreProgressHistogram(mFreProgressStates.get(position));
-        return true;
+    public void advanceToNextPage() {
+        jumpToPage(mPager.getCurrentItem() + 1);
     }
 
     @Override
@@ -551,7 +549,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         if (sObserver != null) sObserver.onAcceptTermsOfService(this);
 
-        advanceToNextPage();
+        jumpToPage(mPager.getCurrentItem() + 1);
     }
 
     /** Initialize local state from launch intent and from saved instance state. */
@@ -572,14 +570,16 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      * @return Whether the transition to a given page was allowed.
      */
     private boolean jumpToPage(int position) {
-        // TODO(http://crbug.com/1250285): Simplify this condition if checking for ToS acceptance is
-        // not needed at this point.
-        boolean jumpToPageSuccess =
-                didAcceptTermsOfService() ? setCurrentItemForPager(position) : position == 0;
-
         if (sObserver != null) sObserver.onJumpToPage(this, position);
 
-        return jumpToPageSuccess;
+        if (!didAcceptTermsOfService()) {
+            return position == 0;
+        }
+        if (!setCurrentItemForPager(position)) {
+            return false;
+        }
+        recordFreProgressHistogram(mFreProgressStates.get(position));
+        return true;
     }
 
     private boolean setCurrentItemForPager(int position) {
@@ -605,12 +605,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     private void skipPagesIfNecessary() {
-        while (mPages.get(mPager.getCurrentItem()).shouldSkipPageOnCreate()
-                && advanceToNextPage()) {
+        boolean shouldSkip = mPages.get(mPager.getCurrentItem()).shouldSkipPageOnCreate();
+        while (shouldSkip) {
+            if (!jumpToPage(mPager.getCurrentItem() + 1)) return;
+            shouldSkip = mPages.get(mPager.getCurrentItem()).shouldSkipPageOnCreate();
         }
     }
 
-    // TODO(http://crbug.com/1250289): Ensure each state is only recorded once.
     private void recordFreProgressHistogram(int state) {
         if (mLaunchedFromChromeIcon) {
             RecordHistogram.recordEnumeratedHistogram(
@@ -630,11 +631,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @VisibleForTesting
     public boolean isNativeSideIsInitializedForTest() {
         return mNativeSideIsInitialized;
-    }
-
-    @VisibleForTesting
-    public FirstRunFragment getCurrentFragmentForTesting() {
-        return mPagerAdapter.getFirstRunFragment(mPager.getCurrentItem());
     }
 
     @VisibleForTesting
