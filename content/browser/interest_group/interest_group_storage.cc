@@ -44,22 +44,21 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version number of the database.
 //
 // Version 1 - 2021/03 - crrev.com/c/2757425
+// Version 2 - 2021/08 - crrev.com/c/3097715
+// Version 3 - 2021/09 - crrev.com/c/3165576
 //
 // Version 1 adds a table for interest groups.
-//
-// Version 2 - 2021/08 - crrev.com/c/3097715
-//
 // Version 2 adds a column for rate limiting interest group updates.
-const int kCurrentVersionNumber = 2;
+// Version 3 adds a field for ad components.
+const int kCurrentVersionNumber = 3;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 2;
+const int kCompatibleVersionNumber = 3;
 
 // Latest version of the database that cannot be upgraded to
-// |kCurrentVersionNumber| without razing the database. No versions are
-// currently deprecated.
-const int kDeprecatedVersionNumber = 1;
+// |kCurrentVersionNumber| without razing the database.
+const int kDeprecatedVersionNumber = 2;
 
 // TODO(crbug.com/1195852): Add UMA to count errors.
 }  // namespace
@@ -161,7 +160,7 @@ absl::optional<std::vector<std::string>> DeserializeStringVector(
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV2Schema(sql::Database& db) {
+bool CreateV3Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -177,6 +176,7 @@ bool CreateV2Schema(sql::Database& db) {
         "trusted_bidding_signals_keys TEXT NOT NULL,"
         "user_bidding_signals TEXT,"
         "ads TEXT NOT NULL,"
+        "ad_components TEXT NOT NULL,"
       "PRIMARY KEY(owner,name))";
   // clang-format on
   if (!db.Execute(kInterestGroupTableSql))
@@ -286,8 +286,9 @@ bool DoJoinInterestGroup(sql::Database& db,
             "trusted_bidding_signals_url,"
             "trusted_bidding_signals_keys,"
             "user_bidding_signals,"  // opaque data
-            "ads) "
-          "VALUES(?,?,?,?,?,?,?,?,?,?,?)"));
+            "ads,"
+            "ad_components) "
+          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"));
   // clang-format on
   if (!join_group.is_valid())
     return false;
@@ -308,6 +309,7 @@ bool DoJoinInterestGroup(sql::Database& db,
     join_group.BindNull(9);
   }
   join_group.BindString(10, Serialize(data.ads));
+  join_group.BindString(11, Serialize(data.ad_components));
 
   if (!join_group.Run())
     return false;
@@ -347,14 +349,20 @@ bool DoUpdateInterestGroup(sql::Database& db,
   // (bidding_url, update_url, etc.) getting written back to the field -- in
   // other words, that field doesn't change.
 
-  sql::Statement update_group(db.GetCachedStatement(SQL_FROM_HERE, R"(
-UPDATE interest_groups SET
-  last_updated=?,
-  bidding_url=COALESCE(?,bidding_url),
-  trusted_bidding_signals_url=COALESCE(?,trusted_bidding_signals_url),
-  trusted_bidding_signals_keys=COALESCE(?,trusted_bidding_signals_keys),
-  ads=COALESCE(?,ads)
-WHERE owner=? AND name=?)"));
+  // clang-format off
+  sql::Statement update_group(
+    db.GetCachedStatement(SQL_FROM_HERE,
+      "UPDATE interest_groups "
+      "SET last_updated=?,"
+          "bidding_url=COALESCE(?,bidding_url),"
+          "trusted_bidding_signals_url="
+              "COALESCE(?,trusted_bidding_signals_url),"
+          "trusted_bidding_signals_keys="
+              "COALESCE(?,trusted_bidding_signals_keys),"
+          "ads=COALESCE(?,ads),"
+          "ad_components=COALESCE(?,ad_components) "
+      "WHERE owner=? AND name=?"));
+  // clang-format on
 
   if (!update_group.is_valid())
     return false;
@@ -381,8 +389,13 @@ WHERE owner=? AND name=?)"));
   } else {
     update_group.BindNull(4);
   }
-  update_group.BindString(5, Serialize(data.owner));
-  update_group.BindString(6, data.name);
+  if (data.ad_components) {
+    update_group.BindString(5, Serialize(data.ad_components));
+  } else {
+    update_group.BindNull(5);
+  }
+  update_group.BindString(6, Serialize(data.owner));
+  update_group.BindString(7, data.name);
 
   return update_group.Run();
 }
@@ -667,7 +680,8 @@ absl::optional<std::vector<BiddingInterestGroup>> DoGetInterestGroupsForOwner(
           "trusted_bidding_signals_url,"
           "trusted_bidding_signals_keys,"
           "user_bidding_signals,"  // opaque data
-          "ads "
+          "ads,"
+          "ad_components "
         "FROM interest_groups "
         "WHERE owner = ? AND expiration >=? AND ?>= next_update_after "
         "ORDER BY expiration ASC "
@@ -710,6 +724,8 @@ absl::optional<std::vector<BiddingInterestGroup>> DoGetInterestGroupsForOwner(
       interest_group->user_bidding_signals = load.ColumnString(8);
     interest_group->ads =
         DeserializeInterestGroupAdVector(load.ColumnString(9));
+    interest_group->ad_components =
+        DeserializeInterestGroupAdVector(load.ColumnString(10));
 
     bidding_interest_group->signals =
         auction_worklet::mojom::BiddingBrowserSignals::New();
@@ -984,7 +1000,7 @@ bool InterestGroupStorage::InitializeSchema() {
     return false;
 
   if (!db_->DoesTableExist("interest_groups")) {
-    return CreateV2Schema(*db_);
+    return CreateV3Schema(*db_);
   }
 
   sql::MetaTable meta_table;
@@ -1004,7 +1020,7 @@ bool InterestGroupStorage::InitializeSchema() {
     db_->Raze();
     return meta_table.Init(db_.get(), kCurrentVersionNumber,
                            kCompatibleVersionNumber) &&
-           CreateV2Schema(*db_);
+           CreateV3Schema(*db_);
   }
 
   if (meta_table.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
@@ -1016,7 +1032,7 @@ bool InterestGroupStorage::InitializeSchema() {
     db_->Raze();
     return meta_table.Init(db_.get(), kCurrentVersionNumber,
                            kCompatibleVersionNumber) &&
-           CreateV2Schema(*db_);
+           CreateV3Schema(*db_);
   }
 
   DCHECK(sql::MetaTable::DoesTableExist(db_.get()));

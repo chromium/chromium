@@ -277,6 +277,11 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
       GURL("https://full.example.com/ad1"), "metadata1"));
   full.ads->emplace_back(blink::InterestGroup::Ad(
       GURL("https://full.example.com/ad2"), "metadata2"));
+  full.ad_components.emplace();
+  full.ad_components->emplace_back(blink::InterestGroup::Ad(
+      GURL("https://full.example.com/adcomponent1"), "metadata1c"));
+  full.ad_components->emplace_back(blink::InterestGroup::Ad(
+      GURL("https://full.example.com/adcomponent2"), "metadata2c"));
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
