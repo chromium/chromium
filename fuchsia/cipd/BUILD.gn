@@ -267,12 +267,6 @@ _debug_symbols_outdir =
 
 build_id_dir(_build_ids_target) {
   testonly = true
-  build_id_dirs = [
-    "${root_gen_dir}/fuchsia/engine/web_engine",
-    "${root_gen_dir}/fuchsia/runners/cast_runner",
-    "${root_gen_dir}/fuchsia/runners/web_runner",
-  ]
-
   output_path = _debug_symbols_outdir
   deps = [
     ":test_packages_for_deps",
