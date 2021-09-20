@@ -391,6 +391,7 @@ void DeleteMediaFoundationCdmData(
     if (origin_id_string.empty())
       continue;
 
+    DVLOG(2) << __func__ << ": Processing: " << file_path;
     absl::optional<url::Origin> origin = absl::nullopt;
     if (origin_id_mapping.count(origin_id_string) != 0)
       origin = origin_id_mapping.at(origin_id_string);
@@ -417,6 +418,7 @@ void DeleteMediaFoundationCdmData(
     for (auto cdm_data_file_path = file_enumerator.Next();
          !cdm_data_file_path.value().empty();
          cdm_data_file_path = file_enumerator.Next()) {
+      DVLOG(2) << __func__ << ": - Processing: " << cdm_data_file_path;
       base::File::Info file_info;
       if (!base::GetFileInfo(cdm_data_file_path, &file_info)) {
         DVLOG(ERROR) << "Failed to get FileInfo";
@@ -424,8 +426,9 @@ void DeleteMediaFoundationCdmData(
         break;
       }
 
-      if (file_info.last_accessed >= start &&
-          (!end.is_null() || file_info.last_accessed <= end)) {
+      if (file_info.last_modified >= start &&
+          (end.is_null() || file_info.last_modified <= end)) {
+        DVLOG(2) << "Deleting file. Last modified: " << file_info.last_modified;
         should_delete = true;
         break;
       }
