@@ -110,8 +110,8 @@ public class AssistantPaymentMethodSection
         AutofillPaymentInstrument method = model.mOption;
         ImageView cardIssuerImageView = view.findViewById(R.id.credit_card_issuer_icon);
         try {
-            cardIssuerImageView.setImageDrawable(view.getContext().getResources().getDrawable(
-                    method.getCard().getIssuerIconDrawableId()));
+            cardIssuerImageView.setImageDrawable(
+                    view.getContext().getDrawable(method.getCard().getIssuerIconDrawableId()));
         } catch (Resources.NotFoundException e) {
             cardIssuerImageView.setImageDrawable(null);
         }

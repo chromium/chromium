@@ -1093,39 +1093,6 @@
     <issue
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`"
-        errorLine1="                context.getResources().getDrawable(R.drawable.autofill_assistant_actions_gradient);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/carousel/AssistantActionsDecoration.java"
-            line="85"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `ResourcesCompat.getDrawable()`"
-        errorLine1="            mDefaultImage = (GradientDrawable) context.getResources().getDrawable("
-        errorLine2="                                               ^">
-        <location
-            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantDetailsViewBinder.java"
-            line="73"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `ResourcesCompat.getDrawable()`"
-        errorLine1="            cardIssuerImageView.setImageDrawable(view.getContext().getResources().getDrawable("
-        errorLine2="                                                 ^">
-        <location
-            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/AssistantPaymentMethodSection.java"
-            line="103"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `ResourcesCompat.getDrawable()`"
         errorLine1="            Drawable mInlineTitleIcon = resources.getDrawable(googlePayDrawableId);"
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location

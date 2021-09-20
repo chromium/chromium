@@ -81,8 +81,7 @@ class AssistantActionsDecoration extends RecyclerView.ItemDecoration {
         mShadowLayerWidth =
                 context.getResources().getDimension(R.dimen.autofill_assistant_actions_shadow_width)
                 / SHADOW_LAYERS;
-        mGradientDrawable =
-                context.getResources().getDrawable(R.drawable.autofill_assistant_actions_gradient);
+        mGradientDrawable = context.getDrawable(R.drawable.autofill_assistant_actions_gradient);
 
         mShadowPaint.setAntiAlias(true);
         mShadowPaint.setDither(true);
