@@ -65,8 +65,10 @@ class BuildConfigGenerator extends DefaultTask {
      */
     static final Set<String> ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES = [
       'androidx_constraintlayout',
+      'androidx_documentfile',
       'androidx_legacy',
       'androidx_multidex_multidex',
+      'androidx_print',
       'androidx_test',
     ]
 
