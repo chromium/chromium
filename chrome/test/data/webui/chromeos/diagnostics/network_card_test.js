@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/network_card.js';
 
-import {fakeCellularNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
@@ -50,6 +50,8 @@ export function networkCardTestSuite() {
     provider.setFakeNetworkState(
         'wifiDisconnectedGuid', [fakeDisconnectedWifiNetwork]);
     provider.setFakeNetworkState('wifiPortalGuid', [fakePortalWifiNetwork]);
+    provider.setFakeNetworkState(
+        'ethernetConnectingGuid', [fakeConnectingEthernetNetwork]);
     // Add the network info to the DOM.
     networkCardElement = /** @type {!NetworkCardElement} */ (
         document.createElement('network-card'));
@@ -161,6 +163,17 @@ export function networkCardTestSuite() {
       assertTrue(isVisible(getTroubleConnectingElement()));
       assertFalse(isVisible(getNetworkInfoElement()));
       assertFalse(isVisible(getIpConfigDrawerElement()));
+    });
+  });
+
+  test('NetworkConnectingHideTroubleShooting', () => {
+    return initializeNetworkCard('ethernetConnectingGuid').then(() => {
+      dx_utils.assertElementContainsText(
+          networkCardElement.$$('#cardTitle'),
+          'Ethernet [81:C5:A6:30:3F:33] (Connecting)');
+      assertFalse(isVisible(getTroubleConnectingElement()));
+      assertTrue(isVisible(getNetworkInfoElement()));
+      assertTrue(isVisible(getIpConfigDrawerElement()));
     });
   });
 

@@ -145,11 +145,12 @@ Polymer({
       return false;
     }
 
-    // Show the data-points when portal, online, or connected.
+    // Show the data-points when portal, online, connected, or connecting.
     switch (this.network.state) {
       case NetworkState.kPortal:
       case NetworkState.kOnline:
       case NetworkState.kConnected:
+      case NetworkState.kConnecting:
         return true;
       default:
         return false;

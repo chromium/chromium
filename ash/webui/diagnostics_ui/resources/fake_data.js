@@ -475,6 +475,15 @@ export let fakeEthernetNetwork = {
 };
 
 /** @type {!Network} */
+export let fakeConnectingEthernetNetwork = {
+  state: NetworkState.kConnecting,
+  type: NetworkType.kEthernet,
+  observerGuid: 'ethernetGuid',
+  name: 'ethernetName',
+  macAddress: '81:C5:A6:30:3F:33',
+};
+
+/** @type {!Network} */
 export let fakeDisconnectedEthernetNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kEthernet,
