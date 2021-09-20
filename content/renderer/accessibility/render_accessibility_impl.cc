@@ -200,7 +200,7 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
       GetAccessibilityMode().has_mode(ui::AXMode::kLabelImages)) {
     return;
   }
-  tree_source_->RemoveImageAnnotator();
+  tree_source_->RemoveBlinkImageAnnotator();
   ax_image_annotator_->Destroy();
   ax_image_annotator_.reset();
   page_language_.clear();
@@ -1282,7 +1282,7 @@ void RenderAccessibilityImpl::CreateAXImageAnnotator() {
 
   ax_image_annotator_ =
       std::make_unique<AXImageAnnotator>(this, std::move(annotator));
-  tree_source_->AddImageAnnotator(ax_image_annotator_.get());
+  tree_source_->AddBlinkImageAnnotator(ax_image_annotator_.get());
 }
 
 void RenderAccessibilityImpl::StartOrStopLabelingImages(ui::AXMode old_mode,
@@ -1295,7 +1295,7 @@ void RenderAccessibilityImpl::StartOrStopLabelingImages(ui::AXMode old_mode,
     CreateAXImageAnnotator();
   } else if (old_mode.has_mode(ui::AXMode::kLabelImages) &&
              !new_mode.has_mode(ui::AXMode::kLabelImages)) {
-    tree_source_->RemoveImageAnnotator();
+    tree_source_->RemoveBlinkImageAnnotator();
     ax_image_annotator_->Destroy();
     ax_image_annotator_.reset();
   }

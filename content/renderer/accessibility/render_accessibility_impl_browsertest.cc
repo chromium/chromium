@@ -1245,8 +1245,8 @@ class AXImageAnnotatorTest : public RenderAccessibilityImplTest {
     GetRenderAccessibilityImpl()->ax_image_annotator_ =
         std::make_unique<TestAXImageAnnotator>(GetRenderAccessibilityImpl(),
                                                mock_annotator().GetRemote());
-    GetRenderAccessibilityImpl()->tree_source_->RemoveImageAnnotator();
-    GetRenderAccessibilityImpl()->tree_source_->AddImageAnnotator(
+    GetRenderAccessibilityImpl()->tree_source_->RemoveBlinkImageAnnotator();
+    GetRenderAccessibilityImpl()->tree_source_->AddBlinkImageAnnotator(
         GetRenderAccessibilityImpl()->ax_image_annotator_.get());
     BlinkAXTreeSource::IgnoreProtocolChecksForTesting();
   }

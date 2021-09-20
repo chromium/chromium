@@ -84,10 +84,10 @@ class CONTENT_EXPORT BlinkAXTreeSource
 
   // The following methods add or remove an image annotator which is used to
   // provide automatic labels for images.
-  void AddImageAnnotator(AXImageAnnotator* const annotator) {
+  void AddBlinkImageAnnotator(AXImageAnnotator* const annotator) {
     image_annotator_ = annotator;
   }
-  void RemoveImageAnnotator() {
+  void RemoveBlinkImageAnnotator() {
     image_annotator_ = nullptr;
     first_unlabeled_image_id_ = absl::nullopt;
   }
