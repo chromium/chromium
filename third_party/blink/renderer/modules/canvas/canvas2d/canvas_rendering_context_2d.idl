@@ -141,11 +141,6 @@ interface CanvasRenderingContext2D {
     [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
     [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
 
-    // hit regions
-    [RuntimeEnabled=CanvasHitRegion, RaisesException] void addHitRegion(optional HitRegionOptions options = {});
-    [RuntimeEnabled=CanvasHitRegion] void removeHitRegion(DOMString id);
-    [RuntimeEnabled=CanvasHitRegion] void clearHitRegions();
-
     // pixel manipulation
     [RaisesException] ImageData createImageData(ImageData imagedata);
     [RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh);

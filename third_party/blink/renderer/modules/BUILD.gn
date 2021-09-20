@@ -199,8 +199,6 @@ source_set("modules_testing") {
   sources = [
     "accessibility/testing/internals_accessibility.cc",
     "accessibility/testing/internals_accessibility.h",
-    "canvas/canvas2d/testing/internals_canvas_rendering_context_2d.cc",
-    "canvas/canvas2d/testing/internals_canvas_rendering_context_2d.h",
     "mediastream/testing/internals_media_stream.cc",
     "mediastream/testing/internals_media_stream.h",
     "netinfo/testing/internals_net_info.cc",

@@ -70,7 +70,6 @@ class CanvasDrawListener;
 class CanvasRenderingContext;
 class CanvasRenderingContextFactory;
 class GraphicsContext;
-class HitTestCanvasResult;
 class HTMLCanvasElement;
 class ImageBitmapOptions;
 class IntSize;
@@ -260,11 +259,6 @@ class CORE_EXPORT HTMLCanvasElement final
   void LayoutObjectDestroyed();
 
   void NotifyListenersCanvasChanged();
-
-  // For Canvas HitRegions
-  bool IsSupportedInteractiveCanvasFallback(const Element&);
-  HitTestCanvasResult* GetControlAndIdIfHitRegionExists(const PhysicalOffset&);
-  String GetIdFromControl(const Element*);
 
   // For OffscreenCanvas that controls this html canvas element
   ::blink::SurfaceLayerBridge* SurfaceLayerBridge() const {

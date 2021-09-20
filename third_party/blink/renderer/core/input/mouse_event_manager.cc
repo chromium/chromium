@@ -58,20 +58,7 @@ namespace blink {
 namespace {
 
 String CanvasRegionId(Node* node, const WebMouseEvent& mouse_event) {
-  auto* element = DynamicTo<Element>(node);
-  if (!element)
-    return String();
-
-  if (!element->IsInCanvasSubtree())
-    return String();
-
-  HTMLCanvasElement* canvas =
-      Traversal<HTMLCanvasElement>::FirstAncestorOrSelf(*element);
-  // In this case, the event target is canvas and mouse rerouting doesn't
-  // happen.
-  if (canvas == element)
-    return String();
-  return canvas->GetIdFromControl(element);
+  return String();
 }
 
 void UpdateMouseMovementXY(const WebMouseEvent& mouse_event,

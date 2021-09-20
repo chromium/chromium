@@ -544,14 +544,6 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
       Node* node = result.InnerNode();
       if (!node)
         return;
-      if (auto* canvas = DynamicTo<HTMLCanvasElement>(node)) {
-        HitTestCanvasResult* hit_test_canvas_result =
-            canvas->GetControlAndIdIfHitRegionExists(
-                result.PointInInnerNodeFrame());
-        if (hit_test_canvas_result->GetControl())
-          node = hit_test_canvas_result->GetControl();
-        region = hit_test_canvas_result->GetId();
-      }
       // Touch events should not go to text nodes.
       if (node->IsTextNode())
         node = FlatTreeTraversal::Parent(*node);

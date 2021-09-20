@@ -207,15 +207,9 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void ClearRect(double x, double y, double width, double height) {}
   virtual void DidSetSurfaceSize() {}
   virtual void SetShouldAntialias(bool) {}
-  virtual unsigned HitRegionsCount() const { return 0; }
   virtual void setFont(const String&) {}
   virtual void StyleDidChange(const ComputedStyle* old_style,
                               const ComputedStyle& new_style) {}
-  virtual HitTestCanvasResult* GetControlAndIdIfHitRegionExists(
-      const PhysicalOffset& location) {
-    NOTREACHED();
-    return MakeGarbageCollected<HitTestCanvasResult>(String(), nullptr);
-  }
   virtual String GetIdFromControl(const Element* element) { return String(); }
   virtual void ResetUsageTracking() {}
 

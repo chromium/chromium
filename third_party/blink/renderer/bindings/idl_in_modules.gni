@@ -95,7 +95,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.idl",
           "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.idl",
           "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_settings.idl",
-          "//third_party/blink/renderer/modules/canvas/canvas2d/hit_region_options.idl",
           "//third_party/blink/renderer/modules/canvas/canvas2d/path_2d.idl",
           "//third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_module.idl",
           "//third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.idl",
@@ -1182,7 +1181,6 @@ if (!is_android) {
 static_idl_files_in_modules_for_testing = get_path_info(
         [
           "//third_party/blink/renderer/modules/accessibility/testing/internals_accessibility.idl",
-          "//third_party/blink/renderer/modules/canvas/canvas2d/testing/internals_canvas_rendering_context_2d.idl",
           "//third_party/blink/renderer/modules/mediastream/testing/internals_media_stream.idl",
           "//third_party/blink/renderer/modules/netinfo/testing/internals_net_info.idl",
           "//third_party/blink/renderer/modules/peerconnection/testing/internals_rtc_certificate.idl",

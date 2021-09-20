@@ -434,14 +434,6 @@ PointerEventManager::ComputePointerEventTarget(
     Element* target = hit_test_tesult.InnerElement();
     if (target) {
       pointer_event_target.target_frame = target->GetDocument().GetFrame();
-      if (auto* canvas = DynamicTo<HTMLCanvasElement>(target)) {
-        HitTestCanvasResult* hit_test_canvas_result =
-            canvas->GetControlAndIdIfHitRegionExists(
-                hit_test_tesult.PointInInnerNodeFrame());
-        if (hit_test_canvas_result->GetControl())
-          target = hit_test_canvas_result->GetControl();
-        pointer_event_target.region = hit_test_canvas_result->GetId();
-      }
       pointer_event_target.target_element = target;
     }
   } else {

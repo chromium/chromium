@@ -4332,16 +4332,6 @@ MouseEventWithHitTestResults Document::PerformMouseEventHitTest(
                            result.InnerElement());
   }
 
-  if (auto* canvas = DynamicTo<HTMLCanvasElement>(result.InnerNode())) {
-    HitTestCanvasResult* hit_test_canvas_result =
-        canvas->GetControlAndIdIfHitRegionExists(
-            result.PointInInnerNodeFrame());
-    if (hit_test_canvas_result->GetControl()) {
-      result.SetInnerNode(hit_test_canvas_result->GetControl());
-    }
-    result.SetCanvasRegionId(hit_test_canvas_result->GetId());
-  }
-
   return MouseEventWithHitTestResults(event, location, result);
 }
 

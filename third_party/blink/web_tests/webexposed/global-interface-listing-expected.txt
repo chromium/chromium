@@ -1110,13 +1110,11 @@ interface CanvasRenderingContext2D
     getter textBaseline
     getter textRendering
     getter wordSpacing
-    method addHitRegion
     method arc
     method arcTo
     method beginLayer
     method beginPath
     method bezierCurveTo
-    method clearHitRegions
     method clearRect
     method clip
     method closePath
@@ -1148,7 +1146,6 @@ interface CanvasRenderingContext2D
     method putImageData
     method quadraticCurveTo
     method rect
-    method removeHitRegion
     method reset
     method resetTransform
     method restore
