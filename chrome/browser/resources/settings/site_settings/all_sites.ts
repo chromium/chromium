@@ -211,10 +211,11 @@ class AllSitesElement extends AllSitesElementBase {
     this.addEventListener('open-menu', this.onOpenMenu_.bind(this));
 
     const sortParam = Router.getInstance().getQueryParameters().get('sort');
-    if (sortParam !== null && Object.values(SortMethod).includes(sortParam)) {
+    if (sortParam !== null &&
+        Object.values(SortMethod).includes(sortParam as SortMethod)) {
       this.$.sortMethod.value = sortParam;
     }
-    this.sortMethod_ = this.$.sortMethod.value;
+    this.sortMethod_ = this.$.sortMethod.value as (SortMethod | undefined);
   }
 
   connectedCallback() {
@@ -376,7 +377,7 @@ class AllSitesElement extends AllSitesElementBase {
    * Called when the user chooses a different sort method to the default.
    */
   private onSortMethodChanged_() {
-    this.sortMethod_ = this.$.sortMethod.value;
+    this.sortMethod_ = this.$.sortMethod.value as SortMethod;
     this.filteredList_ = this.sortSiteGroupList_(this.filteredList_);
     // Force the iron-list to rerender its items, as the order has changed.
     this.$.allSitesList.fire('iron-resize');
@@ -699,7 +700,7 @@ class AllSitesElement extends AllSitesElementBase {
    * @param origin The origin of the target origin that should be cleared.
    */
   private clearDataForOrigin_(index: number, origin: string) {
-    this.browserProxy.clearOriginDataAndCookies(this.toUrl(origin).href);
+    this.browserProxy.clearOriginDataAndCookies(this.toUrl(origin)!.href);
 
     const siteGroupToUpdate = this.filteredList_[index];
     const updatedSiteGroup: SiteGroup = {
@@ -746,7 +747,7 @@ class AllSitesElement extends AllSitesElementBase {
    */
   private onClearData_(e: Event) {
     const {index, actionScope, origin} = this.actionMenuModel_!;
-    const scopes = [ALL_SITES_DIALOG.CLEAR_DATA];
+    const scopes: Array<string> = [ALL_SITES_DIALOG.CLEAR_DATA];
 
     if (actionScope === 'origin') {
       this.browserProxy.recordAction(AllSitesAction2.CLEAR_ORIGIN_DATA);

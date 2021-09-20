@@ -6,21 +6,19 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // clang-format on
 
-/**
- * @typedef {{hasChildren: boolean,
- *            id: string,
- *            idPath: string,
- *            title: string,
- *            totalUsage: string,
- *            type: string}}
- */
-export let CookieDetails;
+export type CookieDetails = {
+  hasChildren: boolean,
+  id: string,
+  idPath: string,
+  title: string,
+  totalUsage: string,
+  type: string,
+};
 
-/**
- * @typedef {{content: string,
- *            label: string}}
- */
-export let CookieDataForDisplay;
+export type CookieDataForDisplay = {
+  content: string,
+  label: string,
+};
 
 // This structure maps the various cookie type names from C++ (hence the
 // underscores) to arrays of the different types of data each has, along with
@@ -29,7 +27,7 @@ export let CookieDataForDisplay;
 // 1) to list what subset of the cookie data we want to show in the UI.
 // 2) What order to show it in.
 // 3) What user friendly label to prefix the data with.
-export const cookieInfo = {
+export const cookieInfo: {[key: string]: Array<Array<string>>} = {
   'cookie': [
     ['name', 'cookieName'], ['content', 'cookieContent'],
     ['domain', 'cookieDomain'], ['path', 'cookiePath'],
@@ -74,12 +72,11 @@ export const cookieInfo = {
 
 /**
  * Get cookie data for a given HTML node.
- * @param {CookieDetails} data The contents of the cookie.
- * @return {!Array<CookieDataForDisplay>}
+ * @param data The contents of the cookie.
  */
-export const getCookieData = function(data) {
-  /** @type {!Array<CookieDataForDisplay>} */
-  const out = [];
+export function getCookieData(data: CookieDetails):
+    Array<CookieDataForDisplay> {
+  const out: Array<CookieDataForDisplay> = [];
   const fields = cookieInfo[data.type];
   for (let i = 0; i < fields.length; i++) {
     const field = fields[i];
@@ -87,13 +84,14 @@ export const getCookieData = function(data) {
     // and see if those keys are present in the data. If so, display them
     // (in the order determined by |cookieInfo|).
     const key = field[0];
-    if (data[key].length > 0) {
-      const entry = /** @type {CookieDataForDisplay} */ ({
+    const value = (data as unknown as {[key: string]: string})[key];
+    if (value.length > 0) {
+      const entry = {
         label: loadTimeData.getString(field[1]),
-        content: data[key],
-      });
+        content: value,
+      };
       out.push(entry);
     }
   }
   return out;
-};
+}

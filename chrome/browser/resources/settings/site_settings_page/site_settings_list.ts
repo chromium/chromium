@@ -164,7 +164,7 @@ class SettingsSiteSettingsListElement extends
     // PROTECTED_CONTENT
     if (category === ContentSettingsTypes.ZOOM_LEVELS ||
         category === ContentSettingsTypes.PROTECTED_CONTENT ||
-        category === 'pdfDocuments') {
+        category === ContentSettingsTypes.PDF_DOCUMENTS) {
       return Promise.resolve();
     }
 

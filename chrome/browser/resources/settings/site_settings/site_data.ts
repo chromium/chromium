@@ -18,10 +18,11 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared_css.js';
 import './site_data_entry.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
@@ -29,31 +30,38 @@ import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
 
-/**
- * @typedef {{
- *   id: string,
- *   start: number,
- *   count: number,
- * }}
- */
-let CookieRemovePacket;
+type FocusConfig = Map<string, string|(() => void)>;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {ListPropertyUpdateBehaviorInterface}
- * @implements {BaseMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SiteDataElementBase = mixinBehaviors(
-    [ListPropertyUpdateBehavior, WebUIListenerBehavior],
-    GlobalScrollTargetMixin(BaseMixin(PolymerElement)));
+type SelectedItem = {
+  item: LocalDataItem,
+  index: number,
+};
 
-/** @polymer */
+type RepeaterEvent = {
+  model: SelectedItem,
+};
+
+interface SiteDataElement {
+  $: {
+    confirmDeleteDialog: CrDialogElement,
+    confirmDeleteThirdPartyDialog: CrDialogElement,
+    removeShowingSites: HTMLElement,
+    removeAllThirdPartyCookies: HTMLElement,
+  };
+}
+
+const SiteDataElementBase =
+    mixinBehaviors(
+        [ListPropertyUpdateBehavior, WebUIListenerBehavior],
+        GlobalScrollTargetMixin(BaseMixin(PolymerElement))) as {
+      new (): PolymerElement & ListPropertyUpdateBehavior & BaseMixinInterface &
+      WebUIListenerBehavior & RouteObserverMixinInterface
+    };
+
 class SiteDataElement extends SiteDataElementBase {
   static get is() {
     return 'site-data';
@@ -74,7 +82,6 @@ class SiteDataElement extends SiteDataElementBase {
         type: String,
       },
 
-      /** @type {!Map<string, (string|Function)>} */
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
@@ -82,7 +89,6 @@ class SiteDataElement extends SiteDataElementBase {
 
       isLoading_: Boolean,
 
-      /** @type {!Array<!LocalDataItem>} */
       sites: {
         type: Array,
         value() {
@@ -92,53 +98,50 @@ class SiteDataElement extends SiteDataElementBase {
 
       /**
        * GlobalScrollTargetMixin
-       * @override
        */
       subpageRoute: {
         type: Object,
         value: routes.SITE_SETTINGS_SITE_DATA,
       },
 
-      /** @private */
       lastFocused_: Object,
-
-      /** @private */
       listBlurred_: Boolean,
     };
   }
 
+  filter: string;
+  focusConfig: FocusConfig;
+  private isLoading_: boolean;
+  sites: Array<LocalDataItem>;
+  subpageRoute: Route;
+  private listBlurred_: boolean;
+  private browserProxy_: LocalDataBrowserProxy =
+      LocalDataBrowserProxyImpl.getInstance();
+  private lastSelected_: SelectedItem|null;
+
   constructor() {
     super();
-
-    /** @private {!LocalDataBrowserProxy} */
-    this.browserProxy_ = LocalDataBrowserProxyImpl.getInstance();
 
     /**
      * When navigating to site data details sub-page, |lastSelected_| holds the
      * site name as well as the index of the selected site. This is used when
      * navigating back to site data in order to focus on the correct site.
-     * @private {!{item: !LocalDataItem, index: number}|null}
      */
     this.lastSelected_ = null;
   }
 
-  /** @override */
   ready() {
     super.ready();
 
-    this.addWebUIListener(
-        'on-tree-item-removed', this.updateSiteList_.bind(this));
+    this.addWebUIListener('on-tree-item-removed', () => this.updateSiteList_());
   }
 
   /**
    * Reload cookies when the site data page is visited.
    *
    * RouteObserverBehavior
-   * @param {!Route} currentRoute
-   * @param {!Route} previousRoute
-   * @protected
    */
-  currentRouteChanged(currentRoute, previousRoute) {
+  currentRouteChanged(currentRoute: Route, previousRoute: Route) {
     super.currentRouteChanged(currentRoute);
     // Reload cookies on navigation to the site data page from a different
     // page. Avoid reloading on repeated navigations to the same page, as these
@@ -149,18 +152,13 @@ class SiteDataElement extends SiteDataElementBase {
       // Needed to fix iron-list rendering issue. The list will not render
       // correctly until a scroll occurs.
       // See https://crbug.com/853906.
-      const ironList = /** @type {!IronListElement} */ (this.$$('iron-list'));
+      const ironList = this.shadowRoot!.querySelector('iron-list')!;
       ironList.scrollToIndex(0);
-      this.browserProxy_.reloadCookies().then(this.updateSiteList_.bind(this));
+      this.browserProxy_.reloadCookies().then(() => this.updateSiteList_());
     }
   }
 
-  /**
-   * @param {!Map<string, (string|Function)>} newConfig
-   * @param {?Map<string, (string|Function)>} oldConfig
-   * @private
-   */
-  focusConfigChanged_(newConfig, oldConfig) {
+  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     // focusConfig is set only once on the parent, so this observer should only
     // fire once.
     assert(!oldConfig);
@@ -195,25 +193,17 @@ class SiteDataElement extends SiteDataElementBase {
     }
   }
 
-  /**
-   * @param {number} index
-   * @private
-   */
-  focusOnSiteSelectButton_(index) {
-    const ironList =
-        /** @type {!IronListElement} */ (this.$$('iron-list'));
+  private focusOnSiteSelectButton_(index: number) {
+    const ironList = this.shadowRoot!.querySelector('iron-list')!;
     ironList.focusItem(index);
     const siteToSelect = this.sites[index].site.replace(/[.]/g, '\\.');
-    const button = this.$$(`#siteItem_${siteToSelect}`).$$('.subpage-arrow');
+    const button =
+        this.$$(`#siteItem_${siteToSelect}`)!.shadowRoot!.querySelector(
+            '.subpage-arrow')!;
     focusWithoutInk(assert(button));
   }
 
-  /**
-   * @param {string} current
-   * @param {string|undefined} previous
-   * @private
-   */
-  onFilterChanged_(current, previous) {
+  private onFilterChanged_(_current: string, previous?: string) {
     // Ignore filter changes which do not occur on the site data page. The
     // site settings data details subpage expects the tree model to remain in
     // the same state.
@@ -227,9 +217,8 @@ class SiteDataElement extends SiteDataElementBase {
 
   /**
    * Gather all the site data.
-   * @private
    */
-  updateSiteList_() {
+  private updateSiteList_() {
     this.isLoading_ = true;
     this.browserProxy_.getDisplayList(this.filter).then(localDataItems => {
       this.updateList('sites', item => item.site, localDataItems);
@@ -240,43 +229,35 @@ class SiteDataElement extends SiteDataElementBase {
 
   /**
    * Returns the string to use for the Remove label.
-   * @param {string} filter The current filter string.
-   * @return {string}
-   * @private
+   * @param filter The current filter string.
    */
-  computeRemoveLabel_(filter) {
+  private computeRemoveLabel_(filter: string): string {
     if (filter.length === 0) {
       return loadTimeData.getString('siteSettingsCookieRemoveAll');
     }
     return loadTimeData.getString('siteSettingsCookieRemoveAllShown');
   }
 
-  /** @private */
-  onCloseDialog_() {
+  private onCloseDialog_() {
     this.$.confirmDeleteDialog.close();
   }
 
-  /** @private */
-  onCloseThirdPartyDialog_() {
+  private onCloseThirdPartyDialog_() {
     this.$.confirmDeleteThirdPartyDialog.close();
   }
 
-  /** @private */
-  onConfirmDeleteDialogClosed_() {
+  private onConfirmDeleteDialogClosed_() {
     focusWithoutInk(assert(this.$.removeShowingSites));
   }
 
-  /** @private */
-  onConfirmDeleteThirdPartyDialogClosed_() {
+  private onConfirmDeleteThirdPartyDialogClosed_() {
     focusWithoutInk(assert(this.$.removeAllThirdPartyCookies));
   }
 
   /**
    * Shows a dialog to confirm the deletion of multiple sites.
-   * @param {!Event} e
-   * @private
    */
-  onRemoveShowingSitesTap_(e) {
+  onRemoveShowingSitesTap_(e: Event) {
     e.preventDefault();
     this.$.confirmDeleteDialog.showModal();
   }
@@ -284,18 +265,16 @@ class SiteDataElement extends SiteDataElementBase {
   /**
    * Shows a dialog to confirm the deletion of cookies available
    * in third-party contexts and associated site data.
-   * @private
    */
-  onRemoveThirdPartyCookiesTap_(e) {
+  private onRemoveThirdPartyCookiesTap_(e: Event) {
     e.preventDefault();
     this.$.confirmDeleteThirdPartyDialog.showModal();
   }
 
   /**
    * Called when deletion for all showing sites has been confirmed.
-   * @private
    */
-  onConfirmDelete_() {
+  private onConfirmDelete_() {
     this.$.confirmDeleteDialog.close();
     if (this.filter.length === 0) {
       MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
@@ -315,20 +294,15 @@ class SiteDataElement extends SiteDataElementBase {
   /**
    * Called when deletion of all third-party cookies and site data has been
    * confirmed.
-   * @private
    */
-  onConfirmThirdPartyDelete_() {
+  private onConfirmThirdPartyDelete_() {
     this.$.confirmDeleteThirdPartyDialog.close();
     this.browserProxy_.removeAllThirdPartyCookies().then(() => {
       this.updateSiteList_();
     });
   }
 
-  /**
-   * @param {!{model: !{item: !LocalDataItem, index: number}}} event
-   * @private
-   */
-  onSiteClick_(event) {
+  private onSiteClick_(event: RepeaterEvent) {
     // If any delete button is selected, the focus will be in a bad state when
     // returning to this page. To avoid this, the site select button is given
     // focus. See https://crbug.com/872197.
@@ -339,11 +313,7 @@ class SiteDataElement extends SiteDataElementBase {
     this.lastSelected_ = event.model;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  showRemoveThirdPartyCookies_() {
+  private showRemoveThirdPartyCookies_(): boolean {
     return loadTimeData.getBoolean('enableRemovingAllThirdPartyCookies') &&
         this.sites.length > 0 && this.filter.length === 0;
   }

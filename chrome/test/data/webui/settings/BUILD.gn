@@ -139,7 +139,6 @@ js_type_check("closure_compile") {
     #":test_extension_control_browser_proxy",
     ":test_hats_browser_proxy",
     ":test_lifetime_browser_proxy",
-    ":test_local_data_browser_proxy",
     ":test_metrics_browser_proxy",
     ":test_open_window_proxy",
 
@@ -149,7 +148,6 @@ js_type_check("closure_compile") {
     #":test_reset_browser_proxy",
     #":test_search_engines_browser_proxy",
     ":test_sync_browser_proxy",
-    ":test_util",
 
     #":zoom_levels_tests",
   ]
@@ -302,13 +300,6 @@ js_library("test_lifetime_browser_proxy") {
   ]
 }
 
-js_library("test_local_data_browser_proxy") {
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:lazy_load",
-  ]
-}
-
 js_library("test_search_engines_browser_proxy") {
   deps = [
     "..:test_browser_proxy",
@@ -319,13 +310,6 @@ js_library("test_search_engines_browser_proxy") {
 js_library("test_sync_browser_proxy") {
   deps = [
     "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:settings",
-  ]
-}
-
-js_library("test_util") {
-  deps = [
-    "//chrome/browser/resources/settings:lazy_load",
     "//chrome/browser/resources/settings:settings",
   ]
 }

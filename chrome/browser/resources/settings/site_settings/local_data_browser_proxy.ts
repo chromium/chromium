@@ -8,150 +8,119 @@
  */
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {CookieDetails} from './cookie_info.js';
 // clang-format on
 
-/**
- * @typedef {{
- *   localData: string,
- *   site: string,
- * }}
- */
-export let LocalDataItem;
+export type LocalDataItem = {
+  localData: string,
+  site: string,
+};
 
 /**
  * Number of cookies attached to a given domain / eTLD+1.
- * @typedef {{
- *   etldPlus1: string,
- *   numCookies: number,
- * }}
  */
-let EtldPlus1CookieNumber;
+type EtldPlus1CookieNumber = {
+  etldPlus1: string,
+  numCookies: number,
+};
 
-/** @interface */
-export class LocalDataBrowserProxy {
-  /**
-   * @param {string} filter Search filter (use "" for none).
-   * @return {!Promise<!Array<!LocalDataItem>>}
-   */
-  getDisplayList(filter) {}
+export interface LocalDataBrowserProxy {
+  getDisplayList(filter: string): Promise<Array<LocalDataItem>>;
 
   /**
    * Removes all local data (local storage, cookies, etc.).
    * Note: on-tree-item-removed will not be sent.
-   * @return {!Promise} To signal completion.
    */
-  removeAll() {}
+  removeAll(): Promise<void>;
 
   /**
    * Remove items that pass the current filter. Completion signaled by
    * on-tree-item-removed.
    */
-  removeShownItems() {}
+  removeShownItems(): void;
 
   /**
    * Remove data for a specific site. Completion signaled by
    * on-tree-item-removed.
-   * @param {string} site Site to delete data for.
    */
-  removeSite(site) {}
+  removeSite(site: string): void;
 
   /**
    * Gets the cookie details for a particular site.
-   * @param {string} site The name of the site.
-   * @return {!Promise<!Array<!CookieDetails>>}
    */
-  getCookieDetails(site) {}
+  getCookieDetails(site: string): Promise<Array<CookieDetails>>;
 
   /**
    * Gets the plural string for a given number of cookies.
-   * @param {number} numCookies The number of cookies.
-   * @return {!Promise<string>}
+   * @param numCookies The number of cookies.
    */
-  getNumCookiesString(numCookies) {}
+  getNumCookiesString(numCookies: number): Promise<string>;
 
   /**
    * Reloads all local data.
    * TODO(dschuyler): rename function to reload().
-   * @return {!Promise} To signal completion.
    */
-  reloadCookies() {}
+  reloadCookies(): Promise<void>;
 
   /**
    * Removes a given piece of site data.
-   * @param {string} path The path to the item in the tree model.
+   * @param path The path to the item in the tree model.
    */
-  removeItem(path) {}
+  removeItem(path: string): void;
 
   /**
    * Removes all SameSite=None cookies, as well as storage available in
    * third-party contexts.
    * Note: on-tree-item-removed will not be sent.
-   * @return {!Promise} To signal completion.
    */
-  removeAllThirdPartyCookies() {}
+  removeAllThirdPartyCookies(): Promise<void>;
 }
 
-/**
- * @implements {LocalDataBrowserProxy}
- */
-export class LocalDataBrowserProxyImpl {
-  /** @override */
-  getDisplayList(filter) {
+export class LocalDataBrowserProxyImpl implements LocalDataBrowserProxy {
+  getDisplayList(filter: string) {
     return sendWithPromise('localData.getDisplayList', filter);
   }
 
-  /** @override */
   removeAll() {
     return sendWithPromise('localData.removeAll');
   }
 
-  /** @override */
   removeShownItems() {
     chrome.send('localData.removeShownItems');
   }
 
-  /** @override */
-  removeSite(site) {
+  removeSite(site: string) {
     chrome.send('localData.removeSite', [site]);
   }
 
-  /** @override */
-  getCookieDetails(site) {
+  getCookieDetails(site: string) {
     return sendWithPromise('localData.getCookieDetails', site);
   }
 
-  /** @override */
-  getNumCookiesString(numCookies) {
+  getNumCookiesString(numCookies: number) {
     return sendWithPromise('localData.getNumCookiesString', numCookies);
   }
 
-  /** @override */
   reloadCookies() {
     return sendWithPromise('localData.reload');
   }
 
-  /** @override */
-  removeItem(path) {
+  removeItem(path: string) {
     chrome.send('localData.removeItem', [path]);
   }
 
-  /** @override */
   removeAllThirdPartyCookies() {
     return sendWithPromise('localData.removeThirdPartyCookies');
   }
 
-  /** @return {!LocalDataBrowserProxy} */
-  static getInstance() {
+  static getInstance(): LocalDataBrowserProxy {
     return instance || (instance = new LocalDataBrowserProxyImpl());
   }
 
-  /** @param {!LocalDataBrowserProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: LocalDataBrowserProxy) {
     instance = obj;
   }
 }
 
-/** @type {?LocalDataBrowserProxy} */
-let instance = null;
+let instance: LocalDataBrowserProxy|null = null;

@@ -50,7 +50,7 @@ interface SiteDetailsElement {
 const SiteDetailsElementBase =
     mixinBehaviors(
         [I18nBehavior, WebUIListenerBehavior],
-        SiteSettingsMixin(RouteObserverMixin(PolymerElement))) as {
+        RouteObserverMixin(SiteSettingsMixin(PolymerElement))) as {
       new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
       SiteSettingsMixinInterface & RouteObserverMixinInterface
     };
@@ -168,7 +168,7 @@ class SiteDetailsElement extends SiteDetailsElementBase {
       if (!valid) {
         Router.getInstance().navigateToPreviousRoute();
       } else {
-        this.fetchingForHost_ = this.toUrl(this.origin_).hostname;
+        this.fetchingForHost_ = this.toUrl(this.origin_)!.hostname;
         this.storedData_ = '';
         this.websiteUsageProxy_.fetchUsageTotal(this.fetchingForHost_);
         this.browserProxy.getCategoryList(this.origin_).then((categoryList) => {
@@ -289,7 +289,7 @@ class SiteDetailsElement extends SiteDetailsElementBase {
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.SITE_DETAILS_CLEAR_DATA);
     if (this.hasUsage_(this.storedData_, this.numCookies_)) {
-      this.websiteUsageProxy_.clearUsage(this.toUrl(this.origin_).href);
+      this.websiteUsageProxy_.clearUsage(this.toUrl(this.origin_)!.href);
       this.storedData_ = '';
       this.numCookies_ = '';
     }

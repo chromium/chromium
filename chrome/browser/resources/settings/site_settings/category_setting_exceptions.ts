@@ -13,8 +13,9 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
+import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {ContentSettingProvider} from './site_settings_prefs_browser_proxy.js';
 
 const CategorySettingExceptionsElementBase =
     mixinBehaviors(
@@ -145,7 +146,8 @@ export class CategorySettingExceptionsElement extends
 
     this.browserProxy.getDefaultValueForContentType(this.category)
         .then(update => {
-          this.defaultManaged_ = update.source === SiteSettingSource.POLICY;
+          this.defaultManaged_ =
+              update.source === ContentSettingProvider.POLICY;
         });
   }
 

@@ -38,7 +38,7 @@ import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -50,23 +50,19 @@ import {ContentSettingProvider, DefaultContentSetting} from './site_settings_pre
 
 /**
  * The setting to display as a sub-option, if any.
- * @enum {string}
  */
-const SubOptionMode = {
-  PREF: 'pref',
-  NONE: 'none',
-};
+enum SubOptionMode {
+  PREF = 'pref',
+  NONE = 'none',
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SiteSettingsMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const CategoryDefaultSettingElementBase =
-    mixinBehaviors([WebUIListenerBehavior], SiteSettingsMixin(PolymerElement));
+    mixinBehaviors(
+        [WebUIListenerBehavior], SiteSettingsMixin(PolymerElement)) as {
+      new ():
+          PolymerElement & WebUIListenerBehavior & SiteSettingsMixinInterface
+    };
 
-/** @polymer */
 class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
   static get is() {
     return 'category-default-setting';
@@ -102,12 +98,10 @@ class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
        * set to SubOptionMode.PREF. */
       subOptionPref: Boolean,
 
-      /* Pref based
-      /** @private {chrome.settingsPrivate.PrefObject} */
       controlParams_: {
         type: Object,
         value() {
-          return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
+          return {};
         },
       },
 
@@ -115,21 +109,18 @@ class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
        * The label to be shown next to the toggle (above
        * |optionDescription_|). This will be either toggleOffLabel or
        * toggleOnLabel.
-       * @private
        */
       optionLabel_: String,
 
       /* The second line, shown under the |optionLabel_| line. This will be
        * either toggleOffDescription or toggleOnDescription. (optional)
-       * @private
        */
       optionDescription_: String,
 
-      /** @private {!DefaultContentSetting} */
       priorDefaultContentSetting_: {
         type: Object,
         value() {
-          return /** @type {DefaultContentSetting} */ ({});
+          return {};
         },
       },
     };
@@ -142,25 +133,35 @@ class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
     ];
   }
 
-  /** @override */
+  toggleOffLabel: string;
+  toggleOnLabel: string;
+  toggleOffDescription: string;
+  toggleOnDescription: string;
+  subOptionLabel: string;
+  subOptionDescription: string;
+  subOptionMode: string;
+  subOptionPref: boolean;
+  private controlParams_: chrome.settingsPrivate.PrefObject;
+  private optionLabel_: string;
+  private optionDescription_: string;
+  private priorDefaultContentSetting_: DefaultContentSetting;
+
   ready() {
     super.ready();
 
     this.addWebUIListener(
-        'contentSettingCategoryChanged', this.onCategoryChanged_.bind(this));
+        'contentSettingCategoryChanged', () => this.onCategoryChanged_());
   }
 
-  /** @return {boolean} */
-  get categoryEnabled() {
+  get categoryEnabled(): boolean {
     return !!assert(this.controlParams_).value;
   }
 
   /**
    * A handler for changing the default permission value for a content type.
    * This is also called during page setup after we get the default state.
-   * @private
    */
-  onChangePermissionControl_() {
+  private onChangePermissionControl_() {
     if (this.category === undefined ||
         this.controlParams_.value === undefined) {
       // Do nothing unless all dependencies are defined.
@@ -224,10 +225,8 @@ class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
 
   /**
    * Update the control parameter values from the content settings.
-   * @param {!DefaultContentSetting} update
-   * @private
    */
-  updateControlParams_(update) {
+  private updateControlParams_(update: DefaultContentSetting) {
     // Early out if there is no actual change.
     if (this.priorDefaultContentSetting_.setting === update.setting &&
         this.priorDefaultContentSetting_.source === update.source) {
@@ -235,9 +234,10 @@ class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
     }
     this.priorDefaultContentSetting_ = update;
 
-    const basePref = {
-      'key': 'controlParams',
-      'type': chrome.settingsPrivate.PrefType.BOOLEAN,
+    const basePref: chrome.settingsPrivate.PrefObject = {
+      key: 'controlParams',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
     };
     if (update.source !== undefined &&
         update.source !== ContentSettingProvider.PREFERENCE) {
@@ -263,15 +263,13 @@ class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
     const prefValue = this.computeIsSettingEnabled(update.setting);
     // The controlParams_ must be replaced (rather than just value changes) so
     // that observers will be notified of the change.
-    this.controlParams_ = /** @type {chrome.settingsPrivate.PrefObject} */ (
-        Object.assign({'value': prefValue}, basePref));
+    this.controlParams_ = Object.assign(basePref, {value: prefValue});
   }
 
   /**
    * Handles changes to the category pref and the |category| member variable.
-   * @private
    */
-  onCategoryChanged_() {
+  private onCategoryChanged_() {
     this.browserProxy.getDefaultValueForContentType(this.category)
         .then(defaultValue => {
           this.updateControlParams_(defaultValue);
@@ -285,20 +283,12 @@ class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
         });
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isToggleDisabled_() {
+  private isToggleDisabled_(): boolean {
     return this.category === ContentSettingsTypes.POPUPS &&
         loadTimeData.getBoolean('isGuest');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showPrefSubOption_(subOptionMode) {
+  private showPrefSubOption_(subOptionMode: SubOptionMode): boolean {
     return (subOptionMode === SubOptionMode.PREF);
   }
 }

@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {CookieDetails, LocalDataBrowserProxy, LocalDataItem} from 'chrome://settings/lazy_load.js';
-
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 // clang-format on
 

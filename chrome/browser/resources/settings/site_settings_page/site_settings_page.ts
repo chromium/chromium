@@ -226,7 +226,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
     },
     {
       route: routes.SITE_SETTINGS_PDF_DOCUMENTS,
-      id: 'pdfDocuments',
+      id: Id.PDF_DOCUMENTS,
       label: 'siteSettingsPdfDocuments',
       icon: 'settings:pdf',
       enabledLabel: 'siteSettingsPdfsAllowed',
@@ -390,7 +390,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
               Id.SOUND,
               Id.ADS,
               Id.ZOOM_LEVELS,
-              'pdfDocuments',
+              Id.PDF_DOCUMENTS,
               Id.PROTECTED_CONTENT,
               Id.MIXEDSCRIPT,
             ]),

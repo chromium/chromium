@@ -73,6 +73,13 @@ export class SiteDetailsPermissionElement extends
 
       icon: String,
 
+      /**
+       * Expose ContentSetting enum to HTML bindings.
+       */
+      contentSettingEnum_: {
+        type: Object,
+        value: ContentSetting,
+      },
     };
   }
 
@@ -147,7 +154,8 @@ export class SiteDetailsPermissionElement extends
    */
   private onPermissionSelectionChange_() {
     this.browserProxy.setOriginPermissions(
-        this.site.origin, this.category, this.$.permission.value);
+        this.site.origin, this.category,
+        this.$.permission.value as ContentSetting);
   }
 
   /**

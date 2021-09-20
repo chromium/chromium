@@ -23,14 +23,10 @@ import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_br
 
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- */
 const SiteDataEntryElementBase =
-    mixinBehaviors([FocusRowBehavior, I18nBehavior], PolymerElement);
+    mixinBehaviors([FocusRowBehavior, I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class SiteDataEntryElement extends SiteDataEntryElementBase {
   static get is() {
     return 'site-data-entry';
@@ -42,17 +38,16 @@ class SiteDataEntryElement extends SiteDataEntryElementBase {
 
   static get properties() {
     return {
-      /** @type {!LocalDataItem} */
       model: Object,
     };
   }
 
+  model: LocalDataItem;
+
   /**
    * Deletes all site data for this site.
-   * @param {!Event} e
-   * @private
    */
-  onRemove_(e) {
+  private onRemove_(e: Event) {
     e.stopPropagation();
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.SITE_DATA_REMOVE_SITE);

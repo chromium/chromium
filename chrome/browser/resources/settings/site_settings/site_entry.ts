@@ -52,7 +52,7 @@ interface SiteEntryElement {
 
 const SiteEntryElementBase =
     mixinBehaviors(
-        [FocusRowBehavior], SiteSettingsMixin(BaseMixin(PolymerElement))) as
+        [FocusRowBehavior], BaseMixin(SiteSettingsMixin(PolymerElement))) as
     {new (): PolymerElement & SiteSettingsMixinInterface & BaseMixinInterface};
 
 class SiteEntryElement extends SiteEntryElementBase {
@@ -243,7 +243,7 @@ class SiteEntryElement extends SiteEntryElementBase {
    * @return The scheme if non-HTTPS, or empty string if HTTPS.
    */
   private originScheme_(origin: OriginInfo): string {
-    const url = this.toUrl(origin.origin);
+    const url = this.toUrl(origin.origin)!;
     const scheme = url.protocol.replace(new RegExp(':*$'), '');
     const HTTPS_SCHEME = 'https';
     if (scheme === HTTPS_SCHEME) {
@@ -269,7 +269,8 @@ class SiteEntryElement extends SiteEntryElementBase {
     // origin. Otherwise find the origin with largest storage, and use the
     // number of cookies as a tie breaker.
     for (const originInfo of origins) {
-      if (this.toUrl(originInfo.origin).host === 'www.' + siteGroup.etldPlus1) {
+      if (this.toUrl(originInfo.origin)!.host ===
+          'www.' + siteGroup.etldPlus1) {
         return originInfo.origin;
       }
     }

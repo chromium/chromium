@@ -36,7 +36,7 @@ interface SiteListEntryElement {
 
 const SiteListEntryElementBase =
     mixinBehaviors(
-        [FocusRowBehavior], SiteSettingsMixin(BaseMixin(PolymerElement))) as
+        [FocusRowBehavior], BaseMixin(SiteSettingsMixin(PolymerElement))) as
     {new (): PolymerElement & BaseMixinInterface & SiteSettingsMixinInterface};
 
 class SiteListEntryElement extends SiteListEntryElementBase {

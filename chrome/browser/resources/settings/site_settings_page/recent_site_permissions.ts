@@ -41,7 +41,7 @@ export interface SettingsRecentSitePermissionsElement {
 const SettingsRecentSitePermissionsElementBase =
     mixinBehaviors(
         [WebUIListenerBehavior, I18nBehavior],
-        SiteSettingsMixin(RouteObserverMixin(PolymerElement))) as {
+        RouteObserverMixin(SiteSettingsMixin(PolymerElement))) as {
       new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
       SiteSettingsMixinInterface & RouteObserverMixinInterface
     };
@@ -214,16 +214,14 @@ export class SettingsRecentSitePermissionsElement extends
    */
   private getDisplayName_(recentSitePermissions: RecentSitePermissions):
       string {
-    const url = this.toUrl(recentSitePermissions.origin);
-    return url.host;
+    return this.toUrl(recentSitePermissions.origin)!.host;
   }
 
   /**
    * @return the site scheme for the origin of a set of recent permissions.
    */
   private getSiteScheme_({origin}: RecentSitePermissions): string {
-    const url = this.toUrl(origin);
-    const scheme = url.protocol.slice(0, -1);
+    const scheme = this.toUrl(origin)!.protocol.slice(0, -1);
     return scheme === 'https' ? '' : scheme;
   }
 
@@ -274,7 +272,8 @@ export class SettingsRecentSitePermissionsElement extends
   private getPermissionGroupText_(
       setting: string, exceptions: Array<RawSiteException>): string {
     const typeStrings = exceptions.map(
-        exception => this.getI18nContentTypeString_(exception.type));
+        exception => this.getI18nContentTypeString_(
+            exception.type as ContentSettingsTypes));
 
     if (exceptions.length === 0) {
       return '';

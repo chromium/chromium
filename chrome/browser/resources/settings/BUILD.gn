@@ -153,11 +153,11 @@ preprocess_if_expr("preprocess") {
     "settings.ts",
     "settings_page/main_page_mixin.js",
     "settings_routes.js",
-    "site_settings/constants.js",
-    "site_settings/cookie_info.js",
-    "site_settings/local_data_browser_proxy.js",
-    "site_settings/site_settings_mixin.js",
-    "site_settings/site_settings_prefs_browser_proxy.js",
+    "site_settings/constants.ts",
+    "site_settings/cookie_info.ts",
+    "site_settings/local_data_browser_proxy.ts",
+    "site_settings/site_settings_mixin.ts",
+    "site_settings/site_settings_prefs_browser_proxy.ts",
     "site_settings/website_usage_browser_proxy.ts",
 
     # Files holding TypeScript types, necessary only during the migration. These
@@ -310,7 +310,7 @@ preprocess_if_expr("preprocess_generated") {
     "site_settings/add_site_dialog.ts",
     "site_settings/all_sites.ts",
     "site_settings/all_sites_icons.ts",
-    "site_settings/category_default_setting.js",
+    "site_settings/category_default_setting.ts",
     "site_settings/category_setting_exceptions.ts",
     "site_settings/chooser_exception_list.ts",
     "site_settings/chooser_exception_list_entry.ts",
@@ -320,9 +320,9 @@ preprocess_if_expr("preprocess_generated") {
     "site_settings/pdf_documents.ts",
     "site_settings/protocol_handlers.ts",
     "site_settings/settings_category_default_radio_group.ts",
-    "site_settings/site_data.js",
+    "site_settings/site_data.ts",
     "site_settings/site_data_details_subpage.ts",
-    "site_settings/site_data_entry.js",
+    "site_settings/site_data_entry.ts",
     "site_settings/site_details.ts",
     "site_settings/site_details_permission.ts",
     "site_settings/site_entry.ts",
@@ -395,7 +395,6 @@ group("closure_compile") {
     "settings_menu:closure_compile",
     "settings_page:closure_compile",
     "settings_ui:closure_compile",
-    "site_settings:closure_compile",
   ]
 
   if (!is_chromeos_ash) {
@@ -478,13 +477,9 @@ js_library("hats_browser_proxy") {
 js_library("lazy_load") {
   sources =
       [ "$root_gen_dir/chrome/browser/resources/settings/tsc/lazy_load.js" ]
-  deps = [
-    "site_settings:local_data_browser_proxy",
-    "site_settings:site_settings_prefs_browser_proxy",
-  ]
 
   if (!is_chromeos_ash) {
-    deps += [
+    deps = [
       "languages_page:languages_browser_proxy",
       "languages_page:languages_page",
       "languages_page:languages_settings_metrics_proxy",
@@ -780,15 +775,15 @@ ts_library("build_ts") {
     "site_settings/add_site_dialog.ts",
     "site_settings/all_sites_icons.ts",
     "site_settings/all_sites.ts",
-    "site_settings/category_default_setting.js",
+    "site_settings/category_default_setting.ts",
     "site_settings/category_setting_exceptions.ts",
     "site_settings/chooser_exception_list_entry.ts",
     "site_settings/chooser_exception_list.ts",
     "site_settings/clear_storage_dialog_css.ts",
-    "site_settings/constants.js",
-    "site_settings/cookie_info.js",
+    "site_settings/constants.ts",
+    "site_settings/cookie_info.ts",
     "site_settings/edit_exception_dialog.ts",
-    "site_settings/local_data_browser_proxy.js",
+    "site_settings/local_data_browser_proxy.ts",
     "site_settings/media_picker.ts",
     "site_settings_page/recent_site_permissions.ts",
     "site_settings_page/site_settings_list.ts",
@@ -797,15 +792,15 @@ ts_library("build_ts") {
     "site_settings/protocol_handlers.ts",
     "site_settings/settings_category_default_radio_group.ts",
     "site_settings/site_data_details_subpage.ts",
-    "site_settings/site_data_entry.js",
-    "site_settings/site_data.js",
+    "site_settings/site_data_entry.ts",
+    "site_settings/site_data.ts",
     "site_settings/site_details.ts",
     "site_settings/site_details_permission.ts",
     "site_settings/site_entry.ts",
     "site_settings/site_list_entry.ts",
     "site_settings/site_list.ts",
-    "site_settings/site_settings_mixin.js",
-    "site_settings/site_settings_prefs_browser_proxy.js",
+    "site_settings/site_settings_mixin.ts",
+    "site_settings/site_settings_prefs_browser_proxy.ts",
     "site_settings/website_usage_browser_proxy.ts",
     "site_settings/zoom_levels.ts",
   ]
