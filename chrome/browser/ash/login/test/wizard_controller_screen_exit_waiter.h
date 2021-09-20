@@ -24,7 +24,6 @@ class WizardControllerExitWaiter : public test::TestConditionWaiter,
                                    public WizardController::ScreenObserver {
  public:
   explicit WizardControllerExitWaiter(OobeScreenId screen_id);
-  explicit WizardControllerExitWaiter(BaseScreen* target_screen);
   ~WizardControllerExitWaiter() override;
 
   // WizardController::ScreenObserver:
@@ -39,7 +38,7 @@ class WizardControllerExitWaiter : public test::TestConditionWaiter,
 
   void EndWait();
 
-  const BaseScreen* target_screen_;
+  const OobeScreenId target_screen_id_ = OobeScreen::SCREEN_UNKNOWN;
 
   State state_ = State::IDLE;
 

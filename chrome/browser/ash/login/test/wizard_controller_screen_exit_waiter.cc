@@ -12,12 +12,7 @@
 namespace ash {
 
 WizardControllerExitWaiter::WizardControllerExitWaiter(OobeScreenId screen_id)
-    : WizardControllerExitWaiter(
-          WizardController::default_controller()->GetScreen(screen_id)) {}
-
-WizardControllerExitWaiter::WizardControllerExitWaiter(
-    BaseScreen* target_screen)
-    : target_screen_(target_screen) {}
+    : target_screen_id_(screen_id) {}
 
 WizardControllerExitWaiter::~WizardControllerExitWaiter() = default;
 
@@ -26,7 +21,7 @@ void WizardControllerExitWaiter::Wait() {
 
   WizardController* wizard_controller = WizardController::default_controller();
   if (!wizard_controller ||
-      wizard_controller->current_screen() != target_screen_) {
+      wizard_controller->current_screen()->screen_id() != target_screen_id_) {
     state_ = State::DONE;
     return;
   }
@@ -36,8 +31,7 @@ void WizardControllerExitWaiter::Wait() {
 
   state_ = State::WAITING_FOR_SCREEN_EXIT;
 
-  LOG(INFO) << "Actually waiting for exiting screen "
-            << target_screen_->screen_id();
+  LOG(INFO) << "Actually waiting for exiting screen " << target_screen_id_;
 
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
@@ -51,7 +45,7 @@ void WizardControllerExitWaiter::Wait() {
 void WizardControllerExitWaiter::OnCurrentScreenChanged(
     BaseScreen* new_screen) {
   ASSERT_NE(state_, State::IDLE);
-  if (new_screen != target_screen_)
+  if (new_screen->screen_id() != target_screen_id_)
     EndWait();
 }
 
