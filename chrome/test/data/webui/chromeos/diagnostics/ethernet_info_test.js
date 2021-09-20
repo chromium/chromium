@@ -25,7 +25,10 @@ export function ethernetInfoTestSuite() {
     ethernetInfoElement = null;
   });
 
-  function initializeEthernetInfo() {
+  /**
+   * @param {!Network} network
+   */
+  function initializeEthernetInfo(network) {
     assertFalse(!!ethernetInfoElement);
 
     // Add the ethernet info to the DOM.
@@ -33,7 +36,7 @@ export function ethernetInfoTestSuite() {
         /** @type {!EthernetInfoElement} */ (
             document.createElement('ethernet-info'));
     assertTrue(!!ethernetInfoElement);
-    ethernetInfoElement.network = fakeEthernetNetwork;
+    ethernetInfoElement.network = network;
     document.body.appendChild(ethernetInfoElement);
 
     return flushTasks();
@@ -47,16 +50,16 @@ export function ethernetInfoTestSuite() {
     const baseProperties = {
       authentication: AuthenticationType.kNone,
     };
-    const ethernetTypeProperties = Object.assign({}, baseProperties, typeProps);
+    const ethernetTypeProperies = Object.assign({}, baseProperties, typeProps);
     return Object.assign({}, fakeEthernetNetwork, {
       typeProperties: {
-        ethernet: ethernetTypeProperties,
+        ethernet: ethernetTypeProperies,
       }
     });
   }
 
   test('EthernetInfoPopulated', () => {
-    return initializeEthernetInfo().then(() => {
+    return initializeEthernetInfo(fakeEthernetNetwork).then(() => {
       // Element expected on screen but data currently missing in api.
       // TODO(ashleydp): Update test when link speed data-point value provided.
       assertTextContains(
@@ -65,7 +68,7 @@ export function ethernetInfoTestSuite() {
   });
 
   test('EthernetInfoIpAddressBasedOnNetwork', () => {
-    return initializeEthernetInfo().then(() => {
+    return initializeEthernetInfo(fakeEthernetNetwork).then(() => {
       const expectedHeader = ethernetInfoElement.i18n('networkIpAddressLabel');
       assertDataPointHasExpectedHeaderAndValue(
           ethernetInfoElement, '#ipAddress', expectedHeader,
@@ -73,7 +76,7 @@ export function ethernetInfoTestSuite() {
     });
   });
 
-  test('EthernetInfoAuthenticationWithAuthentication8021x', () => {
+  test('EthernetInfoAuthenticationBasedOnNetwork', () => {
     return initializeEthernetInfo(fakeEthernetNetwork).then(() => {
       const expectedHeader =
           ethernetInfoElement.i18n('networkAuthenticationLabel');
@@ -85,14 +88,11 @@ export function ethernetInfoTestSuite() {
     });
   });
 
-  test('EthernetInfoAuthenticationWithAuthenticationNone', () => {
-    return initializeEthernetInfo()
-        .then(() => {
-          ethernetInfoElement.network = getEthernetNetworkWithTypeProperties(
-              /** @type {EthernetStateProperties} */
-              ({authentication: AuthenticationType.kNone}));
-          return flushTasks();
-        })
+  test('EthernetInfoAuthenticationWithAuthentication', () => {
+    return initializeEthernetInfo(
+               getEthernetNetworkWithTypeProperties(
+                   /** @type {EthernetStateProperties} */
+                   ({authentication: AuthenticationType.kNone})))
         .then(() => {
           const expectedHeader =
               ethernetInfoElement.i18n('networkAuthenticationLabel');

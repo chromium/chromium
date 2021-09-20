@@ -25,7 +25,10 @@ export function cellularInfoTestSuite() {
     cellularInfoElement = null;
   });
 
-  function initializeCellularInfo() {
+  /**
+   * @param {!Network} network
+   */
+  function initializeCellularInfo(network) {
     assertFalse(!!cellularInfoElement);
 
     // Add the cellular info to the DOM.
@@ -33,14 +36,14 @@ export function cellularInfoTestSuite() {
         /** @type {!CellularInfoElement} */ (
             document.createElement('cellular-info'));
     assertTrue(!!cellularInfoElement);
-    cellularInfoElement.network = fakeCellularNetwork;
+    cellularInfoElement.network = network;
     document.body.appendChild(cellularInfoElement);
 
     return flushTasks();
   }
 
   test('CellularInfoPopulated', () => {
-    return initializeCellularInfo().then(() => {
+    return initializeCellularInfo(fakeCellularNetwork).then(() => {
       assertDataPointHasExpectedHeaderAndValue(
           cellularInfoElement, '#ipAddress',
           cellularInfoElement.i18n('networkIpAddressLabel'),
