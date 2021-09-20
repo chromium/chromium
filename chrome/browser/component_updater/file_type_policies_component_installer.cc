@@ -125,7 +125,7 @@ update_client::InstallerAttributes
 FileTypePoliciesComponentInstallerPolicy::GetInstallerAttributes() const {
   update_client::InstallerAttributes attributes;
   attributes["tag"] = safe_browsing::GetFileTypePoliciesTag();
-  return update_client::InstallerAttributes();
+  return attributes;
 }
 
 void RegisterFileTypePoliciesComponent(ComponentUpdateService* cus) {
