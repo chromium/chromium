@@ -33,10 +33,6 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(HAS_LOCAL_ELFUTILS)
-#include "tools/memory/partition_allocator/lookup_symbol.h"
-#endif
-
 namespace {
 
 // SIGSTOPs a process.
@@ -202,25 +198,6 @@ std::map<base::PlatformThreadId, std::string> ThreadNames(pid_t pid) {
 
   return result;
 }
-
-#if defined(HAS_LOCAL_ELFUTILS)
-void* GetThreadRegistryAddress(pid_t pid) {
-  LOG(INFO) << "Looking for the thread cache registry";
-  Dwfl* dwfl = AddressLookupInit(pid);
-  unsigned long thread_cache_bias;
-  Dwarf_Die* thread_cache_cu = LookupCompilationUnit(
-      dwfl, nullptr, "../../base/allocator/partition_allocator/thread_cache.cc",
-      &thread_cache_bias);
-
-  const char* namespace_path[] = {"base", "internal", nullptr};
-  void* thread_cache_registry_addr = LookupVariable(
-      thread_cache_cu, thread_cache_bias, namespace_path, 3, "g_instance");
-  LOG(INFO) << "Address = " << thread_cache_registry_addr;
-  AddressLookupFinish(dwfl);
-
-  return thread_cache_registry_addr;
-}
-#endif  // defined(HAS_LOCAL_ELFUTILS)
 
 }  // namespace
 
@@ -532,16 +509,9 @@ int main(int argc, char** argv) {
     uint64_t address;
     CHECK(base::StringToUint64(argv[2], &address));
     registry_address = static_cast<uintptr_t>(address);
-
-    // Scan the memory.
-    if (!registry_address) {
-      registry_address = FindThreadCacheRegistry(pid, mem_fd.get());
-    }
   } else {
-#if defined(HAS_LOCAL_ELFUTILS)
-    registry_address =
-        reinterpret_cast<uintptr_t>(GetThreadRegistryAddress(pid));
-#endif
+    // Scan the memory.
+    registry_address = FindThreadCacheRegistry(pid, mem_fd.get());
   }
 
   CHECK(registry_address);
