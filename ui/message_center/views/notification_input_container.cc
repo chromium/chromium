@@ -62,9 +62,11 @@ void NotificationInputContainer::Init() {
   AddChildView(textfield_);
   box_layout->SetFlexForView(textfield_, 1);
 
-  button_->SetBorder(views::CreateEmptyBorder(kInputReplyButtonPadding));
+  button_->SetBorder(views::CreateEmptyBorder(GetSendButtonPadding()));
+  SetSendButtonHighlightPath();
   button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+
   OnAfterUserAction(textfield_);
   AddChildView(button_);
 
@@ -179,6 +181,14 @@ views::InkDropContainerView* NotificationInputContainer::InstallInkDrop() {
 
 gfx::Insets NotificationInputContainer::GetTextfieldPadding() const {
   return kInputTextfieldPadding;
+}
+
+gfx::Insets NotificationInputContainer::GetSendButtonPadding() const {
+  return kInputReplyButtonPadding;
+}
+
+void NotificationInputContainer::SetSendButtonHighlightPath() {
+  // Use the default highlight path.
 }
 
 void NotificationInputContainer::SetTextfieldBackground() {

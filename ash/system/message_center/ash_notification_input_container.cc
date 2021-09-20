@@ -9,7 +9,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/rrect_f.h"
-#include "ui/message_center/vector_icons.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -23,15 +22,19 @@ namespace {
 // ImageButton.
 constexpr int kBetweenChildSpacing = 12;
 
-// The icon size of inline reply input field.
-constexpr int kInputReplyButtonSize = 20;
-
-// Padding of the textfield, inside the rounded background.
-constexpr gfx::Insets kInputTextfieldPaddingCrOS(6, 12, 6, 12);
-
 // Insets for inside the border.
 constexpr gfx::Insets kInsideBorderInsets(6, 16, 14, 16);
 
+// The icon size of inline reply input field.
+constexpr int kInputReplyButtonSize = 20;
+// Padding on the input reply button.
+constexpr gfx::Insets kInputReplyButtonPadding(0, 6, 0, 6);
+// Radius of the circular input reply button highlight.
+constexpr int kInputReplyHighlightRadius =
+    (kInputReplyButtonPadding.width() + kInputReplyButtonSize) / 2;
+
+// Padding of the textfield, inside the rounded background.
+constexpr gfx::Insets kInputTextfieldPaddingCrOS(6, 12, 6, 12);
 // Corner radius of the grey background of the textfield.
 constexpr int kTextfieldBackgroundCornerRadius = 24;
 
@@ -55,6 +58,28 @@ class TextfieldHighlightPathGenerator : public views::HighlightPathGenerator {
  private:
   // Owned by the view hierarchy.
   const views::Textfield* const textfield_;
+};
+
+// Inline reply's send button's highlight path generator. Draws a circular
+// highlight path.
+class SendButtonHighlightPathGenerator : public views::HighlightPathGenerator {
+ public:
+  explicit SendButtonHighlightPathGenerator(views::ImageButton* button)
+      : button_(button) {}
+  SendButtonHighlightPathGenerator(const SendButtonHighlightPathGenerator&) =
+      delete;
+  SendButtonHighlightPathGenerator& operator=(
+      const SendButtonHighlightPathGenerator&) = delete;
+
+  // views::HighlightPathGenerator:
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+    return gfx::RRectF(gfx::RectF(button_->GetLocalBounds()),
+                       kInputReplyHighlightRadius);
+  }
+
+ private:
+  // Owned by the views hierarchy.
+  const views::ImageButton* const button_;
 };
 
 }  // namespace
@@ -94,18 +119,25 @@ void AshNotificationInputContainer::SetTextfieldBackground() {
       std::make_unique<TextfieldHighlightPathGenerator>(textfield()));
 }
 
+gfx::Insets AshNotificationInputContainer::GetSendButtonPadding() const {
+  return kInputReplyButtonPadding;
+}
+
+void AshNotificationInputContainer::SetSendButtonHighlightPath() {
+  views::HighlightPathGenerator::Install(
+      button(), std::make_unique<SendButtonHighlightPathGenerator>(button()));
+}
+
 void AshNotificationInputContainer::UpdateButtonImage() {
   if (!GetWidget())
     return;
 
-  // TODO(crbug/1249259): Replace this icon with the new icon once UX delivers
-  // it.
   button()->SetImage(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(
-          message_center::kNotificationInlineReplyIcon, kInputReplyButtonSize,
-          ash::AshColorProvider::Get()->GetContentLayerColor(
-              ash::AshColorProvider::ContentLayerType::kButtonIconColor)));
+      gfx::CreateVectorIcon(kSendIcon, kInputReplyButtonSize,
+                            ash::AshColorProvider::Get()->GetControlsLayerColor(
+                                ash::AshColorProvider::ControlsLayerType::
+                                    kControlBackgroundColorActive)));
 }
 
 }  // namespace ash

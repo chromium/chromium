@@ -75,7 +75,14 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
   // the textfield and button.
   virtual views::InkDropContainerView* InstallInkDrop();
 
+  // Gets padding for `textfield_`.
   virtual gfx::Insets GetTextfieldPadding() const;
+
+  // Gets padding for `button_`.
+  virtual gfx::Insets GetSendButtonPadding() const;
+
+  // Sets the custom highlight path for `button_`.
+  virtual void SetSendButtonHighlightPath();
 
   // Sets the visible background of `textfield_`.
   virtual void SetTextfieldBackground();
