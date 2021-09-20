@@ -201,11 +201,11 @@ void AudioEncoder::ProcessConfigure(Request* request) {
     }
 
     req->EndTracing();
-    self->stall_request_processing_ = false;
+    self->blocking_request_in_progress_ = false;
     self->ProcessRequests();
   };
 
-  stall_request_processing_ = true;
+  blocking_request_in_progress_ = true;
   first_output_after_configure_ = true;
   media_encoder_->Initialize(
       active_config_->options, std::move(output_cb),

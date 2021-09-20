@@ -114,6 +114,7 @@ class MODULES_EXPORT EncoderBase
   virtual void HandleError(DOMException* ex);
   virtual void EnqueueRequest(Request* request);
   virtual void ProcessRequests();
+  virtual bool ReadyToProcessNextRequest();
   virtual void ProcessEncode(Request* request) = 0;
   virtual void ProcessConfigure(Request* request) = 0;
   virtual void ProcessReconfigure(Request* request) = 0;
@@ -150,9 +151,10 @@ class MODULES_EXPORT EncoderBase
   uint32_t reset_count_ = 0;
 
   // Some kConfigure and kFlush requests can't be executed in parallel with
-  // kEncode. This flag stops processing of new requests in the requests_ queue
-  // till the current requests are finished.
-  bool stall_request_processing_ = false;
+  // kEncode. Even some kEncode might have synchronous parts like readback.
+  // This flag stops processing of new requests in the requests_ queue
+  // till the current request is finished.
+  bool blocking_request_in_progress_ = false;
 
   bool first_output_after_configure_ = true;
 
