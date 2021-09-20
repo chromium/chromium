@@ -2980,12 +2980,19 @@ message ActiveDirectoryUserSigninResponse {
 
 // Contains information about the TPM used on the device.
 message TpmVersionInfo {
+  enum GscVersion {
+    GSC_VERSION_UNSPECIFIED = 0;
+    GSC_VERSION_NOT_GSC = 1;
+    GSC_VERSION_CR50 = 2;
+    GSC_VERSION_TI50 = 3;
+  }
   optional uint32 family = 1;
   optional uint64 spec_level = 2;
   optional uint32 manufacturer = 3;
   optional uint32 tpm_model = 4;
   optional uint64 firmware_version = 5;
   optional string vendor_specific = 6;
+  optional GscVersion gsc_version = 7;
 }
 
 // Contains status of the TPM unit.
