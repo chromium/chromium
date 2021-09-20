@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/event_router.h"
@@ -39,7 +38,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/feature_switch.h"
@@ -578,6 +576,7 @@ ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
 }
 
 BrowserActionOpenPopupFunction::BrowserActionOpenPopupFunction() = default;
+BrowserActionOpenPopupFunction::~BrowserActionOpenPopupFunction() = default;
 
 ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
   // We only allow the popup in the active window.
@@ -609,8 +608,7 @@ ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
   // If the extension is spanning, then extension hosts are created with the
   // original profile, and if it's split, then we know the api call came from
   // the right profile.
-  registrar_.Add(this, NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-                 content::Source<Profile>(profile));
+  host_registry_observation_.Observe(ExtensionHostRegistry::Get(profile));
 
   // Set a timeout for waiting for the notification that the popup is loaded.
   // Waiting is required so that the popup view can be retrieved by the custom
@@ -623,6 +621,15 @@ ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
   return RespondLater();
 }
 
+void BrowserActionOpenPopupFunction::OnBrowserContextShutdown() {
+  // No point in responding at this point (the context is gone). However, we
+  // need to explicitly remove the ExtensionHostRegistry observation, since the
+  // ExtensionHostRegistry's lifetime is tied to the BrowserContext. Otherwise,
+  // this would cause a UAF when the observation is destructed as part of this
+  // instance's destruction.
+  host_registry_observation_.Reset();
+}
+
 void BrowserActionOpenPopupFunction::OpenPopupTimedOut() {
   if (did_respond())
     return;
@@ -631,21 +638,18 @@ void BrowserActionOpenPopupFunction::OpenPopupTimedOut() {
   Respond(Error(kOpenPopupError));
 }
 
-void BrowserActionOpenPopupFunction::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD, type);
+void BrowserActionOpenPopupFunction::OnExtensionHostCompletedFirstLoad(
+    content::BrowserContext* browser_context,
+    ExtensionHost* host) {
   if (did_respond())
     return;
 
-  ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
   if (host->extension_host_type() != mojom::ViewType::kExtensionPopup ||
       host->extension()->id() != extension_->id())
     return;
 
   Respond(NoArguments());
-  registrar_.RemoveAll();
+  host_registry_observation_.Reset();
 }
 
 }  // namespace extensions

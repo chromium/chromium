@@ -593,6 +593,9 @@ void ExtensionFunction::SetDispatcher(
 }
 
 void ExtensionFunction::Shutdown() {
+  // Allow the extension function to perform any cleanup before nulling out
+  // `browser_context_`.
+  OnBrowserContextShutdown();
   browser_context_ = nullptr;
 }
 

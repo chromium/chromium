@@ -93,7 +93,7 @@ void ExtensionHostRegistry::ExtensionHostDestroyed(
     ExtensionHost* extension_host) {
   // NOTE: We don't do
   //
-  // DCHECK(base::Contains(extension_hosts, extension_host);
+  // DCHECK(base::Contains(extension_hosts_, extension_host);
   //
   // because the ExtensionHostCreated() signal is only fired when the
   // renderer process has been initialized, and an ExtensionHost could
@@ -103,6 +103,38 @@ void ExtensionHostRegistry::ExtensionHostDestroyed(
   for (Observer& observer : observers_) {
     observer.OnExtensionHostDestroyed(extension_host->browser_context(),
                                       extension_host);
+  }
+}
+
+void ExtensionHostRegistry::ExtensionHostCompletedFirstLoad(
+    ExtensionHost* extension_host) {
+  // NOTE: We can't do
+  //
+  // DCHECK(base::Contains(extension_hosts_, extension_host);
+  //
+  // For a combination of convoluted reasons, which should probably change:
+  // 1) ExtensionHostCreated() is triggered when the renderer process has been
+  //    initialized, rather than in its ctor.
+  // 2) When a renderer process is terminated, it causes the RenderFrameHostImpl
+  //    to reset its loading state, which calls DidStopLoading() if it was
+  //    loading. Then, if the first load never happened, ExtensionHost will fire
+  //    the DidCompleteFirstLoad() notification.
+  //
+  // TODO(devlin): Both of these should be fixed. Since code is relying on the
+  // existing semantics of ExtensionHostCreated(), we should probably just
+  // rename it to be more clear (e.g., OnExtensionHostReady() or similar?).
+  // Issue 2) is more subtle, and is probably actually a behavioral bug. We
+  // should probably have ExtensionHost check whether the renderer is still
+  // around or whether the load succeeded before notifying observers, or at
+  // least indicate the success in the notification.
+  //
+  // Because of these issues, we instead insert the extension host here, if we
+  // weren't already tracking it.
+  extension_hosts_.insert(extension_host);
+
+  for (Observer& observer : observers_) {
+    observer.OnExtensionHostCompletedFirstLoad(
+        extension_host->browser_context(), extension_host);
   }
 }
 

@@ -25,7 +25,6 @@
 #include "base/task/post_task.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -41,8 +40,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -50,6 +47,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -70,12 +68,11 @@
 namespace extensions {
 namespace {
 
-class MessageSender : public content::NotificationObserver {
+class MessageSender : public ExtensionHostRegistry::Observer {
  public:
-  MessageSender() {
-    registrar_.Add(this,
-                   extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-                   content::NotificationService::AllSources());
+  explicit MessageSender(content::BrowserContext* browser_context) {
+    host_registry_observation_.Observe(
+        ExtensionHostRegistry::Get(browser_context));
   }
 
  private:
@@ -92,44 +89,38 @@ class MessageSender : public content::NotificationObserver {
 
   static std::unique_ptr<Event> BuildEvent(
       std::unique_ptr<base::ListValue> event_args,
-      Profile* profile,
+      content::BrowserContext* browser_context,
       GURL event_url) {
-    auto event =
-        std::make_unique<Event>(events::TEST_ON_MESSAGE, "test.onMessage",
-                                std::move(*event_args).TakeList(), profile);
-    event->event_url = event_url;
+    auto event = std::make_unique<Event>(
+        events::TEST_ON_MESSAGE, "test.onMessage",
+        std::move(*event_args).TakeList(), browser_context);
+    event->event_url = std::move(event_url);
     return event;
   }
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-              type);
-    EventRouter* event_router =
-        EventRouter::Get(content::Source<Profile>(source).ptr());
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostCompletedFirstLoad(
+      content::BrowserContext* browser_context,
+      ExtensionHost* extension_host) override {
+    EventRouter* event_router = EventRouter::Get(browser_context);
 
     // Sends four messages to the extension. All but the third message sent
     // from the origin http://b.com/ are supposed to arrive.
     event_router->BroadcastEvent(BuildEvent(
-        BuildEventArguments(false, "no restriction"),
-        content::Source<Profile>(source).ptr(),
-        GURL()));
+        BuildEventArguments(false, "no restriction"), browser_context, GURL()));
+    event_router->BroadcastEvent(
+        BuildEvent(BuildEventArguments(false, "http://a.com/"), browser_context,
+                   GURL("http://a.com/")));
+    event_router->BroadcastEvent(
+        BuildEvent(BuildEventArguments(false, "http://b.com/"), browser_context,
+                   GURL("http://b.com/")));
     event_router->BroadcastEvent(BuildEvent(
-        BuildEventArguments(false, "http://a.com/"),
-        content::Source<Profile>(source).ptr(),
-        GURL("http://a.com/")));
-    event_router->BroadcastEvent(BuildEvent(
-        BuildEventArguments(false, "http://b.com/"),
-        content::Source<Profile>(source).ptr(),
-        GURL("http://b.com/")));
-    event_router->BroadcastEvent(BuildEvent(
-        BuildEventArguments(true, "last message"),
-        content::Source<Profile>(source).ptr(),
-        GURL()));
+        BuildEventArguments(true, "last message"), browser_context, GURL()));
   }
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<ExtensionHostRegistry,
+                          ExtensionHostRegistry::Observer>
+      host_registry_observation_{this};
 };
 
 class MessagingApiTest : public ExtensionApiTest {
@@ -188,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
 // Tests that messages with event_urls are only passed to extensions with
 // appropriate permissions.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingEventURL) {
-  MessageSender sender;
+  MessageSender sender(profile());
   ASSERT_TRUE(RunExtensionTest("messaging/event_url")) << message_;
 }
 

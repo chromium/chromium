@@ -9,12 +9,12 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace base {
@@ -29,6 +29,7 @@ class WebContents;
 class Browser;
 
 namespace extensions {
+class ExtensionHost;
 class ExtensionPrefs;
 
 class ExtensionActionAPI : public BrowserContextKeyedAPI {
@@ -454,24 +455,29 @@ class BrowserActionDisableFunction : public ExtensionActionHideFunction {
 };
 
 class BrowserActionOpenPopupFunction : public ExtensionFunction,
-                                       public content::NotificationObserver {
+                                       public ExtensionHostRegistry::Observer {
  public:
   DECLARE_EXTENSION_FUNCTION("browserAction.openPopup",
                              BROWSERACTION_OPEN_POPUP)
   BrowserActionOpenPopupFunction();
 
  private:
-  ~BrowserActionOpenPopupFunction() override {}
+  ~BrowserActionOpenPopupFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
+  void OnBrowserContextShutdown() override;
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostCompletedFirstLoad(
+      content::BrowserContext* browser_context,
+      ExtensionHost* host) override;
+
   void OpenPopupTimedOut();
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<ExtensionHostRegistry,
+                          ExtensionHostRegistry::Observer>
+      host_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BrowserActionOpenPopupFunction);
 };

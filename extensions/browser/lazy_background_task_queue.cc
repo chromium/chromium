@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
@@ -18,7 +17,6 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/lazy_background_task_queue_factory.h"
 #include "extensions/browser/lazy_context_id.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/extension.h"
@@ -45,10 +43,6 @@ bool CreateLazyBackgroundHost(ProcessManager* pm, const Extension* extension) {
 LazyBackgroundTaskQueue::LazyBackgroundTaskQueue(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-                 content::NotificationService::AllBrowserContextsAndSources());
-
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context));
   extension_host_registry_observation_.Observe(
@@ -166,14 +160,11 @@ void LazyBackgroundTaskQueue::NotifyTasksExtensionFailedToLoad(
   }
 }
 
-void LazyBackgroundTaskQueue::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD, type);
+void LazyBackgroundTaskQueue::OnExtensionHostCompletedFirstLoad(
+    content::BrowserContext* browser_context,
+    ExtensionHost* host) {
   // If an on-demand background page finished loading, dispatch queued up
   // events for it.
-  ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
   if (host->extension_host_type() ==
       mojom::ViewType::kExtensionBackgroundPage) {
     CHECK(host->has_loaded_once());

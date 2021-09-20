@@ -15,8 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -40,7 +38,6 @@ class ExtensionHost;
 // only with extensions that have not-yet-loaded lazy background pages.
 class LazyBackgroundTaskQueue : public KeyedService,
                                 public LazyContextTaskQueue,
-                                public content::NotificationObserver,
                                 public ExtensionRegistryObserver,
                                 public ExtensionHostRegistry::Observer {
  public:
@@ -79,12 +76,10 @@ class LazyBackgroundTaskQueue : public KeyedService,
   using PendingTasksMap =
       std::map<PendingTasksKey, std::unique_ptr<PendingTasksList>>;
 
-  // content::NotificationObserver interface.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // ExtensionHostRegistry::Observer:
+  void OnExtensionHostCompletedFirstLoad(
+      content::BrowserContext* browser_context,
+      ExtensionHost* host) override;
   void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
                                 ExtensionHost* host) override;
 
@@ -115,7 +110,6 @@ class LazyBackgroundTaskQueue : public KeyedService,
       const Extension* extension);
 
   content::BrowserContext* browser_context_;
-  content::NotificationRegistrar registrar_;
   PendingTasksMap pending_tasks_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

@@ -41,6 +41,16 @@ class ExtensionHostRegistry : public KeyedService {
     virtual void OnExtensionHostDestroyed(
         content::BrowserContext* browser_context,
         ExtensionHost* host) {}
+
+    // Called when an ExtensionHost completes its first load. The
+    // `browser_context` is the context associated with that host (which might
+    // be an incognito version of ExtensionHostRegistry::browser_context_).
+    // Note: If you only need to observe a single ExtensionHost (that's already
+    // created), prefer overriding
+    // ExtensionHostObserver::OnExtensionHostDidStopFirstLoad().
+    virtual void OnExtensionHostCompletedFirstLoad(
+        content::BrowserContext* browser_context,
+        ExtensionHost* host) {}
   };
 
   ExtensionHostRegistry();
@@ -63,6 +73,8 @@ class ExtensionHostRegistry : public KeyedService {
   // Called when an ExtensionHost is destroyed. Stops tracking the host and
   // notifies observers.
   void ExtensionHostDestroyed(ExtensionHost* extension_host);
+  // Called when an ExtensionHost completes its first load.
+  void ExtensionHostCompletedFirstLoad(ExtensionHost* extension_host);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

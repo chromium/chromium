@@ -465,6 +465,13 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // additional work or cleanup.
   virtual void OnResponded();
 
+  // Called when the `browser_context_` associated with this ExtensionFunction
+  // is shutting down. Immediately after this call, `browser_context_` will be
+  // set to null. Subclasses should override this method to perform any cleanup
+  // that needs to happen before the context shuts down, such as removing
+  // observers of KeyedServices.
+  virtual void OnBrowserContextShutdown() {}
+
   // Return true if the argument to this function at |index| was provided and
   // is non-null.
   bool HasOptionalArgument(size_t index);
