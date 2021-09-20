@@ -80,8 +80,9 @@
       debug: "$google_red_700",
     },
 
+    dark_icon_color_primary: "$google_grey_900",
     icon_color_primary: {
-      light: "$google_grey_900",
+      light: "$dark_icon_color_primary",
       dark: "$google_grey_200",
       debug: "#ff00ff",
     },

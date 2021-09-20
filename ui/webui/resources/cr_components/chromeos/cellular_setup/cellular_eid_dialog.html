@@ -29,18 +29,22 @@
         margin: 8px 0 8px 32px;
       }
 
-      .cellular-not-setup {
-        color: var(--google-grey-700);
-        font-size: smaller;
-        margin-bottom: 16px;
-      }
-
       #qrCodeCanvas {
         display: block;
         margin: 20px auto 16px auto;
         max-width: calc(var(--cr-dialog-width) -
             var(--cr-dialog-title-slot-padding-start) -
             var(--cr-dialog-title-slot-padding-end));
+      }
+
+      @media(prefers-color-scheme: dark) {
+        /* NOTE: In dark mode a light background is applied to the QR code
+         * canvas as some QR code scanners cannot read an inverted QR code in
+         * which the background is darker than the foreground. */
+        #qrCodeCanvas {
+          background-color: var(--cros-icon-color-primary);
+          padding: 1px;
+        }
       }
 
       #eid {
