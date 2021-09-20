@@ -239,8 +239,8 @@ void SurfaceTreeHost::UpdateDisplayOnTree() {
       display::Screen::GetScreen()->GetDisplayNearestWindow(host_window());
   if (display_id_ != display.id()) {
     if (root_surface_) {
-      if (root_surface_->UpdateDisplay(display_id_, display.id()))
-        display_id_ = display.id();
+      root_surface_->UpdateDisplay(display_id_, display.id());
+      display_id_ = display.id();
     }
   }
 }

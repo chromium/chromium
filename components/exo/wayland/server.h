@@ -48,8 +48,6 @@ class Server : public display::DisplayObserver {
   // default socket name.
   static std::unique_ptr<Server> Create(Display* display);
 
-  void Initialize();
-
   // This adds a Unix socket to the Wayland display server which can be used
   // by clients to connect to the display server.
   bool AddSocket(const std::string name);
@@ -73,11 +71,6 @@ class Server : public display::DisplayObserver {
   wl_resource* GetOutputResource(wl_client* client, int64_t display_id);
 
   Display* GetDisplay() { return display_; }
-
- protected:
-  void AddWaylandOutput(int64_t id,
-                        std::unique_ptr<WaylandDisplayOutput> output);
-  wl_display* GetWaylandDisplay() const { return wl_display_.get(); }
 
  private:
   Display* const display_;

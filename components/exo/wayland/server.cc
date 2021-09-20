@@ -153,9 +153,7 @@ Server::Server(Display* display) : display_(display) {
   wl_log_set_handler_server(wayland_log);
 
   wl_display_.reset(wl_display_create());
-}
 
-void Server::Initialize() {
   serial_tracker_ = std::make_unique<SerialTracker>(wl_display_.get());
   wl_global_create(wl_display_.get(), &wl_compositor_interface,
                    kWlCompositorVersion, this, bind_compositor);
@@ -298,7 +296,6 @@ Server::~Server() {
 // static
 std::unique_ptr<Server> Server::Create(Display* display) {
   std::unique_ptr<Server> server(new Server(display));
-  server->Initialize();
 
   char* runtime_dir_str = getenv("XDG_RUNTIME_DIR");
   if (!runtime_dir_str) {
@@ -402,11 +399,6 @@ wl_resource* Server::GetOutputResource(wl_client* client, int64_t display_id) {
   if (iter == outputs_.end())
     return nullptr;
   return iter->second.get()->GetOutputResourceForClient(client);
-}
-
-void Server::AddWaylandOutput(int64_t id,
-                              std::unique_ptr<WaylandDisplayOutput> output) {
-  outputs_.insert(std::make_pair(id, std::move(output)));
 }
 
 }  // namespace wayland

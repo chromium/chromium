@@ -758,17 +758,13 @@ void Surface::Commit() {
     CommitSurfaceHierarchy(false);
 }
 
-bool Surface::UpdateDisplay(int64_t old_display, int64_t new_display) {
-  if (!leave_enter_callback_.is_null()) {
-    if (!leave_enter_callback_.Run(old_display, new_display))
-      return false;
-  }
+void Surface::UpdateDisplay(int64_t old_display, int64_t new_display) {
+  if (!leave_enter_callback_.is_null())
+    leave_enter_callback_.Run(old_display, new_display);
   for (const auto& sub_surface_entry : base::Reversed(sub_surfaces_)) {
     auto* sub_surface = sub_surface_entry.first;
-    if (!sub_surface->UpdateDisplay(old_display, new_display))
-      return false;
+    sub_surface->UpdateDisplay(old_display, new_display);
   }
-  return true;
 }
 
 void Surface::CommitSurfaceHierarchy(bool synchronized) {
