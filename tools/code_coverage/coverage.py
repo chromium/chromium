@@ -163,7 +163,8 @@ def _ConfigureLLVMCoverageTools(args):
     LLVM_PROFDATA_PATH = os.path.join(llvm_bin_dir, 'llvm-profdata')
   else:
     subprocess.check_call([
-        'python', 'tools/clang/scripts/update.py', '--package', 'coverage_tools'
+        sys.executable, 'tools/clang/scripts/update.py', '--package',
+        'coverage_tools'
     ])
 
   if coverage_utils.GetHostPlatform() == 'win':
@@ -1050,7 +1051,8 @@ def Main():
   # is used by coverage bot for initial setup.
   if len(sys.argv) == 1:
     subprocess.check_call([
-        'python', 'tools/clang/scripts/update.py', '--package', 'coverage_tools'
+        sys.executable, 'tools/clang/scripts/update.py', '--package',
+        'coverage_tools'
     ])
     print(__doc__)
     return
