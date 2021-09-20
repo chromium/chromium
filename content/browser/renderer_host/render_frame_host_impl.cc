@@ -1450,7 +1450,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   }
 
   if (frame_tree_->is_prerendering()) {
-    DCHECK(blink::features::IsPrerender2Enabled());
     // TODO(https://crbug.com/1132752): Check the prerendering page is
     // same-origin to the prerender trigger page.
     broker_.ApplyMojoBinderPolicies(
@@ -4867,7 +4866,6 @@ void RenderFrameHostImpl::DownloadURL(
   // prerendering page is activated, and it will comply with the prerendering
   // spec.
   if (frame_tree()->is_prerendering()) {
-    DCHECK(blink::features::IsPrerender2Enabled());
     CancelPrerendering(PrerenderHost::FinalStatus::kDownload);
     return;
   }
@@ -6353,7 +6351,6 @@ void RenderFrameHostImpl::BindBrowserInterfaceBrokerReceiver(
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver) {
   DCHECK(receiver.is_valid());
   if (frame_tree()->is_prerendering()) {
-    DCHECK(blink::features::IsPrerender2Enabled());
     // RenderFrameHostImpl will rebind the receiver end of
     // BrowserInterfaceBroker if it receives a new one sent from renderer
     // processes. It happens when renderer processes navigate to a new document,
@@ -10390,7 +10387,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     DCHECK_EQ(navigation_request->is_overriding_user_agent() && is_main_frame(),
               params->is_overriding_user_agent);
     if (navigation_request->IsPrerenderedPageActivation()) {
-      DCHECK(blink::features::IsPrerender2Enabled());
       // Set the NavigationStart time for
       // PerformanceNavigationTiming.activationStart.
       // https://jeremyroman.github.io/alternate-loading-modes/#performance-navigation-timing-extension

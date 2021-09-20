@@ -4624,7 +4624,6 @@ net::Error NavigationRequest::CheckCSPDirectives(
 
       // [prefetch-src]
       if (frame_tree_node_->frame_tree()->is_prerendering()) {
-        DCHECK(blink::features::IsPrerender2Enabled());
         if (!IsAllowedByCSPDirective(
                 initiator_policies->content_security_policies,
                 &initiator_context,

@@ -6182,8 +6182,7 @@ float RenderFrameImpl::GetDeviceScaleFactor() {
 
 bool RenderFrameImpl::DeferMediaLoad(bool has_played_media_before,
                                      base::OnceClosure closure) {
-  if (blink::features::IsPrerender2Enabled() &&
-      frame_->GetDocument().IsPrerendering()) {
+  if (frame_->GetDocument().IsPrerendering()) {
     frame_->GetDocument().AddPostPrerenderingActivationStep(
         base::BindOnce(CallClientDeferMediaLoad, weak_factory_.GetWeakPtr(),
                        has_played_media_before, std::move(closure)));

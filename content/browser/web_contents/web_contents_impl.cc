@@ -984,8 +984,7 @@ WebContentsImpl::~WebContentsImpl() {
   //
   // Currently the only instances of the non-primary FrameTrees are for
   // prerendering. Shutdown them by destructing PrerenderHostRegistry.
-  if (blink::features::IsPrerender2Enabled())
-    prerender_host_registry_.reset();
+  prerender_host_registry_.reset();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Call this before WebContentsDestroyed() is broadcasted since
@@ -1249,9 +1248,6 @@ RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
 }
 
 bool WebContentsImpl::IsPrerenderedFrame(int frame_tree_node_id) {
-  if (!blink::features::IsPrerender2Enabled())
-    return false;
-
   if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId)
     return false;
 
@@ -4426,17 +4422,15 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
       FrameTree* frame_tree = frame_tree_node->frame_tree();
       CHECK_EQ(frame_tree->controller().DeprecatedGetWebContents(), this);
 
-      if (blink::features::IsPrerender2Enabled()) {
-        // Prerendering is generally hidden from embedders. If the navigation is
-        // targeting a frame in a prerendering frame tree, we shouldn't run that
-        // navigation through the embedder delegate. Instead, we just navigate
-        // directly on the prerendering frame tree.
-        if (frame_tree->type() == FrameTree::Type::kPrerender) {
-          DCHECK_EQ(params.disposition, WindowOpenDisposition::CURRENT_TAB);
-          frame_tree->controller().LoadURLWithParams(
-              NavigationController::LoadURLParams(params));
-          return this;
-        }
+      // Prerendering is generally hidden from embedders. If the navigation is
+      // targeting a frame in a prerendering frame tree, we shouldn't run that
+      // navigation through the embedder delegate. Instead, we just navigate
+      // directly on the prerendering frame tree.
+      if (frame_tree->type() == FrameTree::Type::kPrerender) {
+        DCHECK_EQ(params.disposition, WindowOpenDisposition::CURRENT_TAB);
+        frame_tree->controller().LoadURLWithParams(
+            NavigationController::LoadURLParams(params));
+        return this;
       }
     } else {
       // If the node doesn't exist it was probably removed from its frame tree.

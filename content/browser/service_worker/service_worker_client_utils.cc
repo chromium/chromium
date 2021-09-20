@@ -498,7 +498,6 @@ void NavigateClient(const GURL& url,
   // mechanism to disallow (PrerenderNavigationThrottle), because
   // RequestOpenURL() crashes if called by a prerendering main frame.
   if (rfhi->is_main_frame() && rfhi->frame_tree()->is_prerendering()) {
-    DCHECK(blink::features::IsPrerender2Enabled());
     DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
                 GlobalRenderFrameHostId());
     return;
