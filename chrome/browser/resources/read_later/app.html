@@ -113,6 +113,7 @@
 
   #empty-state-image {
     content: url(images/read_later_empty.svg);
+    height: 160px;
     margin-bottom: 8px;
     margin-top: 16px;
     width: 240px;
@@ -154,47 +155,49 @@
       on-click="onCloseClick_" title="$i18n{tooltipClose}">
   </cr-icon-button>
 </div>
-<div id="empty-state-container"
-     hidden="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">
-  <img id="empty-state-image" aria-hidden="true">
-  <div id="empty-state-header">$i18n{emptyStateHeader}</div>
-  <div id="empty-state-subheader">[[getEmptyStateSubheaderText_()]]</div>
-</div>
-<cr-button id="currentPageActionButton"
-    hidden$="[[!shouldShowCurrentPageActionButton_()]]"
-    aria-label="$i18n{addCurrentTab}"
-    on-click="onCurrentPageActionButtonClick_"
-    disabled="[[getCurrentPageActionButtonDisabled_(
-        currentPageActionButtonState_)]]">
-  <iron-icon id="currentPageActionButtonIcon" aria-hidden="true"
-      icon="cr:add">
-  </iron-icon>
-  <div id="currentPageActionButtonText" aria-hidden="true">
-    $i18n{addCurrentTab}
+<div id="content" hidden="[[loadingContent_]]">
+  <div id="empty-state-container"
+       hidden="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">
+    <img id="empty-state-image" aria-hidden="true">
+    <div id="empty-state-header">$i18n{emptyStateHeader}</div>
+    <div id="empty-state-subheader">[[getEmptyStateSubheaderText_()]]</div>
   </div>
-</cr-button>
-<div id="readLaterList">
-  <iron-selector id="selector" on-keydown="onItemKeyDown_"
-      attr-for-selected="data-url" selectable="read-later-item">
-    <div hidden="[[!unreadItems_.length]]" class="sub-heading">
-      $i18n{unreadHeader}
+  <cr-button id="currentPageActionButton"
+      hidden$="[[!shouldShowCurrentPageActionButton_()]]"
+      aria-label="$i18n{addCurrentTab}"
+      on-click="onCurrentPageActionButtonClick_"
+      disabled="[[getCurrentPageActionButtonDisabled_(
+          currentPageActionButtonState_)]]">
+    <iron-icon id="currentPageActionButtonIcon" aria-hidden="true"
+        icon="cr:add">
+    </iron-icon>
+    <div id="currentPageActionButtonText" aria-hidden="true">
+      $i18n{addCurrentTab}
     </div>
-    <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
-      <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-          aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
-          data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
-      </read-later-item>
-    </template>
-    <div class="hr" hidden$="[[!shouldShowHr_(unreadItems_, readItems_)]]">
-    </div>
-    <div hidden="[[!readItems_.length]]" class="sub-heading">
-      $i18n{readHeader}
-    </div>
-    <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
-      <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-          aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
-          data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
-      </read-later-item>
-    </template>
-  </iron-selector>
+  </cr-button>
+  <div id="readLaterList">
+    <iron-selector id="selector" on-keydown="onItemKeyDown_"
+        attr-for-selected="data-url" selectable="read-later-item">
+      <div hidden="[[!unreadItems_.length]]" class="sub-heading">
+        $i18n{unreadHeader}
+      </div>
+      <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
+        <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
+            aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
+            data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
+        </read-later-item>
+      </template>
+      <div class="hr" hidden$="[[!shouldShowHr_(unreadItems_, readItems_)]]">
+      </div>
+      <div hidden="[[!readItems_.length]]" class="sub-heading">
+        $i18n{readHeader}
+      </div>
+      <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
+        <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
+            aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
+            data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
+        </read-later-item>
+      </template>
+    </iron-selector>
+  </div>
 </div>

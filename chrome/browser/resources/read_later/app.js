@@ -58,6 +58,12 @@ export class ReadLaterAppElement extends PolymerElement {
         type: Boolean,
         value: () => loadTimeData.getBoolean('useRipples'),
       },
+
+      /** @private {boolean} */
+      loadingContent_: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -144,6 +150,7 @@ export class ReadLaterAppElement extends PolymerElement {
   updateItems_(entries) {
     this.unreadItems_ = entries.unreadEntries;
     this.readItems_ = entries.readEntries;
+    this.loadingContent_ = false;
   }
 
   /**
