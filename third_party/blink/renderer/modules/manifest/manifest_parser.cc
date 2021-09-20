@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "net/base/mime_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/features.h"
@@ -1027,7 +1028,16 @@ HashMap<String, Vector<String>> ManifestParser::ParseFileHandlerAccept(
 
   for (wtf_size_t i = 0; i < accept->size(); ++i) {
     JSONObject::Entry entry = accept->at(i);
+
+    // Validate the MIME type.
     String& mimetype = entry.first;
+    std::string top_level_mime_type;
+    if (!net::ParseMimeTypeWithoutParameter(mimetype.Utf8(),
+                                            &top_level_mime_type, nullptr) ||
+        !net::IsValidTopLevelMimeType(top_level_mime_type)) {
+      AddErrorInfo("invalid MIME type: " + mimetype);
+      continue;
+    }
 
     Vector<String> extensions;
     String extension;

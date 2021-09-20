@@ -2205,6 +2205,44 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
     EXPECT_EQ(0u, file_handlers[0]->accept.find("image/png")->value.size());
   }
 
+  // Invalid MIME types and those with parameters are stripped.
+  {
+    auto& manifest = ParseManifest(
+        R"({
+          "file_handlers": [
+            {
+              "name": "Foo",
+              "icons": [{ "src": "foo.jpg" }],
+              "action": "/files",
+              "accept": {
+                "image_png": ".png",
+                "foo/bar": ".foo",
+                "application/foobar;parameter=25": ".foobar",
+                "application/its+xml": ".itsml"
+              }
+            }
+          ]
+        })");
+    auto& file_handlers = manifest->file_handlers;
+
+    ASSERT_EQ(3u, GetErrorCount());
+    EXPECT_EQ("invalid MIME type: image_png", errors()[0]);
+    EXPECT_EQ("invalid MIME type: foo/bar", errors()[1]);
+    EXPECT_EQ("invalid MIME type: application/foobar;parameter=25",
+              errors()[2]);
+    ASSERT_EQ(1u, file_handlers.size());
+
+    EXPECT_EQ("Foo", file_handlers[0]->name);
+    EXPECT_EQ("http://foo.com/foo.jpg",
+              file_handlers[0]->icons[0]->src.GetString());
+    EXPECT_EQ(KURL("http://foo.com/files"), file_handlers[0]->action);
+    ASSERT_EQ(1U, file_handlers[0]->accept.size());
+    ASSERT_TRUE(file_handlers[0]->accept.Contains("application/its+xml"));
+    EXPECT_EQ(0u, file_handlers[0]
+                      ->accept.find("application/its+xml")
+                      ->value.Contains(".foobar"));
+  }
+
   // Extensions specified as a single string is valid.
   {
     auto& manifest = ParseManifest(

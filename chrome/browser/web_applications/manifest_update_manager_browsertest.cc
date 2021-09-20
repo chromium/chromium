@@ -2055,7 +2055,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
           "action": "/?longtype",
           "name": "Long Custom type",
           "accept": {
-            "long/type": [".longtype"]
+            "application/long-type": [".longtype"]
           }
         }
       ],
@@ -2070,7 +2070,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
       GetFileTypeAssociationsHandledByWebAppsForDisplay(browser()->profile(),
                                                         GetAppURL());
 #if defined(OS_LINUX)
-  EXPECT_EQ(u"long/type, text/plain", associations_list);
+  EXPECT_EQ(u"application/long-type, text/plain", associations_list);
 #else
   EXPECT_EQ(u"LONGTYPE, TXT", associations_list);
 #endif  // defined(OS_LINUX)
