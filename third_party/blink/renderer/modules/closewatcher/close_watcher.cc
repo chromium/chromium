@@ -68,6 +68,13 @@ void CloseWatcher::WatcherStack::Invoke(ExecutionContext*, Event* e) {
 CloseWatcher* CloseWatcher::Create(ScriptState* script_state,
                                    ExceptionState& exception_state) {
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  if (!window->GetFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "CloseWatchers cannot be created in detached Windows.");
+    return nullptr;
+  }
+
   WatcherStack& stack = WatcherStack::From(*window);
   if (stack.HasActiveWatcher() &&
       !LocalFrame::HasTransientUserActivation(window->GetFrame())) {
@@ -105,7 +112,8 @@ void CloseWatcher::signalClosed() {
 void CloseWatcher::Close() {
   if (IsClosed())
     return;
-  WatcherStack::From(*DomWindow()).Remove(this);
+  if (DomWindow())
+    WatcherStack::From(*DomWindow()).Remove(this);
   state_ = State::kClosed;
   DispatchEvent(*Event::Create(event_type_names::kClose));
 }
@@ -113,7 +121,8 @@ void CloseWatcher::Close() {
 void CloseWatcher::destroy() {
   if (IsClosed())
     return;
-  WatcherStack::From(*DomWindow()).Remove(this);
+  if (DomWindow())
+    WatcherStack::From(*DomWindow()).Remove(this);
   state_ = State::kClosed;
 }
 
