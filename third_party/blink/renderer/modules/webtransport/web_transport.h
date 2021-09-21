@@ -157,6 +157,15 @@ class MODULES_EXPORT WebTransport final
               WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
       stream_map_;
 
+  // A map from stream id to whether the fin signal was received. When
+  // OnIncomingStreamClosed is called with a stream ID which doesn't have its
+  // corresponding incoming stream, the event is recorded here.
+  HashMap<uint32_t,
+          bool,
+          WTF::DefaultHash<uint32_t>::Hash,
+          WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
+      closed_potentially_pending_streams_;
+
   HeapMojoRemote<mojom::blink::WebTransportConnector> connector_;
   HeapMojoRemote<network::mojom::blink::WebTransport> transport_remote_;
   HeapMojoReceiver<network::mojom::blink::WebTransportHandshakeClient,

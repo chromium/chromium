@@ -568,6 +568,18 @@ class WebTransport::ReceiveStreamVendor final
     CHECK_LT(stream_id, 0xfffffffe);
     web_transport_->stream_map_.insert(stream_id, receive_stream);
 
+    auto it =
+        web_transport_->closed_potentially_pending_streams_.find(stream_id);
+    if (it != web_transport_->closed_potentially_pending_streams_.end()) {
+      // The stream has already been closed in the network service.
+      const bool fin_received = it->value;
+      web_transport_->closed_potentially_pending_streams_.erase(it);
+
+      // This can run JavaScript. This is safe because `receive_stream` hasn't
+      // been exposed yet.
+      receive_stream->OnIncomingStreamClosed(fin_received);
+    }
+
     std::move(enqueue).Run(receive_stream);
   }
 
@@ -863,13 +875,23 @@ void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
            << fin_received << ") this=" << this;
   auto it = stream_map_.find(stream_id);
 
-  // The stream may have already been removed from the map because of races
-  // between different ways of closing bidirectional streams.
-  if (it != stream_map_.end()) {
-    WebTransportStream* stream = it->value;
-    DCHECK(stream);
-    stream->OnIncomingStreamClosed(fin_received);
+  if (it == stream_map_.end()) {
+    // We reach here from two reasons.
+    // 1) The stream may have already been removed from the map because of races
+    //    between different ways of closing bidirectional streams.
+    // 2) The stream is a server created incoming stream, and we haven't created
+    //    it yet.
+    // For the second case, we need to store `stream_id` and `fin_received` and
+    // dispatch them later.
+    DCHECK(closed_potentially_pending_streams_.find(stream_id) ==
+           closed_potentially_pending_streams_.end());
+    closed_potentially_pending_streams_.insert(stream_id, fin_received);
+    return;
   }
+
+  WebTransportStream* stream = it->value;
+  DCHECK(stream);
+  stream->OnIncomingStreamClosed(fin_received);
 }
 
 void WebTransport::ContextDestroyed() {
