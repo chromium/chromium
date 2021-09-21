@@ -67,13 +67,15 @@ void PartitionAllocMemoryReclaimer::UnregisterPartition(
 
 void PartitionAllocMemoryReclaimer::Start(
     scoped_refptr<SequencedTaskRunner> task_runner) {
-  PA_DCHECK(!timer_);
+  AutoLock lock(lock_);
+
   PA_DCHECK(task_runner);
 
-  {
-    AutoLock lock(lock_);
-    PA_DCHECK(!thread_safe_partitions_.empty());
-  }
+  // Can be called several times.
+  if (timer_)
+    return;
+
+  PA_DCHECK(!thread_safe_partitions_.empty());
 
   // This does not need to run on the main thread, however there are a few
   // reasons to do it there:

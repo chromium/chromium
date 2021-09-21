@@ -37,7 +37,7 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
   // Unregisters a partition to be tracked by the reclaimer.
   void UnregisterPartition(PartitionRoot<internal::ThreadSafe>* partition);
   void UnregisterPartition(PartitionRoot<internal::NotThreadSafe>* partition);
-  // Starts the periodic reclaim. Should be called once.
+  // Starts the periodic reclaim. Can be called several times.
   void Start(scoped_refptr<SequencedTaskRunner> task_runner);
   // Triggers an explicit reclaim now reclaiming all free memory
   void ReclaimAll();

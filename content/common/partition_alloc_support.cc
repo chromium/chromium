@@ -25,6 +25,11 @@
 #include "base/system/sys_info.h"
 #endif
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/partition_allocator/memory_reclaimer.h"
+#include "base/threading/thread_task_runner_handle.h"
+#endif
+
 namespace content {
 namespace internal {
 
@@ -147,9 +152,7 @@ void PartitionAllocSupport::ReconfigureEarlyish(
   // These initializations are only relevant for PartitionAlloc-Everywhere
   // builds.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
   base::allocator::EnablePartitionAllocMemoryReclaimer();
-
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
@@ -321,6 +324,11 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     base::internal::PCScan::scheduler().SetNewSchedulingBackend(
         *mu_aware_task_based_backend.get());
   }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  base::PartitionAllocMemoryReclaimer::Instance()->Start(
+      base::ThreadTaskRunnerHandle::Get());
+#endif
 }
 
 void PartitionAllocSupport::OnForegrounded() {
