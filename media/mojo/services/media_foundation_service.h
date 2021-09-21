@@ -27,9 +27,8 @@ class MEDIA_MOJO_EXPORT MediaFoundationService final
   // The MediaFoundationService process is NOT sandboxed after startup. The
   // `ensure_sandboxed_cb` must be called after necessary initialization to
   // ensure the process is sandboxed.
-  MediaFoundationService(
-      mojo::PendingReceiver<mojom::MediaFoundationService> receiver,
-      const base::FilePath& user_data_dir);
+  explicit MediaFoundationService(
+      mojo::PendingReceiver<mojom::MediaFoundationService> receiver);
   MediaFoundationService(const MediaFoundationService&) = delete;
   MediaFoundationService operator=(const MediaFoundationService&) = delete;
   ~MediaFoundationService() final;

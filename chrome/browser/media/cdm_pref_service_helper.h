@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_
 #define CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_
 
+#include <map>
 #include <vector>
 
 #include "base/callback.h"
@@ -57,8 +58,7 @@ class CdmPrefServiceHelper {
       PrefService* user_prefs,
       base::Time start,
       base::Time end,
-      const base::RepeatingCallback<bool(const GURL&)>& filter,
-      base::OnceClosure complete_cb);
+      const base::RepeatingCallback<bool(const GURL&)>& filter);
 
   // Gets the CDM preference data associated with the current origin. If no
   // preference data exist for the current origin, an entry is created with a
@@ -74,6 +74,12 @@ class CdmPrefServiceHelper {
   static void SetCdmClientToken(PrefService* user_prefs,
                                 const url::Origin& cdm_origin,
                                 const std::vector<uint8_t>& client_token);
+
+  // Return a mapping of Origin ID to url::Origin. The string representation
+  // for the origin id is used in the mapping so that it can be more easily used
+  // to map a directory name to its origin.
+  static std::map<std::string, url::Origin> GetOriginIdMapping(
+      PrefService* user_prefs);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_CDM_PREF_SERVICE_HELPER_H_

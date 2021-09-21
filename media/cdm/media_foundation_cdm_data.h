@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/unguessable_token.h"
 #include "media/base/media_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -14,8 +15,10 @@
 namespace media {
 struct MEDIA_EXPORT MediaFoundationCdmData {
   MediaFoundationCdmData();
-  MediaFoundationCdmData(base::UnguessableToken origin_id,
-                         absl::optional<std::vector<uint8_t>> client_token);
+  MediaFoundationCdmData(
+      const base::UnguessableToken& origin_id,
+      const absl::optional<std::vector<uint8_t>>& client_token,
+      const base::FilePath& cdm_store_path_root);
 
   MediaFoundationCdmData(const MediaFoundationCdmData& other) = delete;
   MediaFoundationCdmData& operator=(const MediaFoundationCdmData& other) =
@@ -25,6 +28,7 @@ struct MEDIA_EXPORT MediaFoundationCdmData {
 
   base::UnguessableToken origin_id;
   absl::optional<std::vector<uint8_t>> client_token;
+  base::FilePath cdm_store_path_root;
 };
 }  // namespace media
 
