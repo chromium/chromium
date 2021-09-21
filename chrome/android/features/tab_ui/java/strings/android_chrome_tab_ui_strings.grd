@@ -469,6 +469,18 @@
       <message name="IDS_PAGE_INFO_STORE_INFO_DESCRIPTION_WITH_NO_RATING" desc="The description of the Store info row in Trusted Surface for sites with return policy but no ratings.">
         See return policy and more
       </message>
+      <message name="IDS_MERCHANT_VIEWER_PREVIEW_SHEET_DESCRIPTION" desc="The content description of the merchant viewer bottom sheet.">
+        Information about this store
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_PREVIEW_SHEET_OPENED_HALF" desc="Accessibility string read when the merchant viewer bottom sheet is opened at half height. The sheet will occupy up to half the screen.">
+        Information about this store opened at half height
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_PREVIEW_SHEET_OPENED_FULL" desc="Accessibility string read when the merchant viewer bottom sheet is opened at full height. The sheet will occupy up to full screen.">
+        Information about this store opened at full height
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_PREVIEW_SHEET_CLOSED" desc="Accessibility string read when the merchant viewer bottom sheet is closed.">
+        Information about this store closed
+      </message>
     </messages>
   </release>
 </grit>

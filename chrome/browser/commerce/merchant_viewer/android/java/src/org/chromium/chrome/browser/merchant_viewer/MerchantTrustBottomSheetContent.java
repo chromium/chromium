@@ -85,21 +85,21 @@ public class MerchantTrustBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        return R.string.merchant_viewer_preview_sheet_title;
+        return R.string.merchant_viewer_preview_sheet_description;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.merchant_viewer_preview_sheet_title;
+        return R.string.merchant_viewer_preview_sheet_opened_half;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.merchant_viewer_preview_sheet_title;
+        return R.string.merchant_viewer_preview_sheet_opened_full;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return R.string.merchant_viewer_preview_sheet_title;
+        return R.string.merchant_viewer_preview_sheet_closed;
     }
 }
