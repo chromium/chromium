@@ -6804,12 +6804,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAImageReader)},
 #endif  // OS_ANDROID
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-auto-select", flag_descriptions::kEnableAutoSelectName,
-     flag_descriptions::kEnableAutoSelectDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(blink::features::kCrOSAutoSelect)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(OS_ANDROID)
     {"smart-suggestion-for-large-downloads",
      flag_descriptions::kSmartSuggestionForLargeDownloadsName,

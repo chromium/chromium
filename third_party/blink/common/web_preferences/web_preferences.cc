@@ -112,10 +112,7 @@ WebPreferences::WebPreferences()
 #elif defined(OS_ANDROID)
       editing_behavior(mojom::EditingBehavior::kEditingAndroidBehavior),
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-      editing_behavior(
-          base::FeatureList::IsEnabled(blink::features::kCrOSAutoSelect)
-              ? mojom::EditingBehavior::kEditingChromeOSBehavior
-              : mojom::EditingBehavior::kEditingUnixBehavior),
+      editing_behavior(mojom::EditingBehavior::kEditingChromeOSBehavior),
 #elif defined(OS_POSIX)
       editing_behavior(mojom::EditingBehavior::kEditingUnixBehavior),
 #else

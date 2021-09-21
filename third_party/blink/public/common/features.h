@@ -293,8 +293,6 @@ extern const char
 BLINK_COMMON_EXPORT extern const base::Feature kCompressParkableStrings;
 BLINK_COMMON_EXPORT bool IsParkableStringsToDiskEnabled();
 
-BLINK_COMMON_EXPORT extern const base::Feature kCrOSAutoSelect;
-
 BLINK_COMMON_EXPORT extern const base::Feature kCLSScrollAnchoring;
 
 BLINK_COMMON_EXPORT extern const base::Feature kReducedReferrerGranularity;

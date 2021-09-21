@@ -4363,10 +4363,6 @@ const char kEnableAssistantLauncherIntegrationDescription[] =
 const char kEnableAssistantRoutinesName[] = "Assistant Routines";
 const char kEnableAssistantRoutinesDescription[] = "Enable Assistant Routines.";
 
-const char kEnableAutoSelectName[] = "Auto Select";
-const char kEnableAutoSelectDescription[] =
-    "Automatically select the word under cursor on contextual menu click.";
-
 const char kEnableBackgroundBlurName[] = "Enable background blur.";
 const char kEnableBackgroundBlurDescription[] =
     "Enables background blur for the Launcher, Shelf, Unified System Tray etc.";

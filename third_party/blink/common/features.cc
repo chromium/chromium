@@ -746,10 +746,6 @@ bool IsParkableStringsToDiskEnabled() {
   return base::FeatureList::IsEnabled(kCompressParkableStrings);
 }
 
-// Controls whether to auto select on contextual menu click in Chrome OS.
-const base::Feature kCrOSAutoSelect{"CrOSAutoSelect",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kCLSScrollAnchoring{"CLSScrollAnchoring",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
