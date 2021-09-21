@@ -139,24 +139,6 @@ InputMethodManagerImpl::StateImpl::StateImpl(InputMethodManagerImpl* manager,
 
 InputMethodManagerImpl::StateImpl::~StateImpl() = default;
 
-void InputMethodManagerImpl::StateImpl::InitFrom(const StateImpl& other) {
-  last_used_input_method = other.last_used_input_method;
-  current_input_method = other.current_input_method;
-
-  active_input_method_ids = other.active_input_method_ids;
-  allowed_keyboard_layout_input_method_ids =
-      other.allowed_keyboard_layout_input_method_ids;
-
-  pending_input_method_id = other.pending_input_method_id;
-
-  enabled_extension_imes = other.enabled_extension_imes;
-  available_input_methods = other.available_input_methods;
-  menu_activated = other.menu_activated;
-  input_view_url = other.input_view_url;
-  input_view_url_overridden = other.input_view_url_overridden;
-  ui_style_ = other.ui_style_;
-}
-
 bool InputMethodManagerImpl::StateImpl::IsActive() const {
   return manager_->state_.get() == this;
 }
@@ -164,7 +146,23 @@ bool InputMethodManagerImpl::StateImpl::IsActive() const {
 scoped_refptr<InputMethodManager::State>
 InputMethodManagerImpl::StateImpl::Clone() const {
   scoped_refptr<StateImpl> new_state(new StateImpl(this->manager_, profile));
-  new_state->InitFrom(*this);
+
+  new_state->last_used_input_method = last_used_input_method;
+  new_state->current_input_method = current_input_method;
+
+  new_state->active_input_method_ids = active_input_method_ids;
+  new_state->allowed_keyboard_layout_input_method_ids =
+      allowed_keyboard_layout_input_method_ids;
+
+  new_state->pending_input_method_id = pending_input_method_id;
+
+  new_state->enabled_extension_imes = enabled_extension_imes;
+  new_state->available_input_methods = available_input_methods;
+  new_state->menu_activated = menu_activated;
+  new_state->input_view_url = input_view_url;
+  new_state->input_view_url_overridden = input_view_url_overridden;
+  new_state->ui_style_ = ui_style_;
+
   return scoped_refptr<InputMethodManager::State>(new_state.get());
 }
 

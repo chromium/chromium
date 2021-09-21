@@ -50,9 +50,6 @@ class InputMethodManagerImpl : public InputMethodManager,
    public:
     StateImpl(InputMethodManagerImpl* manager, Profile* profile);
 
-    // Init new state as a copy of other.
-    void InitFrom(const StateImpl& other);
-
     // Returns true if (manager_->state_ == this).
     bool IsActive() const;
 
@@ -176,8 +173,7 @@ class InputMethodManagerImpl : public InputMethodManager,
     InputMethodManager::UIStyle ui_style_ =
         InputMethodManager::UIStyle::kNormal;
 
-    // Do not forget to update StateImpl::InitFrom(const StateImpl& other).
-    // when adding new data members!!!
+    // Do not forget to update StateImpl::Clone() when adding new data members!!
   };
 
   // Constructs an InputMethodManager instance. The client is responsible for
