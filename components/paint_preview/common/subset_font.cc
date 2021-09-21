@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -66,39 +67,91 @@ sk_sp<SkData> SubsetFont(SkTypeface* typeface, const GlyphUsage& usage) {
   sk_sp<SkData> data = StreamToData(typeface->openStream(&ttc_index));
   HbScoped<hb_face_t> face(hb_face_create(MakeBlob(data).get(), ttc_index));
   HbScoped<hb_subset_input_t> input(hb_subset_input_create_or_fail());
-  if (!face || !input)
+  if (!face || !input) {
     return nullptr;
+  }
 
   hb_set_t* glyphs =
       hb_subset_input_glyph_set(input.get());  // Owned by |input|.
   usage.ForEach(base::BindRepeating(&AddGlyphs, base::Unretained(glyphs)));
   hb_subset_input_set_flags(input.get(), HB_SUBSET_FLAGS_RETAIN_GIDS);
 
+  // Retain all variation information for OpenType variation fonts. See:
+  // https://docs.microsoft.com/en-us/typography/opentype/spec/otvaroverview
+  hb_set_t* skip_subset =
+      hb_subset_input_no_subset_tables_set(input.get());  // Owned by |input|.
+  hb_set_add(skip_subset, HB_TAG('a', 'v', 'a', 'r'));
+  hb_set_add(skip_subset, HB_TAG('c', 'v', 'a', 'r'));
+  hb_set_add(skip_subset, HB_TAG('f', 'v', 'a', 'r'));
+  hb_set_add(skip_subset, HB_TAG('M', 'V', 'A', 'R'));
+  // Normally harfbuzz would subset these variation tables, but they are needed
+  // for variation fonts.
+  hb_set_add(skip_subset, HB_TAG('g', 'v', 'a', 'r'));
+  hb_set_add(skip_subset, HB_TAG('H', 'V', 'A', 'R'));
+  hb_set_add(skip_subset, HB_TAG('V', 'V', 'A', 'R'));
+
+  // Also retain layout information which is important for non-latin characters.
+  hb_set_add(skip_subset, HB_TAG('G', 'D', 'E', 'F'));
+  hb_set_add(skip_subset, HB_TAG('G', 'S', 'U', 'B'));
+  hb_set_add(skip_subset, HB_TAG('G', 'P', 'O', 'S'));
+
   HbScoped<hb_face_t> subset_face(hb_subset_or_fail(face.get(), input.get()));
-  if (!subset_face)
+  if (!subset_face) {
     return nullptr;
+  }
+  // Store the correct collection index for the subsetted font.
+  const int final_ttc_index = hb_face_get_index(subset_face.get());
+
   HbScoped<hb_blob_t> subset_blob(hb_face_reference_blob(subset_face.get()));
-  if (!subset_blob)
+  if (!subset_blob) {
     return nullptr;
+  }
 
   unsigned int length = 0;
   const char* subset_data = hb_blob_get_data(subset_blob.get(), &length);
-  if (!subset_data || !length)
+  if (!subset_data || !length) {
     return nullptr;
+  }
 
   auto sk_data = SkData::MakeWithProc(
       subset_data, static_cast<size_t>(length),
       [](const void*, void* ctx) { hb_blob_destroy((hb_blob_t*)ctx); },
       subset_blob.release());
-  if (!sk_data)
+  if (!sk_data) {
     return nullptr;
+  }
 
   // Ensure the data is in SkTypeface format so it will deserialize when
   // embedded in an SkPicture. This is *not* a validation/sanitation and the
   // inner workings may vary by platform.
-  auto sk_subset_typeface = SkTypeface::MakeFromData(sk_data);
-  if (!sk_subset_typeface)
+  auto sk_subset_typeface = SkTypeface::MakeFromData(sk_data, final_ttc_index);
+  if (!sk_subset_typeface) {
     return nullptr;
+  }
+
+  // For fonts with variations we need to force the right variant of SkTypeface
+  // post subset.
+  const int axis_count = typeface->getVariationDesignPosition(nullptr, 0);
+  if (axis_count > 0) {
+    std::vector<SkFontArguments::VariationPosition::Coordinate> typeface_axis;
+    typeface_axis.resize(axis_count);
+    if (typeface->getVariationDesignPosition(typeface_axis.data(),
+                                             typeface_axis.size()) > 0) {
+      SkFontArguments::VariationPosition variation;
+      variation.coordinates = typeface_axis.data();
+      variation.coordinateCount = typeface_axis.size();
+
+      SkFontArguments args;
+      args.setVariationDesignPosition(variation);
+      args.setCollectionIndex(final_ttc_index);
+
+      sk_subset_typeface = sk_subset_typeface->makeClone(args);
+    }
+  }
+
+  // TODO(crbug/1249178): Even after forcing the right variation,
+  // `sk_subset_typeface` may have the wrong SkFontStyle as there is no way to
+  // manipulate the style while loading the font from data.
   return sk_subset_typeface->serialize(
       SkTypeface::SerializeBehavior::kDoIncludeData);
 }

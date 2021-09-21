@@ -4,6 +4,7 @@
 
 #include "components/paint_preview/common/serial_utils.h"
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -84,6 +85,9 @@ TEST(PaintPreviewSerialUtils, TestSerialPictureNotInMap) {
             nullptr);
 }
 
+// Skip this on Android as we only have system fonts in this test and Android
+// doesn't serialize those.
+#if !defined(OS_ANDROID)
 TEST(PaintPreviewSerialUtils, TestSerialTypeface) {
   PictureSerializationContext picture_ctx;
 
@@ -106,11 +110,49 @@ TEST(PaintPreviewSerialUtils, TestSerialTypeface) {
   EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
   EXPECT_EQ(serial_procs.fImageCtx, nullptr);
 
-  EXPECT_NE(
-      serial_procs.fTypefaceProc(typeface.get(), serial_procs.fTypefaceCtx),
-      nullptr);
+  auto final_data =
+      serial_procs.fTypefaceProc(typeface.get(), serial_procs.fTypefaceCtx);
+  ASSERT_TRUE(final_data);
   EXPECT_GT(typeface_ctx.finished.count(typeface->uniqueID()), 0U);
+  auto original_data = typeface->serialize();
+  ASSERT_NE(original_data->size(), final_data->size());
 }
+#endif
+
+#if defined(OS_ANDROID)
+TEST(PaintPreviewSerialUtils, TestSerialAndroidSystemTypeface) {
+  PictureSerializationContext picture_ctx;
+
+  // This is a system font serialization of the data will be skipped.
+  auto typeface = SkTypeface::MakeFromName("sans-serif", SkFontStyle::Bold());
+  TypefaceUsageMap usage_map;
+  std::unique_ptr<GlyphUsage> usage =
+      std::make_unique<SparseGlyphUsage>(typeface->countGlyphs());
+  usage->Set(0);
+  usage->Set('a');
+  usage->Set('b');
+  EXPECT_TRUE(
+      usage_map.insert(std::make_pair(typeface->uniqueID(), std::move(usage)))
+          .second);
+  TypefaceSerializationContext typeface_ctx(&usage_map);
+  ImageSerializationContext ictx;
+
+  SkSerialProcs serial_procs =
+      MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
+  EXPECT_EQ(serial_procs.fPictureCtx, &picture_ctx);
+  EXPECT_EQ(serial_procs.fTypefaceCtx, &typeface_ctx);
+  EXPECT_EQ(serial_procs.fImageCtx, nullptr);
+
+  auto final_data =
+      serial_procs.fTypefaceProc(typeface.get(), serial_procs.fTypefaceCtx);
+  ASSERT_TRUE(final_data);
+  EXPECT_GT(typeface_ctx.finished.count(typeface->uniqueID()), 0U);
+  auto original_data = typeface->serialize();
+  ASSERT_EQ(original_data->size(), final_data->size());
+  ASSERT_EQ(
+      0, memcmp(original_data->data(), final_data->data(), final_data->size()));
+}
+#endif
 
 TEST(PaintPreviewSerialUtils, TestSerialNoTypefaceInMap) {
   PictureSerializationContext picture_ctx;
