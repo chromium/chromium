@@ -374,7 +374,7 @@ void AutocompleteControllerAndroid::DeleteSuggestion(JNIEnv* env, jint index) {
 }
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
-    UpdateMatchDestinationURLWithQueryFormulationTime(
+    UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
         JNIEnv* env,
         jint selected_index,
         jlong elapsed_time_since_input_change,
@@ -415,9 +415,10 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
     match.search_terms_args->additional_query_params =
         base::JoinString(params, "&");
   }
-  autocomplete_controller_->UpdateMatchDestinationURLWithQueryFormulationTime(
-      base::TimeDelta::FromMilliseconds(elapsed_time_since_input_change),
-      &match);
+  autocomplete_controller_
+      ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+          base::TimeDelta::FromMilliseconds(elapsed_time_since_input_change),
+          &match);
   return url::GURLAndroid::FromNativeGURL(env, match.destination_url);
 }
 

@@ -274,10 +274,12 @@ public class AutocompleteController {
         if (!mAutocompleteResult.verifyCoherency(selectedIndex, VerificationPoint.UPDATE_MATCH)) {
             return null;
         }
-        return AutocompleteControllerJni.get().updateMatchDestinationURLWithQueryFormulationTime(
-                mNativeController, selectedIndex, elapsedTimeSinceInputChange, newQueryText,
-                newQueryParams == null ? null
-                                       : newQueryParams.toArray(new String[newQueryParams.size()]));
+        return AutocompleteControllerJni.get()
+                .updateMatchDestinationURLWithAdditionalAssistedQueryStats(mNativeController,
+                        selectedIndex, elapsedTimeSinceInputChange, newQueryText,
+                        newQueryParams == null
+                                ? null
+                                : newQueryParams.toArray(new String[newQueryParams.size()]));
     }
 
     /**
@@ -323,7 +325,7 @@ public class AutocompleteController {
         void onOmniboxFocused(long nativeAutocompleteControllerAndroid, String omniboxText,
                 String currentUrl, int pageClassification, String currentTitle);
         void deleteSuggestion(long nativeAutocompleteControllerAndroid, int selectedIndex);
-        GURL updateMatchDestinationURLWithQueryFormulationTime(
+        GURL updateMatchDestinationURLWithAdditionalAssistedQueryStats(
                 long nativeAutocompleteControllerAndroid, int selectedIndex,
                 long elapsedTimeSinceInputChange, String newQueryText, String[] newQueryParams);
         Tab findMatchingTabWithUrl(long nativeAutocompleteControllerAndroid, GURL url);

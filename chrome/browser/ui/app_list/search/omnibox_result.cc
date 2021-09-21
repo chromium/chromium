@@ -189,8 +189,7 @@ OmniboxResult::OmniboxResult(Profile* profile,
       is_zero_suggestion_(is_zero_suggestion) {
   if (match_.search_terms_args && autocomplete_controller_) {
     match_.search_terms_args->request_source = TemplateURLRef::CROS_APP_LIST;
-    autocomplete_controller_->UpdateMatchDestinationURL(
-        *match_.search_terms_args, &match_);
+    autocomplete_controller_->SetMatchDestinationURL(&match_);
   }
   set_id(match_.stripped_destination_url.spec());
   SetDisplayType(DisplayType::kList);

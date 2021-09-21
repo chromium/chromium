@@ -762,8 +762,9 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   const base::TimeTicks& now(base::TimeTicks::Now());
   base::TimeDelta elapsed_time_since_user_first_modified_omnibox(
       now - time_user_first_modified_omnibox_);
-  autocomplete_controller()->UpdateMatchDestinationURLWithQueryFormulationTime(
-      elapsed_time_since_user_first_modified_omnibox, &match);
+  autocomplete_controller()
+      ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+          elapsed_time_since_user_first_modified_omnibox, &match);
 
   // Save the result of the interaction, but do not record the histogram yet.
   focus_resulted_in_navigation_ = true;

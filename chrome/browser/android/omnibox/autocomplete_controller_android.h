@@ -70,7 +70,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       const base::android::JavaParamRef<jobject>& j_web_contents);
   void DeleteSuggestion(JNIEnv* env, jint selected_index);
   base::android::ScopedJavaLocalRef<jobject>
-  UpdateMatchDestinationURLWithQueryFormulationTime(
+  UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
       JNIEnv* env,
       jint selected_index,
       jlong elapsed_time_since_input_change,

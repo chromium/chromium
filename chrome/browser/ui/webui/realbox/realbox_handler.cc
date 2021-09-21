@@ -411,8 +411,9 @@ void RealboxHandler::OpenAutocompleteMatch(
   const auto now = base::TimeTicks::Now();
   base::TimeDelta elapsed_time_since_first_autocomplete_query =
       now - time_user_first_modified_realbox_;
-  autocomplete_controller_->UpdateMatchDestinationURLWithQueryFormulationTime(
-      elapsed_time_since_first_autocomplete_query, &match);
+  autocomplete_controller_
+      ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+          elapsed_time_since_first_autocomplete_query, &match);
 
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
 

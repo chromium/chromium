@@ -600,27 +600,27 @@ void AutocompleteController::ResetSession() {
   provider_client_->GetOmniboxTriggeredFeatureService()->ResetSession();
 }
 
-void AutocompleteController::UpdateMatchDestinationURLWithQueryFormulationTime(
-    base::TimeDelta query_formulation_time,
-    AutocompleteMatch* match) const {
+void AutocompleteController::
+    UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+        base::TimeDelta query_formulation_time,
+        AutocompleteMatch* match) const {
   if (!match->search_terms_args ||
       match->search_terms_args->assisted_query_stats.empty())
     return;
 
   // Append the query formulation time (time from when the user first typed a
-  // character into the omnibox to when the user selected a query) and whether
-  // a field trial has triggered to the AQS parameter.
-  TemplateURLRef::SearchTermsArgs search_terms_args(*match->search_terms_args);
-  search_terms_args.assisted_query_stats += base::StringPrintf(
-      ".%" PRId64 "j%dj%d",
-      query_formulation_time.InMilliseconds(),
+  // character into the omnibox to when the user selected a query), whether
+  // a field trial has triggered, and the current page classification to the AQS
+  // parameter.
+  match->search_terms_args->assisted_query_stats += base::StringPrintf(
+      ".%" PRId64 "j%dj%d", query_formulation_time.InMilliseconds(),
       (search_provider_ &&
        search_provider_->field_trial_triggered_in_session()) ||
-      (zero_suggest_provider_ &&
-       zero_suggest_provider_->field_trial_triggered_in_session()),
+          (zero_suggest_provider_ &&
+           zero_suggest_provider_->field_trial_triggered_in_session()),
       input_.current_page_classification());
 
-  // Append the experiment stats to the AQS parameter to be logged in
+  // Append the ExperimentStatsV2 to the AQS parameter to be logged in
   // searchbox_stats.proto's experiment_stats_v2 field.
   if (zero_suggest_provider_) {
     // The field number for the experiment stat type specified as an int
@@ -649,16 +649,15 @@ void AutocompleteController::UpdateMatchDestinationURLWithQueryFormulationTime(
     }
     if (!experiment_stats_v2.empty()) {
       // 'j' is used as a delimiter between individual experiment stat entries.
-      search_terms_args.assisted_query_stats +=
+      match->search_terms_args->assisted_query_stats +=
           "." + base::JoinString(experiment_stats_v2, "j");
     }
   }
 
-  UpdateMatchDestinationURL(search_terms_args, match);
+  SetMatchDestinationURL(match);
 }
 
-void AutocompleteController::UpdateMatchDestinationURL(
-    const TemplateURLRef::SearchTermsArgs& search_terms_args,
+void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
   const TemplateURL* template_url = match->GetTemplateURL(
       template_url_service_, false);
@@ -666,7 +665,7 @@ void AutocompleteController::UpdateMatchDestinationURL(
     return;
 
   match->destination_url = GURL(template_url->url_ref().ReplaceSearchTerms(
-      search_terms_args, template_url_service_->search_terms_data()));
+      *match->search_terms_args, template_url_service_->search_terms_data()));
 #if defined(OS_ANDROID)
   match->UpdateJavaDestinationUrl();
 #endif
@@ -935,8 +934,6 @@ void AutocompleteController::UpdateAssistedQueryStats(
         base::StringPrintf("chrome.%s.%s",
                            selected_index.c_str(),
                            autocompletions.c_str());
-    match->destination_url = GURL(template_url->url_ref().ReplaceSearchTerms(
-        *match->search_terms_args, template_url_service_->search_terms_data()));
   }
 }
 
