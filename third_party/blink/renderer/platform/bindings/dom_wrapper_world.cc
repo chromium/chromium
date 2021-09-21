@@ -35,6 +35,7 @@
 
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
+#include "third_party/blink/renderer/platform/bindings/v8_object_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -80,7 +81,8 @@ DOMWrapperWorld::DOMWrapperWorld(v8::Isolate* isolate,
     : world_type_(world_type),
       world_id_(world_id),
       dom_data_store_(
-          MakeGarbageCollected<DOMDataStore>(isolate, IsMainWorld())) {
+          MakeGarbageCollected<DOMDataStore>(isolate, IsMainWorld())),
+      v8_object_data_store_(MakeGarbageCollected<V8ObjectDataStore>()) {
   switch (world_type_) {
     case WorldType::kMain:
       // The main world is managed separately from worldMap(). See worldMap().

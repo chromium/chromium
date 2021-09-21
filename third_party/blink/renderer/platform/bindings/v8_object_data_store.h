@@ -18,6 +18,7 @@ class V8ObjectDataStore final : public GarbageCollected<V8ObjectDataStore> {
   using key_type = MultiWorldsV8Reference*;
   using value_type = v8::Local<v8::Object>;
 
+  V8ObjectDataStore() = default;
   V8ObjectDataStore(const V8ObjectDataStore&) = delete;
   V8ObjectDataStore& operator=(const V8ObjectDataStore&) = delete;
 
