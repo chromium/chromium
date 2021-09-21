@@ -489,6 +489,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/icons.html",
                                  "chrome/browser/resources/settings/languages_page/languages_browser_proxy.html",
                                  "chrome/browser/resources/settings/languages_page/languages.html",
+                                 "chrome/browser/resources/settings/languages_page/languages_types.html",
                                  "chrome/browser/resources/settings/lifetime_browser_proxy.html",
                                  "chrome/browser/resources/settings/people_page/account_manager_browser_proxy.html",
                                  "chrome/browser/resources/settings/people_page/profile_info_browser_proxy.html",

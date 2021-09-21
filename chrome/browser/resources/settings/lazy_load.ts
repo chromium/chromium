@@ -77,6 +77,7 @@ export {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from 
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.js';
 export {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_page/languages_settings_metrics_proxy.js';
 export {kMenuCloseDelay, SettingsLanguagesSubpageElement} from './languages_page/languages_subpage.js';
+export {LanguageHelper, LanguagesModel} from './languages_page/languages_types.js';
 // </if>
 // <if expr="not chromeos">
 export {ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';

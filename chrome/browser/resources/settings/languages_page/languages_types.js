@@ -21,7 +21,7 @@
  *       ?chrome.languageSettingsPrivate.SpellcheckDictionaryStatus,
  * }}
  */
-let LanguageState;
+export let LanguageState;
 
 /**
  * Settings and state for spellcheck languages.
@@ -34,7 +34,7 @@ let LanguageState;
  *       ?chrome.languageSettingsPrivate.SpellcheckDictionaryStatus,
  * }}
  */
-let SpellCheckLanguageState;
+export let SpellCheckLanguageState;
 
 /**
  * Input method data to expose to consumers (Chrome OS only).
@@ -47,7 +47,7 @@ let SpellCheckLanguageState;
  *   currentId: string,
  * }}
  */
-let InputMethodsModel;
+export let InputMethodsModel;
 
 /**
  * Languages data to expose to consumers.
@@ -77,13 +77,13 @@ let InputMethodsModel;
  *   spellCheckOffLanguages: !Array<!SpellCheckLanguageState>,
  * }}
  */
-let LanguagesModel;
+export let LanguagesModel;
 
 /**
  * Helper methods for reading and writing language settings.
  * @interface
  */
-class LanguageHelper {
+export class LanguageHelper {
   /** @return {!Promise} */
   whenReady() {}
 

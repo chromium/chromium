@@ -234,7 +234,7 @@ polymer_modulizer("add_input_methods_dialog") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/languages_page/languages_types.html|LanguageHelper,LanguagesModel" ]
 }
 
 polymer_modulizer("add_spellcheck_languages_dialog") {
@@ -249,7 +249,7 @@ polymer_modulizer("change_device_language_dialog") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/languages_page/languages_types.html|LanguageHelper,LanguagesModel" ]
 }
 
 polymer_modulizer("cr_checkbox_with_policy") {
@@ -264,7 +264,7 @@ polymer_modulizer("os_add_languages_dialog") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/languages_page/languages_types.html|LanguageHelper,LanguagesModel" ]
 }
 
 polymer_modulizer("os_edit_dictionary_page") {
@@ -282,7 +282,7 @@ polymer_modulizer("os_languages_page_v2") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/languages_page/languages_types.html|LanguageHelper,LanguagesModel,LanguageState" ]
 }
 
 polymer_modulizer("os_languages_section") {
@@ -291,7 +291,7 @@ polymer_modulizer("os_languages_section") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/languages_page/languages_types.html|LanguageHelper,LanguagesModel" ]
 }
 
 polymer_modulizer("input_method_options_page") {
@@ -300,7 +300,7 @@ polymer_modulizer("input_method_options_page") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/languages_page/languages_types.html|LanguageHelper" ]
 }
 
 polymer_modulizer("input_page") {
@@ -309,7 +309,10 @@ polymer_modulizer("input_page") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/controls/settings_toggle_button.html|SettingsToggleButtonElement" ]
+  auto_imports = os_settings_auto_imports + [
+                   "chrome/browser/resources/settings/controls/settings_toggle_button.html|SettingsToggleButtonElement",
+                   "chrome/browser/resources/settings/languages_page/languages_types.html|LanguageHelper,LanguagesModel,LanguageState,SpellCheckLanguageState",
+                 ]
 }
 
 polymer_modulizer("shared_style") {

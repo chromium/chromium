@@ -46,6 +46,7 @@ import {routes} from '../route.js';
 import {Route, Router} from '../router.js';
 
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
+import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
 /**
  * @constructor

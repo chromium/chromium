@@ -189,6 +189,7 @@ preprocess_if_expr("preprocess") {
       "languages_page/languages.js",
       "languages_page/languages_browser_proxy.js",
       "languages_page/languages_settings_metrics_proxy.js",
+      "languages_page/languages_types.js",
       "people_page/import_data_browser_proxy.js",
       "people_page/manage_profile_browser_proxy.js",
     ]
@@ -484,6 +485,7 @@ js_library("lazy_load") {
       "languages_page:languages_page",
       "languages_page:languages_settings_metrics_proxy",
       "languages_page:languages_subpage",
+      "languages_page:languages_types",
     ]
   }
   extra_deps = [ ":build_ts" ]
@@ -839,6 +841,7 @@ ts_library("build_ts") {
       "languages_page/languages_page.js",
       "languages_page/languages_settings_metrics_proxy.js",
       "languages_page/languages_subpage.js",
+      "languages_page/languages_types.js",
       "people_page/import_data_browser_proxy.js",
       "people_page/import_data_dialog.js",
       "people_page/manage_profile_browser_proxy.js",

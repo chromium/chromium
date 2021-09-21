@@ -21,6 +21,7 @@ import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js'
 import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
+import {InputMethodsModel, LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
 
 const MoveType = chrome.languageSettingsPrivate.MoveType;

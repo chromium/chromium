@@ -40,6 +40,7 @@ import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
+import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
 
 /**
  * @type {number} Millisecond delay that can be used when closing an action
