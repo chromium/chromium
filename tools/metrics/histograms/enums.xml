@@ -63786,6 +63786,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="DisplayPort Alt Mode Peripheral"/>
   <int value="9" label="USB Hub"/>
   <int value="10" label="USB Peripheral"/>
+  <int value="11" label="PD Power Source"/>
+  <int value="12" label="PD Sourcing Device"/>
+  <int value="13" label="Non-PD Power Source"/>
+  <int value="14" label="PD Sink"/>
+  <int value="15" label="PD Sinking Host"/>
+  <int value="16" label="Non-PD Sink"/>
 </enum>
 
 <enum name="PassiveForcedListenerResultType">
