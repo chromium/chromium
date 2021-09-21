@@ -88,7 +88,7 @@ DWORD __stdcall ThreadFunc(void* params) {
   ThreadParams* thread_params = static_cast<ThreadParams*>(params);
   PlatformThread::Delegate* delegate = thread_params->delegate;
   if (!thread_params->joinable)
-    base::ThreadRestrictions::SetSingletonAllowed(false);
+    base::DisallowSingleton();
 
   if (thread_params->priority != ThreadPriority::NORMAL)
     PlatformThread::SetCurrentThreadPriority(thread_params->priority);

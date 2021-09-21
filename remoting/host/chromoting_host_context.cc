@@ -22,9 +22,9 @@ namespace remoting {
 namespace {
 
 void DisallowBlockingOperations() {
-  base::ThreadRestrictions::SetIOAllowed(false);
+  base::DisallowBlocking();
   // TODO(crbug.com/793486): Re-enable after the underlying issue is fixed.
-  // base::ThreadRestrictions::DisallowBaseSyncPrimitives();
+  // base::DisallowBaseSyncPrimitives();
 }
 
 }  // namespace

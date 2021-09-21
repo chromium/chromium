@@ -77,15 +77,6 @@ struct GroupTypes {
   test::GroupType background_type;
 };
 
-#if DCHECK_IS_ON()
-// Returns true if I/O calls are allowed on the current thread.
-bool GetIOAllowed() {
-  const bool previous_value = ThreadRestrictions::SetIOAllowed(true);
-  ThreadRestrictions::SetIOAllowed(previous_value);
-  return previous_value;
-}
-#endif
-
 // Returns true if a task with |traits| could run at background thread priority
 // on this platform. Even if this returns true, it is possible that the task
 // won't run at background thread priority if a native thread group is used.
@@ -129,11 +120,10 @@ void VerifyTaskEnvironment(const TaskTraits& traits, GroupTypes group_types) {
                                               : ThreadPriority::NORMAL,
             PlatformThread::GetCurrentThreadPriority());
 
-#if DCHECK_IS_ON()
-  // The #if above is required because GetIOAllowed() always returns true when
-  // !DCHECK_IS_ON(), even when |traits| don't allow file I/O.
-  EXPECT_EQ(traits.may_block(), GetIOAllowed());
-#endif
+  if (traits.may_block())
+    internal::AssertBlockingAllowed();
+  else
+    internal::AssertBlockingDisallowedForTesting();
 
 #if HAS_NATIVE_THREAD_POOL()
   // Native thread groups do not provide the ability to name threads.

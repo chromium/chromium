@@ -22,6 +22,7 @@
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
 #if !defined(OS_APPLE) && !defined(OS_FUCHSIA) && !defined(OS_NACL)
@@ -69,7 +70,7 @@ void* ThreadFunc(void* params) {
 
     delegate = thread_params->delegate;
     if (!thread_params->joinable)
-      base::ThreadRestrictions::SetSingletonAllowed(false);
+      base::DisallowSingleton();
 
 #if !defined(OS_NACL)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

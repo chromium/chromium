@@ -64,7 +64,9 @@ TEST_F(ThreadRestrictionsTest, ScopedAllowBlockingForTesting) {
   EXPECT_DCHECK_DEATH({ internal::AssertBlockingAllowed(); });
 }
 
-TEST_F(ThreadRestrictionsTest, BaseSyncPrimitivesAllowedByDefault) {}
+TEST_F(ThreadRestrictionsTest, BaseSyncPrimitivesAllowedByDefault) {
+  internal::AssertBaseSyncPrimitivesAllowed();
+}
 
 TEST_F(ThreadRestrictionsTest, DisallowBaseSyncPrimitives) {
   DisallowBaseSyncPrimitives();
@@ -139,6 +141,31 @@ TEST_F(ThreadRestrictionsTest,
       scoped_allow_base_sync_primitives_for_testing;
 }
 
+TEST_F(ThreadRestrictionsTest, ScopedDisallowBaseSyncPrimitives) {
+  {
+    ScopedDisallowBaseSyncPrimitives disallow_sync_primitives;
+    EXPECT_DCHECK_DEATH({ internal::AssertBaseSyncPrimitivesAllowed(); });
+  }
+  internal::AssertBaseSyncPrimitivesAllowed();
+}
+
+TEST_F(ThreadRestrictionsTest, SingletonAllowedByDefault) {
+  internal::AssertSingletonAllowed();
+}
+
+TEST_F(ThreadRestrictionsTest, DisallowSingleton) {
+  DisallowSingleton();
+  EXPECT_DCHECK_DEATH({ internal::AssertSingletonAllowed(); });
+}
+
+TEST_F(ThreadRestrictionsTest, ScopedDisallowSingleton) {
+  {
+    ScopedDisallowSingleton disallow_sync_primitives;
+    EXPECT_DCHECK_DEATH({ internal::AssertSingletonAllowed(); });
+  }
+  internal::AssertSingletonAllowed();
+}
+
 TEST_F(ThreadRestrictionsTest, LongCPUWorkAllowedByDefault) {
   AssertLongCPUWorkAllowed();
 }
@@ -171,29 +198,25 @@ TEST_F(ThreadRestrictionsTest, BlockingCheckEmitsStack) {
                    : "");
 }
 
-namespace {
-
-class CustomDisallow {
+class TestCustomDisallow {
  public:
-  NOINLINE CustomDisallow() { ThreadRestrictions::SetIOAllowed(false); }
-  NOINLINE ~CustomDisallow() { ThreadRestrictions::SetIOAllowed(true); }
+  NOINLINE TestCustomDisallow() { DisallowBlocking(); }
+  NOINLINE ~TestCustomDisallow() { PermanentThreadAllowance::AllowBlocking(); }
 };
 
-}  // namespace
-
 TEST_F(ThreadRestrictionsTest, NestedAllowRestoresPreviousStack) {
-  CustomDisallow custom_disallow;
+  TestCustomDisallow custom_disallow;
   {
     ScopedAllowBlocking scoped_allow;
     internal::AssertBlockingAllowed();
   }
-  // CustomDisallow should be back on the blame list (as opposed to
+  // TestCustomDisallow should be back on the blame list (as opposed to
   // ~ScopedAllowBlocking which is the last one to have changed the state but is
   // no longer relevant).
   EXPECT_DEATH({ internal::AssertBlockingAllowed(); },
                EXPENSIVE_DCHECKS_ARE_ON() &&
                        debug::StackTrace::WillSymbolizeToStreamForTesting()
-                   ? "CustomDisallow"
+                   ? "TestCustomDisallow"
                    : "");
   // And the stack should mention this test body as source.
   EXPECT_DEATH({ internal::AssertBlockingAllowed(); },

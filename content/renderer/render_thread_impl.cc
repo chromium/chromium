@@ -199,7 +199,6 @@ namespace content {
 namespace {
 
 using ::base::PassKey;
-using ::base::ThreadRestrictions;
 using ::blink::WebDocument;
 using ::blink::WebFrame;
 using ::blink::WebNetworkStateNotifier;
@@ -882,10 +881,8 @@ void RenderThreadImpl::InitializeCompositorThread() {
   blink_platform_impl_->CreateAndSetCompositorThread();
   compositor_task_runner_ = blink_platform_impl_->CompositorThreadTaskRunner();
 
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&ThreadRestrictions::SetIOAllowed),
-                     false));
+  compositor_task_runner_->PostTask(FROM_HERE,
+                                    base::BindOnce(&base::DisallowBlocking));
   GetContentClient()->renderer()->PostCompositorThreadCreated(
       compositor_task_runner_.get());
 }

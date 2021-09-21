@@ -820,7 +820,7 @@ bool WatchDogThread::Started() const {
 
 void WatchDogThread::Init() {
   // This thread shouldn't be allowed to perform any blocking disk I/O.
-  base::ThreadRestrictions::SetIOAllowed(false);
+  base::DisallowBlocking();
 
   base::AutoLock lock(g_watchdog_lock.Get());
   CHECK(!g_watchdog_thread);

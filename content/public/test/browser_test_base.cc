@@ -705,7 +705,7 @@ void BrowserTestBase::SetUp() {
 
   // Like in BrowserMainLoop::ShutdownThreadsAndCleanUp(), allow IO during main
   // thread tear down.
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::PermanentThreadAllowance::AllowBlocking();
 
   base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
   BrowserTaskExecutor::Shutdown();

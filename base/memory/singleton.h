@@ -231,7 +231,7 @@ class Singleton {
   static Type* get() {
 #if DCHECK_IS_ON()
     if (!Traits::kAllowedToAccessOnNonjoinableThread)
-      ThreadRestrictions::AssertSingletonAllowed();
+      internal::AssertSingletonAllowed();
 #endif
 
     return subtle::GetOrCreateLazyPointer(
@@ -244,7 +244,7 @@ class Singleton {
   static Type* GetIfExists() {
 #if DCHECK_IS_ON()
     if (!Traits::kAllowedToAccessOnNonjoinableThread)
-      ThreadRestrictions::AssertSingletonAllowed();
+      internal::AssertSingletonAllowed();
 #endif
 
     if (!subtle::NoBarrier_Load(&instance_))

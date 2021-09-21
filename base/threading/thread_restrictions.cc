@@ -110,6 +110,11 @@ void AssertBlockingAllowed() {
       << "g_blocking_disallowed " << *GetBlockingDisallowedTls();
 }
 
+void AssertBlockingDisallowedForTesting() {
+  DCHECK(*GetBlockingDisallowedTls())
+      << "g_blocking_disallowed " << *GetBlockingDisallowedTls();
+}
+
 }  // namespace internal
 
 void DisallowBlocking() {
@@ -131,6 +136,19 @@ ScopedDisallowBlocking::~ScopedDisallowBlocking() {
 void DisallowBaseSyncPrimitives() {
   GetBaseSyncPrimitivesDisallowedTls().Set(
       std::make_unique<BooleanWithStack>(true));
+}
+
+ScopedDisallowBaseSyncPrimitives::ScopedDisallowBaseSyncPrimitives()
+    : was_disallowed_(GetBaseSyncPrimitivesDisallowedTls().Set(
+          std::make_unique<BooleanWithStack>(true))) {}
+
+ScopedDisallowBaseSyncPrimitives::~ScopedDisallowBaseSyncPrimitives() {
+  DCHECK(*GetBaseSyncPrimitivesDisallowedTls())
+      << "~ScopedDisallowBaseSyncPrimitives() running while surprisingly "
+         "already no longer disallowed.\n"
+      << "g_base_sync_primitives_disallowed "
+      << *GetBaseSyncPrimitivesDisallowedTls();
+  GetBaseSyncPrimitivesDisallowedTls().Set(std::move(was_disallowed_));
 }
 
 ScopedAllowBaseSyncPrimitives::ScopedAllowBaseSyncPrimitives()
@@ -201,7 +219,35 @@ void ResetThreadRestrictionsForTesting() {
       std::make_unique<BooleanWithStack>(false));
 }
 
+void AssertSingletonAllowed() {
+  DCHECK(!*GetSingletonDisallowedTls())
+      << "LazyInstance/Singleton is not allowed to be used on this thread. "
+         "Most likely it's because this thread is not joinable (or the current "
+         "task is running with TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN "
+         "semantics), so AtExitManager may have deleted the object on "
+         "shutdown, leading to a potential shutdown crash. If you need to use "
+         "the object from this context, it'll have to be updated to use Leaky "
+         "traits.\n"
+      << "g_singleton_disallowed " << *GetSingletonDisallowedTls();
+}
+
 }  // namespace internal
+
+void DisallowSingleton() {
+  GetSingletonDisallowedTls().Set(std::make_unique<BooleanWithStack>(true));
+}
+
+ScopedDisallowSingleton::ScopedDisallowSingleton()
+    : was_disallowed_(GetSingletonDisallowedTls().Set(
+          std::make_unique<BooleanWithStack>(true))) {}
+
+ScopedDisallowSingleton::~ScopedDisallowSingleton() {
+  DCHECK(*GetSingletonDisallowedTls())
+      << "~ScopedDisallowSingleton() running while surprisingly already no "
+         "longer disallowed.\n"
+      << "g_singleton_disallowed " << *GetSingletonDisallowedTls();
+  GetSingletonDisallowedTls().Set(std::move(was_disallowed_));
+}
 
 void AssertLongCPUWorkAllowed() {
   DCHECK(!*GetCPUIntensiveWorkDisallowedTls())
@@ -220,41 +266,19 @@ void DisallowUnresponsiveTasks() {
 }
 
 // static
-bool ThreadRestrictions::SetIOAllowed(bool allowed) {
-  const bool previously_allowed = !*GetBlockingDisallowedTls().Set(
-      std::make_unique<BooleanWithStack>(!allowed));
-  return previously_allowed;
+void PermanentThreadAllowance::AllowBlocking() {
+  *GetBlockingDisallowedTls().Set(std::make_unique<BooleanWithStack>(false));
 }
 
 // static
-bool ThreadRestrictions::SetSingletonAllowed(bool allowed) {
-  const bool previously_allowed = !*GetSingletonDisallowedTls().Set(
-      std::make_unique<BooleanWithStack>(!allowed));
-  return previously_allowed;
+void PermanentThreadAllowance::AllowBaseSyncPrimitives() {
+  *GetBaseSyncPrimitivesDisallowedTls().Set(
+      std::make_unique<BooleanWithStack>(false));
 }
 
 // static
-void ThreadRestrictions::AssertSingletonAllowed() {
-  DCHECK(!*GetSingletonDisallowedTls())
-      << "LazyInstance/Singleton is not allowed to be used on this thread. "
-         "Most likely it's because this thread is not joinable (or the current "
-         "task is running with TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN "
-         "semantics), so AtExitManager may have deleted the object on "
-         "shutdown, leading to a potential shutdown crash. If you need to use "
-         "the object from this context, it'll have to be updated to use Leaky "
-         "traits.\n"
-      << "g_singleton_disallowed " << *GetSingletonDisallowedTls();
-}
-
-// static
-void ThreadRestrictions::DisallowWaiting() {
-  DisallowBaseSyncPrimitives();
-}
-
-bool ThreadRestrictions::SetWaitAllowed(bool allowed) {
-  const bool previously_allowed = !*GetBaseSyncPrimitivesDisallowedTls().Set(
-      std::make_unique<BooleanWithStack>(!allowed));
-  return previously_allowed;
+void PermanentSingletonAllowance::AllowSingleton() {
+  *GetSingletonDisallowedTls().Set(std::make_unique<BooleanWithStack>(false));
 }
 
 }  // namespace base

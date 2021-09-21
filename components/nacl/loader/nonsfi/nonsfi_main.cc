@@ -20,9 +20,15 @@
 
 namespace nacl {
 namespace nonsfi {
+
 namespace {
 
 typedef void (*EntryPointType)(uintptr_t*);
+
+// Default stack size of the plugin main thread. We heuristically chose 16M.
+const size_t kStackSize = (16 << 20);
+
+}  // namespace
 
 class PluginMainDelegate : public base::PlatformThread::Delegate {
  public:
@@ -37,7 +43,7 @@ class PluginMainDelegate : public base::PlatformThread::Delegate {
 
     // This will only happen once per process, so we give the permission to
     // create Singletons.
-    base::ThreadRestrictions::SetSingletonAllowed(true);
+    base::PermanentSingletonAllowance::AllowSingleton();
     uintptr_t info[] = {
       0,  // Do not use fini.
       0,  // envc.
@@ -55,11 +61,6 @@ class PluginMainDelegate : public base::PlatformThread::Delegate {
  private:
   EntryPointType entry_point_;
 };
-
-// Default stack size of the plugin main thread. We heuristically chose 16M.
-const size_t kStackSize = (16 << 20);
-
-}  // namespace
 
 void MainStart(int nexe_file) {
   EntryPointType entry_point =

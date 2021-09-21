@@ -739,10 +739,9 @@ _BANNED_CPP_FUNCTIONS = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     (
-      (r'/base::ThreadRestrictions::(ScopedAllowIO|AssertIOAllowed|'
-       r'DisallowWaiting|AssertWaitAllowed|SetWaitAllowed|ScopedAllowWait)'),
+      ('base::ThreadRestrictions::ScopedAllowIO'),
       (
-        'Use the new API in base/threading/thread_restrictions.h.',
+        'ScopedAllowIO is deprecated, use ScopedAllowBlocking instead.',
       ),
       False,
       (),

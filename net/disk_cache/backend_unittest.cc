@@ -58,6 +58,7 @@
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using disk_cache::EntryResult;
 using net::test::IsError;
@@ -805,13 +806,15 @@ TEST_F(DiskCacheBackendTest, CreateBackend_MissingFile) {
   base::DeleteFile(filename);
   net::TestCompletionCallback cb;
 
-  bool prev = base::ThreadRestrictions::SetIOAllowed(false);
+  // Blocking shouldn't be needed to create the cache.
+  absl::optional<base::ScopedDisallowBlocking> disallow_blocking(
+      absl::in_place);
   std::unique_ptr<disk_cache::BackendImpl> cache(
       std::make_unique<disk_cache::BackendImpl>(cache_path_, nullptr, nullptr,
                                                 net::DISK_CACHE, nullptr));
   int rv = cache->Init(cb.callback());
   EXPECT_THAT(cb.GetResult(rv), IsError(net::ERR_FAILED));
-  base::ThreadRestrictions::SetIOAllowed(prev);
+  disallow_blocking.reset();
 
   cache.reset();
   DisableIntegrityCheck();
@@ -2598,15 +2601,16 @@ TEST_F(DiskCacheBackendTest, DeleteOld) {
   SetNewEviction();
 
   net::TestCompletionCallback cb;
-  bool prev = base::ThreadRestrictions::SetIOAllowed(false);
-  base::FilePath path(cache_path_);
-  int rv = disk_cache::CreateCacheBackend(
-      net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE, path, 0,
-      disk_cache::ResetHandling::kResetOnError, nullptr, &cache_,
-      cb.callback());
-  path.clear();  // Make sure path was captured by the previous call.
-  ASSERT_THAT(cb.GetResult(rv), IsOk());
-  base::ThreadRestrictions::SetIOAllowed(prev);
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    base::FilePath path(cache_path_);
+    int rv = disk_cache::CreateCacheBackend(
+        net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE, path, 0,
+        disk_cache::ResetHandling::kResetOnError, nullptr, &cache_,
+        cb.callback());
+    path.clear();  // Make sure path was captured by the previous call.
+    ASSERT_THAT(cb.GetResult(rv), IsOk());
+  }
   cache_.reset();
   EXPECT_TRUE(CheckCacheIntegrity(cache_path_, new_eviction_, /*max_size = */ 0,
                                   mask_));

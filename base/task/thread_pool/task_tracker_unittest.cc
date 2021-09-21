@@ -146,19 +146,6 @@ class ThreadPostingAndRunningTask : public SimpleThread {
   const bool expect_post_succeeds_;
 };
 
-class ScopedSetSingletonAllowed {
- public:
-  explicit ScopedSetSingletonAllowed(bool singleton_allowed)
-      : previous_value_(
-            ThreadRestrictions::SetSingletonAllowed(singleton_allowed)) {}
-  ~ScopedSetSingletonAllowed() {
-    ThreadRestrictions::SetSingletonAllowed(previous_value_);
-  }
-
- private:
-  const bool previous_value_;
-};
-
 class ThreadPoolTaskTrackerTest
     : public testing::TestWithParam<TaskShutdownBehavior> {
  public:
@@ -490,15 +477,10 @@ TEST_P(ThreadPoolTaskTrackerTest, SingletonAllowed) {
   const bool can_use_singletons =
       (GetParam() != TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN);
 
-  Task task(FROM_HERE, BindOnce(&ThreadRestrictions::AssertSingletonAllowed),
+  Task task(FROM_HERE, BindOnce(&internal::AssertSingletonAllowed),
             TimeTicks::Now(), TimeDelta());
   auto sequence = WillPostTaskAndQueueTaskSource(std::move(task), {GetParam()});
   EXPECT_TRUE(sequence);
-
-  // Set the singleton allowed bit to the opposite of what it is expected to be
-  // when |tracker| runs |task| to verify that |tracker| actually sets the
-  // correct value.
-  ScopedSetSingletonAllowed scoped_singleton_allowed(!can_use_singletons);
 
   // Running the task should fail iff the task isn't allowed to use singletons.
   if (can_use_singletons) {
@@ -510,9 +492,7 @@ TEST_P(ThreadPoolTaskTrackerTest, SingletonAllowed) {
 
 // Verify that AssertIOAllowed() succeeds only for a MayBlock() task.
 TEST_P(ThreadPoolTaskTrackerTest, IOAllowed) {
-  // Unset the IO allowed bit. Expect TaskTracker to set it before running a
-  // task with the MayBlock() trait.
-  ThreadRestrictions::SetIOAllowed(false);
+  // Allowed with MayBlock().
   Task task_with_may_block(FROM_HERE, BindOnce([]() {
                              // Shouldn't fail.
                              ScopedBlockingCall scope_blocking_call(
@@ -525,9 +505,7 @@ TEST_P(ThreadPoolTaskTrackerTest, IOAllowed) {
   EXPECT_TRUE(sequence_with_may_block);
   RunAndPopNextTask(std::move(sequence_with_may_block));
 
-  // Set the IO allowed bit. Expect TaskTracker to unset it before running a
-  // task without the MayBlock() trait.
-  ThreadRestrictions::SetIOAllowed(true);
+  // Disallowed in the absence of MayBlock().
   Task task_without_may_block(FROM_HERE, BindOnce([]() {
                                 EXPECT_DCHECK_DEATH({
                                   ScopedBlockingCall scope_blocking_call(
@@ -1199,9 +1177,9 @@ class WaitAllowedTestThread : public SimpleThread {
     test::QueueAndRunTaskSource(task_tracker.get(),
                                 std::move(sequence_without_sync_primitives));
 
-    // Disallow waiting. Expect TaskTracker to allow it before running a task
-    // with the WithBaseSyncPrimitives() trait.
-    ThreadRestrictions::DisallowWaiting();
+    // Expect TaskTracker to keep waiting allowed when running a task with the
+    // WithBaseSyncPrimitives() trait.
+    internal::AssertBaseSyncPrimitivesAllowed();
     Task task_with_sync_primitives(
         FROM_HERE, BindOnce([]() {
           // Shouldn't fail.

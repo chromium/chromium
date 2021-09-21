@@ -43,7 +43,7 @@ std::unique_ptr<VideoCaptureDevice> FileVideoCaptureDeviceFactory::CreateDevice(
 void FileVideoCaptureDeviceFactory::GetDevicesInfo(
     GetDevicesInfoCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlocking allow_blocking;
 
   std::vector<VideoCaptureDeviceInfo> devices_info;
 
