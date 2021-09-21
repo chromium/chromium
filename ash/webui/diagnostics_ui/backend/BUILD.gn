@@ -6,6 +6,8 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 static_library("backend") {
   sources = [
+    "async_log.cc",
+    "async_log.h",
     "cpu_usage_data.cc",
     "cpu_usage_data.h",
     "cros_healthd_helpers.cc",
@@ -70,6 +72,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "async_log_unittest.cc",
     "cpu_usage_data_unittest.cc",
     "input_data_provider_unittest.cc",
     "log_test_helpers_unittest.cc",
