@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -31,6 +32,7 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "third_party/khronos/GLES2/gl2.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -49,6 +51,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -509,6 +512,19 @@ void Surface::OnSubSurfaceCommit() {
     delegate_->OnSurfaceCommit();
 }
 
+void Surface::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
+  TRACE_EVENT1("exo", "Surface::SetRoundedCorner", "corners", radii.ToString());
+  if (radii != pending_state_.radii) {
+    has_pending_contents_ = true;
+    pending_state_.radii = radii;
+  }
+}
+
+void Surface::SetOverlayPriorityHint(OverlayPriority hint) {
+  TRACE_EVENT0("exo", "Surface::SetOverlayPriorityHint");
+  pending_state_.overlay_priority_hint = hint;
+}
+
 void Surface::SetViewport(const gfx::Size& viewport) {
   TRACE_EVENT1("exo", "Surface::SetViewport", "viewport", viewport.ToString());
 
@@ -738,6 +754,8 @@ void Surface::Commit() {
   has_cached_contents_ |= has_pending_contents_;
   has_pending_contents_ = false;
   cached_state_.buffer = std::move(pending_state_.buffer);
+  cached_state_.radii = std::move(pending_state_.radii);
+  cached_state_.overlay_priority_hint = pending_state_.overlay_priority_hint;
   cached_state_.acquire_fence = std::move(pending_state_.acquire_fence);
   cached_state_.per_commit_explicit_release_callback_ =
       std::move(pending_state_.per_commit_explicit_release_callback_);
@@ -787,6 +805,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
         cached_state_.basic_state.buffer_transform !=
             state_.basic_state.buffer_transform ||
         cached_state_.basic_state.viewport != state_.basic_state.viewport ||
+        cached_state_.radii != state_.radii ||
         cached_state_.basic_state.crop != state_.basic_state.crop ||
         cached_state_.basic_state.only_visible_on_secure_output !=
             state_.basic_state.only_visible_on_secure_output ||
@@ -861,6 +880,8 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
         needs_update_buffer_transform = true;
 
       state_.buffer = std::move(cached_state_.buffer);
+      state_.radii = std::move(cached_state_.radii);
+      state_.overlay_priority_hint = cached_state_.overlay_priority_hint;
       state_.acquire_fence = std::move(cached_state_.acquire_fence);
       state_.per_commit_explicit_release_callback_ =
           std::move(cached_state_.per_commit_explicit_release_callback_);
@@ -1288,12 +1309,32 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
 
-  quad_state->SetAll(
-      quad_to_target_transform, quad_rect /*quad_layer_rect=*/,
-      quad_rect /*visible_quad_layer_rect=*/,
-      gfx::MaskFilterInfo() /*mask_filter_info=*/, absl::nullopt /*clip_rect=*/,
-      are_contents_opaque, state_.basic_state.alpha /*opacity=*/,
-      SkBlendMode::kSrcOver /*blend_mode=*/, 0 /*sorting_context_id=*/);
+  gfx::MaskFilterInfo msk;
+
+  if (!state_.radii.IsEmpty()) {
+    const auto rect =
+        gfx::ScaleRect(gfx::RectF(scale.x(), scale.y()), device_scale_factor);
+    msk = gfx::MaskFilterInfo(rect, state_.radii);
+  }
+
+  quad_state->SetAll(/*quad_layer_rect=*/quad_to_target_transform, quad_rect,
+                     /*visible_quad_layer_rect=*/quad_rect,
+                     /*mask_filter_info=*/msk, /*clip_rect=*/absl::nullopt,
+                     /*contents_opaque=*/are_contents_opaque,
+                     /*opacity=*/state_.basic_state.alpha,
+                     /*blend_mode=*/SkBlendMode::kSrcOver,
+                     /*sorting_context_id=*/0);
+  switch (state_.overlay_priority_hint) {
+    case OverlayPriority::LOW:
+      quad_state->overlay_priority_hint = viz::OverlayPriority::kLow;
+      break;
+    case OverlayPriority::REQUIRED:
+      quad_state->overlay_priority_hint = viz::OverlayPriority::kRequired;
+      break;
+    case OverlayPriority::REGULAR:
+      quad_state->overlay_priority_hint = viz::OverlayPriority::kRegular;
+      break;
+  }
 
   if (current_resource_.id) {
     gfx::RectF uv_crop(gfx::SizeF(1, 1));
@@ -1368,6 +1409,12 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
         damage_rect = gfx::Rect();
       }
     }
+  } else if (state_.buffer.buffer()) {
+    SkColor color = state_.buffer.buffer()->GetColor().toSkColor();
+    viz::SolidColorDrawQuad* solid_quad =
+        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    solid_quad->SetNew(quad_state, quad_rect, quad_rect, color,
+                       false /* force_anti_aliasing_off */);
   } else {
     viz::SolidColorDrawQuad* solid_quad =
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();

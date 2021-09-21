@@ -12,6 +12,8 @@ import("//ui/base/ui_features.gni")
 
 source_set("wayland") {
   sources = [
+    "overlay_prioritizer.cc",
+    "overlay_prioritizer.h",
     "scoped_wl.cc",
     "scoped_wl.h",
     "serial_tracker.cc",
@@ -20,6 +22,8 @@ source_set("wayland") {
     "server.h",
     "server_util.cc",
     "server_util.h",
+    "surface_augmenter.cc",
+    "surface_augmenter.h",
     "wayland_display_observer.cc",
     "wayland_display_observer.h",
     "wayland_display_output.cc",
@@ -69,6 +73,8 @@ source_set("wayland") {
     "//components/exo",
     "//components/exo:buildflags",
     "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
+    "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//device/gamepad",
     "//services/viz/privileged/mojom/compositing",
     "//services/viz/public/mojom",
@@ -233,6 +239,8 @@ source_set("unit_tests") {
     "//components/exo:test_support",
     "//components/exo/wayland/fuzzer:unit_tests",
     "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
+    "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
@@ -287,6 +295,8 @@ source_set("client_support") {
 
   public_deps = [
     "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
+    "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//skia",
     "//third_party/wayland:wayland_client",
     "//third_party/wayland-protocols:alpha_compositing_protocol",

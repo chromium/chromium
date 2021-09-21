@@ -105,21 +105,6 @@
       <arg name="bottom_left" type="fixed" summary="bottom left corner"/>
     </request>
 
-    <enum name="overlay_priority">
-    <description summary="hints for overlay prioritization">
-    </description>
-      <entry name="none" value="0" summary="overlay promotion is not necessary for this surface" />
-      <entry name="regular" value="1" summary="surface could be considered as a candidate for promotion" />
-      <entry name="preferred_low_latency_canvas" value="2" summary="the surface is a low latency surface that requires promotion to overlay for correctness" />
-      <entry name="required_hardware_protection" value="3" summary="the surface contains protected content and requires to be promoted to overlay" />
-    </enum>
-
-    <request name="set_overlay_priority">
-      <description summary="set the surface overlay priority">
-      </description>
-      <arg name="priority" type="uint" />
-    </request>
-
   </interface>
 
 </protocol>

@@ -24,6 +24,7 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/transform.h"
@@ -61,6 +62,9 @@ class PropertyHelper;
 
 // Counter-clockwise rotations.
 enum class Transform { NORMAL, ROTATE_90, ROTATE_180, ROTATE_270 };
+
+// Priority for overlay promotion.
+enum class OverlayPriority { LOW, REGULAR, REQUIRED };
 
 // A property key to store the surface Id set by the client.
 extern const ui::ClassProperty<std::string*>* const kClientSurfaceIdKey;
@@ -159,6 +163,9 @@ class Surface final : public ui::PropertyHandler {
   void PlaceSubSurfaceAbove(Surface* sub_surface, Surface* reference);
   void PlaceSubSurfaceBelow(Surface* sub_surface, Surface* sibling);
   void OnSubSurfaceCommit();
+
+  void SetRoundedCorners(const gfx::RoundedCornersF& radii);
+  void SetOverlayPriorityHint(OverlayPriority hint);
 
   // This sets the surface viewport for scaling.
   void SetViewport(const gfx::Size& viewport);
@@ -425,6 +432,8 @@ class Surface final : public ui::PropertyHandler {
 
     // The buffer that will become the content of surface.
     BufferAttachment buffer;
+    // The rounded corner for the surface.
+    gfx::RoundedCornersF radii;
     // The damage region to schedule paint for.
     cc::Region damage;
     // These lists contain the callbacks to notify the client when it is a good
@@ -440,6 +449,8 @@ class Surface final : public ui::PropertyHandler {
     // event of the explicit sync protocol.
     Buffer::PerCommitExplicitReleaseCallback
         per_commit_explicit_release_callback_;
+    // The hint for overlay prioritization
+    OverlayPriority overlay_priority_hint = OverlayPriority::REGULAR;
   };
 
   friend class subtle::PropertyHelper;

@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -34,11 +35,9 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
          bool use_zero_copy,
          bool is_overlay_candidate,
          bool y_invert);
-
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
-
-  ~Buffer();
+  virtual ~Buffer();
 
   const gfx::GpuMemoryBuffer* gfx_buffer() const {
     return gpu_memory_buffer_.get();
@@ -59,7 +58,7 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
   // are no longer required.
   using PerCommitExplicitReleaseCallback =
       base::OnceCallback<void(gfx::GpuFenceHandle)>;
-  bool ProduceTransferableResource(
+  virtual bool ProduceTransferableResource(
       FrameSinkResourceManager* resource_manager,
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
@@ -73,10 +72,13 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
   void OnDetach();
 
   // Returns the size of the buffer.
-  gfx::Size GetSize() const;
+  virtual gfx::Size GetSize() const;
 
   // Returns the format of the buffer.
   gfx::BufferFormat GetFormat() const;
+
+  // The default color to be used should transferable resource production fail.
+  virtual SkColor4f GetColor() const;
 
   // Set the amount of time to wait for buffer release.
   void set_wait_for_release_delay_for_testing(
@@ -186,6 +188,28 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
   // Even if we send explicit synchronization release information, Wayland
   // protocol requires us to send regular buffer release events.
   base::flat_map<uint64_t, BufferRelease> buffer_releases_;
+};
+
+class SolidColorBuffer : public Buffer {
+ public:
+  SolidColorBuffer(const SkColor4f& color, const gfx::Size& size);
+  SolidColorBuffer(const SolidColorBuffer& buffer) = delete;
+  SolidColorBuffer& operator=(const SolidColorBuffer&) = delete;
+  ~SolidColorBuffer() override;
+
+  SkColor4f GetColor() const override;
+  gfx::Size GetSize() const override;
+  bool ProduceTransferableResource(
+      FrameSinkResourceManager* resource_manager,
+      std::unique_ptr<gfx::GpuFence> acquire_fence,
+      bool secure_output_only,
+      viz::TransferableResource* resource,
+      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback)
+      override;
+
+ private:
+  SkColor4f color_;
+  gfx::Size size_;
 };
 
 }  // namespace exo

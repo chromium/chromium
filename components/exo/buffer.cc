@@ -547,6 +547,10 @@ gfx::BufferFormat Buffer::GetFormat() const {
   return gpu_memory_buffer_->GetFormat();
 }
 
+SkColor4f Buffer::GetColor() const {
+  return SkColors::kBlack;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Buffer, private:
 
@@ -624,6 +628,29 @@ void Buffer::FenceSignalled(uint64_t commit_id) {
   DCHECK(iter != buffer_releases_.end());
   std::move(iter->second.buffer_release_callback).Run();
   buffer_releases_.erase(iter);
+}
+
+SolidColorBuffer::SolidColorBuffer(const SkColor4f& color,
+                                   const gfx::Size& size)
+    : Buffer(nullptr), color_(color), size_(size) {}
+
+SolidColorBuffer::~SolidColorBuffer() = default;
+
+bool SolidColorBuffer::ProduceTransferableResource(
+    FrameSinkResourceManager* resource_manager,
+    std::unique_ptr<gfx::GpuFence> acquire_fence,
+    bool secure_output_only,
+    viz::TransferableResource* resource,
+    PerCommitExplicitReleaseCallback per_commit_explicit_release_callback) {
+  return false;
+}
+
+SkColor4f SolidColorBuffer::GetColor() const {
+  return color_;
+}
+
+gfx::Size SolidColorBuffer::GetSize() const {
+  return size_;
 }
 
 }  // namespace exo

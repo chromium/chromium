@@ -30,6 +30,8 @@
   }                                                          \
   }
 
+DEFAULT_DELETER(surface_augmenter, surface_augmenter_destroy)
+DEFAULT_DELETER(overlay_prioritizer, overlay_prioritizer_destroy)
 DEFAULT_DELETER(wl_buffer, wl_buffer_destroy)
 DEFAULT_DELETER(wl_callback, wl_callback_destroy)
 DEFAULT_DELETER(wl_compositor, wl_compositor_destroy)

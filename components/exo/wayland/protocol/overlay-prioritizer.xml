@@ -36,7 +36,7 @@
       <description summary="Destroy the overlay prioritizer.">
         Informs the server that the client will not be using this
         protocol object anymore. This does not affect any other objects,
-        augmenter objects included.
+        prioritizer objects included.
       </description>
     </request>
 
@@ -53,8 +53,8 @@
 	a prioritization object associated, the delegate_exists protocol error is
   raised.
       </description>
-      <arg name="id" type="new_id" interface="augmented_surface"
-           summary="the new augmenter interface id"/>
+      <arg name="id" type="new_id" interface="overlay_prioritized_surface"
+           summary="the new prioritized interface id"/>
       <arg name="surface" type="object" interface="wl_surface"
            summary="the surface"/>
     </request>
