@@ -3877,6 +3877,23 @@
             ]
         }
     ],
+    "FontManagerEarlyInit": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210921",
+                    "enable_features": [
+                        "FontManagerEarlyInit"
+                    ]
+                }
+            ]
+        }
+    ],
     "FuzzyAppSearch": [
         {
             "platforms": [
