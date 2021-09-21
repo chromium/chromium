@@ -95,12 +95,14 @@ void RecordUserAction(const std::string& action_id) {
 std::string ArcTermsOfServiceScreen::GetResultString(Result result) {
   switch (result) {
     case Result::ACCEPTED:
+    case Result::ACCEPTED_DEMO_ONLINE:
+    case Result::ACCEPTED_DEMO_OFFLINE:
       return "Accepted";
     case Result::BACK:
       return "Back";
     case Result::NOT_APPLICABLE:
-    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO_ONLINE:
-    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO_OFFLINE:
+    case Result::NOT_APPLICABLE_DEMO_ONLINE:
+    case Result::NOT_APPLICABLE_DEMO_OFFLINE:
     case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_ARC_ENABLED:
       return BaseScreen::kNotApplicable;
   }
@@ -147,11 +149,9 @@ bool ArcTermsOfServiceScreen::MaybeSkip(WizardContext* context) {
         WizardController::default_controller()->demo_setup_controller();
     if (demo_setup_controller) {
       if (demo_setup_controller->IsOfflineEnrollment()) {
-        exit_callback_.Run(
-            Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO_OFFLINE);
+        exit_callback_.Run(Result::NOT_APPLICABLE_DEMO_OFFLINE);
       } else {
-        exit_callback_.Run(
-            Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO_ONLINE);
+        exit_callback_.Run(Result::NOT_APPLICABLE_DEMO_ONLINE);
       }
       return true;
     }
@@ -169,7 +169,16 @@ bool ArcTermsOfServiceScreen::MaybeSkip(WizardContext* context) {
   }
 
   if (!arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {
-    exit_callback_.Run(Result::NOT_APPLICABLE);
+    const auto* const demo_setup_controller =
+        WizardController::default_controller()->demo_setup_controller();
+
+    if (!demo_setup_controller) {
+      exit_callback_.Run(Result::NOT_APPLICABLE);
+    } else if (demo_setup_controller->IsOfflineEnrollment()) {
+      exit_callback_.Run(Result::NOT_APPLICABLE_DEMO_OFFLINE);
+    } else {
+      exit_callback_.Run(Result::NOT_APPLICABLE_DEMO_ONLINE);
+    }
     return true;
   }
   return false;
@@ -211,7 +220,17 @@ void ArcTermsOfServiceScreen::OnAccept(bool review_arc_settings) {
     profile->GetPrefs()->SetBoolean(prefs::kShowArcSettingsOnSessionStart,
                                     true);
   }
-  exit_callback_.Run(Result::ACCEPTED);
+
+  const DemoSetupController* const demo_setup_controller =
+      WizardController::default_controller()->demo_setup_controller();
+
+  if (!demo_setup_controller) {
+    exit_callback_.Run(Result::ACCEPTED);
+  } else if (demo_setup_controller->IsOfflineEnrollment()) {
+    exit_callback_.Run(Result::ACCEPTED_DEMO_OFFLINE);
+  } else {
+    exit_callback_.Run(Result::ACCEPTED_DEMO_ONLINE);
+  }
 }
 
 void ArcTermsOfServiceScreen::OnViewDestroyed(

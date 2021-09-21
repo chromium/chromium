@@ -1211,7 +1211,6 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
 void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
   OnScreenExit(NetworkScreenView::kScreenId,
                NetworkScreen::GetResultString(result));
-
   if (result == NetworkScreen::Result::BACK) {
     if (demo_setup_controller_) {
       ShowDemoModePreferencesScreen();
@@ -1237,43 +1236,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
     }
   }
 
-  if (ShowEulaOrArcTosAfterNetworkScreen())
-    return;
-
-  switch (result) {
-    case NetworkScreen::Result::CONNECTED:
-      InitiateOOBEUpdate();
-      break;
-    case NetworkScreen::Result::OFFLINE_DEMO_SETUP:
-      // TODO(agawronska): Maybe check if device is connected to the network
-      // and attempt system update. It is possible to initiate offline demo
-      // setup on the device that is connected, although it is probably not
-      // common.
-      ShowDemoModeSetupScreen();
-      break;
-    case NetworkScreen::Result::BACK:
-      NOTREACHED();
-  }
-}
-
-bool WizardController::ShowEulaOrArcTosAfterNetworkScreen() {
-  if (!is_branded_build_)
-    return false;
-
-  if (!StartupUtils::IsEulaAccepted()) {
-    ShowEulaScreen();
-    return true;
-  }
-  if (arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {
-    ShowArcTermsOfServiceScreen();
-    return true;
-  }
-
-  // This is reachable in case of a reboot during previous OOBE flow after EULA
-  // was accepted and ARC terms of service handled - for example due to a forced
-  // update (which is the next step, with the exception of offline demo mode
-  // setup).
-  return false;
+  ShowEulaScreen();
 }
 
 void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
@@ -1282,6 +1245,12 @@ void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
   switch (result) {
     case EulaScreen::Result::ACCEPTED_WITH_USAGE_STATS_REPORTING:
       OnEulaAccepted(true /*usage_statistics_reporting_enabled*/);
+      break;
+    case EulaScreen::Result::ALREADY_ACCEPTED:
+      InitiateOOBEUpdate();
+      break;
+    case EulaScreen::Result::ALREADY_ACCEPTED_DEMO_MODE:
+      ShowArcTermsOfServiceScreen();
       break;
     case EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING:
     case EulaScreen::Result::NOT_APPLICABLE:
@@ -1574,26 +1543,23 @@ void WizardController::OnArcTermsOfServiceScreenExit(
 
   switch (result) {
     case ArcTermsOfServiceScreen::Result::ACCEPTED:
-      OnArcTermsOfServiceAccepted();
+    case ArcTermsOfServiceScreen::Result::
+        NOT_APPLICABLE_CONSOLIDATED_CONSENT_ARC_ENABLED:
+      DCHECK(!demo_setup_controller_);
+      ShowRecommendAppsScreen();
       break;
     case ArcTermsOfServiceScreen::Result::NOT_APPLICABLE:
       ShowAssistantOptInFlowScreen();
       break;
-    case ArcTermsOfServiceScreen::Result::
-        NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO_ONLINE:
-      DCHECK(demo_setup_controller_);
-      InitiateOOBEUpdate();
-      break;
-    case ArcTermsOfServiceScreen::Result::
-        NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO_OFFLINE:
+    case ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_OFFLINE:
+    case ArcTermsOfServiceScreen::Result::NOT_APPLICABLE_DEMO_OFFLINE:
       DCHECK(demo_setup_controller_);
       ShowDemoModeSetupScreen();
       break;
-    case ArcTermsOfServiceScreen::Result::
-        NOT_APPLICABLE_CONSOLIDATED_CONSENT_ARC_ENABLED:
-      // Consolidated Consent had already been accepted and ARC is enabled.
-      DCHECK(!demo_setup_controller_);
-      ShowRecommendAppsScreen();
+    case ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_ONLINE:
+    case ArcTermsOfServiceScreen::Result::NOT_APPLICABLE_DEMO_ONLINE:
+      DCHECK(demo_setup_controller_);
+      InitiateOOBEUpdate();
       break;
     case ArcTermsOfServiceScreen::Result::BACK:
       DCHECK(demo_setup_controller_);
@@ -1601,18 +1567,6 @@ void WizardController::OnArcTermsOfServiceScreenExit(
       ShowNetworkScreen();
       break;
   }
-}
-
-void WizardController::OnArcTermsOfServiceAccepted() {
-  if (demo_setup_controller_) {
-    if (demo_setup_controller_->IsOfflineEnrollment()) {
-      ShowDemoModeSetupScreen();
-    } else {
-      InitiateOOBEUpdate();
-    }
-    return;
-  }
-  ShowRecommendAppsScreen();
 }
 
 void WizardController::OnRecommendAppsScreenExit(

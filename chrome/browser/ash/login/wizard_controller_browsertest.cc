@@ -1863,10 +1863,18 @@ class WizardControllerScreenPriorityOOBETest : public OobeBaseTest {
   WizardControllerScreenPriorityOOBETest() = default;
   ~WizardControllerScreenPriorityOOBETest() override = default;
 
+  void SetUpOnMainThread() override {
+    OobeBaseTest::SetUpOnMainThread();
+    autoreset_ = WizardController::ForceBrandedBuildForTesting(true);
+  }
+
   void CheckCurrentScreen(OobeScreenId screen) {
     EXPECT_EQ(WizardController::default_controller()->GetScreen(screen),
               WizardController::default_controller()->current_screen());
   }
+
+ private:
+  std::unique_ptr<base::AutoReset<bool>> autoreset_;
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerScreenPriorityOOBETest,
@@ -2321,7 +2329,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
   mock_arc_terms_of_service_screen_->ExitScreen(
-      ArcTermsOfServiceScreen::Result::ACCEPTED);
+      ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_ONLINE);
 
   base::RunLoop().RunUntilIdle();
 
@@ -2394,7 +2402,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   EXPECT_CALL(*mock_demo_setup_screen_, ShowImpl()).Times(1);
 
   mock_arc_terms_of_service_screen_->ExitScreen(
-      ArcTermsOfServiceScreen::Result::ACCEPTED);
+      ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_OFFLINE);
 
   base::RunLoop().RunUntilIdle();
 
@@ -2450,7 +2458,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoSetupCanceled) {
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
   mock_arc_terms_of_service_screen_->ExitScreen(
-      ArcTermsOfServiceScreen::Result::ACCEPTED);
+      ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_ONLINE);
 
   base::RunLoop().RunUntilIdle();
 
@@ -2617,7 +2625,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
 
   mock_arc_terms_of_service_screen_->ExitScreen(
-      ArcTermsOfServiceScreen::Result::ACCEPTED);
+      ArcTermsOfServiceScreen::Result::ACCEPTED_DEMO_ONLINE);
 
   base::RunLoop().RunUntilIdle();
 

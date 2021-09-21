@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/testapi/oobe_test_api_handler.h"
 
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 
 namespace chromeos {
@@ -25,7 +26,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
   dict->SetBoolean(
       "testapi_shouldSkipEula",
       policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
-          !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+          StartupUtils::IsEulaAccepted() || !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 }
 
 }  // namespace chromeos

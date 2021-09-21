@@ -26,6 +26,10 @@ class EulaScreen : public BaseScreen {
     ACCEPTED_WITH_USAGE_STATS_REPORTING,
     // The user accepted EULA, and disabled usage stats reporting.
     ACCEPTED_WITHOUT_USAGE_STATS_REPORTING,
+    // Eula already accepted, skip screen
+    ALREADY_ACCEPTED,
+    // Eula already accepted, skip screen (demo mode)
+    ALREADY_ACCEPTED_DEMO_MODE,
     // The usage did not accept EULA - they clicked back button instead.
     BACK,
     // Eula screen is skipped.

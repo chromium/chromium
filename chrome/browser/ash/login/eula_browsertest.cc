@@ -119,6 +119,11 @@ class EulaTest : public OobeBaseTest {
   }
 
  protected:
+  void SetUpOnMainThread() override {
+    OobeBaseTest::SetUpOnMainThread();
+    branded_build_ = WizardController::ForceBrandedBuildForTesting(true);
+  }
+
   content::WebContents* FindEulaContents() {
     // Tag the Eula webview in use with a unique name.
     constexpr char kUniqueEulaWebviewName[] = "unique-eula-webview-name";
@@ -196,6 +201,9 @@ class EulaTest : public OobeBaseTest {
   }
 
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
+
+ private:
+  std::unique_ptr<base::AutoReset<bool>> branded_build_;
 };
 
 // When testing the offline fallback mechanism, the requests reaching the
