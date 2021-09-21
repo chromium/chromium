@@ -20,6 +20,10 @@ class WindowsWindow;
 class WindowsWindowManager {
  public:
   WindowsWindowManager();
+
+  WindowsWindowManager(const WindowsWindowManager&) = delete;
+  WindowsWindowManager& operator=(const WindowsWindowManager&) = delete;
+
   ~WindowsWindowManager();
 
   // Register a new window. Returns the window id.
@@ -33,8 +37,6 @@ class WindowsWindowManager {
 
  private:
   base::IDMap<WindowsWindow*> windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowsWindowManager);
 };
 
 }  // namespace ui

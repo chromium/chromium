@@ -16,6 +16,12 @@ class TouchTransformControllerTestApi {
  public:
   explicit TouchTransformControllerTestApi(
       TouchTransformController* controller);
+
+  TouchTransformControllerTestApi(const TouchTransformControllerTestApi&) =
+      delete;
+  TouchTransformControllerTestApi& operator=(
+      const TouchTransformControllerTestApi&) = delete;
+
   ~TouchTransformControllerTestApi();
 
   TouchTransformSetter* touch_transform_setter() {
@@ -24,8 +30,6 @@ class TouchTransformControllerTestApi {
 
  private:
   TouchTransformController* controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTransformControllerTestApi);
 };
 
 }  // namespace test

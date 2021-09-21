@@ -26,6 +26,10 @@ class WaylandShm;
 class WaylandShmBuffer {
  public:
   WaylandShmBuffer(WaylandShm* shm, const gfx::Size& size);
+
+  WaylandShmBuffer(const WaylandShmBuffer&) = delete;
+  WaylandShmBuffer& operator=(const WaylandShmBuffer&) = delete;
+
   ~WaylandShmBuffer();
 
   WaylandShmBuffer(WaylandShmBuffer&& buffer);
@@ -54,8 +58,6 @@ class WaylandShmBuffer {
   int stride_;
   wl::Object<wl_buffer> buffer_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandShmBuffer);
 };
 
 }  // namespace ui

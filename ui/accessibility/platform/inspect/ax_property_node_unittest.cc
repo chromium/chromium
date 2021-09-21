@@ -17,10 +17,11 @@ namespace ui {
 class AXPropertyNodeTest : public testing::Test {
  public:
   AXPropertyNodeTest() = default;
-  ~AXPropertyNodeTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXPropertyNodeTest);
+  AXPropertyNodeTest(const AXPropertyNodeTest&) = delete;
+  AXPropertyNodeTest& operator=(const AXPropertyNodeTest&) = delete;
+
+  ~AXPropertyNodeTest() override = default;
 };
 
 AXPropertyNode Parse(const char* input) {

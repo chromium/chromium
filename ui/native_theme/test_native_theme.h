@@ -13,6 +13,10 @@ namespace ui {
 class TestNativeTheme : public NativeTheme {
  public:
   TestNativeTheme();
+
+  TestNativeTheme(const TestNativeTheme&) = delete;
+  TestNativeTheme& operator=(const TestNativeTheme&) = delete;
+
   ~TestNativeTheme() override;
 
   // NativeTheme:
@@ -55,8 +59,6 @@ class TestNativeTheme : public NativeTheme {
 
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
       color_scheme_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeTheme);
 };
 
 }  // namespace ui

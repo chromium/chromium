@@ -25,6 +25,10 @@ namespace ui {
 class GL_EXPORT ScopedMakeCurrent {
  public:
   ScopedMakeCurrent(gl::GLContext* context, gl::GLSurface* surface);
+
+  ScopedMakeCurrent(const ScopedMakeCurrent&) = delete;
+  ScopedMakeCurrent& operator=(const ScopedMakeCurrent&) = delete;
+
   ~ScopedMakeCurrent();
 
   // Returns whether the |context_| is current.
@@ -36,8 +40,6 @@ class GL_EXPORT ScopedMakeCurrent {
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<gl::GLSurface> surface_;
   bool is_context_current_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMakeCurrent);
 };
 
 }  // namespace ui

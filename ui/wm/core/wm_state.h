@@ -20,6 +20,10 @@ class TransientWindowStackingClient;
 class WM_CORE_EXPORT WMState {
  public:
   WMState();
+
+  WMState(const WMState&) = delete;
+  WMState& operator=(const WMState&) = delete;
+
   ~WMState();
 
  private:
@@ -27,8 +31,6 @@ class WM_CORE_EXPORT WMState {
   std::unique_ptr<TransientWindowController> transient_window_client_;
   // NOTE: this is really only needed in ash
   std::unique_ptr<CaptureController> capture_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(WMState);
 };
 
 }  // namespace wm

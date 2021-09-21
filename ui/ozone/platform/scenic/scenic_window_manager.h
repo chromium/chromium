@@ -31,6 +31,10 @@ class ScenicWindow;
 class COMPONENT_EXPORT(OZONE) ScenicWindowManager {
  public:
   ScenicWindowManager();
+
+  ScenicWindowManager(const ScenicWindowManager&) = delete;
+  ScenicWindowManager& operator=(const ScenicWindowManager&) = delete;
+
   ~ScenicWindowManager();
 
   // Shuts down the window manager.
@@ -60,8 +64,6 @@ class COMPONENT_EXPORT(OZONE) ScenicWindowManager {
   base::WeakPtr<ScenicScreen> screen_;
 
   fuchsia::ui::scenic::ScenicPtr scenic_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScenicWindowManager);
 };
 
 }  // namespace ui

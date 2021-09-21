@@ -19,6 +19,10 @@ namespace ui {
 class DeviceDataManagerTest : public testing::Test {
  public:
   DeviceDataManagerTest() {}
+
+  DeviceDataManagerTest(const DeviceDataManagerTest&) = delete;
+  DeviceDataManagerTest& operator=(const DeviceDataManagerTest&) = delete;
+
   ~DeviceDataManagerTest() override {}
 
   // testing::Test:
@@ -29,9 +33,6 @@ class DeviceDataManagerTest : public testing::Test {
   void CallOnDeviceListsComplete() {
     DeviceDataManager::GetInstance()->OnDeviceListsComplete();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDataManagerTest);
 };
 
 TEST_F(DeviceDataManagerTest, DisplayIdUpdated) {

@@ -24,6 +24,10 @@ class GlobalObject {
   GlobalObject(const wl_interface* interface,
                const void* implementation,
                uint32_t version);
+
+  GlobalObject(const GlobalObject&) = delete;
+  GlobalObject& operator=(const GlobalObject&) = delete;
+
   virtual ~GlobalObject();
 
   // Creates a global object.
@@ -58,8 +62,6 @@ class GlobalObject {
   const void* implementation_;
   const uint32_t version_;
   wl_resource* resource_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalObject);
 };
 
 }  // namespace wl

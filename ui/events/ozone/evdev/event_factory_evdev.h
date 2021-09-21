@@ -53,6 +53,10 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   EventFactoryEvdev(CursorDelegateEvdev* cursor,
                     DeviceManager* device_manager,
                     KeyboardLayoutEngine* keyboard_layout_engine);
+
+  EventFactoryEvdev(const EventFactoryEvdev&) = delete;
+  EventFactoryEvdev& operator=(const EventFactoryEvdev&) = delete;
+
   ~EventFactoryEvdev() override;
 
   // Initialize. Must be called with a valid message loop.
@@ -157,8 +161,6 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
 
   // Support weak pointers for attach & detach callbacks.
   base::WeakPtrFactory<EventFactoryEvdev> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventFactoryEvdev);
 };
 
 }  // namespace ui

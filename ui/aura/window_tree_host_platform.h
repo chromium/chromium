@@ -32,6 +32,10 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
  public:
   explicit WindowTreeHostPlatform(ui::PlatformWindowInitProperties properties,
                                   std::unique_ptr<Window> = nullptr);
+
+  WindowTreeHostPlatform(const WindowTreeHostPlatform&) = delete;
+  WindowTreeHostPlatform& operator=(const WindowTreeHostPlatform&) = delete;
+
   ~WindowTreeHostPlatform() override;
 
   // WindowTreeHost:
@@ -104,8 +108,6 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   // OnBoundsChanged() this is incremented and on leaving OnBoundsChanged() this
   // is decremented.
   int on_bounds_changed_recursion_depth_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowTreeHostPlatform);
 };
 
 }  // namespace aura

@@ -113,6 +113,10 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
     : public DisplayLayoutManager {
  public:
   explicit DisplayLayoutManagerImpl(DisplayConfigurator* configurator);
+
+  DisplayLayoutManagerImpl(const DisplayLayoutManagerImpl&) = delete;
+  DisplayLayoutManagerImpl& operator=(const DisplayLayoutManagerImpl&) = delete;
+
   ~DisplayLayoutManagerImpl() override;
 
   // DisplayLayoutManager:
@@ -159,8 +163,6 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
                                    bool preserve_native_aspect_ratio) const;
 
   DisplayConfigurator* configurator_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayLayoutManagerImpl);
 };
 
 DisplayConfigurator::DisplayLayoutManagerImpl::DisplayLayoutManagerImpl(

@@ -18,6 +18,10 @@ namespace ui {
 class WindowsSurfaceFactory : public SurfaceFactoryOzone {
  public:
   WindowsSurfaceFactory();
+
+  WindowsSurfaceFactory(const WindowsSurfaceFactory&) = delete;
+  WindowsSurfaceFactory& operator=(const WindowsSurfaceFactory&) = delete;
+
   ~WindowsSurfaceFactory() override;
 
   // SurfaceFactoryOzone:
@@ -26,8 +30,6 @@ class WindowsSurfaceFactory : public SurfaceFactoryOzone {
 
  private:
   std::unique_ptr<GLOzone> egl_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowsSurfaceFactory);
 };
 
 }  // namespace ui

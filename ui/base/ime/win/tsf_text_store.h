@@ -107,6 +107,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
       public ITfTextEditSink {
  public:
   TSFTextStore();
+
+  TSFTextStore(const TSFTextStore&) = delete;
+  TSFTextStore& operator=(const TSFTextStore&) = delete;
+
   virtual ~TSFTextStore();
   HRESULT Initialize();
 
@@ -444,8 +448,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   Microsoft::WRL::ComPtr<ITfCategoryMgr> category_manager_;
   Microsoft::WRL::ComPtr<ITfDisplayAttributeMgr> display_attribute_manager_;
   Microsoft::WRL::ComPtr<ITfContext> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(TSFTextStore);
 };
 
 }  // namespace ui

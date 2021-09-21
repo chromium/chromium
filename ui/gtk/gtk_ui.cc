@@ -133,6 +133,9 @@ class GtkButtonImageSource : public gfx::ImageSkiaSource {
     }
   }
 
+  GtkButtonImageSource(const GtkButtonImageSource&) = delete;
+  GtkButtonImageSource& operator=(const GtkButtonImageSource&) = delete;
+
   ~GtkButtonImageSource() override = default;
 
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
@@ -195,14 +198,16 @@ class GtkButtonImageSource : public gfx::ImageSkiaSource {
   ui::NativeTheme::State state_;
   int width_;
   int height_;
-
-  DISALLOW_COPY_AND_ASSIGN(GtkButtonImageSource);
 };
 
 class GtkButtonPainter : public views::Painter {
  public:
   GtkButtonPainter(bool focus, views::Button::ButtonState button_state)
       : focus_(focus), button_state_(button_state) {}
+
+  GtkButtonPainter(const GtkButtonPainter&) = delete;
+  GtkButtonPainter& operator=(const GtkButtonPainter&) = delete;
+
   ~GtkButtonPainter() override = default;
 
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
@@ -215,8 +220,6 @@ class GtkButtonPainter : public views::Painter {
  private:
   const bool focus_;
   const views::Button::ButtonState button_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(GtkButtonPainter);
 };
 
 // Number of app indicators used (used as part of app-indicator id).

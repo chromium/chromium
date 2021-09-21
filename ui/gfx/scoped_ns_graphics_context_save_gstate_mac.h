@@ -20,12 +20,16 @@ namespace gfx {
 class GFX_EXPORT ScopedNSGraphicsContextSaveGState {
  public:
   ScopedNSGraphicsContextSaveGState();
+
+  ScopedNSGraphicsContextSaveGState(const ScopedNSGraphicsContextSaveGState&) =
+      delete;
+  ScopedNSGraphicsContextSaveGState& operator=(
+      const ScopedNSGraphicsContextSaveGState&) = delete;
+
   ~ScopedNSGraphicsContextSaveGState();
 
  private:
   NSGraphicsContext* context_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedNSGraphicsContextSaveGState);
 };
 
 }  // namespace gfx

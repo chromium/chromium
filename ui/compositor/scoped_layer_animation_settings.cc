@@ -26,6 +26,11 @@ class ScopedLayerAnimationObserver : public ui::ImplicitAnimationObserver,
     layer_->AddObserver(this);
     Trait::AddRequest(layer_);
   }
+
+  ScopedLayerAnimationObserver(const ScopedLayerAnimationObserver&) = delete;
+  ScopedLayerAnimationObserver& operator=(const ScopedLayerAnimationObserver&) =
+      delete;
+
   ~ScopedLayerAnimationObserver() override {
     if (layer_)
       layer_->RemoveObserver(this);
@@ -53,8 +58,6 @@ class ScopedLayerAnimationObserver : public ui::ImplicitAnimationObserver,
 
  private:
   ui::Layer* layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLayerAnimationObserver);
 };
 
 struct RenderSurfaceCachingTrait {

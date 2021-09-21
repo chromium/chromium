@@ -21,6 +21,11 @@ class MockZwpTextInput;
 class TestZwpTextInputManagerV1 : public GlobalObject {
  public:
   TestZwpTextInputManagerV1();
+
+  TestZwpTextInputManagerV1(const TestZwpTextInputManagerV1&) = delete;
+  TestZwpTextInputManagerV1& operator=(const TestZwpTextInputManagerV1&) =
+      delete;
+
   ~TestZwpTextInputManagerV1() override;
 
   void set_text_input(MockZwpTextInput* text_input) {
@@ -30,8 +35,6 @@ class TestZwpTextInputManagerV1 : public GlobalObject {
 
  private:
   MockZwpTextInput* text_input_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestZwpTextInputManagerV1);
 };
 
 }  // namespace wl

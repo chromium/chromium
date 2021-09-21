@@ -31,6 +31,11 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdevProxy {
   InputDeviceFactoryEvdevProxy(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       base::WeakPtr<InputDeviceFactoryEvdev> input_device_factory);
+
+  InputDeviceFactoryEvdevProxy(const InputDeviceFactoryEvdevProxy&) = delete;
+  InputDeviceFactoryEvdevProxy& operator=(const InputDeviceFactoryEvdevProxy&) =
+      delete;
+
   ~InputDeviceFactoryEvdevProxy();
 
   // See InputDeviceFactoryEvdev for docs. These calls simply forward to
@@ -53,8 +58,6 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdevProxy {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<InputDeviceFactoryEvdev> input_device_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputDeviceFactoryEvdevProxy);
 };
 
 }  // namespace ui

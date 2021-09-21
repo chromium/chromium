@@ -99,6 +99,11 @@ void CheckPointsOfInterests(const int touch_id,
 class TouchTransformControllerTest : public testing::Test {
  public:
   TouchTransformControllerTest() {}
+
+  TouchTransformControllerTest(const TouchTransformControllerTest&) = delete;
+  TouchTransformControllerTest& operator=(const TouchTransformControllerTest&) =
+      delete;
+
   ~TouchTransformControllerTest() override {}
 
   gfx::Transform GetTouchTransform(
@@ -157,8 +162,6 @@ class TouchTransformControllerTest : public testing::Test {
   std::unique_ptr<DisplayManager> display_manager_;
   std::unique_ptr<TouchTransformController> touch_transform_controller_;
   TouchDeviceManager* touch_device_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTransformControllerTest);
 };
 
 TEST_F(TouchTransformControllerTest, MirrorModeLetterboxing) {

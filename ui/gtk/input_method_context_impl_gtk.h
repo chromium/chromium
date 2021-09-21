@@ -24,6 +24,11 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
  public:
   InputMethodContextImplGtk(ui::LinuxInputMethodContextDelegate* delegate,
                             bool is_simple);
+
+  InputMethodContextImplGtk(const InputMethodContextImplGtk&) = delete;
+  InputMethodContextImplGtk& operator=(const InputMethodContextImplGtk&) =
+      delete;
+
   ~InputMethodContextImplGtk() override;
 
   // Overridden from ui::LinuxInputMethodContext
@@ -79,8 +84,6 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
 
   // Last known caret bounds relative to the screen coordinates, in DIPs.
   gfx::Rect last_caret_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodContextImplGtk);
 };
 
 }  // namespace gtk

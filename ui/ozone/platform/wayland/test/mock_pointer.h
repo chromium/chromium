@@ -20,15 +20,16 @@ extern const struct wl_pointer_interface kMockPointerImpl;
 class MockPointer : public ServerObject {
  public:
   explicit MockPointer(wl_resource* resource);
+
+  MockPointer(const MockPointer&) = delete;
+  MockPointer& operator=(const MockPointer&) = delete;
+
   ~MockPointer() override;
 
   MOCK_METHOD3(SetCursor,
                void(wl_resource* surface_resource,
                     int32_t hotspot_x,
                     int32_t hotspot_y));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPointer);
 };
 
 }  // namespace wl

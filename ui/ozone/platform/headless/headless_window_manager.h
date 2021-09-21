@@ -20,6 +20,10 @@ class HeadlessWindow;
 class HeadlessWindowManager {
  public:
   HeadlessWindowManager();
+
+  HeadlessWindowManager(const HeadlessWindowManager&) = delete;
+  HeadlessWindowManager& operator=(const HeadlessWindowManager&) = delete;
+
   ~HeadlessWindowManager();
 
   // Register a new window. Returns the window id.
@@ -34,8 +38,6 @@ class HeadlessWindowManager {
  private:
   base::IDMap<HeadlessWindow*> windows_;
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessWindowManager);
 };
 
 }  // namespace ui

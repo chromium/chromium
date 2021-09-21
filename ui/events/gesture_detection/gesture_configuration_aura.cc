@@ -21,6 +21,9 @@ constexpr bool kDoubleTapAuraSupport = false;
 
 class GestureConfigurationAura : public GestureConfiguration {
  public:
+  GestureConfigurationAura(const GestureConfigurationAura&) = delete;
+  GestureConfigurationAura& operator=(const GestureConfigurationAura&) = delete;
+
   ~GestureConfigurationAura() override {
   }
 
@@ -54,7 +57,6 @@ class GestureConfigurationAura : public GestureConfiguration {
   }
 
   friend struct base::DefaultSingletonTraits<GestureConfigurationAura>;
-  DISALLOW_COPY_AND_ASSIGN(GestureConfigurationAura);
 };
 
 }  // namespace

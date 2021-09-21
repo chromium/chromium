@@ -29,6 +29,10 @@ class Window;
 class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
  public:
   WindowTargeter();
+
+  WindowTargeter(const WindowTargeter&) = delete;
+  WindowTargeter& operator=(const WindowTargeter&) = delete;
+
   ~WindowTargeter() override;
 
   using HitTestRects = std::vector<gfx::Rect>;
@@ -155,8 +159,6 @@ class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
 
   gfx::Insets mouse_extend_;
   gfx::Insets touch_extend_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowTargeter);
 };
 
 }  // namespace aura

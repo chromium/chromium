@@ -38,6 +38,10 @@ class WM_CORE_EXPORT CursorManager : public aura::client::CursorClient,
                                      public NativeCursorManagerDelegate {
  public:
   explicit CursorManager(std::unique_ptr<NativeCursorManager> delegate);
+
+  CursorManager(const CursorManager&) = delete;
+  CursorManager& operator=(const CursorManager&) = delete;
+
   ~CursorManager() override;
 
   // Resets the last visibility state, etc. Currently only called by tests.
@@ -95,8 +99,6 @@ class WM_CORE_EXPORT CursorManager : public aura::client::CursorClient,
   // CursorManager instance is created it gets populated with the correct
   // cursor visibility state.
   static bool last_cursor_visibility_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorManager);
 };
 
 }  // namespace wm

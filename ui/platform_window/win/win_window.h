@@ -24,6 +24,10 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
                                     public gfx::WindowImpl {
  public:
   WinWindow(PlatformWindowDelegate* delegate, const gfx::Rect& bounds);
+
+  WinWindow(const WinWindow&) = delete;
+  WinWindow& operator=(const WinWindow&) = delete;
+
   ~WinWindow() override;
 
  private:
@@ -112,8 +116,6 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
   scoped_refptr<WinCursor> cursor_;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(WinWindow)
-
-  DISALLOW_COPY_AND_ASSIGN(WinWindow);
 };
 
 namespace test {

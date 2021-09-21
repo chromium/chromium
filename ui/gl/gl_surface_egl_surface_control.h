@@ -162,6 +162,11 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
    public:
     TransactionAckTimeoutManager(
         scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+    TransactionAckTimeoutManager(const TransactionAckTimeoutManager&) = delete;
+    TransactionAckTimeoutManager& operator=(
+        const TransactionAckTimeoutManager&) = delete;
+
     ~TransactionAckTimeoutManager();
 
     void ScheduleHangDetection();
@@ -174,8 +179,6 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
     TransactionId current_transaction_id_ = 0;
     TransactionId last_acked_transaction_id_ = 0;
     base::CancelableOnceClosure hang_detection_cb_;
-
-    DISALLOW_COPY_AND_ASSIGN(TransactionAckTimeoutManager);
   };
 
   void CommitPendingTransaction(const gfx::Rect& damage_rect,

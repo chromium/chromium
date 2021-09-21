@@ -20,6 +20,11 @@ class WM_CORE_EXPORT TransientWindowController
     : public aura::client::TransientWindowClient {
  public:
   TransientWindowController();
+
+  TransientWindowController(const TransientWindowController&) = delete;
+  TransientWindowController& operator=(const TransientWindowController&) =
+      delete;
+
   ~TransientWindowController() override;
 
   // Returns the single TransientWindowController instance.
@@ -44,8 +49,6 @@ class WM_CORE_EXPORT TransientWindowController
 
   base::ObserverList<aura::client::TransientWindowClientObserver>::Unchecked
       observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransientWindowController);
 };
 
 }  // namespace wm

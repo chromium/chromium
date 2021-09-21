@@ -101,6 +101,10 @@ class OMLSyncControlVSyncProvider : public SyncControlVSyncProvider {
   explicit OMLSyncControlVSyncProvider(GLXWindow glx_window)
       : SyncControlVSyncProvider(), glx_window_(glx_window) {}
 
+  OMLSyncControlVSyncProvider(const OMLSyncControlVSyncProvider&) = delete;
+  OMLSyncControlVSyncProvider& operator=(const OMLSyncControlVSyncProvider&) =
+      delete;
+
   ~OMLSyncControlVSyncProvider() override = default;
 
  protected:
@@ -132,8 +136,6 @@ class OMLSyncControlVSyncProvider : public SyncControlVSyncProvider {
 
  private:
   GLXWindow glx_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(OMLSyncControlVSyncProvider);
 };
 
 class SGIVideoSyncThread : public base::Thread,
@@ -238,6 +240,11 @@ class SGIVideoSyncProviderThreadShim {
     x11::Connection::Get()->Sync();
   }
 
+  SGIVideoSyncProviderThreadShim(const SGIVideoSyncProviderThreadShim&) =
+      delete;
+  SGIVideoSyncProviderThreadShim& operator=(
+      const SGIVideoSyncProviderThreadShim&) = delete;
+
   ~SGIVideoSyncProviderThreadShim() {
     auto* connection = vsync_thread_->GetConnection();
     if (glx_window_) {
@@ -328,8 +335,6 @@ class SGIVideoSyncProviderThreadShim {
 
   base::AtomicFlag cancel_vsync_flag_;
   base::Lock vsync_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SGIVideoSyncProviderThreadShim);
 };
 
 class SGIVideoSyncVSyncProvider
@@ -346,6 +351,10 @@ class SGIVideoSyncVSyncProvider
         FROM_HERE, base::BindOnce(&SGIVideoSyncProviderThreadShim::Initialize,
                                   base::Unretained(shim_.get())));
   }
+
+  SGIVideoSyncVSyncProvider(const SGIVideoSyncVSyncProvider&) = delete;
+  SGIVideoSyncVSyncProvider& operator=(const SGIVideoSyncVSyncProvider&) =
+      delete;
 
   ~SGIVideoSyncVSyncProvider() override {
     {
@@ -400,8 +409,6 @@ class SGIVideoSyncVSyncProvider
   // the shim_, so they are safe to access.
   base::AtomicFlag* cancel_vsync_flag_;
   base::Lock* vsync_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SGIVideoSyncVSyncProvider);
 };
 
 SGIVideoSyncThread* SGIVideoSyncThread::g_video_sync_thread = nullptr;

@@ -28,6 +28,9 @@ class COMPONENT_EXPORT(UI_BASE_X) VisualPickerGlx {
  public:
   static VisualPickerGlx* GetInstance();
 
+  VisualPickerGlx(const VisualPickerGlx&) = delete;
+  VisualPickerGlx& operator=(const VisualPickerGlx&) = delete;
+
   ~VisualPickerGlx();
 
   x11::VisualId system_visual() const { return system_visual_; }
@@ -61,8 +64,6 @@ class COMPONENT_EXPORT(UI_BASE_X) VisualPickerGlx {
       config_map_;
 
   VisualPickerGlx();
-
-  DISALLOW_COPY_AND_ASSIGN(VisualPickerGlx);
 };
 
 }  // namespace ui

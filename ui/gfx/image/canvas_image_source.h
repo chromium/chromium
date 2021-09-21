@@ -39,6 +39,10 @@ class GFX_EXPORT CanvasImageSource : public ImageSkiaSource {
   static ImageSkia CreatePadded(const ImageSkia& image, const Insets& insets);
 
   explicit CanvasImageSource(const Size& size);
+
+  CanvasImageSource(const CanvasImageSource&) = delete;
+  CanvasImageSource& operator=(const CanvasImageSource&) = delete;
+
   ~CanvasImageSource() override {}
 
   // Called when a new image needs to be drawn for a scale factor.
@@ -52,7 +56,6 @@ class GFX_EXPORT CanvasImageSource : public ImageSkiaSource {
 
  protected:
   const Size size_;
-  DISALLOW_COPY_AND_ASSIGN(CanvasImageSource);
 };
 
 }  // namespace gfx

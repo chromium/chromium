@@ -31,6 +31,10 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
   explicit MockMessagePopupCollection(gfx::NativeWindow context)
       : DesktopMessagePopupCollection(), context_(context) {}
 
+  MockMessagePopupCollection(const MockMessagePopupCollection&) = delete;
+  MockMessagePopupCollection& operator=(const MockMessagePopupCollection&) =
+      delete;
+
   ~MockMessagePopupCollection() override = default;
 
   void SetAnimationValue(double current) {
@@ -99,8 +103,6 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
   bool is_primary_display_ = true;
   bool is_fullscreen_ = false;
   int new_popup_height_ = 84;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMessagePopupCollection);
 };
 
 class MockMessagePopupView : public MessagePopupView {
@@ -197,6 +199,11 @@ class MessagePopupCollectionTest : public views::ViewsTestBase,
                                    public MessageCenterObserver {
  public:
   MessagePopupCollectionTest() = default;
+
+  MessagePopupCollectionTest(const MessagePopupCollectionTest&) = delete;
+  MessagePopupCollectionTest& operator=(const MessagePopupCollectionTest&) =
+      delete;
+
   ~MessagePopupCollectionTest() override = default;
 
   // views::ViewTestBase:
@@ -318,8 +325,6 @@ class MessagePopupCollectionTest : public views::ViewsTestBase,
 
   gfx::Rect work_area_;
   std::string last_displayed_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePopupCollectionTest);
 };
 
 TEST_F(MessagePopupCollectionTest, Nothing) {

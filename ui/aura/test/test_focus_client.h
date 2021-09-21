@@ -19,6 +19,10 @@ class TestFocusClient : public client::FocusClient,
                         public WindowObserver {
  public:
   explicit TestFocusClient(Window* root_window);
+
+  TestFocusClient(const TestFocusClient&) = delete;
+  TestFocusClient& operator=(const TestFocusClient&) = delete;
+
   ~TestFocusClient() override;
 
  private:
@@ -37,8 +41,6 @@ class TestFocusClient : public client::FocusClient,
   base::ScopedObservation<Window, WindowObserver> observation_manager_{this};
   base::ObserverList<aura::client::FocusChangeObserver>::Unchecked
       focus_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusClient);
 };
 
 }  // namespace test

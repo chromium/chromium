@@ -21,6 +21,10 @@ namespace test {
 class TestWindowDelegate : public WindowDelegate {
  public:
   TestWindowDelegate();
+
+  TestWindowDelegate(const TestWindowDelegate&) = delete;
+  TestWindowDelegate& operator=(const TestWindowDelegate&) = delete;
+
   ~TestWindowDelegate() override;
 
   // Returns a TestWindowDelegate that delete itself when
@@ -69,8 +73,6 @@ class TestWindowDelegate : public WindowDelegate {
   gfx::Size minimum_size_;
   gfx::Size maximum_size_;
   bool can_focus_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowDelegate);
 };
 
 // A simple WindowDelegate implementation for these tests. It owns itself
@@ -78,6 +80,10 @@ class TestWindowDelegate : public WindowDelegate {
 class ColorTestWindowDelegate : public TestWindowDelegate {
  public:
   explicit ColorTestWindowDelegate(SkColor color);
+
+  ColorTestWindowDelegate(const ColorTestWindowDelegate&) = delete;
+  ColorTestWindowDelegate& operator=(const ColorTestWindowDelegate&) = delete;
+
   ~ColorTestWindowDelegate() override;
 
   ui::KeyboardCode last_key_code() const { return last_key_code_; }
@@ -93,8 +99,6 @@ class ColorTestWindowDelegate : public TestWindowDelegate {
   SkColor color_;
   ui::KeyboardCode last_key_code_;
   gfx::Size window_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ColorTestWindowDelegate);
 };
 
 // A simple WindowDelegate that has a hit-test mask.

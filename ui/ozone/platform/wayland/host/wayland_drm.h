@@ -36,6 +36,10 @@ class WaylandDrm : public wl::GlobalObjectRegistrar<WaylandDrm> {
                           uint32_t version);
 
   WaylandDrm(wl_drm* drm, WaylandConnection* connection);
+
+  WaylandDrm(const WaylandDrm&) = delete;
+  WaylandDrm& operator=(const WaylandDrm&) = delete;
+
   ~WaylandDrm();
 
   // Says if can create dmabuf based wl_buffers.
@@ -97,8 +101,6 @@ class WaylandDrm : public wl::GlobalObjectRegistrar<WaylandDrm> {
   // Says if the drm device passed by the Wayland compositor authenticates this
   // client.
   bool authenticated_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDrm);
 };
 
 }  // namespace ui

@@ -33,6 +33,10 @@ class DragSourceWin
   // are an error - it is only public because a WRL helper function creates the
   // objects.
   DragSourceWin();
+
+  DragSourceWin(const DragSourceWin&) = delete;
+  DragSourceWin& operator=(const DragSourceWin&) = delete;
+
   ~DragSourceWin() override = default;
 
   // Stop the drag operation at the next chance we get.  This doesn't
@@ -72,8 +76,6 @@ class DragSourceWin
   // detect if touch drag drop started successfully. See comment there for much
   // more info.
   int num_query_continues_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DragSourceWin);
 };
 
 }  // namespace ui

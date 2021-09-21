@@ -23,6 +23,10 @@ class COMPONENT_EXPORT(UI_BASE) BubbleCloser {
   // Installs an event monitor watching for mouse clicks outside of |window| or
   // any of its child windows. Invokes |on_click_outside| on each event.
   BubbleCloser(NSWindow* window, base::RepeatingClosure on_click_outside);
+
+  BubbleCloser(const BubbleCloser&) = delete;
+  BubbleCloser& operator=(const BubbleCloser&) = delete;
+
   ~BubbleCloser();
 
  private:
@@ -31,8 +35,6 @@ class COMPONENT_EXPORT(UI_BASE) BubbleCloser {
   id event_tap_;  // Weak. Owned by AppKit.
   base::RepeatingClosure on_click_outside_;
   WeakPtrNSObjectFactory<BubbleCloser> factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleCloser);
 };
 
 }  // namespace ui

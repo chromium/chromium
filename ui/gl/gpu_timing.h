@@ -80,6 +80,9 @@ class GL_EXPORT GPUTimer {
  public:
   static void DisableTimestampQueries();
 
+  GPUTimer(const GPUTimer&) = delete;
+  GPUTimer& operator=(const GPUTimer&) = delete;
+
   ~GPUTimer();
 
   // Destroy the timer object. This must be explicitly called before destroying
@@ -117,8 +120,6 @@ class GL_EXPORT GPUTimer {
   scoped_refptr<GPUTimingClient> gpu_timing_client_;
   scoped_refptr<QueryResult> time_stamp_result_;
   scoped_refptr<QueryResult> elapsed_timer_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTimer);
 };
 
 // GPUTimingClient contains all the gl timing logic that is not specific

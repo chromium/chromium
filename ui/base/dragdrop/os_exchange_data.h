@@ -64,6 +64,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // takes ownership of the supplied provider.
   explicit OSExchangeData(std::unique_ptr<OSExchangeDataProvider> provider);
 
+  OSExchangeData(const OSExchangeData&) = delete;
+  OSExchangeData& operator=(const OSExchangeData&) = delete;
+
   ~OSExchangeData();
 
   // Returns the Provider, which actually stores and manages the data.
@@ -191,8 +194,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
  private:
   // Provides the actual data.
   std::unique_ptr<OSExchangeDataProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OSExchangeData);
 };
 
 }  // namespace ui

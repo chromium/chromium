@@ -19,6 +19,10 @@ namespace {
 class DisplayObserverImpl : public DisplayObserver {
  public:
   DisplayObserverImpl() {}
+
+  DisplayObserverImpl(const DisplayObserverImpl&) = delete;
+  DisplayObserverImpl& operator=(const DisplayObserverImpl&) = delete;
+
   ~DisplayObserverImpl() override {}
 
   std::string GetAndClearChanges() {
@@ -66,8 +70,6 @@ class DisplayObserverImpl : public DisplayObserver {
   }
 
   std::string changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayObserverImpl);
 };
 
 TEST(DisplayListTest, AddUpdateRemove) {

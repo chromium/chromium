@@ -20,6 +20,10 @@ namespace display {
 class DISPLAY_TYPES_EXPORT DisplayMode {
  public:
   DisplayMode(const gfx::Size& size, bool interlaced, float refresh_rate);
+
+  DisplayMode(const DisplayMode&) = delete;
+  DisplayMode& operator=(const DisplayMode&) = delete;
+
   ~DisplayMode();
   std::unique_ptr<DisplayMode> Clone() const;
 
@@ -35,8 +39,6 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
   const gfx::Size size_;
   const float refresh_rate_;
   const bool is_interlaced_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayMode);
 };
 
 // Used to by gtest to print readable errors.

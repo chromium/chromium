@@ -34,6 +34,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public x11::EventObserver {
                 std::size_t max_frames_pending,
                 bool enable_multibuffering);
 
+  XShmImagePool(const XShmImagePool&) = delete;
+  XShmImagePool& operator=(const XShmImagePool&) = delete;
+
   ~XShmImagePool() override;
 
   bool Resize(const gfx::Size& pixel_size);
@@ -95,8 +98,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public x11::EventObserver {
   std::list<SwapClosure> swap_closures_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(XShmImagePool);
 };
 
 }  // namespace ui

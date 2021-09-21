@@ -43,6 +43,10 @@ class AuraTestHelper {
   // single-threaded phase without a backing task environment, and must not
   // create one lest the caller wish to do so.
   explicit AuraTestHelper(ui::ContextFactory* context_factory = nullptr);
+
+  AuraTestHelper(const AuraTestHelper&) = delete;
+  AuraTestHelper& operator=(const AuraTestHelper&) = delete;
+
   virtual ~AuraTestHelper();
 
   // Returns the current AuraTestHelper, or nullptr if it's not alive.
@@ -86,8 +90,6 @@ class AuraTestHelper {
   std::unique_ptr<client::DefaultCaptureClient> capture_client_;
   std::unique_ptr<TestWindowParentingClient> parenting_client_;
   std::unique_ptr<client::ScreenPositionClient> screen_position_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuraTestHelper);
 };
 
 }  // namespace test

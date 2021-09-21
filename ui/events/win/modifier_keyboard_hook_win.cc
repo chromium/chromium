@@ -113,6 +113,11 @@ class ModifierKeyboardHookWinImpl : public KeyboardHookWinBase {
   ModifierKeyboardHookWinImpl(absl::optional<base::flat_set<DomCode>> dom_codes,
                               KeyEventCallback callback,
                               bool enable_hook_registration);
+
+  ModifierKeyboardHookWinImpl(const ModifierKeyboardHookWinImpl&) = delete;
+  ModifierKeyboardHookWinImpl& operator=(const ModifierKeyboardHookWinImpl&) =
+      delete;
+
   ~ModifierKeyboardHookWinImpl() override;
 
   // KeyboardHookWinBase implementation.
@@ -145,8 +150,6 @@ class ModifierKeyboardHookWinImpl : public KeyboardHookWinBase {
   // synthesized left control key event followed by the right alt key event.
   // This sequence occurs on the initial keypress and every repeat.
   int altgr_sequence_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ModifierKeyboardHookWinImpl);
 };
 
 // static

@@ -35,6 +35,10 @@ class TestPositioner : public ServerObject {
   };
 
   explicit TestPositioner(wl_resource* resource);
+
+  TestPositioner(const TestPositioner&) = delete;
+  TestPositioner& operator=(const TestPositioner&) = delete;
+
   ~TestPositioner() override;
 
   PopupPosition position() { return std::move(position_); }
@@ -50,8 +54,6 @@ class TestPositioner : public ServerObject {
 
  private:
   PopupPosition position_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPositioner);
 };
 
 }  // namespace wl

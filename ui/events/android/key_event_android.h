@@ -18,6 +18,10 @@ namespace ui {
 class EVENTS_EXPORT KeyEventAndroid {
  public:
   KeyEventAndroid(JNIEnv* env, jobject event, int key_code);
+
+  KeyEventAndroid(const KeyEventAndroid&) = delete;
+  KeyEventAndroid& operator=(const KeyEventAndroid&) = delete;
+
   ~KeyEventAndroid();
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
@@ -27,8 +31,6 @@ class EVENTS_EXPORT KeyEventAndroid {
   // The Java reference to the key event.
   base::android::ScopedJavaGlobalRef<jobject> event_;
   int key_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyEventAndroid);
 };
 
 }  // namespace ui

@@ -71,6 +71,10 @@ struct PlatformWindowInitProperties;
 class COMPONENT_EXPORT(OZONE) OzonePlatform {
  public:
   OzonePlatform();
+
+  OzonePlatform(const OzonePlatform&) = delete;
+  OzonePlatform& operator=(const OzonePlatform&) = delete;
+
   virtual ~OzonePlatform();
 
   // Additional initialization params for the platform. Platforms must not
@@ -346,8 +350,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // modifications to |single_process_| visible by other threads. Mutex is not
   // needed since it's set before other threads are started.
   volatile bool single_process_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatform);
 };
 
 }  // namespace ui

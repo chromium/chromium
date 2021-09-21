@@ -178,6 +178,11 @@ class LinuxInputMethodContextFactoryForTesting
 class InputMethodDelegateForTesting : public internal::InputMethodDelegate {
  public:
   InputMethodDelegateForTesting() {}
+
+  InputMethodDelegateForTesting(const InputMethodDelegateForTesting&) = delete;
+  InputMethodDelegateForTesting& operator=(
+      const InputMethodDelegateForTesting&) = delete;
+
   ~InputMethodDelegateForTesting() override {}
 
   ui::EventDispatchDetails DispatchKeyEventPostIME(
@@ -199,9 +204,6 @@ class InputMethodDelegateForTesting : public internal::InputMethodDelegate {
     TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(action));
     return ui::EventDispatchDetails();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputMethodDelegateForTesting);
 };
 
 class TextInputClientForTesting : public DummyTextInputClient {

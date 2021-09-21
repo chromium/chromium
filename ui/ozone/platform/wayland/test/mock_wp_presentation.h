@@ -19,6 +19,10 @@ extern const struct wp_presentation_interface kMockWpPresentationImpl;
 class MockWpPresentation : public GlobalObject {
  public:
   MockWpPresentation();
+
+  MockWpPresentation(const MockWpPresentation&) = delete;
+  MockWpPresentation& operator=(const MockWpPresentation&) = delete;
+
   ~MockWpPresentation() override;
 
   MOCK_METHOD2(Destroy,
@@ -41,8 +45,6 @@ class MockWpPresentation : public GlobalObject {
 
  private:
   wl_resource* presentation_callback_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWpPresentation);
 };
 
 }  // namespace wl

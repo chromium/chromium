@@ -22,6 +22,10 @@ class TestTarget : public EventTarget,
                    public EventHandler {
  public:
   TestTarget() : parent_(nullptr), valid_(true) { SetTargetHandler(this); }
+
+  TestTarget(const TestTarget&) = delete;
+  TestTarget& operator=(const TestTarget&) = delete;
+
   ~TestTarget() override {}
 
   void set_parent(TestTarget* parent) { parent_ = parent; }
@@ -55,13 +59,14 @@ class TestTarget : public EventTarget,
   TestTarget* parent_;
   std::vector<int> handler_list_;
   bool valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTarget);
 };
 
 class TestEventHandler : public EventHandler {
  public:
   explicit TestEventHandler(int id) : id_(id) {}
+
+  TestEventHandler(const TestEventHandler&) = delete;
+  TestEventHandler& operator=(const TestEventHandler&) = delete;
 
   ~TestEventHandler() override {
     if (pre_target_)
@@ -110,8 +115,6 @@ class TestEventHandler : public EventHandler {
   bool expect_post_target_ = false;
   bool received_pre_target_ = false;
   EventTarget* pre_target_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
 
 typedef CancelModeEvent NonCancelableEvent;
@@ -125,6 +128,11 @@ class EventHandlerDestroyDispatcherDelegate : public TestEventHandler {
         dispatcher_delegate_(delegate) {
   }
 
+  EventHandlerDestroyDispatcherDelegate(
+      const EventHandlerDestroyDispatcherDelegate&) = delete;
+  EventHandlerDestroyDispatcherDelegate& operator=(
+      const EventHandlerDestroyDispatcherDelegate&) = delete;
+
   ~EventHandlerDestroyDispatcherDelegate() override {}
 
  private:
@@ -134,14 +142,17 @@ class EventHandlerDestroyDispatcherDelegate : public TestEventHandler {
   }
 
   EventDispatcherDelegate* dispatcher_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventHandlerDestroyDispatcherDelegate);
 };
 
 // Invalidates the target when it receives any event.
 class InvalidateTargetEventHandler : public TestEventHandler {
  public:
   explicit InvalidateTargetEventHandler(int id) : TestEventHandler(id) {}
+
+  InvalidateTargetEventHandler(const InvalidateTargetEventHandler&) = delete;
+  InvalidateTargetEventHandler& operator=(const InvalidateTargetEventHandler&) =
+      delete;
+
   ~InvalidateTargetEventHandler() override {}
 
  private:
@@ -150,8 +161,6 @@ class InvalidateTargetEventHandler : public TestEventHandler {
    TestTarget* target = static_cast<TestTarget*>(event->target());
    target->set_valid(false);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidateTargetEventHandler);
 };
 
 // Destroys a second event handler when this handler gets an event.
@@ -162,6 +171,9 @@ class EventHandlerDestroyer : public TestEventHandler {
       : TestEventHandler(id),
         to_destroy_(destroy),
         dispatcher_delegate_(nullptr) {}
+
+  EventHandlerDestroyer(const EventHandlerDestroyer&) = delete;
+  EventHandlerDestroyer& operator=(const EventHandlerDestroyer&) = delete;
 
   ~EventHandlerDestroyer() override { CHECK(!to_destroy_); }
 
@@ -183,13 +195,14 @@ class EventHandlerDestroyer : public TestEventHandler {
 
   EventHandler* to_destroy_;
   EventDispatcherDelegate* dispatcher_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventHandlerDestroyer);
 };
 
 class TestEventDispatcher : public EventDispatcherDelegate {
  public:
   TestEventDispatcher() {}
+
+  TestEventDispatcher(const TestEventDispatcher&) = delete;
+  TestEventDispatcher& operator=(const TestEventDispatcher&) = delete;
 
   ~TestEventDispatcher() override {}
 
@@ -203,8 +216,6 @@ class TestEventDispatcher : public EventDispatcherDelegate {
     TestTarget* test_target = static_cast<TestTarget*>(target);
     return test_target->valid();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventDispatcher);
 };
 
 }  // namespace

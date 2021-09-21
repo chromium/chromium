@@ -25,6 +25,10 @@ class WaylandDataOffer : public WaylandDataOfferBase {
  public:
   // Takes ownership of data_offer.
   explicit WaylandDataOffer(wl_data_offer* data_offer);
+
+  WaylandDataOffer(const WaylandDataOffer&) = delete;
+  WaylandDataOffer& operator=(const WaylandDataOffer&) = delete;
+
   ~WaylandDataOffer() override;
 
   void Accept(uint32_t serial, const std::string& mime_type);
@@ -55,8 +59,6 @@ class WaylandDataOffer : public WaylandDataOfferBase {
   uint32_t source_actions_;
   // Action selected by the compositor
   uint32_t dnd_action_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataOffer);
 };
 
 }  // namespace ui

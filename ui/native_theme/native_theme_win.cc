@@ -112,6 +112,9 @@ class ScopedCreateDCWithBitmap {
   explicit ScopedCreateDCWithBitmap(base::win::ScopedCreateDC::Handle hdc)
       : dc_(hdc) {}
 
+  ScopedCreateDCWithBitmap(const ScopedCreateDCWithBitmap&) = delete;
+  ScopedCreateDCWithBitmap& operator=(const ScopedCreateDCWithBitmap&) = delete;
+
   ~ScopedCreateDCWithBitmap() {
     // Delete DC before the bitmap, since objects should not be deleted while
     // selected into a DC.
@@ -135,8 +138,6 @@ class ScopedCreateDCWithBitmap {
  private:
   base::win::ScopedCreateDC dc_;
   base::win::ScopedBitmap bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCreateDCWithBitmap);
 };
 
 base::win::RegKey OpenThemeRegKey(REGSAM access) {

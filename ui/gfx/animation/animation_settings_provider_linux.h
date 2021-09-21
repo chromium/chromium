@@ -12,6 +12,11 @@ namespace gfx {
 
 class ANIMATION_EXPORT AnimationSettingsProviderLinux {
  public:
+  AnimationSettingsProviderLinux(const AnimationSettingsProviderLinux&) =
+      delete;
+  AnimationSettingsProviderLinux& operator=(
+      const AnimationSettingsProviderLinux&) = delete;
+
   virtual ~AnimationSettingsProviderLinux();
 
   // Indicates if animations are enabled by the toolkit.
@@ -24,8 +29,6 @@ class ANIMATION_EXPORT AnimationSettingsProviderLinux {
 
  private:
   static AnimationSettingsProviderLinux* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationSettingsProviderLinux);
 };
 
 }  // namespace gfx

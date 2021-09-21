@@ -48,6 +48,10 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   InputDeviceFactoryEvdev(
       std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
       CursorDelegateEvdev* cursor);
+
+  InputDeviceFactoryEvdev(const InputDeviceFactoryEvdev&) = delete;
+  InputDeviceFactoryEvdev& operator=(const InputDeviceFactoryEvdev&) = delete;
+
   ~InputDeviceFactoryEvdev();
 
   // Open & start reading a newly plugged-in input device.
@@ -161,8 +165,6 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
 
   // Support weak pointers for attach & detach callbacks.
   base::WeakPtrFactory<InputDeviceFactoryEvdev> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputDeviceFactoryEvdev);
 };
 
 }  // namespace ui

@@ -19,6 +19,10 @@ constexpr base::TimeDelta kExpectedDefaultTimeInterval =
 class InputPredictorTest : public testing::Test {
  public:
   InputPredictorTest();
+
+  InputPredictorTest(const InputPredictorTest&) = delete;
+  InputPredictorTest& operator=(const InputPredictorTest&) = delete;
+
   ~InputPredictorTest() override;
 
   static base::TimeTicks FromMilliseconds(double ms) {
@@ -41,8 +45,6 @@ class InputPredictorTest : public testing::Test {
   static constexpr double kEpsilon = 0.1;
 
   std::unique_ptr<InputPredictor> predictor_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputPredictorTest);
 };
 
 }  // namespace ui

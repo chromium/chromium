@@ -78,6 +78,10 @@ class MESSAGE_CENTER_EXPORT MessageView
   };
 
   explicit MessageView(const Notification& notification);
+
+  MessageView(const MessageView&) = delete;
+  MessageView& operator=(const MessageView&) = delete;
+
   ~MessageView() override;
 
   // Updates this view with an additional grouped notification. If the view
@@ -260,8 +264,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   // shape of the notification.
   int top_radius_ = 0;
   int bottom_radius_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageView);
 };
 
 }  // namespace message_center

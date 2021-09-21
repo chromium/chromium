@@ -43,6 +43,10 @@ class GFX_EXPORT WindowImpl : public MessageMapInterface {
   // |debugging_id| is reported with crashes to help attribute the code that
   // created the WindowImpl.
   explicit WindowImpl(const std::string& debugging_id = std::string());
+
+  WindowImpl(const WindowImpl&) = delete;
+  WindowImpl& operator=(const WindowImpl&) = delete;
+
   virtual ~WindowImpl();
 
   // Causes all generated windows classes to be unregistered at exit.
@@ -125,8 +129,6 @@ class GFX_EXPORT WindowImpl : public MessageMapInterface {
   bool got_valid_hwnd_ = false;
   // For tracking whether this object has been destroyed. Must be last.
   base::WeakPtrFactory<WindowImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowImpl);
 };
 
 }  // namespace gfx

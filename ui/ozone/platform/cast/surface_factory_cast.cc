@@ -23,6 +23,10 @@ namespace {
 class DummySurface : public SurfaceOzoneCanvas {
  public:
   DummySurface() {}
+
+  DummySurface(const DummySurface&) = delete;
+  DummySurface& operator=(const DummySurface&) = delete;
+
   ~DummySurface() override {}
 
   // SurfaceOzoneCanvas implementation:
@@ -41,8 +45,6 @@ class DummySurface : public SurfaceOzoneCanvas {
 
  private:
   sk_sp<SkSurface> surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummySurface);
 };
 
 class CastPixmap : public gfx::NativePixmap {

@@ -181,6 +181,11 @@ class CallbacksHelper {
 class WaylandSurfaceFactoryTest : public WaylandTest {
  public:
   WaylandSurfaceFactoryTest() = default;
+
+  WaylandSurfaceFactoryTest(const WaylandSurfaceFactoryTest&) = delete;
+  WaylandSurfaceFactoryTest& operator=(const WaylandSurfaceFactoryTest&) =
+      delete;
+
   ~WaylandSurfaceFactoryTest() override = default;
 
   void SetUp() override {
@@ -215,9 +220,6 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
 
     return canvas;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandSurfaceFactoryTest);
 };
 
 TEST_P(WaylandSurfaceFactoryTest,

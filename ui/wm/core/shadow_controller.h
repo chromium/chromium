@@ -39,6 +39,10 @@ class WM_CORE_EXPORT ShadowController : public ActivationChangeObserver {
   ShadowController(ActivationClient* activation_client,
                    std::unique_ptr<ShadowControllerDelegate> delegate,
                    aura::Env* env = nullptr);
+
+  ShadowController(const ShadowController&) = delete;
+  ShadowController& operator=(const ShadowController&) = delete;
+
   ~ShadowController() override;
 
   bool IsShadowVisibleForWindow(aura::Window* window);
@@ -60,8 +64,6 @@ class WM_CORE_EXPORT ShadowController : public ActivationChangeObserver {
   ActivationClient* activation_client_;
 
   scoped_refptr<Impl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShadowController);
 };
 
 }  // namespace wm

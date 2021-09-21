@@ -15,6 +15,10 @@ namespace ui {
 class DrmRenderNodeHandle {
  public:
   DrmRenderNodeHandle();
+
+  DrmRenderNodeHandle(const DrmRenderNodeHandle&) = delete;
+  DrmRenderNodeHandle& operator=(const DrmRenderNodeHandle&) = delete;
+
   ~DrmRenderNodeHandle();
 
   bool Initialize(const base::FilePath& path);
@@ -23,8 +27,6 @@ class DrmRenderNodeHandle {
 
  private:
   base::ScopedFD drm_fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmRenderNodeHandle);
 };
 
 }  // namespace ui

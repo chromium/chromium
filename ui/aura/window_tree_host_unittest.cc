@@ -159,6 +159,10 @@ class TestWindow : public ui::StubWindow {
  public:
   explicit TestWindow(ui::PlatformWindowDelegate* delegate)
       : StubWindow(delegate, false, gfx::Rect(400, 600)) {}
+
+  TestWindow(const TestWindow&) = delete;
+  TestWindow& operator=(const TestWindow&) = delete;
+
   ~TestWindow() override {}
 
  private:
@@ -168,8 +172,6 @@ class TestWindow : public ui::StubWindow {
     // destruction, for example on Windows (see crbug.com/770670).
     delegate()->OnLostCapture();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindow);
 };
 
 class TestWindowTreeHost : public WindowTreeHostPlatform {

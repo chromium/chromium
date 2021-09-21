@@ -28,6 +28,10 @@ class WaylandTouch {
   WaylandTouch(wl_touch* touch,
                WaylandConnection* connection,
                Delegate* delegate);
+
+  WaylandTouch(const WaylandTouch&) = delete;
+  WaylandTouch& operator=(const WaylandTouch&) = delete;
+
   ~WaylandTouch();
 
  private:
@@ -57,8 +61,6 @@ class WaylandTouch {
   wl::Object<wl_touch> obj_;
   WaylandConnection* const connection_;
   Delegate* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandTouch);
 };
 
 class WaylandTouch::Delegate {

@@ -412,6 +412,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
   // Are all of the system requirements met for using transparent visuals?
   bool ArgbVisualAvailable() const;
 
+  XVisualManager(const XVisualManager&) = delete;
+  XVisualManager& operator=(const XVisualManager&) = delete;
+
   ~XVisualManager();
 
  private:
@@ -439,18 +442,19 @@ class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
 
   x11::VisualId opaque_visual_id_{};
   x11::VisualId transparent_visual_id_{};
-
-  DISALLOW_COPY_AND_ASSIGN(XVisualManager);
 };
 
 class COMPONENT_EXPORT(UI_BASE_X) ScopedUnsetDisplay {
  public:
   ScopedUnsetDisplay();
+
+  ScopedUnsetDisplay(const ScopedUnsetDisplay&) = delete;
+  ScopedUnsetDisplay& operator=(const ScopedUnsetDisplay&) = delete;
+
   ~ScopedUnsetDisplay();
 
  private:
   absl::optional<std::string> display_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedUnsetDisplay);
 };
 
 }  // namespace ui

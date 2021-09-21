@@ -38,6 +38,10 @@ class WaylandZwpLinuxDmabuf
 
   WaylandZwpLinuxDmabuf(zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
                         WaylandConnection* connection);
+
+  WaylandZwpLinuxDmabuf(const WaylandZwpLinuxDmabuf&) = delete;
+  WaylandZwpLinuxDmabuf& operator=(const WaylandZwpLinuxDmabuf&) = delete;
+
   ~WaylandZwpLinuxDmabuf();
 
   // Requests to create a wl_buffer backed by the dmabuf prime |fd| descriptor.
@@ -105,8 +109,6 @@ class WaylandZwpLinuxDmabuf
   base::flat_map<struct zwp_linux_buffer_params_v1*,
                  wl::OnRequestBufferCallback>
       pending_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandZwpLinuxDmabuf);
 };
 
 }  // namespace ui

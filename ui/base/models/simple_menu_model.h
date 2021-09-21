@@ -77,6 +77,10 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   // The Delegate can be NULL, though if it is items can't be checked or
   // disabled.
   explicit SimpleMenuModel(Delegate* delegate);
+
+  SimpleMenuModel(const SimpleMenuModel&) = delete;
+  SimpleMenuModel& operator=(const SimpleMenuModel&) = delete;
+
   ~SimpleMenuModel() override;
 
   // Methods for adding items to the model.
@@ -268,8 +272,6 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   Delegate* delegate_;
 
   base::WeakPtrFactory<SimpleMenuModel> method_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleMenuModel);
 };
 
 }  // namespace ui

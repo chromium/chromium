@@ -24,6 +24,10 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
     : public TouchHandleDrawable {
  public:
   explicit TouchHandleDrawableAura(aura::Window* parent);
+
+  TouchHandleDrawableAura(const TouchHandleDrawableAura&) = delete;
+  TouchHandleDrawableAura& operator=(const TouchHandleDrawableAura&) = delete;
+
   ~TouchHandleDrawableAura() override;
 
  private:
@@ -53,8 +57,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
 
   // Window bounds relative to the focal position.
   gfx::RectF relative_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHandleDrawableAura);
 };
 
 }  // namespace ui

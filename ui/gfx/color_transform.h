@@ -31,6 +31,10 @@ class GFX_EXPORT ColorTransform {
   typedef Point3F TriStim;
 
   ColorTransform();
+
+  ColorTransform(const ColorTransform&) = delete;
+  ColorTransform& operator=(const ColorTransform&) = delete;
+
   virtual ~ColorTransform();
   virtual gfx::ColorSpace GetSrcColorSpace() const = 0;
   virtual gfx::ColorSpace GetDstColorSpace() const = 0;
@@ -69,8 +73,6 @@ class GFX_EXPORT ColorTransform {
  private:
   // The default bit depth assumed by NewColorTransform().
   static constexpr int kDefaultBitDepth = 8;
-
-  DISALLOW_COPY_AND_ASSIGN(ColorTransform);
 };
 
 }  // namespace gfx

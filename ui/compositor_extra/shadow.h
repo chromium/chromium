@@ -23,6 +23,10 @@ class Layer;
 class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
  public:
   Shadow();
+
+  Shadow(const Shadow&) = delete;
+  Shadow& operator=(const Shadow&) = delete;
+
   ~Shadow() override;
 
   // Initialize for the the given shadow |elevation|. This is passed to
@@ -63,6 +67,10 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
    public:
     explicit ShadowLayerOwner(Shadow* owner,
                               std::unique_ptr<Layer> layer = nullptr);
+
+    ShadowLayerOwner(const ShadowLayerOwner&) = delete;
+    ShadowLayerOwner& operator=(const ShadowLayerOwner&) = delete;
+
     ~ShadowLayerOwner() override;
 
     // ui::LayerOwner:
@@ -70,8 +78,6 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
    private:
     Shadow* const owner_shadow_;
-
-    DISALLOW_COPY_AND_ASSIGN(ShadowLayerOwner);
   };
 
   // Updates the shadow layer and its image to reflect |desired_elevation_|.
@@ -107,8 +113,6 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
 
   // Bounds of the content that the shadow encloses.
   gfx::Rect content_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(Shadow);
 };
 
 }  // namespace ui

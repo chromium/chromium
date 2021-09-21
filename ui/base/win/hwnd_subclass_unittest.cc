@@ -15,6 +15,10 @@ namespace {
 class TestWindow : public gfx::WindowImpl {
  public:
   TestWindow() : saw_message(false) {}
+
+  TestWindow(const TestWindow&) = delete;
+  TestWindow& operator=(const TestWindow&) = delete;
+
   ~TestWindow() override {}
 
   bool saw_message;
@@ -32,13 +36,15 @@ class TestWindow : public gfx::WindowImpl {
 
     return FALSE;  // Results in DefWindowProc().
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindow);
 };
 
 class TestMessageFilter : public HWNDMessageFilter {
  public:
   TestMessageFilter() : consume_messages(false), saw_message(false) {}
+
+  TestMessageFilter(const TestMessageFilter&) = delete;
+  TestMessageFilter& operator=(const TestMessageFilter&) = delete;
+
   ~TestMessageFilter() override {}
 
   // Setting to true causes the filter subclass to stop messages from reaching
@@ -61,8 +67,6 @@ class TestMessageFilter : public HWNDMessageFilter {
     }
     return false;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestMessageFilter);
 };
 
 }  // namespace

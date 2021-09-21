@@ -36,6 +36,10 @@ class DISPLAY_MANAGER_EXPORT DisplayChangeObserver
   GetExternalManagedDisplayModeList(const DisplaySnapshot& output);
 
   explicit DisplayChangeObserver(DisplayManager* display_manager);
+
+  DisplayChangeObserver(const DisplayChangeObserver&) = delete;
+  DisplayChangeObserver& operator=(const DisplayChangeObserver&) = delete;
+
   ~DisplayChangeObserver() override;
 
   // DisplayConfigurator::StateController overrides:
@@ -70,8 +74,6 @@ class DISPLAY_MANAGER_EXPORT DisplayChangeObserver
 
   // |display_manager_| is not owned and must outlive DisplayChangeObserver.
   DisplayManager* display_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayChangeObserver);
 };
 
 }  // namespace display

@@ -55,6 +55,10 @@ ui::PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
 class WaylandClipboardTest : public WaylandTest {
  public:
   WaylandClipboardTest() = default;
+
+  WaylandClipboardTest(const WaylandClipboardTest&) = delete;
+  WaylandClipboardTest& operator=(const WaylandClipboardTest&) = delete;
+
   ~WaylandClipboardTest() override = default;
 
   void SetUp() override {
@@ -113,9 +117,6 @@ class WaylandClipboardTest : public WaylandTest {
 
   WaylandClipboard* clipboard_ = nullptr;
   PlatformClipboard::DataMap offered_data_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandClipboardTest);
 };
 
 class CopyPasteOnlyClipboardTest : public WaylandTest {

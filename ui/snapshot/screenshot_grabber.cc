@@ -51,6 +51,9 @@ class ScreenshotGrabber::ScopedCursorHider {
         base::WrapUnique(new ScopedCursorHider(window)));
   }
 
+  ScopedCursorHider(const ScopedCursorHider&) = delete;
+  ScopedCursorHider& operator=(const ScopedCursorHider&) = delete;
+
   ~ScopedCursorHider() {
     aura::client::CursorClient* cursor_client =
         aura::client::GetCursorClient(window_);
@@ -60,8 +63,6 @@ class ScreenshotGrabber::ScopedCursorHider {
  private:
   explicit ScopedCursorHider(aura::Window* window) : window_(window) {}
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCursorHider);
 };
 #endif
 

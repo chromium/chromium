@@ -73,6 +73,9 @@ class DCLayerTree {
               bool disable_vp_scaling,
               bool no_downscaled_overlay_promotion);
 
+  DCLayerTree(const DCLayerTree&) = delete;
+  DCLayerTree& operator=(const DCLayerTree&) = delete;
+
   ~DCLayerTree();
 
   // Returns true on success.
@@ -200,8 +203,6 @@ class DCLayerTree {
   // platform supports delegated ink trails. It must be initialized via the
   // Initialize() method in order to be used for drawing delegated ink trails.
   std::unique_ptr<DelegatedInkRenderer> ink_renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DCLayerTree);
 };
 
 }  // namespace gl

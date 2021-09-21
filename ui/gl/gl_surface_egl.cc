@@ -235,6 +235,10 @@ class EGLSyncControlVSyncProvider : public SyncControlVSyncProvider {
         surface_(surface) {
   }
 
+  EGLSyncControlVSyncProvider(const EGLSyncControlVSyncProvider&) = delete;
+  EGLSyncControlVSyncProvider& operator=(const EGLSyncControlVSyncProvider&) =
+      delete;
+
   ~EGLSyncControlVSyncProvider() override {}
 
   static bool IsSupported() {
@@ -273,8 +277,6 @@ class EGLSyncControlVSyncProvider : public SyncControlVSyncProvider {
 
  private:
   EGLSurface surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(EGLSyncControlVSyncProvider);
 };
 
 class EGLGpuSwitchingObserver final : public ui::GpuSwitchingObserver {

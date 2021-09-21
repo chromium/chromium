@@ -28,6 +28,10 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
   class Builder {
    public:
     Builder();
+
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
+
     ~Builder();
 
     // Builds new FakeDisplaySnapshot. At the very minimum you must set id and
@@ -111,8 +115,6 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     gfx::ColorSpace color_space_;
     uint32_t bits_per_channel_ = 8u;
     gfx::HDRStaticMetadata hdr_static_metadata_;
-
-    DISALLOW_COPY_AND_ASSIGN(Builder);
   };
 
   FakeDisplaySnapshot(int64_t display_id,

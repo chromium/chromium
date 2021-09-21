@@ -22,6 +22,10 @@ namespace aura {
 class TestNativeWindow : public gfx::WindowImpl {
  public:
   TestNativeWindow() {}
+
+  TestNativeWindow(const TestNativeWindow&) = delete;
+  TestNativeWindow& operator=(const TestNativeWindow&) = delete;
+
   ~TestNativeWindow() override;
 
  private:
@@ -34,8 +38,6 @@ class TestNativeWindow : public gfx::WindowImpl {
                             DWORD msg_map_id) override {
     return FALSE;  // Results in DefWindowProc().
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeWindow);
 };
 
 TestNativeWindow::~TestNativeWindow() {
@@ -47,11 +49,13 @@ TestNativeWindow::~TestNativeWindow() {
 class TestWin32Window {
  public:
   TestWin32Window() {}
+
+  TestWin32Window(const TestWin32Window&) = delete;
+  TestWin32Window& operator=(const TestWin32Window&) = delete;
+
   ~TestWin32Window();
 
   HWND Create(DWORD style);
-
-  DISALLOW_COPY_AND_ASSIGN(TestWin32Window);
 
  private:
   HWND hwnd_ = NULL;

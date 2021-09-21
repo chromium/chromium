@@ -67,6 +67,9 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
                                    public display::DisplayObserver,
                                    public ui::CompositorObserver {
  public:
+  WindowTreeHost(const WindowTreeHost&) = delete;
+  WindowTreeHost& operator=(const WindowTreeHost&) = delete;
+
   ~WindowTreeHost() override;
 
   // Creates a new WindowTreeHost with the specified |properties|.
@@ -406,8 +409,6 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   bool accelerated_widget_made_visible_ = false;
 
   base::WeakPtrFactory<WindowTreeHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowTreeHost);
 };
 
 }  // namespace aura

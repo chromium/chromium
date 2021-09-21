@@ -30,6 +30,10 @@ class DISPLAY_UTIL_EXPORT EdidParser {
  public:
   explicit EdidParser(const std::vector<uint8_t>& edid_blob,
                       bool is_external = false);
+
+  EdidParser(const EdidParser&) = delete;
+  EdidParser& operator=(const EdidParser&) = delete;
+
   ~EdidParser();
 
   uint16_t manufacturer_id() const { return manufacturer_id_; }
@@ -126,8 +130,6 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
-
-  DISALLOW_COPY_AND_ASSIGN(EdidParser);
 };
 
 }  // namespace display

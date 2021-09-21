@@ -30,6 +30,10 @@ class EVENTS_EXPORT DragEventAndroid {
                    const gfx::PointF& screen_location,
                    const std::vector<std::u16string>& mime_types,
                    jstring content);
+
+  DragEventAndroid(const DragEventAndroid&) = delete;
+  DragEventAndroid& operator=(const DragEventAndroid&) = delete;
+
   ~DragEventAndroid();
 
   int action() const { return action_; }
@@ -55,8 +59,6 @@ class EVENTS_EXPORT DragEventAndroid {
   const std::vector<std::u16string>& mime_types_;
   // The Java reference to the drop content to avoid unnecessary copying.
   base::android::ScopedJavaGlobalRef<jstring> content_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragEventAndroid);
 };
 
 }  // namespace ui

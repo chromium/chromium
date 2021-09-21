@@ -18,6 +18,10 @@ class DrmDisplayHostManager;
 class DrmNativeDisplayDelegate : public display::NativeDisplayDelegate {
  public:
   explicit DrmNativeDisplayDelegate(DrmDisplayHostManager* display_manager);
+
+  DrmNativeDisplayDelegate(const DrmNativeDisplayDelegate&) = delete;
+  DrmNativeDisplayDelegate& operator=(const DrmNativeDisplayDelegate&) = delete;
+
   ~DrmNativeDisplayDelegate() override;
 
   void OnConfigurationChanged();
@@ -53,8 +57,6 @@ class DrmNativeDisplayDelegate : public display::NativeDisplayDelegate {
   DrmDisplayHostManager* const display_manager_;  // Not owned.
 
   base::ObserverList<display::NativeDisplayObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmNativeDisplayDelegate);
 };
 
 }  // namespace ui

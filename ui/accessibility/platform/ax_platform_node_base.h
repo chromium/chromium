@@ -61,6 +61,10 @@ struct AX_EXPORT AXLegacyHypertext {
 class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
  public:
   AXPlatformNodeBase();
+
+  AXPlatformNodeBase(const AXPlatformNodeBase&) = delete;
+  AXPlatformNodeBase& operator=(const AXPlatformNodeBase&) = delete;
+
   ~AXPlatformNodeBase() override;
 
   virtual void Init(AXPlatformNodeDelegate* delegate);
@@ -566,8 +570,6 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   // Is there an aria-describedby that points to a role="tooltip".
   bool IsDescribedByTooltip() const;
-
-  DISALLOW_COPY_AND_ASSIGN(AXPlatformNodeBase);
 };
 
 }  // namespace ui

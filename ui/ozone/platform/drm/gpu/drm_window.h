@@ -53,6 +53,9 @@ class DrmWindow {
             DrmDeviceManager* device_manager,
             ScreenManager* screen_manager);
 
+  DrmWindow(const DrmWindow&) = delete;
+  DrmWindow& operator=(const DrmWindow&) = delete;
+
   ~DrmWindow();
 
   gfx::Rect bounds() const { return bounds_; }
@@ -123,8 +126,6 @@ class DrmWindow {
   DrmOverlayPlaneList last_submitted_planes_;
 
   bool force_buffer_reallocation_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmWindow);
 };
 
 }  // namespace ui

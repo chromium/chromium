@@ -21,6 +21,12 @@ class ViewsContentClientMainPartsChromeOS
   ViewsContentClientMainPartsChromeOS(
       const content::MainFunctionParams& content_params,
       ViewsContentClient* views_content_client);
+
+  ViewsContentClientMainPartsChromeOS(
+      const ViewsContentClientMainPartsChromeOS&) = delete;
+  ViewsContentClientMainPartsChromeOS& operator=(
+      const ViewsContentClientMainPartsChromeOS&) = delete;
+
   ~ViewsContentClientMainPartsChromeOS() override {}
 
   // content::BrowserMainParts:
@@ -30,8 +36,6 @@ class ViewsContentClientMainPartsChromeOS
  private:
   // Enable a minimal set of views::corewm to be initialized.
   std::unique_ptr<::wm::WMTestHelper> wm_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainPartsChromeOS);
 };
 
 ViewsContentClientMainPartsChromeOS::ViewsContentClientMainPartsChromeOS(

@@ -25,6 +25,10 @@ class HostCursorProxy : public DrmCursorProxy {
       mojo::PendingAssociatedRemote<ui::ozone::mojom::DeviceCursor> main_cursor,
       mojo::PendingAssociatedRemote<ui::ozone::mojom::DeviceCursor>
           evdev_cursor);
+
+  HostCursorProxy(const HostCursorProxy&) = delete;
+  HostCursorProxy& operator=(const HostCursorProxy&) = delete;
+
   ~HostCursorProxy() override;
 
  private:
@@ -46,8 +50,6 @@ class HostCursorProxy : public DrmCursorProxy {
 
   base::PlatformThreadRef ui_thread_ref_;
   scoped_refptr<base::SingleThreadTaskRunner> evdev_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostCursorProxy);
 };
 
 }  // namespace ui

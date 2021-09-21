@@ -35,6 +35,10 @@ class FalseTouchFinderTest : public testing::Test {
   static constexpr gfx::Size kTouchscreenSize = gfx::Size(4000, 4000);
 
   FalseTouchFinderTest() {}
+
+  FalseTouchFinderTest(const FalseTouchFinderTest&) = delete;
+  FalseTouchFinderTest& operator=(const FalseTouchFinderTest&) = delete;
+
   ~FalseTouchFinderTest() override {}
 
   bool FilterAndCheck(const TouchEntry entries[], size_t count) {
@@ -88,8 +92,6 @@ class FalseTouchFinderTest : public testing::Test {
   }
 
   std::unique_ptr<FalseTouchFinder> false_touch_finder_;
-
-  DISALLOW_COPY_AND_ASSIGN(FalseTouchFinderTest);
 };
 
 constexpr gfx::Size FalseTouchFinderTest::kTouchscreenSize;

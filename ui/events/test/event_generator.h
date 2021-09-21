@@ -130,6 +130,9 @@ class EventGenerator {
   EventGenerator(gfx::NativeWindow root_window,
                  gfx::NativeWindow target_window);
 
+  EventGenerator(const EventGenerator&) = delete;
+  EventGenerator& operator=(const EventGenerator&) = delete;
+
   virtual ~EventGenerator();
 
   // Explicitly sets the location used by mouse/touch events, in screen
@@ -480,8 +483,6 @@ class EventGenerator {
   Target target_ = Target::WIDGET;
 
   std::unique_ptr<TestTickClock> tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventGenerator);
 };
 
 }  // namespace test

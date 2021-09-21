@@ -53,6 +53,9 @@ struct ClassInfo {
 // WARNING: this class may be used on multiple threads.
 class ClassRegistrar {
  public:
+  ClassRegistrar(const ClassRegistrar&) = delete;
+  ClassRegistrar& operator=(const ClassRegistrar&) = delete;
+
   ~ClassRegistrar();
 
   static ClassRegistrar* GetInstance();
@@ -94,8 +97,6 @@ class ClassRegistrar {
   int registered_count_;
 
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClassRegistrar);
 };
 
 ClassRegistrar::~ClassRegistrar() {}

@@ -57,6 +57,10 @@ class TestWaylandServerThread : public base::Thread,
   class OutputDelegate;
 
   TestWaylandServerThread();
+
+  TestWaylandServerThread(const TestWaylandServerThread&) = delete;
+  TestWaylandServerThread& operator=(const TestWaylandServerThread&) = delete;
+
   ~TestWaylandServerThread() override;
 
   // Starts the test Wayland server thread. If this succeeds, the WAYLAND_SOCKET
@@ -154,8 +158,6 @@ class TestWaylandServerThread : public base::Thread,
   base::MessagePumpLibevent::FdWatchController controller_;
 
   OutputDelegate* output_delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWaylandServerThread);
 };
 
 class TestWaylandServerThread::OutputDelegate {

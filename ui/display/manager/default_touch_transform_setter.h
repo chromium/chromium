@@ -14,14 +14,16 @@ class DISPLAY_MANAGER_EXPORT DefaultTouchTransformSetter
     : public TouchTransformSetter {
  public:
   DefaultTouchTransformSetter();
+
+  DefaultTouchTransformSetter(const DefaultTouchTransformSetter&) = delete;
+  DefaultTouchTransformSetter& operator=(const DefaultTouchTransformSetter&) =
+      delete;
+
   ~DefaultTouchTransformSetter() override;
 
   // TouchTransformSetter:
   void ConfigureTouchDevices(
       const std::vector<ui::TouchDeviceTransform>& transforms) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultTouchTransformSetter);
 };
 
 }  // namespace display

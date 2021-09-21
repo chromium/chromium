@@ -60,6 +60,10 @@ EventDispatchDetails SelfDestroyingEventProcessor::PostDispatchEvent(
 class EventProcessorTest : public testing::Test {
  public:
   EventProcessorTest() {}
+
+  EventProcessorTest(const EventProcessorTest&) = delete;
+  EventProcessorTest& operator=(const EventProcessorTest&) = delete;
+
   ~EventProcessorTest() override {}
 
  protected:
@@ -90,8 +94,6 @@ class EventProcessorTest : public testing::Test {
 
  private:
   TestEventProcessor processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventProcessorTest);
 };
 
 TEST_F(EventProcessorTest, Basic) {
@@ -122,6 +124,10 @@ class ReDispatchEventHandler : public TestEventHandler {
  public:
   ReDispatchEventHandler(EventProcessor* processor, EventTarget* target)
       : processor_(processor), expected_target_(target) {}
+
+  ReDispatchEventHandler(const ReDispatchEventHandler&) = delete;
+  ReDispatchEventHandler& operator=(const ReDispatchEventHandler&) = delete;
+
   ~ReDispatchEventHandler() override {}
 
   // TestEventHandler:
@@ -146,8 +152,6 @@ class ReDispatchEventHandler : public TestEventHandler {
  private:
   EventProcessor* processor_;
   EventTarget* expected_target_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReDispatchEventHandler);
 };
 
 // Verifies that the phase and target information of an event is not mutated

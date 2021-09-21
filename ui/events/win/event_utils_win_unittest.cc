@@ -16,6 +16,10 @@ namespace {
 class TestWindow : public gfx::WindowImpl {
  public:
   TestWindow() {}
+
+  TestWindow(const TestWindow&) = delete;
+  TestWindow& operator=(const TestWindow&) = delete;
+
   ~TestWindow() override {}
 
   BOOL ProcessWindowMessage(HWND window,
@@ -29,9 +33,6 @@ class TestWindow : public gfx::WindowImpl {
     // screen coordinate transform.
     return message == WM_NCCALCSIZE;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWindow);
 };
 
 CHROME_MSG CreateEvent(UINT type, WORD x, WORD y, HWND hwnd) {

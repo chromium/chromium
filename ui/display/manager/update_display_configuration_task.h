@@ -40,6 +40,12 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
                                  int power_flags,
                                  bool force_configure,
                                  ResponseCallback callback);
+
+  UpdateDisplayConfigurationTask(const UpdateDisplayConfigurationTask&) =
+      delete;
+  UpdateDisplayConfigurationTask& operator=(
+      const UpdateDisplayConfigurationTask&) = delete;
+
   ~UpdateDisplayConfigurationTask() override;
 
   void Run();
@@ -112,8 +118,6 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   absl::optional<base::TimeTicks> start_timestamp_;
 
   base::WeakPtrFactory<UpdateDisplayConfigurationTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateDisplayConfigurationTask);
 };
 
 }  // namespace display

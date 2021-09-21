@@ -22,12 +22,14 @@ extern const struct wl_buffer_interface kMockWlBufferImpl;
 class MockBuffer : public ServerObject {
  public:
   MockBuffer(wl_resource* resource, std::vector<base::ScopedFD>&& fds);
+
+  MockBuffer(const MockBuffer&) = delete;
+  MockBuffer& operator=(const MockBuffer&) = delete;
+
   ~MockBuffer() override;
 
  private:
   std::vector<base::ScopedFD> fds_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBuffer);
 };
 
 }  // namespace wl

@@ -43,6 +43,10 @@ class GESTURE_DETECTION_EXPORT ScaleGestureDetector {
   };
 
   ScaleGestureDetector(const Config& config, ScaleGestureListener* listener);
+
+  ScaleGestureDetector(const ScaleGestureDetector&) = delete;
+  ScaleGestureDetector& operator=(const ScaleGestureDetector&) = delete;
+
   virtual ~ScaleGestureDetector();
 
   // Accepts MotionEvents and dispatches events to a |ScaleGestureListener|
@@ -111,8 +115,6 @@ class GESTURE_DETECTION_EXPORT ScaleGestureDetector {
   AnchoredScaleMode anchored_scale_mode_;
 
   bool event_before_or_above_starting_gesture_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScaleGestureDetector);
 };
 
 }  // namespace ui

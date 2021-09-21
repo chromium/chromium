@@ -97,6 +97,10 @@ class GFX_EXPORT SurfaceControl {
   struct GFX_EXPORT TransactionStats {
    public:
     TransactionStats();
+
+    TransactionStats(const TransactionStats&) = delete;
+    TransactionStats& operator=(const TransactionStats&) = delete;
+
     ~TransactionStats();
 
     TransactionStats(TransactionStats&& other);
@@ -107,14 +111,15 @@ class GFX_EXPORT SurfaceControl {
     base::ScopedFD present_fence;
     std::vector<SurfaceStats> surface_stats;
     base::TimeTicks latch_time;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TransactionStats);
   };
 
   class GFX_EXPORT Transaction {
    public:
     Transaction();
+
+    Transaction(const Transaction&) = delete;
+    Transaction& operator=(const Transaction&) = delete;
+
     ~Transaction();
 
     Transaction(Transaction&& other);
@@ -162,8 +167,6 @@ class GFX_EXPORT SurfaceControl {
     ASurfaceTransaction* transaction_;
     OnCommitCb on_commit_cb_;
     OnCompleteCb on_complete_cb_;
-
-    DISALLOW_COPY_AND_ASSIGN(Transaction);
   };
 };
 }  // namespace gfx

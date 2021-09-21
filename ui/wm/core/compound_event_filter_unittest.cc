@@ -37,13 +37,16 @@ namespace {
 class ConsumeGestureEventFilter : public ui::EventHandler {
  public:
   ConsumeGestureEventFilter() {}
+
+  ConsumeGestureEventFilter(const ConsumeGestureEventFilter&) = delete;
+  ConsumeGestureEventFilter& operator=(const ConsumeGestureEventFilter&) =
+      delete;
+
   ~ConsumeGestureEventFilter() override {}
 
  private:
   // Overridden from ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* e) override { e->StopPropagation(); }
-
-  DISALLOW_COPY_AND_ASSIGN(ConsumeGestureEventFilter);
 };
 
 }  // namespace

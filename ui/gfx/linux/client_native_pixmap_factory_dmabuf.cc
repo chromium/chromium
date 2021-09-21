@@ -59,6 +59,12 @@ class ClientNativePixmapOpaque : public ClientNativePixmap {
 class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
  public:
   explicit ClientNativePixmapFactoryDmabuf() {}
+
+  ClientNativePixmapFactoryDmabuf(const ClientNativePixmapFactoryDmabuf&) =
+      delete;
+  ClientNativePixmapFactoryDmabuf& operator=(
+      const ClientNativePixmapFactoryDmabuf&) = delete;
+
   ~ClientNativePixmapFactoryDmabuf() override {}
 
   std::unique_ptr<ClientNativePixmap> ImportFromHandle(
@@ -87,9 +93,6 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
     NOTREACHED();
     return nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientNativePixmapFactoryDmabuf);
 };
 
 ClientNativePixmapFactory* CreateClientNativePixmapFactoryDmabuf() {

@@ -18,10 +18,13 @@ namespace gfx {
 class GFX_EXPORT ScopedCocoaDisableScreenUpdates {
  public:
   ScopedCocoaDisableScreenUpdates();
-  ~ScopedCocoaDisableScreenUpdates();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedCocoaDisableScreenUpdates);
+  ScopedCocoaDisableScreenUpdates(const ScopedCocoaDisableScreenUpdates&) =
+      delete;
+  ScopedCocoaDisableScreenUpdates& operator=(
+      const ScopedCocoaDisableScreenUpdates&) = delete;
+
+  ~ScopedCocoaDisableScreenUpdates();
 };
 
 }  // namespace gfx

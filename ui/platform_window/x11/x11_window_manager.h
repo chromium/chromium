@@ -17,6 +17,10 @@ class X11Window;
 class X11_WINDOW_EXPORT X11WindowManager {
  public:
   X11WindowManager();
+
+  X11WindowManager(const X11WindowManager&) = delete;
+  X11WindowManager& operator=(const X11WindowManager&) = delete;
+
   ~X11WindowManager();
 
   // Returns instance of X11WindowManager.
@@ -52,8 +56,6 @@ class X11_WINDOW_EXPORT X11WindowManager {
   X11Window* window_mouse_currently_on_ = nullptr;
 
   base::flat_map<gfx::AcceleratedWidget, X11Window*> windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11WindowManager);
 };
 
 }  // namespace ui

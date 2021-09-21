@@ -69,6 +69,10 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
                 DrmThreadProxy* drm_thread_proxy)
       : surface_factory_(surface_factory),
         drm_thread_proxy_(drm_thread_proxy) {}
+
+  GLOzoneEGLGbm(const GLOzoneEGLGbm&) = delete;
+  GLOzoneEGLGbm& operator=(const GLOzoneEGLGbm&) = delete;
+
   ~GLOzoneEGLGbm() override {}
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
@@ -171,8 +175,6 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
   GbmSurfaceFactory* surface_factory_;
   DrmThreadProxy* drm_thread_proxy_;
   gl::EGLDisplayPlatform native_display_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLGbm);
 };
 
 std::vector<gfx::BufferFormat> EnumerateSupportedBufferFormatsForTexturing() {

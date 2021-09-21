@@ -210,6 +210,9 @@ class InputMethodAshTest : public internal::InputMethodDelegate,
     ResetFlags();
   }
 
+  InputMethodAshTest(const InputMethodAshTest&) = delete;
+  InputMethodAshTest& operator=(const InputMethodAshTest&) = delete;
+
   ~InputMethodAshTest() override = default;
 
   void SetUp() override {
@@ -375,8 +378,6 @@ class InputMethodAshTest : public internal::InputMethodDelegate,
   TestInputMethodManager* input_method_manager_;
 
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodAshTest);
 };
 
 // Tests public APIs in ui::InputMethod first.
@@ -976,9 +977,12 @@ TEST_F(InputMethodAshTest, ConfirmCompositionText_SetCompositionRange) {
 class InputMethodAshKeyEventTest : public InputMethodAshTest {
  public:
   InputMethodAshKeyEventTest() = default;
-  ~InputMethodAshKeyEventTest() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(InputMethodAshKeyEventTest);
+  InputMethodAshKeyEventTest(const InputMethodAshKeyEventTest&) = delete;
+  InputMethodAshKeyEventTest& operator=(const InputMethodAshKeyEventTest&) =
+      delete;
+
+  ~InputMethodAshKeyEventTest() override = default;
 };
 
 TEST_F(InputMethodAshKeyEventTest, KeyEventDelayResponseTest) {

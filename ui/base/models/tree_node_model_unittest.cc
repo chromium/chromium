@@ -20,6 +20,10 @@ namespace ui {
 class TreeNodeModelTest : public testing::Test, public TreeModelObserver {
  public:
   TreeNodeModelTest() = default;
+
+  TreeNodeModelTest(const TreeNodeModelTest&) = delete;
+  TreeNodeModelTest& operator=(const TreeNodeModelTest&) = delete;
+
   ~TreeNodeModelTest() override = default;
 
  protected:
@@ -51,8 +55,6 @@ class TreeNodeModelTest : public testing::Test, public TreeModelObserver {
   int added_count_ = 0;
   int removed_count_ = 0;
   int changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeNodeModelTest);
 };
 
 typedef TreeNodeWithValue<int> TestNode;

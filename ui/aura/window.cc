@@ -138,6 +138,10 @@ class ScopedCursorHider {
       hid_cursor_ = true;
     }
   }
+
+  ScopedCursorHider(const ScopedCursorHider&) = delete;
+  ScopedCursorHider& operator=(const ScopedCursorHider&) = delete;
+
   ~ScopedCursorHider() {
     if (!window_->IsRootWindow())
       return;
@@ -158,8 +162,6 @@ class ScopedCursorHider {
  private:
   Window* window_;
   bool hid_cursor_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCursorHider);
 };
 
 }  // namespace

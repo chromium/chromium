@@ -73,6 +73,10 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandle : public TouchSelectionDraggable {
   TouchHandle(TouchHandleClient* client,
               TouchHandleOrientation orientation,
               const gfx::RectF& viewport_rect);
+
+  TouchHandle(const TouchHandle&) = delete;
+  TouchHandle& operator=(const TouchHandle&) = delete;
+
   ~TouchHandle() override;
 
   // TouchSelectionDraggable implementation.
@@ -168,8 +172,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandle : public TouchSelectionDraggable {
   bool mirror_vertical_;
   bool mirror_horizontal_;
   float handle_horizontal_padding_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHandle);
 };
 
 }  // namespace ui

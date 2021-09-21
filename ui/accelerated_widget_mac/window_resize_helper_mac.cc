@@ -33,6 +33,10 @@ using EventTimedWaitCallback =
 class WrappedTask {
  public:
   WrappedTask(base::OnceClosure closure, base::TimeDelta delay);
+
+  WrappedTask(const WrappedTask&) = delete;
+  WrappedTask& operator=(const WrappedTask&) = delete;
+
   ~WrappedTask();
   bool ShouldRunBefore(const WrappedTask& other);
   void Run();
@@ -49,8 +53,6 @@ class WrappedTask {
 
   // Back pointer to the pumpable task runner that this task is enqueued in.
   scoped_refptr<PumpableTaskRunner> pumpable_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappedTask);
 };
 
 // The PumpableTaskRunner is a task runner that will wrap tasks in an

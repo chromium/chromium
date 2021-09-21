@@ -111,6 +111,10 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 
   explicit DisplayManager(std::unique_ptr<Screen> screen);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+  DisplayManager(const DisplayManager&) = delete;
+  DisplayManager& operator=(const DisplayManager&) = delete;
+
   ~DisplayManager() override;
 #else
   ~DisplayManager();
@@ -508,12 +512,14 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   class BeginEndNotifier {
    public:
     explicit BeginEndNotifier(DisplayManager* display_manager);
+
+    BeginEndNotifier(const BeginEndNotifier&) = delete;
+    BeginEndNotifier& operator=(const BeginEndNotifier&) = delete;
+
     ~BeginEndNotifier();
 
    private:
     DisplayManager* display_manager_;
-
-    DISALLOW_COPY_AND_ASSIGN(BeginEndNotifier);
   };
 
   void set_change_display_upon_host_resize(bool value) {
@@ -705,8 +711,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 #endif
 
   base::WeakPtrFactory<DisplayManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayManager);
 };
 
 }  // namespace display

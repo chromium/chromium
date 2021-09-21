@@ -28,6 +28,10 @@ namespace {
 class UIChromeOSTestSuite : public base::TestSuite {
  public:
   UIChromeOSTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+
+  UIChromeOSTestSuite(const UIChromeOSTestSuite&) = delete;
+  UIChromeOSTestSuite& operator=(const UIChromeOSTestSuite&) = delete;
+
   ~UIChromeOSTestSuite() override {}
 
  protected:
@@ -50,8 +54,6 @@ class UIChromeOSTestSuite : public base::TestSuite {
 
  private:
   std::unique_ptr<aura::Env> env_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIChromeOSTestSuite);
 };
 
 }  // namespace

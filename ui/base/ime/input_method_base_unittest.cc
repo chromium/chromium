@@ -119,6 +119,10 @@ class MockInputMethodBase : public InputMethodBase {
  public:
   explicit MockInputMethodBase(ClientChangeVerifier* verifier)
       : InputMethodBase(nullptr), verifier_(verifier) {}
+
+  MockInputMethodBase(const MockInputMethodBase&) = delete;
+  MockInputMethodBase& operator=(const MockInputMethodBase&) = delete;
+
   ~MockInputMethodBase() override = default;
 
  private:
@@ -145,7 +149,6 @@ class MockInputMethodBase : public InputMethodBase {
   ClientChangeVerifier* const verifier_;
 
   FRIEND_TEST_ALL_PREFIXES(InputMethodBaseTest, CandidateWindowEvents);
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodBase);
 };
 
 class MockInputMethodObserver : public InputMethodObserver {
@@ -153,6 +156,10 @@ class MockInputMethodObserver : public InputMethodObserver {
   explicit MockInputMethodObserver(ClientChangeVerifier* verifier)
       : verifier_(verifier) {
   }
+
+  MockInputMethodObserver(const MockInputMethodObserver&) = delete;
+  MockInputMethodObserver& operator=(const MockInputMethodObserver&) = delete;
+
   ~MockInputMethodObserver() override = default;
 
  private:
@@ -167,7 +174,6 @@ class MockInputMethodObserver : public InputMethodObserver {
 
   // Not owned.
   ClientChangeVerifier* const verifier_;
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethodObserver);
 };
 
 typedef base::ScopedObservation<InputMethod, InputMethodObserver>

@@ -47,6 +47,9 @@ class WindowTreeHost;
 class AURA_EXPORT Env : public ui::EventTarget,
                         public base::SupportsUserData {
  public:
+  Env(const Env&) = delete;
+  Env& operator=(const Env&) = delete;
+
   ~Env() override;
 
   // Creates a new Env instance.
@@ -196,8 +199,6 @@ class AURA_EXPORT Env : public ui::EventTarget,
   std::unique_ptr<WindowOcclusionTracker> window_occlusion_tracker_;
 
   std::vector<aura::WindowTreeHost*> window_tree_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(Env);
 };
 
 }  // namespace aura

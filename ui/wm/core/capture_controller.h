@@ -25,6 +25,10 @@ namespace wm {
 class WM_CORE_EXPORT CaptureController : public aura::client::CaptureClient {
  public:
   CaptureController();
+
+  CaptureController(const CaptureController&) = delete;
+  CaptureController& operator=(const CaptureController&) = delete;
+
   ~CaptureController() override;
 
   static CaptureController* Get() { return instance_; }
@@ -65,8 +69,6 @@ class WM_CORE_EXPORT CaptureController : public aura::client::CaptureClient {
   std::map<aura::Window*, aura::client::CaptureDelegate*> delegates_;
 
   base::ObserverList<aura::client::CaptureClientObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureController);
 };
 
 // ScopedCaptureClient is responsible for creating a CaptureClient for a
@@ -77,6 +79,10 @@ class WM_CORE_EXPORT ScopedCaptureClient : public aura::WindowObserver {
   class WM_CORE_EXPORT TestApi {
    public:
     explicit TestApi(ScopedCaptureClient* client) : client_(client) {}
+
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     ~TestApi() {}
 
     // Sets the delegate.
@@ -85,8 +91,6 @@ class WM_CORE_EXPORT ScopedCaptureClient : public aura::WindowObserver {
    private:
     // Not owned.
     ScopedCaptureClient* client_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   explicit ScopedCaptureClient(aura::Window* root);

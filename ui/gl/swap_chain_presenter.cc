@@ -53,6 +53,9 @@ class ScopedReleaseKeyedMutex {
     DCHECK(keyed_mutex);
   }
 
+  ScopedReleaseKeyedMutex(const ScopedReleaseKeyedMutex&) = delete;
+  ScopedReleaseKeyedMutex& operator=(const ScopedReleaseKeyedMutex&) = delete;
+
   ~ScopedReleaseKeyedMutex() {
     HRESULT hr = keyed_mutex_->ReleaseSync(key_);
     DCHECK(SUCCEEDED(hr));
@@ -61,8 +64,6 @@ class ScopedReleaseKeyedMutex {
  private:
   Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex_;
   UINT64 key_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedReleaseKeyedMutex);
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

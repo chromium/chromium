@@ -24,6 +24,10 @@ class EventSink;
 class EVENTS_EXPORT EventSource {
  public:
   EventSource();
+
+  EventSource(const EventSource&) = delete;
+  EventSource& operator=(const EventSource&) = delete;
+
   virtual ~EventSource();
 
   virtual EventSink* GetEventSink() = 0;
@@ -70,8 +74,6 @@ class EVENTS_EXPORT EventSource {
 
   friend class EventRewriter;  // TODO(kpschoedel): Remove along with old API.
   friend class EventSourceTestApi;
-
-  DISALLOW_COPY_AND_ASSIGN(EventSource);
 };
 
 }  // namespace ui

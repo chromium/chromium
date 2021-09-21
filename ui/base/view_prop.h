@@ -29,6 +29,10 @@ class COMPONENT_EXPORT(UI_BASE) ViewProp {
   // ViewProp does *not* make a copy of the char*, the pointer is used for
   // sorting.
   ViewProp(gfx::AcceleratedWidget view, const char* key, void* data);
+
+  ViewProp(const ViewProp&) = delete;
+  ViewProp& operator=(const ViewProp&) = delete;
+
   ~ViewProp();
 
   // Returns the value associated with the view/key pair, or NULL if there is
@@ -43,8 +47,6 @@ class COMPONENT_EXPORT(UI_BASE) ViewProp {
 
   // Stores the actual data.
   scoped_refptr<Data> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewProp);
 };
 
 }  // namespace ui

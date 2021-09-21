@@ -25,6 +25,9 @@ class DelegateBase : public SimpleMenuModel::Delegate {
  public:
   DelegateBase() : SimpleMenuModel::Delegate() {}
 
+  DelegateBase(const DelegateBase&) = delete;
+  DelegateBase& operator=(const DelegateBase&) = delete;
+
   ~DelegateBase() override = default;
 
   void set_icon_on_item(int command_id) { item_with_icon_ = command_id; }
@@ -60,8 +63,6 @@ class DelegateBase : public SimpleMenuModel::Delegate {
 
  private:
   absl::optional<int> item_with_icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegateBase);
 };
 
 TEST(SimpleMenuModelTest, SetLabel) {

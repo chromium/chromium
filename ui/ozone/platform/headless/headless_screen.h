@@ -18,6 +18,10 @@ namespace ui {
 class HeadlessScreen : public PlatformScreen {
  public:
   HeadlessScreen();
+
+  HeadlessScreen(const HeadlessScreen&) = delete;
+  HeadlessScreen& operator=(const HeadlessScreen&) = delete;
+
   ~HeadlessScreen() override;
 
   // Overridden from ui::PlatformScreen:
@@ -39,8 +43,6 @@ class HeadlessScreen : public PlatformScreen {
   display::DisplayList display_list_;
 
   base::ObserverList<display::DisplayObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessScreen);
 };
 
 }  // namespace ui

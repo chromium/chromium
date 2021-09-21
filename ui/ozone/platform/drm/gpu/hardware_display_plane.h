@@ -22,6 +22,9 @@ class HardwareDisplayPlane {
  public:
   HardwareDisplayPlane(uint32_t id);
 
+  HardwareDisplayPlane(const HardwareDisplayPlane&) = delete;
+  HardwareDisplayPlane& operator=(const HardwareDisplayPlane&) = delete;
+
   virtual ~HardwareDisplayPlane();
 
   virtual bool Initialize(DrmDevice* drm);
@@ -88,8 +91,6 @@ class HardwareDisplayPlane {
 
  private:
   void InitializeProperties(DrmDevice* drm);
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayPlane);
 };
 
 }  // namespace ui

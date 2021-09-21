@@ -15,14 +15,15 @@ namespace ui {
 class PlatformWindowCast : public StubWindow, public PlatformEventDispatcher {
  public:
   PlatformWindowCast(PlatformWindowDelegate* delegate, const gfx::Rect& bounds);
+
+  PlatformWindowCast(const PlatformWindowCast&) = delete;
+  PlatformWindowCast& operator=(const PlatformWindowCast&) = delete;
+
   ~PlatformWindowCast() override;
 
   // PlatformEventDispatcher implementation:
   bool CanDispatchEvent(const PlatformEvent& event) override;
   uint32_t DispatchEvent(const PlatformEvent& event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformWindowCast);
 };
 
 }  // namespace ui

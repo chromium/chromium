@@ -26,6 +26,10 @@ class DrmDisplayHost : public GpuThreadObserver {
   DrmDisplayHost(GpuThreadAdapter* sender,
                  std::unique_ptr<display::DisplaySnapshot> params,
                  bool is_dummy);
+
+  DrmDisplayHost(const DrmDisplayHost&) = delete;
+  DrmDisplayHost& operator=(const DrmDisplayHost&) = delete;
+
   ~DrmDisplayHost() override;
 
   display::DisplaySnapshot* snapshot() const { return snapshot_.get(); }
@@ -68,8 +72,6 @@ class DrmDisplayHost : public GpuThreadObserver {
 
   display::GetHDCPStateCallback get_hdcp_callback_;
   display::SetHDCPStateCallback set_hdcp_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDisplayHost);
 };
 
 }  // namespace ui

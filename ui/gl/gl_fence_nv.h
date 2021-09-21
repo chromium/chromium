@@ -15,6 +15,10 @@ namespace gl {
 class GL_EXPORT GLFenceNV : public GLFence {
  public:
   GLFenceNV();
+
+  GLFenceNV(const GLFenceNV&) = delete;
+  GLFenceNV& operator=(const GLFenceNV&) = delete;
+
   ~GLFenceNV() override;
 
   // GLFence implementation:
@@ -27,8 +31,6 @@ class GL_EXPORT GLFenceNV : public GLFence {
 
  private:
   GLuint fence_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GLFenceNV);
 };
 
 }  // namespace gl

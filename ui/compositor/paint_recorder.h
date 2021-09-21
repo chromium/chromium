@@ -35,6 +35,10 @@ class COMPOSITOR_EXPORT PaintRecorder {
                 float recording_scale_y,
                 PaintCache* cache);
   PaintRecorder(const PaintContext& context, const gfx::Size& recording_size);
+
+  PaintRecorder(const PaintRecorder&) = delete;
+  PaintRecorder& operator=(const PaintRecorder&) = delete;
+
   ~PaintRecorder();
 
   // Gets a gfx::Canvas for painting into.
@@ -47,8 +51,6 @@ class COMPOSITOR_EXPORT PaintRecorder {
   gfx::Canvas canvas_;
   PaintCache* cache_;
   gfx::Size recording_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintRecorder);
 };
 
 }  // namespace ui

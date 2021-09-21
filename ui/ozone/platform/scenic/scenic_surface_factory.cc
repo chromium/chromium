@@ -99,6 +99,10 @@ class GLOzoneEGLScenic : public GLOzoneEGL {
  public:
   explicit GLOzoneEGLScenic(ScenicSurfaceFactory* scenic_surface_factory)
       : scenic_surface_factory_(scenic_surface_factory) {}
+
+  GLOzoneEGLScenic(const GLOzoneEGLScenic&) = delete;
+  GLOzoneEGLScenic& operator=(const GLOzoneEGLScenic&) = delete;
+
   ~GLOzoneEGLScenic() override = default;
 
   // GLOzone:
@@ -127,7 +131,6 @@ class GLOzoneEGLScenic : public GLOzoneEGL {
 
  private:
   ScenicSurfaceFactory* const scenic_surface_factory_;
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLScenic);
 };
 
 fuchsia::sysmem::AllocatorHandle ConnectSysmemAllocator() {

@@ -20,11 +20,14 @@ namespace test {
 class ScopedScreenOverride {
  public:
   explicit ScopedScreenOverride(Screen* screen);
+
+  ScopedScreenOverride(const ScopedScreenOverride&) = delete;
+  ScopedScreenOverride& operator=(const ScopedScreenOverride&) = delete;
+
   ~ScopedScreenOverride();
 
  private:
   Screen* original_screen_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedScreenOverride);
 };
 
 }  // namespace test

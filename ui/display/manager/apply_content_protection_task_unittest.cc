@@ -45,6 +45,12 @@ class ApplyContentProtectionTaskTest : public testing::Test {
   using Response = ApplyContentProtectionTask::Status;
 
   ApplyContentProtectionTaskTest() = default;
+
+  ApplyContentProtectionTaskTest(const ApplyContentProtectionTaskTest&) =
+      delete;
+  ApplyContentProtectionTaskTest& operator=(
+      const ApplyContentProtectionTaskTest&) = delete;
+
   ~ApplyContentProtectionTaskTest() override = default;
 
   void ResponseCallback(Response response) { response_ = response; }
@@ -55,9 +61,6 @@ class ApplyContentProtectionTaskTest : public testing::Test {
   Response response_ = Response::KILLED;
   ActionLogger log_;
   TestNativeDisplayDelegate display_delegate_{&log_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ApplyContentProtectionTaskTest);
 };
 
 TEST_F(ApplyContentProtectionTaskTest, ApplyHdcpToInternalDisplay) {

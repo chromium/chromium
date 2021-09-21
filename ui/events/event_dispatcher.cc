@@ -21,12 +21,12 @@ class ScopedDispatchHelper : public Event::DispatcherApi {
     set_result(ui::ER_UNHANDLED);
   }
 
+  ScopedDispatchHelper(const ScopedDispatchHelper&) = delete;
+  ScopedDispatchHelper& operator=(const ScopedDispatchHelper&) = delete;
+
   virtual ~ScopedDispatchHelper() {
     set_phase(EP_POSTDISPATCH);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedDispatchHelper);
 };
 
 }  // namespace

@@ -22,6 +22,10 @@ namespace ui {
 class X11PropertyChangeWaiter : public x11::EventObserver {
  public:
   X11PropertyChangeWaiter(x11::Window window, const char* property);
+
+  X11PropertyChangeWaiter(const X11PropertyChangeWaiter&) = delete;
+  X11PropertyChangeWaiter& operator=(const X11PropertyChangeWaiter&) = delete;
+
   ~X11PropertyChangeWaiter() override;
 
   // Blocks till the value of |property_| changes.
@@ -47,8 +51,6 @@ class X11PropertyChangeWaiter : public x11::EventObserver {
 
   // Ends the run loop.
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11PropertyChangeWaiter);
 };
 
 }  // namespace ui

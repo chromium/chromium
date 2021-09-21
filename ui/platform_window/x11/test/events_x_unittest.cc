@@ -88,6 +88,10 @@ std::string FlooredEventLocationString(const x11::Event& xev) {
 class EventsXTest : public testing::Test {
  public:
   EventsXTest() = default;
+
+  EventsXTest(const EventsXTest&) = delete;
+  EventsXTest& operator=(const EventsXTest&) = delete;
+
   ~EventsXTest() override = default;
 
   void SetUp() override {
@@ -96,9 +100,6 @@ class EventsXTest : public testing::Test {
     ResetTimestampRolloverCountersForTesting();
   }
   void TearDown() override { ResetTimestampRolloverCountersForTesting(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventsXTest);
 };
 
 TEST_F(EventsXTest, ButtonEvents) {

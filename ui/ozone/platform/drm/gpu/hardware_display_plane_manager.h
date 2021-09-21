@@ -97,6 +97,11 @@ class HardwareDisplayPlaneManager {
   };
 
   explicit HardwareDisplayPlaneManager(DrmDevice* drm);
+
+  HardwareDisplayPlaneManager(const HardwareDisplayPlaneManager&) = delete;
+  HardwareDisplayPlaneManager& operator=(const HardwareDisplayPlaneManager&) =
+      delete;
+
   virtual ~HardwareDisplayPlaneManager();
 
   // This parses information from the drm driver, adding any new planes
@@ -270,8 +275,6 @@ class HardwareDisplayPlaneManager {
   std::vector<CrtcState> crtc_state_;
   std::vector<ConnectorProperties> connectors_props_;
   std::vector<uint32_t> supported_formats_;
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayPlaneManager);
 };
 
 }  // namespace ui

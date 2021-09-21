@@ -27,6 +27,10 @@ namespace {
 class TestEventRewriteSink : public EventSink {
  public:
   TestEventRewriteSink() {}
+
+  TestEventRewriteSink(const TestEventRewriteSink&) = delete;
+  TestEventRewriteSink& operator=(const TestEventRewriteSink&) = delete;
+
   ~TestEventRewriteSink() override { CheckAllReceived(); }
 
   void AddExpectedEvent(EventType type) { expected_events_.push_back(type); }
@@ -43,7 +47,6 @@ class TestEventRewriteSink : public EventSink {
 
  private:
   std::list<EventType> expected_events_;
-  DISALLOW_COPY_AND_ASSIGN(TestEventRewriteSink);
 };
 
 std::unique_ptr<Event> CreateEventForType(EventType type) {

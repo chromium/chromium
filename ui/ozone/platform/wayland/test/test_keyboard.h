@@ -19,10 +19,11 @@ extern const struct wl_pointer_interface kTestKeyboardImpl;
 class TestKeyboard : public ServerObject {
  public:
   explicit TestKeyboard(wl_resource* resource);
-  ~TestKeyboard() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestKeyboard);
+  TestKeyboard(const TestKeyboard&) = delete;
+  TestKeyboard& operator=(const TestKeyboard&) = delete;
+
+  ~TestKeyboard() override;
 };
 
 }  // namespace wl

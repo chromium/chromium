@@ -31,6 +31,9 @@ class PlatformEventSourceTestAPI;
 // to the appropriate dispatchers.
 class EVENTS_EXPORT PlatformEventSource {
  public:
+  PlatformEventSource(const PlatformEventSource&) = delete;
+  PlatformEventSource& operator=(const PlatformEventSource&) = delete;
+
   virtual ~PlatformEventSource();
 
   // Returns the thread-local singleton.
@@ -114,8 +117,6 @@ class EVENTS_EXPORT PlatformEventSource {
   static bool ignore_native_platform_events_;
 
   PlatformEventObserverList observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformEventSource);
 };
 
 }  // namespace ui

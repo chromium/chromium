@@ -22,6 +22,11 @@ class ScopedFakeNSWindowFullscreen {
   class Impl;
 
   ScopedFakeNSWindowFullscreen();
+
+  ScopedFakeNSWindowFullscreen(const ScopedFakeNSWindowFullscreen&) = delete;
+  ScopedFakeNSWindowFullscreen& operator=(const ScopedFakeNSWindowFullscreen&) =
+      delete;
+
   ~ScopedFakeNSWindowFullscreen();
 
   // Wait for any transition in progress to complete.
@@ -29,8 +34,6 @@ class ScopedFakeNSWindowFullscreen {
 
  private:
   std::unique_ptr<Impl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFakeNSWindowFullscreen);
 };
 
 }  // namespace test

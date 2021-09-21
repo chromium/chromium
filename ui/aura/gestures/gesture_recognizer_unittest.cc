@@ -106,6 +106,10 @@ class GestureEventConsumeDelegate : public TestWindowDelegate {
         flags_(0),
         wait_until_event_(ui::ET_UNKNOWN) {}
 
+  GestureEventConsumeDelegate(const GestureEventConsumeDelegate&) = delete;
+  GestureEventConsumeDelegate& operator=(const GestureEventConsumeDelegate&) =
+      delete;
+
   ~GestureEventConsumeDelegate() override {}
 
   void Reset() {
@@ -331,8 +335,6 @@ class GestureEventConsumeDelegate : public TestWindowDelegate {
   int flags_;
 
   ui::EventType wait_until_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureEventConsumeDelegate);
 };
 
 class QueueTouchEventDelegate : public GestureEventConsumeDelegate {
@@ -341,6 +343,9 @@ class QueueTouchEventDelegate : public GestureEventConsumeDelegate {
       : window_(nullptr),
         dispatcher_(dispatcher),
         synchronous_ack_for_next_event_(AckState::PENDING) {}
+
+  QueueTouchEventDelegate(const QueueTouchEventDelegate&) = delete;
+  QueueTouchEventDelegate& operator=(const QueueTouchEventDelegate&) = delete;
 
   ~QueueTouchEventDelegate() override {}
 
@@ -397,8 +402,6 @@ class QueueTouchEventDelegate : public GestureEventConsumeDelegate {
   WindowEventDispatcher* dispatcher_;
   AckState synchronous_ack_for_next_event_;
   std::list<uint32_t> sent_events_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueueTouchEventDelegate);
 };
 
 // A delegate that ignores gesture events but keeps track of [synthetic] mouse
@@ -540,6 +543,9 @@ class TestEventHandler : public ui::EventHandler {
         touch_pressed_count_(0),
         touch_moved_count_(0) {}
 
+  TestEventHandler(const TestEventHandler&) = delete;
+  TestEventHandler& operator=(const TestEventHandler&) = delete;
+
   ~TestEventHandler() override {}
 
   void OnTouchEvent(ui::TouchEvent* event) override {
@@ -583,8 +589,6 @@ class TestEventHandler : public ui::EventHandler {
   int touch_pressed_count_;
   int touch_moved_count_;
   std::vector<gfx::PointF> cancelled_touch_points_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
 
 // Removes the target window from its parent when it receives a touch-cancel
@@ -592,6 +596,11 @@ class TestEventHandler : public ui::EventHandler {
 class RemoveOnTouchCancelHandler : public TestEventHandler {
  public:
   RemoveOnTouchCancelHandler() {}
+
+  RemoveOnTouchCancelHandler(const RemoveOnTouchCancelHandler&) = delete;
+  RemoveOnTouchCancelHandler& operator=(const RemoveOnTouchCancelHandler&) =
+      delete;
+
   ~RemoveOnTouchCancelHandler() override {}
 
  private:
@@ -603,8 +612,6 @@ class RemoveOnTouchCancelHandler : public TestEventHandler {
       target->parent()->RemoveChild(target);
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveOnTouchCancelHandler);
 };
 
 void DelayByLongPressTimeout() {
@@ -3111,6 +3118,11 @@ TEST_F(GestureRecognizerTest, LongPressTimerStopsOnPreventDefaultedTouchMoves) {
 class ConsumesTouchMovesDelegate : public GestureEventConsumeDelegate {
  public:
   ConsumesTouchMovesDelegate() : consume_touch_move_(true) {}
+
+  ConsumesTouchMovesDelegate(const ConsumesTouchMovesDelegate&) = delete;
+  ConsumesTouchMovesDelegate& operator=(const ConsumesTouchMovesDelegate&) =
+      delete;
+
   ~ConsumesTouchMovesDelegate() override {}
 
   void set_consume_touch_move(bool consume) { consume_touch_move_ = consume; }
@@ -3124,8 +3136,6 @@ class ConsumesTouchMovesDelegate : public GestureEventConsumeDelegate {
   }
 
   bool consume_touch_move_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConsumesTouchMovesDelegate);
 };
 
 // Same as GestureEventScroll, but tests that the behavior is the same

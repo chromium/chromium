@@ -30,6 +30,9 @@ class EVENTS_EXPORT GestureEventAndroid {
                       bool synthetic_scroll,
                       bool prevent_boosting);
 
+  GestureEventAndroid(const GestureEventAndroid&) = delete;
+  GestureEventAndroid& operator=(const GestureEventAndroid&) = delete;
+
   ~GestureEventAndroid();
 
   int type() const { return type_; }
@@ -67,8 +70,6 @@ class EVENTS_EXPORT GestureEventAndroid {
   // Used by fling cancel. If true, this gesture will never attempt to boost an
   // existing fling. It will immediately cancel an existing fling.
   bool prevent_boosting_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureEventAndroid);
 };
 
 }  // namespace ui

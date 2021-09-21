@@ -19,6 +19,10 @@ namespace ui {
 class EVENTS_EXPORT MotionEventAura : public MotionEventGeneric {
  public:
   MotionEventAura();
+
+  MotionEventAura(const MotionEventAura&) = delete;
+  MotionEventAura& operator=(const MotionEventAura&) = delete;
+
   ~MotionEventAura() override;
 
   // MotionEventGeneric:
@@ -39,8 +43,6 @@ class EVENTS_EXPORT MotionEventAura : public MotionEventGeneric {
   void UpdateTouch(const TouchEvent& touch);
   void UpdateCachedAction(const TouchEvent& touch);
   int GetIndexFromId(int id) const;
-
-  DISALLOW_COPY_AND_ASSIGN(MotionEventAura);
 };
 
 }  // namespace ui

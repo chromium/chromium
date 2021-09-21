@@ -55,6 +55,9 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuClient {
 // quick menu.
 class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuRunner {
  public:
+  TouchSelectionMenuRunner(const TouchSelectionMenuRunner&) = delete;
+  TouchSelectionMenuRunner& operator=(const TouchSelectionMenuRunner&) = delete;
+
   virtual ~TouchSelectionMenuRunner();
 
   static TouchSelectionMenuRunner* GetInstance();
@@ -76,9 +79,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuRunner {
 
  protected:
   TouchSelectionMenuRunner();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunner);
 };
 
 }  // namespace ui

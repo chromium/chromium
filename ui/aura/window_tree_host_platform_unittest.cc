@@ -61,6 +61,11 @@ class TestWindowTreeHostObserver : public WindowTreeHostObserver {
       : host_(host), platform_window_(platform_window) {
     host_->AddObserver(this);
   }
+
+  TestWindowTreeHostObserver(const TestWindowTreeHostObserver&) = delete;
+  TestWindowTreeHostObserver& operator=(const TestWindowTreeHostObserver&) =
+      delete;
+
   ~TestWindowTreeHostObserver() override { host_->RemoveObserver(this); }
 
   int on_host_did_process_bounds_change_count() const {
@@ -94,8 +99,6 @@ class TestWindowTreeHostObserver : public WindowTreeHostObserver {
   bool should_change_bounds_in_on_resized_ = true;
   int on_host_will_process_bounds_change_count_ = 0;
   int on_host_did_process_bounds_change_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowTreeHostObserver);
 };
 
 // Regression test for https://crbug.com/958449
@@ -120,6 +123,12 @@ class DeleteHostWindowTreeHostObserver : public WindowTreeHostObserver {
       : host_(std::move(host)) {
     host_->AddObserver(this);
   }
+
+  DeleteHostWindowTreeHostObserver(const DeleteHostWindowTreeHostObserver&) =
+      delete;
+  DeleteHostWindowTreeHostObserver& operator=(
+      const DeleteHostWindowTreeHostObserver&) = delete;
+
   ~DeleteHostWindowTreeHostObserver() override = default;
 
   TestWindowTreeHost* host() { return host_.get(); }
@@ -133,8 +142,6 @@ class DeleteHostWindowTreeHostObserver : public WindowTreeHostObserver {
 
  private:
   std::unique_ptr<TestWindowTreeHost> host_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteHostWindowTreeHostObserver);
 };
 
 // Verifies WindowTreeHostPlatform can be safely deleted when calling

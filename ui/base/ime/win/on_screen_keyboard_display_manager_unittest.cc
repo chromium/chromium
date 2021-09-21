@@ -24,13 +24,16 @@ class MockVirtualKeyboardControllerObserver
     : public VirtualKeyboardControllerObserver {
  public:
   MockVirtualKeyboardControllerObserver() = default;
+
+  MockVirtualKeyboardControllerObserver(
+      const MockVirtualKeyboardControllerObserver&) = delete;
+  MockVirtualKeyboardControllerObserver& operator=(
+      const MockVirtualKeyboardControllerObserver&) = delete;
+
   virtual ~MockVirtualKeyboardControllerObserver() = default;
 
   MOCK_METHOD1(OnKeyboardVisible, void(const gfx::Rect&));
   MOCK_METHOD0(OnKeyboardHidden, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockVirtualKeyboardControllerObserver);
 };
 
 class MockInputPane

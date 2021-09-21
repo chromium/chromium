@@ -28,6 +28,11 @@ class MESSAGE_CENTER_EXPORT DesktopMessagePopupCollection
       public display::DisplayObserver {
  public:
   DesktopMessagePopupCollection();
+
+  DesktopMessagePopupCollection(const DesktopMessagePopupCollection&) = delete;
+  DesktopMessagePopupCollection& operator=(
+      const DesktopMessagePopupCollection&) = delete;
+
   ~DesktopMessagePopupCollection() override;
 
   void StartObserving();
@@ -71,8 +76,6 @@ class MESSAGE_CENTER_EXPORT DesktopMessagePopupCollection
   display::Screen* screen_ = nullptr;
   absl::optional<display::ScopedDisplayObserver> display_observer_;
   gfx::Rect work_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMessagePopupCollection);
 };
 
 }  // namespace message_center

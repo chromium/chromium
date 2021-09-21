@@ -69,6 +69,10 @@ class DrmThread : public base::Thread,
                               const std::vector<OverlayStatus>&)>;
 
   DrmThread();
+
+  DrmThread(const DrmThread&) = delete;
+  DrmThread& operator=(const DrmThread&) = delete;
+
   ~DrmThread() override;
 
   void Start(base::OnceClosure receiver_completer,
@@ -227,8 +231,6 @@ class DrmThread : public base::Thread,
   std::unique_ptr<DrmDeviceGenerator> device_generator_;
 
   base::WeakPtrFactory<DrmThread> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DrmThread);
 };
 
 }  // namespace ui

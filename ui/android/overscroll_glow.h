@@ -40,6 +40,10 @@ class UI_ANDROID_EXPORT OverscrollGlow {
   // The effect is enabled by default, but will remain dormant until the first
   // overscroll event.
   explicit OverscrollGlow(OverscrollGlowClient* client);
+
+  OverscrollGlow(const OverscrollGlow&) = delete;
+  OverscrollGlow& operator=(const OverscrollGlow&) = delete;
+
   virtual ~OverscrollGlow();
 
   // Called when the root content layer overscrolls.
@@ -105,8 +109,6 @@ class UI_ANDROID_EXPORT OverscrollGlow {
   bool allow_vertical_overscroll_;
 
   scoped_refptr<cc::Layer> root_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollGlow);
 };
 
 }  // namespace ui

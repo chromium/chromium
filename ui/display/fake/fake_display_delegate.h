@@ -71,6 +71,10 @@ class FAKE_DISPLAY_EXPORT FakeDisplayDelegate : public NativeDisplayDelegate,
                                                 public FakeDisplayController {
  public:
   FakeDisplayDelegate();
+
+  FakeDisplayDelegate(const FakeDisplayDelegate&) = delete;
+  FakeDisplayDelegate& operator=(const FakeDisplayDelegate&) = delete;
+
   ~FakeDisplayDelegate() override;
 
   // FakeDisplayController:
@@ -127,8 +131,6 @@ class FAKE_DISPLAY_EXPORT FakeDisplayDelegate : public NativeDisplayDelegate,
 
   // The next available display id.
   uint8_t next_display_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDisplayDelegate);
 };
 
 }  // namespace display

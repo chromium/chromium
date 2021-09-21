@@ -33,6 +33,10 @@ namespace {
 class CompositorTest : public testing::Test {
  public:
   CompositorTest() = default;
+
+  CompositorTest(const CompositorTest&) = delete;
+  CompositorTest& operator=(const CompositorTest&) = delete;
+
   ~CompositorTest() override = default;
 
   void SetUp() override {
@@ -60,8 +64,6 @@ class CompositorTest : public testing::Test {
  private:
   std::unique_ptr<TestContextFactories> context_factories_;
   std::unique_ptr<Compositor> compositor_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorTest);
 };
 
 // For tests that control time.

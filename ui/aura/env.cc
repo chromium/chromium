@@ -57,6 +57,9 @@ class EventObserverAdapter : public ui::EventHandler,
     target_->AddPreTargetHandler(this);
   }
 
+  EventObserverAdapter(const EventObserverAdapter&) = delete;
+  EventObserverAdapter& operator=(const EventObserverAdapter&) = delete;
+
   ~EventObserverAdapter() override { target_->RemovePreTargetHandler(this); }
 
   ui::EventObserver* observer() { return observer_; }
@@ -82,8 +85,6 @@ class EventObserverAdapter : public ui::EventHandler,
   ui::EventObserver* observer_;
   ui::EventTarget* target_;
   const std::set<ui::EventType> types_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventObserverAdapter);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -15,6 +15,10 @@ namespace ui {
 class EdgeTouchFilter : public TouchFilter {
  public:
   EdgeTouchFilter(const gfx::Size& touchscreen_size);
+
+  EdgeTouchFilter(const EdgeTouchFilter&) = delete;
+  EdgeTouchFilter& operator=(const EdgeTouchFilter&) = delete;
+
   ~EdgeTouchFilter() override;
 
   // TouchFilter:
@@ -28,8 +32,6 @@ class EdgeTouchFilter : public TouchFilter {
   std::bitset<kNumTouchEvdevSlots> slots_filtered_;
 
   const gfx::Size touchscreen_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(EdgeTouchFilter);
 };
 
 }  // namespace ui

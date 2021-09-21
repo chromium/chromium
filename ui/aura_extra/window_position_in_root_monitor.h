@@ -20,6 +20,11 @@ class WindowPositionInRootMonitor : public aura::WindowObserver {
  public:
   WindowPositionInRootMonitor(aura::Window* window,
                               base::RepeatingClosure callback);
+
+  WindowPositionInRootMonitor(const WindowPositionInRootMonitor&) = delete;
+  WindowPositionInRootMonitor& operator=(const WindowPositionInRootMonitor&) =
+      delete;
+
   ~WindowPositionInRootMonitor() override;
 
  private:
@@ -40,8 +45,6 @@ class WindowPositionInRootMonitor : public aura::WindowObserver {
   // The windows being watched. This contains the window supplied to the
   // constructor and all it's ancestors. This is empty if the window is deleted.
   std::vector<aura::Window*> ancestors_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPositionInRootMonitor);
 };
 
 }  // namespace aura_extra

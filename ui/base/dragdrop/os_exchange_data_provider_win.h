@@ -137,6 +137,10 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
   explicit OSExchangeDataProviderWin(IDataObject* source);
   OSExchangeDataProviderWin();
 
+  OSExchangeDataProviderWin(const OSExchangeDataProviderWin&) = delete;
+  OSExchangeDataProviderWin& operator=(const OSExchangeDataProviderWin&) =
+      delete;
+
   ~OSExchangeDataProviderWin() override;
 
   IDataObject* data_object() const { return data_.get(); }
@@ -202,8 +206,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
 
   scoped_refptr<DataObjectImpl> data_;
   Microsoft::WRL::ComPtr<IDataObject> source_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(OSExchangeDataProviderWin);
 };
 
 }  // namespace ui

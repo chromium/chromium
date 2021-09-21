@@ -114,6 +114,10 @@ class ImplementedAtkInterfaces {
 class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
  public:
   AXPlatformNodeAuraLinux();
+
+  AXPlatformNodeAuraLinux(const AXPlatformNodeAuraLinux&) = delete;
+  AXPlatformNodeAuraLinux& operator=(const AXPlatformNodeAuraLinux&) = delete;
+
   ~AXPlatformNodeAuraLinux() override;
 
   static AXPlatformNodeAuraLinux* FromAtkObject(const AtkObject*);
@@ -423,8 +427,6 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   TextAttributeList default_text_attributes_;
 
   bool window_activate_event_postponed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AXPlatformNodeAuraLinux);
 };
 
 }  // namespace ui

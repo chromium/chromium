@@ -44,6 +44,11 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
         FROM_HERE, std::move(wts_register));
   }
 
+  WtsRegistrationNotificationManager(
+      const WtsRegistrationNotificationManager&) = delete;
+  WtsRegistrationNotificationManager& operator=(
+      const WtsRegistrationNotificationManager&) = delete;
+
   ~WtsRegistrationNotificationManager() { RemoveSingletonHwndObserver(); }
 
   void AddObserver(SessionChangeObserver* observer) {
@@ -102,8 +107,6 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
 
   base::ObserverList<SessionChangeObserver, true>::Unchecked observer_list_;
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WtsRegistrationNotificationManager);
 };
 
 SessionChangeObserver::SessionChangeObserver(const WtsCallback& callback)

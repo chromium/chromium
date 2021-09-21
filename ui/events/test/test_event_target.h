@@ -25,6 +25,10 @@ class TestEventTarget : public EventTarget,
                         public EventHandler {
  public:
   TestEventTarget();
+
+  TestEventTarget(const TestEventTarget&) = delete;
+  TestEventTarget& operator=(const TestEventTarget&) = delete;
+
   ~TestEventTarget() override;
 
   void AddChild(std::unique_ptr<TestEventTarget> child);
@@ -77,8 +81,6 @@ class TestEventTarget : public EventTarget,
 
   HandlerSequenceRecorder* recorder_;
   std::string target_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventTarget);
 };
 
 }  // namespace test

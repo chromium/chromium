@@ -21,6 +21,10 @@ namespace ui {
 class X11SurfaceFactory : public SurfaceFactoryOzone {
  public:
   explicit X11SurfaceFactory(std::unique_ptr<x11::Connection> connection);
+
+  X11SurfaceFactory(const X11SurfaceFactory&) = delete;
+  X11SurfaceFactory& operator=(const X11SurfaceFactory&) = delete;
+
   ~X11SurfaceFactory() override;
 
   // SurfaceFactoryOzone:
@@ -52,8 +56,6 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
   std::unique_ptr<GLOzone> egl_implementation_;
 
   std::unique_ptr<x11::Connection> connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11SurfaceFactory);
 };
 
 }  // namespace ui

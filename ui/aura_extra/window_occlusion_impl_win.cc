@@ -24,6 +24,10 @@ class WindowEvaluatorImpl : public WindowEvaluator {
   WindowEvaluatorImpl(
       const std::vector<aura::WindowTreeHost*>& windows_of_interest,
       std::unique_ptr<WindowBoundsDelegate> bounds_delegate);
+
+  WindowEvaluatorImpl(const WindowEvaluatorImpl&) = delete;
+  WindowEvaluatorImpl& operator=(const WindowEvaluatorImpl&) = delete;
+
   ~WindowEvaluatorImpl();
 
   // WindowEvaluator.
@@ -56,8 +60,6 @@ class WindowEvaluatorImpl : public WindowEvaluator {
   // ComputeNativeWindowOcclusionStatus().
   base::flat_map<aura::WindowTreeHost*, aura::Window::OcclusionState>
       occlusion_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowEvaluatorImpl);
 };
 
 WindowEvaluatorImpl::WindowEvaluatorImpl(

@@ -15,6 +15,10 @@ namespace gl {
 class GL_EXPORT GLFenceARB : public GLFence {
  public:
   GLFenceARB();
+
+  GLFenceARB(const GLFenceARB&) = delete;
+  GLFenceARB& operator=(const GLFenceARB&) = delete;
+
   ~GLFenceARB() override;
 
   // GLFence implementation:
@@ -27,8 +31,6 @@ class GL_EXPORT GLFenceARB : public GLFence {
   GLsync sync_ = 0;
 
   void HandleClientWaitFailure();
-
-  DISALLOW_COPY_AND_ASSIGN(GLFenceARB);
 };
 
 }  // namespace gl

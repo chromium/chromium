@@ -31,6 +31,10 @@ extern const struct zwp_linux_surface_synchronization_v1_interface
 class MockSurface : public ServerObject {
  public:
   explicit MockSurface(wl_resource* resource);
+
+  MockSurface(const MockSurface&) = delete;
+  MockSurface& operator=(const MockSurface&) = delete;
+
   ~MockSurface() override;
 
   static MockSurface* FromResource(wl_resource* resource);
@@ -108,8 +112,6 @@ class MockSurface : public ServerObject {
   wl_resource* prev_attached_buffer_ = nullptr;
 
   int32_t buffer_scale_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSurface);
 };
 
 }  // namespace wl

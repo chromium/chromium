@@ -14,6 +14,9 @@ namespace gl {
 
 class GL_EXPORT GLFenceEGL : public GLFence {
  public:
+  GLFenceEGL(const GLFenceEGL&) = delete;
+  GLFenceEGL& operator=(const GLFenceEGL&) = delete;
+
   ~GLFenceEGL() override;
 
   // Factory method using default initialization.
@@ -43,9 +46,6 @@ class GL_EXPORT GLFenceEGL : public GLFence {
 
   EGLSyncKHR sync_;
   EGLDisplay display_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLFenceEGL);
 };
 
 }  // namespace gl

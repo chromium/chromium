@@ -24,6 +24,10 @@ const float kMaxGestureBoundsLengthDips = 32.f;
 
 class GestureConfigurationAndroid : public GestureConfiguration {
  public:
+  GestureConfigurationAndroid(const GestureConfigurationAndroid&) = delete;
+  GestureConfigurationAndroid& operator=(const GestureConfigurationAndroid&) =
+      delete;
+
   ~GestureConfigurationAndroid() override {
   }
 
@@ -68,7 +72,6 @@ class GestureConfigurationAndroid : public GestureConfiguration {
   }
 
   friend struct base::DefaultSingletonTraits<GestureConfigurationAndroid>;
-  DISALLOW_COPY_AND_ASSIGN(GestureConfigurationAndroid);
 };
 
 }  // namespace

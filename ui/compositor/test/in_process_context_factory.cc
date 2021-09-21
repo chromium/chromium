@@ -73,6 +73,9 @@ class DirectOutputSurface : public viz::OutputSurface {
         context_provider->ContextCapabilities().surface_origin;
   }
 
+  DirectOutputSurface(const DirectOutputSurface&) = delete;
+  DirectOutputSurface& operator=(const DirectOutputSurface&) = delete;
+
   ~DirectOutputSurface() override {}
 
   // viz::OutputSurface implementation.
@@ -140,8 +143,6 @@ class DirectOutputSurface : public viz::OutputSurface {
 
   viz::OutputSurfaceClient* client_ = nullptr;
   base::WeakPtrFactory<DirectOutputSurface> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DirectOutputSurface);
 };
 
 }  // namespace

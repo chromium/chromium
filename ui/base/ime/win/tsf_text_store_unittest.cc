@@ -177,6 +177,10 @@ class TSFTextStoreTestCallback {
       : text_store_(text_store) {
     CHECK(text_store_);
   }
+
+  TSFTextStoreTestCallback(const TSFTextStoreTestCallback&) = delete;
+  TSFTextStoreTestCallback& operator=(const TSFTextStoreTestCallback&) = delete;
+
   virtual ~TSFTextStoreTestCallback() {}
 
   bool HasCompositionText() { return has_composition_text_; }
@@ -413,9 +417,6 @@ class TSFTextStoreTestCallback {
   gfx::Range composition_range_;
   std::u16string text_buffer_;
   scoped_refptr<TSFTextStore> text_store_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TSFTextStoreTestCallback);
 };
 
 namespace {

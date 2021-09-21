@@ -19,6 +19,10 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_IME_WIN) MockTSFBridge : public TSFBridge {
  public:
   MockTSFBridge();
+
+  MockTSFBridge(const MockTSFBridge&) = delete;
+  MockTSFBridge& operator=(const MockTSFBridge&) = delete;
+
   ~MockTSFBridge() override;
 
   // TSFBridge:
@@ -101,8 +105,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) MockTSFBridge : public TSFBridge {
   TextInputType latest_text_input_type_ = TEXT_INPUT_TYPE_NONE;
   Microsoft::WRL::ComPtr<ITfThreadMgr> thread_manager_;
   TSFTextStore* tsf_text_store_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTSFBridge);
 };
 
 }  // namespace ui

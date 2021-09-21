@@ -34,6 +34,10 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   typedef std::map<int, GestureConsumer*> TouchIdToConsumerMap;
 
   GestureRecognizerImpl();
+
+  GestureRecognizerImpl(const GestureRecognizerImpl&) = delete;
+  GestureRecognizerImpl& operator=(const GestureRecognizerImpl&) = delete;
+
   ~GestureRecognizerImpl() override;
 
   std::vector<GestureEventHelper*>& helpers() { return helpers_; }
@@ -115,8 +119,6 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   TouchIdToConsumerMap touch_id_target_;
 
   std::vector<GestureEventHelper*> helpers_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureRecognizerImpl);
 };
 
 }  // namespace ui

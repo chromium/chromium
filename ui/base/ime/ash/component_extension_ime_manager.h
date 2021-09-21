@@ -51,6 +51,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIMEManager {
  public:
   ComponentExtensionIMEManager(
       std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate);
+
+  ComponentExtensionIMEManager(const ComponentExtensionIMEManager&) = delete;
+  ComponentExtensionIMEManager& operator=(const ComponentExtensionIMEManager&) =
+      delete;
+
   virtual ~ComponentExtensionIMEManager();
 
   // Loads the IME component extension for |input_method_id| if the extension Id
@@ -96,8 +101,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIMEManager {
   // For quick check the validity of a given input method id.
   // It's filled by ctor and never changed during runtime.
   std::set<std::string> input_method_id_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentExtensionIMEManager);
 };
 
 }  // namespace chromeos

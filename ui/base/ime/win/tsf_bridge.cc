@@ -31,6 +31,10 @@ namespace {
 class TSFBridgeImpl : public TSFBridge {
  public:
   TSFBridgeImpl();
+
+  TSFBridgeImpl(const TSFBridgeImpl&) = delete;
+  TSFBridgeImpl& operator=(const TSFBridgeImpl&) = delete;
+
   ~TSFBridgeImpl() override;
 
   HRESULT Initialize();
@@ -144,8 +148,6 @@ class TSFBridgeImpl : public TSFBridge {
 
   // Handle to ITfLanguageProfileNotifySink
   DWORD language_profile_cookie_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TSFBridgeImpl);
 };
 
 TSFBridgeImpl::TSFBridgeImpl() = default;

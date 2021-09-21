@@ -14,12 +14,15 @@ namespace gfx {
 class ScopedUIGraphicsPushContext {
  public:
   explicit ScopedUIGraphicsPushContext(CGContextRef context);
+
+  ScopedUIGraphicsPushContext(const ScopedUIGraphicsPushContext&) = delete;
+  ScopedUIGraphicsPushContext& operator=(const ScopedUIGraphicsPushContext&) =
+      delete;
+
   ~ScopedUIGraphicsPushContext();
 
  private:
   CGContextRef context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUIGraphicsPushContext);
 };
 
 }  // namespace gfx

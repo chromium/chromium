@@ -24,6 +24,10 @@ namespace ui {
 class EVENTS_EXPORT KeyboardEventCounter {
  public:
   KeyboardEventCounter();
+
+  KeyboardEventCounter(const KeyboardEventCounter&) = delete;
+  KeyboardEventCounter& operator=(const KeyboardEventCounter&) = delete;
+
   ~KeyboardEventCounter();
 
   // Returns the total number of keypresses since its creation.
@@ -39,8 +43,6 @@ class EVENTS_EXPORT KeyboardEventCounter {
   std::set<KeyboardCode> pressed_keys_;
 
   std::atomic<uint32_t> total_key_presses_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEventCounter);
 };
 
 }  // namespace ui

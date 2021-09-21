@@ -17,14 +17,16 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_X) IdleQueryX11 {
  public:
   IdleQueryX11();
+
+  IdleQueryX11(const IdleQueryX11&) = delete;
+  IdleQueryX11& operator=(const IdleQueryX11&) = delete;
+
   ~IdleQueryX11();
 
   int IdleTime();
 
  private:
   x11::Connection* connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleQueryX11);
 };
 
 }  // namespace ui

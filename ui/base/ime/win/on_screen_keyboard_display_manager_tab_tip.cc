@@ -49,6 +49,10 @@ class OnScreenKeyboardDetector {
  public:
   OnScreenKeyboardDetector(
       OnScreenKeyboardDisplayManagerTabTip* display_manager);
+
+  OnScreenKeyboardDetector(const OnScreenKeyboardDetector&) = delete;
+  OnScreenKeyboardDetector& operator=(const OnScreenKeyboardDetector&) = delete;
+
   ~OnScreenKeyboardDetector();
 
   // Schedules a delayed task which detects if the on screen keyboard was
@@ -104,8 +108,6 @@ class OnScreenKeyboardDetector {
   // by this class instance are canceled when it is destroyed.
   base::WeakPtrFactory<OnScreenKeyboardDetector> keyboard_detector_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardDetector);
 };
 
 // OnScreenKeyboardDetector member definitions.

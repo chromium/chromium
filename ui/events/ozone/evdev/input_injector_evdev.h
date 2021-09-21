@@ -20,6 +20,9 @@ class COMPONENT_EXPORT(EVDEV) InputInjectorEvdev : public SystemInputInjector {
   InputInjectorEvdev(std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
                      CursorDelegateEvdev* cursor);
 
+  InputInjectorEvdev(const InputInjectorEvdev&) = delete;
+  InputInjectorEvdev& operator=(const InputInjectorEvdev&) = delete;
+
   ~InputInjectorEvdev() override;
 
   // SystemInputInjector implementation.
@@ -36,11 +39,8 @@ class COMPONENT_EXPORT(EVDEV) InputInjectorEvdev : public SystemInputInjector {
 
   // Interface for dispatching events.
   const std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorEvdev);
 };
 
 }  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_INPUT_INJECTOR_EVDEV_H_
-

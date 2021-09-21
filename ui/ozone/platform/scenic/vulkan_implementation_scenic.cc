@@ -304,12 +304,15 @@ class SysmemBufferCollectionImpl : public gpu::SysmemBufferCollection {
   SysmemBufferCollectionImpl(
       scoped_refptr<ui::SysmemBufferCollection> collection)
       : collection_(std::move(collection)) {}
+
+  SysmemBufferCollectionImpl(const SysmemBufferCollectionImpl&) = delete;
+  SysmemBufferCollectionImpl& operator=(const SysmemBufferCollectionImpl&) =
+      delete;
+
   ~SysmemBufferCollectionImpl() override = default;
 
  private:
   scoped_refptr<ui::SysmemBufferCollection> collection_;
-
-  DISALLOW_COPY_AND_ASSIGN(SysmemBufferCollectionImpl);
 };
 
 std::unique_ptr<gpu::SysmemBufferCollection>

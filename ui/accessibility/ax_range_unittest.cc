@@ -114,6 +114,10 @@ class AXRangeTest : public ::testing::Test, public TestAXTreeManager {
       BUTTON.substr().append(TEXT_FIELD).append(AFTER_LINE);
 
   AXRangeTest();
+
+  AXRangeTest(const AXRangeTest&) = delete;
+  AXRangeTest& operator=(const AXRangeTest&) = delete;
+
   ~AXRangeTest() override = default;
 
  protected:
@@ -141,8 +145,6 @@ class AXRangeTest : public ::testing::Test, public TestAXTreeManager {
 
  private:
   testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXRangeTest);
 };
 
 // These tests use kSuppressCharacter behavior.

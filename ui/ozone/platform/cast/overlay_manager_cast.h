@@ -15,14 +15,15 @@ namespace ui {
 class OverlayManagerCast : public OverlayManagerOzone {
  public:
   OverlayManagerCast();
+
+  OverlayManagerCast(const OverlayManagerCast&) = delete;
+  OverlayManagerCast& operator=(const OverlayManagerCast&) = delete;
+
   ~OverlayManagerCast() override;
 
   // OverlayManagerOzone:
   std::unique_ptr<OverlayCandidatesOzone> CreateOverlayCandidates(
       gfx::AcceleratedWidget w) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlayManagerCast);
 };
 
 }  // namespace ui

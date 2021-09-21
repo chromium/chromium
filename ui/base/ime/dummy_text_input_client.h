@@ -23,6 +23,10 @@ class DummyTextInputClient : public TextInputClient {
   explicit DummyTextInputClient(TextInputType text_input_type);
   DummyTextInputClient(TextInputType text_input_type,
                        TextInputMode text_input_mode);
+
+  DummyTextInputClient(const DummyTextInputClient&) = delete;
+  DummyTextInputClient& operator=(const DummyTextInputClient&) = delete;
+
   ~DummyTextInputClient() override;
 
   // Overriden from TextInputClient.
@@ -105,8 +109,6 @@ class DummyTextInputClient : public TextInputClient {
 
   TextInputType text_input_type_;
   TextInputMode text_input_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTextInputClient);
 
  private:
   int insert_char_count_;

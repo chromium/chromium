@@ -23,6 +23,10 @@ enum class StylusState;
 class DeviceDataManagerTestApi {
  public:
   DeviceDataManagerTestApi();
+
+  DeviceDataManagerTestApi(const DeviceDataManagerTestApi&) = delete;
+  DeviceDataManagerTestApi& operator=(const DeviceDataManagerTestApi&) = delete;
+
   ~DeviceDataManagerTestApi();
 
   void NotifyObserversDeviceListsComplete();
@@ -43,9 +47,6 @@ class DeviceDataManagerTestApi {
   void SetTouchscreenDevices(
       const std::vector<TouchscreenDevice>& devices,
       bool are_touchscreen_target_displays_valid = false);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDataManagerTestApi);
 };
 
 }  // namespace ui

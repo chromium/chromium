@@ -27,6 +27,10 @@ class MockTouchHandleDrawable : public TouchHandleDrawable {
  public:
   explicit MockTouchHandleDrawable(bool* contains_point)
       : intersects_rect_(contains_point) {}
+
+  MockTouchHandleDrawable(const MockTouchHandleDrawable&) = delete;
+  MockTouchHandleDrawable& operator=(const MockTouchHandleDrawable&) = delete;
+
   ~MockTouchHandleDrawable() override {}
   void SetEnabled(bool enabled) override {}
   void SetOrientation(ui::TouchHandleOrientation orientation,
@@ -42,8 +46,6 @@ class MockTouchHandleDrawable : public TouchHandleDrawable {
 
  private:
   bool* intersects_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTouchHandleDrawable);
 };
 
 }  // namespace
@@ -58,6 +60,10 @@ class TouchSelectionControllerTest : public testing::Test,
         needs_animate_(false),
         animation_enabled_(true),
         dragging_enabled_(false) {}
+
+  TouchSelectionControllerTest(const TouchSelectionControllerTest&) = delete;
+  TouchSelectionControllerTest& operator=(const TouchSelectionControllerTest&) =
+      delete;
 
   ~TouchSelectionControllerTest() override {}
 
@@ -271,8 +277,6 @@ class TouchSelectionControllerTest : public testing::Test,
   bool animation_enabled_;
   bool dragging_enabled_;
   std::unique_ptr<TouchSelectionController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerTest);
 };
 
 TEST_F(TouchSelectionControllerTest, InsertionBasic) {

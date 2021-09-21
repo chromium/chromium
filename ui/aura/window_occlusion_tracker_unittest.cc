@@ -37,6 +37,10 @@ constexpr base::TimeDelta kTransitionDuration = base::TimeDelta::FromSeconds(3);
 class MockWindowDelegate : public test::ColorTestWindowDelegate {
  public:
   MockWindowDelegate() : test::ColorTestWindowDelegate(SK_ColorWHITE) {}
+
+  MockWindowDelegate(const MockWindowDelegate&) = delete;
+  MockWindowDelegate& operator=(const MockWindowDelegate&) = delete;
+
   ~MockWindowDelegate() override { EXPECT_FALSE(is_expecting_call()); }
 
   void set_window(Window* window) { window_ = window; }
@@ -70,8 +74,6 @@ class MockWindowDelegate : public test::ColorTestWindowDelegate {
       Window::OcclusionState::UNKNOWN;
   SkRegion expected_occluded_region_ = SkRegion();
   Window* window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWindowDelegate);
 };
 
 class WindowOcclusionTrackerTest : public test::AuraTestBase {
@@ -1409,6 +1411,11 @@ class ObserverDestroyingWindowOnAnimationEnded
  public:
   ObserverDestroyingWindowOnAnimationEnded(Window* window) : window_(window) {}
 
+  ObserverDestroyingWindowOnAnimationEnded(
+      const ObserverDestroyingWindowOnAnimationEnded&) = delete;
+  ObserverDestroyingWindowOnAnimationEnded& operator=(
+      const ObserverDestroyingWindowOnAnimationEnded&) = delete;
+
   ~ObserverDestroyingWindowOnAnimationEnded() override {
     EXPECT_FALSE(window_);
   }
@@ -1425,8 +1432,6 @@ class ObserverDestroyingWindowOnAnimationEnded
 
  private:
   Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverDestroyingWindowOnAnimationEnded);
 };
 
 }  // namespace

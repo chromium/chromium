@@ -26,6 +26,11 @@ namespace ui {
 class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
  public:
   AXPlatformNodeDelegateBase();
+
+  AXPlatformNodeDelegateBase(const AXPlatformNodeDelegateBase&) = delete;
+  AXPlatformNodeDelegateBase& operator=(const AXPlatformNodeDelegateBase&) =
+      delete;
+
   ~AXPlatformNodeDelegateBase() override;
 
   // `AXPlatformNodeDelegate` implementation.
@@ -368,9 +373,6 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
       const std::set<int32_t>& ids);
 
   AXPlatformNodeDelegate* GetParentDelegate();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXPlatformNodeDelegateBase);
 };
 
 }  // namespace ui

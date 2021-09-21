@@ -34,6 +34,12 @@ class UI_CHROMEOS_EXPORT UserActivityPowerManagerNotifier
   UserActivityPowerManagerNotifier(
       UserActivityDetector* detector,
       mojo::PendingRemote<device::mojom::Fingerprint> fingerprint);
+
+  UserActivityPowerManagerNotifier(const UserActivityPowerManagerNotifier&) =
+      delete;
+  UserActivityPowerManagerNotifier& operator=(
+      const UserActivityPowerManagerNotifier&) = delete;
+
   ~UserActivityPowerManagerNotifier() override;
 
   // InputDeviceEventObserver implementation.
@@ -75,8 +81,6 @@ class UI_CHROMEOS_EXPORT UserActivityPowerManagerNotifier
   // True after SuspendImminent has been received and when SuspendDone has not
   // been received.
   bool suspending_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActivityPowerManagerNotifier);
 };
 
 }  // namespace ui

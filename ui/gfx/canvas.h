@@ -96,6 +96,9 @@ class GFX_EXPORT Canvas {
   // RecreateBackingCanvas is called.
   Canvas(cc::PaintCanvas* sk_canvas, float image_scale);
 
+  Canvas(const Canvas&) = delete;
+  Canvas& operator=(const Canvas&) = delete;
+
   virtual ~Canvas();
 
   // Recreates the backing platform canvas with DIP |size| and |image_scale_|.
@@ -460,8 +463,6 @@ class GFX_EXPORT Canvas {
   absl::optional<SkBitmap> bitmap_;
   absl::optional<cc::SkiaPaintCanvas> owned_canvas_;
   cc::PaintCanvas* canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(Canvas);
 };
 
 }  // namespace gfx

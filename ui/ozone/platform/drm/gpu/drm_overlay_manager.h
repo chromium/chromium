@@ -25,6 +25,10 @@ class DrmOverlayManager : public OverlayManagerOzone {
  public:
   explicit DrmOverlayManager(
       bool allow_sync_and_real_buffer_page_flip_testing = true);
+
+  DrmOverlayManager(const DrmOverlayManager&) = delete;
+  DrmOverlayManager& operator=(const DrmOverlayManager&) = delete;
+
   ~DrmOverlayManager() override;
 
   // OverlayManagerOzone:
@@ -87,8 +91,6 @@ class DrmOverlayManager : public OverlayManagerOzone {
       widget_cache_map_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DrmOverlayManager);
 };
 
 }  // namespace ui

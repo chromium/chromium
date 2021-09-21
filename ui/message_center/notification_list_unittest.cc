@@ -29,6 +29,10 @@ using NotificationState = NotificationList::NotificationState;
 class NotificationListTest : public testing::Test {
  public:
   NotificationListTest() {}
+
+  NotificationListTest(const NotificationListTest&) = delete;
+  NotificationListTest& operator=(const NotificationListTest&) = delete;
+
   ~NotificationListTest() override {}
 
   void SetUp() override {
@@ -110,9 +114,6 @@ class NotificationListTest : public testing::Test {
   std::unique_ptr<NotificationList> notification_list_;
   NotificationBlockers blockers_;
   size_t counter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationListTest);
 };
 
 bool IsInNotifications(const NotificationList::Notifications& notifications,

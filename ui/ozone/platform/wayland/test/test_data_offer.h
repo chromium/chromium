@@ -19,6 +19,10 @@ extern const struct wl_data_offer_interface kTestDataOfferImpl;
 class TestDataOffer : public TestSelectionOffer {
  public:
   explicit TestDataOffer(wl_resource* resource);
+
+  TestDataOffer(const TestDataOffer&) = delete;
+  TestDataOffer& operator=(const TestDataOffer&) = delete;
+
   ~TestDataOffer() override;
 
   void SetActions(uint32_t dnd_actions, uint32_t preferred_action);
@@ -32,8 +36,6 @@ class TestDataOffer : public TestSelectionOffer {
  private:
   uint32_t client_supported_actions_ = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
   uint32_t client_preferred_action_ = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataOffer);
 };
 
 }  // namespace wl

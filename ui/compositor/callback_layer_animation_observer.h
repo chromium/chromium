@@ -108,6 +108,11 @@ class COMPOSITOR_EXPORT CallbackLayerAnimationObserver
   explicit CallbackLayerAnimationObserver(
       AnimationEndedCallback animation_ended_callback);
 
+  CallbackLayerAnimationObserver(const CallbackLayerAnimationObserver&) =
+      delete;
+  CallbackLayerAnimationObserver& operator=(
+      const CallbackLayerAnimationObserver&) = delete;
+
   ~CallbackLayerAnimationObserver() override;
 
   bool active() const { return active_; }
@@ -169,8 +174,6 @@ class COMPOSITOR_EXPORT CallbackLayerAnimationObserver
 
   // Used to detect deletion while calling out.
   base::WeakPtrFactory<CallbackLayerAnimationObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackLayerAnimationObserver);
 };
 
 }  // namespace ui

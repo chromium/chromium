@@ -39,6 +39,9 @@ class TestScreenWin : public ScreenWin {
     UpdateFromDisplayInfos(display_infos);
   }
 
+  TestScreenWin(const TestScreenWin&) = delete;
+  TestScreenWin& operator=(const TestScreenWin&) = delete;
+
   ~TestScreenWin() override { Screen::SetScreenInstance(old_screen_); }
 
  protected:
@@ -125,8 +128,6 @@ class TestScreenWin : public ScreenWin {
   Screen* old_screen_ = Screen::SetScreenInstance(this);
   std::vector<MONITORINFOEX> monitor_infos_;
   std::unordered_map<HWND, gfx::Rect> hwnd_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScreenWin);
 };
 
 Screen* GetScreen() {
@@ -149,6 +150,10 @@ class TestScreenWinInitializer {
 class TestScreenWinManager final : public TestScreenWinInitializer {
  public:
   TestScreenWinManager() = default;
+
+  TestScreenWinManager(const TestScreenWinManager&) = delete;
+  TestScreenWinManager& operator=(const TestScreenWinManager&) = delete;
+
   ~TestScreenWinManager() = default;
 
   void AddMonitor(const gfx::Rect& pixel_bounds,
@@ -187,8 +192,6 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
   std::vector<MONITORINFOEX> monitor_infos_;
   std::vector<DisplayInfo> display_infos_;
   std::unordered_map<HWND, gfx::Rect> hwnd_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScreenWinManager);
 };
 
 class ScreenWinTest : public testing::Test {

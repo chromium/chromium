@@ -56,6 +56,11 @@ class ScopedLocalSurfaceIdValidator {
       : window_(window),
         local_surface_id_(window ? window->GetLocalSurfaceId()
                                  : viz::LocalSurfaceId()) {}
+
+  ScopedLocalSurfaceIdValidator(const ScopedLocalSurfaceIdValidator&) = delete;
+  ScopedLocalSurfaceIdValidator& operator=(
+      const ScopedLocalSurfaceIdValidator&) = delete;
+
   ~ScopedLocalSurfaceIdValidator() {
     if (window_) {
       DCHECK_EQ(local_surface_id_, window_->GetLocalSurfaceId());
@@ -65,7 +70,6 @@ class ScopedLocalSurfaceIdValidator {
  private:
   Window* const window_;
   const viz::LocalSurfaceId local_surface_id_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedLocalSurfaceIdValidator);
 };
 #else
 class ScopedLocalSurfaceIdValidator {

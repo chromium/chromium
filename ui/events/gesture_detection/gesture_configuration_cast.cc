@@ -14,6 +14,9 @@ namespace {
 
 class GestureConfigurationCast : public GestureConfiguration {
  public:
+  GestureConfigurationCast(const GestureConfigurationCast&) = delete;
+  GestureConfigurationCast& operator=(const GestureConfigurationCast&) = delete;
+
   ~GestureConfigurationCast() override {
   }
 
@@ -42,7 +45,6 @@ class GestureConfigurationCast : public GestureConfiguration {
   }
 
   friend struct base::DefaultSingletonTraits<GestureConfigurationCast>;
-  DISALLOW_COPY_AND_ASSIGN(GestureConfigurationCast);
 };
 
 }  // namespace

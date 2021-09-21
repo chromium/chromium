@@ -17,6 +17,10 @@ class WaylandPopup : public WaylandWindow {
   WaylandPopup(PlatformWindowDelegate* delegate,
                WaylandConnection* connection,
                WaylandWindow* parent);
+
+  WaylandPopup(const WaylandPopup&) = delete;
+  WaylandPopup& operator=(const WaylandPopup&) = delete;
+
   ~WaylandPopup() override;
 
   ShellPopupWrapper* shell_popup() const { return shell_popup_.get(); }
@@ -65,8 +69,6 @@ class WaylandPopup : public WaylandWindow {
   // Ozone/Wayland may not do so. Otherwise, a new state (if bounds has been
   // changed) won't be applied.
   bool schedule_redraw_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandPopup);
 };
 
 }  // namespace ui

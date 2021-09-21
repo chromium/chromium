@@ -18,6 +18,9 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE) I18nSourceStream
     : public net::FilterSourceStream {
  public:
+  I18nSourceStream(const I18nSourceStream&) = delete;
+  I18nSourceStream& operator=(const I18nSourceStream&) = delete;
+
   ~I18nSourceStream() override;
 
   // Factory function to create an I18nSourceStream.
@@ -53,8 +56,6 @@ class COMPONENT_EXPORT(UI_BASE) I18nSourceStream
 
   // A map of i18n replacement keys and translations.
   const TemplateReplacements* replacements_;
-
-  DISALLOW_COPY_AND_ASSIGN(I18nSourceStream);
 };
 
 }  // namespace ui

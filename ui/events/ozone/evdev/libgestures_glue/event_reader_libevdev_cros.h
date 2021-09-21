@@ -47,6 +47,10 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
                           int id,
                           const EventDeviceInfo& devinfo,
                           std::unique_ptr<Delegate> delegate);
+
+  EventReaderLibevdevCros(const EventReaderLibevdevCros&) = delete;
+  EventReaderLibevdevCros& operator=(const EventReaderLibevdevCros&) = delete;
+
   ~EventReaderLibevdevCros() override;
 
   // EventConverterEvdev:
@@ -86,8 +90,6 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
 
   // Delegate for event processing.
   std::unique_ptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventReaderLibevdevCros);
 };
 
 }  // namspace ui

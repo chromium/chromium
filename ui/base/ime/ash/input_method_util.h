@@ -31,6 +31,10 @@ enum InputMethodType {
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
  public:
   explicit InputMethodUtil(InputMethodDelegate* delegate);
+
+  InputMethodUtil(const InputMethodUtil&) = delete;
+  InputMethodUtil& operator=(const InputMethodUtil&) = delete;
+
   ~InputMethodUtil();
 
   // Converts an input method ID to a display name of the IME. Returns
@@ -192,8 +196,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   std::vector<std::string> hardware_layouts_;
   std::vector<std::string> hardware_login_layouts_;
   std::vector<std::string> cached_hardware_layouts_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodUtil);
 };
 
 }  // namespace input_method

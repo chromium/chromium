@@ -26,6 +26,10 @@ class PaintContext;
 class COMPOSITOR_EXPORT TransformRecorder {
  public:
   explicit TransformRecorder(const PaintContext& context);
+
+  TransformRecorder(const TransformRecorder&) = delete;
+  TransformRecorder& operator=(const TransformRecorder&) = delete;
+
   ~TransformRecorder();
 
   void Transform(const gfx::Transform& transform);
@@ -33,8 +37,6 @@ class COMPOSITOR_EXPORT TransformRecorder {
  private:
   const PaintContext& context_;
   bool transformed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransformRecorder);
 };
 
 }  // namespace ui

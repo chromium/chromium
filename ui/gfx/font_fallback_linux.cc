@@ -425,6 +425,9 @@ class CachedFontSet {
     return base::WrapUnique(new CachedFontSet(font_set));
   }
 
+  CachedFontSet(const CachedFontSet&) = delete;
+  CachedFontSet& operator=(const CachedFontSet&) = delete;
+
   ~CachedFontSet() {
     fallback_list_.clear();
     FcFontSetDestroy(font_set_);
@@ -502,8 +505,6 @@ class CachedFontSet {
   // If the FcFontSet is ever destroyed, the fallback list
   // must be cleared first.
   std::vector<CachedFont> fallback_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedFontSet);
 };
 
 typedef std::map<std::string, std::unique_ptr<CachedFontSet>> FontSetCache;

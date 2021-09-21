@@ -49,6 +49,10 @@ class WaylandCursorBufferListener {
 class WaylandCursor {
  public:
   WaylandCursor(WaylandPointer* pointer, WaylandConnection* connection);
+
+  WaylandCursor(const WaylandCursor&) = delete;
+  WaylandCursor& operator=(const WaylandCursor&) = delete;
+
   ~WaylandCursor();
 
   // Updates wl_pointer's visual representation with the given bitmap
@@ -98,8 +102,6 @@ class WaylandCursor {
   size_t current_image_index_ = 0;
   int buffer_scale_ = 1;
   base::RepeatingTimer animation_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandCursor);
 };
 
 }  // namespace ui

@@ -18,6 +18,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockComponentExtensionIMEManagerDelegate
     : public ComponentExtensionIMEManagerDelegate {
  public:
   MockComponentExtensionIMEManagerDelegate();
+
+  MockComponentExtensionIMEManagerDelegate(
+      const MockComponentExtensionIMEManagerDelegate&) = delete;
+  MockComponentExtensionIMEManagerDelegate& operator=(
+      const MockComponentExtensionIMEManagerDelegate&) = delete;
+
   ~MockComponentExtensionIMEManagerDelegate() override;
 
   std::vector<ComponentExtensionIME> ListIME() override;
@@ -37,8 +43,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockComponentExtensionIMEManagerDelegate
  private:
   std::set<std::string> login_layout_set_;
   std::vector<ComponentExtensionIME> ime_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockComponentExtensionIMEManagerDelegate);
 };
 
 }  // namespace input_method

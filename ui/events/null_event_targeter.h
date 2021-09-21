@@ -17,15 +17,16 @@ namespace ui {
 class EVENTS_EXPORT NullEventTargeter : public EventTargeter {
  public:
   NullEventTargeter();
+
+  NullEventTargeter(const NullEventTargeter&) = delete;
+  NullEventTargeter& operator=(const NullEventTargeter&) = delete;
+
   ~NullEventTargeter() override;
 
   // EventTargeter:
   EventTarget* FindTargetForEvent(EventTarget* root, Event* event) override;
   EventTarget* FindNextBestTarget(EventTarget* previous_target,
                                   Event* event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullEventTargeter);
 };
 
 }  // namespace ui

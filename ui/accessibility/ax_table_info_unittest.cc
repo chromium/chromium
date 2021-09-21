@@ -83,15 +83,16 @@ void MakeRowHeader(AXNodeData* cell,
 class AXTableInfoTest : public testing::Test {
  public:
   AXTableInfoTest() {}
+
+  AXTableInfoTest(const AXTableInfoTest&) = delete;
+  AXTableInfoTest& operator=(const AXTableInfoTest&) = delete;
+
   ~AXTableInfoTest() override {}
 
  protected:
   AXTableInfo* GetTableInfo(AXTree* tree, AXNode* node) {
     return tree->GetTableInfo(node);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXTableInfoTest);
 };
 
 TEST_F(AXTableInfoTest, SimpleTable) {

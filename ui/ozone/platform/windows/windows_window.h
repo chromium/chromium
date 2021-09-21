@@ -16,10 +16,11 @@ namespace ui {
 class WindowsWindow : public WinWindow {
  public:
   WindowsWindow(PlatformWindowDelegate* delegate, const gfx::Rect& bounds);
-  ~WindowsWindow() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowsWindow);
+  WindowsWindow(const WindowsWindow&) = delete;
+  WindowsWindow& operator=(const WindowsWindow&) = delete;
+
+  ~WindowsWindow() override;
 };
 
 }  // namespace ui

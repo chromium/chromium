@@ -17,6 +17,11 @@ class WM_CORE_EXPORT DefaultScreenPositionClient
     : public aura::client::ScreenPositionClient {
  public:
   explicit DefaultScreenPositionClient(aura::Window* root_window);
+
+  DefaultScreenPositionClient(const DefaultScreenPositionClient&) = delete;
+  DefaultScreenPositionClient& operator=(const DefaultScreenPositionClient&) =
+      delete;
+
   ~DefaultScreenPositionClient() override;
 
   // aura::client::ScreenPositionClient overrides:
@@ -37,8 +42,6 @@ class WM_CORE_EXPORT DefaultScreenPositionClient
 
  private:
   aura::Window* root_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultScreenPositionClient);
 };
 
 }  // namespace wm

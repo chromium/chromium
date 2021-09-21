@@ -42,6 +42,9 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
 
   OverscrollRefresh(OverscrollRefreshHandler* handler, float edge_width);
 
+  OverscrollRefresh(const OverscrollRefresh&) = delete;
+  OverscrollRefresh& operator=(const OverscrollRefresh&) = delete;
+
   virtual ~OverscrollRefresh();
 
   // Scroll event stream listening methods.
@@ -107,8 +110,6 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   const float edge_width_;  // in px
   gfx::Vector2dF cumulative_scroll_;
   OverscrollRefreshHandler* const handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollRefresh);
 };
 
 }  // namespace ui

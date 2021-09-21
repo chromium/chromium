@@ -40,6 +40,10 @@ class ANIMATION_EXPORT Animation : public AnimationContainerElement {
   };
 
   explicit Animation(base::TimeDelta timer_interval);
+
+  Animation(const Animation&) = delete;
+  Animation& operator=(const Animation&) = delete;
+
   ~Animation() override;
 
   // Starts the animation. Does nothing if the animation is already running.
@@ -136,8 +140,6 @@ class ANIMATION_EXPORT Animation : public AnimationContainerElement {
   // Obtaining the PrefersReducedMotion system setting can be expensive, so it
   // is cached in this boolean.
   static absl::optional<bool> prefers_reduced_motion_;
-
-  DISALLOW_COPY_AND_ASSIGN(Animation);
 };
 
 }  // namespace gfx

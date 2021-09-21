@@ -52,6 +52,10 @@ enum COMPONENT_EXPORT(EVDEV) EventDeviceType {
 class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
  public:
   EventDeviceInfo();
+
+  EventDeviceInfo(const EventDeviceInfo&) = delete;
+  EventDeviceInfo& operator=(const EventDeviceInfo&) = delete;
+
   ~EventDeviceInfo();
 
   // Initialize device information from an open device.
@@ -212,8 +216,6 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
 
   // Whether this is an internal or external device.
   InputDeviceType device_type_ = InputDeviceType::INPUT_DEVICE_UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(EventDeviceInfo);
 };
 
 }  // namspace ui

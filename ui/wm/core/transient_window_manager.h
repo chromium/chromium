@@ -31,6 +31,9 @@ class WM_CORE_EXPORT TransientWindowManager : public aura::WindowObserver {
  public:
   using Windows = std::vector<aura::Window*>;
 
+  TransientWindowManager(const TransientWindowManager&) = delete;
+  TransientWindowManager& operator=(const TransientWindowManager&) = delete;
+
   ~TransientWindowManager() override;
 
   // Returns the TransientWindowManager for |window|, creating if necessary.
@@ -105,8 +108,6 @@ class WM_CORE_EXPORT TransientWindowManager : public aura::WindowObserver {
   bool pause_transient_descendants_restacking_ = false;
 
   base::ObserverList<TransientWindowObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransientWindowManager);
 };
 
 }  // namespace wm

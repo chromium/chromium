@@ -21,6 +21,10 @@ namespace gl {
 class GL_EXPORT GLStateRestorer {
  public:
   GLStateRestorer();
+
+  GLStateRestorer(const GLStateRestorer&) = delete;
+  GLStateRestorer& operator=(const GLStateRestorer&) = delete;
+
   virtual ~GLStateRestorer();
 
   virtual bool IsInitialized() = 0;
@@ -35,8 +39,6 @@ class GL_EXPORT GLStateRestorer {
   virtual void RestoreVertexAttribArray(unsigned int index) = 0;
   virtual void PauseQueries() = 0;
   virtual void ResumeQueries() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GLStateRestorer);
 };
 
 }  // namespace gl

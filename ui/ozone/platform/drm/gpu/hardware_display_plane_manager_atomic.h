@@ -17,6 +17,12 @@ namespace ui {
 class HardwareDisplayPlaneManagerAtomic : public HardwareDisplayPlaneManager {
  public:
   explicit HardwareDisplayPlaneManagerAtomic(DrmDevice* drm);
+
+  HardwareDisplayPlaneManagerAtomic(const HardwareDisplayPlaneManagerAtomic&) =
+      delete;
+  HardwareDisplayPlaneManagerAtomic& operator=(
+      const HardwareDisplayPlaneManagerAtomic&) = delete;
+
   ~HardwareDisplayPlaneManagerAtomic() override;
 
   // HardwareDisplayPlaneManager:
@@ -66,8 +72,6 @@ class HardwareDisplayPlaneManagerAtomic : public HardwareDisplayPlaneManager {
       const std::vector<uint32_t>& crtcs,
       std::vector<base::ScopedFD>* out_fence_fds,
       std::vector<base::ScopedFD::Receiver>* out_fence_fd_receivers);
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayPlaneManagerAtomic);
 };
 
 }  // namespace ui

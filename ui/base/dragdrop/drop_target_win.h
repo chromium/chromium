@@ -28,6 +28,10 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE) DropTargetWin : public IDropTarget {
  public:
   DropTargetWin();
+
+  DropTargetWin(const DropTargetWin&) = delete;
+  DropTargetWin& operator=(const DropTargetWin&) = delete;
+
   virtual ~DropTargetWin();
 
   // Initialize the drop target by associating it with the given HWND.
@@ -108,8 +112,6 @@ class COMPONENT_EXPORT(UI_BASE) DropTargetWin : public IDropTarget {
   HWND hwnd_;
 
   ULONG ref_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DropTargetWin);
 };
 
 }  // namespace ui

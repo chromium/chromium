@@ -35,6 +35,11 @@ class ConfigureDisplaysTaskTest : public testing::Test {
         small_mode_(gfx::Size(1366, 768), false, 60.0f),
         medium_mode_(gfx::Size(1920, 1080), false, 60.0f),
         big_mode_(gfx::Size(2560, 1600), false, 60.0f) {}
+
+  ConfigureDisplaysTaskTest(const ConfigureDisplaysTaskTest&) = delete;
+  ConfigureDisplaysTaskTest& operator=(const ConfigureDisplaysTaskTest&) =
+      delete;
+
   ~ConfigureDisplaysTaskTest() override = default;
 
   void SetUp() override {
@@ -74,9 +79,6 @@ class ConfigureDisplaysTaskTest : public testing::Test {
   const DisplayMode big_mode_;
 
   std::vector<std::unique_ptr<DisplaySnapshot>> displays_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConfigureDisplaysTaskTest);
 };
 
 }  // namespace

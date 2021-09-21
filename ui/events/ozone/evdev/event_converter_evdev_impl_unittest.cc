@@ -42,14 +42,16 @@ class MockEventConverterEvdevImpl : public EventConverterEvdevImpl {
                                 dispatcher) {
     SetEnabled(true);
   }
+
+  MockEventConverterEvdevImpl(const MockEventConverterEvdevImpl&) = delete;
+  MockEventConverterEvdevImpl& operator=(const MockEventConverterEvdevImpl&) =
+      delete;
+
   ~MockEventConverterEvdevImpl() override { SetEnabled(false); }
 
   // EventConverterEvdevImpl:
   bool HasKeyboard() const override { return true; }
   bool HasTouchpad() const override { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEventConverterEvdevImpl);
 };
 
 }  // namespace ui

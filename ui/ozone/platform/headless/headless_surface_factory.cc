@@ -184,6 +184,10 @@ class TestPixmap : public gfx::NativePixmap {
 class GLOzoneEGLHeadless : public GLOzoneEGL {
  public:
   GLOzoneEGLHeadless(const base::FilePath& base_path) : base_path_(base_path) {}
+
+  GLOzoneEGLHeadless(const GLOzoneEGLHeadless&) = delete;
+  GLOzoneEGLHeadless& operator=(const GLOzoneEGLHeadless&) = delete;
+
   ~GLOzoneEGLHeadless() override = default;
 
   // GLOzone:
@@ -212,8 +216,6 @@ class GLOzoneEGLHeadless : public GLOzoneEGL {
 
  private:
   base::FilePath base_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLHeadless);
 };
 
 }  // namespace

@@ -69,6 +69,10 @@ class ScreenManagerTest : public testing::Test {
   };
 
   ScreenManagerTest() = default;
+
+  ScreenManagerTest(const ScreenManagerTest&) = delete;
+  ScreenManagerTest& operator=(const ScreenManagerTest&) = delete;
+
   ~ScreenManagerTest() override = default;
 
   gfx::Rect GetPrimaryBounds() const {
@@ -237,9 +241,6 @@ class ScreenManagerTest : public testing::Test {
   base::flat_map<uint64_t /*modifier*/, int /*overhead*/> modifiers_overhead_{
       {DRM_FORMAT_MOD_LINEAR, 1},
       {I915_FORMAT_MOD_Yf_TILED_CCS, 100}};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenManagerTest);
 };
 
 TEST_F(ScreenManagerTest, CheckWithNoControllers) {

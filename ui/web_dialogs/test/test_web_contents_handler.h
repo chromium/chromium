@@ -16,6 +16,10 @@ class TestWebContentsHandler
     : public WebDialogWebContentsDelegate::WebContentsHandler {
  public:
   TestWebContentsHandler();
+
+  TestWebContentsHandler(const TestWebContentsHandler&) = delete;
+  TestWebContentsHandler& operator=(const TestWebContentsHandler&) = delete;
+
   ~TestWebContentsHandler() override;
 
  private:
@@ -34,8 +38,6 @@ class TestWebContentsHandler
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsHandler);
 };
 
 }  // namespace test

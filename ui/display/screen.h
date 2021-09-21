@@ -40,6 +40,10 @@ class DisplayObserver;
 class DISPLAY_EXPORT Screen {
  public:
   Screen();
+
+  Screen(const Screen&) = delete;
+  Screen& operator=(const Screen&) = delete;
+
   virtual ~Screen();
 
   // Retrieves the single Screen object; this may be null (e.g. in some tests).
@@ -176,8 +180,6 @@ class DISPLAY_EXPORT Screen {
 
   int64_t display_id_for_new_windows_;
   int64_t scoped_display_id_for_new_windows_ = display::kInvalidDisplayId;
-
-  DISALLOW_COPY_AND_ASSIGN(Screen);
 };
 
 Screen* CreateNativeScreen();

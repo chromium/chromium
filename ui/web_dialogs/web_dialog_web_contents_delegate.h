@@ -61,6 +61,11 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
   // |context| and |handler| must be non-NULL.
   WebDialogWebContentsDelegate(content::BrowserContext* context,
                                std::unique_ptr<WebContentsHandler> handler);
+
+  WebDialogWebContentsDelegate(const WebDialogWebContentsDelegate&) = delete;
+  WebDialogWebContentsDelegate& operator=(const WebDialogWebContentsDelegate&) =
+      delete;
+
   ~WebDialogWebContentsDelegate() override;
 
   // The returned browser context is guaranteed to be original if non-NULL.
@@ -95,8 +100,6 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
   content::BrowserContext* browser_context_;
 
   std::unique_ptr<WebContentsHandler> const handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogWebContentsDelegate);
 };
 
 }  // namespace ui

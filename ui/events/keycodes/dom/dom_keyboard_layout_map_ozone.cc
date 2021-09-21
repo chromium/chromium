@@ -21,6 +21,11 @@ namespace {
 class DomKeyboardLayoutMapOzone : public DomKeyboardLayoutMapBase {
  public:
   DomKeyboardLayoutMapOzone();
+
+  DomKeyboardLayoutMapOzone(const DomKeyboardLayoutMapOzone&) = delete;
+  DomKeyboardLayoutMapOzone& operator=(const DomKeyboardLayoutMapOzone&) =
+      delete;
+
   ~DomKeyboardLayoutMapOzone() override;
 
  private:
@@ -29,8 +34,6 @@ class DomKeyboardLayoutMapOzone : public DomKeyboardLayoutMapBase {
   ui::DomKey GetDomKeyFromDomCodeForLayout(
       ui::DomCode dom_code,
       uint32_t keyboard_layout_index) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DomKeyboardLayoutMapOzone);
 };
 
 DomKeyboardLayoutMapOzone::DomKeyboardLayoutMapOzone() = default;

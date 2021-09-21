@@ -14,6 +14,10 @@ namespace ui {
 class GLOzoneGLX : public GLOzone {
  public:
   GLOzoneGLX() {}
+
+  GLOzoneGLX(const GLOzoneGLX&) = delete;
+  GLOzoneGLX& operator=(const GLOzoneGLX&) = delete;
+
   ~GLOzoneGLX() override {}
 
   bool InitializeGLOneOffPlatform() override;
@@ -36,9 +40,6 @@ class GLOzoneGLX : public GLOzone {
       gfx::AcceleratedWidget window) override;
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
       const gfx::Size& size) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneGLX);
 };
 
 }  // namespace ui

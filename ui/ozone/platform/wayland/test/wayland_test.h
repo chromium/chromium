@@ -38,6 +38,10 @@ class WaylandScreen;
 class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
  public:
   WaylandTest();
+
+  WaylandTest(const WaylandTest&) = delete;
+  WaylandTest& operator=(const WaylandTest&) = delete;
+
   ~WaylandTest() override;
 
   void SetUp() override;
@@ -81,8 +85,6 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
 
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandTest);
 };
 
 }  // namespace ui

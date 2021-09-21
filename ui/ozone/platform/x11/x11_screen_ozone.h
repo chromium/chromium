@@ -25,6 +25,10 @@ class X11ScreenOzone : public PlatformScreen,
                        public XDisplayManager::Delegate {
  public:
   X11ScreenOzone();
+
+  X11ScreenOzone(const X11ScreenOzone&) = delete;
+  X11ScreenOzone& operator=(const X11ScreenOzone&) = delete;
+
   ~X11ScreenOzone() override;
 
   // Fetch display list through Xlib/XRandR
@@ -73,8 +77,6 @@ class X11ScreenOzone : public PlatformScreen,
   // Scale value that DesktopScreenOzoneLinux sets by listening to
   // DeviceScaleFactorObserver.
   float device_scale_factor_ = 1.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(X11ScreenOzone);
 };
 
 }  // namespace ui

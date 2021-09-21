@@ -36,6 +36,10 @@ class MessageCenterImpl : public MessageCenter,
  public:
   explicit MessageCenterImpl(
       std::unique_ptr<LockScreenController> lock_screen_controller);
+
+  MessageCenterImpl(const MessageCenterImpl&) = delete;
+  MessageCenterImpl& operator=(const MessageCenterImpl&) = delete;
+
   ~MessageCenterImpl() override;
 
   // MessageCenter overrides:
@@ -130,8 +134,6 @@ class MessageCenterImpl : public MessageCenter,
   std::u16string system_notification_app_name_;
 
   MessageCenterStatsCollector stats_collector_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterImpl);
 };
 
 }  // namespace message_center

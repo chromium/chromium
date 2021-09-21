@@ -19,6 +19,10 @@ namespace input_method {
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeImeKeyboard : public ImeKeyboard {
  public:
   FakeImeKeyboard();
+
+  FakeImeKeyboard(const FakeImeKeyboard&) = delete;
+  FakeImeKeyboard& operator=(const FakeImeKeyboard&) = delete;
+
   ~FakeImeKeyboard() override;
 
   bool SetCurrentKeyboardLayoutByName(const std::string& layout_name) override;
@@ -35,9 +39,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeImeKeyboard : public ImeKeyboard {
   AutoRepeatRate last_auto_repeat_rate_;
   // TODO(yusukes): Add more variables for counting the numbers of the API calls
   bool auto_repeat_is_enabled_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeImeKeyboard);
 };
 
 }  // namespace input_method

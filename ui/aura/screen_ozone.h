@@ -23,6 +23,10 @@ namespace aura {
 class AURA_EXPORT ScreenOzone : public display::Screen {
  public:
   ScreenOzone();
+
+  ScreenOzone(const ScreenOzone&) = delete;
+  ScreenOzone& operator=(const ScreenOzone&) = delete;
+
   ~ScreenOzone() override;
 
   // display::Screen interface.
@@ -64,8 +68,6 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
 
   display::Screen* const old_screen_ = display::Screen::SetScreenInstance(this);
   std::unique_ptr<ui::PlatformScreen> platform_screen_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenOzone);
 };
 
 }  // namespace aura

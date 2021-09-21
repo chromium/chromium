@@ -59,6 +59,11 @@ class DisplayChangeObserverTest : public testing::Test,
                                   public testing::WithParamInterface<bool> {
  public:
   DisplayChangeObserverTest() = default;
+
+  DisplayChangeObserverTest(const DisplayChangeObserverTest&) = delete;
+  DisplayChangeObserverTest& operator=(const DisplayChangeObserverTest&) =
+      delete;
+
   ~DisplayChangeObserverTest() override = default;
 
   // testing::Test:
@@ -82,8 +87,6 @@ class DisplayChangeObserverTest : public testing::Test,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayChangeObserverTest);
 };
 
 TEST_P(DisplayChangeObserverTest, GetExternalManagedDisplayModeList) {

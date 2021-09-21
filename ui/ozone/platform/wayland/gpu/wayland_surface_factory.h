@@ -24,6 +24,10 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
  public:
   WaylandSurfaceFactory(WaylandConnection* connection,
                         WaylandBufferManagerGpu* buffer_manager);
+
+  WaylandSurfaceFactory(const WaylandSurfaceFactory&) = delete;
+  WaylandSurfaceFactory& operator=(const WaylandSurfaceFactory&) = delete;
+
   ~WaylandSurfaceFactory() override;
 
   // SurfaceFactoryOzone overrides:
@@ -59,8 +63,6 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
   WaylandConnection* const connection_;
   WaylandBufferManagerGpu* const buffer_manager_;
   std::unique_ptr<GLOzone> egl_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandSurfaceFactory);
 };
 
 }  // namespace ui

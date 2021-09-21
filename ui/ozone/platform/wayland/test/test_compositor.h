@@ -20,14 +20,16 @@ class TestCompositor : public GlobalObject {
   static constexpr uint32_t kVersion = 4;
 
   TestCompositor();
+
+  TestCompositor(const TestCompositor&) = delete;
+  TestCompositor& operator=(const TestCompositor&) = delete;
+
   ~TestCompositor() override;
 
   void AddSurface(MockSurface* surface);
 
  private:
   std::vector<MockSurface*> surfaces_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositor);
 };
 
 }  // namespace wl

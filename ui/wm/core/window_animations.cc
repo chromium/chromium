@@ -60,6 +60,12 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
       : window_(window) {
     window_->AddObserver(this);
   }
+
+  HidingWindowAnimationObserverBase(const HidingWindowAnimationObserverBase&) =
+      delete;
+  HidingWindowAnimationObserverBase& operator=(
+      const HidingWindowAnimationObserverBase&) = delete;
+
   ~HidingWindowAnimationObserverBase() override {
     if (window_)
       window_->RemoveObserver(this);
@@ -135,8 +141,6 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
 
   // The owner of detached layers.
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidingWindowAnimationObserverBase);
 };
 
 // TODO(crbug.com/1021774): Find a better home and merge with
@@ -169,13 +173,16 @@ class ImplicitHidingWindowAnimationObserver
   ImplicitHidingWindowAnimationObserver(
       aura::Window* window,
       ui::ScopedLayerAnimationSettings* settings);
+
+  ImplicitHidingWindowAnimationObserver(
+      const ImplicitHidingWindowAnimationObserver&) = delete;
+  ImplicitHidingWindowAnimationObserver& operator=(
+      const ImplicitHidingWindowAnimationObserver&) = delete;
+
   ~ImplicitHidingWindowAnimationObserver() override {}
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImplicitHidingWindowAnimationObserver);
 };
 
 namespace {
@@ -415,6 +422,12 @@ class RotateHidingWindowAnimationObserver
  public:
   explicit RotateHidingWindowAnimationObserver(aura::Window* window)
       : HidingWindowAnimationObserverBase(window) {}
+
+  RotateHidingWindowAnimationObserver(
+      const RotateHidingWindowAnimationObserver&) = delete;
+  RotateHidingWindowAnimationObserver& operator=(
+      const RotateHidingWindowAnimationObserver&) = delete;
+
   ~RotateHidingWindowAnimationObserver() override {}
 
   // Destroys itself after |last_sequence| ends or is aborted. Does not take
@@ -432,9 +445,6 @@ class RotateHidingWindowAnimationObserver
   }
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RotateHidingWindowAnimationObserver);
 };
 
 void AddLayerAnimationsForRotate(aura::Window* window, bool show) {

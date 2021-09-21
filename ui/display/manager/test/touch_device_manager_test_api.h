@@ -21,6 +21,11 @@ namespace test {
 class DISPLAY_MANAGER_EXPORT TouchDeviceManagerTestApi {
  public:
   explicit TouchDeviceManagerTestApi(TouchDeviceManager* touch_device_manager);
+
+  TouchDeviceManagerTestApi(const TouchDeviceManagerTestApi&) = delete;
+  TouchDeviceManagerTestApi& operator=(const TouchDeviceManagerTestApi&) =
+      delete;
+
   ~TouchDeviceManagerTestApi();
 
   // Associate the given display |display_info| with the touch device |device|.
@@ -47,8 +52,6 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceManagerTestApi {
  private:
   // Not owned
   TouchDeviceManager* touch_device_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchDeviceManagerTestApi);
 };
 
 }  // namespace test

@@ -29,6 +29,9 @@ class SelectionRequestorTest : public testing::Test {
  public:
   explicit SelectionRequestorTest() : connection_(x11::Connection::Get()) {}
 
+  SelectionRequestorTest(const SelectionRequestorTest&) = delete;
+  SelectionRequestorTest& operator=(const SelectionRequestorTest&) = delete;
+
   ~SelectionRequestorTest() override = default;
 
   // Responds to the SelectionRequestor's XConvertSelection() request by
@@ -74,9 +77,6 @@ class SelectionRequestorTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectionRequestorTest);
 };
 
 namespace {

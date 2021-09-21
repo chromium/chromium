@@ -40,6 +40,10 @@ template <class T>
 class WeakPtrNSObjectFactory : public internal::WeakPtrNSObjectFactoryBase {
  public:
   explicit WeakPtrNSObjectFactory(T* owner) : handle_(Create(owner)) {}
+
+  WeakPtrNSObjectFactory(const WeakPtrNSObjectFactory&) = delete;
+  WeakPtrNSObjectFactory& operator=(const WeakPtrNSObjectFactory&) = delete;
+
   ~WeakPtrNSObjectFactory() { InvalidateAndRelease(handle_); }
 
   // Gets the original owner, if it hasn't been destroyed.
@@ -51,8 +55,6 @@ class WeakPtrNSObjectFactory : public internal::WeakPtrNSObjectFactoryBase {
 
  private:
   WeakPtrNSObject* handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(WeakPtrNSObjectFactory);
 };
 
 }  // namespace ui

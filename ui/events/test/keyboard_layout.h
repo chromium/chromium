@@ -45,6 +45,10 @@ PlatformKeyboardLayout GetPlatformKeyboardLayout(KeyboardLayout layout);
 class ScopedKeyboardLayout {
  public:
   explicit ScopedKeyboardLayout(KeyboardLayout layout);
+
+  ScopedKeyboardLayout(const ScopedKeyboardLayout&) = delete;
+  ScopedKeyboardLayout& operator=(const ScopedKeyboardLayout&) = delete;
+
   ~ScopedKeyboardLayout();
 
  private:
@@ -57,8 +61,6 @@ class ScopedKeyboardLayout {
 
   PlatformKeyboardLayout original_layout_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedKeyboardLayout);
 };
 
 }  // namespace ui

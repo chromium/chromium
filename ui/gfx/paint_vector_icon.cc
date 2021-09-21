@@ -87,6 +87,10 @@ class PathParser {
  public:
   PathParser(const PathElement* path_elements, size_t path_size)
       : path_elements_(path_elements), path_size_(path_size) {}
+
+  PathParser(const PathParser&) = delete;
+  PathParser& operator=(const PathParser&) = delete;
+
   ~PathParser() {}
 
   void Advance() { command_index_ += GetArgumentCount() + 1; }
@@ -160,8 +164,6 @@ class PathParser {
   const PathElement* path_elements_;
   size_t path_size_;
   size_t command_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PathParser);
 };
 
 // Translates a string such as "MOVE_TO" into a command such as MOVE_TO.
@@ -480,6 +482,9 @@ class VectorIconSource : public CanvasImageSource {
         data_(kNoneIcon, dip_size, color, &kNoneIcon),
         path_(PathFromSource(definition)) {}
 
+  VectorIconSource(const VectorIconSource&) = delete;
+  VectorIconSource& operator=(const VectorIconSource&) = delete;
+
   ~VectorIconSource() override {}
 
   // CanvasImageSource:
@@ -500,8 +505,6 @@ class VectorIconSource : public CanvasImageSource {
  private:
   const IconDescription data_;
   const std::vector<PathElement> path_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorIconSource);
 };
 
 // This class caches vector icons (as ImageSkia) so they don't have to be drawn
@@ -510,6 +513,10 @@ class VectorIconSource : public CanvasImageSource {
 class VectorIconCache {
  public:
   VectorIconCache() {}
+
+  VectorIconCache(const VectorIconCache&) = delete;
+  VectorIconCache& operator=(const VectorIconCache&) = delete;
+
   ~VectorIconCache() {}
 
   ImageSkia GetOrCreateIcon(const IconDescription& description) {
@@ -525,8 +532,6 @@ class VectorIconCache {
 
  private:
   std::map<IconDescription, ImageSkia, CompareIconDescription> images_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorIconCache);
 };
 
 static base::LazyInstance<VectorIconCache>::DestructorAtExit g_icon_cache =

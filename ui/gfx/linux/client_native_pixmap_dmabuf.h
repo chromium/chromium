@@ -30,6 +30,9 @@ class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
       const gfx::Size& size,
       gfx::BufferFormat format);
 
+  ClientNativePixmapDmaBuf(const ClientNativePixmapDmaBuf&) = delete;
+  ClientNativePixmapDmaBuf& operator=(const ClientNativePixmapDmaBuf&) = delete;
+
   ~ClientNativePixmapDmaBuf() override;
 
   // Overridden from ClientNativePixmap.
@@ -60,8 +63,6 @@ class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
   const gfx::NativePixmapHandle pixmap_handle_;
   const gfx::Size size_;
   const std::array<PlaneInfo, kMaxPlanes> plane_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientNativePixmapDmaBuf);
 };
 
 }  // namespace gfx

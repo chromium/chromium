@@ -38,13 +38,14 @@ class GFX_EXPORT CrashIdHelper {
   // RAII style class that unregisters in the destructor.
   class GFX_EXPORT ScopedLogger {
    public:
+    ScopedLogger(const ScopedLogger&) = delete;
+    ScopedLogger& operator=(const ScopedLogger&) = delete;
+
     ~ScopedLogger();
 
    private:
     friend class CrashIdHelper;
     ScopedLogger();
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedLogger);
   };
 
   // Adds |id| to the list of active debugging ids. When the returned object

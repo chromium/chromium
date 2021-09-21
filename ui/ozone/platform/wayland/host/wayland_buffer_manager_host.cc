@@ -106,6 +106,10 @@ class WaylandBufferManagerHost::Surface {
     wayland_surface_->set_explicit_release_callback(base::BindRepeating(
         &Surface::BufferExplicitRelease, weak_ptr_factory_.GetWeakPtr()));
   }
+
+  Surface(const Surface&) = delete;
+  Surface& operator=(const Surface&) = delete;
+
   ~Surface() = default;
 
   bool CommitBuffer(
@@ -727,8 +731,6 @@ class WaylandBufferManagerHost::Surface {
   bool configured_ = false;
 
   base::WeakPtrFactory<Surface> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Surface);
 };
 
 WaylandBuffer::WaylandBuffer(const gfx::Size& size, uint32_t buffer_id)

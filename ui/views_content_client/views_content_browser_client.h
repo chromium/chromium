@@ -18,6 +18,11 @@ class ViewsContentBrowserClient : public content::ContentBrowserClient {
  public:
   explicit ViewsContentBrowserClient(
       ViewsContentClient* views_content_client);
+
+  ViewsContentBrowserClient(const ViewsContentBrowserClient&) = delete;
+  ViewsContentBrowserClient& operator=(const ViewsContentBrowserClient&) =
+      delete;
+
   ~ViewsContentBrowserClient() override;
 
   // content::ContentBrowserClient:
@@ -26,8 +31,6 @@ class ViewsContentBrowserClient : public content::ContentBrowserClient {
 
  private:
   ViewsContentClient* views_content_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentBrowserClient);
 };
 
 }  // namespace ui

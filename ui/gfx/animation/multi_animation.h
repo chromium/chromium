@@ -64,6 +64,10 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
   explicit MultiAnimation(
       const Parts& parts,
       base::TimeDelta timer_interval = kDefaultTimerInterval);
+
+  MultiAnimation(const MultiAnimation&) = delete;
+  MultiAnimation& operator=(const MultiAnimation&) = delete;
+
   ~MultiAnimation() override;
 
   // Sets whether the animation continues after it reaches the end. If true, the
@@ -102,8 +106,6 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
 
   // See description above setter.
   bool continuous_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiAnimation);
 };
 
 }  // namespace gfx

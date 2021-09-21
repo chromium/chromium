@@ -29,6 +29,10 @@ class MESSAGE_CENTER_EXPORT PopupTimersController
       public PopupTimer::Delegate {
  public:
   explicit PopupTimersController(MessageCenter* message_center);
+
+  PopupTimersController(const PopupTimersController&) = delete;
+  PopupTimersController& operator=(const PopupTimersController&) = delete;
+
   ~PopupTimersController() override;
 
   // MessageCenterObserver implementation.
@@ -72,8 +76,6 @@ class MESSAGE_CENTER_EXPORT PopupTimersController
   using PopupTimerCollection =
       std::map<std::string, std::unique_ptr<PopupTimer>>;
   PopupTimerCollection popup_timers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupTimersController);
 };
 
 }  // namespace message_center

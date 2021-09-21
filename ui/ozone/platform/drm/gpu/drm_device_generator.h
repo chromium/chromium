@@ -16,6 +16,10 @@ class DrmDevice;
 class DrmDeviceGenerator {
  public:
   DrmDeviceGenerator();
+
+  DrmDeviceGenerator(const DrmDeviceGenerator&) = delete;
+  DrmDeviceGenerator& operator=(const DrmDeviceGenerator&) = delete;
+
   virtual ~DrmDeviceGenerator();
 
   // Creates a DRM device for |file|. |device_path| describes the location of
@@ -26,7 +30,6 @@ class DrmDeviceGenerator {
       bool is_primary_device) = 0;
 
  public:
-  DISALLOW_COPY_AND_ASSIGN(DrmDeviceGenerator);
 };
 
 }  // namespace ui

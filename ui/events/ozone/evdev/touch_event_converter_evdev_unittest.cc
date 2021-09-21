@@ -101,6 +101,11 @@ class MockTouchEventConverterEvdev : public TouchEventConverterEvdev {
       const EventDeviceInfo& devinfo,
       SharedPalmDetectionFilterState* shared_palm_state,
       DeviceEventDispatcherEvdev* dispatcher);
+
+  MockTouchEventConverterEvdev(const MockTouchEventConverterEvdev&) = delete;
+  MockTouchEventConverterEvdev& operator=(const MockTouchEventConverterEvdev&) =
+      delete;
+
   ~MockTouchEventConverterEvdev() override;
 
   void ConfigureReadMock(struct input_event* queue,
@@ -124,8 +129,6 @@ class MockTouchEventConverterEvdev : public TouchEventConverterEvdev {
  private:
   int read_pipe_;
   int write_pipe_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTouchEventConverterEvdev);
 };
 
 class MockDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
@@ -1642,6 +1645,11 @@ class EventTypeTouchNoiseFilter : public TouchFilter {
  public:
   explicit EventTypeTouchNoiseFilter(EventType noise_event_type)
       : noise_event_type_(noise_event_type) {}
+
+  EventTypeTouchNoiseFilter(const EventTypeTouchNoiseFilter&) = delete;
+  EventTypeTouchNoiseFilter& operator=(const EventTypeTouchNoiseFilter&) =
+      delete;
+
   ~EventTypeTouchNoiseFilter() override {}
 
   // TouchFilter:
@@ -1671,8 +1679,6 @@ class EventTypeTouchNoiseFilter : public TouchFilter {
 
   EventType noise_event_type_;
   std::map<EventType, size_t> counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventTypeTouchNoiseFilter);
 };
 
 }  // namespace
@@ -1681,6 +1687,12 @@ class TouchEventConverterEvdevTouchNoiseTest
     : public TouchEventConverterEvdevTest {
  public:
   TouchEventConverterEvdevTouchNoiseTest() {}
+
+  TouchEventConverterEvdevTouchNoiseTest(
+      const TouchEventConverterEvdevTouchNoiseTest&) = delete;
+  TouchEventConverterEvdevTouchNoiseTest& operator=(
+      const TouchEventConverterEvdevTouchNoiseTest&) = delete;
+
   ~TouchEventConverterEvdevTouchNoiseTest() override {}
 
   // TouchEventConverterEvdevTest:
@@ -1689,9 +1701,6 @@ class TouchEventConverterEvdevTouchNoiseTest
         switches::kEdgeTouchFiltering);
     TouchEventConverterEvdevTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchEventConverterEvdevTouchNoiseTest);
 };
 
 TEST_F(TouchEventConverterEvdevTest, ActiveStylusTouchAndRelease) {

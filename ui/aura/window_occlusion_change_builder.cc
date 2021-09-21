@@ -18,6 +18,12 @@ class DefaultWindowOcclusionChangeBuilder
     : public WindowOcclusionChangeBuilder {
  public:
   DefaultWindowOcclusionChangeBuilder() = default;
+
+  DefaultWindowOcclusionChangeBuilder(
+      const DefaultWindowOcclusionChangeBuilder&) = delete;
+  DefaultWindowOcclusionChangeBuilder& operator=(
+      const DefaultWindowOcclusionChangeBuilder&) = delete;
+
   ~DefaultWindowOcclusionChangeBuilder() override {
     // No frame eviction until all occlusion state changes are applied.
     viz::FrameEvictionManager::ScopedPause scoped_frame_eviction_pause;
@@ -57,8 +63,6 @@ class DefaultWindowOcclusionChangeBuilder
 
   // Stores the accumulated occlusion changes.
   base::flat_map<Window*, OcclusionData> changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultWindowOcclusionChangeBuilder);
 };
 
 // static

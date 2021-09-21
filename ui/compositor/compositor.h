@@ -154,6 +154,10 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
              bool use_external_begin_frame_control = false,
              bool force_software_compositor = false,
              bool enable_compositing_based_throttling = false);
+
+  Compositor(const Compositor&) = delete;
+  Compositor& operator=(const Compositor&) = delete;
+
   ~Compositor() override;
 
   ui::ContextFactory* context_factory() { return context_factory_; }
@@ -526,8 +530,6 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
 
   base::WeakPtrFactory<Compositor> context_creation_weak_ptr_factory_{this};
   base::WeakPtrFactory<Compositor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Compositor);
 };
 
 }  // namespace ui

@@ -22,6 +22,10 @@ namespace gfx {
 class GFX_EXPORT BiDiLineIterator {
  public:
   BiDiLineIterator();
+
+  BiDiLineIterator(const BiDiLineIterator&) = delete;
+  BiDiLineIterator& operator=(const BiDiLineIterator&) = delete;
+
   ~BiDiLineIterator();
 
   // Initializes the bidirectional iterator with the specified text.  Returns
@@ -39,8 +43,6 @@ class GFX_EXPORT BiDiLineIterator {
 
  private:
   UBiDi* bidi_;
-
-  DISALLOW_COPY_AND_ASSIGN(BiDiLineIterator);
 };
 
 }  // namespace gfx

@@ -21,6 +21,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinBase
  public:
   InputMethodWinBase(internal::InputMethodDelegate* delegate,
                      HWND toplevel_window_handle);
+
+  InputMethodWinBase(const InputMethodWinBase&) = delete;
+  InputMethodWinBase& operator=(const InputMethodWinBase&) = delete;
+
   ~InputMethodWinBase() override;
 
  protected:
@@ -83,8 +87,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinBase
                          UINT msg_filter_min,
                          UINT msg_filter_max,
                          std::vector<CHROME_MSG>* char_msgs);
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodWinBase);
 };
 
 }  // namespace ui

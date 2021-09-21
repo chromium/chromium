@@ -76,6 +76,10 @@ class COMPONENT_EXPORT(EVDEV) GesturePropertyProvider {
   typedef int DeviceId;
 
   GesturePropertyProvider();
+
+  GesturePropertyProvider(const GesturePropertyProvider&) = delete;
+  GesturePropertyProvider& operator=(const GesturePropertyProvider&) = delete;
+
   ~GesturePropertyProvider();
 
   // Get a list of device ids that matches a device type. Return true if the
@@ -167,8 +171,6 @@ class COMPONENT_EXPORT(EVDEV) GesturePropertyProvider {
   // A vector of parsed sections in configuration files. Owns MatchCriterias,
   // GesturesProps and ConfigurationSections in it.
   std::vector<std::unique_ptr<internal::ConfigurationSection>> configurations_;
-
-  DISALLOW_COPY_AND_ASSIGN(GesturePropertyProvider);
 };
 
 // Wrapper of GesturesProp related functions. We group them together so that we
@@ -283,6 +285,10 @@ struct GesturesProp {
   GesturesProp(const std::string& name,
                const PropertyType type,
                const size_t count);
+
+  GesturesProp(const GesturesProp&) = delete;
+  GesturesProp& operator=(const GesturesProp&) = delete;
+
   virtual ~GesturesProp() {}
 
   // Variant-ish interfaces for accessing the property value. Each type of
@@ -333,8 +339,6 @@ struct GesturesProp {
   GesturesPropGetHandler get_ = nullptr;
   GesturesPropSetHandler set_ = nullptr;
   void* handler_data_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GesturesProp);
 };
 
 #endif  // UI_EVENTS_OZONE_EVDEV_LIBGESTURES_GLUE_GESTURE_PROPERTY_PROVIDER_H_

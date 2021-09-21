@@ -41,6 +41,9 @@ class GLImplementationWrapper {
     }
   }
 
+  GLImplementationWrapper(const GLImplementationWrapper&) = delete;
+  GLImplementationWrapper& operator=(const GLImplementationWrapper&) = delete;
+
   ~GLImplementationWrapper() = default;
 
   GLImplApi* api() { return gl_api_; }
@@ -50,8 +53,6 @@ class GLImplementationWrapper {
   std::unique_ptr<GLTraceImplApi> trace_gl_;
   std::unique_ptr<GLLogImplApi> log_gl_;
   GLImplApi* gl_api_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImplementationWrapper);
 };
 
 }  // namespace gl

@@ -29,6 +29,10 @@ using mojom::CursorType;
 class NullProxy : public DrmCursorProxy {
  public:
   NullProxy() {}
+
+  NullProxy(const NullProxy&) = delete;
+  NullProxy& operator=(const NullProxy&) = delete;
+
   ~NullProxy() override {}
 
   void CursorSet(gfx::AcceleratedWidget window,
@@ -37,9 +41,6 @@ class NullProxy : public DrmCursorProxy {
                  base::TimeDelta frame_delay) override {}
   void Move(gfx::AcceleratedWidget window, const gfx::Point& point) override {}
   void InitializeOnEvdevIfNecessary() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullProxy);
 };
 
 }  // namespace

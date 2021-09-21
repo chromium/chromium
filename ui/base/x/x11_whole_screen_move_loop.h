@@ -37,6 +37,10 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
       public ui::PlatformEventDispatcher {
  public:
   explicit X11WholeScreenMoveLoop(X11MoveLoopDelegate* delegate);
+
+  X11WholeScreenMoveLoop(const X11WholeScreenMoveLoop&) = delete;
+  X11WholeScreenMoveLoop& operator=(const X11WholeScreenMoveLoop&) = delete;
+
   ~X11WholeScreenMoveLoop() override;
 
   // ui:::PlatformEventDispatcher:
@@ -89,8 +93,6 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
   bool canceled_;
 
   base::WeakPtrFactory<X11WholeScreenMoveLoop> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(X11WholeScreenMoveLoop);
 };
 
 }  // namespace ui

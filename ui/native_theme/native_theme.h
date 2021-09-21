@@ -553,6 +553,12 @@ class NATIVE_THEME_EXPORT NativeTheme {
       : public NativeThemeObserver {
    public:
     ColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
+
+    ColorSchemeNativeThemeObserver(const ColorSchemeNativeThemeObserver&) =
+        delete;
+    ColorSchemeNativeThemeObserver& operator=(
+        const ColorSchemeNativeThemeObserver&) = delete;
+
     ~ColorSchemeNativeThemeObserver() override;
 
    private:
@@ -561,8 +567,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
     // The theme that gets updated when OnNativeThemeUpdated() is called.
     NativeTheme* const theme_to_update_;
-
-    DISALLOW_COPY_AND_ASSIGN(ColorSchemeNativeThemeObserver);
   };
 
   mutable std::map<SystemThemeColor, SkColor> system_colors_;

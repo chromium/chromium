@@ -76,6 +76,10 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   TouchSelectionController(TouchSelectionControllerClient* client,
                            const Config& config);
+
+  TouchSelectionController(const TouchSelectionController&) = delete;
+  TouchSelectionController& operator=(const TouchSelectionController&) = delete;
+
   ~TouchSelectionController() override;
 
   // To be called when the selection bounds have changed.
@@ -247,8 +251,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   bool consume_touch_sequence_;
 
   bool show_touch_handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionController);
 };
 
 }  // namespace ui

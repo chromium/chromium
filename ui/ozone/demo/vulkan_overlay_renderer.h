@@ -41,6 +41,10 @@ class VulkanOverlayRenderer : public RendererBase {
                         gpu::VulkanImplementation* vulkan_instance,
                         gfx::AcceleratedWidget widget,
                         const gfx::Size& size);
+
+  VulkanOverlayRenderer(const VulkanOverlayRenderer&) = delete;
+  VulkanOverlayRenderer& operator=(const VulkanOverlayRenderer&) = delete;
+
   ~VulkanOverlayRenderer() override;
 
   // Renderer:
@@ -120,8 +124,6 @@ class VulkanOverlayRenderer : public RendererBase {
   VkRenderPass render_pass_ = VK_NULL_HANDLE;
 
   base::WeakPtrFactory<VulkanOverlayRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanOverlayRenderer);
 };
 
 }  // namespace ui

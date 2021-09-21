@@ -12,6 +12,10 @@ namespace ui {
 namespace {
 class GestureConfigurationDefault : public GestureConfiguration {
  public:
+  GestureConfigurationDefault(const GestureConfigurationDefault&) = delete;
+  GestureConfigurationDefault& operator=(const GestureConfigurationDefault&) =
+      delete;
+
   ~GestureConfigurationDefault() override {
   }
 
@@ -23,7 +27,6 @@ class GestureConfigurationDefault : public GestureConfiguration {
   GestureConfigurationDefault() {}
 
   friend struct base::DefaultSingletonTraits<GestureConfigurationDefault>;
-  DISALLOW_COPY_AND_ASSIGN(GestureConfigurationDefault);
 };
 
 }  // namespace

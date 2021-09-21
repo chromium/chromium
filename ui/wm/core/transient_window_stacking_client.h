@@ -17,6 +17,11 @@ class WM_CORE_EXPORT TransientWindowStackingClient
     : public aura::client::WindowStackingClient {
  public:
   TransientWindowStackingClient();
+
+  TransientWindowStackingClient(const TransientWindowStackingClient&) = delete;
+  TransientWindowStackingClient& operator=(
+      const TransientWindowStackingClient&) = delete;
+
   ~TransientWindowStackingClient() override;
 
   // WindowStackingClient:
@@ -29,8 +34,6 @@ class WM_CORE_EXPORT TransientWindowStackingClient
   friend class TransientWindowManager;
 
   static TransientWindowStackingClient* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransientWindowStackingClient);
 };
 
 }  // namespace wm

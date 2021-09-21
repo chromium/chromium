@@ -44,6 +44,11 @@ class MockWindowTreeHostObserver : public WindowTreeHostObserver {
  public:
   explicit MockWindowTreeHostObserver(base::OnceClosure quit_closure)
       : quit_closure_(std::move(quit_closure)) {}
+
+  MockWindowTreeHostObserver(const MockWindowTreeHostObserver&) = delete;
+  MockWindowTreeHostObserver& operator=(const MockWindowTreeHostObserver&) =
+      delete;
+
   ~MockWindowTreeHostObserver() override { EXPECT_FALSE(is_expecting_call()); }
 
   // WindowTreeHostObserver:
@@ -73,14 +78,16 @@ class MockWindowTreeHostObserver : public WindowTreeHostObserver {
   Window::OcclusionState expectation_ = Window::OcclusionState::UNKNOWN;
   Window::OcclusionState cur_state_ = Window::OcclusionState::UNKNOWN;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWindowTreeHostObserver);
 };
 
 // Test wrapper around native window HWND.
 class TestNativeWindow : public gfx::WindowImpl {
  public:
   TestNativeWindow() {}
+
+  TestNativeWindow(const TestNativeWindow&) = delete;
+  TestNativeWindow& operator=(const TestNativeWindow&) = delete;
+
   ~TestNativeWindow() override;
 
  private:
@@ -93,8 +100,6 @@ class TestNativeWindow : public gfx::WindowImpl {
                             DWORD msg_map_id) override {
     return FALSE;  // Results in DefWindowProc().
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeWindow);
 };
 
 TestNativeWindow::~TestNativeWindow() {

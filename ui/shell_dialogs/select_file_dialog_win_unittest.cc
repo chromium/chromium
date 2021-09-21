@@ -151,6 +151,10 @@ class SelectFileDialogWinTest : public ::testing::Test,
                                 public ui::SelectFileDialog::Listener {
  public:
   SelectFileDialogWinTest() = default;
+
+  SelectFileDialogWinTest(const SelectFileDialogWinTest&) = delete;
+  SelectFileDialogWinTest& operator=(const SelectFileDialogWinTest&) = delete;
+
   ~SelectFileDialogWinTest() override = default;
 
   // ui::SelectFileDialog::Listener:
@@ -192,8 +196,6 @@ class SelectFileDialogWinTest : public ::testing::Test,
 
   std::vector<base::FilePath> selected_paths_;
   bool was_cancelled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogWinTest);
 };
 
 TEST_F(SelectFileDialogWinTest, CancelAllDialogs) {

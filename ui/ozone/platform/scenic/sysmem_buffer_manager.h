@@ -29,6 +29,10 @@ class ScenicSurfaceFactory;
 class SysmemBufferManager {
  public:
   explicit SysmemBufferManager(ScenicSurfaceFactory* scenic_surface_factory);
+
+  SysmemBufferManager(const SysmemBufferManager&) = delete;
+  SysmemBufferManager& operator=(const SysmemBufferManager&) = delete;
+
   ~SysmemBufferManager();
 
   // Initializes the buffer manager with a connection to the sysmem service.
@@ -70,8 +74,6 @@ class SysmemBufferManager {
                                      base::UnguessableTokenHash>>
       collections_ GUARDED_BY(collections_lock_);
   base::Lock collections_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(SysmemBufferManager);
 };
 
 }  // namespace ui

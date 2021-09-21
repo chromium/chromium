@@ -183,6 +183,11 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
  public:
   ResourceBundleImageSource(ResourceBundle* rb, int resource_id)
       : rb_(rb), resource_id_(resource_id) {}
+
+  ResourceBundleImageSource(const ResourceBundleImageSource&) = delete;
+  ResourceBundleImageSource& operator=(const ResourceBundleImageSource&) =
+      delete;
+
   ~ResourceBundleImageSource() override {}
 
   // gfx::ImageSkiaSource overrides:
@@ -224,8 +229,6 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
  private:
   ResourceBundle* rb_;
   const int resource_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceBundleImageSource);
 };
 
 ResourceBundle::FontDetails::FontDetails(std::string typeface,

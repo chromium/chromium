@@ -76,6 +76,9 @@ class OzonePlatformX11 : public OzonePlatform,
  public:
   OzonePlatformX11() { SetInstance(this); }
 
+  OzonePlatformX11(const OzonePlatformX11&) = delete;
+  OzonePlatformX11& operator=(const OzonePlatformX11&) = delete;
+
   ~OzonePlatformX11() override = default;
 
   // OzonePlatform:
@@ -336,8 +339,6 @@ class OzonePlatformX11 : public OzonePlatform,
 #if BUILDFLAG(USE_GTK)
   std::unique_ptr<LinuxUiDelegate> linux_ui_delegate_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformX11);
 };
 
 }  // namespace

@@ -38,6 +38,9 @@ class SkiaGoldPixelDiffTest : public ::testing::Test {
     CreateTestBitmap();
   }
 
+  SkiaGoldPixelDiffTest(const SkiaGoldPixelDiffTest&) = delete;
+  SkiaGoldPixelDiffTest& operator=(const SkiaGoldPixelDiffTest&) = delete;
+
   ~SkiaGoldPixelDiffTest() override {}
 
   SkBitmap GetTestBitmap() { return test_bitmap_; }
@@ -49,7 +52,6 @@ class SkiaGoldPixelDiffTest : public ::testing::Test {
   }
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(SkiaGoldPixelDiffTest);
 
  private:
   SkBitmap test_bitmap_;

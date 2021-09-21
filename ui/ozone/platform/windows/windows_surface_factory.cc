@@ -29,6 +29,10 @@ namespace {
 class GLOzoneEGLWindows : public GLOzoneEGL {
  public:
   GLOzoneEGLWindows() = default;
+
+  GLOzoneEGLWindows(const GLOzoneEGLWindows&) = delete;
+  GLOzoneEGLWindows& operator=(const GLOzoneEGLWindows&) = delete;
+
   ~GLOzoneEGLWindows() override = default;
 
   // GLOzone:
@@ -54,9 +58,6 @@ class GLOzoneEGLWindows : public GLOzoneEGL {
       const gl::GLImplementationParts& implementation) override {
     return LoadDefaultEGLGLES2Bindings(implementation);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLWindows);
 };
 
 }  // namespace

@@ -128,6 +128,9 @@ class ScopedFileWriter {
     }
   }
 
+  ScopedFileWriter(const ScopedFileWriter&) = delete;
+  ScopedFileWriter& operator=(const ScopedFileWriter&) = delete;
+
   // Destructor.
   ~ScopedFileWriter() { Close(); }
 
@@ -159,8 +162,6 @@ class ScopedFileWriter {
  private:
   bool valid_ = false;
   FILE* file_ = nullptr;  // base::ScopedFILE doesn't check errors on close.
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFileWriter);
 };
 
 bool MmapHasGzipHeader(const base::MemoryMappedFile* mmap) {
@@ -213,6 +214,9 @@ class DataPack::MemoryMappedDataSource : public DataPack::DataSource {
   explicit MemoryMappedDataSource(std::unique_ptr<base::MemoryMappedFile> mmap)
       : mmap_(std::move(mmap)) {}
 
+  MemoryMappedDataSource(const MemoryMappedDataSource&) = delete;
+  MemoryMappedDataSource& operator=(const MemoryMappedDataSource&) = delete;
+
   ~MemoryMappedDataSource() override {}
 
   // DataPack::DataSource:
@@ -221,14 +225,15 @@ class DataPack::MemoryMappedDataSource : public DataPack::DataSource {
 
  private:
   std::unique_ptr<base::MemoryMappedFile> mmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryMappedDataSource);
 };
 
 // Takes ownership of a string of uncompressed pack data.
 class DataPack::StringDataSource : public DataPack::DataSource {
  public:
   explicit StringDataSource(std::string&& data) : data_(std::move(data)) {}
+
+  StringDataSource(const StringDataSource&) = delete;
+  StringDataSource& operator=(const StringDataSource&) = delete;
 
   ~StringDataSource() override {}
 
@@ -240,14 +245,15 @@ class DataPack::StringDataSource : public DataPack::DataSource {
 
  private:
   const std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringDataSource);
 };
 
 class DataPack::BufferDataSource : public DataPack::DataSource {
  public:
   explicit BufferDataSource(base::span<const uint8_t> buffer)
       : buffer_(buffer) {}
+
+  BufferDataSource(const BufferDataSource&) = delete;
+  BufferDataSource& operator=(const BufferDataSource&) = delete;
 
   ~BufferDataSource() override {}
 
@@ -257,8 +263,6 @@ class DataPack::BufferDataSource : public DataPack::DataSource {
 
  private:
   base::span<const uint8_t> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferDataSource);
 };
 
 DataPack::DataPack(ResourceScaleFactor resource_scale_factor)

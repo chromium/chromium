@@ -24,14 +24,15 @@ class SkiaRendererFactory : public RendererFactory {
   };
 
   SkiaRendererFactory();
+
+  SkiaRendererFactory(const SkiaRendererFactory&) = delete;
+  SkiaRendererFactory& operator=(const SkiaRendererFactory&) = delete;
+
   ~SkiaRendererFactory() override;
 
   bool Initialize() override;
   std::unique_ptr<Renderer> CreateRenderer(gfx::AcceleratedWidget widget,
                                            const gfx::Size& size) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SkiaRendererFactory);
 };
 
 }  // namespace ui

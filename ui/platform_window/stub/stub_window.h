@@ -21,6 +21,10 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
   explicit StubWindow(PlatformWindowDelegate* delegate,
                       bool use_default_accelerated_widget = true,
                       const gfx::Rect& bounds = gfx::Rect());
+
+  StubWindow(const StubWindow&) = delete;
+  StubWindow& operator=(const StubWindow&) = delete;
+
   ~StubWindow() override;
 
  protected:
@@ -59,8 +63,6 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
 
   PlatformWindowDelegate* delegate_;
   gfx::Rect bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubWindow);
 };
 
 }  // namespace ui

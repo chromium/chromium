@@ -16,6 +16,10 @@ class DrmWindow;
 class DrmOverlayValidator {
  public:
   DrmOverlayValidator(DrmWindow* window);
+
+  DrmOverlayValidator(const DrmOverlayValidator&) = delete;
+  DrmOverlayValidator& operator=(const DrmOverlayValidator&) = delete;
+
   ~DrmOverlayValidator();
 
   // Tests if configurations |params| are compatible with |window_| and finds
@@ -26,8 +30,6 @@ class DrmOverlayValidator {
 
  private:
   DrmWindow* const window_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(DrmOverlayValidator);
 };
 
 }  // namespace ui

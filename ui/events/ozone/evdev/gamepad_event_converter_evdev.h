@@ -32,6 +32,10 @@ class COMPONENT_EXPORT(EVDEV) GamepadEventConverterEvdev
                              const EventDeviceInfo& info,
                              DeviceEventDispatcherEvdev* dispatcher);
 
+  GamepadEventConverterEvdev(const GamepadEventConverterEvdev&) = delete;
+  GamepadEventConverterEvdev& operator=(const GamepadEventConverterEvdev&) =
+      delete;
+
   ~GamepadEventConverterEvdev() override;
 
   // EventConverterEvdev:
@@ -121,8 +125,6 @@ class COMPONENT_EXPORT(EVDEV) GamepadEventConverterEvdev
   // The effect id is needed to keep track of effects that are uploaded and
   // stored in the gamepad device.
   int effect_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadEventConverterEvdev);
 };
 
 }  // namespace ui

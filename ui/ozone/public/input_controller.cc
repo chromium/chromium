@@ -18,6 +18,10 @@ namespace {
 class StubInputController : public InputController {
  public:
   StubInputController() = default;
+
+  StubInputController(const StubInputController&) = delete;
+  StubInputController& operator=(const StubInputController&) = delete;
+
   ~StubInputController() override = default;
 
   // InputController:
@@ -79,9 +83,6 @@ class StubInputController : public InputController {
                            uint8_t amplitude,
                            uint16_t duration_millis) override {}
   void StopVibration(int id) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubInputController);
 };
 
 }  // namespace

@@ -36,16 +36,21 @@ namespace {
 class WindowsPlatformEventSource : public ui::PlatformEventSource {
  public:
   WindowsPlatformEventSource() = default;
-  ~WindowsPlatformEventSource() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowsPlatformEventSource);
+  WindowsPlatformEventSource(const WindowsPlatformEventSource&) = delete;
+  WindowsPlatformEventSource& operator=(const WindowsPlatformEventSource&) =
+      delete;
+
+  ~WindowsPlatformEventSource() override = default;
 };
 
 // OzonePlatform for Windows
 class OzonePlatformWindows : public OzonePlatform {
  public:
   OzonePlatformWindows() {}
+
+  OzonePlatformWindows(const OzonePlatformWindows&) = delete;
+  OzonePlatformWindows& operator=(const OzonePlatformWindows&) = delete;
 
   ~OzonePlatformWindows() override {}
 
@@ -112,8 +117,6 @@ class OzonePlatformWindows : public OzonePlatform {
   std::unique_ptr<InputController> input_controller_;
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
   std::unique_ptr<OverlayManagerOzone> overlay_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformWindows);
 };
 
 }  // namespace

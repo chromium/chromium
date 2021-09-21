@@ -15,13 +15,15 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE) ScopedOleInitializer {
  public:
   ScopedOleInitializer();
+
+  ScopedOleInitializer(const ScopedOleInitializer&) = delete;
+  ScopedOleInitializer& operator=(const ScopedOleInitializer&) = delete;
+
   ~ScopedOleInitializer();
 
  private:
   THREAD_CHECKER(thread_checker_);
   HRESULT hr_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedOleInitializer);
 };
 
 }  // namespace

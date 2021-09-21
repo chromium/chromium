@@ -68,6 +68,9 @@ class X11WindowOzoneTest : public testing::Test {
       : task_env_(std::make_unique<base::test::TaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::UI)) {}
 
+  X11WindowOzoneTest(const X11WindowOzoneTest&) = delete;
+  X11WindowOzoneTest& operator=(const X11WindowOzoneTest&) = delete;
+
   ~X11WindowOzoneTest() override = default;
 
   void SetUp() override {
@@ -112,8 +115,6 @@ class X11WindowOzoneTest : public testing::Test {
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_env_;
   std::unique_ptr<X11EventSource> event_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11WindowOzoneTest);
 };
 
 // This test ensures that events are handled by a right target(widget).

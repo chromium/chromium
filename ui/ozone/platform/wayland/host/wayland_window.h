@@ -44,6 +44,9 @@ class WaylandWindow : public PlatformWindow,
                       public PlatformEventDispatcher,
                       public WmDragHandler {
  public:
+  WaylandWindow(const WaylandWindow&) = delete;
+  WaylandWindow& operator=(const WaylandWindow&) = delete;
+
   ~WaylandWindow() override;
 
   // A factory method that can create any of the derived types of WaylandWindow
@@ -380,8 +383,6 @@ class WaylandWindow : public PlatformWindow,
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   base::WeakPtrFactory<WaylandWindow> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandWindow);
 };
 
 }  // namespace ui

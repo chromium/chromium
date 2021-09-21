@@ -66,6 +66,11 @@ class TestPlatformEventDispatcher : public PlatformEventDispatcher {
         post_dispatch_action_(POST_DISPATCH_NONE) {
     PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
   }
+
+  TestPlatformEventDispatcher(const TestPlatformEventDispatcher&) = delete;
+  TestPlatformEventDispatcher& operator=(const TestPlatformEventDispatcher&) =
+      delete;
+
   ~TestPlatformEventDispatcher() override {
     PlatformEventSource::GetInstance()->RemovePlatformEventDispatcher(this);
   }
@@ -87,8 +92,6 @@ class TestPlatformEventDispatcher : public PlatformEventDispatcher {
   int id_;
   std::vector<int>* list_;
   uint32_t post_dispatch_action_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPlatformEventDispatcher);
 };
 
 class TestPlatformEventObserver : public PlatformEventObserver {
@@ -97,6 +100,11 @@ class TestPlatformEventObserver : public PlatformEventObserver {
       : id_(id), list_(list) {
     PlatformEventSource::GetInstance()->AddPlatformEventObserver(this);
   }
+
+  TestPlatformEventObserver(const TestPlatformEventObserver&) = delete;
+  TestPlatformEventObserver& operator=(const TestPlatformEventObserver&) =
+      delete;
+
   ~TestPlatformEventObserver() override {
     PlatformEventSource::GetInstance()->RemovePlatformEventObserver(this);
   }
@@ -112,13 +120,15 @@ class TestPlatformEventObserver : public PlatformEventObserver {
  private:
   int id_;
   std::vector<int>* list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPlatformEventObserver);
 };
 
 class PlatformEventTest : public testing::Test {
  public:
   PlatformEventTest() {}
+
+  PlatformEventTest(const PlatformEventTest&) = delete;
+  PlatformEventTest& operator=(const PlatformEventTest&) = delete;
+
   ~PlatformEventTest() override {}
 
   TestPlatformEventSource* source() { return source_.get(); }
@@ -131,8 +141,6 @@ class PlatformEventTest : public testing::Test {
 
  private:
   std::unique_ptr<TestPlatformEventSource> source_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformEventTest);
 };
 
 // Tests that a dispatcher receives an event.
@@ -314,6 +322,11 @@ class RunCallbackDuringDispatch : public TestPlatformEventDispatcher {
  public:
   RunCallbackDuringDispatch(int id, std::vector<int>* list)
       : TestPlatformEventDispatcher(id, list) {}
+
+  RunCallbackDuringDispatch(const RunCallbackDuringDispatch&) = delete;
+  RunCallbackDuringDispatch& operator=(const RunCallbackDuringDispatch&) =
+      delete;
+
   ~RunCallbackDuringDispatch() override {}
 
   void set_callback(base::OnceClosure callback) {
@@ -330,8 +343,6 @@ class RunCallbackDuringDispatch : public TestPlatformEventDispatcher {
 
  private:
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunCallbackDuringDispatch);
 };
 
 // Test that if a dispatcher removes another dispatcher that is later in the
@@ -481,6 +492,12 @@ TEST_F(PlatformEventTest, DispatcherAddedDuringDispatchReceivesEvent) {
 class PlatformEventTestWithMessageLoop : public PlatformEventTest {
  public:
   PlatformEventTestWithMessageLoop() {}
+
+  PlatformEventTestWithMessageLoop(const PlatformEventTestWithMessageLoop&) =
+      delete;
+  PlatformEventTestWithMessageLoop& operator=(
+      const PlatformEventTestWithMessageLoop&) = delete;
+
   ~PlatformEventTestWithMessageLoop() override {}
 
   void Run() {
@@ -497,8 +514,6 @@ class PlatformEventTestWithMessageLoop : public PlatformEventTest {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformEventTestWithMessageLoop);
 };
 
 #define RUN_TEST_IN_MESSAGE_LOOP(name) \
@@ -549,6 +564,11 @@ class DestroyScopedHandleDispatcher : public TestPlatformEventDispatcher {
  public:
   DestroyScopedHandleDispatcher(int id, std::vector<int>* list)
       : TestPlatformEventDispatcher(id, list) {}
+
+  DestroyScopedHandleDispatcher(const DestroyScopedHandleDispatcher&) = delete;
+  DestroyScopedHandleDispatcher& operator=(
+      const DestroyScopedHandleDispatcher&) = delete;
+
   ~DestroyScopedHandleDispatcher() override {}
 
   void SetScopedHandle(std::unique_ptr<ScopedEventDispatcher> handler) {
@@ -574,8 +594,6 @@ class DestroyScopedHandleDispatcher : public TestPlatformEventDispatcher {
 
   std::unique_ptr<ScopedEventDispatcher> handler_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DestroyScopedHandleDispatcher);
 };
 
 // Tests that resetting an overridden dispatcher, and installing another

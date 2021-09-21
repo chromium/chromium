@@ -20,6 +20,10 @@ class MotionEvent;
 class GESTURE_DETECTION_EXPORT SnapScrollController {
  public:
   SnapScrollController(float snap_bound, const gfx::SizeF& display_size);
+
+  SnapScrollController(const SnapScrollController&) = delete;
+  SnapScrollController& operator=(const SnapScrollController&) = delete;
+
   ~SnapScrollController();
 
   // Sets the snap scroll mode based on the event type.
@@ -43,8 +47,6 @@ class GESTURE_DETECTION_EXPORT SnapScrollController {
   SnapMode mode_;
   gfx::PointF down_position_;
   gfx::Vector2dF accumulated_distance_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapScrollController);
 };
 
 }  // namespace ui

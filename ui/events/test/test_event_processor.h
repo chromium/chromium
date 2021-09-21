@@ -16,6 +16,10 @@ namespace test {
 class TestEventProcessor : public EventProcessor {
  public:
   TestEventProcessor();
+
+  TestEventProcessor(const TestEventProcessor&) = delete;
+  TestEventProcessor& operator=(const TestEventProcessor&) = delete;
+
   ~TestEventProcessor() override;
 
   int num_times_processing_started() const {
@@ -54,8 +58,6 @@ class TestEventProcessor : public EventProcessor {
 
   // Counts the number of times OnEventProcessingFinished() has been called.
   int num_times_processing_finished_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventProcessor);
 };
 
 }  // namespace test

@@ -173,6 +173,10 @@ class ColorTransformNull;
 class ColorTransformStep {
  public:
   ColorTransformStep() {}
+
+  ColorTransformStep(const ColorTransformStep&) = delete;
+  ColorTransformStep& operator=(const ColorTransformStep&) = delete;
+
   virtual ~ColorTransformStep() {}
   virtual ColorTransformFromLinear* GetFromLinear() { return nullptr; }
   virtual ColorTransformFromBT2020CL* GetFromBT2020CL() { return nullptr; }
@@ -196,9 +200,6 @@ class ColorTransformStep {
                                   std::stringstream* src,
                                   size_t step_index) const = 0;
   virtual void AppendSkShaderSource(std::stringstream* src) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ColorTransformStep);
 };
 
 class ColorTransformInternal : public ColorTransform {

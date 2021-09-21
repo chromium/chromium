@@ -49,6 +49,10 @@ class WM_CORE_EXPORT FocusController : public ActivationClient,
  public:
   // |rules| cannot be NULL.
   explicit FocusController(FocusRules* rules);
+
+  FocusController(const FocusController&) = delete;
+  FocusController& operator=(const FocusController&) = delete;
+
   ~FocusController() override;
 
   // Overridden from ActivationClient:
@@ -146,8 +150,6 @@ class WM_CORE_EXPORT FocusController : public ActivationClient,
 
   // When true, windows can be activated (but not raised) without clicking.
   bool focus_follows_cursor_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusController);
 };
 
 }  // namespace wm

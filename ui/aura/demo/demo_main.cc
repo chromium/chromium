@@ -108,6 +108,10 @@ class DemoWindowParentingClient : public aura::client::WindowParentingClient {
     aura::client::SetWindowParentingClient(window_, this);
   }
 
+  DemoWindowParentingClient(const DemoWindowParentingClient&) = delete;
+  DemoWindowParentingClient& operator=(const DemoWindowParentingClient&) =
+      delete;
+
   ~DemoWindowParentingClient() override {
     aura::client::SetWindowParentingClient(window_, nullptr);
   }
@@ -126,8 +130,6 @@ class DemoWindowParentingClient : public aura::client::WindowParentingClient {
   aura::Window* window_;
 
   std::unique_ptr<aura::client::DefaultCaptureClient> capture_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoWindowParentingClient);
 };
 
 // Runs a base::RunLoop until receiving OnHostCloseRequested from |host|.

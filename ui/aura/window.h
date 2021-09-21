@@ -156,6 +156,10 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   explicit Window(WindowDelegate* delegate,
                   client::WindowType type = client::WINDOW_TYPE_UNKNOWN);
+
+  Window(const Window&) = delete;
+  Window& operator=(const Window&) = delete;
+
   ~Window() override;
 
   // Initializes the window. This creates the window's layer.
@@ -815,8 +819,6 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // Used when this is embedding external content.
   base::WeakPtr<cc::LayerTreeFrameSink> frame_sink_;
-
-  DISALLOW_COPY_AND_ASSIGN(Window);
 };
 
 }  // namespace aura

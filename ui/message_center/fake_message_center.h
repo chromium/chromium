@@ -22,6 +22,10 @@ namespace message_center {
 class FakeMessageCenter : public MessageCenter {
  public:
   FakeMessageCenter();
+
+  FakeMessageCenter(const FakeMessageCenter&) = delete;
+  FakeMessageCenter& operator=(const FakeMessageCenter&) = delete;
+
   ~FakeMessageCenter() override;
 
   // Overridden from FakeMessageCenter.
@@ -94,8 +98,6 @@ class FakeMessageCenter : public MessageCenter {
   NotificationList::Notifications visible_notifications_;
   std::vector<NotificationBlocker*> blockers_;
   bool has_message_center_view_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMessageCenter);
 };
 
 }  // namespace message_center

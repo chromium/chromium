@@ -146,6 +146,10 @@ DrmPropertyBlobMetadata::~DrmPropertyBlobMetadata() {
 class DrmDevice::PageFlipManager {
  public:
   PageFlipManager() : next_id_(0) {}
+
+  PageFlipManager(const PageFlipManager&) = delete;
+  PageFlipManager& operator=(const PageFlipManager&) = delete;
+
   ~PageFlipManager() = default;
 
   void OnPageFlip(uint32_t frame, base::TimeTicks timestamp, uint64_t id) {
@@ -192,8 +196,6 @@ class DrmDevice::PageFlipManager {
   uint64_t next_id_;
 
   std::vector<PageFlip> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageFlipManager);
 };
 
 class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
@@ -202,6 +204,9 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
       : page_flip_manager_(page_flip_manager), controller_(FROM_HERE), fd_(fd) {
     Register();
   }
+
+  IOWatcher(const IOWatcher&) = delete;
+  IOWatcher& operator=(const IOWatcher&) = delete;
 
   ~IOWatcher() override { Unregister(); }
 
@@ -235,8 +240,6 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
   base::MessagePumpLibevent::FdWatchController controller_;
 
   int fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOWatcher);
 };
 
 DrmDevice::DrmDevice(const base::FilePath& device_path,

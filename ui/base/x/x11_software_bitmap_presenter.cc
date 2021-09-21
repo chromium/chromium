@@ -40,6 +40,9 @@ class ScopedPixmap {
   ScopedPixmap(x11::Connection* connection, x11::Pixmap pixmap)
       : connection_(connection), pixmap_(pixmap) {}
 
+  ScopedPixmap(const ScopedPixmap&) = delete;
+  ScopedPixmap& operator=(const ScopedPixmap&) = delete;
+
   ~ScopedPixmap() {
     if (pixmap_ != x11::Pixmap::None)
       connection_->FreePixmap({pixmap_});
@@ -48,7 +51,6 @@ class ScopedPixmap {
  private:
   x11::Connection* const connection_;
   x11::Pixmap pixmap_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedPixmap);
 };
 
 }  // namespace

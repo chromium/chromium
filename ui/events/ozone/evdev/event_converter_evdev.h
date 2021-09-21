@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
                       uint16_t vendor_id,
                       uint16_t product_id,
                       uint16_t version);
+
+  EventConverterEvdev(const EventConverterEvdev&) = delete;
+  EventConverterEvdev& operator=(const EventConverterEvdev&) = delete;
+
   ~EventConverterEvdev() override;
 
   int id() const { return input_device_.id; }
@@ -163,9 +167,6 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
 
   // Controller for watching the input fd.
   base::MessagePumpForUI::FdWatchController controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventConverterEvdev);
 };
 
 }  // namespace ui

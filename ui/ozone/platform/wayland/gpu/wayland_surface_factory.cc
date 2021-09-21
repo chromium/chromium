@@ -38,6 +38,10 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
   GLOzoneEGLWayland(WaylandConnection* connection,
                     WaylandBufferManagerGpu* buffer_manager)
       : connection_(connection), buffer_manager_(buffer_manager) {}
+
+  GLOzoneEGLWayland(const GLOzoneEGLWayland&) = delete;
+  GLOzoneEGLWayland& operator=(const GLOzoneEGLWayland&) = delete;
+
   ~GLOzoneEGLWayland() override {}
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
@@ -56,8 +60,6 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
  private:
   WaylandConnection* const connection_;
   WaylandBufferManagerGpu* const buffer_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLWayland);
 };
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(

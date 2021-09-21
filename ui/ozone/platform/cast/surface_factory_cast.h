@@ -26,6 +26,10 @@ class SurfaceFactoryCast : public SurfaceFactoryOzone {
   SurfaceFactoryCast();
   explicit SurfaceFactoryCast(
       std::unique_ptr<chromecast::CastEglPlatform> egl_platform);
+
+  SurfaceFactoryCast(const SurfaceFactoryCast&) = delete;
+  SurfaceFactoryCast& operator=(const SurfaceFactoryCast&) = delete;
+
   ~SurfaceFactoryCast() override;
 
   // SurfaceFactoryOzone implementation:
@@ -43,8 +47,6 @@ class SurfaceFactoryCast : public SurfaceFactoryOzone {
 
  private:
   std::unique_ptr<GLOzoneEglCast> egl_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceFactoryCast);
 };
 
 }  // namespace ui

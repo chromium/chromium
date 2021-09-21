@@ -80,6 +80,10 @@ class EVENTS_EXPORT EventRewriter {
   using Continuation = base::WeakPtr<EventRewriterContinuation>;
 
   EventRewriter() = default;
+
+  EventRewriter(const EventRewriter&) = delete;
+  EventRewriter& operator=(const EventRewriter&) = delete;
+
   virtual ~EventRewriter() = default;
 
   // Potentially rewrites (replaces) an event, possibly with multiple events,
@@ -160,9 +164,6 @@ class EVENTS_EXPORT EventRewriter {
   // TODO(kpschoedel): Replace with SendEvent(continuation, event).
   EventDispatchDetails SendEventToEventSource(EventSource* source,
                                               Event* event) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventRewriter);
 };
 
 }  // namespace ui

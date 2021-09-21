@@ -36,6 +36,10 @@ class SettingsProvider;
 class GtkUi : public views::LinuxUI {
  public:
   GtkUi();
+
+  GtkUi(const GtkUi&) = delete;
+  GtkUi& operator=(const GtkUi&) = delete;
+
   ~GtkUi() override;
 
   // Static delegate getter, used by different objects (created by GtkUi), e.g:
@@ -214,8 +218,6 @@ class GtkUi : public views::LinuxUI {
   // while Chrome is running.
   std::unique_ptr<views::WindowFrameProvider> solid_frame_provider_;
   std::unique_ptr<views::WindowFrameProvider> transparent_frame_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(GtkUi);
 };
 
 }  // namespace gtk

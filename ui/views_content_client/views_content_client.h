@@ -57,6 +57,9 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
   ViewsContentClient(int argc, const char** argv);
 #endif
 
+  ViewsContentClient(const ViewsContentClient&) = delete;
+  ViewsContentClient& operator=(const ViewsContentClient&) = delete;
+
   ~ViewsContentClient();
 
   // Runs content::ContentMain() using the ExamplesMainDelegate.
@@ -100,8 +103,6 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
   OnPreMainMessageLoopRunCallback on_pre_main_message_loop_run_callback_;
   base::OnceClosure on_resources_loaded_callback_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClient);
 };
 
 }  // namespace ui

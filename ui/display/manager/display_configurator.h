@@ -111,6 +111,10 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
    public:
     explicit TestApi(DisplayConfigurator* configurator)
         : configurator_(configurator) {}
+
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     ~TestApi() {}
 
     // If |configure_timer_| is started, stops the timer, runs
@@ -123,8 +127,6 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
    private:
     DisplayConfigurator* configurator_;  // not owned
-
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   // Flags that can be passed to SetDisplayPower().

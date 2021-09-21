@@ -39,6 +39,9 @@ class COMPOSITOR_EXPORT PaintContext {
   };
   PaintContext(const PaintContext& other, CloneWithoutInvalidation c);
 
+  PaintContext(const PaintContext&) = delete;
+  PaintContext& operator=(const PaintContext&) = delete;
+
   ~PaintContext();
 
   // When true, IsRectInvalid() can be called, otherwise its result would be
@@ -110,8 +113,6 @@ class COMPOSITOR_EXPORT PaintContext {
   // recorder is active.
   mutable bool inside_paint_recorder_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PaintContext);
 };
 
 }  // namespace ui

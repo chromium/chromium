@@ -19,6 +19,10 @@ namespace ui {
 class ScenicScreen : public PlatformScreen {
  public:
   ScenicScreen();
+
+  ScenicScreen(const ScenicScreen&) = delete;
+  ScenicScreen& operator=(const ScenicScreen&) = delete;
+
   ~ScenicScreen() override;
 
   // Processes window state change events for the ScenicWindow |window_id_|.
@@ -51,8 +55,6 @@ class ScenicScreen : public PlatformScreen {
   base::ObserverList<display::DisplayObserver> observers_;
 
   base::WeakPtrFactory<ScenicScreen> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScenicScreen);
 };
 
 }  // namespace ui

@@ -30,6 +30,10 @@ class CrtcController {
   CrtcController(const scoped_refptr<DrmDevice>& drm,
                  uint32_t crtc,
                  uint32_t connector);
+
+  CrtcController(const CrtcController&) = delete;
+  CrtcController& operator=(const CrtcController&) = delete;
+
   ~CrtcController();
 
   drmModeModeInfo mode() const { return state_.mode; }
@@ -64,8 +68,6 @@ class CrtcController {
   const uint32_t connector_;
 
   const HardwareDisplayPlaneManager::CrtcState& state_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrtcController);
 };
 
 }  // namespace ui

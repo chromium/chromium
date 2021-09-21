@@ -15,6 +15,10 @@ namespace gl {
 class GL_EXPORT GLFenceAPPLE : public GLFence {
  public:
   GLFenceAPPLE();
+
+  GLFenceAPPLE(const GLFenceAPPLE&) = delete;
+  GLFenceAPPLE& operator=(const GLFenceAPPLE&) = delete;
+
   ~GLFenceAPPLE() override;
 
   // GLFence implementation:
@@ -25,8 +29,6 @@ class GL_EXPORT GLFenceAPPLE : public GLFence {
 
  private:
   GLuint fence_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GLFenceAPPLE);
 };
 
 }  // namespace gl

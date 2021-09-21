@@ -20,6 +20,10 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   TestDisplayLayoutManager(
       std::vector<std::unique_ptr<DisplaySnapshot>> displays,
       MultipleDisplayState display_state);
+
+  TestDisplayLayoutManager(const TestDisplayLayoutManager&) = delete;
+  TestDisplayLayoutManager& operator=(const TestDisplayLayoutManager&) = delete;
+
   ~TestDisplayLayoutManager() override;
 
   void set_displays(std::vector<std::unique_ptr<DisplaySnapshot>> displays) {
@@ -47,8 +51,6 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
  private:
   std::vector<std::unique_ptr<DisplaySnapshot>> displays_;
   MultipleDisplayState display_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayLayoutManager);
 };
 
 }  // namespace test

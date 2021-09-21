@@ -35,6 +35,10 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
  public:
   GestureProviderAura(GestureConsumer* consumer,
                       GestureProviderAuraClient* client);
+
+  GestureProviderAura(const GestureProviderAura&) = delete;
+  GestureProviderAura& operator=(const GestureProviderAura&) = delete;
+
   ~GestureProviderAura() override;
 
   void set_gesture_consumer(GestureConsumer* consumer) {
@@ -72,8 +76,6 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
 
   // |gesture_consumer_| must outlive this object.
   GestureConsumer* gesture_consumer_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureProviderAura);
 };
 
 }  // namespace ui

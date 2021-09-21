@@ -82,6 +82,10 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
                                  public WaylandWindowObserver {
  public:
   explicit WaylandBufferManagerHost(WaylandConnection* connection);
+
+  WaylandBufferManagerHost(const WaylandBufferManagerHost&) = delete;
+  WaylandBufferManagerHost& operator=(const WaylandBufferManagerHost&) = delete;
+
   ~WaylandBufferManagerHost() override;
 
   // WaylandWindowObserver implements:
@@ -282,8 +286,6 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   base::flat_map<uint32_t, std::unique_ptr<WaylandBuffer>> anonymous_buffers_;
 
   base::WeakPtrFactory<WaylandBufferManagerHost> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandBufferManagerHost);
 };
 
 }  // namespace ui

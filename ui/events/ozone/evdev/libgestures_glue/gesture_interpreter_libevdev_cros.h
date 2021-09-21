@@ -46,6 +46,12 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
                                  CursorDelegateEvdev* cursor,
                                  GesturePropertyProvider* property_provider,
                                  DeviceEventDispatcherEvdev* dispatcher);
+
+  GestureInterpreterLibevdevCros(const GestureInterpreterLibevdevCros&) =
+      delete;
+  GestureInterpreterLibevdevCros& operator=(
+      const GestureInterpreterLibevdevCros&) = delete;
+
   ~GestureInterpreterLibevdevCros() override;
 
   // Overriden from ui::EventReaderLibevdevCros::Delegate
@@ -128,8 +134,6 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
 
   // The number of pixels to count as one "tick" on a multitouch mouse.
   static const int kMultitouchMousePixelsPerTick = 50;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureInterpreterLibevdevCros);
 };
 
 }  // namspace ui

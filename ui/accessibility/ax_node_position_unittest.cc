@@ -63,6 +63,10 @@ constexpr const wchar_t* kGraphemeClusters[] = {
 class AXPositionTest : public ::testing::Test, public TestAXTreeManager {
  public:
   AXPositionTest();
+
+  AXPositionTest(const AXPositionTest&) = delete;
+  AXPositionTest& operator=(const AXPositionTest&) = delete;
+
   ~AXPositionTest() override = default;
 
  protected:
@@ -124,8 +128,6 @@ class AXPositionTest : public ::testing::Test, public TestAXTreeManager {
   testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behaviour_;
   // Manages a minimalistic Views tree that is hosting the test webpage.
   TestAXTreeManager views_tree_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXPositionTest);
 };
 
 // Used by AXPositionExpandToEnclosingTextBoundaryTestWithParam.
@@ -212,9 +214,13 @@ class AXPositionCreatePositionAtTextBoundaryTestWithParam
           CreatePositionAtTextBoundaryTestParam> {
  public:
   AXPositionCreatePositionAtTextBoundaryTestWithParam() = default;
-  ~AXPositionCreatePositionAtTextBoundaryTestWithParam() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(AXPositionCreatePositionAtTextBoundaryTestWithParam);
+  AXPositionCreatePositionAtTextBoundaryTestWithParam(
+      const AXPositionCreatePositionAtTextBoundaryTestWithParam&) = delete;
+  AXPositionCreatePositionAtTextBoundaryTestWithParam& operator=(
+      const AXPositionCreatePositionAtTextBoundaryTestWithParam&) = delete;
+
+  ~AXPositionCreatePositionAtTextBoundaryTestWithParam() override = default;
 };
 
 // Used by |AXPositionTextNavigationTestWithParam|.
@@ -259,9 +265,13 @@ class AXPositionTextNavigationTestWithParam
       public ::testing::WithParamInterface<TextNavigationTestParam> {
  public:
   AXPositionTextNavigationTestWithParam() = default;
-  ~AXPositionTextNavigationTestWithParam() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(AXPositionTextNavigationTestWithParam);
+  AXPositionTextNavigationTestWithParam(
+      const AXPositionTextNavigationTestWithParam&) = delete;
+  AXPositionTextNavigationTestWithParam& operator=(
+      const AXPositionTextNavigationTestWithParam&) = delete;
+
+  ~AXPositionTextNavigationTestWithParam() override = default;
 };
 
 // Most tests use kSuppressCharacter behavior.

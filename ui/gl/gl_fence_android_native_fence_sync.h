@@ -15,6 +15,10 @@ namespace gl {
 
 class GL_EXPORT GLFenceAndroidNativeFenceSync : public GLFenceEGL {
  public:
+  GLFenceAndroidNativeFenceSync(const GLFenceAndroidNativeFenceSync&) = delete;
+  GLFenceAndroidNativeFenceSync& operator=(
+      const GLFenceAndroidNativeFenceSync&) = delete;
+
   ~GLFenceAndroidNativeFenceSync() override;
 
   static std::unique_ptr<GLFenceAndroidNativeFenceSync> CreateForGpuFence();
@@ -33,8 +37,6 @@ class GL_EXPORT GLFenceAndroidNativeFenceSync : public GLFenceEGL {
   static std::unique_ptr<GLFenceAndroidNativeFenceSync> CreateInternal(
       EGLenum type,
       EGLint* attribs);
-
-  DISALLOW_COPY_AND_ASSIGN(GLFenceAndroidNativeFenceSync);
 };
 
 }  // namespace gl

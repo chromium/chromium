@@ -22,6 +22,12 @@ namespace wm {
 class TransientWindowStackingClientTest : public aura::test::AuraTestBase {
  public:
   TransientWindowStackingClientTest() {}
+
+  TransientWindowStackingClientTest(const TransientWindowStackingClientTest&) =
+      delete;
+  TransientWindowStackingClientTest& operator=(
+      const TransientWindowStackingClientTest&) = delete;
+
   ~TransientWindowStackingClientTest() override {}
 
   void SetUp() override {
@@ -37,7 +43,6 @@ class TransientWindowStackingClientTest : public aura::test::AuraTestBase {
 
  private:
   std::unique_ptr<TransientWindowStackingClient> client_;
-  DISALLOW_COPY_AND_ASSIGN(TransientWindowStackingClientTest);
 };
 
 // Tests that transient children are stacked as a unit when using stack above.

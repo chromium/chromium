@@ -404,6 +404,11 @@ TEST(StructTraitsTest, UnserializedTouchEventFields) {
 class FixedKeyboardLayoutEngine : public StubKeyboardLayoutEngine {
  public:
   FixedKeyboardLayoutEngine() = default;
+
+  FixedKeyboardLayoutEngine(const FixedKeyboardLayoutEngine&) = delete;
+  FixedKeyboardLayoutEngine& operator=(const FixedKeyboardLayoutEngine&) =
+      delete;
+
   ~FixedKeyboardLayoutEngine() override = default;
 
   // StubKeyboardLayoutEngine:
@@ -415,9 +420,6 @@ class FixedKeyboardLayoutEngine : public StubKeyboardLayoutEngine {
     *out_key_code = ui::VKEY_X;
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FixedKeyboardLayoutEngine);
 };
 
 TEST(StructTraitsTest, DifferentKeyboardLayout) {

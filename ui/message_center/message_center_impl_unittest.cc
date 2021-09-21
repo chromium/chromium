@@ -269,6 +269,11 @@ class ToggledNotificationBlocker : public NotificationBlocker {
  public:
   explicit ToggledNotificationBlocker(MessageCenter* message_center)
       : NotificationBlocker(message_center) {}
+
+  ToggledNotificationBlocker(const ToggledNotificationBlocker&) = delete;
+  ToggledNotificationBlocker& operator=(const ToggledNotificationBlocker&) =
+      delete;
+
   ~ToggledNotificationBlocker() override = default;
 
   void SetPopupNotificationsEnabled(bool enabled) {
@@ -300,8 +305,6 @@ class ToggledNotificationBlocker : public NotificationBlocker {
  private:
   bool notifications_enabled_ = true;
   bool popup_notifications_enabled_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ToggledNotificationBlocker);
 };
 
 class PopupNotificationBlocker : public ToggledNotificationBlocker {
@@ -310,6 +313,10 @@ class PopupNotificationBlocker : public ToggledNotificationBlocker {
                            const NotifierId& allowed_notifier)
       : ToggledNotificationBlocker(message_center),
         allowed_notifier_(allowed_notifier) {}
+
+  PopupNotificationBlocker(const PopupNotificationBlocker&) = delete;
+  PopupNotificationBlocker& operator=(const PopupNotificationBlocker&) = delete;
+
   ~PopupNotificationBlocker() override = default;
 
   // NotificationBlocker overrides:
@@ -322,8 +329,6 @@ class PopupNotificationBlocker : public ToggledNotificationBlocker {
 
  private:
   NotifierId allowed_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupNotificationBlocker);
 };
 
 class TotalNotificationBlocker : public PopupNotificationBlocker {
@@ -331,15 +336,16 @@ class TotalNotificationBlocker : public PopupNotificationBlocker {
   TotalNotificationBlocker(MessageCenter* message_center,
                            const NotifierId& allowed_notifier)
       : PopupNotificationBlocker(message_center, allowed_notifier) {}
+
+  TotalNotificationBlocker(const TotalNotificationBlocker&) = delete;
+  TotalNotificationBlocker& operator=(const TotalNotificationBlocker&) = delete;
+
   ~TotalNotificationBlocker() override = default;
 
   // NotificationBlocker overrides:
   bool ShouldShowNotification(const Notification& notification) const override {
     return ShouldShowNotificationAsPopup(notification);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TotalNotificationBlocker);
 };
 
 bool PopupNotificationsContain(

@@ -27,6 +27,10 @@ class SimpleRendererFactory : public RendererFactory {
   };
 
   SimpleRendererFactory();
+
+  SimpleRendererFactory(const SimpleRendererFactory&) = delete;
+  SimpleRendererFactory& operator=(const SimpleRendererFactory&) = delete;
+
   ~SimpleRendererFactory() override;
 
   bool Initialize() override;
@@ -39,8 +43,6 @@ class SimpleRendererFactory : public RendererFactory {
 #endif
 
   RendererType type_ = SOFTWARE;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleRendererFactory);
 };
 
 }  // namespace ui

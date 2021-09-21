@@ -25,6 +25,10 @@ namespace ui {
 class DeviceManagerManual : public DeviceManager {
  public:
   DeviceManagerManual();
+
+  DeviceManagerManual(const DeviceManagerManual&) = delete;
+  DeviceManagerManual& operator=(const DeviceManagerManual&) = delete;
+
   ~DeviceManagerManual() override;
 
  private:
@@ -51,8 +55,6 @@ class DeviceManagerManual : public DeviceManager {
   std::unique_ptr<base::FilePathWatcher, base::OnTaskRunnerDeleter> watcher_;
 
   base::WeakPtrFactory<DeviceManagerManual> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceManagerManual);
 };
 
 }  // namespace ui

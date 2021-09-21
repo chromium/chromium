@@ -30,6 +30,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
       public IMEInputContextHandlerInterface {
  public:
   explicit InputMethodAsh(internal::InputMethodDelegate* delegate);
+
+  InputMethodAsh(const InputMethodAsh&) = delete;
+  InputMethodAsh& operator=(const InputMethodAsh&) = delete;
+
   ~InputMethodAsh() override;
 
   // Overridden from InputMethod:
@@ -210,8 +214,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
 
   // Used for making callbacks.
   base::WeakPtrFactory<InputMethodAsh> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodAsh);
 };
 
 }  // namespace ui

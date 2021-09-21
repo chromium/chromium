@@ -38,6 +38,10 @@ class DISPLAY_MANAGER_EXPORT TouchTransformController {
  public:
   TouchTransformController(DisplayManager* display_manager,
                            std::unique_ptr<TouchTransformSetter> setter);
+
+  TouchTransformController(const TouchTransformController&) = delete;
+  TouchTransformController& operator=(const TouchTransformController&) = delete;
+
   ~TouchTransformController();
 
   // Updates the transform for touch input-devices and pushes the new transforms
@@ -106,8 +110,6 @@ class DISPLAY_MANAGER_EXPORT TouchTransformController {
   bool is_calibrating_ = false;
 
   std::unique_ptr<TouchTransformSetter> touch_transform_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTransformController);
 };
 
 }  // namespace display

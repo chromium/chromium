@@ -196,6 +196,9 @@ class FontFuncs {
     hb_font_funcs_make_immutable(font_funcs_);
   }
 
+  FontFuncs(const FontFuncs&) = delete;
+  FontFuncs& operator=(const FontFuncs&) = delete;
+
   ~FontFuncs() {
     hb_font_funcs_destroy(font_funcs_);
   }
@@ -204,8 +207,6 @@ class FontFuncs {
 
  private:
   hb_font_funcs_t* font_funcs_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontFuncs);
 };
 
 base::LazyInstance<FontFuncs>::Leaky g_font_funcs = LAZY_INSTANCE_INITIALIZER;
@@ -245,6 +246,9 @@ class TypefaceData {
     data.face_ = nullptr;
   }
 
+  TypefaceData(const TypefaceData&) = delete;
+  TypefaceData& operator=(const TypefaceData&) = delete;
+
   ~TypefaceData() { hb_face_destroy(face_); }
 
   hb_face_t* face() { return face_; }
@@ -258,8 +262,6 @@ class TypefaceData {
 
   // The skia typeface must outlive |face_| since it's being used by harfbuzz.
   sk_sp<SkTypeface> sk_typeface_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypefaceData);
 };
 
 }  // namespace

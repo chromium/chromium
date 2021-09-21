@@ -106,6 +106,9 @@ class ResourceBundleTest : public testing::Test {
  public:
   ResourceBundleTest() : resource_bundle_(nullptr) {}
 
+  ResourceBundleTest(const ResourceBundleTest&) = delete;
+  ResourceBundleTest& operator=(const ResourceBundleTest&) = delete;
+
   ~ResourceBundleTest() override {}
 
   // Overridden from testing::Test:
@@ -128,9 +131,6 @@ class ResourceBundleTest : public testing::Test {
  protected:
   base::ScopedTempDir temp_dir_;
   ResourceBundle* resource_bundle_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceBundleTest);
 };
 
 TEST_F(ResourceBundleTest, DelegateGetPathForResourcePack) {
@@ -363,6 +363,9 @@ class ResourceBundleImageTest : public ResourceBundleTest {
  public:
   ResourceBundleImageTest() {}
 
+  ResourceBundleImageTest(const ResourceBundleImageTest&) = delete;
+  ResourceBundleImageTest& operator=(const ResourceBundleImageTest&) = delete;
+
   ~ResourceBundleImageTest() override {}
 
   void SetUp() override {
@@ -397,8 +400,6 @@ class ResourceBundleImageTest : public ResourceBundleTest {
 
  private:
   std::unique_ptr<DataPack> locale_pack_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceBundleImageTest);
 };
 
 TEST_F(ResourceBundleImageTest, LoadDataResourceBytes) {

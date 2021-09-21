@@ -57,10 +57,11 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   class AURA_EXPORT ScopedPause {
    public:
     ScopedPause();
-    ~ScopedPause();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedPause);
+    ScopedPause(const ScopedPause&) = delete;
+    ScopedPause& operator=(const ScopedPause&) = delete;
+
+    ~ScopedPause();
   };
 
   // Used to exclude a window and all descendants from occlusion calculation.
@@ -78,6 +79,10 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   class AURA_EXPORT ScopedExclude : public WindowObserver {
    public:
     explicit ScopedExclude(Window* window);
+
+    ScopedExclude(const ScopedExclude&) = delete;
+    ScopedExclude& operator=(const ScopedExclude&) = delete;
+
     ~ScopedExclude() override;
 
     Window* window() { return window_; }
@@ -89,7 +94,6 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
     void Shutdown();
 
     Window* window_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedExclude);
   };
 
   // Forces the occlusion state of a window to VISIBLE regardless of the drawn
@@ -104,6 +108,10 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   class AURA_EXPORT ScopedForceVisible : public WindowObserver {
    public:
     explicit ScopedForceVisible(Window* window);
+
+    ScopedForceVisible(const ScopedForceVisible&) = delete;
+    ScopedForceVisible& operator=(const ScopedForceVisible&) = delete;
+
     ~ScopedForceVisible() override;
 
    private:
@@ -113,7 +121,6 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
     void Shutdown();
 
     Window* window_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedForceVisible);
   };
 
   // Holds occlusion related information for tracked windows.

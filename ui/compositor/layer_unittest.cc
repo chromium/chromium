@@ -113,6 +113,11 @@ class LayerWithRealCompositorTest : public testing::Test {
   LayerWithRealCompositorTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         default_font_desc_setter_("Segoe UI, 15px") {}
+
+  LayerWithRealCompositorTest(const LayerWithRealCompositorTest&) = delete;
+  LayerWithRealCompositorTest& operator=(const LayerWithRealCompositorTest&) =
+      delete;
+
   ~LayerWithRealCompositorTest() override = default;
 
   // Overridden from testing::Test:
@@ -255,14 +260,16 @@ class LayerWithRealCompositorTest : public testing::Test {
   base::FilePath test_data_dir_;
 
   gfx::ScopedDefaultFontDescription default_font_desc_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerWithRealCompositorTest);
 };
 
 // LayerDelegate that paints colors to the layer.
 class TestLayerDelegate : public LayerDelegate {
  public:
   TestLayerDelegate() { reset(); }
+
+  TestLayerDelegate(const TestLayerDelegate&) = delete;
+  TestLayerDelegate& operator=(const TestLayerDelegate&) = delete;
+
   ~TestLayerDelegate() override {}
 
   void AddColor(SkColor color) {
@@ -308,8 +315,6 @@ class TestLayerDelegate : public LayerDelegate {
   int color_index_;
   float device_scale_factor_;
   gfx::Rect layer_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayerDelegate);
 };
 
 // LayerDelegate that verifies that a layer was asked to update its canvas.
@@ -317,6 +322,10 @@ class DrawTreeLayerDelegate : public LayerDelegate {
  public:
   explicit DrawTreeLayerDelegate(const gfx::Rect& layer_bounds)
       : painted_(false), layer_bounds_(layer_bounds) {}
+
+  DrawTreeLayerDelegate(const DrawTreeLayerDelegate&) = delete;
+  DrawTreeLayerDelegate& operator=(const DrawTreeLayerDelegate&) = delete;
+
   ~DrawTreeLayerDelegate() override = default;
 
   void Reset() {
@@ -337,14 +346,16 @@ class DrawTreeLayerDelegate : public LayerDelegate {
 
   bool painted_;
   const gfx::Rect layer_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrawTreeLayerDelegate);
 };
 
 // The simplest possible layer delegate. Does nothing.
 class NullLayerDelegate : public LayerDelegate {
  public:
   NullLayerDelegate() {}
+
+  NullLayerDelegate(const NullLayerDelegate&) = delete;
+  NullLayerDelegate& operator=(const NullLayerDelegate&) = delete;
+
   ~NullLayerDelegate() override {}
 
   gfx::Rect invalidation() const { return invalidation_; }
@@ -358,8 +369,6 @@ class NullLayerDelegate : public LayerDelegate {
   }
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(NullLayerDelegate);
 };
 
 // Remembers if it has been notified.
@@ -405,6 +414,11 @@ class TestCompositorAnimationObserver : public CompositorAnimationObserver {
     compositor_->AddAnimationObserver(this);
   }
 
+  TestCompositorAnimationObserver(const TestCompositorAnimationObserver&) =
+      delete;
+  TestCompositorAnimationObserver& operator=(
+      const TestCompositorAnimationObserver&) = delete;
+
   ~TestCompositorAnimationObserver() override {
     if (compositor_)
       compositor_->RemoveAnimationObserver(this);
@@ -428,8 +442,6 @@ class TestCompositorAnimationObserver : public CompositorAnimationObserver {
   ui::Compositor* compositor_;
   size_t animation_step_count_;
   bool shutdown_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositorAnimationObserver);
 };
 
 // An animation observer that invokes a callback when the animation ends.
@@ -487,6 +499,10 @@ class LayerWithDelegateTest : public testing::Test {
  public:
   LayerWithDelegateTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+
+  LayerWithDelegateTest(const LayerWithDelegateTest&) = delete;
+  LayerWithDelegateTest& operator=(const LayerWithDelegateTest&) = delete;
+
   ~LayerWithDelegateTest() override {}
 
   // Overridden from testing::Test:
@@ -554,8 +570,6 @@ class LayerWithDelegateTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestContextFactories> context_factories_;
   std::unique_ptr<TestCompositorHost> compositor_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerWithDelegateTest);
 };
 
 void ReturnMailbox(bool* run, const gpu::SyncToken& sync_token, bool is_lost) {
@@ -981,6 +995,11 @@ TEST_F(LayerWithDelegateTest, SurfaceLayerCloneAndMirror) {
 class LayerWithNullDelegateTest : public LayerWithDelegateTest {
  public:
   LayerWithNullDelegateTest() {}
+
+  LayerWithNullDelegateTest(const LayerWithNullDelegateTest&) = delete;
+  LayerWithNullDelegateTest& operator=(const LayerWithNullDelegateTest&) =
+      delete;
+
   ~LayerWithNullDelegateTest() override {}
 
   void SetUp() override {
@@ -1019,8 +1038,6 @@ class LayerWithNullDelegateTest : public LayerWithDelegateTest {
 
  private:
   std::unique_ptr<NullLayerDelegate> default_layer_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerWithNullDelegateTest);
 };
 
 TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
@@ -2012,6 +2029,10 @@ class SchedulePaintLayerDelegate : public LayerDelegate {
  public:
   SchedulePaintLayerDelegate() : paint_count_(0), layer_(nullptr) {}
 
+  SchedulePaintLayerDelegate(const SchedulePaintLayerDelegate&) = delete;
+  SchedulePaintLayerDelegate& operator=(const SchedulePaintLayerDelegate&) =
+      delete;
+
   ~SchedulePaintLayerDelegate() override {}
 
   void set_layer(Layer* layer) {
@@ -2049,8 +2070,6 @@ class SchedulePaintLayerDelegate : public LayerDelegate {
   Layer* layer_;
   gfx::Rect schedule_paint_rect_;
   gfx::Rect last_clip_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchedulePaintLayerDelegate);
 };
 
 }  // namespace

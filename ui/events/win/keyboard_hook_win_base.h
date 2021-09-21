@@ -31,6 +31,10 @@ class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookWinBase
   KeyboardHookWinBase(absl::optional<base::flat_set<DomCode>> dom_codes,
                       KeyEventCallback callback,
                       bool enable_hook_registration);
+
+  KeyboardHookWinBase(const KeyboardHookWinBase&) = delete;
+  KeyboardHookWinBase& operator=(const KeyboardHookWinBase&) = delete;
+
   ~KeyboardHookWinBase() override;
 
   // Create a KeyboardHookWinBase instance which does not register a
@@ -66,8 +70,6 @@ class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookWinBase
   const bool enable_hook_registration_ = true;
   HHOOK hook_ = nullptr;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardHookWinBase);
 };
 
 }  // namespace ui

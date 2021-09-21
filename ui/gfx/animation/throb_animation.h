@@ -20,6 +20,10 @@ namespace gfx {
 class ANIMATION_EXPORT ThrobAnimation : public SlideAnimation {
  public:
   explicit ThrobAnimation(AnimationDelegate* target);
+
+  ThrobAnimation(const ThrobAnimation&) = delete;
+  ThrobAnimation& operator=(const ThrobAnimation&) = delete;
+
   ~ThrobAnimation() override {}
 
   // Starts throbbing. cycles_til_stop gives the number of cycles to do before
@@ -62,8 +66,6 @@ class ANIMATION_EXPORT ThrobAnimation : public SlideAnimation {
 
   // Are we throbbing?
   bool throbbing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrobAnimation);
 };
 
 }  // namespace gfx

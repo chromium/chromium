@@ -26,6 +26,10 @@ namespace wm {
 class ShadowControllerTest : public aura::test::AuraTestBase {
  public:
   ShadowControllerTest() {}
+
+  ShadowControllerTest(const ShadowControllerTest&) = delete;
+  ShadowControllerTest& operator=(const ShadowControllerTest&) = delete;
+
   ~ShadowControllerTest() override {}
 
   void SetUp() override {
@@ -54,8 +58,6 @@ class ShadowControllerTest : public aura::test::AuraTestBase {
 
  private:
   std::unique_ptr<ShadowController> shadow_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShadowControllerTest);
 };
 
 // Tests that various methods in Window update the Shadow object as expected.
@@ -233,14 +235,16 @@ namespace {
 class TestShadowControllerDelegate : public wm::ShadowControllerDelegate {
  public:
   TestShadowControllerDelegate() {}
+
+  TestShadowControllerDelegate(const TestShadowControllerDelegate&) = delete;
+  TestShadowControllerDelegate& operator=(const TestShadowControllerDelegate&) =
+      delete;
+
   ~TestShadowControllerDelegate() override {}
 
   bool ShouldShowShadowForWindow(const aura::Window* window) override {
     return window->parent();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestShadowControllerDelegate);
 };
 
 }  // namespace

@@ -28,6 +28,10 @@ namespace gfx {
 class TestFontDelegate : public SkiaFontDelegate {
  public:
   TestFontDelegate() = default;
+
+  TestFontDelegate(const TestFontDelegate&) = delete;
+  TestFontDelegate& operator=(const TestFontDelegate&) = delete;
+
   ~TestFontDelegate() override = default;
 
   void set_family(const std::string& family) { family_ = family; }
@@ -60,13 +64,15 @@ class TestFontDelegate : public SkiaFontDelegate {
   int style_ = Font::NORMAL;
   gfx::Font::Weight weight_ = Font::Weight::NORMAL;
   FontRenderParams params_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFontDelegate);
 };
 
 class PlatformFontSkiaTest : public testing::Test {
  public:
   PlatformFontSkiaTest() = default;
+
+  PlatformFontSkiaTest(const PlatformFontSkiaTest&) = delete;
+  PlatformFontSkiaTest& operator=(const PlatformFontSkiaTest&) = delete;
+
   ~PlatformFontSkiaTest() override = default;
 
   void SetUp() override {
@@ -88,8 +94,6 @@ class PlatformFontSkiaTest : public testing::Test {
  private:
   // Originally-registered delegate.
   const SkiaFontDelegate* original_font_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformFontSkiaTest);
 };
 
 // Test that PlatformFontSkia's default constructor initializes the instance

@@ -36,6 +36,10 @@ namespace wm {
 class WM_CORE_EXPORT CompoundEventFilter : public ui::EventHandler {
  public:
   CompoundEventFilter();
+
+  CompoundEventFilter(const CompoundEventFilter&) = delete;
+  CompoundEventFilter& operator=(const CompoundEventFilter&) = delete;
+
   ~CompoundEventFilter() override;
 
   // Returns the cursor for the specified component.
@@ -82,8 +86,6 @@ class WM_CORE_EXPORT CompoundEventFilter : public ui::EventHandler {
 
   // Additional pre-target event handlers.
   base::ObserverList<ui::EventHandler, true>::Unchecked handlers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompoundEventFilter);
 };
 
 }  // namespace wm

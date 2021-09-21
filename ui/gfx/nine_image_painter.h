@@ -24,6 +24,10 @@ class GFX_EXPORT NineImagePainter {
  public:
   explicit NineImagePainter(const std::vector<ImageSkia>& images);
   NineImagePainter(const ImageSkia& image, const Insets& insets);
+
+  NineImagePainter(const NineImagePainter&) = delete;
+  NineImagePainter& operator=(const NineImagePainter&) = delete;
+
   ~NineImagePainter();
 
   bool IsEmpty() const;
@@ -46,8 +50,6 @@ class GFX_EXPORT NineImagePainter {
   // |__i3__|__i4__|__i5__|
   // |__i6__|__i7__|__i8__|
   ImageSkia images_[9];
-
-  DISALLOW_COPY_AND_ASSIGN(NineImagePainter);
 };
 
 }  // namespace gfx

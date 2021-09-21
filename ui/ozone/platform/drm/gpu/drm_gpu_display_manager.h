@@ -37,6 +37,10 @@ class DrmGpuDisplayManager {
  public:
   DrmGpuDisplayManager(ScreenManager* screen_manager,
                        DrmDeviceManager* drm_device_manager);
+
+  DrmGpuDisplayManager(const DrmGpuDisplayManager&) = delete;
+  DrmGpuDisplayManager& operator=(const DrmGpuDisplayManager&) = delete;
+
   ~DrmGpuDisplayManager();
 
   // Sets a callback that will be notified when display configuration may have
@@ -85,8 +89,6 @@ class DrmGpuDisplayManager {
   std::vector<std::unique_ptr<DrmDisplay>> displays_;
 
   base::RepeatingClosure clear_overlay_cache_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmGpuDisplayManager);
 };
 
 }  // namespace ui

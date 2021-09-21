@@ -73,6 +73,11 @@ class ImplicitHidingWindowAnimationObserver;
 class WM_CORE_EXPORT ScopedHidingAnimationSettings {
  public:
   explicit ScopedHidingAnimationSettings(aura::Window* window);
+
+  ScopedHidingAnimationSettings(const ScopedHidingAnimationSettings&) = delete;
+  ScopedHidingAnimationSettings& operator=(
+      const ScopedHidingAnimationSettings&) = delete;
+
   ~ScopedHidingAnimationSettings();
 
   // Returns the wrapped ScopedLayeAnimationSettings instance.
@@ -83,8 +88,6 @@ class WM_CORE_EXPORT ScopedHidingAnimationSettings {
  private:
   ui::ScopedLayerAnimationSettings layer_animation_settings_;
   ImplicitHidingWindowAnimationObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedHidingAnimationSettings);
 };
 
 // Returns false if the |window| didn't animate.

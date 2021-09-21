@@ -23,6 +23,10 @@ class X11_WINDOW_EXPORT X11TopmostWindowFinder
     : public ui::XTopmostWindowFinder {
  public:
   X11TopmostWindowFinder();
+
+  X11TopmostWindowFinder(const X11TopmostWindowFinder&) = delete;
+  X11TopmostWindowFinder& operator=(const X11TopmostWindowFinder&) = delete;
+
   ~X11TopmostWindowFinder() override;
 
   // Returns the topmost window at |screen_loc_in_pixels|, ignoring the windows
@@ -45,8 +49,6 @@ class X11_WINDOW_EXPORT X11TopmostWindowFinder
   gfx::Point screen_loc_in_pixels_;
   std::set<gfx::AcceleratedWidget> ignore_;
   x11::Window toplevel_ = x11::Window::None;
-
-  DISALLOW_COPY_AND_ASSIGN(X11TopmostWindowFinder);
 };
 
 }  // namespace ui

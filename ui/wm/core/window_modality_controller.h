@@ -44,6 +44,10 @@ class WM_CORE_EXPORT WindowModalityController : public ui::EventHandler,
  public:
   explicit WindowModalityController(ui::EventTarget* event_target,
                                     aura::Env* env = nullptr);
+
+  WindowModalityController(const WindowModalityController&) = delete;
+  WindowModalityController& operator=(const WindowModalityController&) = delete;
+
   ~WindowModalityController() override;
 
   // Overridden from ui::EventHandler:
@@ -76,8 +80,6 @@ class WM_CORE_EXPORT WindowModalityController : public ui::EventHandler,
   std::vector<aura::Window*> windows_;
 
   ui::EventTarget* event_target_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowModalityController);
 };
 
 }  // namespace wm

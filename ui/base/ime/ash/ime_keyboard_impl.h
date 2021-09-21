@@ -20,6 +20,10 @@ namespace input_method {
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboardImpl : public ImeKeyboard {
  public:
   ImeKeyboardImpl(ui::InputController* input_controller);
+
+  ImeKeyboardImpl(const ImeKeyboardImpl&) = delete;
+  ImeKeyboardImpl& operator=(const ImeKeyboardImpl&) = delete;
+
   ~ImeKeyboardImpl() override;
 
   // ImeKeyboard:
@@ -35,8 +39,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboardImpl : public ImeKeyboard {
 
  private:
   ui::InputController* const input_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeKeyboardImpl);
 };
 
 }  // namespace input_method

@@ -34,6 +34,10 @@ void OnBufferCreatedOnDrmThread(
 class GbmDeviceGenerator : public DrmDeviceGenerator {
  public:
   GbmDeviceGenerator() {}
+
+  GbmDeviceGenerator(const GbmDeviceGenerator&) = delete;
+  GbmDeviceGenerator& operator=(const GbmDeviceGenerator&) = delete;
+
   ~GbmDeviceGenerator() override {}
 
   // DrmDeviceGenerator:
@@ -52,9 +56,6 @@ class GbmDeviceGenerator : public DrmDeviceGenerator {
       return nullptr;
     return drm;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GbmDeviceGenerator);
 };
 
 }  // namespace

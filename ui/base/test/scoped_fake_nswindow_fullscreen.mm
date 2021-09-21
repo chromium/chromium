@@ -42,6 +42,9 @@ class ScopedFakeNSWindowFullscreen::Impl {
                                  [ToggleFullscreenDonorForWindow class],
                                  @selector(setStyleMask:)) {}
 
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
   ~Impl() {
     // If there's a pending transition, it means there's a task in the queue to
     // complete it, referencing |this|.
@@ -186,8 +189,6 @@ class ScopedFakeNSWindowFullscreen::Impl {
   // NSFullScreenWindowMask in the swizzled styleMask so that client code can
   // read it.
   bool style_as_fullscreen_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 ScopedFakeNSWindowFullscreen::ScopedFakeNSWindowFullscreen() {

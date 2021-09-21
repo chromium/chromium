@@ -26,14 +26,16 @@ class XWindowEventManager;
 class COMPONENT_EXPORT(X11) XScopedEventSelector {
  public:
   XScopedEventSelector(Window window, EventMask event_mask);
+
+  XScopedEventSelector(const XScopedEventSelector&) = delete;
+  XScopedEventSelector& operator=(const XScopedEventSelector&) = delete;
+
   ~XScopedEventSelector();
 
  private:
   Window window_;
   EventMask event_mask_;
   base::WeakPtr<XWindowEventManager> event_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(XScopedEventSelector);
 };
 
 // Allows multiple clients within Chrome to select events on the same X window.

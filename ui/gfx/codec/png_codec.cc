@@ -264,6 +264,10 @@ class PngReadStructInfo {
  public:
   PngReadStructInfo(): png_ptr_(nullptr), info_ptr_(nullptr) {
   }
+
+  PngReadStructInfo(const PngReadStructInfo&) = delete;
+  PngReadStructInfo& operator=(const PngReadStructInfo&) = delete;
+
   ~PngReadStructInfo() {
     png_destroy_read_struct(&png_ptr_, &info_ptr_, NULL);
   }
@@ -290,8 +294,6 @@ class PngReadStructInfo {
 
   png_struct* png_ptr_;
   png_info* info_ptr_;
- private:
-  DISALLOW_COPY_AND_ASSIGN(PngReadStructInfo);
 };
 
 // Holds png struct and info ensuring the proper destruction.
@@ -300,14 +302,15 @@ class PngWriteStructInfo {
   PngWriteStructInfo() : png_ptr_(nullptr), info_ptr_(nullptr) {
   }
 
+  PngWriteStructInfo(const PngWriteStructInfo&) = delete;
+  PngWriteStructInfo& operator=(const PngWriteStructInfo&) = delete;
+
   ~PngWriteStructInfo() {
     png_destroy_write_struct(&png_ptr_, &info_ptr_);
   }
 
   png_struct* png_ptr_;
   png_info* info_ptr_;
- private:
-  DISALLOW_COPY_AND_ASSIGN(PngWriteStructInfo);
 };
 
 // Libpng user error and warning functions which allows us to print libpng

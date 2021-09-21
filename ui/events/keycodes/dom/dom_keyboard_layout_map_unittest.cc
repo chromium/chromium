@@ -148,6 +148,10 @@ DomKey GetKeyFromCombiningLayoutTable(DomCode dom_code) {
 class TestDomKeyboardLayoutMap : public DomKeyboardLayoutMapBase {
  public:
   TestDomKeyboardLayoutMap();
+
+  TestDomKeyboardLayoutMap(const TestDomKeyboardLayoutMap&) = delete;
+  TestDomKeyboardLayoutMap& operator=(const TestDomKeyboardLayoutMap&) = delete;
+
   ~TestDomKeyboardLayoutMap() override;
 
   // DomKeyboardLayoutMapBase overrides.
@@ -166,8 +170,6 @@ class TestDomKeyboardLayoutMap : public DomKeyboardLayoutMapBase {
   DomKey GetDomKeyForLayoutWithNoValidKeys();
 
   std::vector<uint32_t> test_keyboard_layouts_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDomKeyboardLayoutMap);
 };
 
 TestDomKeyboardLayoutMap::TestDomKeyboardLayoutMap() = default;

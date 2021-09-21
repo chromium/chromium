@@ -39,6 +39,9 @@ class GL_EXPORT ScopedJavaSurface {
   static ScopedJavaSurface AcquireExternalSurface(
       const base::android::JavaRef<jobject>& surface);
 
+  ScopedJavaSurface(const ScopedJavaSurface&) = delete;
+  ScopedJavaSurface& operator=(const ScopedJavaSurface&) = delete;
+
   ~ScopedJavaSurface();
 
   // Checks whether the surface is an empty one.
@@ -64,8 +67,6 @@ class GL_EXPORT ScopedJavaSurface {
   bool is_protected_ = false;
 
   base::android::ScopedJavaGlobalRef<jobject> j_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedJavaSurface);
 };
 
 }  // namespace gl

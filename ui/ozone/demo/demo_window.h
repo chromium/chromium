@@ -25,6 +25,10 @@ class DemoWindow : public PlatformWindowDelegate {
   DemoWindow(WindowManager* window_manager,
              RendererFactory* renderer_factory,
              const gfx::Rect& bounds);
+
+  DemoWindow(const DemoWindow&) = delete;
+  DemoWindow& operator=(const DemoWindow&) = delete;
+
   ~DemoWindow() override;
 
   gfx::AcceleratedWidget GetAcceleratedWidget();
@@ -64,8 +68,6 @@ class DemoWindow : public PlatformWindowDelegate {
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
 
   base::WeakPtrFactory<DemoWindow> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoWindow);
 };
 
 }  // namespace ui

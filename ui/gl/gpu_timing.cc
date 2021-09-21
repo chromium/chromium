@@ -33,6 +33,10 @@ int32_t QueryTimestampBits() {
 class GPUTimingImpl : public GPUTiming {
  public:
   explicit GPUTimingImpl(GLContextReal* context);
+
+  GPUTimingImpl(const GPUTimingImpl&) = delete;
+  GPUTimingImpl& operator=(const GPUTimingImpl&) = delete;
+
   ~GPUTimingImpl() override;
 
   void ForceTimeElapsedQuery() { force_time_elapsed_query_ = true; }
@@ -95,8 +99,6 @@ class GPUTimingImpl : public GPUTiming {
   scoped_refptr<TimeElapsedTimerQuery> last_elapsed_query_;
 
   base::circular_deque<scoped_refptr<TimerQuery>> queries_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTimingImpl);
 };
 
 class QueryResult : public base::RefCounted<QueryResult> {

@@ -40,6 +40,10 @@ class DrmDevice;
 class DrmPropertyBlobMetadata {
  public:
   DrmPropertyBlobMetadata(DrmDevice* drm, uint32_t id);
+
+  DrmPropertyBlobMetadata(const DrmPropertyBlobMetadata&) = delete;
+  DrmPropertyBlobMetadata& operator=(const DrmPropertyBlobMetadata&) = delete;
+
   ~DrmPropertyBlobMetadata();
 
   uint32_t id() const { return id_; }
@@ -47,8 +51,6 @@ class DrmPropertyBlobMetadata {
  private:
   DrmDevice* drm_;  // Not owned;
   uint32_t id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmPropertyBlobMetadata);
 };
 
 using ScopedDrmPropertyBlob = std::unique_ptr<DrmPropertyBlobMetadata>;

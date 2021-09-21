@@ -43,6 +43,10 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
         buffer_manager_(buffer_manager) {
     DCHECK(buffer_manager_);
   }
+
+  SharedMemoryBuffer(const SharedMemoryBuffer&) = delete;
+  SharedMemoryBuffer& operator=(const SharedMemoryBuffer&) = delete;
+
   ~SharedMemoryBuffer() { buffer_manager_->DestroyBuffer(widget_, buffer_id_); }
 
   // Returns SkSurface, which the client can use to write to this buffer.
@@ -162,8 +166,6 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 
   // Pending damage region if the buffer is pending to be submitted.
   gfx::Rect pending_damage_region_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryBuffer);
 };
 
 WaylandCanvasSurface::WaylandCanvasSurface(

@@ -82,6 +82,12 @@ class AppKitHost : public FoundationHost {
 class TestAcceleratedWidgetMacNSView : public AcceleratedWidgetMacNSView {
  public:
   TestAcceleratedWidgetMacNSView(NSView* view) : view_([view retain]) {}
+
+  TestAcceleratedWidgetMacNSView(const TestAcceleratedWidgetMacNSView&) =
+      delete;
+  TestAcceleratedWidgetMacNSView& operator=(
+      const TestAcceleratedWidgetMacNSView&) = delete;
+
   virtual ~TestAcceleratedWidgetMacNSView() { [view_ release]; }
 
   // AcceleratedWidgetMacNSView
@@ -89,8 +95,6 @@ class TestAcceleratedWidgetMacNSView : public AcceleratedWidgetMacNSView {
 
  private:
   NSView* view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAcceleratedWidgetMacNSView);
 };
 
 // TestCompositorHostMac provides a window surface and a coordinated compositor
@@ -99,6 +103,10 @@ class TestCompositorHostMac : public TestCompositorHost, public AppKitHost {
  public:
   TestCompositorHostMac(const gfx::Rect& bounds,
                         ui::ContextFactory* context_factory);
+
+  TestCompositorHostMac(const TestCompositorHostMac&) = delete;
+  TestCompositorHostMac& operator=(const TestCompositorHostMac&) = delete;
+
   ~TestCompositorHostMac() override;
 
  private:
@@ -116,8 +124,6 @@ class TestCompositorHostMac : public TestCompositorHost, public AppKitHost {
   // Owned.  Released when window is closed.
   NSWindow* window_;
   viz::ParentLocalSurfaceIdAllocator allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositorHostMac);
 };
 
 TestCompositorHostMac::TestCompositorHostMac(

@@ -20,13 +20,15 @@ class HeadlessWindow : public StubWindow {
   HeadlessWindow(PlatformWindowDelegate* delegate,
                  HeadlessWindowManager* manager,
                  const gfx::Rect& bounds);
+
+  HeadlessWindow(const HeadlessWindow&) = delete;
+  HeadlessWindow& operator=(const HeadlessWindow&) = delete;
+
   ~HeadlessWindow() override;
 
  private:
   HeadlessWindowManager* manager_;
   gfx::AcceleratedWidget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessWindow);
 };
 
 }  // namespace ui

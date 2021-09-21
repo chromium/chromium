@@ -14,6 +14,10 @@ class GLStateRestorer;
 class GL_EXPORT ScopedFramebufferBinder {
  public:
   explicit ScopedFramebufferBinder(unsigned int fbo);
+
+  ScopedFramebufferBinder(const ScopedFramebufferBinder&) = delete;
+  ScopedFramebufferBinder& operator=(const ScopedFramebufferBinder&) = delete;
+
   ~ScopedFramebufferBinder();
 
  private:
@@ -23,13 +27,15 @@ class GL_EXPORT ScopedFramebufferBinder {
 
   // Failing that we use GL calls to save and restore state.
   int old_fbo_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFramebufferBinder);
 };
 
 class GL_EXPORT ScopedActiveTexture {
  public:
   ScopedActiveTexture(unsigned int texture);
+
+  ScopedActiveTexture(const ScopedActiveTexture&) = delete;
+  ScopedActiveTexture& operator=(const ScopedActiveTexture&) = delete;
+
   ~ScopedActiveTexture();
 
  private:
@@ -39,13 +45,15 @@ class GL_EXPORT ScopedActiveTexture {
 
   // Failing that we use GL calls to save and restore state.
   int old_texture_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedActiveTexture);
 };
 
 class GL_EXPORT ScopedTextureBinder {
  public:
   ScopedTextureBinder(unsigned int target, unsigned int id);
+
+  ScopedTextureBinder(const ScopedTextureBinder&) = delete;
+  ScopedTextureBinder& operator=(const ScopedTextureBinder&) = delete;
+
   ~ScopedTextureBinder();
 
  private:
@@ -56,13 +64,15 @@ class GL_EXPORT ScopedTextureBinder {
   // Failing that we use GL calls to save and restore state.
   int target_;
   int old_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTextureBinder);
 };
 
 class GL_EXPORT ScopedUseProgram {
  public:
   ScopedUseProgram(unsigned int program);
+
+  ScopedUseProgram(const ScopedUseProgram&) = delete;
+  ScopedUseProgram& operator=(const ScopedUseProgram&) = delete;
+
   ~ScopedUseProgram();
 
  private:
@@ -72,8 +82,6 @@ class GL_EXPORT ScopedUseProgram {
 
   // Failing that we use GL calls to save and restore state.
   int old_program_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUseProgram);
 };
 
 class GL_EXPORT ScopedVertexAttribArray {
@@ -84,6 +92,10 @@ class GL_EXPORT ScopedVertexAttribArray {
                           char normalized,
                           int stride,
                           const void* pointer);
+
+  ScopedVertexAttribArray(const ScopedVertexAttribArray&) = delete;
+  ScopedVertexAttribArray& operator=(const ScopedVertexAttribArray&) = delete;
+
   ~ScopedVertexAttribArray();
 
  private:
@@ -100,13 +112,15 @@ class GL_EXPORT ScopedVertexAttribArray {
   int normalized_;
   int stride_;
   void* pointer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVertexAttribArray);
 };
 
 class GL_EXPORT ScopedBufferBinder {
  public:
   ScopedBufferBinder(unsigned int target, unsigned int index);
+
+  ScopedBufferBinder(const ScopedBufferBinder&) = delete;
+  ScopedBufferBinder& operator=(const ScopedBufferBinder&) = delete;
+
   ~ScopedBufferBinder();
 
  private:
@@ -117,19 +131,19 @@ class GL_EXPORT ScopedBufferBinder {
   // Failing that we use GL calls to save and restore state.
   int target_;
   int old_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedBufferBinder);
 };
 
 class GL_EXPORT ScopedViewport {
  public:
   ScopedViewport(int x, int y, int width, int height);
+
+  ScopedViewport(const ScopedViewport&) = delete;
+  ScopedViewport& operator=(const ScopedViewport&) = delete;
+
   ~ScopedViewport();
 
  private:
   int data_[4] = {};
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedViewport);
 };
 
 class GL_EXPORT ScopedVertexAttribPointer {
@@ -140,33 +154,39 @@ class GL_EXPORT ScopedVertexAttribPointer {
                             char normalized,
                             int stride,
                             const void* pointer);
-  ~ScopedVertexAttribPointer();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedVertexAttribPointer);
+  ScopedVertexAttribPointer(const ScopedVertexAttribPointer&) = delete;
+  ScopedVertexAttribPointer& operator=(const ScopedVertexAttribPointer&) =
+      delete;
+
+  ~ScopedVertexAttribPointer();
 };
 
 class GL_EXPORT ScopedColorMask {
  public:
   ScopedColorMask(char red, char green, char blue, char alpha);
+
+  ScopedColorMask(const ScopedColorMask&) = delete;
+  ScopedColorMask& operator=(const ScopedColorMask&) = delete;
+
   ~ScopedColorMask();
 
  private:
   unsigned char colors_[4] = {};
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedColorMask);
 };
 
 class GL_EXPORT ScopedCapability {
  public:
   ScopedCapability(unsigned capability, unsigned char enabled);
+
+  ScopedCapability(const ScopedCapability&) = delete;
+  ScopedCapability& operator=(const ScopedCapability&) = delete;
+
   ~ScopedCapability();
 
  private:
   unsigned capability_;
   unsigned char enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCapability);
 };
 
 }  // namespace gl

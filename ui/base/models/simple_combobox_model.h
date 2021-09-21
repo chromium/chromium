@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(UI_BASE) SimpleComboboxModel : public ComboboxModel {
   };
 
   explicit SimpleComboboxModel(std::vector<Item> items);
+
+  SimpleComboboxModel(const SimpleComboboxModel&) = delete;
+  SimpleComboboxModel& operator=(const SimpleComboboxModel&) = delete;
+
   ~SimpleComboboxModel() override;
 
   // ui::ComboboxModel:
@@ -50,8 +54,6 @@ class COMPONENT_EXPORT(UI_BASE) SimpleComboboxModel : public ComboboxModel {
 
  private:
   const std::vector<Item> items_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleComboboxModel);
 };
 
 }  // namespace ui

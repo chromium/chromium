@@ -32,6 +32,10 @@ class COMPONENT_EXPORT(UI_BASE_X) X11SoftwareBitmapPresenter {
                              gfx::AcceleratedWidget widget,
                              bool enable_multibuffering);
 
+  X11SoftwareBitmapPresenter(const X11SoftwareBitmapPresenter&) = delete;
+  X11SoftwareBitmapPresenter& operator=(const X11SoftwareBitmapPresenter&) =
+      delete;
+
   ~X11SoftwareBitmapPresenter();
 
   void Resize(const gfx::Size& pixel_size);
@@ -75,8 +79,6 @@ class COMPONENT_EXPORT(UI_BASE_X) X11SoftwareBitmapPresenter {
   gfx::Size viewport_pixel_size_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(X11SoftwareBitmapPresenter);
 };
 
 }  // namespace ui

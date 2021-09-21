@@ -43,6 +43,11 @@ class HardwareDisplayControllerInfo {
   HardwareDisplayControllerInfo(ScopedDrmConnectorPtr connector,
                                 ScopedDrmCrtcPtr crtc,
                                 uint8_t index);
+
+  HardwareDisplayControllerInfo(const HardwareDisplayControllerInfo&) = delete;
+  HardwareDisplayControllerInfo& operator=(
+      const HardwareDisplayControllerInfo&) = delete;
+
   ~HardwareDisplayControllerInfo();
 
   drmModeConnector* connector() const { return connector_.get(); }
@@ -53,8 +58,6 @@ class HardwareDisplayControllerInfo {
   ScopedDrmConnectorPtr connector_;
   ScopedDrmCrtcPtr crtc_;
   uint8_t index_;
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayControllerInfo);
 };
 
 // Looks-up and parses the native display configurations returning all available

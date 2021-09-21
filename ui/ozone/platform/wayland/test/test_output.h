@@ -18,6 +18,10 @@ namespace wl {
 class TestOutput : public GlobalObject {
  public:
   TestOutput();
+
+  TestOutput(const TestOutput&) = delete;
+  TestOutput& operator=(const TestOutput&) = delete;
+
   ~TestOutput() override;
 
   const gfx::Rect GetRect() { return rect_; }
@@ -36,8 +40,6 @@ class TestOutput : public GlobalObject {
 
   absl::optional<gfx::Rect> pending_rect_ = absl::nullopt;
   absl::optional<int32_t> pending_scale_ = absl::nullopt;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOutput);
 };
 
 }  // namespace wl

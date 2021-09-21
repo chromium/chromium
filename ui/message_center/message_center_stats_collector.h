@@ -39,6 +39,11 @@ class MessageCenterStatsCollector : public MessageCenterObserver {
   };
 
   explicit MessageCenterStatsCollector(MessageCenter* message_center);
+
+  MessageCenterStatsCollector(const MessageCenterStatsCollector&) = delete;
+  MessageCenterStatsCollector& operator=(const MessageCenterStatsCollector&) =
+      delete;
+
   ~MessageCenterStatsCollector() override;
 
  private:
@@ -85,8 +90,6 @@ class MessageCenterStatsCollector : public MessageCenterObserver {
 
   typedef std::map<std::string, NotificationStats> StatsCollection;
   StatsCollection stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterStatsCollector);
 };
 
 }  // namespace message_center

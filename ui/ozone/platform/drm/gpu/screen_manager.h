@@ -54,6 +54,10 @@ class ScreenManager {
   using ControllerConfigsList = std::vector<ControllerConfigParams>;
 
   ScreenManager();
+
+  ScreenManager(const ScreenManager&) = delete;
+  ScreenManager& operator=(const ScreenManager&) = delete;
+
   virtual ~ScreenManager();
 
   // Register a display controller. This must be called before trying to
@@ -187,8 +191,6 @@ class ScreenManager {
   HardwareDisplayControllers controllers_;
 
   WidgetToWindowMap window_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenManager);
 };
 
 }  // namespace ui

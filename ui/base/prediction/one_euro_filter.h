@@ -19,6 +19,10 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) OneEuroFilter : public InputFilter {
  public:
   OneEuroFilter(double mincutoff = kDefaultMincutoff,
                 double beta = kDefaultBeta);
+
+  OneEuroFilter(const OneEuroFilter&) = delete;
+  OneEuroFilter& operator=(const OneEuroFilter&) = delete;
+
   ~OneEuroFilter() override;
 
   bool Filter(const base::TimeTicks& timestamp,
@@ -43,8 +47,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) OneEuroFilter : public InputFilter {
  private:
   std::unique_ptr<one_euro_filter::OneEuroFilter> x_filter_;
   std::unique_ptr<one_euro_filter::OneEuroFilter> y_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneEuroFilter);
 };
 
 }  // namespace ui

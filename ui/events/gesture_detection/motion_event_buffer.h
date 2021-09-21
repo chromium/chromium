@@ -39,6 +39,10 @@ class GESTURE_DETECTION_EXPORT MotionEventBuffer {
   // The provided |client| must not be null, and |enable_resampling| determines
   // resampling behavior (see |resample_|).
   MotionEventBuffer(MotionEventBufferClient* client, bool enable_resampling);
+
+  MotionEventBuffer(const MotionEventBuffer&) = delete;
+  MotionEventBuffer& operator=(const MotionEventBuffer&) = delete;
+
   ~MotionEventBuffer();
 
   // Should be called upon receipt of an event from the platform, prior to event
@@ -77,8 +81,6 @@ class GESTURE_DETECTION_EXPORT MotionEventBuffer {
   // forwarded event. Otherwise the most recently buffered event will be
   // forwarded, with preceding events as historical entries. Defaults to true.
   bool resample_;
-
-  DISALLOW_COPY_AND_ASSIGN(MotionEventBuffer);
 };
 
 }  // namespace ui

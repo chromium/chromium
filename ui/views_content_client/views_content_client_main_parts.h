@@ -37,6 +37,10 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
 
   static void PreBrowserMain();
 
+  ViewsContentClientMainParts(const ViewsContentClientMainParts&) = delete;
+  ViewsContentClientMainParts& operator=(const ViewsContentClientMainParts&) =
+      delete;
+
   ~ViewsContentClientMainParts() override;
 
   // content::BrowserMainParts:
@@ -68,8 +72,6 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
   ViewsContentClient* views_content_client_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainParts);
 };
 
 }  // namespace ui

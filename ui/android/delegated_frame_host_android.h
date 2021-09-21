@@ -50,6 +50,10 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
                             Client* client,
                             const viz::FrameSinkId& frame_sink_id);
 
+  DelegatedFrameHostAndroid(const DelegatedFrameHostAndroid&) = delete;
+  DelegatedFrameHostAndroid& operator=(const DelegatedFrameHostAndroid&) =
+      delete;
+
   ~DelegatedFrameHostAndroid() override;
 
   static int64_t TimeDeltaToFrames(base::TimeDelta delta) {
@@ -180,8 +184,6 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   gfx::Size surface_size_in_pixels_;
 
   std::unique_ptr<viz::FrameEvictor> frame_evictor_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegatedFrameHostAndroid);
 };
 
 }  // namespace ui

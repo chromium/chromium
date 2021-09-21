@@ -101,6 +101,10 @@ GtkPaperSize* FindPaperSizeMatch(GList* gtk_paper_sizes,
 class StickyPrintSettingGtk {
  public:
   StickyPrintSettingGtk() : last_used_settings_(gtk_print_settings_new()) {}
+
+  StickyPrintSettingGtk(const StickyPrintSettingGtk&) = delete;
+  StickyPrintSettingGtk& operator=(const StickyPrintSettingGtk&) = delete;
+
   ~StickyPrintSettingGtk() {
     NOTREACHED();  // Intended to be used with base::NoDestructor.
   }
@@ -115,8 +119,6 @@ class StickyPrintSettingGtk {
 
  private:
   GtkPrintSettings* last_used_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(StickyPrintSettingGtk);
 };
 
 StickyPrintSettingGtk& GetLastUsedSettings() {

@@ -16,6 +16,10 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_PREDICTION) EmptyFilter : public InputFilter {
  public:
   explicit EmptyFilter();
+
+  EmptyFilter(const EmptyFilter&) = delete;
+  EmptyFilter& operator=(const EmptyFilter&) = delete;
+
   ~EmptyFilter() override;
 
   // Filters the position sent to the filter at a specific timestamp.
@@ -31,8 +35,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) EmptyFilter : public InputFilter {
 
   // Reset the filter to its initial state
   void Reset() override;
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyFilter);
 };
 
 }  // namespace ui

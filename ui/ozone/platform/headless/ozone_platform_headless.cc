@@ -43,10 +43,12 @@ namespace {
 class HeadlessPlatformEventSource : public PlatformEventSource {
  public:
   HeadlessPlatformEventSource() = default;
-  ~HeadlessPlatformEventSource() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeadlessPlatformEventSource);
+  HeadlessPlatformEventSource(const HeadlessPlatformEventSource&) = delete;
+  HeadlessPlatformEventSource& operator=(const HeadlessPlatformEventSource&) =
+      delete;
+
+  ~HeadlessPlatformEventSource() override = default;
 };
 
 // OzonePlatform for headless mode
@@ -54,6 +56,10 @@ class OzonePlatformHeadless : public OzonePlatform {
  public:
   explicit OzonePlatformHeadless(const base::FilePath& dump_file)
       : file_path_(dump_file) {}
+
+  OzonePlatformHeadless(const OzonePlatformHeadless&) = delete;
+  OzonePlatformHeadless& operator=(const OzonePlatformHeadless&) = delete;
+
   ~OzonePlatformHeadless() override = default;
 
   // OzonePlatform:
@@ -124,8 +130,6 @@ class OzonePlatformHeadless : public OzonePlatform {
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
   std::unique_ptr<OverlayManagerOzone> overlay_manager_;
   base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformHeadless);
 };
 
 }  // namespace

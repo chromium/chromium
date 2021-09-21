@@ -59,6 +59,10 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
       int64_t product_code,
       int32_t year_of_manufacture,
       const gfx::Size& maximum_cursor_size);
+
+  DisplaySnapshot(const DisplaySnapshot&) = delete;
+  DisplaySnapshot& operator=(const DisplaySnapshot&) = delete;
+
   virtual ~DisplaySnapshot();
 
   int64_t display_id() const { return display_id_; }
@@ -232,9 +236,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   // Maximum supported cursor size on this display.
   const gfx::Size maximum_cursor_size_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplaySnapshot);
 };
 
 }  // namespace display

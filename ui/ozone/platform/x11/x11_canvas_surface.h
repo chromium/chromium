@@ -29,6 +29,10 @@ namespace ui {
 class X11CanvasSurface : public SurfaceOzoneCanvas {
  public:
   explicit X11CanvasSurface(gfx::AcceleratedWidget widget);
+
+  X11CanvasSurface(const X11CanvasSurface&) = delete;
+  X11CanvasSurface& operator=(const X11CanvasSurface&) = delete;
+
   ~X11CanvasSurface() override;
 
   // SurfaceOzoneCanvas overrides:
@@ -46,8 +50,6 @@ class X11CanvasSurface : public SurfaceOzoneCanvas {
 
   // Helper X11 bitmap presenter that presents the contents.
   X11SoftwareBitmapPresenter x11_software_bitmap_presenter_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11CanvasSurface);
 };
 
 }  // namespace ui

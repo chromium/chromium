@@ -19,6 +19,10 @@ namespace ui {
 class EVENTS_DEVICES_EXPORT InputDeviceObserverWin final {
  public:
   static InputDeviceObserverWin* GetInstance();
+
+  InputDeviceObserverWin(const InputDeviceObserverWin&) = delete;
+  InputDeviceObserverWin& operator=(const InputDeviceObserverWin&) = delete;
+
   ~InputDeviceObserverWin();
 
   void AddObserver(InputDeviceEventObserver* observer);
@@ -37,8 +41,6 @@ class EVENTS_DEVICES_EXPORT InputDeviceObserverWin final {
   bool slate_mode_enabled_ = false;
   base::win::RegKey registry_key_;
   base::ObserverList<InputDeviceEventObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputDeviceObserverWin);
 };
 
 }  // namespace ui

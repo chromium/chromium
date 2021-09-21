@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
   SelectionOwner(x11::Connection* connection,
                  x11::Window xwindow,
                  x11::Atom selection_name);
+
+  SelectionOwner(const SelectionOwner&) = delete;
+  SelectionOwner& operator=(const SelectionOwner&) = delete;
+
   ~SelectionOwner();
 
   // Returns the current selection data. Useful for fast paths.
@@ -143,8 +147,6 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionOwner {
 
   // Used to abort stale incremental data transfers.
   base::RepeatingTimer incremental_transfer_abort_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionOwner);
 };
 
 }  // namespace ui

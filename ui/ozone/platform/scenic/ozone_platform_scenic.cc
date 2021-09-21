@@ -63,10 +63,12 @@ namespace {
 class ScenicPlatformEventSource : public ui::PlatformEventSource {
  public:
   ScenicPlatformEventSource() = default;
-  ~ScenicPlatformEventSource() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScenicPlatformEventSource);
+  ScenicPlatformEventSource(const ScenicPlatformEventSource&) = delete;
+  ScenicPlatformEventSource& operator=(const ScenicPlatformEventSource&) =
+      delete;
+
+  ~ScenicPlatformEventSource() override = default;
 };
 
 // OzonePlatform for Scenic.
@@ -74,6 +76,10 @@ class OzonePlatformScenic : public OzonePlatform,
                             public base::CurrentThread::DestructionObserver {
  public:
   OzonePlatformScenic() = default;
+
+  OzonePlatformScenic(const OzonePlatformScenic&) = delete;
+  OzonePlatformScenic& operator=(const OzonePlatformScenic&) = delete;
+
   ~OzonePlatformScenic() override = default;
 
   // OzonePlatform implementation.
@@ -249,8 +255,6 @@ class OzonePlatformScenic : public OzonePlatform,
 
   // Whether the main process has initialized mojo bindings.
   bool bound_in_main_process_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformScenic);
 };
 
 }  // namespace

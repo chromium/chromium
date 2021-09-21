@@ -22,6 +22,10 @@ extern const struct zwp_text_input_v1_interface kMockZwpTextInputV1Impl;
 class MockZwpTextInput : public ServerObject {
  public:
   MockZwpTextInput(wl_resource* resource);
+
+  MockZwpTextInput(const MockZwpTextInput&) = delete;
+  MockZwpTextInput& operator=(const MockZwpTextInput&) = delete;
+
   ~MockZwpTextInput() override;
 
   MOCK_METHOD0(Reset, void());
@@ -33,9 +37,6 @@ class MockZwpTextInput : public ServerObject {
                void(int32_t x, int32_t y, int32_t width, int32_t height));
   MOCK_METHOD2(SetSurroundingText,
                void(std::string text, gfx::Range selection_range));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockZwpTextInput);
 };
 
 }  // namespace wl

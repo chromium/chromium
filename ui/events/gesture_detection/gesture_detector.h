@@ -96,6 +96,10 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
   GestureDetector(const Config& config,
                   GestureListener* listener,
                   DoubleTapListener* optional_double_tap_listener);
+
+  GestureDetector(const GestureDetector&) = delete;
+  GestureDetector& operator=(const GestureDetector&) = delete;
+
   ~GestureDetector();
 
   bool OnTouchEvent(const MotionEvent& ev, bool should_process_double_tap);
@@ -195,8 +199,6 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
 
   // Determines speed during touch scrolling.
   VelocityTrackerState velocity_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureDetector);
 };
 
 }  // namespace ui

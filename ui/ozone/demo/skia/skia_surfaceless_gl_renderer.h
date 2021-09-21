@@ -22,6 +22,11 @@ class SurfacelessSkiaGlRenderer : public SkiaGlRenderer {
       std::unique_ptr<PlatformWindowSurface> window_surface,
       const scoped_refptr<gl::GLSurface>& gl_surface,
       const gfx::Size& size);
+
+  SurfacelessSkiaGlRenderer(const SurfacelessSkiaGlRenderer&) = delete;
+  SurfacelessSkiaGlRenderer& operator=(const SurfacelessSkiaGlRenderer&) =
+      delete;
+
   ~SurfacelessSkiaGlRenderer() override;
 
   // Renderer:
@@ -45,8 +50,6 @@ class SurfacelessSkiaGlRenderer : public SkiaGlRenderer {
   int back_buffer_ = 0;
 
   base::WeakPtrFactory<SurfacelessSkiaGlRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SurfacelessSkiaGlRenderer);
 };
 
 }  // namespace ui

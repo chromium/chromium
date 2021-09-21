@@ -42,6 +42,10 @@ class ScenicSurface : public ui::PlatformWindowSurface {
       ScenicSurfaceFactory* scenic_surface_factory,
       gfx::AcceleratedWidget window,
       scenic::SessionPtrAndListenerRequest sesion_and_listener_request);
+
+  ScenicSurface(const ScenicSurface&) = delete;
+  ScenicSurface& operator=(const ScenicSurface&) = delete;
+
   ~ScenicSurface() override;
 
   // Sets the texture of the surface to a new image pipe.
@@ -123,8 +127,6 @@ class ScenicSurface : public ui::PlatformWindowSurface {
       overlays_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ScenicSurface);
 };
 
 }  // namespace ui

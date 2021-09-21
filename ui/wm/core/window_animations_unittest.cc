@@ -247,6 +247,12 @@ TEST_F(WindowAnimationsTest, HideAnimationDetachLayersWithTransientChildren) {
 class NotifyHideCompletedAnimationHost : public AnimationHost {
  public:
   NotifyHideCompletedAnimationHost() : hide_completed_(false) {}
+
+  NotifyHideCompletedAnimationHost(const NotifyHideCompletedAnimationHost&) =
+      delete;
+  NotifyHideCompletedAnimationHost& operator=(
+      const NotifyHideCompletedAnimationHost&) = delete;
+
   ~NotifyHideCompletedAnimationHost() override {}
 
   // Overridden from AnimationHost:
@@ -259,8 +265,6 @@ class NotifyHideCompletedAnimationHost : public AnimationHost {
 
  private:
   bool hide_completed_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotifyHideCompletedAnimationHost);
 };
 
 TEST_F(WindowAnimationsTest, NotifyHideCompleted) {

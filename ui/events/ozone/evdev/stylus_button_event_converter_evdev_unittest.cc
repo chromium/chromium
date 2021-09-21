@@ -47,6 +47,12 @@ class MockStylusButtonEventConverterEvdev
                                       base::FilePath path,
                                       const EventDeviceInfo& devinfo,
                                       DeviceEventDispatcherEvdev* dispatcher);
+
+  MockStylusButtonEventConverterEvdev(
+      const MockStylusButtonEventConverterEvdev&) = delete;
+  MockStylusButtonEventConverterEvdev& operator=(
+      const MockStylusButtonEventConverterEvdev&) = delete;
+
   ~MockStylusButtonEventConverterEvdev() override {}
 
   void ConfigureReadMock(struct input_event* queue,
@@ -64,8 +70,6 @@ class MockStylusButtonEventConverterEvdev
   int write_pipe_;
 
   std::vector<std::unique_ptr<Event>> dispatched_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockStylusButtonEventConverterEvdev);
 };
 
 MockStylusButtonEventConverterEvdev::MockStylusButtonEventConverterEvdev(

@@ -25,6 +25,9 @@ class IMEBridgeImpl : public IMEBridge {
                                ui::TextInputClient::FOCUS_REASON_NONE,
                                false /* should_do_learning */) {}
 
+  IMEBridgeImpl(const IMEBridgeImpl&) = delete;
+  IMEBridgeImpl& operator=(const IMEBridgeImpl&) = delete;
+
   ~IMEBridgeImpl() override = default;
 
   // IMEBridge override.
@@ -112,8 +115,6 @@ class IMEBridgeImpl : public IMEBridge {
       nullptr;
   chromeos::IMEAssistiveWindowHandlerInterface* assistive_window_handler_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(IMEBridgeImpl);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

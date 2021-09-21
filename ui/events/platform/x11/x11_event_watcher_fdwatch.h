@@ -17,6 +17,10 @@ class X11EventWatcherFdWatch : public X11EventWatcher,
                                public base::MessagePumpForUI::FdWatcher {
  public:
   explicit X11EventWatcherFdWatch(X11EventSource* source);
+
+  X11EventWatcherFdWatch(const X11EventWatcherFdWatch&) = delete;
+  X11EventWatcherFdWatch& operator=(const X11EventWatcherFdWatch&) = delete;
+
   ~X11EventWatcherFdWatch() override;
 
   // X11EventWatcher:
@@ -32,8 +36,6 @@ class X11EventWatcherFdWatch : public X11EventWatcher,
 
   base::MessagePumpForUI::FdWatchController watcher_controller_;
   bool started_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(X11EventWatcherFdWatch);
 };
 
 }  // namespace ui

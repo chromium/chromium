@@ -25,6 +25,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_TYPES) CharacterComposer {
   using ComposeBuffer = std::vector<DomKey>;
 
   CharacterComposer();
+
+  CharacterComposer(const CharacterComposer&) = delete;
+  CharacterComposer& operator=(const CharacterComposer&) = delete;
+
   ~CharacterComposer();
 
   void Reset();
@@ -80,8 +84,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_TYPES) CharacterComposer {
 
   // Composition mode which this instance is in.
   CompositionMode composition_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(CharacterComposer);
 };
 
 // Abstract class for determining whether a ComposeBuffer forms a valid
@@ -98,13 +100,14 @@ class ComposeChecker {
     FULL_MATCH
   };
   ComposeChecker() {}
+
+  ComposeChecker(const ComposeChecker&) = delete;
+  ComposeChecker& operator=(const ComposeChecker&) = delete;
+
   virtual ~ComposeChecker() {}
   virtual CheckSequenceResult CheckSequence(
       const ui::CharacterComposer::ComposeBuffer& sequence,
       uint32_t* composed_character) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ComposeChecker);
 };
 
 // Implementation of |ComposeChecker| using a compact generated tree.

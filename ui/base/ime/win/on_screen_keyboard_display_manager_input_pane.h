@@ -33,6 +33,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN)
     : public VirtualKeyboardController {
  public:
   explicit OnScreenKeyboardDisplayManagerInputPane(HWND hwnd);
+
+  OnScreenKeyboardDisplayManagerInputPane(
+      const OnScreenKeyboardDisplayManagerInputPane&) = delete;
+  OnScreenKeyboardDisplayManagerInputPane& operator=(
+      const OnScreenKeyboardDisplayManagerInputPane&) = delete;
+
   ~OnScreenKeyboardDisplayManagerInputPane() override;
 
   // VirtualKeyboardController:
@@ -74,8 +80,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN)
   std::unique_ptr<VirtualKeyboardDebounceTimer> debouncer_;
   base::WeakPtrFactory<OnScreenKeyboardDisplayManagerInputPane> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardDisplayManagerInputPane);
 };
 
 }  // namespace ui

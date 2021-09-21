@@ -24,6 +24,11 @@ namespace test {
 class ScopedPreferredScrollerStyle {
  public:
   explicit ScopedPreferredScrollerStyle(bool overlay);
+
+  ScopedPreferredScrollerStyle(const ScopedPreferredScrollerStyle&) = delete;
+  ScopedPreferredScrollerStyle& operator=(const ScopedPreferredScrollerStyle&) =
+      delete;
+
   ~ScopedPreferredScrollerStyle();
 
  private:
@@ -31,8 +36,6 @@ class ScopedPreferredScrollerStyle {
 
   // True if the scrollbar style should overlay.
   bool overlay_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPreferredScrollerStyle);
 };
 
 }  // namespace test

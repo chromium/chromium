@@ -70,6 +70,9 @@ using TextAttributeMap = std::map<int, TextAttributeList>;
 // otherwise.
 class AX_EXPORT AXPlatformNodeDelegate {
  public:
+  AXPlatformNodeDelegate(const AXPlatformNodeDelegate&) = delete;
+  AXPlatformNodeDelegate& operator=(const AXPlatformNodeDelegate&) = delete;
+
   virtual ~AXPlatformNodeDelegate() = default;
 
   // Get the accessibility data that should be exposed for this node. This data
@@ -584,9 +587,6 @@ class AX_EXPORT AXPlatformNodeDelegate {
   AXPlatformNodeDelegate() = default;
 
   virtual std::string SubtreeToStringHelper(size_t level) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXPlatformNodeDelegate);
 };
 
 }  // namespace ui

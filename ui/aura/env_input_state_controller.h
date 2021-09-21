@@ -30,6 +30,10 @@ class Window;
 class AURA_EXPORT EnvInputStateController {
  public:
   explicit EnvInputStateController(Env* env);
+
+  EnvInputStateController(const EnvInputStateController&) = delete;
+  EnvInputStateController& operator=(const EnvInputStateController&) = delete;
+
   ~EnvInputStateController();
 
   void UpdateStateForMouseEvent(const Window* window,
@@ -44,8 +48,6 @@ class AURA_EXPORT EnvInputStateController {
   Env* env_;
   // Touch ids that are currently down.
   uint32_t touch_ids_down_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(EnvInputStateController);
 };
 
 }  // namespace aura

@@ -31,6 +31,10 @@ class HardwareDisplayControllerInfo;
 class DrmDisplay {
  public:
   explicit DrmDisplay(const scoped_refptr<DrmDevice>& drm);
+
+  DrmDisplay(const DrmDisplay&) = delete;
+  DrmDisplay& operator=(const DrmDisplay&) = delete;
+
   ~DrmDisplay();
 
   int64_t display_id() const { return display_id_; }
@@ -71,8 +75,6 @@ class DrmDisplay {
   gfx::Point origin_;
   bool is_hdr_capable_ = false;
   gfx::ColorSpace current_color_space_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDisplay);
 };
 
 }  // namespace ui

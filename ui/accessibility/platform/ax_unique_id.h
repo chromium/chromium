@@ -25,6 +25,10 @@ namespace ui {
 class AX_EXPORT AXUniqueId {
  public:
   AXUniqueId();
+
+  AXUniqueId(const AXUniqueId&) = delete;
+  AXUniqueId& operator=(const AXUniqueId&) = delete;
+
   virtual ~AXUniqueId();
 
   int32_t Get() const { return id_; }
@@ -43,8 +47,6 @@ class AX_EXPORT AXUniqueId {
   bool IsAssigned(int32_t) const;
 
   int32_t id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXUniqueId);
 };
 
 }  // namespace ui

@@ -28,6 +28,10 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   InputControllerEvdev(KeyboardEvdev* keyboard,
                        MouseButtonMapEvdev* mouse_button_map,
                        MouseButtonMapEvdev* pointing_stick_button_map);
+
+  InputControllerEvdev(const InputControllerEvdev&) = delete;
+  InputControllerEvdev& operator=(const InputControllerEvdev&) = delete;
+
   ~InputControllerEvdev() override;
 
   // Initialize device factory. This would be in the constructor if it was
@@ -148,8 +152,6 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   bool caps_lock_led_state_ = false;
 
   base::WeakPtrFactory<InputControllerEvdev> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputControllerEvdev);
 };
 
 }  // namespace ui

@@ -18,6 +18,10 @@ namespace test {
 class TestWindowTargeter : public WindowTargeter {
  public:
   TestWindowTargeter();
+
+  TestWindowTargeter(const TestWindowTargeter&) = delete;
+  TestWindowTargeter& operator=(const TestWindowTargeter&) = delete;
+
   ~TestWindowTargeter() override;
 
  protected:
@@ -26,9 +30,6 @@ class TestWindowTargeter : public WindowTargeter {
                                       ui::Event* event) override;
   ui::EventTarget* FindNextBestTarget(ui::EventTarget* previous_target,
                                       ui::Event* event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWindowTargeter);
 };
 
 }  // namespace test

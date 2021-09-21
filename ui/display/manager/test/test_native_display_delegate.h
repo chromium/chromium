@@ -27,6 +27,11 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
  public:
   // Ownership of |log| remains with the caller.
   explicit TestNativeDisplayDelegate(ActionLogger* log);
+
+  TestNativeDisplayDelegate(const TestNativeDisplayDelegate&) = delete;
+  TestNativeDisplayDelegate& operator=(const TestNativeDisplayDelegate&) =
+      delete;
+
   ~TestNativeDisplayDelegate() override;
 
   const std::vector<DisplaySnapshot*>& outputs() const { return outputs_; }
@@ -118,8 +123,6 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
   ActionLogger* log_;  // Not owned.
 
   base::ObserverList<NativeDisplayObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeDisplayDelegate);
 };
 
 }  // namespace test

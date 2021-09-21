@@ -26,6 +26,10 @@ class ScenicGpuService : public mojom::ScenicGpuService {
  public:
   ScenicGpuService(
       mojo::PendingReceiver<mojom::ScenicGpuHost> gpu_host_receiver);
+
+  ScenicGpuService(const ScenicGpuService&) = delete;
+  ScenicGpuService& operator=(const ScenicGpuService&) = delete;
+
   ~ScenicGpuService() override;
 
   base::RepeatingCallback<void(mojo::PendingReceiver<mojom::ScenicGpuService>)>
@@ -42,8 +46,6 @@ class ScenicGpuService : public mojom::ScenicGpuService {
   mojo::ReceiverSet<mojom::ScenicGpuService> receiver_set_;
 
   base::WeakPtrFactory<ScenicGpuService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScenicGpuService);
 };
 
 }  // namespace ui

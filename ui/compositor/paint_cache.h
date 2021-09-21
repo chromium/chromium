@@ -23,6 +23,10 @@ class PaintRecorder;
 class COMPOSITOR_EXPORT PaintCache {
  public:
   PaintCache();
+
+  PaintCache(const PaintCache&) = delete;
+  PaintCache& operator=(const PaintCache&) = delete;
+
   ~PaintCache();
 
   // Returns true if the PaintCache was able to insert a previously-saved
@@ -47,8 +51,6 @@ class COMPOSITOR_EXPORT PaintCache {
   // then we can reject it instead of returning the incorrect cache entry.
   // See https://crbug.com/834114 for details.
   float device_scale_factor_ = 0.f;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintCache);
 };
 
 }  // namespace ui

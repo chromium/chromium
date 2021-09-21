@@ -25,6 +25,10 @@ class ScopedSimpleKeyboardHook : public ScopedKeyboardHook {
  public:
   explicit ScopedSimpleKeyboardHook(
       absl::optional<base::flat_set<ui::DomCode>> dom_codes);
+
+  ScopedSimpleKeyboardHook(const ScopedSimpleKeyboardHook&) = delete;
+  ScopedSimpleKeyboardHook& operator=(const ScopedSimpleKeyboardHook&) = delete;
+
   ~ScopedSimpleKeyboardHook() override;
 
   // ScopedKeyboardHook override.
@@ -32,8 +36,6 @@ class ScopedSimpleKeyboardHook : public ScopedKeyboardHook {
 
  private:
   absl::optional<base::flat_set<ui::DomCode>> dom_codes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSimpleKeyboardHook);
 };
 
 }  // namespace aura

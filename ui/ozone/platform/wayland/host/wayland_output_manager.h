@@ -25,6 +25,10 @@ class WaylandOutput;
 class WaylandOutputManager : public WaylandOutput::Delegate {
  public:
   explicit WaylandOutputManager(WaylandConnection* connection);
+
+  WaylandOutputManager(const WaylandOutputManager&) = delete;
+  WaylandOutputManager& operator=(const WaylandOutputManager&) = delete;
+
   ~WaylandOutputManager() override;
 
   // Says if at least one output has already been announced by a Wayland
@@ -62,8 +66,6 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
 
   // Non-owned wayland screen instance.
   base::WeakPtr<WaylandScreen> wayland_screen_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandOutputManager);
 };
 
 }  // namespace ui

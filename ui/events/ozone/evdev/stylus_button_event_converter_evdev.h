@@ -25,6 +25,11 @@ class COMPONENT_EXPORT(EVDEV) StylusButtonEventConverterEvdev
                                   const EventDeviceInfo& devinfo,
                                   DeviceEventDispatcherEvdev* dispatcher);
 
+  StylusButtonEventConverterEvdev(const StylusButtonEventConverterEvdev&) =
+      delete;
+  StylusButtonEventConverterEvdev& operator=(
+      const StylusButtonEventConverterEvdev&) = delete;
+
   ~StylusButtonEventConverterEvdev() override;
 
   // EventConverterEvdev
@@ -40,8 +45,6 @@ class COMPONENT_EXPORT(EVDEV) StylusButtonEventConverterEvdev
 
   // Callbacks for dispatching events.
   DeviceEventDispatcherEvdev* const dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(StylusButtonEventConverterEvdev);
 };
 
 }  // namespace ui

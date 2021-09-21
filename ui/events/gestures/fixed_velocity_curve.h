@@ -18,6 +18,10 @@ class EVENTS_BASE_EXPORT FixedVelocityCurve : public GestureCurve {
  public:
   FixedVelocityCurve(const gfx::Vector2dF& velocity,
                      base::TimeTicks start_timestamp);
+
+  FixedVelocityCurve(const FixedVelocityCurve&) = delete;
+  FixedVelocityCurve& operator=(const FixedVelocityCurve&) = delete;
+
   ~FixedVelocityCurve() override;
 
   // GestureCurve implementation.
@@ -28,8 +32,6 @@ class EVENTS_BASE_EXPORT FixedVelocityCurve : public GestureCurve {
  private:
   const gfx::Vector2dF velocity_;
   const base::TimeTicks start_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(FixedVelocityCurve);
 };
 
 }  // namespace ui

@@ -20,6 +20,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
  public:
   InputMethodWinTSF(internal::InputMethodDelegate* delegate,
                     HWND toplevel_window_handle);
+
+  InputMethodWinTSF(const InputMethodWinTSF&) = delete;
+  InputMethodWinTSF& operator=(const InputMethodWinTSF&) = delete;
+
   ~InputMethodWinTSF() override;
 
   // Overridden from InputMethod:
@@ -49,8 +53,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
   // TSF event router and observer.
   std::unique_ptr<TSFEventObserver> tsf_event_observer_;
   std::unique_ptr<TSFEventRouter> tsf_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodWinTSF);
 };
 
 }  // namespace ui

@@ -98,6 +98,9 @@ class VelocityTracker {
   // If strategy is NULL, uses the default strategy for the platform.
   explicit VelocityTracker(Strategy strategy);
 
+  VelocityTracker(const VelocityTracker&) = delete;
+  VelocityTracker& operator=(const VelocityTracker&) = delete;
+
   ~VelocityTracker();
 
   // Resets the velocity tracker state.
@@ -146,8 +149,6 @@ class VelocityTracker {
   BitSet32 current_pointer_id_bits_;
   int32_t active_pointer_id_;
   std::unique_ptr<VelocityTrackerStrategy> strategy_;
-
-  DISALLOW_COPY_AND_ASSIGN(VelocityTracker);
 };
 
 }  // namespace ui

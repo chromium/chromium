@@ -35,6 +35,10 @@ class GL_EXPORT GLSurfacePresentationHelper {
     ScopedSwapBuffers(GLSurfacePresentationHelper* helper,
                       GLSurface::PresentationCallback callback,
                       int frame_id);
+
+    ScopedSwapBuffers(const ScopedSwapBuffers&) = delete;
+    ScopedSwapBuffers& operator=(const ScopedSwapBuffers&) = delete;
+
     ~ScopedSwapBuffers();
 
     void set_result(gfx::SwapResult result) { result_ = result; }
@@ -43,8 +47,6 @@ class GL_EXPORT GLSurfacePresentationHelper {
    private:
     GLSurfacePresentationHelper* const helper_;
     gfx::SwapResult result_ = gfx::SwapResult::SWAP_ACK;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedSwapBuffers);
   };
 
   explicit GLSurfacePresentationHelper(gfx::VSyncProvider* vsync_provider);

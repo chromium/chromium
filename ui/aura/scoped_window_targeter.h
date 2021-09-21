@@ -23,6 +23,9 @@ class AURA_EXPORT ScopedWindowTargeter : public WindowObserver {
   ScopedWindowTargeter(Window* window,
                        std::unique_ptr<WindowTargeter> new_targeter);
 
+  ScopedWindowTargeter(const ScopedWindowTargeter&) = delete;
+  ScopedWindowTargeter& operator=(const ScopedWindowTargeter&) = delete;
+
   ~ScopedWindowTargeter() override;
 
   WindowTargeter* old_targeter() { return old_targeter_.get(); }
@@ -33,8 +36,6 @@ class AURA_EXPORT ScopedWindowTargeter : public WindowObserver {
 
   Window* window_;
   std::unique_ptr<WindowTargeter> old_targeter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowTargeter);
 };
 
 }  // namespace aura

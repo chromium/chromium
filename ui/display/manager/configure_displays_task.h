@@ -75,6 +75,10 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   ConfigureDisplaysTask(NativeDisplayDelegate* delegate,
                         const std::vector<DisplayConfigureRequest>& requests,
                         ResponseCallback callback);
+
+  ConfigureDisplaysTask(const ConfigureDisplaysTask&) = delete;
+  ConfigureDisplaysTask& operator=(const ConfigureDisplaysTask&) = delete;
+
   ~ConfigureDisplaysTask() override;
 
   // Starts the configuration task.
@@ -135,8 +139,6 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   Status task_status_;
 
   base::WeakPtrFactory<ConfigureDisplaysTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigureDisplaysTask);
 };
 
 }  // namespace display

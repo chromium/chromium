@@ -16,6 +16,11 @@ namespace {
 class StubClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
  public:
   StubClientNativePixmapFactory() {}
+
+  StubClientNativePixmapFactory(const StubClientNativePixmapFactory&) = delete;
+  StubClientNativePixmapFactory& operator=(
+      const StubClientNativePixmapFactory&) = delete;
+
   ~StubClientNativePixmapFactory() override {}
 
   // ClientNativePixmapFactory:
@@ -27,9 +32,6 @@ class StubClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
     NOTREACHED();
     return nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubClientNativePixmapFactory);
 };
 
 }  // namespace

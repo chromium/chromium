@@ -27,6 +27,10 @@ class WaylandShm : public wl::GlobalObjectRegistrar<WaylandShm> {
                           uint32_t version);
 
   WaylandShm(wl_shm* shm, WaylandConnection* connection);
+
+  WaylandShm(const WaylandShm&) = delete;
+  WaylandShm& operator=(const WaylandShm&) = delete;
+
   ~WaylandShm();
 
   wl_shm* get() const { return shm_.get(); }
@@ -42,8 +46,6 @@ class WaylandShm : public wl::GlobalObjectRegistrar<WaylandShm> {
 
   // Non-owned pointer to the main connection.
   WaylandConnection* const connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandShm);
 };
 
 }  // namespace ui

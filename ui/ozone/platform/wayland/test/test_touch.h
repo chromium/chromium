@@ -19,10 +19,11 @@ extern const struct wl_pointer_interface kTestTouchImpl;
 class TestTouch : public ServerObject {
  public:
   explicit TestTouch(wl_resource* resource);
-  ~TestTouch() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestTouch);
+  TestTouch(const TestTouch&) = delete;
+  TestTouch& operator=(const TestTouch&) = delete;
+
+  ~TestTouch() override;
 };
 
 }  // namespace wl

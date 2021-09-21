@@ -25,6 +25,10 @@ class EVENTS_EXPORT GestureRecognizer {
   using Gestures = std::vector<std::unique_ptr<GestureEvent>>;
 
   GestureRecognizer();
+
+  GestureRecognizer(const GestureRecognizer&) = delete;
+  GestureRecognizer& operator=(const GestureRecognizer&) = delete;
+
   virtual ~GestureRecognizer();
 
   // Invoked before event dispatch. If the event is invalid given the current
@@ -113,9 +117,6 @@ class EVENTS_EXPORT GestureRecognizer {
   // Synthesizes gesture end events (including ET_GESTURE_END and
   // ET_GESTURE_SCROLL_END) and send to `consumer`.
   virtual void SendSynthesizedEndEvents(GestureConsumer* consumer) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureRecognizer);
 };
 
 }  // namespace ui

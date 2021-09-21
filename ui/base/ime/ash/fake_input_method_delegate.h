@@ -25,6 +25,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeInputMethodDelegate
       base::RepeatingCallback<std::u16string(int)>;
 
   FakeInputMethodDelegate();
+
+  FakeInputMethodDelegate(const FakeInputMethodDelegate&) = delete;
+  FakeInputMethodDelegate& operator=(const FakeInputMethodDelegate&) = delete;
+
   ~FakeInputMethodDelegate() override;
 
   // InputMethodDelegate implementation:
@@ -57,7 +61,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeInputMethodDelegate
   std::string active_locale_;
   LanguageNameLocalizationCallback get_display_language_name_callback_;
   GetLocalizedStringCallback get_localized_string_callback_;
-  DISALLOW_COPY_AND_ASSIGN(FakeInputMethodDelegate);
 };
 
 }  // namespace input_method

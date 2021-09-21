@@ -41,6 +41,10 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
       DeviceManager* device_manager,
       OzonePlatform::PlatformRuntimeProperties* host_properties,
       InputControllerEvdev* input_controller);
+
+  DrmDisplayHostManager(const DrmDisplayHostManager&) = delete;
+  DrmDisplayHostManager& operator=(const DrmDisplayHostManager&) = delete;
+
   ~DrmDisplayHostManager() override;
 
   DrmDisplayHost* GetDisplay(int64_t display_id);
@@ -141,8 +145,6 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   std::unique_ptr<DrmDeviceHandle> primary_drm_device_handle_;
 
   base::WeakPtrFactory<DrmDisplayHostManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDisplayHostManager);
 };
 
 }  // namespace ui

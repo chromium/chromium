@@ -44,6 +44,9 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
                 float scroll_factor,
                 bool window_is_wide_color_gamut);
 
+  WindowAndroid(const WindowAndroid&) = delete;
+  WindowAndroid& operator=(const WindowAndroid&) = delete;
+
   ~WindowAndroid() override;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -148,8 +151,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   TestHooks* test_hooks_ = nullptr;
 
   int selection_handles_active_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowAndroid);
 };
 
 }  // namespace ui

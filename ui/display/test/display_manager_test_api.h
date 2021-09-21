@@ -30,6 +30,10 @@ namespace test {
 class DISPLAY_EXPORT DisplayManagerTestApi {
  public:
   explicit DisplayManagerTestApi(DisplayManager* display_manager);
+
+  DisplayManagerTestApi(const DisplayManagerTestApi&) = delete;
+  DisplayManagerTestApi& operator=(const DisplayManagerTestApi&) = delete;
+
   virtual ~DisplayManagerTestApi();
 
   void set_maximum_display(size_t maximum_display_num) {
@@ -71,17 +75,17 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
   static size_t maximum_support_display_;
 
   DisplayManager* display_manager_;  // not owned
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayManagerTestApi);
 };
 
 class DISPLAY_EXPORT ScopedSetInternalDisplayId {
  public:
   ScopedSetInternalDisplayId(DisplayManager* test_api, int64_t id);
-  ~ScopedSetInternalDisplayId();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetInternalDisplayId);
+  ScopedSetInternalDisplayId(const ScopedSetInternalDisplayId&) = delete;
+  ScopedSetInternalDisplayId& operator=(const ScopedSetInternalDisplayId&) =
+      delete;
+
+  ~ScopedSetInternalDisplayId();
 };
 
 // Sets the display mode that matches the |resolution| for |display_id|.

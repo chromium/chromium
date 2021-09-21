@@ -98,6 +98,10 @@ class COMPOSITOR_EXPORT CompositorLock {
                           base::WeakPtr<CompositorLockManager> manager,
                           std::unique_ptr<cc::ScopedDeferMainFrameUpdate>
                               scoped_defer_main_frame_update);
+
+  CompositorLock(const CompositorLock&) = delete;
+  CompositorLock& operator=(const CompositorLock&) = delete;
+
   ~CompositorLock();
 
  private:
@@ -110,8 +114,6 @@ class COMPOSITOR_EXPORT CompositorLock {
   std::unique_ptr<cc::ScopedDeferMainFrameUpdate>
       scoped_defer_main_frame_update_;
   base::WeakPtr<CompositorLockManager> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorLock);
 };
 
 }  // namespace ui

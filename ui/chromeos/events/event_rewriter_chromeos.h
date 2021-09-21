@@ -101,6 +101,10 @@ class EventRewriterChromeOS : public EventRewriter {
   class Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() {}
 
     // Returns true only if the the key event was rewritten to ALTGR. For most
@@ -143,9 +147,6 @@ class EventRewriterChromeOS : public EventRewriter {
     // is only sent once per user session, and this function returns true if
     // the notification was shown.
     virtual bool NotifyDeprecatedSixPackKeyRewrite(KeyboardCode key_code) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Does not take ownership of the |sticky_keys_controller|, which may also be
@@ -161,6 +162,10 @@ class EventRewriterChromeOS : public EventRewriter {
                         EventRewriter* sticky_keys_controller,
                         bool privacy_screen_supported,
                         ::chromeos::input_method::ImeKeyboard* ime_keyboard);
+
+  EventRewriterChromeOS(const EventRewriterChromeOS&) = delete;
+  EventRewriterChromeOS& operator=(const EventRewriterChromeOS&) = delete;
+
   ~EventRewriterChromeOS() override;
 
   // Calls KeyboardDeviceAdded.
@@ -378,8 +383,6 @@ class EventRewriterChromeOS : public EventRewriter {
   // user needs to be able to use an up arrow key to navigate and focus
   // different component, but remapping can turn alt + up arrow into PageUp.
   bool is_alt_down_remapping_enabled_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(EventRewriterChromeOS);
 };
 
 }  // namespace ui

@@ -17,14 +17,16 @@ const gfx::AcceleratedWidget kTestWindow = 1;
 class CursorControllerTest : public testing::Test {
  public:
   CursorControllerTest() {}
+
+  CursorControllerTest(const CursorControllerTest&) = delete;
+  CursorControllerTest& operator=(const CursorControllerTest&) = delete;
+
   ~CursorControllerTest() override {}
 
   void TearDown() override {
     ui::CursorController::GetInstance()->ClearCursorConfigForWindow(
         kTestWindow);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CursorControllerTest);
 };
 
 TEST_F(CursorControllerTest, UnconfiguredIdentity) {

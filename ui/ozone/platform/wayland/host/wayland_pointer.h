@@ -31,6 +31,10 @@ class WaylandPointer {
   WaylandPointer(wl_pointer* pointer,
                  WaylandConnection* connection,
                  Delegate* delegate);
+
+  WaylandPointer(const WaylandPointer&) = delete;
+  WaylandPointer& operator=(const WaylandPointer&) = delete;
+
   virtual ~WaylandPointer();
 
   uint32_t id() const { return obj_.id(); }
@@ -86,8 +90,6 @@ class WaylandPointer {
   // set explicitly for the axis events.  Hence, we set the default source when
   // possible so that the sequence of pointer events has it set.
   bool axis_source_received_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandPointer);
 };
 
 class WaylandPointer::Delegate {

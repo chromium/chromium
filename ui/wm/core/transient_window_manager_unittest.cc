@@ -27,6 +27,10 @@ class TestTransientWindowObserver : public TransientWindowObserver {
   TestTransientWindowObserver() : add_count_(0), remove_count_(0) {
   }
 
+  TestTransientWindowObserver(const TestTransientWindowObserver&) = delete;
+  TestTransientWindowObserver& operator=(const TestTransientWindowObserver&) =
+      delete;
+
   ~TestTransientWindowObserver() override {}
 
   int add_count() const { return add_count_; }
@@ -43,8 +47,6 @@ class TestTransientWindowObserver : public TransientWindowObserver {
  private:
   int add_count_;
   int remove_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTransientWindowObserver);
 };
 
 class WindowVisibilityObserver : public aura::WindowObserver {
@@ -55,6 +57,10 @@ class WindowVisibilityObserver : public aura::WindowObserver {
         owned_window_(std::move(owned_window)) {
     observed_window_->AddObserver(this);
   }
+
+  WindowVisibilityObserver(const WindowVisibilityObserver&) = delete;
+  WindowVisibilityObserver& operator=(const WindowVisibilityObserver&) = delete;
+
   ~WindowVisibilityObserver() override {
     observed_window_->RemoveObserver(this);
   }
@@ -65,13 +71,16 @@ class WindowVisibilityObserver : public aura::WindowObserver {
  private:
   Window* observed_window_;
   std::unique_ptr<Window> owned_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowVisibilityObserver);
 };
 
 class TransientWindowManagerTest : public aura::test::AuraTestBase {
  public:
   TransientWindowManagerTest() {}
+
+  TransientWindowManagerTest(const TransientWindowManagerTest&) = delete;
+  TransientWindowManagerTest& operator=(const TransientWindowManagerTest&) =
+      delete;
+
   ~TransientWindowManagerTest() override {}
 
  protected:
@@ -85,9 +94,6 @@ class TransientWindowManagerTest : public aura::test::AuraTestBase {
     aura::client::ParentWindowWithContext(window, root_window(), gfx::Rect());
     return window;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TransientWindowManagerTest);
 };
 
 // Various assertions for transient children.

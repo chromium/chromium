@@ -213,6 +213,12 @@ class AbortAnimationsOnStartedLayerAnimationObserver
 class LayerAnimatorDestructionObserver {
  public:
   LayerAnimatorDestructionObserver() : animator_deleted_(false) {}
+
+  LayerAnimatorDestructionObserver(const LayerAnimatorDestructionObserver&) =
+      delete;
+  LayerAnimatorDestructionObserver& operator=(
+      const LayerAnimatorDestructionObserver&) = delete;
+
   virtual ~LayerAnimatorDestructionObserver() {}
 
   void NotifyAnimatorDeleted() {
@@ -225,8 +231,6 @@ class LayerAnimatorDestructionObserver {
 
  private:
   bool animator_deleted_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerAnimatorDestructionObserver);
 };
 
 class TestLayerAnimator : public LayerAnimator {
@@ -270,12 +274,14 @@ class TestLayerAnimationSequence : public LayerAnimationSequence {
     (*num_live_instances_)++;
   }
 
+  TestLayerAnimationSequence(const TestLayerAnimationSequence&) = delete;
+  TestLayerAnimationSequence& operator=(const TestLayerAnimationSequence&) =
+      delete;
+
   ~TestLayerAnimationSequence() override { (*num_live_instances_)--; }
 
  private:
   int* num_live_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayerAnimationSequence);
 };
 
 }  // namespace
@@ -2939,6 +2945,9 @@ class DeletingObserver : public LayerAnimationObserver {
     animator()->AddObserver(this);
   }
 
+  DeletingObserver(const DeletingObserver&) = delete;
+  DeletingObserver& operator=(const DeletingObserver&) = delete;
+
   ~DeletingObserver() override {
     animator()->RemoveObserver(this);
     *was_deleted_ = true;
@@ -2989,8 +2998,6 @@ class DeletingObserver : public LayerAnimationObserver {
   bool delete_on_animation_aborted_;
   bool delete_on_animation_scheduled_;
   bool* was_deleted_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeletingObserver);
 };
 
 TEST(LayerAnimatorTest, ObserverDeletesAnimatorAfterFinishingAnimation) {
@@ -3377,6 +3384,10 @@ class LayerOwnerAnimationObserver : public LayerAnimationObserver {
     animator_layer_->SetAnimator(animator);
   }
 
+  LayerOwnerAnimationObserver(const LayerOwnerAnimationObserver&) = delete;
+  LayerOwnerAnimationObserver& operator=(const LayerOwnerAnimationObserver&) =
+      delete;
+
   ~LayerOwnerAnimationObserver() override {}
 
   void OnLayerAnimationEnded(LayerAnimationSequence* sequence) override {
@@ -3397,8 +3408,6 @@ class LayerOwnerAnimationObserver : public LayerAnimationObserver {
 
  private:
   std::unique_ptr<Layer> animator_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerOwnerAnimationObserver);
 };
 
 TEST(LayerAnimatorTest, ObserverDeletesLayerInStopAnimating) {

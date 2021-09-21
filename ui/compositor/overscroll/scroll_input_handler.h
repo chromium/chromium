@@ -20,6 +20,10 @@ class COMPOSITOR_EXPORT ScrollInputHandler : public cc::InputHandlerClient {
  public:
   explicit ScrollInputHandler(
       const base::WeakPtr<cc::InputHandler>& input_handler);
+
+  ScrollInputHandler(const ScrollInputHandler&) = delete;
+  ScrollInputHandler& operator=(const ScrollInputHandler&) = delete;
+
   ~ScrollInputHandler() override;
 
   // Ask the InputHandler to scroll |element| according to |scroll|.
@@ -43,8 +47,6 @@ class COMPOSITOR_EXPORT ScrollInputHandler : public cc::InputHandlerClient {
  private:
   // Cleared in WillShutdown().
   base::WeakPtr<cc::InputHandler> input_handler_weak_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollInputHandler);
 };
 
 }  // namespace ui

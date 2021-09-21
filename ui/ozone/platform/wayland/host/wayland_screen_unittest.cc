@@ -38,6 +38,10 @@ constexpr uint32_t kOutputHeight = 768;
 class TestDisplayObserver : public display::DisplayObserver {
  public:
   TestDisplayObserver() {}
+
+  TestDisplayObserver(const TestDisplayObserver&) = delete;
+  TestDisplayObserver& operator=(const TestDisplayObserver&) = delete;
+
   ~TestDisplayObserver() override {}
 
   display::Display GetDisplay() { return std::move(display_); }
@@ -67,8 +71,6 @@ class TestDisplayObserver : public display::DisplayObserver {
   uint32_t changed_metrics_ = 0;
   display::Display display_;
   display::Display removed_display_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayObserver);
 };
 
 }  // namespace
@@ -76,6 +78,10 @@ class TestDisplayObserver : public display::DisplayObserver {
 class WaylandScreenTest : public WaylandTest {
  public:
   WaylandScreenTest() = default;
+
+  WaylandScreenTest(const WaylandScreenTest&) = delete;
+  WaylandScreenTest& operator=(const WaylandScreenTest&) = delete;
+
   ~WaylandScreenTest() override = default;
 
   void SetUp() override {
@@ -121,9 +127,6 @@ class WaylandScreenTest : public WaylandTest {
   WaylandOutputManager* output_manager_ = nullptr;
 
   std::unique_ptr<WaylandScreen> platform_screen_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandScreenTest);
 };
 
 // Tests whether a primary output has been initialized before PlatformScreen is

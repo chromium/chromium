@@ -49,6 +49,10 @@ class TestPaintingWindowDelegate : public aura::test::TestWindowDelegate {
       : window_size_(window_size) {
   }
 
+  TestPaintingWindowDelegate(const TestPaintingWindowDelegate&) = delete;
+  TestPaintingWindowDelegate& operator=(const TestPaintingWindowDelegate&) =
+      delete;
+
   ~TestPaintingWindowDelegate() override {}
 
   void OnPaint(const ui::PaintContext& context) override {
@@ -63,8 +67,6 @@ class TestPaintingWindowDelegate : public aura::test::TestWindowDelegate {
 
  private:
   gfx::Size window_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPaintingWindowDelegate);
 };
 
 size_t GetFailedPixelsCountWithScaleFactor(const gfx::Image& image,
@@ -94,6 +96,10 @@ size_t GetFailedPixelsCount(const gfx::Image& image) {
 class SnapshotAuraTest : public testing::TestWithParam<bool> {
  public:
   SnapshotAuraTest() {}
+
+  SnapshotAuraTest(const SnapshotAuraTest&) = delete;
+  SnapshotAuraTest& operator=(const SnapshotAuraTest&) = delete;
+
   ~SnapshotAuraTest() override {}
 
   void SetUp() override {
@@ -187,8 +193,6 @@ class SnapshotAuraTest : public testing::TestWithParam<bool> {
   std::unique_ptr<aura::Window> test_window_;
   std::unique_ptr<TestPaintingWindowDelegate> delegate_;
   std::vector<unsigned char> png_representation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapshotAuraTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, SnapshotAuraTest, ::testing::Bool());

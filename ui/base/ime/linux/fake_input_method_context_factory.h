@@ -17,15 +17,17 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContextFactory
     : public LinuxInputMethodContextFactory {
  public:
   FakeInputMethodContextFactory();
+
+  FakeInputMethodContextFactory(const FakeInputMethodContextFactory&) = delete;
+  FakeInputMethodContextFactory& operator=(
+      const FakeInputMethodContextFactory&) = delete;
+
   ~FakeInputMethodContextFactory() override;
 
   // LinuxInputMethodContextFactory:
   std::unique_ptr<LinuxInputMethodContext> CreateInputMethodContext(
       LinuxInputMethodContextDelegate* delegate,
       bool is_simple) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeInputMethodContextFactory);
 };
 
 }  // namespace ui

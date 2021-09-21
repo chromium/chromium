@@ -31,6 +31,11 @@ class TestCompositorHostOzone::StubPlatformWindowDelegate
     : public PlatformWindowDelegate {
  public:
   StubPlatformWindowDelegate() {}
+
+  StubPlatformWindowDelegate(const StubPlatformWindowDelegate&) = delete;
+  StubPlatformWindowDelegate& operator=(const StubPlatformWindowDelegate&) =
+      delete;
+
   ~StubPlatformWindowDelegate() override {}
 
   gfx::AcceleratedWidget widget() const { return widget_; }
@@ -56,8 +61,6 @@ class TestCompositorHostOzone::StubPlatformWindowDelegate
 
  private:
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
-
-  DISALLOW_COPY_AND_ASSIGN(StubPlatformWindowDelegate);
 };
 
 TestCompositorHostOzone::TestCompositorHostOzone(

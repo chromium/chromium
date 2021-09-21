@@ -34,6 +34,10 @@ enum BitmapFormat {
 class GFX_EXPORT JavaBitmap {
  public:
   explicit JavaBitmap(const base::android::JavaRef<jobject>& bitmap);
+
+  JavaBitmap(const JavaBitmap&) = delete;
+  JavaBitmap& operator=(const JavaBitmap&) = delete;
+
   ~JavaBitmap();
 
   inline void* pixels() { return pixels_; }
@@ -50,8 +54,6 @@ class GFX_EXPORT JavaBitmap {
   BitmapFormat format_;
   uint32_t bytes_per_row_;
   int byte_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaBitmap);
 };
 
 enum class OomBehavior {

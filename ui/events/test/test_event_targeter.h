@@ -22,6 +22,10 @@ class TestEventTarget;
 class TestEventTargeter : public EventTargeter {
  public:
   TestEventTargeter(TestEventTarget* initial_target, bool should_bubble);
+
+  TestEventTargeter(const TestEventTargeter&) = delete;
+  TestEventTargeter& operator=(const TestEventTargeter&) = delete;
+
   ~TestEventTargeter() override;
 
   void set_target(TestEventTarget* target);
@@ -34,8 +38,6 @@ class TestEventTargeter : public EventTargeter {
 
   TestEventTarget* target_;
   bool should_bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventTargeter);
 };
 
 }  // namespace test

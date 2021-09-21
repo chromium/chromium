@@ -24,6 +24,10 @@ class EVENTS_EXPORT ScopedEventDispatcher {
  public:
   ScopedEventDispatcher(PlatformEventDispatcher** scoped_dispatcher,
                         PlatformEventDispatcher* new_dispatcher);
+
+  ScopedEventDispatcher(const ScopedEventDispatcher&) = delete;
+  ScopedEventDispatcher& operator=(const ScopedEventDispatcher&) = delete;
+
   ~ScopedEventDispatcher();
 
   operator PlatformEventDispatcher*() const { return original_; }
@@ -31,8 +35,6 @@ class EVENTS_EXPORT ScopedEventDispatcher {
  private:
   PlatformEventDispatcher* original_;
   base::AutoReset<PlatformEventDispatcher*> restore_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedEventDispatcher);
 };
 
 }  // namespace ui

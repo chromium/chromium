@@ -21,6 +21,9 @@ class MockDisplayObserver : public DisplayObserver {
         display_changed_(0),
         latest_metrics_change_(DisplayObserver::DISPLAY_METRIC_NONE) {}
 
+  MockDisplayObserver(const MockDisplayObserver&) = delete;
+  MockDisplayObserver& operator=(const MockDisplayObserver&) = delete;
+
   ~MockDisplayObserver() override {}
 
   void OnDisplayAdded(const Display& display) override { display_added_++; }
@@ -46,8 +49,6 @@ class MockDisplayObserver : public DisplayObserver {
   int display_removed_;
   int display_changed_;
   uint32_t latest_metrics_change_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDisplayObserver);
 };
 
 TEST(DisplayChangeNotifierTest, AddObserver_Smoke) {

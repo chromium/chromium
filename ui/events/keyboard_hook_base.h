@@ -18,6 +18,10 @@ class KeyboardHookBase : public KeyboardHook {
  public:
   KeyboardHookBase(absl::optional<base::flat_set<DomCode>> dom_codes,
                    KeyEventCallback callback);
+
+  KeyboardHookBase(const KeyboardHookBase&) = delete;
+  KeyboardHookBase& operator=(const KeyboardHookBase&) = delete;
+
   ~KeyboardHookBase() override;
 
   // KeyboardHook implementation.
@@ -44,8 +48,6 @@ class KeyboardHookBase : public KeyboardHook {
 
   // The set of keys which should be intercepted by the keyboard hook.
   absl::optional<base::flat_set<DomCode>> dom_codes_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardHookBase);
 };
 
 }  // namespace ui

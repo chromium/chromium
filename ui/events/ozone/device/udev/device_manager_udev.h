@@ -20,6 +20,10 @@ class DeviceManagerUdev : public DeviceManager,
                           base::MessagePumpForUI::FdWatcher {
  public:
   DeviceManagerUdev();
+
+  DeviceManagerUdev(const DeviceManagerUdev&) = delete;
+  DeviceManagerUdev& operator=(const DeviceManagerUdev&) = delete;
+
   ~DeviceManagerUdev() override;
 
  private:
@@ -43,8 +47,6 @@ class DeviceManagerUdev : public DeviceManager,
   base::MessagePumpForUI::FdWatchController controller_;
 
   base::ObserverList<DeviceEventObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceManagerUdev);
 };
 
 }  // namespace ui

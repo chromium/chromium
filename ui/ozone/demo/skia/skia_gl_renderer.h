@@ -39,6 +39,10 @@ class SkiaGlRenderer : public RendererBase,
                  std::unique_ptr<PlatformWindowSurface> window_surface,
                  const scoped_refptr<gl::GLSurface>& gl_surface,
                  const gfx::Size& size);
+
+  SkiaGlRenderer(const SkiaGlRenderer&) = delete;
+  SkiaGlRenderer& operator=(const SkiaGlRenderer&) = delete;
+
   ~SkiaGlRenderer() override;
 
   // Renderer:
@@ -83,8 +87,6 @@ class SkiaGlRenderer : public RendererBase,
   base::queue<sk_sp<SkDeferredDisplayList>> ddls_;
 
   base::WeakPtrFactory<SkiaGlRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaGlRenderer);
 };
 
 }  // namespace ui

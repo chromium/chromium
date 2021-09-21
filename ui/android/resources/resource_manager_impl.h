@@ -32,6 +32,10 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
       const base::android::JavaRef<jobject>& jobj);
 
   explicit ResourceManagerImpl(gfx::NativeWindow native_window);
+
+  ResourceManagerImpl(const ResourceManagerImpl&) = delete;
+  ResourceManagerImpl& operator=(const ResourceManagerImpl&) = delete;
+
   ~ResourceManagerImpl() override;
 
   void Init(cc::UIResourceManager* ui_resource_manager);
@@ -92,8 +96,6 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
   std::unordered_set<int> used_tints_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceManagerImpl);
 };
 
 }  // namespace ui

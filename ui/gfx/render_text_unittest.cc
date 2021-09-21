@@ -295,6 +295,10 @@ class TestSkiaTextRenderer : public internal::SkiaTextRenderer {
  public:
   explicit TestSkiaTextRenderer(Canvas* canvas)
       : internal::SkiaTextRenderer(canvas) {}
+
+  TestSkiaTextRenderer(const TestSkiaTextRenderer&) = delete;
+  TestSkiaTextRenderer& operator=(const TestSkiaTextRenderer&) = delete;
+
   ~TestSkiaTextRenderer() override {}
 
   void GetTextLogAndReset(std::vector<TextLog>* text_log) {
@@ -324,8 +328,6 @@ class TestSkiaTextRenderer : public internal::SkiaTextRenderer {
   }
 
   std::vector<TextLog> text_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSkiaTextRenderer);
 };
 
 class TestRenderTextCanvas : public SkCanvas {

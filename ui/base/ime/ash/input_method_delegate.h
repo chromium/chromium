@@ -16,6 +16,10 @@ namespace input_method {
 class InputMethodDelegate {
  public:
   InputMethodDelegate() = default;
+
+  InputMethodDelegate(const InputMethodDelegate&) = delete;
+  InputMethodDelegate& operator=(const InputMethodDelegate&) = delete;
+
   virtual ~InputMethodDelegate() = default;
 
   // Returns original VPD value.
@@ -34,9 +38,6 @@ class InputMethodDelegate {
   //           "en-US" => "English (United States)"
   virtual std::u16string GetDisplayLanguageName(
       const std::string& language_code) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputMethodDelegate);
 };
 
 }  // namespace input_method

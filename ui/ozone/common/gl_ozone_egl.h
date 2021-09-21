@@ -18,6 +18,10 @@ namespace ui {
 class GLOzoneEGL : public GLOzone {
  public:
   GLOzoneEGL() {}
+
+  GLOzoneEGL(const GLOzoneEGL&) = delete;
+  GLOzoneEGL& operator=(const GLOzoneEGL&) = delete;
+
   ~GLOzoneEGL() override {}
 
   // GLOzone:
@@ -51,9 +55,6 @@ class GLOzoneEGL : public GLOzone {
   // Sets up GL bindings for the native surface.
   virtual bool LoadGLES2Bindings(
       const gl::GLImplementationParts& implementation) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGL);
 };
 
 }  // namespace ui

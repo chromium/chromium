@@ -25,6 +25,11 @@ class ImplicitAnimationObserver;
 class COMPOSITOR_EXPORT ScopedLayerAnimationSettings {
  public:
   explicit ScopedLayerAnimationSettings(scoped_refptr<LayerAnimator> animator);
+
+  ScopedLayerAnimationSettings(const ScopedLayerAnimationSettings&) = delete;
+  ScopedLayerAnimationSettings& operator=(const ScopedLayerAnimationSettings&) =
+      delete;
+
   virtual ~ScopedLayerAnimationSettings();
 
   void AddObserver(ImplicitAnimationObserver* observer);
@@ -65,8 +70,6 @@ class COMPOSITOR_EXPORT ScopedLayerAnimationSettings {
   gfx::Tween::Type old_tween_type_;
   LayerAnimator::PreemptionStrategy old_preemption_strategy_;
   std::set<ImplicitAnimationObserver*> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLayerAnimationSettings);
 };
 
 }  // namespace ui

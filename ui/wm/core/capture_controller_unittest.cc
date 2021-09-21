@@ -30,6 +30,10 @@ namespace {
 class TestCaptureDelegate : public aura::client::CaptureDelegate {
  public:
   TestCaptureDelegate() : has_capture_(false) {}
+
+  TestCaptureDelegate(const TestCaptureDelegate&) = delete;
+  TestCaptureDelegate& operator=(const TestCaptureDelegate&) = delete;
+
   ~TestCaptureDelegate() override {}
 
   bool HasNativeCapture() const {
@@ -45,8 +49,6 @@ class TestCaptureDelegate : public aura::client::CaptureDelegate {
 
  private:
   bool has_capture_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCaptureDelegate);
 };
 
 }  // namespace

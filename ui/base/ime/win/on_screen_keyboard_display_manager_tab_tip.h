@@ -26,6 +26,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN)
     : public VirtualKeyboardController {
  public:
   OnScreenKeyboardDisplayManagerTabTip(HWND hwnd);
+
+  OnScreenKeyboardDisplayManagerTabTip(
+      const OnScreenKeyboardDisplayManagerTabTip&) = delete;
+  OnScreenKeyboardDisplayManagerTabTip& operator=(
+      const OnScreenKeyboardDisplayManagerTabTip&) = delete;
+
   ~OnScreenKeyboardDisplayManagerTabTip() override;
 
   // VirtualKeyboardController overrides.
@@ -54,8 +60,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN)
 
   // The location of TabTip.exe.
   std::wstring osk_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardDisplayManagerTabTip);
 };
 
 }  // namespace ui

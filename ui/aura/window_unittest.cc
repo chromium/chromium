@@ -71,6 +71,10 @@ enum class DeletionOrder {
 class DeletionTracker {
  public:
   DeletionTracker() {}
+
+  DeletionTracker(const DeletionTracker&) = delete;
+  DeletionTracker& operator=(const DeletionTracker&) = delete;
+
   ~DeletionTracker() {}
 
   DeletionOrder order() const { return order_; }
@@ -93,8 +97,6 @@ class DeletionTracker {
   bool property_deleted_ = false;
   bool layout_manager_deleted_ = false;
   DeletionOrder order_ = DeletionOrder::UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(DeletionTracker);
 };
 
 // The helper class to wait for the animation completion and run callbacks.
@@ -166,12 +168,14 @@ class LayerTranslationAnimationNotifier : public ui::CompositorObserver {
 class DeletionTestProperty {
  public:
   explicit DeletionTestProperty(DeletionTracker* tracker) : tracker_(tracker) {}
+
+  DeletionTestProperty(const DeletionTestProperty&) = delete;
+  DeletionTestProperty& operator=(const DeletionTestProperty&) = delete;
+
   ~DeletionTestProperty() { tracker_->PropertyDeleted(); }
 
  private:
   DeletionTracker* tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeletionTestProperty);
 };
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(DeletionTestProperty,
@@ -1864,6 +1868,11 @@ class DeletionTestLayoutManager : public LayoutManager {
  public:
   explicit DeletionTestLayoutManager(DeletionTracker* tracker)
       : tracker_(tracker) {}
+
+  DeletionTestLayoutManager(const DeletionTestLayoutManager&) = delete;
+  DeletionTestLayoutManager& operator=(const DeletionTestLayoutManager&) =
+      delete;
+
   ~DeletionTestLayoutManager() override { tracker_->LayoutManagerDeleted(); }
 
  private:
@@ -1877,8 +1886,6 @@ class DeletionTestLayoutManager : public LayoutManager {
                       const gfx::Rect& requested_bounds) override {}
 
   DeletionTracker* tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeletionTestLayoutManager);
 };
 
 TEST_F(WindowTest, DeleteLayoutManagerBeforeOwnedProps) {
@@ -1986,6 +1993,10 @@ class WindowObserverTest : public WindowTest,
   };
 
   WindowObserverTest() = default;
+
+  WindowObserverTest(const WindowObserverTest&) = delete;
+  WindowObserverTest& operator=(const WindowObserverTest&) = delete;
+
   ~WindowObserverTest() override = default;
 
   const VisibilityInfo* GetVisibilityInfo() const {
@@ -2128,8 +2139,6 @@ class WindowObserverTest : public WindowTest,
   WindowTransformedInfo window_transformed_info_;
   CountAndWindow alpha_shape_info_;
   CountAndWindow layer_recreated_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowObserverTest);
 };
 
 // Various assertions for WindowObserver.
@@ -2562,6 +2571,10 @@ class TestVisibilityClient : public client::VisibilityClient {
       : ignore_visibility_changes_(false) {
     client::SetVisibilityClient(root_window, this);
   }
+
+  TestVisibilityClient(const TestVisibilityClient&) = delete;
+  TestVisibilityClient& operator=(const TestVisibilityClient&) = delete;
+
   ~TestVisibilityClient() override {}
 
   void set_ignore_visibility_changes(bool ignore_visibility_changes) {
@@ -2576,7 +2589,6 @@ class TestVisibilityClient : public client::VisibilityClient {
 
  private:
   bool ignore_visibility_changes_;
-  DISALLOW_COPY_AND_ASSIGN(TestVisibilityClient);
 };
 
 TEST_F(WindowTest, VisibilityClientIsVisible) {
@@ -2739,6 +2751,11 @@ TEST_F(WindowTest, MouseEventsOnNonLeafWindowDelete) {
 class RootWindowAttachmentObserver : public WindowObserver {
  public:
   RootWindowAttachmentObserver() : added_count_(0), removed_count_(0) {}
+
+  RootWindowAttachmentObserver(const RootWindowAttachmentObserver&) = delete;
+  RootWindowAttachmentObserver& operator=(const RootWindowAttachmentObserver&) =
+      delete;
+
   ~RootWindowAttachmentObserver() override {}
 
   int added_count() const { return added_count_; }
@@ -2759,8 +2776,6 @@ class RootWindowAttachmentObserver : public WindowObserver {
  private:
   int added_count_;
   int removed_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowAttachmentObserver);
 };
 
 TEST_F(WindowTest, RootWindowAttachment) {
@@ -2950,6 +2965,12 @@ class DeleteOnVisibilityChangedObserver : public WindowObserver {
       : to_observe_(to_observe), to_delete_(to_delete) {
     to_observe_->AddObserver(this);
   }
+
+  DeleteOnVisibilityChangedObserver(const DeleteOnVisibilityChangedObserver&) =
+      delete;
+  DeleteOnVisibilityChangedObserver& operator=(
+      const DeleteOnVisibilityChangedObserver&) = delete;
+
   ~DeleteOnVisibilityChangedObserver() override {
     // OnWindowVisibilityChanged() should have been called.
     DCHECK(!to_delete_);
@@ -2965,8 +2986,6 @@ class DeleteOnVisibilityChangedObserver : public WindowObserver {
  private:
   Window* to_observe_;
   Window* to_delete_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteOnVisibilityChangedObserver);
 };
 
 TEST_F(WindowTest, DeleteParentWindowFromOnWindowVisibiltyChanged) {
@@ -3144,6 +3163,10 @@ class HierarchyObserver : public WindowObserver {
   explicit HierarchyObserver(Window* target) : target_(target) {
     target_->AddObserver(this);
   }
+
+  HierarchyObserver(const HierarchyObserver&) = delete;
+  HierarchyObserver& operator=(const HierarchyObserver&) = delete;
+
   ~HierarchyObserver() override { target_->RemoveObserver(this); }
 
   void ValidateState(
@@ -3176,8 +3199,6 @@ class HierarchyObserver : public WindowObserver {
 
   Window* target_;
   std::vector<WindowObserver::HierarchyChangeParams> params_;
-
-  DISALLOW_COPY_AND_ASSIGN(HierarchyObserver);
 };
 
 // Tests hierarchy change notifications.
@@ -3340,6 +3361,11 @@ class TestLayerAnimationObserver : public ui::LayerAnimationObserver {
   TestLayerAnimationObserver()
       : animation_completed_(false),
         animation_aborted_(false) {}
+
+  TestLayerAnimationObserver(const TestLayerAnimationObserver&) = delete;
+  TestLayerAnimationObserver& operator=(const TestLayerAnimationObserver&) =
+      delete;
+
   ~TestLayerAnimationObserver() override {}
 
   bool animation_completed() const { return animation_completed_; }
@@ -3365,8 +3391,6 @@ class TestLayerAnimationObserver : public ui::LayerAnimationObserver {
 
   bool animation_completed_;
   bool animation_aborted_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayerAnimationObserver);
 };
 
 TEST_F(WindowTest, WindowDestroyCompletesAnimations) {
@@ -3513,6 +3537,10 @@ class HandleGestureEndDelegate : public TestWindowDelegate {
   explicit HandleGestureEndDelegate(
       base::OnceCallback<void(Window*)> on_gesture_end)
       : on_gesture_end_(std::move(on_gesture_end)) {}
+
+  HandleGestureEndDelegate(const HandleGestureEndDelegate&) = delete;
+  HandleGestureEndDelegate& operator=(const HandleGestureEndDelegate&) = delete;
+
   ~HandleGestureEndDelegate() override = default;
 
  private:
@@ -3532,7 +3560,6 @@ class HandleGestureEndDelegate : public TestWindowDelegate {
   }
 
   base::OnceCallback<void(Window*)> on_gesture_end_;
-  DISALLOW_COPY_AND_ASSIGN(HandleGestureEndDelegate);
 };
 
 TEST_F(WindowTest, CleanupGestureStateChangesWindowHierarchy) {

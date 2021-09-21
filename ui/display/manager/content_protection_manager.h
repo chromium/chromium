@@ -70,6 +70,10 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
 
   ContentProtectionManager(DisplayLayoutManager*,
                            ConfigurationDisabledCallback);
+
+  ContentProtectionManager(const ContentProtectionManager&) = delete;
+  ContentProtectionManager& operator=(const ContentProtectionManager&) = delete;
+
   ~ContentProtectionManager() override;
 
   void set_native_display_delegate(NativeDisplayDelegate* delegate) {
@@ -179,8 +183,6 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
   base::RepeatingTimer security_timer_;
 
   base::WeakPtrFactory<ContentProtectionManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentProtectionManager);
 };
 
 }  // namespace display

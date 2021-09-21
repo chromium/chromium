@@ -49,6 +49,10 @@ namespace gfx {
 class ANIMATION_EXPORT SlideAnimation : public LinearAnimation {
  public:
   explicit SlideAnimation(AnimationDelegate* target);
+
+  SlideAnimation(const SlideAnimation&) = delete;
+  SlideAnimation& operator=(const SlideAnimation&) = delete;
+
   ~SlideAnimation() override;
 
   // Set the animation to some state.
@@ -123,8 +127,6 @@ class ANIMATION_EXPORT SlideAnimation : public LinearAnimation {
 
   // Dampens the reduction in duration for animations which start partway.
   double dampening_value_ = 1.0;
-
-  DISALLOW_COPY_AND_ASSIGN(SlideAnimation);
 };
 
 }  // namespace gfx

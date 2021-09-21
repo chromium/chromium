@@ -28,6 +28,11 @@ namespace {
 class TestLayerAnimationObserver : public ImplicitAnimationObserver {
  public:
   explicit TestLayerAnimationObserver(Layer* layer) : layer_(layer) {}
+
+  TestLayerAnimationObserver(const TestLayerAnimationObserver&) = delete;
+  TestLayerAnimationObserver& operator=(const TestLayerAnimationObserver&) =
+      delete;
+
   ~TestLayerAnimationObserver() override = default;
 
   // ImplicitAnimationObserver:
@@ -37,8 +42,6 @@ class TestLayerAnimationObserver : public ImplicitAnimationObserver {
 
  private:
   Layer* layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayerAnimationObserver);
 };
 
 class LayerOwnerForTesting : public LayerOwner {
@@ -53,6 +56,11 @@ class LayerOwnerForTesting : public LayerOwner {
 class LayerOwnerTestWithCompositor : public testing::Test {
  public:
   LayerOwnerTestWithCompositor();
+
+  LayerOwnerTestWithCompositor(const LayerOwnerTestWithCompositor&) = delete;
+  LayerOwnerTestWithCompositor& operator=(const LayerOwnerTestWithCompositor&) =
+      delete;
+
   ~LayerOwnerTestWithCompositor() override;
 
   void SetUp() override;
@@ -64,8 +72,6 @@ class LayerOwnerTestWithCompositor : public testing::Test {
  private:
   std::unique_ptr<ui::TestContextFactories> context_factories_;
   std::unique_ptr<ui::Compositor> compositor_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerOwnerTestWithCompositor);
 };
 
 LayerOwnerTestWithCompositor::LayerOwnerTestWithCompositor() {

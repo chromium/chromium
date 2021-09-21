@@ -35,6 +35,9 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
     : public InputMethod,
       public base::SupportsWeakPtr<InputMethodBase> {
  public:
+  InputMethodBase(const InputMethodBase&) = delete;
+  InputMethodBase& operator=(const InputMethodBase&) = delete;
+
   ~InputMethodBase() override;
 
   // Overriden from InputMethod.
@@ -121,8 +124,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   gfx::Rect keyboard_bounds_;
 
   std::unique_ptr<VirtualKeyboardController> const keyboard_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodBase);
 };
 
 }  // namespace ui

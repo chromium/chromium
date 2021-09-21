@@ -22,6 +22,11 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
  public:
   explicit WaylandBufferManagerConnector(
       WaylandBufferManagerHost* buffer_manager_host);
+
+  WaylandBufferManagerConnector(const WaylandBufferManagerConnector&) = delete;
+  WaylandBufferManagerConnector& operator=(
+      const WaylandBufferManagerConnector&) = delete;
+
   ~WaylandBufferManagerConnector() override;
 
   // GpuPlatformSupportHost:
@@ -57,8 +62,6 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
 
   THREAD_CHECKER(ui_thread_checker_);
   THREAD_CHECKER(process_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandBufferManagerConnector);
 };
 
 }  // namespace ui

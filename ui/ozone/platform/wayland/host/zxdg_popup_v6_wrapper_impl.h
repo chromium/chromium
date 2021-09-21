@@ -22,6 +22,10 @@ class ZXDGPopupV6WrapperImpl : public ShellPopupWrapper {
   ZXDGPopupV6WrapperImpl(std::unique_ptr<ZXDGSurfaceV6WrapperImpl> surface,
                          WaylandWindow* wayland_window,
                          WaylandConnection* connection);
+
+  ZXDGPopupV6WrapperImpl(const ZXDGPopupV6WrapperImpl&) = delete;
+  ZXDGPopupV6WrapperImpl& operator=(const ZXDGPopupV6WrapperImpl&) = delete;
+
   ~ZXDGPopupV6WrapperImpl() override;
 
   // XDGPopupWrapper:
@@ -59,8 +63,6 @@ class ZXDGPopupV6WrapperImpl : public ShellPopupWrapper {
 
   // Parameters of this popup.
   ShellPopupParams params_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZXDGPopupV6WrapperImpl);
 };
 
 }  // namespace ui

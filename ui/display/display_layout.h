@@ -89,6 +89,10 @@ struct DISPLAY_EXPORT DisplayPlacement {
 class DISPLAY_EXPORT DisplayLayout final {
  public:
   DisplayLayout();
+
+  DisplayLayout(const DisplayLayout&) = delete;
+  DisplayLayout& operator=(const DisplayLayout&) = delete;
+
   ~DisplayLayout();
 
   // Applies the layout to the displays in |display_list|.
@@ -140,8 +144,6 @@ class DISPLAY_EXPORT DisplayLayout final {
   static bool ApplyDisplayPlacement(const DisplayPlacement& placement,
                                     Displays* display_list,
                                     int minimum_offset_overlap);
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayLayout);
 };
 
 }  // namespace display

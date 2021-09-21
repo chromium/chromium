@@ -22,6 +22,10 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) LinearResampling
     : public InputPredictor {
  public:
   explicit LinearResampling();
+
+  LinearResampling(const LinearResampling&) = delete;
+  LinearResampling& operator=(const LinearResampling&) = delete;
+
   ~LinearResampling() override;
 
   const char* GetName() const override;
@@ -65,8 +69,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) LinearResampling
   base::TimeDelta events_dt_;
 
   LatencyCalculator latency_calculator_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinearResampling);
 };
 
 }  // namespace ui

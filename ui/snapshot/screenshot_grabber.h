@@ -40,6 +40,10 @@ enum class ScreenshotResult {
 class SNAPSHOT_EXPORT ScreenshotGrabber {
  public:
   ScreenshotGrabber();
+
+  ScreenshotGrabber(const ScreenshotGrabber&) = delete;
+  ScreenshotGrabber& operator=(const ScreenshotGrabber&) = delete;
+
   ~ScreenshotGrabber();
 
   // Callback for the new system, which ignores the observer crud.
@@ -75,8 +79,6 @@ class SNAPSHOT_EXPORT ScreenshotGrabber {
 #endif
 
   base::WeakPtrFactory<ScreenshotGrabber> factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenshotGrabber);
 };
 
 }  // namespace ui

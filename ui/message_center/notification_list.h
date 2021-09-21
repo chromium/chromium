@@ -78,6 +78,10 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   using PopupNotifications = std::set<Notification*, CompareTimestampSerial>;
 
   explicit NotificationList(MessageCenter* message_center);
+
+  NotificationList(const NotificationList&) = delete;
+  NotificationList& operator=(const NotificationList&) = delete;
+
   virtual ~NotificationList();
 
   // Makes a message "read". Collects the set of ids whose state have changed
@@ -181,8 +185,6 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   MessageCenter* message_center_;  // owner
   OwnedNotifications notifications_;
   bool quiet_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationList);
 };
 
 }  // namespace message_center

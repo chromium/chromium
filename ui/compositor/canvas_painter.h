@@ -31,6 +31,10 @@ class COMPOSITOR_EXPORT CanvasPainter {
                 float device_scale_factor,
                 SkColor clear_color,
                 bool is_pixel_canvas);
+
+  CanvasPainter(const CanvasPainter&) = delete;
+  CanvasPainter& operator=(const CanvasPainter&) = delete;
+
   ~CanvasPainter();
 
   const PaintContext& context() const { return context_; }
@@ -44,8 +48,6 @@ class COMPOSITOR_EXPORT CanvasPainter {
   const SkColor clear_color_;
   scoped_refptr<cc::DisplayItemList> list_;
   PaintContext context_;
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasPainter);
 };
 
 }  // namespace ui

@@ -47,6 +47,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFEventRouter {
  public:
   // Do not pass NULL to |observer|.
   explicit TSFEventRouter(TSFEventRouterObserver* observer);
+
+  TSFEventRouter(const TSFEventRouter&) = delete;
+  TSFEventRouter& operator=(const TSFEventRouter&) = delete;
+
   virtual ~TSFEventRouter();
 
   // Returns true if the IME is composing text.
@@ -67,8 +71,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFEventRouter {
   Microsoft::WRL::ComPtr<Delegate> delegate_;
 
   TSFEventRouterObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TSFEventRouter);
 };
 
 }  // namespace ui

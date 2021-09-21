@@ -23,6 +23,9 @@ class SkCanvas;
 // -----------------------------------------------------------------------------
 class SURFACE_EXPORT TransportDIB {
  public:
+  TransportDIB(const TransportDIB&) = delete;
+  TransportDIB& operator=(const TransportDIB&) = delete;
+
   ~TransportDIB();
 
   // Creates and maps a new TransportDIB with a shared memory region.
@@ -73,8 +76,6 @@ class SURFACE_EXPORT TransportDIB {
   base::UnsafeSharedMemoryRegion shm_region_;
   base::WritableSharedMemoryMapping shm_mapping_;
   size_t size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TransportDIB);
 };
 
 #endif  // UI_SURFACE_TRANSPORT_DIB_H_

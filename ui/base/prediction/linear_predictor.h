@@ -26,6 +26,10 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) LinearPredictor
   enum class EquationOrder : size_t { kFirstOrder = 2, kSecondOrder = 3 };
 
   explicit LinearPredictor(EquationOrder order);
+
+  LinearPredictor(const LinearPredictor&) = delete;
+  LinearPredictor& operator=(const LinearPredictor&) = delete;
+
   ~LinearPredictor() override;
 
   const char* GetName() const override;
@@ -72,8 +76,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) LinearPredictor
 
   // Store the current delta time between the last 2 events
   float events_dt_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinearPredictor);
 };
 
 }  // namespace ui

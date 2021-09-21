@@ -27,6 +27,10 @@ class InterThreadMessagingProxy;
 class DrmThreadProxy {
  public:
   DrmThreadProxy();
+
+  DrmThreadProxy(const DrmThreadProxy&) = delete;
+  DrmThreadProxy& operator=(const DrmThreadProxy&) = delete;
+
   ~DrmThreadProxy();
 
   void BindThreadIntoMessagingProxy(InterThreadMessagingProxy* messaging_proxy);
@@ -88,8 +92,6 @@ class DrmThreadProxy {
 
  private:
   DrmThread drm_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmThreadProxy);
 };
 
 }  // namespace ui

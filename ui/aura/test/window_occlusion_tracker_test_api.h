@@ -18,6 +18,11 @@ namespace test {
 class WindowOcclusionTrackerTestApi {
  public:
   explicit WindowOcclusionTrackerTestApi(WindowOcclusionTracker* tracker);
+
+  WindowOcclusionTrackerTestApi(const WindowOcclusionTrackerTestApi&) = delete;
+  WindowOcclusionTrackerTestApi& operator=(
+      const WindowOcclusionTrackerTestApi&) = delete;
+
   ~WindowOcclusionTrackerTestApi();
 
   // Creates a WindowOcclusionTracker for TestWindowTreeClientSetup to simulate
@@ -35,8 +40,6 @@ class WindowOcclusionTrackerTestApi {
 
  private:
   WindowOcclusionTracker* const tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowOcclusionTrackerTestApi);
 };
 
 }  // namespace test

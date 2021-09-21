@@ -27,6 +27,10 @@ typedef base::OnceCallback<void(std::unique_ptr<InputDeviceFactoryEvdevProxy>)>
 class EventThreadEvdev {
  public:
   EventThreadEvdev();
+
+  EventThreadEvdev(const EventThreadEvdev&) = delete;
+  EventThreadEvdev& operator=(const EventThreadEvdev&) = delete;
+
   ~EventThreadEvdev();
 
   // Start a new events thread. All device events will get sent to the
@@ -38,8 +42,6 @@ class EventThreadEvdev {
 
  private:
   std::unique_ptr<base::Thread> thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventThreadEvdev);
 };
 
 }  // namespace ui

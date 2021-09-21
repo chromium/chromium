@@ -41,6 +41,12 @@ class QueryContentProtectionTaskTest : public testing::Test {
   using Status = QueryContentProtectionTask::Status;
 
   QueryContentProtectionTaskTest() = default;
+
+  QueryContentProtectionTaskTest(const QueryContentProtectionTaskTest&) =
+      delete;
+  QueryContentProtectionTaskTest& operator=(
+      const QueryContentProtectionTaskTest&) = delete;
+
   ~QueryContentProtectionTaskTest() override = default;
 
   void ResponseCallback(Status status,
@@ -60,9 +66,6 @@ class QueryContentProtectionTaskTest : public testing::Test {
   };
 
   absl::optional<Response> response_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueryContentProtectionTaskTest);
 };
 
 TEST_F(QueryContentProtectionTaskTest, QueryInternalDisplay) {

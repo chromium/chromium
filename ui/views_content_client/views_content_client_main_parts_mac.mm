@@ -43,6 +43,12 @@ class ViewsContentClientMainPartsMac : public ViewsContentClientMainParts {
   ViewsContentClientMainPartsMac(
       const content::MainFunctionParams& content_params,
       ViewsContentClient* views_content_client);
+
+  ViewsContentClientMainPartsMac(const ViewsContentClientMainPartsMac&) =
+      delete;
+  ViewsContentClientMainPartsMac& operator=(
+      const ViewsContentClientMainPartsMac&) = delete;
+
   ~ViewsContentClientMainPartsMac() override;
 
   // content::BrowserMainParts:
@@ -50,8 +56,6 @@ class ViewsContentClientMainPartsMac : public ViewsContentClientMainParts {
 
  private:
   base::scoped_nsobject<ViewsContentClientAppController> app_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainPartsMac);
 };
 
 ViewsContentClientMainPartsMac::ViewsContentClientMainPartsMac(

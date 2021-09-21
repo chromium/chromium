@@ -45,10 +45,11 @@ class TestUserActivityObserver : public UserActivityObserver {
 class TestPlatformEventSource : public PlatformEventSource {
  public:
   TestPlatformEventSource() {}
-  ~TestPlatformEventSource() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestPlatformEventSource);
+  TestPlatformEventSource(const TestPlatformEventSource&) = delete;
+  TestPlatformEventSource& operator=(const TestPlatformEventSource&) = delete;
+
+  ~TestPlatformEventSource() override {}
 };
 
 class UserActivityDetectorTest : public testing::Test {
@@ -61,6 +62,9 @@ class UserActivityDetectorTest : public testing::Test {
     now_ = base::TimeTicks::Now();
     detector_->set_now_for_test(now_);
   }
+
+  UserActivityDetectorTest(const UserActivityDetectorTest&) = delete;
+  UserActivityDetectorTest& operator=(const UserActivityDetectorTest&) = delete;
 
   ~UserActivityDetectorTest() override {
     detector_->RemoveObserver(observer_.get());
@@ -82,9 +86,6 @@ class UserActivityDetectorTest : public testing::Test {
   std::unique_ptr<TestUserActivityObserver> observer_;
 
   base::TimeTicks now_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserActivityDetectorTest);
 };
 
 // Checks that the observer is notified in response to different types of input

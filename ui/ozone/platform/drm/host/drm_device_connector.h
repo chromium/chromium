@@ -20,6 +20,10 @@ class HostDrmDevice;
 class DrmDeviceConnector : public GpuPlatformSupportHost {
  public:
   explicit DrmDeviceConnector(scoped_refptr<HostDrmDevice> host_drm_device);
+
+  DrmDeviceConnector(const DrmDeviceConnector&) = delete;
+  DrmDeviceConnector& operator=(const DrmDeviceConnector&) = delete;
+
   ~DrmDeviceConnector() override;
 
   // GpuPlatformSupportHost:
@@ -49,8 +53,6 @@ class DrmDeviceConnector : public GpuPlatformSupportHost {
   int host_id_ = 0;
 
   const scoped_refptr<HostDrmDevice> host_drm_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDeviceConnector);
 };
 
 }  // namespace ui

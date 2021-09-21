@@ -33,6 +33,10 @@ class ScenicGpuHost : public mojom::ScenicGpuHost,
                       public GpuPlatformSupportHost {
  public:
   ScenicGpuHost(ScenicWindowManager* scenic_window_manager);
+
+  ScenicGpuHost(const ScenicGpuHost&) = delete;
+  ScenicGpuHost& operator=(const ScenicGpuHost&) = delete;
+
   ~ScenicGpuHost() override;
 
   // Binds the receiver for the main process surface factory.
@@ -73,8 +77,6 @@ class ScenicGpuHost : public mojom::ScenicGpuHost,
   THREAD_CHECKER(io_thread_checker_);
 
   base::WeakPtrFactory<ScenicGpuHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScenicGpuHost);
 };
 
 }  // namespace ui

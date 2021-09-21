@@ -19,6 +19,11 @@ class InputMethodDelegateForTesting : public internal::InputMethodDelegate {
  public:
   InputMethodDelegateForTesting(bool propagation)
       : propagation_post_ime_(propagation) {}
+
+  InputMethodDelegateForTesting(const InputMethodDelegateForTesting&) = delete;
+  InputMethodDelegateForTesting& operator=(
+      const InputMethodDelegateForTesting&) = delete;
+
   ~InputMethodDelegateForTesting() override {}
 
   ui::EventDispatchDetails DispatchKeyEventPostIME(
@@ -30,8 +35,6 @@ class InputMethodDelegateForTesting : public internal::InputMethodDelegate {
 
  private:
   bool propagation_post_ime_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodDelegateForTesting);
 };
 
 class InputMethodMinimalTest : public testing::Test {

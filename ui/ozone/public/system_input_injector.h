@@ -21,6 +21,10 @@ namespace ui {
 class COMPONENT_EXPORT(OZONE) SystemInputInjector {
  public:
   SystemInputInjector() {}
+
+  SystemInputInjector(const SystemInputInjector&) = delete;
+  SystemInputInjector& operator=(const SystemInputInjector&) = delete;
+
   virtual ~SystemInputInjector() {}
 
   // Moves the cursor on the screen and generates the corresponding MouseMove or
@@ -44,9 +48,6 @@ class COMPONENT_EXPORT(OZONE) SystemInputInjector {
   virtual void InjectKeyEvent(DomCode physical_key,
                               bool down,
                               bool suppress_auto_repeat) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemInputInjector);
 };
 
 }  // namespace ui

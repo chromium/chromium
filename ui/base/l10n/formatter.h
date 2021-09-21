@@ -90,6 +90,10 @@ class Formatter {
 class COMPONENT_EXPORT(UI_BASE) FormatterContainer {
  public:
   FormatterContainer();
+
+  FormatterContainer(const FormatterContainer&) = delete;
+  FormatterContainer& operator=(const FormatterContainer&) = delete;
+
   ~FormatterContainer();
 
   const Formatter* Get(TimeFormat::Format format,
@@ -106,8 +110,6 @@ class COMPONENT_EXPORT(UI_BASE) FormatterContainer {
 
   std::unique_ptr<Formatter> formatter_[TimeFormat::FORMAT_COUNT]
                                        [TimeFormat::LENGTH_COUNT];
-
-  DISALLOW_COPY_AND_ASSIGN(FormatterContainer);
 };
 
 // Windows compilation requires full definition of FormatterContainer before

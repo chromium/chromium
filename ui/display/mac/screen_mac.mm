@@ -256,6 +256,9 @@ class ScreenMac : public Screen {
                 usingBlock:update_block] retain]);
   }
 
+  ScreenMac(const ScreenMac&) = delete;
+  ScreenMac& operator=(const ScreenMac&) = delete;
+
   ~ScreenMac() override {
     NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
     [center removeObserver:screen_color_change_observer_];
@@ -447,8 +450,6 @@ class ScreenMac : public Screen {
   base::scoped_nsobject<id> screen_params_change_observer_;
 
   DisplayChangeNotifier change_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenMac);
 };
 
 }  // namespace

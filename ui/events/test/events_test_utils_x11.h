@@ -27,6 +27,10 @@ struct Valuator {
 class ScopedXI2Event {
  public:
   ScopedXI2Event();
+
+  ScopedXI2Event(const ScopedXI2Event&) = delete;
+  ScopedXI2Event& operator=(const ScopedXI2Event&) = delete;
+
   ~ScopedXI2Event();
 
   operator x11::Event*() { return &event_; }
@@ -81,8 +85,6 @@ class ScopedXI2Event {
   void SetUpValuators(const std::vector<Valuator>& valuators);
 
   x11::Event event_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedXI2Event);
 };
 
 // Initializes a test touchpad device for scroll events.

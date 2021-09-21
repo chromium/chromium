@@ -14,12 +14,14 @@ namespace ui {
 class ScopedSetIdleState {
  public:
   explicit ScopedSetIdleState(IdleState state);
+
+  ScopedSetIdleState(const ScopedSetIdleState&) = delete;
+  ScopedSetIdleState& operator=(const ScopedSetIdleState&) = delete;
+
   ~ScopedSetIdleState();
 
  private:
   absl::optional<IdleState> previous_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetIdleState);
 };
 
 }  // namespace ui

@@ -25,6 +25,10 @@ class COMPOSITOR_EXPORT LayerAnimatorCollection
     : public CompositorAnimationObserver {
  public:
   explicit LayerAnimatorCollection(Compositor* compositor);
+
+  LayerAnimatorCollection(const LayerAnimatorCollection&) = delete;
+  LayerAnimatorCollection& operator=(const LayerAnimatorCollection&) = delete;
+
   ~LayerAnimatorCollection() override;
 
   void StartAnimator(scoped_refptr<LayerAnimator> animator);
@@ -42,8 +46,6 @@ class COMPOSITOR_EXPORT LayerAnimatorCollection
   Compositor* compositor_;
   base::TimeTicks last_tick_time_;
   std::set<scoped_refptr<LayerAnimator> > animators_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerAnimatorCollection);
 };
 
 }  // namespace ui

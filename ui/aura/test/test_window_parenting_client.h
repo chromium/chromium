@@ -15,6 +15,11 @@ namespace test {
 class TestWindowParentingClient : public client::WindowParentingClient {
  public:
   explicit TestWindowParentingClient(Window* root_window);
+
+  TestWindowParentingClient(const TestWindowParentingClient&) = delete;
+  TestWindowParentingClient& operator=(const TestWindowParentingClient&) =
+      delete;
+
   ~TestWindowParentingClient() override;
 
   void set_default_parent(Window* parent) { default_parent_ = parent; }
@@ -27,8 +32,6 @@ class TestWindowParentingClient : public client::WindowParentingClient {
 
   // If non-null this is returned from GetDefaultParent().
   Window* default_parent_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowParentingClient);
 };
 
 }  // namespace test

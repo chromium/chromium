@@ -17,6 +17,11 @@ namespace ui {
 class MockPlatformWindowDelegate : public PlatformWindowDelegate {
  public:
   MockPlatformWindowDelegate();
+
+  MockPlatformWindowDelegate(const MockPlatformWindowDelegate&) = delete;
+  MockPlatformWindowDelegate& operator=(const MockPlatformWindowDelegate&) =
+      delete;
+
   ~MockPlatformWindowDelegate();
 
   MOCK_METHOD1(OnBoundsChanged, void(const BoundsChange& change));
@@ -39,9 +44,6 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD0(GetOwnedWindowAnchorAndRectInPx,
                absl::optional<OwnedWindowAnchor>());
   MOCK_METHOD0(OnMouseEnter, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPlatformWindowDelegate);
 };
 
 bool operator==(const PlatformWindowDelegate::BoundsChange& bounds,

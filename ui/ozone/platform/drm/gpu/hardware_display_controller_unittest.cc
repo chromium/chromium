@@ -103,6 +103,11 @@ void FakeFenceFD::Signal() const {
 class HardwareDisplayControllerTest : public testing::Test {
  public:
   HardwareDisplayControllerTest() = default;
+
+  HardwareDisplayControllerTest(const HardwareDisplayControllerTest&) = delete;
+  HardwareDisplayControllerTest& operator=(
+      const HardwareDisplayControllerTest&) = delete;
+
   ~HardwareDisplayControllerTest() override = default;
 
   void SetUp() override;
@@ -143,9 +148,6 @@ class HardwareDisplayControllerTest : public testing::Test {
   int successful_page_flips_count_ = 0;
   gfx::SwapResult last_swap_result_;
   gfx::PresentationFeedback last_presentation_feedback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayControllerTest);
 };
 
 void HardwareDisplayControllerTest::SetUp() {

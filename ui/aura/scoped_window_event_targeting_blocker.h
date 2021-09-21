@@ -19,6 +19,12 @@ class Window;
 class AURA_EXPORT ScopedWindowEventTargetingBlocker : public WindowObserver {
  public:
   explicit ScopedWindowEventTargetingBlocker(Window* window);
+
+  ScopedWindowEventTargetingBlocker(const ScopedWindowEventTargetingBlocker&) =
+      delete;
+  ScopedWindowEventTargetingBlocker& operator=(
+      const ScopedWindowEventTargetingBlocker&) = delete;
+
   ~ScopedWindowEventTargetingBlocker() override;
 
   // WindowObserver:
@@ -26,7 +32,6 @@ class AURA_EXPORT ScopedWindowEventTargetingBlocker : public WindowObserver {
 
  private:
   Window* window_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowEventTargetingBlocker);
 };
 
 }  // namespace aura

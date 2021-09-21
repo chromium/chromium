@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
                           const EventDeviceInfo& info,
                           CursorDelegateEvdev* cursor,
                           DeviceEventDispatcherEvdev* dispatcher);
+
+  EventConverterEvdevImpl(const EventConverterEvdevImpl&) = delete;
+  EventConverterEvdevImpl& operator=(const EventConverterEvdevImpl&) = delete;
+
   ~EventConverterEvdevImpl() override;
 
   // EventConverterEvdev:
@@ -109,8 +113,6 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
 
   // Callbacks for dispatching events.
   DeviceEventDispatcherEvdev* const dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventConverterEvdevImpl);
 };
 
 }  // namespace ui

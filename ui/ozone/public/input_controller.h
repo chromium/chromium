@@ -44,6 +44,10 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   using GetStylusSwitchStateReply = base::OnceCallback<void(ui::StylusState)>;
 
   InputController() {}
+
+  InputController(const InputController&) = delete;
+  InputController& operator=(const InputController&) = delete;
+
   virtual ~InputController() {}
 
   // Functions for checking devices existence.
@@ -132,9 +136,6 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   virtual void GetGesturePropertiesService(
       mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
           receiver) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputController);
 };
 
 // Create an input controller that does nothing.

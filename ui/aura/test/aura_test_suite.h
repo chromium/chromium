@@ -30,10 +30,11 @@ namespace test {
 class EnvReinstaller {
  public:
   EnvReinstaller();
-  ~EnvReinstaller();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnvReinstaller);
+  EnvReinstaller(const EnvReinstaller&) = delete;
+  EnvReinstaller& operator=(const EnvReinstaller&) = delete;
+
+  ~EnvReinstaller();
 };
 
 }  // namespace test

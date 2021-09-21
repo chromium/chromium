@@ -27,6 +27,10 @@ class TestTouch;
 class TestSeat : public GlobalObject {
  public:
   TestSeat();
+
+  TestSeat(const TestSeat&) = delete;
+  TestSeat& operator=(const TestSeat&) = delete;
+
   ~TestSeat() override;
 
   void set_pointer(MockPointer* pointer) { pointer_ = pointer; }
@@ -42,8 +46,6 @@ class TestSeat : public GlobalObject {
   MockPointer* pointer_;
   TestKeyboard* keyboard_;
   TestTouch* touch_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSeat);
 };
 
 }  // namespace wl

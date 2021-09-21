@@ -90,6 +90,10 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorFactoryOzone
     : public CursorFactory {
  public:
   BitmapCursorFactoryOzone();
+
+  BitmapCursorFactoryOzone(const BitmapCursorFactoryOzone&) = delete;
+  BitmapCursorFactoryOzone& operator=(const BitmapCursorFactoryOzone&) = delete;
+
   ~BitmapCursorFactoryOzone() override;
 
   // CursorFactory:
@@ -110,8 +114,6 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorFactoryOzone
   std::map<mojom::CursorType, scoped_refptr<BitmapCursorOzone>>
       default_cursors_;
   float cursor_scale_factor_ = 1.f;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapCursorFactoryOzone);
 };
 
 }  // namespace ui

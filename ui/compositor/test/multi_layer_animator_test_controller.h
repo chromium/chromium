@@ -21,6 +21,12 @@ class MultiLayerAnimatorTestController {
  public:
   explicit MultiLayerAnimatorTestController(
       MultiLayerAnimatorTestControllerDelegate* delegate);
+
+  MultiLayerAnimatorTestController(const MultiLayerAnimatorTestController&) =
+      delete;
+  MultiLayerAnimatorTestController& operator=(
+      const MultiLayerAnimatorTestController&) = delete;
+
   virtual ~MultiLayerAnimatorTestController();
 
   // Disables the animation timers when |disable_timers| is true.
@@ -44,8 +50,6 @@ class MultiLayerAnimatorTestController {
   void StepAnimations(const base::TimeDelta& duration);
 
   MultiLayerAnimatorTestControllerDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiLayerAnimatorTestController);
 };
 
 }  // namespace test

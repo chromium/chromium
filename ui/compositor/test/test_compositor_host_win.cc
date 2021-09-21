@@ -33,6 +33,9 @@ class TestCompositorHostWin : public TestCompositorHost,
                                  allocator_.GetCurrentLocalSurfaceId());
   }
 
+  TestCompositorHostWin(const TestCompositorHostWin&) = delete;
+  TestCompositorHostWin& operator=(const TestCompositorHostWin&) = delete;
+
   ~TestCompositorHostWin() override { DestroyWindow(hwnd()); }
 
   // Overridden from TestCompositorHost:
@@ -62,8 +65,6 @@ class TestCompositorHostWin : public TestCompositorHost,
   viz::ParentLocalSurfaceIdAllocator allocator_;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(TestCompositorHostWin)
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositorHostWin);
 };
 
 TestCompositorHost* TestCompositorHost::Create(

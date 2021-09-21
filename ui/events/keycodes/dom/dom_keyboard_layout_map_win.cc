@@ -26,6 +26,10 @@ namespace {
 class DomKeyboardLayoutMapWin : public DomKeyboardLayoutMapBase {
  public:
   DomKeyboardLayoutMapWin();
+
+  DomKeyboardLayoutMapWin(const DomKeyboardLayoutMapWin&) = delete;
+  DomKeyboardLayoutMapWin& operator=(const DomKeyboardLayoutMapWin&) = delete;
+
   ~DomKeyboardLayoutMapWin() override;
 
  private:
@@ -38,8 +42,6 @@ class DomKeyboardLayoutMapWin : public DomKeyboardLayoutMapBase {
   // Set of keyboard layout handles provided by the operating system.
   // The handles stored do not need to be released when the vector is destroyed.
   std::vector<HKL> keyboard_layout_handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomKeyboardLayoutMapWin);
 };
 
 DomKeyboardLayoutMapWin::DomKeyboardLayoutMapWin() = default;

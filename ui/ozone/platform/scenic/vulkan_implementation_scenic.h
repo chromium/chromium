@@ -22,6 +22,11 @@ class VulkanImplementationScenic : public gpu::VulkanImplementation {
   VulkanImplementationScenic(ScenicSurfaceFactory* scenic_surface_factory,
                              SysmemBufferManager* sysmem_buffer_manager,
                              bool allow_protected_memory);
+
+  VulkanImplementationScenic(const VulkanImplementationScenic&) = delete;
+  VulkanImplementationScenic& operator=(const VulkanImplementationScenic&) =
+      delete;
+
   ~VulkanImplementationScenic() override;
 
   // VulkanImplementation:
@@ -67,8 +72,6 @@ class VulkanImplementationScenic : public gpu::VulkanImplementation {
   SysmemBufferManager* const sysmem_buffer_manager_;
 
   gpu::VulkanInstance vulkan_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementationScenic);
 };
 
 }  // namespace ui

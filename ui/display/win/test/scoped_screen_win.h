@@ -19,12 +19,14 @@ namespace test {
 class ScopedScreenWin : public ScreenWin {
  public:
   ScopedScreenWin();
+
+  ScopedScreenWin(const ScopedScreenWin&) = delete;
+  ScopedScreenWin& operator=(const ScopedScreenWin&) = delete;
+
   ~ScopedScreenWin() override;
 
  private:
   Screen* old_screen_ = Screen::SetScreenInstance(this);
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedScreenWin);
 };
 
 }  // namespace test

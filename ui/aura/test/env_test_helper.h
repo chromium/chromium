@@ -20,6 +20,10 @@ class EnvTestHelper {
  public:
   EnvTestHelper() : EnvTestHelper(Env::GetInstance()) {}
   explicit EnvTestHelper(Env* env) : env_(env) {}
+
+  EnvTestHelper(const EnvTestHelper&) = delete;
+  EnvTestHelper& operator=(const EnvTestHelper&) = delete;
+
   ~EnvTestHelper() {}
 
   void SetInputStateLookup(
@@ -45,8 +49,6 @@ class EnvTestHelper {
 
  private:
   Env* env_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnvTestHelper);
 };
 
 }  // namespace test

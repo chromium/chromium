@@ -33,10 +33,12 @@ void SetUpInputMethodForTesting(InputMethod* input_method);
 class COMPONENT_EXPORT(UI_BASE_IME_INIT) ScopedTestInputMethodFactory {
  public:
   ScopedTestInputMethodFactory();
-  ~ScopedTestInputMethodFactory();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestInputMethodFactory);
+  ScopedTestInputMethodFactory(const ScopedTestInputMethodFactory&) = delete;
+  ScopedTestInputMethodFactory& operator=(const ScopedTestInputMethodFactory&) =
+      delete;
+
+  ~ScopedTestInputMethodFactory();
 };
 
 }  // namespace ui;

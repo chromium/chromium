@@ -136,6 +136,10 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceManager {
   using PortAssociationMap = ActiveTouchAssociationMap;
 
   TouchDeviceManager();
+
+  TouchDeviceManager(const TouchDeviceManager&) = delete;
+  TouchDeviceManager& operator=(const TouchDeviceManager&) = delete;
+
   ~TouchDeviceManager();
 
   // Given a list of displays and a list of touchscreens, associate them. The
@@ -250,8 +254,6 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceManager {
   // This map only contains items (displays and touch devices) that are
   // currently active.
   ActiveTouchAssociationMap active_touch_associations_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchDeviceManager);
 };
 
 DISPLAY_MANAGER_EXPORT std::ostream& operator<<(

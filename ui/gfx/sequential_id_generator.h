@@ -21,6 +21,10 @@ class GFX_EXPORT SequentialIDGenerator {
  public:
    // Creates a new generator with the specified lower bound for the IDs.
   explicit SequentialIDGenerator(uint32_t min_id);
+
+  SequentialIDGenerator(const SequentialIDGenerator&) = delete;
+  SequentialIDGenerator& operator=(const SequentialIDGenerator&) = delete;
+
   ~SequentialIDGenerator();
 
   // Generates a unique ID to represent |number|. The generated ID is the
@@ -54,8 +58,6 @@ class GFX_EXPORT SequentialIDGenerator {
 
   const uint32_t min_id_;
   uint32_t min_available_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequentialIDGenerator);
 };
 
 }  // namespace ui

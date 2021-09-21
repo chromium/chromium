@@ -21,6 +21,10 @@ class TestDataSource;
 class TestDataDeviceManager : public GlobalObject {
  public:
   TestDataDeviceManager();
+
+  TestDataDeviceManager(const TestDataDeviceManager&) = delete;
+  TestDataDeviceManager& operator=(const TestDataDeviceManager&) = delete;
+
   ~TestDataDeviceManager() override;
 
   TestDataDevice* data_device() const { return data_device_; }
@@ -36,8 +40,6 @@ class TestDataDeviceManager : public GlobalObject {
  private:
   TestDataDevice* data_device_ = nullptr;
   TestDataSource* data_source_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataDeviceManager);
 };
 
 }  // namespace wl

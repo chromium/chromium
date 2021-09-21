@@ -24,6 +24,10 @@ class GL_EXPORT HDRMetadataHelperWin {
  public:
   explicit HDRMetadataHelperWin(
       const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device);
+
+  HDRMetadataHelperWin(const HDRMetadataHelperWin&) = delete;
+  HDRMetadataHelperWin& operator=(const HDRMetadataHelperWin&) = delete;
+
   ~HDRMetadataHelperWin();
 
   // Return the metadata for the display, if available.  Must call
@@ -41,8 +45,6 @@ class GL_EXPORT HDRMetadataHelperWin {
 
  private:
   absl::optional<DXGI_HDR_METADATA_HDR10> hdr_metadata_;
-
-  DISALLOW_COPY_AND_ASSIGN(HDRMetadataHelperWin);
 };
 
 }  // namespace gl

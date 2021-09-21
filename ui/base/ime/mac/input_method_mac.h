@@ -19,6 +19,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_MAC) InputMethodMac
     : public InputMethodBase {
  public:
   explicit InputMethodMac(internal::InputMethodDelegate* delegate);
+
+  InputMethodMac(const InputMethodMac&) = delete;
+  InputMethodMac& operator=(const InputMethodMac&) = delete;
+
   ~InputMethodMac() override;
 
   // Overriden from InputMethod.
@@ -26,9 +30,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_MAC) InputMethodMac
   void OnCaretBoundsChanged(const TextInputClient* client) override;
   void CancelComposition(const TextInputClient* client) override;
   bool IsCandidatePopupOpen() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputMethodMac);
 };
 
 }  // namespace ui

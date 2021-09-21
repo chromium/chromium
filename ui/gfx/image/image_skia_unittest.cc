@@ -26,19 +26,23 @@ class FixedSource : public ImageSkiaSource {
  public:
   explicit FixedSource(const ImageSkiaRep& image) : image_(image) {}
 
+  FixedSource(const FixedSource&) = delete;
+  FixedSource& operator=(const FixedSource&) = delete;
+
   ~FixedSource() override {}
 
   ImageSkiaRep GetImageForScale(float scale) override { return image_; }
 
  private:
   ImageSkiaRep image_;
-
-  DISALLOW_COPY_AND_ASSIGN(FixedSource);
 };
 
 class FixedScaleSource : public ImageSkiaSource {
  public:
   explicit FixedScaleSource(const ImageSkiaRep& image) : image_(image) {}
+
+  FixedScaleSource(const FixedScaleSource&) = delete;
+  FixedScaleSource& operator=(const FixedScaleSource&) = delete;
 
   ~FixedScaleSource() override {}
 
@@ -50,8 +54,6 @@ class FixedScaleSource : public ImageSkiaSource {
 
  private:
   ImageSkiaRep image_;
-
-  DISALLOW_COPY_AND_ASSIGN(FixedScaleSource);
 };
 
 class DynamicSource : public ImageSkiaSource {
@@ -59,6 +61,9 @@ class DynamicSource : public ImageSkiaSource {
   explicit DynamicSource(const gfx::Size& size)
       : size_(size),
         last_requested_scale_(0.0f) {}
+
+  DynamicSource(const DynamicSource&) = delete;
+  DynamicSource& operator=(const DynamicSource&) = delete;
 
   ~DynamicSource() override {}
 
@@ -76,8 +81,6 @@ class DynamicSource : public ImageSkiaSource {
  private:
   gfx::Size size_;
   float last_requested_scale_;
-
-  DISALLOW_COPY_AND_ASSIGN(DynamicSource);
 };
 
 class NullSource: public ImageSkiaSource {
@@ -85,14 +88,14 @@ class NullSource: public ImageSkiaSource {
   NullSource() {
   }
 
+  NullSource(const NullSource&) = delete;
+  NullSource& operator=(const NullSource&) = delete;
+
   ~NullSource() override {}
 
   ImageSkiaRep GetImageForScale(float scale) override {
     return gfx::ImageSkiaRep();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullSource);
 };
 
 }  // namespace
@@ -146,11 +149,14 @@ class ImageSkiaTest : public testing::Test {
     supported_scales.push_back(2.0f);
     ImageSkia::SetSupportedScales(supported_scales);
   }
+
+  ImageSkiaTest(const ImageSkiaTest&) = delete;
+  ImageSkiaTest& operator=(const ImageSkiaTest&) = delete;
+
   ~ImageSkiaTest() override { ImageSkia::SetSupportedScales(old_scales_); }
 
  private:
   std::vector<float> old_scales_;
-  DISALLOW_COPY_AND_ASSIGN(ImageSkiaTest);
 };
 
 TEST_F(ImageSkiaTest, FixedSource) {

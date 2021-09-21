@@ -20,6 +20,11 @@ namespace {
 class MockMediaKeysListenerDelegate : public MediaKeysListener::Delegate {
  public:
   MockMediaKeysListenerDelegate() = default;
+
+  MockMediaKeysListenerDelegate(const MockMediaKeysListenerDelegate&) = delete;
+  MockMediaKeysListenerDelegate& operator=(
+      const MockMediaKeysListenerDelegate&) = delete;
+
   ~MockMediaKeysListenerDelegate() override = default;
 
   // MediaKeysListener::Delegate implementation.
@@ -60,8 +65,6 @@ class MockMediaKeysListenerDelegate : public MediaKeysListener::Delegate {
   std::vector<KeyEvent> received_events_;
   std::unique_ptr<base::RunLoop> key_event_wait_loop_;
   uint32_t num_key_events_to_wait_for_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaKeysListenerDelegate);
 };
 
 }  // anonymous namespace

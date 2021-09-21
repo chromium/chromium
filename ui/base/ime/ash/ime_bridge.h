@@ -23,6 +23,9 @@ namespace ui {
 // is used for IME implementation.
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
  public:
+  IMEBridge(const IMEBridge&) = delete;
+  IMEBridge& operator=(const IMEBridge&) = delete;
+
   virtual ~IMEBridge();
 
   // Allocates the global instance. Must be called before any calls to Get().
@@ -85,9 +88,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
 
  protected:
   IMEBridge();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IMEBridge);
 };
 
 }  // namespace ui

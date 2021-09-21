@@ -18,6 +18,9 @@ class WindowAndroid;
 
 class DisplayAndroidManager : public display::ScreenBase {
  public:
+  DisplayAndroidManager(const DisplayAndroidManager&) = delete;
+  DisplayAndroidManager& operator=(const DisplayAndroidManager&) = delete;
+
   ~DisplayAndroidManager() override;
 
   // Screen interface.
@@ -64,8 +67,6 @@ class DisplayAndroidManager : public display::ScreenBase {
 
   const bool use_display_wide_color_gamut_;
   int primary_display_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayAndroidManager);
 };
 
 }  // namespace ui

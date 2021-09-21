@@ -31,6 +31,10 @@ class PopupTimer {
   PopupTimer(const std::string& id,
              base::TimeDelta timeout,
              base::WeakPtr<Delegate> delegate);
+
+  PopupTimer(const PopupTimer&) = delete;
+  PopupTimer& operator=(const PopupTimer&) = delete;
+
   ~PopupTimer();
 
   // Starts running the timer.  Barring a Pause or Reset call, the timer will
@@ -62,8 +66,6 @@ class PopupTimer {
 
   // The actual timer.
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupTimer);
 };
 
 }  // namespace message_center

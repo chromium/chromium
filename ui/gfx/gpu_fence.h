@@ -27,6 +27,10 @@ class GFX_EXPORT GpuFence {
   GpuFence() = delete;
   GpuFence(GpuFence&& other);
   GpuFence& operator=(GpuFence&& other);
+
+  GpuFence(const GpuFence&) = delete;
+  GpuFence& operator=(const GpuFence&) = delete;
+
   ~GpuFence();
 
   // Returns a const reference to the underlying GpuFenceHandle
@@ -48,8 +52,6 @@ class GFX_EXPORT GpuFence {
 
  private:
   gfx::GpuFenceHandle fence_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuFence);
 };
 
 }  // namespace gfx

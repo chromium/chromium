@@ -15,13 +15,14 @@ namespace ui {
 class X11HotplugEventHandler {
  public:
   X11HotplugEventHandler();
+
+  X11HotplugEventHandler(const X11HotplugEventHandler&) = delete;
+  X11HotplugEventHandler& operator=(const X11HotplugEventHandler&) = delete;
+
   ~X11HotplugEventHandler();
 
   // Called on an X11 hotplug event.
   void OnHotplugEvent();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(X11HotplugEventHandler);
 };
 
 }  // namespace ui

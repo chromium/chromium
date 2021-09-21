@@ -20,12 +20,14 @@ namespace aura_extra {
 class WindowBoundsDelegate {
  public:
   WindowBoundsDelegate() {}
+
+  WindowBoundsDelegate(const WindowBoundsDelegate&) = delete;
+  WindowBoundsDelegate& operator=(const WindowBoundsDelegate&) = delete;
+
   virtual ~WindowBoundsDelegate() {}
 
   // Gets the bounds in pixels for |window|.
   virtual gfx::Rect GetBoundsInPixels(aura::WindowTreeHost* window) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowBoundsDelegate);
 };
 
 // Stores internal state during occlusion computation by

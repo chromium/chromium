@@ -60,6 +60,10 @@ class MockSurfaceGpu : public WaylandSurfaceGpu {
       : buffer_manager_(buffer_manager), widget_(widget) {
     buffer_manager_->RegisterSurface(widget_, this);
   }
+
+  MockSurfaceGpu(const MockSurfaceGpu&) = delete;
+  MockSurfaceGpu& operator=(const MockSurfaceGpu&) = delete;
+
   ~MockSurfaceGpu() { buffer_manager_->UnregisterSurface(widget_); }
 
   MOCK_METHOD3(OnSubmission,
@@ -73,8 +77,6 @@ class MockSurfaceGpu : public WaylandSurfaceGpu {
  private:
   WaylandBufferManagerGpu* const buffer_manager_;
   const gfx::AcceleratedWidget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSurfaceGpu);
 };
 
 }  // namespace
@@ -82,6 +84,10 @@ class MockSurfaceGpu : public WaylandSurfaceGpu {
 class WaylandBufferManagerTest : public WaylandTest {
  public:
   WaylandBufferManagerTest() = default;
+
+  WaylandBufferManagerTest(const WaylandBufferManagerTest&) = delete;
+  WaylandBufferManagerTest& operator=(const WaylandBufferManagerTest&) = delete;
+
   ~WaylandBufferManagerTest() override = default;
 
   void SetUp() override {
@@ -218,9 +224,6 @@ class WaylandBufferManagerTest : public WaylandTest {
 
   MockTerminateGpuCallback callback_;
   WaylandBufferManagerHost* manager_host_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandBufferManagerTest);
 };
 
 TEST_P(WaylandBufferManagerTest, CreateDmabufBasedBuffers) {

@@ -30,6 +30,10 @@ class Pause : public LayerAnimationElement {
   Pause(AnimatableProperties properties, base::TimeDelta duration)
       : LayerAnimationElement(properties, duration) {
   }
+
+  Pause(const Pause&) = delete;
+  Pause& operator=(const Pause&) = delete;
+
   ~Pause() override {}
 
  private:
@@ -40,8 +44,6 @@ class Pause : public LayerAnimationElement {
   }
   void OnGetTarget(TargetValue* target) const override {}
   void OnAbort(LayerAnimationDelegate* delegate) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(Pause);
 };
 
 // InterpolatedTransformTransition ---------------------------------------------
@@ -53,6 +55,12 @@ class InterpolatedTransformTransition : public LayerAnimationElement {
       base::TimeDelta duration)
       : LayerAnimationElement(TRANSFORM, duration),
         interpolated_transform_(std::move(interpolated_transform)) {}
+
+  InterpolatedTransformTransition(const InterpolatedTransformTransition&) =
+      delete;
+  InterpolatedTransformTransition& operator=(
+      const InterpolatedTransformTransition&) = delete;
+
   ~InterpolatedTransformTransition() override {}
 
  protected:
@@ -76,8 +84,6 @@ class InterpolatedTransformTransition : public LayerAnimationElement {
 
  private:
   std::unique_ptr<InterpolatedTransform> interpolated_transform_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterpolatedTransformTransition);
 };
 
 // BoundsTransition ------------------------------------------------------------
@@ -88,6 +94,10 @@ class BoundsTransition : public LayerAnimationElement {
       : LayerAnimationElement(BOUNDS, duration),
         target_(target) {
   }
+
+  BoundsTransition(const BoundsTransition&) = delete;
+  BoundsTransition& operator=(const BoundsTransition&) = delete;
+
   ~BoundsTransition() override {}
 
  protected:
@@ -112,8 +122,6 @@ class BoundsTransition : public LayerAnimationElement {
  private:
   gfx::Rect start_;
   const gfx::Rect target_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoundsTransition);
 };
 
 // VisibilityTransition --------------------------------------------------------
@@ -125,6 +133,10 @@ class VisibilityTransition : public LayerAnimationElement {
         start_(false),
         target_(target) {
   }
+
+  VisibilityTransition(const VisibilityTransition&) = delete;
+  VisibilityTransition& operator=(const VisibilityTransition&) = delete;
+
   ~VisibilityTransition() override {}
 
  protected:
@@ -148,8 +160,6 @@ class VisibilityTransition : public LayerAnimationElement {
  private:
   bool start_;
   const bool target_;
-
-  DISALLOW_COPY_AND_ASSIGN(VisibilityTransition);
 };
 
 // BrightnessTransition --------------------------------------------------------
@@ -161,6 +171,10 @@ class BrightnessTransition : public LayerAnimationElement {
         start_(0.0f),
         target_(target) {
   }
+
+  BrightnessTransition(const BrightnessTransition&) = delete;
+  BrightnessTransition& operator=(const BrightnessTransition&) = delete;
+
   ~BrightnessTransition() override {}
 
  protected:
@@ -185,8 +199,6 @@ class BrightnessTransition : public LayerAnimationElement {
  private:
   float start_;
   const float target_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrightnessTransition);
 };
 
 // GrayscaleTransition ---------------------------------------------------------
@@ -198,6 +210,10 @@ class GrayscaleTransition : public LayerAnimationElement {
         start_(0.0f),
         target_(target) {
   }
+
+  GrayscaleTransition(const GrayscaleTransition&) = delete;
+  GrayscaleTransition& operator=(const GrayscaleTransition&) = delete;
+
   ~GrayscaleTransition() override {}
 
  protected:
@@ -222,8 +238,6 @@ class GrayscaleTransition : public LayerAnimationElement {
  private:
   float start_;
   const float target_;
-
-  DISALLOW_COPY_AND_ASSIGN(GrayscaleTransition);
 };
 
 // ColorTransition -------------------------------------------------------------
@@ -235,6 +249,10 @@ class ColorTransition : public LayerAnimationElement {
         start_(SK_ColorBLACK),
         target_(target) {
   }
+
+  ColorTransition(const ColorTransition&) = delete;
+  ColorTransition& operator=(const ColorTransition&) = delete;
+
   ~ColorTransition() override {}
 
  protected:
@@ -259,8 +277,6 @@ class ColorTransition : public LayerAnimationElement {
  private:
   SkColor start_;
   const SkColor target_;
-
-  DISALLOW_COPY_AND_ASSIGN(ColorTransition);
 };
 
 // ClipRectTransition ----------------------------------------------------------
@@ -269,6 +285,10 @@ class ClipRectTransition : public LayerAnimationElement {
  public:
   ClipRectTransition(const gfx::Rect& target, base::TimeDelta duration)
       : LayerAnimationElement(CLIP, duration), target_(target) {}
+
+  ClipRectTransition(const ClipRectTransition&) = delete;
+  ClipRectTransition& operator=(const ClipRectTransition&) = delete;
+
   ~ClipRectTransition() override {}
 
  protected:
@@ -293,8 +313,6 @@ class ClipRectTransition : public LayerAnimationElement {
  private:
   gfx::Rect start_;
   const gfx::Rect target_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipRectTransition);
 };
 
 // RoundedCornersTransition ----------------------------------------------------
@@ -304,6 +322,10 @@ class RoundedCornersTransition : public LayerAnimationElement {
   RoundedCornersTransition(const gfx::RoundedCornersF& target,
                            base::TimeDelta duration)
       : LayerAnimationElement(ROUNDED_CORNERS, duration), target_(target) {}
+
+  RoundedCornersTransition(const RoundedCornersTransition&) = delete;
+  RoundedCornersTransition& operator=(const RoundedCornersTransition&) = delete;
+
   ~RoundedCornersTransition() override = default;
 
  protected:
@@ -336,8 +358,6 @@ class RoundedCornersTransition : public LayerAnimationElement {
  private:
   gfx::RoundedCornersF start_;
   gfx::RoundedCornersF target_;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundedCornersTransition);
 };
 
 // ThreadedLayerAnimationElement -----------------------------------------------
@@ -348,6 +368,11 @@ class ThreadedLayerAnimationElement : public LayerAnimationElement {
                                 base::TimeDelta duration)
       : LayerAnimationElement(properties, duration) {
   }
+
+  ThreadedLayerAnimationElement(const ThreadedLayerAnimationElement&) = delete;
+  ThreadedLayerAnimationElement& operator=(
+      const ThreadedLayerAnimationElement&) = delete;
+
   ~ThreadedLayerAnimationElement() override {}
 
   bool IsThreaded(LayerAnimationDelegate* delegate) const override {
@@ -405,9 +430,6 @@ class ThreadedLayerAnimationElement : public LayerAnimationElement {
   virtual void OnEnd(LayerAnimationDelegate* delegate) = 0;
 
   virtual std::unique_ptr<cc::KeyframeModel> CreateCCKeyframeModel() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadedLayerAnimationElement);
 };
 
 // ThreadedOpacityTransition ---------------------------------------------------
@@ -419,6 +441,11 @@ class ThreadedOpacityTransition : public ThreadedLayerAnimationElement {
         start_(0.0f),
         target_(target) {
   }
+
+  ThreadedOpacityTransition(const ThreadedOpacityTransition&) = delete;
+  ThreadedOpacityTransition& operator=(const ThreadedOpacityTransition&) =
+      delete;
+
   ~ThreadedOpacityTransition() override {}
 
  protected:
@@ -474,8 +501,6 @@ class ThreadedOpacityTransition : public ThreadedLayerAnimationElement {
  private:
   float start_;
   const float target_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedOpacityTransition);
 };
 
 // ThreadedTransformTransition -------------------------------------------------
@@ -487,6 +512,11 @@ class ThreadedTransformTransition : public ThreadedLayerAnimationElement {
       : ThreadedLayerAnimationElement(TRANSFORM, duration),
         target_(target) {
   }
+
+  ThreadedTransformTransition(const ThreadedTransformTransition&) = delete;
+  ThreadedTransformTransition& operator=(const ThreadedTransformTransition&) =
+      delete;
+
   ~ThreadedTransformTransition() override {}
 
  protected:
@@ -533,8 +563,6 @@ class ThreadedTransformTransition : public ThreadedLayerAnimationElement {
  private:
   gfx::Transform start_;
   const gfx::Transform target_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedTransformTransition);
 };
 
 }  // namespace
