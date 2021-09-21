@@ -48,12 +48,6 @@ class DualMediaSinkService {
   static DualMediaSinkService* GetInstance();
   static void SetInstanceForTest(DualMediaSinkService* instance_for_test);
 
-  // Returns the current list of sinks, keyed by provider name.
-  const base::flat_map<std::string, std::vector<MediaSinkInternal>>&
-  current_sinks() {
-    return current_sinks_;
-  }
-
   // Used by DialMediaRouteProvider only.
   DialMediaSinkServiceImpl* GetDialMediaSinkServiceImpl();
 
@@ -64,9 +58,10 @@ class DualMediaSinkService {
     return cast_app_discovery_service_.get();
   }
 
-  // Adds |callback| to be notified when the list of discovered sinks changes.
-  // The caller is responsible for destroying the returned subscription when it
-  // no longer wishes to receive updates.
+  // Calls |callback| with the current list of discovered sinks, and adds
+  // |callback| to be notified when the list changes. The caller is responsible
+  // for destroying the returned subscription when it no longer wishes to
+  // receive updates.
   base::CallbackListSubscription AddSinksDiscoveredCallback(
       const OnSinksDiscoveredProviderCallback& callback);
 
@@ -98,6 +93,8 @@ class DualMediaSinkService {
   friend class DualMediaSinkServiceTest;
   FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
                            AddSinksDiscoveredCallback);
+  FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
+                           AddSinksDiscoveredCallbackAfterDiscovery);
   friend class MediaRouterDesktopTest;
 
   static DualMediaSinkService* instance_for_test_;
