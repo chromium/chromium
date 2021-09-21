@@ -6474,19 +6474,6 @@
     'name': 'internal.chrome.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
-      'linux-chrome-finch-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-          'chrome/installer/linux',
-        ],
-        'mixins': [
-          'chrome-swarming-pool',
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'variations_smoke_tests',
-        },
-      },
       'win-chrome-finch-fyi': {
         'additional_compile_targets': [
           'chrome',

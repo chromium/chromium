@@ -197,13 +197,6 @@
       "use_goma": true
     }
   },
-  "linux-chrome-finch-fyi": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "use_goma": true
-    }
-  },
   "linux-chrome-stable": {
     "gn_args": {
       "is_chrome_branded": true,
