@@ -48,18 +48,18 @@ JaPhoneticData = class {
     for (const char of chars) {
       const currentCharacterSet = JaPhoneticData.getCharacterSet(char);
       if (currentCharacterSet !== JaPhoneticData.CharacterSet.OTHER) {
-        if (currentCharacterSet !== lastCharacterSet) {
-          // If the character set has changed, push the prefix first,
-          // followed by the character.
-          const prefix = JaPhoneticData.getDefaultPrefix(currentCharacterSet);
-          result.push(prefix, JaPhoneticData.maybeGetLargeLetterKana(char));
+        const info =
+            JaPhoneticData.getPrefixInfo(lastCharacterSet, currentCharacterSet);
+        if (info.prefix) {
+          // Need to announce the new charset explicitly.
+          result.push(info.prefix);
+        }
+        if (info.delimiter === false && result.length > 0) {
+          // Does not convert small Kana if it is not the beginning of the
+          // element.
+          result[result.length - 1] += char;
         } else {
-          const lastEntry = result[result.length - 1];
-          if (lastEntry) {
-            // If the character set stayed the same, then append the character
-            // to the last entry in the array.
-            result[result.length - 1] = lastEntry.concat(char);
-          }
+          result.push(JaPhoneticData.maybeGetLargeLetterKana(char));
         }
       } else {
         result.push(JaPhoneticData.phoneticMap_.get(char) || char);
@@ -136,6 +136,113 @@ JaPhoneticData = class {
    */
   static getDefaultPrefix(characterSet) {
     return JaPhoneticData.DEFAULT_PREFIX.get(characterSet);
+  }
+
+  /**
+   * Returns an object containing the relationship between the preceding
+   * character set and the current character set.
+   * @param {JaPhoneticData.CharacterSet} lastCharacterSet
+   * @param {JaPhoneticData.CharacterSet} currentCharacterSet
+   * @return {Object<{delimiter: boolean, prefix: ?string}>}
+   * delimiter: true if a space between preceding character and current
+   * character is necessary. A space leaves a pause so users can recognize that
+   * the type of characters has changed.
+   * prefix: a string that represents the character set. Null if unncessary.
+   */
+  static getPrefixInfo(lastCharacterSet, currentCharacterSet) {
+    // Don't add prefixes for the same character set.
+    if (lastCharacterSet === currentCharacterSet) {
+      return {delimiter: false, prefix: null};
+    }
+    // Exceptional cases:
+    switch (currentCharacterSet) {
+      case JaPhoneticData.CharacterSet.HIRAGANA:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.NONE:
+          case JaPhoneticData.CharacterSet.HIRAGANA_SMALL_LETTER:
+            return {delimiter: false, prefix: null};
+          case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_UPPER:
+          case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_LOWER:
+          case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER:
+          case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER:
+          case JaPhoneticData.CharacterSet.OTHER:
+            return {delimiter: true, prefix: null};
+        }
+        break;
+      case JaPhoneticData.CharacterSet.KATAKANA:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.KATAKANA_SMALL_LETTER:
+            return {delimiter: false, prefix: null};
+        }
+        break;
+      case JaPhoneticData.CharacterSet.HIRAGANA_SMALL_LETTER:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.NONE:
+          case JaPhoneticData.CharacterSet.HIRAGANA:
+            return {delimiter: false, prefix: null};
+          case JaPhoneticData.CharacterSet.OTHER:
+            return {delimiter: true, prefix: null};
+        }
+        break;
+      case JaPhoneticData.CharacterSet.KATAKANA_SMALL_LETTER:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.KATAKANA:
+            return {delimiter: false, prefix: null};
+        }
+        break;
+      case JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA_SMALL_LETTER:
+            return {delimiter: false, prefix: null};
+        }
+        break;
+      case JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA_SMALL_LETTER:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA:
+            return {delimiter: false, prefix: null};
+        }
+        break;
+      case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_UPPER:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER:
+          case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER:
+          case JaPhoneticData.CharacterSet.OTHER:
+            return {delimiter: true, prefix: 'ハンカクオオモジ'};
+        }
+        break;
+      case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_LOWER:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.NONE:
+            return {delimiter: false, prefix: null};
+          case JaPhoneticData.CharacterSet.HIRAGANA:
+          case JaPhoneticData.CharacterSet.KATAKANA:
+          case JaPhoneticData.CharacterSet.HIRAGANA_SMALL_LETTER:
+          case JaPhoneticData.CharacterSet.KATAKANA_SMALL_LETTER:
+          case JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA:
+          case JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA_SMALL_LETTER:
+          case JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_UPPER:
+            return {delimiter: true, prefix: null};
+        }
+        break;
+      case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER:
+          case JaPhoneticData.CharacterSet.OTHER:
+            return {delimiter: true, prefix: 'オオモジ'};
+        }
+        break;
+      case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER:
+        switch (lastCharacterSet) {
+          case JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER:
+            return {delimiter: true, prefix: null};
+        }
+        break;
+    }
+    // Returns the default prefix.
+    return {
+      delimiter: true,
+      prefix: JaPhoneticData.getDefaultPrefix(currentCharacterSet)
+    };
   }
 };
 
