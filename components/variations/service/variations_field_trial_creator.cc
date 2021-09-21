@@ -146,9 +146,6 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
 
 }  // namespace
 
-const base::Feature kForceFieldTrialSetupCrashForTesting{
-    "ForceFieldTrialSetupCrashForTesting", base::FEATURE_DISABLED_BY_DEFAULT};
-
 VariationsFieldTrialCreator::VariationsFieldTrialCreator(
     VariationsServiceClient* client,
     std::unique_ptr<VariationsSeedStore> seed_store,
@@ -199,6 +196,19 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
     base::FieldTrial::EnableBenchmarking();
   }
 
+#if !defined(OS_ANDROID)
+  // TODO(crbug/1248239): Enable Extended Variations Safe Mode on Android.
+  if (extend_variations_safe_mode &&
+      !metrics_state_manager->is_background_session()) {
+    // If the session is expected to be a background session, then do not extend
+    // Variations Safe Mode. Extending Safe Mode involves monitoring for crashes
+    // earlier on in startup; however, this monitoring is not desired in
+    // background sessions, whose terminations should never be considered
+    // crashes.
+    MaybeExtendVariationsSafeMode(metrics_state_manager);
+  }
+#endif
+
   if (command_line->HasSwitch(switches::kForceFieldTrialParams)) {
     bool result = AssociateParamsFromString(
         command_line->GetSwitchValueASCII(switches::kForceFieldTrialParams));
@@ -224,19 +234,6 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
                                          ::switches::kForceFieldTrials));
     }
   }
-
-#if !defined(OS_ANDROID)
-  // TODO(crbug/1248239): Enable Extended Variations Safe Mode on Android.
-  if (extend_variations_safe_mode &&
-      !metrics_state_manager->is_background_session()) {
-    // If the session is expected to be a background session, then do not extend
-    // Variations Safe Mode. Extending Safe Mode involves monitoring for crashes
-    // earlier on in startup; however, this monitoring is not desired in
-    // background sessions, whose terminations should never be considered
-    // crashes.
-    MaybeExtendVariationsSafeMode(metrics_state_manager);
-  }
-#endif
 
   VariationsIdsProvider* http_header_provider =
       VariationsIdsProvider::GetInstance();
@@ -303,15 +300,6 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
       used_seed, low_entropy_provider.get(), feature_list.get());
 
   base::FeatureList::SetInstance(std::move(feature_list));
-
-  // For testing Variations Safe Mode, maybe crash here.
-  if (base::FeatureList::IsEnabled(kForceFieldTrialSetupCrashForTesting)) {
-    // We use a recognizable token for the CHECK condition, to allow tests to
-    // recognize the crash location in the test output. See:
-    // TEST_P(FieldTrialTest, ExtendedSafeModeEndToEnd)
-    constexpr bool crash_for_testing = false;
-    CHECK(crash_for_testing);
-  }
 
   // This must be called after |local_state_| is initialized.
   platform_field_trials->SetupFieldTrials();

@@ -255,10 +255,6 @@ class VariationsFieldTrialCreator {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-// A testing feature that forces a crash during field trial creation
-// on developer and test builds.
-extern const base::Feature kForceFieldTrialSetupCrashForTesting;
-
 }  // namespace variations
 
 #endif  // COMPONENTS_VARIATIONS_SERVICE_VARIATIONS_FIELD_TRIAL_CREATOR_H_
