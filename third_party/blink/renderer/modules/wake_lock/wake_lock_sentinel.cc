@@ -82,6 +82,11 @@ void WakeLockSentinel::DoRelease() {
   manager_->UnregisterSentinel(this);
   manager_.Clear();
 
+  // This function may be called on ExecutionContext destruction. Events should
+  // not be dispatched in this case.
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
+    return;
+
   // 4. Set lock's [[Released]] to true.
   // 5. Fire an event named "release" at lock.
   DCHECK(!released_);
