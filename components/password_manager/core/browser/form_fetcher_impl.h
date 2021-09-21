@@ -40,8 +40,8 @@ class FormFetcherImpl : public FormFetcher,
 
   ~FormFetcherImpl() override;
 
-  // Returns a MultiStoreFormFetcher if  the password account storage feature is
-  // enabled. Returns a FormFetcherImpl otherwise.
+  // TODO(crbug.com/1108738): Remove this factory method. Callers should use the
+  // constructor instead.
   static std::unique_ptr<FormFetcherImpl> CreateFormFetcherImpl(
       PasswordFormDigest form_digest,
       const PasswordManagerClient* client,

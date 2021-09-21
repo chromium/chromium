@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
-#include "components/password_manager/core/browser/multi_store_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
@@ -244,19 +243,16 @@ class FormFetcherImplTestBase : public testing::Test {
     if (!create_account_store) {
       feature_list_.InitAndDisableFeature(
           password_manager::features::kEnablePasswordsAccountStorage);
-
-      form_fetcher_ = std::make_unique<FormFetcherImpl>(
-          form_digest_, &client_, false /* should_migrate_http_passwords */);
     } else {
       feature_list_.InitAndEnableFeature(
           password_manager::features::kEnablePasswordsAccountStorage);
 
       account_mock_store_ = new testing::NiceMock<MockPasswordStoreInterface>;
       client_.set_account_store(account_mock_store_.get());
-
-      form_fetcher_ = std::make_unique<MultiStoreFormFetcher>(
-          form_digest_, &client_, false /* should_migrate_http_passwords */);
     }
+
+    form_fetcher_ = std::make_unique<FormFetcherImpl>(
+        form_digest_, &client_, false /* should_migrate_http_passwords */);
   }
 
   void SetUp() override {
@@ -1019,7 +1015,7 @@ TEST_F(MultiStoreFormFetcherTest, CloningMultiStoreFetcherClonesState) {
 
   // Cloning a fetcher that is done fetching keeps blocklisting information.
   form_fetcher_.reset(
-      static_cast<MultiStoreFormFetcher*>(form_fetcher_->Clone().release()));
+      static_cast<FormFetcherImpl*>(form_fetcher_->Clone().release()));
   EXPECT_EQ(form_fetcher_->GetState(), FormFetcher::State::NOT_WAITING);
   EXPECT_TRUE(form_fetcher_->IsBlocklisted());
 }
@@ -1035,7 +1031,7 @@ TEST_F(MultiStoreFormFetcherTest, CloningMultiStoreFetcherResumesFetch) {
   // A cloned multi-store fetcher must be a multi-store fetcher itself and
   // continue the fetching.
   form_fetcher_.reset(
-      static_cast<MultiStoreFormFetcher*>(form_fetcher_->Clone().release()));
+      static_cast<FormFetcherImpl*>(form_fetcher_->Clone().release()));
   EXPECT_EQ(form_fetcher_->GetState(), FormFetcher::State::WAITING);
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 

@@ -15,7 +15,6 @@
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
-#include "components/password_manager/core/browser/multi_store_form_fetcher.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -62,8 +61,8 @@ std::unique_ptr<FormFetcherImpl> FormFetcherImpl::CreateFormFetcherImpl(
     PasswordFormDigest form_digest,
     const PasswordManagerClient* client,
     bool should_migrate_http_passwords) {
-  return std::make_unique<MultiStoreFormFetcher>(std::move(form_digest), client,
-                                                 should_migrate_http_passwords);
+  return std::make_unique<FormFetcherImpl>(std::move(form_digest), client,
+                                           should_migrate_http_passwords);
 }
 
 FormFetcherImpl::FormFetcherImpl(PasswordFormDigest form_digest,
