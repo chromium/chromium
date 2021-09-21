@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>A nested bundle is not supported</title>
+<title>Web Bundle fetching failed due to a network error</title>
 <link rel="help" href="https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading.md" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -9,7 +9,5 @@
   window.TEST_WEB_BUNDLE_ELEMENT_TYPE = 'link';
 </script>
 <body>
-  <link rel="webbundle" href="https://web-platform.test:8444/web-bundle/resources/wbn/nested-main.wbn"
-    resources="https://web-platform.test:8444/web-bundle/resources/wbn/nested-sub.wbn" />
-  <script src="resources/nested-bundle-test.js"></script>
+  <script src="resources/network-error-test.sub.js"></script>
 </body>

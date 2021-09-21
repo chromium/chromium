@@ -3,6 +3,7 @@
 <link rel="help" href="https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading.md" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../resources/test-helpers.js"></script>
 
 <body>
   <link id="link-web-bundle" rel="webbundle" href="../resources/wbn/subresource.wbn" resources="https://web-platform.test:8444/web-bundle/resources/wbn/root.js
@@ -165,11 +166,17 @@
     }, 'Dynamically loading classic script from web bundle with link.scopes');
 
     promise_test(() => {
-      return addLinkAndWaitForLoad("../resources/wbn/dynamic1.wbn?test-event");
+      return addLinkAndWaitForLoad(
+          "../resources/wbn/dynamic1.wbn?test-event",
+          /*resources=*/[],
+          /*crossorigin=*/undefined);
     }, '<link rel="webbundle"> fires a load event on load success');
 
     promise_test((t) => {
-      return addLinkAndWaitForError("../resources/wbn/nonexistent.wbn");
+      return addLinkAndWaitForError(
+          "../resources/wbn/nonexistent.wbn",
+          /*resources=*/[],
+          /*crossorigin=*/undefined);
     }, '<link rel="webbundle"> fires an error event on load failure');
 
     promise_test(async () => {
@@ -207,34 +214,14 @@
     promise_test(async () => {
       const wbn_url = 'https://web-platform.test:8444/web-bundle/resources/wbn/subresource.wbn?test-resources-update';
       const resource_url = 'https://web-platform.test:8444/web-bundle/resources/wbn/submodule.js';
-      const link = await addLinkAndWaitForLoad(wbn_url);
+      const link = await addLinkAndWaitForLoad(wbn_url,
+                                               /*resources=*/[],
+                                               /*crossorigin=*/undefined);
       link.resources.add(resource_url);
       const resp = await fetch(resource_url, { cache: 'no-store' });
       assert_true(resp.ok);
       assert_equals(performance.getEntriesByName(wbn_url).length, 1);
     }, 'Updating resource= attribute should not reload the bundle');
-
-    function addLinkAndWaitForLoad(url) {
-      return new Promise((resolve, reject) => {
-        const link = document.createElement("link");
-        link.rel = "webbundle";
-        link.href = url;
-        link.onload = () => resolve(link);
-        link.onerror = reject;
-        document.body.appendChild(link);
-      });
-    }
-
-    function addLinkAndWaitForError(url) {
-      return new Promise((resolve, reject) => {
-        const link = document.createElement("link");
-        link.rel = "webbundle";
-        link.href = url;
-        link.onload = reject;
-        link.onerror = () => resolve(link);
-        document.body.appendChild(link);
-      });
-    }
 
     async function loadScriptAndWaitReport(script_url) {
       const result_promise = new Promise((resolve) => {

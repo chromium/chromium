@@ -6,10 +6,14 @@
 <script src="../resources/test-helpers.js"></script>
 
 <script>
-  window.TEST_WEB_BUNDLE_ELEMENT_TYPE = 'link';
+  window.TEST_WEB_BUNDLE_ELEMENT_TYPE = 'script';
 </script>
 <body>
-  <link rel="webbundle" href="https://web-platform.test:8444/web-bundle/resources/wbn/nested-main.wbn"
-    resources="https://web-platform.test:8444/web-bundle/resources/wbn/nested-sub.wbn" />
+  <script type="webbundle">
+    {
+      "source": "/web-bundle/resources/wbn/nested-main.wbn",
+      "resources": ["/web-bundle/resources/wbn/nested-sub.wbn"]
+    }
+  </script>
   <script src="resources/nested-bundle-test.js"></script>
 </body>

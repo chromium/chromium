@@ -6,10 +6,12 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <body>
-  <link
-  rel="webbundle"
-  href="../static-element.wbn"
-  resources="resources/script.js"/>
+  <script type="webbundle">
+    {
+      "source": "../static-element.wbn",
+      "resources": ["resources/script.js"]
+    }
+  </script>
   <script id="script" src="resources/script.js"></script>
 
   <script src="/web-bundle/subresource-loading/resources/relative-url-with-base-test.js"></script>

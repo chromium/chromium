@@ -6,13 +6,15 @@
 <script src="../resources/test-helpers.js"></script>
 
 <script>
-  window.TEST_WEB_BUNDLE_ELEMENT_TYPE = 'link';
+  window.TEST_WEB_BUNDLE_ELEMENT_TYPE = 'script';
 </script>
 <body>
-  <link
-  rel="webbundle"
-  href="../resources/wbn/static-element.wbn"
-  resources="/web-bundle/resources/wbn/static-element/resources/script.js"/>
+  <script type="webbundle">
+    {
+      "source": "../resources/wbn/static-element.wbn",
+      "resources": ["/web-bundle/resources/wbn/static-element/resources/script.js"]
+    }
+  </script>
   <script id="script" src="/web-bundle/resources/wbn/static-element/resources/script.js"></script>
 
   <script src="resources/relative-url-test.js"></script>

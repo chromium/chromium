@@ -5,29 +5,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="../resources/test-helpers.js"></script>
 
+<script>
+  window.TEST_WEB_BUNDLE_ELEMENT_TYPE = 'link';
+</script>
 <body>
-  <!--
-       This test uses a non-existing WebBundle,
-       https://web-platform.test:8444/web-bundle/resources/wbn/cors/non-existing.wbn.
-
-       The intent of this test is to check if failing to fetch a WebBundle due to not
-       found error also makes subresource fetch requests fail.
-  -->
-  <script>
-    promise_test(async () => {
-      const prefix =
-        "https://web-platform.test:8444/web-bundle/resources/wbn/";
-      const resources = [
-        prefix + "resource.js",
-      ];
-      const link = await addLinkAndWaitForError(
-        prefix + "non-existing.wbn",
-        resources,
-        undefined
-      );
-
-      // Can not fetch a subresource because Web Bundle fetch failed.
-      await fetchAndWaitForReject(prefix + "resource.js");
-    }, "Subresource fetch requests for non-existing Web Bundle should fail.");
-  </script>
+  <script src="resources/not-found-test.js"></script>
 </body>
