@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.AppHooksModule;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -102,6 +103,7 @@ public class IncognitoTabLauncherTest {
     @Test
     @Feature("Incognito")
     @MediumTest
+    @DisabledTest(message = "crbug.com/1237504")
     public void testLaunchIncognitoNewTab() throws TimeoutException {
         ChromeTabbedActivity activity = launchIncognitoTab(false);
         assertIncognitoTabLaunched(activity, false);
@@ -110,6 +112,7 @@ public class IncognitoTabLauncherTest {
     @Test
     @Feature("Incognito")
     @MediumTest
+    @DisabledTest(message = "crbug.com/1237504")
     @Features.DisableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLaunchIncognitoNewTab_omniboxFocused_disabled_firstParty()
             throws TimeoutException {
@@ -120,6 +123,7 @@ public class IncognitoTabLauncherTest {
     @Test
     @Feature("Incognito")
     @MediumTest
+    @DisabledTest(message = "crbug.com/1237504")
     @Features.DisableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLaunchIncognitoNewTab_omniboxFocused_disabled_thirdParty()
             throws TimeoutException {
@@ -130,6 +134,7 @@ public class IncognitoTabLauncherTest {
     @Test
     @Feature("Incognito")
     @MediumTest
+    @DisabledTest(message = "crbug.com/1237504")
     @Features.EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLaunchIncognitoNewTab_omniboxFocused_enabled_thirdParty()
             throws TimeoutException {
@@ -140,6 +145,7 @@ public class IncognitoTabLauncherTest {
     @Test
     @Feature("Incognito")
     @MediumTest
+    @DisabledTest(message = "crbug.com/1237504")
     @Features.EnableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLaunchIncognitoNewTab_omniboxFocused_enabled_firstParty()
             throws TimeoutException {
