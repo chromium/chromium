@@ -2696,6 +2696,12 @@ const char kV8VmFutureDescription[] =
     "This enables upcoming and experimental V8 VM features. "
     "This flag does not enable experimental JavaScript features.";
 
+const char kVerticalSnapName[] = "Vertical Snap features";
+const char kVerticalSnapDescription[] =
+    "This enables Vertical Snap feature in portrait display."
+    "This feature allows users to snap windows to top and bottom in portrait "
+    "display orientation and maintains left/right snap for landscape display.";
+
 const char kWalletServiceUseSandboxName[] =
     "Use Google Payments sandbox servers";
 const char kWalletServiceUseSandboxDescription[] =
