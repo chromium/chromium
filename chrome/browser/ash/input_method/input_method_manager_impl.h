@@ -67,13 +67,6 @@ class InputMethodManagerImpl : public InputMethodManager,
     // Returns true if |input_method_id| is in |active_input_method_ids|.
     bool InputMethodIsActivated(const std::string& input_method_id) const;
 
-    // If |current_input_methodid_| is not in |input_method_ids|, switch to
-    // input_method_ids[0]. If the ID is equal to input_method_ids[N], switch to
-    // input_method_ids[N+1].
-    void SwitchToNextInputMethodInternal(
-        const std::vector<std::string>& input_method_ids,
-        const std::string& current_input_methodid);
-
     // Returns true if given input method requires pending extension.
     bool MethodAwaitsExtensionLoad(const std::string& input_method_id) const;
 

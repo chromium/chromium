@@ -808,9 +808,14 @@ void InputMethodManagerImpl::StateImpl::SwitchToNextInputMethod() {
   if (!CanCycleInputMethod())
     return;
 
-  // Find the next input method and switch to it.
-  SwitchToNextInputMethodInternal(active_input_method_ids,
-                                  current_input_method.id());
+  auto iter =
+      std::find(active_input_method_ids.begin(), active_input_method_ids.end(),
+                current_input_method.id());
+  if (iter != active_input_method_ids.end())
+    ++iter;
+  if (iter == active_input_method_ids.end())
+    iter = active_input_method_ids.begin();
+  ChangeInputMethod(*iter, true);
 }
 
 void InputMethodManagerImpl::StateImpl::SwitchToLastUsedInputMethod() {
@@ -831,18 +836,6 @@ void InputMethodManagerImpl::StateImpl::SwitchToLastUsedInputMethod() {
     SwitchToNextInputMethod();
     return;
   }
-  ChangeInputMethod(*iter, true);
-}
-
-void InputMethodManagerImpl::StateImpl::SwitchToNextInputMethodInternal(
-    const std::vector<std::string>& input_method_ids,
-    const std::string& current_input_method_id) {
-  auto iter = std::find(input_method_ids.begin(), input_method_ids.end(),
-                        current_input_method_id);
-  if (iter != input_method_ids.end())
-    ++iter;
-  if (iter == input_method_ids.end())
-    iter = input_method_ids.begin();
   ChangeInputMethod(*iter, true);
 }
 
