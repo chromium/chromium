@@ -2510,6 +2510,8 @@ test("ash_unittests") {
     "wm/overview/overview_grid_unittest.cc",
     "wm/overview/overview_highlight_controller_unittest.cc",
     "wm/overview/overview_session_unittest.cc",
+    "wm/overview/overview_test_base.cc",
+    "wm/overview/overview_test_base.h",
     "wm/overview/overview_test_util.cc",
     "wm/overview/overview_test_util.h",
     "wm/overview/overview_wallpaper_controller_unittest.cc",

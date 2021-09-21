@@ -374,7 +374,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
  private:
   class TargetWindowObserver;
-  friend class OverviewSessionTest;
+  friend class OverviewTestBase;
 
   // Struct which holds data required to perform nudges.
   struct NudgeData {

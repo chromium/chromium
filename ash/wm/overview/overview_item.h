@@ -268,7 +268,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   }
 
  private:
-  friend class OverviewSessionTest;
+  friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(SplitViewOverviewSessionTest, Clipping);
 
   // Returns the target bounds of |window_|. Same as |target_bounds_|, with some

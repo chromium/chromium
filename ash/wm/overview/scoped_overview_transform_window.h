@@ -158,7 +158,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
  private:
   friend class OverviewHighlightControllerTest;
-  friend class OverviewSessionTest;
+  friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(OverviewSessionTest, CloseAnimationShadow);
   class LayerCachingAndFilteringObserver;
 

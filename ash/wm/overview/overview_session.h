@@ -331,7 +331,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
  private:
   friend class DesksAcceleratorsTest;
-  friend class OverviewSessionTest;
+  friend class OverviewTestBase;
 
   // Helper function that moves the highlight forward or backward on the
   // corresponding window grid.

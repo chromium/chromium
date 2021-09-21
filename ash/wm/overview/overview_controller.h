@@ -112,8 +112,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   std::vector<aura::Window*> GetWindowsListInOverviewGridsForTest();
 
  private:
-  friend class OverviewSessionTest;
-
   // Toggle overview mode. Depending on |type| the enter/exit animation will
   // look different.
   void ToggleOverview(
