@@ -130,6 +130,9 @@ extern const char kEnableSignedExchangeSubresourcePrefetchDescription[];
 extern const char kEnableSignedExchangePrefetchCacheForNavigationsName[];
 extern const char kEnableSignedExchangePrefetchCacheForNavigationsDescription[];
 
+extern const char kU2FSecurityKeyAPIName[];
+extern const char kU2FSecurityKeyAPIDescription[];
+
 extern const char kUseLookalikesForNavigationSuggestionsName[];
 extern const char kUseLookalikesForNavigationSuggestionsDescription[];
 

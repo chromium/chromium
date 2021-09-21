@@ -7731,6 +7731,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAppDiscoveryForOobe)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    {"u2f-security-key-api", flag_descriptions::kU2FSecurityKeyAPIName,
+     flag_descriptions::kU2FSecurityKeyAPIDescription, kOsAll,
+     FEATURE_VALUE_TYPE(extensions_features::kU2FSecurityKeyAPI)},
+#endif  // ENABLE_EXTENSIONS
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
