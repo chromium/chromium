@@ -40,6 +40,10 @@ class DuplicateDownloadInfoBar : public infobars::ConfirmInfoBar {
       std::unique_ptr<android::DuplicateDownloadInfoBarDelegate> delegate);
   ~DuplicateDownloadInfoBar() override;
 
+  static void RecordDuplicateDownloadInfobarEvent(
+      bool is_offline_page,
+      DuplicateDownloadInfobarEvent event);
+
  private:
   explicit DuplicateDownloadInfoBar(
       std::unique_ptr<android::DuplicateDownloadInfoBarDelegate> delegate);

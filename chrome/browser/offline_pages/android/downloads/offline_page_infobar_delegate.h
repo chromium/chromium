@@ -49,6 +49,7 @@ class OfflinePageInfoBarDelegate
   bool IsOfflinePage() const override;
   std::string GetPageURL() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
+  void InfoBarDismissed() override;
   bool DuplicateRequestExists() const override;
   OfflinePageInfoBarDelegate* AsOfflinePageInfoBarDelegate() override;
 
