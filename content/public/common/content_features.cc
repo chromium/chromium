@@ -686,6 +686,11 @@ const base::Feature kSendBeaconThrowForBlobWithNonSimpleType{
 const base::Feature kServiceWorkerPaymentApps{"ServiceWorkerPaymentApps",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable the basic-card payment method from the PaymentRequest API. This flag
+// will be used to deprecate basic-card eventually: crbug.com/1209835.
+const base::Feature kPaymentRequestBasicCard{"PaymentRequestBasicCard",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 // If enabled, prefer to start service workers in an unused renderer process if
 // available. This helps let navigations and service workers use the same
 // process when a process was already created for a navigation but not yet

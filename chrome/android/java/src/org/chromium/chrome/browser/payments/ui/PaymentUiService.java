@@ -554,7 +554,8 @@ public class PaymentUiService
         }
         // Checks whether the merchant supports autofill cards before show is called.
         mMerchantSupportsAutofillCards =
-                BasicCardUtils.merchantSupportsBasicCard(mParams.getMethodData());
+                PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)
+                && BasicCardUtils.merchantSupportsBasicCard(mParams.getMethodData());
 
         // If in strict mode, don't give user an option to add an autofill card during the checkout
         // to avoid the "unhappy" basic-card flow.

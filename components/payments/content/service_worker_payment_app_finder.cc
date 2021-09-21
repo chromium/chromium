@@ -34,6 +34,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/stored_payment_app.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "ui/gfx/image/image.h"
 #include "url/url_canon.h"
 
@@ -75,6 +76,8 @@ bool AppSupportsAtLeastOneRequestedMethodData(
   for (const auto& enabled_method : app.enabled_methods) {
     for (const auto& request : requests) {
       if (enabled_method == request->supported_method) {
+        if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard))
+          return true;
         if (enabled_method != methods::kBasicCard ||
             BasicCardCapabilitiesMatch(app.capabilities, request)) {
           return true;

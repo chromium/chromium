@@ -21,6 +21,7 @@
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payments_experimental_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace payments {
@@ -40,6 +41,11 @@ void PopulateValidatedMethodData(
                                    basic_card_specified_networks,
                                    url_payment_method_identifiers,
                                    payment_method_identifiers_set);
+  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard)) {
+    // Clears the basic-card related items that ParseSupportedMethods() added.
+    supported_card_networks->clear();
+    basic_card_specified_networks->clear();
+  }
   supported_card_networks_set->insert(supported_card_networks->begin(),
                                       supported_card_networks->end());
 }

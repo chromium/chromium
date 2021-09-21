@@ -291,6 +291,9 @@ public class ChromePaymentRequestService
     @Override
     public void modifyQueryForQuotaCreatedIfNeeded(
             Map<String, PaymentMethodData> queryForQuota, PaymentOptions paymentOptions) {
+        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)) {
+            return;
+        }
         if (queryForQuota.containsKey(MethodStrings.BASIC_CARD)
                 && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                         PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
@@ -305,16 +308,17 @@ public class ChromePaymentRequestService
     @Override
     public void addPaymentAppFactories(
             PaymentAppService service, PaymentAppFactoryDelegate delegate) {
-
-        String autofillFactoryId = AutofillPaymentAppFactory.class.getName();
-        if (!service.containsFactory(autofillFactoryId)) {
-            service.addUniqueFactory(
-                    mDelegate.createAutofillPaymentAppFactory(), autofillFactoryId);
-        }
-        if (mDelegate.canMakeAutofillPayment(mSpec.getMethodData())) {
-            mPaymentUiService.setAutofillPaymentAppCreator(
-                    AutofillPaymentAppFactory.createAppCreator(
-                            /*delegate=*/delegate));
+        if (PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)) {
+            String autofillFactoryId = AutofillPaymentAppFactory.class.getName();
+            if (!service.containsFactory(autofillFactoryId)) {
+                service.addUniqueFactory(
+                        mDelegate.createAutofillPaymentAppFactory(), autofillFactoryId);
+            }
+            if (mDelegate.canMakeAutofillPayment(mSpec.getMethodData())) {
+                mPaymentUiService.setAutofillPaymentAppCreator(
+                        AutofillPaymentAppFactory.createAppCreator(
+                                /*delegate=*/delegate));
+            }
         }
     }
 

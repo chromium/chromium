@@ -28,6 +28,8 @@ public class ShadowPaymentFeatureList {
                 PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES, true);
         ShadowPaymentFeatureList.setFeatureEnabled(
                 PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD, true);
     }
 
     @Resetter

@@ -438,7 +438,9 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
   }
 
   // Parse method data to avoid parsing JSON in the browser.
-  if (supported_method == "basic-card") {
+  if (RuntimeEnabledFeatures::PaymentRequestBasicCardEnabled(
+          &execution_context) &&
+      supported_method == "basic-card") {
     BasicCardHelper::ParseBasiccardData(input, output->supported_networks,
                                         exception_state);
   } else if (supported_method == kSecurePaymentConfirmationMethod &&
@@ -664,7 +666,10 @@ void ValidateAndConvertPaymentMethodData(
 #if defined(OS_ANDROID)
   // TODO(crbug.com/984694): Remove this special hack for GPay after general
   // delegation for shipping and contact information is available.
-  bool skip_to_gpay_eligible = SkipToGPayUtils::IsEligible(input);
+  bool skip_to_gpay_eligible =
+      RuntimeEnabledFeatures::PaymentRequestBasicCardEnabled(
+          &execution_context) &&
+      SkipToGPayUtils::IsEligible(input);
 #endif
 
   for (const PaymentMethodData* payment_method_data : input) {

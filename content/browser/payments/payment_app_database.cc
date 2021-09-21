@@ -17,6 +17,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -83,8 +84,10 @@ PaymentInstrumentPtr ToPaymentInstrumentForMojo(const std::string& input) {
     instrument->icons.emplace_back(icon);
   }
   instrument->method = instrument_proto.method();
-  instrument->stringified_capabilities =
-      instrument_proto.stringified_capabilities();
+  if (base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard)) {
+    instrument->stringified_capabilities =
+        instrument_proto.stringified_capabilities();
+  }
 
   return instrument;
 }
@@ -742,10 +745,12 @@ void PaymentAppDatabase::DidReadAllPaymentInstruments(
       continue;
 
     apps[id]->enabled_methods.emplace_back(instrument_proto.method());
-    apps[id]->capabilities.emplace_back(StoredCapabilities());
-    for (const auto& network : instrument_proto.supported_card_networks()) {
-      apps[id]->capabilities.back().supported_card_networks.emplace_back(
-          network);
+    if (base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard)) {
+      apps[id]->capabilities.emplace_back(StoredCapabilities());
+      for (const auto& network : instrument_proto.supported_card_networks()) {
+        apps[id]->capabilities.back().supported_card_networks.emplace_back(
+            network);
+      }
     }
   }
 
@@ -934,10 +939,13 @@ void PaymentAppDatabase::DidFindRegistrationToWritePaymentInstrument(
       size_proto->set_height(size.height());
     }
   }
-  instrument_proto.set_stringified_capabilities(
-      instrument->stringified_capabilities);
-  for (const auto& network : instrument->supported_networks) {
-    instrument_proto.add_supported_card_networks(static_cast<int32_t>(network));
+  if (base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard)) {
+    instrument_proto.set_stringified_capabilities(
+        instrument->stringified_capabilities);
+    for (const auto& network : instrument->supported_networks) {
+      instrument_proto.add_supported_card_networks(
+          static_cast<int32_t>(network));
+    }
   }
 
   std::string serialized_instrument;

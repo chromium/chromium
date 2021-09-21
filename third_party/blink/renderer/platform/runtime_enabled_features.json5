@@ -1696,6 +1696,11 @@
       name: "PaymentRequest",
       status: "experimental",
     },
+    // TODO(crbug.com/1209835): this feature is getting deprecated.
+    {
+      name: "PaymentRequestBasicCard",
+      status: "stable",
+    },
     {
       name: "PaymentRequestMerchantValidationEvent",
       status: "experimental",

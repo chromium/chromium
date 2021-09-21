@@ -305,7 +305,9 @@ void PaymentInstruments::OnRequestPermission(
   instrument->method =
       details->hasMethod() ? details->method() : WTF::g_empty_string;
 
-  if (details->hasCapabilities()) {
+  if (RuntimeEnabledFeatures::PaymentRequestBasicCardEnabled(
+          resolver->GetExecutionContext()) &&
+      details->hasCapabilities()) {
     v8::Local<v8::String> value;
     if (!v8::JSON::Stringify(resolver->GetScriptState()->GetContext(),
                              details->capabilities().V8Value().As<v8::Object>())
@@ -379,7 +381,9 @@ void PaymentInstruments::onGetPaymentInstrument(
   }
   instrument->setIcons(icons);
   instrument->setMethod(stored_instrument->method);
-  if (!stored_instrument->stringified_capabilities.IsEmpty()) {
+  if (RuntimeEnabledFeatures::PaymentRequestBasicCardEnabled(
+          resolver->GetExecutionContext()) &&
+      !stored_instrument->stringified_capabilities.IsEmpty()) {
     ExceptionState exception_state(resolver->GetScriptState()->GetIsolate(),
                                    ExceptionState::kGetterContext,
                                    "PaymentInstruments", "get");

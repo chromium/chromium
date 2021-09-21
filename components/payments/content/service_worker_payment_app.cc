@@ -447,6 +447,9 @@ bool ServiceWorkerPaymentApp::IsValidForModifier(
   if (method != methods::kBasicCard)
     return true;
 
+  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard))
+    return true;
+
   // Checking the capabilities of this app against the modifier.
   // Return true if card networks are not specified in the  modifier.
   if (!supported_networks_specified)

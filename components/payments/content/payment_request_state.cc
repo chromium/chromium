@@ -358,6 +358,7 @@ void PaymentRequestState::CheckRequestedMethodsSupported(
   // used for canMakePayment().
   bool supported = are_requested_methods_supported_;
   if (supported && is_show_user_gesture_ &&
+      base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard) &&
       base::Contains(spec_->payment_method_identifiers_set(),
                      methods::kBasicCard) &&
       !has_non_autofill_app_ && !has_enrolled_instrument_ &&
@@ -447,6 +448,9 @@ void PaymentRequestState::SetAvailablePaymentAppForRetry() {
 void PaymentRequestState::AddAutofillPaymentApp(
     bool selected,
     const autofill::CreditCard& card) {
+  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard))
+    return;
+
   auto app =
       AutofillPaymentAppFactory::ConvertCardToPaymentAppIfSupportedNetwork(
           card, weak_ptr_factory_.GetWeakPtr());

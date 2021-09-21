@@ -29,6 +29,9 @@ public final class SkipToGPayHelperUtil {
     public static boolean canActivateExperiment(
             WebContents webContents, PaymentMethodData[] rawMethodData) {
         if (rawMethodData == null || rawMethodData.length == 0) return false;
+        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)) {
+            return false;
+        }
 
         Map<String, PaymentMethodData> methodData = new ArrayMap<>();
         for (int i = 0; i < rawMethodData.length; i++) {

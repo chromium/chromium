@@ -13,6 +13,7 @@
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/features.h"
+#include "content/public/common/content_features.h"
 
 namespace payments {
 
@@ -57,6 +58,11 @@ void AutofillPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
   // No need to create autofill payment apps if native app creation is skipped
   // because autofill payment apps are created completely by the Java factory.
   if (delegate->SkipCreatingNativePaymentApps()) {
+    delegate->OnDoneCreatingPaymentApps();
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard)) {
     delegate->OnDoneCreatingPaymentApps();
     return;
   }
