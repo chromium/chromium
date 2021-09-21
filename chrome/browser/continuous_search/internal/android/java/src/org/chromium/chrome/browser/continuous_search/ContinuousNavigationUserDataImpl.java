@@ -109,7 +109,8 @@ public class ContinuousNavigationUserDataImpl extends ContinuousNavigationUserDa
         return null;
     }
 
-    void updateCurrentUrl(GURL url) {
+    @Override
+    public void updateCurrentUrl(GURL url) {
         updateCurrentUrlInternal(url, true);
     }
 
