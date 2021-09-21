@@ -3052,7 +3052,7 @@
     Double tap with one finger
   </message>
   <message desc="The text label for the use pitch changes checkbox." name="IDS_CHROMEVOX_OPTIONS_USE_PITCH_CHANGES_CHECKBOX_LABEL">
-    Change pitch when speaking element types and quoted, deleted, bolded, parenthesized, or capitalized text.
+    Change pitch when speaking element types and formatted text
   </message>
   <message desc="Describes the current web page position of the ChromeVox focus." is_accessibility_with_no_ui="true" name="IDS_CHROMEVOX_DESCRIBE_POS_BY_PAGE">
     Page <ph name="currentPage">$1<ex>1</ex></ph> of <ph name="totalPages">$2<ex>10</ex></ph>
