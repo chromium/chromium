@@ -338,6 +338,38 @@ crbug.com/1237275 fast/canvas/layers-lonebeginlayer.html [ Failure Pass ]
 crbug.com/1237275 fast/canvas/layers-unmatched-beginlayer.html [ Failure Pass ]
 crbug.com/1231615 fast/canvas/layers-nested.html [ Failure Pass ]
 
+# Assorted WPT canvas tests failing
+crbug.com/1093709 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
+crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.color.space.p3.fillText.html [ Failure ]
+crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.color.space.p3.fillText.shadow.html [ Failure ]
+crbug.com/1170062 [ Linux ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Pass Timeout ]
+crbug.com/1170062 [ mac ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Pass Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.small.html [ Pass Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.html [ Pass Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.small.html [ Pass Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.html [ Pass Skip Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.small.worker.html [ Pass Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.negative.html [ Pass Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fillText.html [ Pass Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.NaN.html [ Pass Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.negative.html [ Pass Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.negative.worker.html [ Pass Timeout ]
+crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.zero.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.small.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.small.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.html [ Pass Skip Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.small.worker.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.negative.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fillText.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.NaN.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.negative.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.negative.worker.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.zero.html [ Pass Timeout ]
+crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.worker.html [ Timeout ]
+crbug.com/1170337 [ Mac10.13 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.worker.html [ Timeout ]
+crbug.com/1170337 [ Mac10.13 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.worker.html [ Skip Timeout ]
+
 # Subpixel differences due to compositing on Mac10.14+.
 crbug.com/997202 [ Mac10.14 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
 crbug.com/997202 [ Mac10.15 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
@@ -3229,33 +3261,8 @@ crbug.com/626703 [ Mac10.13 ] external/wpt/webxr/xrSession_requestReferenceSpace
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Skip Timeout ]
 crbug.com/1014091 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html [ Failure ]
 crbug.com/1014091 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-2.html [ Failure ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.small.html [ Pass Timeout ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.html [ Pass Timeout ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.small.html [ Pass Timeout ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.html [ Pass Skip Timeout ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.small.worker.html [ Pass Timeout ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.negative.html [ Pass Timeout ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fillText.html [ Pass Timeout ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.NaN.html [ Pass Timeout ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.negative.html [ Pass Timeout ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.negative.worker.html [ Pass Timeout ]
-crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.zero.html [ Pass Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.small.html [ Pass Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.html [ Pass Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.small.html [ Pass Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.html [ Pass Skip Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.small.worker.html [ Pass Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.negative.html [ Pass Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fillText.html [ Pass Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.NaN.html [ Pass Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.negative.html [ Pass Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.negative.worker.html [ Pass Timeout ]
-crbug.com/1170337 [ Linux ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.zero.html [ Pass Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.worker.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webmessaging/with-ports/011.html [ Timeout ]
-crbug.com/626703 [ Mac10.13 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.worker.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/webmessaging/without-ports/011.html [ Timeout ]
-crbug.com/626703 [ Mac10.13 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.worker.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.13 ] virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection.tentative.html?target=ContentEditable&parent=b [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=ContentEditable [ Failure Skip Timeout ]
@@ -3634,8 +3641,6 @@ crbug.com/626703 external/wpt/css/css-ui/cursor-auto-006.html [ Skip ]
 crbug.com/626703 external/wpt/css/css-ui/cursor-auto-007.html [ Skip ]
 crbug.com/626703 external/wpt/requestidlecallback/callback-timeout-when-busy.html [ Skip Timeout ]
 crbug.com/810669 external/wpt/requestidlecallback/callback-removed-frame.html [ Skip ]
-crbug.com/626703 external/wpt/html/canvas/element/building-paths/canvas_complexshapes_arcto_001.htm [ Failure ]
-crbug.com/626703 external/wpt/html/canvas/element/building-paths/canvas_complexshapes_beziercurveto_001.htm [ Failure ]
 crbug.com/626703 external/wpt/compat/webkit-text-fill-color-property-005.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/text/text-decoration-va-length-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/text/text-decoration-va-length-002.xht [ Failure ]
@@ -5516,9 +5521,6 @@ crbug.com/1093198 external/wpt/webrtc/RTCPeerConnection-addIceCandidate-timing [
 # Sheriff 2020-06-09
 crbug.com/1093003 [ Mac ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe.sub.html [ Failure Pass ]
 
-# Sheriff 2020-06-10
-crbug.com/1093709 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
-
 # Sheriff 2020-06-11
 crbug.com/1093026 [ Linux ] http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html [ Failure Pass ]
 
@@ -5882,9 +5884,6 @@ crbug.com/893869 css3/masking/mask-repeat-space-padding.html [ Failure Pass ]
 
 # V8 roll
 crbug.com/961059 fast/workers/worker-shared-asm-buffer.html [ Skip ]
-
-crbug.com/1170062 [ Linux ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Pass Timeout ]
-crbug.com/1170062 [ mac ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Pass Timeout ]
 
 # Temporarily disabled to unblock https://crrev.com/c/2979697
 crbug.com/1222114 http/tests/devtools/console/console-call-getter-on-proto.js [ Failure Pass ]
@@ -6810,8 +6809,6 @@ crbug.com/1242243 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-a
 crbug.com/1244896 [ Mac ] fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size-too-large.html [ Pass Timeout ]
 
 # Sheriff 2021-08-25
-crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.color.space.p3.fillText.html [ Failure ]
-crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.color.space.p3.fillText.shadow.html [ Failure ]
 crbug.com/1243128 [ Win ] external/wpt/web-share/disabled-by-permissions-policy.https.sub.html [ Failure ]
 
 # Sheriff 2021-08-26
