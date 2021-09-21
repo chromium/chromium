@@ -46,8 +46,6 @@ bool IsSupported(const ImageProcessorBackend::PortConfig& config) {
     VLOGF(2) << "Unsupported visible size: " << visible_size.ToString();
     return false;
   }
-  // TODO(b/195351653): this check only makes sense if
-  // ImageProcessor::Process() validates the visible rectangle for each frame.
   if (!gfx::Rect(config.size).Contains(config.visible_rect)) {
     VLOGF(2) << "The frame size (" << config.size.ToString()
              << ") does not contain the visible rect ("

@@ -39,7 +39,13 @@ bool CheckVideoFrameFormat(const ImageProcessor::PortConfig& config,
     return false;
   }
 
-  // TODO(b/195351653): Add visible_rect check here.
+  if (frame.visible_rect() != config.visible_rect) {
+    VLOGF(1) << "Invalid frame visible rectangle="
+             << frame.visible_rect().ToString()
+             << ", expected=" << config.visible_rect.ToString();
+    return false;
+  }
+
   return true;
 }
 
