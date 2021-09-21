@@ -477,6 +477,23 @@ bool ClientBase::Init(const InitParams& params) {
 
 #if defined(USE_GBM)
   if (params.use_drm) {
+    static struct zwp_linux_dmabuf_v1_listener kLinuxDmabufListener = {
+        .format =
+            [](void* data, struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf_v1,
+               uint32_t format) {
+              CastToClientBase(data)->HandleDmabufFormat(
+                  data, zwp_linux_dmabuf_v1, format);
+            },
+        .modifier =
+            [](void* data, struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf_v1,
+               uint32_t format, uint32_t modifier_hi, uint32_t modifier_lo) {
+              CastToClientBase(data)->HandleDmabufModifier(
+                  data, zwp_linux_dmabuf_v1, format, modifier_hi, modifier_lo);
+            }};
+    zwp_linux_dmabuf_v1_add_listener(globals_.linux_dmabuf.get(),
+                                     &kLinuxDmabufListener, this);
+    wl_display_roundtrip(display_.get());
+
     // Number of files to look for when discovering DRM devices.
     const uint32_t kDrmMaxMinor = 15;
     const uint32_t kRenderNodeStart = 128;
@@ -862,6 +879,21 @@ void ClientBase::HandleScale(void* data,
                              struct wl_output* wl_output,
                              int32_t factor) {}
 
+////////////////////////////////////////////////////////////////////////////////
+// zwp_linux_dmabuf_v1_listener
+
+void ClientBase::HandleDmabufFormat(
+    void* data,
+    struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf_v1,
+    uint32_t format) {}
+
+void ClientBase::HandleDmabufModifier(
+    void* data,
+    struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf_v1,
+    uint32_t format,
+    uint32_t modifier_hi,
+    uint32_t modifier_lo) {}
+
 std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     const gfx::Size& size,
     int32_t drm_format,
@@ -978,6 +1010,11 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
   std::unique_ptr<Buffer> buffer;
 #if defined(USE_GBM)
   if (device_) {
+    if (!gbm_device_is_format_supported(device_.get(), drm_format, bo_usage)) {
+      LOG(ERROR) << "Format/usage not supported";
+      return nullptr;
+    }
+
     buffer = std::make_unique<Buffer>();
     buffer->bo.reset(gbm_bo_create(device_.get(), size.width(), size.height(),
                                    drm_format, bo_usage));
