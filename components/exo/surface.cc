@@ -1234,6 +1234,10 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
       damage_rect = gfx::ToEnclosedRect(scaled_damage);
     }
   }
+
+  // TODO(b/191414141) : Check is temporary to isolate damage issue.
+  CHECK(damage_rect.size().GetCheckedArea().IsValid());
+
   state_.damage.Clear();
 
   gfx::PointF scale(content_size_.width(), content_size_.height());
