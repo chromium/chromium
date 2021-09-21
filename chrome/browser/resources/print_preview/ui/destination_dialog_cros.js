@@ -33,7 +33,7 @@ import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://r
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
 import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
 import {PrintServerStore, PrintServerStoreEventType} from '../data/print_server_store.js';
-import {Metrics, MetricsContext} from '../metrics.js';
+import {DestinationSearchBucket, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 import {PrintServer, PrintServersConfig} from '../native_layer_cros.js';
 
@@ -268,9 +268,8 @@ export class PrintPreviewDestinationDialogCrosElement extends
     }
     const cancelled = this.$.dialog.getNative().returnValue !== 'success';
     this.metrics_.record(
-        cancelled ?
-            Metrics.DestinationSearchBucket.DESTINATION_CLOSED_UNCHANGED :
-            Metrics.DestinationSearchBucket.DESTINATION_CLOSED_CHANGED);
+        cancelled ? DestinationSearchBucket.DESTINATION_CLOSED_UNCHANGED :
+                    DestinationSearchBucket.DESTINATION_CLOSED_CHANGED);
     if (this.currentDestinationAccount &&
         this.currentDestinationAccount !== this.activeUser) {
       this.fireAccountChange_(this.currentDestinationAccount);
@@ -357,7 +356,7 @@ export class PrintPreviewDestinationDialogCrosElement extends
     this.$.dialog.showModal();
     this.loadingDestinations_ = this.destinationStore === undefined ||
         this.destinationStore.isPrintDestinationSearchInProgress;
-    this.metrics_.record(Metrics.DestinationSearchBucket.DESTINATION_SHOWN);
+    this.metrics_.record(DestinationSearchBucket.DESTINATION_SHOWN);
     if (this.activeUser) {
       beforeNextRender(assert(this.shadowRoot.querySelector('select')), () => {
         this.shadowRoot.querySelector('select').value = this.activeUser;
@@ -416,18 +415,17 @@ export class PrintPreviewDestinationDialogCrosElement extends
     if (account) {
       this.loadingDestinations_ = true;
       this.fireAccountChange_(account);
-      this.metrics_.record(Metrics.DestinationSearchBucket.ACCOUNT_CHANGED);
+      this.metrics_.record(DestinationSearchBucket.ACCOUNT_CHANGED);
     } else {
       select.value = this.activeUser;
       NativeLayerImpl.getInstance().signIn();
-      this.metrics_.record(
-          Metrics.DestinationSearchBucket.ADD_ACCOUNT_SELECTED);
+      this.metrics_.record(DestinationSearchBucket.ADD_ACCOUNT_SELECTED);
     }
   }
 
   /** @private */
   onManageButtonClick_() {
-    this.metrics_.record(Metrics.DestinationSearchBucket.MANAGE_BUTTON_CLICKED);
+    this.metrics_.record(DestinationSearchBucket.MANAGE_BUTTON_CLICKED);
     NativeLayerImpl.getInstance().managePrinters();
   }
 }

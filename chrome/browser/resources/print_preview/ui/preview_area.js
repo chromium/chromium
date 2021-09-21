@@ -14,7 +14,7 @@ import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DarkModeBehavior, DarkModeBehaviorInterface} from '../dark_mode_behavior.js';
+import {DarkModeMixin, DarkModeMixinInterface} from '../dark_mode_mixin.js';
 import {Coordinate2d} from '../data/coordinate2d.js';
 import {Destination} from '../data/destination.js';
 import {getPrinterTypeForDestination} from '../data/destination_match.js';
@@ -25,7 +25,7 @@ import {PrintableArea} from '../data/printable_area.js';
 import {ScalingType} from '../data/scaling.js';
 import {Size} from '../data/size.js';
 import {Error, State} from '../data/state.js';
-import {Metrics, MetricsContext} from '../metrics.js';
+import {MetricsContext, PrintPreviewInitializationEvents} from '../metrics.js';
 import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
 import {areRangesEqual} from '../print_preview_utils.js';
 
@@ -54,14 +54,14 @@ export const PreviewAreaState = {
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {DarkModeBehaviorInterface}
+ * @implements {DarkModeMixinInterface}
  * @implements {I18nBehaviorInterface}
  * @implements {SettingsBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewPreviewAreaElementBase = mixinBehaviors(
-    [WebUIListenerBehavior, SettingsBehavior, I18nBehavior, DarkModeBehavior],
-    PolymerElement);
+    [WebUIListenerBehavior, SettingsBehavior, I18nBehavior],
+    DarkModeMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewPreviewAreaElement extends
@@ -321,7 +321,7 @@ export class PrintPreviewPreviewAreaElement extends
     this.getPreview_().then(
         previewUid => {
           MetricsContext.getPreview().record(
-              Metrics.PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
+              PrintPreviewInitializationEvents.FUNCTION_SUCCESSFUL);
           if (!this.documentModifiable) {
             this.onPreviewStart_(previewUid, -1);
           }
@@ -329,7 +329,7 @@ export class PrintPreviewPreviewAreaElement extends
         },
         type => {
           MetricsContext.getPreview().record(
-              Metrics.PrintPreviewInitializationEvents.FUNCTION_FAILED);
+              PrintPreviewInitializationEvents.FUNCTION_FAILED);
           if (/** @type{string} */ (type) === 'SETTINGS_INVALID') {
             this.error = Error.INVALID_PRINTER;
             this.previewState = PreviewAreaState.ERROR;
@@ -339,7 +339,7 @@ export class PrintPreviewPreviewAreaElement extends
           }
         });
     MetricsContext.getPreview().record(
-        Metrics.PrintPreviewInitializationEvents.FUNCTION_INITIATED);
+        PrintPreviewInitializationEvents.FUNCTION_INITIATED);
   }
 
   // <if expr="is_macosx">

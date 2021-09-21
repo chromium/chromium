@@ -28,6 +28,7 @@ import './scaling_settings.js';
 import '../strings.m.js';
 // <if expr="not chromeos and not lacros">
 import './link_container.js';
+
 // </if>
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
@@ -35,10 +36,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DarkModeBehavior, DarkModeBehaviorInterface} from '../dark_mode_behavior.js';
+import {DarkModeMixin, DarkModeMixinInterface} from '../dark_mode_mixin.js';
 import {Destination} from '../data/destination.js';
 import {Error, State} from '../data/state.js';
-import {Metrics, MetricsContext} from '../metrics.js';
+import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
 import {DestinationState} from './destination_settings.js';
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
@@ -52,16 +53,17 @@ const MAX_SECTIONS_TO_SHOW = 6;
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {DarkModeBehaviorInterface}
+ * @implements {DarkModeMixinInterface}
  * @implements {SettingsBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewSidebarElementBase = mixinBehaviors(
     [
-      SettingsBehavior, CrContainerShadowBehavior, WebUIListenerBehavior,
-      DarkModeBehavior
+      SettingsBehavior,
+      CrContainerShadowBehavior,
+      WebUIListenerBehavior,
     ],
-    PolymerElement);
+    DarkModeMixin(PolymerElement));
 
 /** @polymer */
 export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
@@ -240,8 +242,8 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     if (this.shouldShowMoreSettings_) {
       MetricsContext.printSettingsUi().record(
           this.settingsExpandedByUser_ ?
-              Metrics.PrintSettingsUiBucket.PRINT_WITH_SETTINGS_EXPANDED :
-              Metrics.PrintSettingsUiBucket.PRINT_WITH_SETTINGS_COLLAPSED);
+              PrintSettingsUiBucket.PRINT_WITH_SETTINGS_EXPANDED :
+              PrintSettingsUiBucket.PRINT_WITH_SETTINGS_COLLAPSED);
     }
   }
 

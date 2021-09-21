@@ -16,7 +16,7 @@ import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js'
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
-import {Metrics, MetricsContext} from '../metrics.js';
+import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
 import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
@@ -85,8 +85,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   connectedCallback() {
     super.connectedCallback();
 
-    this.metrics_.record(
-        Metrics.PrintSettingsUiBucket.ADVANCED_SETTINGS_DIALOG_SHOWN);
+    this.metrics_.record(PrintSettingsUiBucket.ADVANCED_SETTINGS_DIALOG_SHOWN);
     this.$.dialog.showModal();
   }
 
@@ -166,7 +165,7 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
     }
     if (this.$.dialog.getNative().returnValue === 'success') {
       this.metrics_.record(
-          Metrics.PrintSettingsUiBucket.ADVANCED_SETTINGS_DIALOG_CANCELED);
+          PrintSettingsUiBucket.ADVANCED_SETTINGS_DIALOG_CANCELED);
     }
   }
 

@@ -5,7 +5,7 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
-import {DarkModeBehavior} from './dark_mode_behavior.js';
+import {inDarkMode} from './dark_mode_mixin.js';
 
 /**
  * Returns true if the contents of the two page ranges are equal.
@@ -73,15 +73,14 @@ export function observerDepsDefined(args) {
 export function getSelectDropdownBackground(iconset, iconName, el) {
   const serializer = new XMLSerializer();
   const iconElement = iconset.createIcon(iconName, isRTL());
-  const inDarkMode = DarkModeBehavior.inDarkMode();
+  const dark = inDarkMode();
   const fillColor = getComputedStyle(el).getPropertyValue(
-      inDarkMode ? '--google-grey-refresh-500' : '--google-grey-600');
+      dark ? '--google-grey-refresh-500' : '--google-grey-600');
   iconElement.style.fill = fillColor;
   const serializedIcon = serializer.serializeToString(iconElement);
   const uri = encodeURIComponent(serializedIcon);
-  const arrowDownPath = inDarkMode ?
-      'chrome://resources/images/dark/arrow_down.svg' :
-      'chrome://resources/images/arrow_down.svg';
+  const arrowDownPath = dark ? 'chrome://resources/images/dark/arrow_down.svg' :
+                               'chrome://resources/images/arrow_down.svg';
   return `url("data:image/svg+xml;charset=utf-8,${uri}"),` +
       `url("${arrowDownPath}")`;
 }

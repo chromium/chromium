@@ -80,7 +80,7 @@ function extractCertificateStatus(tags: string[]):
   return value;
 }
 
-type CloudDestinationInfo = {
+export type CloudDestinationInfo = {
   [field in CloudDestinationField]: (string|string[]|Cdd|undefined)
 };
 

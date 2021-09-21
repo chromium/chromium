@@ -72,10 +72,10 @@ preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "cloud_print_interface.js",
-    "cloud_print_interface_impl.js",
-    "dark_mode_behavior.js",
-    "metrics.js",
+    "cloud_print_interface.ts",
+    "cloud_print_interface_impl.ts",
+    "dark_mode_mixin.ts",
+    "metrics.ts",
     "native_layer.js",
     "print_preview.js",
     "print_preview_utils.js",
@@ -234,10 +234,10 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "cloud_print_interface.js",
-    "cloud_print_interface_impl.js",
-    "dark_mode_behavior.js",
-    "metrics.js",
+    "cloud_print_interface.ts",
+    "cloud_print_interface_impl.ts",
+    "dark_mode_mixin.ts",
+    "metrics.ts",
     "native_layer.js",
     "print_preview.js",
     "print_preview_utils.js",
