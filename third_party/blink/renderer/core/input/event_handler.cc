@@ -859,9 +859,8 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
     frame_->Selection().SetCaretBlinkingSuspended(true);
 
   WebInputEventResult event_result = DispatchMousePointerEvent(
-      WebInputEvent::Type::kPointerDown, mev.InnerElement(),
-      mev.CanvasRegionId(), mev.Event(), Vector<WebMouseEvent>(),
-      Vector<WebMouseEvent>());
+      WebInputEvent::Type::kPointerDown, mev.InnerElement(), mev.Event(),
+      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
   // Disabled form controls still need to resize the scrollable area.
   if ((event_result == WebInputEventResult::kNotHandled ||
@@ -1026,7 +1025,7 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
   if (frame_set_being_resized_) {
     return DispatchMousePointerEvent(
         WebInputEvent::Type::kPointerMove, frame_set_being_resized_.Get(),
-        String(), mouse_event, coalesced_events, predicted_events);
+        mouse_event, coalesced_events, predicted_events);
   }
 
   // Send events right to a scrollbar if the mouse is pressed.
@@ -1106,8 +1105,7 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
   if (current_subframe) {
     // Update over/out state before passing the event to the subframe.
     pointer_event_manager_->SendMouseAndPointerBoundaryEvents(
-        EffectiveMouseEventTargetElement(mev.InnerElement()),
-        mev.CanvasRegionId(), mev.Event());
+        EffectiveMouseEventTargetElement(mev.InnerElement()), mev.Event());
 
     // Event dispatch in sendMouseAndPointerBoundaryEvents may have caused the
     // subframe of the target node to be detached from its LocalFrameView, in
@@ -1138,9 +1136,9 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
   if (event_result != WebInputEventResult::kNotHandled)
     return event_result;
 
-  event_result = DispatchMousePointerEvent(
-      WebInputEvent::Type::kPointerMove, mev.InnerElement(),
-      mev.CanvasRegionId(), mev.Event(), coalesced_events, predicted_events);
+  event_result = DispatchMousePointerEvent(WebInputEvent::Type::kPointerMove,
+                                           mev.InnerElement(), mev.Event(),
+                                           coalesced_events, predicted_events);
   // TODO(crbug.com/346473): Since there is no default action for the mousemove
   // event we should consider doing drag&drop even when js cancels the
   // mouse move event.
@@ -1181,7 +1179,7 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
     WebInputEventResult result =
         mouse_event_manager_->SetMousePositionAndDispatchMouseEvent(
             EffectiveMouseEventTargetElement(frame_set_being_resized_.Get()),
-            String(), event_type_names::kMouseup, mouse_event);
+            event_type_names::kMouseup, mouse_event);
     // crbug.com/1053385 release mouse capture only if there are no more mouse
     // buttons depressed
     if (MouseEvent::WebInputEventModifiersToButtons(
@@ -1201,7 +1199,7 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
     }
     return DispatchMousePointerEvent(
         WebInputEvent::Type::kPointerUp,
-        mouse_event_manager_->GetElementUnderMouse(), String(), mouse_event,
+        mouse_event_manager_->GetElementUnderMouse(), mouse_event,
         Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
   }
 
@@ -1224,9 +1222,8 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
     event_result = WebInputEventResult::kHandledSuppressed;
   } else {
     event_result = DispatchMousePointerEvent(
-        WebInputEvent::Type::kPointerUp, mev.InnerElement(),
-        mev.CanvasRegionId(), mev.Event(), Vector<WebMouseEvent>(),
-        Vector<WebMouseEvent>(),
+        WebInputEvent::Type::kPointerUp, mev.InnerElement(), mev.Event(),
+        Vector<WebMouseEvent>(), Vector<WebMouseEvent>(),
         (GetSelectionController().HasExtendedSelection() &&
          IsSelectionOverLink(mev)));
   }
@@ -1534,15 +1531,13 @@ bool EventHandler::LongTapShouldInvokeContextMenu() {
 WebInputEventResult EventHandler::DispatchMousePointerEvent(
     const WebInputEvent::Type event_type,
     Element* target_element,
-    const String& canvas_region_id,
     const WebMouseEvent& mouse_event,
     const Vector<WebMouseEvent>& coalesced_events,
     const Vector<WebMouseEvent>& predicted_events,
     bool skip_click_dispatch) {
   const auto& event_result = pointer_event_manager_->SendMousePointerEvent(
-      EffectiveMouseEventTargetElement(target_element), canvas_region_id,
-      event_type, mouse_event, coalesced_events, predicted_events,
-      skip_click_dispatch);
+      EffectiveMouseEventTargetElement(target_element), event_type, mouse_event,
+      coalesced_events, predicted_events, skip_click_dispatch);
   return event_result;
 }
 
@@ -1558,12 +1553,10 @@ WebInputEventResult EventHandler::HandleTargetedMouseEvent(
     const WebMouseEvent& event,
     const AtomicString& mouse_event_type,
     const Vector<WebMouseEvent>& coalesced_events,
-    const Vector<WebMouseEvent>& predicted_events,
-    const String& canvas_region_id) {
+    const Vector<WebMouseEvent>& predicted_events) {
   mouse_event_manager_->SetClickCount(event.click_count);
   return pointer_event_manager_->DirectDispatchMousePointerEvent(
-      target, event, mouse_event_type, coalesced_events, predicted_events,
-      canvas_region_id);
+      target, event, mouse_event_type, coalesced_events, predicted_events);
 }
 
 WebInputEventResult EventHandler::HandleGestureEvent(
@@ -1881,7 +1874,7 @@ void EventHandler::UpdateGestureTargetNodeForMouseEvent(
   while (index_exited_frame_chain) {
     LocalFrame* leave_frame = exited_frame_chain[--index_exited_frame_chain];
     leave_frame->GetEventHandler().mouse_event_manager_->SetElementUnderMouse(
-        EffectiveMouseEventTargetElement(nullptr), String(), fake_mouse_move);
+        EffectiveMouseEventTargetElement(nullptr), fake_mouse_move);
   }
 
   // update the mouseover/mouseenter event
@@ -1893,7 +1886,7 @@ void EventHandler::UpdateGestureTargetNodeForMouseEvent(
           .mouse_event_manager_->SetElementUnderMouse(
               EffectiveMouseEventTargetElement(To<HTMLFrameOwnerElement>(
                   entered_frame_chain[index_entered_frame_chain]->Owner())),
-              String(), fake_mouse_move);
+              fake_mouse_move);
     }
   }
 }
@@ -2086,9 +2079,7 @@ WebInputEventResult EventHandler::SendContextMenuEvent(
       override_target_element ? override_target_element : mev.InnerElement();
   return mouse_event_manager_->DispatchMouseEvent(
       EffectiveMouseEventTargetElement(target_element),
-      event_type_names::kContextmenu, event,
-      mev.GetHitTestResult().CanvasRegionId(), nullptr, nullptr, false,
-      event.id,
+      event_type_names::kContextmenu, event, nullptr, nullptr, false, event.id,
       PointerEventFactory::PointerTypeNameForWebPointPointerType(
           event.pointer_type));
 }

@@ -46,7 +46,6 @@ class CORE_EXPORT MouseEventManager final
       EventTarget*,
       const AtomicString&,
       const WebMouseEvent&,
-      const String& canvas_region_id,
       const FloatPoint* last_position,
       EventTarget* related_target,
       bool check_for_listener = false,
@@ -55,14 +54,12 @@ class CORE_EXPORT MouseEventManager final
 
   WebInputEventResult SetMousePositionAndDispatchMouseEvent(
       Element* target_element,
-      const String& canvas_region_id,
       const AtomicString& event_type,
       const WebMouseEvent&);
 
   WebInputEventResult DispatchMouseClickIfNeeded(
       Element* mouse_release_target,
       const WebMouseEvent& mouse_event,
-      const String& canvas_region_id,
       const PointerId& pointer_id,
       const String& pointer_type);
 
@@ -79,11 +76,9 @@ class CORE_EXPORT MouseEventManager final
 
   void SendBoundaryEvents(EventTarget* exited_target,
                           EventTarget* entered_target,
-                          const String& canvas_region_id,
                           const WebMouseEvent&);
 
   void SetElementUnderMouse(Element*,
-                            const String& canvas_region_id,
                             const WebMouseEvent&);
 
   WebInputEventResult HandleMouseFocus(
@@ -158,10 +153,7 @@ class CORE_EXPORT MouseEventManager final
  private:
   class MouseEventBoundaryEventDispatcher : public BoundaryEventDispatcher {
    public:
-    MouseEventBoundaryEventDispatcher(MouseEventManager*,
-                                      const WebMouseEvent*,
-                                      EventTarget* exited_target,
-                                      const String& canvas_region_id);
+    MouseEventBoundaryEventDispatcher(MouseEventManager*, const WebMouseEvent*);
     MouseEventBoundaryEventDispatcher(
         const MouseEventBoundaryEventDispatcher&) = delete;
     MouseEventBoundaryEventDispatcher& operator=(
@@ -183,13 +175,10 @@ class CORE_EXPORT MouseEventManager final
     void Dispatch(EventTarget*,
                   EventTarget* related_target,
                   const AtomicString&,
-                  const String& canvas_region_id,
                   const WebMouseEvent&,
                   bool check_for_listener);
     MouseEventManager* mouse_event_manager_;
     const WebMouseEvent* web_mouse_event_;
-    EventTarget* exited_target_;
-    String canvas_region_id_;
   };
 
   // If the given element is a shadow host and its root has delegatesFocus=false

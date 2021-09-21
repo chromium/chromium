@@ -57,10 +57,6 @@ namespace blink {
 
 namespace {
 
-String CanvasRegionId(Node* node, const WebMouseEvent& mouse_event) {
-  return String();
-}
-
 void UpdateMouseMovementXY(const WebMouseEvent& mouse_event,
                            const FloatPoint* last_position,
                            LocalDOMWindow* dom_window,
@@ -99,7 +95,6 @@ void SetMouseEventAttributes(MouseEventInit* initializer,
                              Node* target_node,
                              const AtomicString& mouse_event_type,
                              const WebMouseEvent& mouse_event,
-                             const String& canvas_region_id,
                              const FloatPoint* last_position,
                              EventTarget* related_target,
                              int click_count) {
@@ -120,7 +115,6 @@ void SetMouseEventAttributes(MouseEventInit* initializer,
   initializer->setView(target_node->GetDocument().domWindow());
   initializer->setComposed(true);
   initializer->setDetail(click_count);
-  initializer->setRegion(canvas_region_id);
   initializer->setRelatedTarget(related_target);
   UIEventWithKeyState::SetFromWebInputEventModifiers(
       initializer,
@@ -192,19 +186,14 @@ void MouseEventManager::Trace(Visitor* visitor) const {
 
 MouseEventManager::MouseEventBoundaryEventDispatcher::
     MouseEventBoundaryEventDispatcher(MouseEventManager* mouse_event_manager,
-                                      const WebMouseEvent* web_mouse_event,
-                                      EventTarget* exited_target,
-                                      const String& canvas_region_id)
+                                      const WebMouseEvent* web_mouse_event)
     : mouse_event_manager_(mouse_event_manager),
-      web_mouse_event_(web_mouse_event),
-      exited_target_(exited_target),
-      canvas_region_id_(canvas_region_id) {}
+      web_mouse_event_(web_mouse_event) {}
 
 void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchOut(
     EventTarget* target,
     EventTarget* related_target) {
   Dispatch(target, related_target, event_type_names::kMouseout,
-           CanvasRegionId(exited_target_->ToNode(), *web_mouse_event_),
            *web_mouse_event_, false);
 }
 
@@ -212,7 +201,7 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchOver(
     EventTarget* target,
     EventTarget* related_target) {
   Dispatch(target, related_target, event_type_names::kMouseover,
-           canvas_region_id_, *web_mouse_event_, false);
+           *web_mouse_event_, false);
 }
 
 void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchLeave(
@@ -220,7 +209,6 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchLeave(
     EventTarget* related_target,
     bool check_for_listener) {
   Dispatch(target, related_target, event_type_names::kMouseleave,
-           CanvasRegionId(exited_target_->ToNode(), *web_mouse_event_),
            *web_mouse_event_, check_for_listener);
 }
 
@@ -229,7 +217,7 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::DispatchEnter(
     EventTarget* related_target,
     bool check_for_listener) {
   Dispatch(target, related_target, event_type_names::kMouseenter,
-           canvas_region_id_, *web_mouse_event_, check_for_listener);
+           *web_mouse_event_, check_for_listener);
 }
 
 AtomicString
@@ -246,20 +234,18 @@ void MouseEventManager::MouseEventBoundaryEventDispatcher::Dispatch(
     EventTarget* target,
     EventTarget* related_target,
     const AtomicString& type,
-    const String& canvas_region_id,
     const WebMouseEvent& web_mouse_event,
     bool check_for_listener) {
   mouse_event_manager_->DispatchMouseEvent(target, type, web_mouse_event,
-                                           canvas_region_id, nullptr,
-                                           related_target, check_for_listener);
+                                           nullptr, related_target,
+                                           check_for_listener);
 }
 
 void MouseEventManager::SendBoundaryEvents(EventTarget* exited_target,
                                            EventTarget* entered_target,
-                                           const String& canvas_region_id,
                                            const WebMouseEvent& mouse_event) {
-  MouseEventBoundaryEventDispatcher boundary_event_dispatcher(
-      this, &mouse_event, exited_target, canvas_region_id);
+  MouseEventBoundaryEventDispatcher boundary_event_dispatcher(this,
+                                                              &mouse_event);
   boundary_event_dispatcher.SendBoundaryEvents(exited_target, entered_target);
 }
 
@@ -267,7 +253,6 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
     EventTarget* target,
     const AtomicString& mouse_event_type,
     const WebMouseEvent& mouse_event,
-    const String& canvas_region_id,
     const FloatPoint* last_position,
     EventTarget* related_target,
     bool check_for_listener,
@@ -304,8 +289,8 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
          mouse_event_type == event_type_names::kAuxclick)) {
       PointerEventInit* initializer = PointerEventInit::Create();
       SetMouseEventAttributes(initializer, target_node, mouse_event_type,
-                              mouse_event, canvas_region_id, last_position,
-                              related_target, click_count);
+                              mouse_event, last_position, related_target,
+                              click_count);
       initializer->setPointerId(pointer_id);
       initializer->setPointerType(pointer_type);
       PointerEvent* event = PointerEvent::Create(
@@ -322,8 +307,8 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
     } else {
       MouseEventInit* initializer = MouseEventInit::Create();
       SetMouseEventAttributes(initializer, target_node, mouse_event_type,
-                              mouse_event, canvas_region_id, last_position,
-                              related_target, click_count);
+                              mouse_event, last_position, related_target,
+                              click_count);
       MouseEvent* event = MouseEvent::Create(
           mouse_event_type, initializer, mouse_event.TimeStamp(),
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
@@ -343,13 +328,12 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
 
 WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(
     Element* target_element,
-    const String& canvas_region_id,
     const AtomicString& event_type,
     const WebMouseEvent& web_mouse_event) {
-  SetElementUnderMouse(target_element, canvas_region_id, web_mouse_event);
+  SetElementUnderMouse(target_element, web_mouse_event);
   return DispatchMouseEvent(
-      element_under_mouse_, event_type, web_mouse_event, canvas_region_id,
-      nullptr, nullptr, false, web_mouse_event.id,
+      element_under_mouse_, event_type, web_mouse_event, nullptr, nullptr,
+      false, web_mouse_event.id,
       PointerEventFactory::PointerTypeNameForWebPointPointerType(
           web_mouse_event.pointer_type));
 }
@@ -357,7 +341,6 @@ WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(
 WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
     Element* mouse_release_target,
     const WebMouseEvent& mouse_event,
-    const String& canvas_region_id,
     const PointerId& pointer_id,
     const String& pointer_type) {
   // We only prevent click event when the click may cause contextmenu to popup.
@@ -414,8 +397,7 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
         (mouse_event.button == WebPointerProperties::Button::kLeft)
             ? event_type_names::kClick
             : event_type_names::kAuxclick,
-        mouse_event, canvas_region_id, nullptr, nullptr, false, pointer_id,
-        pointer_type);
+        mouse_event, nullptr, nullptr, false, pointer_id, pointer_type);
   }
 
   return WebInputEventResult::kNotHandled;
@@ -478,7 +460,6 @@ bool MouseEventManager::HoverStateDirty() {
 
 void MouseEventManager::SetElementUnderMouse(
     Element* target,
-    const String& canvas_region_id,
     const WebMouseEvent& web_mouse_event) {
   Element* last_element_under_mouse = element_under_mouse_;
   element_under_mouse_ = target;
@@ -514,7 +495,7 @@ void MouseEventManager::SetElementUnderMouse(
   }
 
   SendBoundaryEvents(last_element_under_mouse, element_under_mouse_,
-                     canvas_region_id, web_mouse_event);
+                     web_mouse_event);
 }
 
 void MouseEventManager::NodeChildrenWillBeRemoved(ContainerNode& container) {

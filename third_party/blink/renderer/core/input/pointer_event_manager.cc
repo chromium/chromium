@@ -229,7 +229,6 @@ Element* PointerEventManager::GetEffectiveTargetForPointerEvent(
 
 void PointerEventManager::SendMouseAndPointerBoundaryEvents(
     Element* entered_element,
-    const String& canvas_region_id,
     const WebMouseEvent& mouse_event) {
   // Mouse event type does not matter as this pointerevent will only be used
   // to create boundary pointer events and its type will be overridden in
@@ -252,7 +251,7 @@ void PointerEventManager::SendMouseAndPointerBoundaryEvents(
   }
 
   ProcessCaptureAndPositionOfPointerEvent(dummy_pointer_event, entered_element,
-                                          canvas_region_id, &mouse_event);
+                                          &mouse_event);
 }
 
 void PointerEventManager::SendBoundaryEvents(EventTarget* exited_target,
@@ -670,8 +669,7 @@ WebInputEventResult PointerEventManager::CreateAndDispatchPointerEvent(
     const AtomicString& mouse_event_name,
     const WebMouseEvent& mouse_event,
     const Vector<WebMouseEvent>& coalesced_events,
-    const Vector<WebMouseEvent>& predicted_events,
-    const String& canvas_region_id) {
+    const Vector<WebMouseEvent>& predicted_events) {
   WebInputEvent::Type event_type;
   // TODO(crbug.com/665924): The following ifs skip the mouseover/leave cases,
   // we should fixed them when further merge the code path.
@@ -697,8 +695,7 @@ WebInputEventResult PointerEventManager::CreateAndDispatchPointerEvent(
       target->GetDocument().domWindow());
   DCHECK(pointer_event);
 
-  ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
-                                          canvas_region_id, &mouse_event);
+  ProcessCaptureAndPositionOfPointerEvent(pointer_event, target, &mouse_event);
 
   return DispatchPointerEvent(target, pointer_event);
 }
@@ -710,8 +707,7 @@ WebInputEventResult PointerEventManager::DirectDispatchMousePointerEvent(
     const WebMouseEvent& event,
     const AtomicString& mouse_event_type,
     const Vector<WebMouseEvent>& coalesced_events,
-    const Vector<WebMouseEvent>& predicted_events,
-    const String& canvas_region_id) {
+    const Vector<WebMouseEvent>& predicted_events) {
   if (!(event.GetModifiers() &
         WebInputEvent::Modifiers::kRelativeMotionEvent)) {
     // Fetch the last_mouse_position for creating MouseEvent before
@@ -721,13 +717,12 @@ WebInputEventResult PointerEventManager::DirectDispatchMousePointerEvent(
             PointerEventFactory::kMouseId, event, event.GetType());
 
     WebInputEventResult result = CreateAndDispatchPointerEvent(
-        target, mouse_event_type, event, coalesced_events, predicted_events,
-        canvas_region_id);
+        target, mouse_event_type, event, coalesced_events, predicted_events);
 
     result = event_handling_util::MergeEventResult(
-        result, mouse_event_manager_->DispatchMouseEvent(
-                    target, mouse_event_type, event, canvas_region_id,
-                    &last_mouse_position, nullptr));
+        result,
+        mouse_event_manager_->DispatchMouseEvent(
+            target, mouse_event_type, event, &last_mouse_position, nullptr));
     return result;
   }
   pointer_event_factory_.SetLastPosition(
@@ -739,7 +734,6 @@ WebInputEventResult PointerEventManager::DirectDispatchMousePointerEvent(
 
 WebInputEventResult PointerEventManager::SendMousePointerEvent(
     Element* target,
-    const String& canvas_region_id,
     const WebInputEvent::Type event_type,
     const WebMouseEvent& mouse_event,
     const Vector<WebMouseEvent>& coalesced_events,
@@ -789,7 +783,7 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
   }
 
   Element* pointer_event_target = ProcessCaptureAndPositionOfPointerEvent(
-      pointer_event, target, canvas_region_id, &mouse_event);
+      pointer_event, target, &mouse_event);
 
   // Don't send fake mouse event to the DOM.
   if (fake_event)
@@ -846,13 +840,13 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
           result,
           mouse_event_manager_->DispatchMouseEvent(
               mouse_target, MouseEventNameForPointerEventInputType(event_type),
-              mouse_event, canvas_region_id, &last_mouse_position, nullptr));
+              mouse_event, &last_mouse_position, nullptr));
     }
     if (!skip_click_dispatch && mouse_target &&
         event_type == WebInputEvent::Type::kPointerUp) {
       mouse_event_manager_->DispatchMouseClickIfNeeded(
-          mouse_target, mouse_event, canvas_region_id,
-          pointer_event->pointerId(), pointer_event->pointerType());
+          mouse_target, mouse_event, pointer_event->pointerId(),
+          pointer_event->pointerType());
     }
   }
 
@@ -876,7 +870,7 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
         target = mev.InnerElement();
       }
       ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
-                                              canvas_region_id, &mouse_event);
+                                              &mouse_event);
     } else {
       // Don't send out/leave events in this case as it is a little tricky.
       // This case happens for the drag operation and currently we don't
@@ -922,7 +916,6 @@ bool PointerEventManager::GetPointerCaptureState(
 Element* PointerEventManager::ProcessCaptureAndPositionOfPointerEvent(
     PointerEvent* pointer_event,
     Element* hit_test_target,
-    const String& canvas_region_id,
     const WebMouseEvent* mouse_event) {
   ProcessPendingPointerCapture(pointer_event);
 
@@ -934,8 +927,7 @@ Element* PointerEventManager::ProcessCaptureAndPositionOfPointerEvent(
 
   SetElementUnderPointer(pointer_event, hit_test_target);
   if (mouse_event) {
-    mouse_event_manager_->SetElementUnderMouse(hit_test_target,
-                                               canvas_region_id, *mouse_event);
+    mouse_event_manager_->SetElementUnderMouse(hit_test_target, *mouse_event);
   }
   return hit_test_target;
 }
