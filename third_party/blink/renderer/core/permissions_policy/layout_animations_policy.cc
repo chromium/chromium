@@ -38,7 +38,7 @@ LayoutAnimationsPolicy::AffectedCSSProperties() {
 // static
 void LayoutAnimationsPolicy::ReportViolation(
     const CSSProperty& animated_property,
-    const ExecutionContext& context) {
+    ExecutionContext& context) {
   DCHECK(AffectedCSSProperties().Contains(&animated_property));
   context.IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kLayoutAnimations,

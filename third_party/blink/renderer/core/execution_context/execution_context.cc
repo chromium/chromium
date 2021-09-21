@@ -608,10 +608,27 @@ bool ExecutionContext::IsFeatureEnabled(
 }
 
 bool ExecutionContext::IsFeatureEnabled(
+    mojom::blink::DocumentPolicyFeature feature) const {
+  DCHECK(GetDocumentPolicyFeatureInfoMap().at(feature).default_value.Type() ==
+         mojom::blink::PolicyValueType::kBool);
+  return IsFeatureEnabled(feature, PolicyValue::CreateBool(true));
+}
+
+bool ExecutionContext::IsFeatureEnabled(
+    mojom::blink::DocumentPolicyFeature feature,
+    PolicyValue threshold_value) const {
+  // The default value for any feature should be true unless restricted by
+  // document policy
+  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled())
+    return true;
+  return security_context_.IsFeatureEnabled(feature, threshold_value).enabled;
+}
+
+bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::DocumentPolicyFeature feature,
     ReportOptions report_option,
     const String& message,
-    const String& source_file) const {
+    const String& source_file) {
   DCHECK(GetDocumentPolicyFeatureInfoMap().at(feature).default_value.Type() ==
          mojom::blink::PolicyValueType::kBool);
   return IsFeatureEnabled(feature, PolicyValue::CreateBool(true), report_option,
@@ -623,7 +640,7 @@ bool ExecutionContext::IsFeatureEnabled(
     PolicyValue threshold_value,
     ReportOptions report_option,
     const String& message,
-    const String& source_file) const {
+    const String& source_file) {
   // The default value for any feature should be true unless restricted by
   // document policy
   if (!RuntimeEnabledFeatures::DocumentPolicyEnabled())

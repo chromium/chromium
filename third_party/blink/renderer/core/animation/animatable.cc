@@ -31,7 +31,7 @@ namespace {
 // the |element.animate| API is used to animate a CSS property which is blocked
 // by the permissions policy 'layout-animations'.
 void ReportPermissionsPolicyViolationsIfNecessary(
-    const ExecutionContext& context,
+    ExecutionContext& context,
     const KeyframeEffectModelBase& effect) {
   for (const auto& property_handle : effect.Properties()) {
     if (!property_handle.IsCSSProperty())

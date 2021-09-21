@@ -338,17 +338,20 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       ReportOptions report_option = ReportOptions::kDoNotReport,
       const String& message = g_empty_string);
 
+  bool IsFeatureEnabled(mojom::blink::DocumentPolicyFeature) const;
+  bool IsFeatureEnabled(mojom::blink::DocumentPolicyFeature,
+                        PolicyValue threshold_value) const;
   bool IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature,
       ReportOptions report_option = ReportOptions::kDoNotReport,
       const String& message = g_empty_string,
-      const String& source_file = g_empty_string) const;
+      const String& source_file = g_empty_string);
   bool IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature,
       PolicyValue threshold_value,
       ReportOptions report_option = ReportOptions::kDoNotReport,
       const String& message = g_empty_string,
-      const String& source_file = g_empty_string) const;
+      const String& source_file = g_empty_string);
 
   // Report policy violations is delegated to Document because in order
   // to both remain const qualified and output console message, needs
