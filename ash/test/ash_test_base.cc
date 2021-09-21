@@ -315,6 +315,10 @@ AppListTestHelper* AshTestBase::GetAppListTestHelper() {
   return ash_test_helper_->app_list_test_helper();
 }
 
+TestAppListClient* AshTestBase::GetTestAppListClient() {
+  return GetAppListTestHelper()->app_list_client();
+}
+
 AmbientAshTestHelper* AshTestBase::GetAmbientAshTestHelper() {
   return ash_test_helper_->ambient_ash_test_helper();
 }

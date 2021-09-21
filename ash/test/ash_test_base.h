@@ -71,6 +71,7 @@ class AmbientAshTestHelper;
 class AppListTestHelper;
 class AshTestHelper;
 class Shelf;
+class TestAppListClient;
 class TestShellDelegate;
 class TestSystemTrayClient;
 class UnifiedSystemTray;
@@ -238,6 +239,8 @@ class AshTestBase : public testing::Test {
   TestSystemTrayClient* GetSystemTrayClient();
 
   AppListTestHelper* GetAppListTestHelper();
+
+  TestAppListClient* GetTestAppListClient();
 
   AmbientAshTestHelper* GetAmbientAshTestHelper();
 

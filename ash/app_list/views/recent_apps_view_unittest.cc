@@ -65,12 +65,6 @@ class RecentAppsViewTest : public AshTestBase {
   }
   ~RecentAppsViewTest() override = default;
 
-  // testing::Test:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    Shell::Get()->app_list_controller()->SetClient(&app_list_client_);
-  }
-
   void RightClickOn(views::View* view) {
     GetEventGenerator()->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
     GetEventGenerator()->ClickRightButton();
@@ -81,7 +75,6 @@ class RecentAppsViewTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestAppListClient app_list_client_;
 };
 
 TEST_F(RecentAppsViewTest, CreatesIconsForApps) {
@@ -135,8 +128,8 @@ TEST_F(RecentAppsViewTest, ClickOnRecentApp) {
   GetEventGenerator()->ClickLeftButton();
 
   // The item was activated.
-  EXPECT_EQ(1, app_list_client_.activate_item_count());
-  EXPECT_EQ("id", app_list_client_.activate_item_last_id());
+  EXPECT_EQ(1, GetTestAppListClient()->activate_item_count());
+  EXPECT_EQ("id", GetTestAppListClient()->activate_item_last_id());
 }
 
 TEST_F(RecentAppsViewTest, RightClickOpensContextMenu) {

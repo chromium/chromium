@@ -73,7 +73,6 @@ class ScrollableAppsGridViewTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    Shell::Get()->app_list_controller()->SetClient(&app_list_client_);
     shelf_item_factory_ = std::make_unique<ShelfItemFactoryFake>();
     ShelfModel::Get()->SetShelfItemFactory(shelf_item_factory_.get());
   }
@@ -123,7 +122,6 @@ class ScrollableAppsGridViewTest : public AshTestBase {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
-  TestAppListClient app_list_client_;
 
   // Cache some view pointers to make the tests more concise.
   ScrollableAppsGridView* apps_grid_view_ = nullptr;
@@ -158,8 +156,8 @@ TEST_F(ScrollableAppsGridViewTest, ClickOnApp) {
   GetEventGenerator()->ClickLeftButton();
 
   // The item was activated.
-  EXPECT_EQ(1, app_list_client_.activate_item_count());
-  EXPECT_EQ("id", app_list_client_.activate_item_last_id());
+  EXPECT_EQ(1, GetTestAppListClient()->activate_item_count());
+  EXPECT_EQ("id", GetTestAppListClient()->activate_item_last_id());
 }
 
 TEST_F(ScrollableAppsGridViewTest, DragApp) {
@@ -177,7 +175,7 @@ TEST_F(ScrollableAppsGridViewTest, DragApp) {
   generator->ReleaseLeftButton();
 
   // The item was not activated.
-  EXPECT_EQ(0, app_list_client_.activate_item_count());
+  EXPECT_EQ(0, GetTestAppListClient()->activate_item_count());
 
   // Items were reordered.
   AppListItemList* item_list =
