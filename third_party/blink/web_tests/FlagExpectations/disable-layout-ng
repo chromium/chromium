@@ -261,6 +261,7 @@ crbug.com/1012289 external/wpt/css/css-pseudo/marker-unicode-bidi-normal.html [ 
 crbug.com/1147859 external/wpt/css/css-pseudo/selection-decoration-p3.html [ Failure ]
 
 ### external/wpt/css/css-ruby/
+crbug.com/591099 external/wpt/css/css-ruby/br-clear-all-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-ruby/ruby-line-breaking-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-ruby/ruby-with-floats-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-ruby/ruby-with-floats-003.html [ Failure ]

@@ -211,6 +211,12 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return intrinsic_block_size_;
   }
 
+  // Return the amount of clearance that we have to add after the fragment. This
+  // is used for BR clear elements.
+  LayoutUnit ClearanceAfterLine() const {
+    return HasRareData() ? rare_data_->clearance_after_line : LayoutUnit();
+  }
+
   LayoutUnit MinimalSpaceShortage() const {
     if (!HasRareData() || rare_data_->minimal_space_shortage == kIndefiniteSize)
       return LayoutUnit::Max();
@@ -467,6 +473,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
               rare_data.tallest_unbreakable_block_size),
           exclusion_space(rare_data.exclusion_space),
           custom_layout_data(rare_data.custom_layout_data),
+          clearance_after_line(rare_data.clearance_after_line),
           line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
           annotation_overflow(rare_data.annotation_overflow),
           block_end_annotation_space(rare_data.block_end_annotation_space),
@@ -502,6 +509,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     NGExclusionSpace exclusion_space;
     scoped_refptr<SerializedScriptValue> custom_layout_data;
 
+    LayoutUnit clearance_after_line;
     absl::optional<LayoutUnit> line_box_bfc_block_offset;
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;

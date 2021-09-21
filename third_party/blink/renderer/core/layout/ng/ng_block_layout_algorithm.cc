@@ -2100,7 +2100,8 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
     if (!container_builder_.BfcBlockOffset())
       DCHECK_EQ(logical_block_offset, LayoutUnit());
   } else {
-    // We add AnnotationOverflow unconditionally here.  Then, we cancel it if
+    // We add the greater of AnnotationOverflow and ClearanceAfterLine here.
+    // Then, we cancel the AnnotationOverflow part if
     //  - The next line box has block-start annotation space, or
     //  - There are no following child boxes and this container has block-end
     //    padding.
@@ -2108,7 +2109,8 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
     // See NGInlineLayoutAlgorithm::CreateLine() and
     // BlockLayoutAlgorithm::Layout().
     logical_block_offset = logical_offset.block_offset + fragment.BlockSize() +
-                           layout_result.AnnotationOverflow();
+                           std::max(layout_result.AnnotationOverflow(),
+                                    layout_result.ClearanceAfterLine());
   }
 
   NGMarginStrut margin_strut = layout_result.EndMarginStrut();
@@ -2161,7 +2163,11 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
   LayoutUnit annotation_space = layout_result.BlockEndAnnotationSpace();
   if (layout_result.AnnotationOverflow() > LayoutUnit()) {
     DCHECK(!annotation_space);
-    annotation_space = -layout_result.AnnotationOverflow();
+    // Allow the portion of the annotation overflow that isn't also part of
+    // clearance to overlap with certain types of subsequent content.
+    annotation_space =
+        -std::max(LayoutUnit(), layout_result.AnnotationOverflow() -
+                                    layout_result.ClearanceAfterLine());
   }
 
   return {logical_block_offset, margin_strut, annotation_space,

@@ -121,7 +121,8 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   LayoutUnit ApplyTextAlign(NGLineInfo*);
   absl::optional<LayoutUnit> ApplyJustify(LayoutUnit space, NGLineInfo*);
 
-  LayoutUnit ComputeContentSize(const NGLineInfo&);
+  // Add any trailing clearance requested by a BR 'clear' attribute on the line.
+  void AddAnyClearanceAfterLine(const NGLineInfo&);
 
   LayoutUnit SetAnnotationOverflow(const NGLineInfo& line_info,
                                    const NGLogicalLineItems& line_box,

@@ -1040,13 +1040,11 @@ LayoutUnit NGInlineLayoutAlgorithm::SetAnnotationOverflow(
   return block_offset_shift;
 }
 
-LayoutUnit NGInlineLayoutAlgorithm::ComputeContentSize(
+void NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
     const NGLineInfo& line_info) {
-  LayoutUnit content_size = container_builder_.LineHeight();
-
   const NGInlineItemResults& line_items = line_info.Results();
   if (line_items.IsEmpty())
-    return content_size;
+    return;
 
   // If the last item was a <br> we need to adjust the content_size to clear
   // floats if specified. The <br> element must be at the back of the item
@@ -1055,6 +1053,7 @@ LayoutUnit NGInlineLayoutAlgorithm::ComputeContentSize(
   DCHECK(item_result.item);
   const NGInlineItem& item = *item_result.item;
   const LayoutObject* layout_object = item.GetLayoutObject();
+  LayoutUnit content_size = container_builder_.LineHeight();
 
   // layout_object may be null in certain cases, e.g. if it's a kBidiControl.
   if (layout_object && layout_object->IsBR()) {
@@ -1062,13 +1061,20 @@ LayoutUnit NGInlineLayoutAlgorithm::ComputeContentSize(
         *container_builder_.LineBoxBfcBlockOffset();
     NGBfcOffset bfc_offset = {LayoutUnit(),
                               line_box_bfc_block_offset + content_size};
-    AdjustToClearance(
-        exclusion_space_.ClearanceOffset(item.Style()->Clear(Style())),
-        &bfc_offset);
-    content_size = bfc_offset.block_offset - line_box_bfc_block_offset;
-  }
+    LayoutUnit block_end_offset_without_clearence = bfc_offset.block_offset;
+    const auto clear_type = item.Style()->Clear(Style());
+    if (clear_type != EClear::kNone) {
+      AdjustToClearance(exclusion_space_.ClearanceOffset(clear_type),
+                        &bfc_offset);
 
-  return content_size;
+      // Unlike regular CSS clearance (which adds space *before* content), BR
+      // clearance is about adding space *after* content. Store the amount of
+      // space to add, so that we push subsequent content (and stretch the
+      // container) past the relevant floats.
+      container_builder_.SetClearanceAfterLine(
+          bfc_offset.block_offset - block_end_offset_without_clearence);
+    }
+  }
 }
 
 scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
@@ -1304,10 +1310,8 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
         container_builder_.SetLineBoxBfcBlockOffset(*forced_bfc_block_offset);
       }
     } else {
-      // A <br clear=both> will strech the line-box height, such that the
-      // block-end edge will clear any floats.
-      // TODO(ikilpatrick): Move this into ng_block_layout_algorithm.
-      container_builder_.SetBlockSize(ComputeContentSize(line_info));
+      AddAnyClearanceAfterLine(line_info);
+      container_builder_.SetBlockSize(container_builder_.LineHeight());
 
       // Margins should only collapse across "certain zero-height line boxes".
       // https://drafts.csswg.org/css2/box.html#collapsing-margins

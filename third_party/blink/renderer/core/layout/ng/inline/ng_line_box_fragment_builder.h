@@ -85,6 +85,10 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
   // are some data that should be propagated through line box fragments.
   void PropagateChildrenData(NGLogicalLineItems&);
 
+  void SetClearanceAfterLine(LayoutUnit clearance) {
+    clearance_after_line_ = clearance;
+  }
+
   // Creates the fragment. Can only be called once.
   scoped_refptr<const NGLayoutResult> ToLineBoxFragment();
 
@@ -92,6 +96,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
   absl::optional<LayoutUnit> line_box_bfc_block_offset_;
   FontHeight metrics_ = FontHeight::Empty();
   LayoutUnit hang_inline_size_;
+  LayoutUnit clearance_after_line_;
   NGPhysicalLineBoxFragment::NGLineBoxType line_box_type_;
   TextDirection base_direction_;
 
