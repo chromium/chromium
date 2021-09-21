@@ -772,9 +772,16 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DownloadDoesntDismissDialog) {
   EXPECT_FALSE(contents->GetMainFrame()->GetProcess()->IsBlocked());
 }
 
+#if defined(OS_MAC)
+// Flaky on Mac 10.11 CI builder. See https://crbug.com/1251684.
+#define MAYBE_SadTabCancelsDialogs DISABLED_SadTabCancelsDialogs
+#else
+#define MAYBE_SadTabCancelsDialogs SadTabCancelsDialogs
+#endif
+
 // Make sure that dialogs are closed after a renderer process dies, and that
 // subsequent navigations work.  See http://crbug/com/343265.
-IN_PROC_BROWSER_TEST_F(BrowserTest, SadTabCancelsDialogs) {
+IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_SadTabCancelsDialogs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL beforeunload_url(embedded_test_server()->GetURL("/beforeunload.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), beforeunload_url));
