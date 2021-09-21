@@ -10,7 +10,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 
+namespace content {
 class BrowserContext;
+}  // namespace content
 
 namespace extensions {
 
