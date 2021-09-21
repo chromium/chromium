@@ -30,6 +30,12 @@ void ExtensionHostTestHelper::OnExtensionHostCreated(
   EventSeen(host, HostEvent::kCreated);
 }
 
+void ExtensionHostTestHelper::OnExtensionHostCompletedFirstLoad(
+    content::BrowserContext* browser_context,
+    ExtensionHost* host) {
+  EventSeen(host, HostEvent::kCompletedFirstLoad);
+}
+
 void ExtensionHostTestHelper::OnExtensionHostDestroyed(
     content::BrowserContext* browser_context,
     ExtensionHost* host) {

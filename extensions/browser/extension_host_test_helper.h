@@ -42,31 +42,36 @@ class ExtensionHostTestHelper : public ExtensionHostRegistry::Observer {
   // TODO(devlin): Add a restriction for type of ExtensionHost, e.g.
   // background, popup, etc.
 
-  // Waits until an extension host matching the restrictions (if any) is
-  // created; returning the new ExtensionHost.
-  // Note: This can return null if the host has already been destroyed (which
-  // can happen if the host was closed before this method was called or if
-  // the host is destroyed synchronously from creation), before the run loop
-  // is quit.
+  // Waits for an ExtensionHost matching the restrictions (if any) to fire the
+  // corresponding notification.
+  // NOTE: These WaitFor() methods can return null if the host has already been
+  // destroyed (which can happen if the host was closed before this method was
+  // called or if the host is destroyed synchronously from creation), before
+  // the run loop is quit.
   ExtensionHost* WaitForExtensionHostCreated() {
     return WaitFor(HostEvent::kCreated);
   }
-
-  // Waits until an extension host matching the restrictions (if any) is
-  // destroyed.
+  ExtensionHost* WaitForExtensionHostCompletedFirstLoad() {
+    return WaitFor(HostEvent::kCompletedFirstLoad);
+  }
+  // NOTE: No return because the ExtensionHost is *always* (obviously)
+  // destroyed by the time this returns.
   void WaitForExtensionHostDestroyed() { WaitFor(HostEvent::kDestroyed); }
 
  private:
   // The different types of events this class can wait for.
   enum class HostEvent {
-    // TODO(devlin): Add events here for load stopped, etc.
     kCreated,
+    kCompletedFirstLoad,
     kDestroyed,
   };
 
   // ExtensionHostRegistry::Observer:
   void OnExtensionHostCreated(content::BrowserContext* browser_context,
                               ExtensionHost* host) override;
+  void OnExtensionHostCompletedFirstLoad(
+      content::BrowserContext* browser_context,
+      ExtensionHost* host) override;
   void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
                                 ExtensionHost* host) override;
 
