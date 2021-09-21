@@ -814,6 +814,8 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+// TODO(https://crbug.com/1250495): Remove this in favor of the copy in
+// ShareSubmenuModel.
 std::u16string RenderViewContextMenu::FormatURLForClipboard(const GURL& url) {
   DCHECK(!url.is_empty());
   DCHECK(url.is_valid());
@@ -1355,8 +1357,10 @@ void RenderViewContextMenu::AppendLinkItems() {
       share::ShareSubmenuModel::Context context =
           params_.has_image_contents ? share::ShareSubmenuModel::Context::IMAGE
                                      : share::ShareSubmenuModel::Context::LINK;
+      GURL url =
+          params_.has_image_contents ? params_.src_url : params_.link_url;
       share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-          GetBrowser(), context, params_.page_url);
+          GetBrowser(), CreateDataEndpoint(true), context, url);
       if (share_submenu_model_->GetItemCount() > 0) {
         menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
                                            IDS_SHARE_MENU_TITLE,
@@ -1523,8 +1527,8 @@ void RenderViewContextMenu::AppendImageItems() {
 
   if (ShouldUseShareMenu() && !share_submenu_model_) {
     share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-        GetBrowser(), share::ShareSubmenuModel::Context::IMAGE,
-        params_.src_url);
+        GetBrowser(), CreateDataEndpoint(true),
+        share::ShareSubmenuModel::Context::IMAGE, params_.src_url);
     if (share_submenu_model_->GetItemCount() > 0) {
       menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
                                          IDS_SHARE_MENU_TITLE,
@@ -1655,8 +1659,8 @@ void RenderViewContextMenu::AppendPageItems() {
   if (ShouldUseShareMenu()) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-        GetBrowser(), share::ShareSubmenuModel::Context::PAGE,
-        params_.page_url);
+        GetBrowser(), CreateDataEndpoint(true),
+        share::ShareSubmenuModel::Context::PAGE, params_.page_url);
     if (share_submenu_model_->GetItemCount() > 0) {
       menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
                                          IDS_SHARE_MENU_TITLE,

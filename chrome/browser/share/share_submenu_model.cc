@@ -34,6 +34,34 @@ bool ShouldUseSendTabToSelfIcons() {
 #endif
 }
 
+// TODO(ellyjones): This is duplicated from RenderViewContextMenu, where it
+// doesn't really belong. There is a note on the RenderViewContextMenu to remove
+// it once it is no longer needed there, after https://crbug.com/1250494 is
+// fixed.
+std::u16string FormatURLForClipboard(const GURL& url) {
+  DCHECK(!url.is_empty());
+  DCHECK(url.is_valid());
+
+  GURL url_to_format = url;
+  url_formatter::FormatUrlTypes format_types;
+  net::UnescapeRule::Type unescape_rules;
+  if (url.SchemeIs(url::kMailToScheme)) {
+    GURL::Replacements replacements;
+    replacements.ClearQuery();
+    url_to_format = url.ReplaceComponents(replacements);
+    format_types = url_formatter::kFormatUrlOmitMailToScheme;
+    unescape_rules =
+        net::UnescapeRule::PATH_SEPARATORS |
+        net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS;
+  } else {
+    format_types = url_formatter::kFormatUrlOmitNothing;
+    unescape_rules = net::UnescapeRule::NONE;
+  }
+
+  return url_formatter::FormatUrl(url_to_format, format_types, unescape_rules,
+                                  nullptr, nullptr, nullptr);
+}
+
 }  // namespace
 
 const base::Feature kShareMenu{
@@ -41,15 +69,19 @@ const base::Feature kShareMenu{
     base::FEATURE_DISABLED_BY_DEFAULT,
 };
 
-ShareSubmenuModel::ShareSubmenuModel(Browser* browser,
-                                     Context context,
-                                     GURL url)
+ShareSubmenuModel::ShareSubmenuModel(
+    Browser* browser,
+    std::unique_ptr<ui::DataTransferEndpoint> source_endpoint,
+    Context context,
+    GURL url)
     : ui::SimpleMenuModel(this),
       browser_(browser),
+      source_endpoint_(std::move(source_endpoint)),
       context_(context),
       url_(url) {
   AddGenerateQRCodeItem();
   AddSendTabToSelfItem();
+  AddCopyLinkItem();
 }
 
 ShareSubmenuModel::~ShareSubmenuModel() = default;
@@ -61,6 +93,10 @@ void ShareSubmenuModel::ExecuteCommand(int id, int event_flags) {
       break;
     case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
       SendTabToSelfSingleTarget();
+      break;
+    case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
+    case IDC_CONTENT_CONTEXT_COPYIMAGELOCATION:
+      CopyLink();
       break;
   }
 }
@@ -84,6 +120,11 @@ void ShareSubmenuModel::AddGenerateQRCodeItem() {
 }
 
 void ShareSubmenuModel::AddSendTabToSelfItem() {
+  // This can happen in unit tests which don't want to supply a browser or
+  // profile.
+  if (!browser_ || !browser_->profile())
+    return;
+
   size_t devices = send_tab_to_self::GetValidDeviceCount(browser_->profile());
 
   if (devices == 0)
@@ -115,6 +156,18 @@ void ShareSubmenuModel::AddSendTabToSelfItem() {
         ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
   } else {
     AddSubMenuWithStringId(command_id, label_id, stts_submenu_model_.get());
+  }
+}
+
+void ShareSubmenuModel::AddCopyLinkItem() {
+  if (context_ == Context::LINK && url_.is_valid()) {
+    AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
+                        url_.SchemeIs(url::kMailToScheme)
+                            ? IDS_CONTENT_CONTEXT_COPYEMAILADDRESS
+                            : IDS_CONTENT_CONTEXT_COPYLINKLOCATION);
+  } else if (context_ == Context::IMAGE) {
+    AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYIMAGELOCATION,
+                        IDS_CONTENT_CONTEXT_COPYIMAGELOCATION);
   }
 }
 
@@ -161,6 +214,15 @@ void ShareSubmenuModel::SendTabToSelfSingleTarget() {
     send_tab_to_self::RecordDeviceClicked(
         send_tab_to_self::ShareEntryPoint::kContentMenu);
   }
+}
+
+void ShareSubmenuModel::CopyLink() {
+  if (url_.is_empty() || !url_.is_valid())
+    return;
+
+  ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
+                                std::move(source_endpoint_));
+  scw.WriteText(FormatURLForClipboard(url_));
 }
 
 }  // namespace share

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARE_SHARE_SUBMENU_MODEL_H_
 
 #include "base/feature_list.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -44,8 +45,12 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
 
   // The |url| parameter is a bit tricky: it is the "target URL" of the
   // containing menu, whatever that happens to be. The exact meaning of that
-  // depends on |context|.
-  ShareSubmenuModel(Browser* browser, Context context, GURL url);
+  // depends on |context|. The |source_endpoint| is the source of |url| or
+  // whichever other data is being offered for share (image or similar).
+  ShareSubmenuModel(Browser* browser,
+                    std::unique_ptr<ui::DataTransferEndpoint> source_endpoint,
+                    Context context,
+                    GURL url);
   ~ShareSubmenuModel() override;
 
   // ui::SimpleMenuModel::Delegate:
@@ -54,13 +59,16 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
  private:
   void AddGenerateQRCodeItem();
   void AddSendTabToSelfItem();
+  void AddCopyLinkItem();
 
   void AddSendTabToSelfSingleTargetItem();
 
   void GenerateQRCode();
   void SendTabToSelfSingleTarget();
+  void CopyLink();
 
   Browser* browser_;
+  std::unique_ptr<ui::DataTransferEndpoint> source_endpoint_;
   Context context_;
   GURL url_;
 

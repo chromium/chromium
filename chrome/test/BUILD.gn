@@ -5025,6 +5025,7 @@ test("unit_tests") {
       "../browser/profiles/profile_destroyer_unittest.cc",
       "../browser/resources_integrity_unittest.cc",
       "../browser/safe_browsing/generated_safe_browsing_pref_unittest.cc",
+      "../browser/share/share_submenu_model_unittest.cc",
       "../browser/speech/speech_recognition_service_factory_unittest.cc",
       "../browser/tab_contents/form_interaction_tab_helper_unittest.cc",
       "../browser/ui/autofill/payments/autofill_dialog_models_unittest.cc",
