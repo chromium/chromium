@@ -321,14 +321,15 @@ Polymer({
     multiPageScanChecked: Boolean,
 
     /**
-     * Only true when the multi-page checkbox is checked AND the selected file
-     * type is PDF. Multi-page scanning only supports creating PDFs.
+     * Only true when the multi-page checkbox is checked and the supported scan
+     * settings are chosen. Multi-page scanning only supports creating PDFs from
+     * the Flatbed source.
      * @private {boolean}
      */
     isMultiPageScan_: {
       type: Boolean,
       computed: 'computeIsMultiPageScan_(multiPageScanChecked, ' +
-          'selectedFileType)',
+          'selectedFileType, selectedSource)',
       observer: 'onIsMultiPageScanChange_',
     },
 
@@ -1252,7 +1253,8 @@ Polymer({
 
   /** @private */
   computeIsMultiPageScan_() {
-    return this.multiPageScanChecked && this.isPDFSelected_();
+    return this.multiPageScanChecked && this.isPDFSelected_() &&
+        this.isFlatbedSelected_();
   },
 
   /** @private */
