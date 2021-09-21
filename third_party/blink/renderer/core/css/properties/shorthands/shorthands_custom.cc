@@ -1328,11 +1328,16 @@ bool FontSynthesis::ParseShorthand(
         CSSPropertyID::kFontSynthesisStyle, CSSPropertyID::kFontSynthesis,
         *CSSIdentifierValue::Create(CSSValueID::kNone), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontSynthesisSmallCaps, CSSPropertyID::kFontSynthesis,
+        *CSSIdentifierValue::Create(CSSValueID::kNone), important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
     return range.AtEnd();
   }
 
   CSSValue* font_synthesis_weight = nullptr;
   CSSValue* font_synthesis_style = nullptr;
+  CSSValue* font_synthesis_small_caps = nullptr;
   do {
     CSSValueID id = range.ConsumeIncludingWhitespace().Id();
     switch (id) {
@@ -1345,6 +1350,12 @@ bool FontSynthesis::ParseShorthand(
         if (font_synthesis_style)
           return false;
         font_synthesis_style = CSSIdentifierValue::Create(CSSValueID::kAuto);
+        break;
+      case CSSValueID::kSmallCaps:
+        if (font_synthesis_small_caps)
+          return false;
+        font_synthesis_small_caps =
+            CSSIdentifierValue::Create(CSSValueID::kAuto);
         break;
       default:
         return false;
@@ -1361,6 +1372,13 @@ bool FontSynthesis::ParseShorthand(
       CSSPropertyID::kFontSynthesisStyle, CSSPropertyID::kFontSynthesis,
       font_synthesis_style ? *font_synthesis_style
                            : *CSSIdentifierValue::Create(CSSValueID::kNone),
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kFontSynthesisSmallCaps, CSSPropertyID::kFontSynthesis,
+      font_synthesis_small_caps
+          ? *font_synthesis_small_caps
+          : *CSSIdentifierValue::Create(CSSValueID::kNone),
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
   return true;

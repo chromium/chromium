@@ -6092,7 +6092,7 @@
     },
     {
       name: "font-synthesis",
-      longhands: ["font-synthesis-weight", "font-synthesis-style"],
+      longhands: ["font-synthesis-weight", "font-synthesis-style", "font-synthesis-small-caps"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "FontSynthesis"
     },

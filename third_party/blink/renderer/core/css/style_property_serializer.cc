@@ -845,18 +845,25 @@ String StylePropertySerializer::FontSynthesisValue() const {
       property_set_.FindPropertyIndex(GetCSSPropertyFontSynthesisWeight());
   int font_synthesis_style_property_index =
       property_set_.FindPropertyIndex(GetCSSPropertyFontSynthesisStyle());
+  int font_synthesis_small_caps_property_index =
+      property_set_.FindPropertyIndex(GetCSSPropertyFontSynthesisSmallCaps());
   DCHECK_NE(font_synthesis_weight_property_index, -1);
   DCHECK_NE(font_synthesis_style_property_index, -1);
+  DCHECK_NE(font_synthesis_small_caps_property_index, -1);
 
   PropertyValueForSerializer font_synthesis_weight_property =
       property_set_.PropertyAt(font_synthesis_weight_property_index);
   PropertyValueForSerializer font_synthesis_style_property =
       property_set_.PropertyAt(font_synthesis_style_property_index);
+  PropertyValueForSerializer font_synthesis_small_caps_property =
+      property_set_.PropertyAt(font_synthesis_small_caps_property_index);
 
   const CSSValue* font_synthesis_weight_value =
       font_synthesis_weight_property.Value();
   const CSSValue* font_synthesis_style_value =
       font_synthesis_style_property.Value();
+  const CSSValue* font_synthesis_small_caps_value =
+      font_synthesis_small_caps_property.Value();
 
   auto* font_synthesis_weight_identifier_value =
       DynamicTo<CSSIdentifierValue>(font_synthesis_weight_value);
@@ -874,6 +881,16 @@ String StylePropertySerializer::FontSynthesisValue() const {
     if (!result.IsEmpty())
       result.Append(' ');
     result.Append("style");
+  }
+
+  auto* font_synthesis_small_caps_identifier_value =
+      DynamicTo<CSSIdentifierValue>(font_synthesis_small_caps_value);
+  if (font_synthesis_small_caps_identifier_value &&
+      font_synthesis_small_caps_identifier_value->GetValueID() ==
+          CSSValueID::kAuto) {
+    if (!result.IsEmpty())
+      result.Append(' ');
+    result.Append("small-caps");
   }
 
   if (result.IsEmpty())

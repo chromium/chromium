@@ -2717,6 +2717,10 @@ CSSValue* ComputedStyleUtils::ValuesForFontSynthesisProperty(
                    CSSPropertyID::kFontSynthesisStyle) &&
                identifier_value->GetValueID() == CSSValueID::kAuto) {
       shorthand_case = kConcatenateAuto;
+    } else if (shorthand.properties()[i]->IDEquals(
+                   CSSPropertyID::kFontSynthesisSmallCaps) &&
+               identifier_value->GetValueID() == CSSValueID::kAuto) {
+      shorthand_case = kConcatenateAuto;
     }
   }
 
@@ -2738,6 +2742,10 @@ CSSValue* ComputedStyleUtils::ValuesForFontSynthesisProperty(
                        CSSPropertyID::kFontSynthesisStyle) &&
                    identifier_value->GetValueID() == CSSValueID::kAuto) {
           list->Append(*CSSIdentifierValue::Create(CSSValueID::kStyle));
+        } else if (shorthand.properties()[i]->IDEquals(
+                       CSSPropertyID::kFontSynthesisSmallCaps) &&
+                   identifier_value->GetValueID() == CSSValueID::kAuto) {
+          list->Append(*CSSIdentifierValue::Create(CSSValueID::kSmallCaps));
         }
       }
       return list;
