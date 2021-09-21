@@ -25,7 +25,6 @@
 #include "content/public/browser/context_factory.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/media_session_service.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
@@ -247,13 +246,7 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
 #if BUILDFLAG(ENABLE_NACL)
   nacl::NaClBrowser::SetDelegate(
       std::make_unique<ShellNaClBrowserDelegate>(browser_context_.get()));
-  // Track the task so it can be canceled if app_shell shuts down very quickly,
-  // such as in browser tests.
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? content::GetUIThreadTaskRunner({})
-                         : content::GetIOThreadTaskRunner({});
-  task_tracker_.PostTask(task_runner.get(), FROM_HERE,
-                         base::BindOnce(nacl::NaClProcessHost::EarlyStartup));
+  nacl::NaClProcessHost::EarlyStartup();
 #endif
 
   content::ShellDevToolsManagerDelegate::StartHttpHandler(
@@ -294,10 +287,6 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
   // NOTE: Please destroy objects in the reverse order of their creation.
   browser_main_delegate_->Shutdown();
   content::ShellDevToolsManagerDelegate::StopHttpHandler();
-
-#if BUILDFLAG(ENABLE_NACL)
-  task_tracker_.TryCancelAll();
-#endif
 
   BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
       browser_context_.get());

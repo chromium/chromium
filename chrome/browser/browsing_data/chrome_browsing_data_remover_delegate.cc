@@ -127,7 +127,6 @@
 #include "content/public/browser/plugin_data_remover.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/services/video_decode_perf_history.h"
@@ -221,27 +220,6 @@ template <typename T>
 base::OnceCallback<void(T)> IgnoreArgument(base::OnceClosure callback) {
   return base::BindOnce(&IgnoreArgumentHelper<T>, std::move(callback));
 }
-
-#if BUILDFLAG(ENABLE_NACL)
-void ClearNaClCacheOnProcessThread(base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
-
-  nacl::NaClBrowser::GetInstance()->ClearValidationCache(std::move(callback));
-}
-
-void ClearPnaclCacheOnProcessThread(base::Time begin,
-                                    base::Time end,
-                                    base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
-
-  pnacl::PnaclHost::GetInstance()->ClearTranslationCacheEntriesBetween(
-      begin, end, std::move(callback));
-}
-#endif
 
 // Returned by ChromeBrowsingDataRemoverDelegate::GetOriginTypeMatcher().
 bool DoesOriginMatchEmbedderMask(uint64_t origin_type_mask,
@@ -976,20 +954,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
 
 #if BUILDFLAG(ENABLE_NACL)
-    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                           ? content::GetUIThreadTaskRunner({})
-                           : content::GetIOThreadTaskRunner({});
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ClearNaClCacheOnProcessThread,
-                       UIThreadTrampoline(CreateTaskCompletionClosure(
-                           TracingDataType::kNaclCache))));
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ClearPnaclCacheOnProcessThread, delete_begin_, delete_end_,
-            UIThreadTrampoline(
-                CreateTaskCompletionClosure(TracingDataType::kPnaclCache))));
+    nacl::NaClBrowser::GetInstance()->ClearValidationCache(UIThreadTrampoline(
+        CreateTaskCompletionClosure(TracingDataType::kNaclCache)));
+
+    pnacl::PnaclHost::GetInstance()->ClearTranslationCacheEntriesBetween(
+        delete_begin_, delete_end_,
+        UIThreadTrampoline(
+            CreateTaskCompletionClosure(TracingDataType::kPnaclCache)));
 #endif
 
     browsing_data::RemovePrerenderCacheData(
