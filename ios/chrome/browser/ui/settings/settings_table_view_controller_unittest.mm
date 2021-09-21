@@ -348,6 +348,6 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
       static_cast<TableViewInfoButtonItem*>(signin_items[0]);
   ASSERT_NSEQ(signin_item.text,
               l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE));
-  ASSERT_NSEQ(signin_item.detailText,
-              l10n_util::GetNSString(IDS_IOS_SETTINGS_SIGNIN_DISABLED));
+  ASSERT_NSEQ(signin_item.statusText,
+              l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
 }

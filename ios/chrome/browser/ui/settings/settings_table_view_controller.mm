@@ -678,8 +678,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       initWithType:SettingsItemTypeSigninDisabled];
   signinDisabledItem.text =
       l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE);
-  signinDisabledItem.detailText =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SIGNIN_DISABLED);
+  signinDisabledItem.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   signinDisabledItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   signinDisabledItem.tintColor = [UIColor colorNamed:kGrey300Color];
