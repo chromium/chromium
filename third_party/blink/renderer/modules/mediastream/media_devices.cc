@@ -606,6 +606,9 @@ void MediaDevices::CloseFocusWindowOfOpportunity(const String& id,
     return;
   }
 
+  // Inform the track that further calls to focus() should raise an exception.
+  track->CloseFocusWindowOfOpportunity();
+
   GetDispatcherHost(window->GetFrame())->CloseFocusWindowOfOpportunity(id);
 }
 #endif

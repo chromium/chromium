@@ -13,12 +13,20 @@
       // Then:
       // * If (focusCallValue == ''), don't call focus().
       // * If (focusCallValue != ''), call focus(focusCallValue).
-      function captureOtherTab(busyWaitMs, focusCallValue) {
-        navigator.mediaDevices.getDisplayMedia()
-          .then((mediaStream) => {
+      // * If |onCorrectMicrotask|, focus() is called on the microtask
+      //   on which getDisplayMedia's Promise was resolved. Otherwise, it is
+      //   scheduled to be called in a later task.
+      async function captureOtherTab(busyWaitMs, focusCallValue, onCorrectMicrotask) {
+        try {
+          const mediaStream = await navigator.mediaDevices.getDisplayMedia();
+          if (onCorrectMicrotask) {
             handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue);
-          })
-          .catch(handleCaptureError);
+          } else {
+            setTimeout(handleCaptureSuccess, 0, mediaStream, busyWaitMs, focusCallValue);
+          }
+        } catch (error) {
+          window.domAutomationController.send("capture-failure");
+        }
       }
 
       function busyWait(durationMs) {
@@ -37,17 +45,17 @@
 
         if (focusCallValue) {
           const [track] = mediaStream.getVideoTracks();
-          track.focus(focusCallValue);
+          try {
+            track.focus(focusCallValue);
+          } catch (error) {
+            window.domAutomationController.send(`${error}`);
+          }
         }
 
         // Allow the microtask to fire before unblocking the test.
         setTimeout(() => {
           window.domAutomationController.send("capture-success");
         });
-      }
-
-      function handleCaptureError(error) {
-        window.domAutomationController.send("capture-failure");
       }
 
       function callFocusAndExpectError() {

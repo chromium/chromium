@@ -114,15 +114,21 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
   //    (c) random CPU delays.
   // 3. Either avoids calling focus() or does so with the appropriate
   //    value, depending on |focus_enum_value|.
-  void Capture(int busy_wait_ms, FocusEnumValue focus_enum_value) {
+  // If !on_correct_microtask, calling focus() is done from a task that is
+  // scheduled to be executed later.
+  void Capture(int busy_wait_ms,
+               FocusEnumValue focus_enum_value,
+               bool on_correct_microtask = true,
+               const std::string& expected_result = "capture-success") {
     std::string script_result;
     // TODO(crbug.com/1243764): Use EvalJs() instead.
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         capturing_tab_->GetMainFrame(),
-        base::StringPrintf("captureOtherTab(%d, \"%s\");", busy_wait_ms,
-                           ToString(focus_enum_value)),
+        base::StringPrintf("captureOtherTab(%d, \"%s\", %s);", busy_wait_ms,
+                           ToString(focus_enum_value),
+                           on_correct_microtask ? "true" : "false"),
         &script_result));
-    EXPECT_EQ(script_result, "capture-success");
+    EXPECT_EQ(script_result, expected_result);
   }
 
   void Wait(base::TimeDelta timeout) {
@@ -251,6 +257,18 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
       script_result,
       "InvalidStateError: Failed to execute 'focus' on "
       "'FocusableMediaStreamTrack': Method may not be invoked on clones.");
+}
+
+IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
+                       ExceptionRaisedIfFocusCalledAfterMicrotaskExecutes) {
+  // Setup.
+  SetUpTestTabs();
+  Capture(0, FocusEnumValue::kFocusCapturedSurface,
+          /*on_correct_microtask=*/false,
+          /*expected_result=*/
+          "InvalidStateError: Failed to execute 'focus' on "
+          "'FocusableMediaStreamTrack': The microtask on which the Promise was "
+          "settled has terminated.");
 }
 
 #endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)

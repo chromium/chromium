@@ -29,6 +29,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -853,6 +854,10 @@ std::unique_ptr<AudioSourceProvider> MediaStreamTrack::CreateWebAudioSource(
       CreateWebAudioSourceFromMediaStreamTrack(Component(),
                                                context_sample_rate));
 }
+
+#if !defined(OS_ANDROID)
+void MediaStreamTrack::CloseFocusWindowOfOpportunity() {}
+#endif
 
 void MediaStreamTrack::RegisterMediaStream(MediaStream* media_stream) {
   CHECK(!is_iterating_registered_media_streams_);

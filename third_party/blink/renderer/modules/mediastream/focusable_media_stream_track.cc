@@ -61,6 +61,12 @@ FocusableMediaStreamTrack* FocusableMediaStreamTrack::clone(
   return cloned_track;
 }
 
+#if !defined(OS_ANDROID)
+void FocusableMediaStreamTrack::CloseFocusWindowOfOpportunity() {
+  promise_settled_ = true;
+}
+#endif
+
 void FocusableMediaStreamTrack::focus(
     ExecutionContext* execution_context,
     V8CaptureStartFocusBehavior focus_behavior,
@@ -91,6 +97,13 @@ void FocusableMediaStreamTrack::focus(
     return;
   }
   focus_called_ = true;
+
+  if (promise_settled_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The microtask on which the Promise was settled has terminated.");
+    return;
+  }
 
   client->FocusCapturedSurface(
       descriptor_id_,

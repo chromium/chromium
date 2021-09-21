@@ -31,6 +31,10 @@ class FocusableMediaStreamTrack final : public MediaStreamTrack {
   // Clones raise an error if focus() is called.
   FocusableMediaStreamTrack* clone(ScriptState*) override;
 
+#if !defined(OS_ANDROID)
+  void CloseFocusWindowOfOpportunity() override;
+#endif
+
   void focus(ExecutionContext* execution_context,
              V8CaptureStartFocusBehavior focus_behavior,
              ExceptionState& exception_state);
@@ -39,6 +43,10 @@ class FocusableMediaStreamTrack final : public MediaStreamTrack {
 #if !defined(OS_ANDROID)
   // Clones may not be focus()-ed.
   const bool is_clone_;
+
+  // Calling focus() after the microtask on which getDisplayMedia()'s Promise
+  // was settled raises an exception.
+  bool promise_settled_ = false;
 
   // First call to focus() is allowed. Subsequent calls produce an error.
   bool focus_called_ = false;
