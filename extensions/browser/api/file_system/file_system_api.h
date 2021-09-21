@@ -19,10 +19,6 @@
 #include "extensions/common/api/file_system.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace extensions {
 class ExtensionPrefs;
 
@@ -168,13 +164,12 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
   // directory. If so, calls ConfirmSensitiveDirectoryAccess. Otherwise, calls
   // OnDirectoryAccessConfirmed.
   void ConfirmDirectoryAccessAsync(bool non_native_path,
-                                   const std::vector<base::FilePath>& paths,
-                                   content::WebContents* web_contents);
+                                   const std::vector<base::FilePath>& paths);
 
   // Shows a dialog to confirm whether the user wants to open the directory.
   // Calls OnDirectoryAccessConfirmed or FileSelectionCanceled.
-  void ConfirmSensitiveDirectoryAccess(const std::vector<base::FilePath>& paths,
-                                       content::WebContents* web_contents);
+  void ConfirmSensitiveDirectoryAccess(
+      const std::vector<base::FilePath>& paths);
 
   void OnDirectoryAccessConfirmed(const std::vector<base::FilePath>& paths);
 
