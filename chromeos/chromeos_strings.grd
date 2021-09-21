@@ -1031,24 +1031,34 @@ Try tapping the mic to ask me anything.
         Touchscreen
       </message>
 
-      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_DESCRIPTION" desc="Description for a keyboard in the input diagnostics device list.">
-        <ph name="CONNECTION_TYPE">$1<ex>Bluetooth</ex></ph> keyboard
+      <message name="IDS_INPUT_DIAGNOSTICS_BLUETOOTH_KEYBOARD" desc="Noun phrase that describes a Bluetooth keyboard to the user. Used as a label in a list of input devices in a diagnostic tool.">
+        Bluetooth keyboard
       </message>
-      <message name="IDS_INPUT_DIAGNOSTICS_TOUCHPAD_DESCRIPTION" desc="Description for a touchpad in the input diagnostics device list.">
-        <ph name="CONNECTION_TYPE">$1<ex>Internal</ex></ph> touchpad
+      <message name="IDS_INPUT_DIAGNOSTICS_BLUETOOTH_TOUCHPAD" desc="Noun phrase that describes a Bluetooth touchpad to the user. Used as a label in a list of input devices in a diagnostic tool.">
+        Bluetooth touchpad
       </message>
-      <message name="IDS_INPUT_DIAGNOSTICS_TOUCHSCREEN_DESCRIPTION" desc="Description for a touchscreen in the input diagnostics device list.">
-        <ph name="CONNECTION_TYPE">$1<ex>USB</ex></ph> touchscreen
+      <message name="IDS_INPUT_DIAGNOSTICS_BLUETOOTH_TOUCHSCREEN" desc="Noun phrase that describes a Bluetooth touchscreen to the user. Used as a label in a list of input devices in a diagnostic tool.">
+        Bluetooth touchscreen
       </message>
 
-      <message name="IDS_INPUT_DIAGNOSTICS_CONNECTION_TYPE_BLUETOOTH" desc="Used in input device descriptions such as 'Bluetooth keyboard'.">
-        Bluetooth
+      <message name="IDS_INPUT_DIAGNOSTICS_INTERNAL_KEYBOARD" desc="Noun phrase that describes an internal keyboard (built-in, as found on a laptop) to the user. Used as a label in a list of input devices in a diagnostic tool.">
+        Internal keyboard
       </message>
-      <message name="IDS_INPUT_DIAGNOSTICS_CONNECTION_TYPE_INTERNAL" desc="Used in input device descriptions such as 'Internal keyboard'.">
-        Internal
+      <message name="IDS_INPUT_DIAGNOSTICS_INTERNAL_TOUCHPAD" desc="Noun phrase that describes an internal touchpad (built-in, as found on a laptop) to the user. Used as a label in a list of input devices in a diagnostic tool.">
+        Internal touchpad
       </message>
-      <message name="IDS_INPUT_DIAGNOSTICS_CONNECTION_TYPE_USB" desc="Used in input device descriptions such as 'USB keyboard'.">
-        USB
+      <message name="IDS_INPUT_DIAGNOSTICS_INTERNAL_TOUCHSCREEN" desc="Noun phrase that describes an internal (built-in) touchscreen to the user. Used as a label in a list of input devices in a diagnostic tool.">
+        Internal touchscreen
+      </message>
+
+      <message name="IDS_INPUT_DIAGNOSTICS_USB_KEYBOARD" desc="Noun phrase that describes a USB keyboard to the user. Used as a label in a list of input devices in a diagnostic tool.">
+        USB keyboard
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_USB_TOUCHPAD" desc="Noun phrase that describes a USB touchpad to the user. Used as a label in a list of input devices in a diagnostic tool.">
+        USB touchpad
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_USB_TOUCHSCREEN" desc="Noun phrase that describes a USB touchscreen to the user. Used as a label in a list of input devices in a diagnostic tool.">
+        USB touchscreen
       </message>
 
       <message name="IDS_ECHE_APP_DEFAULT_DEVICE_NAME" desc="The default device name used to display on Android endpoint of Eche app.">

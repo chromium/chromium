@@ -65,8 +65,8 @@ Polymer({
   },
 
   /**
-   * Assembles the description string for an input device based on its
-   * connection type (e.g. "Bluetooth keyboard", "Internal touchpad").
+   * Fetches the description string for a device based on its connection type
+   * (e.g. "Bluetooth keyboard", "Internal touchpad").
    * @param {!KeyboardInfo|!TouchDeviceInfo} device
    * @return {string}
    * @private
@@ -75,18 +75,18 @@ Polymer({
     if (device.connectionType === ConnectionType.kUnknown) {
       return '';
     }
-    const descriptionStringId = {
-      [InputCardType.kKeyboard]: 'inputDeviceDescriptionKeyboard',
-      [InputCardType.kTouchpad]: 'inputDeviceDescriptionTouchpad',
-      [InputCardType.kTouchscreen]: 'inputDeviceDescriptionTouchscreen',
-    }[this.deviceType];
-    const connectionTypeStringId = {
-      [ConnectionType.kInternal]: 'inputConnectionTypeInternal',
-      [ConnectionType.kUsb]: 'inputConnectionTypeUSB',
-      [ConnectionType.kBluetooth]: 'inputConnectionTypeBluetooth',
+    const connectionTypeString = {
+      [ConnectionType.kInternal]: 'Internal',
+      [ConnectionType.kUsb]: 'Usb',
+      [ConnectionType.kBluetooth]: 'Bluetooth',
     }[device.connectionType];
-    return loadTimeData.getStringF(
-        descriptionStringId, loadTimeData.getString(connectionTypeStringId));
+    const deviceTypeString = {
+      [InputCardType.kKeyboard]: 'Keyboard',
+      [InputCardType.kTouchpad]: 'Touchpad',
+      [InputCardType.kTouchscreen]: 'Touchscreen',
+    }[this.deviceType];
+    return loadTimeData.getString(
+        'inputDescription' + connectionTypeString + deviceTypeString);
   },
 
   /**
