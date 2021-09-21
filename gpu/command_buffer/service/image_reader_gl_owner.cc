@@ -92,7 +92,7 @@ uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
 class ImageReaderGLOwner::ScopedHardwareBufferImpl
     : public base::android::ScopedHardwareBufferFenceSync {
  public:
-  ScopedHardwareBufferImpl(base::WeakPtr<ImageReaderGLOwner> texture_owner,
+  ScopedHardwareBufferImpl(scoped_refptr<ImageReaderGLOwner> texture_owner,
                            AImage* image,
                            base::android::ScopedHardwareBufferHandle handle,
                            base::ScopedFD fence_fd)
@@ -129,7 +129,7 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
 
  private:
   base::ScopedFD read_fence_;
-  base::WeakPtr<ImageReaderGLOwner> texture_owner_;
+  scoped_refptr<ImageReaderGLOwner> texture_owner_;
   AImage* image_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
@@ -363,7 +363,7 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
   base::AndroidHardwareBufferCompat::GetInstance().Release(buffer);
 
   return std::make_unique<ScopedHardwareBufferImpl>(
-      weak_factory_.GetWeakPtr(), current_image_ref_->image(),
+      this, current_image_ref_->image(),
       base::android::ScopedHardwareBufferHandle::Create(buffer),
       current_image_ref_->GetReadyFence());
 }

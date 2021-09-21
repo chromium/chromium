@@ -9,7 +9,6 @@
 
 #include "base/android/android_image_reader_compat.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_fence_egl.h"
@@ -151,8 +150,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
 
   // This class is created on gpu main thread.
   THREAD_CHECKER(gpu_main_thread_checker_);
-
-  base::WeakPtrFactory<ImageReaderGLOwner> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImageReaderGLOwner);
 };
