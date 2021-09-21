@@ -1677,6 +1677,29 @@
             ]
         }
     ],
+    "CPSS-Geolocation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled__20210817",
+                    "params": {
+                        "holdback_chance": "0.3"
+                    },
+                    "enable_features": [
+                        "PermissionGeolocationPredictions"
+                    ]
+                }
+            ]
+        }
+    ],
     "CWPCollectionOnHostAndGuest": [
         {
             "platforms": [
