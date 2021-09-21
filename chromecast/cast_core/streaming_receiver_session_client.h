@@ -97,7 +97,7 @@ class StreamingReceiverSessionClient
 
   bool is_healthy() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return streaming_state_ != LaunchState::kError;
+    return !(streaming_state_ & LaunchState::kError);
   }
 
  private:

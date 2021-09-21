@@ -23,7 +23,7 @@ class RuntimeApplication {
   // NOTE: These fields are the empty string until after Load().
   const std::string& app_id() const { return app_id_; }
   const std::string& cast_session_id() const { return cast_session_id_; }
-  const std::string& display_name() { return display_name_; }
+  const std::string& display_name() const { return display_name_; }
 
   // NOTE: This is the empty string until after Launch().
   const std::string& cast_media_service_grpc_endpoint() const {
@@ -65,6 +65,8 @@ class RuntimeApplication {
   std::string display_name_;
   std::string cast_media_service_grpc_endpoint_;
 };
+
+std::ostream& operator<<(std::ostream& os, const RuntimeApplication& app);
 
 }  // namespace chromecast
 

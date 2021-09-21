@@ -59,37 +59,59 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
     const PlatformInfoSerializer& deserializer) {
   cast_streaming::ReceiverSession::AVConstraints constraints;
 
-  auto display_description =
-      std::make_unique<openscreen::cast::ReceiverSession::Display>();
-  bool use_display_description = false;
-  auto width = deserializer.MaxWidth();
-  if (width) {
-    use_display_description = true;
+  const auto width = deserializer.MaxWidth();
+  const auto height = deserializer.MaxHeight();
+  const auto frame_rate = deserializer.MaxFrameRate();
+  if (width && width.value() && height && height.value() && frame_rate &&
+      frame_rate.value()) {
+    auto display_description =
+        std::make_unique<openscreen::cast::ReceiverSession::Display>();
     display_description->dimensions.width = width.value();
-  }
-
-  auto height = deserializer.MaxHeight();
-  if (height) {
-    use_display_description = true;
     display_description->dimensions.height = height.value();
-  }
-
-  auto frame_rate = deserializer.MaxFrameRate();
-  if (frame_rate) {
-    use_display_description = true;
     display_description->dimensions.frame_rate = frame_rate.value();
-  }
-
-  if (use_display_description) {
     constraints.display_description = std::move(display_description);
+  } else {
+    LOG(WARNING) << "Some Display properties missing. Using default values for "
+                 << "MaxWidth, MaxHeight, and MaxFrameRate";
+
+#if DCHECK_IS_ON()
+    if (!height) {
+      LOG(INFO) << "MaxHeight value not present in received AV Settings.";
+    } else if (!height.value()) {
+      LOG(WARNING) << "Invalid MaxHeight of 0 parsed from AV Settings.";
+    } else if (height) {
+      LOG(WARNING)
+          << "MaxHeight value ignored due to missing display properties.";
+    }
+
+    if (!width) {
+      LOG(INFO) << "MaxWidth value not present in received AV Settings.";
+    } else if (!width.value()) {
+      LOG(WARNING) << "Invalid MaxWidth of 0 parsed from AV Settings.";
+    } else if (width) {
+      LOG(WARNING)
+          << "MaxWidth value ignored due to missing display properties.";
+    }
+
+    if (!frame_rate) {
+      LOG(INFO) << "MaxFrameRate value not present in received AV Settings.";
+    } else if (!frame_rate.value()) {
+      LOG(WARNING) << "Invalid MaxFrameRate of 0 parsed from AV Settings.";
+    } else if (frame_rate) {
+      LOG(WARNING)
+          << "MaxFrameRate value ignored due to missing display properties.";
+    }
+#endif  // DCHECK_IS_ON()
   }
 
   auto audio_codec_infos = deserializer.SupportedAudioCodecs();
   std::vector<openscreen::cast::AudioCodec> audio_codecs;
   std::vector<openscreen::cast::ReceiverSession::AudioLimits> audio_limits;
-  if (audio_codec_infos) {
+  if (!audio_codec_infos || !audio_codec_infos.value().size()) {
+    DLOG(WARNING) << "No AudioCodecInfos in received AV Settings.";
+  } else {
     for (auto& info : audio_codec_infos.value()) {
-      auto converted_codec = ToOpenscreenCodec(info.codec);
+      const auto converted_codec = ToOpenscreenCodec(info.codec);
       if (converted_codec == openscreen::cast::AudioCodec::kNotSpecified) {
         continue;
       }
@@ -133,10 +155,12 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
   }
 
   auto video_codec_infos = deserializer.SupportedVideoCodecs();
-  if (video_codec_infos && video_codec_infos.value().size()) {
+  if (!video_codec_infos || !video_codec_infos.value().size()) {
+    DLOG(WARNING) << "No VideoCodecInfos in received AV Settings.";
+  } else {
     std::vector<openscreen::cast::VideoCodec> video_codecs;
     for (auto& info : video_codec_infos.value()) {
-      auto converted_codec = ToOpenscreenCodec(info.codec);
+      const auto converted_codec = ToOpenscreenCodec(info.codec);
       if (converted_codec != openscreen::cast::VideoCodec::kNotSpecified &&
           std::find(video_codecs.begin(), video_codecs.end(),
                     converted_codec) == video_codecs.end()) {
@@ -205,6 +229,7 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
   DCHECK(message_port_);
   message_port_->SetReceiver(this);
 
+  DLOG(INFO) << "Streaming Receiver Session start pending...";
   handler_->StartAvSettingsQuery(std::move(server));
 
   task_runner_->PostDelayedTask(
@@ -215,6 +240,13 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
 }
 
 StreamingReceiverSessionClient::~StreamingReceiverSessionClient() {
+  DLOG(INFO) << "StreamingReceiverSessionClient state when destroyed"
+             << "\n\tIs Healthy: " << is_healthy()
+             << "\n\tLaunch called: " << is_streaming_launch_pending()
+             << "\n\tAV Settings Received: " << has_received_av_settings()
+             << "\n\tMojo Handle Acquired: "
+             << !!(streaming_state_ & LaunchState::kMojoHandleAcquired);
+
   cast_streaming::SetNetworkContextGetter({});
 }
 
@@ -236,9 +268,12 @@ void StreamingReceiverSessionClient::MainFrameReadyToCommitNavigation(
   DCHECK(is_streaming_launch_pending());
   DCHECK(navigation_handle);
 
-  if ((streaming_state_ & LaunchState::kMojoHandleAcquired) ||
-      !cast_streaming::IsCastStreamingMediaSourceUrl(
-          navigation_handle->GetURL())) {
+  // Check whether the mojo handle has been acquired. The page URL cannot be
+  // checked because the receiver app is expected to be loaded as an embedded
+  // video within the page, not as the page itself.
+  if (streaming_state_ & LaunchState::kMojoHandleAcquired) {
+    DLOG(WARNING) << "Mojo handle already acquired before page load: "
+                  << navigation_handle->GetURL();
     return;
   }
 
@@ -246,6 +281,7 @@ void StreamingReceiverSessionClient::MainFrameReadyToCommitNavigation(
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&cast_streaming_receiver_);
   streaming_state_ |= LaunchState::kMojoHandleAcquired;
+  DLOG(INFO) << "CastStreamingReceiver mojo pipe captured.";
 
   if (!TryStartStreamingSession()) {
     DCHECK(!has_received_av_settings());
@@ -284,6 +320,8 @@ void StreamingReceiverSessionClient::VerifyAVSettingsReceived() {
 bool StreamingReceiverSessionClient::OnMessage(
     base::StringPiece message,
     std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
+  DLOG(INFO) << "AV Settings Response Received: " << message;
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ports.empty());
 
@@ -325,11 +363,11 @@ void StreamingReceiverSessionClient::OnPipeError() {
 }
 
 void StreamingReceiverSessionClient::TriggerError() {
-  if (streaming_state_ == LaunchState::kError) {
+  if (!is_healthy()) {
     return;
   }
 
-  streaming_state_ = LaunchState::kError;
+  streaming_state_ |= LaunchState::kError;
   handler_->OnError();
 }
 

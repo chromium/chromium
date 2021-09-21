@@ -48,10 +48,12 @@ void StreamingRuntimeApplication::HandleMessage(
 }
 
 void StreamingRuntimeApplication::OnStreamingSessionStarted() {
+  LOG(INFO) << "Streaming session started for " << *this << "!";
   SetApplicationStarted();
 }
 
 void StreamingRuntimeApplication::OnError() {
+  LOG(WARNING) << "Streaming session for " << *this << " has hit an error!";
   StopApplication();
 }
 
@@ -89,6 +91,11 @@ GURL StreamingRuntimeApplication::ProcessWebView(
 }
 
 void StreamingRuntimeApplication::StopApplication() {
+  if (!receiver_session_client_) {
+    DLOG(INFO) << "Streaming session never started prior to " << *this
+               << " stop.";
+  }
+
   receiver_session_client_.reset();
   RuntimeApplicationBase::StopApplication();
   message_port_service_.reset();

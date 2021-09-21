@@ -10,4 +10,10 @@ RuntimeApplication::RuntimeApplication() = default;
 
 RuntimeApplication::~RuntimeApplication() = default;
 
+std::ostream& operator<<(std::ostream& os, const RuntimeApplication& app) {
+  return os << "Application '" << app.display_name() << "'' with id '"
+            << app.app_id() << "' (session id '" << app.cast_session_id()
+            << "')";
+}
+
 }  // namespace chromecast

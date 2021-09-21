@@ -60,11 +60,15 @@ bool RuntimeApplicationBase::Load(
   set_app_id(request.application_config().app_id());
   set_display_name(request.application_config().display_name());
 
+  LOG(INFO) << *this << " successfully loaded!";
+
   return true;
 }
 
 bool RuntimeApplicationBase::Launch(
     const cast::runtime::LaunchApplicationRequest& request) {
+  LOG(INFO) << "Beginning launch of " << *this;
+
   if (!request.has_cast_media_service_info()) {
     return false;
   }
@@ -89,7 +93,10 @@ void RuntimeApplicationBase::FinishLaunch(
   core_app_stub_ =
       cast::v2::CoreApplicationService::NewStub(std::move(core_channel));
 
+  DLOG(INFO) << *this << "creating web view...";
   cast_web_view_ = CreateWebView(core_app_stub_.get());
+
+  DLOG(INFO) << *this << "processing web view...";
   GURL cast_application_url =
       ProcessWebView(core_app_stub_.get(), cast_web_view_->cast_web_contents());
 
@@ -98,6 +105,8 @@ void RuntimeApplicationBase::FinishLaunch(
   cast_web_view_->window()->CreateWindow(
       ::chromecast::mojom::ZOrder::APP,
       chromecast::VisibilityPriority::STICKY_ACTIVITY);
+
+  LOG(INFO) << *this << " successfully launched!";
 }
 
 void RuntimeApplicationBase::PostMessage(const cast::web::Message& request,
@@ -129,8 +138,8 @@ void RuntimeApplicationBase::SetApplicationStarted() {
       core_app_stub_->SetApplicationStatus(&context, app_status, &unused);
 
   if (!status.ok()) {
-    LOG(ERROR)
-        << "Failed to call SetApplicationStatus() when starting application";
+    LOG(ERROR) << "Failed to call SetApplicationStatus() when starting "
+               << *this;
   }
 }
 
@@ -172,8 +181,8 @@ void RuntimeApplicationBase::StopApplication() {
         core_app_stub_->SetApplicationStatus(&context, app_status, &unused);
 
     if (!status.ok()) {
-      LOG(ERROR)
-          << "Failed to call SetApplicationStatus() when starting application";
+      LOG(ERROR) << "Failed to call SetApplicationStatus() when starting "
+                 << *this;
     }
   }
 
