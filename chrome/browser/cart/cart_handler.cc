@@ -8,22 +8,19 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/cart/cart_features.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "components/search/ntp_features.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace {
-constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
-    &ntp_features::kNtpChromeCartModule, "partner-merchant-pattern",
-    // This regex does not match anything.
-    "\\b\\B"};
 
 const re2::RE2& GetPartnerMerchantPattern() {
   re2::RE2::Options options;
   options.set_case_sensitive(false);
-  static base::NoDestructor<re2::RE2> instance(kPartnerMerchantPattern.Get(),
-                                               options);
+  static base::NoDestructor<re2::RE2> instance(
+      cart_features::kPartnerMerchantPattern.Get(), options);
   return *instance;
 }
 
