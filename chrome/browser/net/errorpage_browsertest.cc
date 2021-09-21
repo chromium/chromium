@@ -25,14 +25,19 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/net/net_error_diagnostics_dialog.h"
+#include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -79,9 +84,10 @@
 #include "net/url_request/url_request_test_job.h"
 #include "services/network/public/cpp/features.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "chrome/browser/policy/profile_policy_connector_builder.h"
-#include "build/chromeos_buildflags.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // defined(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
 using content::NavigationController;
@@ -137,6 +143,16 @@ bool WARN_UNUSED_RESULT IsDisplayingDiagnosticsLink(Browser* browser) {
                          command)
       .ExtractBool();
 }
+
+#if defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH)
+// For ChromeOS, launches appropriate diagnostics app.
+void ClickDiagnosticsLink(Browser* browser) {
+  DCHECK(IsDisplayingDiagnosticsLink(browser));
+  EXPECT_TRUE(
+      content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('diagnose-link').click();"));
+}
+#endif
 
 // Checks that the error page is being displayed with the specified error
 // string.
@@ -1056,5 +1072,78 @@ IN_PROC_BROWSER_TEST_F(ErrorPageSniffTest,
 
   ExpectDisplayingErrorPage(browser(), net::ERR_INVALID_RESPONSE);
 }
+
+#if defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH)
+// On ChromeOS "Running Connectivity Diagnostics" link on error page should
+// launch chrome://connectivity-diagnostics app by default. Not running test on
+// LaCROS due to errors on Wayland initialization and to keep test to ChromeOS
+// devices.
+class ErrorPageOfflineAppLaunchFeatureDisabledTest
+    : public web_app::SystemWebAppBrowserTestBase {
+ public:
+  ErrorPageOfflineAppLaunchFeatureDisabledTest()
+      : web_app::SystemWebAppBrowserTestBase(true) {}
+
+ private:
+  base::test::ScopedFeatureList features;
+};
+
+IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchFeatureDisabledTest,
+                       DiagnosticsConnectivityFeatureDisabled) {
+  WaitForTestSystemAppInstall();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED)));
+
+  // Click to open diagnostics app.
+  ClickDiagnosticsLink(browser());
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
+  // The active screen should be Connectivity Diagnostics app.
+  content::WebContents* contents =
+      ::chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(GURL("chrome://connectivity-diagnostics"),
+            contents->GetVisibleURL());
+}
+
+// On ChromeOS "Running Connectivity Diagnostics" link on error page should
+// launch chrome://diagnostics/?connectivity app when related features are
+// enabled.
+class ErrorPageOfflineAppLaunchFeatureEnabledTest
+    : public web_app::SystemWebAppBrowserTestBase {
+ public:
+  ErrorPageOfflineAppLaunchFeatureEnabledTest()
+      : web_app::SystemWebAppBrowserTestBase(true) {
+    // Ensure required features are enabled.
+    features.InitWithFeatures(
+        std::vector<base::Feature>{
+            ash::features::kDiagnosticsAppNavigation,
+            ash::features::kEnableNetworkingInDiagnosticsApp,
+            ash::features::kDiagnosticsApp},
+        std::vector<base::Feature>{});
+  }
+
+ private:
+  base::test::ScopedFeatureList features;
+};
+
+IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchFeatureEnabledTest,
+                       DiagnosticsConnectivityFeatureEnabled) {
+  WaitForTestSystemAppInstall();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED)));
+
+  // Click to open diagnostics app.
+  ClickDiagnosticsLink(browser());
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
+  // The active screen should be Diagnostics app at connectivity screen.
+  content::WebContents* contents =
+      ::chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(GURL("chrome://diagnostics/?connectivity"),
+            contents->GetVisibleURL());
+}
+#endif  // defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
 
 }  // namespace
