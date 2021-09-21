@@ -107,6 +107,13 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
   }
 }
 
+bool FrameSorter::IsFrameDropped(const viz::BeginFrameId& id) const {
+  auto it = frame_states_.find(id);
+  if (it == frame_states_.end())
+    return false;
+  return it->second.is_dropped();
+}
+
 void FrameSorter::Reset() {
   for (auto pending_frame : pending_frames_) {
     auto& frame_state = frame_states_[pending_frame.frame_id];

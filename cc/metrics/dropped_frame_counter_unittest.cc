@@ -295,6 +295,17 @@ class DroppedFrameCounterTest : public testing::Test {
     return args;
   }
 
+  // Simulate a main and impl thread update on the same frame.
+  void SimulateForkedFrame(bool main_dropped, bool impl_dropped) {
+    viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
+    dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
+    dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
+    dropped_frame_counter_.OnEndFrame(args_, main_dropped);
+    dropped_frame_counter_.OnEndFrame(args_, impl_dropped);
+    sequence_number_++;
+    frame_time_ += interval_;
+  }
+
   void AdvancetimeByIntervals(int interval_count) {
     frame_time_ += interval_ * interval_count;
   }
@@ -742,6 +753,22 @@ TEST_F(DroppedFrameCounterTest, FramesInFlightWhenFcpReceived) {
     dropped_frame_counter_.OnEndFrame(frame, true);
   }
   EXPECT_EQ(dropped_frame_counter_.total_smoothness_dropped(), 2u);
+}
+
+TEST_F(DroppedFrameCounterTest, ForkedCompositorFrameReporter) {
+  // Run different combinations of main and impl threads dropping, make sure
+  // only one frame is counted as dropped each time.
+  SimulateForkedFrame(false, false);
+  EXPECT_EQ(dropped_frame_counter_.total_smoothness_dropped(), 0u);
+
+  SimulateForkedFrame(true, false);
+  EXPECT_EQ(dropped_frame_counter_.total_smoothness_dropped(), 1u);
+
+  SimulateForkedFrame(false, true);
+  EXPECT_EQ(dropped_frame_counter_.total_smoothness_dropped(), 2u);
+
+  SimulateForkedFrame(true, true);
+  EXPECT_EQ(dropped_frame_counter_.total_smoothness_dropped(), 3u);
 }
 
 }  // namespace
