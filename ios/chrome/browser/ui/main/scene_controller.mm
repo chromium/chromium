@@ -1308,6 +1308,10 @@ bool IsSigninForcedByPolicy() {
 
 #pragma mark - ApplicationCommands
 
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion {
+  [self dismissModalDialogsWithCompletion:completion dismissOmnibox:YES];
+}
+
 - (void)dismissModalDialogs {
   [self dismissModalDialogsWithCompletion:nil dismissOmnibox:YES];
 }

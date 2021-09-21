@@ -176,6 +176,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/reading_list:features",
+    "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/start_surface",

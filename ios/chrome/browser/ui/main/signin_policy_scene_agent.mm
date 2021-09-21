@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,6 +63,11 @@ bool IsSigninForcedByPolicy() {
 
 // Browser of the main interface of the scene.
 @property(nonatomic, assign) Browser* mainBrowser;
+
+// YES if the scene is showing the forced sign-in prompt. This is to avoid
+// that the scene that is presenting the forced sign-in UI handles the
+// policy more than one time.
+@property(nonatomic, assign) BOOL presentingForcedSigninPrompt;
 
 @end
 
@@ -199,26 +205,62 @@ bool IsSigninForcedByPolicy() {
   }
 
   if ([self isForcedSignInRequiredByPolicy]) {
-    // Prompt to sign in if required by policy.
-    ShowSigninCommand* command = [[ShowSigninCommand alloc]
-        initWithOperation:AUTHENTICATION_OPERATION_FORCED_SIGNIN
-                 identity:nil
-              accessPoint:signin_metrics::AccessPoint::
-                              ACCESS_POINT_FORCED_SIGNIN
-              promoAction:signin_metrics::PromoAction::
-                              PROMO_ACTION_NO_SIGNIN_PROMO
-                 callback:^(BOOL success) {
-                   self.sceneState.appState.shouldShowPolicySignoutPrompt = NO;
-                 }];
+    // Sanity check that when the policy is handled while there is a UIBlocker
+    // that the scene that will show the sign-in prompt corresponds to the
+    // target of the UI blocker.
+    if (self.sceneState.appState.currentUIBlocker) {
+      DCHECK(self.sceneState.appState.currentUIBlocker == self.sceneState);
+    }
 
+    self.presentingForcedSigninPrompt = YES;
+
+    // Put a UI blocker to stop the other scenes from handling the policy.
+    // This UI blocker will be superimposed on the one of the sign-in prompt
+    // command and maybe the existing sign-in prompt (to be dismissed) to not
+    // leave any gap that would allow the other scenes to handle the sign-in
+    // policy (by keeping |sceneState.presentingModalOverlay| == YES). There
+    // won't be issues with the superimpositions of the UI blockers because this
+    // is done on the same SceneState target, which will only increase the
+    // target counter. If the scene is dismissed, the count will be decremented
+    // to zero leaving the way for another scene to take over the forced
+    // sign-in prompt.
+    __block std::unique_ptr<ScopedUIBlocker> uiBlocker =
+        std::make_unique<ScopedUIBlocker>(self.sceneState);
+    // Prompt to sign in if required by policy.
     id<ApplicationCommands> handler =
         HandlerForProtocol(self.dispatcher, ApplicationCommands);
-    // TODO(crbug.com/1241451): Use the command for forced sign-in when
-    // available.
-    [handler showSignin:command
-        baseViewController:self.sceneState.interfaceProvider.currentInterface
-                               .viewController];
+
+    __weak __typeof(self) weakSelf = self;
+    [handler dismissModalDialogsWithCompletion:^{
+      [weakSelf showForcedSigninPrompt];
+      // Remove the blocker after the showSignin: command to make sure that the
+      // blocker doesn't go down to 0 in which case the other scenes will try to
+      // take over handling the force sign-in prompt.
+      uiBlocker.reset();
+    }];
   }
+}
+
+// Shows the forced sign-in prompt using the application command.
+- (void)showForcedSigninPrompt {
+  __weak __typeof(self) weakSelf = self;
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AUTHENTICATION_OPERATION_FORCED_SIGNIN
+               identity:nil
+            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+               callback:^(BOOL success) {
+                 weakSelf.presentingForcedSigninPrompt = NO;
+               }];
+
+  id<ApplicationCommands> handler =
+      HandlerForProtocol(self.dispatcher, ApplicationCommands);
+  // TODO(crbug.com/1241451): Use the command for forced sign-in when
+  // available.
+  [handler showSignin:command
+      baseViewController:self.sceneState.interfaceProvider.currentInterface
+                             .viewController];
 }
 
 // YES if the scene and the app are in a state where the UI of the scene is
@@ -232,10 +274,18 @@ bool IsSigninForcedByPolicy() {
     return NO;
   }
 
-  if (self.sceneState.appState.currentUIBlocker) {
-    // Return NO when |currentUIBlocker| is set because it means that there is
-    // a UI blocking modal being displayed. Re-attempting to show prompts is
-    // done when the blocker is dismissed.
+  if (self.sceneState.presentingModalOverlay) {
+    // Return NO when the scene cannot present views because it is blocked by
+    // the modal overlay.
+    return NO;
+  }
+
+  if (self.presentingForcedSigninPrompt) {
+    // Return NO when the scene is already presenting the forced sign-in prompt
+    // to not handle the forced sign-in policy more than one time. The other
+    // scenes will have |self.sceneState.presentingModalOverlay| == YES which
+    // will stop them from handling the policy as well. For example, this stops
+    // the scene from rehandling the forced sign-in policy when foregrounded.
     return NO;
   }
 
