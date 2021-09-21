@@ -126,6 +126,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.IppAttributes" enum="IppAttribute"
     expires_after="M93">
+  <obsolete>
+    Removed 2021-09.
+  </obsolete>
   <owner>vkuzkokov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>
@@ -136,6 +139,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.IppAttributesCount" units="count"
     expires_after="M82">
+  <obsolete>
+    Removed 2021-09.
+  </obsolete>
   <owner>vkuzkokov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>
@@ -159,6 +165,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Printing.CUPS.IppAttributesUsed" units="count"
     expires_after="M93">
+  <obsolete>
+    Removed 2021-09.
+  </obsolete>
   <owner>vkuzkokov@chromium.org</owner>
   <owner>skau@chromium.org</owner>
   <summary>

@@ -15,8 +15,6 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,51 +64,6 @@ ScopedCupsOption ConstructOption(base::StringPiece name,
 
 base::StringPiece GetCollateString(bool collate) {
   return collate ? kCollated : kUncollated;
-}
-
-// This enum is used for UMA. It shouldn't be renumbered and numeric values
-// shouldn't be reused.
-enum class Attribute {
-  kConfirmationSheetPrint = 0,
-  kFinishings = 1,
-  kIppAttributeFidelity = 2,
-  kJobName = 3,
-  kJobPriority = 4,
-  kJobSheets = 5,
-  kMultipleDocumentHandling = 6,
-  kOrientationRequested = 7,
-  kOutputBin = 8,
-  kPrintQuality = 9,
-  kMaxValue = kPrintQuality,
-};
-
-using AttributeMap = std::map<base::StringPiece, Attribute>;
-
-AttributeMap GenerateAttributeMap() {
-  AttributeMap result;
-  result.emplace("confirmation-sheet-print",
-                 Attribute::kConfirmationSheetPrint);
-  result.emplace("finishings", Attribute::kFinishings);
-  result.emplace("ipp-attribute-fidelity", Attribute::kIppAttributeFidelity);
-  result.emplace("job-name", Attribute::kJobName);
-  result.emplace("job-priority", Attribute::kJobPriority);
-  result.emplace("job-sheets", Attribute::kJobSheets);
-  result.emplace("multiple-document-handling",
-                 Attribute::kMultipleDocumentHandling);
-  result.emplace("orientation-requested", Attribute::kOrientationRequested);
-  result.emplace("output-bin", Attribute::kOutputBin);
-  result.emplace("print-quality", Attribute::kPrintQuality);
-  return result;
-}
-
-void ReportEnumUsage(const std::string& attribute_name) {
-  static const base::NoDestructor<AttributeMap> attributes(
-      GenerateAttributeMap());
-  auto it = attributes->find(attribute_name);
-  if (it == attributes->end())
-    return;
-
-  base::UmaHistogramEnumeration("Printing.CUPS.IppAttributes", it->second);
 }
 
 // Given an integral `value` expressed in PWG units (1/100 mm), returns
@@ -210,7 +163,6 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
     options.push_back(ConstructOption(kIppResolution, dpi + "dpi"));
   }
 
-  size_t regular_attr_count = options.size();
   std::map<std::string, std::vector<std::string>> multival;
   for (const auto& setting : settings.advanced_settings()) {
     const std::string& key = setting.first;
@@ -222,7 +174,6 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
     size_t pos = key.find('/');
     if (pos == std::string::npos) {
       // Regular value.
-      ReportEnumUsage(key);
       options.push_back(ConstructOption(key, value));
       continue;
     }
@@ -233,12 +184,9 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
 
   // Pass multivalue enums as comma-separated lists.
   for (const auto& it : multival) {
-    ReportEnumUsage(it.first);
     options.push_back(
         ConstructOption(it.first, base::JoinString(it.second, ",")));
   }
-  base::UmaHistogramCounts1000("Printing.CUPS.IppAttributesUsed",
-                               options.size() - regular_attr_count);
 
   return options;
 }

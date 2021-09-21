@@ -44265,6 +44265,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="IppAttribute">
+  <obsolete>
+    Removed 2021/09.
+  </obsolete>
   <int value="0" label="confirmation-sheet-print"/>
   <int value="1" label="finishings"/>
   <int value="2" label="ipp-attribute-fidelity"/>
