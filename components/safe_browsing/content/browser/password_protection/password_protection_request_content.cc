@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
@@ -36,8 +37,14 @@ namespace {
 const int kDomFeatureTimeoutMs = 3000;
 
 // Parameters chosen to ensure privacy is preserved by visual features.
+#if defined(OS_ANDROID)
+const int kMinWidthForVisualFeatures = 258;
+const int kMinHeightForVisualFeatures = 258;
+#else
 const int kMinWidthForVisualFeatures = 576;
 const int kMinHeightForVisualFeatures = 576;
+#endif
+
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

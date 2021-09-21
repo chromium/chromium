@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -28,8 +29,13 @@ namespace {
 
 // WARNING: The following parameters are highly privacy and performance
 // sensitive. These should not be changed without thorough review.
+#if defined(OS_ANDROID)
+const int kPHashDownsampleWidth = 108;
+const int kPHashDownsampleHeight = 192;
+#else
 const int kPHashDownsampleWidth = 288;
 const int kPHashDownsampleHeight = 288;
+#endif
 const int kPHashBlockSize = 6;
 
 // Constants for computing Earth Movers Distance (EMD) between ColorHistograms.
