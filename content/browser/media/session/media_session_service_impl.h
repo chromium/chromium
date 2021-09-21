@@ -78,15 +78,10 @@ class CONTENT_EXPORT MediaSessionServiceImpl
  private:
   MediaSessionImpl* GetMediaSession();
 
-  void Bind(mojo::PendingReceiver<blink::mojom::MediaSessionService> receiver);
-
   void ClearActions();
 
   const GlobalRenderFrameHostId render_frame_host_id_;
 
-  // RAII binding of |this| to an MediaSessionService interface request.
-  // The binding is removed when receiver_ is cleared or goes out of scope.
-  std::unique_ptr<mojo::Receiver<blink::mojom::MediaSessionService>> receiver_;
   mojo::Remote<blink::mojom::MediaSessionClient> client_;
   blink::mojom::MediaSessionPlaybackState playback_state_;
   blink::mojom::SpecMediaMetadataPtr metadata_;
