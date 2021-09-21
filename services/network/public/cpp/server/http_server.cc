@@ -85,7 +85,9 @@ void HttpServer::SendOverWebSocket(
   if (connection == NULL)
     return;
   DCHECK(connection->web_socket());
-  connection->web_socket()->Send(data, traffic_annotation);
+  connection->web_socket()->Send(
+      data, net::WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+      traffic_annotation);
 }
 
 void HttpServer::SendRaw(int connection_id,

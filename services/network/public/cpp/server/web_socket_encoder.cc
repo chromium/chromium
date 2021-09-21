@@ -15,6 +15,7 @@
 #include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_extension.h"
 #include "net/websockets/websocket_extension_parser.h"
+#include "net/websockets/websocket_frame.h"
 
 namespace network {
 
@@ -28,16 +29,6 @@ namespace {
 const int kInflaterChunkSize = 16 * 1024;
 
 // Constants for hybi-10 frame format.
-
-typedef int OpCode;
-
-const OpCode kOpCodeContinuation = 0x0;
-const OpCode kOpCodeText = 0x1;
-const OpCode kOpCodeBinary = 0x2;
-const OpCode kOpCodeClose = 0x8;
-const OpCode kOpCodePing = 0x9;
-const OpCode kOpCodePong = 0xA;
-
 const unsigned char kFinalBit = 0x80;
 const unsigned char kReserved1Bit = 0x40;
 const unsigned char kReserved2Bit = 0x20;
@@ -79,19 +70,20 @@ WebSocket::ParseResult DecodeFrameHybi17(const base::StringPiece& frame,
 
   bool closed = false;
   switch (op_code) {
-    case kOpCodeClose:
+    case net::WebSocketFrameHeader::OpCodeEnum::kOpCodeClose:
       closed = true;
       break;
 
-    case kOpCodeText:
+    case net::WebSocketFrameHeader::OpCodeEnum::kOpCodeText:
+    case net::WebSocketFrameHeader::OpCodeEnum::
+        kOpCodeContinuation:  // Treated in the same as kOpCodeText.
+    case net::WebSocketFrameHeader::OpCodeEnum::kOpCodePing:
+    case net::WebSocketFrameHeader::OpCodeEnum::kOpCodePong:
       break;
 
-    case kOpCodeContinuation:  // Treated in the same as kOpCodeText.
-      break;
-
-    case kOpCodeBinary:        // We don't support binary frames yet.
-    case kOpCodePing:          // We don't support binary frames yet.
-    case kOpCodePong:          // We don't support binary frames yet.
+    case net::WebSocketFrameHeader::OpCodeEnum::
+        kOpCodeBinary:  // We don't support
+                        // binary frames yet.
     default:
       return WebSocket::FRAME_ERROR;
   }
@@ -144,6 +136,12 @@ WebSocket::ParseResult DecodeFrameHybi17(const base::StringPiece& frame,
   size_t pos = p + actual_masking_key_length + payload_length - buffer_begin;
   *bytes_consumed = pos;
 
+  if (op_code == net::WebSocketFrameHeader::OpCodeEnum::kOpCodePing)
+    return WebSocket::FRAME_PING;
+
+  if (op_code == net::WebSocketFrameHeader::OpCodeEnum::kOpCodePong)
+    return WebSocket::FRAME_PONG;
+
   if (closed)
     return WebSocket::FRAME_CLOSE;
   return final ? WebSocket::FRAME_OK_FINAL : WebSocket::FRAME_OK_MIDDLE;
@@ -152,9 +150,9 @@ WebSocket::ParseResult DecodeFrameHybi17(const base::StringPiece& frame,
 void EncodeFrameHybi17(base::StringPiece message,
                        int masking_key,
                        bool compressed,
+                       net::WebSocketFrameHeader::OpCodeEnum op_code,
                        std::string* output) {
   std::vector<char> frame;
-  OpCode op_code = kOpCodeText;
   size_t data_length = message.size();
 
   int reserved1 = compressed ? kReserved1Bit : 0;
@@ -306,12 +304,12 @@ WebSocket::ParseResult WebSocketEncoder::DecodeFrame(
   WebSocket::ParseResult result = DecodeFrameHybi17(
       frame, type_ == FOR_SERVER, bytes_consumed, &current_output, &compressed);
   if (result == WebSocket::FRAME_OK_FINAL ||
-      result == WebSocket::FRAME_OK_MIDDLE) {
+      result == WebSocket::FRAME_OK_MIDDLE || result == WebSocket::FRAME_PING) {
     if (continuation_message_frames_.empty())
       is_current_message_compressed_ = compressed;
     continuation_message_frames_.push_back(std::move(current_output));
   }
-  if (result == WebSocket::FRAME_OK_FINAL) {
+  if (result == WebSocket::FRAME_OK_FINAL || result == WebSocket::FRAME_PING) {
     *output = base::StrCat(continuation_message_frames_);
     if (is_current_message_compressed_) {
       if (!Inflate(output))
@@ -323,14 +321,22 @@ WebSocket::ParseResult WebSocketEncoder::DecodeFrame(
   return result;
 }
 
-void WebSocketEncoder::EncodeFrame(base::StringPiece frame,
-                                   int masking_key,
-                                   std::string* output) {
+void WebSocketEncoder::EncodeTextFrame(base::StringPiece frame,
+                                       int masking_key,
+                                       std::string* output) {
   std::string compressed;
+  constexpr auto op_code = net::WebSocketFrameHeader::OpCodeEnum::kOpCodeText;
   if (Deflate(frame, &compressed))
-    EncodeFrameHybi17(compressed, masking_key, true, output);
+    EncodeFrameHybi17(compressed, masking_key, true, op_code, output);
   else
-    EncodeFrameHybi17(frame, masking_key, false, output);
+    EncodeFrameHybi17(frame, masking_key, false, op_code, output);
+}
+
+void WebSocketEncoder::EncodePongFrame(base::StringPiece frame,
+                                       int masking_key,
+                                       std::string* output) {
+  constexpr auto op_code = net::WebSocketFrameHeader::OpCodeEnum::kOpCodePong;
+  EncodeFrameHybi17(frame, masking_key, false, op_code, output);
 }
 
 bool WebSocketEncoder::Inflate(std::string* message) {
