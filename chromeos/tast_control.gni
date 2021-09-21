@@ -39,6 +39,9 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1247177
   "inputs.PhysicalKeyboardEnglishTyping",
   "inputs.PhysicalKeyboardEmoji",
+
+  # crbug.com/1251580
+  "arc.TextToSpeech",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
