@@ -26,6 +26,7 @@ TypeConverter<ui::ozone::mojom::WaylandOverlayConfigPtr,
   wayland_overlay_config->bounds_rect = input.display_bounds;
   wayland_overlay_config->crop_rect = input.crop_rect;
   wayland_overlay_config->enable_blend = input.enable_blend;
+  wayland_overlay_config->opacity = input.opacity;
   wayland_overlay_config->damage_region = input.damage_rect;
   wayland_overlay_config->access_fence_handle =
       !input.gpu_fence || input.gpu_fence->GetGpuFenceHandle().is_null()
@@ -196,7 +197,7 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, buffer_id,
       surface_scale_factor, bounds_rect, gfx::RectF(1.f, 1.f) /* no crop */,
-      damage_region, false, gfx::GpuFenceHandle()));
+      damage_region, false, 1.0f /*opacity*/, gfx::GpuFenceHandle()));
 
   CommitOverlays(widget, std::move(overlay_configs));
 }

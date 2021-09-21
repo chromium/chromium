@@ -333,6 +333,12 @@ void WaylandSurface::SetViewportSource(const gfx::RectF& src_rect) {
   crop_rect_ = src_rect;
 }
 
+void WaylandSurface::SetOpacity(const float opacity) {
+  if (blending()) {
+    zcr_blending_v1_set_alpha(blending(), wl_fixed_from_double(opacity));
+  }
+}
+
 void WaylandSurface::SetViewportDestination(const gfx::Size& dest_size_px) {
   if (dest_size_px == gfx::ScaleToRoundedSize(display_size_dip_, buffer_scale_))
     return;

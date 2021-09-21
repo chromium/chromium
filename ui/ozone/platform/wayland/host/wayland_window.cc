@@ -798,6 +798,7 @@ bool WaylandWindow::CommitOverlays(
             nullptr, reference_above);
         (*iter)->wayland_surface()->SetViewportSource(
             (*overlay_iter)->crop_rect);
+        (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
         (*iter)->wayland_surface()->SetViewportDestination(
             (*overlay_iter)->bounds_rect.size());
         connection_->buffer_manager_host()->CommitBufferInternal(
@@ -834,6 +835,7 @@ bool WaylandWindow::CommitOverlays(
             reference_below, nullptr);
         (*iter)->wayland_surface()->SetViewportSource(
             (*overlay_iter)->crop_rect);
+        (*iter)->wayland_surface()->SetOpacity((*overlay_iter)->opacity);
         (*iter)->wayland_surface()->SetViewportDestination(
             (*overlay_iter)->bounds_rect.size());
         connection_->buffer_manager_host()->CommitBufferInternal(
@@ -883,6 +885,7 @@ bool WaylandWindow::CommitOverlays(
         nullptr);
     primary_subsurface_->wayland_surface()->SetViewportSource(
         (*split)->crop_rect);
+    primary_subsurface_->wayland_surface()->SetOpacity((*split)->opacity);
     primary_subsurface_->wayland_surface()->SetViewportDestination(
         (*split)->crop_rect == gfx::RectF(1.f, 1.f)
             ? gfx::Size()

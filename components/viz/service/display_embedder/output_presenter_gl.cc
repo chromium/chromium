@@ -382,7 +382,7 @@ void OutputPresenterGL::SchedulePrimaryPlane(
   gl_surface_->ScheduleOverlayPlane(
       kPlaneZOrder, plane.transform, gl_image,
       ToNearestRect(plane.display_rect), plane.uv_rect, plane.enable_blending,
-      gfx::Rect(plane.resource_size), /*opacity=*/1.0f, std::move(fence),
+      gfx::Rect(plane.resource_size), plane.opacity, std::move(fence),
       plane.priority_hint);
 }
 

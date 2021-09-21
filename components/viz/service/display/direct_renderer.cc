@@ -321,7 +321,7 @@ void DirectRenderer::DrawFrame(
       current_frame()->output_surface_plane =
           overlay_processor_->ProcessOutputSurfaceAsOverlay(
               device_viewport_size, surface_resource_size, frame_buffer_format,
-              frame_color_space, frame_has_alpha,
+              frame_color_space, frame_has_alpha, 1.0f /*opacity*/,
               output_surface_->GetOverlayMailbox());
       primary_plane = &(current_frame()->output_surface_plane.value());
     }

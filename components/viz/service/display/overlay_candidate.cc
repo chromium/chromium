@@ -397,15 +397,7 @@ bool OverlayCandidate::FromSolidColorQuad(
   // TODO(https://crbug.com/1204102) : The 4x4 size is only valid for the non
   // native color support.
   candidate->resource_size_in_pixels = gfx::Size(4, 4);
-  // Fold opacity into the alpha of the color quad.
-  // TODO(https://crbug.com/1204102) : Remove this when we support delegation of
-  // opacity.
-  SkColor color_with_opacity = quad->color;
-  float alpha = (SkColorGetA(color_with_opacity) / 255.f) * candidate->opacity;
-  int alpha_int_clamped = base::clamp(static_cast<int>(alpha * 255.f), 0, 255);
-  color_with_opacity =
-      SkColorSetA(color_with_opacity, static_cast<uint8_t>(alpha_int_clamped));
-  candidate->solid_color = color_with_opacity;
+  candidate->solid_color = quad->color;
   return true;
 }
 

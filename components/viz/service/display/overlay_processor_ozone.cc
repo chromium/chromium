@@ -35,6 +35,7 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->crop_rect = primary_plane.uv_rect;
   ozone_candidate->clip_rect.reset();
   ozone_candidate->is_opaque = !primary_plane.enable_blending;
+  ozone_candidate->opacity = primary_plane.opacity;
   ozone_candidate->plane_z_order = 0;
   ozone_candidate->buffer_size = primary_plane.resource_size;
 }
@@ -48,6 +49,7 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->crop_rect = overlay_candidate.uv_rect;
   ozone_candidate->clip_rect = overlay_candidate.clip_rect;
   ozone_candidate->is_opaque = overlay_candidate.is_opaque;
+  ozone_candidate->opacity = overlay_candidate.opacity;
   ozone_candidate->plane_z_order = overlay_candidate.plane_z_order;
   ozone_candidate->buffer_size = overlay_candidate.resource_size_in_pixels;
   ozone_candidate->requires_overlay = overlay_candidate.requires_overlay;
@@ -139,7 +141,13 @@ void OverlayProcessorOzone::CheckOverlaySupport(
     OverlayCandidateList* surfaces) {
   // This number is depended on what type of strategies we have. Currently we
   // only overlay one video.
-  DCHECK_EQ(1U, surfaces->size());
+#if DCHECK_IS_ON()
+  // TODO(petermcneeley) : Reconsider this check in light of delegated
+  // compositing and multiple overlay work.
+  if (!features::IsDelegatedCompositingEnabled()) {
+    DCHECK_EQ(1U, surfaces->size());
+  }
+#endif
   auto full_size = surfaces->size();
   if (primary_plane)
     full_size += 1;

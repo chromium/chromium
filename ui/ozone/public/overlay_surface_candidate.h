@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   absl::optional<gfx::Rect> clip_rect;
   // If the quad doesn't require blending.
   bool is_opaque = false;
+  // Opacity of the overlay independent of buffer alpha. When rendered:
+  // src-alpha = |opacity| * buffer-component-alpha.
+  float opacity = 1.0f;
   // Optionally contains a pointer to the NativePixmap corresponding to this
   // candidate.
   scoped_refptr<gfx::NativePixmap> native_pixmap;

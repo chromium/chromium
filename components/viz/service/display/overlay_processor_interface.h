@@ -97,6 +97,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     gfx::ColorSpace color_space;
     // Enable blending when we have underlay.
     bool enable_blending;
+    // Opacity of the overlay independent of buffer alpha. When rendered:
+    // src-alpha = |opacity| * buffer-component-alpha.
+    float opacity;
     // TODO(weiliangc): Should be replaced by SharedImage mailbox.
     // Gpu fence to wait for before overlay is ready for display.
     unsigned gpu_fence_id;
@@ -115,6 +118,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       const gfx::BufferFormat& buffer_format,
       const gfx::ColorSpace& color_space,
       bool has_alpha,
+      float opacity,
       const gpu::Mailbox& mailbox);
 
   static std::unique_ptr<OverlayProcessorInterface> CreateOverlayProcessor(

@@ -189,6 +189,7 @@ OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
     const gfx::BufferFormat& buffer_format,
     const gfx::ColorSpace& color_space,
     bool has_alpha,
+    float opacity,
     const gpu::Mailbox& mailbox) {
   OutputSurfaceOverlayPlane overlay_plane;
   overlay_plane.transform = gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE;
@@ -200,6 +201,7 @@ OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
   overlay_plane.format = buffer_format;
   overlay_plane.color_space = color_space;
   overlay_plane.enable_blending = has_alpha;
+  overlay_plane.opacity = opacity;
   overlay_plane.mailbox = mailbox;
 
   // Adjust transformation and display_rect based on display rotation.

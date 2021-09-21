@@ -43,6 +43,10 @@ struct WaylandOverlayConfig {
   // scanout.
   bool enable_blend;
 
+  // Opacity of the overlay independent of buffer alpha.
+  // Valid values are [0.0, 1.0f].
+  float opacity;
+
   // Specifies a GpuFenceHandle to be waited on before content of the buffer can
   // be accessed by the display controller for overlay, or by the gpu for
   // compositing.

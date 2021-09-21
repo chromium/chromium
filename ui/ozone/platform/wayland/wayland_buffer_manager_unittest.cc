@@ -449,12 +449,12 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u,
       kDefaultScale, window_->GetBounds(), gfx::RectF(), window_->GetBounds(),
-      false, gfx::GpuFenceHandle()));
+      false, 1.0f, gfx::GpuFenceHandle()));
 
   // Non-existing buffer id
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 2u, kDefaultScale,
-      window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false,
+      window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
       gfx::GpuFenceHandle()));
 
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
@@ -1690,15 +1690,15 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
-      kDefaultScale, bounds, gfx::RectF(), bounds, false,
+      kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
       gfx::GpuFenceHandle()));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId2,
-      kDefaultScale, bounds, gfx::RectF(), bounds, false,
+      kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
       gfx::GpuFenceHandle()));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId3,
-      kDefaultScale, bounds, gfx::RectF(), bounds, false,
+      kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
       gfx::GpuFenceHandle()));
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
