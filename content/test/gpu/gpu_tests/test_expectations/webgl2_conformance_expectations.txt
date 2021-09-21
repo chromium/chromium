@@ -901,7 +901,6 @@ crbug.com/1219024 [ chromeos chromeos-board-kevin no-passthrough ] conformance/g
 crbug.com/1219024 [ chromeos chromeos-board-kevin no-passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1219024 [ chromeos chromeos-board-kevin no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1219024 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
-crbug.com/1219055 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/misc/generate-mipmap-with-large-base-level.html [ Failure ]
 crbug.com/1219057 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/buffers/uniform-buffers.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/canvas/webgl-to-2d-canvas.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/context/context-attribute-preserve-drawing-buffer.html [ Failure ]
