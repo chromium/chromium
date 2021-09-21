@@ -52,24 +52,20 @@ class ScopedPrivacyBudgetConfig {
     bool enabled = true;
     int generation = kDefaultGeneration;
 
-    std::vector<blink::IdentifiableSurface> blocked_surfaces;
-    std::vector<blink::IdentifiableSurface::Type> blocked_types;
-    int surface_selection_rate = kDefaultExpectedSurfaceCount;
-    int max_surfaces = std::numeric_limits<int>::max();
-    std::map<blink::IdentifiableSurface, int> per_surface_sampling_rate;
-    std::map<blink::IdentifiableSurface::Type, int> per_type_sampling_rate;
+    IdentifiableSurfaceList blocked_surfaces;
+    IdentifiableSurfaceTypeList blocked_types;
+    int expected_surface_count = kDefaultExpectedSurfaceCount;
+    int active_surface_budget = std::numeric_limits<int>::max();
     IdentifiableSurfaceCostMap per_surface_cost;
     IdentifiableSurfaceTypeCostMap per_type_cost;
     SurfaceSetEquivalentClassesList equivalence_classes;
+    IdentifiableSurfaceBlocks blocks;
+    std::vector<double> block_weights;
   };
 
   enum Presets {
     // Represents the default state of `Parameters` which enables the study with
-    // the following settings:
-    //
-    // * `generation` = 1
-    // * `surface_selection_rate`= 1 (i.e. includes every surface)
-    // * `max_surfaces` = <very large number> (i.e. unlimited)
+    // the default Parameters values.
     kEnable,
 
     // Disables the study. The other parameters are undefined and should not be

@@ -70,7 +70,7 @@ using SurfaceSetEquivalentClassesList = std::vector<IdentifiableSurfaceList>;
 // Similar to the SurfaceSetEquivalentClassesList, but is semantically different
 // in that the ordering doesn't matter. There's no assumption that the first
 // element of each list is special in any meaningful way.
-using IdentifiableSurfaceGroupList = std::vector<IdentifiableSurfaceList>;
+using IdentifiableSurfaceBlocks = std::vector<IdentifiableSurfaceList>;
 
 namespace privacy_budget_internal {
 

@@ -18,5 +18,5 @@ void PrivacyBudgetMetricsProvider::Init() {
 }
 
 void PrivacyBudgetMetricsProvider::OnClientStateCleared() {
-  study_state_->ResetClientState();
+  study_state_->ResetPersistedState();
 }

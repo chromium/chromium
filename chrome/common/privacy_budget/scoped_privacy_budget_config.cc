@@ -75,22 +75,36 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
          EncodeIdentifiabilityFieldTrialParam(parameters.blocked_types)});
   }
 
-  ftp.insert({features::kIdentifiabilityStudySurfaceSelectionRate.name,
-              base::NumberToString(parameters.surface_selection_rate)});
+  ftp.insert({features::kIdentifiabilityStudyExpectedSurfaceCount.name,
+              base::NumberToString(parameters.expected_surface_count)});
 
-  if (parameters.max_surfaces != defaults.max_surfaces) {
-    ftp.insert({features::kIdentifiabilityStudyMaxSurfaces.name,
-                base::NumberToString(parameters.max_surfaces)});
+  if (parameters.active_surface_budget != defaults.active_surface_budget) {
+    ftp.insert({features::kIdentifiabilityStudyActiveSurfaceBudget.name,
+                base::NumberToString(parameters.active_surface_budget)});
   }
-  if (!parameters.per_surface_sampling_rate.empty()) {
-    ftp.insert({features::kIdentifiabilityStudyPerSurfaceSettings.name,
-                EncodeIdentifiabilityFieldTrialParam(
-                    parameters.per_surface_sampling_rate)});
+  if (!parameters.per_surface_cost.empty()) {
+    ftp.insert(
+        {features::kIdentifiabilityStudyPerHashCost.name,
+         EncodeIdentifiabilityFieldTrialParam(parameters.per_surface_cost)});
   }
-  if (!parameters.per_type_sampling_rate.empty()) {
-    ftp.insert({features::kIdentifiabilityStudyPerTypeSettings.name,
-                EncodeIdentifiabilityFieldTrialParam(
-                    parameters.per_type_sampling_rate)});
+  if (!parameters.per_type_cost.empty()) {
+    ftp.insert(
+        {features::kIdentifiabilityStudyPerTypeCost.name,
+         EncodeIdentifiabilityFieldTrialParam(parameters.per_type_cost)});
+  }
+  if (!parameters.equivalence_classes.empty()) {
+    ftp.insert(
+        {features::kIdentifiabilityStudySurfaceEquivalenceClasses.name,
+         EncodeIdentifiabilityFieldTrialParam(parameters.equivalence_classes)});
+  }
+  if (!parameters.blocks.empty()) {
+    ftp.insert({features::kIdentifiabilityStudyBlocks.name,
+                EncodeIdentifiabilityFieldTrialParam(parameters.blocks)});
+  }
+  if (!parameters.block_weights.empty()) {
+    ftp.insert(
+        {features::kIdentifiabilityStudyBlockWeights.name,
+         EncodeIdentifiabilityFieldTrialParam(parameters.block_weights)});
   }
   if (!parameters.per_surface_cost.empty()) {
     ftp.insert(

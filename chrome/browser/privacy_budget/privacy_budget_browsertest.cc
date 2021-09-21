@@ -141,9 +141,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
   ASSERT_TRUE(ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled())
       << "UKM recording not enabled";
 
-  local_state()->SetString(prefs::kPrivacyBudgetActiveSurfaces, "1,2,3");
-  const auto first_prng_seed =
-      local_state()->GetUint64(prefs::kPrivacyBudgetSeed);
+  local_state()->SetString(prefs::kPrivacyBudgetSeenSurfaces, "1,2,3");
 
   // Disallowing reporting is equivalent to revoking consent.
   reporting_allowed = false;
@@ -151,14 +149,8 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
   ASSERT_FALSE(ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled())
       << "UKM recording not disabled";
 
-  const auto second_prng_seed =
-      local_state()->GetUint64(prefs::kPrivacyBudgetSeed);
-
-  EXPECT_NE(first_prng_seed, second_prng_seed)
-      << "PRNG seeds from before and after resetting UKM Client ID are still "
-         "the same";
   EXPECT_TRUE(
-      local_state()->GetString(prefs::kPrivacyBudgetActiveSurfaces).empty())
+      local_state()->GetString(prefs::kPrivacyBudgetSeenSurfaces).empty())
       << "Active surface list still exists after resetting client ID";
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
@@ -343,6 +335,44 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
               << " surface input hash " << surface.GetInputHash() << " value "
               << metric.second;
   }
+}
+
+namespace {
+
+class PrivacyBudgetGroupConfigBrowserTest : public PlatformBrowserTest {
+ public:
+  PrivacyBudgetGroupConfigBrowserTest() {
+    test::ScopedPrivacyBudgetConfig::Parameters parameters;
+
+    constexpr auto kSurfacesPerGroup = 40;
+    constexpr auto kGroupCount = 200;
+
+    auto counter = 0;
+    for (auto i = 0; i < kGroupCount; ++i) {
+      parameters.blocks.emplace_back();
+      auto& group = parameters.blocks.back();
+      group.reserve(kSurfacesPerGroup);
+      for (auto j = 0; j < kSurfacesPerGroup; ++j) {
+        group.push_back(blink::IdentifiableSurface::FromTypeAndToken(
+            blink::IdentifiableSurface::Type::kNavigator_GetUserMedia,
+            ++counter));
+      }
+    }
+
+    scoped_config_.Apply(parameters);
+  }
+
+ private:
+  test::ScopedPrivacyBudgetConfig scoped_config_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetGroupConfigBrowserTest, LoadsAGroup) {
+  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
+
+  auto* settings = blink::IdentifiabilityStudySettings::Get();
+  ASSERT_TRUE(settings->IsActive());
 }
 
 #if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)

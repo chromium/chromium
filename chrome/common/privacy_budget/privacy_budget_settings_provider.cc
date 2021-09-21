@@ -22,7 +22,7 @@ PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider()
       // In practice there's really no point in enabling the feature with a max
       // active surface count of 0.
       enabled_(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy) &&
-               features::kIdentifiabilityStudySurfaceSelectionRate.Get() > 0) {}
+               features::kIdentifiabilityStudyExpectedSurfaceCount.Get() > 0) {}
 
 PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider(
     const PrivacyBudgetSettingsProvider&) = default;

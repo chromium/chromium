@@ -59,6 +59,7 @@ source_set("unit_tests") {
   sources = [
     "encountered_surface_tracker_unittest.cc",
     "identifiability_study_state_unittest.cc",
+    "inspectable_identifiability_study_state.cc",
     "inspectable_identifiability_study_state.h",
     "mesa_distribution_unittest.cc",
     "privacy_budget_metrics_provider_unittest.cc",

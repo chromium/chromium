@@ -87,6 +87,13 @@ class SurfaceSetValuation {
   // model.
   const SurfaceSetEquivalence& equivalence() const { return equivalence_sets_; }
 
+  // Returns the expected number of surfaces that would fit in `cost`. This is
+  // a naive estimate that assumes that the surfaces will be of average cost and
+  // mutually independent.
+  //
+  // `cost` must be positive.
+  static size_t ExpectedSurfaceCountForCost(PrivacyBudgetCost cost);
+
  private:
   const SurfaceSetEquivalence& equivalence_sets_;
 

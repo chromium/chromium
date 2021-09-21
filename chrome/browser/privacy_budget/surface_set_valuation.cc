@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
@@ -86,4 +87,9 @@ double SurfaceSetValuation::IncrementalCost(
   if (base::Contains(prior, new_addition))
     return 0.0;
   return Cost(new_addition);
+}
+
+size_t SurfaceSetValuation::ExpectedSurfaceCountForCost(double cost) {
+  // The units are already in expected surface counts.
+  return base::ClampCeil<size_t>(cost);
 }

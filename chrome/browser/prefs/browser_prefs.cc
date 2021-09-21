@@ -666,6 +666,9 @@ const char kNtpSearchSuggestionsOptOut[] = "ntp.search_suggestions_opt_out";
 // Deprecated 09/2021.
 const char kAutofillAcceptSaveCreditCardPromptState[] =
     "autofill.accept_save_credit_card_prompt_state";
+const char kPrivacyBudgetActiveSurfaces[] = "privacy_budget.active_surfaces";
+const char kPrivacyBudgetRetiredSurfaces[] = "privacy_budget.retired_surfaces";
+const char kPrivacyBudgetSeed[] = "privacy_budget.randomizer_seed";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -703,6 +706,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry->RegisterBooleanPref(kPinnedExtensionsMigrationComplete, false);
 #endif
+
+  registry->RegisterStringPref(kPrivacyBudgetActiveSurfaces, std::string());
+  registry->RegisterStringPref(kPrivacyBudgetRetiredSurfaces, std::string());
+  registry->RegisterUint64Pref(kPrivacyBudgetSeed, 0u);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1466,6 +1473,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 07/2021
   local_state->ClearPref(kUserAgentClientHintsEnabled);
+
+  // Added 08/2021
+  local_state->ClearPref(kPrivacyBudgetActiveSurfaces);
+  local_state->ClearPref(kPrivacyBudgetRetiredSurfaces);
+  local_state->ClearPref(kPrivacyBudgetSeed);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
