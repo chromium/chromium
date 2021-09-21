@@ -149,6 +149,9 @@ bool HIDDetectionScreen::MaybeSkip(WizardContext* context) {
   if (StartupUtils::IsHIDDetectionScreenDisabledForTests() ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableHIDDetectionOnOOBEForTesting)) {
+    // Store the flag inside the local state so it persists restart for the
+    // autoupdate tests.
+    StartupUtils::DisableHIDDetectionScreenForTests();
     Exit(Result::SKIPPED_FOR_TESTS);
     return true;
   }
