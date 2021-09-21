@@ -33,7 +33,7 @@ class URLRequestContext;
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "QuicTransportClientState" in src/tools/metrics/histograms/enums.xml.
-enum WebTransportState {
+enum class WebTransportState {
   // The client object has been created but Connect() has not been called.
   NEW,
   // Connection establishment is in progress.  No application data can be sent
@@ -50,6 +50,8 @@ enum WebTransportState {
   // Total number of possible states.
   NUM_STATES,
 };
+
+NET_EXPORT std::ostream& operator<<(std::ostream& os, WebTransportState state);
 
 // A visitor that gets notified about events that happen to a WebTransport
 // client.

@@ -157,7 +157,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
   quic::QuicCryptoClientConfig crypto_config_;
 
-  WebTransportState state_ = NEW;
+  WebTransportState state_ = WebTransportState::NEW;
   ConnectState next_connect_state_ = CONNECT_STATE_NONE;
   absl::optional<WebTransportError> error_;
   bool retried_with_new_version_ = false;

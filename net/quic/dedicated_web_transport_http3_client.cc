@@ -217,12 +217,13 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
 DedicatedWebTransportHttp3Client::~DedicatedWebTransportHttp3Client() = default;
 
 void DedicatedWebTransportHttp3Client::Connect() {
-  if (state_ != NEW || next_connect_state_ != CONNECT_STATE_NONE) {
+  if (state_ != WebTransportState::NEW ||
+      next_connect_state_ != CONNECT_STATE_NONE) {
     NOTREACHED();
     return;
   }
 
-  TransitionToState(CONNECTING);
+  TransitionToState(WebTransportState::CONNECTING);
   next_connect_state_ = CONNECT_STATE_INIT;
   DoLoop(OK);
 }
@@ -282,7 +283,7 @@ void DedicatedWebTransportHttp3Client::DoLoop(int rv) {
   if (rv == OK || rv == ERR_IO_PENDING)
     return;
   SetErrorIfNecessary(rv);
-  TransitionToState(FAILED);
+  TransitionToState(WebTransportState::FAILED);
 }
 
 int DedicatedWebTransportHttp3Client::DoInit() {
@@ -465,7 +466,7 @@ void DedicatedWebTransportHttp3Client::OnHeadersComplete() {
 
 void DedicatedWebTransportHttp3Client::OnConnectStreamClosed() {
   SetErrorIfNecessary(ERR_FAILED);
-  TransitionToState(FAILED);
+  TransitionToState(WebTransportState::FAILED);
 }
 
 int DedicatedWebTransportHttp3Client::DoSendRequest() {
@@ -505,7 +506,7 @@ int DedicatedWebTransportHttp3Client::DoConfirmConnection() {
     return ERR_METHOD_NOT_SUPPORTED;
   }
 
-  TransitionToState(CONNECTED);
+  TransitionToState(WebTransportState::CONNECTED);
   return OK;
 }
 
@@ -515,27 +516,27 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
   const WebTransportState last_state = state_;
   state_ = next_state;
   switch (next_state) {
-    case CONNECTING:
-      DCHECK_EQ(last_state, NEW);
+    case WebTransportState::CONNECTING:
+      DCHECK_EQ(last_state, WebTransportState::NEW);
       break;
 
-    case CONNECTED:
-      DCHECK_EQ(last_state, CONNECTING);
+    case WebTransportState::CONNECTED:
+      DCHECK_EQ(last_state, WebTransportState::CONNECTING);
       visitor_->OnConnected(http_response_info_->headers);
       break;
 
-    case CLOSED:
-      DCHECK_EQ(last_state, CONNECTED);
+    case WebTransportState::CLOSED:
+      DCHECK_EQ(last_state, WebTransportState::CONNECTED);
       visitor_->OnClosed();
       break;
 
-    case FAILED:
+    case WebTransportState::FAILED:
       DCHECK(error_.has_value());
-      if (last_state == CONNECTING) {
+      if (last_state == WebTransportState::CONNECTING) {
         visitor_->OnConnectionFailed(*error_);
         break;
       }
-      DCHECK_EQ(last_state, CONNECTED);
+      DCHECK_EQ(last_state, WebTransportState::CONNECTED);
       visitor_->OnError(*error_);
       break;
 
@@ -651,21 +652,21 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
   }
 
   if (error == quic::QUIC_NO_ERROR) {
-    TransitionToState(CLOSED);
+    TransitionToState(WebTransportState::CLOSED);
     return;
   }
 
   SetErrorIfNecessary(ERR_QUIC_PROTOCOL_ERROR, error, error_details);
 
-  if (state_ == CONNECTING) {
+  if (state_ == WebTransportState::CONNECTING) {
     DoLoop(OK);
     return;
   }
 
   // `state_` can be FAILED when the stream associated with a WebTransport
   // session is closed.
-  if (state_ != FAILED)
-    TransitionToState(FAILED);
+  if (state_ != WebTransportState::FAILED)
+    TransitionToState(WebTransportState::FAILED);
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramProcessed(

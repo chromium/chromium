@@ -29,6 +29,30 @@ class FailedWebTransportClient : public WebTransportClient {
 };
 }  // namespace
 
+std::ostream& operator<<(std::ostream& os, WebTransportState state) {
+  switch (state) {
+    case WebTransportState::NEW:
+      os << "NEW";
+      break;
+    case WebTransportState::CONNECTING:
+      os << "CONNECTING";
+      break;
+    case WebTransportState::CONNECTED:
+      os << "CONNECTED";
+      break;
+    case WebTransportState::CLOSED:
+      os << "CLOSED";
+      break;
+    case WebTransportState::FAILED:
+      os << "FAILED";
+      break;
+    default:
+      os << "[" << static_cast<int>(state) << "]";
+      break;
+  }
+  return os;
+}
+
 WebTransportClientVisitor::~WebTransportClientVisitor() = default;
 
 WebTransportParameters::WebTransportParameters() = default;
