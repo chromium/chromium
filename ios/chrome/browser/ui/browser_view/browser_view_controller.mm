@@ -35,8 +35,6 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
@@ -71,7 +69,6 @@
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
-#import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
@@ -91,9 +88,7 @@
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#include "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
-#import "ios/chrome/browser/ui/context_menu/image_preview_view_controller.h"
-#import "ios/chrome/browser/ui/context_menu/link_no_preview_view_controller.h"
+#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
@@ -220,42 +215,6 @@ const CGFloat kTabStripHeight = 39.0;
 
 const size_t kMaxURLDisplayChars = 32 * 1024;
 
-typedef NS_ENUM(NSInteger, ContextMenuHistogram) {
-  // Note: these values must match the ContextMenuOptionIOS enum in enums.xml.
-  ACTION_OPEN_IN_NEW_TAB = 0,
-  ACTION_OPEN_IN_INCOGNITO_TAB = 1,
-  ACTION_COPY_LINK_ADDRESS = 2,
-  ACTION_SAVE_IMAGE = 3,
-  ACTION_OPEN_IMAGE = 4,
-  ACTION_OPEN_IMAGE_IN_NEW_TAB = 5,
-  ACTION_COPY_IMAGE = 6,
-  ACTION_SEARCH_BY_IMAGE = 7,
-  ACTION_OPEN_JAVASCRIPT = 8,
-  ACTION_READ_LATER = 9,
-  ACTION_OPEN_IN_NEW_WINDOW = 10,
-  NUM_ACTIONS = 11,
-};
-
-void Record(ContextMenuHistogram action, bool is_image, bool is_link) {
-  if (is_image) {
-    if (is_link) {
-      UMA_HISTOGRAM_ENUMERATION("ContextMenu.SelectedOptionIOS.ImageLink",
-                                action, NUM_ACTIONS);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION("ContextMenu.SelectedOptionIOS.Image", action,
-                                NUM_ACTIONS);
-    }
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("ContextMenu.SelectedOptionIOS.Link", action,
-                              NUM_ACTIONS);
-  }
-}
-
-// Maximum length for a context menu title formed from a URL.
-const NSUInteger kContextMenuMaxURLTitleLength = 100;
-// Character to append to context menut titles that are truncated.
-NSString* const kContextMenuEllipsis = @"…";
-
 // Duration of the toolbar animation.
 const NSTimeInterval kLegacyFullscreenControllerToolbarAnimationDuration = 0.3;
 
@@ -273,9 +232,6 @@ enum HeaderBehaviour {
 // Snackbar category for browser view controller.
 NSString* const kBrowserViewControllerSnackbarCategory =
     @"BrowserViewControllerSnackbarCategory";
-
-// Desired width and height of favicon.
-const CGFloat kFaviconWidthHeight = 24;
 
 }  // namespace
 
@@ -382,9 +338,6 @@ const CGFloat kFaviconWidthHeight = 24;
 
   // Controller for edge swipe gestures for page and tab navigation.
   SideSwipeController* _sideSwipeController;
-
-  // Handles displaying the action sheet for all form factors.
-  ActionSheetCoordinator* _contextMenuCoordinator;
 
   // Handles presentation of JavaScript dialogs.
   std::unique_ptr<web::JavaScriptDialogPresenter> _javaScriptDialogPresenter;
@@ -533,10 +486,6 @@ const CGFloat kFaviconWidthHeight = 24;
 @property(nonatomic, weak) UIView<TabStripContaining>* tabStripView;
 // A snapshot of the tab strip used on the thumb strip reveal/hide animation.
 @property(nonatomic, strong) UIView* tabStripSnapshot;
-// Helper for saving images.
-@property(nonatomic, strong) ImageSaver* imageSaver;
-// Helper for copying images.
-@property(nonatomic, strong) ImageCopier* imageCopier;
 // Helper for the bvc.
 @property(nonatomic, strong) BrowserViewControllerHelper* helper;
 
@@ -564,6 +513,10 @@ const CGFloat kFaviconWidthHeight = 24;
 
 // The FullscreenController.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
+
+// Configuration provider for the context menu.
+@property(nonatomic, strong)
+    ContextMenuConfigurationProvider* contextMenuProvider;
 
 // Primary toolbar.
 @property(nonatomic, strong)
@@ -1260,7 +1213,7 @@ const CGFloat kFaviconWidthHeight = 24;
   }
 
   [self.dispatcher dismissPopupMenuAnimated:NO];
-  [_contextMenuCoordinator stop];
+  [self.contextMenuProvider dismissLegacyContextMenu];
 
   if (self.presentedViewController) {
     // Dismisses any other modal controllers that may be present, e.g. Recent
@@ -1901,8 +1854,8 @@ const CGFloat kFaviconWidthHeight = 24;
   for (int index = 0; index < webStateList->count(); ++index)
     [self installDelegatesForWebState:webStateList->GetWebStateAt(index)];
 
-  self.imageSaver = [[ImageSaver alloc] initWithBrowser:self.browser];
-  self.imageCopier = [[ImageCopier alloc] initWithBrowser:self.browser];
+  self.contextMenuProvider =
+      [[ContextMenuConfigurationProvider alloc] initWithBrowser:self.browser];
 
   // Set the TTS playback controller's WebStateList.
   TextToSpeechPlaybackControllerFactory::GetInstance()
@@ -3409,289 +3362,9 @@ const CGFloat kFaviconWidthHeight = 24;
 
 - (void)webState:(web::WebState*)webState
     handleContextMenu:(const web::ContextMenuParams&)params {
-  DCHECK(!web::features::UseWebViewNativeContextMenuWeb() &&
-         !web::features::UseWebViewNativeContextMenuSystem());
-  // Prevent context menu from displaying for a tab which is no longer the
-  // current one.
-  if (webState != self.currentWebState) {
-    return;
-  }
-
-  // No custom context menu if no valid url is available in |params|.
-  if (!params.link_url.is_valid() && !params.src_url.is_valid()) {
-    return;
-  }
-
-  DCHECK(self.browserState);
-
-  // Truncate context meny titles that originate from URLs, leaving text titles
-  // untruncated.
-  NSString* menuTitle = GetContextMenuTitle(params);
-  if (!IsImageTitle(params) &&
-      menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-    menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
-        stringByAppendingString:kContextMenuEllipsis];
-  }
-
-  _contextMenuCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self
-                         browser:self.browser
-                           title:menuTitle
-                         message:nil
-                            rect:CGRectMake(params.location.x,
-                                            params.location.y, 1.0, 1.0)
-                            view:params.view];
-
-  NSString* title = nil;
-  ProceduralBlock action = nil;
-
-  __weak BrowserViewController* weakSelf = self;
-  GURL link = params.link_url;
-  bool isLink = link.is_valid();
-  GURL imageUrl = params.src_url;
-  bool isImage = imageUrl.is_valid();
-  const GURL& lastCommittedURL = webState->GetLastCommittedURL();
-  CGPoint originPoint = [params.view convertPoint:params.location toView:nil];
-
-  if (isLink) {
-    base::RecordAction(
-        base::UserMetricsAction("MobileWebContextMenuLinkImpression"));
-    if (web::UrlHasWebScheme(link)) {
-      web::Referrer referrer(lastCommittedURL, params.referrer_policy);
-
-      // Open in New Tab.
-      title = l10n_util::GetNSStringWithFixup(
-          IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
-      action = ^{
-        base::RecordAction(
-            base::UserMetricsAction("MobileWebContextMenuOpenInNewTab"));
-        Record(ACTION_OPEN_IN_NEW_TAB, isImage, isLink);
-        // The "New Tab" item in the context menu opens a new tab in the current
-        // browser state. |isOffTheRecord| indicates whether or not the current
-        // browser state is incognito.
-        BrowserViewController* strongSelf = weakSelf;
-        if (!strongSelf)
-          return;
-
-        UrlLoadParams params = UrlLoadParams::InNewTab(link);
-        params.SetInBackground(YES);
-        params.web_params.referrer = referrer;
-        params.in_incognito = strongSelf.isOffTheRecord;
-        params.append_to = kCurrentTab;
-        params.origin_point = originPoint;
-        UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-      };
-      [_contextMenuCoordinator addItemWithTitle:title
-                                         action:action
-                                          style:UIAlertActionStyleDefault];
-
-      if (base::ios::IsMultipleScenesSupported()) {
-        // Open in New Window.
-        title = l10n_util::GetNSStringWithFixup(
-            IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
-        action = ^{
-          base::RecordAction(
-              base::UserMetricsAction("MobileWebContextMenuOpenInNewWindow"));
-          Record(ACTION_OPEN_IN_NEW_WINDOW, isImage, isLink);
-          // The "Open In New Window" item in the context menu opens a new tab
-          // in a new window. This will be (according to |isOffTheRecord|)
-          // incognito if the originating browser is incognito.
-          BrowserViewController* strongSelf = weakSelf;
-          if (!strongSelf)
-            return;
-
-          NSUserActivity* loadURLActivity =
-              ActivityToLoadURL(WindowActivityContextMenuOrigin, link, referrer,
-                                strongSelf.isOffTheRecord);
-          [strongSelf.dispatcher openNewWindowWithActivity:loadURLActivity];
-        };
-        [_contextMenuCoordinator addItemWithTitle:title
-                                           action:action
-                                            style:UIAlertActionStyleDefault];
-      }
-      if (!_isOffTheRecord) {
-        // Open in Incognito Tab.
-        title = l10n_util::GetNSStringWithFixup(
-            IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
-        action = ^{
-          base::RecordAction(base::UserMetricsAction(
-              "MobileWebContextMenuOpenInIncognitoTab"));
-          BrowserViewController* strongSelf = weakSelf;
-          if (!strongSelf)
-            return;
-
-          Record(ACTION_OPEN_IN_INCOGNITO_TAB, isImage, isLink);
-
-          UrlLoadParams params = UrlLoadParams::InNewTab(link);
-          params.web_params.referrer = referrer;
-          params.in_incognito = YES;
-          params.append_to = kCurrentTab;
-          UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-        };
-
-        if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-          IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
-              agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
-                                 ->GetSceneState()];
-          // Wrap the action inside of an auth check block.
-          ProceduralBlock wrappedAction = action;
-          action = ^{
-            if (reauthAgent.authenticationRequired) {
-              [reauthAgent authenticateIncognitoContentWithCompletionBlock:^(
-                               BOOL success) {
-                if (success) {
-                  wrappedAction();
-                }
-              }];
-            } else {
-              wrappedAction();
-            }
-          };
-        }
-
-        [_contextMenuCoordinator
-            addItemWithTitle:title
-                      action:action
-                       style:UIAlertActionStyleDefault
-                     enabled:!IsIncognitoModeDisabled(
-                                 self.browser->GetBrowserState()->GetPrefs())];
-      }
-    }
-    if (link.SchemeIsHTTPOrHTTPS()) {
-      NSString* innerText = params.link_text;
-      if ([innerText length] > 0) {
-        // Add to reading list.
-        title = l10n_util::GetNSStringWithFixup(
-            IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST);
-        action = ^{
-          base::RecordAction(
-              base::UserMetricsAction("MobileWebContextMenuReadLater"));
-          Record(ACTION_READ_LATER, isImage, isLink);
-          [weakSelf addURLsToReadingList:@[ [[URLWithTitle alloc]
-                                             initWithURL:link
-                                                   title:innerText] ]];
-        };
-        [_contextMenuCoordinator addItemWithTitle:title
-                                           action:action
-                                            style:UIAlertActionStyleDefault];
-      }
-    }
-    // Copy Link.
-    title = l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_COPY);
-    action = ^{
-      base::RecordAction(
-          base::UserMetricsAction("MobileWebContextMenuCopyLink"));
-      Record(ACTION_COPY_LINK_ADDRESS, isImage, isLink);
-      StoreURLInPasteboard(link);
-    };
-    [_contextMenuCoordinator addItemWithTitle:title
-                                       action:action
-                                        style:UIAlertActionStyleDefault];
-  }
-  if (isImage) {
-    base::RecordAction(
-        base::UserMetricsAction("MobileWebContextMenuImageImpression"));
-    web::Referrer referrer(lastCommittedURL, params.referrer_policy);
-    // Save Image.
-    title = l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE);
-    action = ^{
-      base::RecordAction(
-          base::UserMetricsAction("MobileWebContextMenuSaveImage"));
-      Record(ACTION_SAVE_IMAGE, isImage, isLink);
-      [weakSelf.imageSaver saveImageAtURL:imageUrl
-                                 referrer:referrer
-                                 webState:weakSelf.currentWebState
-                       baseViewController:self];
-    };
-    [_contextMenuCoordinator addItemWithTitle:title
-                                       action:action
-                                        style:UIAlertActionStyleDefault];
-    // Copy Image.
-    title = l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_COPYIMAGE);
-    action = ^{
-      base::RecordAction(
-          base::UserMetricsAction("MobileWebContextMenuCopyImage"));
-      Record(ACTION_COPY_IMAGE, isImage, isLink);
-      DCHECK(imageUrl.is_valid());
-      [weakSelf.imageCopier copyImageAtURL:imageUrl
-                                  referrer:referrer
-                                  webState:weakSelf.currentWebState
-                        baseViewController:self];
-    };
-    [_contextMenuCoordinator addItemWithTitle:title
-                                       action:action
-                                        style:UIAlertActionStyleDefault];
-    // Open Image.
-    title = l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE);
-    action = ^{
-      base::RecordAction(
-          base::UserMetricsAction("MobileWebContextMenuOpenImage"));
-      BrowserViewController* strongSelf = weakSelf;
-      if (!strongSelf)
-        return;
-
-      Record(ACTION_OPEN_IMAGE, isImage, isLink);
-      UrlLoadingBrowserAgent::FromBrowser(self.browser)
-          ->Load(UrlLoadParams::InCurrentTab(imageUrl));
-    };
-    [_contextMenuCoordinator addItemWithTitle:title
-                                       action:action
-                                        style:UIAlertActionStyleDefault];
-    // Open Image In New Tab.
-    title = l10n_util::GetNSStringWithFixup(
-        IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB);
-    action = ^{
-      base::RecordAction(
-          base::UserMetricsAction("MobileWebContextMenuOpenImageInNewTab"));
-      Record(ACTION_OPEN_IMAGE_IN_NEW_TAB, isImage, isLink);
-      BrowserViewController* strongSelf = weakSelf;
-      if (!strongSelf)
-        return;
-
-      UrlLoadParams params = UrlLoadParams::InNewTab(imageUrl);
-      params.SetInBackground(YES);
-      params.web_params.referrer = referrer;
-      params.in_incognito = strongSelf.isOffTheRecord;
-      params.append_to = kCurrentTab;
-      params.origin_point = originPoint;
-      UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-    };
-    [_contextMenuCoordinator addItemWithTitle:title
-                                       action:action
-                                        style:UIAlertActionStyleDefault];
-
-    TemplateURLService* service =
-        ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
-    if (search_engines::SupportsSearchByImage(service)) {
-      const TemplateURL* defaultURL = service->GetDefaultSearchProvider();
-      title = l10n_util::GetNSStringF(IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE,
-                                      defaultURL->short_name());
-      action = ^{
-        base::RecordAction(
-            base::UserMetricsAction("MobileWebContextMenuSearchByImage"));
-        Record(ACTION_SEARCH_BY_IMAGE, isImage, isLink);
-        ImageFetchTabHelper* imageFetcher =
-            ImageFetchTabHelper::FromWebState(self.currentWebState);
-        DCHECK(imageFetcher);
-        imageFetcher->GetImageData(imageUrl, referrer, ^(NSData* data) {
-          BrowserViewController* strongSelf = weakSelf;
-          if (!strongSelf)
-            return;
-          SearchByImageCommand* command = [[SearchByImageCommand alloc]
-              initWithImage:[UIImage imageWithData:data]
-                        URL:imageUrl
-                   inNewTab:YES];
-
-          [weakSelf searchByImage:command];
-        });
-      };
-      [_contextMenuCoordinator addItemWithTitle:title
-                                         action:action
-                                          style:UIAlertActionStyleDefault];
-    }
-  }
-
-  [_contextMenuCoordinator start];
+  [self.contextMenuProvider showLegacyContextMenuForWebState:webState
+                                                      params:params
+                                          baseViewController:self];
 }
 
 - (void)webState:(web::WebState*)webState
@@ -3739,238 +3412,11 @@ const CGFloat kFaviconWidthHeight = 24;
     contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
                     completionHandler:(void (^)(UIContextMenuConfiguration*))
                                           completionHandler {
-  // Prevent context menu from displaying for a tab which is no longer the
-  // current one.
-  if (webState != self.currentWebState) {
-    return;
-  }
-
-  // Copy the link_url and src_url to allow the block to safely
-  // capture them (capturing references would lead to UAF).
-  const GURL link = params.link_url;
-  const bool isLink = link.is_valid();
-  const GURL imageUrl = params.src_url;
-  const bool isImage = imageUrl.is_valid();
-
-  // Presents a custom menu only if there is a valid url
-  // or a valid image.
-  if (!isLink && !isImage)
-    return;
-
-  base::RecordAction(
-      base::UserMetricsAction("MobileWebContextMenuLinkImpression"));
-  DCHECK(self.browserState);
-  // TODO(crbug.com/1140387): Add support for the context menu images.
-
-  __weak BrowserViewController* weakSelf = self;
-
-  const GURL& lastCommittedURL = webState->GetLastCommittedURL();
-  web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
-
-  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
-  MenuScenario menuScenario = isImage && isLink
-                                  ? MenuScenario::kContextMenuImageLink
-                                  : isImage ? MenuScenario::kContextMenuImage
-                                            : MenuScenario::kContextMenuLink;
-
-  BrowserActionFactory* actionFactory =
-      [[BrowserActionFactory alloc] initWithBrowser:self.browser
-                                           scenario:menuScenario];
-
-  if (isLink) {
-    if (web::UrlHasWebScheme(link)) {
-      // Open in New Tab.
-      UrlLoadParams loadParams = UrlLoadParams::InNewTab(link);
-      loadParams.SetInBackground(YES);
-      loadParams.in_incognito = self.isOffTheRecord;
-      loadParams.append_to = kCurrentTab;
-      loadParams.web_params.referrer = referrer;
-      loadParams.origin_point = [params.view convertPoint:params.location
-                                                   toView:nil];
-      UIAction* openNewTab = [actionFactory actionToOpenInNewTabWithBlock:^{
-        BrowserViewController* strongSelf = weakSelf;
-        if (!strongSelf)
-          return;
-        UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
-            ->Load(loadParams);
-      }];
-      [menuElements addObject:openNewTab];
-
-      if (!_isOffTheRecord) {
-        // Open in Incognito Tab.
-        UIAction* openIncognitoTab =
-            [actionFactory actionToOpenInNewIncognitoTabWithURL:link
-                                                     completion:nil];
-        [menuElements addObject:openIncognitoTab];
-      }
-
-      if (base::ios::IsMultipleScenesSupported()) {
-        // Open in New Window.
-
-        NSUserActivity* newWindowActivity =
-            ActivityToLoadURL(WindowActivityContextMenuOrigin, link, referrer,
-                              self.isOffTheRecord);
-        UIAction* openNewWindow = [actionFactory
-            actionToOpenInNewWindowWithActivity:newWindowActivity];
-
-        [menuElements addObject:openNewWindow];
-      }
-
-      if (link.SchemeIsHTTPOrHTTPS()) {
-        NSString* innerText = params.link_text;
-        if ([innerText length] > 0) {
-          // Add to reading list.
-          UIAction* addToReadingList =
-              [actionFactory actionToAddToReadingListWithBlock:^{
-                  [weakSelf addURLsToReadingList:@[ [[URLWithTitle alloc]
-                                                     initWithURL:link
-                                                     title:innerText] ]];
-              }];
-          [menuElements addObject:addToReadingList];
-        }
-      }
-    }
-
-    // Copy Link.
-    UIAction* copyLink = [actionFactory actionToCopyURL:link];
-    [menuElements addObject:copyLink];
-  }
-
-  if (isImage) {
-    // Save Image.
-    UIAction* saveImage = [actionFactory actionSaveImageWithBlock:^{
-      [weakSelf.imageSaver saveImageAtURL:imageUrl
-                                 referrer:referrer
-                                 webState:weakSelf.currentWebState
-                       baseViewController:self];
-    }];
-    [menuElements addObject:saveImage];
-
-    // Copy Image.
-    UIAction* copyImage = [actionFactory actionCopyImageWithBlock:^{
-      [weakSelf.imageCopier copyImageAtURL:imageUrl
-                                  referrer:referrer
-                                  webState:weakSelf.currentWebState
-                        baseViewController:self];
-    }];
-    [menuElements addObject:copyImage];
-
-    // Open Image.
-    UIAction* openImage = [actionFactory actionOpenImageWithURL:imageUrl
-                                                     completion:nil];
-    [menuElements addObject:openImage];
-
-    // Open Image in new tab.
-    UrlLoadParams loadParams = UrlLoadParams::InNewTab(imageUrl);
-    loadParams.SetInBackground(YES);
-    loadParams.web_params.referrer = referrer;
-    loadParams.in_incognito = self.isOffTheRecord;
-    loadParams.append_to = kCurrentTab;
-    loadParams.origin_point = [params.view convertPoint:params.location
-                                                 toView:nil];
-    UIAction* openImageInNewTab =
-        [actionFactory actionOpenImageInNewTabWithUrlLoadParams:loadParams
-                                                     completion:nil];
-    [menuElements addObject:openImageInNewTab];
-
-    // Search by image.
-    TemplateURLService* service =
-        ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
-    if (search_engines::SupportsSearchByImage(service)) {
-      const TemplateURL* defaultURL = service->GetDefaultSearchProvider();
-      NSString* title =
-          IsContextMenuActionsRefreshEnabled()
-              ? l10n_util::GetNSString(IDS_IOS_CONTEXT_MENU_SEARCHFORIMAGE)
-              : l10n_util::GetNSStringF(IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE,
-                                        defaultURL->short_name());
-      UIAction* searchByImage = [actionFactory
-          actionSearchImageWithTitle:title
-                               Block:^{
-                                 ImageFetchTabHelper* imageFetcher =
-                                     ImageFetchTabHelper::FromWebState(
-                                         self.currentWebState);
-                                 DCHECK(imageFetcher);
-                                 imageFetcher->GetImageData(
-                                     imageUrl, referrer, ^(NSData* data) {
-                                       BrowserViewController* strongSelf =
-                                           weakSelf;
-                                       if (!strongSelf)
-                                         return;
-                                       SearchByImageCommand* command =
-                                           [[SearchByImageCommand alloc]
-                                               initWithImage:
-                                                   [UIImage imageWithData:data]
-                                                         URL:imageUrl
-                                                    inNewTab:YES];
-
-                                       [weakSelf searchByImage:command];
-                                     });
-                               }];
-      [menuElements addObject:searchByImage];
-    }
-  }
-
-  NSString* menuTitle = nil;
-  if (!base::FeatureList::IsEnabled(
-          web::features::kWebViewNativeContextMenuPhase2)) {
-    menuTitle = GetContextMenuTitle(params);
-
-    // Truncate context meny titles that originate from URLs, leaving text
-    // titles untruncated.
-    if (!IsImageTitle(params) &&
-        menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-      menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
-          stringByAppendingString:kContextMenuEllipsis];
-    }
-  }
-
-  UIContextMenuActionProvider actionProvider =
-      ^(NSArray<UIMenuElement*>* suggestedActions) {
-        RecordMenuShown(menuScenario);
-        return [UIMenu menuWithTitle:menuTitle children:menuElements];
-      };
-
-  UIContextMenuContentPreviewProvider previewProvider = ^UIViewController* {
-    if (!base::FeatureList::IsEnabled(
-            web::features::kWebViewNativeContextMenuPhase2)) {
-      return nil;
-    }
-    if (isLink) {
-      NSString* title = GetContextMenuTitle(params);
-      NSString* subtitle = GetContextMenuSubtitle(params);
-      LinkNoPreviewViewController* previewViewController =
-          [[LinkNoPreviewViewController alloc] initWithTitle:title
-                                                    subtitle:subtitle];
-
-      __weak LinkNoPreviewViewController* weakPreview = previewViewController;
-      FaviconLoader* faviconLoader =
-          IOSChromeFaviconLoaderFactory::GetForBrowserState(self.browserState);
-      faviconLoader->FaviconForPageUrl(
-          params.link_url, kFaviconWidthHeight, kFaviconWidthHeight,
-          /*fallback_to_google_server=*/false,
-          ^(FaviconAttributes* attributes) {
-            [weakPreview configureFaviconWithAttributes:attributes];
-          });
-      return previewViewController;
-    }
-    DCHECK(isImage);
-    ImagePreviewViewController* preview =
-        [[ImagePreviewViewController alloc] init];
-    __weak ImagePreviewViewController* weakPreview = preview;
-
-    ImageFetchTabHelper* imageFetcher =
-        ImageFetchTabHelper::FromWebState(self.currentWebState);
-    DCHECK(imageFetcher);
-    imageFetcher->GetImageData(imageUrl, referrer, ^(NSData* data) {
-      [weakPreview updateImageData:data];
-    });
-
-    return preview;
-  };
   UIContextMenuConfiguration* configuration =
-      [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:previewProvider
-                                               actionProvider:actionProvider];
+      [self.contextMenuProvider contextMenuConfigurationForWebState:webState
+                                                             params:params
+                                                 baseViewController:self];
+
   completionHandler(configuration);
 }
 
