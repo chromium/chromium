@@ -66,12 +66,12 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
         "https://calendar.google.com/calendar/installwebapp?usp=chrome_default",
         "https://calendar.google.com/calendar/r?usp=installed_webapp",
     },
-#endif  // defined(OS_CHROMEOS)
     {
         kCalculatorAppId,
         "https://calculator.apps.chrome/install",
         "https://calculator.apps.chrome/",
     },
+#endif  // defined(OS_CHROMEOS)
     {
         kGoogleDocsAppId,
         "https://docs.google.com/document/installwebapp?usp=chrome_default",
