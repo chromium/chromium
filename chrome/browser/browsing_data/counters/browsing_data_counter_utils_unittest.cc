@@ -138,6 +138,7 @@ TEST_F(BrowsingDataCounterUtilsTest, DeletePasswordsAndSigninData) {
 
   auto password_store =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
+  password_store->Init(GetProfile()->GetPrefs());
 
   // This counter does not really count anything; we just need a reference to
   // pass to the SigninDataResult ctor.

@@ -31,6 +31,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
+  void Shutdown(std::unique_ptr<PasswordStoreBackend> self) override;
   void GetAllLoginsAsync(LoginsReply callback) override;
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(

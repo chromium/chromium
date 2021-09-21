@@ -5,14 +5,22 @@
 #include "components/password_manager/core/browser/password_store_impl.h"
 
 #include <iterator>
+#include <memory>
 #include <set>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/login_database.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
@@ -31,12 +39,17 @@ constexpr base::TimeDelta kSyncTaskTimeout = base::TimeDelta::FromSeconds(30);
 
 PasswordStoreImpl::PasswordStoreImpl(std::unique_ptr<LoginDatabase> login_db)
     : login_db_(std::move(login_db)) {
-  backend_ = this;
+  main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  DCHECK(main_task_runner_);
+  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  DCHECK(background_task_runner_);
 }
 
 PasswordStoreImpl::PasswordStoreImpl(
     std::unique_ptr<LoginDatabase> login_db,
-    std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier)
+    std::unique_ptr<PasswordStore::UnsyncedCredentialsDeletionNotifier>
+        notifier)
     : PasswordStoreImpl(std::move(login_db)) {
   DCHECK(notifier);
   deletion_notifier_ = std::move(notifier);
@@ -44,10 +57,14 @@ PasswordStoreImpl::PasswordStoreImpl(
 
 PasswordStoreImpl::~PasswordStoreImpl() = default;
 
-void PasswordStoreImpl::ShutdownOnUIThread() {
-  PasswordStore::ShutdownOnUIThread();
-  ScheduleTask(
-      base::BindOnce(&PasswordStoreImpl::DestroyOnBackgroundSequence, this));
+void PasswordStoreImpl::Shutdown(std::unique_ptr<PasswordStoreBackend> self) {
+  background_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&PasswordStoreImpl::DestroyOnBackgroundSequence,
+                                weak_ptr_factory_.GetWeakPtr(), std::move(self),
+                                main_task_runner_, background_task_runner_));
+  // Don't allow any further tasks to be posted.
+  main_task_runner_.reset();
+  background_task_runner_.reset();
 }
 
 PasswordStoreChangeList PasswordStoreImpl::DisableAutoSignInForOriginsImpl(
@@ -80,27 +97,27 @@ PasswordStoreChangeList PasswordStoreImpl::DisableAutoSignInForOriginsImpl(
 }
 
 DatabaseCleanupResult PasswordStoreImpl::DeleteUndecryptableLogins() {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   if (!login_db_)
     return DatabaseCleanupResult::kDatabaseUnavailable;
   return login_db_->DeleteUndecryptableLogins();
 }
 
 void PasswordStoreImpl::AddSiteStatsInternal(const InteractionsStats& stats) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   if (login_db_)
     login_db_->stats_table().AddRow(stats);
 }
 
 void PasswordStoreImpl::RemoveSiteStatsInternal(const GURL& origin_domain) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   if (login_db_)
     login_db_->stats_table().RemoveRow(origin_domain);
 }
 
 std::vector<InteractionsStats> PasswordStoreImpl::GetSiteStatsInternal(
     const GURL& origin_domain) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   return login_db_ ? login_db_->stats_table().GetRows(origin_domain)
                    : std::vector<InteractionsStats>();
 }
@@ -117,13 +134,13 @@ void PasswordStoreImpl::RemoveStatisticsByOriginAndTimeInternal(
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 PasswordStoreImpl::GetSyncControllerDelegateOnBackgroundSequence() {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(sync_bridge_);
   return sync_bridge_->change_processor()->GetControllerDelegate();
 }
 
 void PasswordStoreImpl::ReportMetrics() {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   if (!login_db_)
     return;
   login_db_->ReportMetrics();
@@ -155,21 +172,21 @@ PasswordStoreChangeList PasswordStoreImpl::UpdateLoginSync(
 
 void PasswordStoreImpl::NotifyLoginsChanged(
     const PasswordStoreChangeList& changes) {
-  main_task_runner()->PostTask(
+  main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(remote_forms_changes_received_callback_, changes));
 }
 
 void PasswordStoreImpl::NotifyDeletionsHaveSynced(bool success) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   // Either all deletions have been committed to the Sync server, or Sync is
   // telling us that it won't commit them (because Sync was turned off
   // permanently). In either case, run the corresponding callbacks now (on the
   // main task runner).
   DCHECK(!success || !GetMetadataStore()->HasUnsyncedDeletions());
   for (auto& callback : deletions_have_synced_callbacks_) {
-    main_task_runner()->PostTask(FROM_HERE,
-                                 base::BindOnce(std::move(callback), success));
+    main_task_runner_->PostTask(FROM_HERE,
+                                base::BindOnce(std::move(callback), success));
   }
   deletions_have_synced_timeout_.Cancel();
   deletions_have_synced_callbacks_.clear();
@@ -177,14 +194,14 @@ void PasswordStoreImpl::NotifyDeletionsHaveSynced(bool success) {
 
 void PasswordStoreImpl::NotifyUnsyncedCredentialsWillBeDeleted(
     std::vector<PasswordForm> unsynced_credentials) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(IsAccountStore());
   // |deletion_notifier_| only gets set for desktop.
   if (deletion_notifier_) {
-    main_task_runner()->PostTask(
+    main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &PasswordStoreImpl::UnsyncedCredentialsDeletionNotifier::Notify,
+            &PasswordStore::UnsyncedCredentialsDeletionNotifier::Notify,
             deletion_notifier_->GetWeakPtr(), std::move(unsynced_credentials)));
   }
 }
@@ -208,7 +225,7 @@ bool PasswordStoreImpl::CommitTransaction() {
 
 FormRetrievalResult PasswordStoreImpl::ReadAllLogins(
     PrimaryKeyToFormMap* key_to_form_map) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   if (!login_db_)
     return FormRetrievalResult::kDbError;
   return login_db_->GetAllLogins(key_to_form_map);
@@ -216,7 +233,7 @@ FormRetrievalResult PasswordStoreImpl::ReadAllLogins(
 
 PasswordStoreChangeList PasswordStoreImpl::RemoveLoginByPrimaryKeySync(
     FormPrimaryKey primary_key) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   PasswordStoreChangeList changes;
   if (login_db_ && login_db_->RemoveLoginByPrimaryKey(primary_key, &changes)) {
     return changes;
@@ -240,27 +257,32 @@ void PasswordStoreImpl::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReplyWithResult(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::InitOnBackgroundSequence, this,
+      base::BindOnce(&PasswordStoreImpl::InitOnBackgroundSequence,
+                     base::Unretained(this),
                      std::move(remote_form_changes_received),
                      std::move(sync_enabled_or_disabled_cb)),
       std::move(completion));
 }
 
 void PasswordStoreImpl::GetAllLoginsAsync(LoginsReply callback) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&PasswordStoreImpl::GetAllLoginsInternal, this),
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::GetAllLoginsInternal,
+                     base::Unretained(this)),
       std::move(callback));
 }
 
 void PasswordStoreImpl::GetAutofillableLoginsAsync(LoginsReply callback) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReplyWithResult(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::GetAutofillableLoginsInternal, this),
+      base::BindOnce(&PasswordStoreImpl::GetAutofillableLoginsInternal,
+                     base::Unretained(this)),
       std::move(callback));
 }
 
@@ -268,45 +290,48 @@ void PasswordStoreImpl::FillMatchingLoginsAsync(
     LoginsReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (forms.empty()) {
     std::move(callback).Run({});
     return;
   }
 
-  background_task_runner()->PostTaskAndReplyWithResult(
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::FillMatchingLoginsInternal, this,
-                     forms, include_psl),
+      base::BindOnce(&PasswordStoreImpl::FillMatchingLoginsInternal,
+                     base::Unretained(this), forms, include_psl),
       std::move(callback));
 }
 
 void PasswordStoreImpl::AddLoginAsync(const PasswordForm& form,
                                       PasswordStoreChangeListReply callback) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReplyWithResult(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::AddLoginInternal, this, form),
+      base::BindOnce(&PasswordStoreImpl::AddLoginInternal,
+                     base::Unretained(this), form),
       std::move(callback));
 }
 
 void PasswordStoreImpl::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReplyWithResult(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::UpdateLoginInternal, this, form),
+      base::BindOnce(&PasswordStoreImpl::UpdateLoginInternal,
+                     base::Unretained(this), form),
       std::move(callback));
 }
 
 void PasswordStoreImpl::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReplyWithResult(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::RemoveLoginInternal, this, form),
+      base::BindOnce(&PasswordStoreImpl::RemoveLoginInternal,
+                     base::Unretained(this), form),
       std::move(callback));
 }
 
@@ -314,11 +339,11 @@ void PasswordStoreImpl::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
     PasswordStoreChangeListReply callback) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReplyWithResult(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PasswordStoreImpl::RemoveLoginsCreatedBetweenInternal,
-                     this, delete_begin, delete_end),
+                     base::Unretained(this), delete_begin, delete_end),
       std::move(callback));
 }
 
@@ -328,24 +353,24 @@ void PasswordStoreImpl::RemoveLoginsByURLAndTimeAsync(
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
     PasswordStoreChangeListReply callback) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReplyWithResult(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::RemoveLoginsByURLAndTimeInternal, this,
-                     url_filter, delete_begin, delete_end,
-                     std::move(sync_completion)),
+      base::BindOnce(&PasswordStoreImpl::RemoveLoginsByURLAndTimeInternal,
+                     base::Unretained(this), url_filter, delete_begin,
+                     delete_end, std::move(sync_completion)),
       std::move(callback));
 }
 
 void PasswordStoreImpl::DisableAutoSignInForOriginsAsync(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReply(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(
                          &PasswordStoreImpl::DisableAutoSignInForOriginsImpl),
-                     this, origin_filter),
+                     base::Unretained(this), origin_filter),
       std::move(completion));
 }
 
@@ -359,39 +384,39 @@ FieldInfoStore* PasswordStoreImpl::GetFieldInfoStore() {
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreImpl::CreateSyncControllerDelegateFactory() {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   // Note that a callback is bound for
   // GetSyncControllerDelegateOnBackgroundSequence() because this getter itself
   // must also run in the backend sequence, and the proxy object below will take
   // care of that.
   return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
-      background_task_runner(),
+      background_task_runner_,
       base::BindRepeating(
           &PasswordStoreImpl::GetSyncControllerDelegateOnBackgroundSequence,
           base::Unretained(this)));
 }
 
 void PasswordStoreImpl::AddSiteStats(const InteractionsStats& stats) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::AddSiteStatsInternal, this, stats));
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&PasswordStoreImpl::AddSiteStatsInternal,
+                                weak_ptr_factory_.GetWeakPtr(), stats));
 }
 
 void PasswordStoreImpl::RemoveSiteStats(const GURL& origin_domain) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTask(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&PasswordStoreImpl::RemoveSiteStatsInternal,
-                                this, origin_domain));
+                                weak_ptr_factory_.GetWeakPtr(), origin_domain));
 }
 
 void PasswordStoreImpl::GetSiteStats(const GURL& origin_domain,
                                      PasswordStoreConsumer* consumer) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
-      background_task_runner().get(), FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::GetSiteStatsInternal, this,
-                     origin_domain),
+      background_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::GetSiteStatsInternal,
+                     base::Unretained(this), origin_domain),
       base::BindOnce(&PasswordStoreConsumer::OnGetSiteStatistics,
                      consumer->GetWeakPtr()));
 }
@@ -401,27 +426,29 @@ void PasswordStoreImpl::RemoveStatisticsByOriginAndTime(
     base::Time delete_begin,
     base::Time delete_end,
     base::OnceClosure completion) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReply(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
-          &PasswordStoreImpl::RemoveStatisticsByOriginAndTimeInternal, this,
-          origin_filter, delete_begin, delete_end),
+          &PasswordStoreImpl::RemoveStatisticsByOriginAndTimeInternal,
+          weak_ptr_factory_.GetWeakPtr(), origin_filter, delete_begin,
+          delete_end),
       std::move(completion));
 }
 
 void PasswordStoreImpl::AddFieldInfo(const FieldInfo& field_info) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&PasswordStoreImpl::AddFieldInfoInternal, this,
-                                field_info));
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&PasswordStoreImpl::AddFieldInfoInternal,
+                                weak_ptr_factory_.GetWeakPtr(), field_info));
 }
 
 void PasswordStoreImpl::GetAllFieldInfo(PasswordStoreConsumer* consumer) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
-      background_task_runner().get(), FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::GetAllFieldInfoInternal, this),
+      background_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::GetAllFieldInfoInternal,
+                     base::Unretained(this)),
       base::BindOnce(&PasswordStoreConsumer::OnGetAllFieldInfo,
                      consumer->GetWeakPtr()));
 }
@@ -429,18 +456,18 @@ void PasswordStoreImpl::GetAllFieldInfo(PasswordStoreConsumer* consumer) {
 void PasswordStoreImpl::RemoveFieldInfoByTime(base::Time remove_begin,
                                               base::Time remove_end,
                                               base::OnceClosure completion) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  background_task_runner()->PostTaskAndReply(
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  background_task_runner_->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::RemoveFieldInfoByTimeInternal, this,
-                     remove_begin, remove_end),
+      base::BindOnce(&PasswordStoreImpl::RemoveFieldInfoByTimeInternal,
+                     weak_ptr_factory_.GetWeakPtr(), remove_begin, remove_end),
       std::move(completion));
 }
 
 bool PasswordStoreImpl::InitOnBackgroundSequence(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
 
   remote_forms_changes_received_callback_ =
       std::move(remote_form_changes_received);
@@ -460,7 +487,7 @@ bool PasswordStoreImpl::InitOnBackgroundSequence(
 
     // Delay the actual reporting by 30 seconds, to ensure it doesn't happen
     // during the "hot phase" of Chrome startup.
-    background_task_runner()->PostDelayedTask(
+    background_task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PasswordStoreImpl::ReportMetrics,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -475,16 +502,28 @@ bool PasswordStoreImpl::InitOnBackgroundSequence(
   return success;
 }
 
-void PasswordStoreImpl::DestroyOnBackgroundSequence() {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+void PasswordStoreImpl::DestroyOnBackgroundSequence(
+    std::unique_ptr<PasswordStoreBackend> self,
+    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
+  DCHECK(background_task_runner->RunsTasksInCurrentSequence());
   login_db_.reset();
   sync_bridge_.reset();
   remote_forms_changes_received_callback_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
+  // Ensure the remains of the backend is deleted on the main sequence and
+  // afterwards, allow the last reference to the main task runner to expire.
+  base::SequencedTaskRunner* runner = main_task_runner.get();
+  runner->DeleteSoon(FROM_HERE, std::move(self));
+  runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<base::SequencedTaskRunner> main_task_runner) {},
+          std::move(main_task_runner)));
 }
 
 LoginsResult PasswordStoreImpl::GetAllLoginsInternal() {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   PrimaryKeyToFormMap key_to_form_map;
 
   if (!login_db_ || login_db_->GetAllLogins(&key_to_form_map) !=
@@ -508,7 +547,7 @@ LoginsResult PasswordStoreImpl::GetAutofillableLoginsInternal() {
 LoginsResult PasswordStoreImpl::FillMatchingLoginsInternal(
     const std::vector<PasswordFormDigest>& forms,
     bool include_psl) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
 
   std::vector<std::unique_ptr<PasswordForm>> results;
   for (const auto& form : forms) {
@@ -524,7 +563,7 @@ LoginsResult PasswordStoreImpl::FillMatchingLoginsInternal(
 
 PasswordStoreChangeList PasswordStoreImpl::AddLoginInternal(
     const PasswordForm& form) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   BeginTransaction();
   PasswordStoreChangeList changes = AddLoginSync(form, /*error=*/nullptr);
   if (sync_bridge_ && !changes.empty())
@@ -539,7 +578,7 @@ PasswordStoreChangeList PasswordStoreImpl::AddLoginInternal(
 
 PasswordStoreChangeList PasswordStoreImpl::UpdateLoginInternal(
     const PasswordForm& form) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   BeginTransaction();
   PasswordStoreChangeList changes = UpdateLoginSync(form, /*error=*/nullptr);
   if (sync_bridge_ && !changes.empty())
@@ -554,7 +593,7 @@ PasswordStoreChangeList PasswordStoreImpl::UpdateLoginInternal(
 
 PasswordStoreChangeList PasswordStoreImpl::RemoveLoginInternal(
     const PasswordForm& form) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   BeginTransaction();
   PasswordStoreChangeList changes;
   if (login_db_ && login_db_->RemoveLogin(form, &changes)) {
@@ -572,7 +611,7 @@ PasswordStoreChangeList PasswordStoreImpl::RemoveLoginInternal(
 PasswordStoreChangeList PasswordStoreImpl::RemoveLoginsCreatedBetweenInternal(
     base::Time delete_begin,
     base::Time delete_end) {
-  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   BeginTransaction();
   PasswordStoreChangeList changes;
   if (login_db_ && login_db_->RemoveLoginsCreatedBetween(
@@ -620,9 +659,10 @@ PasswordStoreChangeList PasswordStoreImpl::RemoveLoginsByURLAndTimeInternal(
     deletions_have_synced_callbacks_.push_back(std::move(sync_completion));
     // Start a timeout for sync, or restart it if it was already running.
     deletions_have_synced_timeout_.Reset(
-        base::BindOnce(&PasswordStoreImpl::NotifyDeletionsHaveSynced, this,
+        base::BindOnce(&PasswordStoreImpl::NotifyDeletionsHaveSynced,
+                       weak_ptr_factory_.GetWeakPtr(),
                        /*success=*/false));
-    background_task_runner()->PostDelayedTask(
+    background_task_runner_->PostDelayedTask(
         FROM_HERE, deletions_have_synced_timeout_.callback(), kSyncTaskTimeout);
 
     // Do an immediate check for the case where there are already no unsynced

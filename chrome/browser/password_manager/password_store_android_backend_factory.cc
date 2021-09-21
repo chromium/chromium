@@ -8,6 +8,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/login_database.h"
+#include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
@@ -23,13 +24,11 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
   if (base::FeatureList::IsEnabled(
           password_manager::features::kUnifiedPasswordManagerShadowAndroid)) {
     return std::make_unique<PasswordStoreProxyBackend>(
-        /*TODO(crbug.com/1229654): Create a local backend instead of */ nullptr,
+        std::make_unique<PasswordStoreImpl>(std::move(login_db)),
         std::make_unique<PasswordStoreAndroidBackend>(
             PasswordStoreAndroidBackendBridge::Create()));
   }
-  // TODO(crbug.com/1217071): Once PasswordStoreImpl does not implement the
-  // PasswordStore abstract class anymore, return a local backend.
-  return nullptr;
+  return std::make_unique<PasswordStoreImpl>(std::move(login_db));
 }
 
 }  // namespace password_manager

@@ -186,12 +186,16 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
           profile->GetPath()));
 
   scoped_refptr<password_manager::PasswordStore> ps =
-#if !defined(OS_ANDROID)
-      new password_manager::PasswordStoreImpl(
-          std::move(login_db),
-          std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(profile));
+#if defined(OS_ANDROID)
+      new password_manager::PasswordStore(
+          std::make_unique<password_manager::PasswordStoreImpl>(
+              std::move(login_db)));
 #else
-      new password_manager::PasswordStoreImpl(std::move(login_db));
+      new password_manager::PasswordStore(
+          std::make_unique<password_manager::PasswordStoreImpl>(
+              std::move(login_db),
+              std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(
+                  profile)));
 #endif
 
   if (!ps->Init(profile->GetPrefs(),

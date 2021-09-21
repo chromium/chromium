@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
+#include <utility>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -45,6 +46,12 @@ void PasswordStoreProxyBackend::InitBackend(
                              base::BindOnce(pending_initialization_calls_));
   shadow_backend_->InitBackend(base::DoNothing(), base::DoNothing(),
                                base::BindOnce(pending_initialization_calls_));
+}
+
+void PasswordStoreProxyBackend::Shutdown(
+    std::unique_ptr<PasswordStoreBackend> self) {
+  main_backend_->Shutdown(std::exchange(main_backend_, nullptr));
+  shadow_backend_->Shutdown(std::exchange(shadow_backend_, nullptr));
 }
 
 void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsReply callback) {
